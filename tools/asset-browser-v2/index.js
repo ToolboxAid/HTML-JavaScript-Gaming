@@ -166,6 +166,10 @@ class AssetBrowserV2 {
       this.renderError(versionCheck.error);
       return;
     }
+    if (typeof versionCheck.payload.toolId !== "string" || versionCheck.payload.toolId.trim() !== "asset-browser-v2") {
+      this.renderError("Asset Browser V2 session data is invalid. Expected toolId 'asset-browser-v2'.");
+      return;
+    }
     if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
       this.renderError("Asset Browser V2 session data is invalid. Expected payloadJson only.");
       return;

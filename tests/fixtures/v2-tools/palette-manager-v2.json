@@ -3,15 +3,14 @@
   "sessionContext": {
     "version": "v2",
     "toolId": "palette-manager-v2",
-    "paletteJson": {
-      "name": "Fixture Palette",
-      "colors": [
-        "#112233",
-        {
-          "name": "Accent",
-          "hex": "#FF6600"
-        }
-      ]
+    "payloadJson": {
+      "paletteDocument": {
+        "name": "Fixture Palette",
+        "swatches": [
+          { "symbol": "A", "hex": "#112233", "name": "Base" },
+          { "symbol": "B", "hex": "#FF6600", "name": "Accent" }
+        ]
+      }
     }
   }
 }

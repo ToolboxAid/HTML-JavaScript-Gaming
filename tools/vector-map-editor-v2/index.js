@@ -154,6 +154,10 @@ class VectorMapEditorV2 {
       this.renderError(versionCheck.error);
       return;
     }
+    if (typeof versionCheck.payload.toolId !== "string" || versionCheck.payload.toolId.trim() !== "vector-map-editor-v2") {
+      this.renderError("Vector Map Editor V2 session data is invalid. Expected toolId 'vector-map-editor-v2'.");
+      return;
+    }
     if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
       this.renderError("Vector Map Editor V2 session data is invalid. Expected payloadJson only.");
       return;

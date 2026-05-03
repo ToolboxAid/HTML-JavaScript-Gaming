@@ -166,6 +166,10 @@ class TilemapStudioV2 {
       this.renderError(versionCheck.error);
       return;
     }
+    if (typeof versionCheck.payload.toolId !== "string" || versionCheck.payload.toolId.trim() !== "tilemap-studio-v2") {
+      this.renderError("Tilemap session data is invalid. Expected toolId 'tilemap-studio-v2'.");
+      return;
+    }
     if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
       this.renderError("Tilemap session data is invalid. Expected payloadJson only.");
       return;

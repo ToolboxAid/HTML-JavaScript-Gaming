@@ -158,7 +158,7 @@ class PaletteManagerV2 {
   loadContract(sessionContext) {
     console.log("[PALETTE_MANAGER_V2_CONTRACT_LOADED]");
     if (!sessionContext || typeof sessionContext !== "object" || Array.isArray(sessionContext)) {
-      this.renderError("Session context is invalid. Expected an object containing paletteJson.");
+      this.renderError("Session context is invalid. Expected an object containing payloadJson.paletteDocument.");
       return;
     }
     const versionCheck = this.handleSessionVersion(sessionContext);
@@ -166,74 +166,80 @@ class PaletteManagerV2 {
       this.renderError(versionCheck.error);
       return;
     }
-    if (!versionCheck.payload.paletteJson || typeof versionCheck.payload.paletteJson !== "object" || Array.isArray(versionCheck.payload.paletteJson)) {
-      this.renderError("Palette Manager V2 session data is invalid. Expected paletteJson only.");
+    if (typeof versionCheck.payload.toolId !== "string" || versionCheck.payload.toolId.trim() !== "palette-manager-v2") {
+      this.renderError("Palette Manager V2 session data is invalid. Expected toolId 'palette-manager-v2'.");
       return;
     }
-    this.renderPalette(versionCheck.payload.paletteJson, versionCheck.payload);
+    if (Object.prototype.hasOwnProperty.call(versionCheck.payload, "paletteJson")) {
+      this.renderError("Palette Manager V2 session data is invalid. paletteJson is not supported; use payloadJson.paletteDocument.");
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(versionCheck.payload, "payloadJson") || !versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
+      this.renderError("Palette Manager V2 session data is invalid. Expected payloadJson only.");
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(versionCheck.payload.payloadJson, "paletteDocument") || !versionCheck.payload.payloadJson.paletteDocument || typeof versionCheck.payload.payloadJson.paletteDocument !== "object" || Array.isArray(versionCheck.payload.payloadJson.paletteDocument)) {
+      this.renderError("Palette Manager V2 session data is invalid. Expected payloadJson.paletteDocument.");
+      return;
+    }
+    this.renderPalette(versionCheck.payload.payloadJson.paletteDocument, versionCheck.payload);
   }
 
-  renderPalette(paletteJson, sessionContext) {
-    if (typeof paletteJson.name !== "string" || !paletteJson.name.trim()) {
-      this.renderError("Palette Manager V2 session data is invalid. Expected paletteJson.name.");
+  renderPalette(paletteDocument, sessionContext) {
+    if (typeof paletteDocument.name !== "string" || !paletteDocument.name.trim()) {
+      this.renderError("Palette Manager V2 session data is invalid. Expected paletteDocument.name.");
       return;
     }
-    if (!Array.isArray(paletteJson.colors)) {
-      this.renderError("Palette Manager V2 session data is invalid. Expected paletteJson.colors[].");
+    if (!Array.isArray(paletteDocument.swatches)) {
+      this.renderError("Palette Manager V2 session data is invalid. Expected paletteDocument.swatches[].");
       return;
     }
 
-    const normalizedColors = [];
-    for (let index = 0; index < paletteJson.colors.length; index += 1) {
-      let colorValue = "";
-      let colorLabel = "";
-      if (typeof paletteJson.colors[index] === "string") {
-        colorValue = paletteJson.colors[index].trim().toUpperCase();
-        colorLabel = colorValue;
-      }
-      if (
-        paletteJson.colors[index] &&
-        typeof paletteJson.colors[index] === "object" &&
-        !Array.isArray(paletteJson.colors[index]) &&
-        typeof paletteJson.colors[index].hex === "string"
-      ) {
-        colorValue = paletteJson.colors[index].hex.trim().toUpperCase();
-        colorLabel = typeof paletteJson.colors[index].name === "string" && paletteJson.colors[index].name.trim()
-          ? paletteJson.colors[index].name.trim()
-          : colorValue;
-      }
-      if (
-        paletteJson.colors[index] &&
-        typeof paletteJson.colors[index] === "object" &&
-        !Array.isArray(paletteJson.colors[index]) &&
-        typeof paletteJson.colors[index].color === "string"
-      ) {
-        colorValue = paletteJson.colors[index].color.trim().toUpperCase();
-        colorLabel = typeof paletteJson.colors[index].name === "string" && paletteJson.colors[index].name.trim()
-          ? paletteJson.colors[index].name.trim()
-          : colorValue;
-      }
-      if (!/^#([0-9A-F]{6}|[0-9A-F]{8})$/.test(colorValue)) {
-        this.renderError("Palette Manager V2 session data is invalid. Every paletteJson.colors[] entry must include #RRGGBB or #RRGGBBAA.");
+    const validatedSwatches = [];
+    for (let index = 0; index < paletteDocument.swatches.length; index += 1) {
+      const swatch = paletteDocument.swatches[index];
+      if (!swatch || typeof swatch !== "object" || Array.isArray(swatch)) {
+        this.renderError("Palette Manager V2 session data is invalid. Every swatch must be an object.");
         return;
       }
-      normalizedColors.push({ label: colorLabel, color: colorValue });
+      const swatchKeys = Object.keys(swatch);
+      if (swatchKeys.some((key) => key !== "symbol" && key !== "hex" && key !== "name")) {
+        this.renderError("Palette Manager V2 session data is invalid. Swatches only allow symbol, hex, and name.");
+        return;
+      }
+      if (typeof swatch.symbol !== "string" || swatch.symbol.length !== 1) {
+        this.renderError("Palette Manager V2 session data is invalid. Every swatch requires a one-character symbol.");
+        return;
+      }
+      if (typeof swatch.name !== "string" || !swatch.name.trim()) {
+        this.renderError("Palette Manager V2 session data is invalid. Every swatch requires a name.");
+        return;
+      }
+      if (typeof swatch.hex !== "string" || !/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/.test(swatch.hex)) {
+        this.renderError("Palette Manager V2 session data is invalid. Every swatch requires #RRGGBB or #RRGGBBAA hex.");
+        return;
+      }
+      validatedSwatches.push({
+        symbol: swatch.symbol,
+        name: swatch.name.trim(),
+        hex: swatch.hex.toUpperCase()
+      });
     }
 
     document.getElementById("paletteManagerSessionReadout").textContent = `Session: loaded\nContext: ${this.urlState.hostContextId}\nTool: ${typeof sessionContext.toolId === "string" && sessionContext.toolId.trim() ? sessionContext.toolId.trim() : "not provided"}${this.optionalUrlStateSummary() ? `\nURL State: ${this.optionalUrlStateSummary()}` : ""}`;
-    document.getElementById("paletteManagerContractReadout").textContent = "paletteJson loaded\npaletteJson.name valid\npaletteJson.colors[] valid";
+    document.getElementById("paletteManagerContractReadout").textContent = "payloadJson loaded\npayloadJson.paletteDocument valid\nswatches[] valid";
     document.getElementById("paletteManagerWorkspaceReadout").textContent = "Workspace session context was read. Workspace writes are deferred for this isolated V2 entry.";
-    document.getElementById("paletteManagerName").textContent = paletteJson.name.trim();
-    document.getElementById("paletteManagerCount").textContent = `${normalizedColors.length} color${normalizedColors.length === 1 ? "" : "s"}`;
-    document.getElementById("paletteManagerState").textContent = normalizedColors.length === 0
-      ? "Palette Manager V2 loaded a valid session palette with zero colors."
+    document.getElementById("paletteManagerName").textContent = paletteDocument.name.trim();
+    document.getElementById("paletteManagerCount").textContent = `${validatedSwatches.length} swatch${validatedSwatches.length === 1 ? "" : "es"}`;
+    document.getElementById("paletteManagerState").textContent = validatedSwatches.length === 0
+      ? "Palette Manager V2 loaded a valid session palette with zero swatches."
       : "Palette Manager V2 loaded the session palette.";
     document.getElementById("paletteManagerEmptyState").hidden = true;
     document.getElementById("paletteManagerInvalidState").hidden = true;
     document.getElementById("paletteManagerValidState").hidden = false;
 
     document.getElementById("paletteManagerSwatches").replaceChildren();
-    normalizedColors.forEach((entry) => {
+    validatedSwatches.forEach((entry) => {
       const swatch = document.createElement("article");
       const chip = document.createElement("div");
       const swatchBody = document.createElement("div");
@@ -241,10 +247,10 @@ class PaletteManagerV2 {
       const swatchColor = document.createElement("div");
       swatch.className = "palette-manager-v2-swatch";
       chip.className = "palette-manager-v2-chip";
-      chip.style.backgroundColor = entry.color;
+      chip.style.backgroundColor = entry.hex;
       swatchBody.className = "palette-manager-v2-swatch-body";
-      swatchName.textContent = entry.label;
-      swatchColor.textContent = entry.color;
+      swatchName.textContent = `${entry.symbol} ${entry.name}`;
+      swatchColor.textContent = entry.hex;
       swatchBody.append(swatchName, swatchColor);
       swatch.append(chip, swatchBody);
       document.getElementById("paletteManagerSwatches").appendChild(swatch);
@@ -254,10 +260,10 @@ class PaletteManagerV2 {
   renderMissing(message) {
     this.logStructuredError("EMPTY", message, { hostContextId: this.urlState.hostContextId || "" });
     document.getElementById("paletteManagerSessionReadout").textContent = "Session: missing";
-    document.getElementById("paletteManagerContractReadout").textContent = "paletteJson not loaded";
+    document.getElementById("paletteManagerContractReadout").textContent = "payloadJson.paletteDocument not loaded";
     document.getElementById("paletteManagerWorkspaceReadout").textContent = "Workspace session context is not available.";
     document.getElementById("paletteManagerName").textContent = "No palette loaded";
-    document.getElementById("paletteManagerCount").textContent = "0 colors";
+    document.getElementById("paletteManagerCount").textContent = "0 swatches";
     document.getElementById("paletteManagerEmptyState").textContent = message;
     document.getElementById("paletteManagerEmptyState").hidden = false;
     document.getElementById("paletteManagerInvalidState").hidden = true;
@@ -268,11 +274,11 @@ class PaletteManagerV2 {
   renderError(message) {
     this.logStructuredError("INVALID", message, { hostContextId: this.urlState.hostContextId || "" });
     document.getElementById("paletteManagerSessionReadout").textContent = "Session: read attempted";
-    document.getElementById("paletteManagerContractReadout").textContent = "paletteJson invalid";
+    document.getElementById("paletteManagerContractReadout").textContent = "payloadJson.paletteDocument invalid";
     document.getElementById("paletteManagerWorkspaceReadout").textContent = "Workspace writes are disabled for invalid Palette Manager V2 session data.";
     document.getElementById("paletteManagerName").textContent = "Palette Manager V2 error";
-    document.getElementById("paletteManagerCount").textContent = "0 colors";
-    document.getElementById("paletteManagerInvalidState").textContent = `${message} Re-open Palette Manager V2 from a host session that provides paletteJson.`;
+    document.getElementById("paletteManagerCount").textContent = "0 swatches";
+    document.getElementById("paletteManagerInvalidState").textContent = `${message} Re-open Palette Manager V2 from a host session that provides payloadJson.paletteDocument.`;
     document.getElementById("paletteManagerEmptyState").hidden = true;
     document.getElementById("paletteManagerInvalidState").hidden = false;
     document.getElementById("paletteManagerValidState").hidden = true;
