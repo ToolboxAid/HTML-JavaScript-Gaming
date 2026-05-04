@@ -1,24 +1,23 @@
-# Codex Commands - PR_26124_047-palette-manager-right-column-and-hex-fixes
+# Codex Commands - PR_26124_048-palette-manager-right-accordion-v2
 
 ## Workflow
 - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
-- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md`.
-- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md`.
-- Updated Palette Manager V2 only.
-- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md`.
+- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md`.
+- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md`.
+- Updated Palette Manager V2 right-column markup and CSS only.
+- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md`.
 
 ## Validation Commands
-- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`
-- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
-- Targeted served-browser Palette Manager V2 check using Playwright from Node.
+- `git diff --name-only -- '*.js'`
+- Targeted served-browser Palette Manager V2 right-column check using Playwright from Node.
 - `git diff --check`
+- `git diff --cached --check`
 - `npm run test:workspace-v2`
 
 ## Validation Outcome
-- JavaScript syntax checks: PASS.
-- Targeted served-browser Palette Manager V2 check: PASS.
+- JavaScript syntax checks: no JavaScript files changed by PR048.
+- Targeted served-browser Palette Manager V2 right-column check: PASS.
 - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed files.
+- `git diff --cached --check`: PASS.
 - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
 - Full samples smoke test: skipped by instruction.

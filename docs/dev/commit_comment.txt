@@ -1,1 +1,1 @@
-Fix Palette Manager right column, source locking, and alpha hex input - PR_26124_047-palette-manager-right-column-and-hex-fixes
+Move Palette Manager right column to accordionV2 - PR_26124_048-palette-manager-right-accordion-v2

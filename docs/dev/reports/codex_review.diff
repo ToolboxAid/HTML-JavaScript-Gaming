@@ -1,438 +1,380 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 7391b599..5b363cfb 100644
+index 5b363cfb..cd2d225d 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,21 +1,24 @@
--# Codex Commands - PR_26124_046-right-column-height-balance
-+# Codex Commands - PR_26124_047-palette-manager-right-column-and-hex-fixes
+@@ -1,24 +1,23 @@
+-# Codex Commands - PR_26124_047-palette-manager-right-column-and-hex-fixes
++# Codex Commands - PR_26124_048-palette-manager-right-accordion-v2
 
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
--- Read `docs/pr/PR_26124_046-right-column-height-balance/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_046-right-column-height-balance/BUILD_PR.md`.
--- Updated `tools/palette-manager-v2/paletteManagerV2.css`.
--- Created `docs/pr/PR_26124_046-right-column-height-balance/APPLY_PR.md`.
-+- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md`.
-+- Updated Palette Manager V2 only.
-+- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md`.
+-- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md`.
+-- Updated Palette Manager V2 only.
+-- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md`.
++- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md`.
++- Updated Palette Manager V2 right-column markup and CSS only.
++- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md`.
 
  ## Validation Commands
--- Targeted browser layout check using Playwright from Node against `tools/palette-manager-v2/index.html`.
-+- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`
-+- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
-+- Targeted served-browser Palette Manager V2 check using Playwright from Node.
+-- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
+-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
+-- `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`
+-- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
+-- Targeted served-browser Palette Manager V2 check using Playwright from Node.
++- `git diff --name-only -- '*.js'`
++- Targeted served-browser Palette Manager V2 right-column check using Playwright from Node.
  - `git diff --check`
--- `git diff --name-only -- '*.js'`
++- `git diff --cached --check`
  - `npm run test:workspace-v2`
 
  ## Validation Outcome
--- Targeted browser layout check: PASS.
--- `git diff --check`: PASS with Git line-ending warning for `tools/palette-manager-v2/paletteManagerV2.css`.
--- JavaScript syntax checks: no JavaScript files changed.
-+- JavaScript syntax checks: PASS.
-+- Targeted served-browser Palette Manager V2 check: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed files.
+-- JavaScript syntax checks: PASS.
+-- Targeted served-browser Palette Manager V2 check: PASS.
++- JavaScript syntax checks: no JavaScript files changed by PR048.
++- Targeted served-browser Palette Manager V2 right-column check: PASS.
+ - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed files.
++- `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
  - Full samples smoke test: skipped by instruction.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 1174539a..274de88b 100644
+index 274de88b..6409893b 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Balance Palette Manager right column section heights - PR_26124_046-right-column-height-balance
-+Fix Palette Manager right column, source locking, and alpha hex input - PR_26124_047-palette-manager-right-column-and-hex-fixes
-diff --git a/tools/palette-manager-v2/README.md b/tools/palette-manager-v2/README.md
-index f4d1051a..d6b7ec86 100644
---- a/tools/palette-manager-v2/README.md
-+++ b/tools/palette-manager-v2/README.md
-@@ -6,11 +6,11 @@ Palette Manager V2 is the runtime tool for editing the global palette data store
- - Runtime tool id: `palette-manager-v2`
- - Global data key: `tools.palette-browser`
- - Managed data: `tools.palette-browser.swatches`
--- Swatch shape: `{ "symbol": "A", "hex": "#RRGGBB", "name": "Color Name", "source": "source-id" }`
-+- Swatch shape: `{ "symbol": "A", "hex": "#RRGGBB or #RRGGBBAA", "name": "Color Name", "source": "source-id" }`
- - Read-only source palettes: `src/engine/paletteList.js`
-
- ## Workflow
--- Add, edit, and remove user swatches from the User Palette accordion.
-+- Add, edit, and remove user swatches from the User Palette accordion. Swatches created with Add User Swatch use `User Added` as their source.
- - Browse Crayola, W3C, and JavaScript source palettes without editing the source lists.
- - Use the red tack to copy a source swatch into the user palette.
- - Use the green tack to remove a pinned/user swatch when `isSwatchUsedByTool(swatch)` allows removal.
-diff --git a/tools/palette-manager-v2/controls/PaletteEditorControl.js b/tools/palette-manager-v2/controls/PaletteEditorControl.js
-index d7a67b68..c85fb5a5 100644
---- a/tools/palette-manager-v2/controls/PaletteEditorControl.js
-+++ b/tools/palette-manager-v2/controls/PaletteEditorControl.js
-@@ -1,4 +1,4 @@
--import { cloneSwatch, normalizeHex, sanitizeText } from "../modules/paletteUtils.js";
-+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText } from "../modules/paletteUtils.js";
-
- export class PaletteEditorControl {
-   constructor({ refs, app, hexColorPattern }) {
-@@ -26,7 +26,7 @@ export class PaletteEditorControl {
-   }
-
-   clearForm() {
--    this.showSwatch({ symbol: "", hex: "", name: "", source: "" }, "Selected Swatch");
-+    this.showSwatch({ symbol: "", hex: "", name: "", source: USER_ADDED_SOURCE }, "Selected Swatch");
-   }
-
-   showSwatch(swatch, title) {
-@@ -36,6 +36,7 @@ export class PaletteEditorControl {
-     this.refs.swatchHexInput.value = cleanSwatch.hex;
-     this.refs.swatchNameInput.value = cleanSwatch.name;
-     this.refs.swatchSourceInput.value = cleanSwatch.source;
-+    this.refs.swatchSourceInput.readOnly = true;
-     this.renderSelectedSwatchPreview(cleanSwatch);
-   }
-
-diff --git a/tools/palette-manager-v2/how_to_use.html b/tools/palette-manager-v2/how_to_use.html
-index 10ca9a24..6bf02ce7 100644
---- a/tools/palette-manager-v2/how_to_use.html
-+++ b/tools/palette-manager-v2/how_to_use.html
-@@ -13,7 +13,7 @@
-     <h1>Palette Manager V2: How To Use</h1>
-     <section class="card">
-       <h2>User Palette</h2>
--      <p>Add or select user swatches, edit symbol, hex, name, and source, then update or remove the selected row.</p>
-+      <p>Add or select user swatches, edit symbol, hex, and name, then update or remove the selected row. User-created swatches use <code>User Added</code> as their source.</p>
-     </section>
-     <section class="card">
-       <h2>Browse Palettes</h2>
+-Fix Palette Manager right column, source locking, and alpha hex input - PR_26124_047-palette-manager-right-column-and-hex-fixes
++Move Palette Manager right column to accordionV2 - PR_26124_048-palette-manager-right-accordion-v2
 diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 03551dc8..5a5c2b0a 100644
+index 5a5c2b0a..9e00d5fd 100644
 --- a/tools/palette-manager-v2/index.html
 +++ b/tools/palette-manager-v2/index.html
-@@ -37,7 +37,7 @@
-               </label>
-               <label class="palette-manager-v2__field">
-                 Hex
--                <input id="swatchHexInput" type="text" maxlength="7" autocomplete="off" placeholder="#RRGGBB" />
-+                <input id="swatchHexInput" type="text" maxlength="9" autocomplete="off" placeholder="#RRGGBBAA" />
-               </label>
-               <label class="palette-manager-v2__field">
-                 Name
-@@ -45,7 +45,7 @@
-               </label>
-               <label class="palette-manager-v2__field">
-                 Source
--                <input id="swatchSourceInput" type="text" autocomplete="off" />
-+                <input id="swatchSourceInput" type="text" autocomplete="off" readonly />
-               </label>
-             </div>
+@@ -110,12 +110,12 @@
+       </main>
+
+       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
+-        <details class="palette-manager-v2__accordion" open>
+-          <summary class="palette-manager-v2__accordion-summary">
++        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--import is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="importExportAccordionContent">
+             <span>Import/Export</span>
+-            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+-          </summary>
+-          <div class="palette-manager-v2__accordion-content">
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="importExportAccordionContent" class="accordion-v2__content">
              <div class="palette-manager-v2__controls">
-diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 724e5c3a..cd2b6076 100644
---- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
-+++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -4,7 +4,9 @@ import { PaletteValidationErrorControl } from "../controls/PaletteValidationErro
- import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
- import { UserPaletteControl } from "../controls/UserPaletteControl.js";
- import { PaletteValidationService } from "./PaletteValidationService.js";
--import { cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUtils.js";
-+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUtils.js";
-+
-+const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
+               <button id="importPaletteButton" type="button">Import JSON</button>
+               <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
+@@ -124,18 +124,18 @@
+             </div>
+             <pre id="paletteJsonPreview" class="palette-manager-v2__json-preview">No user palette data.</pre>
+           </div>
+-        </details>
++        </section>
 
- const REQUIRED_REF_IDS = Object.freeze([
-   "userPaletteCount",
-@@ -63,7 +65,7 @@ export class PaletteManagerApp {
-     this.sortService = sortService;
-     this.usageService = usageService;
-     this.globalPaletteToolKey = paletteSource.GLOBAL_PALETTE_TOOL_KEY;
--    this.hexColorPattern = paletteSource.HEX_COLOR_PATTERN;
-+    this.hexColorPattern = USER_HEX_COLOR_PATTERN;
-     this.sourcePalettes = paletteSource.SOURCE_PALETTES;
-     this.sourcePaletteLabels = paletteSource.SOURCE_PALETTE_LABELS || {};
-     this.sourcePaletteIds = Object.keys(this.sourcePalettes);
-@@ -275,7 +277,7 @@ export class PaletteManagerApp {
-   }
-
-   addUserSwatch(swatch) {
--    const cleanSwatch = cloneSwatch(swatch);
-+    const cleanSwatch = cloneSwatch({ ...swatch, source: USER_ADDED_SOURCE });
-     const errors = this.validator.validateSwatch(cleanSwatch, "new swatch");
-     if (errors.length > 0) {
-       this.setActionState(errors, "User swatch was not added.");
-@@ -294,7 +296,8 @@ export class PaletteManagerApp {
-       return;
-     }
-
--    const cleanSwatch = cloneSwatch(swatch);
-+    const existingSwatch = this.state.userSwatches[this.state.selectedUserIndex];
-+    const cleanSwatch = cloneSwatch({ ...swatch, source: existingSwatch.source });
-     const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
-     if (errors.length > 0) {
-       this.setActionState(errors, "Selected swatch was not updated.");
-diff --git a/tools/palette-manager-v2/modules/PaletteValidationService.js b/tools/palette-manager-v2/modules/PaletteValidationService.js
-index a429b3de..393e27cc 100644
---- a/tools/palette-manager-v2/modules/PaletteValidationService.js
-+++ b/tools/palette-manager-v2/modules/PaletteValidationService.js
-@@ -22,7 +22,7 @@ export class PaletteValidationService {
-     if (!hex) {
-       issues.push(`${cleanLabel}.hex is required.`);
-     } else if (!this.hexColorPattern.test(hex)) {
--      issues.push(`${cleanLabel}.hex must be #RRGGBB.`);
-+      issues.push(`${cleanLabel}.hex must be #RRGGBB or #RRGGBBAA.`);
-     }
-     if (!name) {
-       issues.push(`${cleanLabel}.name is required.`);
-diff --git a/tools/palette-manager-v2/modules/paletteUtils.js b/tools/palette-manager-v2/modules/paletteUtils.js
-index 629c05ed..2d8ba1ef 100644
---- a/tools/palette-manager-v2/modules/paletteUtils.js
-+++ b/tools/palette-manager-v2/modules/paletteUtils.js
-@@ -1,3 +1,5 @@
-+export const USER_ADDED_SOURCE = "User Added";
-+
- export function sanitizeText(value) {
-   return typeof value === "string" ? value.trim() : "";
- }
+-        <details class="palette-manager-v2__accordion" open>
+-          <summary class="palette-manager-v2__accordion-summary">
++        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--validation is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
+             <span>Validation/Error Viewer</span>
+-            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+-          </summary>
+-          <div class="palette-manager-v2__accordion-content">
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="validationErrorAccordionContent" class="accordion-v2__content">
+             <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
+             <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
+           </div>
+-        </details>
++        </section>
+       </aside>
+     </div>
+   </div>
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index 3d3cf51d..ed5b09d2 100644
+index ed5b09d2..98e0fb46 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -75,7 +75,7 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+@@ -75,46 +75,75 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
    overflow: hidden;
  }
 
--.palette-manager-v2__panel--right {
-+.palette-manager-v2__panel.palette-manager-v2__panel--right {
+-.palette-manager-v2__panel.palette-manager-v2__panel--right {
++.palette-manager-v2__panel.palette-manager-v2__panel--right.tools-platform-resize-panel {
    display: flex;
    flex-direction: column;
++  justify-content: space-between;
    gap: 14px;
-@@ -87,9 +87,17 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   overflow: hidden;
  }
 
- .palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child {
-+  flex: 0 0 auto;
-+  min-height: 0;
+-.palette-manager-v2__panel--right > .palette-manager-v2__accordion {
+-  margin-top: 0;
++.palette-manager-v2__panel--right .accordion-v2 {
++  --accordion-v2-accent: var(--pm-accent);
++  --accordion-v2-line: var(--pm-line);
++  --accordion-v2-surface: var(--pm-surface);
+ }
+
+-.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child {
++.palette-manager-v2__right-accordion--import {
+   flex: 0 0 auto;
+   min-height: 0;
+   overflow: hidden;
+ }
+
+-.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child[open] {
++.palette-manager-v2__right-accordion--import.is-open {
+   flex: 1 1 auto;
+   min-height: 0;
+-  overflow: auto;
+-  display: flex;
+-  flex-direction: column;
 +  overflow: hidden;
 +}
 +
-+.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child[open] {
++.palette-manager-v2__right-accordion--import .accordion-v2__content {
++  flex: 1 1 auto;
++  min-height: 0;
++  overflow: hidden;
+ }
+
+-.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child > .palette-manager-v2__accordion-content {
++.palette-manager-v2__right-accordion--import .palette-manager-v2__controls {
++  flex: 0 0 auto;
++}
++
++.palette-manager-v2__right-accordion--import .palette-manager-v2__json-preview {
    flex: 1 1 auto;
    min-height: 0;
-   overflow: auto;
-+  display: flex;
-+  flex-direction: column;
- }
-
- .palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child > .palette-manager-v2__accordion-content {
-@@ -104,6 +112,11 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
++  max-height: none;
++  height: auto;
    overflow: auto;
  }
 
-+.palette-manager-v2__panel--right > .palette-manager-v2__accordion:nth-child(2)[open] {
-+  display: flex;
-+  flex-direction: column;
+-.palette-manager-v2__panel--right > .palette-manager-v2__accordion:nth-child(2) {
++.palette-manager-v2__right-accordion--validation {
+   flex: 0 0 auto;
+   max-height: clamp(120px, 22vh, 260px);
++  overflow: hidden;
 +}
 +
++.palette-manager-v2__right-accordion--validation.is-open {
++  flex: 0 0 auto;
++}
++
++.palette-manager-v2__right-accordion--validation .accordion-v2__content {
++  flex: 1 1 auto;
++  min-height: 0;
+   overflow: auto;
+ }
+
+-.palette-manager-v2__panel--right > .palette-manager-v2__accordion:nth-child(2)[open] {
+-  display: flex;
+-  flex-direction: column;
++.palette-manager-v2__right-accordion--validation .palette-manager-v2__status {
++  flex: 0 0 auto;
++}
++
++.palette-manager-v2__right-accordion--validation .palette-manager-v2__errors {
++  flex: 1 1 auto;
++  min-height: 0;
++  max-height: none;
++  overflow: auto;
+ }
+
  .palette-manager-v2__accordion {
-   min-width: 0;
-   min-height: 0;
-@@ -191,6 +204,11 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   min-width: 0;
+@@ -130,10 +159,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   margin-top: 14px;
  }
 
-+.palette-manager-v2__field input[readonly] {
-+  color: var(--pm-text-muted);
-+  cursor: default;
-+}
-+
- .palette-manager-v2__form-grid {
-   display: grid;
-   grid-template-columns: repeat(4, minmax(0, 1fr));
-diff --git a/docs/dev/reports/PR_26124_047_report.md b/docs/dev/reports/PR_26124_047_report.md
+-.palette-manager-v2__panel--right > .palette-manager-v2__accordion + .palette-manager-v2__accordion {
+-  margin-top: 0;
+-}
+-
+ .palette-manager-v2__accordion-summary {
+   flex: 0 0 44px;
+   min-height: 44px;
+diff --git a/docs/dev/reports/PR_26124_048_report.md b/docs/dev/reports/PR_26124_048_report.md
 new file mode 100644
-index 00000000..c2f221df
+index 00000000..7986dbbf
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_047_report.md
-@@ -0,0 +1,56 @@
-+# PR_26124_047-palette-manager-right-column-and-hex-fixes Report
++++ b/docs/dev/reports/PR_26124_048_report.md
+@@ -0,0 +1,46 @@
++# PR_26124_048-palette-manager-right-accordion-v2 Report
 +
 +## Summary
-+Palette Manager V2 now handles right-column collapsed/open sizing correctly, locks swatch source editing, stores `User Added` for Add User Swatch, and validates both six- and eight-digit hex colors.
++Palette Manager V2 right-column Import/Export and Validation/Error Viewer now use shared accordionV2 markup. Right-column CSS now sizes the accordionV2 sections so Import/Export owns the flexible space and Validation/Error Viewer remains compact at the bottom.
 +
 +## Changed Runtime Files
-+- `tools/palette-manager-v2/README.md`
-+- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
-+- `tools/palette-manager-v2/how_to_use.html`
 +- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/modules/PaletteValidationService.js`
-+- `tools/palette-manager-v2/modules/paletteUtils.js`
 +- `tools/palette-manager-v2/paletteManagerV2.css`
 +
 +## Scope Confirmation
 +- No workspace/toolState/session logic changed.
 +- No sample JSON changed.
 +- No `tools/shared` files changed.
-+- Shared accordionV2 was not modified.
++- Shared accordionV2 behavior was not modified.
 +- No dependencies added.
++- Left and center panel behavior was not modified.
 +
 +## Targeted Browser Check
 +PASS using a local static server and Playwright.
 +
 +Validated:
-+- Import/Export starts open and fills remaining right-column height above Validation/Error Viewer.
-+- Collapsed Import/Export has `flex: 0 0 auto`.
-+- Validation/Error Viewer sits directly below collapsed Import/Export.
-+- Validation/Error Viewer remains non-growing, capped, and scrollable.
-+- Hex placeholder is exactly `#RRGGBBAA`.
-+- Add User Swatch stores `source: "User Added"`.
-+- `#RRGGBBAA` is preserved in stored hex.
-+- Existing `#RRGGBB` behavior is preserved.
-+- Source input is readonly.
-+- Update preserves user-added and source-palette source values.
++- Right column contains no `details` or `summary` elements.
++- Right Import/Export and Validation/Error Viewer are `section.accordion-v2`.
++- Import/Export opens and collapses through accordionV2 class, dataset, `aria-expanded`, and hidden-content behavior.
++- Collapsed Import/Export is header-only.
++- Open Import/Export flex-fills the space above Validation/Error Viewer.
++- JSON preview starts near the buttons, reaches the Import/Export content bottom, and scrolls internally for long content.
++- Validation/Error Viewer is non-growing, compact, bottom-anchored, and internally scrollable.
++- No right-column overflow below the panel.
 +
 +## Validation Results
-+- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`: PASS.
-+- `node --check tools/palette-manager-v2/modules/paletteUtils.js`: PASS.
++- JavaScript syntax checks: no JavaScript files changed by PR048.
 +- `git diff --check`: PASS.
 +  - Warning observed: Git reports LF will be replaced by CRLF for changed files when Git next touches them.
++- `git diff --cached --check`: PASS.
 +- `npm run test:workspace-v2`: FAIL.
 +  - Failure reason: `npm` reports missing script `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open `tools/palette-manager-v2/index.html` through a local server.
-+2. Collapse Import/Export and confirm no empty flex space appears before Validation/Error Viewer.
-+3. Open Import/Export and confirm it fills remaining right-column height.
-+4. Add a user swatch with `#11223344`; confirm Source is `User Added` and hex is preserved.
-+5. Confirm Source cannot be edited in the Selected Swatch container.
-+6. Update the swatch with `#445566`; confirm six-digit hex still works.
-+7. Pin a source palette swatch and confirm update does not overwrite its source.
-diff --git a/docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md b/docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md
++2. Confirm right-column accordions match center-column accordionV2 behavior.
++3. Collapse Import/Export and confirm only the header remains visible.
++4. Open Import/Export and confirm the JSON preview fills to the bottom of the panel.
++5. Add or import enough JSON to make the preview overflow and confirm it scrolls internally.
++6. Confirm Validation/Error Viewer remains anchored at the bottom and does not overflow below the right column.
+diff --git a/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md
 new file mode 100644
-index 00000000..2f3c4282
+index 00000000..7ddefbb2
 --- /dev/null
-+++ b/docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md
-@@ -0,0 +1,41 @@
-+# APPLY_PR - PR_26124_047-palette-manager-right-column-and-hex-fixes
++++ b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md
+@@ -0,0 +1,33 @@
++# APPLY_PR - PR_26124_048-palette-manager-right-accordion-v2
 +
 +## Applied Change
-+Updated Palette Manager V2 only to fix right-column accordion sizing, user-added swatch source handling, and 8-digit hex input support.
++Replaced Palette Manager V2 right-column `details`/`summary` accordions with shared accordionV2 markup and right-column-only sizing rules.
 +
 +## Runtime Files Changed
-+- `tools/palette-manager-v2/README.md`
-+- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
-+- `tools/palette-manager-v2/how_to_use.html`
 +- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/modules/PaletteValidationService.js`
-+- `tools/palette-manager-v2/modules/paletteUtils.js`
 +- `tools/palette-manager-v2/paletteManagerV2.css`
 +
 +## Behavior
-+- Collapsed Import/Export uses `flex: 0 0 auto` and no longer consumes the right-column free height.
-+- Open Import/Export uses `flex: 1 1 auto` and fills the remaining space above Validation/Error Viewer.
-+- Validation/Error Viewer remains non-growing, capped, and scrollable.
-+- Validation/Error Viewer sits directly below collapsed Import/Export.
-+- Add User Swatch stores `source: "User Added"` for user-created swatches.
-+- The selected swatch Source input is readonly.
-+- Updating a selected swatch preserves the existing stored source.
-+- Hex input placeholder is `#RRGGBBAA`.
-+- Hex validation accepts and preserves both `#RRGGBB` and `#RRGGBBAA`.
++- Import/Export now uses `section.accordion-v2` with a shared `accordion-v2__header` and `accordion-v2__content`.
++- Validation/Error Viewer now uses `section.accordion-v2` with a shared `accordion-v2__header` and `accordion-v2__content`.
++- Collapsed Import/Export is header-only.
++- Open Import/Export fills the available right-column height above Validation/Error Viewer.
++- JSON preview starts directly below the buttons, stretches to the bottom of the Import/Export content area, and scrolls internally.
++- Validation/Error Viewer remains compact, bottom-anchored, and internally scrollable.
++- Right column clips overflow so content does not extend below the right panel.
 +
 +## Validation
-+- JavaScript syntax checks: PASS.
-+- Targeted served-browser Palette Manager V2 check: PASS.
++- JavaScript syntax checks: no JavaScript files changed by PR048.
++- Targeted served-browser Palette Manager V2 right-column check: PASS.
 +- `git diff --check`: PASS with Git line-ending warnings for changed files.
++- `git diff --cached --check`: PASS.
 +- `npm run test:workspace-v2`: FAILED because the repository has no `test:workspace-v2` script.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Test
-+1. Open Palette Manager V2.
-+2. Collapse Import/Export and confirm Validation/Error Viewer sits directly below it with no floating dead space.
-+3. Open Import/Export and confirm it fills available height above Validation/Error Viewer.
-+4. Add a user swatch with `#11223344` and confirm the stored source is exactly `User Added`.
-+5. Confirm Source is visible but not editable in Selected Swatch.
-+6. Update the swatch with `#445566` and confirm six-digit hex still persists.
-+7. Pin a source-palette swatch, update editable fields, and confirm its source value is preserved.
-diff --git a/docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md b/docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md
++1. Open Palette Manager V2 through a local server.
++2. Confirm the right Import/Export and Validation/Error Viewer panels use the same accordionV2 toggle style as the center column.
++3. Collapse Import/Export and confirm it is header-only.
++4. Open Import/Export and confirm it fills available height above Validation/Error Viewer.
++5. Confirm the JSON preview begins near the buttons, reaches the bottom of Import/Export, and scrolls internally for long JSON.
++6. Confirm Validation/Error Viewer remains compact at the bottom and scrolls internally if errors overflow.
+diff --git a/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md
 new file mode 100644
-index 00000000..fd7dabcf
+index 00000000..e8aefabe
 --- /dev/null
-+++ b/docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md
-@@ -0,0 +1,30 @@
-+# BUILD_PR - PR_26124_047-palette-manager-right-column-and-hex-fixes
++++ b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md
+@@ -0,0 +1,34 @@
++# BUILD_PR - PR_26124_048-palette-manager-right-accordion-v2
 +
 +## Purpose
-+Apply one scoped Palette Manager V2 fix bundle covering right-column accordion sizing, user-added source locking, and 8-digit hex input support.
++Use shared accordionV2 for Palette Manager V2 right-column accordions and fix right-column height ownership around Import/Export and Validation/Error Viewer.
 +
 +## Scope
-+- `tools/palette-manager-v2/*`
++- `tools/palette-manager-v2/index.html`
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts only.
 +
 +## Implementation
-+1. Update Palette Manager V2 right-column layout so the Import/Export section flexes only while open.
-+2. Keep Validation/Error Viewer bottom-anchored with capped usable height.
-+3. Set source to exactly `User Added` for swatches created through Add User Swatch.
-+4. Keep selected/user-added swatch source visible but not user-editable.
-+5. Update local hex validation to accept `#RRGGBB` and `#RRGGBBAA`, preserving alpha.
-+6. Update local hex hint text from `#RRGGBB` to `#RRGGBBAA`.
++1. Convert right-column Import/Export from `details`/`summary` to `section.accordion-v2`.
++2. Convert right-column Validation/Error Viewer from `details`/`summary` to `section.accordion-v2`.
++3. Preserve right-column control IDs and content.
++4. Add right-column-only accordionV2 sizing rules:
++   - Import/Export collapsed: header only.
++   - Import/Export open: fills available height above Validation/Error Viewer.
++   - JSON preview: flexes from below buttons to the bottom of Import/Export and scrolls internally.
++   - Validation/Error Viewer: bottom-anchored, compact, and internally scrollable.
++5. Remove old right-column details/summary sizing overrides.
 +
 +## Boundaries
 +- Do not change workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
-+- Do not modify shared accordionV2.
++- Do not modify shared accordionV2 behavior.
 +- Do not add dependencies.
-+- Do not refactor outside the targeted local fix.
++- Do not alter left or center panel behavior.
 +
 +## Validation
-+- Syntax check changed JavaScript files.
-+- Run a targeted browser layout and form behavior check for Palette Manager V2.
++- Syntax check changed files.
++- Run targeted served-browser Palette Manager V2 right-column check.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md b/docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md
 new file mode 100644
-index 00000000..c4c32560
+index 00000000..61546fe9
 --- /dev/null
-+++ b/docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md
-@@ -0,0 +1,40 @@
-+# PLAN_PR - PR_26124_047-palette-manager-right-column-and-hex-fixes
++++ b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md
+@@ -0,0 +1,44 @@
++# PLAN_PR - PR_26124_048-palette-manager-right-accordion-v2
 +
 +## Goal
-+Fix Palette Manager V2 right-column accordion height behavior, user-added swatch source handling, and 8-digit hex alpha support.
++Replace Palette Manager V2 right-column `details`/`summary` accordions with shared accordionV2 markup and right-column sizing rules.
 +
 +## Scope
-+- `tools/palette-manager-v2/*`
++- `tools/palette-manager-v2/index.html`
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +- Workflow docs/reports required by `docs/dev/PROJECT_INSTRUCTIONS.md`
 +
 +## Boundaries
 +- Do not touch workspace/toolState/session logic.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
-+- Do not modify shared accordionV2.
++- Do not modify shared accordionV2 behavior.
 +- Do not add dependencies.
 +- Do not broadly refactor Palette Manager V2.
++- Do not change left or center panel behavior.
 +
 +## Implementation Plan
-+1. Inspect Palette Manager V2 right-column markup/CSS and local controls for Import/Export and Validation/Error Viewer behavior.
-+2. Adjust only Palette Manager V2 CSS/markup/JS as needed so collapsed Import/Export does not consume free height, open Import/Export fills available height, and Validation/Error Viewer remains bottom-anchored with usable height.
-+3. Inspect Add User Swatch and selected swatch editor source handling.
-+4. Ensure newly created user swatches store and display `User Added` as source, and prevent editing that source value from the selected swatch editor.
-+5. Inspect local hex validation and input hints.
-+6. Accept both `#RRGGBB` and `#RRGGBBAA`, preserve alpha, and update hint text to `#RRGGBBAA`.
-+7. Run requested validation and produce required review artifacts and delta ZIP.
++1. Replace right-column Import/Export `details` markup with shared accordionV2 markup.
++2. Replace right-column Validation/Error Viewer `details` markup with shared accordionV2 markup.
++3. Keep existing right-column button/input/status/list IDs so Palette Manager controls continue binding without behavior changes.
++4. Add right-column-only accordionV2 CSS so:
++   - collapsed Import/Export is header-only,
++   - open Import/Export fills the remaining height above Validation/Error Viewer,
++   - JSON preview fills the Import/Export content area and scrolls internally,
++   - Validation/Error Viewer remains bottom-anchored, compact, and internally scrollable.
++5. Remove obsolete right-column details/summary CSS overrides.
++6. Run targeted syntax/layout validation and the requested Workspace V2 command.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- Expected pass behavior: Workspace V2 validation remains green after Palette Manager V2-only changes.
++- Expected pass behavior: Workspace V2 validation remains green after the Palette Manager V2 right-column markup/CSS change.
 +- Expected fail behavior: failures identify Workspace V2 regressions or a missing validation command.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
-+1. Open Palette Manager V2.
-+2. Collapse Import/Export and confirm it no longer consumes available vertical space.
-+3. Open Import/Export and confirm it fills available height above Validation/Error Viewer.
-+4. Confirm Validation/Error Viewer remains anchored at the bottom with usable height.
-+5. Add a user swatch and confirm Source displays exactly `User Added`.
-+6. Confirm the selected swatch Source field is not editable for user-added swatches.
-+7. Enter `#RRGGBB` and `#RRGGBBAA` hex values and confirm both validate and persist exactly.
++1. Open Palette Manager V2 through a local server.
++2. Confirm Import/Export and Validation/Error Viewer use the same accordionV2 toggle behavior as the center column.
++3. Collapse Import/Export and confirm it is header-only.
++4. Open Import/Export and confirm it fills remaining right-column height above Validation/Error Viewer.
++5. Confirm JSON preview starts near the buttons, stretches to the bottom of Import/Export, and scrolls internally.
++6. Confirm Validation/Error Viewer remains compact at the bottom and scrolls internally when needed.
