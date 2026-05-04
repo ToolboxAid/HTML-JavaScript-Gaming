@@ -1,522 +1,674 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index cd2d225d..d45f1206 100644
+index d45f1206..90548836 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,23 +1,34 @@
--# Codex Commands - PR_26124_048-palette-manager-right-accordion-v2
-+# Codex Commands - PR_26124_049-palette-manager-swatch-tags-and-selected-layout
+@@ -1,32 +1,27 @@
+-# Codex Commands - PR_26124_049-palette-manager-swatch-tags-and-selected-layout
++# Codex Commands - PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility
  
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
--- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md`.
--- Updated Palette Manager V2 right-column markup and CSS only.
--- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md`.
-+- Used `.codex/skills/repo-build/SKILL.md`.
-+- Created `docs/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/BUILD_PR.md`.
-+- Updated Palette Manager V2 and the palette swatch schema only.
-+- Created `docs/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/APPLY_PR.md`.
+ - Used `.codex/skills/repo-build/SKILL.md`.
+-- Created `docs/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/BUILD_PR.md`.
+-- Updated Palette Manager V2 and the palette swatch schema only.
+-- Created `docs/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/APPLY_PR.md`.
++- Created `docs/pr/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility/BUILD_PR.md`.
++- Updated Palette Manager V2 only.
++- Created `docs/pr/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility/APPLY_PR.md`.
  
  ## Validation Commands
--- `git diff --name-only -- '*.js'`
--- Targeted served-browser Palette Manager V2 right-column check using Playwright from Node.
-+- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`
-+- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
-+- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
-+- Palette schema/import validation with positive and negative tag/hex samples using Node.
-+- Targeted served-browser Palette Manager V2 selected/user-defined/tag/source check using Playwright from Node.
+ - `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
+ - `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
+-- `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`
+-- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
+-- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
+-- Palette schema/import validation with positive and negative tag/hex samples using Node.
+-- Targeted served-browser Palette Manager V2 selected/user-defined/tag/source check using Playwright from Node.
++- Targeted served-browser Palette Manager V2 tag-entry/user-defined visibility check using Playwright from Node.
  - `git diff --check`
  - `git diff --cached --check`
  - `npm run test:workspace-v2`
-+- `npm run codex:review-artifacts`
-+- Python `zipfile` packaging for `tmp/PR_26124_049-palette-manager-swatch-tags-and-selected-layout_delta.zip`
+ - `npm run codex:review-artifacts`
+-- Python `zipfile` packaging for `tmp/PR_26124_049-palette-manager-swatch-tags-and-selected-layout_delta.zip`
++- Python `zipfile` packaging for `tmp/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility_delta.zip`
  
  ## Validation Outcome
--- JavaScript syntax checks: no JavaScript files changed by PR048.
--- Targeted served-browser Palette Manager V2 right-column check: PASS.
--- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed files.
-+- JavaScript syntax checks: PASS.
-+- Palette schema/import validation: PASS.
-+- Targeted served-browser Palette Manager V2 behavior check: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/schema files.
+ - JavaScript syntax checks: PASS.
+-- Palette schema/import validation: PASS.
+ - Targeted served-browser Palette Manager V2 behavior check: PASS.
+-- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/schema files.
++- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files.
  - `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
-+- Review artifacts: generated.
-+- Repo-structured delta ZIP: generated.
- - Full samples smoke test: skipped by instruction.
+ - Review artifacts: generated.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 6409893b..07aca01d 100644
+index 07aca01d..48a56089 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Move Palette Manager right column to accordionV2 - PR_26124_048-palette-manager-right-accordion-v2
-+Add Palette Manager swatch tags and selected layout split - PR_26124_049-palette-manager-swatch-tags-and-selected-layout
+-Add Palette Manager swatch tags and selected layout split - PR_26124_049-palette-manager-swatch-tags-and-selected-layout
++Refine Palette Manager tag entry and user-defined visibility - PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility
 diff --git a/tools/palette-manager-v2/README.md b/tools/palette-manager-v2/README.md
-index d6b7ec86..693d1174 100644
+index 693d1174..3c5f8530 100644
 --- a/tools/palette-manager-v2/README.md
 +++ b/tools/palette-manager-v2/README.md
-@@ -6,12 +6,14 @@ Palette Manager V2 is the runtime tool for editing the global palette data store
- - Runtime tool id: `palette-manager-v2`
- - Global data key: `tools.palette-browser`
- - Managed data: `tools.palette-browser.swatches`
--- Swatch shape: `{ "symbol": "A", "hex": "#RRGGBB or #RRGGBBAA", "name": "Color Name", "source": "source-id" }`
-+- Swatch shape: `{ "symbol": "A", "hex": "#RRGGBB or #RRGGBBAA", "name": "Color Name", "source": "source-id", "tags": ["optional-tag"] }`
-+- Optional tags are stored as an array of non-empty strings.
+@@ -11,8 +11,10 @@ Palette Manager V2 is the runtime tool for editing the global palette data store
  - Read-only source palettes: `src/engine/paletteList.js`
  
  ## Workflow
--- Add, edit, and remove user swatches from the User Palette accordion. Swatches created with Add User Swatch use `User Added` as their source.
-+- Add, edit, and remove user swatches from the User Palette and User Defined Swatch accordions. Swatches created with Add User Swatch use `User Added` as their source.
-+- Selected Swatch shows selected details with symbol, hex, name, and source read-only. Tags remain editable from Selected Swatch and offer suggestions from tags already used in the active palette.
+-- Add, edit, and remove user swatches from the User Palette and User Defined Swatch accordions. Swatches created with Add User Swatch use `User Added` as their source.
+-- Selected Swatch shows selected details with symbol, hex, name, and source read-only. Tags remain editable from Selected Swatch and offer suggestions from tags already used in the active palette.
++- Add and edit user-defined swatches from the User Defined Swatch accordion. Swatches created with Add User Swatch use `User Added` as their source.
++- User Defined Swatch shows populated form data only for selected `User Added` swatches; source-palette selections clear the form.
++- Selected Swatch shows selected details with symbol, hex, name, source, and current tags read-only.
++- Use the Selected Swatch or User Defined Swatch tag entry controls to add tags. Tag suggestions come from tags already used in the active user palette.
  - Browse Crayola, W3C, and JavaScript source palettes without editing the source lists.
  - Use the red tack to copy a source swatch into the user palette.
  - Use the green tack to remove a pinned/user swatch when `isSwatchUsedByTool(swatch)` allows removal.
--- Import, copy, and export the exact `tools.palette-browser` JSON wrapper.
-+- Import, copy, and export the exact `tools.palette-browser` JSON wrapper, including swatch tags when present.
 diff --git a/tools/palette-manager-v2/controls/PaletteEditorControl.js b/tools/palette-manager-v2/controls/PaletteEditorControl.js
-index c85fb5a5..bf43d467 100644
+index bf43d467..9e145dfc 100644
 --- a/tools/palette-manager-v2/controls/PaletteEditorControl.js
 +++ b/tools/palette-manager-v2/controls/PaletteEditorControl.js
-@@ -1,4 +1,8 @@
--import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText } from "../modules/paletteUtils.js";
-+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modules/paletteUtils.js";
+@@ -1,7 +1,10 @@
+ import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modules/paletteUtils.js";
+ 
+-function tagsToInputValue(tags) {
+-  return normalizeTags(tags).join(", ");
++const MAX_TAG_SUGGESTIONS = 6;
 +
-+function tagsToInputValue(tags) {
-+  return normalizeTags(tags).join(", ");
-+}
++function tagsContainTag(tags, tag) {
++  const cleanTag = sanitizeText(tag).toLowerCase();
++  return Boolean(cleanTag) && normalizeTags(tags).some((existingTag) => existingTag.toLowerCase() === cleanTag);
+ }
  
  export class PaletteEditorControl {
-   constructor({ refs, app, hexColorPattern }) {
-@@ -9,7 +13,10 @@ export class PaletteEditorControl {
+@@ -9,14 +12,35 @@ export class PaletteEditorControl {
+     this.refs = refs;
+     this.app = app;
+     this.hexColorPattern = hexColorPattern;
++    this.selectedTags = [];
++    this.userDefinedTags = [];
++    this.selectedTagSuggestionIndex = -1;
++    this.userDefinedTagSuggestionIndex = -1;
+   }
  
    bind() {
      this.refs.swatchHexInput.addEventListener("input", () => {
--      this.renderSelectedSwatchPreview(this.readFormSwatch());
-+      this.renderUserDefinedSwatchPreview(this.readFormSwatch());
+       this.renderUserDefinedSwatchPreview(this.readFormSwatch());
+     });
+-    this.refs.selectedSwatchTagsInput.addEventListener("change", () => {
+-      this.app.updateSelectedSwatchTags(this.readSelectedTags());
++    this.refs.selectedTagEntryInput.addEventListener("input", () => {
++      this.selectedTagSuggestionIndex = 0;
++      this.renderSelectedTagSuggestions();
 +    });
-+    this.refs.selectedSwatchTagsInput.addEventListener("change", () => {
-+      this.app.updateSelectedSwatchTags(this.readSelectedTags());
++    this.refs.selectedTagEntryInput.addEventListener("keydown", (event) => {
++      this.handleSelectedTagKeydown(event);
++    });
++    this.refs.selectedAddTagButton.addEventListener("click", () => {
++      this.addSelectedTag(sanitizeText(this.refs.selectedTagEntryInput.value));
++    });
++    this.refs.userDefinedTagEntryInput.addEventListener("input", () => {
++      this.userDefinedTagSuggestionIndex = 0;
++      this.renderUserDefinedTagSuggestions();
++    });
++    this.refs.userDefinedTagEntryInput.addEventListener("keydown", (event) => {
++      this.handleUserDefinedTagKeydown(event);
++    });
++    this.refs.userDefinedAddTagButton.addEventListener("click", () => {
++      this.addUserDefinedTag(sanitizeText(this.refs.userDefinedTagEntryInput.value));
      });
      this.refs.addSwatchButton.addEventListener("click", () => {
        this.app.addUserSwatch(this.readFormSwatch());
-@@ -26,18 +33,33 @@ export class PaletteEditorControl {
-   }
+@@ -24,9 +48,6 @@ export class PaletteEditorControl {
+     this.refs.updateSwatchButton.addEventListener("click", () => {
+       this.app.updateSelectedSwatch(this.readFormSwatch());
+     });
+-    this.refs.removeSwatchButton.addEventListener("click", () => {
+-      this.app.removeSelectedSwatch();
+-    });
+     this.refs.clearFormButton.addEventListener("click", () => {
+       this.app.clearEditorForm("Form cleared.");
+     });
+@@ -34,11 +55,12 @@ export class PaletteEditorControl {
  
    clearForm() {
--    this.showSwatch({ symbol: "", hex: "", name: "", source: USER_ADDED_SOURCE }, "Selected Swatch");
-+    this.showSwatch({ symbol: "", hex: "", name: "", source: "", tags: [] }, "Selected Swatch");
-+    this.showUserDefinedSwatch({ symbol: "", hex: "", name: "", source: USER_ADDED_SOURCE, tags: [] });
-+  }
-+
-+  render() {
-+    this.renderTagSuggestions();
+     this.showSwatch({ symbol: "", hex: "", name: "", source: "", tags: [] }, "Selected Swatch");
+-    this.showUserDefinedSwatch({ symbol: "", hex: "", name: "", source: USER_ADDED_SOURCE, tags: [] });
++    this.clearUserDefinedSwatch();
+   }
+ 
+   render() {
+-    this.renderTagSuggestions();
++    this.renderSelectedTagSuggestions();
++    this.renderUserDefinedTagSuggestions();
    }
  
    showSwatch(swatch, title) {
-     const cleanSwatch = cloneSwatch(swatch);
--    this.refs.editorTitle.textContent = sanitizeText(title) || "Selected Swatch";
-+    this.refs.editorTitle.textContent = sanitizeText(cleanSwatch.name) || sanitizeText(title) || "Selected Swatch";
-+    this.refs.selectedSwatchSymbolInput.value = cleanSwatch.symbol;
-+    this.refs.selectedSwatchHexInput.value = cleanSwatch.hex;
-+    this.refs.selectedSwatchNameInput.value = cleanSwatch.name;
-+    this.refs.selectedSwatchSourceInput.value = cleanSwatch.source;
-+    this.refs.selectedSwatchTagsInput.value = tagsToInputValue(cleanSwatch.tags);
-+    this.renderSelectedSwatchPreview(cleanSwatch);
-+  }
-+
-+  showUserDefinedSwatch(swatch) {
-+    const cleanSwatch = cloneSwatch(swatch);
-     this.refs.swatchSymbolInput.value = cleanSwatch.symbol;
-     this.refs.swatchHexInput.value = cleanSwatch.hex;
-     this.refs.swatchNameInput.value = cleanSwatch.name;
--    this.refs.swatchSourceInput.value = cleanSwatch.source;
--    this.refs.swatchSourceInput.readOnly = true;
--    this.renderSelectedSwatchPreview(cleanSwatch);
-+    this.refs.swatchSourceInput.value = cleanSwatch.source || USER_ADDED_SOURCE;
-+    this.refs.swatchTagsInput.value = tagsToInputValue(cleanSwatch.tags);
-+    this.renderUserDefinedSwatchPreview(cleanSwatch);
+@@ -48,7 +70,11 @@ export class PaletteEditorControl {
+     this.refs.selectedSwatchHexInput.value = cleanSwatch.hex;
+     this.refs.selectedSwatchNameInput.value = cleanSwatch.name;
+     this.refs.selectedSwatchSourceInput.value = cleanSwatch.source;
+-    this.refs.selectedSwatchTagsInput.value = tagsToInputValue(cleanSwatch.tags);
++    this.selectedTags = normalizeTags(cleanSwatch.tags);
++    this.refs.selectedTagEntryInput.value = "";
++    this.selectedTagSuggestionIndex = -1;
++    this.renderSelectedTagList();
++    this.renderSelectedTagSuggestions();
+     this.renderSelectedSwatchPreview(cleanSwatch);
    }
  
+@@ -58,22 +84,144 @@ export class PaletteEditorControl {
+     this.refs.swatchHexInput.value = cleanSwatch.hex;
+     this.refs.swatchNameInput.value = cleanSwatch.name;
+     this.refs.swatchSourceInput.value = cleanSwatch.source || USER_ADDED_SOURCE;
+-    this.refs.swatchTagsInput.value = tagsToInputValue(cleanSwatch.tags);
++    this.userDefinedTags = normalizeTags(cleanSwatch.tags);
++    this.refs.userDefinedTagEntryInput.value = "";
++    this.userDefinedTagSuggestionIndex = -1;
++    this.renderUserDefinedTagList();
++    this.renderUserDefinedTagSuggestions();
+     this.renderUserDefinedSwatchPreview(cleanSwatch);
+   }
+ 
++  clearUserDefinedSwatch() {
++    this.refs.swatchSymbolInput.value = "";
++    this.refs.swatchHexInput.value = "";
++    this.refs.swatchNameInput.value = "";
++    this.refs.swatchSourceInput.value = "";
++    this.userDefinedTags = [];
++    this.refs.userDefinedTagEntryInput.value = "";
++    this.userDefinedTagSuggestionIndex = -1;
++    this.renderUserDefinedTagList();
++    this.renderUserDefinedTagSuggestions();
++    this.renderUserDefinedSwatchPreview({ hex: "" });
++  }
++
    readFormSwatch() {
-@@ -45,12 +67,31 @@ export class PaletteEditorControl {
+     return {
        symbol: sanitizeText(this.refs.swatchSymbolInput.value),
        hex: normalizeHex(this.refs.swatchHexInput.value),
        name: sanitizeText(this.refs.swatchNameInput.value),
--      source: sanitizeText(this.refs.swatchSourceInput.value)
-+      source: sanitizeText(this.refs.swatchSourceInput.value),
-+      tags: normalizeTags(this.refs.swatchTagsInput.value)
+       source: sanitizeText(this.refs.swatchSourceInput.value),
+-      tags: normalizeTags(this.refs.swatchTagsInput.value)
++      tags: normalizeTags(this.userDefinedTags)
      };
    }
  
-+  readSelectedTags() {
-+    return normalizeTags(this.refs.selectedSwatchTagsInput.value);
+-  readSelectedTags() {
+-    return normalizeTags(this.refs.selectedSwatchTagsInput.value);
++  handleSelectedTagKeydown(event) {
++    if (event.key === "ArrowDown") {
++      this.moveSelectedTagSuggestion(1);
++      event.preventDefault();
++      return;
++    }
++    if (event.key === "ArrowUp") {
++      this.moveSelectedTagSuggestion(-1);
++      event.preventDefault();
++      return;
++    }
++    if (event.key !== "Enter") {
++      return;
++    }
++    event.preventDefault();
++    this.addSelectedTag(this.getSelectedTagEntryValue(true));
 +  }
 +
-   renderSelectedSwatchPreview(swatch) {
-     const hex = normalizeHex(swatch?.hex);
-     this.refs.selectedSwatchPreview.style.background = this.hexColorPattern.test(hex) ? hex : "#000000";
++  handleUserDefinedTagKeydown(event) {
++    if (event.key === "ArrowDown") {
++      this.moveUserDefinedTagSuggestion(1);
++      event.preventDefault();
++      return;
++    }
++    if (event.key === "ArrowUp") {
++      this.moveUserDefinedTagSuggestion(-1);
++      event.preventDefault();
++      return;
++    }
++    if (event.key !== "Enter") {
++      return;
++    }
++    event.preventDefault();
++    this.addUserDefinedTag(this.getUserDefinedTagEntryValue(true));
++  }
++
++  getSelectedTagEntryValue(useSuggestion) {
++    const suggestions = this.getFilteredTagSuggestions(this.refs.selectedTagEntryInput.value, this.selectedTags);
++    if (useSuggestion && suggestions.length > 0) {
++      return suggestions[Math.max(0, this.selectedTagSuggestionIndex)] || suggestions[0];
++    }
++    return sanitizeText(this.refs.selectedTagEntryInput.value);
++  }
++
++  getUserDefinedTagEntryValue(useSuggestion) {
++    const suggestions = this.getFilteredTagSuggestions(this.refs.userDefinedTagEntryInput.value, this.userDefinedTags);
++    if (useSuggestion && suggestions.length > 0) {
++      return suggestions[Math.max(0, this.userDefinedTagSuggestionIndex)] || suggestions[0];
++    }
++    return sanitizeText(this.refs.userDefinedTagEntryInput.value);
++  }
++
++  addSelectedTag(tag) {
++    const cleanTag = sanitizeText(tag);
++    if (!cleanTag) {
++      return;
++    }
++    this.app.addTagToSelectedSwatch(cleanTag);
++    this.refs.selectedTagEntryInput.value = "";
++    this.selectedTagSuggestionIndex = -1;
++    this.renderSelectedTagSuggestions();
++  }
++
++  addUserDefinedTag(tag) {
++    const cleanTag = sanitizeText(tag);
++    if (!cleanTag) {
++      return;
++    }
++    if (tagsContainTag(this.userDefinedTags, cleanTag)) {
++      this.app.setActionState([], `${cleanTag} is already on the User Defined Swatch form.`);
++      return;
++    }
++    this.userDefinedTags = [...this.userDefinedTags, cleanTag];
++    this.refs.userDefinedTagEntryInput.value = "";
++    this.userDefinedTagSuggestionIndex = -1;
++    this.renderUserDefinedTagList();
++    this.renderUserDefinedTagSuggestions();
++    this.app.setActionState([], `Added ${cleanTag} to User Defined Swatch form.`);
++  }
++
++  moveSelectedTagSuggestion(direction) {
++    const suggestions = this.getFilteredTagSuggestions(this.refs.selectedTagEntryInput.value, this.selectedTags);
++    if (suggestions.length === 0) {
++      return;
++    }
++    this.selectedTagSuggestionIndex = (Math.max(0, this.selectedTagSuggestionIndex) + direction + suggestions.length) % suggestions.length;
++    this.renderSelectedTagSuggestions();
++  }
++
++  moveUserDefinedTagSuggestion(direction) {
++    const suggestions = this.getFilteredTagSuggestions(this.refs.userDefinedTagEntryInput.value, this.userDefinedTags);
++    if (suggestions.length === 0) {
++      return;
++    }
++    this.userDefinedTagSuggestionIndex = (Math.max(0, this.userDefinedTagSuggestionIndex) + direction + suggestions.length) % suggestions.length;
++    this.renderUserDefinedTagSuggestions();
++  }
++
++  getFilteredTagSuggestions(query, currentTags) {
++    const cleanQuery = sanitizeText(query).toLowerCase();
++    if (!cleanQuery) {
++      return [];
++    }
++    return this.app.getTagSuggestions()
++      .filter((tag) => !tagsContainTag(currentTags, tag))
++      .filter((tag) => tag.toLowerCase().includes(cleanQuery))
++      .slice(0, MAX_TAG_SUGGESTIONS);
    }
-+
-+  renderUserDefinedSwatchPreview(swatch) {
-+    const hex = normalizeHex(swatch?.hex);
-+    this.refs.userDefinedSwatchPreview.style.background = this.hexColorPattern.test(hex) ? hex : "#000000";
+ 
+   renderSelectedSwatchPreview(swatch) {
+@@ -86,12 +234,64 @@ export class PaletteEditorControl {
+     this.refs.userDefinedSwatchPreview.style.background = this.hexColorPattern.test(hex) ? hex : "#000000";
+   }
+ 
+-  renderTagSuggestions() {
+-    this.refs.swatchTagSuggestions.replaceChildren();
+-    this.app.getTagSuggestions().forEach((tag) => {
+-      const option = this.refs.swatchTagSuggestions.ownerDocument.createElement("option");
+-      option.value = tag;
+-      this.refs.swatchTagSuggestions.appendChild(option);
++  renderSelectedTagList() {
++    this.renderTagList(this.refs.selectedSwatchTagList, this.selectedTags);
 +  }
 +
-+  renderTagSuggestions() {
-+    this.refs.swatchTagSuggestions.replaceChildren();
-+    this.app.getTagSuggestions().forEach((tag) => {
-+      const option = this.refs.swatchTagSuggestions.ownerDocument.createElement("option");
-+      option.value = tag;
-+      this.refs.swatchTagSuggestions.appendChild(option);
++  renderUserDefinedTagList() {
++    this.renderTagList(this.refs.userDefinedSwatchTagList, this.userDefinedTags);
++  }
++
++  renderTagList(container, tags) {
++    container.replaceChildren();
++    const cleanTags = normalizeTags(tags);
++    if (cleanTags.length === 0) {
++      const empty = container.ownerDocument.createElement("p");
++      empty.className = "palette-manager-v2__meta";
++      empty.textContent = "No tags.";
++      container.appendChild(empty);
++      return;
++    }
++    cleanTags.forEach((tag) => {
++      const pill = container.ownerDocument.createElement("span");
++      pill.className = "palette-manager-v2__tag-pill";
++      pill.textContent = tag;
++      container.appendChild(pill);
 +    });
 +  }
++
++  renderSelectedTagSuggestions() {
++    this.renderTagSuggestions({
++      container: this.refs.selectedTagSuggestions,
++      suggestions: this.getFilteredTagSuggestions(this.refs.selectedTagEntryInput.value, this.selectedTags),
++      activeIndex: this.selectedTagSuggestionIndex,
++      onPick: (tag) => this.addSelectedTag(tag)
++    });
++  }
++
++  renderUserDefinedTagSuggestions() {
++    this.renderTagSuggestions({
++      container: this.refs.userDefinedTagSuggestions,
++      suggestions: this.getFilteredTagSuggestions(this.refs.userDefinedTagEntryInput.value, this.userDefinedTags),
++      activeIndex: this.userDefinedTagSuggestionIndex,
++      onPick: (tag) => this.addUserDefinedTag(tag)
++    });
++  }
++
++  renderTagSuggestions({ container, suggestions, activeIndex, onPick }) {
++    container.replaceChildren();
++    suggestions.forEach((tag, index) => {
++      const button = container.ownerDocument.createElement("button");
++      button.type = "button";
++      button.className = "palette-manager-v2__tag-suggestion";
++      button.classList.toggle("is-active", index === Math.max(0, activeIndex));
++      button.setAttribute("role", "option");
++      button.setAttribute("aria-selected", String(index === Math.max(0, activeIndex)));
++      button.textContent = tag;
++      button.addEventListener("click", () => {
++        onPick(tag);
++      });
++      container.appendChild(button);
+     });
+   }
  }
 diff --git a/tools/palette-manager-v2/how_to_use.html b/tools/palette-manager-v2/how_to_use.html
-index 6bf02ce7..66003062 100644
+index 66003062..271135d8 100644
 --- a/tools/palette-manager-v2/how_to_use.html
 +++ b/tools/palette-manager-v2/how_to_use.html
-@@ -13,7 +13,11 @@
+@@ -13,11 +13,15 @@
      <h1>Palette Manager V2: How To Use</h1>
      <section class="card">
        <h2>User Palette</h2>
--      <p>Add or select user swatches, edit symbol, hex, and name, then update or remove the selected row. User-created swatches use <code>User Added</code> as their source.</p>
-+      <p>Add or select user swatches, then use User Defined Swatch to edit symbol, hex, name, and tags before updating or removing the selected swatch. User-created swatches use <code>User Added</code> as their source.</p>
+-      <p>Add or select user swatches, then use User Defined Swatch to edit symbol, hex, name, and tags before updating or removing the selected swatch. User-created swatches use <code>User Added</code> as their source.</p>
++      <p>Add or select user swatches, then use User Defined Swatch to edit symbol, hex, and name before updating the selected swatch. User-created swatches use <code>User Added</code> as their source.</p>
+     </section>
+     <section class="card">
+       <h2>Selected Swatch</h2>
+-      <p>Selected Swatch displays symbol, hex, name, and source as read-only details. Tags remain editable there and offer suggestions from tags already used in the active palette.</p>
++      <p>Selected Swatch displays symbol, hex, name, source, and tags as read-only details. Use the tag entry field and Add Tag button to add new tags from typed text or active suggestions.</p>
 +    </section>
 +    <section class="card">
-+      <h2>Selected Swatch</h2>
-+      <p>Selected Swatch displays symbol, hex, name, and source as read-only details. Tags remain editable there and offer suggestions from tags already used in the active palette.</p>
++      <h2>User Defined Swatch</h2>
++      <p>User Defined Swatch shows populated form data only when the selected user palette swatch was created as <code>User Added</code>. Source-palette selections clear the form data.</p>
      </section>
      <section class="card">
        <h2>Browse Palettes</h2>
-@@ -25,7 +29,7 @@
-     </section>
-     <section class="card">
-       <h2>Import/Export</h2>
--      <p>Import must be valid JSON with <code>tools.palette-browser.swatches</code>. Export and copy emit that same global key.</p>
-+      <p>Import must be valid JSON with <code>tools.palette-browser.swatches</code>. Export and copy emit that same global key, including optional tag arrays when present.</p>
-     </section>
-   </main>
-   <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 9e00d5fd..a5cafae9 100644
+index b60b8b2b..b5b666b7 100644
 --- a/tools/palette-manager-v2/index.html
 +++ b/tools/palette-manager-v2/index.html
-@@ -30,6 +30,38 @@
-           <div class="palette-manager-v2__accordion-content">
-             <h2 id="editorTitle">Selected Swatch</h2>
-             <div id="selectedSwatchPreview" class="palette-manager-v2__preview" aria-label="Selected swatch preview"></div>
-+            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked">
-+              <label class="palette-manager-v2__field">
-+                Symbol
-+                <input id="selectedSwatchSymbolInput" type="text" autocomplete="off" readonly />
-+              </label>
-+              <label class="palette-manager-v2__field">
-+                Hex
-+                <input id="selectedSwatchHexInput" type="text" autocomplete="off" readonly />
-+              </label>
-+              <label class="palette-manager-v2__field">
-+                Name
-+                <input id="selectedSwatchNameInput" type="text" autocomplete="off" readonly />
-+              </label>
-+              <label class="palette-manager-v2__field">
-+                Source
-+                <input id="selectedSwatchSourceInput" type="text" autocomplete="off" readonly />
-+              </label>
-+              <label class="palette-manager-v2__field">
-+                Tags
-+                <input id="selectedSwatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
-+              </label>
-+            </div>
-+          </div>
-+        </details>
-+
-+        <details class="palette-manager-v2__accordion" open>
-+          <summary class="palette-manager-v2__accordion-summary">
-+            <span>User Defined Swatch</span>
-+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
-+          </summary>
-+          <div class="palette-manager-v2__accordion-content">
-+            <div id="userDefinedSwatchPreview" class="palette-manager-v2__preview" aria-label="User defined swatch preview"></div>
-             <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked">
-               <label class="palette-manager-v2__field">
-                 Symbol
-@@ -47,10 +79,15 @@
+@@ -47,10 +47,18 @@
+                 Source
+                 <input id="selectedSwatchSourceInput" type="text" autocomplete="off" readonly />
+               </label>
+-              <label class="palette-manager-v2__field">
+-                Tags
+-                <input id="selectedSwatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
+-              </label>
++              <div class="palette-manager-v2__field">
++                <span>Tags</span>
++                <div id="selectedSwatchTagList" class="palette-manager-v2__tag-list" aria-label="Selected swatch tags"></div>
++              </div>
++              <div class="palette-manager-v2__tag-entry">
++                <label class="palette-manager-v2__field">
++                  Tag name
++                  <input id="selectedTagEntryInput" type="text" autocomplete="off" />
++                </label>
++                <button id="selectedAddTagButton" type="button">Add Tag</button>
++                <div id="selectedTagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Selected swatch tag suggestions"></div>
++              </div>
+             </div>
+           </div>
+         </details>
+@@ -79,16 +87,22 @@
                  Source
                  <input id="swatchSourceInput" type="text" autocomplete="off" readonly />
                </label>
-+              <label class="palette-manager-v2__field">
-+                Tags
-+                <input id="swatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
-+              </label>
-+              <datalist id="swatchTagSuggestions"></datalist>
+-              <label class="palette-manager-v2__field">
+-                Tags
+-                <input id="swatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
+-              </label>
+-              <datalist id="swatchTagSuggestions"></datalist>
++              <div class="palette-manager-v2__field">
++                <span>Tags</span>
++                <div id="userDefinedSwatchTagList" class="palette-manager-v2__tag-list" aria-label="User defined swatch tags"></div>
++              </div>
++              <div class="palette-manager-v2__tag-entry">
++                <label class="palette-manager-v2__field">
++                  Tag name
++                  <input id="userDefinedTagEntryInput" type="text" autocomplete="off" />
++                </label>
++                <button id="userDefinedAddTagButton" type="button">Add Tag</button>
++                <div id="userDefinedTagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="User defined swatch tag suggestions"></div>
++              </div>
              </div>
              <div class="palette-manager-v2__controls">
                <button id="addSwatchButton" type="button">Add User Swatch</button>
--              <button id="updateSwatchButton" type="button">Update Selected</button>
-+              <button id="updateSwatchButton" type="button">Update Swatch</button>
-               <button id="removeSwatchButton" type="button">Remove Selected</button>
+               <button id="updateSwatchButton" type="button">Update Swatch</button>
+-              <button id="removeSwatchButton" type="button">Remove Selected</button>
                <button id="clearFormButton" type="button">Clear Form</button>
              </div>
+           </div>
 diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index cd2b6076..e74b869d 100644
+index e74b869d..92c87b4b 100644
 --- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
 +++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -4,7 +4,7 @@ import { PaletteValidationErrorControl } from "../controls/PaletteValidationErro
- import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
- import { UserPaletteControl } from "../controls/UserPaletteControl.js";
- import { PaletteValidationService } from "./PaletteValidationService.js";
--import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUtils.js";
-+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText, swatchKey } from "./paletteUtils.js";
- 
- const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
- 
-@@ -20,10 +20,18 @@ const REQUIRED_REF_IDS = Object.freeze([
-   "sourceSwatchList",
-   "editorTitle",
-   "selectedSwatchPreview",
-+  "selectedSwatchSymbolInput",
-+  "selectedSwatchHexInput",
-+  "selectedSwatchNameInput",
-+  "selectedSwatchSourceInput",
-+  "selectedSwatchTagsInput",
-+  "userDefinedSwatchPreview",
+@@ -24,17 +24,21 @@ const REQUIRED_REF_IDS = Object.freeze([
+   "selectedSwatchHexInput",
+   "selectedSwatchNameInput",
+   "selectedSwatchSourceInput",
+-  "selectedSwatchTagsInput",
++  "selectedSwatchTagList",
++  "selectedTagEntryInput",
++  "selectedTagSuggestions",
++  "selectedAddTagButton",
+   "userDefinedSwatchPreview",
++  "userDefinedSwatchTagList",
++  "userDefinedTagEntryInput",
++  "userDefinedTagSuggestions",
++  "userDefinedAddTagButton",
    "swatchSymbolInput",
    "swatchHexInput",
    "swatchNameInput",
    "swatchSourceInput",
-+  "swatchTagsInput",
-+  "swatchTagSuggestions",
+-  "swatchTagsInput",
+-  "swatchTagSuggestions",
    "addSwatchButton",
    "updateSwatchButton",
-   "removeSwatchButton",
-@@ -183,11 +191,21 @@ export class PaletteManagerApp {
-     return Array.from(new Set([...this.state.errors, ...this.validator.validateUserSwatches(this.state.userSwatches)]));
-   }
+-  "removeSwatchButton",
+   "clearFormButton",
+   "importPaletteButton",
+   "importPaletteInput",
+@@ -55,6 +59,10 @@ function isValidSwatchSize(swatchSize) {
+   return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
+ }
  
-+  getTagSuggestions() {
-+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
-+    return Array.from(new Set(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags))))
-+      .sort((left, right) => collator.compare(left, right));
-+  }
++function isUserDefinedSwatch(swatch) {
++  return sanitizeText(swatch?.source) === USER_ADDED_SOURCE;
++}
 +
-   getVisibleSourceSwatches() {
-     const swatches = this.sourcePalettes[this.state.sourcePaletteId] || [];
-     const query = sanitizeText(this.state.sourceSearch).toLowerCase();
-+    const toSourceSwatch = (swatch) => cloneSwatch({
-+      ...swatch,
-+      source: swatch.source || this.state.sourcePaletteId
-+    });
-     if (!query) {
--      return this.sortService.sortSwatches(swatches.map(cloneSwatch), this.state.sourceSortMode);
-+      return this.sortService.sortSwatches(swatches.map(toSourceSwatch), this.state.sourceSortMode);
-     }
-     const visibleSwatches = swatches
-       .filter((swatch) => {
-@@ -195,7 +213,7 @@ export class PaletteManagerApp {
-           || swatch.hex.toLowerCase().includes(query)
-           || swatch.symbol.toLowerCase().includes(query);
-       })
--      .map(cloneSwatch);
-+      .map(toSourceSwatch);
-     return this.sortService.sortSwatches(visibleSwatches, this.state.sourceSortMode);
-   }
- 
-@@ -266,13 +284,18 @@ export class PaletteManagerApp {
-       return;
+ function collectRefs(documentRef) {
+   return REQUIRED_REF_IDS.reduce((refs, id) => {
+     const element = documentRef.getElementById(id);
+@@ -285,17 +293,18 @@ export class PaletteManagerApp {
      }
      this.state.selectedUserIndex = index;
--    this.editorControl.showSwatch(swatch, `Editing ${swatch.name}`);
-+    this.editorControl.showSwatch(swatch, swatch.name);
-+    this.editorControl.showUserDefinedSwatch(swatch);
+     this.editorControl.showSwatch(swatch, swatch.name);
+-    this.editorControl.showUserDefinedSwatch(swatch);
++    if (isUserDefinedSwatch(swatch)) {
++      this.editorControl.showUserDefinedSwatch(swatch);
++    } else {
++      this.editorControl.clearUserDefinedSwatch();
++    }
      this.render();
    }
  
    browseSourceSwatch(swatch) {
      this.state.selectedUserIndex = -1;
--    this.editorControl.showSwatch(swatch, `Browsing ${swatch.name}`);
-+    this.editorControl.showSwatch(swatch, swatch.name);
-+    this.editorControl.showUserDefinedSwatch({
-+      ...swatch,
-+      source: USER_ADDED_SOURCE
-+    });
+     this.editorControl.showSwatch(swatch, swatch.name);
+-    this.editorControl.showUserDefinedSwatch({
+-      ...swatch,
+-      source: USER_ADDED_SOURCE
+-    });
++    this.editorControl.clearUserDefinedSwatch();
      this.render();
    }
  
-@@ -286,7 +309,8 @@ export class PaletteManagerApp {
- 
-     this.state.userSwatches.push(cleanSwatch);
-     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
--    this.editorControl.showSwatch(cleanSwatch, `Editing ${cleanSwatch.name}`);
-+    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
-+    this.editorControl.showUserDefinedSwatch(cleanSwatch);
-     this.setActionState([], `Added ${cleanSwatch.name}.`);
-   }
- 
-@@ -305,10 +329,33 @@ export class PaletteManagerApp {
+@@ -321,6 +330,11 @@ export class PaletteManagerApp {
      }
  
+     const existingSwatch = this.state.userSwatches[this.state.selectedUserIndex];
++    if (!isUserDefinedSwatch(existingSwatch)) {
++      this.setActionState(["Only User Added swatches can be updated in User Defined Swatch."], "Selected swatch was not updated.");
++      return;
++    }
++
+     const cleanSwatch = cloneSwatch({ ...swatch, source: existingSwatch.source });
+     const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
+     if (errors.length > 0) {
+@@ -330,30 +344,48 @@ export class PaletteManagerApp {
+ 
      this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
--    this.editorControl.showSwatch(cleanSwatch, `Editing ${cleanSwatch.name}`);
-+    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
-+    this.editorControl.showUserDefinedSwatch(cleanSwatch);
+     this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
+-    this.editorControl.showUserDefinedSwatch(cleanSwatch);
++    if (isUserDefinedSwatch(cleanSwatch)) {
++      this.editorControl.showUserDefinedSwatch(cleanSwatch);
++    } else {
++      this.editorControl.clearUserDefinedSwatch();
++    }
      this.setActionState([], `Updated ${cleanSwatch.name}.`);
    }
  
-+  updateSelectedSwatchTags(tags) {
-+    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-+      this.setActionState(["Select a user swatch before updating tags."], "No user swatch selected.");
-+      return;
-+    }
-+
-+    const cleanSwatch = cloneSwatch({
-+      ...this.state.userSwatches[this.state.selectedUserIndex],
-+      tags: normalizeTags(tags)
-+    });
-+    const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
-+    if (errors.length > 0) {
-+      this.setActionState(errors, "Selected swatch tags were not updated.");
-+      return;
-+    }
-+
-+    this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
-+    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
-+    this.editorControl.showUserDefinedSwatch(cleanSwatch);
-+    this.setActionState([], `Updated tags for ${cleanSwatch.name}.`);
-+  }
-+
-   removeSelectedSwatch() {
+-  updateSelectedSwatchTags(tags) {
++  addTagToSelectedSwatch(tag) {
      if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-       this.setActionState(["Select a user swatch before removing."], "No user swatch selected.");
-@@ -349,7 +396,8 @@ export class PaletteManagerApp {
+-      this.setActionState(["Select a user swatch before updating tags."], "No user swatch selected.");
++      this.setActionState(["Select a user swatch before adding a tag."], "No user swatch selected.");
++      return;
++    }
++
++    const cleanTag = sanitizeText(tag);
++    if (!cleanTag) {
+       return;
+     }
  
++    const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
++    if (existingTags.some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
++      this.setActionState([], `${cleanTag} is already on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
++      return;
++    }
+     const cleanSwatch = cloneSwatch({
+       ...this.state.userSwatches[this.state.selectedUserIndex],
+-      tags: normalizeTags(tags)
++      tags: [...existingTags, cleanTag]
+     });
+     const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
+     if (errors.length > 0) {
+-      this.setActionState(errors, "Selected swatch tags were not updated.");
++      this.setActionState(errors, "Selected swatch tag was not added.");
+       return;
+     }
+ 
+     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
+     this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
+-    this.editorControl.showUserDefinedSwatch(cleanSwatch);
+-    this.setActionState([], `Updated tags for ${cleanSwatch.name}.`);
++    if (isUserDefinedSwatch(cleanSwatch)) {
++      this.editorControl.showUserDefinedSwatch(cleanSwatch);
++    } else {
++      this.editorControl.clearUserDefinedSwatch();
++    }
++    this.setActionState([], `Added ${cleanTag} to ${cleanSwatch.name}.`);
+   }
+ 
+   removeSelectedSwatch() {
+@@ -397,7 +429,7 @@ export class PaletteManagerApp {
      this.state.userSwatches.push(pinnedSwatch);
      this.state.selectedUserIndex = this.state.userSwatches.length - 1;
--    this.editorControl.showSwatch(pinnedSwatch, `Editing ${pinnedSwatch.name}`);
-+    this.editorControl.showSwatch(pinnedSwatch, pinnedSwatch.name);
-+    this.editorControl.showUserDefinedSwatch(pinnedSwatch);
+     this.editorControl.showSwatch(pinnedSwatch, pinnedSwatch.name);
+-    this.editorControl.showUserDefinedSwatch(pinnedSwatch);
++    this.editorControl.clearUserDefinedSwatch();
      this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
    }
  
-diff --git a/tools/palette-manager-v2/modules/PaletteValidationService.js b/tools/palette-manager-v2/modules/PaletteValidationService.js
-index 393e27cc..e8cc0aa9 100644
---- a/tools/palette-manager-v2/modules/PaletteValidationService.js
-+++ b/tools/palette-manager-v2/modules/PaletteValidationService.js
-@@ -13,6 +13,7 @@ export class PaletteValidationService {
-     const hex = normalizeHex(swatch?.hex);
-     const name = sanitizeText(swatch?.name);
-     const source = sanitizeText(swatch?.source);
-+    const tags = swatch?.tags;
- 
-     if (!symbol) {
-       issues.push(`${cleanLabel}.symbol is required.`);
-@@ -30,6 +31,17 @@ export class PaletteValidationService {
-     if (!source) {
-       issues.push(`${cleanLabel}.source is required.`);
-     }
-+    if (tags !== undefined) {
-+      if (!Array.isArray(tags)) {
-+        issues.push(`${cleanLabel}.tags must be an array of strings.`);
-+      } else {
-+        tags.forEach((tag, index) => {
-+          if (typeof tag !== "string" || !sanitizeText(tag)) {
-+            issues.push(`${cleanLabel}.tags[${index}] must be a non-empty string.`);
-+          }
-+        });
-+      }
-+    }
-     return issues;
-   }
- 
-@@ -58,8 +70,8 @@ export class PaletteValidationService {
-       return { swatches: null, errors: [`tools.${this.globalPaletteToolKey}.swatches must be an array.`] };
-     }
- 
-+    const errors = this.validateUserSwatches(paletteValue.swatches);
-     const swatches = paletteValue.swatches.map(cloneSwatch);
--    const errors = this.validateUserSwatches(swatches);
-     return { swatches: errors.length > 0 ? null : swatches, errors };
-   }
- }
-diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
-index 092ff1ee..9beda4fa 100644
---- a/tools/palette-manager-v2/modules/SwatchRow.js
-+++ b/tools/palette-manager-v2/modules/SwatchRow.js
-@@ -93,7 +93,8 @@ export class SwatchRow {
-       `Name: ${swatch.name}`,
-       `Symbol: ${swatch.symbol}`,
-       `Hex: ${swatch.hex}`,
--      `Source: ${swatch.source}`
-+      `Source: ${swatch.source}`,
-+      `Tags: ${Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"}`
-     ].join("\n");
-   }
- 
-@@ -104,7 +105,8 @@ export class SwatchRow {
-       ["Name", swatch.name],
-       ["Symbol", swatch.symbol],
-       ["Hex", swatch.hex],
--      ["Source", swatch.source]
-+      ["Source", swatch.source],
-+      ["Tags", Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"]
-     ].forEach(([label, value]) => {
-       const term = documentRef.createElement("dt");
-       term.textContent = label;
-diff --git a/tools/palette-manager-v2/modules/paletteUtils.js b/tools/palette-manager-v2/modules/paletteUtils.js
-index 2d8ba1ef..47f3c7e7 100644
---- a/tools/palette-manager-v2/modules/paletteUtils.js
-+++ b/tools/palette-manager-v2/modules/paletteUtils.js
-@@ -8,13 +8,28 @@ export function normalizeHex(value) {
-   return sanitizeText(value).toUpperCase();
+diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
+index 98e0fb46..15d23e73 100644
+--- a/tools/palette-manager-v2/paletteManagerV2.css
++++ b/tools/palette-manager-v2/paletteManagerV2.css
+@@ -256,6 +256,67 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   align-items: center;
  }
  
-+export function normalizeTags(value) {
-+  if (Array.isArray(value)) {
-+    return value.map(sanitizeText).filter(Boolean);
-+  }
-+  if (typeof value === "string") {
-+    return value.split(",").map(sanitizeText).filter(Boolean);
-+  }
-+  return [];
++.palette-manager-v2__tag-list {
++  min-height: 36px;
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  gap: 6px;
++  border: 1px solid var(--pm-line);
++  border-radius: 8px;
++  background: var(--pm-surface-strong);
++  padding: 6px;
 +}
 +
- export function cloneSwatch(swatch) {
--  return {
-+  const cleanSwatch = {
-     symbol: sanitizeText(swatch?.symbol),
-     hex: normalizeHex(swatch?.hex),
-     name: sanitizeText(swatch?.name),
-     source: sanitizeText(swatch?.source)
-   };
-+  const tags = normalizeTags(swatch?.tags);
-+  if (tags.length > 0) {
-+    cleanSwatch.tags = tags;
-+  }
-+  return cleanSwatch;
- }
- 
- export function swatchKey(swatch) {
-diff --git a/tools/schemas/tools/palette-browser.schema.json b/tools/schemas/tools/palette-browser.schema.json
-index 1c939ac3..e544f66d 100644
---- a/tools/schemas/tools/palette-browser.schema.json
-+++ b/tools/schemas/tools/palette-browser.schema.json
-@@ -63,6 +63,17 @@
-         "name": {
-           "type": "string",
-           "minLength": 1
-+        },
-+        "source": {
-+          "type": "string",
-+          "minLength": 1
-+        },
-+        "tags": {
-+          "type": "array",
-+          "items": {
-+            "type": "string",
-+            "minLength": 1
-+          }
-         }
-       }
-     }
++.palette-manager-v2__tag-list .palette-manager-v2__meta {
++  font-weight: 400;
++}
++
++.palette-manager-v2__tag-pill {
++  min-width: 0;
++  max-width: 100%;
++  border: 1px solid var(--pm-line);
++  border-radius: 999px;
++  background: rgba(221, 214, 254, 0.16);
++  color: inherit;
++  font-size: 0.86rem;
++  font-weight: 700;
++  overflow-wrap: anywhere;
++  padding: 4px 8px;
++}
++
++.palette-manager-v2__tag-entry {
++  display: grid;
++  gap: 8px;
++}
++
++.palette-manager-v2__tag-entry > button {
++  justify-self: start;
++}
++
++.palette-manager-v2__tag-suggestions {
++  min-height: 0;
++  display: flex;
++  flex-wrap: wrap;
++  gap: 6px;
++}
++
++.palette-manager-v2__tag-suggestion {
++  border: 1px solid var(--pm-line);
++  border-radius: 999px;
++  background: rgba(0, 0, 0, 0.2);
++  color: inherit;
++  cursor: pointer;
++  font-size: 0.86rem;
++  padding: 4px 8px;
++}
++
++.palette-manager-v2__tag-suggestion.is-active {
++  border-color: var(--pm-accent);
++  background: rgba(221, 214, 254, 0.22);
++  box-shadow: inset 0 0 0 1px var(--pm-accent);
++}
++
+ .palette-manager-v2__sort-row {
+   flex: 0 0 auto;
+   display: flex;

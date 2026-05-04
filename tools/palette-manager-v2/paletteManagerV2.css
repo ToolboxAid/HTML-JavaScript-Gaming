@@ -256,6 +256,67 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   align-items: center;
 }
 
+.palette-manager-v2__tag-list {
+  min-height: 36px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--pm-line);
+  border-radius: 8px;
+  background: var(--pm-surface-strong);
+  padding: 6px;
+}
+
+.palette-manager-v2__tag-list .palette-manager-v2__meta {
+  font-weight: 400;
+}
+
+.palette-manager-v2__tag-pill {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--pm-line);
+  border-radius: 999px;
+  background: rgba(221, 214, 254, 0.16);
+  color: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  padding: 4px 8px;
+}
+
+.palette-manager-v2__tag-entry {
+  display: grid;
+  gap: 8px;
+}
+
+.palette-manager-v2__tag-entry > button {
+  justify-self: start;
+}
+
+.palette-manager-v2__tag-suggestions {
+  min-height: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.palette-manager-v2__tag-suggestion {
+  border: 1px solid var(--pm-line);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.86rem;
+  padding: 4px 8px;
+}
+
+.palette-manager-v2__tag-suggestion.is-active {
+  border-color: var(--pm-accent);
+  background: rgba(221, 214, 254, 0.22);
+  box-shadow: inset 0 0 0 1px var(--pm-accent);
+}
+
 .palette-manager-v2__sort-row {
   flex: 0 0 auto;
   display: flex;

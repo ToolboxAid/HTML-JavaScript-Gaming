@@ -1,1 +1,1 @@
-Add Palette Manager swatch tags and selected layout split - PR_26124_049-palette-manager-swatch-tags-and-selected-layout
+Refine Palette Manager tag entry and user-defined visibility - PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility

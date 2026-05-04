@@ -24,17 +24,21 @@ const REQUIRED_REF_IDS = Object.freeze([
   "selectedSwatchHexInput",
   "selectedSwatchNameInput",
   "selectedSwatchSourceInput",
-  "selectedSwatchTagsInput",
+  "selectedSwatchTagList",
+  "selectedTagEntryInput",
+  "selectedTagSuggestions",
+  "selectedAddTagButton",
   "userDefinedSwatchPreview",
+  "userDefinedSwatchTagList",
+  "userDefinedTagEntryInput",
+  "userDefinedTagSuggestions",
+  "userDefinedAddTagButton",
   "swatchSymbolInput",
   "swatchHexInput",
   "swatchNameInput",
   "swatchSourceInput",
-  "swatchTagsInput",
-  "swatchTagSuggestions",
   "addSwatchButton",
   "updateSwatchButton",
-  "removeSwatchButton",
   "clearFormButton",
   "importPaletteButton",
   "importPaletteInput",
@@ -53,6 +57,10 @@ const SWATCH_SIZE_OPTIONS = Object.freeze([
 
 function isValidSwatchSize(swatchSize) {
   return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
+}
+
+function isUserDefinedSwatch(swatch) {
+  return sanitizeText(swatch?.source) === USER_ADDED_SOURCE;
 }
 
 function collectRefs(documentRef) {
@@ -285,17 +293,18 @@ export class PaletteManagerApp {
     }
     this.state.selectedUserIndex = index;
     this.editorControl.showSwatch(swatch, swatch.name);
-    this.editorControl.showUserDefinedSwatch(swatch);
+    if (isUserDefinedSwatch(swatch)) {
+      this.editorControl.showUserDefinedSwatch(swatch);
+    } else {
+      this.editorControl.clearUserDefinedSwatch();
+    }
     this.render();
   }
 
   browseSourceSwatch(swatch) {
     this.state.selectedUserIndex = -1;
     this.editorControl.showSwatch(swatch, swatch.name);
-    this.editorControl.showUserDefinedSwatch({
-      ...swatch,
-      source: USER_ADDED_SOURCE
-    });
+    this.editorControl.clearUserDefinedSwatch();
     this.render();
   }
 
@@ -321,6 +330,11 @@ export class PaletteManagerApp {
     }
 
     const existingSwatch = this.state.userSwatches[this.state.selectedUserIndex];
+    if (!isUserDefinedSwatch(existingSwatch)) {
+      this.setActionState(["Only User Added swatches can be updated in User Defined Swatch."], "Selected swatch was not updated.");
+      return;
+    }
+
     const cleanSwatch = cloneSwatch({ ...swatch, source: existingSwatch.source });
     const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
     if (errors.length > 0) {
@@ -330,30 +344,48 @@ export class PaletteManagerApp {
 
     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
     this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
-    this.editorControl.showUserDefinedSwatch(cleanSwatch);
+    if (isUserDefinedSwatch(cleanSwatch)) {
+      this.editorControl.showUserDefinedSwatch(cleanSwatch);
+    } else {
+      this.editorControl.clearUserDefinedSwatch();
+    }
     this.setActionState([], `Updated ${cleanSwatch.name}.`);
   }
 
-  updateSelectedSwatchTags(tags) {
+  addTagToSelectedSwatch(tag) {
     if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-      this.setActionState(["Select a user swatch before updating tags."], "No user swatch selected.");
+      this.setActionState(["Select a user swatch before adding a tag."], "No user swatch selected.");
       return;
     }
 
+    const cleanTag = sanitizeText(tag);
+    if (!cleanTag) {
+      return;
+    }
+
+    const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
+    if (existingTags.some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
+      this.setActionState([], `${cleanTag} is already on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
+      return;
+    }
     const cleanSwatch = cloneSwatch({
       ...this.state.userSwatches[this.state.selectedUserIndex],
-      tags: normalizeTags(tags)
+      tags: [...existingTags, cleanTag]
     });
     const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
     if (errors.length > 0) {
-      this.setActionState(errors, "Selected swatch tags were not updated.");
+      this.setActionState(errors, "Selected swatch tag was not added.");
       return;
     }
 
     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
     this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
-    this.editorControl.showUserDefinedSwatch(cleanSwatch);
-    this.setActionState([], `Updated tags for ${cleanSwatch.name}.`);
+    if (isUserDefinedSwatch(cleanSwatch)) {
+      this.editorControl.showUserDefinedSwatch(cleanSwatch);
+    } else {
+      this.editorControl.clearUserDefinedSwatch();
+    }
+    this.setActionState([], `Added ${cleanTag} to ${cleanSwatch.name}.`);
   }
 
   removeSelectedSwatch() {
@@ -397,7 +429,7 @@ export class PaletteManagerApp {
     this.state.userSwatches.push(pinnedSwatch);
     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
     this.editorControl.showSwatch(pinnedSwatch, pinnedSwatch.name);
-    this.editorControl.showUserDefinedSwatch(pinnedSwatch);
+    this.editorControl.clearUserDefinedSwatch();
     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
   }
 

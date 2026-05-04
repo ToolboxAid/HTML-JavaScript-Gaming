@@ -47,10 +47,18 @@
                 Source
                 <input id="selectedSwatchSourceInput" type="text" autocomplete="off" readonly />
               </label>
-              <label class="palette-manager-v2__field">
-                Tags
-                <input id="selectedSwatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
-              </label>
+              <div class="palette-manager-v2__field">
+                <span>Tags</span>
+                <div id="selectedSwatchTagList" class="palette-manager-v2__tag-list" aria-label="Selected swatch tags"></div>
+              </div>
+              <div class="palette-manager-v2__tag-entry">
+                <label class="palette-manager-v2__field">
+                  Tag name
+                  <input id="selectedTagEntryInput" type="text" autocomplete="off" />
+                </label>
+                <button id="selectedAddTagButton" type="button">Add Tag</button>
+                <div id="selectedTagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Selected swatch tag suggestions"></div>
+              </div>
             </div>
           </div>
         </details>
@@ -79,16 +87,22 @@
                 Source
                 <input id="swatchSourceInput" type="text" autocomplete="off" readonly />
               </label>
-              <label class="palette-manager-v2__field">
-                Tags
-                <input id="swatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
-              </label>
-              <datalist id="swatchTagSuggestions"></datalist>
+              <div class="palette-manager-v2__field">
+                <span>Tags</span>
+                <div id="userDefinedSwatchTagList" class="palette-manager-v2__tag-list" aria-label="User defined swatch tags"></div>
+              </div>
+              <div class="palette-manager-v2__tag-entry">
+                <label class="palette-manager-v2__field">
+                  Tag name
+                  <input id="userDefinedTagEntryInput" type="text" autocomplete="off" />
+                </label>
+                <button id="userDefinedAddTagButton" type="button">Add Tag</button>
+                <div id="userDefinedTagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="User defined swatch tag suggestions"></div>
+              </div>
             </div>
             <div class="palette-manager-v2__controls">
               <button id="addSwatchButton" type="button">Add User Swatch</button>
               <button id="updateSwatchButton" type="button">Update Swatch</button>
-              <button id="removeSwatchButton" type="button">Remove Selected</button>
               <button id="clearFormButton" type="button">Clear Form</button>
             </div>
           </div>
