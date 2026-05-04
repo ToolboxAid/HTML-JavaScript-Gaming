@@ -1,302 +1,266 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index ebb69ca9..17d5dc4f 100644
+index 17d5dc4f..7391b599 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,7 +1,7 @@
--# PR_26124_044-accordionv2-theme-extract
-+# PR_26124_045-palette-manager-hidden-header-wide-layout
+@@ -1,22 +1,21 @@
+-# PR_26124_045-palette-manager-hidden-header-wide-layout
++# Codex Commands - PR_26124_046-right-column-height-balance
 
- ```bash
--npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_044-accordionv2-theme-extract. Follow PROJECT_INSTRUCTIONS.md exactly. Move the working accordionV2 implementation from palette-manager-v2 into src/engine/theme/accordionV2 and update palette-manager-v2 to use the shared accordionV2 without behavior changes."
-+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_045-palette-manager-hidden-header-wide-layout. Follow PROJECT_INSTRUCTIONS.md exactly. Update only palette-manager-v2 layout behavior when the shared platform header/details area is hidden."
- ```
+-```bash
+-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_045-palette-manager-hidden-header-wide-layout. Follow PROJECT_INSTRUCTIONS.md exactly. Update only palette-manager-v2 layout behavior when the shared platform header/details area is hidden."
+-```
++## Workflow
++- Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
++- Read `docs/pr/PR_26124_046-right-column-height-balance/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_046-right-column-height-balance/BUILD_PR.md`.
++- Updated `tools/palette-manager-v2/paletteManagerV2.css`.
++- Created `docs/pr/PR_26124_046-right-column-height-balance/APPLY_PR.md`.
 
  ## Validation Commands
-@@ -15,7 +15,8 @@ npm run test:workspace-v2
- ## Manual Validation
++- Targeted browser layout check using Playwright from Node against `tools/palette-manager-v2/index.html`.
++- `git diff --check`
++- `git diff --name-only -- '*.js'`
++- `npm run test:workspace-v2`
 
- - Open `tools/palette-manager-v2/index.html`.
--- Confirm User Palette and Add User Swatch use shared `.accordion-v2` classes.
--- Confirm both open panels share center height.
--- Collapse either panel and confirm the other fills available center height.
--- Confirm source select, search, sort, size, pin, and unpin still work.
-+- Confirm normal layout is unchanged.
-+- Click `Hide Header and Details`.
-+- Confirm left/right panels anchor to the viewport sides.
-+- Confirm center fills the space between them and uses available height.
-+- Confirm accordionV2 behavior remains unchanged.
+-```bash
+-node --check src/engine/theme/accordionV2/accordionV2.js
+-node --check tools/palette-manager-v2/modules/PaletteManagerApp.js
+-npm run test:workspace-v2
+-```
+-
+-## Manual Validation
+-
+-- Open `tools/palette-manager-v2/index.html`.
+-- Confirm normal layout is unchanged.
+-- Click `Hide Header and Details`.
+-- Confirm left/right panels anchor to the viewport sides.
+-- Confirm center fills the space between them and uses available height.
+-- Confirm accordionV2 behavior remains unchanged.
++## Validation Outcome
++- Targeted browser layout check: PASS.
++- `git diff --check`: PASS with Git line-ending warning for `tools/palette-manager-v2/paletteManagerV2.css`.
++- JavaScript syntax checks: no JavaScript files changed.
++- `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
++- Full samples smoke test: skipped by instruction.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 10f6cbdd..3ab721a3 100644
+index 3ab721a3..1174539a 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Extract accordionV2 into shared theme component and reuse it in Palette Manager - PR_26124_044-accordionv2-theme-extract
-+Expand Palette Manager layout when platform header is hidden - PR_26124_045-palette-manager-hidden-header-wide-layout
+-Expand Palette Manager layout when platform header is hidden - PR_26124_045-palette-manager-hidden-header-wide-layout
++Balance Palette Manager right column section heights - PR_26124_046-right-column-height-balance
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index 28a09a74..b07bad66 100644
+index 137cf0ec..3d3cf51d 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -446,6 +446,63 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   color: #ffd6d6;
+@@ -75,6 +75,35 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   overflow: hidden;
  }
 
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] > .palette-manager-v2,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] > .palette-manager-v2 {
-+  flex: 1 1 auto;
-+  min-width: 0;
-+  max-width: none;
-+  min-height: 0;
-+  width: 100%;
++.palette-manager-v2__panel--right {
 +  display: flex;
 +  flex-direction: column;
-+  margin: 0;
-+  padding: 8px 12px;
++  gap: 14px;
 +  overflow: hidden;
 +}
 +
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout {
++.palette-manager-v2__panel--right > .palette-manager-v2__accordion {
++  margin-top: 0;
++}
++
++.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child {
 +  flex: 1 1 auto;
-+  grid-template-columns: 340px minmax(0, 1fr) 360px;
-+  width: 100%;
-+  height: 100%;
 +  min-height: 0;
-+  align-items: stretch;
++  overflow: auto;
 +}
 +
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel {
++.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child > .palette-manager-v2__accordion-content {
++  flex: 1 1 auto;
 +  min-height: 0;
++  overflow: auto;
 +}
 +
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left,
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right {
-+  position: static;
-+  align-self: stretch;
-+  height: 100%;
-+  max-height: none;
++.palette-manager-v2__panel--right > .palette-manager-v2__accordion:nth-child(2) {
++  flex: 0 0 auto;
++  max-height: clamp(120px, 22vh, 260px);
++  overflow: auto;
 +}
 +
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left {
-+  justify-self: start;
+ .palette-manager-v2__accordion {
+   min-width: 0;
+   min-height: 0;
+@@ -88,6 +117,10 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   margin-top: 14px;
+ }
+
++.palette-manager-v2__panel--right > .palette-manager-v2__accordion + .palette-manager-v2__accordion {
++  margin-top: 0;
 +}
 +
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right {
-+  justify-self: end;
+ .palette-manager-v2__accordion-summary {
+   flex: 0 0 44px;
+   min-height: 44px;
+@@ -563,4 +596,4 @@ body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palet
+ .palette-manager-v2__pin-button--tile .palette-manager-v2__pin-icon {
+   width: 20px;
+   height: 20px;
+-}
+\ No newline at end of file
 +}
-+
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--center,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--center {
-+  align-self: stretch;
-+  height: 100%;
-+  min-height: 0;
-+  max-height: none;
-+}
-+
- @media (max-width: 1180px) {
-   .palette-manager-v2__layout {
-     grid-template-columns: 1fr;
-diff --git a/docs/dev/reports/PR_26124_045_report.md b/docs/dev/reports/PR_26124_045_report.md
+diff --git a/docs/dev/reports/PR_26124_046_report.md b/docs/dev/reports/PR_26124_046_report.md
 new file mode 100644
-index 00000000..a5dd2dd1
+index 00000000..4c8b8961
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_045_report.md
-@@ -0,0 +1,49 @@
-+# PR_26124_045 Report
++++ b/docs/dev/reports/PR_26124_046_report.md
+@@ -0,0 +1,37 @@
++# PR_26124_046-right-column-height-balance Report
 +
-+## Purpose
-+Update Palette Manager V2 layout only when the shared platform header/details area is hidden.
++## Summary
++Updated Palette Manager V2 right-column CSS only. The right panel is now a flex column where Import/Export fills remaining height and Validation/Error Viewer stays capped and scrollable.
 +
-+## Changes
-+- Added CSS overrides scoped to the existing platform hidden-header/fullscreen state.
-+- Expanded Palette Manager to full available width only when hidden-header state is active.
-+- Anchored left and right panels to their grid edges in hidden-header state.
-+- Let the center panel fill the horizontal space and available viewport height in hidden-header state.
-+- Preserved normal non-hidden-header layout.
++## Changed Runtime Files
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +
-+## Boundaries Confirmed
-+- No workspace/toolState/session changes.
-+- No sample JSON changes.
-+- No `tools/shared` changes.
-+- No shared accordionV2 changes.
++## Scope Confirmation
++- No workspace/toolState/session logic changed.
++- No sample JSON changed.
++- No `tools/shared` files changed.
 +- No dependencies added.
++- No left or center panel layout rules changed.
 +
-+## Validation
-+- No PR045 JS files changed.
-+- `node --check src/engine/theme/accordionV2/accordionV2.js` -> PASS
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
-+- `git diff --check` -> PASS with existing Git LF/CRLF warning
-+- Browser/manual layout validation at 1920x1000 -> PASS
-+- `npm run test:workspace-v2` -> FAIL: missing npm script
++## Validation Results
++- Targeted browser layout check: PASS.
++  - Right panel display: `flex`.
++  - Right panel flex direction: `column`.
++  - Import/Export flex: `1 1 auto`.
++  - Validation/Error flex: `0 0 auto`.
++  - Validation/Error max-height: computed from `clamp(120px, 22vh, 260px)`.
++  - Right-column occupied child height matched available content height.
++- `git diff --check`: PASS.
++  - Warning observed: Git reports `tools/palette-manager-v2/paletteManagerV2.css` LF will be replaced by CRLF when Git next touches it.
++- JavaScript syntax checks: no JavaScript files changed.
++- `npm run test:workspace-v2`: FAIL.
++  - Failure reason: `npm` reports missing script `test:workspace-v2`.
++- Full samples smoke test: skipped by instruction.
 +
-+## Playwright
-+- Required command was executed but failed before tests ran because `test:workspace-v2` is not defined in `package.json`.
-+- Expected pass behavior after script restoration: Workspace V2 validation should pass with Palette Manager hidden-header layout overrides.
-+- Expected fail behavior: Workspace V2 failures should identify a lifecycle or tool validation regression.
-+
-+## Manual Validation Details
-+- Normal layout remained capped at `1600px`.
-+- Clicking `Hide Header and Details` entered existing platform fullscreen state.
-+- Hidden-header layout expanded to full viewport width.
-+- Left panel anchored near the left edge.
-+- Right panel anchored near the right edge.
-+- Center panel filled the space between left and right panels.
-+- Center panel used available viewport height.
-+- accordionV2 panel count and open state remained unchanged.
-+- No horizontal page overflow was detected.
-+
-+## Full Samples Smoke
-+- Skipped by explicit instruction.
-+- Sample JSON remains out of scope until the sample alignment phase.
-+
-+## Roadmap
-+- No roadmap status change was made because this PR is a focused Palette Manager layout correction without a matching pending roadmap status item.
-diff --git a/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md
-new file mode 100644
-index 00000000..5a62d033
---- /dev/null
-+++ b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md
-@@ -0,0 +1,30 @@
-+# APPLY_PR - PR_26124_045-palette-manager-hidden-header-wide-layout
-+
-+## Apply Summary
-+Applied the Palette Manager hidden-header wide layout override.
-+
-+## Result
-+- Normal Palette Manager layout remains unchanged.
-+- When the platform header/details area is hidden, Palette Manager uses the full available width.
-+- Left and right panels anchor to their sides.
-+- The center panel fills the remaining width and available height.
-+- accordionV2 behavior remains unchanged.
-+
-+## Review Artifacts
-+- `docs/dev/reports/codex_review.diff`
-+- `docs/dev/reports/codex_changed_files.txt`
-+- `tmp/PR_26124_045-palette-manager-hidden-header-wide-layout_delta.zip`
-+
-+## Validation Result
-+- CSS/manual layout validation passed.
-+- Related JS syntax checks passed.
-+- `npm run test:workspace-v2` could not run because the npm script is missing from `package.json`.
-+- Full samples smoke test was not run.
-+
-+## Manual Apply Check
++## Manual Validation
 +1. Open `tools/palette-manager-v2/index.html`.
-+2. Confirm normal layout is unchanged.
-+3. Click `Hide Header and Details`.
-+4. Confirm left/right panels anchor to the viewport sides.
-+5. Confirm center fills the space between them and uses available height.
-+6. Confirm accordionV2 open/collapse behavior is unchanged.
-diff --git a/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md
++2. Inspect the right column.
++3. Confirm Import/Export fills remaining height after Validation/Error Viewer.
++4. Confirm Validation/Error Viewer height is capped and scrollable.
++5. Confirm Import/Export scrolls internally when needed.
++6. Confirm left and center panels are unchanged.
+diff --git a/docs/pr/PR_26124_046-right-column-height-balance/APPLY_PR.md b/docs/pr/PR_26124_046-right-column-height-balance/APPLY_PR.md
 new file mode 100644
-index 00000000..dd868de1
+index 00000000..605ef335
 --- /dev/null
-+++ b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md
-@@ -0,0 +1,53 @@
-+# BUILD_PR - PR_26124_045-palette-manager-hidden-header-wide-layout
++++ b/docs/pr/PR_26124_046-right-column-height-balance/APPLY_PR.md
+@@ -0,0 +1,27 @@
++# APPLY_PR - PR_26124_046-right-column-height-balance
 +
-+## Scope Applied
-+- Updated only `tools/palette-manager-v2/paletteManagerV2.css`.
-+- Added Palette Manager layout overrides scoped to the existing platform hidden-header/fullscreen state.
-+- Did not modify workspace/toolState/session code, sample JSON, `tools/shared`, shared accordionV2 behavior, or dependencies.
++## Applied Change
++Updated `tools/palette-manager-v2/paletteManagerV2.css` so the Palette Manager V2 right column uses a flex-column layout.
 +
 +## Files Changed
 +- `tools/palette-manager-v2/paletteManagerV2.css`
-+- `docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md`
-+- `docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md`
-+- `docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md`
-+- `docs/dev/codex_commands.md`
-+- `docs/dev/commit_comment.txt`
-+- `docs/dev/reports/PR_26124_045_report.md`
-+- `docs/dev/reports/codex_review.diff`
-+- `docs/dev/reports/codex_changed_files.txt`
 +
-+## Implementation
-+- Consumed existing platform hidden-header state:
-+  - `html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"]`
-+  - `body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"]`
-+- In hidden-header state only:
-+  - Palette Manager app shell expands to full available width.
-+  - Left panel anchors to the left grid edge.
-+  - Right panel anchors to the right grid edge.
-+  - Center panel fills the remaining horizontal space.
-+  - Layout and panels use available viewport height.
-+- Normal non-hidden-header layout rules were left unchanged.
++## Behavior
++- Import/Export is the first right-column accordion and now fills the remaining right-column content height.
++- Validation/Error Viewer is the second right-column accordion and keeps content-sized height capped by `clamp(120px, 22vh, 260px)`.
++- The right column uses panel `gap` for accordion spacing, with the inherited accordion sibling margin disabled only inside the right panel.
++- Import/Export and Validation/Error Viewer can scroll internally when their content exceeds their available area.
 +
 +## Validation
-+- No PR045 JS files changed.
-+- `node --check src/engine/theme/accordionV2/accordionV2.js` -> PASS
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
-+- `git diff --check` -> PASS with existing Git LF/CRLF warning
-+- Browser/manual layout validation at 1920x1000 -> PASS:
-+  - normal layout remained capped at `1600px`
-+  - clicking `Hide Header and Details` entered existing platform fullscreen state
-+  - hidden-header layout expanded to full viewport width
-+  - left panel anchored near the left edge
-+  - right panel anchored near the right edge
-+  - center panel filled the horizontal space between left and right panels
-+  - center panel used available viewport height
-+  - accordionV2 panel count and open state remained unchanged
-+  - no horizontal page overflow
-+- `npm run test:workspace-v2` -> FAIL before test execution because `package.json` has no `test:workspace-v2` script.
++- Targeted browser layout check: PASS.
++- `git diff --check`: PASS with the existing line-ending warning for `tools/palette-manager-v2/paletteManagerV2.css`.
++- JavaScript syntax checks: no JavaScript files changed.
++- `npm run test:workspace-v2`: FAILED because the repository has no `test:workspace-v2` script.
++- Full samples smoke test: skipped by instruction.
 +
-+## Full Samples Smoke
-+- Skipped by explicit instruction.
-+- Sample JSON remains out of scope until the sample alignment phase.
-+
-+## Known Validation Blocker
-+- The required Workspace V2 npm validation command is unavailable in the current `package.json`.
-diff --git a/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md
++## Manual Test
++1. Open Palette Manager V2.
++2. Confirm the right column still shows Import/Export above Validation/Error Viewer.
++3. Confirm Validation/Error Viewer remains capped and scrollable.
++4. Confirm Import/Export fills the remaining right-column height and scrolls internally when needed.
++5. Confirm left and center panel layout behavior is unchanged.
+diff --git a/docs/pr/PR_26124_046-right-column-height-balance/BUILD_PR.md b/docs/pr/PR_26124_046-right-column-height-balance/BUILD_PR.md
 new file mode 100644
-index 00000000..b072acf7
+index 00000000..ea566167
 --- /dev/null
-+++ b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md
-@@ -0,0 +1,44 @@
-+# PLAN_PR - PR_26124_045-palette-manager-hidden-header-wide-layout
++++ b/docs/pr/PR_26124_046-right-column-height-balance/BUILD_PR.md
+@@ -0,0 +1,34 @@
++# BUILD_PR - PR_26124_046-right-column-height-balance
++
++## Purpose
++Make the Palette Manager V2 right column allocate its height between Import/Export and Validation/Error Viewer without changing behavior or content.
++
++## Scope
++- `tools/palette-manager-v2/paletteManagerV2.css`
++- PR workflow docs and required review artifacts only.
++
++## Implementation
++1. Convert `.palette-manager-v2__panel--right` to a flex column.
++2. Make the first right-column accordion, Import/Export, fill the remaining panel height:
++   - `flex: 1 1 auto`
++   - `min-height: 0`
++   - `overflow: auto`
++3. Make the second right-column accordion, Validation/Error Viewer, keep content-sized height with a cap:
++   - `flex: 0 0 auto`
++   - `max-height: clamp(120px, 22vh, 260px)`
++   - `overflow: auto`
++4. Keep right-column accordion spacing controlled by the panel gap only.
++
++## Boundaries
++- Do not change Palette Manager behavior or content.
++- Do not touch workspace/toolState/session logic.
++- Do not touch sample JSON.
++- Do not modify left or center panel layout.
++- Do not modify `tools/shared`.
++- Do not add dependencies.
++
++## Validation
++- Run a targeted browser style check for the right column.
++- Run syntax checks only if JavaScript files change.
++- Run `npm run test:workspace-v2`.
++- Skip the full samples smoke test.
+diff --git a/docs/pr/PR_26124_046-right-column-height-balance/PLAN_PR.md b/docs/pr/PR_26124_046-right-column-height-balance/PLAN_PR.md
+new file mode 100644
+index 00000000..232c753f
+--- /dev/null
++++ b/docs/pr/PR_26124_046-right-column-height-balance/PLAN_PR.md
+@@ -0,0 +1,35 @@
++# PLAN_PR - PR_26124_046-right-column-height-balance
 +
 +## Goal
-+Update Palette Manager V2 layout only when the shared platform header/details area is hidden.
-+
-+## Existing Platform State
-+- `tools/shared/platformShell.js` already applies fullscreen/hidden-header state through `html:fullscreen`, `tools-platform-fullscreen-active`, and `data-tools-platform-fullscreen`.
-+- Palette Manager will consume that existing state with CSS only.
++Balance Palette Manager V2 right column heights so Import/Export takes remaining column height after the Validation/Error viewer.
 +
 +## Scope
 +- `tools/palette-manager-v2/paletteManagerV2.css`
 +- Workflow docs/reports required by `docs/dev/PROJECT_INSTRUCTIONS.md`
 +
 +## Boundaries
-+- Do not change normal non-hidden-header layout.
-+- Do not change accordionV2 behavior.
-+- Do not change workspace/toolState/session code.
-+- Do not change sample JSON.
-+- Do not modify `tools/shared`.
-+- Do not modify shared `accordionV2`.
++- Do not change behavior or content.
++- Do not touch workspace/toolState/session code.
++- Do not touch sample JSON.
++- Do not modify other panels.
 +- Do not add dependencies.
-+- Do not broad refactor.
 +
 +## Implementation Plan
-+1. Add Palette Manager CSS overrides scoped to the existing hidden-header/fullscreen platform state.
-+2. In hidden-header state, let the app shell use full available width.
-+3. Anchor left and right panels to their grid edges and let the center column fill remaining horizontal space.
-+4. In hidden-header state, make the Palette Manager root/layout/panels consume available viewport height.
-+5. Preserve normal non-hidden-header layout by keeping all overrides under hidden-header/fullscreen selectors.
-+6. Run CSS/manual layout validation and requested validation commands.
++1. Convert `.palette-manager-v2__panel--right` to a flex column.
++2. Make the first right-column accordion, Import/Export, consume remaining height with `flex: 1 1 auto`, `min-height: 0`, and internal overflow.
++3. Make the second right-column accordion, Validation/Error Viewer, fixed-auto height with `max-height: clamp(120px, 22vh, 260px)` and internal overflow.
++4. Preserve existing markup and behavior.
++5. Run targeted syntax/layout validation and the requested Workspace V2 command.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- Expected pass behavior: Workspace V2 validation remains green after the Palette Manager hidden-header layout override.
++- Expected pass behavior: Workspace V2 validation remains green after the CSS-only right-column layout change.
 +- Expected fail behavior: failures identify Workspace V2 validation regressions or a missing validation command.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open `tools/palette-manager-v2/index.html`.
-+2. Confirm normal layout is unchanged before hiding the header/details area.
-+3. Click `Hide Header and Details`.
-+4. Confirm left column anchors left, right column anchors right, and center fills remaining horizontal space.
-+5. Confirm center panel uses available viewport height.
-+6. Confirm accordionV2 open/collapse behavior remains unchanged.
++2. Confirm the right column contains Import/Export above Validation/Error Viewer.
++3. Confirm Validation/Error Viewer height is capped.
++4. Confirm Import/Export fills the remaining right-column height.
++5. Confirm right-column content still scrolls internally where needed.

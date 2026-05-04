@@ -1,1 +1,1 @@
-Expand Palette Manager layout when platform header is hidden - PR_26124_045-palette-manager-hidden-header-wide-layout
+Balance Palette Manager right column section heights - PR_26124_046-right-column-height-balance

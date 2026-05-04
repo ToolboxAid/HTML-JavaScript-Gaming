@@ -75,6 +75,35 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   overflow: hidden;
 }
 
+.palette-manager-v2__panel--right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.palette-manager-v2__panel--right > .palette-manager-v2__accordion {
+  margin-top: 0;
+}
+
+.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child > .palette-manager-v2__accordion-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.palette-manager-v2__panel--right > .palette-manager-v2__accordion:nth-child(2) {
+  flex: 0 0 auto;
+  max-height: clamp(120px, 22vh, 260px);
+  overflow: auto;
+}
+
 .palette-manager-v2__accordion {
   min-width: 0;
   min-height: 0;
@@ -86,6 +115,10 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
 
 .palette-manager-v2__accordion + .palette-manager-v2__accordion {
   margin-top: 14px;
+}
+
+.palette-manager-v2__panel--right > .palette-manager-v2__accordion + .palette-manager-v2__accordion {
+  margin-top: 0;
 }
 
 .palette-manager-v2__accordion-summary {

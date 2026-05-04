@@ -1,22 +1,21 @@
-# PR_26124_045-palette-manager-hidden-header-wide-layout
+# Codex Commands - PR_26124_046-right-column-height-balance
 
-```bash
-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_045-palette-manager-hidden-header-wide-layout. Follow PROJECT_INSTRUCTIONS.md exactly. Update only palette-manager-v2 layout behavior when the shared platform header/details area is hidden."
-```
+## Workflow
+- Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
+- Read `docs/pr/PR_26124_046-right-column-height-balance/PLAN_PR.md`.
+- Created `docs/pr/PR_26124_046-right-column-height-balance/BUILD_PR.md`.
+- Updated `tools/palette-manager-v2/paletteManagerV2.css`.
+- Created `docs/pr/PR_26124_046-right-column-height-balance/APPLY_PR.md`.
 
 ## Validation Commands
+- Targeted browser layout check using Playwright from Node against `tools/palette-manager-v2/index.html`.
+- `git diff --check`
+- `git diff --name-only -- '*.js'`
+- `npm run test:workspace-v2`
 
-```bash
-node --check src/engine/theme/accordionV2/accordionV2.js
-node --check tools/palette-manager-v2/modules/PaletteManagerApp.js
-npm run test:workspace-v2
-```
-
-## Manual Validation
-
-- Open `tools/palette-manager-v2/index.html`.
-- Confirm normal layout is unchanged.
-- Click `Hide Header and Details`.
-- Confirm left/right panels anchor to the viewport sides.
-- Confirm center fills the space between them and uses available height.
-- Confirm accordionV2 behavior remains unchanged.
+## Validation Outcome
+- Targeted browser layout check: PASS.
+- `git diff --check`: PASS with Git line-ending warning for `tools/palette-manager-v2/paletteManagerV2.css`.
+- JavaScript syntax checks: no JavaScript files changed.
+- `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
+- Full samples smoke test: skipped by instruction.
