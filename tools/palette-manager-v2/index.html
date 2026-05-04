@@ -21,6 +21,8 @@
 
   <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
     <div class="palette-manager-v2__menu-actions">
+      <button id="undoPaletteButton" type="button">Undo</button>
+      <button id="redoPaletteButton" type="button">Redo</button>
       <button id="importPaletteButton" type="button">Import JSON</button>
       <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
       <button id="copyPaletteButton" type="button">Copy JSON</button>
@@ -129,6 +131,7 @@
               </div>
             </div>
             <div id="userPaletteCount" class="palette-manager-v2__meta">0 user swatches</div>
+            <div id="userPaletteSelectedCount" class="palette-manager-v2__meta palette-manager-v2__selected-count">0 selected</div>
             <div id="userSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--user" aria-label="User palette swatches"></div>
           </div>
         </section>

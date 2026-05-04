@@ -2,11 +2,6 @@ import { cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modul
 
 const MAX_TAG_SUGGESTIONS = 6;
 
-function tagsContainTag(tags, tag) {
-  const cleanTag = sanitizeText(tag).toLowerCase();
-  return Boolean(cleanTag) && normalizeTags(tags).some((existingTag) => existingTag.toLowerCase() === cleanTag);
-}
-
 export class PaletteEditorControl {
   constructor({ refs, app, hexColorPattern }) {
     this.refs = refs;
@@ -120,7 +115,7 @@ export class PaletteEditorControl {
     if (!cleanTag) {
       return;
     }
-    if (this.app.addTagToSelectedSwatch(cleanTag)) {
+    if (this.app.addTagFromTagControl(cleanTag)) {
       this.refs.tagEntryInput.value = "";
       this.tagSuggestionIndex = -1;
     }
@@ -181,12 +176,12 @@ export class PaletteEditorControl {
       const button = this.refs.availableTagList.ownerDocument.createElement("button");
       button.type = "button";
       button.className = "palette-manager-v2__tag-pill palette-manager-v2__tag-toggle";
-      const isActive = tagsContainTag(this.selectedTags, tag);
+      const isActive = this.app.isTagActiveForTagControl(tag, this.selectedTags);
       button.classList.toggle("is-active", isActive);
       button.setAttribute("aria-pressed", String(isActive));
       button.textContent = tag;
       button.addEventListener("click", () => {
-        this.app.toggleTagOnSelectedSwatch(tag);
+        this.app.toggleTagFromTagControl(tag);
       });
 
       tagItem.appendChild(button);

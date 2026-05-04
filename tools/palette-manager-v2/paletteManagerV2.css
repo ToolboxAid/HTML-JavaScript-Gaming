@@ -424,6 +424,10 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   overflow-wrap: anywhere;
 }
 
+.palette-manager-v2__selected-count {
+  font-weight: 700;
+}
+
 .palette-manager-v2__tile-grid {
   --swatch-tile-width: 112px;
   --swatch-tile-height: 108px;
@@ -499,6 +503,23 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 6px;
   background: var(--swatch-color, #000000);
+}
+
+.palette-manager-v2__swatch-select-checkbox {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--pm-accent);
+  cursor: pointer;
+}
+
+.palette-manager-v2__tile-grid[data-swatch-size="small"] .palette-manager-v2__swatch-select-checkbox {
+  width: 16px;
+  height: 16px;
 }
 
 .palette-manager-v2__source-tile,

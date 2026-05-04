@@ -15,6 +15,7 @@ export class UserPaletteControl {
   render() {
     const swatches = this.app.getUserSwatches();
     this.refs.userPaletteCount.textContent = `${swatches.length} user swatches`;
+    this.refs.userPaletteSelectedCount.textContent = `${this.app.getCheckedUserSwatchCount()} selected`;
     this.refs.userSwatchList.dataset.swatchSize = this.app.getUserSwatchSize();
     this.renderActiveSortButton();
     this.renderActiveSizeButton();
@@ -32,7 +33,10 @@ export class UserPaletteControl {
       this.refs.userSwatchList.appendChild(SwatchRow.createUserTile(this.document, swatch, {
         pinned: true,
         selected: index === this.app.getSelectedUserIndex(),
+        checked: this.app.isUserSwatchChecked(index),
+        showCheckbox: true,
         onSelect: () => this.app.selectUserSwatch(index),
+        onCheck: (isChecked) => this.app.setUserSwatchChecked(index, isChecked),
         onTack: () => this.app.removeUserSwatch(index)
       }));
     });

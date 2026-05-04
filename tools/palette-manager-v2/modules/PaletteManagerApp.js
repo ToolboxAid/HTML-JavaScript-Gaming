@@ -3,13 +3,17 @@ import { PaletteImportExportControl } from "../controls/PaletteImportExportContr
 import { PaletteValidationErrorControl } from "../controls/PaletteValidationErrorControl.js";
 import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
 import { UserPaletteControl } from "../controls/UserPaletteControl.js";
+import { PaletteHistoryStack } from "./PaletteHistoryStack.js";
 import { PaletteValidationService } from "./PaletteValidationService.js";
 import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "./paletteUtils.js";
 
 const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
 
 const REQUIRED_REF_IDS = Object.freeze([
+  "undoPaletteButton",
+  "redoPaletteButton",
   "userPaletteCount",
+  "userPaletteSelectedCount",
   "userPaletteSortControls",
   "userSwatchSizeControls",
   "userSwatchList",
@@ -182,6 +186,8 @@ export class PaletteManagerApp {
       errors: [],
       status: "Ready."
     };
+    this.checkedUserSwatchIndexes = new Set();
+    this.historyStack = new PaletteHistoryStack(this.createHistorySnapshot());
   }
 
   init() {
@@ -198,6 +204,7 @@ export class PaletteManagerApp {
       new PaletteValidationErrorControl({ documentRef: this.document, refs: this.refs, app: this })
     ];
 
+    this.bindHistoryControls();
     this.controls.forEach((control) => control.bind());
     this.editorControl.clearForm();
 
@@ -213,6 +220,83 @@ export class PaletteManagerApp {
         control.render();
       }
     });
+    this.renderHistoryButtons();
+  }
+
+  bindHistoryControls() {
+    this.refs.undoPaletteButton.addEventListener("click", () => {
+      this.undoPaletteChange();
+    });
+    this.refs.redoPaletteButton.addEventListener("click", () => {
+      this.redoPaletteChange();
+    });
+  }
+
+  renderHistoryButtons() {
+    this.refs.undoPaletteButton.disabled = !this.historyStack.canUndo();
+    this.refs.redoPaletteButton.disabled = !this.historyStack.canRedo();
+  }
+
+  createHistorySnapshot() {
+    return {
+      userSwatches: this.state.userSwatches.map(cloneSwatch),
+      selectedUserIndex: this.state.selectedUserIndex,
+      availableTags: this.state.availableTags.slice()
+    };
+  }
+
+  recordHistorySnapshot() {
+    this.historyStack.record(this.createHistorySnapshot());
+  }
+
+  resetHistorySnapshot() {
+    this.historyStack.reset(this.createHistorySnapshot());
+  }
+
+  restoreHistorySnapshot(snapshot, status) {
+    this.state.userSwatches = snapshot.userSwatches.map(cloneSwatch);
+    this.state.selectedUserIndex = Number.isInteger(snapshot.selectedUserIndex)
+      && snapshot.selectedUserIndex >= 0
+      && snapshot.selectedUserIndex < this.state.userSwatches.length
+      ? snapshot.selectedUserIndex
+      : -1;
+    this.setAvailableTags(snapshot.availableTags);
+    this.checkedUserSwatchIndexes.clear();
+    this.renderSelectedSwatchState();
+    this.setActionState([], status, false);
+    this.render();
+  }
+
+  renderSelectedSwatchState() {
+    const selectedSwatch = this.getSelectedSwatch();
+    if (!selectedSwatch) {
+      this.editorControl.clearForm();
+      return;
+    }
+    this.editorControl.showSwatch(selectedSwatch);
+    if (isUserDefinedSwatch(selectedSwatch)) {
+      this.editorControl.showUserDefinedSwatch(selectedSwatch);
+    } else {
+      this.editorControl.clearUserDefinedSwatch();
+    }
+  }
+
+  undoPaletteChange() {
+    const snapshot = this.historyStack.undo();
+    if (!snapshot) {
+      this.setActionState([], "No palette changes to undo.");
+      return;
+    }
+    this.restoreHistorySnapshot(snapshot, "Undid palette change.");
+  }
+
+  redoPaletteChange() {
+    const snapshot = this.historyStack.redo();
+    if (!snapshot) {
+      this.setActionState([], "No palette changes to redo.");
+      return;
+    }
+    this.restoreHistorySnapshot(snapshot, "Redid palette change.");
   }
 
   getUserSwatches() {
@@ -232,6 +316,48 @@ export class PaletteManagerApp {
 
   getSelectedUserIndex() {
     return this.state.selectedUserIndex;
+  }
+
+  getCheckedUserSwatchCount() {
+    return this.getCheckedUserSwatchIndexes().length;
+  }
+
+  getCheckedUserSwatchIndexes() {
+    const checkedIndexes = Array.from(this.checkedUserSwatchIndexes)
+      .filter((index) => Number.isInteger(index) && index >= 0 && index < this.state.userSwatches.length)
+      .sort((left, right) => left - right);
+    this.checkedUserSwatchIndexes = new Set(checkedIndexes);
+    return checkedIndexes;
+  }
+
+  isUserSwatchChecked(index) {
+    return this.getCheckedUserSwatchIndexes().includes(index);
+  }
+
+  setUserSwatchChecked(index, isChecked) {
+    if (!this.state.userSwatches[index]) {
+      return;
+    }
+    if (isChecked) {
+      this.checkedUserSwatchIndexes.add(index);
+    } else {
+      this.checkedUserSwatchIndexes.delete(index);
+    }
+    this.render();
+  }
+
+  shiftCheckedUserSwatchIndexesAfterRemove(removedIndex) {
+    const checkedIndexes = [];
+    this.checkedUserSwatchIndexes.forEach((index) => {
+      if (!Number.isInteger(index) || index === removedIndex) {
+        return;
+      }
+      const nextIndex = index > removedIndex ? index - 1 : index;
+      if (nextIndex >= 0 && nextIndex < this.state.userSwatches.length) {
+        checkedIndexes.push(nextIndex);
+      }
+    });
+    this.checkedUserSwatchIndexes = new Set(checkedIndexes);
   }
 
   getUserSortOptions() {
@@ -480,6 +606,7 @@ export class PaletteManagerApp {
     this.mergeAvailableTags(cleanSwatch.tags);
     this.editorControl.showSwatch(cleanSwatch);
     this.editorControl.showUserDefinedSwatch(cleanSwatch);
+    this.recordHistorySnapshot();
     this.setActionState([], `Added ${cleanSwatch.name}.`);
   }
 
@@ -517,6 +644,7 @@ export class PaletteManagerApp {
     } else {
       this.editorControl.clearUserDefinedSwatch();
     }
+    this.recordHistorySnapshot();
     this.setActionState([], `Updated ${cleanSwatch.name}.`);
   }
 
@@ -555,6 +683,7 @@ export class PaletteManagerApp {
     } else {
       this.editorControl.clearUserDefinedSwatch();
     }
+    this.recordHistorySnapshot();
     this.setActionState([], `Added ${cleanTag} to ${cleanSwatch.name}.`);
     return true;
   }
@@ -594,6 +723,7 @@ export class PaletteManagerApp {
     } else {
       this.editorControl.clearUserDefinedSwatch();
     }
+    this.recordHistorySnapshot();
     this.setActionState([], `Removed ${cleanTag} from ${cleanSwatch.name}.`);
     return true;
   }
@@ -610,6 +740,120 @@ export class PaletteManagerApp {
       return this.removeTagFromSelectedSwatch(cleanTag);
     }
     return this.addTagToSelectedSwatch(cleanTag);
+  }
+
+  addTagFromTagControl(tag) {
+    if (this.getCheckedUserSwatchCount() > 0) {
+      return this.addTagToCheckedUserSwatches(tag);
+    }
+    return this.addTagToSelectedSwatch(tag);
+  }
+
+  toggleTagFromTagControl(tag) {
+    if (this.getCheckedUserSwatchCount() > 0) {
+      return this.toggleTagOnCheckedUserSwatches(tag);
+    }
+    return this.toggleTagOnSelectedSwatch(tag);
+  }
+
+  isTagActiveForTagControl(tag, selectedTags) {
+    const cleanTag = normalizeTags([tag])[0] || "";
+    if (!cleanTag) {
+      return false;
+    }
+    const checkedIndexes = this.getCheckedUserSwatchIndexes();
+    if (checkedIndexes.length === 0) {
+      return normalizeTags(selectedTags).includes(cleanTag);
+    }
+    return checkedIndexes.every((index) => {
+      return normalizeTags(this.state.userSwatches[index]?.tags).includes(cleanTag);
+    });
+  }
+
+  addTagToCheckedUserSwatches(tag) {
+    const cleanTag = normalizeTags([tag])[0] || "";
+    if (!cleanTag) {
+      return false;
+    }
+    return this.updateCheckedUserSwatchTags(cleanTag, true);
+  }
+
+  removeTagFromCheckedUserSwatches(tag) {
+    const cleanTag = normalizeTags([tag])[0] || "";
+    if (!cleanTag) {
+      return false;
+    }
+    return this.updateCheckedUserSwatchTags(cleanTag, false);
+  }
+
+  toggleTagOnCheckedUserSwatches(tag) {
+    const cleanTag = normalizeTags([tag])[0] || "";
+    if (!cleanTag) {
+      return false;
+    }
+    const checkedIndexes = this.getCheckedUserSwatchIndexes();
+    if (checkedIndexes.length === 0) {
+      return this.toggleTagOnSelectedSwatch(cleanTag);
+    }
+    const everyCheckedSwatchHasTag = checkedIndexes.every((index) => {
+      return normalizeTags(this.state.userSwatches[index]?.tags).includes(cleanTag);
+    });
+    return everyCheckedSwatchHasTag
+      ? this.removeTagFromCheckedUserSwatches(cleanTag)
+      : this.addTagToCheckedUserSwatches(cleanTag);
+  }
+
+  updateCheckedUserSwatchTags(tag, shouldAddTag) {
+    const checkedIndexes = this.getCheckedUserSwatchIndexes();
+    if (checkedIndexes.length === 0) {
+      return shouldAddTag ? this.addTagToSelectedSwatch(tag) : this.removeTagFromSelectedSwatch(tag);
+    }
+
+    const updates = [];
+    const errors = [];
+    checkedIndexes.forEach((index) => {
+      const swatch = this.state.userSwatches[index];
+      if (!swatch) {
+        return;
+      }
+      const existingTags = normalizeTags(swatch.tags);
+      const hasTag = existingTags.includes(tag);
+      if ((shouldAddTag && hasTag) || (!shouldAddTag && !hasTag)) {
+        return;
+      }
+      const nextTags = shouldAddTag ? [...existingTags, tag] : existingTags.filter((existingTag) => existingTag !== tag);
+      const cleanSwatch = cloneSwatch({ ...swatch, tags: nextTags });
+      const swatchErrors = this.validator.validateSwatch(cleanSwatch, `selected swatch ${index + 1}`);
+      if (swatchErrors.length > 0) {
+        errors.push(...swatchErrors);
+        return;
+      }
+      updates.push({ index, swatch: cleanSwatch });
+    });
+
+    if (errors.length > 0) {
+      this.setActionState(errors, shouldAddTag ? "Selected swatch tags were not added." : "Selected swatch tags were not removed.");
+      return false;
+    }
+    if (updates.length === 0) {
+      this.setActionState([], shouldAddTag
+        ? `${tag} is already on selected swatches.`
+        : `${tag} is not on selected swatches.`);
+      return false;
+    }
+
+    updates.forEach((update) => {
+      this.state.userSwatches[update.index] = update.swatch;
+    });
+    if (shouldAddTag) {
+      this.mergeAvailableTags([tag]);
+    }
+    this.renderSelectedSwatchState();
+    this.recordHistorySnapshot();
+    this.setActionState([], shouldAddTag
+      ? `Added ${tag} to ${updates.length} selected swatches.`
+      : `Removed ${tag} from ${updates.length} selected swatches.`);
+    return true;
   }
 
   isTagUsedByUserPalette(tag) {
@@ -638,6 +882,7 @@ export class PaletteManagerApp {
     }
 
     this.state.availableTags = this.state.availableTags.filter((availableTag) => availableTag !== cleanTag);
+    this.recordHistorySnapshot();
     this.setActionState([], `Deleted tag ${cleanTag}.`);
     return true;
   }
@@ -668,6 +913,8 @@ export class PaletteManagerApp {
     } else if (this.state.selectedUserIndex > index) {
       this.state.selectedUserIndex -= 1;
     }
+    this.shiftCheckedUserSwatchIndexesAfterRemove(index);
+    this.recordHistorySnapshot();
     this.setActionState([], `Removed ${swatch.name}.`);
     return true;
   }
@@ -693,6 +940,7 @@ export class PaletteManagerApp {
     this.mergeAvailableTags(pinnedSwatch.tags);
     this.editorControl.showSwatch(pinnedSwatch);
     this.editorControl.clearUserDefinedSwatch();
+    this.recordHistorySnapshot();
     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
   }
 
@@ -730,6 +978,9 @@ export class PaletteManagerApp {
       this.editorControl.showSwatch(this.state.userSwatches[lastPinnedIndex]);
       this.editorControl.clearUserDefinedSwatch();
     }
+    if (pinnedCount > 0) {
+      this.recordHistorySnapshot();
+    }
 
     const status = `Pinned ${pinnedCount} source swatches. Skipped ${skippedCount} duplicate or invalid swatches.`;
     this.setActionState(Array.from(new Set(skipReasons)), status);
@@ -758,7 +1009,9 @@ export class PaletteManagerApp {
     this.state.userSwatches = importResult.swatches.map(cloneSwatch);
     this.setAvailableTags(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags)));
     this.state.selectedUserIndex = -1;
+    this.checkedUserSwatchIndexes.clear();
     this.editorControl.clearForm();
+    this.resetHistorySnapshot();
     this.setActionState([], `Imported ${this.state.userSwatches.length} user swatches.`);
   }
 

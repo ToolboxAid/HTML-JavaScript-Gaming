@@ -1,1 +1,1 @@
-Add Palette Manager validation viewer clear and consolidate duplicate errors - PR_26124_059-validation-viewer-clear-and-error-consolidation
+Add Palette Manager undo redo history and batch tag selection - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select

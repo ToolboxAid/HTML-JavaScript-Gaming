@@ -1,117 +1,145 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 004290bd..25568512 100644
+index 25568512..7416dcab 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,27 +1,26 @@
--# Codex Commands - PR_26124_058-palette-manager-baseline-restore-and-hardening
-+# Codex Commands - PR_26124_059-validation-viewer-clear-and-error-consolidation
-
+@@ -1,26 +1,32 @@
+-# Codex Commands - PR_26124_059-validation-viewer-clear-and-error-consolidation
++# Codex Commands - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
+ 
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
  - Used `.codex/skills/repo-build/SKILL.md`.
--- Created `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/BUILD_PR.md`.
--- Created `docs/dev/reports/PR_26124_058-palette-manager-restore-point/` before runtime edits.
-+- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md`.
+-- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md`.
++- Checked git status before implementation.
++- Searched `src/` for undo/history/command stack classes and found no suitable reusable stack for Palette Manager V2 user palette mutations.
++- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md`.
++- Read the active BUILD doc before changing runtime files.
  - Updated Palette Manager V2 only.
--- Created `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/APPLY_PR.md`.
-+- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md`.
-
+-- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md`.
++- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md`.
+ 
  ## Validation Commands
  - `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
--- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
--- Targeted served-browser Palette Manager V2 hardening validation using Playwright from Node.
-+- `node --check tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`
-+- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation using Playwright from Node.
+-- `node --check tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`
+-- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation using Playwright from Node.
++- `node --check tools/palette-manager-v2/modules/PaletteHistoryStack.js`
++- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
++- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
++- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
++- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin validation using Playwright from Node.
  - `git diff --check`
  - `npm run test:workspace-v2`
  - `git diff --cached --check`
  - `npm run codex:review-artifacts`
--- Python `zipfile` packaging for `tmp/PR_26124_058-palette-manager-baseline-restore-and-hardening_delta.zip`
-+- Python `zipfile` packaging for `tmp/PR_26124_059-validation-viewer-clear-and-error-consolidation_delta.zip`
-
+-- Python `zipfile` packaging for `tmp/PR_26124_059-validation-viewer-clear-and-error-consolidation_delta.zip`
++- Python `zipfile` packaging for `tmp/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select_delta.zip`
+ 
  ## Validation Outcome
  - JavaScript syntax checks: PASS.
--- Targeted served-browser Palette Manager V2 hardening check: PASS.
-+- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation check: PASS.
+-- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation check: PASS.
++- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin check: PASS.
  - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
  - `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 4975ffe1..3cae9f95 100644
+index 3cae9f95..c0056458 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Harden Palette Manager baseline with restore point - PR_26124_058-palette-manager-baseline-restore-and-hardening
-+Add Palette Manager validation viewer clear and consolidate duplicate errors - PR_26124_059-validation-viewer-clear-and-error-consolidation
-diff --git a/docs/dev/reports/PR_26124_059_report.md b/docs/dev/reports/PR_26124_059_report.md
+-Add Palette Manager validation viewer clear and consolidate duplicate errors - PR_26124_059-validation-viewer-clear-and-error-consolidation
++Add Palette Manager undo redo history and batch tag selection - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
+diff --git a/docs/dev/reports/PR_26124_060_report.md b/docs/dev/reports/PR_26124_060_report.md
 new file mode 100644
-index 00000000..8b3cd47f
+index 00000000..92943768
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_059_report.md
-@@ -0,0 +1,38 @@
-+# PR_26124_059-validation-viewer-clear-and-error-consolidation Report
++++ b/docs/dev/reports/PR_26124_060_report.md
+@@ -0,0 +1,55 @@
++# PR_26124_060-palette-manager-undo-redo-and-multi-tag-select Report
 +
 +## Summary
-+Palette Manager V2 Validation/Error Viewer now has a display-only Clear action, and duplicate user swatch validation messages are consolidated into a single line.
++Palette Manager V2 now supports local undo/redo for user palette mutations, checkbox multi-select on User Palette swatches, and batch tag application from the Tags accordion.
++
++## Existing History Search
++- Searched under `src/` for undo/history/command stack classes.
++- No suitable reusable undo/history/command stack class was found for Palette Manager V2 user palette mutations.
++- Implemented the smallest local history stack in `tools/palette-manager-v2/modules/PaletteHistoryStack.js`.
 +
 +## Files Changed
-+- `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md`
-+- `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md`
-+- `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md`
++- `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md`
++- `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md`
++- `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md`
 +- `docs/dev/codex_commands.md`
 +- `docs/dev/commit_comment.txt`
-+- `docs/dev/reports/PR_26124_059_report.md`
++- `docs/dev/reports/PR_26124_060_report.md`
 +- `tools/palette-manager-v2/index.html`
 +- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`
++- `tools/palette-manager-v2/modules/PaletteHistoryStack.js`
++- `tools/palette-manager-v2/modules/SwatchRow.js`
++- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
++- `tools/palette-manager-v2/controls/UserPaletteControl.js`
 +- `tools/palette-manager-v2/paletteManagerV2.css`
 +
 +## Validation
 +- JavaScript syntax checks: PASS.
-+- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation: PASS.
++- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin validation: PASS.
 +- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 +- `npm run test:workspace-v2`: FAIL because the script is missing from `package.json`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Targeted Browser Coverage
-+- Duplicate symbol/name/RGB-hex failures render as one consolidated line.
-+- Name-only duplicate failures render as one line with only the failed field.
-+- Clear empties the displayed viewer status and error list.
-+- Clear does not remove or mutate User Palette data.
-+- Repeating the same validation after Clear renders the message again.
++- Undo and Redo start disabled.
++- Adding a user swatch enables Undo.
++- Undo removes the added swatch and enables Redo.
++- Redo restores the swatch and selected swatch display.
++- User Palette checkbox click does not select the tile.
++- Selected-count status updates when User Palette checkboxes are checked.
++- Add Tag applies a lowercase tag to all checked User Palette swatches.
++- Existing tag click removes the tag from all checked User Palette swatches when all checked swatches have it.
++- Undo/redo restores batch tag mutations.
++- Source swatch pin adds a user swatch.
++- Undo/redo restores source pin mutations.
 +
 +## Manual Test
 +1. Open Palette Manager V2 through a local server.
-+2. Add a user swatch.
-+3. Attempt to add another swatch with duplicate symbol, name, and RGB/hex.
-+4. Confirm the viewer shows one consolidated duplicate message.
-+5. Click `Clear` and confirm the viewer output is empty.
-+6. Repeat the duplicate action and confirm the message appears again.
-diff --git a/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md
++2. Add a user swatch, click `Undo`, and confirm it is removed.
++3. Click `Redo` and confirm the swatch returns with selected details restored.
++4. Add a second user swatch.
++5. Check both User Palette tile checkboxes and confirm the selected count is `2 selected`.
++6. Type a mixed-case tag in the Tags accordion and click `Add`.
++7. Confirm the lowercase tag appears on both checked swatches.
++8. Click the tag in the Tags accordion and confirm it toggles across the checked swatches.
++9. Pin a source swatch and confirm Undo/Redo restores the pin state.
+diff --git a/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md
 new file mode 100644
-index 00000000..40f1739f
+index 00000000..f56780c2
 --- /dev/null
-+++ b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md
-@@ -0,0 +1,25 @@
-+# APPLY_PR - PR_26124_059-validation-viewer-clear-and-error-consolidation
++++ b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md
+@@ -0,0 +1,31 @@
++# APPLY_PR - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
 +
 +## Summary
-+Added a display-only Clear action to Palette Manager V2 Validation/Error Viewer and consolidated duplicate user swatch validation messages.
++Added local Palette Manager V2 undo/redo history, User Palette multi-select checkboxes, and batch tag application from the Tags accordion.
 +
 +## Applied Changes
-+- Added `Clear` to Validation/Error Viewer.
-+- Clear hides the currently displayed status/error batch without mutating Palette Manager validation state.
-+- New validation/status events display again after the viewer is cleared.
-+- Consolidated duplicate user swatch messages from symbol/name/RGB-hex guards into one line.
-+- Duplicate messages include only fields that actually failed.
-+- Preserved duplicate validation behavior for add, update, individual pin, and Pin All.
++- Added `Undo` and `Redo` buttons to the `menuSample` nav.
++- Added local `PaletteHistoryStack` for Palette Manager V2 user palette mutation snapshots.
++- Tracked user swatch add, update, remove/unpin, source pin, Pin All, tag add/remove, batch tag changes, and unused tag deletion.
++- Restored user swatches, selected user swatch index, and available unused tags on undo/redo.
++- Added checkbox selection to User Palette tiles without changing tile selection click behavior.
++- Added selected-count status near User Palette controls.
++- Made Tags accordion Add Tag and tag toggle actions batch across checked User Palette swatches.
++- Preserved selected-swatch tag behavior when no User Palette checkboxes are checked.
++- Preserved lowercase tag normalization and duplicate tag avoidance.
 +
 +## Validation
 +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- `node --check tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`: PASS.
-+- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation: PASS.
++- `node --check tools/palette-manager-v2/modules/PaletteHistoryStack.js`: PASS.
++- `node --check tools/palette-manager-v2/modules/SwatchRow.js`: PASS.
++- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
++- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
++- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin validation: PASS.
 +- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
@@ -119,36 +147,55 @@ index 00000000..40f1739f
 +## Artifacts
 +- Review diff: `docs/dev/reports/codex_review.diff`
 +- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_059-validation-viewer-clear-and-error-consolidation_delta.zip`
-diff --git a/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md
++- Delta ZIP: `tmp/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select_delta.zip`
+diff --git a/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md
 new file mode 100644
-index 00000000..52e48226
+index 00000000..07763843
 --- /dev/null
-+++ b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md
-@@ -0,0 +1,36 @@
-+# BUILD_PR - PR_26124_059-validation-viewer-clear-and-error-consolidation
++++ b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md
+@@ -0,0 +1,55 @@
++# BUILD_PR - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
 +
 +## Purpose
-+Implement one scoped Palette Manager V2 validation viewer update: add display-only clearing and consolidate duplicate user swatch validation messages.
++Implement one scoped Palette Manager V2 update: local undo/redo history for user palette mutations plus User Palette multi-select and batch tag application.
 +
 +## Scope
 +- `tools/palette-manager-v2/index.html`
 +- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`
++- `tools/palette-manager-v2/modules/SwatchRow.js`
++- `tools/palette-manager-v2/modules/PaletteHistoryStack.js`
++- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
++- `tools/palette-manager-v2/controls/UserPaletteControl.js`
 +- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts only.
 +
++## Source History Search Result
++Search `src/` for undo/history/command stack classes before changing runtime files.
++
++Result: no reusable undo/history/command stack class suitable for Palette Manager V2 user palette mutations was found under `src/`; implement the smallest local Palette Manager V2 history stack.
++
 +## Implementation
-+1. Add a `Clear` button to Validation/Error Viewer.
-+2. Add the button to Palette Manager required refs.
-+3. Bind the `Clear` button in `PaletteValidationErrorControl`.
-+4. Clear only the visible viewer output; do not mutate the app validation/error state.
-+5. Let new validation/status changes render again after clearing.
-+6. Consolidate duplicate guard errors from `validateUniqueUserSwatchFields`.
-+7. Format duplicate guard output as:
-+   `Duplicate user swatch symbol: <symbol>.name: <name>.RGB/hex: <hex>.`
-+8. Only include fields that actually failed.
-+9. Preserve existing duplicate validation behavior for symbol, name, and RGB/hex.
++1. Add `Undo` and `Redo` buttons to the existing `menuSample` button group.
++2. Add a local `PaletteHistoryStack` module under `tools/palette-manager-v2/modules/`.
++3. Snapshot and restore:
++   - user swatches
++   - selected user swatch index
++   - available unused tag list
++4. Record history for:
++   - add user swatch
++   - update user swatch
++   - remove/unpin swatch
++   - pin source swatch
++   - Pin All source swatches
++   - add/remove tag
++   - batch add/remove tag
++   - delete unused tag
++5. Do not record view-only changes such as sort, search, size, accordion open/close, or source swatch browse.
++6. Add a checkbox to each User Palette tile with click handling isolated from tile selection.
++7. Add selected-count display near User Palette controls.
++8. Preserve single selected-swatch tag behavior when no User Palette checkboxes are selected.
++9. When one or more User Palette checkboxes are selected, apply Add Tag and existing tag clicks across checked swatches.
++10. Avoid duplicate tags and preserve lowercase tag normalization.
 +
 +## Boundaries
 +- Do not touch workspace/toolState/session behavior.
@@ -159,211 +206,658 @@ index 00000000..52e48226
 +
 +## Validation
 +- Syntax check changed JavaScript files.
-+- Run targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation.
++- Run targeted served-browser Palette Manager V2 undo/redo, multi-select, and batch tag validation.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md
 new file mode 100644
-index 00000000..7b28145c
+index 00000000..cc4f9741
 --- /dev/null
-+++ b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md
-@@ -0,0 +1,38 @@
-+# PLAN_PR - PR_26124_059-validation-viewer-clear-and-error-consolidation
++++ b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md
+@@ -0,0 +1,48 @@
++# PLAN_PR - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
 +
 +## Goal
-+Add a display-only Clear action to Palette Manager V2 Validation/Error Viewer and consolidate duplicate user swatch validation messages into a single line.
++Add Palette Manager V2 undo/redo history for user palette mutations, add User Palette multi-select checkboxes, and support batch tag application from the Tags accordion.
 +
 +## Scope
 +- `tools/palette-manager-v2/*`
++- Existing `src/` undo/history class consumption only if a suitable class exists.
 +- PR workflow docs and required review artifacts only.
++
++## Existing History Search
++- Search under `src/` for undo/history/command stack classes before implementation.
++- If a reusable undo/history stack is not found, implement the smallest local Palette Manager V2 history stack.
 +
 +## Boundaries
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
 +- Do not add dependencies.
-+- Preserve existing validation behavior.
++- Preserve accordionV2 behavior.
++- Preserve import/export, sort, search, size, pin/unpin, and Pin All behavior.
 +- Avoid broad refactor.
 +
 +## Implementation Plan
-+1. Add a `Clear` button to the Validation/Error Viewer.
-+2. Wire `Clear` inside the validation viewer control so it only clears displayed messages.
-+3. Do not mutate Palette Manager validation state when clearing the viewer.
-+4. Consolidate duplicate user swatch validation output into one message.
-+5. Include only duplicate fields that actually failed: symbol, name, RGB/hex.
-+6. Preserve duplicate validation checks for add, update, individual pin, and Pin All.
++1. Add Undo and Redo buttons to the existing `menuSample` nav.
++2. Track user palette mutation snapshots for add, update, remove/unpin, pin, Pin All, tag add/remove, batch tag changes, and unused tag deletion.
++3. Restore user palette state, selected swatch state, and available unused tag state safely during undo/redo.
++4. Add a checkbox to each User Palette tile without changing tile selection behavior.
++5. Add selected-count status near User Palette controls.
++6. When User Palette checkboxes are selected, make Tags accordion tag clicks and Add Tag apply to the checked swatches.
++7. When no checkboxes are selected, preserve the current selected-swatch tag behavior.
++8. Preserve lowercase tag normalization and duplicate tag avoidance.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by the Palette Manager V2-only validation viewer update.
++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only UI/history update.
 +- Expected pass behavior: Workspace V2 validation remains green.
 +- Expected fail behavior: missing script or Workspace V2 regression is reported.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open Palette Manager V2.
-+2. Trigger a duplicate user swatch validation failure where symbol, name, and RGB/hex duplicate.
-+3. Confirm the Validation/Error Viewer shows one consolidated duplicate line.
-+4. Click `Clear` and confirm the visible status/error messages are removed.
-+5. Trigger another validation message and confirm the viewer displays new messages again.
-diff --git a/tools/palette-manager-v2/controls/PaletteValidationErrorControl.js b/tools/palette-manager-v2/controls/PaletteValidationErrorControl.js
-index 879d07a6..6ae0a90b 100644
---- a/tools/palette-manager-v2/controls/PaletteValidationErrorControl.js
-+++ b/tools/palette-manager-v2/controls/PaletteValidationErrorControl.js
-@@ -3,15 +3,29 @@ export class PaletteValidationErrorControl {
-     this.document = documentRef;
++2. Add a user swatch, click Undo, and confirm the swatch is removed and Redo becomes available.
++3. Click Redo and confirm the swatch returns and selection is restored safely.
++4. Pin a source swatch and confirm Undo removes the pinned swatch.
++5. Select multiple User Palette checkboxes and confirm the selected count updates.
++6. Add a tag from the Tags accordion and confirm the tag is applied to all checked swatches in lowercase without duplicates.
++7. Click an existing tag while multiple swatches are checked and confirm the tag toggles across the checked swatches.
+diff --git a/tools/palette-manager-v2/controls/PaletteEditorControl.js b/tools/palette-manager-v2/controls/PaletteEditorControl.js
+index 1901c037..e8707126 100644
+--- a/tools/palette-manager-v2/controls/PaletteEditorControl.js
++++ b/tools/palette-manager-v2/controls/PaletteEditorControl.js
+@@ -2,11 +2,6 @@ import { cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modul
+ 
+ const MAX_TAG_SUGGESTIONS = 6;
+ 
+-function tagsContainTag(tags, tag) {
+-  const cleanTag = sanitizeText(tag).toLowerCase();
+-  return Boolean(cleanTag) && normalizeTags(tags).some((existingTag) => existingTag.toLowerCase() === cleanTag);
+-}
+-
+ export class PaletteEditorControl {
+   constructor({ refs, app, hexColorPattern }) {
      this.refs = refs;
-     this.app = app;
-+    this.clearedViewerRevision = -1;
-   }
-
--  bind() {}
-+  bind() {
-+    this.refs.clearValidationViewerButton.addEventListener("click", () => {
-+      this.clearedViewerRevision = this.app.getValidationViewerRevision();
-+      this.renderViewer("", []);
-+    });
-+  }
-
+@@ -120,7 +115,7 @@ export class PaletteEditorControl {
+     if (!cleanTag) {
+       return;
+     }
+-    if (this.app.addTagToSelectedSwatch(cleanTag)) {
++    if (this.app.addTagFromTagControl(cleanTag)) {
+       this.refs.tagEntryInput.value = "";
+       this.tagSuggestionIndex = -1;
+     }
+@@ -181,12 +176,12 @@ export class PaletteEditorControl {
+       const button = this.refs.availableTagList.ownerDocument.createElement("button");
+       button.type = "button";
+       button.className = "palette-manager-v2__tag-pill palette-manager-v2__tag-toggle";
+-      const isActive = tagsContainTag(this.selectedTags, tag);
++      const isActive = this.app.isTagActiveForTagControl(tag, this.selectedTags);
+       button.classList.toggle("is-active", isActive);
+       button.setAttribute("aria-pressed", String(isActive));
+       button.textContent = tag;
+       button.addEventListener("click", () => {
+-        this.app.toggleTagOnSelectedSwatch(tag);
++        this.app.toggleTagFromTagControl(tag);
+       });
+ 
+       tagItem.appendChild(button);
+diff --git a/tools/palette-manager-v2/controls/UserPaletteControl.js b/tools/palette-manager-v2/controls/UserPaletteControl.js
+index 3847c020..c705d811 100644
+--- a/tools/palette-manager-v2/controls/UserPaletteControl.js
++++ b/tools/palette-manager-v2/controls/UserPaletteControl.js
+@@ -15,6 +15,7 @@ export class UserPaletteControl {
    render() {
--    this.refs.paletteStatus.textContent = this.app.getStatus();
-+    if (this.app.getValidationViewerRevision() === this.clearedViewerRevision) {
-+      this.renderViewer("", []);
-+      return;
-+    }
-+    this.renderViewer(this.app.getStatus(), this.app.getVisibleErrors());
-+  }
-+
-+  renderViewer(status, errors) {
-+    this.refs.paletteStatus.textContent = status;
-     this.refs.paletteErrorList.replaceChildren();
-
--    this.app.getVisibleErrors().forEach((error) => {
-+    errors.forEach((error) => {
-       const item = this.document.createElement("li");
-       item.textContent = error;
-       this.refs.paletteErrorList.appendChild(item);
+     const swatches = this.app.getUserSwatches();
+     this.refs.userPaletteCount.textContent = `${swatches.length} user swatches`;
++    this.refs.userPaletteSelectedCount.textContent = `${this.app.getCheckedUserSwatchCount()} selected`;
+     this.refs.userSwatchList.dataset.swatchSize = this.app.getUserSwatchSize();
+     this.renderActiveSortButton();
+     this.renderActiveSizeButton();
+@@ -32,7 +33,10 @@ export class UserPaletteControl {
+       this.refs.userSwatchList.appendChild(SwatchRow.createUserTile(this.document, swatch, {
+         pinned: true,
+         selected: index === this.app.getSelectedUserIndex(),
++        checked: this.app.isUserSwatchChecked(index),
++        showCheckbox: true,
+         onSelect: () => this.app.selectUserSwatch(index),
++        onCheck: (isChecked) => this.app.setUserSwatchChecked(index, isChecked),
+         onTack: () => this.app.removeUserSwatch(index)
+       }));
+     });
 diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 106e8505..0bcbc805 100644
+index 0bcbc805..730ee004 100644
 --- a/tools/palette-manager-v2/index.html
 +++ b/tools/palette-manager-v2/index.html
-@@ -182,6 +182,9 @@
-             <span class="accordion-v2__icon" aria-hidden="true">+</span>
-           </button>
-           <div id="validationErrorAccordionContent" class="accordion-v2__content">
-+            <div class="palette-manager-v2__viewer-actions">
-+              <button id="clearValidationViewerButton" type="button">Clear</button>
-+            </div>
-             <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
-             <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
+@@ -21,6 +21,8 @@
+ 
+   <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
+     <div class="palette-manager-v2__menu-actions">
++      <button id="undoPaletteButton" type="button">Undo</button>
++      <button id="redoPaletteButton" type="button">Redo</button>
+       <button id="importPaletteButton" type="button">Import JSON</button>
+       <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
+       <button id="copyPaletteButton" type="button">Copy JSON</button>
+@@ -129,6 +131,7 @@
+               </div>
+             </div>
+             <div id="userPaletteCount" class="palette-manager-v2__meta">0 user swatches</div>
++            <div id="userPaletteSelectedCount" class="palette-manager-v2__meta palette-manager-v2__selected-count">0 selected</div>
+             <div id="userSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--user" aria-label="User palette swatches"></div>
            </div>
+         </section>
+diff --git a/tools/palette-manager-v2/modules/PaletteHistoryStack.js b/tools/palette-manager-v2/modules/PaletteHistoryStack.js
+new file mode 100644
+index 00000000..90823246
+--- /dev/null
++++ b/tools/palette-manager-v2/modules/PaletteHistoryStack.js
+@@ -0,0 +1,63 @@
++import { cloneSwatch, normalizeTags } from "./paletteUtils.js";
++
++function cloneSnapshot(snapshot = {}) {
++  return {
++    userSwatches: Array.isArray(snapshot.userSwatches) ? snapshot.userSwatches.map(cloneSwatch) : [],
++    selectedUserIndex: Number.isInteger(snapshot.selectedUserIndex) ? snapshot.selectedUserIndex : -1,
++    availableTags: normalizeTags(snapshot.availableTags)
++  };
++}
++
++function snapshotsMatch(left, right) {
++  return JSON.stringify(left) === JSON.stringify(right);
++}
++
++export class PaletteHistoryStack {
++  constructor(initialSnapshot) {
++    this.undoStack = [];
++    this.redoStack = [];
++    this.currentSnapshot = cloneSnapshot(initialSnapshot);
++  }
++
++  reset(snapshot) {
++    this.undoStack = [];
++    this.redoStack = [];
++    this.currentSnapshot = cloneSnapshot(snapshot);
++  }
++
++  record(snapshot) {
++    const nextSnapshot = cloneSnapshot(snapshot);
++    if (snapshotsMatch(this.currentSnapshot, nextSnapshot)) {
++      return;
++    }
++    this.undoStack.push(cloneSnapshot(this.currentSnapshot));
++    this.currentSnapshot = nextSnapshot;
++    this.redoStack = [];
++  }
++
++  canUndo() {
++    return this.undoStack.length > 0;
++  }
++
++  canRedo() {
++    return this.redoStack.length > 0;
++  }
++
++  undo() {
++    if (!this.canUndo()) {
++      return null;
++    }
++    this.redoStack.push(cloneSnapshot(this.currentSnapshot));
++    this.currentSnapshot = this.undoStack.pop();
++    return cloneSnapshot(this.currentSnapshot);
++  }
++
++  redo() {
++    if (!this.canRedo()) {
++      return null;
++    }
++    this.undoStack.push(cloneSnapshot(this.currentSnapshot));
++    this.currentSnapshot = this.redoStack.pop();
++    return cloneSnapshot(this.currentSnapshot);
++  }
++}
 diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 8ab07422..6b0377c8 100644
+index 6b0377c8..bf062f13 100644
 --- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
 +++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -41,6 +41,7 @@ const REQUIRED_REF_IDS = Object.freeze([
-   "copyPaletteButton",
-   "exportPaletteButton",
-   "paletteJsonPreview",
-+  "clearValidationViewerButton",
-   "paletteStatus",
-   "paletteErrorList"
- ]);
-@@ -93,6 +94,20 @@ function getRgbHexKey(hex) {
-   return normalizeHex(hex).slice(0, 7);
- }
-
-+function formatDuplicateUserSwatchMessage(duplicateFields) {
-+  const parts = [];
-+  if (duplicateFields.symbol) {
-+    parts.push(`symbol: ${duplicateFields.symbol}`);
-+  }
-+  if (duplicateFields.name) {
-+    parts.push(`name: ${duplicateFields.name}`);
-+  }
-+  if (duplicateFields.rgbHex) {
-+    parts.push(`RGB/hex: ${duplicateFields.rgbHex}`);
-+  }
-+  return parts.length > 0 ? `Duplicate user swatch ${parts.join(".")}.` : "";
-+}
-+
- function getTagSortKey(swatch) {
-   return sortUniqueTags(swatch?.tags)[0] || "";
- }
-@@ -145,6 +160,7 @@ export class PaletteManagerApp {
-     this.sourcePaletteLabels = paletteSource.SOURCE_PALETTE_LABELS || {};
-     this.sourcePaletteIds = Object.keys(this.sourcePalettes);
-     this.refs = collectRefs(documentRef);
-+    this.validationViewerRevision = 0;
-     this.validator = new PaletteValidationService({
-       hexColorPattern: this.hexColorPattern,
-       globalPaletteToolKey: this.globalPaletteToolKey
-@@ -278,6 +294,10 @@ export class PaletteManagerApp {
-     return Array.from(new Set([...this.state.errors, ...this.validator.validateUserSwatches(this.state.userSwatches)]));
+@@ -3,13 +3,17 @@ import { PaletteImportExportControl } from "../controls/PaletteImportExportContr
+ import { PaletteValidationErrorControl } from "../controls/PaletteValidationErrorControl.js";
+ import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
+ import { UserPaletteControl } from "../controls/UserPaletteControl.js";
++import { PaletteHistoryStack } from "./PaletteHistoryStack.js";
+ import { PaletteValidationService } from "./PaletteValidationService.js";
+ import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "./paletteUtils.js";
+ 
+ const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
+ 
+ const REQUIRED_REF_IDS = Object.freeze([
++  "undoPaletteButton",
++  "redoPaletteButton",
+   "userPaletteCount",
++  "userPaletteSelectedCount",
+   "userPaletteSortControls",
+   "userSwatchSizeControls",
+   "userSwatchList",
+@@ -182,6 +186,8 @@ export class PaletteManagerApp {
+       errors: [],
+       status: "Ready."
+     };
++    this.checkedUserSwatchIndexes = new Set();
++    this.historyStack = new PaletteHistoryStack(this.createHistorySnapshot());
    }
-
-+  getValidationViewerRevision() {
-+    return this.validationViewerRevision;
-+  }
-+
-   getTagSuggestions() {
-     return this.state.availableTags.slice();
-   }
-@@ -377,6 +397,7 @@ export class PaletteManagerApp {
-   setActionState(errors, status, shouldRender = true) {
-     this.state.errors = Array.isArray(errors) ? errors : [];
-     this.state.status = sanitizeText(status) || "Ready.";
-+    this.validationViewerRevision += 1;
-     if (shouldRender) {
-       this.render();
-     }
-@@ -392,22 +413,27 @@ export class PaletteManagerApp {
-
-   validateUniqueUserSwatchFields(swatch, ignoredIndex) {
-     const cleanSwatch = cloneSwatch(swatch);
--    const issues = [];
-+    const duplicateFields = {
-+      symbol: "",
-+      name: "",
-+      rgbHex: ""
-+    };
-     this.state.userSwatches.forEach((existingSwatch, index) => {
-       if (index === ignoredIndex) {
-         return;
-       }
-       if (isSameText(existingSwatch.name, cleanSwatch.name)) {
--        issues.push(`Duplicate user swatch name: ${cleanSwatch.name}.`);
-+        duplicateFields.name = cleanSwatch.name;
-       }
-       if (getRgbHexKey(existingSwatch.hex) === getRgbHexKey(cleanSwatch.hex)) {
--        issues.push(`Duplicate user swatch RGB/hex: ${getRgbHexKey(cleanSwatch.hex)}.`);
-+        duplicateFields.rgbHex = getRgbHexKey(cleanSwatch.hex);
-       }
-       if (isSameText(existingSwatch.symbol, cleanSwatch.symbol)) {
--        issues.push(`Duplicate user swatch symbol: ${cleanSwatch.symbol}.`);
-+        duplicateFields.symbol = cleanSwatch.symbol;
+ 
+   init() {
+@@ -198,6 +204,7 @@ export class PaletteManagerApp {
+       new PaletteValidationErrorControl({ documentRef: this.document, refs: this.refs, app: this })
+     ];
+ 
++    this.bindHistoryControls();
+     this.controls.forEach((control) => control.bind());
+     this.editorControl.clearForm();
+ 
+@@ -213,6 +220,83 @@ export class PaletteManagerApp {
+         control.render();
        }
      });
--    return Array.from(new Set(issues));
-+    const message = formatDuplicateUserSwatchMessage(duplicateFields);
-+    return message ? [message] : [];
++    this.renderHistoryButtons();
++  }
++
++  bindHistoryControls() {
++    this.refs.undoPaletteButton.addEventListener("click", () => {
++      this.undoPaletteChange();
++    });
++    this.refs.redoPaletteButton.addEventListener("click", () => {
++      this.redoPaletteChange();
++    });
++  }
++
++  renderHistoryButtons() {
++    this.refs.undoPaletteButton.disabled = !this.historyStack.canUndo();
++    this.refs.redoPaletteButton.disabled = !this.historyStack.canRedo();
++  }
++
++  createHistorySnapshot() {
++    return {
++      userSwatches: this.state.userSwatches.map(cloneSwatch),
++      selectedUserIndex: this.state.selectedUserIndex,
++      availableTags: this.state.availableTags.slice()
++    };
++  }
++
++  recordHistorySnapshot() {
++    this.historyStack.record(this.createHistorySnapshot());
++  }
++
++  resetHistorySnapshot() {
++    this.historyStack.reset(this.createHistorySnapshot());
++  }
++
++  restoreHistorySnapshot(snapshot, status) {
++    this.state.userSwatches = snapshot.userSwatches.map(cloneSwatch);
++    this.state.selectedUserIndex = Number.isInteger(snapshot.selectedUserIndex)
++      && snapshot.selectedUserIndex >= 0
++      && snapshot.selectedUserIndex < this.state.userSwatches.length
++      ? snapshot.selectedUserIndex
++      : -1;
++    this.setAvailableTags(snapshot.availableTags);
++    this.checkedUserSwatchIndexes.clear();
++    this.renderSelectedSwatchState();
++    this.setActionState([], status, false);
++    this.render();
++  }
++
++  renderSelectedSwatchState() {
++    const selectedSwatch = this.getSelectedSwatch();
++    if (!selectedSwatch) {
++      this.editorControl.clearForm();
++      return;
++    }
++    this.editorControl.showSwatch(selectedSwatch);
++    if (isUserDefinedSwatch(selectedSwatch)) {
++      this.editorControl.showUserDefinedSwatch(selectedSwatch);
++    } else {
++      this.editorControl.clearUserDefinedSwatch();
++    }
++  }
++
++  undoPaletteChange() {
++    const snapshot = this.historyStack.undo();
++    if (!snapshot) {
++      this.setActionState([], "No palette changes to undo.");
++      return;
++    }
++    this.restoreHistorySnapshot(snapshot, "Undid palette change.");
++  }
++
++  redoPaletteChange() {
++    const snapshot = this.historyStack.redo();
++    if (!snapshot) {
++      this.setActionState([], "No palette changes to redo.");
++      return;
++    }
++    this.restoreHistorySnapshot(snapshot, "Redid palette change.");
    }
-
-   clearEditorForm(status) {
+ 
+   getUserSwatches() {
+@@ -234,6 +318,48 @@ export class PaletteManagerApp {
+     return this.state.selectedUserIndex;
+   }
+ 
++  getCheckedUserSwatchCount() {
++    return this.getCheckedUserSwatchIndexes().length;
++  }
++
++  getCheckedUserSwatchIndexes() {
++    const checkedIndexes = Array.from(this.checkedUserSwatchIndexes)
++      .filter((index) => Number.isInteger(index) && index >= 0 && index < this.state.userSwatches.length)
++      .sort((left, right) => left - right);
++    this.checkedUserSwatchIndexes = new Set(checkedIndexes);
++    return checkedIndexes;
++  }
++
++  isUserSwatchChecked(index) {
++    return this.getCheckedUserSwatchIndexes().includes(index);
++  }
++
++  setUserSwatchChecked(index, isChecked) {
++    if (!this.state.userSwatches[index]) {
++      return;
++    }
++    if (isChecked) {
++      this.checkedUserSwatchIndexes.add(index);
++    } else {
++      this.checkedUserSwatchIndexes.delete(index);
++    }
++    this.render();
++  }
++
++  shiftCheckedUserSwatchIndexesAfterRemove(removedIndex) {
++    const checkedIndexes = [];
++    this.checkedUserSwatchIndexes.forEach((index) => {
++      if (!Number.isInteger(index) || index === removedIndex) {
++        return;
++      }
++      const nextIndex = index > removedIndex ? index - 1 : index;
++      if (nextIndex >= 0 && nextIndex < this.state.userSwatches.length) {
++        checkedIndexes.push(nextIndex);
++      }
++    });
++    this.checkedUserSwatchIndexes = new Set(checkedIndexes);
++  }
++
+   getUserSortOptions() {
+     return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
+   }
+@@ -480,6 +606,7 @@ export class PaletteManagerApp {
+     this.mergeAvailableTags(cleanSwatch.tags);
+     this.editorControl.showSwatch(cleanSwatch);
+     this.editorControl.showUserDefinedSwatch(cleanSwatch);
++    this.recordHistorySnapshot();
+     this.setActionState([], `Added ${cleanSwatch.name}.`);
+   }
+ 
+@@ -517,6 +644,7 @@ export class PaletteManagerApp {
+     } else {
+       this.editorControl.clearUserDefinedSwatch();
+     }
++    this.recordHistorySnapshot();
+     this.setActionState([], `Updated ${cleanSwatch.name}.`);
+   }
+ 
+@@ -555,6 +683,7 @@ export class PaletteManagerApp {
+     } else {
+       this.editorControl.clearUserDefinedSwatch();
+     }
++    this.recordHistorySnapshot();
+     this.setActionState([], `Added ${cleanTag} to ${cleanSwatch.name}.`);
+     return true;
+   }
+@@ -594,6 +723,7 @@ export class PaletteManagerApp {
+     } else {
+       this.editorControl.clearUserDefinedSwatch();
+     }
++    this.recordHistorySnapshot();
+     this.setActionState([], `Removed ${cleanTag} from ${cleanSwatch.name}.`);
+     return true;
+   }
+@@ -612,6 +742,120 @@ export class PaletteManagerApp {
+     return this.addTagToSelectedSwatch(cleanTag);
+   }
+ 
++  addTagFromTagControl(tag) {
++    if (this.getCheckedUserSwatchCount() > 0) {
++      return this.addTagToCheckedUserSwatches(tag);
++    }
++    return this.addTagToSelectedSwatch(tag);
++  }
++
++  toggleTagFromTagControl(tag) {
++    if (this.getCheckedUserSwatchCount() > 0) {
++      return this.toggleTagOnCheckedUserSwatches(tag);
++    }
++    return this.toggleTagOnSelectedSwatch(tag);
++  }
++
++  isTagActiveForTagControl(tag, selectedTags) {
++    const cleanTag = normalizeTags([tag])[0] || "";
++    if (!cleanTag) {
++      return false;
++    }
++    const checkedIndexes = this.getCheckedUserSwatchIndexes();
++    if (checkedIndexes.length === 0) {
++      return normalizeTags(selectedTags).includes(cleanTag);
++    }
++    return checkedIndexes.every((index) => {
++      return normalizeTags(this.state.userSwatches[index]?.tags).includes(cleanTag);
++    });
++  }
++
++  addTagToCheckedUserSwatches(tag) {
++    const cleanTag = normalizeTags([tag])[0] || "";
++    if (!cleanTag) {
++      return false;
++    }
++    return this.updateCheckedUserSwatchTags(cleanTag, true);
++  }
++
++  removeTagFromCheckedUserSwatches(tag) {
++    const cleanTag = normalizeTags([tag])[0] || "";
++    if (!cleanTag) {
++      return false;
++    }
++    return this.updateCheckedUserSwatchTags(cleanTag, false);
++  }
++
++  toggleTagOnCheckedUserSwatches(tag) {
++    const cleanTag = normalizeTags([tag])[0] || "";
++    if (!cleanTag) {
++      return false;
++    }
++    const checkedIndexes = this.getCheckedUserSwatchIndexes();
++    if (checkedIndexes.length === 0) {
++      return this.toggleTagOnSelectedSwatch(cleanTag);
++    }
++    const everyCheckedSwatchHasTag = checkedIndexes.every((index) => {
++      return normalizeTags(this.state.userSwatches[index]?.tags).includes(cleanTag);
++    });
++    return everyCheckedSwatchHasTag
++      ? this.removeTagFromCheckedUserSwatches(cleanTag)
++      : this.addTagToCheckedUserSwatches(cleanTag);
++  }
++
++  updateCheckedUserSwatchTags(tag, shouldAddTag) {
++    const checkedIndexes = this.getCheckedUserSwatchIndexes();
++    if (checkedIndexes.length === 0) {
++      return shouldAddTag ? this.addTagToSelectedSwatch(tag) : this.removeTagFromSelectedSwatch(tag);
++    }
++
++    const updates = [];
++    const errors = [];
++    checkedIndexes.forEach((index) => {
++      const swatch = this.state.userSwatches[index];
++      if (!swatch) {
++        return;
++      }
++      const existingTags = normalizeTags(swatch.tags);
++      const hasTag = existingTags.includes(tag);
++      if ((shouldAddTag && hasTag) || (!shouldAddTag && !hasTag)) {
++        return;
++      }
++      const nextTags = shouldAddTag ? [...existingTags, tag] : existingTags.filter((existingTag) => existingTag !== tag);
++      const cleanSwatch = cloneSwatch({ ...swatch, tags: nextTags });
++      const swatchErrors = this.validator.validateSwatch(cleanSwatch, `selected swatch ${index + 1}`);
++      if (swatchErrors.length > 0) {
++        errors.push(...swatchErrors);
++        return;
++      }
++      updates.push({ index, swatch: cleanSwatch });
++    });
++
++    if (errors.length > 0) {
++      this.setActionState(errors, shouldAddTag ? "Selected swatch tags were not added." : "Selected swatch tags were not removed.");
++      return false;
++    }
++    if (updates.length === 0) {
++      this.setActionState([], shouldAddTag
++        ? `${tag} is already on selected swatches.`
++        : `${tag} is not on selected swatches.`);
++      return false;
++    }
++
++    updates.forEach((update) => {
++      this.state.userSwatches[update.index] = update.swatch;
++    });
++    if (shouldAddTag) {
++      this.mergeAvailableTags([tag]);
++    }
++    this.renderSelectedSwatchState();
++    this.recordHistorySnapshot();
++    this.setActionState([], shouldAddTag
++      ? `Added ${tag} to ${updates.length} selected swatches.`
++      : `Removed ${tag} from ${updates.length} selected swatches.`);
++    return true;
++  }
++
+   isTagUsedByUserPalette(tag) {
+     const cleanTag = normalizeTags([tag])[0] || "";
+     if (!cleanTag) {
+@@ -638,6 +882,7 @@ export class PaletteManagerApp {
+     }
+ 
+     this.state.availableTags = this.state.availableTags.filter((availableTag) => availableTag !== cleanTag);
++    this.recordHistorySnapshot();
+     this.setActionState([], `Deleted tag ${cleanTag}.`);
+     return true;
+   }
+@@ -668,6 +913,8 @@ export class PaletteManagerApp {
+     } else if (this.state.selectedUserIndex > index) {
+       this.state.selectedUserIndex -= 1;
+     }
++    this.shiftCheckedUserSwatchIndexesAfterRemove(index);
++    this.recordHistorySnapshot();
+     this.setActionState([], `Removed ${swatch.name}.`);
+     return true;
+   }
+@@ -693,6 +940,7 @@ export class PaletteManagerApp {
+     this.mergeAvailableTags(pinnedSwatch.tags);
+     this.editorControl.showSwatch(pinnedSwatch);
+     this.editorControl.clearUserDefinedSwatch();
++    this.recordHistorySnapshot();
+     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
+   }
+ 
+@@ -730,6 +978,9 @@ export class PaletteManagerApp {
+       this.editorControl.showSwatch(this.state.userSwatches[lastPinnedIndex]);
+       this.editorControl.clearUserDefinedSwatch();
+     }
++    if (pinnedCount > 0) {
++      this.recordHistorySnapshot();
++    }
+ 
+     const status = `Pinned ${pinnedCount} source swatches. Skipped ${skippedCount} duplicate or invalid swatches.`;
+     this.setActionState(Array.from(new Set(skipReasons)), status);
+@@ -758,7 +1009,9 @@ export class PaletteManagerApp {
+     this.state.userSwatches = importResult.swatches.map(cloneSwatch);
+     this.setAvailableTags(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags)));
+     this.state.selectedUserIndex = -1;
++    this.checkedUserSwatchIndexes.clear();
+     this.editorControl.clearForm();
++    this.resetHistorySnapshot();
+     this.setActionState([], `Imported ${this.state.userSwatches.length} user swatches.`);
+   }
+ 
+diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
+index 9beda4fa..d45a6d2d 100644
+--- a/tools/palette-manager-v2/modules/SwatchRow.js
++++ b/tools/palette-manager-v2/modules/SwatchRow.js
+@@ -84,10 +84,31 @@ export class SwatchRow {
+     const tack = SwatchRow.createTackButton(documentRef, options);
+     tack.classList.add("palette-manager-v2__pin-button--tile");
+ 
++    if (options.showCheckbox) {
++      tile.appendChild(SwatchRow.createSelectCheckbox(documentRef, options));
++    }
+     tile.append(chip, tack);
+     return tile;
+   }
+ 
++  static createSelectCheckbox(documentRef, options = {}) {
++    const checkbox = documentRef.createElement("input");
++    checkbox.type = "checkbox";
++    checkbox.className = "palette-manager-v2__swatch-select-checkbox";
++    checkbox.checked = Boolean(options.checked);
++    checkbox.title = "Select swatch for batch tag changes";
++    checkbox.setAttribute("aria-label", checkbox.title);
++    checkbox.addEventListener("click", (event) => {
++      event.stopPropagation();
++    });
++    checkbox.addEventListener("change", () => {
++      if (typeof options.onCheck === "function") {
++        options.onCheck(checkbox.checked);
++      }
++    });
++    return checkbox;
++  }
++
+   static createTooltipText(swatch) {
+     return [
+       `Name: ${swatch.name}`,
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index c87239fe..57637249 100644
+index 57637249..2a3c5d7e 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -162,6 +162,12 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   flex: 0 0 auto;
+@@ -424,6 +424,10 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   overflow-wrap: anywhere;
  }
-
-+.palette-manager-v2__viewer-actions {
-+  flex: 0 0 auto;
-+  display: flex;
-+  justify-content: flex-end;
+ 
++.palette-manager-v2__selected-count {
++  font-weight: 700;
 +}
 +
- .palette-manager-v2__right-accordion--validation .palette-manager-v2__errors {
-   flex: 1 1 auto;
-   min-height: 0;
+ .palette-manager-v2__tile-grid {
+   --swatch-tile-width: 112px;
+   --swatch-tile-height: 108px;
+@@ -501,6 +505,23 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   background: var(--swatch-color, #000000);
+ }
+ 
++.palette-manager-v2__swatch-select-checkbox {
++  position: absolute;
++  top: 10px;
++  left: 10px;
++  z-index: 2;
++  width: 18px;
++  height: 18px;
++  margin: 0;
++  accent-color: var(--pm-accent);
++  cursor: pointer;
++}
++
++.palette-manager-v2__tile-grid[data-swatch-size="small"] .palette-manager-v2__swatch-select-checkbox {
++  width: 16px;
++  height: 16px;
++}
++
+ .palette-manager-v2__source-tile,
+ .palette-manager-v2__user-tile {
+   isolation: isolate;

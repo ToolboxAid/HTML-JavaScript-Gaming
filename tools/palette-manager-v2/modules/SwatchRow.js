@@ -84,8 +84,29 @@ export class SwatchRow {
     const tack = SwatchRow.createTackButton(documentRef, options);
     tack.classList.add("palette-manager-v2__pin-button--tile");
 
+    if (options.showCheckbox) {
+      tile.appendChild(SwatchRow.createSelectCheckbox(documentRef, options));
+    }
     tile.append(chip, tack);
     return tile;
+  }
+
+  static createSelectCheckbox(documentRef, options = {}) {
+    const checkbox = documentRef.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "palette-manager-v2__swatch-select-checkbox";
+    checkbox.checked = Boolean(options.checked);
+    checkbox.title = "Select swatch for batch tag changes";
+    checkbox.setAttribute("aria-label", checkbox.title);
+    checkbox.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+    checkbox.addEventListener("change", () => {
+      if (typeof options.onCheck === "function") {
+        options.onCheck(checkbox.checked);
+      }
+    });
+    return checkbox;
   }
 
   static createTooltipText(swatch) {
