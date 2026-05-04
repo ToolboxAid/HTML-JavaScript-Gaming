@@ -1,185 +1,243 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index caaf0367..50dd971f 100644
+index 50dd971f..c4531bb5 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,14 +1,15 @@
--# Codex Commands - PR_26124_068-palette-manager-pin-style-append-only
-+# Codex Commands - PR_26124_069-palette-manager-left-accordionv2-cleanup
+@@ -1,15 +1,14 @@
+-# Codex Commands - PR_26124_069-palette-manager-left-accordionv2-cleanup
++# Codex Commands - PR_26124_070-palette-manager-css-dead-override-cleanup
  
  ```bash
--npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_068-palette-manager-pin-style-append-only. Follow PROJECT_INSTRUCTIONS.md exactly."
-+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_069-palette-manager-left-accordionv2-cleanup. Follow PROJECT_INSTRUCTIONS.md exactly."
+-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_069-palette-manager-left-accordionv2-cleanup. Follow PROJECT_INSTRUCTIONS.md exactly."
++npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_070-palette-manager-css-dead-override-cleanup. Follow PROJECT_INSTRUCTIONS.md exactly."
  ```
  
  ## Validation Commands
  
  ```bash
--node --input-type=module <css append-only validation>
--git diff --check -- tools/palette-manager-v2/paletteManagerV2.css
-+node --input-type=module <left-column accordionV2 markup validation>
-+node --input-type=module <palette-manager-v2 JS syntax validation>
-+git diff --check
+-node --input-type=module <left-column accordionV2 markup validation>
+-node --input-type=module <palette-manager-v2 JS syntax validation>
+-git diff --check
++node --input-type=module <css structural cleanup validation>
++git diff --check -- tools/palette-manager-v2/paletteManagerV2.css
  npm run test:workspace-v2
  ```
  
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 72d9b530..7275bfd5 100644
+index 7275bfd5..c026297f 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Append Palette Manager tile pin override at CSS EOF - PR_26124_068-palette-manager-pin-style-append-only
-+Verify Palette Manager left accordions already use accordionV2 - PR_26124_069-palette-manager-left-accordionv2-cleanup
-diff --git a/docs/dev/reports/PR_26124_069_report.md b/docs/dev/reports/PR_26124_069_report.md
+-Verify Palette Manager left accordions already use accordionV2 - PR_26124_069-palette-manager-left-accordionv2-cleanup
++Remove dead Palette Manager CSS overrides - PR_26124_070-palette-manager-css-dead-override-cleanup
+diff --git a/docs/dev/reports/PR_26124_070_report.md b/docs/dev/reports/PR_26124_070_report.md
 new file mode 100644
-index 00000000..70408a19
+index 00000000..7af98ad1
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_069_report.md
-@@ -0,0 +1,30 @@
-+# PR_26124_069-palette-manager-left-accordionv2-cleanup Report
++++ b/docs/dev/reports/PR_26124_070_report.md
+@@ -0,0 +1,32 @@
++# PR_26124_070-palette-manager-css-dead-override-cleanup Report
 +
 +## Summary
-+Verified Palette Manager V2 left-column accordion markup and found no remaining legacy `details`/`summary` accordions to convert.
++Removed confirmed dead or duplicate Palette Manager V2 CSS override blocks while preserving current visual behavior.
 +
-+## Findings
-+- `Selected Swatch` already uses `section.accordion-v2`, `button.accordion-v2__header`, and `div.accordion-v2__content`.
-+- `User Defined Swatch` already uses `section.accordion-v2`, `button.accordion-v2__header`, and `div.accordion-v2__content`.
-+- `Tags` already uses `section.accordion-v2`, `button.accordion-v2__header`, and `div.accordion-v2__content`.
-+- The only remaining `details`/`summary` markup in `tools/palette-manager-v2/index.html` is the shared platform shell wrapper above the app layout, outside `.palette-manager-v2__panel--left`.
++## Changes
++- Removed the closed-state import accordion override because shared accordionV2 already supplies the same closed/base behavior.
++- Removed the import accordion content override because it duplicated shared accordionV2 content values.
++- Removed the validation open-state override because it repeated the validation base flex value.
++- Removed the center tile-grid patch because the base tile-grid rule already supplies the flex value and `max-height: none` is the default.
 +
-+## Runtime Changes
-+- No runtime files changed.
-+- No behavior changed.
-+- No layout changed.
-+- Pin styling and pin size were not touched.
-+- `tools/shared`, workspace/toolState/session behavior, sample JSON, schemas, and dependencies were not touched.
++## Preserved
++- The active `.palette-manager-v2__right-accordion--import.is-open` sizing rule remains.
++- The active Palette JSON preview sizing rule remains.
++- The active Validation/Error Viewer sizing rules remain.
++- The center accordion non-grid fixed-control rule remains.
++- The append-only `.palette-manager-v2__pin-button--tile` override remains the final rule in the file.
++- Pin styling and pin size were not changed.
++- HTML, JavaScript, `tools/shared`, workspace/toolState/session behavior, sample JSON, schemas, and dependencies were not touched.
 +
 +## Validation
-+- Targeted left-column accordionV2 markup validation: PASS.
-+- `node --check` for all `tools/palette-manager-v2/**/*.js` files: PASS.
-+- `git diff --check`: PASS.
++- CSS structural cleanup validation: PASS.
++- `git diff --check -- tools/palette-manager-v2/paletteManagerV2.css`: PASS with Git LF-to-CRLF warning for the CSS file.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
-+- Full samples smoke test: skipped because this PR is limited to Palette Manager V2 left-column accordion cleanup and full samples were explicitly out of scope.
++- Full samples smoke test: skipped because this PR is Palette Manager V2 CSS-only and full samples were explicitly out of scope.
 +
 +## Manual Test Notes
 +1. Open Palette Manager V2.
-+2. Confirm Selected Swatch, User Defined Swatch, and Tags open/close like the other accordionV2 sections.
-+3. Confirm left-column section content and controls behave unchanged.
-+4. Confirm pin styling and size are unchanged.
-diff --git a/docs/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/APPLY_PR.md b/docs/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/APPLY_PR.md
++2. Confirm left, center, and right accordion layout appears unchanged.
++3. Confirm User Palette and Sample Palette tile grids keep their current sizing and scrolling.
++4. Confirm Palette JSON and Validation/Error Viewer sizing remains unchanged.
++5. Confirm pin styling and pin size are unchanged.
+diff --git a/docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/APPLY_PR.md b/docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/APPLY_PR.md
 new file mode 100644
-index 00000000..5a5b3a22
+index 00000000..007c1e86
 --- /dev/null
-+++ b/docs/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/APPLY_PR.md
++++ b/docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/APPLY_PR.md
 @@ -0,0 +1,22 @@
-+# APPLY_PR - PR_26124_069-palette-manager-left-accordionv2-cleanup
++# APPLY_PR - PR_26124_070-palette-manager-css-dead-override-cleanup
 +
 +## Summary
-+Completed the Palette Manager V2 left-column accordionV2 cleanup pass.
++Completed the Palette Manager V2 CSS dead override cleanup without changing visual behavior.
 +
 +## Applied Changes
-+- Inspected `tools/palette-manager-v2/index.html`.
-+- Confirmed the left-column Selected Swatch, User Defined Swatch, and Tags sections already use the shared `accordionV2` structure.
-+- Made no runtime markup changes because no left-column legacy `details`/`summary` accordion remained.
-+- Preserved the shared platform shell `details`/`summary` wrapper outside the left column.
++- Removed `.palette-manager-v2__right-accordion--import`, whose closed-state declarations were already covered by shared accordionV2 rules.
++- Removed `.palette-manager-v2__right-accordion--import .accordion-v2__content`, which duplicated shared accordionV2 content declarations.
++- Removed `.palette-manager-v2__right-accordion--validation.is-open`, which duplicated the base validation accordion flex declaration.
++- Removed `.palette-manager-v2__panel--center .accordion-v2__content .palette-manager-v2__tile-grid`, which duplicated the base tile grid flex declaration and restated default `max-height: none`.
++- Preserved the append-only `.palette-manager-v2__pin-button--tile` override at EOF.
 +
 +## Validation
-+- Targeted left-column accordionV2 markup validation: PASS.
-+- `node --check` for all `tools/palette-manager-v2/**/*.js` files: PASS.
-+- `git diff --check`: PASS.
++- CSS structural cleanup validation: PASS.
++- `git diff --check -- tools/palette-manager-v2/paletteManagerV2.css`: PASS with Git LF-to-CRLF warning for the CSS file.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Artifacts
 +- Review diff: `docs/dev/reports/codex_review.diff`
 +- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_069-palette-manager-left-accordionv2-cleanup_delta.zip`
-diff --git a/docs/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/BUILD_PR.md b/docs/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/BUILD_PR.md
++- Delta ZIP: `tmp/PR_26124_070-palette-manager-css-dead-override-cleanup_delta.zip`
+diff --git a/docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/BUILD_PR.md b/docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/BUILD_PR.md
 new file mode 100644
-index 00000000..583b75bc
+index 00000000..f24e06e6
 --- /dev/null
-+++ b/docs/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/BUILD_PR.md
-@@ -0,0 +1,36 @@
-+# BUILD_PR - PR_26124_069-palette-manager-left-accordionv2-cleanup
++++ b/docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/BUILD_PR.md
+@@ -0,0 +1,39 @@
++# BUILD_PR - PR_26124_070-palette-manager-css-dead-override-cleanup
 +
 +## Purpose
-+Perform one scoped Palette Manager V2 cleanup by converting any remaining left-column legacy `details`/`summary` accordion markup to the existing `accordionV2` structure.
++Perform one scoped Palette Manager V2 CSS cleanup by removing only confirmed dead or duplicate override blocks from `paletteManagerV2.css`.
 +
 +## Scope
-+- `tools/palette-manager-v2/index.html` only if left-column legacy accordion markup exists.
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts.
 +
 +## Implementation
-+1. Inspect only `tools/palette-manager-v2/index.html` and immediate Palette Manager accordion references.
-+2. Search for `details`/`summary` markup inside `.palette-manager-v2__panel--left`.
-+3. If found, convert only the left-column legacy accordion markup to the existing pattern used by working Palette Manager V2 sections:
-+   - `section.accordion-v2`
-+   - `button.accordion-v2__header`
-+   - `span.accordion-v2__icon`
-+   - `div.accordion-v2__content`
-+4. Preserve existing IDs, labels, controls, inputs, and section content.
-+5. Preserve the shared platform shell `details`/`summary` wrapper because it is outside the left column and is owned by the platform shell.
-+6. If no left-column legacy `details`/`summary` accordion markup exists, do not change runtime files and document the verified no-op.
++1. Inspect `tools/palette-manager-v2/paletteManagerV2.css` and the shared accordionV2 CSS for direct duplicate coverage.
++2. Remove only these confirmed dead/duplicate blocks:
++   - `.palette-manager-v2__right-accordion--import`
++     - closed-state `flex`, `min-height`, and `overflow` are already covered by shared accordionV2 closed/base rules; open behavior remains in `.palette-manager-v2__right-accordion--import.is-open`.
++   - `.palette-manager-v2__right-accordion--import .accordion-v2__content`
++     - duplicates shared `.accordion-v2__content` `flex`, `min-height`, and `overflow` values.
++   - `.palette-manager-v2__right-accordion--validation.is-open`
++     - duplicates the base `.palette-manager-v2__right-accordion--validation` flex value.
++   - `.palette-manager-v2__panel--center .accordion-v2__content .palette-manager-v2__tile-grid`
++     - duplicates the base `.palette-manager-v2__tile-grid` flex value and only restates default `max-height: none`.
++3. Keep all active sizing/layout rules that are not fully duplicated.
++4. Keep the final append-only `.palette-manager-v2__pin-button--tile` override at EOF untouched.
 +
 +## Boundaries
-+- Do not change behavior.
-+- Do not change layout beyond matching `accordionV2` structure.
++- Do not modify HTML or JavaScript.
++- Do not refactor class names.
++- Do not merge rules.
++- Do not change layout, spacing, sizing, pin styling, or pin size.
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
-+- Do not change pin styling or size.
 +- Do not add dependencies.
-+- Avoid broad refactor.
 +
 +## Validation
-+- Run a targeted left-column markup validation that confirms `.palette-manager-v2__panel--left` contains no `details` or `summary` elements and still contains the expected left-column `accordion-v2` sections.
-+- Syntax check changed JavaScript files if any JavaScript is changed.
++- Run a CSS structural syntax check.
++- Run targeted CSS cleanup validation confirming removed dead selectors are absent and the append-only pin override remains at EOF.
++- Run `git diff --check`.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/PLAN_PR.md b/docs/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/PLAN_PR.md b/docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/PLAN_PR.md
 new file mode 100644
-index 00000000..b071496f
+index 00000000..d570d2cf
 --- /dev/null
-+++ b/docs/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/PLAN_PR.md
-@@ -0,0 +1,42 @@
-+# PLAN_PR - PR_26124_069-palette-manager-left-accordionv2-cleanup
++++ b/docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/PLAN_PR.md
+@@ -0,0 +1,43 @@
++# PLAN_PR - PR_26124_070-palette-manager-css-dead-override-cleanup
 +
 +## Goal
-+Convert any remaining Palette Manager V2 left-column legacy `details`/`summary` accordions to the shared `accordionV2` structure.
++Remove confirmed duplicate, dead, or unreachable override blocks from Palette Manager V2 CSS without changing visual behavior.
 +
 +## Scope
-+- `tools/palette-manager-v2/index.html` only if left-column legacy accordion markup exists.
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts.
 +
 +## Boundaries
-+- Do not change behavior.
-+- Do not change layout beyond matching existing `accordionV2` structure.
-+- Do not touch workspace/toolState/session behavior.
-+- Do not touch sample JSON.
-+- Do not modify `tools/shared`.
-+- Do not change pin styling or size.
-+- Do not add dependencies.
-+- Avoid broad refactor.
++- CSS only.
++- Do not modify HTML or JavaScript.
++- Do not refactor class names.
++- Do not merge rules.
++- Remove only confirmed duplicate/dead override blocks.
++- Keep the most recent/active rule when duplicates exist.
++- Keep the append-only `.palette-manager-v2__pin-button--tile` override at the bottom exactly in place.
++- Do not change layout, spacing, sizing, pin styling, or pin size.
++- Do not touch workspace/toolState/session behavior, sample JSON, `tools/shared`, schemas, or dependencies.
 +
 +## Implementation Plan
-+1. Inspect `tools/palette-manager-v2/index.html` left-column markup.
-+2. Identify any `details`/`summary` accordions inside `.palette-manager-v2__panel--left`.
-+3. Convert only those left-column legacy accordions, if found, to the current local `accordionV2` structure:
-+   - `section.accordion-v2`
-+   - `button.accordion-v2__header`
-+   - `.accordion-v2__content`
-+   - existing IDs and controls preserved.
-+4. Preserve the shared platform shell `details` wrapper if present outside the left column.
-+5. If no left-column legacy accordion exists, make no runtime change and record the verified no-op.
++1. Inspect `tools/palette-manager-v2/paletteManagerV2.css`.
++2. Compare Palette Manager accordion overrides against shared `src/engine/theme/accordionV2/accordionV2.css`.
++3. Remove only CSS blocks confirmed to be inactive duplicates or obsolete patch remnants:
++   - closed-state import accordion declarations already covered by shared accordionV2,
++   - import accordion content declarations identical to shared accordionV2 content,
++   - validation accordion open-state declarations identical to validation base declarations,
++   - center tile-grid patch declarations already covered by the base tile grid/default CSS.
++4. Preserve active right-column sizing rules and the final append-only pin override.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2 accordion structure cleanup.
++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2 CSS-only cleanup.
 +- Expected pass behavior: Workspace V2 validation remains green.
 +- Expected fail behavior: missing script or Workspace V2 regression is reported.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open Palette Manager V2.
-+2. Confirm the left-column Selected Swatch, User Defined Swatch, and Tags sections use the same accordionV2 behavior as center/right sections.
-+3. Confirm section open/close behavior is unchanged.
-+4. Confirm no pin styling, pin size, JSON behavior, or sample data behavior changed.
++2. Confirm left, center, and right accordion layout appears unchanged.
++3. Confirm User Palette and Sample Palette grids retain the same size and scrolling behavior.
++4. Confirm Palette JSON and Validation/Error Viewer sizing remains unchanged.
++5. Confirm pin styling and pin size are unchanged.
+diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
+index c93fad2e..ab43bab9 100644
+--- a/tools/palette-manager-v2/paletteManagerV2.css
++++ b/tools/palette-manager-v2/paletteManagerV2.css
+@@ -112,24 +112,12 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   --accordion-v2-surface: var(--pm-surface);
+ }
+ 
+-.palette-manager-v2__right-accordion--import {
+-  flex: 0 0 auto;
+-  min-height: 0;
+-  overflow: hidden;
+-}
+-
+ .palette-manager-v2__right-accordion--import.is-open {
+   flex: 1 1 auto;
+   min-height: 0;
+   overflow: hidden;
+ }
+ 
+-.palette-manager-v2__right-accordion--import .accordion-v2__content {
+-  flex: 1 1 auto;
+-  min-height: 0;
+-  overflow: hidden;
+-}
+-
+ .palette-manager-v2__right-accordion--import .palette-manager-v2__json-preview {
+   flex: 1 1 auto;
+   min-height: 0;
+@@ -144,10 +132,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   overflow: hidden;
+ }
+ 
+-.palette-manager-v2__right-accordion--validation.is-open {
+-  flex: 0 0 auto;
+-}
+-
+ .palette-manager-v2__right-accordion--validation .accordion-v2__content {
+   flex: 1 1 auto;
+   min-height: 0;
+@@ -180,11 +164,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   flex: 0 0 auto;
+ }
+ 
+-.palette-manager-v2__panel--center .accordion-v2__content .palette-manager-v2__tile-grid {
+-  flex: 1 1 auto;
+-  max-height: none;
+-}
+-
+ .palette-manager-v2__field {
+   min-width: 0;
+   display: grid;

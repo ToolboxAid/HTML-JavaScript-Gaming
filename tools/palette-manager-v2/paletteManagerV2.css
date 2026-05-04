@@ -111,12 +111,14 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   --accordion-v2-line: var(--pm-line);
   --accordion-v2-surface: var(--pm-surface);
 }
+/*
 
 .palette-manager-v2__right-accordion--import {
   flex: 0 0 auto;
   min-height: 0;
   overflow: hidden;
 }
+*/
 
 .palette-manager-v2__right-accordion--import.is-open {
   flex: 1 1 auto;
@@ -124,11 +126,13 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   overflow: hidden;
 }
 
+/*
 .palette-manager-v2__right-accordion--import .accordion-v2__content {
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
 }
+*/
 
 .palette-manager-v2__right-accordion--import .palette-manager-v2__json-preview {
   flex: 1 1 auto;
@@ -180,10 +184,12 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   flex: 0 0 auto;
 }
 
+/*
 .palette-manager-v2__panel--center .accordion-v2__content .palette-manager-v2__tile-grid {
   flex: 1 1 auto;
   max-height: none;
 }
+*/
 
 .palette-manager-v2__field {
   min-width: 0;

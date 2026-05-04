@@ -1,1 +1,1 @@
-Verify Palette Manager left accordions already use accordionV2 - PR_26124_069-palette-manager-left-accordionv2-cleanup
+Remove dead Palette Manager CSS overrides - PR_26124_070-palette-manager-css-dead-override-cleanup
