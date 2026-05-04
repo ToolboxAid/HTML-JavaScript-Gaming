@@ -28,36 +28,27 @@
             <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
           </summary>
           <div class="palette-manager-v2__accordion-content">
-            <h2 id="editorTitle">Selected Swatch</h2>
             <div id="selectedSwatchPreview" class="palette-manager-v2__preview" aria-label="Selected swatch preview"></div>
-            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked">
-              <label class="palette-manager-v2__field">
+            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked palette-manager-v2__form-grid--compact">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
                 Symbol
                 <input id="selectedSwatchSymbolInput" type="text" autocomplete="off" readonly />
               </label>
-              <label class="palette-manager-v2__field">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
                 Hex
                 <input id="selectedSwatchHexInput" type="text" autocomplete="off" readonly />
               </label>
-              <label class="palette-manager-v2__field">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
                 Name
                 <input id="selectedSwatchNameInput" type="text" autocomplete="off" readonly />
               </label>
-              <label class="palette-manager-v2__field">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
                 Source
                 <input id="selectedSwatchSourceInput" type="text" autocomplete="off" readonly />
               </label>
-              <div class="palette-manager-v2__field">
+              <div class="palette-manager-v2__field palette-manager-v2__field--compact">
                 <span>Tags</span>
                 <div id="selectedSwatchTagList" class="palette-manager-v2__tag-list" aria-label="Selected swatch tags"></div>
-              </div>
-              <div class="palette-manager-v2__tag-entry">
-                <label class="palette-manager-v2__field">
-                  Tag name
-                  <input id="selectedTagEntryInput" type="text" autocomplete="off" />
-                </label>
-                <button id="selectedAddTagButton" type="button">Add Tag</button>
-                <div id="selectedTagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Selected swatch tag suggestions"></div>
               </div>
             </div>
           </div>
@@ -70,40 +61,50 @@
           </summary>
           <div class="palette-manager-v2__accordion-content">
             <div id="userDefinedSwatchPreview" class="palette-manager-v2__preview" aria-label="User defined swatch preview"></div>
-            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked">
-              <label class="palette-manager-v2__field">
+            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked palette-manager-v2__form-grid--compact">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
                 Symbol
                 <input id="swatchSymbolInput" type="text" maxlength="1" autocomplete="off" />
               </label>
-              <label class="palette-manager-v2__field">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
                 Hex
-                <input id="swatchHexInput" type="text" maxlength="9" autocomplete="off" placeholder="#RRGGBBAA" />
+                <input id="swatchHexInput" type="text" maxlength="9" autocomplete="off" placeholder="#RRGGBB or #RRGGBBAA" />
               </label>
-              <label class="palette-manager-v2__field">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
                 Name
                 <input id="swatchNameInput" type="text" autocomplete="off" />
               </label>
-              <label class="palette-manager-v2__field">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
                 Source
                 <input id="swatchSourceInput" type="text" autocomplete="off" readonly />
               </label>
-              <div class="palette-manager-v2__field">
+              <div class="palette-manager-v2__field palette-manager-v2__field--compact">
                 <span>Tags</span>
                 <div id="userDefinedSwatchTagList" class="palette-manager-v2__tag-list" aria-label="User defined swatch tags"></div>
               </div>
-              <div class="palette-manager-v2__tag-entry">
-                <label class="palette-manager-v2__field">
-                  Tag name
-                  <input id="userDefinedTagEntryInput" type="text" autocomplete="off" />
-                </label>
-                <button id="userDefinedAddTagButton" type="button">Add Tag</button>
-                <div id="userDefinedTagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="User defined swatch tag suggestions"></div>
-              </div>
             </div>
             <div class="palette-manager-v2__controls">
-              <button id="addSwatchButton" type="button">Add User Swatch</button>
-              <button id="updateSwatchButton" type="button">Update Swatch</button>
+              <button id="addSwatchButton" type="button">Add</button>
+              <button id="updateSwatchButton" type="button">Update</button>
               <button id="clearFormButton" type="button">Clear Form</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
+            <span>Tags</span>
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
+            <div id="availableTagList" class="palette-manager-v2__tag-list palette-manager-v2__tag-list--available" aria-label="Available user palette tags"></div>
+            <div class="palette-manager-v2__tag-entry">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
+                Tag name
+                <input id="tagEntryInput" type="text" autocomplete="off" />
+              </label>
+              <button id="addTagButton" type="button">Add</button>
+              <div id="tagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Tag suggestions"></div>
             </div>
           </div>
         </details>

@@ -14,33 +14,22 @@ export class PaletteEditorControl {
     this.hexColorPattern = hexColorPattern;
     this.selectedTags = [];
     this.userDefinedTags = [];
-    this.selectedTagSuggestionIndex = -1;
-    this.userDefinedTagSuggestionIndex = -1;
+    this.tagSuggestionIndex = -1;
   }
 
   bind() {
     this.refs.swatchHexInput.addEventListener("input", () => {
       this.renderUserDefinedSwatchPreview(this.readFormSwatch());
     });
-    this.refs.selectedTagEntryInput.addEventListener("input", () => {
-      this.selectedTagSuggestionIndex = 0;
-      this.renderSelectedTagSuggestions();
+    this.refs.tagEntryInput.addEventListener("input", () => {
+      this.tagSuggestionIndex = 0;
+      this.renderTagSuggestions();
     });
-    this.refs.selectedTagEntryInput.addEventListener("keydown", (event) => {
-      this.handleSelectedTagKeydown(event);
+    this.refs.tagEntryInput.addEventListener("keydown", (event) => {
+      this.handleTagKeydown(event);
     });
-    this.refs.selectedAddTagButton.addEventListener("click", () => {
-      this.addSelectedTag(sanitizeText(this.refs.selectedTagEntryInput.value));
-    });
-    this.refs.userDefinedTagEntryInput.addEventListener("input", () => {
-      this.userDefinedTagSuggestionIndex = 0;
-      this.renderUserDefinedTagSuggestions();
-    });
-    this.refs.userDefinedTagEntryInput.addEventListener("keydown", (event) => {
-      this.handleUserDefinedTagKeydown(event);
-    });
-    this.refs.userDefinedAddTagButton.addEventListener("click", () => {
-      this.addUserDefinedTag(sanitizeText(this.refs.userDefinedTagEntryInput.value));
+    this.refs.addTagButton.addEventListener("click", () => {
+      this.addSelectedTag(sanitizeText(this.refs.tagEntryInput.value));
     });
     this.refs.addSwatchButton.addEventListener("click", () => {
       this.app.addUserSwatch(this.readFormSwatch());
@@ -59,22 +48,22 @@ export class PaletteEditorControl {
   }
 
   render() {
-    this.renderSelectedTagSuggestions();
-    this.renderUserDefinedTagSuggestions();
+    this.renderAvailableTagList();
+    this.renderTagSuggestions();
   }
 
-  showSwatch(swatch, title) {
+  showSwatch(swatch) {
     const cleanSwatch = cloneSwatch(swatch);
-    this.refs.editorTitle.textContent = sanitizeText(cleanSwatch.name) || sanitizeText(title) || "Selected Swatch";
     this.refs.selectedSwatchSymbolInput.value = cleanSwatch.symbol;
     this.refs.selectedSwatchHexInput.value = cleanSwatch.hex;
     this.refs.selectedSwatchNameInput.value = cleanSwatch.name;
     this.refs.selectedSwatchSourceInput.value = cleanSwatch.source;
     this.selectedTags = normalizeTags(cleanSwatch.tags);
-    this.refs.selectedTagEntryInput.value = "";
-    this.selectedTagSuggestionIndex = -1;
+    this.refs.tagEntryInput.value = "";
+    this.tagSuggestionIndex = -1;
     this.renderSelectedTagList();
-    this.renderSelectedTagSuggestions();
+    this.renderAvailableTagList();
+    this.renderTagSuggestions();
     this.renderSelectedSwatchPreview(cleanSwatch);
   }
 
@@ -85,10 +74,7 @@ export class PaletteEditorControl {
     this.refs.swatchNameInput.value = cleanSwatch.name;
     this.refs.swatchSourceInput.value = cleanSwatch.source || USER_ADDED_SOURCE;
     this.userDefinedTags = normalizeTags(cleanSwatch.tags);
-    this.refs.userDefinedTagEntryInput.value = "";
-    this.userDefinedTagSuggestionIndex = -1;
     this.renderUserDefinedTagList();
-    this.renderUserDefinedTagSuggestions();
     this.renderUserDefinedSwatchPreview(cleanSwatch);
   }
 
@@ -98,10 +84,7 @@ export class PaletteEditorControl {
     this.refs.swatchNameInput.value = "";
     this.refs.swatchSourceInput.value = "";
     this.userDefinedTags = [];
-    this.refs.userDefinedTagEntryInput.value = "";
-    this.userDefinedTagSuggestionIndex = -1;
     this.renderUserDefinedTagList();
-    this.renderUserDefinedTagSuggestions();
     this.renderUserDefinedSwatchPreview({ hex: "" });
   }
 
@@ -115,14 +98,14 @@ export class PaletteEditorControl {
     };
   }
 
-  handleSelectedTagKeydown(event) {
+  handleTagKeydown(event) {
     if (event.key === "ArrowDown") {
-      this.moveSelectedTagSuggestion(1);
+      this.moveTagSuggestion(1);
       event.preventDefault();
       return;
     }
     if (event.key === "ArrowUp") {
-      this.moveSelectedTagSuggestion(-1);
+      this.moveTagSuggestion(-1);
       event.preventDefault();
       return;
     }
@@ -130,41 +113,15 @@ export class PaletteEditorControl {
       return;
     }
     event.preventDefault();
-    this.addSelectedTag(this.getSelectedTagEntryValue(true));
+    this.addSelectedTag(this.getTagEntryValue(true));
   }
 
-  handleUserDefinedTagKeydown(event) {
-    if (event.key === "ArrowDown") {
-      this.moveUserDefinedTagSuggestion(1);
-      event.preventDefault();
-      return;
-    }
-    if (event.key === "ArrowUp") {
-      this.moveUserDefinedTagSuggestion(-1);
-      event.preventDefault();
-      return;
-    }
-    if (event.key !== "Enter") {
-      return;
-    }
-    event.preventDefault();
-    this.addUserDefinedTag(this.getUserDefinedTagEntryValue(true));
-  }
-
-  getSelectedTagEntryValue(useSuggestion) {
-    const suggestions = this.getFilteredTagSuggestions(this.refs.selectedTagEntryInput.value, this.selectedTags);
+  getTagEntryValue(useSuggestion) {
+    const suggestions = this.getFilteredTagSuggestions(this.refs.tagEntryInput.value);
     if (useSuggestion && suggestions.length > 0) {
-      return suggestions[Math.max(0, this.selectedTagSuggestionIndex)] || suggestions[0];
+      return suggestions[Math.max(0, this.tagSuggestionIndex)] || suggestions[0];
     }
-    return sanitizeText(this.refs.selectedTagEntryInput.value);
-  }
-
-  getUserDefinedTagEntryValue(useSuggestion) {
-    const suggestions = this.getFilteredTagSuggestions(this.refs.userDefinedTagEntryInput.value, this.userDefinedTags);
-    if (useSuggestion && suggestions.length > 0) {
-      return suggestions[Math.max(0, this.userDefinedTagSuggestionIndex)] || suggestions[0];
-    }
-    return sanitizeText(this.refs.userDefinedTagEntryInput.value);
+    return sanitizeText(this.refs.tagEntryInput.value);
   }
 
   addSelectedTag(tag) {
@@ -172,55 +129,29 @@ export class PaletteEditorControl {
     if (!cleanTag) {
       return;
     }
-    this.app.addTagToSelectedSwatch(cleanTag);
-    this.refs.selectedTagEntryInput.value = "";
-    this.selectedTagSuggestionIndex = -1;
-    this.renderSelectedTagSuggestions();
+    if (this.app.addTagToSelectedSwatch(cleanTag)) {
+      this.refs.tagEntryInput.value = "";
+      this.tagSuggestionIndex = -1;
+    }
+    this.renderTagSuggestions();
   }
 
-  addUserDefinedTag(tag) {
-    const cleanTag = sanitizeText(tag);
-    if (!cleanTag) {
-      return;
-    }
-    if (tagsContainTag(this.userDefinedTags, cleanTag)) {
-      this.app.setActionState([], `${cleanTag} is already on the User Defined Swatch form.`);
-      return;
-    }
-    this.userDefinedTags = [...this.userDefinedTags, cleanTag];
-    this.refs.userDefinedTagEntryInput.value = "";
-    this.userDefinedTagSuggestionIndex = -1;
-    this.renderUserDefinedTagList();
-    this.renderUserDefinedTagSuggestions();
-    this.app.setActionState([], `Added ${cleanTag} to User Defined Swatch form.`);
-  }
-
-  moveSelectedTagSuggestion(direction) {
-    const suggestions = this.getFilteredTagSuggestions(this.refs.selectedTagEntryInput.value, this.selectedTags);
+  moveTagSuggestion(direction) {
+    const suggestions = this.getFilteredTagSuggestions(this.refs.tagEntryInput.value);
     if (suggestions.length === 0) {
       return;
     }
-    this.selectedTagSuggestionIndex = (Math.max(0, this.selectedTagSuggestionIndex) + direction + suggestions.length) % suggestions.length;
-    this.renderSelectedTagSuggestions();
+    this.tagSuggestionIndex = (Math.max(0, this.tagSuggestionIndex) + direction + suggestions.length) % suggestions.length;
+    this.renderTagSuggestions();
   }
 
-  moveUserDefinedTagSuggestion(direction) {
-    const suggestions = this.getFilteredTagSuggestions(this.refs.userDefinedTagEntryInput.value, this.userDefinedTags);
-    if (suggestions.length === 0) {
-      return;
-    }
-    this.userDefinedTagSuggestionIndex = (Math.max(0, this.userDefinedTagSuggestionIndex) + direction + suggestions.length) % suggestions.length;
-    this.renderUserDefinedTagSuggestions();
-  }
-
-  getFilteredTagSuggestions(query, currentTags) {
+  getFilteredTagSuggestions(query) {
     const cleanQuery = sanitizeText(query).toLowerCase();
     if (!cleanQuery) {
       return [];
     }
     return this.app.getTagSuggestions()
-      .filter((tag) => !tagsContainTag(currentTags, tag))
-      .filter((tag) => tag.toLowerCase().includes(cleanQuery))
+      .filter((tag) => tag.toLowerCase().startsWith(cleanQuery))
       .slice(0, MAX_TAG_SUGGESTIONS);
   }
 
@@ -242,6 +173,31 @@ export class PaletteEditorControl {
     this.renderTagList(this.refs.userDefinedSwatchTagList, this.userDefinedTags);
   }
 
+  renderAvailableTagList() {
+    const availableTags = this.app.getTagSuggestions();
+    this.refs.availableTagList.replaceChildren();
+    if (availableTags.length === 0) {
+      const empty = this.refs.availableTagList.ownerDocument.createElement("p");
+      empty.className = "palette-manager-v2__meta";
+      empty.textContent = "No tags.";
+      this.refs.availableTagList.appendChild(empty);
+      return;
+    }
+    availableTags.forEach((tag) => {
+      const button = this.refs.availableTagList.ownerDocument.createElement("button");
+      button.type = "button";
+      button.className = "palette-manager-v2__tag-pill palette-manager-v2__tag-toggle";
+      const isActive = tagsContainTag(this.selectedTags, tag);
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+      button.textContent = tag;
+      button.addEventListener("click", () => {
+        this.app.toggleTagOnSelectedSwatch(tag);
+      });
+      this.refs.availableTagList.appendChild(button);
+    });
+  }
+
   renderTagList(container, tags) {
     container.replaceChildren();
     const cleanTags = normalizeTags(tags);
@@ -260,38 +216,20 @@ export class PaletteEditorControl {
     });
   }
 
-  renderSelectedTagSuggestions() {
-    this.renderTagSuggestions({
-      container: this.refs.selectedTagSuggestions,
-      suggestions: this.getFilteredTagSuggestions(this.refs.selectedTagEntryInput.value, this.selectedTags),
-      activeIndex: this.selectedTagSuggestionIndex,
-      onPick: (tag) => this.addSelectedTag(tag)
-    });
-  }
-
-  renderUserDefinedTagSuggestions() {
-    this.renderTagSuggestions({
-      container: this.refs.userDefinedTagSuggestions,
-      suggestions: this.getFilteredTagSuggestions(this.refs.userDefinedTagEntryInput.value, this.userDefinedTags),
-      activeIndex: this.userDefinedTagSuggestionIndex,
-      onPick: (tag) => this.addUserDefinedTag(tag)
-    });
-  }
-
-  renderTagSuggestions({ container, suggestions, activeIndex, onPick }) {
-    container.replaceChildren();
-    suggestions.forEach((tag, index) => {
-      const button = container.ownerDocument.createElement("button");
+  renderTagSuggestions() {
+    this.refs.tagSuggestions.replaceChildren();
+    this.getFilteredTagSuggestions(this.refs.tagEntryInput.value).forEach((tag, index) => {
+      const button = this.refs.tagSuggestions.ownerDocument.createElement("button");
       button.type = "button";
       button.className = "palette-manager-v2__tag-suggestion";
-      button.classList.toggle("is-active", index === Math.max(0, activeIndex));
+      button.classList.toggle("is-active", index === Math.max(0, this.tagSuggestionIndex));
       button.setAttribute("role", "option");
-      button.setAttribute("aria-selected", String(index === Math.max(0, activeIndex)));
+      button.setAttribute("aria-selected", String(index === Math.max(0, this.tagSuggestionIndex)));
       button.textContent = tag;
       button.addEventListener("click", () => {
-        onPick(tag);
+        this.addSelectedTag(tag);
       });
-      container.appendChild(button);
+      this.refs.tagSuggestions.appendChild(button);
     });
   }
 }

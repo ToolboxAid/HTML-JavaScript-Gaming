@@ -10,10 +10,10 @@ export function normalizeHex(value) {
 
 export function normalizeTags(value) {
   if (Array.isArray(value)) {
-    return value.map(sanitizeText).filter(Boolean);
+    return value.map((tag) => sanitizeText(tag).toLowerCase()).filter(Boolean);
   }
   if (typeof value === "string") {
-    return value.split(",").map(sanitizeText).filter(Boolean);
+    return value.split(",").map((tag) => sanitizeText(tag).toLowerCase()).filter(Boolean);
   }
   return [];
 }

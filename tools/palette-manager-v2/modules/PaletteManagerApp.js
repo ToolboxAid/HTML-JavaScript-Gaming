@@ -18,25 +18,22 @@ const REQUIRED_REF_IDS = Object.freeze([
   "sourcePaletteSortControls",
   "sourceSwatchSizeControls",
   "sourceSwatchList",
-  "editorTitle",
   "selectedSwatchPreview",
   "selectedSwatchSymbolInput",
   "selectedSwatchHexInput",
   "selectedSwatchNameInput",
   "selectedSwatchSourceInput",
   "selectedSwatchTagList",
-  "selectedTagEntryInput",
-  "selectedTagSuggestions",
-  "selectedAddTagButton",
   "userDefinedSwatchPreview",
   "userDefinedSwatchTagList",
-  "userDefinedTagEntryInput",
-  "userDefinedTagSuggestions",
-  "userDefinedAddTagButton",
   "swatchSymbolInput",
   "swatchHexInput",
   "swatchNameInput",
   "swatchSourceInput",
+  "availableTagList",
+  "tagEntryInput",
+  "tagSuggestions",
+  "addTagButton",
   "addSwatchButton",
   "updateSwatchButton",
   "clearFormButton",
@@ -61,6 +58,12 @@ function isValidSwatchSize(swatchSize) {
 
 function isUserDefinedSwatch(swatch) {
   return sanitizeText(swatch?.source) === USER_ADDED_SOURCE;
+}
+
+function sortUniqueTags(tags) {
+  const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+  return Array.from(new Set(normalizeTags(tags)))
+    .sort((left, right) => collator.compare(left, right));
 }
 
 function collectRefs(documentRef) {
@@ -99,6 +102,7 @@ export class PaletteManagerApp {
       sourceSortMode: "hue",
       userSwatchSize: "large",
       sourceSwatchSize: "large",
+      availableTags: [],
       errors: [],
       status: "Ready."
     };
@@ -200,9 +204,14 @@ export class PaletteManagerApp {
   }
 
   getTagSuggestions() {
-    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
-    return Array.from(new Set(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags))))
-      .sort((left, right) => collator.compare(left, right));
+    return this.state.availableTags.slice();
+  }
+
+  getSelectedSwatch() {
+    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
+      return null;
+    }
+    return cloneSwatch(this.state.userSwatches[this.state.selectedUserIndex]);
   }
 
   getVisibleSourceSwatches() {
@@ -280,6 +289,14 @@ export class PaletteManagerApp {
     }
   }
 
+  setAvailableTags(tags) {
+    this.state.availableTags = sortUniqueTags(tags);
+  }
+
+  mergeAvailableTags(tags) {
+    this.state.availableTags = sortUniqueTags([...this.state.availableTags, ...normalizeTags(tags)]);
+  }
+
   clearEditorForm(status) {
     this.state.selectedUserIndex = -1;
     this.editorControl.clearForm();
@@ -292,7 +309,7 @@ export class PaletteManagerApp {
       return;
     }
     this.state.selectedUserIndex = index;
-    this.editorControl.showSwatch(swatch, swatch.name);
+    this.editorControl.showSwatch(swatch);
     if (isUserDefinedSwatch(swatch)) {
       this.editorControl.showUserDefinedSwatch(swatch);
     } else {
@@ -303,7 +320,7 @@ export class PaletteManagerApp {
 
   browseSourceSwatch(swatch) {
     this.state.selectedUserIndex = -1;
-    this.editorControl.showSwatch(swatch, swatch.name);
+    this.editorControl.showSwatch(swatch);
     this.editorControl.clearUserDefinedSwatch();
     this.render();
   }
@@ -318,7 +335,8 @@ export class PaletteManagerApp {
 
     this.state.userSwatches.push(cleanSwatch);
     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
-    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
+    this.mergeAvailableTags(cleanSwatch.tags);
+    this.editorControl.showSwatch(cleanSwatch);
     this.editorControl.showUserDefinedSwatch(cleanSwatch);
     this.setActionState([], `Added ${cleanSwatch.name}.`);
   }
@@ -331,7 +349,7 @@ export class PaletteManagerApp {
 
     const existingSwatch = this.state.userSwatches[this.state.selectedUserIndex];
     if (!isUserDefinedSwatch(existingSwatch)) {
-      this.setActionState(["Only User Added swatches can be updated in User Defined Swatch."], "Selected swatch was not updated.");
+      this.setActionState(["Only User Added swatches can be updated in Add."], "Selected swatch was not updated.");
       return;
     }
 
@@ -343,7 +361,8 @@ export class PaletteManagerApp {
     }
 
     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
-    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
+    this.mergeAvailableTags(cleanSwatch.tags);
+    this.editorControl.showSwatch(cleanSwatch);
     if (isUserDefinedSwatch(cleanSwatch)) {
       this.editorControl.showUserDefinedSwatch(cleanSwatch);
     } else {
@@ -355,18 +374,19 @@ export class PaletteManagerApp {
   addTagToSelectedSwatch(tag) {
     if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
       this.setActionState(["Select a user swatch before adding a tag."], "No user swatch selected.");
-      return;
+      return false;
     }
 
     const cleanTag = sanitizeText(tag);
     if (!cleanTag) {
-      return;
+      return false;
     }
 
     const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
     if (existingTags.some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
+      this.mergeAvailableTags([cleanTag]);
       this.setActionState([], `${cleanTag} is already on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
-      return;
+      return false;
     }
     const cleanSwatch = cloneSwatch({
       ...this.state.userSwatches[this.state.selectedUserIndex],
@@ -375,17 +395,72 @@ export class PaletteManagerApp {
     const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
     if (errors.length > 0) {
       this.setActionState(errors, "Selected swatch tag was not added.");
-      return;
+      return false;
     }
 
     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
-    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
+    this.mergeAvailableTags([cleanTag]);
+    this.editorControl.showSwatch(cleanSwatch);
     if (isUserDefinedSwatch(cleanSwatch)) {
       this.editorControl.showUserDefinedSwatch(cleanSwatch);
     } else {
       this.editorControl.clearUserDefinedSwatch();
     }
     this.setActionState([], `Added ${cleanTag} to ${cleanSwatch.name}.`);
+    return true;
+  }
+
+  removeTagFromSelectedSwatch(tag) {
+    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
+      this.setActionState(["Select a user swatch before removing a tag."], "No user swatch selected.");
+      return false;
+    }
+
+    const cleanTag = sanitizeText(tag);
+    if (!cleanTag) {
+      return false;
+    }
+
+    const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
+    const nextTags = existingTags.filter((existingTag) => existingTag.toLowerCase() !== cleanTag.toLowerCase());
+    if (nextTags.length === existingTags.length) {
+      this.setActionState([], `${cleanTag} is not on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
+      return false;
+    }
+
+    const cleanSwatch = cloneSwatch({
+      ...this.state.userSwatches[this.state.selectedUserIndex],
+      tags: nextTags
+    });
+    const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
+    if (errors.length > 0) {
+      this.setActionState(errors, "Selected swatch tag was not removed.");
+      return false;
+    }
+
+    this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
+    this.editorControl.showSwatch(cleanSwatch);
+    if (isUserDefinedSwatch(cleanSwatch)) {
+      this.editorControl.showUserDefinedSwatch(cleanSwatch);
+    } else {
+      this.editorControl.clearUserDefinedSwatch();
+    }
+    this.setActionState([], `Removed ${cleanTag} from ${cleanSwatch.name}.`);
+    return true;
+  }
+
+  toggleTagOnSelectedSwatch(tag) {
+    const selectedSwatch = this.getSelectedSwatch();
+    if (!selectedSwatch) {
+      this.setActionState(["Select a user swatch before toggling a tag."], "No user swatch selected.");
+      return false;
+    }
+
+    const cleanTag = sanitizeText(tag);
+    if (normalizeTags(selectedSwatch.tags).some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
+      return this.removeTagFromSelectedSwatch(cleanTag);
+    }
+    return this.addTagToSelectedSwatch(cleanTag);
   }
 
   removeSelectedSwatch() {
@@ -428,7 +503,8 @@ export class PaletteManagerApp {
 
     this.state.userSwatches.push(pinnedSwatch);
     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
-    this.editorControl.showSwatch(pinnedSwatch, pinnedSwatch.name);
+    this.mergeAvailableTags(pinnedSwatch.tags);
+    this.editorControl.showSwatch(pinnedSwatch);
     this.editorControl.clearUserDefinedSwatch();
     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
   }
@@ -450,6 +526,7 @@ export class PaletteManagerApp {
     }
 
     this.state.userSwatches = importResult.swatches.map(cloneSwatch);
+    this.setAvailableTags(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags)));
     this.state.selectedUserIndex = -1;
     this.editorControl.clearForm();
     this.setActionState([], `Imported ${this.state.userSwatches.length} user swatches.`);

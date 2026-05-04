@@ -1,1 +1,1 @@
-Refine Palette Manager tag entry and user-defined visibility - PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility
+Move Palette Manager tags into left accordion and clean labels - PR_26124_051-palette-manager-tags-accordion-and-label-cleanup

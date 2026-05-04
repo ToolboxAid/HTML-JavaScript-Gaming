@@ -223,6 +223,12 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   font-weight: 700;
 }
 
+.palette-manager-v2__field--compact {
+  grid-template-columns: 74px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
 .palette-manager-v2__field input,
 .palette-manager-v2__field select {
   width: 100%;
@@ -242,6 +248,10 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
 
 .palette-manager-v2__form-grid--stacked {
   grid-template-columns: 1fr;
+}
+
+.palette-manager-v2__form-grid--compact {
+  gap: 8px;
 }
 
 .palette-manager-v2__controls,
@@ -283,6 +293,20 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   font-weight: 700;
   overflow-wrap: anywhere;
   padding: 4px 8px;
+}
+
+.palette-manager-v2__tag-toggle {
+  cursor: pointer;
+}
+
+.palette-manager-v2__tag-toggle.is-active {
+  border-color: var(--pm-accent);
+  background: rgba(221, 214, 254, 0.28);
+  box-shadow: inset 0 0 0 1px var(--pm-accent);
+}
+
+.palette-manager-v2__tag-list--available {
+  align-items: flex-start;
 }
 
 .palette-manager-v2__tag-entry {
