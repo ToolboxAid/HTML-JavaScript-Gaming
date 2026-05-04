@@ -101,24 +101,10 @@ export function isWorkspaceManagerContext() {
     return false;
   }
   const searchParams = new URLSearchParams(window.location.search);
-  const currentPath = window.location.pathname || "";
   const isHostedWorkspaceView = searchParams.get("hosted") === "1"
     || searchParams.has("hostToolId")
     || searchParams.has("hostContextId");
-  const isWorkspaceManagerReferrer = /\/tools\/Workspace(?:%20| )Manager\//i.test(document.referrer || "");
-  const isWorkspaceManagerParent = (() => {
-    try {
-      return window.top !== window
-        && /\/tools\/Workspace(?:%20| )Manager\//i.test(window.top.location.pathname || "");
-    } catch {
-      return false;
-    }
-  })();
-  return isHostedWorkspaceView
-    || isWorkspaceManagerReferrer
-    || isWorkspaceManagerParent
-    || /\/tools\/Workspace%20Manager\//i.test(currentPath)
-    || /\/tools\/Workspace Manager\//i.test(currentPath);
+  return isHostedWorkspaceView;
 }
 
 export function getDocumentMode(rawDocument) {
@@ -171,7 +157,7 @@ export function assertStandaloneToolDocument(rawDocument, options = {}) {
   if (detectWorkspaceDocument(rawDocument)) {
     return {
       ok: false,
-      reason: "This file is a Workspace document. Open it from Workspace Manager instead."
+      reason: "This file is a workspace document and is not supported by the active standalone tool surface."
     };
   }
 

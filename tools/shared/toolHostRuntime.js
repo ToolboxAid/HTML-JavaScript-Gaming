@@ -189,7 +189,7 @@ export function createToolHostRuntime(options = {}) {
     const sequenceId = mountSequence;
     const hostContext = writeToolHostSharedContext({
       toolId: toolEntry.id,
-      source: "workspace-manager",
+      source: "tool-host",
       requestedAt: new Date().toISOString(),
       sharedContext: {
         payloadJson,

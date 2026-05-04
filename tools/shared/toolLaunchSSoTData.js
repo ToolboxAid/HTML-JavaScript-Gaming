@@ -4,11 +4,6 @@ const ALLOWED_LAUNCH_SOURCES = Object.freeze(["samples", "games", "tools", "work
 const ALLOWED_LAUNCH_TYPES = Object.freeze(["sample-to-tool", "game-to-workspace", "tool-internal", "workspace-internal"]);
 const SAMPLE_TOOL_LAUNCH_SOURCES = Object.freeze(["samples", "tools", "workspace", "internal"]);
 const SAMPLE_TOOL_LAUNCH_TYPES = Object.freeze(["sample-to-tool", "tool-internal", "workspace-internal"]);
-const WORKSPACE_MANAGER_GAME_LAUNCH_ID = "workspace-manager.game-to-workspace";
-const WORKSPACE_MANAGER_GAME_DISPLAY_NAME = "Workspace Manager";
-const WORKSPACE_MANAGER_ENTRY_POINT = "Workspace Manager/index.html";
-const WORKSPACE_MANAGER_GAME_LAUNCH_SOURCES = Object.freeze(["games", "workspace", "internal"]);
-const WORKSPACE_MANAGER_GAME_LAUNCH_TYPES = Object.freeze(["game-to-workspace", "workspace-internal"]);
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -60,16 +55,6 @@ function createSampleToolLaunchDefinition(tool) {
   };
 }
 
-function createWorkspaceManagerGameLaunchDefinition() {
-  return {
-    launchId: WORKSPACE_MANAGER_GAME_LAUNCH_ID,
-    displayName: WORKSPACE_MANAGER_GAME_DISPLAY_NAME,
-    targetPath: buildTargetPathFromEntryPoint(WORKSPACE_MANAGER_ENTRY_POINT),
-    allowedLaunchSources: [...WORKSPACE_MANAGER_GAME_LAUNCH_SOURCES],
-    allowedLaunchTypes: [...WORKSPACE_MANAGER_GAME_LAUNCH_TYPES]
-  };
-}
-
 function findActiveVisibleToolById(toolId) {
   const normalizedToolId = normalizeToken(toolId);
   if (!normalizedToolId) {
@@ -80,12 +65,11 @@ function findActiveVisibleToolById(toolId) {
 }
 
 export function listToolLaunchIds() {
-  const toolLaunchIds = getActiveToolRegistry()
+  return getActiveToolRegistry()
     .filter((tool) => tool.visibleInToolsList === true)
     .map((tool) => normalizeText(tool.id))
     .filter(Boolean)
     .map((toolId) => `tool.${toolId}`);
-  return [...toolLaunchIds, WORKSPACE_MANAGER_GAME_LAUNCH_ID];
 }
 
 export function getSampleToolLaunchDefinition(toolId) {
@@ -110,20 +94,6 @@ export function getSampleToolLaunchDefinition(toolId) {
     return { launchDefinition: null, error: `Tool "${normalizedToolId}" target path is missing in SSoT.` };
   }
 
-  return { launchDefinition, error: "" };
-}
-
-export function getWorkspaceManagerGameLaunchDefinition() {
-  const launchDefinition = createWorkspaceManagerGameLaunchDefinition();
-  if (!launchDefinition.launchId) {
-    return { launchDefinition: null, error: "Workspace Manager launch id is missing in SSoT." };
-  }
-  if (!launchDefinition.displayName) {
-    return { launchDefinition: null, error: "Workspace Manager displayName is missing in SSoT." };
-  }
-  if (!launchDefinition.targetPath) {
-    return { launchDefinition: null, error: "Workspace Manager target path is missing in SSoT." };
-  }
   return { launchDefinition, error: "" };
 }
 

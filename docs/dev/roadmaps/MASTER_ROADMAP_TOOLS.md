@@ -1,6 +1,6 @@
 # MASTER_ROADMAP_TOOLS
 
-Task: PR_26124_024
+Task: PR_26124_025-remove-v2-common-rebuild-surface
 
 ## Core Tool Rebuild
 - [.] Palette Browser: rebuild first as the global palette source of truth; publish `tools.palette-browser`.
@@ -21,16 +21,9 @@ Task: PR_26124_024
 - [ ] Replay Visualizer: rebuild replay event validation, playback controls, and export; publish `tools.replay-visualizer`.
 - [ ] Performance Profiler: rebuild profile settings validation and report export; publish `tools.performance-profiler`.
 
-## Deferred Transitional Cleanup
-- [ ] palette-manager-v2: deferred transitional cleanup after corresponding core contracts are stable.
-- [ ] asset-manager-v2: deferred transitional cleanup after corresponding core contracts are stable.
-- [ ] svg-asset-studio-v2: deferred transitional cleanup after corresponding core contracts are stable.
-- [ ] tilemap-studio-v2: deferred transitional cleanup after corresponding core contracts are stable.
-- [ ] vector-map-editor-v2: deferred transitional cleanup after corresponding core contracts are stable.
-- [ ] workspace-v2: deferred transitional cleanup after corresponding core contracts are stable.
-- [ ] Workspace Manager: deferred transitional cleanup after corresponding core contracts are stable.
-
 ## Deferred References
-- [ ] Support folders remain reference-only: common, shared, dev, preview, codex, templates.
+- [x] Transitional V2/workspace rebuild surface removed before Palette Browser rebuild.
+- [x] Unused common support files removed after confirming no remaining imports.
+- [ ] Support folders remain reference-only: shared, dev, preview, codex, templates.
 - [ ] Schemas remain the current contract baseline until a schema-scoped PR.
 - [ ] Samples remain deferred until core tools are rebuilt and published outputs are stable.

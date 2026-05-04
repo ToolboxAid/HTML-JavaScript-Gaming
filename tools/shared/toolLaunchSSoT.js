@@ -1,11 +1,9 @@
 import {
   getSampleToolLaunchDefinition,
-  getWorkspaceManagerGameLaunchDefinition,
   validateLaunchDefinitionAccess
 } from "./toolLaunchSSoTData.js";
 
 const TOOLBOXAID_STORAGE_KEY_PREFIX = "toolboxaid.";
-const WORKSPACE_MANAGER_GAME_MOUNT_MODE = "game";
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -97,25 +95,10 @@ export function resolveGameWorkspaceLaunchHref(gameId, options = {}) {
   if (!normalizedGameId) {
     return { href: "", error: "gameId is required." };
   }
-
-  const launchDefinitionResult = getWorkspaceManagerGameLaunchDefinition();
-  if (!launchDefinitionResult.launchDefinition) {
-    return { href: "", error: launchDefinitionResult.error || "Workspace Manager launch metadata is missing in SSoT." };
-  }
-  const accessError = validateLaunchDefinitionAccess(
-    launchDefinitionResult.launchDefinition,
-    options.launchSource,
-    options.launchType
-  );
-  if (accessError) {
-    return { href: "", error: accessError };
-  }
-
-  const href = appendQuery(launchDefinitionResult.launchDefinition.targetPath, {
-    gameId: normalizedGameId,
-    mount: WORKSPACE_MANAGER_GAME_MOUNT_MODE
-  });
-  return { href, error: "" };
+  return {
+    href: "",
+    error: `Workspace launch surface was removed; game "${normalizedGameId}" has no active workspace launch target.`
+  };
 }
 
 export function clearExternalToolWorkspaceMemory() {

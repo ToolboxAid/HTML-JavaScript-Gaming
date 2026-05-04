@@ -106,7 +106,7 @@ function normalizeForwardedLaunchParam(key, value) {
     return normalizeLocalHref(normalizedValue, ["/games/"]);
   }
   if (key === "workspaceHref") {
-    return normalizeLocalHref(normalizedValue, ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"]);
+    return "";
   }
   if (key === "returnTo") {
     return normalizeLocalHref(normalizedValue, ["/games/", "/samples/"]);
@@ -443,11 +443,8 @@ function normalizeLocalHref(value, allowedPrefixes) {
   return allowedPrefixes.some((prefix) => normalized.startsWith(prefix)) ? normalized : "";
 }
 
-function buildWorkspaceHrefFromGameId(gameId) {
-  const normalizedGameId = normalizeTextValue(gameId);
-  return normalizedGameId
-    ? `/tools/Workspace%20Manager/index.html?gameId=${encodeURIComponent(normalizedGameId)}&mount=game`
-    : "";
+function buildWorkspaceHrefFromGameId() {
+  return "";
 }
 
 function normalizeSamplePresetPath(value) {
@@ -885,8 +882,7 @@ function readGameLaunchContext() {
   const gameId = normalizeTextValue(searchParams.get("gameId") || searchParams.get("game"));
   const gameTitle = normalizeTextValue(searchParams.get("gameTitle"));
   const gameHref = normalizeLocalHref(searchParams.get("gameHref"), ["/games/"]);
-  const workspaceHrefParam = normalizeLocalHref(searchParams.get("workspaceHref"), ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"]);
-  const workspaceHref = workspaceHrefParam || buildWorkspaceHrefFromGameId(gameId);
+  const workspaceHref = buildWorkspaceHrefFromGameId(gameId);
   if (!gameId && !gameTitle && !gameHref && !workspaceHref) {
     return null;
   }
@@ -1105,7 +1101,7 @@ async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
         sourcePath: manifestContext?.manifestPath || "",
         vectorStyle: manifestVectorStyle
       },
-      sourceToolId: "workspace-manager",
+      sourceToolId: "tool-host",
       selectedAt: new Date().toISOString()
     });
   }
@@ -1125,7 +1121,7 @@ async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
           sourcePath: manifestContext?.manifestPath || "",
           vectorStyle: manifestVectorStyle
         },
-        sourceToolId: "workspace-manager",
+        sourceToolId: "tool-host",
         selectedAt: new Date().toISOString()
       });
     }
@@ -1167,7 +1163,7 @@ async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
       gameId: launchContext.gameId || "",
       sourcePath: primaryAsset.path
     },
-    sourceToolId: "workspace-manager",
+    sourceToolId: "tool-host",
     selectedAt: new Date().toISOString()
   });
 }
@@ -1317,31 +1313,17 @@ function isWorkspaceManagerContext() {
   if (typeof window === "undefined") {
     return false;
   }
-  const currentPath = window.location.pathname || "";
   const searchParams = new URLSearchParams(window.location.search);
   const isHostedWorkspaceView = searchParams.get("hosted") === "1"
     || searchParams.has("hostToolId")
     || searchParams.has("hostContextId");
-  const isWorkspaceManagerReferrer = /\/tools\/Workspace(?:%20| )Manager\//i.test(document.referrer || "");
-  const isWorkspaceManagerParent = (() => {
-    try {
-      return window.top !== window
-        && /\/tools\/Workspace(?:%20| )Manager\//i.test(window.top.location.pathname || "");
-    } catch {
-      return false;
-    }
-  })();
-  return isHostedWorkspaceView
-    || isWorkspaceManagerReferrer
-    || isWorkspaceManagerParent
-    || /\/tools\/Workspace%20Manager\//i.test(currentPath)
-    || /\/tools\/Workspace Manager\//i.test(currentPath);
+  return isHostedWorkspaceView;
 }
 
 function getDisplaySurfaceName(currentTool) {
   if (isWorkspaceManagerContext()) {
     const toolName = currentTool?.displayName || document.body.dataset.toolTitle || "Tool";
-    return `Workspace Manager (${toolName})`;
+    return `Hosted Tool (${toolName})`;
   }
   if (currentTool) {
     return currentTool.displayName;
@@ -1809,32 +1791,13 @@ function renderWorkspaceStatusHeaderBlock(currentTool) {
 
 function renderHeaderMarkup(currentTool, isHeaderExpanded) {
   const isLanding = getPageMode() === "landing";
-  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search)
     : null;
   const isHostedWorkspaceView = searchParams?.get("hosted") === "1"
     || searchParams?.has("hostToolId") === true
     || searchParams?.has("hostContextId") === true;
-  const isWorkspaceManagerReferrer = typeof document !== "undefined"
-    ? /\/tools\/Workspace(?:%20| )Manager\//i.test(document.referrer || "")
-    : false;
-  const isWorkspaceManagerParent = (() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-    try {
-      return window.top !== window
-        && /\/tools\/Workspace(?:%20| )Manager\//i.test(window.top.location.pathname || "");
-    } catch {
-      return false;
-    }
-  })();
-  const showNavThroughTiles = isHostedWorkspaceView
-    || isWorkspaceManagerReferrer
-    || isWorkspaceManagerParent
-    || /\/tools\/Workspace%20Manager\//i.test(currentPath)
-    || /\/tools\/Workspace Manager\//i.test(currentPath);
+  const showNavThroughTiles = isHostedWorkspaceView;
   const lockState = resolveWorkspaceToolLockState();
   const navWorkspaceLockClass = showNavThroughTiles && !lockState.workspaceReady ? " is-workspace-locked" : "";
   const sharedActionLinks = !isLanding ? renderSharedActionLinks(currentTool?.id ?? "") : "";

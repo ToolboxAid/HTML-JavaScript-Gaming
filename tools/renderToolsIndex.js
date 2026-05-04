@@ -94,37 +94,6 @@ function classifyToolGroup(toolId) {
   return "editors";
 }
 
-function renderWorkspaceManagerCard(sampleCountByToolId) {
-  const sampleCount = Number(sampleCountByToolId.get("workspace-manager") || 0);
-  const samplesLink = sampleCount > 0
-    ? `<a class="tools-platform-card__action tools-platform-card__action--secondary" href="${SAMPLES_INDEX_PATH}?tool=workspace-manager">Samples (${sampleCount})</a>`
-    : "";
-  return `
-    <div class="card tools-platform-card">
-      <div class="meta">
-        <span class="pill live">Workspace</span>
-        <span class="pill planned">Manager</span>
-      </div>
-      <h3><a href="/tools/Workspace%20Manager/index.html">Workspace Manager</a></h3>
-      <p>Shared hosted launcher for opening tools inside a managed workspace container.</p>
-      <div class="meta">
-        <a class="tools-platform-card__action" href="/tools/Workspace%20Manager/index.html">Open Workspace Manager</a>
-        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="Workspace Manager/how_to_use.html">How To Use</a>
-        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="Workspace Manager/README.md">README</a>
-        ${samplesLink}
-      </div>
-    </div>
-  `;
-}
-
-function renderWorkspaceManagerSection(sampleCountByToolId) {
-  const grid = document.querySelector("[data-workspace-manager-grid]");
-  if (!grid) {
-    return;
-  }
-  grid.innerHTML = renderWorkspaceManagerCard(sampleCountByToolId);
-}
-
 async function loadSampleCountByToolId() {
   const counts = new Map();
   try {
@@ -203,7 +172,6 @@ function sortPlannedCardsAlphabetically() {
 
 async function initToolsIndex() {
   const sampleCountByToolId = await loadSampleCountByToolId();
-  renderWorkspaceManagerSection(sampleCountByToolId);
   renderActiveToolsList(sampleCountByToolId);
   sortPlannedCardsAlphabetically();
 }
