@@ -1,46 +1,46 @@
 # Tools Reengineering Index
 
-Task: PR_26124_021-tool-folder-design-reset
+Task: PR_26124_022-tighten-tool-design-docs
 
-This index is based on the current `tools/*` folders and the completed schema baseline under `tools/schemas`. It is intentionally tool-only: no runtime rollback, schema mutation, sample edit, game edit, or tool deletion is part of this reset.
+This index separates rebuild targets from transitional entries and support/reference folders. It uses exact folder paths under `tools/*`.
 
-| Tool ID | Folder | Global-Only | Launchable Tool | Published-Output-Capable | Needs Schema Alignment | Needs Controls Cleanup | Rebuild Priority |
-|---|---|---:|---:|---:|---:|---:|---:|
-| `palette-browser` | `tools/Palette Browser` | yes | yes | yes | no | yes | P01 |
-| `palette-manager-v2` | `tools/palette-manager-v2` | yes | yes | no | yes | yes | P02 |
-| `asset-browser` | `tools/Asset Browser` | no | yes | yes | no | yes | P03 |
-| `asset-pipeline` | `tools/Asset Pipeline` | no | yes | yes | no | yes | P04 |
-| `asset-manager-v2` | `tools/asset-manager-v2` | no | yes | yes | yes | yes | P05 |
-| `svg-asset-studio` | `tools/SVG Asset Studio` | no | yes | yes | no | yes | P06 |
-| `svg-asset-studio-v2` | `tools/svg-asset-studio-v2` | no | yes | yes | yes | yes | P07 |
-| `sprite-editor` | `tools/Sprite Editor` | no | yes | yes | no | yes | P08 |
-| `skin-editor` | `tools/Skin Editor` | no | yes | yes | no | yes | P09 |
-| `tile-map-editor` | `tools/Tilemap Studio` | no | yes | yes | no | yes | P10 |
-| `tilemap-studio-v2` | `tools/tilemap-studio-v2` | no | yes | yes | yes | yes | P11 |
-| `tile-model-converter` | `tools/Tile Model Converter` | no | yes | yes | no | yes | P12 |
-| `parallax-editor` | `tools/Parallax Scene Studio` | no | yes | yes | no | yes | P13 |
-| `vector-map-editor` | `tools/Vector Map Editor` | no | yes | yes | no | yes | P14 |
-| `vector-map-editor-v2` | `tools/vector-map-editor-v2` | no | yes | yes | yes | yes | P15 |
-| `3d-json-payload` | `tools/3D JSON Payload` | no | yes | yes | no | yes | P16 |
-| `3d-asset-viewer` | `tools/3D Asset Viewer` | no | yes | yes | no | yes | P17 |
-| `3d-camera-path-editor` | `tools/3D Camera Path Editor` | no | yes | yes | no | yes | P18 |
-| `physics-sandbox` | `tools/Physics Sandbox` | no | yes | yes | no | yes | P19 |
-| `state-inspector` | `tools/State Inspector` | no | yes | yes | no | yes | P20 |
-| `replay-visualizer` | `tools/Replay Visualizer` | no | yes | yes | no | yes | P21 |
-| `performance-profiler` | `tools/Performance Profiler` | no | yes | yes | no | yes | P22 |
-| `workspace-manager` | `tools/Workspace Manager` | yes | yes | no | no | yes | P23 |
-| `workspace-v2` | `tools/workspace-v2` | yes | yes | no | no | yes | P24 |
-| `schemas` | `tools/schemas` | yes | no | no | no | no | P25 |
-| `common` | `tools/common` | yes | no | no | no | no | P26 |
-| `shared` | `tools/shared` | yes | no | no | no | no | P27 |
-| `dev` | `tools/dev` | yes | no | no | no | no | P28 |
-| `preview` | `tools/preview` | yes | no | no | no | no | P29 |
-| `codex` | `tools/codex` | yes | no | no | no | no | P30 |
-| `templates` | `tools/templates` | yes | no | no | no | no | P31 |
+| Tool ID | Exact Source Folder | Classification | Core Roadmap Priority | Publish Target | Notes |
+|---|---|---|---|---|---|
+| `palette-browser` | `tools/Palette Browser` | global tool | core-01 | tools.palette-browser | core rebuild path |
+| `workspace-manager` | `tools/Workspace Manager` | global tool | deferred | none | global launcher; deferred cleanup |
+| `asset-browser` | `tools/Asset Browser` | rebuildable tool | core-02 | tools.asset-browser | core rebuild path |
+| `asset-pipeline` | `tools/Asset Pipeline` | rebuildable tool | core-03 | tools.asset-pipeline | core rebuild path |
+| `svg-asset-studio` | `tools/SVG Asset Studio` | rebuildable tool | core-04 | tools.svg-asset-studio | core rebuild path |
+| `sprite-editor` | `tools/Sprite Editor` | rebuildable tool | core-05 | tools.sprite-editor | core rebuild path |
+| `skin-editor` | `tools/Skin Editor` | rebuildable tool | core-06 | tools.skin-editor | core rebuild path |
+| `tile-map-editor` | `tools/Tilemap Studio` | rebuildable tool | core-07 | tools.tile-map-editor | core rebuild path |
+| `tile-model-converter` | `tools/Tile Model Converter` | rebuildable tool | core-08 | tools.tile-model-converter | core rebuild path |
+| `parallax-editor` | `tools/Parallax Scene Studio` | rebuildable tool | core-09 | tools.parallax-editor | core rebuild path |
+| `vector-map-editor` | `tools/Vector Map Editor` | rebuildable tool | core-10 | tools.vector-map-editor | core rebuild path |
+| `3d-json-payload` | `tools/3D JSON Payload` | rebuildable tool | core-11 | tools.3d-json-payload | core rebuild path |
+| `3d-asset-viewer` | `tools/3D Asset Viewer` | rebuildable tool | core-12 | tools.3d-asset-viewer | core rebuild path |
+| `3d-camera-path-editor` | `tools/3D Camera Path Editor` | rebuildable tool | core-13 | tools.3d-camera-path-editor | core rebuild path |
+| `physics-sandbox` | `tools/Physics Sandbox` | rebuildable tool | core-14 | tools.physics-sandbox | core rebuild path |
+| `state-inspector` | `tools/State Inspector` | rebuildable tool | core-15 | tools.state-inspector | core rebuild path |
+| `replay-visualizer` | `tools/Replay Visualizer` | rebuildable tool | core-16 | tools.replay-visualizer | core rebuild path |
+| `performance-profiler` | `tools/Performance Profiler` | rebuildable tool | core-17 | tools.performance-profiler | core rebuild path |
+| `asset-manager-v2` | `tools/asset-manager-v2` | transitional/quarantine tool | deferred | none | deferred until core tool rebuilds are complete |
+| `palette-manager-v2` | `tools/palette-manager-v2` | transitional/quarantine tool | deferred | none | deferred until core tool rebuilds are complete |
+| `svg-asset-studio-v2` | `tools/svg-asset-studio-v2` | transitional/quarantine tool | deferred | none | deferred until core tool rebuilds are complete |
+| `tilemap-studio-v2` | `tools/tilemap-studio-v2` | transitional/quarantine tool | deferred | none | deferred until core tool rebuilds are complete |
+| `vector-map-editor-v2` | `tools/vector-map-editor-v2` | transitional/quarantine tool | deferred | none | deferred until core tool rebuilds are complete |
+| `workspace-v2` | `tools/workspace-v2` | transitional/quarantine tool | deferred | none | deferred until core tool rebuilds are complete |
+| `schemas` | `tools/schemas` | schema folder | reference-only | none | schema baseline only; no schema changes in this PR |
+| `codex` | `tools/codex` | support folder | reference-only | none | reference only; no normal rebuild doc |
+| `common` | `tools/common` | support folder | reference-only | none | reference only; no normal rebuild doc |
+| `dev` | `tools/dev` | support folder | reference-only | none | reference only; no normal rebuild doc |
+| `preview` | `tools/preview` | support folder | reference-only | none | reference only; no normal rebuild doc |
+| `shared` | `tools/shared` | support folder | reference-only | none | reference only; no normal rebuild doc |
+| `templates` | `tools/templates` | support folder | reference-only | none | reference only; no normal rebuild doc |
 
-## Classification Notes
-- Global-only means the folder is workspace-wide/supporting infrastructure or global project state, not a per-tool JSON editor by itself.
-- Launchable tool means the folder has its own `index.html` entry point.
-- Published-output-capable means the folder is expected to own a `tools.<toolId>` payload for games/samples when rebuilt.
-- Needs schema alignment means the current contract is code-only or not yet represented by a dedicated completed schema baseline.
-- Needs controls cleanup means the current UI exposes controls/panels that should be rebuilt into explicit import/load, validate, edit/process, export/save, and publish actions.
+## Classification Definitions
+- `global tool`: a launchable, global surface. Palette Browser rebuilds first; Workspace Manager is deferred launcher cleanup.
+- `rebuildable tool`: non-transitional launchable tool with an owned JSON contract and `tools.<toolId>` publish target.
+- `transitional/quarantine tool`: hosted-payload or toolState bridge retained only as reference until a later cleanup PR.
+- `support folder`: shared/reference infrastructure only; it is not a normal tool rebuild target and has no `REENGINEERING_DESIGN.md`.
+- `schema folder`: current contract baseline only; no schema changes are part of this PR.

@@ -1,77 +1,71 @@
 # 3D JSON Payload Reengineering Design
 
-Task: PR_26124_021-tool-folder-design-reset
-Tool ID: `3d-json-payload`
+Task: PR_26124_022-tighten-tool-design-docs
+Classification: rebuildable tool
+Core priority: core-11
 Source folder: `tools/3D JSON Payload`
+Publish target: `tools.3d-json-payload`
 
-## 1. Tool Purpose
-Normalize generic 3D map payload JSON and present canonical output for downstream tool or runtime use.
+## Tool Purpose
+3D map payload normalization. This tool owns `mapPayload`, normalization, invalid JSON rejection, export, and publish to `tools.3d-json-payload`.
 
-## 2. Folder/Files Inspected
+## Exact Folder/Files Inspected
 - `tools/3D JSON Payload/how_to_use.html`
 - `tools/3D JSON Payload/index.html`
 - `tools/3D JSON Payload/main.js`
 - `tools/3D JSON Payload/README.md`
 
-Skipped from inspection for this design reset: sample/data JSON, image assets, generated preview assets, and schema history notes outside the current contract baseline.
+## Exact Current Controls Found
+- `tools/3D JSON Payload/index.html`: `button[button]#normalize3dMapButton` - Normalize JSON Payload
+- `tools/3D JSON Payload/index.html`: `button[button]#openHowToUse3dMapButton` - How to Use
+- `tools/3D JSON Payload/index.html`: `textarea#map3dInput` - map3dInput
+- `tools/3D JSON Payload/main.js`: `normalize3dMapButton` via normalizeButton
+- `tools/3D JSON Payload/main.js`: `openHowToUse3dMapButton` via howToUseButton
+- `tools/3D JSON Payload/main.js`: `map3dStatus` via statusText
+- `tools/3D JSON Payload/main.js`: `map3dInput` via input
+- `tools/3D JSON Payload/main.js`: `map3dOutput` via output
 
-## 3. Current Controls/Buttons/Inputs/Selects/Textareas/Tables/Panels
-Counts found: buttons 2, inputs 0, selects 0, textareas 1, tables 0, inferred DOM controls/panels 5.
-- `tools/3D JSON Payload/index.html`: button[button] #normalize3dMapButton - Normalize JSON Payload
-- `tools/3D JSON Payload/index.html`: button[button] #openHowToUse3dMapButton - How to Use
-- `tools/3D JSON Payload/index.html`: textarea #map3dInput - map3dInput
-- `tools/3D JSON Payload/main.js`: button #normalize3dMapButton - inferred from JS DOM lookup
-- `tools/3D JSON Payload/main.js`: button #openHowToUse3dMapButton - inferred from JS DOM lookup
-- `tools/3D JSON Payload/main.js`: panel #map3dStatus - inferred from JS DOM lookup
-- `tools/3D JSON Payload/main.js`: input #map3dInput - inferred from JS DOM lookup
-- `tools/3D JSON Payload/main.js`: panel #map3dOutput - inferred from JS DOM lookup
-- Panels/surfaces found:
-  - `tools/3D JSON Payload/index.html`: .debug-tool-shell
-  - `tools/3D JSON Payload/index.html`: .app-shell
-  - `tools/3D JSON Payload/index.html`: .panel
-  - `tools/3D JSON Payload/index.html`: .debug-tool-panel
-  - `tools/3D JSON Payload/index.html`: .debug-tool-grid
+## Current Panels And Surfaces Found
+- `tools/3D JSON Payload/index.html`: `.debug-tool-shell`
+- `tools/3D JSON Payload/index.html`: `.app-shell`
+- `tools/3D JSON Payload/index.html`: `.panel`
+- `tools/3D JSON Payload/index.html`: `.debug-tool-panel`
+- `tools/3D JSON Payload/index.html`: `.debug-tool-grid`
 
-## 4. Current Component/Class/Function Inventory
+## Exact Current Functions And Classes
 - `tools/3D JSON Payload/main.js`: function boot3dMapEditor; function buildPresetLoadedStatus; function normalizeMapPayload; function normalizeMapPayloadAction; function normalizeSamplePresetPath; function sanitizeNumber; function setStatus; function tryLoadPresetFromQuery; method getApi; method registerToolBootContract
 
-## 5. JSON Schema/Input Contract Currently Expected
-Schema baseline: `tools/schemas/tools/3d-json-payload.schema.json`. Title: 3d-json-payload Payload. Required top-level fields: mapPayload. Allowed top-level fields: mapPayload. Additional top-level properties: rejected.
+## Target Controls
+Keep:
+- Normalize JSON Payload
+- How to Use
+- map input textarea
+- normalized output panel
 
-JSON handling signals found: download/export, safeParseJson, schema, tools.*.
+Remove or rename:
+- none identified in the current folder
 
-## 6. Valid JSON Behavior
-Valid JSON must parse cleanly, match the current schema baseline or tool-owned normalized shape, update the local editor/preview state, and remain exportable as path/file-field JSON without embedding `imageDataUrl`.
+Add:
+- Load 3D Payload JSON
+- Export normalized map payload
+- Publish `tools.3d-json-payload`
 
-## 7. Invalid JSON Rejection Behavior
-Malformed JSON, missing required fields, unsupported top-level fields, wrong nested types, and empty required editor payloads must be rejected in the tool UI before export/save/publish.
+## JSON Contract Owned By This Tool
+Baseline schema: `tools/schemas/tools/3d-json-payload.schema.json`. Required top-level fields: mapPayload. Allowed top-level fields: mapPayload. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
 
-## 8. Tool-Owned JSON Responsibilities
-- import/load: tool-owned; load files, pasted JSON, or hosted session payloads inside the tool.
-- validate: tool-owned validation against the current schema/input contract before state mutation.
-- edit/process: tool-owned editor or processing state.
-- export/save: tool-owned normalized JSON/export artifacts.
-- publish to `tools.3d-json-payload` if applicable: yes, publish normalized output under `tools.3d-json-payload` when this tool is the producer.
-- copy/create toolState if applicable: only if a future workspace flow copies a published `tools.*` entry into a toolState; the tool JSON remains tool-owned.
+## Hosted/Launch Payload Boundary
+- Launch payloads may seed this tool, but they do not become workspace-owned internals.
+- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
+- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
 
-## 9. Workspace Integration Contract
-- Workspace validates and launches only.
-- Workspace may provide `hostContextId`, launch URL state, or a workspace manifest shell, but it does not manage tool JSON internals.
-- The tool owns its JSON behavior after launch: import/load, validate, edit/process, export/save, publish output, and any copy/create `toolState` behavior listed above.
-- Workspace rejection should stop at invalid launch/session/manifest envelope; nested payload rules stay with the tool.
+## Invalid JSON Behavior
+- Reject malformed JSON before state mutation.
+- Reject missing required fields from the schema baseline.
+- Reject unsupported top-level fields when the schema disallows extras.
+- Keep export/save/publish disabled until the current payload validates.
+- Show a tool-specific error that names the failing field or control group.
 
-## 10. Published `tools.*` Output Contract For Games/Samples
-Published output key: `tools.3d-json-payload`. The value must match the current contract baseline, contain only JSON-safe values, use file/path/name fields for assets, and never persist `imageDataUrl`. Games and samples should consume the published payload as data, not as workspace-managed tool internals.
-
-## 11. Playwright Expectations
-Open `tools/3D JSON Payload/index.html`; verify the page renders without console errors, expected controls are present, valid JSON/session data reaches the success state, and invalid JSON/session data stays in the tool-owned rejection path. No Playwright run is expected for this documentation-only PR.
-
-## 12. Manual Test Expectations
-Manually launch `tools/3D JSON Payload/index.html`, exercise import/load controls or hosted launch parameters, confirm edit/process controls do not delegate JSON internals to workspace, export/save the normalized output, and confirm invalid JSON blocks export/save.
-
-## 13. Known Gaps
-- Controls need cleanup during the tool rebuild so import, validate, edit/process, export/save, and publish actions are explicit.
-- Playwright/manual checks are documented as expectations only; this PR does not change runtime behavior or add tests.
-
-## 14. Rebuild Order Priority
-P16: 3D JSON Payload. This priority is used by `docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` and keeps the rebuild anchored on Palette / Palette Browser first, then dependent tool families.
+## Manual Test Plan
+- Paste a valid `mapPayload` document and normalize it.
+- Export/copy the normalized output.
+- Try malformed JSON and JSON without `mapPayload`; output and publish must stay blocked.

@@ -1,108 +1,110 @@
 # Palette Browser Reengineering Design
 
-Task: PR_26124_021-tool-folder-design-reset
-Tool ID: `palette-browser`
+Task: PR_26124_022-tighten-tool-design-docs
+Classification: global tool
+Core priority: core-01
 Source folder: `tools/Palette Browser`
+Publish target: `tools.palette-browser`
 
-## 1. Tool Purpose
-Own the global palette authoring and browsing surface, including swatch editing, palette JSON validation, import/load, export/save, and the publishable palette entry.
+## Tool Purpose
+Global palette authoring and selection. This tool owns palette JSON import, validation, swatch editing, export, and publish to `tools.palette-browser`.
 
-## 2. Folder/Files Inspected
+## Exact Folder/Files Inspected
 - `tools/Palette Browser/how_to_use.html`
 - `tools/Palette Browser/index.html`
 - `tools/Palette Browser/main.js`
 - `tools/Palette Browser/paletteBrowser.css`
 - `tools/Palette Browser/README.md`
 
-Skipped from inspection for this design reset: sample/data JSON, image assets, generated preview assets, and schema history notes outside the current contract baseline.
+## Exact Current Controls Found
+- `tools/Palette Browser/index.html`: `input[search]#paletteSearchInput` - Find a palette
+- `tools/Palette Browser/index.html`: `input[text]#paletteNameInput` - paletteNameInput
+- `tools/Palette Browser/index.html`: `input[color]#swatchColorInput` - swatchColorInput
+- `tools/Palette Browser/index.html`: `input[text]#swatchNameInput` - Color name
+- `tools/Palette Browser/index.html`: `input[text]#swatchSymbolInput` - A
+- `tools/Palette Browser/index.html`: `button[button]#newPaletteButton` - New Palette
+- `tools/Palette Browser/index.html`: `button[button]#duplicatePaletteButton` - Duplicate Selected
+- `tools/Palette Browser/index.html`: `button[button]#renamePaletteButton` - Rename Palette
+- `tools/Palette Browser/index.html`: `button[button]#deletePaletteButton` - Delete Palette
+- `tools/Palette Browser/index.html`: `button[button]#addSwatchButton` - Add Swatch
+- `tools/Palette Browser/index.html`: `button[button]#deleteSwatchButton` - Delete Swatch
+- `tools/Palette Browser/index.html`: `button[button]#importPaletteJsonButton` - Import Palette JSON
+- `tools/Palette Browser/index.html`: `input[file]#importPaletteJsonInput` - importPaletteJsonInput
+- `tools/Palette Browser/index.html`: `button[button]#exportPaletteJsonButton` - Export Palette JSON
+- `tools/Palette Browser/index.html`: `button[button]#copyPaletteJsonButton` - Copy Palette JSON
+- `tools/Palette Browser/index.html`: `button[button]#usePaletteButton` - Use in Workspace Manager
+- `tools/Palette Browser/main.js`: `paletteSearchInput` via searchInput
+- `tools/Palette Browser/main.js`: `launchContextText` via launchContextText
+- `tools/Palette Browser/main.js`: `paletteCountText` via countText
+- `tools/Palette Browser/main.js`: `paletteList` via paletteList
+- `tools/Palette Browser/main.js`: `paletteTitle` via paletteTitle
+- `tools/Palette Browser/main.js`: `paletteSummaryText` via paletteSummaryText
+- `tools/Palette Browser/main.js`: `paletteSwatches` via paletteSwatches
+- `tools/Palette Browser/main.js`: `paletteNameInput` via paletteNameInput
+- `tools/Palette Browser/main.js`: `swatchColorInput` via swatchColorInput
+- `tools/Palette Browser/main.js`: `swatchNameInput` via swatchNameInput
+- `tools/Palette Browser/main.js`: `swatchSymbolInput` via swatchSymbolInput
+- `tools/Palette Browser/main.js`: `newPaletteButton` via newPaletteButton
+- `tools/Palette Browser/main.js`: `duplicatePaletteButton` via duplicatePaletteButton
+- `tools/Palette Browser/main.js`: `renamePaletteButton` via renamePaletteButton
+- `tools/Palette Browser/main.js`: `deletePaletteButton` via deletePaletteButton
+- `tools/Palette Browser/main.js`: `addSwatchButton` via addSwatchButton
+- `tools/Palette Browser/main.js`: `deleteSwatchButton` via deleteSwatchButton
+- `tools/Palette Browser/main.js`: `paletteValidationText` via validationText
+- `tools/Palette Browser/main.js`: `paletteSelectionText` via selectionText
+- `tools/Palette Browser/main.js`: `paletteJsonPreview` via jsonPreview
+- `tools/Palette Browser/main.js`: `importPaletteJsonButton` via importPaletteJsonButton
+- `tools/Palette Browser/main.js`: `importPaletteJsonInput` via importPaletteJsonInput
+- `tools/Palette Browser/main.js`: `copyPaletteJsonButton` via copyPaletteJsonButton
+- `tools/Palette Browser/main.js`: `exportPaletteJsonButton` via exportPaletteJsonButton
+- `tools/Palette Browser/main.js`: `usePaletteButton` via usePaletteButton
 
-## 3. Current Controls/Buttons/Inputs/Selects/Textareas/Tables/Panels
-Counts found: buttons 12, inputs 6, selects 0, textareas 0, tables 0, inferred DOM controls/panels 18.
-- `tools/Palette Browser/index.html`: input[search] #paletteSearchInput - Find a palette
-- `tools/Palette Browser/index.html`: input[text] #paletteNameInput - paletteNameInput
-- `tools/Palette Browser/index.html`: input[color] #swatchColorInput - #ffffff
-- `tools/Palette Browser/index.html`: input[text] #swatchNameInput - Color name
-- `tools/Palette Browser/index.html`: input[text] #swatchSymbolInput - A
-- `tools/Palette Browser/index.html`: button[button] #newPaletteButton - New Palette
-- `tools/Palette Browser/index.html`: button[button] #duplicatePaletteButton - Duplicate Selected
-- `tools/Palette Browser/index.html`: button[button] #renamePaletteButton - Rename Palette
-- `tools/Palette Browser/index.html`: button[button] #deletePaletteButton - Delete Palette
-- `tools/Palette Browser/index.html`: button[button] #addSwatchButton - Add Swatch
-- `tools/Palette Browser/index.html`: button[button] #deleteSwatchButton - Delete Swatch
-- `tools/Palette Browser/index.html`: button[button] #importPaletteJsonButton - Import Palette JSON
-- `tools/Palette Browser/index.html`: input[file] #importPaletteJsonInput - importPaletteJsonInput
-- `tools/Palette Browser/index.html`: button[button] #exportPaletteJsonButton - Export Palette JSON
-- `tools/Palette Browser/index.html`: button[button] #copyPaletteJsonButton - Copy Palette JSON
-- `tools/Palette Browser/index.html`: button[button] #usePaletteButton - Use in Workspace Manager
-- `tools/Palette Browser/main.js`: button[button] #${palette.id} - ${palette.name} (${palette.swatches.length}) swatches | ${palette.source}
-- `tools/Palette Browser/main.js`: button[button] - ${formatSwatchNameForDisplay(entry.name || "Unnamed")} ${entry.symbol || "-"}
-- `tools/Palette Browser/main.js`: input #paletteSearchInput - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: panel #paletteList - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: input #paletteNameInput - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: input #swatchColorInput - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: input #swatchNameInput - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: input #swatchSymbolInput - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #newPaletteButton - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #duplicatePaletteButton - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #renamePaletteButton - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #deletePaletteButton - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #addSwatchButton - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #deleteSwatchButton - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: panel #paletteJsonPreview - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #importPaletteJsonButton - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: input #importPaletteJsonInput - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #copyPaletteJsonButton - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #exportPaletteJsonButton - inferred from JS DOM lookup
-- `tools/Palette Browser/main.js`: button #usePaletteButton - inferred from JS DOM lookup
-- Panels/surfaces found:
-  - `tools/Palette Browser/index.html`: .app-shell
-  - `tools/Palette Browser/index.html`: .tools-platform-layout-grid
-  - `tools/Palette Browser/index.html`: .panel
-  - `tools/Palette Browser/index.html`: .palette-browser__panel
-  - `tools/Palette Browser/index.html`: .tools-platform-resize-panel
-  - `tools/Palette Browser/index.html`: .palette-browser__list
-  - `tools/Palette Browser/index.html`: .palette-browser__editor-grid
-  - `tools/Palette Browser/index.html`: .palette-browser__json-preview
+## Current Panels And Surfaces Found
+- `tools/Palette Browser/index.html`: `.app-shell`
+- `tools/Palette Browser/index.html`: `.tools-platform-layout-grid`
+- `tools/Palette Browser/index.html`: `.panel`
+- `tools/Palette Browser/index.html`: `.palette-browser__panel`
+- `tools/Palette Browser/index.html`: `.tools-platform-resize-panel`
+- `tools/Palette Browser/index.html`: `.palette-browser__list`
+- `tools/Palette Browser/index.html`: `.palette-browser__editor-grid`
+- `tools/Palette Browser/index.html`: `.palette-browser__json-preview`
 
-## 4. Current Component/Class/Function Inventory
+## Exact Current Functions And Classes
 - `tools/Palette Browser/main.js`: function addSwatchToSelectedPalette; function applyLaunchContext; function bindEvents; function bootPaletteBrowser; function buildPaletteDocumentPayload; function buildPresetLoadedStatus; function copyPaletteJson; function createCustomPalette; function createNewPalette; function createSharedPaletteMirror; function deleteSelectedPalette; function deleteSelectedSwatch; function duplicateSelectedPalette; function exportPaletteJson; function findPaletteBySharedHandoff; function formatSwatchNameForDisplay; function getAllPalettes; function getBuiltInPalettes; function getSelectedPalette; function getVisiblePalettes; function hasDeleteOverrideParam; function hasReservedPaletteKeyword; function importPaletteFromPresetPayload; function importPaletteJsonFromFile; function init; function isCustomPalette; function isReadOnlyPalette; function isWorkspaceContext; function isWorkspaceManagerParent; function loadCustomPalettes; function loadHiddenBuiltInPaletteIds; function makeUniquePaletteName; function normalizeHandoffEntries; function normalizeImportedPalette; function normalizePaletteNameForReservedCheck; function normalizeSamplePresetPath; function renameSelectedPalette; function renderPaletteList; function renderSelectedPalette; function renderStoredSelection; function saveCustomPalettes; function saveHiddenBuiltInPaletteIds; function selectSharedPaletteFromHandoff; function setSelectedPalette; function setSelectionText; function syncSelectionFromSharedHandoff; function tryLoadPresetFromQuery; function updateSelectedSwatchFromInputs; function usePaletteInActiveTools; function validatePalette; method applyProjectState; method captureProjectState; method getApi; method registerToolBootContract
 
-## 5. JSON Schema/Input Contract Currently Expected
-Schema baseline: `tools/schemas/tools/palette-browser.schema.json`. Title: Palette Browser Direct Palette Payload. Required top-level fields: schema, version, name, swatches. Allowed top-level fields: $schema, schema, version, id, name, source, sourceId, locked, swatches. Additional top-level properties: rejected.
+## Target Controls
+Keep:
+- palette search/list
+- palette name editing
+- swatch color/name/symbol inputs
+- new/duplicate/rename/delete palette
+- add/delete swatch
+- import/copy/export palette JSON
 
-JSON handling signals found: Blob/object URL, download/export, hostContextId, JSON.parse, JSON.stringify, localStorage, schema, tools.*, validate.
+Remove or rename:
+- replace `Use in Workspace Manager` wording with explicit publish/launch-payload wording
 
-## 6. Valid JSON Behavior
-Valid JSON must parse cleanly, match the current schema baseline or tool-owned normalized shape, update the local editor/preview state, and remain exportable as path/file-field JSON without embedding `imageDataUrl`.
+Add:
+- dedicated Validate Palette action
+- Publish `tools.palette-browser` action
+- invalid JSON panel that names missing fields and unsupported top-level keys
 
-## 7. Invalid JSON Rejection Behavior
-Malformed JSON, missing required fields, unsupported top-level fields, wrong nested types, and empty required editor payloads must be rejected in the tool UI before export/save/publish.
+## JSON Contract Owned By This Tool
+Baseline schema: `tools/schemas/tools/palette-browser.schema.json`. Required top-level fields: schema, version, name, swatches. Allowed top-level fields: $schema, schema, version, id, name, source, sourceId, locked, swatches. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
 
-## 8. Tool-Owned JSON Responsibilities
-- import/load: tool-owned; load files, pasted JSON, or hosted session payloads inside the tool.
-- validate: tool-owned validation against the current schema/input contract before state mutation.
-- edit/process: tool-owned editor or processing state.
-- export/save: tool-owned normalized JSON/export artifacts.
-- publish to `tools.palette-browser` if applicable: yes, publish normalized output under `tools.palette-browser` when this tool is the producer.
-- copy/create toolState if applicable: only if a future workspace flow copies a published `tools.*` entry into a toolState; the tool JSON remains tool-owned.
+## Hosted/Launch Payload Boundary
+- Launch payloads may seed this tool, but they do not become workspace-owned internals.
+- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
+- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
 
-## 9. Workspace Integration Contract
-- Workspace validates and launches only.
-- Workspace may provide `hostContextId`, launch URL state, or a workspace manifest shell, but it does not manage tool JSON internals.
-- The tool owns its JSON behavior after launch: import/load, validate, edit/process, export/save, publish output, and any copy/create `toolState` behavior listed above.
-- Workspace rejection should stop at invalid launch/session/manifest envelope; nested payload rules stay with the tool.
+## Invalid JSON Behavior
+- Reject malformed JSON before state mutation.
+- Reject missing required fields from the schema baseline.
+- Reject unsupported top-level fields when the schema disallows extras.
+- Keep export/save/publish disabled until the current payload validates.
+- Show a tool-specific error that names the failing field or control group.
 
-## 10. Published `tools.*` Output Contract For Games/Samples
-Published output key: `tools.palette-browser`. The value must match the current contract baseline, contain only JSON-safe values, use file/path/name fields for assets, and never persist `imageDataUrl`. Games and samples should consume the published payload as data, not as workspace-managed tool internals.
-
-## 11. Playwright Expectations
-Open `tools/Palette Browser/index.html`; verify the page renders without console errors, expected controls are present, valid JSON/session data reaches the success state, and invalid JSON/session data stays in the tool-owned rejection path. No Playwright run is expected for this documentation-only PR.
-
-## 12. Manual Test Expectations
-Manually launch `tools/Palette Browser/index.html`, exercise import/load controls or hosted launch parameters, confirm edit/process controls do not delegate JSON internals to workspace, export/save the normalized output, and confirm invalid JSON blocks export/save.
-
-## 13. Known Gaps
-- Playwright/manual checks are documented as expectations only; this PR does not change runtime behavior or add tests.
-
-## 14. Rebuild Order Priority
-P01: Palette Browser. This priority is used by `docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` and keeps the rebuild anchored on Palette / Palette Browser first, then dependent tool families.
+## Manual Test Plan
+- Open the folder directly and confirm built-in palettes render.
+- Create a custom palette, add a swatch, validate, export, copy, and re-import it.
+- Try malformed JSON, a palette without `swatches`, and a swatch with an invalid hex color; each case must be rejected before publish.

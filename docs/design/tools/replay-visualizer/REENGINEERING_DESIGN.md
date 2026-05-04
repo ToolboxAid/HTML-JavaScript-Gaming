@@ -1,89 +1,86 @@
 # Replay Visualizer Reengineering Design
 
-Task: PR_26124_021-tool-folder-design-reset
-Tool ID: `replay-visualizer`
+Task: PR_26124_022-tighten-tool-design-docs
+Classification: rebuildable tool
+Core priority: core-16
 Source folder: `tools/Replay Visualizer`
+Publish target: `tools.replay-visualizer`
 
-## 1. Tool Purpose
-Load event replay JSON, scrub through playback state, validate event structure, and export replay reports.
+## Tool Purpose
+Replay event visualization. This tool owns `events`, playback controls, scrubber state, validation, export, and publish to `tools.replay-visualizer`.
 
-## 2. Folder/Files Inspected
+## Exact Folder/Files Inspected
 - `tools/Replay Visualizer/how_to_use.html`
 - `tools/Replay Visualizer/index.html`
 - `tools/Replay Visualizer/main.js`
 - `tools/Replay Visualizer/README.md`
 
-Skipped from inspection for this design reset: sample/data JSON, image assets, generated preview assets, and schema history notes outside the current contract baseline.
+## Exact Current Controls Found
+- `tools/Replay Visualizer/index.html`: `button[button]#loadReplayButton` - Load Replay JSON
+- `tools/Replay Visualizer/index.html`: `button[button]#playReplayButton` - Play
+- `tools/Replay Visualizer/index.html`: `button[button]#pauseReplayButton` - Pause
+- `tools/Replay Visualizer/index.html`: `button[button]#resetReplayButton` - Reset
+- `tools/Replay Visualizer/index.html`: `textarea#replayJsonInput` - {
+- `tools/Replay Visualizer/index.html`: `input[range]#replayTimeSlider` - replayTimeSlider
+- `tools/Replay Visualizer/main.js`: `loadReplayButton` via loadButton
+- `tools/Replay Visualizer/main.js`: `playReplayButton` via playButton
+- `tools/Replay Visualizer/main.js`: `pauseReplayButton` via pauseButton
+- `tools/Replay Visualizer/main.js`: `resetReplayButton` via resetButton
+- `tools/Replay Visualizer/main.js`: `replayStatusText` via statusText
+- `tools/Replay Visualizer/main.js`: `replayJsonInput` via input
+- `tools/Replay Visualizer/main.js`: `replayTimeSlider` via slider
+- `tools/Replay Visualizer/main.js`: `replayTimeReadout` via timeReadout
+- `tools/Replay Visualizer/main.js`: `replayEventList` via eventList
+- `tools/Replay Visualizer/main.js`: `replayEventOutput` via eventOutput
 
-## 3. Current Controls/Buttons/Inputs/Selects/Textareas/Tables/Panels
-Counts found: buttons 5, inputs 1, selects 0, textareas 1, tables 0, inferred DOM controls/panels 8.
-- `tools/Replay Visualizer/index.html`: button[button] #loadReplayButton - Load Replay JSON
-- `tools/Replay Visualizer/index.html`: button[button] #playReplayButton - Play
-- `tools/Replay Visualizer/index.html`: button[button] #pauseReplayButton - Pause
-- `tools/Replay Visualizer/index.html`: button[button] #resetReplayButton - Reset
-- `tools/Replay Visualizer/index.html`: textarea #replayJsonInput - {
-- `tools/Replay Visualizer/index.html`: input[range] #replayTimeSlider - 0
-- `tools/Replay Visualizer/main.js`: button[button] - ${event.timeMs.toFixed(0)}ms | ${event.type} | ${event.label}
-- `tools/Replay Visualizer/main.js`: button #loadReplayButton - inferred from JS DOM lookup
-- `tools/Replay Visualizer/main.js`: button #playReplayButton - inferred from JS DOM lookup
-- `tools/Replay Visualizer/main.js`: button #pauseReplayButton - inferred from JS DOM lookup
-- `tools/Replay Visualizer/main.js`: button #resetReplayButton - inferred from JS DOM lookup
-- `tools/Replay Visualizer/main.js`: input #replayJsonInput - inferred from JS DOM lookup
-- `tools/Replay Visualizer/main.js`: panel #replayTimeReadout - inferred from JS DOM lookup
-- `tools/Replay Visualizer/main.js`: panel #replayEventList - inferred from JS DOM lookup
-- `tools/Replay Visualizer/main.js`: panel #replayEventOutput - inferred from JS DOM lookup
-- Panels/surfaces found:
-  - `tools/Replay Visualizer/index.html`: .tool-shell-page
-  - `tools/Replay Visualizer/index.html`: .tool-shell-container
-  - `tools/Replay Visualizer/index.html`: .tool-shell
-  - `tools/Replay Visualizer/index.html`: .app-shell
-  - `tools/Replay Visualizer/index.html`: .tool-shell__left
-  - `tools/Replay Visualizer/index.html`: .panel
-  - `tools/Replay Visualizer/index.html`: .debug-tool-panel
-  - `tools/Replay Visualizer/index.html`: .tool-shell__center
-  - `tools/Replay Visualizer/index.html`: .tool-shell__right
-  - `tools/Replay Visualizer/index.html`: .debug-tool-list
+## Current Panels And Surfaces Found
+- `tools/Replay Visualizer/index.html`: `.tool-shell-page`
+- `tools/Replay Visualizer/index.html`: `.tool-shell-container`
+- `tools/Replay Visualizer/index.html`: `.tool-shell`
+- `tools/Replay Visualizer/index.html`: `.app-shell`
+- `tools/Replay Visualizer/index.html`: `.tool-shell__left`
+- `tools/Replay Visualizer/index.html`: `.panel`
+- `tools/Replay Visualizer/index.html`: `.debug-tool-panel`
+- `tools/Replay Visualizer/index.html`: `.tool-shell__center`
+- `tools/Replay Visualizer/index.html`: `.tool-shell__right`
+- `tools/Replay Visualizer/index.html`: `.debug-tool-list`
 
-## 4. Current Component/Class/Function Inventory
+## Exact Current Functions And Classes
 - `tools/Replay Visualizer/main.js`: function applyEvents; function bindEvents; function bootReplayVisualizer; function buildPresetLoadedStatus; function clampTimeMs; function getDurationMs; function loadReplayFromInput; function normalizeSamplePresetPath; function playReplay; function renderCurrentEvent; function renderEventList; function setCurrentTimeMs; function setStatus; function stopPlayback; function tryLoadPresetFromQuery; function updateControlState; method applyProjectState; method captureProjectState; method getApi; method registerToolBootContract
 
-## 5. JSON Schema/Input Contract Currently Expected
-Schema baseline: `tools/schemas/tools/replay-visualizer.schema.json`. Title: replay-visualizer Payload. Required top-level fields: events. Allowed top-level fields: events. Additional top-level properties: rejected.
+## Target Controls
+Keep:
+- Load Replay JSON
+- Play
+- Pause
+- Reset
+- time slider
+- event list/output panels
 
-JSON handling signals found: download/export, safeParseJson, validate.
+Remove or rename:
+- none identified in the current folder
 
-## 6. Valid JSON Behavior
-Valid JSON must parse cleanly, match the current schema baseline or tool-owned normalized shape, update the local editor/preview state, and remain exportable as path/file-field JSON without embedding `imageDataUrl`.
+Add:
+- Validate Replay Events
+- Export Replay JSON/report
+- Publish `tools.replay-visualizer`
 
-## 7. Invalid JSON Rejection Behavior
-Malformed JSON, missing required fields, unsupported top-level fields, wrong nested types, and empty required editor payloads must be rejected in the tool UI before export/save/publish.
+## JSON Contract Owned By This Tool
+Baseline schema: `tools/schemas/tools/replay-visualizer.schema.json`. Required top-level fields: events. Allowed top-level fields: events. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
 
-## 8. Tool-Owned JSON Responsibilities
-- import/load: tool-owned; load files, pasted JSON, or hosted session payloads inside the tool.
-- validate: tool-owned validation against the current schema/input contract before state mutation.
-- edit/process: tool-owned editor or processing state.
-- export/save: tool-owned normalized JSON/export artifacts.
-- publish to `tools.replay-visualizer` if applicable: yes, publish normalized output under `tools.replay-visualizer` when this tool is the producer.
-- copy/create toolState if applicable: only if a future workspace flow copies a published `tools.*` entry into a toolState; the tool JSON remains tool-owned.
+## Hosted/Launch Payload Boundary
+- Launch payloads may seed this tool, but they do not become workspace-owned internals.
+- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
+- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
 
-## 9. Workspace Integration Contract
-- Workspace validates and launches only.
-- Workspace may provide `hostContextId`, launch URL state, or a workspace manifest shell, but it does not manage tool JSON internals.
-- The tool owns its JSON behavior after launch: import/load, validate, edit/process, export/save, publish output, and any copy/create `toolState` behavior listed above.
-- Workspace rejection should stop at invalid launch/session/manifest envelope; nested payload rules stay with the tool.
+## Invalid JSON Behavior
+- Reject malformed JSON before state mutation.
+- Reject missing required fields from the schema baseline.
+- Reject unsupported top-level fields when the schema disallows extras.
+- Keep export/save/publish disabled until the current payload validates.
+- Show a tool-specific error that names the failing field or control group.
 
-## 10. Published `tools.*` Output Contract For Games/Samples
-Published output key: `tools.replay-visualizer`. The value must match the current contract baseline, contain only JSON-safe values, use file/path/name fields for assets, and never persist `imageDataUrl`. Games and samples should consume the published payload as data, not as workspace-managed tool internals.
-
-## 11. Playwright Expectations
-Open `tools/Replay Visualizer/index.html`; verify the page renders without console errors, expected controls are present, valid JSON/session data reaches the success state, and invalid JSON/session data stays in the tool-owned rejection path. No Playwright run is expected for this documentation-only PR.
-
-## 12. Manual Test Expectations
-Manually launch `tools/Replay Visualizer/index.html`, exercise import/load controls or hosted launch parameters, confirm edit/process controls do not delegate JSON internals to workspace, export/save the normalized output, and confirm invalid JSON blocks export/save.
-
-## 13. Known Gaps
-- Controls need cleanup during the tool rebuild so import, validate, edit/process, export/save, and publish actions are explicit.
-- Playwright/manual checks are documented as expectations only; this PR does not change runtime behavior or add tests.
-
-## 14. Rebuild Order Priority
-P21: Replay Visualizer. This priority is used by `docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` and keeps the rebuild anchored on Palette / Palette Browser first, then dependent tool families.
+## Manual Test Plan
+- Load valid replay events.
+- Play, pause, reset, and scrub with the slider.
+- Try malformed JSON and event rows without valid time/type fields; playback and publish must stay blocked.

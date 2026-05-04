@@ -1,54 +1,36 @@
 # MASTER_ROADMAP_TOOLS
 
-Task: PR_26124_021-tool-folder-design-reset
+Task: PR_26124_022-tighten-tool-design-docs
 
-## Palette / Palette Browser
-- [.] Palette Browser: rebuild the global palette tool first with tool-owned import/load, validate, edit/process, export/save, and publish to `tools.palette-browser`.
-- [ ] Palette Manager V2: align hosted palette session reading with the palette contract after Palette Browser is clean.
+## Core Tool Rebuild
+- [.] Palette Browser: rebuild first as the global palette source of truth for `tools.palette-browser`.
+- [ ] Asset Browser: rebuild approved asset browsing, import-plan validation, and `tools.asset-browser` publish.
+- [ ] Asset Pipeline: rebuild pipeline payload validation, normalized output, and `tools.asset-pipeline` publish.
+- [ ] SVG Asset Studio: rebuild vector asset authoring, validation, export, and `tools.svg-asset-studio` publish.
+- [ ] Sprite Editor: rebuild sprite project editing, validation, export, and `tools.sprite-editor` publish.
+- [ ] Skin Editor: rebuild primitive skin editing, validation, export, and `tools.skin-editor` publish.
+- [ ] Tilemap Studio: rebuild tile map/layer authoring, validation, export, and `tools.tile-map-editor` publish.
+- [ ] Tile Model Converter: rebuild candidate/conversion validation, normalized output, and `tools.tile-model-converter` publish.
+- [ ] Parallax Scene Studio: rebuild parallax document editing, path-based references, validation, export, and `tools.parallax-editor` publish.
+- [ ] Vector Map Editor: rebuild vector map geometry editing, validation, export, and `tools.vector-map-editor` publish.
+- [ ] 3D JSON Payload: rebuild map payload normalization, validation, export, and `tools.3d-json-payload` publish.
+- [ ] 3D Asset Viewer: rebuild read-only asset inspection, validation report export, and `tools.3d-asset-viewer` publish.
+- [ ] 3D Camera Path Editor: rebuild waypoint editing, path validation, export, and `tools.3d-camera-path-editor` publish.
+- [ ] Physics Sandbox: rebuild physics body validation, step preview, export, and `tools.physics-sandbox` publish.
+- [ ] State Inspector: rebuild snapshot validation, inspection report export, and `tools.state-inspector` publish.
+- [ ] Replay Visualizer: rebuild replay event validation, playback controls, export, and `tools.replay-visualizer` publish.
+- [ ] Performance Profiler: rebuild profile settings validation, report export, and `tools.performance-profiler` publish.
 
-## Asset Flow
-- [ ] Asset Browser: rebuild browsing, filters, import plan validation, and published asset-browser output.
-- [ ] Asset Pipeline: rebuild pipeline payload validation and normalized export/report behavior.
-- [ ] Asset Manager V2: align hosted asset catalog edits, persistence, and copy/create toolState behavior.
+## Transitional And Global Cleanup
+- [ ] palette-manager-v2: review only after Palette Browser is rebuilt.
+- [ ] asset-manager-v2: review only after Asset Browser and Asset Pipeline are rebuilt.
+- [ ] svg-asset-studio-v2: review only after SVG Asset Studio is rebuilt.
+- [ ] tilemap-studio-v2: review only after Tilemap Studio is rebuilt.
+- [ ] vector-map-editor-v2: review only after Vector Map Editor is rebuilt.
+- [ ] workspace-v2: review toolState launch/copy behavior only after core tool contracts are stable.
+- [ ] Workspace Manager: keep as launcher/global coordinator; cleanup after core tools and toolState contracts are stable.
 
-## Vector And Sprite Authoring
-- [ ] SVG Asset Studio: rebuild vector document import, preview, validation, and export/publish behavior.
-- [ ] SVG Asset Studio V2: align hosted vector asset session reading with the rebuilt SVG contract.
-- [ ] Sprite Editor: rebuild sprite project controls, frame/animation state, validation, and export/publish behavior.
-- [ ] Skin Editor: rebuild primitive skin controls, validation, and export/publish behavior.
-
-## Tile And Scene Authoring
-- [ ] Tilemap Studio: rebuild tile map editing, layer controls, validation, and export/publish behavior.
-- [ ] Tilemap Studio V2: align hosted tile map session reading with the rebuilt tile map contract.
-- [ ] Tile Model Converter: rebuild candidate/conversion validation and normalized conversion output.
-- [ ] Parallax Scene Studio: rebuild layer controls, path-based image references, validation, and export/publish behavior.
-
-## Vector Map And Spatial Tools
-- [ ] Vector Map Editor: rebuild vector map object editing, geometry validation, and export/publish behavior.
-- [ ] Vector Map Editor V2: align hosted vector map session reading with the rebuilt vector map contract.
-- [ ] 3D JSON Payload: rebuild map payload normalization, invalid JSON rejection, and export behavior.
-- [ ] 3D Asset Viewer: rebuild read-only asset inspection, validation reporting, and export behavior.
-- [ ] 3D Camera Path Editor: rebuild waypoint editing, path validation, and camera path export behavior.
-
-## Runtime Inspection Tools
-- [ ] Physics Sandbox: rebuild physics payload validation, preview, and export behavior.
-- [ ] State Inspector: rebuild snapshot import, validation, inspection, and export behavior.
-- [ ] Replay Visualizer: rebuild event replay import, validation, playback controls, and export behavior.
-- [ ] Performance Profiler: rebuild profiler settings, capture controls, validation, and report export behavior.
-
-## Workspace And Support Folders
-- [ ] Workspace Manager: keep launch/coordination only and remove any expectation that workspace owns tool internals.
-- [ ] Workspace V2: keep validation and launch only; preserve copy/create toolState behavior without editing nested tool JSON.
-- [ ] Tool Schemas: keep the completed schema baseline unchanged until a later schema-scoped PR.
-- [ ] Common Tool Contracts: keep support helpers aligned with rebuilt tool-owned contracts.
-- [ ] Shared Tool Support: keep shared modules as callers/helpers for rebuilt tools, not owners of tool JSON.
-- [ ] Developer Tooling: keep guards/debug helpers aligned with the rebuilt tool surfaces.
-- [ ] Preview Utilities: keep preview generation separate from persisted tool JSON contracts.
-- [ ] Codex Path Utilities: keep maintenance scripts outside runtime/tool payload ownership.
-- [ ] Tool Templates: keep templates outside this rebuild until tool contracts are complete.
-
-## Completion Gates
-- [ ] Every `tools/*` folder has a current reengineering design doc.
-- [ ] Every launchable tool owns import/load, validate, edit/process, export/save, and publish behavior where applicable.
-- [ ] Workspace validates and launches only.
-- [ ] No runtime code rollback, schema mutation, sample edit, game edit, or tool deletion occurs in the reset/design anchor.
+## Deferred References
+- [ ] Support folders remain reference-only: common, shared, dev, preview, codex, templates.
+- [ ] Schemas remain the current contract baseline until a schema-scoped PR.
+- [ ] Samples remain deferred until core tools are rebuilt and published outputs are stable.

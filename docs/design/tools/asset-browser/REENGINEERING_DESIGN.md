@@ -1,94 +1,98 @@
 # Asset Browser Reengineering Design
 
-Task: PR_26124_021-tool-folder-design-reset
-Tool ID: `asset-browser`
+Task: PR_26124_022-tighten-tool-design-docs
+Classification: rebuildable tool
+Core priority: core-02
 Source folder: `tools/Asset Browser`
+Publish target: `tools.asset-browser`
 
-## 1. Tool Purpose
-Browse approved assets, filter import candidates, validate import plans, and emit asset-browser payloads for downstream tools.
+## Tool Purpose
+Approved asset browsing and import-plan authoring. This tool owns asset selection, import candidate validation, and publish to `tools.asset-browser`.
 
-## 2. Folder/Files Inspected
+## Exact Folder/Files Inspected
 - `tools/Asset Browser/assetBrowser.css`
 - `tools/Asset Browser/how_to_use.html`
 - `tools/Asset Browser/index.html`
 - `tools/Asset Browser/main.js`
 - `tools/Asset Browser/README.md`
 
-Skipped from inspection for this design reset: sample/data JSON, image assets, generated preview assets, and schema history notes outside the current contract baseline.
+## Exact Current Controls Found
+- `tools/Asset Browser/index.html`: `select#assetCategoryFilter` - assetCategoryFilter
+- `tools/Asset Browser/index.html`: `input[search]#assetSearchInput` - Filter by name or path
+- `tools/Asset Browser/index.html`: `button[button]#useAssetInToolButton` - Use In Active Tool
+- `tools/Asset Browser/index.html`: `input[file]#importFileInput` - importFileInput
+- `tools/Asset Browser/index.html`: `select#importCategorySelect` - importCategorySelect
+- `tools/Asset Browser/index.html`: `select#importDestinationSelect` - importDestinationSelect
+- `tools/Asset Browser/index.html`: `input[text]#importNameInput` - lowercase-name.ext
+- `tools/Asset Browser/index.html`: `button[button]#validateImportButton` - Validate Plan
+- `tools/Asset Browser/index.html`: `button[button]#downloadImportPlanButton` - Download Plan JSON
+- `tools/Asset Browser/main.js`: `assetCategoryFilter` via categoryFilter
+- `tools/Asset Browser/main.js`: `assetSearchInput` via searchInput
+- `tools/Asset Browser/main.js`: `launchContextText` via launchContextText
+- `tools/Asset Browser/main.js`: `assetCountText` via countText
+- `tools/Asset Browser/main.js`: `assetList` via assetList
+- `tools/Asset Browser/main.js`: `assetPreviewTitle` via previewTitle
+- `tools/Asset Browser/main.js`: `assetPreviewMeta` via previewMeta
+- `tools/Asset Browser/main.js`: `assetPreviewCanvas` via previewCanvas
+- `tools/Asset Browser/main.js`: `useAssetInToolButton` via useAssetInToolButton
+- `tools/Asset Browser/main.js`: `assetPreviewText` via previewText
+- `tools/Asset Browser/main.js`: `importFileInput` via importFileInput
+- `tools/Asset Browser/main.js`: `importCategorySelect` via importCategorySelect
+- `tools/Asset Browser/main.js`: `importDestinationSelect` via importDestinationSelect
+- `tools/Asset Browser/main.js`: `importNameInput` via importNameInput
+- `tools/Asset Browser/main.js`: `validateImportButton` via validateImportButton
+- `tools/Asset Browser/main.js`: `downloadImportPlanButton` via downloadImportPlanButton
+- `tools/Asset Browser/main.js`: `importStatusText` via importStatusText
+- `tools/Asset Browser/main.js`: `importPlanText` via importPlanText
 
-## 3. Current Controls/Buttons/Inputs/Selects/Textareas/Tables/Panels
-Counts found: buttons 4, inputs 3, selects 3, textareas 0, tables 0, inferred DOM controls/panels 10.
-- `tools/Asset Browser/index.html`: select #assetCategoryFilter - assetCategoryFilter
-- `tools/Asset Browser/index.html`: input[search] #assetSearchInput - Filter by name or path
-- `tools/Asset Browser/index.html`: button[button] #useAssetInToolButton - Use In Active Tool
-- `tools/Asset Browser/index.html`: input[file] #importFileInput - importFileInput
-- `tools/Asset Browser/index.html`: select #importCategorySelect - importCategorySelect
-- `tools/Asset Browser/index.html`: select #importDestinationSelect - importDestinationSelect
-- `tools/Asset Browser/index.html`: input[text] #importNameInput - lowercase-name.ext
-- `tools/Asset Browser/index.html`: button[button] #validateImportButton - Validate Plan
-- `tools/Asset Browser/index.html`: button[button] #downloadImportPlanButton - Download Plan JSON
-- `tools/Asset Browser/main.js`: button[button] #${entry.id} - ${entry.label} ${entry.category} ${entry.path}
-- `tools/Asset Browser/main.js`: input #assetSearchInput - inferred from JS DOM lookup
-- `tools/Asset Browser/main.js`: panel #assetList - inferred from JS DOM lookup
-- `tools/Asset Browser/main.js`: panel #assetPreviewCanvas - inferred from JS DOM lookup
-- `tools/Asset Browser/main.js`: button #useAssetInToolButton - inferred from JS DOM lookup
-- `tools/Asset Browser/main.js`: input #importFileInput - inferred from JS DOM lookup
-- `tools/Asset Browser/main.js`: select #importCategorySelect - inferred from JS DOM lookup
-- `tools/Asset Browser/main.js`: select #importDestinationSelect - inferred from JS DOM lookup
-- `tools/Asset Browser/main.js`: input #importNameInput - inferred from JS DOM lookup
-- `tools/Asset Browser/main.js`: button #validateImportButton - inferred from JS DOM lookup
-- `tools/Asset Browser/main.js`: button #downloadImportPlanButton - inferred from JS DOM lookup
-- Panels/surfaces found:
-  - `tools/Asset Browser/index.html`: .app-shell
-  - `tools/Asset Browser/index.html`: .panel
-  - `tools/Asset Browser/index.html`: .asset-browser__panel
-  - `tools/Asset Browser/index.html`: .tools-platform-layout-grid
-  - `tools/Asset Browser/index.html`: .tools-platform-resize-panel
-  - `tools/Asset Browser/index.html`: .asset-browser__list
-  - `tools/Asset Browser/index.html`: .asset-browser__preview
-  - `tools/Asset Browser/index.html`: .asset-browser__text-preview
-  - `tools/Asset Browser/index.html`: .asset-browser__status
+## Current Panels And Surfaces Found
+- `tools/Asset Browser/index.html`: `.app-shell`
+- `tools/Asset Browser/index.html`: `.panel`
+- `tools/Asset Browser/index.html`: `.asset-browser__panel`
+- `tools/Asset Browser/index.html`: `.tools-platform-layout-grid`
+- `tools/Asset Browser/index.html`: `.tools-platform-resize-panel`
+- `tools/Asset Browser/index.html`: `.asset-browser__list`
+- `tools/Asset Browser/index.html`: `.asset-browser__preview`
+- `tools/Asset Browser/index.html`: `.asset-browser__text-preview`
+- `tools/Asset Browser/index.html`: `.asset-browser__status`
 
-## 4. Current Component/Class/Function Inventory
-- `tools/Asset Browser/main.js`: function applyAssetBrowserPreset; function applyLaunchContext; function bindEvents; function bootAssetBrowser; function buildApprovedAssetEmptyStateText; function buildApprovedAssetStatusText; function buildImportPlan; function buildPresetLoadedStatus; function classifyApprovedAssetState; function collectCatalogPathCandidates; function downloadImportPlan; function emitAssetBrowserControlReadiness; function ensureFirstVisibleAssetSelection; function extractAssetBrowserCatalogFromPreset; function extractAssetBrowserPreset; function extractCompanionAssetPayload; function findCompanionPresetPath; function getActiveAssetEmptyStateMessage; function getAssetTypeFromCategory; function getCategoryOrder; function getPathExtension; function getSelectedAsset; function getVisibleAssets; function humanizeAssetId; function hydrateApprovedAssetCatalog; function hydrateCatalogLabels; function inferAssetKindFromPath; function inferCategoryFromFileName; function init; function inspectManifestAssetBrowserSource; function loadCatalogEntriesFromContext; function loadCompanionSampleEntries; function loadSampleMetadataManifest; function loadSamplePresetCatalogEntries; function mapCompanionPresetToEntries; function mapKindToCategory; function normalizeCatalogEntries; function normalizeExplicitCatalogPath; function normalizeImportName; function normalizeLocalPath; function normalizeManifestAssetEntries; function normalizeManifestToolAssetEntries; function normalizePresetAssetEntries; function normalizeSampleId; function normalizeSamplePresetPath; function normalizeToolId; function populateCategoryControls; function populateDestinationOptions; function pushEntry; function readActiveProjectManifest; function readCatalogEntriesFromPath; function renderAssetList; function renderImportPlan; function renderPreview; function resolveInitialSelectedAssetId; function sanitizeText; function setAssetBrowserLifecycle; function syncAssetBrowserUxContract; function syncImportFormFromFile; function toTitleCase; ... 6 more
+## Exact Current Functions And Classes
+- `tools/Asset Browser/main.js`: function applyAssetBrowserPreset; function applyLaunchContext; function bindEvents; function bootAssetBrowser; function buildApprovedAssetEmptyStateText; function buildApprovedAssetStatusText; function buildImportPlan; function buildPresetLoadedStatus; function classifyApprovedAssetState; function collectCatalogPathCandidates; function downloadImportPlan; function emitAssetBrowserControlReadiness; function ensureFirstVisibleAssetSelection; function extractAssetBrowserCatalogFromPreset; function extractAssetBrowserPreset; function extractCompanionAssetPayload; function findCompanionPresetPath; function getActiveAssetEmptyStateMessage; function getAssetTypeFromCategory; function getCategoryOrder; function getPathExtension; function getSelectedAsset; function getVisibleAssets; function humanizeAssetId; function hydrateApprovedAssetCatalog; function hydrateCatalogLabels; function inferAssetKindFromPath; function inferCategoryFromFileName; function init; function inspectManifestAssetBrowserSource; function loadCatalogEntriesFromContext; function loadCompanionSampleEntries; function loadSampleMetadataManifest; function loadSamplePresetCatalogEntries; function mapCompanionPresetToEntries; function mapKindToCategory; function normalizeCatalogEntries; function normalizeExplicitCatalogPath; function normalizeImportName; function normalizeLocalPath; function normalizeManifestAssetEntries; function normalizeManifestToolAssetEntries; function normalizePresetAssetEntries; function normalizeSampleId; function normalizeSamplePresetPath; function normalizeToolId; function populateCategoryControls; function populateDestinationOptions; function pushEntry; function readActiveProjectManifest; function readCatalogEntriesFromPath; function renderAssetList; function renderImportPlan; function renderPreview; function resolveInitialSelectedAssetId; function sanitizeText; function setAssetBrowserLifecycle; function syncAssetBrowserUxContract; function syncImportFormFromFile; function toTitleCase; function tryLoadPresetFromQuery; function useSelectedAssetInActiveTool; method applyProjectState; method captureProjectState; method destroy; method getApi
 
-## 5. JSON Schema/Input Contract Currently Expected
-Schema baseline: `tools/schemas/tools/asset-browser.schema.json`. Title: asset-browser Payload. Required top-level fields: assets. Allowed top-level fields: assets, assetBrowserPreset, approvedAssets, importHubPreset. Additional top-level properties: rejected.
+## Target Controls
+Keep:
+- category filter
+- search input
+- asset list and preview
+- import file/category/destination/name controls
+- Validate Plan
+- Download Plan JSON
 
-JSON handling signals found: Blob/object URL, download/export, JSON.parse, JSON.stringify, localStorage, schema, tools.*, validate.
+Remove or rename:
+- ambiguous `Use In Active Tool` handoff as a persisted JSON owner
 
-## 6. Valid JSON Behavior
-Valid JSON must parse cleanly, match the current schema baseline or tool-owned normalized shape, update the local editor/preview state, and remain exportable as path/file-field JSON without embedding `imageDataUrl`.
+Add:
+- Load asset-browser JSON
+- Validate asset catalog/import plan
+- Publish `tools.asset-browser`
+- copy selected asset as launch payload only
 
-## 7. Invalid JSON Rejection Behavior
-Malformed JSON, missing required fields, unsupported top-level fields, wrong nested types, and empty required editor payloads must be rejected in the tool UI before export/save/publish.
+## JSON Contract Owned By This Tool
+Baseline schema: `tools/schemas/tools/asset-browser.schema.json`. Required top-level fields: assets. Allowed top-level fields: assets, assetBrowserPreset, approvedAssets, importHubPreset. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
 
-## 8. Tool-Owned JSON Responsibilities
-- import/load: tool-owned; load files, pasted JSON, or hosted session payloads inside the tool.
-- validate: tool-owned validation against the current schema/input contract before state mutation.
-- edit/process: tool-owned editor or processing state.
-- export/save: tool-owned normalized JSON/export artifacts.
-- publish to `tools.asset-browser` if applicable: yes, publish normalized output under `tools.asset-browser` when this tool is the producer.
-- copy/create toolState if applicable: only if a future workspace flow copies a published `tools.*` entry into a toolState; the tool JSON remains tool-owned.
+## Hosted/Launch Payload Boundary
+- Launch payloads may seed this tool, but they do not become workspace-owned internals.
+- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
+- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
 
-## 9. Workspace Integration Contract
-- Workspace validates and launches only.
-- Workspace may provide `hostContextId`, launch URL state, or a workspace manifest shell, but it does not manage tool JSON internals.
-- The tool owns its JSON behavior after launch: import/load, validate, edit/process, export/save, publish output, and any copy/create `toolState` behavior listed above.
-- Workspace rejection should stop at invalid launch/session/manifest envelope; nested payload rules stay with the tool.
+## Invalid JSON Behavior
+- Reject malformed JSON before state mutation.
+- Reject missing required fields from the schema baseline.
+- Reject unsupported top-level fields when the schema disallows extras.
+- Keep export/save/publish disabled until the current payload validates.
+- Show a tool-specific error that names the failing field or control group.
 
-## 10. Published `tools.*` Output Contract For Games/Samples
-Published output key: `tools.asset-browser`. The value must match the current contract baseline, contain only JSON-safe values, use file/path/name fields for assets, and never persist `imageDataUrl`. Games and samples should consume the published payload as data, not as workspace-managed tool internals.
-
-## 11. Playwright Expectations
-Open `tools/Asset Browser/index.html`; verify the page renders without console errors, expected controls are present, valid JSON/session data reaches the success state, and invalid JSON/session data stays in the tool-owned rejection path. No Playwright run is expected for this documentation-only PR.
-
-## 12. Manual Test Expectations
-Manually launch `tools/Asset Browser/index.html`, exercise import/load controls or hosted launch parameters, confirm edit/process controls do not delegate JSON internals to workspace, export/save the normalized output, and confirm invalid JSON blocks export/save.
-
-## 13. Known Gaps
-- Controls need cleanup during the tool rebuild so import, validate, edit/process, export/save, and publish actions are explicit.
-- Playwright/manual checks are documented as expectations only; this PR does not change runtime behavior or add tests.
-
-## 14. Rebuild Order Priority
-P03: Asset Browser. This priority is used by `docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` and keeps the rebuild anchored on Palette / Palette Browser first, then dependent tool families.
+## Manual Test Plan
+- Filter assets by category and search term.
+- Select an asset and confirm preview/meta text updates.
+- Build an import plan, validate it, download it, and confirm invalid category/destination/name combinations are blocked.
