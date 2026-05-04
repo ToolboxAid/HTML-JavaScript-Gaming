@@ -189,14 +189,16 @@
         </section>
 
         <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--validation is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
-            <span>Validation/Error Viewer</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="validationErrorAccordionContent" class="accordion-v2__content">
-            <div class="palette-manager-v2__viewer-actions">
+          <div class="palette-manager-v2__validation-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
+              <span>Validation/Error Viewer</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
+            <div class="palette-manager-v2__validation-actions" aria-label="Validation/Error Viewer controls">
               <button id="clearValidationViewerButton" type="button">Clear</button>
             </div>
+          </div>
+          <div id="validationErrorAccordionContent" class="accordion-v2__content">
             <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
             <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
           </div>

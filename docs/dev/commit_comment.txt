@@ -1,1 +1,1 @@
-Preserve Palette Manager source scroll after pin render - PR_26124_064-palette-manager-source-pin-scroll-preserve
+Move Palette Manager validation Clear into viewer header - PR_26124_065-palette-manager-validation-clear-in-viewer

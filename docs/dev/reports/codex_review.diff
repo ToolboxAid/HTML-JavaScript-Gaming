@@ -1,139 +1,146 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 3d48e7ee..e148fe65 100644
+index e148fe65..5255f164 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,28 +1,28 @@
--# Codex Commands - PR_26124_063-palette-manager-tag-sort-untagged-last
-+# Codex Commands - PR_26124_064-palette-manager-source-pin-scroll-preserve
+@@ -1,28 +1,27 @@
+-# Codex Commands - PR_26124_064-palette-manager-source-pin-scroll-preserve
++# Codex Commands - PR_26124_065-palette-manager-validation-clear-in-viewer
  
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
  - Used `.codex/skills/repo-build/SKILL.md`.
  - Checked git status before implementation.
--- Created `docs/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/BUILD_PR.md`.
-+- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md`.
+-- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md`.
++- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md`.
  - Read the active BUILD doc before changing runtime files.
--- Updated only `tools/palette-manager-v2/modules/PaletteManagerApp.js`.
--- Created `docs/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/APPLY_PR.md`.
-+- Updated only `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`.
-+- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md`.
+-- Updated only `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`.
+-- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md`.
++- Updated `tools/palette-manager-v2/index.html`.
++- Updated `tools/palette-manager-v2/paletteManagerV2.css`.
++- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md`.
  
  ## Validation Commands
--- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
--- Targeted served-browser Palette Manager V2 Tag ascending/descending sort validation using Playwright from Node.
-+- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-+- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation using Playwright from Node.
+-- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+-- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation using Playwright from Node.
++- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation using Playwright from Node.
  - `git diff --check`
  - `npm run test:workspace-v2`
  - `git diff --cached --check`
  - `npm run codex:review-artifacts`
--- Python `zipfile` packaging for `tmp/PR_26124_063-palette-manager-tag-sort-untagged-last_delta.zip`
-+- Python `zipfile` packaging for `tmp/PR_26124_064-palette-manager-source-pin-scroll-preserve_delta.zip`
+-- Python `zipfile` packaging for `tmp/PR_26124_064-palette-manager-source-pin-scroll-preserve_delta.zip`
++- Python `zipfile` packaging for `tmp/PR_26124_065-palette-manager-validation-clear-in-viewer_delta.zip`
  
  ## Validation Outcome
- - JavaScript syntax check: PASS.
--- Targeted served-browser Palette Manager V2 Tag sort validation: PASS.
--- `git diff --check`: PASS.
-+- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warning for generated review artifact.
+-- JavaScript syntax check: PASS.
+-- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation: PASS.
+-- `git diff --check`: PASS with Git LF-to-CRLF warning for generated review artifact.
++- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
  - `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
  - Review artifacts: generated.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 4f675d1b..c5251306 100644
+index c5251306..ebb0de10 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Keep untagged swatches last in Palette Manager Tag sort - PR_26124_063-palette-manager-tag-sort-untagged-last
-+Preserve Palette Manager source scroll after pin render - PR_26124_064-palette-manager-source-pin-scroll-preserve
-diff --git a/docs/dev/reports/PR_26124_064_report.md b/docs/dev/reports/PR_26124_064_report.md
+-Preserve Palette Manager source scroll after pin render - PR_26124_064-palette-manager-source-pin-scroll-preserve
++Move Palette Manager validation Clear into viewer header - PR_26124_065-palette-manager-validation-clear-in-viewer
+diff --git a/docs/dev/reports/PR_26124_065_report.md b/docs/dev/reports/PR_26124_065_report.md
 new file mode 100644
-index 00000000..aef49575
+index 00000000..e7fbd6ee
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_064_report.md
-@@ -0,0 +1,24 @@
-+# PR_26124_064-palette-manager-source-pin-scroll-preserve Report
++++ b/docs/dev/reports/PR_26124_065_report.md
+@@ -0,0 +1,26 @@
++# PR_26124_065-palette-manager-validation-clear-in-viewer Report
 +
 +## Summary
-+Implemented a Palette Manager V2-only source grid scroll preservation timing fix.
++Implemented a Palette Manager V2-only UI placement update for Validation/Error Viewer Clear.
 +
 +## Changes
-+- `SourcePaletteBrowserControl.preserveSourceScrollDuring` now captures the source grid scroll position before the pin/unpin action.
-+- The source grid scroll position is restored with `requestAnimationFrame` after the app render replaces the source grid contents.
-+- Pin/unpin behavior itself is unchanged.
-+- Pin All still uses the same helper and may benefit naturally from the post-render restore path.
++- The Validation/Error Viewer Clear button now appears in the Validation/Error Viewer header/control area.
++- The old in-content Clear button wrapper was removed.
++- The existing Clear behavior is preserved:
++  - displayed status/errors are cleared,
++  - palette state is not changed,
++  - the next validation/error event displays normally.
 +
 +## Validation
-+- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
-+- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warning for generated review artifact.
++- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
-+- Full samples smoke test: skipped because this PR is limited to Palette Manager V2 source grid scroll timing and sample JSON remains out of scope.
++- Full samples smoke test: skipped because this PR is limited to Palette Manager V2 Validation/Error Viewer UI placement and sample JSON remains out of scope.
 +
 +## Manual Test Notes
 +1. Open Palette Manager V2.
-+2. Scroll the Sample/Source Palette grid down.
-+3. Click an individual red pin and confirm the source grid remains at the same scroll position after render.
-+4. Click an individual green pin/unpin and confirm the source grid remains at the same scroll position after render.
-+5. Confirm Clear checkbox behavior, tag sorting, pin button size, and Validation/Error Viewer behavior are unchanged.
-diff --git a/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md
++2. Confirm `Clear` is in the Validation/Error Viewer header/control area.
++3. Trigger a validation error.
++4. Click `Clear` and confirm displayed status/errors are removed.
++5. Trigger another validation error and confirm it displays normally.
++6. Confirm palette state, swatch state, tags, sorting, pinning, import/export data, pin button size, and source/sample pin scroll behavior are unchanged.
+diff --git a/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md
 new file mode 100644
-index 00000000..3e1aa3ea
+index 00000000..3c8041d0
 --- /dev/null
-+++ b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md
++++ b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md
 @@ -0,0 +1,23 @@
-+# APPLY_PR - PR_26124_064-palette-manager-source-pin-scroll-preserve
++# APPLY_PR - PR_26124_065-palette-manager-validation-clear-in-viewer
 +
 +## Summary
-+Updated Palette Manager V2 source grid scroll preservation so individual source pin/unpin restores scroll position after render.
++Moved Palette Manager V2 Validation/Error Viewer Clear into the viewer header/control area while preserving clear behavior.
 +
 +## Applied Changes
-+- Updated `preserveSourceScrollDuring` in `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`.
-+- Preserved `sourceSwatchList.scrollTop` before the existing pin/unpin action.
-+- Restored `sourceSwatchList.scrollTop` inside `requestAnimationFrame` after render.
-+- Kept existing pin/unpin behavior unchanged.
-+- Did not change Clear checkbox behavior, tag sorting, pin button size, or Validation/Error Viewer behavior.
++- Wrapped the Validation/Error Viewer accordion header in a local header/action container.
++- Moved `#clearValidationViewerButton` into that Validation/Error Viewer header/action container.
++- Removed the old in-content `palette-manager-v2__viewer-actions` wrapper.
++- Kept `#clearValidationViewerButton` unchanged so the existing validation controller binding remains intact.
++- Added scoped CSS for the Validation/Error Viewer header/action layout.
++- Preserved Clear behavior: visible validation/error history is cleared, palette data is unchanged, and future validation/error events display normally.
 +
 +## Validation
-+- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
-+- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warning for generated review artifact.
++- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Artifacts
 +- Review diff: `docs/dev/reports/codex_review.diff`
 +- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_064-palette-manager-source-pin-scroll-preserve_delta.zip`
-diff --git a/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md
++- Delta ZIP: `tmp/PR_26124_065-palette-manager-validation-clear-in-viewer_delta.zip`
+diff --git a/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md
 new file mode 100644
-index 00000000..e5f725e3
+index 00000000..fdc36d5d
 --- /dev/null
-+++ b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md
-@@ -0,0 +1,32 @@
-+# BUILD_PR - PR_26124_064-palette-manager-source-pin-scroll-preserve
++++ b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md
+@@ -0,0 +1,37 @@
++# BUILD_PR - PR_26124_065-palette-manager-validation-clear-in-viewer
 +
 +## Purpose
-+Implement one scoped Palette Manager V2 source grid scroll preservation fix for individual source swatch pin/unpin.
++Implement one scoped Palette Manager V2 UI placement fix: move Validation/Error Viewer Clear into the Validation/Error Viewer header/control area without changing clear behavior.
 +
 +## Scope
-+- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
++- `tools/palette-manager-v2/index.html`
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts only.
 +
 +## Implementation
-+1. Update `preserveSourceScrollDuring` in `SourcePaletteBrowserControl.js`.
-+2. Capture `this.refs.sourceSwatchList.scrollTop` before executing the action.
-+3. Execute the existing action without changing pin/unpin behavior.
-+4. Restore `this.refs.sourceSwatchList.scrollTop` inside `requestAnimationFrame` after render.
-+5. Keep Pin All behavior unchanged except for natural benefit from the same helper if it uses that helper.
++1. Wrap the Validation/Error Viewer accordion header in a local header/action container, matching the existing User Palette and Sample Palette Swatch pattern.
++2. Move `#clearValidationViewerButton` into that Validation/Error Viewer header/action container.
++3. Remove the old in-content `palette-manager-v2__viewer-actions` wrapper.
++4. Keep `#clearValidationViewerButton` unchanged so `PaletteValidationErrorControl.js` continues to bind it without runtime logic changes.
++5. Add only scoped CSS needed for the Validation/Error Viewer header/action layout.
++6. Preserve existing Clear behavior:
++   - Clear removes displayed validation/error history.
++   - Clear does not change palette state, swatch state, tags, sorting, pinning, or import/export data.
++   - The next validation/error event displays normally.
 +
 +## Boundaries
-+- Do not change Clear checkbox behavior.
++- Do not change Clear tag checkbox behavior.
 +- Do not change tag sorting.
++- Do not change source/sample pin scroll preservation.
 +- Do not change pin button size.
-+- Do not change Validation/Error Viewer behavior.
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
@@ -141,30 +148,31 @@ index 00000000..e5f725e3
 +- Do not broadly refactor Palette Manager V2.
 +
 +## Validation
-+- Syntax check changed JavaScript files.
-+- Run targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation.
++- Syntax check changed files if any JavaScript changes are made.
++- Run targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md
 new file mode 100644
-index 00000000..97e09774
+index 00000000..251cb5fa
 --- /dev/null
-+++ b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md
-@@ -0,0 +1,43 @@
-+# PLAN_PR - PR_26124_064-palette-manager-source-pin-scroll-preserve
++++ b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md
+@@ -0,0 +1,42 @@
++# PLAN_PR - PR_26124_065-palette-manager-validation-clear-in-viewer
 +
 +## Goal
-+Make Palette Manager V2 Sample/Source Palette individual pin/unpin preserve the current source grid scroll position reliably after render.
++Move Palette Manager V2 Validation/Error Viewer Clear into the Validation/Error Viewer header/control area while preserving display-only clear behavior.
 +
 +## Scope
-+- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
++- `tools/palette-manager-v2/index.html`
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts only.
 +
 +## Boundaries
-+- Do not change Clear checkbox behavior.
++- Do not change Clear tag checkbox behavior.
 +- Do not change tag sorting.
++- Do not change source/sample pin scroll preservation.
 +- Do not change pin button size.
-+- Do not change Validation/Error Viewer behavior.
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
@@ -172,40 +180,105 @@ index 00000000..97e09774
 +- Avoid broad refactor.
 +
 +## Implementation Plan
-+1. Update `SourcePaletteBrowserControl.js` scroll preservation helper.
-+2. Capture `sourceSwatchList.scrollTop` before pin/unpin action triggers render.
-+3. Restore `sourceSwatchList.scrollTop` in `requestAnimationFrame` after render completes.
-+4. Keep existing pin/unpin behavior unchanged.
-+5. Let Pin All continue using the same helper if already wired through it.
++1. Move `#clearValidationViewerButton` from Validation/Error Viewer content into its header/control area.
++2. Match the sibling header/action pattern used by User Palette and Sample Palette Swatch.
++3. Keep `#clearValidationViewerButton` id unchanged so existing behavior remains wired.
++4. Keep Validation/Error Viewer Clear behavior unchanged: clear visible history only, then show future validation/action events normally.
++5. Add scoped CSS for the Validation/Error Viewer header/action row.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only source-grid scroll timing update.
++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only UI placement update.
 +- Expected pass behavior: Workspace V2 validation remains green.
 +- Expected fail behavior: missing script or Workspace V2 regression is reported.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open Palette Manager V2.
-+2. Ensure the Sample/Source Palette grid has enough swatches to scroll.
-+3. Scroll the Sample/Source Palette grid down.
-+4. Click an individual red pin.
-+5. Confirm the source grid remains at the same scroll position after render.
-+6. Click an individual green pin/unpin.
-+7. Confirm the source grid remains at the same scroll position after render.
-+8. Confirm Clear checkbox behavior, tag sorting, pin button size, and Validation/Error Viewer behavior are unchanged.
-diff --git a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-index 6fbdf15d..d2de66d0 100644
---- a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-+++ b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-@@ -25,7 +25,9 @@ export class SourcePaletteBrowserControl {
-   preserveSourceScrollDuring(action) {
-     const sourceScrollTop = this.refs.sourceSwatchList.scrollTop;
-     action();
--    this.refs.sourceSwatchList.scrollTop = sourceScrollTop;
-+    requestAnimationFrame(() => {
-+      this.refs.sourceSwatchList.scrollTop = sourceScrollTop;
-+    });
-   }
++2. Confirm the Validation/Error Viewer Clear button appears in the Validation/Error Viewer header/control area.
++3. Trigger a validation error.
++4. Click Clear and confirm displayed status/errors are removed.
++5. Trigger another validation error and confirm it displays normally.
++6. Confirm palette state, swatch state, tags, sorting, pinning, import/export data, pin button size, and source/sample pin scroll behavior are unchanged.
+diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
+index fd0575bf..8b30bcc4 100644
+--- a/tools/palette-manager-v2/index.html
++++ b/tools/palette-manager-v2/index.html
+@@ -189,14 +189,16 @@
+         </section>
  
-   render() {
+         <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--validation is-open" data-accordion-v2-open="true">
+-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
+-            <span>Validation/Error Viewer</span>
+-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+-          </button>
+-          <div id="validationErrorAccordionContent" class="accordion-v2__content">
+-            <div class="palette-manager-v2__viewer-actions">
++          <div class="palette-manager-v2__validation-header">
++            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
++              <span>Validation/Error Viewer</span>
++              <span class="accordion-v2__icon" aria-hidden="true">+</span>
++            </button>
++            <div class="palette-manager-v2__validation-actions" aria-label="Validation/Error Viewer controls">
+               <button id="clearValidationViewerButton" type="button">Clear</button>
+             </div>
++          </div>
++          <div id="validationErrorAccordionContent" class="accordion-v2__content">
+             <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
+             <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
+           </div>
+diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
+index c3cda204..7fb1f803 100644
+--- a/tools/palette-manager-v2/paletteManagerV2.css
++++ b/tools/palette-manager-v2/paletteManagerV2.css
+@@ -162,12 +162,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   flex: 0 0 auto;
+ }
+ 
+-.palette-manager-v2__viewer-actions {
+-  flex: 0 0 auto;
+-  display: flex;
+-  justify-content: flex-end;
+-}
+-
+ .palette-manager-v2__right-accordion--validation .palette-manager-v2__errors {
+   flex: 1 1 auto;
+   min-height: 0;
+@@ -371,7 +365,8 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+ }
+ 
+ .palette-manager-v2__user-palette-header,
+-.palette-manager-v2__source-palette-header {
++.palette-manager-v2__source-palette-header,
++.palette-manager-v2__validation-header {
+   flex: 0 0 auto;
+   display: flex;
+   align-items: stretch;
+@@ -380,13 +375,15 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+ }
+ 
+ .palette-manager-v2__user-palette-header .accordion-v2__header,
+-.palette-manager-v2__source-palette-header .accordion-v2__header {
++.palette-manager-v2__source-palette-header .accordion-v2__header,
++.palette-manager-v2__validation-header .accordion-v2__header {
+   flex: 1 1 auto;
+   width: auto;
+ }
+ 
+ .palette-manager-v2__user-palette-actions,
+-.palette-manager-v2__source-palette-actions {
++.palette-manager-v2__source-palette-actions,
++.palette-manager-v2__validation-actions {
+   flex: 0 0 auto;
+   display: flex;
+   align-items: center;
+@@ -395,7 +392,8 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   flex-wrap: wrap;
+ }
+ 
+-.palette-manager-v2__source-palette-actions {
++.palette-manager-v2__source-palette-actions,
++.palette-manager-v2__validation-actions {
+   justify-content: flex-end;
+   margin-left: auto;
+ }
