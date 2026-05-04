@@ -1,7 +1,2 @@
-docs/dev/reports/PR_26124_035_report.md
-docs/dev/reports/PR_26124_035_scrollbar_completion_report.md
-tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-tools/palette-manager-v2/controls/UserPaletteControl.js
-tools/palette-manager-v2/index.html
-tools/palette-manager-v2/modules/PaletteManagerApp.js
+docs/dev/reports/PR_26124_040_report.md
 tools/palette-manager-v2/paletteManagerV2.css

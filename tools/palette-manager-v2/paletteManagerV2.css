@@ -32,33 +32,12 @@
 }
 
 .palette-manager-v2__panel--center {
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 14px;
   overflow: hidden;
-}
-
-.palette-manager-v2__panel--center .palette-manager-v2__accordion {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.palette-manager-v2__panel--center .palette-manager-v2__accordion[open] {
-  flex: 1 1 0;
-  overflow: hidden;
-}
-
-.palette-manager-v2__panel--center .palette-manager-v2__accordion-content {
-  display: flex;
-  flex: 1 1 0;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.palette-manager-v2__panel--center .palette-manager-v2__accordion-content > :not(.palette-manager-v2__tile-grid) {
-  flex: 0 0 auto;
 }
 
 .palette-manager-v2__accordion {
@@ -129,13 +108,9 @@
   grid-template-columns: 1fr;
 }
 
-.palette-manager-v2__controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.palette-manager-v2__sort-buttons {
+.palette-manager-v2__controls,
+.palette-manager-v2__sort-buttons,
+.palette-manager-v2__size-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -158,10 +133,7 @@
 }
 
 .palette-manager-v2__size-buttons {
-  display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  flex-wrap: wrap;
 }
 
 .palette-manager-v2__size-button {
@@ -189,32 +161,22 @@
   outline-offset: 2px;
 }
 
-.palette-manager-v2__list {
-  display: grid;
-  gap: 8px;
-  min-height: 0;
-  max-height: 520px;
-  overflow-y: auto;
-  align-content: start;
-}
-
 .palette-manager-v2__tile-grid {
   --swatch-tile-width: 112px;
   --swatch-tile-height: 108px;
   --swatch-chip-height: 90px;
   --swatch-tile-padding: 8px;
+
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--swatch-tile-width), 1fr));
   gap: 10px;
-  flex: 1 1 0;
-  height: 0;
   min-height: 0;
   overflow-y: auto;
   overflow-x: visible;
   align-content: start;
   overscroll-behavior: contain;
   padding-right: 4px;
-  padding-bottom: 150px;
+  padding-bottom: 8px;
 }
 
 .palette-manager-v2__tile-grid[data-swatch-size="small"] {
@@ -239,12 +201,13 @@
 }
 
 .palette-manager-v2__tile-grid--user {
-  max-height: none;
+  max-height: clamp(180px, 24vh, 320px);
   overflow-y: auto;
 }
 
 .palette-manager-v2__tile-grid--source {
-  max-height: none;
+  max-height: clamp(360px, 48vh, 620px);
+  overflow-y: auto;
 }
 
 .palette-manager-v2__swatch-row {
