@@ -1,663 +1,256 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 87de06c9..7773a1fc 100644
+index 7773a1fc..ebb69ca9 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,357 +1,20 @@
--MODEL: gpt-5.3-codex
--REASONING: medium
--
--# PR_11_198 — Tilemap Studio V2 Completion + Validation
--
--## Execute
--Implement the smallest valid testable change for Tilemap Studio V2.
--
--## Hard Boundaries
--- Codex writes implementation code.
--- Do not change schemas.
--- Do not change samples.
--- Do not change games.
--- Do not touch Workspace Manager v1.
--- Do not patch legacy tools.
--- Do not use platformShell.
--- Do not use tools/shared except the explicitly required theme/header mount path already used by the repo theme system.
--- Do not copy old tool code. Re-engineer the V2 tool.
--
--## Required Files To Inspect/Edit
--- tools/tilemap-studio-v2/index.html
--- tools/tilemap-studio-v2/index.js
--
--If either file does not exist, create only the missing file required for this tool.
--
--## Implementation Rules
--1. `tools/tilemap-studio-v2/index.html` must own the static shell:
--   - include theme CSS
--   - include `<div id="shared-theme-header"></div>`
--   - include static page shell/root container
--   - include static menuTool section
--   - include static menuWorkspace section
--   - include `../../src/engine/theme/mount-shared-header.js`
--   - include `./index.js`
--
--2. `tools/tilemap-studio-v2/index.js` must be behavior-only:
--   - single class
--   - no helper classes
--   - no alias/pass-through variables
--   - no full-page `innerHTML` construction
--   - no CSS injection
--   - no dynamic header injection
--   - read session only
--   - update existing DOM nodes only
--   - handle missing, invalid, and valid session states
--
--3. Enforce naming:
--   - visible name: `Tilemap Studio V2`
--   - `document.title`: `Tilemap Studio V2`
--   - `data-tool-id`: `tilemap-studio-v2`
--
--4. Session rules:
--   - no fallback data
--   - no defaults
--   - no fetch
--   - no guessed payloads
--   - no hidden samples
--
--## Validation Commands
--Run targeted validation only:
--
--```powershell
--node --check tools/tilemap-studio-v2/index.js
--```
--
--Manual validation:
--- Open `tools/tilemap-studio-v2/index.html`.
--- Confirm shared header renders in `#shared-theme-header`.
--- Confirm missing session shows clear actionable state.
--- Confirm valid session renders tilemap content.
--- Confirm browser console has no errors.
--
--## Evidence Report
--Create or update:
--
--```text
--docs/dev/reports/PR_11_198_report.md
--```
--
--Report must include:
--- files changed
--- validation commands run
--- pass/fail results
--- manual test notes
--- statement that full samples smoke was skipped and why
--
--## Local ZIP Output
--After validation, Codex must create:
--
--```text
--<project folder>/tmp/PR_11_198.zip
--```
--
--The ZIP must preserve repo-relative structure and include the final changed files plus docs/dev evidence.
--
--
-----
--PR_11_310
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_310 ..."
--```
--
--
-----
--PR_11_311
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_311 ..."
--```
--
--
-----
--PR_11_312
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_312 ..."
--```
--
--
-----
--PR_11_313
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_313 ..."
--```
--
-----
--PR_11_313 (Workspace V2 launcher + Asset Manager V2 UI labels)
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_313: Workspace V2 tool launcher UI + Asset Manager V2 user-facing rename."
--```
--
-----
--PR_11_313 (single contract rename: asset-manager-v2)
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_313: rename legacy asset browser v2 id to asset-manager-v2 across tool ID, paths, payloads, registry links, tests, and docs with zero old references."
--```
--
-----
--PR_11_314
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_314: persist valid Asset Manager V2 payloadJson.assetCatalog into Workspace V2 active session/export path and block invalid writes."
--```
--
-----
--PR_11_315
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_315: Enable core asset management actions in Asset Manager V2 (add/remove entries) with strict required-field validation and workspace persistence."
--```
--
-----
--PR_11_316
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_316: Harden Asset Manager V2 add/remove actions by rejecting duplicate ids, blank/whitespace fields, and missing remove ids with actionable status messages while preserving valid persistence behavior."
--```
--
-----
--PR_11_317
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_317: Clarify Workspace V2 Asset Manager launcher with explicit no-session vs active-session state while preserving session-routed launch behavior."
--```
--
-----
--PR_11_318
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318: Add Asset Manager V2 row selection + details panel with UI-only selection state and no payload mutation."
--```
--
-----
--PR_11_318A
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318A: Remove test-to-test imports by extracting RuntimeSceneLoaderHotReload shared logic into tests/helpers and updating final/tool tests to consume helper."
--```
--
-----
--PR_11_318B
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318B: Add first Playwright UI test for Workspace V2 launching Asset Manager V2, add/remove asset flow, and export verification."
--```
--
-----
--PR_11_318C
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318C: Redirect Playwright outputs to tests/results/** and avoid default output folders with config-only changes."
--```
--
-----
--PR_11_318D
-+# PR_26124_043-palette-manager-accordion-v2
+@@ -1,12 +1,13 @@
+-# PR_26124_043-palette-manager-accordion-v2
++# PR_26124_044-accordionv2-theme-extract
 
  ```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318D: Expand Workspace V2 Playwright UI coverage into full Asset Manager regression with launch/add/remove/validation/export/import round-trip assertions."
-+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_043-palette-manager-accordion-v2. Follow PROJECT_INSTRUCTIONS.md exactly. Rewrite only palette-manager-v2 center accordion HTML/JS/CSS to use a local accordionV2 structure instead of details/summary."
+-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_043-palette-manager-accordion-v2. Follow PROJECT_INSTRUCTIONS.md exactly. Rewrite only palette-manager-v2 center accordion HTML/JS/CSS to use a local accordionV2 structure instead of details/summary."
++npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_044-accordionv2-theme-extract. Follow PROJECT_INSTRUCTIONS.md exactly. Move the working accordionV2 implementation from palette-manager-v2 into src/engine/theme/accordionV2 and update palette-manager-v2 to use the shared accordionV2 without behavior changes."
  ```
 
-----
--PR_11_318E
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318E: Configure Playwright HTML reporter to open automatically after targeted UI test runs."
--```
--
-----
--PR_11_319
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_319: Add required Workspace V2 Playwright gate command with explicit pass/fail summary and non-zero failure handling."
--```
--
-----
--PR_11_320
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_320: Update Workspace V2 Playwright gate to execute installed Playwright command path only, preserving fail-fast and summary output."
--```
--
-----
--PR_11_322
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_322: Run Workspace V2 Playwright tests automatically via CI."
--```
--
-----
--PR_11_323
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_323: Add full Workspace V2 Playwright coverage beyond Asset Manager."
--```
--
-----
--PR_11_324
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_324: Audit all tools for Workspace V2 compliance and completion status."
--```
--
-----
--PR_11_325
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_325: Fix the highest-impact failing Workspace V2 tool interaction from tool_completion_audit.md."
--```
--
-----
--PR_11_326
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_326: Fix the next failing tool from tool_completion_audit.md."
--```
--
-----
--PR_11_321
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_321: Document the Workspace V2 Playwright validation gate for repeatable local testing."
--```
--
-----
--PR_11_327
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_327: fix the next failing tool from tool_completion_audit.md with a minimal single-tool change and required Workspace V2 Playwright gate validation."
--```
--
-----
--PR_26123_001-project-instructions-update
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PROJECT_INSTRUCTIONS update: add PR naming standard, update ChatGPT output contract (command + commit comment + Playwright coverage + manual test steps), and enforce ChatGPT non-ZIP ownership language while keeping Codex ZIP ownership intact."
--```
--
-----
--PR_26124_002-palette-manager-strict-payload-guard
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_002: fix the next failing tool from tool_completion_audit.md with a minimal single-tool palette-manager-v2 guard that rejects legacy payloadJson.paletteDocument.colors before render and validates required swatches contract."
--```
--
-----
--PR_26124_003-validation-scope-sample-exclusion
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_003: adjust validation scope to exclude sample-launch requirements until sample JSON is schema-compliant, update docs/dev validation wording, and keep Playwright workspace lifecycle/payload/roundtrip coverage sample-independent."
--```
--
-----
--PR_26124_004-workspace-v2-launch-toolid-guard
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_004: fix next failing Workspace V2 tool lane issue with a minimal guard that blocks launch when active session.toolId does not match selected tool and preserves strict payload behavior."
--```
--
-----
--PR_26124_006-playwright-ctrl-tap-debug
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_006: add shared Ctrl tap (Control down/up) before key Playwright click actions for Workspace V2 navigation/tool/workspace interaction points without changing runtime behavior."
--```
--
-----
--PR_26124_007-tool-payload-guards-group
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_007: fix next small group of failing tools (asset-manager-v2 + palette-manager-v2) by adding strict pre-render cross-tool payload guards while preserving workspace launch behavior."
--```
--
-----
--PR_26124_008-next-fail-group-fix
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_008: extract next 3 FAIL tools from tool_completion_audit.md, fix only that group with minimal contract-safe changes, update audit statuses for those tools only, and validate with npm run test:workspace-v2."
--```
--
-----
--PR_26124_009-empty-fail-batch-capture
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_009: extract next FAIL tools from tool_completion_audit.md, record explicit batch fail list, and if no FAIL tools remain capture the empty batch with validation evidence and no runtime changes."
--```
--
-----
--PR_26124_014-include-review-diff
--
--```bash
--npm run codex:review-artifacts
--```
--
-----
--PR_26124_018-clarify-tools-vs-toolstate-ux
--
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_018-clarify-tools-vs-toolstate-ux."
--```
--
-----
--PR_26124_018-workspace-toolstate-lifecycle-ux
-+## Validation Commands
+ ## Validation Commands
 
  ```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_018-workspace-toolstate-lifecycle-ux."
-+node --check tools/palette-manager-v2/modules/PaletteManagerApp.js
-+npm run test:workspace-v2
++node --check src/engine/theme/accordionV2/accordionV2.js
+ node --check tools/palette-manager-v2/modules/PaletteManagerApp.js
+ npm run test:workspace-v2
  ```
+@@ -14,7 +15,7 @@ npm run test:workspace-v2
+ ## Manual Validation
 
-----
--PR_26124_020-workspace-tools-reengineering-design-docs
-+## Manual Validation
-
--```bash
--npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_020-workspace-tools-reengineering-design-docs."
--```
-+- Open `tools/palette-manager-v2/index.html`.
-+- Confirm User Palette and Add User Swatch use accordionV2 button headers.
-+- Confirm both open panels share center height.
-+- Collapse either panel and confirm the other fills available center height.
-+- Confirm source select, search, sort, size, pin, and unpin still work.
+ - Open `tools/palette-manager-v2/index.html`.
+-- Confirm User Palette and Add User Swatch use accordionV2 button headers.
++- Confirm User Palette and Add User Swatch use shared `.accordion-v2` classes.
+ - Confirm both open panels share center height.
+ - Collapse either panel and confirm the other fills available center height.
+ - Confirm source select, search, sort, size, pin, and unpin still work.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 25c4d156..4f163037 100644
+index 4f163037..10f6cbdd 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Add Workspace V2 and full tool reengineering design docs with explicit ownership boundaries and contract inventories - PR_26124_020-workspace-tools-reengineering-design-docs
-+Replace Palette Manager center accordions with local accordionV2 layout - PR_26124_043-palette-manager-accordion-v2
+-Replace Palette Manager center accordions with local accordionV2 layout - PR_26124_043-palette-manager-accordion-v2
++Extract accordionV2 into shared theme component and reuse it in Palette Manager - PR_26124_044-accordionv2-theme-extract
 diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 84a37737..b3fd9f02 100644
+index b3fd9f02..03551dc8 100644
 --- a/tools/palette-manager-v2/index.html
 +++ b/tools/palette-manager-v2/index.html
-@@ -57,13 +57,13 @@
+@@ -6,6 +6,7 @@
+   <title>Palette Manager V2</title>
+   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
++  <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
+   <link rel="stylesheet" href="../shared/platformShell.css" />
+   <link rel="stylesheet" href="./paletteManagerV2.css" />
+ </head>
+@@ -57,13 +58,13 @@
          </details>
        </aside>
 
--      <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
--        <details class="palette-manager-v2__accordion" open>
--          <summary class="palette-manager-v2__accordion-summary">
-+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center" data-accordion-v2-root>
-+        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
-+          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="userPaletteAccordionContent">
+-      <main class="palette-manager-v2__panel palette-manager-v2__panel--center" data-accordion-v2-root>
+-        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
+-          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="userPaletteAccordionContent">
++      <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
++        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
              <span>User Palette</span>
--            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
--          </summary>
--          <div class="palette-manager-v2__accordion-content">
-+            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="userPaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
+-            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+           </button>
+-          <div id="userPaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
++          <div id="userPaletteAccordionContent" class="accordion-v2__content">
              <div class="palette-manager-v2__sort-row">
                <div class="palette-manager-v2__field">
                  <span>Sort user palette</span>
-@@ -77,14 +77,14 @@
-             <div id="userPaletteCount" class="palette-manager-v2__meta">0 user swatches</div>
-             <div id="userSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--user" aria-label="User palette swatches"></div>
+@@ -79,12 +80,12 @@
            </div>
--        </details>
-+        </section>
+         </section>
 
--        <details class="palette-manager-v2__accordion" open>
--          <summary class="palette-manager-v2__accordion-summary">
-+        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
-+          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
+-        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
+-          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
++        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
              <span>Add User Swatch</span>
--            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
--          </summary>
--          <div class="palette-manager-v2__accordion-content">
-+            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="sourcePaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
+-            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+           </button>
+-          <div id="sourcePaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
++          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
              <label class="palette-manager-v2__field">
                Source palette
                <select id="sourcePaletteSelect"></select>
-@@ -105,7 +105,7 @@
-             </div>
-             <div id="sourceSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--source" aria-label="Browse palette swatches"></div>
-           </div>
--        </details>
-+        </section>
-       </main>
-
-       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
+@@ -142,6 +143,7 @@
+   <div data-tools-platform-status></div>
+   <script type="module" src="../shared/platformShell.js"></script>
+   <script src="../../src/engine/paletteList.js"></script>
++  <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
+   <script type="module" src="./main.js"></script>
+   <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+ </body>
 diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 724e5c3a..755bb701 100644
+index 755bb701..724e5c3a 100644
 --- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
 +++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -87,6 +87,7 @@ export class PaletteManagerApp {
+@@ -87,7 +87,6 @@ export class PaletteManagerApp {
    }
 
    init() {
-+    this.bindCenterAccordionV2();
+-    this.bindCenterAccordionV2();
      this.editorControl = new PaletteEditorControl({
        refs: this.refs,
        app: this,
-@@ -109,6 +110,33 @@ export class PaletteManagerApp {
+@@ -110,33 +109,6 @@ export class PaletteManagerApp {
      this.render();
    }
 
-+  bindCenterAccordionV2() {
-+    const root = this.document.querySelector("[data-accordion-v2-root]");
-+    if (!root) {
-+      throw new Error("Palette Manager V2 missing accordionV2 root.");
-+    }
-+
-+    root.querySelectorAll("[data-accordion-v2-panel]").forEach((panel) => {
-+      const toggle = panel.querySelector("[data-accordion-v2-toggle]");
-+      const content = panel.querySelector("[data-accordion-v2-content]");
-+      if (!toggle || !content) {
-+        throw new Error("Palette Manager V2 accordionV2 panel is incomplete.");
-+      }
-+
-+      const setOpen = (isOpen) => {
-+        panel.classList.toggle("is-open", isOpen);
-+        panel.dataset.accordionV2Open = String(isOpen);
-+        toggle.setAttribute("aria-expanded", String(isOpen));
-+        content.hidden = !isOpen;
-+      };
-+
-+      setOpen(panel.dataset.accordionV2Open !== "false");
-+      toggle.addEventListener("click", () => {
-+        setOpen(!panel.classList.contains("is-open"));
-+      });
-+    });
-+  }
-+
+-  bindCenterAccordionV2() {
+-    const root = this.document.querySelector("[data-accordion-v2-root]");
+-    if (!root) {
+-      throw new Error("Palette Manager V2 missing accordionV2 root.");
+-    }
+-
+-    root.querySelectorAll("[data-accordion-v2-panel]").forEach((panel) => {
+-      const toggle = panel.querySelector("[data-accordion-v2-toggle]");
+-      const content = panel.querySelector("[data-accordion-v2-content]");
+-      if (!toggle || !content) {
+-        throw new Error("Palette Manager V2 accordionV2 panel is incomplete.");
+-      }
+-
+-      const setOpen = (isOpen) => {
+-        panel.classList.toggle("is-open", isOpen);
+-        panel.dataset.accordionV2Open = String(isOpen);
+-        toggle.setAttribute("aria-expanded", String(isOpen));
+-        content.hidden = !isOpen;
+-      };
+-
+-      setOpen(panel.dataset.accordionV2Open !== "false");
+-      toggle.addEventListener("click", () => {
+-        setOpen(!panel.classList.contains("is-open"));
+-      });
+-    });
+-  }
+-
    render() {
      this.controls.forEach((control) => {
        if (typeof control.render === "function") {
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index d44e6511..eb6b3061 100644
+index eb6b3061..28a09a74 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -88,57 +88,91 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   margin-top: 14px;
- }
-
--.palette-manager-v2__panel--center .palette-manager-v2__accordion + .palette-manager-v2__accordion {
--  margin-top: 0;
-+.palette-manager-v2__accordion-summary {
-+  flex: 0 0 44px;
-+  min-height: 44px;
-+  display: flex;
-+  align-items: center;
-+  justify-content: space-between;
-+  gap: 10px;
-+  padding: 10px 12px;
-+  cursor: pointer;
-+  font-weight: 700;
-+  list-style: none;
- }
-
--.palette-manager-v2__panel--center > .palette-manager-v2__accordion {
-+.palette-manager-v2__accordion-summary::-webkit-details-marker {
-+  display: none;
-+}
-+
-+.palette-manager-v2__accordion-icon {
-   flex: 0 0 auto;
-+  width: 22px;
-+  height: 22px;
-+  display: inline-grid;
-+  place-items: center;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 999px;
-+  line-height: 1;
- }
-
--.palette-manager-v2__panel--center > .palette-manager-v2__accordion:not([open]) {
--  flex: 0 0 44px;
--  height: 44px;
--  min-height: 44px;
--  max-height: 44px;
-+.palette-manager-v2__accordion[open] .palette-manager-v2__accordion-icon {
-+  transform: rotate(45deg);
- }
-
--.palette-manager-v2__panel--center > .palette-manager-v2__accordion[open] {
-+.palette-manager-v2__accordion-content {
-+  min-height: 0;
-   display: flex;
-   flex-direction: column;
--  min-height: 0;
-+  gap: 12px;
-+  padding: 12px;
-+  border-top: 1px solid var(--pm-line);
-+  overflow: hidden;
- }
-
--.palette-manager-v2__panel--center > .palette-manager-v2__accordion[open]:first-child {
--  flex: 1 1 0;
-+.palette-manager-v2__accordion-v2 {
-+  min-width: 0;
-+  min-height: 0;
-+  display: flex;
-+  flex-direction: column;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 8px;
-+  background: var(--pm-surface);
-+  overflow: hidden;
- }
-
--.palette-manager-v2__panel--center > .palette-manager-v2__accordion[open]:nth-child(2) {
--  flex: 2 1 0;
-+.palette-manager-v2__accordion-v2.is-open {
-+  flex: 1 1 0;
- }
-
--.palette-manager-v2__panel--center > .palette-manager-v2__accordion[open]:first-child:last-child {
--  flex: 1 1 auto;
-+.palette-manager-v2__accordion-v2:not(.is-open) {
-+  flex: 0 0 auto;
- }
-
--.palette-manager-v2__accordion-summary {
-+.palette-manager-v2__accordion-v2-header {
-   flex: 0 0 44px;
-+  width: 100%;
-   min-height: 44px;
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-   gap: 10px;
--  padding: 10px 12px;
-+  border: 0;
-+  background: transparent;
-+  color: inherit;
-   cursor: pointer;
-+  font: inherit;
-   font-weight: 700;
--  list-style: none;
-+  padding: 10px 12px;
-+  text-align: left;
- }
-
--.palette-manager-v2__accordion-summary::-webkit-details-marker {
--  display: none;
-+.palette-manager-v2__accordion-v2-header:focus-visible {
-+  outline: 2px solid var(--pm-accent);
-+  outline-offset: -4px;
- }
-
--.palette-manager-v2__accordion-icon {
-+.palette-manager-v2__accordion-v2-icon {
-   flex: 0 0 auto;
-   width: 22px;
-   height: 22px;
-@@ -149,22 +183,32 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   line-height: 1;
- }
-
--.palette-manager-v2__accordion[open] .palette-manager-v2__accordion-icon {
-+.palette-manager-v2__accordion-v2.is-open .palette-manager-v2__accordion-v2-icon {
-   transform: rotate(45deg);
- }
-
--.palette-manager-v2__accordion-content {
-+.palette-manager-v2__accordion-v2-content {
-+  flex: 1 1 auto;
-   min-height: 0;
-   display: flex;
-   flex-direction: column;
-   gap: 12px;
--  padding: 12px;
-   border-top: 1px solid var(--pm-line);
+@@ -130,83 +130,17 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
    overflow: hidden;
-+  padding: 12px;
-+}
-+
-+.palette-manager-v2__accordion-v2-content[hidden] {
-+  display: none;
  }
 
--.palette-manager-v2__panel--center > .palette-manager-v2__accordion[open] > .palette-manager-v2__accordion-content {
-+.palette-manager-v2__accordion-v2-content > :not(.palette-manager-v2__tile-grid) {
-+  flex: 0 0 auto;
-+}
-+
-+.palette-manager-v2__accordion-v2-content .palette-manager-v2__tile-grid {
-   flex: 1 1 auto;
-+  max-height: none;
- }
-
- .palette-manager-v2__field {
-@@ -508,4 +552,4 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   .palette-manager-v2__size-buttons {
-     justify-content: flex-start;
-   }
+-.palette-manager-v2__accordion-v2 {
+-  min-width: 0;
+-  min-height: 0;
+-  display: flex;
+-  flex-direction: column;
+-  border: 1px solid var(--pm-line);
+-  border-radius: 8px;
+-  background: var(--pm-surface);
+-  overflow: hidden;
 -}
-\ No newline at end of file
-+}
-diff --git a/docs/dev/reports/PR_26124_043_report.md b/docs/dev/reports/PR_26124_043_report.md
+-
+-.palette-manager-v2__accordion-v2.is-open {
+-  flex: 1 1 0;
+-}
+-
+-.palette-manager-v2__accordion-v2:not(.is-open) {
+-  flex: 0 0 auto;
+-}
+-
+-.palette-manager-v2__accordion-v2-header {
+-  flex: 0 0 44px;
+-  width: 100%;
+-  min-height: 44px;
+-  display: flex;
+-  align-items: center;
+-  justify-content: space-between;
+-  gap: 10px;
+-  border: 0;
+-  background: transparent;
+-  color: inherit;
+-  cursor: pointer;
+-  font: inherit;
+-  font-weight: 700;
+-  padding: 10px 12px;
+-  text-align: left;
+-}
+-
+-.palette-manager-v2__accordion-v2-header:focus-visible {
+-  outline: 2px solid var(--pm-accent);
+-  outline-offset: -4px;
+-}
+-
+-.palette-manager-v2__accordion-v2-icon {
+-  flex: 0 0 auto;
+-  width: 22px;
+-  height: 22px;
+-  display: inline-grid;
+-  place-items: center;
+-  border: 1px solid var(--pm-line);
+-  border-radius: 999px;
+-  line-height: 1;
+-}
+-
+-.palette-manager-v2__accordion-v2.is-open .palette-manager-v2__accordion-v2-icon {
+-  transform: rotate(45deg);
+-}
+-
+-.palette-manager-v2__accordion-v2-content {
+-  flex: 1 1 auto;
+-  min-height: 0;
+-  display: flex;
+-  flex-direction: column;
+-  gap: 12px;
+-  border-top: 1px solid var(--pm-line);
+-  overflow: hidden;
+-  padding: 12px;
+-}
+-
+-.palette-manager-v2__accordion-v2-content[hidden] {
+-  display: none;
++.palette-manager-v2__panel--center .accordion-v2 {
++  --accordion-v2-accent: var(--pm-accent);
++  --accordion-v2-line: var(--pm-line);
++  --accordion-v2-surface: var(--pm-surface);
+ }
+
+-.palette-manager-v2__accordion-v2-content > :not(.palette-manager-v2__tile-grid) {
++.palette-manager-v2__panel--center .accordion-v2__content > :not(.palette-manager-v2__tile-grid) {
+   flex: 0 0 auto;
+ }
+
+-.palette-manager-v2__accordion-v2-content .palette-manager-v2__tile-grid {
++.palette-manager-v2__panel--center .accordion-v2__content .palette-manager-v2__tile-grid {
+   flex: 1 1 auto;
+   max-height: none;
+ }
+diff --git a/docs/dev/reports/PR_26124_044_report.md b/docs/dev/reports/PR_26124_044_report.md
 new file mode 100644
-index 00000000..db495e44
+index 00000000..1e807f5e
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_043_report.md
-@@ -0,0 +1,45 @@
-+# PR_26124_043 Report
++++ b/docs/dev/reports/PR_26124_044_report.md
+@@ -0,0 +1,51 @@
++# PR_26124_044 Report
 +
 +## Purpose
-+Replace Palette Manager V2 center `details`/`summary` accordions with a local accordionV2 implementation.
++Extract the Palette Manager accordionV2 implementation into a reusable theme component.
 +
 +## Changes
-+- Updated center User Palette and Add User Swatch markup to use local accordionV2 sections with button headers.
-+- Added local accordionV2 binding in `PaletteManagerApp`.
-+- Reworked center accordion CSS so open panels share/fill height and tile grids scroll internally.
-+- Preserved source palette selection, search, sort, size, pin, and unpin controls.
++- Added `src/engine/theme/accordionV2/accordionV2.css`.
++- Added `src/engine/theme/accordionV2/accordionV2.js`.
++- Updated Palette Manager V2 center accordions to use shared generic `.accordion-v2` class names.
++- Imported shared accordionV2 CSS and JS into Palette Manager.
++- Removed Palette Manager-local accordionV2 behavior from `PaletteManagerApp`.
++- Removed Palette Manager-local accordionV2 CSS rules.
 +
 +## Boundaries Confirmed
++- Shared accordionV2 has no Palette Manager dependencies.
 +- No palette JSON logic changes.
 +- No source palette logic changes.
 +- No `tools/shared` changes.
@@ -665,19 +258,22 @@ index 00000000..db495e44
 +- No dependencies added.
 +
 +## Validation
++- `node --check src/engine/theme/accordionV2/accordionV2.js` -> PASS
 +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
 +- `git diff --check` for changed implementation and PLAN doc -> PASS with existing Git LF/CRLF warnings
++- Shared component boundary search -> PASS
 +- Browser/manual layout validation at 1440x960 -> PASS
 +- `npm run test:workspace-v2` -> FAIL: missing npm script
-+- Supplemental `npx playwright test tests/playwright/workspace-v2.validation.spec.js` -> FAIL: no active matching test file
 +
 +## Playwright
 +- Required command was executed but failed before tests ran because `test:workspace-v2` is not defined in `package.json`.
-+- Expected pass behavior after script restoration: Workspace V2 validation should pass without Palette Manager accordion regressions.
++- Expected pass behavior after script restoration: Workspace V2 validation should pass with Palette Manager consuming the shared accordionV2 component.
 +- Expected fail behavior: any Workspace V2 launch/tool validation failure should identify the broken lifecycle or tool interaction.
 +
 +## Manual Validation Details
 +- Center panel contains zero `details`/`summary` elements after render.
++- Center panel uses two shared `.accordion-v2` sections.
++- Center panel contains zero Palette Manager-local accordionV2 classes.
 +- Both open accordionV2 panels shared height equally.
 +- Collapsing User Palette made Add User Swatch fill remaining center height.
 +- Collapsing Add User Swatch made User Palette fill remaining center height.
@@ -690,84 +286,87 @@ index 00000000..db495e44
 +- Sample JSON remains out of scope until the sample alignment phase.
 +
 +## Roadmap
-+- No roadmap status change was made because the Palette Manager V2 tool roadmap item is already `[x]` complete.
-diff --git a/docs/pr/PR_26124_043-palette-manager-accordion-v2/APPLY_PR.md b/docs/pr/PR_26124_043-palette-manager-accordion-v2/APPLY_PR.md
++- No roadmap status change was made because this PR extracts a reusable component without a matching pending roadmap status item.
+diff --git a/docs/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md b/docs/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md
 new file mode 100644
-index 00000000..9a159cf0
+index 00000000..4b44358f
 --- /dev/null
-+++ b/docs/pr/PR_26124_043-palette-manager-accordion-v2/APPLY_PR.md
-@@ -0,0 +1,29 @@
-+# APPLY_PR - PR_26124_043-palette-manager-accordion-v2
++++ b/docs/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md
+@@ -0,0 +1,28 @@
++# APPLY_PR - PR_26124_044-accordionv2-theme-extract
 +
 +## Apply Summary
-+Applied the Palette Manager V2 center accordion rewrite using a local accordionV2 structure.
++Applied the accordionV2 theme extraction and updated Palette Manager V2 to use the shared component.
 +
 +## Result
-+- User Palette and Add User Swatch no longer use competing center `details`/`summary` behavior.
-+- Both panels open by default and share available center height.
-+- Collapsing either panel makes the remaining open panel fill the center column.
-+- Tile grids scroll internally.
-+- Palette controls remain available.
++- Shared accordionV2 CSS/JS now lives under `src/engine/theme/accordionV2/`.
++- Palette Manager center accordions use generic shared class names.
++- Palette Manager retains the same center panel open/collapse behavior.
++- Palette Manager-local accordion behavior was removed from `PaletteManagerApp`.
 +
 +## Review Artifacts
 +- `docs/dev/reports/codex_review.diff`
 +- `docs/dev/reports/codex_changed_files.txt`
-+- `tmp/PR_26124_043-palette-manager-accordion-v2_delta.zip`
++- `tmp/PR_26124_044-accordionv2-theme-extract_delta.zip`
 +
 +## Validation Result
-+- Targeted JS syntax check passed.
++- Targeted JS syntax checks passed.
 +- Browser/manual layout validation passed.
 +- `npm run test:workspace-v2` could not run because the npm script is missing from `package.json`.
 +- Full samples smoke test was not run.
 +
 +## Manual Apply Check
 +1. Open `tools/palette-manager-v2/index.html`.
-+2. Confirm the center column uses accordionV2 button headers.
++2. Confirm User Palette and Add User Swatch use `.accordion-v2` classes.
 +3. Confirm both center panels share height when open.
-+4. Collapse each panel and confirm the other fills the center area.
++4. Collapse either center panel and confirm the other fills available center height.
 +5. Confirm source select, search, sort, size, pin, and unpin still work.
-diff --git a/docs/pr/PR_26124_043-palette-manager-accordion-v2/BUILD_PR.md b/docs/pr/PR_26124_043-palette-manager-accordion-v2/BUILD_PR.md
+diff --git a/docs/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md b/docs/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md
 new file mode 100644
-index 00000000..a664e517
+index 00000000..aa0af5bb
 --- /dev/null
-+++ b/docs/pr/PR_26124_043-palette-manager-accordion-v2/BUILD_PR.md
-@@ -0,0 +1,51 @@
-+# BUILD_PR - PR_26124_043-palette-manager-accordion-v2
++++ b/docs/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md
+@@ -0,0 +1,54 @@
++# BUILD_PR - PR_26124_044-accordionv2-theme-extract
 +
 +## Scope Applied
-+- Rewrote only the Palette Manager V2 center column accordions.
-+- Left left/right `details` panels unchanged.
-+- Did not modify palette JSON logic, source palette logic, `tools/shared`, workspace/toolState/session code, games, or sample JSON.
++- Extracted the working Palette Manager center accordionV2 behavior into `src/engine/theme/accordionV2/`.
++- Updated Palette Manager V2 to consume the shared accordionV2 CSS/JS and generic class names.
++- Did not change palette JSON logic, source palette logic, workspace/toolState/session code, sample JSON, games, or `tools/shared`.
 +- Did not add dependencies.
 +
 +## Files Changed
++- `src/engine/theme/accordionV2/accordionV2.css`
++- `src/engine/theme/accordionV2/accordionV2.js`
 +- `tools/palette-manager-v2/index.html`
 +- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
 +- `tools/palette-manager-v2/paletteManagerV2.css`
-+- `docs/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md`
-+- `docs/pr/PR_26124_043-palette-manager-accordion-v2/BUILD_PR.md`
-+- `docs/pr/PR_26124_043-palette-manager-accordion-v2/APPLY_PR.md`
++- `docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md`
++- `docs/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md`
++- `docs/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md`
 +- `docs/dev/codex_commands.md`
 +- `docs/dev/commit_comment.txt`
-+- `docs/dev/reports/PR_26124_043_report.md`
++- `docs/dev/reports/PR_26124_044_report.md`
 +- `docs/dev/reports/codex_review.diff`
 +- `docs/dev/reports/codex_changed_files.txt`
 +
 +## Implementation
-+- Replaced center User Palette and Add User Swatch `details`/`summary` blocks with local accordionV2 `section` + `button` + content containers.
-+- Added local accordionV2 state binding in `PaletteManagerApp`.
-+- Updated center CSS so:
-+  - both open panels share available center height
-+  - one open panel fills remaining center height when the other is collapsed
-+  - collapsed panels shrink to header height
-+  - tile grids scroll internally
-+  - source palette select/search/sort/size and pin/unpin controls remain available
++- Added generic `.accordion-v2`, `.accordion-v2__header`, `.accordion-v2__icon`, and `.accordion-v2__content` CSS.
++- Added minimal shared JS to initialize existing `.accordion-v2` panels and toggle `is-open`, `aria-expanded`, `hidden`, and `data-accordion-v2-open`.
++- Replaced Palette Manager center local accordion classes with generic shared classes.
++- Imported shared accordionV2 CSS/JS into Palette Manager.
++- Removed Palette Manager-local accordionV2 binding from `PaletteManagerApp`.
++- Kept Palette Manager-specific center sizing rules in Palette Manager CSS, using generic accordion selectors only where layout needs tool context.
 +
 +## Validation
++- `node --check src/engine/theme/accordionV2/accordionV2.js` -> PASS
 +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
-+- `git diff --check -- tools/palette-manager-v2/index.html tools/palette-manager-v2/modules/PaletteManagerApp.js tools/palette-manager-v2/paletteManagerV2.css docs/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md` -> PASS with existing Git LF/CRLF warnings
++- `git diff --check -- src/engine/theme/accordionV2 tools/palette-manager-v2/index.html tools/palette-manager-v2/modules/PaletteManagerApp.js tools/palette-manager-v2/paletteManagerV2.css docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md` -> PASS with existing Git LF/CRLF warnings
++- Shared component boundary search -> PASS: no Palette Manager, workspace, toolState, session, sample JSON, or `tools/shared` references in `src/engine/theme/accordionV2/`
 +- Browser/manual layout validation at 1440x960 -> PASS:
 +  - center panel has zero `details`/`summary` elements
++  - center panel has two shared `.accordion-v2` sections
++  - center panel has zero Palette Manager-local accordionV2 classes
 +  - both open panels share height
 +  - User collapsed makes Add User Swatch fill remaining center height
 +  - Add User Swatch collapsed makes User Palette fill remaining center height
@@ -775,62 +374,174 @@ index 00000000..a664e517
 +  - source select, search, sort buttons, size buttons, and tile pin button remain present
 +  - no horizontal page overflow
 +- `npm run test:workspace-v2` -> FAIL before test execution because `package.json` has no `test:workspace-v2` script.
-+- `npx playwright test tests/playwright/workspace-v2.validation.spec.js` -> FAIL before test execution because no active test file matches that path in the current repo tree.
 +
 +## Full Samples Smoke
 +- Skipped by explicit instruction.
-+- Also out of scope because sample JSON alignment is deferred.
++- Sample JSON remains out of scope until the sample alignment phase.
 +
 +## Known Validation Blocker
 +- The required Workspace V2 npm validation command is unavailable in the current `package.json`.
-diff --git a/docs/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md b/docs/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md b/docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md
 new file mode 100644
-index 00000000..a852bfc9
+index 00000000..266ca6b2
 --- /dev/null
-+++ b/docs/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md
-@@ -0,0 +1,45 @@
-+# PLAN_PR - PR_26124_043-palette-manager-accordion-v2
++++ b/docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md
+@@ -0,0 +1,44 @@
++# PLAN_PR - PR_26124_044-accordionv2-theme-extract
 +
 +## Goal
-+Replace Palette Manager V2 center `details`/`summary` accordions with a local accordionV2 structure so User Palette and Add User Swatch panels share/fill available center height predictably.
++Move the working Palette Manager accordionV2 implementation into a reusable theme component under `src/engine/theme/accordionV2/`.
 +
 +## Scope
++- `src/engine/theme/accordionV2/accordionV2.css`
++- `src/engine/theme/accordionV2/accordionV2.js`
 +- `tools/palette-manager-v2/index.html`
 +- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
 +- `tools/palette-manager-v2/paletteManagerV2.css`
 +- Workflow docs/reports required by `docs/dev/PROJECT_INSTRUCTIONS.md`
 +
 +## Boundaries
++- Do not change accordion behavior.
 +- Do not change palette JSON logic.
 +- Do not change source palette logic.
-+- Do not touch `tools/shared`.
 +- Do not touch workspace, toolState, session, games, or sample JSON.
++- Do not modify `tools/shared`.
 +- Do not add dependencies.
-+- Do not run the full samples smoke test.
++- Do not introduce abstraction beyond accordionV2.
 +
 +## Implementation Plan
-+1. Replace only the center column User Palette and Add User Swatch `details` blocks with local accordionV2 sections using buttons, ARIA state, and content containers.
-+2. Add local Palette Manager JS binding for accordionV2 toggle state without changing palette controls or payload behavior.
-+3. Update Palette Manager CSS so:
-+   - center panel owns available height
-+   - both open accordionV2 panels share available height
-+   - one open panel fills remaining height when the other is collapsed
-+   - tile grids scroll internally
-+   - sort, size, source select/search, and pin controls remain usable
-+4. Run targeted syntax checks for changed JS/HTML where applicable.
-+5. Run `npm run test:workspace-v2`.
-+6. Produce required review artifacts, workflow docs, command/comment docs, and repo-structured ZIP.
++1. Create `src/engine/theme/accordionV2/accordionV2.css` with generic `accordion-v2` class names and no Palette Manager selectors.
++2. Create `src/engine/theme/accordionV2/accordionV2.js` with minimal toggle behavior for existing multi-open accordion behavior.
++3. Update Palette Manager center markup to use shared generic accordion class names.
++4. Import shared accordionV2 CSS and JS from Palette Manager.
++5. Remove Palette Manager local accordionV2 behavior/CSS now owned by the shared theme component.
++6. Run syntax checks for changed JS/HTML/CSS where applicable.
++7. Run `npm run test:workspace-v2`.
++8. Skip the full samples smoke test.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- Expected pass behavior: Workspace V2 validation remains green after the Palette Manager center UI structural change.
-+- Expected fail behavior: failures indicate the local accordionV2 rewrite broke Workspace V2 tool launch or tool coverage assumptions.
-+- Full samples smoke test: skipped by instruction and because sample JSON is out of scope.
++- Expected pass behavior: Workspace V2 validation remains green after Palette Manager consumes the shared accordionV2 component.
++- Expected fail behavior: failures identify Workspace V2 launch/tool lifecycle regressions or a missing validation command.
++- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open `tools/palette-manager-v2/index.html`.
-+2. Confirm User Palette and Add User Swatch use button-based accordionV2 headers, not center `details`/`summary`.
-+3. With both panels open, confirm both share center height and each tile grid scrolls internally.
-+4. Collapse User Palette and confirm Add User Swatch fills remaining center height.
-+5. Collapse Add User Swatch and confirm User Palette fills remaining center height.
-+6. Confirm source palette selection, search, sort, size, pin, and unpin still work.
++2. Confirm User Palette and Add User Swatch use shared `.accordion-v2` markup.
++3. Confirm both open panels share center height.
++4. Collapse either panel and confirm the other fills available center height.
++5. Confirm source select, search, sort, size, pin, and unpin still work.
+diff --git a/src/engine/theme/accordionV2/accordionV2.css b/src/engine/theme/accordionV2/accordionV2.css
+new file mode 100644
+index 00000000..c7e2c12f
+--- /dev/null
++++ b/src/engine/theme/accordionV2/accordionV2.css
+@@ -0,0 +1,71 @@
++.accordion-v2 {
++  min-width: 0;
++  min-height: 0;
++  display: flex;
++  flex-direction: column;
++  border: 1px solid var(--accordion-v2-line, var(--line, rgba(221, 214, 254, 0.26)));
++  border-radius: 8px;
++  background: var(--accordion-v2-surface, var(--surface-inline, rgba(18, 16, 28, 0.78)));
++  overflow: hidden;
++}
++
++.accordion-v2.is-open {
++  flex: 1 1 0;
++}
++
++.accordion-v2:not(.is-open) {
++  flex: 0 0 auto;
++}
++
++.accordion-v2__header {
++  flex: 0 0 44px;
++  width: 100%;
++  min-height: 44px;
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 10px;
++  border: 0;
++  background: transparent;
++  color: inherit;
++  cursor: pointer;
++  font: inherit;
++  font-weight: 700;
++  padding: 10px 12px;
++  text-align: left;
++}
++
++.accordion-v2__header:focus-visible {
++  outline: 2px solid var(--accordion-v2-accent, var(--accent, #ddd6fe));
++  outline-offset: -4px;
++}
++
++.accordion-v2__icon {
++  flex: 0 0 auto;
++  width: 22px;
++  height: 22px;
++  display: inline-grid;
++  place-items: center;
++  border: 1px solid var(--accordion-v2-line, var(--line, rgba(221, 214, 254, 0.26)));
++  border-radius: 999px;
++  line-height: 1;
++}
++
++.accordion-v2.is-open .accordion-v2__icon {
++  transform: rotate(45deg);
++}
++
++.accordion-v2__content {
++  flex: 1 1 auto;
++  min-height: 0;
++  display: flex;
++  flex-direction: column;
++  gap: 12px;
++  border-top: 1px solid var(--accordion-v2-line, var(--line, rgba(221, 214, 254, 0.26)));
++  overflow: hidden;
++  padding: 12px;
++}
++
++.accordion-v2__content[hidden] {
++  display: none;
++}
+diff --git a/src/engine/theme/accordionV2/accordionV2.js b/src/engine/theme/accordionV2/accordionV2.js
+new file mode 100644
+index 00000000..cf9f50a7
+--- /dev/null
++++ b/src/engine/theme/accordionV2/accordionV2.js
+@@ -0,0 +1,31 @@
++function setAccordionV2Open(panel, isOpen) {
++  const header = panel.querySelector(".accordion-v2__header");
++  const content = panel.querySelector(".accordion-v2__content");
++  if (!header || !content) {
++    return;
++  }
++
++  panel.classList.toggle("is-open", isOpen);
++  panel.dataset.accordionV2Open = String(isOpen);
++  header.setAttribute("aria-expanded", String(isOpen));
++  content.hidden = !isOpen;
++}
++
++function mountAccordionV2(root = document) {
++  root.querySelectorAll(".accordion-v2").forEach((panel) => {
++    const header = panel.querySelector(".accordion-v2__header");
++    if (!header || header.dataset.accordionV2Bound === "true") {
++      return;
++    }
++
++    header.dataset.accordionV2Bound = "true";
++    setAccordionV2Open(panel, panel.dataset.accordionV2Open !== "false");
++    header.addEventListener("click", () => {
++      setAccordionV2Open(panel, !panel.classList.contains("is-open"));
++    });
++  });
++}
++
++mountAccordionV2();
++
++export { mountAccordionV2, setAccordionV2Open };

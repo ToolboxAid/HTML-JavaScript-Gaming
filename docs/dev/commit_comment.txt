@@ -1,1 +1,1 @@
-Replace Palette Manager center accordions with local accordionV2 layout - PR_26124_043-palette-manager-accordion-v2
+Extract accordionV2 into shared theme component and reuse it in Palette Manager - PR_26124_044-accordionv2-theme-extract

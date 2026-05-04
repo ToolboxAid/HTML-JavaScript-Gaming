@@ -6,6 +6,7 @@
   <title>Palette Manager V2</title>
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
   <link rel="stylesheet" href="../shared/platformShell.css" />
   <link rel="stylesheet" href="./paletteManagerV2.css" />
 </head>
@@ -57,13 +58,13 @@
         </details>
       </aside>
 
-      <main class="palette-manager-v2__panel palette-manager-v2__panel--center" data-accordion-v2-root>
-        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
-          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="userPaletteAccordionContent">
+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
             <span>User Palette</span>
-            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="userPaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
+          <div id="userPaletteAccordionContent" class="accordion-v2__content">
             <div class="palette-manager-v2__sort-row">
               <div class="palette-manager-v2__field">
                 <span>Sort user palette</span>
@@ -79,12 +80,12 @@
           </div>
         </section>
 
-        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
-          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
             <span>Add User Swatch</span>
-            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="sourcePaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
+          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
             <label class="palette-manager-v2__field">
               Source palette
               <select id="sourcePaletteSelect"></select>
@@ -142,6 +143,7 @@
   <div data-tools-platform-status></div>
   <script type="module" src="../shared/platformShell.js"></script>
   <script src="../../src/engine/paletteList.js"></script>
+  <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
   <script type="module" src="./main.js"></script>
   <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
