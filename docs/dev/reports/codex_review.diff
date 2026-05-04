@@ -1,487 +1,227 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 9cf8f128..698f16b1 100644
+index 698f16b1..96fda30b 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,16 +1,14 @@
--# Codex Commands - PR_26124_072-palette-manager-rollback-shared-removal
-+# Codex Commands - PR_26124_073-palette-manager-playwright-baseline
+@@ -1,14 +1,14 @@
+-# Codex Commands - PR_26124_073-palette-manager-playwright-baseline
++# Codex Commands - PR_26124_074-sample-palette-json-audit-and-fix
 
  ```bash
--npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_072-palette-manager-rollback-shared-removal. Follow PROJECT_INSTRUCTIONS.md exactly."
-+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_073-palette-manager-playwright-baseline. Follow PROJECT_INSTRUCTIONS.md exactly."
+-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_073-palette-manager-playwright-baseline. Follow PROJECT_INSTRUCTIONS.md exactly."
++npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_074-sample-palette-json-audit-and-fix. Follow PROJECT_INSTRUCTIONS.md exactly."
  ```
 
  ## Validation Commands
 
  ```bash
--git status --short
--git diff -- tools/palette-manager-v2
--node --check tools/palette-manager-v2/paletteManagerShell.js
--node --check tools/palette-manager-v2/main.js
-+node --check tests/tools/PaletteManagerV2Baseline.test.mjs
-+node tests/tools/PaletteManagerV2Baseline.test.mjs
+-node --check tests/tools/PaletteManagerV2Baseline.test.mjs
+-node tests/tools/PaletteManagerV2Baseline.test.mjs
++node --input-type=module <sample palette JSON audit/fix>
++node --input-type=module <sample palette JSON validation>
  git diff --check
  npm run test:workspace-v2
  npm run codex:review-artifacts
-@@ -18,7 +16,7 @@ npm run codex:review-artifacts
+@@ -16,7 +16,7 @@ npm run codex:review-artifacts
 
  ## Playwright
 
--No Palette Manager behavior change is expected. The default requested gate is `npm run test:workspace-v2`.
-+The targeted Palette Manager V2 Playwright baseline validates page load, console/runtime cleanliness, menuSample actions, accordion toggles, Validation/Error Viewer Clear placement, source pin scroll preservation, and Tag sort untagged-last behavior.
+-The targeted Palette Manager V2 Playwright baseline validates page load, console/runtime cleanliness, menuSample actions, accordion toggles, Validation/Error Viewer Clear placement, source pin scroll preservation, and Tag sort untagged-last behavior.
++No targeted Playwright impact is expected because this PR changes sample palette JSON data only. The default requested gate is `npm run test:workspace-v2`.
 
  `npm run test:workspace-v2` failed because `package.json` does not define the `test:workspace-v2` script.
 
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index b2c88ce2..056d226a 100644
+index 056d226a..252284af 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Rollback uncommitted Palette Manager shared-removal attempt - PR_26124_072-palette-manager-rollback-shared-removal
-+Add Palette Manager V2 Playwright baseline coverage - PR_26124_073-palette-manager-playwright-baseline
-diff --git a/docs/dev/reports/PR_26124_073_report.md b/docs/dev/reports/PR_26124_073_report.md
+-Add Palette Manager V2 Playwright baseline coverage - PR_26124_073-palette-manager-playwright-baseline
++Audit and fix sample palette JSON schema compliance - PR_26124_074-sample-palette-json-audit-and-fix
+diff --git a/docs/dev/reports/PR_26124_074_report.md b/docs/dev/reports/PR_26124_074_report.md
 new file mode 100644
-index 00000000..4efdb6c4
+index 00000000..3cb2c29e
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_073_report.md
-@@ -0,0 +1,34 @@
-+# PR_26124_073 Palette Manager Playwright Baseline
++++ b/docs/dev/reports/PR_26124_074_report.md
+@@ -0,0 +1,45 @@
++# PR_26124_074 Sample Palette JSON Audit And Fix
 +
 +## Summary
-+Added targeted Playwright coverage for Palette Manager V2 baseline behavior.
++Audited all sample palette JSON files against the requested palette swatch contract. No sample palette JSON files required changes.
++
++## Files Audited
++- `samples/**/*.palette.json`
++- Count: 20 files
++
++## Pattern Note
++The requested literal pattern `samples/**/palette.*.*.json` did not match files in this repository. The repo's sample palette files use `sample.<id>.palette.json`, so the audit target was `samples/**/*.palette.json`.
++
++## Contract Checked
++- Required swatch fields:
++  - `symbol`: one-character string
++  - `hex`: `#RRGGBB` or `#RRGGBBAA`
++  - `name`: non-empty string
++- Optional swatch field:
++  - `tags`: array of lowercase non-empty strings
++- Extra swatch properties are rejected by the audit.
++- Duplicate swatches are rejected within each palette by duplicate `name`, `hex`, or `symbol`.
++
++## Result
++- No invalid JSON files.
++- No schema violations.
++- No duplicate swatches.
++- No tag normalization changes required.
++- No sample palette JSON files changed.
 +
 +## Files Changed
-+- `tests/tools/PaletteManagerV2Baseline.test.mjs`
-+- `docs/pr/PR_26124_073-palette-manager-playwright-baseline/PLAN_PR.md`
-+- `docs/pr/PR_26124_073-palette-manager-playwright-baseline/BUILD_PR.md`
-+- `docs/pr/PR_26124_073-palette-manager-playwright-baseline/APPLY_PR.md`
++- `docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md`
++- `docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md`
++- `docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md`
 +- `docs/dev/codex_commands.md`
 +- `docs/dev/commit_comment.txt`
 +- `docs/dev/reports/codex_review.diff`
 +- `docs/dev/reports/codex_changed_files.txt`
 +
-+## Runtime Impact
-+- No Palette Manager runtime files changed.
-+- No CSS layout or pin styling changed.
-+- No `tools/shared`, workspace/toolState/session, or sample JSON files changed.
-+
-+## Test Coverage Added
-+- Page load with page error, console error, and failed request guards.
-+- `menuSample` and JSON action button actionability.
-+- Required accordionV2 sections collapse/reopen.
-+- Validation/Error Viewer Clear button placement inside viewer header.
-+- Source palette individual pin scroll preservation.
-+- User Palette Tag sort keeps untagged swatches last for ascending and descending sort.
-+
 +## Validation
-+- PASS: `node --check tests/tools/PaletteManagerV2Baseline.test.mjs`
-+- PASS: `node tests/tools/PaletteManagerV2Baseline.test.mjs`
++- PASS: read-only sample palette audit.
++- PASS: sample palette JSON contract validation, 20 files.
++- PASS: `git diff -- samples`
 +- PASS: `git diff --check`
 +- FAIL: `npm run test:workspace-v2` is unavailable because `package.json` does not define a `test:workspace-v2` script.
 +- SKIPPED: full samples smoke test, by instruction.
-diff --git a/docs/pr/PR_26124_073-palette-manager-playwright-baseline/APPLY_PR.md b/docs/pr/PR_26124_073-palette-manager-playwright-baseline/APPLY_PR.md
+diff --git a/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md
 new file mode 100644
-index 00000000..449be86a
+index 00000000..b477ecc0
 --- /dev/null
-+++ b/docs/pr/PR_26124_073-palette-manager-playwright-baseline/APPLY_PR.md
-@@ -0,0 +1,33 @@
-+# APPLY_PR - PR_26124_073-palette-manager-playwright-baseline
++++ b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md
+@@ -0,0 +1,34 @@
++# APPLY_PR - PR_26124_074-sample-palette-json-audit-and-fix
 +
 +## Summary
-+Added a targeted Node-run Playwright baseline test for Palette Manager V2.
++Audited all sample palette JSON files. No sample palette JSON changes were required because all audited files already match the requested swatch contract.
 +
-+## Applied Changes
-+- Added `tests/tools/PaletteManagerV2Baseline.test.mjs`.
-+- The test uses the existing repo static server helper and drives the live Palette Manager V2 page.
-+- No Palette Manager runtime, CSS, workspace/toolState/session, sample JSON, or `tools/shared` files were changed.
++## Audit Result
++- Audited 20 files matching `samples/**/*.palette.json`.
++- The requested literal pattern `samples/**/palette.*.*.json` has no matches in this repository.
++- No invalid JSON files were found.
++- No swatches with missing or invalid `symbol`, `hex`, or `name` were found.
++- No extra swatch properties were found.
++- No uppercase or invalid tags were found.
++- No duplicate swatches by `name`, `hex`, or `symbol` were found within a palette.
 +
-+## Coverage
-+- Tool loads without page/runtime/console errors.
-+- `menuSample` exists.
-+- Import JSON, Copy JSON, and Export JSON buttons are visible, enabled, and actionable.
-+- User Palette, Sample Palette Swatch, Tags, Selected Swatch, User Defined Swatch, Palette JSON, and Validation/Error Viewer accordions collapse and reopen.
-+- Validation/Error Viewer Clear button exists inside its viewer header.
-+- Individual source palette pinning preserves source grid scroll position.
-+- User Palette Tag sort keeps untagged swatches after tagged swatches for ascending and descending sort.
++## Runtime/Data Result
++- No sample palette JSON files were modified.
++- No tools were modified.
++- No workspace/toolState/session files were modified.
++- No sample launch code was modified.
++- No fallback/default data was added.
 +
 +## Validation
-+- PASS: `node --check tests/tools/PaletteManagerV2Baseline.test.mjs`
-+- PASS: `node tests/tools/PaletteManagerV2Baseline.test.mjs`
++- PASS: read-only audit of all `samples/**/*.palette.json` files.
++- PASS: schema/contract validation of all 20 sample palette JSON files.
++- PASS: `git diff -- samples` produced no diff.
 +- PASS: `git diff --check`
 +- FAIL: `npm run test:workspace-v2` is unavailable because `package.json` does not define a `test:workspace-v2` script.
 +- SKIPPED: full samples smoke test, by instruction.
 +
 +## Manual Test
-+1. Open `tools/palette-manager-v2/index.html`.
-+2. Confirm the tool loads without visible errors.
-+3. Confirm Import JSON, Copy JSON, and Export JSON remain centered in `menuSample`.
-+4. Collapse and reopen each Palette Manager accordion.
-+5. Scroll Sample Palette Swatch and pin an individual source swatch; confirm scroll position stays stable.
-+6. Add tagged and untagged user swatches, sort by Tag ascending and descending, and confirm untagged swatches remain last.
-diff --git a/docs/pr/PR_26124_073-palette-manager-playwright-baseline/BUILD_PR.md b/docs/pr/PR_26124_073-palette-manager-playwright-baseline/BUILD_PR.md
++1. Review the 20 `samples/**/*.palette.json` files if desired.
++2. Confirm no sample palette JSON diff exists for this PR.
++3. Confirm sample launch code was not modified.
++4. Full samples smoke test remains out of scope by instruction.
+diff --git a/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md
 new file mode 100644
-index 00000000..4c74d865
+index 00000000..78e2383c
 --- /dev/null
-+++ b/docs/pr/PR_26124_073-palette-manager-playwright-baseline/BUILD_PR.md
-@@ -0,0 +1,35 @@
-+# BUILD_PR - PR_26124_073-palette-manager-playwright-baseline
++++ b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md
+@@ -0,0 +1,39 @@
++# BUILD_PR - PR_26124_074-sample-palette-json-audit-and-fix
 +
 +## Purpose
-+Add one targeted Palette Manager V2 Playwright baseline test that protects current working behavior without runtime changes.
++Perform one scoped data cleanup: audit and fix sample palette JSON files so their swatches match the current palette schema contract.
 +
 +## Scope
-+- `tests/tools/PaletteManagerV2Baseline.test.mjs`
++- `samples/**/*.palette.json`
 +- Required PR workflow docs and review artifacts.
 +
++## Pattern Note
++The requested literal pattern `samples/**/palette.*.*.json` has no matches in this repository. The actual sample palette JSON files use `sample.<id>.palette.json`, so the executable target set is `samples/**/*.palette.json`.
++
 +## Implementation
-+1. Add a Node-run Playwright test under `tests/tools`.
-+2. Use the existing repo static server helper.
-+3. Load `tools/palette-manager-v2/index.html`.
-+4. Assert no page errors or console errors occur during the baseline interactions.
-+5. Assert `menuSample` and JSON action buttons exist and are actionable.
-+6. Toggle each requested accordion closed and open using existing `accordion-v2` headers.
-+7. Assert Validation/Error Viewer Clear is inside the viewer header.
-+8. Select a scrollable source palette, scroll the source swatch grid, click an individual tile pin, and assert scrollTop is preserved after render.
-+9. Create test user swatches through the UI, add tags through the Tags control, and verify Tag ascending/descending sorts keep untagged swatches last.
++1. Enumerate `samples/**/*.palette.json`.
++2. Parse and rewrite only files requiring schema fixes.
++3. Preserve top-level palette metadata already allowed by `tools/schemas/tools/palette-browser.schema.json`.
++4. Normalize each swatch to:
++   - `symbol`: one-character string,
++   - `hex`: `#RRGGBB` or `#RRGGBBAA`,
++   - `name`: non-empty string,
++   - optional `tags`: lowercase non-empty strings.
++5. Remove extra swatch properties.
++6. Remove duplicate swatches within a palette by duplicate `name`, `hex`, or `symbol`, preserving the first occurrence.
++7. Keep JSON formatting stable and compact for primitive arrays where tags exist.
 +
 +## Boundaries
-+- Do not change Palette Manager V2 runtime behavior unless a tiny selector hook is required.
-+- Do not touch workspace/toolState/session behavior.
-+- Do not touch sample JSON.
-+- Do not modify `tools/shared`.
-+- Do not change CSS layout or pin styling.
++- Do not modify tools.
++- Do not modify workspace/toolState/session behavior.
++- Do not modify sample launch code.
++- Do not add fallback/default data.
 +- Do not add dependencies.
 +- Do not run the full samples smoke test.
 +
 +## Validation
-+- Run `node --check tests/tools/PaletteManagerV2Baseline.test.mjs`.
-+- Run `node tests/tools/PaletteManagerV2Baseline.test.mjs`.
++- Syntax check every `samples/**/*.palette.json` file by parsing JSON.
++- Validate every `samples/**/*.palette.json` file against the current palette swatch contract.
 +- Run `npm run test:workspace-v2`.
 +- Run `git diff --check`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_073-palette-manager-playwright-baseline/PLAN_PR.md b/docs/pr/PR_26124_073-palette-manager-playwright-baseline/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md
 new file mode 100644
-index 00000000..653ec854
+index 00000000..51bc01e4
 --- /dev/null
-+++ b/docs/pr/PR_26124_073-palette-manager-playwright-baseline/PLAN_PR.md
-@@ -0,0 +1,47 @@
-+# PLAN_PR - PR_26124_073-palette-manager-playwright-baseline
++++ b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md
+@@ -0,0 +1,46 @@
++# PLAN_PR - PR_26124_074-sample-palette-json-audit-and-fix
 +
 +## Goal
-+Add targeted Playwright baseline coverage for Palette Manager V2 without changing runtime behavior.
++Audit sample palette JSON files and fix schema violations against the current palette browser swatch contract.
 +
 +## Scope
-+- `tests/tools/PaletteManagerV2Baseline.test.mjs`
++- `samples/**/*.palette.json`
 +- Required PR workflow docs and review artifacts.
 +
++## Pattern Note
++The requested literal pattern `samples/**/palette.*.*.json` does not match files in this repository. The sample palette files are named `sample.<id>.palette.json`, so this PR audits and fixes only `samples/**/*.palette.json`.
++
 +## Boundaries
-+- Update Palette Manager V2 tests only.
-+- Do not touch workspace/toolState/session behavior.
-+- Do not touch sample JSON.
-+- Do not modify `tools/shared`.
-+- Do not change CSS layout or pin styling.
++- Do not modify tools.
++- Do not modify workspace/toolState/session behavior.
++- Do not modify sample launch code.
++- Do not add fallback/default data.
 +- Do not add dependencies.
 +- Do not run the full samples smoke test.
++- Avoid broad refactor outside sample palette JSON.
 +
-+## Test Plan
-+The new targeted Playwright test will verify:
-+- Palette Manager V2 loads without page/runtime/console errors.
-+- `menuSample` exists.
-+- Import JSON, Copy JSON, and Export JSON buttons exist, are visible, enabled, and actionable.
-+- User Palette accordion opens and collapses.
-+- Sample Palette Swatch accordion opens and collapses.
-+- Tags accordion opens and collapses.
-+- Selected Swatch accordion opens and collapses.
-+- User Defined Swatch accordion opens and collapses.
-+- Palette JSON accordion opens and collapses.
-+- Validation/Error Viewer accordion opens and collapses.
-+- Validation/Error Viewer Clear button exists inside its viewer header.
-+- Individual source palette pinning preserves source grid scroll position.
-+- User Palette Tag sort keeps untagged swatches last for ascending and descending with test-created swatches.
++## Implementation Plan
++1. Enumerate all `samples/**/*.palette.json` files.
++2. Parse each JSON file.
++3. Validate top-level palette document shape using the existing `tools/schemas/tools/palette-browser.schema.json` contract.
++4. For each swatch, keep only valid contract properties:
++   - required `symbol`, `hex`, `name`;
++   - optional `tags`.
++5. Normalize swatch tags to lowercase non-empty strings.
++6. Remove invalid/extra swatch properties.
++7. Detect duplicate swatches by `name`, `hex`, and `symbol` within each palette and preserve the first occurrence.
++8. Preserve intended palette content while making only schema corrections.
 +
 +## Playwright
-+- Targeted command: `node tests/tools/PaletteManagerV2Baseline.test.mjs`
-+- Expected pass behavior: the tool page loads, baseline controls are actionable, accordionV2 toggles work, source pin scroll is preserved, and tag sort keeps untagged swatches last in both directions.
-+- Expected fail behavior: the test fails with a specific assertion for missing controls, runtime errors, broken accordion state, scroll reset, or tag sort regression.
-+- Default gate: `npm run test:workspace-v2`
++- Default requested gate: `npm run test:workspace-v2`.
++- Expected pass behavior: Workspace V2 validation runs successfully if the script exists.
++- Expected fail behavior: the command reports that the script is unavailable if `package.json` does not define it.
++- No targeted Playwright impact is expected because this PR changes sample palette JSON data only.
 +
 +## Manual Validation
-+1. Open `tools/palette-manager-v2/index.html`.
-+2. Confirm the Palette Manager V2 page loads without visible errors.
-+3. Confirm Import JSON, Copy JSON, and Export JSON are centered in `menuSample`.
-+4. Collapse and reopen each Palette Manager accordion.
-+5. Scroll the Sample Palette Swatch grid and pin an individual source swatch; confirm the grid stays at the same scroll position.
-+6. Add user swatches with and without tags, sort by Tag ascending and descending, and confirm untagged swatches stay after tagged swatches.
-diff --git a/tests/tools/PaletteManagerV2Baseline.test.mjs b/tests/tools/PaletteManagerV2Baseline.test.mjs
-new file mode 100644
-index 00000000..50e1b6c4
---- /dev/null
-+++ b/tests/tools/PaletteManagerV2Baseline.test.mjs
-@@ -0,0 +1,267 @@
-+import assert from "node:assert/strict";
-+import { chromium } from "@playwright/test";
-+import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
-+
-+const TOOL_PATH = "/tools/palette-manager-v2/index.html";
-+const ACCORDION_CONTENT_IDS = Object.freeze([
-+  { id: "userPaletteAccordionContent", label: "User Palette" },
-+  { id: "sourcePaletteAccordionContent", label: "Sample Palette Swatch" },
-+  { id: "tagsAccordionContent", label: "Tags" },
-+  { id: "selectedSwatchAccordionContent", label: "Selected Swatch" },
-+  { id: "userDefinedSwatchAccordionContent", label: "User Defined Swatch" },
-+  { id: "importExportAccordionContent", label: "Palette JSON" },
-+  { id: "validationErrorAccordionContent", label: "Validation/Error Viewer" }
-+]);
-+
-+function createFailureMessage(label, details) {
-+  return `${label}: ${details}`;
-+}
-+
-+async function assertLocatorActionable(locator, label) {
-+  await locator.waitFor({ state: "visible" });
-+  assert.equal(await locator.isEnabled(), true, `${label} should be enabled.`);
-+  await locator.click({ trial: true });
-+}
-+
-+async function assertAccordionToggles(page, { id, label }) {
-+  const header = page.locator(`.accordion-v2__header[aria-controls="${id}"]`);
-+  const content = page.locator(`#${id}`);
-+
-+  assert.equal(await header.count(), 1, `${label} accordion header should exist once.`);
-+  assert.equal(await content.count(), 1, `${label} accordion content should exist once.`);
-+  await header.waitFor({ state: "visible" });
-+
-+  await header.click();
-+  await page.waitForFunction((contentId) => {
-+    const element = document.getElementById(contentId);
-+    return Boolean(element?.hidden);
-+  }, id);
-+  assert.equal(await header.getAttribute("aria-expanded"), "false", `${label} should collapse.`);
-+
-+  await header.click();
-+  await page.waitForFunction((contentId) => {
-+    const element = document.getElementById(contentId);
-+    return Boolean(element && !element.hidden);
-+  }, id);
-+  assert.equal(await header.getAttribute("aria-expanded"), "true", `${label} should reopen.`);
-+}
-+
-+async function selectLargestSourcePalette(page) {
-+  const largestPalette = await page.evaluate(() => {
-+    const palettes = globalThis.paletteList?.SOURCE_PALETTES || {};
-+    const entries = Object.entries(palettes)
-+      .map(([sourceId, swatches]) => ({ sourceId, count: Array.isArray(swatches) ? swatches.length : 0 }))
-+      .sort((left, right) => right.count - left.count);
-+    return entries[0] || null;
-+  });
-+
-+  assert.ok(largestPalette, "Palette Manager should expose source palettes.");
-+  assert.ok(largestPalette.count > 12, `Expected a scrollable source palette, found ${largestPalette.count} swatches.`);
-+  await page.locator("#sourcePaletteSelect").selectOption(largestPalette.sourceId);
-+  await page.waitForFunction((minimumCount) => {
-+    return document.querySelectorAll("#sourceSwatchList .palette-manager-v2__source-tile").length >= minimumCount;
-+  }, Math.min(12, largestPalette.count));
-+  return largestPalette;
-+}
-+
-+async function assertSourcePinPreservesScroll(page) {
-+  await selectLargestSourcePalette(page);
-+  const result = await page.evaluate(async () => {
-+    const grid = document.getElementById("sourceSwatchList");
-+    if (!grid) {
-+      return { error: "missing source grid" };
-+    }
-+    grid.scrollTop = Math.min(220, Math.max(0, grid.scrollHeight - grid.clientHeight));
-+    await new Promise((resolve) => requestAnimationFrame(resolve));
-+    const before = grid.scrollTop;
-+    const gridRect = grid.getBoundingClientRect();
-+    const visiblePinButton = Array.from(grid.querySelectorAll(".palette-manager-v2__source-tile .palette-manager-v2__pin-button"))
-+      .find((button) => {
-+        const rect = button.getBoundingClientRect();
-+        return rect.top >= gridRect.top && rect.bottom <= gridRect.bottom;
-+      });
-+
-+    if (!visiblePinButton) {
-+      return {
-+        before,
-+        after: grid.scrollTop,
-+        clicked: false,
-+        scrollHeight: grid.scrollHeight,
-+        clientHeight: grid.clientHeight
-+      };
-+    }
-+
-+    visiblePinButton.click();
-+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-+    return {
-+      before,
-+      after: grid.scrollTop,
-+      clicked: true,
-+      scrollHeight: grid.scrollHeight,
-+      clientHeight: grid.clientHeight
-+    };
-+  });
-+
-+  assert.equal(result.error, undefined, result.error);
-+  assert.ok(result.scrollHeight > result.clientHeight, "Source grid should be scrollable for the pin scroll baseline.");
-+  assert.ok(result.before > 0, `Source grid should scroll before pinning. Result: ${JSON.stringify(result)}`);
-+  assert.equal(result.clicked, true, "A visible source swatch pin button should be clicked.");
-+  assert.ok(Math.abs(result.after - result.before) <= 1, `Source pin should preserve scrollTop. Result: ${JSON.stringify(result)}`);
-+}
-+
-+async function addUserSwatch(page, swatch) {
-+  await page.locator("#swatchSymbolInput").fill(swatch.symbol);
-+  await page.locator("#swatchHexInput").fill(swatch.hex);
-+  await page.locator("#swatchNameInput").fill(swatch.name);
-+  await page.locator("#addSwatchButton").click();
-+  await page.waitForFunction((name) => {
-+    return globalThis.paletteManagerV2App?.getPaletteValue().swatches
-+      .some((entry) => entry.name === name);
-+  }, swatch.name);
-+
-+  if (swatch.tag) {
-+    await page.locator("#tagEntryInput").fill(swatch.tag);
-+    await page.locator("#addTagButton").click();
-+    await page.waitForFunction(({ name, tag }) => {
-+      return globalThis.paletteManagerV2App?.getPaletteValue().swatches
-+        .some((entry) => entry.name === name && Array.isArray(entry.tags) && entry.tags.includes(tag));
-+    }, { name: swatch.name, tag: swatch.tag });
-+  }
-+}
-+
-+async function createTagSortFixture(page) {
-+  const existingSymbols = await page.evaluate(() => {
-+    return globalThis.paletteManagerV2App?.getPaletteValue().swatches.map((swatch) => swatch.symbol) || [];
-+  });
-+  const symbolPool = ["A", "B", "C", "D", "E", "F", "G", "H"].filter((symbol) => !existingSymbols.includes(symbol));
-+  assert.ok(symbolPool.length >= 4, "Tag sort fixture needs four available symbols.");
-+
-+  const swatches = [
-+    { symbol: symbolPool[0], hex: "#010203", name: "Tag Sort Zeta", tag: "zeta" },
-+    { symbol: symbolPool[1], hex: "#020304", name: "Tag Sort Alpha", tag: "alpha" },
-+    { symbol: symbolPool[2], hex: "#030405", name: "Tag Sort Untagged One" },
-+    { symbol: symbolPool[3], hex: "#040506", name: "Tag Sort Untagged Two" }
-+  ];
-+
-+  for (const swatch of swatches) {
-+    await addUserSwatch(page, swatch);
-+  }
-+}
-+
-+async function readUserTileRows(page) {
-+  return page.$$eval("#userSwatchList .palette-manager-v2__user-tile", (tiles) => {
-+    return tiles.map((tile) => {
-+      const title = tile.getAttribute("title") || "";
-+      const name = title.match(/^Name: (.*)$/m)?.[1] || "";
-+      const tagsText = title.match(/^Tags: (.*)$/m)?.[1] || "None";
-+      const tags = tagsText === "None"
-+        ? []
-+        : tagsText.split(",").map((tag) => tag.trim()).filter(Boolean);
-+      return { name, tags };
-+    });
-+  });
-+}
-+
-+function assertTagRowsKeepUntaggedLast(rows, expectedTaggedNames, expectedTags, label) {
-+  const taggedRows = rows.filter((row) => row.tags.length > 0);
-+  const firstUntaggedIndex = rows.findIndex((row) => row.tags.length === 0);
-+  assert.ok(taggedRows.length >= expectedTaggedNames.length, `${label} should include tagged swatches.`);
-+  assert.ok(firstUntaggedIndex >= expectedTaggedNames.length, `${label} should keep untagged rows after tagged rows.`);
-+  assert.ok(rows.slice(firstUntaggedIndex).every((row) => row.tags.length === 0), `${label} should keep all trailing rows untagged.`);
-+  assert.deepEqual(
-+    taggedRows.slice(0, expectedTaggedNames.length).map((row) => row.name),
-+    expectedTaggedNames,
-+    `${label} should order tagged swatches by tag.`
-+  );
-+  assert.deepEqual(
-+    taggedRows.slice(0, expectedTags.length).map((row) => row.tags[0]),
-+    expectedTags,
-+    `${label} should expose expected tag order.`
-+  );
-+}
-+
-+async function assertTagSortKeepsUntaggedLast(page) {
-+  await createTagSortFixture(page);
-+  const tagSortButton = page.locator('#userPaletteSortControls [data-sort-key="tag"]');
-+
-+  await tagSortButton.click();
-+  await page.waitForFunction(() => {
-+    const active = document.querySelector('#userPaletteSortControls [data-sort-key="tag"].is-active');
-+    return Boolean(active && active.textContent.includes("Tag"));
-+  });
-+  assertTagRowsKeepUntaggedLast(
-+    await readUserTileRows(page),
-+    ["Tag Sort Alpha", "Tag Sort Zeta"],
-+    ["alpha", "zeta"],
-+    "Tag ascending sort"
-+  );
-+
-+  await tagSortButton.click();
-+  await page.waitForFunction(() => {
-+    const active = document.querySelector('#userPaletteSortControls [data-sort-key="tag"].is-active');
-+    return Boolean(active && active.textContent.includes("Tag"));
-+  });
-+  assertTagRowsKeepUntaggedLast(
-+    await readUserTileRows(page),
-+    ["Tag Sort Zeta", "Tag Sort Alpha"],
-+    ["zeta", "alpha"],
-+    "Tag descending sort"
-+  );
-+}
-+
-+async function run() {
-+  const server = await startRepoServer();
-+  const consoleErrors = [];
-+  const pageErrors = [];
-+  const failedRequests = [];
-+  let browser;
-+
-+  try {
-+    browser = await chromium.launch({ headless: true });
-+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-+    page.on("console", (message) => {
-+      if (message.type() === "error") {
-+        consoleErrors.push(message.text());
-+      }
-+    });
-+    page.on("pageerror", (error) => {
-+      pageErrors.push(error.message);
-+    });
-+    page.on("requestfailed", (request) => {
-+      failedRequests.push(`${request.url()} ${request.failure()?.errorText || "failed"}`);
-+    });
-+
-+    await page.goto(`${server.baseUrl}${TOOL_PATH}`, { waitUntil: "networkidle" });
-+    await page.locator(".palette-manager-v2.app-shell").waitFor({ state: "visible" });
-+
-+    const menu = page.locator('nav[aria-label="menuSample"]');
-+    await menu.waitFor({ state: "visible" });
-+    assert.equal(await menu.count(), 1, "menuSample nav should exist once.");
-+
-+    await assertLocatorActionable(page.locator("#importPaletteButton"), "Import JSON");
-+    await assertLocatorActionable(page.locator("#copyPaletteButton"), "Copy JSON");
-+    await assertLocatorActionable(page.locator("#exportPaletteButton"), "Export JSON");
-+
-+    for (const accordion of ACCORDION_CONTENT_IDS) {
-+      await assertAccordionToggles(page, accordion);
-+    }
-+
-+    const clearButtonInsideViewerHeader = await page.locator(".palette-manager-v2__validation-header #clearValidationViewerButton").count();
-+    assert.equal(clearButtonInsideViewerHeader, 1, "Validation/Error Viewer Clear button should be inside the viewer header.");
-+
-+    await assertSourcePinPreservesScroll(page);
-+    await assertTagSortKeepsUntaggedLast(page);
-+
-+    assert.deepEqual(pageErrors, [], createFailureMessage("page errors", pageErrors.join(" | ")));
-+    assert.deepEqual(consoleErrors, [], createFailureMessage("console errors", consoleErrors.join(" | ")));
-+    assert.deepEqual(failedRequests, [], createFailureMessage("failed requests", failedRequests.join(" | ")));
-+    console.log("Palette Manager V2 Playwright baseline: PASS");
-+  } finally {
-+    if (browser) {
-+      await browser.close();
-+    }
-+    await server.close();
-+  }
-+}
-+
-+await run();
++1. Open each changed `sample.<id>.palette.json` file.
++2. Confirm the file is valid JSON.
++3. Confirm each swatch has `symbol`, `hex`, and `name`.
++4. Confirm optional tags are lowercase arrays of strings.
++5. Confirm no sample launch code was modified.
++6. Full samples smoke test remains out of scope by instruction.

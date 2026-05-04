@@ -1,1 +1,1 @@
-Add Palette Manager V2 Playwright baseline coverage - PR_26124_073-palette-manager-playwright-baseline
+Audit and fix sample palette JSON schema compliance - PR_26124_074-sample-palette-json-audit-and-fix

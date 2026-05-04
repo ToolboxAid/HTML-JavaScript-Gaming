@@ -1,14 +1,14 @@
-# Codex Commands - PR_26124_073-palette-manager-playwright-baseline
+# Codex Commands - PR_26124_074-sample-palette-json-audit-and-fix
 
 ```bash
-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_073-palette-manager-playwright-baseline. Follow PROJECT_INSTRUCTIONS.md exactly."
+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_074-sample-palette-json-audit-and-fix. Follow PROJECT_INSTRUCTIONS.md exactly."
 ```
 
 ## Validation Commands
 
 ```bash
-node --check tests/tools/PaletteManagerV2Baseline.test.mjs
-node tests/tools/PaletteManagerV2Baseline.test.mjs
+node --input-type=module <sample palette JSON audit/fix>
+node --input-type=module <sample palette JSON validation>
 git diff --check
 npm run test:workspace-v2
 npm run codex:review-artifacts
@@ -16,7 +16,7 @@ npm run codex:review-artifacts
 
 ## Playwright
 
-The targeted Palette Manager V2 Playwright baseline validates page load, console/runtime cleanliness, menuSample actions, accordion toggles, Validation/Error Viewer Clear placement, source pin scroll preservation, and Tag sort untagged-last behavior.
+No targeted Playwright impact is expected because this PR changes sample palette JSON data only. The default requested gate is `npm run test:workspace-v2`.
 
 `npm run test:workspace-v2` failed because `package.json` does not define the `test:workspace-v2` script.
 
