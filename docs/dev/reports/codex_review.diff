@@ -1,2074 +1,117 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 373b15d0..004290bd 100644
+index 004290bd..25568512 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,30 +1,28 @@
--# Codex Commands - PR_26124_057-palette-manager-source-pin-all
-+# Codex Commands - PR_26124_058-palette-manager-baseline-restore-and-hardening
+@@ -1,27 +1,26 @@
+-# Codex Commands - PR_26124_058-palette-manager-baseline-restore-and-hardening
++# Codex Commands - PR_26124_059-validation-viewer-clear-and-error-consolidation
 
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
  - Used `.codex/skills/repo-build/SKILL.md`.
--- Created `docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md`.
-+- Created `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/BUILD_PR.md`.
-+- Created `docs/dev/reports/PR_26124_058-palette-manager-restore-point/` before runtime edits.
+-- Created `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/BUILD_PR.md`.
+-- Created `docs/dev/reports/PR_26124_058-palette-manager-restore-point/` before runtime edits.
++- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md`.
  - Updated Palette Manager V2 only.
--- Created `docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md`.
-+- Created `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/APPLY_PR.md`.
+-- Created `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/APPLY_PR.md`.
++- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md`.
 
  ## Validation Commands
  - `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
- - `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
--- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
--- Targeted served-browser Palette Manager V2 source sort and `Pin All` validation using Playwright from Node.
--- Targeted served-browser `Pin All` source dropdown placement and size validation using Playwright from Node.
-+- Targeted served-browser Palette Manager V2 hardening validation using Playwright from Node.
+-- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+-- Targeted served-browser Palette Manager V2 hardening validation using Playwright from Node.
++- `node --check tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`
++- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation using Playwright from Node.
  - `git diff --check`
  - `npm run test:workspace-v2`
  - `git diff --cached --check`
  - `npm run codex:review-artifacts`
--- Python `zipfile` packaging for `tmp/PR_26124_057-palette-manager-source-pin-all_delta_2.zip`
-+- Python `zipfile` packaging for `tmp/PR_26124_058-palette-manager-baseline-restore-and-hardening_delta.zip`
+-- Python `zipfile` packaging for `tmp/PR_26124_058-palette-manager-baseline-restore-and-hardening_delta.zip`
++- Python `zipfile` packaging for `tmp/PR_26124_059-validation-viewer-clear-and-error-consolidation_delta.zip`
 
  ## Validation Outcome
  - JavaScript syntax checks: PASS.
--- Targeted served-browser Palette Manager V2 behavior check: PASS.
--- Targeted served-browser `Pin All` placement and size check: PASS.
--- `git diff --check`: PASS with Git LF-to-CRLF warning for `tools/palette-manager-v2/index.html`.
-+- Targeted served-browser Palette Manager V2 hardening check: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
+-- Targeted served-browser Palette Manager V2 hardening check: PASS.
++- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation check: PASS.
+ - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
  - `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
- - Review artifacts: generated.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 62fedaa9..4975ffe1 100644
+index 4975ffe1..3cae9f95 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Add Palette Manager source Pin All action - PR_26124_057-palette-manager-source-pin-all
-+Harden Palette Manager baseline with restore point - PR_26124_058-palette-manager-baseline-restore-and-hardening
-diff --git a/docs/dev/reports/PR_26124_058-palette-manager-restore-point/README.md b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/README.md
+-Harden Palette Manager baseline with restore point - PR_26124_058-palette-manager-baseline-restore-and-hardening
++Add Palette Manager validation viewer clear and consolidate duplicate errors - PR_26124_059-validation-viewer-clear-and-error-consolidation
+diff --git a/docs/dev/reports/PR_26124_059_report.md b/docs/dev/reports/PR_26124_059_report.md
 new file mode 100644
-index 00000000..0ba998e3
+index 00000000..8b3cd47f
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/README.md
-@@ -0,0 +1,8 @@
-+# PR_26124_058 Palette Manager Restore Point
-+
-+This folder is the pre-hardening rollback snapshot for Palette Manager V2.
-+
-+It contains copies of the current runtime files that PR_26124_058 changes after this restore point was created.
-+Use these files only as a manual rollback reference for the pre-hardening Palette Manager V2 state.
-+
-+No start_of_day files were created.
-diff --git a/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-new file mode 100644
-index 00000000..ccbbb5bb
---- /dev/null
-+++ b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-@@ -0,0 +1,122 @@
-+import { SwatchRow } from "../modules/SwatchRow.js";
-+
-+export class SourcePaletteBrowserControl {
-+  constructor({ documentRef, refs, app }) {
-+    this.document = documentRef;
-+    this.refs = refs;
-+    this.app = app;
-+  }
-+
-+  bind() {
-+    this.renderSourceOptions();
-+    this.renderSortOptions();
-+    this.renderSizeOptions();
-+    this.refs.sourcePaletteSelect.addEventListener("change", () => {
-+      this.app.setSourcePaletteId(this.refs.sourcePaletteSelect.value);
-+    });
-+    this.refs.sourceSearchInput.addEventListener("input", () => {
-+      this.app.setSourceSearch(this.refs.sourceSearchInput.value);
-+    });
-+    this.refs.pinAllSourceButton.addEventListener("click", () => {
-+      this.app.pinVisibleSourceSwatches();
-+    });
-+  }
-+
-+  render() {
-+    this.refs.sourcePaletteSelect.value = this.app.getCurrentSourcePaletteId();
-+    this.refs.sourceSearchInput.value = this.app.getSourceSearch();
-+    this.refs.sourceSwatchList.dataset.swatchSize = this.app.getSourceSwatchSize();
-+    this.renderActiveSortButton();
-+    this.renderActiveSizeButton();
-+    this.refs.sourceSwatchList.replaceChildren();
-+
-+    const visibleSwatches = this.app.getVisibleSourceSwatches();
-+    if (visibleSwatches.length === 0) {
-+      const empty = this.document.createElement("p");
-+      empty.className = "palette-manager-v2__meta";
-+      empty.textContent = "No source swatches match the search.";
-+      this.refs.sourceSwatchList.appendChild(empty);
-+      return;
-+    }
-+
-+    visibleSwatches.forEach((swatch) => {
-+      const userIndex = this.app.findUserSwatchIndex(swatch);
-+      this.refs.sourceSwatchList.appendChild(SwatchRow.createSourceTile(this.document, swatch, {
-+        pinned: userIndex >= 0,
-+        onSelect: () => this.app.browseSourceSwatch(swatch),
-+        onTack: () => {
-+          if (userIndex >= 0) {
-+            this.app.removeUserSwatch(userIndex);
-+            return;
-+          }
-+          this.app.pinSourceSwatch(swatch, this.app.getCurrentSourcePaletteId());
-+        }
-+      }));
-+    });
-+  }
-+
-+  renderSourceOptions() {
-+    this.refs.sourcePaletteSelect.replaceChildren();
-+    this.app.getSourcePaletteIds().forEach((sourceId) => {
-+      const option = this.document.createElement("option");
-+      option.value = sourceId;
-+      option.textContent = this.app.getSourcePaletteLabel(sourceId);
-+      this.refs.sourcePaletteSelect.appendChild(option);
-+    });
-+  }
-+
-+  renderSortOptions() {
-+    this.refs.sourcePaletteSortControls.replaceChildren();
-+    this.app.getSourceSortOptions().forEach((option) => {
-+      const button = this.document.createElement("button");
-+      button.type = "button";
-+      button.className = "palette-manager-v2__sort-button";
-+      button.dataset.sortKey = option.value;
-+      button.dataset.sortLabel = option.label;
-+      button.setAttribute("role", "radio");
-+      button.textContent = option.label;
-+      button.addEventListener("click", () => {
-+        this.app.setSourceSortKey(option.value);
-+      });
-+      this.refs.sourcePaletteSortControls.appendChild(button);
-+    });
-+    this.renderActiveSortButton();
-+  }
-+
-+  renderSizeOptions() {
-+    this.refs.sourceSwatchSizeControls.replaceChildren();
-+    this.app.getSwatchSizeOptions().forEach((size) => {
-+      const button = this.document.createElement("button");
-+      button.type = "button";
-+      button.className = "palette-manager-v2__sort-button palette-manager-v2__size-button";
-+      button.dataset.swatchSize = size.value;
-+      button.setAttribute("role", "radio");
-+      button.textContent = size.label;
-+      button.addEventListener("click", () => {
-+        this.app.setSourceSwatchSize(size.value);
-+      });
-+      this.refs.sourceSwatchSizeControls.appendChild(button);
-+    });
-+    this.renderActiveSizeButton();
-+  }
-+
-+  renderActiveSortButton() {
-+    const activeKey = this.app.getSourceSortKey();
-+    const directionIndicator = this.app.getSourceSortDirection() === "descending" ? "▼" : "▲";
-+    this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-key]").forEach((button) => {
-+      const isActive = button.dataset.sortKey === activeKey;
-+      button.classList.toggle("is-active", isActive);
-+      button.setAttribute("aria-checked", String(isActive));
-+      button.textContent = isActive ? `${button.dataset.sortLabel} ${directionIndicator}` : button.dataset.sortLabel;
-+    });
-+  }
-+
-+  renderActiveSizeButton() {
-+    const activeSize = this.app.getSourceSwatchSize();
-+    this.refs.sourceSwatchSizeControls.querySelectorAll("[data-swatch-size]").forEach((button) => {
-+      const isActive = button.dataset.swatchSize === activeSize;
-+      button.classList.toggle("is-active", isActive);
-+      button.setAttribute("aria-checked", String(isActive));
-+    });
-+  }
-+}
-diff --git a/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/index.html b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/index.html
-new file mode 100644
-index 00000000..2bc94a48
---- /dev/null
-+++ b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/index.html
-@@ -0,0 +1,200 @@
-+<!DOCTYPE html>
-+<html lang="en">
-+<head>
-+  <meta charset="UTF-8" />
-+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-+  <title>Palette Manager V2</title>
-+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
-+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
-+  <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
-+  <link rel="stylesheet" href="../shared/platformShell.css" />
-+  <link rel="stylesheet" href="./paletteManagerV2.css" />
-+</head>
-+<body class="tools-platform-tool-page hub-page-tools" data-tool-id="palette-manager-v2" data-tools-platform-page="tool">
-+  <details class="is-collapsible" open>
-+    <summary class="is-collapsible__summary" data-tools-platform-summary></summary>
-+    <div class="is-collapsible__content">
-+      <div id="shared-theme-header"></div>
-+      <div data-tools-platform-header></div>
-+    </div>
-+  </details>
-+
-+  <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
-+    <div class="palette-manager-v2__menu-actions">
-+      <button id="importPaletteButton" type="button">Import JSON</button>
-+      <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
-+      <button id="copyPaletteButton" type="button">Copy JSON</button>
-+      <button id="exportPaletteButton" type="button">Export JSON</button>
-+    </div>
-+  </nav>
-+
-+  <div class="palette-manager-v2 app-shell">
-+    <div class="palette-manager-v2__layout tools-platform-layout-grid">
-+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
-+        <details class="palette-manager-v2__accordion" open>
-+          <summary class="palette-manager-v2__accordion-summary">
-+            <span>Selected Swatch</span>
-+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
-+          </summary>
-+          <div class="palette-manager-v2__accordion-content">
-+            <div id="selectedSwatchPreview" class="palette-manager-v2__preview" aria-label="Selected swatch preview"></div>
-+            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked palette-manager-v2__form-grid--compact">
-+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-+                Symbol
-+                <input id="selectedSwatchSymbolInput" type="text" autocomplete="off" readonly />
-+              </label>
-+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-+                Hex
-+                <input id="selectedSwatchHexInput" type="text" autocomplete="off" readonly />
-+              </label>
-+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-+                Name
-+                <input id="selectedSwatchNameInput" type="text" autocomplete="off" readonly />
-+              </label>
-+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-+                Source
-+                <input id="selectedSwatchSourceInput" type="text" autocomplete="off" readonly />
-+              </label>
-+              <div class="palette-manager-v2__field palette-manager-v2__field--compact">
-+                <span>Tags</span>
-+                <div id="selectedSwatchTagList" class="palette-manager-v2__tag-list" aria-label="Selected swatch tags"></div>
-+              </div>
-+            </div>
-+          </div>
-+        </details>
-+
-+        <details class="palette-manager-v2__accordion" open>
-+          <summary class="palette-manager-v2__accordion-summary">
-+            <span>User Defined Swatch</span>
-+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
-+          </summary>
-+          <div class="palette-manager-v2__accordion-content">
-+            <div id="userDefinedSwatchPreview" class="palette-manager-v2__preview" aria-label="User defined swatch preview"></div>
-+            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked palette-manager-v2__form-grid--compact">
-+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-+                Symbol
-+                <input id="swatchSymbolInput" type="text" maxlength="1" autocomplete="off" />
-+              </label>
-+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-+                Hex
-+                <input id="swatchHexInput" type="text" maxlength="9" autocomplete="off" placeholder="#RRGGBB or #RRGGBBAA" />
-+              </label>
-+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-+                Name
-+                <input id="swatchNameInput" type="text" autocomplete="off" />
-+              </label>
-+            </div>
-+            <div class="palette-manager-v2__controls">
-+              <button id="addSwatchButton" type="button">Add</button>
-+              <button id="updateSwatchButton" type="button">Update</button>
-+              <button id="clearFormButton" type="button">Clear Form</button>
-+            </div>
-+          </div>
-+        </details>
-+
-+        <details class="palette-manager-v2__accordion" open>
-+          <summary class="palette-manager-v2__accordion-summary">
-+            <span>Tags</span>
-+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
-+          </summary>
-+          <div class="palette-manager-v2__accordion-content">
-+            <div id="availableTagList" class="palette-manager-v2__tag-list palette-manager-v2__tag-list--available" aria-label="Available user palette tags"></div>
-+            <div class="palette-manager-v2__tag-entry">
-+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-+                Tag name
-+                <input id="tagEntryInput" type="text" autocomplete="off" />
-+              </label>
-+              <button id="addTagButton" type="button">Add</button>
-+              <div id="tagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Tag suggestions"></div>
-+            </div>
-+          </div>
-+        </details>
-+      </aside>
-+
-+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
-+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
-+            <span>User Palette</span>
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="userPaletteAccordionContent" class="accordion-v2__content">
-+            <div class="palette-manager-v2__sort-row">
-+              <div class="palette-manager-v2__field">
-+                <span>Sort user palette</span>
-+                <div id="userPaletteSortControls" class="palette-manager-v2__sort-buttons" role="radiogroup" aria-label="Sort user palette"></div>
-+              </div>
-+              <div class="palette-manager-v2__field palette-manager-v2__size-field">
-+                <span>Size</span>
-+                <div id="userSwatchSizeControls" class="palette-manager-v2__size-buttons" role="radiogroup" aria-label="User palette tile size"></div>
-+              </div>
-+            </div>
-+            <div id="userPaletteCount" class="palette-manager-v2__meta">0 user swatches</div>
-+            <div id="userSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--user" aria-label="User palette swatches"></div>
-+          </div>
-+        </section>
-+
-+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
-+            <span>Sample Palette Swatch</span>
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
-+            <div class="palette-manager-v2__source-palette-row">
-+              <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
-+                Source palette
-+                <select id="sourcePaletteSelect"></select>
-+              </label>
-+              <button id="pinAllSourceButton" class="palette-manager-v2__pin-all-source-button" type="button">Pin All</button>
-+            </div>
-+            <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
-+              Search source swatches
-+              <input id="sourceSearchInput" type="search" autocomplete="off" />
-+            </label>
-+            <div class="palette-manager-v2__sort-row">
-+              <div class="palette-manager-v2__field">
-+                <span>Sort source palette</span>
-+                <div id="sourcePaletteSortControls" class="palette-manager-v2__sort-buttons" role="radiogroup" aria-label="Sort source palette"></div>
-+              </div>
-+              <div class="palette-manager-v2__field palette-manager-v2__size-field">
-+                <span>Size</span>
-+                <div id="sourceSwatchSizeControls" class="palette-manager-v2__size-buttons" role="radiogroup" aria-label="Source palette tile size"></div>
-+              </div>
-+            </div>
-+            <div id="sourceSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--source" aria-label="Browse palette swatches"></div>
-+          </div>
-+        </section>
-+      </main>
-+
-+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
-+        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--import is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="importExportAccordionContent">
-+            <span>Palette JSON</span>
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="importExportAccordionContent" class="accordion-v2__content">
-+            <pre id="paletteJsonPreview" class="palette-manager-v2__json-preview">No user palette data.</pre>
-+          </div>
-+        </section>
-+
-+        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--validation is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
-+            <span>Validation/Error Viewer</span>
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="validationErrorAccordionContent" class="accordion-v2__content">
-+            <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
-+            <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
-+          </div>
-+        </section>
-+      </aside>
-+    </div>
-+  </div>
-+
-+  <div data-tools-platform-status></div>
-+  <script type="module" src="../shared/platformShell.js"></script>
-+  <script src="../../src/engine/paletteList.js"></script>
-+  <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
-+  <script type="module" src="./main.js"></script>
-+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
-+</body>
-+</html>
-diff --git a/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/modules/PaletteManagerApp.js b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/modules/PaletteManagerApp.js
-new file mode 100644
-index 00000000..1d7437ed
---- /dev/null
-+++ b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -0,0 +1,765 @@
-+import { PaletteEditorControl } from "../controls/PaletteEditorControl.js";
-+import { PaletteImportExportControl } from "../controls/PaletteImportExportControl.js";
-+import { PaletteValidationErrorControl } from "../controls/PaletteValidationErrorControl.js";
-+import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
-+import { UserPaletteControl } from "../controls/UserPaletteControl.js";
-+import { PaletteValidationService } from "./PaletteValidationService.js";
-+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText, swatchKey } from "./paletteUtils.js";
-+
-+const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
-+
-+const REQUIRED_REF_IDS = Object.freeze([
-+  "userPaletteCount",
-+  "userPaletteSortControls",
-+  "userSwatchSizeControls",
-+  "userSwatchList",
-+  "sourcePaletteSelect",
-+  "sourceSearchInput",
-+  "pinAllSourceButton",
-+  "sourcePaletteSortControls",
-+  "sourceSwatchSizeControls",
-+  "sourceSwatchList",
-+  "selectedSwatchPreview",
-+  "selectedSwatchSymbolInput",
-+  "selectedSwatchHexInput",
-+  "selectedSwatchNameInput",
-+  "selectedSwatchSourceInput",
-+  "selectedSwatchTagList",
-+  "userDefinedSwatchPreview",
-+  "swatchSymbolInput",
-+  "swatchHexInput",
-+  "swatchNameInput",
-+  "availableTagList",
-+  "tagEntryInput",
-+  "tagSuggestions",
-+  "addTagButton",
-+  "addSwatchButton",
-+  "updateSwatchButton",
-+  "clearFormButton",
-+  "importPaletteButton",
-+  "importPaletteInput",
-+  "copyPaletteButton",
-+  "exportPaletteButton",
-+  "paletteJsonPreview",
-+  "paletteStatus",
-+  "paletteErrorList"
-+]);
-+
-+const SWATCH_SIZE_OPTIONS = Object.freeze([
-+  Object.freeze({ value: "small", label: "Small" }),
-+  Object.freeze({ value: "medium", label: "Medium" }),
-+  Object.freeze({ value: "large", label: "Large" })
-+]);
-+
-+const PALETTE_SORT_OPTIONS = Object.freeze([
-+  Object.freeze({ value: "hue", label: "Hue" }),
-+  Object.freeze({ value: "saturation", label: "Saturation" }),
-+  Object.freeze({ value: "brightness", label: "Brightness" }),
-+  Object.freeze({ value: "name", label: "Name" }),
-+  Object.freeze({ value: "tag", label: "Tag" })
-+]);
-+
-+const SOURCE_PALETTE_SORT_OPTIONS = Object.freeze(
-+  PALETTE_SORT_OPTIONS.filter((option) => option.value !== "tag")
-+);
-+
-+function isValidSwatchSize(swatchSize) {
-+  return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
-+}
-+
-+function isValidSortKey(sortKey) {
-+  return PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
-+}
-+
-+function isValidSourceSortKey(sortKey) {
-+  return SOURCE_PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
-+}
-+
-+function isUserDefinedSwatch(swatch) {
-+  return sanitizeText(swatch?.source) === USER_ADDED_SOURCE;
-+}
-+
-+function sortUniqueTags(tags) {
-+  const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
-+  return Array.from(new Set(normalizeTags(tags)))
-+    .sort((left, right) => collator.compare(left, right));
-+}
-+
-+function isSameText(left, right) {
-+  return sanitizeText(left).toLowerCase() === sanitizeText(right).toLowerCase();
-+}
-+
-+function getRgbHexKey(hex) {
-+  return normalizeHex(hex).slice(0, 7);
-+}
-+
-+function getTagSortKey(swatch) {
-+  return sortUniqueTags(swatch?.tags)[0] || "";
-+}
-+
-+function applySortDirection(entries, sortDirection) {
-+  return sortDirection === "descending" ? entries.slice().reverse() : entries;
-+}
-+
-+function sortRowsByTag(rows, sortDirection) {
-+  const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
-+  const sortedRows = (Array.isArray(rows) ? rows : [])
-+    .map((row, index) => ({ row, index, tagKey: getTagSortKey(row?.swatch) }))
-+    .sort((left, right) => {
-+      if (!left.tagKey && right.tagKey) {
-+        return 1;
-+      }
-+      if (left.tagKey && !right.tagKey) {
-+        return -1;
-+      }
-+      return collator.compare(left.tagKey, right.tagKey) || left.index - right.index;
-+    })
-+    .map((entry) => entry.row);
-+  return applySortDirection(sortedRows, sortDirection);
-+}
-+
-+function toggleSortDirection(sortDirection) {
-+  return sortDirection === "ascending" ? "descending" : "ascending";
-+}
-+
-+function collectRefs(documentRef) {
-+  return REQUIRED_REF_IDS.reduce((refs, id) => {
-+    const element = documentRef.getElementById(id);
-+    if (!element) {
-+      throw new Error(`Palette Manager V2 missing #${id}.`);
-+    }
-+    refs[id] = element;
-+    return refs;
-+  }, {});
-+}
-+
-+export class PaletteManagerApp {
-+  constructor({ documentRef, paletteSource, sortService, usageService }) {
-+    this.document = documentRef;
-+    this.paletteSource = paletteSource;
-+    this.sortService = sortService;
-+    this.usageService = usageService;
-+    this.globalPaletteToolKey = paletteSource.GLOBAL_PALETTE_TOOL_KEY;
-+    this.hexColorPattern = USER_HEX_COLOR_PATTERN;
-+    this.sourcePalettes = paletteSource.SOURCE_PALETTES;
-+    this.sourcePaletteLabels = paletteSource.SOURCE_PALETTE_LABELS || {};
-+    this.sourcePaletteIds = Object.keys(this.sourcePalettes);
-+    this.refs = collectRefs(documentRef);
-+    this.validator = new PaletteValidationService({
-+      hexColorPattern: this.hexColorPattern,
-+      globalPaletteToolKey: this.globalPaletteToolKey
-+    });
-+    this.state = {
-+      userSwatches: [],
-+      selectedUserIndex: -1,
-+      sourcePaletteId: this.sourcePaletteIds[0] || "",
-+      sourceSearch: "",
-+      userSortKey: "hue",
-+      userSortDirection: "ascending",
-+      userSortHasUserChoice: false,
-+      sourceSortKey: "hue",
-+      sourceSortDirection: "ascending",
-+      sourceSortHasUserChoice: false,
-+      userSwatchSize: "large",
-+      sourceSwatchSize: "large",
-+      availableTags: [],
-+      errors: [],
-+      status: "Ready."
-+    };
-+  }
-+
-+  init() {
-+    this.editorControl = new PaletteEditorControl({
-+      refs: this.refs,
-+      app: this,
-+      hexColorPattern: this.hexColorPattern
-+    });
-+    this.controls = [
-+      this.editorControl,
-+      new UserPaletteControl({ documentRef: this.document, refs: this.refs, app: this }),
-+      new SourcePaletteBrowserControl({ documentRef: this.document, refs: this.refs, app: this }),
-+      new PaletteImportExportControl({ refs: this.refs, app: this }),
-+      new PaletteValidationErrorControl({ documentRef: this.document, refs: this.refs, app: this })
-+    ];
-+
-+    this.controls.forEach((control) => control.bind());
-+    this.editorControl.clearForm();
-+
-+    if (this.sourcePaletteIds.length === 0) {
-+      this.setActionState(["src/engine/paletteList.js did not provide source palettes."], "Source palettes unavailable.", false);
-+    }
-+    this.render();
-+  }
-+
-+  render() {
-+    this.controls.forEach((control) => {
-+      if (typeof control.render === "function") {
-+        control.render();
-+      }
-+    });
-+  }
-+
-+  getUserSwatches() {
-+    return this.state.userSwatches.map(cloneSwatch);
-+  }
-+
-+  getVisibleUserSwatchRows() {
-+    const rows = this.state.userSwatches.map((swatch, index) => ({
-+      index,
-+      swatch: cloneSwatch(swatch)
-+    }));
-+    if (this.state.userSortKey === "tag") {
-+      return sortRowsByTag(rows, this.state.userSortDirection);
-+    }
-+    return applySortDirection(this.sortService.sortRows(rows, this.state.userSortKey), this.state.userSortDirection);
-+  }
-+
-+  getSelectedUserIndex() {
-+    return this.state.selectedUserIndex;
-+  }
-+
-+  getUserSortOptions() {
-+    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
-+  }
-+
-+  getSourceSortOptions() {
-+    return SOURCE_PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
-+  }
-+
-+  getSwatchSizeOptions() {
-+    return SWATCH_SIZE_OPTIONS.map((size) => ({ ...size }));
-+  }
-+
-+  getUserSortKey() {
-+    return this.state.userSortKey;
-+  }
-+
-+  getUserSortDirection() {
-+    return this.state.userSortDirection;
-+  }
-+
-+  getSourceSortKey() {
-+    return this.state.sourceSortKey;
-+  }
-+
-+  getSourceSortDirection() {
-+    return this.state.sourceSortDirection;
-+  }
-+
-+  getUserSwatchSize() {
-+    return this.state.userSwatchSize;
-+  }
-+
-+  getSourceSwatchSize() {
-+    return this.state.sourceSwatchSize;
-+  }
-+
-+  getSourcePaletteIds() {
-+    return this.sourcePaletteIds.slice();
-+  }
-+
-+  getSourcePaletteLabel(sourceId) {
-+    return sanitizeText(this.sourcePaletteLabels[sourceId]) || sanitizeText(sourceId);
-+  }
-+
-+  getCurrentSourcePaletteId() {
-+    return this.state.sourcePaletteId;
-+  }
-+
-+  getSourceSearch() {
-+    return this.state.sourceSearch;
-+  }
-+
-+  getStatus() {
-+    return this.state.status;
-+  }
-+
-+  getVisibleErrors() {
-+    return Array.from(new Set([...this.state.errors, ...this.validator.validateUserSwatches(this.state.userSwatches)]));
-+  }
-+
-+  getTagSuggestions() {
-+    return this.state.availableTags.slice();
-+  }
-+
-+  getSelectedSwatch() {
-+    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-+      return null;
-+    }
-+    return cloneSwatch(this.state.userSwatches[this.state.selectedUserIndex]);
-+  }
-+
-+  getVisibleSourceSwatches() {
-+    const swatches = this.sourcePalettes[this.state.sourcePaletteId] || [];
-+    const query = sanitizeText(this.state.sourceSearch).toLowerCase();
-+    const toSourceSwatch = (swatch) => cloneSwatch({
-+      symbol: swatch.symbol,
-+      hex: swatch.hex,
-+      name: swatch.name,
-+      source: swatch.source || this.state.sourcePaletteId
-+    });
-+    if (!query) {
-+      return this.sortVisibleSourceSwatches(swatches.map(toSourceSwatch));
-+    }
-+    const visibleSwatches = swatches
-+      .filter((swatch) => {
-+        return swatch.name.toLowerCase().includes(query)
-+          || swatch.hex.toLowerCase().includes(query)
-+          || swatch.symbol.toLowerCase().includes(query);
-+      })
-+      .map(toSourceSwatch);
-+    return this.sortVisibleSourceSwatches(visibleSwatches);
-+  }
-+
-+  sortVisibleSourceSwatches(swatches) {
-+    return applySortDirection(this.sortService.sortSwatches(swatches, this.state.sourceSortKey), this.state.sourceSortDirection);
-+  }
-+
-+  setSourcePaletteId(sourcePaletteId) {
-+    if (!this.sourcePalettes[sourcePaletteId]) {
-+      return;
-+    }
-+    this.state.sourcePaletteId = sourcePaletteId;
-+    this.state.sourceSearch = "";
-+    this.setActionState([], `Browsing ${sourcePaletteId}.`, false);
-+    this.render();
-+  }
-+
-+  setSourceSearch(sourceSearch) {
-+    this.state.sourceSearch = sanitizeText(sourceSearch);
-+    this.render();
-+  }
-+
-+  setUserSortKey(sortKey) {
-+    if (!isValidSortKey(sortKey)) {
-+      return;
-+    }
-+    if (this.state.userSortKey === sortKey && this.state.userSortHasUserChoice) {
-+      this.state.userSortDirection = toggleSortDirection(this.state.userSortDirection);
-+    } else {
-+      this.state.userSortKey = sortKey;
-+      this.state.userSortDirection = "ascending";
-+      this.state.userSortHasUserChoice = true;
-+    }
-+    this.render();
-+  }
-+
-+  setSourceSortKey(sortKey) {
-+    if (!isValidSourceSortKey(sortKey)) {
-+      return;
-+    }
-+    if (this.state.sourceSortKey === sortKey && this.state.sourceSortHasUserChoice) {
-+      this.state.sourceSortDirection = toggleSortDirection(this.state.sourceSortDirection);
-+    } else {
-+      this.state.sourceSortKey = sortKey;
-+      this.state.sourceSortDirection = "ascending";
-+      this.state.sourceSortHasUserChoice = true;
-+    }
-+    this.render();
-+  }
-+
-+  setUserSwatchSize(swatchSize) {
-+    if (!isValidSwatchSize(swatchSize)) {
-+      return;
-+    }
-+    this.state.userSwatchSize = swatchSize;
-+    this.render();
-+  }
-+
-+  setSourceSwatchSize(swatchSize) {
-+    if (!isValidSwatchSize(swatchSize)) {
-+      return;
-+    }
-+    this.state.sourceSwatchSize = swatchSize;
-+    this.render();
-+  }
-+
-+  setActionState(errors, status, shouldRender = true) {
-+    this.state.errors = Array.isArray(errors) ? errors : [];
-+    this.state.status = sanitizeText(status) || "Ready.";
-+    if (shouldRender) {
-+      this.render();
-+    }
-+  }
-+
-+  setAvailableTags(tags) {
-+    this.state.availableTags = sortUniqueTags(tags);
-+  }
-+
-+  mergeAvailableTags(tags) {
-+    this.state.availableTags = sortUniqueTags([...this.state.availableTags, ...normalizeTags(tags)]);
-+  }
-+
-+  validateUniqueUserSwatchFields(swatch, ignoredIndex) {
-+    const cleanSwatch = cloneSwatch(swatch);
-+    const issues = [];
-+    this.state.userSwatches.forEach((existingSwatch, index) => {
-+      if (index === ignoredIndex) {
-+        return;
-+      }
-+      if (isSameText(existingSwatch.name, cleanSwatch.name)) {
-+        issues.push(`Duplicate user swatch name: ${cleanSwatch.name}.`);
-+      }
-+      if (getRgbHexKey(existingSwatch.hex) === getRgbHexKey(cleanSwatch.hex)) {
-+        issues.push(`Duplicate user swatch RGB/hex: ${getRgbHexKey(cleanSwatch.hex)}.`);
-+      }
-+      if (isSameText(existingSwatch.symbol, cleanSwatch.symbol)) {
-+        issues.push(`Duplicate user swatch symbol: ${cleanSwatch.symbol}.`);
-+      }
-+    });
-+    return Array.from(new Set(issues));
-+  }
-+
-+  clearEditorForm(status) {
-+    this.state.selectedUserIndex = -1;
-+    this.editorControl.clearForm();
-+    this.setActionState([], status || "Ready.");
-+  }
-+
-+  selectUserSwatch(index) {
-+    const swatch = this.state.userSwatches[index];
-+    if (!swatch) {
-+      return;
-+    }
-+    this.state.selectedUserIndex = index;
-+    this.editorControl.showSwatch(swatch);
-+    if (isUserDefinedSwatch(swatch)) {
-+      this.editorControl.showUserDefinedSwatch(swatch);
-+    } else {
-+      this.editorControl.clearUserDefinedSwatch();
-+    }
-+    this.render();
-+  }
-+
-+  browseSourceSwatch(swatch) {
-+    this.state.selectedUserIndex = -1;
-+    this.editorControl.showSwatch(swatch);
-+    this.editorControl.clearUserDefinedSwatch();
-+    this.render();
-+  }
-+
-+  addUserSwatch(swatch) {
-+    const cleanSwatch = cloneSwatch({ ...swatch, source: USER_ADDED_SOURCE });
-+    const errors = [
-+      ...this.validator.validateSwatch(cleanSwatch, "new swatch"),
-+      ...this.validateUniqueUserSwatchFields(cleanSwatch, -1)
-+    ];
-+    if (errors.length > 0) {
-+      this.setActionState(errors, "User swatch was not added.");
-+      return;
-+    }
-+
-+    this.state.userSwatches.push(cleanSwatch);
-+    this.state.selectedUserIndex = this.state.userSwatches.length - 1;
-+    this.mergeAvailableTags(cleanSwatch.tags);
-+    this.editorControl.showSwatch(cleanSwatch);
-+    this.editorControl.showUserDefinedSwatch(cleanSwatch);
-+    this.setActionState([], `Added ${cleanSwatch.name}.`);
-+  }
-+
-+  updateSelectedSwatch(swatch) {
-+    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-+      this.setActionState(["Select a user swatch before updating."], "No user swatch selected.");
-+      return;
-+    }
-+
-+    const existingSwatch = this.state.userSwatches[this.state.selectedUserIndex];
-+    if (!isUserDefinedSwatch(existingSwatch)) {
-+      this.setActionState(["Only User Added swatches can be updated in Add."], "Selected swatch was not updated.");
-+      return;
-+    }
-+
-+    const cleanSwatch = cloneSwatch({
-+      ...swatch,
-+      source: existingSwatch.source,
-+      tags: existingSwatch.tags
-+    });
-+    const errors = [
-+      ...this.validator.validateSwatch(cleanSwatch, "selected swatch"),
-+      ...this.validateUniqueUserSwatchFields(cleanSwatch, this.state.selectedUserIndex)
-+    ];
-+    if (errors.length > 0) {
-+      this.setActionState(errors, "Selected swatch was not updated.");
-+      return;
-+    }
-+
-+    this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
-+    this.mergeAvailableTags(cleanSwatch.tags);
-+    this.editorControl.showSwatch(cleanSwatch);
-+    if (isUserDefinedSwatch(cleanSwatch)) {
-+      this.editorControl.showUserDefinedSwatch(cleanSwatch);
-+    } else {
-+      this.editorControl.clearUserDefinedSwatch();
-+    }
-+    this.setActionState([], `Updated ${cleanSwatch.name}.`);
-+  }
-+
-+  addTagToSelectedSwatch(tag) {
-+    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-+      this.setActionState(["Select a user swatch before adding a tag."], "No user swatch selected.");
-+      return false;
-+    }
-+
-+    const cleanTag = sanitizeText(tag);
-+    if (!cleanTag) {
-+      return false;
-+    }
-+
-+    const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
-+    if (existingTags.some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
-+      this.mergeAvailableTags([cleanTag]);
-+      this.setActionState([], `${cleanTag} is already on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
-+      return false;
-+    }
-+    const cleanSwatch = cloneSwatch({
-+      ...this.state.userSwatches[this.state.selectedUserIndex],
-+      tags: [...existingTags, cleanTag]
-+    });
-+    const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
-+    if (errors.length > 0) {
-+      this.setActionState(errors, "Selected swatch tag was not added.");
-+      return false;
-+    }
-+
-+    this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
-+    this.mergeAvailableTags([cleanTag]);
-+    this.editorControl.showSwatch(cleanSwatch);
-+    if (isUserDefinedSwatch(cleanSwatch)) {
-+      this.editorControl.showUserDefinedSwatch(cleanSwatch);
-+    } else {
-+      this.editorControl.clearUserDefinedSwatch();
-+    }
-+    this.setActionState([], `Added ${cleanTag} to ${cleanSwatch.name}.`);
-+    return true;
-+  }
-+
-+  removeTagFromSelectedSwatch(tag) {
-+    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-+      this.setActionState(["Select a user swatch before removing a tag."], "No user swatch selected.");
-+      return false;
-+    }
-+
-+    const cleanTag = sanitizeText(tag);
-+    if (!cleanTag) {
-+      return false;
-+    }
-+
-+    const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
-+    const nextTags = existingTags.filter((existingTag) => existingTag.toLowerCase() !== cleanTag.toLowerCase());
-+    if (nextTags.length === existingTags.length) {
-+      this.setActionState([], `${cleanTag} is not on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
-+      return false;
-+    }
-+
-+    const cleanSwatch = cloneSwatch({
-+      ...this.state.userSwatches[this.state.selectedUserIndex],
-+      tags: nextTags
-+    });
-+    const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
-+    if (errors.length > 0) {
-+      this.setActionState(errors, "Selected swatch tag was not removed.");
-+      return false;
-+    }
-+
-+    this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
-+    this.editorControl.showSwatch(cleanSwatch);
-+    if (isUserDefinedSwatch(cleanSwatch)) {
-+      this.editorControl.showUserDefinedSwatch(cleanSwatch);
-+    } else {
-+      this.editorControl.clearUserDefinedSwatch();
-+    }
-+    this.setActionState([], `Removed ${cleanTag} from ${cleanSwatch.name}.`);
-+    return true;
-+  }
-+
-+  toggleTagOnSelectedSwatch(tag) {
-+    const selectedSwatch = this.getSelectedSwatch();
-+    if (!selectedSwatch) {
-+      this.setActionState(["Select a user swatch before toggling a tag."], "No user swatch selected.");
-+      return false;
-+    }
-+
-+    const cleanTag = sanitizeText(tag);
-+    if (normalizeTags(selectedSwatch.tags).some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
-+      return this.removeTagFromSelectedSwatch(cleanTag);
-+    }
-+    return this.addTagToSelectedSwatch(cleanTag);
-+  }
-+
-+  isTagUsedByUserPalette(tag) {
-+    const cleanTag = normalizeTags([tag])[0] || "";
-+    if (!cleanTag) {
-+      return false;
-+    }
-+    return this.state.userSwatches.some((swatch) => {
-+      return normalizeTags(swatch.tags).some((existingTag) => existingTag === cleanTag);
-+    });
-+  }
-+
-+  deleteAvailableTag(tag) {
-+    const cleanTag = normalizeTags([tag])[0] || "";
-+    if (!cleanTag) {
-+      return false;
-+    }
-+
-+    if (this.isTagUsedByUserPalette(cleanTag)) {
-+      this.setActionState([`Tag "${cleanTag}" is used by a User Palette swatch and cannot be deleted.`], "Tag delete blocked.");
-+      return false;
-+    }
-+
-+    if (!this.state.availableTags.includes(cleanTag)) {
-+      return false;
-+    }
-+
-+    this.state.availableTags = this.state.availableTags.filter((availableTag) => availableTag !== cleanTag);
-+    this.setActionState([], `Deleted tag ${cleanTag}.`);
-+    return true;
-+  }
-+
-+  removeSelectedSwatch() {
-+    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-+      this.setActionState(["Select a user swatch before removing."], "No user swatch selected.");
-+      return false;
-+    }
-+    return this.removeUserSwatch(this.state.selectedUserIndex);
-+  }
-+
-+  removeUserSwatch(index) {
-+    const swatch = this.state.userSwatches[index];
-+    if (!swatch) {
-+      return false;
-+    }
-+
-+    if (this.isSwatchUsedByTool(swatch)) {
-+      this.setActionState([`${swatch.name} is used by another tool and cannot be removed.`], "Pinned swatch removal blocked.");
-+      return false;
-+    }
-+
-+    this.state.userSwatches.splice(index, 1);
-+    if (this.state.selectedUserIndex === index) {
-+      this.state.selectedUserIndex = -1;
-+      this.editorControl.clearForm();
-+    } else if (this.state.selectedUserIndex > index) {
-+      this.state.selectedUserIndex -= 1;
-+    }
-+    this.setActionState([], `Removed ${swatch.name}.`);
-+    return true;
-+  }
-+
-+  pinSourceSwatch(swatch, sourcePaletteId) {
-+    const pinnedSwatch = cloneSwatch({ ...swatch, source: sourcePaletteId });
-+    delete pinnedSwatch.tags;
-+    const errors = this.validator.validateSwatch(pinnedSwatch, "source swatch");
-+    if (errors.length > 0) {
-+      this.setActionState(errors, "Source swatch was not pinned.");
-+      return;
-+    }
-+
-+    this.state.userSwatches.push(pinnedSwatch);
-+    this.state.selectedUserIndex = this.state.userSwatches.length - 1;
-+    this.mergeAvailableTags(pinnedSwatch.tags);
-+    this.editorControl.showSwatch(pinnedSwatch);
-+    this.editorControl.clearUserDefinedSwatch();
-+    this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
-+  }
-+
-+  pinVisibleSourceSwatches() {
-+    const visibleSwatches = this.getVisibleSourceSwatches();
-+    let pinnedCount = 0;
-+    let skippedCount = 0;
-+    let lastPinnedIndex = -1;
-+    const skipReasons = [];
-+
-+    visibleSwatches.forEach((swatch) => {
-+      const pinnedSwatch = cloneSwatch({
-+        symbol: swatch.symbol,
-+        hex: swatch.hex,
-+        name: swatch.name,
-+        source: this.state.sourcePaletteId
-+      });
-+      const errors = [
-+        ...this.validator.validateSwatch(pinnedSwatch, "source swatch"),
-+        ...this.validateUniqueUserSwatchFields(pinnedSwatch, -1)
-+      ];
-+      if (errors.length > 0) {
-+        skippedCount += 1;
-+        skipReasons.push(...errors);
-+        return;
-+      }
-+
-+      this.state.userSwatches.push(pinnedSwatch);
-+      pinnedCount += 1;
-+      lastPinnedIndex = this.state.userSwatches.length - 1;
-+    });
-+
-+    if (lastPinnedIndex >= 0) {
-+      this.state.selectedUserIndex = lastPinnedIndex;
-+      this.editorControl.showSwatch(this.state.userSwatches[lastPinnedIndex]);
-+      this.editorControl.clearUserDefinedSwatch();
-+    }
-+
-+    const status = `Pinned ${pinnedCount} source swatches. Skipped ${skippedCount} duplicate or invalid swatches.`;
-+    this.setActionState(Array.from(new Set(skipReasons)), status);
-+  }
-+
-+  findUserSwatchIndex(swatch) {
-+    const targetKey = swatchKey(swatch);
-+    return this.state.userSwatches.findIndex((entry) => swatchKey(entry) === targetKey);
-+  }
-+
-+  rejectImport(errors) {
-+    this.setActionState(errors, "Import rejected.");
-+  }
-+
-+  importPaletteDocument(documentValue) {
-+    const importResult = this.validator.extractImportedPaletteDocument(documentValue);
-+    if (importResult.errors.length > 0) {
-+      this.setActionState(importResult.errors, "Import rejected.");
-+      return;
-+    }
-+
-+    this.state.userSwatches = importResult.swatches.map(cloneSwatch);
-+    this.setAvailableTags(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags)));
-+    this.state.selectedUserIndex = -1;
-+    this.editorControl.clearForm();
-+    this.setActionState([], `Imported ${this.state.userSwatches.length} user swatches.`);
-+  }
-+
-+  preparePaletteDocument(blockedStatus) {
-+    const errors = this.validator.validateUserSwatches(this.state.userSwatches);
-+    if (errors.length > 0) {
-+      this.setActionState(errors, blockedStatus);
-+      return false;
-+    }
-+    return true;
-+  }
-+
-+  getPaletteValue() {
-+    return {
-+      swatches: this.state.userSwatches.map(cloneSwatch)
-+    };
-+  }
-+
-+  getExportDocument() {
-+    return {
-+      tools: {
-+        [this.globalPaletteToolKey]: this.getPaletteValue()
-+      }
-+    };
-+  }
-+
-+  isSwatchUsedByTool(swatch) {
-+    return this.usageService.isSwatchUsedByTool({
-+      ...cloneSwatch(swatch),
-+      hex: normalizeHex(swatch?.hex)
-+    });
-+  }
-+
-+  getPublicApi() {
-+    return {
-+      getPaletteValue: () => this.getPaletteValue(),
-+      getExportDocument: () => this.getExportDocument(),
-+      isSwatchUsedByTool: (swatch) => this.isSwatchUsedByTool(swatch)
-+    };
-+  }
-+}
-diff --git a/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/paletteManagerV2.css b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/paletteManagerV2.css
-new file mode 100644
-index 00000000..ef675f23
---- /dev/null
-+++ b/docs/dev/reports/PR_26124_058-palette-manager-restore-point/tools/palette-manager-v2/paletteManagerV2.css
-@@ -0,0 +1,800 @@
-+body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] {
-+  min-height: 100vh;
-+  min-height: 100dvh;
-+  display: flex;
-+  flex-direction: column;
-+  overflow-y: auto;
-+  overflow-x: hidden;
-+}
-+
-+body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > .is-collapsible,
-+body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > .palette-manager-v2__menu-sample,
-+body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-platform-status] {
-+  flex: 0 0 auto;
-+}
-+
-+.palette-manager-v2__menu-sample {
-+  box-sizing: border-box;
-+  width: calc(100% - 32px);
-+  display: flex;
-+  align-items: center;
-+  justify-content: center;
-+  flex-wrap: wrap;
-+  gap: 12px;
-+  margin: 16px 16px 0;
-+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-+  border-radius: 8px;
-+  background: var(--panel, rgba(30, 24, 48, 0.92));
-+  padding: 10px 14px;
-+}
-+
-+.palette-manager-v2__menu-actions {
-+  flex: 0 1 auto;
-+  display: flex;
-+  flex-wrap: wrap;
-+  justify-content: center;
-+  gap: 8px;
-+}
-+
-+.palette-manager-v2 {
-+  --pm-line: var(--line, rgba(221, 214, 254, 0.26));
-+  --pm-panel: var(--panel, rgba(30, 24, 48, 0.92));
-+  --pm-surface: var(--surface-inline, rgba(18, 16, 28, 0.78));
-+  --pm-surface-strong: rgba(0, 0, 0, 0.24);
-+  --pm-text-muted: var(--muted, #c4b5fd);
-+  --pm-accent: var(--accent, #ddd6fe);
-+  --pm-danger: #b3261e;
-+  --pm-success: #188038;
-+
-+  box-sizing: border-box;
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  width: 100%;
-+  padding: 16px;
-+  overflow: visible;
-+}
-+
-+.palette-manager-v2 *,
-+.palette-manager-v2 *::before,
-+.palette-manager-v2 *::after {
-+  box-sizing: border-box;
-+}
-+
-+.palette-manager-v2__layout {
-+  display: grid;
-+  grid-template-columns: 340px minmax(0, 1fr) 360px;
-+  gap: 16px;
-+  width: 100%;
-+  min-width: 0;
-+  min-height: 0;
-+  align-items: stretch;
-+}
-+
-+.palette-manager-v2__panel {
-+  min-width: 0;
-+  min-height: 0;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 8px;
-+  background: var(--pm-panel);
-+  padding: 14px;
-+  overflow: auto;
-+}
-+
-+.palette-manager-v2__panel--left,
-+.palette-manager-v2__panel--right {
-+  width: 100%;
-+  height: calc(100vh - 220px);
-+  height: calc(100dvh - 220px);
-+  position: sticky;
-+  top: 16px;
-+}
-+
-+.palette-manager-v2__panel--center {
-+  height: calc(100vh - 220px);
-+  height: calc(100dvh - 220px);
-+  min-height: 420px;
-+  display: flex;
-+  flex-direction: column;
-+  gap: 14px;
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__panel.palette-manager-v2__panel--right.tools-platform-resize-panel {
-+  display: flex;
-+  flex-direction: column;
-+  justify-content: space-between;
-+  gap: 14px;
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__panel--right .accordion-v2 {
-+  --accordion-v2-accent: var(--pm-accent);
-+  --accordion-v2-line: var(--pm-line);
-+  --accordion-v2-surface: var(--pm-surface);
-+}
-+
-+.palette-manager-v2__right-accordion--import {
-+  flex: 0 0 auto;
-+  min-height: 0;
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__right-accordion--import.is-open {
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__right-accordion--import .accordion-v2__content {
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__right-accordion--import .palette-manager-v2__controls {
-+  flex: 0 0 auto;
-+}
-+
-+.palette-manager-v2__right-accordion--import .palette-manager-v2__json-preview {
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  max-height: none;
-+  height: auto;
-+  overflow: auto;
-+}
-+
-+.palette-manager-v2__right-accordion--validation {
-+  flex: 0 0 auto;
-+  max-height: clamp(120px, 22vh, 260px);
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__right-accordion--validation.is-open {
-+  flex: 0 0 auto;
-+}
-+
-+.palette-manager-v2__right-accordion--validation .accordion-v2__content {
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  overflow: auto;
-+}
-+
-+.palette-manager-v2__right-accordion--validation .palette-manager-v2__status {
-+  flex: 0 0 auto;
-+}
-+
-+.palette-manager-v2__right-accordion--validation .palette-manager-v2__errors {
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  max-height: none;
-+  overflow: auto;
-+}
-+
-+.palette-manager-v2__accordion {
-+  min-width: 0;
-+  min-height: 0;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 8px;
-+  background: var(--pm-surface);
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__accordion + .palette-manager-v2__accordion {
-+  margin-top: 14px;
-+}
-+
-+.palette-manager-v2__accordion-summary {
-+  flex: 0 0 44px;
-+  min-height: 44px;
-+  display: flex;
-+  align-items: center;
-+  justify-content: space-between;
-+  gap: 10px;
-+  padding: 10px 12px;
-+  cursor: pointer;
-+  font-weight: 700;
-+  list-style: none;
-+}
-+
-+.palette-manager-v2__accordion-summary::-webkit-details-marker {
-+  display: none;
-+}
-+
-+.palette-manager-v2__accordion-icon {
-+  flex: 0 0 auto;
-+  width: 22px;
-+  height: 22px;
-+  display: inline-grid;
-+  place-items: center;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 999px;
-+  line-height: 1;
-+}
-+
-+.palette-manager-v2__accordion[open] .palette-manager-v2__accordion-icon {
-+  transform: rotate(45deg);
-+}
-+
-+.palette-manager-v2__accordion-content {
-+  min-height: 0;
-+  display: flex;
-+  flex-direction: column;
-+  gap: 12px;
-+  padding: 12px;
-+  border-top: 1px solid var(--pm-line);
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__panel--center .accordion-v2 {
-+  --accordion-v2-accent: var(--pm-accent);
-+  --accordion-v2-line: var(--pm-line);
-+  --accordion-v2-surface: var(--pm-surface);
-+}
-+
-+.palette-manager-v2__panel--center .accordion-v2__content > :not(.palette-manager-v2__tile-grid) {
-+  flex: 0 0 auto;
-+}
-+
-+.palette-manager-v2__panel--center .accordion-v2__content .palette-manager-v2__tile-grid {
-+  flex: 1 1 auto;
-+  max-height: none;
-+}
-+
-+.palette-manager-v2__field {
-+  min-width: 0;
-+  display: grid;
-+  gap: 6px;
-+  font-weight: 700;
-+}
-+
-+.palette-manager-v2__field--compact {
-+  grid-template-columns: 74px minmax(0, 1fr);
-+  align-items: center;
-+  gap: 8px;
-+}
-+
-+.palette-manager-v2__field--source-control {
-+  grid-template-columns: minmax(142px, auto) minmax(0, 1fr);
-+  align-items: center;
-+  gap: 8px;
-+}
-+
-+.palette-manager-v2__source-palette-row {
-+  display: flex;
-+  align-items: end;
-+  gap: 10px;
-+  flex-wrap: wrap;
-+}
-+
-+.palette-manager-v2__source-palette-row .palette-manager-v2__field--source-control {
-+  flex: 1 1 320px;
-+}
-+
-+.palette-manager-v2__pin-all-source-button {
-+  flex: 0 0 auto;
-+  min-height: 25px;
-+  padding-inline: 10px;
-+}
-+
-+.palette-manager-v2__field input,
-+.palette-manager-v2__field select {
-+  width: 100%;
-+  min-width: 0;
-+}
-+
-+.palette-manager-v2__field input[readonly] {
-+  color: var(--pm-text-muted);
-+  cursor: default;
-+}
-+
-+.palette-manager-v2__form-grid {
-+  display: grid;
-+  grid-template-columns: repeat(4, minmax(0, 1fr));
-+  gap: 12px;
-+}
-+
-+.palette-manager-v2__form-grid--stacked {
-+  grid-template-columns: 1fr;
-+}
-+
-+.palette-manager-v2__form-grid--compact {
-+  gap: 8px;
-+}
-+
-+.palette-manager-v2__controls,
-+.palette-manager-v2__sort-buttons,
-+.palette-manager-v2__size-buttons {
-+  display: flex;
-+  flex-wrap: wrap;
-+  gap: 8px;
-+}
-+
-+.palette-manager-v2__controls {
-+  align-items: center;
-+}
-+
-+.palette-manager-v2__tag-list {
-+  min-height: 36px;
-+  display: flex;
-+  flex-wrap: wrap;
-+  align-items: center;
-+  gap: 6px;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 8px;
-+  background: var(--pm-surface-strong);
-+  padding: 6px;
-+}
-+
-+.palette-manager-v2__tag-list .palette-manager-v2__meta {
-+  font-weight: 400;
-+}
-+
-+.palette-manager-v2__tag-pill {
-+  min-width: 0;
-+  max-width: 100%;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 999px;
-+  background: rgba(221, 214, 254, 0.16);
-+  color: inherit;
-+  font-size: 0.86rem;
-+  font-weight: 700;
-+  overflow-wrap: anywhere;
-+  padding: 4px 8px;
-+}
-+
-+.palette-manager-v2__tag-item {
-+  min-width: 0;
-+  display: inline-flex;
-+  align-items: center;
-+  gap: 4px;
-+}
-+
-+.palette-manager-v2__tag-toggle {
-+  cursor: pointer;
-+}
-+
-+.palette-manager-v2__tag-remove {
-+  cursor: pointer;
-+}
-+
-+.palette-manager-v2__tag-delete {
-+  width: 24px;
-+  height: 24px;
-+  display: inline-grid;
-+  place-items: center;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 999px;
-+  background: rgba(179, 38, 30, 0.18);
-+  color: inherit;
-+  cursor: pointer;
-+  font-weight: 800;
-+  line-height: 1;
-+  padding: 0;
-+}
-+
-+.palette-manager-v2__tag-toggle.is-active {
-+  border-color: var(--pm-accent);
-+  background: rgba(221, 214, 254, 0.28);
-+  box-shadow: inset 0 0 0 1px var(--pm-accent);
-+}
-+
-+.palette-manager-v2__tag-list--available {
-+  align-items: flex-start;
-+}
-+
-+.palette-manager-v2__tag-entry {
-+  display: grid;
-+  gap: 8px;
-+}
-+
-+.palette-manager-v2__tag-entry > button {
-+  justify-self: start;
-+}
-+
-+.palette-manager-v2__tag-suggestions {
-+  min-height: 0;
-+  display: flex;
-+  flex-wrap: wrap;
-+  gap: 6px;
-+}
-+
-+.palette-manager-v2__tag-suggestion {
-+  border: 1px solid var(--pm-line);
-+  border-radius: 999px;
-+  background: rgba(0, 0, 0, 0.2);
-+  color: inherit;
-+  cursor: pointer;
-+  font-size: 0.86rem;
-+  padding: 4px 8px;
-+}
-+
-+.palette-manager-v2__tag-suggestion.is-active {
-+  border-color: var(--pm-accent);
-+  background: rgba(221, 214, 254, 0.22);
-+  box-shadow: inset 0 0 0 1px var(--pm-accent);
-+}
-+
-+.palette-manager-v2__sort-row {
-+  flex: 0 0 auto;
-+  display: flex;
-+  align-items: end;
-+  justify-content: space-between;
-+  gap: 12px;
-+  flex-wrap: wrap;
-+}
-+
-+.palette-manager-v2__sort-row > .palette-manager-v2__field:not(.palette-manager-v2__size-field) {
-+  flex: 1 1 320px;
-+}
-+
-+.palette-manager-v2__size-field {
-+  flex: 0 0 auto;
-+  margin-left: auto;
-+}
-+
-+.palette-manager-v2__size-buttons {
-+  justify-content: flex-end;
-+}
-+
-+.palette-manager-v2__sort-button {
-+  min-height: 34px;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 8px;
-+  background: rgba(0, 0, 0, 0.2);
-+  color: inherit;
-+  cursor: pointer;
-+  padding: 6px 10px;
-+}
-+
-+.palette-manager-v2__size-button {
-+  min-width: 70px;
-+}
-+
-+.palette-manager-v2__sort-button.is-active {
-+  border-color: var(--pm-accent);
-+  background: rgba(221, 214, 254, 0.22);
-+  box-shadow: inset 0 0 0 1px var(--pm-accent);
-+}
-+
-+.palette-manager-v2__sort-button:focus-visible {
-+  outline: 2px solid var(--pm-accent);
-+  outline-offset: 2px;
-+}
-+
-+.palette-manager-v2__meta {
-+  flex: 0 0 auto;
-+  margin: 0;
-+  color: var(--pm-text-muted);
-+  font-size: 0.9rem;
-+  overflow-wrap: anywhere;
-+}
-+
-+.palette-manager-v2__tile-grid {
-+  --swatch-tile-width: 112px;
-+  --swatch-tile-height: 108px;
-+  --swatch-chip-height: 90px;
-+  --swatch-tile-padding: 8px;
-+
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  display: grid;
-+  grid-template-columns: repeat(auto-fill, minmax(var(--swatch-tile-width), var(--swatch-tile-width)));
-+  justify-content: start;
-+  align-content: start;
-+  gap: 10px;
-+  overflow-y: auto;
-+  overflow-x: hidden;
-+  overscroll-behavior: contain;
-+  padding: 0 4px 8px 0;
-+}
-+
-+.palette-manager-v2__tile-grid[data-swatch-size="small"] {
-+  --swatch-tile-width: 72px;
-+  --swatch-tile-height: 68px;
-+  --swatch-chip-height: 50px;
-+  --swatch-tile-padding: 6px;
-+}
-+
-+.palette-manager-v2__tile-grid[data-swatch-size="medium"] {
-+  --swatch-tile-width: 92px;
-+  --swatch-tile-height: 88px;
-+  --swatch-chip-height: 70px;
-+  --swatch-tile-padding: 7px;
-+}
-+
-+.palette-manager-v2__tile-grid[data-swatch-size="large"] {
-+  --swatch-tile-width: 112px;
-+  --swatch-tile-height: 108px;
-+  --swatch-chip-height: 90px;
-+  --swatch-tile-padding: 8px;
-+}
-+
-+.palette-manager-v2__swatch-tile {
-+  position: relative;
-+  width: var(--swatch-tile-width);
-+  height: var(--swatch-tile-height);
-+  min-width: 0;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 8px;
-+  background: var(--pm-surface);
-+  cursor: pointer;
-+  padding: var(--swatch-tile-padding);
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__swatch-tile:hover,
-+.palette-manager-v2__swatch-tile:focus,
-+.palette-manager-v2__swatch-tile:focus-within {
-+  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.34);
-+}
-+
-+.palette-manager-v2__swatch-tile.is-selected {
-+  border-color: var(--pm-accent);
-+}
-+
-+.palette-manager-v2__swatch-tile:focus-visible {
-+  outline: 2px solid var(--pm-accent);
-+  outline-offset: 2px;
-+}
-+
-+.palette-manager-v2__swatch-tile-chip {
-+  display: block;
-+  width: 100%;
-+  height: var(--swatch-chip-height);
-+  border: 1px solid rgba(255, 255, 255, 0.24);
-+  border-radius: 6px;
-+  background: var(--swatch-color, #000000);
-+}
-+
-+.palette-manager-v2__source-tile,
-+.palette-manager-v2__user-tile {
-+  isolation: isolate;
-+}
-+
-+.palette-manager-v2__pin-button {
-+  width: 34px;
-+  height: 34px;
-+  display: inline-grid;
-+  place-items: center;
-+  padding: 0;
-+  border: 0;
-+  border-radius: 999px;
-+  background: rgba(255, 255, 255, 0.72);
-+  color: var(--pm-danger);
-+  cursor: pointer;
-+}
-+
-+.palette-manager-v2__pin-button.is-pinned {
-+  color: var(--pm-success);
-+}
-+
-+.palette-manager-v2__pin-button:focus-visible {
-+  outline: 2px solid var(--pm-accent);
-+  outline-offset: 2px;
-+}
-+
-+.palette-manager-v2__pin-button--tile {
-+  position: absolute;
-+  top: 6px;
-+  right: 6px;
-+  z-index: 1;
-+}
-+
-+.palette-manager-v2__pin-icon {
-+  width: 26px;
-+  height: 26px;
-+  display: block;
-+}
-+
-+.palette-manager-v2__swatch-row {
-+  min-height: 44px;
-+  display: grid;
-+  grid-template-columns: 36px minmax(0, 1fr) 42px;
-+  align-items: center;
-+  gap: 8px;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 8px;
-+  background: var(--pm-surface);
-+  padding: 6px;
-+}
-+
-+.palette-manager-v2__swatch-row.is-selected {
-+  border-color: var(--pm-accent);
-+}
-+
-+.palette-manager-v2__swatch-chip,
-+.palette-manager-v2__preview {
-+  border: 1px solid rgba(255, 255, 255, 0.24);
-+  border-radius: 6px;
-+  background: #000000;
-+}
-+
-+.palette-manager-v2__swatch-chip {
-+  width: 32px;
-+  height: 32px;
-+}
-+
-+.palette-manager-v2__preview {
-+  width: 100%;
-+  aspect-ratio: 8 / 3;
-+}
-+
-+.palette-manager-v2__swatch-copy {
-+  min-width: 0;
-+}
-+
-+.palette-manager-v2__swatch-name,
-+.palette-manager-v2__swatch-meta {
-+  margin: 0;
-+}
-+
-+.palette-manager-v2__swatch-name {
-+  font-weight: 700;
-+  overflow-wrap: anywhere;
-+}
-+
-+.palette-manager-v2__swatch-meta {
-+  color: var(--pm-text-muted);
-+  font-size: 0.9rem;
-+  overflow-wrap: anywhere;
-+  display: grid;
-+  grid-template-columns: auto minmax(0, 1fr);
-+  gap: 2px 8px;
-+}
-+
-+.palette-manager-v2__swatch-meta dt {
-+  font-weight: 700;
-+}
-+
-+.palette-manager-v2__swatch-meta dd {
-+  min-width: 0;
-+  margin: 0;
-+  overflow-wrap: anywhere;
-+}
-+
-+.palette-manager-v2__json-preview {
-+  min-height: 180px;
-+  max-height: clamp(220px, 36vh, 460px);
-+  margin: 0;
-+  overflow: auto;
-+  white-space: pre-wrap;
-+  overflow-wrap: anywhere;
-+  border: 1px solid var(--pm-line);
-+  border-radius: 8px;
-+  background: var(--pm-surface-strong);
-+  padding: 12px;
-+}
-+
-+.palette-manager-v2__status {
-+  min-height: 24px;
-+  color: var(--pm-text-muted);
-+}
-+
-+.palette-manager-v2__errors {
-+  max-height: clamp(120px, 22vh, 260px);
-+  display: grid;
-+  gap: 6px;
-+  margin: 0;
-+  overflow: auto;
-+  padding-left: 18px;
-+  color: #ffd6d6;
-+}
-+
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] > .palette-manager-v2,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] > .palette-manager-v2 {
-+  flex: 1 1 auto;
-+  min-width: 0;
-+  max-width: none;
-+  min-height: 0;
-+  width: 100%;
-+  display: flex;
-+  flex-direction: column;
-+  margin: 0;
-+  padding: 8px 12px;
-+  overflow: hidden;
-+}
-+
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout {
-+  flex: 1 1 auto;
-+  grid-template-columns: 340px minmax(0, 1fr) 360px;
-+  width: 100%;
-+  height: 100%;
-+  min-height: 0;
-+  align-items: stretch;
-+}
-+
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel {
-+  min-height: 0;
-+}
-+
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left,
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right {
-+  position: static;
-+  align-self: stretch;
-+  height: 100%;
-+  max-height: none;
-+}
-+
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left {
-+  justify-self: start;
-+}
-+
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right {
-+  justify-self: end;
-+}
-+
-+html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--center,
-+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--center {
-+  align-self: stretch;
-+  height: 100%;
-+  min-height: 0;
-+  max-height: none;
-+}
-+
-+@media (max-width: 1180px) {
-+  .palette-manager-v2__layout {
-+    grid-template-columns: 1fr;
-+  }
-+
-+  .palette-manager-v2__panel--left,
-+  .palette-manager-v2__panel--right {
-+    height: auto;
-+    position: static;
-+  }
-+
-+  .palette-manager-v2__panel--center {
-+    height: calc(100vh - 160px);
-+    height: calc(100dvh - 160px);
-+    min-height: 520px;
-+  }
-+
-+  .palette-manager-v2__form-grid {
-+    grid-template-columns: 1fr;
-+  }
-+}
-+
-+@media (max-width: 640px) {
-+  .palette-manager-v2 {
-+    padding: 10px;
-+  }
-+
-+  .palette-manager-v2__sort-row {
-+    align-items: stretch;
-+  }
-+
-+  .palette-manager-v2__sort-row > .palette-manager-v2__field,
-+  .palette-manager-v2__size-field {
-+    flex: 1 1 100%;
-+    margin-left: 0;
-+  }
-+
-+  .palette-manager-v2__size-buttons {
-+    justify-content: flex-start;
-+  }
-+}
-+
-+
-+/* Pin button style update */
-+.palette-manager-v2__pin-button--tile {
-+  background: #ffffff88 !important;
-+  border: none !important;
-+  outline: none !important;
-+  box-shadow: none !important;
-+  margin: 5px !important;
-+}
-+/* Shrink pin button + icon 50% */
-+.palette-manager-v2__pin-button--tile {
-+  width: 24px;
-+  height: 24px;
-+}
-+
-+.palette-manager-v2__pin-button--tile .palette-manager-v2__pin-icon {
-+  width: 20px;
-+  height: 20px;
-+}
-diff --git a/docs/dev/reports/PR_26124_058_report.md b/docs/dev/reports/PR_26124_058_report.md
-new file mode 100644
-index 00000000..b9ccc93f
---- /dev/null
-+++ b/docs/dev/reports/PR_26124_058_report.md
-@@ -0,0 +1,53 @@
-+# PR_26124_058-palette-manager-baseline-restore-and-hardening Report
++++ b/docs/dev/reports/PR_26124_059_report.md
+@@ -0,0 +1,38 @@
++# PR_26124_059-validation-viewer-clear-and-error-consolidation Report
 +
 +## Summary
-+Palette Manager V2 now has a pre-hardening rollback snapshot and a hardened baseline implementation for future tool rebuild patterns.
-+
-+## Restore Point
-+Created:
-+`docs/dev/reports/PR_26124_058-palette-manager-restore-point/`
-+
-+Snapshot contents:
-+- `README.md`
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
++Palette Manager V2 Validation/Error Viewer now has a display-only Clear action, and duplicate user swatch validation messages are consolidated into a single line.
 +
 +## Files Changed
-+- `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/PLAN_PR.md`
-+- `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/BUILD_PR.md`
-+- `docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/APPLY_PR.md`
++- `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md`
++- `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md`
++- `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md`
 +- `docs/dev/codex_commands.md`
 +- `docs/dev/commit_comment.txt`
-+- `docs/dev/reports/PR_26124_058_report.md`
-+- `docs/dev/reports/PR_26124_058-palette-manager-restore-point/*`
++- `docs/dev/reports/PR_26124_059_report.md`
 +- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
 +- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
++- `tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +
 +## Validation
 +- JavaScript syntax checks: PASS.
-+- Targeted served-browser Palette Manager V2 hardening validation: PASS.
++- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation: PASS.
 +- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 +- `npm run test:workspace-v2`: FAIL because the script is missing from `package.json`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Targeted Browser Coverage
-+- Left-column accordions use shared accordionV2 structure.
-+- Left-column accordionV2 collapse/reopen behavior works.
-+- User-added duplicate source swatch marks the source tile as pinned by user duplicate rules.
-+- Individual source pin/unpin still works.
-+- Individual source pin preserves source palette tracking and does not add tags.
-+- `Pin All` still reports duplicate skips.
-+- Tag add/remove status messages use lowercase stored tags.
-+- Folded pin button CSS preserves the expected tile pin button and icon size.
++- Duplicate symbol/name/RGB-hex failures render as one consolidated line.
++- Name-only duplicate failures render as one line with only the failed field.
++- Clear empties the displayed viewer status and error list.
++- Clear does not remove or mutate User Palette data.
++- Repeating the same validation after Clear renders the message again.
 +
 +## Manual Test
 +1. Open Palette Manager V2 through a local server.
-+2. Collapse and reopen Selected Swatch, User Defined Swatch, and Tags.
-+3. Add a user swatch matching a source swatch name/hex/symbol and confirm the matching source tile shows pinned.
-+4. Use the source tile pin button to remove and re-pin the swatch.
-+5. Add and remove a mixed-case tag and confirm status messages use lowercase.
-+6. Confirm User Palette, Sample Palette Swatch, Import/Export, and Validation/Error Viewer remain usable.
-diff --git a/docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/APPLY_PR.md b/docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/APPLY_PR.md
++2. Add a user swatch.
++3. Attempt to add another swatch with duplicate symbol, name, and RGB/hex.
++4. Confirm the viewer shows one consolidated duplicate message.
++5. Click `Clear` and confirm the viewer output is empty.
++6. Repeat the duplicate action and confirm the message appears again.
+diff --git a/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md
 new file mode 100644
-index 00000000..a5f68c7e
+index 00000000..40f1739f
 --- /dev/null
-+++ b/docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/APPLY_PR.md
-@@ -0,0 +1,38 @@
-+# APPLY_PR - PR_26124_058-palette-manager-baseline-restore-and-hardening
++++ b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md
+@@ -0,0 +1,25 @@
++# APPLY_PR - PR_26124_059-validation-viewer-clear-and-error-consolidation
 +
 +## Summary
-+Created a pre-hardening rollback snapshot of Palette Manager V2 and applied the baseline hardening pass for Palette Manager V2.
-+
-+## Restore Point
-+Created:
-+`docs/dev/reports/PR_26124_058-palette-manager-restore-point/`
-+
-+The restore point includes copies of the pre-hardening runtime files changed by this PR:
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
++Added a display-only Clear action to Palette Manager V2 Validation/Error Viewer and consolidated duplicate user swatch validation messages.
 +
 +## Applied Changes
-+- Converted left-column Selected Swatch, User Defined Swatch, and Tags accordions from `details`/`summary` to shared accordionV2 markup.
-+- Removed unused local left accordion CSS and added local left-panel accordionV2 consumption styling.
-+- Removed right-column `justify-content: space-between`.
-+- Folded tile pin button patch CSS into primary pin button rules.
-+- Removed patch-style pin button CSS leftovers.
-+- Replaced source-sensitive source tile duplicate detection with User Palette duplicate-rule detection.
-+- Updated individual source pin to use duplicate guards for name, RGB/hex, and symbol.
-+- Preserved `Pin All` duplicate behavior.
-+- Normalized tag add/remove/toggle status messages to lowercase stored tag values.
++- Added `Clear` to Validation/Error Viewer.
++- Clear hides the currently displayed status/error batch without mutating Palette Manager validation state.
++- New validation/status events display again after the viewer is cleared.
++- Consolidated duplicate user swatch messages from symbol/name/RGB-hex guards into one line.
++- Duplicate messages include only fields that actually failed.
++- Preserved duplicate validation behavior for add, update, individual pin, and Pin All.
 +
 +## Validation
 +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
-+- Targeted served-browser Palette Manager V2 hardening validation: PASS.
++- `node --check tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`: PASS.
++- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation: PASS.
 +- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
@@ -2076,77 +119,62 @@ index 00000000..a5f68c7e
 +## Artifacts
 +- Review diff: `docs/dev/reports/codex_review.diff`
 +- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_058-palette-manager-baseline-restore-and-hardening_delta.zip`
-diff --git a/docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/BUILD_PR.md b/docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/BUILD_PR.md
++- Delta ZIP: `tmp/PR_26124_059-validation-viewer-clear-and-error-consolidation_delta.zip`
+diff --git a/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md
 new file mode 100644
-index 00000000..219e9ec9
+index 00000000..52e48226
 --- /dev/null
-+++ b/docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/BUILD_PR.md
-@@ -0,0 +1,50 @@
-+# BUILD_PR - PR_26124_058-palette-manager-baseline-restore-and-hardening
++++ b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md
+@@ -0,0 +1,36 @@
++# BUILD_PR - PR_26124_059-validation-viewer-clear-and-error-consolidation
 +
 +## Purpose
-+Create a pre-hardening rollback snapshot of Palette Manager V2 and apply one scoped hardening pass so Palette Manager V2 becomes the clean base pattern for future tools.
++Implement one scoped Palette Manager V2 validation viewer update: add display-only clearing and consolidate duplicate user swatch validation messages.
 +
 +## Scope
 +- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
 +- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-+- `docs/dev/reports/PR_26124_058-palette-manager-restore-point/*`
++- `tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts only.
 +
-+## Restore Point
-+Before changing runtime files, create:
-+`docs/dev/reports/PR_26124_058-palette-manager-restore-point/`
-+
-+Include copies of the current runtime files that will be edited:
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-+
-+Include a `README.md` explaining that this is the pre-hardening rollback snapshot.
-+
 +## Implementation
-+1. Convert remaining left-column `details`/`summary` accordions to shared `accordionV2`.
-+2. Remove local left accordion implementation CSS that is no longer used.
-+3. Add local left-panel styling only as needed to consume shared accordionV2.
-+4. Remove right-column `justify-content: space-between`; keep existing explicit flex sizing behavior.
-+5. Fold pin button patch CSS into the primary pin button and tile pin button rules.
-+6. Remove redundant patch-style pin button CSS leftovers.
-+7. Replace source-sensitive source tile duplicate detection with User Palette duplicate-rule detection.
-+8. Ensure individual source pin validates duplicates with name, RGB/hex, and symbol before adding.
-+9. Keep `Pin All` duplicate behavior intact.
-+10. Normalize tag status messages to use lowercase stored tag values.
++1. Add a `Clear` button to Validation/Error Viewer.
++2. Add the button to Palette Manager required refs.
++3. Bind the `Clear` button in `PaletteValidationErrorControl`.
++4. Clear only the visible viewer output; do not mutate the app validation/error state.
++5. Let new validation/status changes render again after clearing.
++6. Consolidate duplicate guard errors from `validateUniqueUserSwatchFields`.
++7. Format duplicate guard output as:
++   `Duplicate user swatch symbol: <symbol>.name: <name>.RGB/hex: <hex>.`
++8. Only include fields that actually failed.
++9. Preserve existing duplicate validation behavior for symbol, name, and RGB/hex.
 +
 +## Boundaries
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
 +- Do not add dependencies.
-+- Do not create `start_of_day` files.
 +- Do not broadly refactor Palette Manager V2.
 +
 +## Validation
 +- Syntax check changed JavaScript files.
-+- Run targeted served-browser Palette Manager V2 hardening validation.
++- Run targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/PLAN_PR.md b/docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md
 new file mode 100644
-index 00000000..0887aaf6
+index 00000000..7b28145c
 --- /dev/null
-+++ b/docs/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/PLAN_PR.md
-@@ -0,0 +1,54 @@
-+# PLAN_PR - PR_26124_058-palette-manager-baseline-restore-and-hardening
++++ b/docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md
+@@ -0,0 +1,38 @@
++# PLAN_PR - PR_26124_059-validation-viewer-clear-and-error-consolidation
 +
 +## Goal
-+Create a rollback snapshot of the current working Palette Manager V2, then harden Palette Manager V2 so it can serve as the clean base pattern for future tool rebuilds.
++Add a display-only Clear action to Palette Manager V2 Validation/Error Viewer and consolidate duplicate user swatch validation messages into a single line.
 +
 +## Scope
 +- `tools/palette-manager-v2/*`
-+- `docs/dev/reports/PR_26124_058-palette-manager-restore-point/*`
 +- PR workflow docs and required review artifacts only.
 +
 +## Boundaries
@@ -2154,372 +182,188 @@ index 00000000..0887aaf6
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
 +- Do not add dependencies.
-+- Do not create `start_of_day` files.
++- Preserve existing validation behavior.
 +- Avoid broad refactor.
-+- Preserve current working Palette Manager V2 behavior.
-+
-+## Restore Point
-+Before changing runtime files, copy the current runtime files that will be edited into:
-+`docs/dev/reports/PR_26124_058-palette-manager-restore-point/`
-+
-+The restore point must include:
-+- `README.md`
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
 +
 +## Implementation Plan
-+1. Convert the remaining left-column `details`/`summary` accordions to the shared `accordionV2` markup.
-+2. Replace local left accordion CSS with shared accordionV2 consumption styling.
-+3. Fix source swatch duplicate detection so source tiles use User Palette duplicate rules instead of source-sensitive `swatchKey`.
-+4. Ensure individual source pin uses the same duplicate guards as `Pin All`: name, RGB/hex, and symbol.
-+5. Normalize tag status messages so they use lowercase stored tag values.
-+6. Fold the patch-style pin button CSS into the primary pin button rules.
-+7. Remove right-column `justify-content: space-between` and keep the explicit flex sizing rules.
++1. Add a `Clear` button to the Validation/Error Viewer.
++2. Wire `Clear` inside the validation viewer control so it only clears displayed messages.
++3. Do not mutate Palette Manager validation state when clearing the viewer.
++4. Consolidate duplicate user swatch validation output into one message.
++5. Include only duplicate fields that actually failed: symbol, name, RGB/hex.
++6. Preserve duplicate validation checks for add, update, individual pin, and Pin All.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by the Palette Manager V2-only hardening update.
++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by the Palette Manager V2-only validation viewer update.
 +- Expected pass behavior: Workspace V2 validation remains green.
 +- Expected fail behavior: missing script or Workspace V2 regression is reported.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open Palette Manager V2.
-+2. Confirm Selected Swatch, User Defined Swatch, and Tags use the shared accordionV2 expand/collapse behavior.
-+3. Confirm User Palette and Sample Palette Swatch accordions still work.
-+4. Pin a source swatch and confirm the source tile shows pinned when name, RGB/hex, or symbol matches a User Palette swatch.
-+5. Try to pin the same source swatch again and confirm duplicate validation blocks it.
-+6. Add, remove, toggle, and delete tags and confirm messages use lowercase tag values.
-+7. Confirm pin button visuals match the prior working UI without patch-style CSS leftovers.
-diff --git a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-index ccbbb5bb..783e731d 100644
---- a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-+++ b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-@@ -40,7 +40,7 @@ export class SourcePaletteBrowserControl {
-     }
++2. Trigger a duplicate user swatch validation failure where symbol, name, and RGB/hex duplicate.
++3. Confirm the Validation/Error Viewer shows one consolidated duplicate line.
++4. Click `Clear` and confirm the visible status/error messages are removed.
++5. Trigger another validation message and confirm the viewer displays new messages again.
+diff --git a/tools/palette-manager-v2/controls/PaletteValidationErrorControl.js b/tools/palette-manager-v2/controls/PaletteValidationErrorControl.js
+index 879d07a6..6ae0a90b 100644
+--- a/tools/palette-manager-v2/controls/PaletteValidationErrorControl.js
++++ b/tools/palette-manager-v2/controls/PaletteValidationErrorControl.js
+@@ -3,15 +3,29 @@ export class PaletteValidationErrorControl {
+     this.document = documentRef;
+     this.refs = refs;
+     this.app = app;
++    this.clearedViewerRevision = -1;
+   }
 
-     visibleSwatches.forEach((swatch) => {
--      const userIndex = this.app.findUserSwatchIndex(swatch);
-+      const userIndex = this.app.findDuplicateUserSwatchIndex(swatch);
-       this.refs.sourceSwatchList.appendChild(SwatchRow.createSourceTile(this.document, swatch, {
-         pinned: userIndex >= 0,
-         onSelect: () => this.app.browseSourceSwatch(swatch),
+-  bind() {}
++  bind() {
++    this.refs.clearValidationViewerButton.addEventListener("click", () => {
++      this.clearedViewerRevision = this.app.getValidationViewerRevision();
++      this.renderViewer("", []);
++    });
++  }
+
+   render() {
+-    this.refs.paletteStatus.textContent = this.app.getStatus();
++    if (this.app.getValidationViewerRevision() === this.clearedViewerRevision) {
++      this.renderViewer("", []);
++      return;
++    }
++    this.renderViewer(this.app.getStatus(), this.app.getVisibleErrors());
++  }
++
++  renderViewer(status, errors) {
++    this.refs.paletteStatus.textContent = status;
+     this.refs.paletteErrorList.replaceChildren();
+
+-    this.app.getVisibleErrors().forEach((error) => {
++    errors.forEach((error) => {
+       const item = this.document.createElement("li");
+       item.textContent = error;
+       this.refs.paletteErrorList.appendChild(item);
 diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 2bc94a48..106e8505 100644
+index 106e8505..0bcbc805 100644
 --- a/tools/palette-manager-v2/index.html
 +++ b/tools/palette-manager-v2/index.html
-@@ -31,12 +31,12 @@
-   <div class="palette-manager-v2 app-shell">
-     <div class="palette-manager-v2__layout tools-platform-layout-grid">
-       <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
--        <details class="palette-manager-v2__accordion" open>
--          <summary class="palette-manager-v2__accordion-summary">
-+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="selectedSwatchAccordionContent">
-             <span>Selected Swatch</span>
--            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
--          </summary>
--          <div class="palette-manager-v2__accordion-content">
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="selectedSwatchAccordionContent" class="accordion-v2__content">
-             <div id="selectedSwatchPreview" class="palette-manager-v2__preview" aria-label="Selected swatch preview"></div>
-             <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked palette-manager-v2__form-grid--compact">
-               <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-@@ -61,14 +61,14 @@
-               </div>
-             </div>
+@@ -182,6 +182,9 @@
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+           </button>
+           <div id="validationErrorAccordionContent" class="accordion-v2__content">
++            <div class="palette-manager-v2__viewer-actions">
++              <button id="clearValidationViewerButton" type="button">Clear</button>
++            </div>
+             <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
+             <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
            </div>
--        </details>
-+        </section>
-
--        <details class="palette-manager-v2__accordion" open>
--          <summary class="palette-manager-v2__accordion-summary">
-+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userDefinedSwatchAccordionContent">
-             <span>User Defined Swatch</span>
--            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
--          </summary>
--          <div class="palette-manager-v2__accordion-content">
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="userDefinedSwatchAccordionContent" class="accordion-v2__content">
-             <div id="userDefinedSwatchPreview" class="palette-manager-v2__preview" aria-label="User defined swatch preview"></div>
-             <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked palette-manager-v2__form-grid--compact">
-               <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-@@ -90,14 +90,14 @@
-               <button id="clearFormButton" type="button">Clear Form</button>
-             </div>
-           </div>
--        </details>
-+        </section>
-
--        <details class="palette-manager-v2__accordion" open>
--          <summary class="palette-manager-v2__accordion-summary">
-+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="tagsAccordionContent">
-             <span>Tags</span>
--            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
--          </summary>
--          <div class="palette-manager-v2__accordion-content">
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="tagsAccordionContent" class="accordion-v2__content">
-             <div id="availableTagList" class="palette-manager-v2__tag-list palette-manager-v2__tag-list--available" aria-label="Available user palette tags"></div>
-             <div class="palette-manager-v2__tag-entry">
-               <label class="palette-manager-v2__field palette-manager-v2__field--compact">
-@@ -108,7 +108,7 @@
-               <div id="tagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Tag suggestions"></div>
-             </div>
-           </div>
--        </details>
-+        </section>
-       </aside>
-
-       <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
 diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 1d7437ed..8ab07422 100644
+index 8ab07422..6b0377c8 100644
 --- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
 +++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -4,7 +4,7 @@ import { PaletteValidationErrorControl } from "../controls/PaletteValidationErro
- import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
- import { UserPaletteControl } from "../controls/UserPaletteControl.js";
- import { PaletteValidationService } from "./PaletteValidationService.js";
--import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText, swatchKey } from "./paletteUtils.js";
-+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "./paletteUtils.js";
+@@ -41,6 +41,7 @@ const REQUIRED_REF_IDS = Object.freeze([
+   "copyPaletteButton",
+   "exportPaletteButton",
+   "paletteJsonPreview",
++  "clearValidationViewerButton",
+   "paletteStatus",
+   "paletteErrorList"
+ ]);
+@@ -93,6 +94,20 @@ function getRgbHexKey(hex) {
+   return normalizeHex(hex).slice(0, 7);
+ }
 
- const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
-
-@@ -500,13 +500,13 @@ export class PaletteManagerApp {
-       return false;
-     }
-
--    const cleanTag = sanitizeText(tag);
-+    const cleanTag = normalizeTags([tag])[0] || "";
-     if (!cleanTag) {
-       return false;
-     }
-
-     const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
--    if (existingTags.some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
-+    if (existingTags.includes(cleanTag)) {
-       this.mergeAvailableTags([cleanTag]);
-       this.setActionState([], `${cleanTag} is already on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
-       return false;
-@@ -539,13 +539,13 @@ export class PaletteManagerApp {
-       return false;
-     }
-
--    const cleanTag = sanitizeText(tag);
-+    const cleanTag = normalizeTags([tag])[0] || "";
-     if (!cleanTag) {
-       return false;
-     }
-
-     const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
--    const nextTags = existingTags.filter((existingTag) => existingTag.toLowerCase() !== cleanTag.toLowerCase());
-+    const nextTags = existingTags.filter((existingTag) => existingTag !== cleanTag);
-     if (nextTags.length === existingTags.length) {
-       this.setActionState([], `${cleanTag} is not on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
-       return false;
-@@ -579,8 +579,8 @@ export class PaletteManagerApp {
-       return false;
-     }
-
--    const cleanTag = sanitizeText(tag);
--    if (normalizeTags(selectedSwatch.tags).some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
-+    const cleanTag = normalizeTags([tag])[0] || "";
-+    if (normalizeTags(selectedSwatch.tags).includes(cleanTag)) {
-       return this.removeTagFromSelectedSwatch(cleanTag);
-     }
-     return this.addTagToSelectedSwatch(cleanTag);
-@@ -647,9 +647,16 @@ export class PaletteManagerApp {
++function formatDuplicateUserSwatchMessage(duplicateFields) {
++  const parts = [];
++  if (duplicateFields.symbol) {
++    parts.push(`symbol: ${duplicateFields.symbol}`);
++  }
++  if (duplicateFields.name) {
++    parts.push(`name: ${duplicateFields.name}`);
++  }
++  if (duplicateFields.rgbHex) {
++    parts.push(`RGB/hex: ${duplicateFields.rgbHex}`);
++  }
++  return parts.length > 0 ? `Duplicate user swatch ${parts.join(".")}.` : "";
++}
++
+ function getTagSortKey(swatch) {
+   return sortUniqueTags(swatch?.tags)[0] || "";
+ }
+@@ -145,6 +160,7 @@ export class PaletteManagerApp {
+     this.sourcePaletteLabels = paletteSource.SOURCE_PALETTE_LABELS || {};
+     this.sourcePaletteIds = Object.keys(this.sourcePalettes);
+     this.refs = collectRefs(documentRef);
++    this.validationViewerRevision = 0;
+     this.validator = new PaletteValidationService({
+       hexColorPattern: this.hexColorPattern,
+       globalPaletteToolKey: this.globalPaletteToolKey
+@@ -278,6 +294,10 @@ export class PaletteManagerApp {
+     return Array.from(new Set([...this.state.errors, ...this.validator.validateUserSwatches(this.state.userSwatches)]));
    }
 
-   pinSourceSwatch(swatch, sourcePaletteId) {
--    const pinnedSwatch = cloneSwatch({ ...swatch, source: sourcePaletteId });
--    delete pinnedSwatch.tags;
--    const errors = this.validator.validateSwatch(pinnedSwatch, "source swatch");
-+    const pinnedSwatch = cloneSwatch({
-+      symbol: swatch.symbol,
-+      hex: swatch.hex,
-+      name: swatch.name,
-+      source: sourcePaletteId
-+    });
-+    const errors = [
-+      ...this.validator.validateSwatch(pinnedSwatch, "source swatch"),
-+      ...this.validateUniqueUserSwatchFields(pinnedSwatch, -1)
-+    ];
-     if (errors.length > 0) {
-       this.setActionState(errors, "Source swatch was not pinned.");
-       return;
-@@ -702,9 +709,13 @@ export class PaletteManagerApp {
-     this.setActionState(Array.from(new Set(skipReasons)), status);
++  getValidationViewerRevision() {
++    return this.validationViewerRevision;
++  }
++
+   getTagSuggestions() {
+     return this.state.availableTags.slice();
+   }
+@@ -377,6 +397,7 @@ export class PaletteManagerApp {
+   setActionState(errors, status, shouldRender = true) {
+     this.state.errors = Array.isArray(errors) ? errors : [];
+     this.state.status = sanitizeText(status) || "Ready.";
++    this.validationViewerRevision += 1;
+     if (shouldRender) {
+       this.render();
+     }
+@@ -392,22 +413,27 @@ export class PaletteManagerApp {
+
+   validateUniqueUserSwatchFields(swatch, ignoredIndex) {
+     const cleanSwatch = cloneSwatch(swatch);
+-    const issues = [];
++    const duplicateFields = {
++      symbol: "",
++      name: "",
++      rgbHex: ""
++    };
+     this.state.userSwatches.forEach((existingSwatch, index) => {
+       if (index === ignoredIndex) {
+         return;
+       }
+       if (isSameText(existingSwatch.name, cleanSwatch.name)) {
+-        issues.push(`Duplicate user swatch name: ${cleanSwatch.name}.`);
++        duplicateFields.name = cleanSwatch.name;
+       }
+       if (getRgbHexKey(existingSwatch.hex) === getRgbHexKey(cleanSwatch.hex)) {
+-        issues.push(`Duplicate user swatch RGB/hex: ${getRgbHexKey(cleanSwatch.hex)}.`);
++        duplicateFields.rgbHex = getRgbHexKey(cleanSwatch.hex);
+       }
+       if (isSameText(existingSwatch.symbol, cleanSwatch.symbol)) {
+-        issues.push(`Duplicate user swatch symbol: ${cleanSwatch.symbol}.`);
++        duplicateFields.symbol = cleanSwatch.symbol;
+       }
+     });
+-    return Array.from(new Set(issues));
++    const message = formatDuplicateUserSwatchMessage(duplicateFields);
++    return message ? [message] : [];
    }
 
--  findUserSwatchIndex(swatch) {
--    const targetKey = swatchKey(swatch);
--    return this.state.userSwatches.findIndex((entry) => swatchKey(entry) === targetKey);
-+  findDuplicateUserSwatchIndex(swatch) {
-+    const cleanSwatch = cloneSwatch(swatch);
-+    return this.state.userSwatches.findIndex((existingSwatch) => {
-+      return isSameText(existingSwatch.name, cleanSwatch.name)
-+        || getRgbHexKey(existingSwatch.hex) === getRgbHexKey(cleanSwatch.hex)
-+        || isSameText(existingSwatch.symbol, cleanSwatch.symbol);
-+    });
-   }
-
-   rejectImport(errors) {
+   clearEditorForm(status) {
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index 39b514c6..c87239fe 100644
+index c87239fe..57637249 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -102,7 +102,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
- .palette-manager-v2__panel.palette-manager-v2__panel--right.tools-platform-resize-panel {
-   display: flex;
-   flex-direction: column;
--  justify-content: space-between;
-   gap: 14px;
-   overflow: hidden;
- }
-@@ -170,67 +169,17 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   overflow: auto;
- }
-
--.palette-manager-v2__accordion {
--  min-width: 0;
--  min-height: 0;
--  border: 1px solid var(--pm-line);
--  border-radius: 8px;
--  background: var(--pm-surface);
--  overflow: hidden;
--}
--
--.palette-manager-v2__accordion + .palette-manager-v2__accordion {
--  margin-top: 14px;
--}
--
--.palette-manager-v2__accordion-summary {
--  flex: 0 0 44px;
--  min-height: 44px;
--  display: flex;
--  align-items: center;
--  justify-content: space-between;
--  gap: 10px;
--  padding: 10px 12px;
--  cursor: pointer;
--  font-weight: 700;
--  list-style: none;
--}
--
--.palette-manager-v2__accordion-summary::-webkit-details-marker {
--  display: none;
--}
--
--.palette-manager-v2__accordion-icon {
--  flex: 0 0 auto;
--  width: 22px;
--  height: 22px;
--  display: inline-grid;
--  place-items: center;
--  border: 1px solid var(--pm-line);
--  border-radius: 999px;
--  line-height: 1;
--}
--
--.palette-manager-v2__accordion[open] .palette-manager-v2__accordion-icon {
--  transform: rotate(45deg);
--}
--
--.palette-manager-v2__accordion-content {
--  min-height: 0;
--  display: flex;
--  flex-direction: column;
--  gap: 12px;
--  padding: 12px;
--  border-top: 1px solid var(--pm-line);
--  overflow: hidden;
--}
--
-+.palette-manager-v2__panel--left .accordion-v2,
- .palette-manager-v2__panel--center .accordion-v2 {
-   --accordion-v2-accent: var(--pm-accent);
-   --accordion-v2-line: var(--pm-line);
-   --accordion-v2-surface: var(--pm-surface);
- }
-
-+.palette-manager-v2__left-accordion + .palette-manager-v2__left-accordion {
-+  margin-top: 14px;
-+}
-+
- .palette-manager-v2__panel--center .accordion-v2__content > :not(.palette-manager-v2__tile-grid) {
+@@ -162,6 +162,12 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
    flex: 0 0 auto;
  }
-@@ -272,8 +221,8 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
 
- .palette-manager-v2__pin-all-source-button {
-   flex: 0 0 auto;
--  min-height: 30px;
--  padding-inline: 15px;
-+  min-height: 25px;
-+  padding-inline: 10px;
- }
-
- .palette-manager-v2__field input,
-@@ -560,6 +509,7 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   border: 0;
-   border-radius: 999px;
-   background: rgba(255, 255, 255, 0.72);
-+  box-shadow: none;
-   color: var(--pm-danger);
-   cursor: pointer;
- }
-@@ -578,6 +528,10 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   top: 6px;
-   right: 6px;
-   z-index: 1;
-+  width: 24px;
-+  height: 24px;
-+  margin: 5px;
-+  background: #ffffff88;
- }
-
- .palette-manager-v2__pin-icon {
-@@ -586,6 +540,11 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   display: block;
- }
-
-+.palette-manager-v2__pin-button--tile .palette-manager-v2__pin-icon {
-+  width: 20px;
-+  height: 20px;
++.palette-manager-v2__viewer-actions {
++  flex: 0 0 auto;
++  display: flex;
++  justify-content: flex-end;
 +}
 +
- .palette-manager-v2__swatch-row {
-   min-height: 44px;
-   display: grid;
-@@ -778,23 +737,3 @@ body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palet
-     justify-content: flex-start;
-   }
- }
--
--
--/* Pin button style update */
--.palette-manager-v2__pin-button--tile {
--  background: #ffffff88 !important;
--  border: none !important;
--  outline: none !important;
--  box-shadow: none !important;
--  margin: 5px !important;
--}
--/* Shrink pin button + icon 50% */
--.palette-manager-v2__pin-button--tile {
--  width: 24px;
--  height: 24px;
--}
--
--.palette-manager-v2__pin-button--tile .palette-manager-v2__pin-icon {
--  width: 20px;
--  height: 20px;
--}
+ .palette-manager-v2__right-accordion--validation .palette-manager-v2__errors {
+   flex: 1 1 auto;
+   min-height: 0;

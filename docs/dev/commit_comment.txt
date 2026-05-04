@@ -1,1 +1,1 @@
-Harden Palette Manager baseline with restore point - PR_26124_058-palette-manager-baseline-restore-and-hardening
+Add Palette Manager validation viewer clear and consolidate duplicate errors - PR_26124_059-validation-viewer-clear-and-error-consolidation

@@ -162,6 +162,12 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   flex: 0 0 auto;
 }
 
+.palette-manager-v2__viewer-actions {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .palette-manager-v2__right-accordion--validation .palette-manager-v2__errors {
   flex: 1 1 auto;
   min-height: 0;

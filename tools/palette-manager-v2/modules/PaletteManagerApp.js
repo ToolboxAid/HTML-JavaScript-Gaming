@@ -41,6 +41,7 @@ const REQUIRED_REF_IDS = Object.freeze([
   "copyPaletteButton",
   "exportPaletteButton",
   "paletteJsonPreview",
+  "clearValidationViewerButton",
   "paletteStatus",
   "paletteErrorList"
 ]);
@@ -91,6 +92,20 @@ function isSameText(left, right) {
 
 function getRgbHexKey(hex) {
   return normalizeHex(hex).slice(0, 7);
+}
+
+function formatDuplicateUserSwatchMessage(duplicateFields) {
+  const parts = [];
+  if (duplicateFields.symbol) {
+    parts.push(`symbol: ${duplicateFields.symbol}`);
+  }
+  if (duplicateFields.name) {
+    parts.push(`name: ${duplicateFields.name}`);
+  }
+  if (duplicateFields.rgbHex) {
+    parts.push(`RGB/hex: ${duplicateFields.rgbHex}`);
+  }
+  return parts.length > 0 ? `Duplicate user swatch ${parts.join(".")}.` : "";
 }
 
 function getTagSortKey(swatch) {
@@ -145,6 +160,7 @@ export class PaletteManagerApp {
     this.sourcePaletteLabels = paletteSource.SOURCE_PALETTE_LABELS || {};
     this.sourcePaletteIds = Object.keys(this.sourcePalettes);
     this.refs = collectRefs(documentRef);
+    this.validationViewerRevision = 0;
     this.validator = new PaletteValidationService({
       hexColorPattern: this.hexColorPattern,
       globalPaletteToolKey: this.globalPaletteToolKey
@@ -278,6 +294,10 @@ export class PaletteManagerApp {
     return Array.from(new Set([...this.state.errors, ...this.validator.validateUserSwatches(this.state.userSwatches)]));
   }
 
+  getValidationViewerRevision() {
+    return this.validationViewerRevision;
+  }
+
   getTagSuggestions() {
     return this.state.availableTags.slice();
   }
@@ -377,6 +397,7 @@ export class PaletteManagerApp {
   setActionState(errors, status, shouldRender = true) {
     this.state.errors = Array.isArray(errors) ? errors : [];
     this.state.status = sanitizeText(status) || "Ready.";
+    this.validationViewerRevision += 1;
     if (shouldRender) {
       this.render();
     }
@@ -392,22 +413,27 @@ export class PaletteManagerApp {
 
   validateUniqueUserSwatchFields(swatch, ignoredIndex) {
     const cleanSwatch = cloneSwatch(swatch);
-    const issues = [];
+    const duplicateFields = {
+      symbol: "",
+      name: "",
+      rgbHex: ""
+    };
     this.state.userSwatches.forEach((existingSwatch, index) => {
       if (index === ignoredIndex) {
         return;
       }
       if (isSameText(existingSwatch.name, cleanSwatch.name)) {
-        issues.push(`Duplicate user swatch name: ${cleanSwatch.name}.`);
+        duplicateFields.name = cleanSwatch.name;
       }
       if (getRgbHexKey(existingSwatch.hex) === getRgbHexKey(cleanSwatch.hex)) {
-        issues.push(`Duplicate user swatch RGB/hex: ${getRgbHexKey(cleanSwatch.hex)}.`);
+        duplicateFields.rgbHex = getRgbHexKey(cleanSwatch.hex);
       }
       if (isSameText(existingSwatch.symbol, cleanSwatch.symbol)) {
-        issues.push(`Duplicate user swatch symbol: ${cleanSwatch.symbol}.`);
+        duplicateFields.symbol = cleanSwatch.symbol;
       }
     });
-    return Array.from(new Set(issues));
+    const message = formatDuplicateUserSwatchMessage(duplicateFields);
+    return message ? [message] : [];
   }
 
   clearEditorForm(status) {
