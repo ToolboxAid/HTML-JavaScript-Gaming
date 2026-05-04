@@ -7,6 +7,7 @@ Palette Manager V2 is the runtime tool for editing the global palette data store
 - Global data key: `tools.palette-browser`
 - Managed data: `tools.palette-browser.swatches`
 - Swatch shape: `{ "symbol": "A", "hex": "#RRGGBB", "name": "Color Name", "source": "source-id" }`
+- Read-only source palettes: `src/engine/paletteList.js`
 
 ## Workflow
 - Add, edit, and remove user swatches from the User Palette accordion.

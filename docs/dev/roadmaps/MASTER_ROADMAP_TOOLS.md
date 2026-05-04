@@ -1,9 +1,9 @@
 # MASTER_ROADMAP_TOOLS
 
-Task: PR_26124_026
+Task: PR_26124_027
 
 ## Core Tool Rebuild
-- [x] Palette Manager V2: rebuilt first as the global palette source of truth; runtime id `palette-manager-v2`; publish `tools.palette-browser`.
+- [x] Palette Manager V2: rebuilt first as the global palette source of truth; class controls split; source palettes owned by `src/engine/paletteList.js`; runtime id `palette-manager-v2`; publish `tools.palette-browser`.
 - [ ] Asset Browser: rebuild approved asset browsing and manifest validation; publish `tools.asset-browser`.
 - [ ] Asset Pipeline: rebuild pipeline payload validation and normalized output; publish `tools.asset-pipeline`.
 - [ ] SVG Asset Studio: rebuild vector asset authoring, validation, and export; publish `tools.svg-asset-studio`.

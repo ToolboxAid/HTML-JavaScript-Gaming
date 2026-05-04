@@ -3,6 +3,9 @@
 // 01/26/2025
 // paletteList.js
 
+const GLOBAL_PALETTE_TOOL_KEY = 'palette-browser';
+const HEX_COLOR_PATTERN = /^#[0-9A-F]{6}$/;
+
 /** Reference colors
  * https://www.crayola.com/explore-colors/
  * https://toolboxaid.com/programming/html/crayola-colors/
@@ -1198,7 +1201,58 @@ const palettesList = {
 
 };
 
+function normalizeHexColor(value) {
+    return String(value || '').trim().toUpperCase();
+}
+
+function normalizeSourceSwatch(swatch, source) {
+    const hex = normalizeHexColor(swatch && swatch.hex);
+    return Object.freeze({
+        symbol: String((swatch && swatch.symbol) || '').trim(),
+        hex,
+        name: String((swatch && swatch.name) || '').trim(),
+        source
+    });
+}
+
+function createSourcePalette(source, swatches) {
+    return Object.freeze((Array.isArray(swatches) ? swatches : [])
+        .map((swatch) => normalizeSourceSwatch(swatch, source))
+        .filter((swatch) => swatch.symbol && HEX_COLOR_PATTERN.test(swatch.hex) && swatch.name && swatch.source));
+}
+
+function freezeLegacyPaletteMap(paletteMap) {
+    Object.keys(paletteMap).forEach((paletteId) => {
+        const palette = paletteMap[paletteId];
+        if (Array.isArray(palette)) {
+            palette.forEach((swatch) => {
+                if (swatch && typeof swatch === 'object') {
+                    Object.freeze(swatch);
+                }
+            });
+            Object.freeze(palette);
+        }
+    });
+    return Object.freeze(paletteMap);
+}
+
+const SOURCE_PALETTES = Object.freeze({
+    crayola: Object.freeze([...createSourcePalette('crayola', palettesList.crayola032)]),
+    w3c: Object.freeze([...createSourcePalette('w3c', palettesList.w3c)]),
+    javascript: Object.freeze([...createSourcePalette('javascript', palettesList.javascript)])
+});
+
+const PALETTE_LIST = Object.freeze({
+    GLOBAL_PALETTE_TOOL_KEY,
+    HEX_COLOR_PATTERN,
+    SOURCE_PALETTES
+});
+
+freezeLegacyPaletteMap(palettesList);
+
 window.palettesList = palettesList;
+window.paletteList = PALETTE_LIST;
+window.PaletteList = PALETTE_LIST;
 
 
 
