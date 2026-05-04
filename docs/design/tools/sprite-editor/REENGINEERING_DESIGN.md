@@ -1,13 +1,13 @@
 # Sprite Editor Reengineering Design
 
-Task: PR_26124_022-tighten-tool-design-docs
+Task: PR_26124_023-finalize-tool-design-docs
 Classification: rebuildable tool
 Core priority: core-05
 Source folder: `tools/Sprite Editor`
 Publish target: `tools.sprite-editor`
 
 ## Tool Purpose
-Sprite project authoring. This tool owns `spriteProject`, optional `assetRegistry`, frame/animation editing, validation, export, and publish to `tools.sprite-editor`.
+Sprite project authoring. Sprite Editor owns `spriteProject`, optional `assetRegistry`, frame/animation editing, validation, export, and publish to `tools.sprite-editor`.
 
 ## Exact Folder/Files Inspected
 - `tools/Sprite Editor/how_to_use.html`
@@ -102,29 +102,27 @@ Keep:
 - import/export controls
 
 Remove or rename:
-- workspace-owned sprite state assumptions
+- cross-tool sprite state assumptions
 
 Add:
 - Validate Sprite Project
 - Publish `tools.sprite-editor`
-- explicit invalid frame/animation diagnostics
+- frame and animation diagnostics
 
 ## JSON Contract Owned By This Tool
-Baseline schema: `tools/schemas/tools/sprite-editor.schema.json`. Required top-level fields: spriteProject. Allowed top-level fields: assetRegistry, spriteProject. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
+Owned JSON is the Sprite Editor payload. Required field is `spriteProject`; optional field is `assetRegistry`. Sprite project data includes the project metadata, frames, animation definitions, and color data edited in this folder.
 
-## Hosted/Launch Payload Boundary
-- Launch payloads may seed this tool, but they do not become workspace-owned internals.
-- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
-- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
+## Publish Output
+Publish only to `tools.sprite-editor`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
 
 ## Invalid JSON Behavior
-- Reject malformed JSON before state mutation.
-- Reject missing required fields from the schema baseline.
-- Reject unsupported top-level fields when the schema disallows extras.
-- Keep export/save/publish disabled until the current payload validates.
-- Show a tool-specific error that names the failing field or control group.
+- malformed JSON
+- missing `spriteProject`
+- invalid frame dimensions or frame data
+- animation references that do not match frames
+- unsupported top-level fields
 
 ## Manual Test Plan
 - Create or load a sprite project.
-- Edit at least one frame and animation, then export JSON.
+- Edit at least one frame and one animation, then export JSON.
 - Try missing `spriteProject`, invalid frame data, and bad animation references; each must reject before publish.

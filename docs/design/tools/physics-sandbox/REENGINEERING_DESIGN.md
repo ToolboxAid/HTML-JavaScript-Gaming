@@ -1,13 +1,13 @@
 # Physics Sandbox Reengineering Design
 
-Task: PR_26124_022-tighten-tool-design-docs
+Task: PR_26124_023-finalize-tool-design-docs
 Classification: rebuildable tool
 Core priority: core-14
 Source folder: `tools/Physics Sandbox`
 Publish target: `tools.physics-sandbox`
 
 ## Tool Purpose
-Physics payload inspection. This tool owns `physicsBody`, step simulation inputs, validation, export, and publish to `tools.physics-sandbox`.
+Physics payload inspection. Physics Sandbox owns `physicsBody`, step simulation inputs, validation, export, and publish to `tools.physics-sandbox`.
 
 ## Exact Folder/Files Inspected
 - `tools/Physics Sandbox/how_to_use.html`
@@ -53,19 +53,17 @@ Add:
 - Publish `tools.physics-sandbox`
 
 ## JSON Contract Owned By This Tool
-Baseline schema: `tools/schemas/tools/physics-sandbox.schema.json`. Required top-level fields: physicsBody. Allowed top-level fields: physicsBody. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
+Owned JSON is the physics-sandbox payload. Required field is `physicsBody`; no other top-level fields are allowed. Physics body data owns position, velocity, acceleration, drag, and step output values.
 
-## Hosted/Launch Payload Boundary
-- Launch payloads may seed this tool, but they do not become workspace-owned internals.
-- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
-- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
+## Publish Output
+Publish only to `tools.physics-sandbox`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
 
 ## Invalid JSON Behavior
-- Reject malformed JSON before state mutation.
-- Reject missing required fields from the schema baseline.
-- Reject unsupported top-level fields when the schema disallows extras.
-- Keep export/save/publish disabled until the current payload validates.
-- Show a tool-specific error that names the failing field or control group.
+- malformed JSON
+- missing `physicsBody`
+- nonnumeric body movement values
+- physics values the stepper cannot process
+- unsupported top-level fields
 
 ## Manual Test Plan
 - Paste a valid physics body and run a step.

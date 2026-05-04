@@ -1,13 +1,13 @@
 # Parallax Scene Studio Reengineering Design
 
-Task: PR_26124_022-tighten-tool-design-docs
+Task: PR_26124_023-finalize-tool-design-docs
 Classification: rebuildable tool
 Core priority: core-09
 Source folder: `tools/Parallax Scene Studio`
 Publish target: `tools.parallax-editor`
 
 ## Tool Purpose
-Parallax scene authoring. This tool owns `parallaxDocument`, optional `tilemapDocumentPath`, optional `vectorAssetSvgPath`, layer controls, validation, export, and publish to `tools.parallax-editor`.
+Parallax scene authoring. Parallax Scene Studio owns `parallaxDocument`, optional `tilemapDocumentPath`, optional `vectorAssetSvgPath`, layer controls, validation, export, and publish to `tools.parallax-editor`.
 
 ## Exact Folder/Files Inspected
 - `tools/Parallax Scene Studio/how_to_use.html`
@@ -168,29 +168,27 @@ Keep:
 - tilemap patch export
 
 Remove or rename:
-- image file import as a persisted source of truth if it would produce embedded image data
+- local image import as a persisted source of truth for parallax JSON
 
 Add:
 - Validate Parallax Document
 - Publish `tools.parallax-editor`
-- path-only image/reference audit before export
+- layer source/reference diagnostics
 
 ## JSON Contract Owned By This Tool
-Baseline schema: `tools/schemas/tools/parallax-editor.schema.json`. Required top-level fields: (none). Allowed top-level fields: parallaxDocument, tilemapDocumentPath, vectorAssetSvgPath. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
+Owned JSON is the parallax-editor payload. Allowed top-level fields are `parallaxDocument`, `tilemapDocumentPath`, and `vectorAssetSvgPath`. The parallax document owns map metadata, layer order, layer image source values, scroll factors, offsets, repeat flags, wrap mode, and boundaries.
 
-## Hosted/Launch Payload Boundary
-- Launch payloads may seed this tool, but they do not become workspace-owned internals.
-- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
-- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
+## Publish Output
+Publish only to `tools.parallax-editor`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
 
 ## Invalid JSON Behavior
-- Reject malformed JSON before state mutation.
-- Reject missing required fields from the schema baseline.
-- Reject unsupported top-level fields when the schema disallows extras.
-- Keep export/save/publish disabled until the current payload validates.
-- Show a tool-specific error that names the failing field or control group.
+- malformed JSON
+- parallax documents without usable map/layer data when publishing
+- invalid layer opacity/draw order/scroll/offset values
+- invalid image source value
+- unsupported top-level fields
 
 ## Manual Test Plan
 - Create or load a parallax project.
-- Edit map metadata, add a layer, set image source as a path, and export.
-- Try malformed JSON, invalid layer opacity, and embedded image data; publish must stay blocked.
+- Edit map metadata, add a layer, set image source, and export.
+- Try malformed JSON, invalid layer opacity, and invalid image source values; publish must stay blocked.

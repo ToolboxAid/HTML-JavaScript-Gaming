@@ -1,13 +1,13 @@
 # Skin Editor Reengineering Design
 
-Task: PR_26124_022-tighten-tool-design-docs
+Task: PR_26124_023-finalize-tool-design-docs
 Classification: rebuildable tool
 Core priority: core-06
 Source folder: `tools/Skin Editor`
 Publish target: `tools.skin-editor`
 
 ## Tool Purpose
-Primitive skin editing. This tool owns `skin` plus optional `projectId`, object ordering, color/style editing, export, and publish to `tools.skin-editor`.
+Primitive skin editing. Skin Editor owns `skin`, optional `projectId`, object ordering, color/style editing, export, and publish to `tools.skin-editor`.
 
 ## Exact Folder/Files Inspected
 - `tools/Skin Editor/how_to_use.html`
@@ -90,7 +90,7 @@ Keep:
 - Sync Visual From JSON
 
 Remove or rename:
-- `Open Game` as a required validation path for tool-owned JSON
+- `Open Game` as a required validation path for Skin Editor JSON
 
 Add:
 - visible Import Skin JSON action
@@ -98,19 +98,17 @@ Add:
 - Publish `tools.skin-editor`
 
 ## JSON Contract Owned By This Tool
-Baseline schema: `tools/schemas/tools/skin-editor.schema.json`. Required top-level fields: (none). Allowed top-level fields: projectId, skin. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
+Owned JSON is the skin-editor payload. Optional top-level fields are `projectId` and `skin`; no other top-level fields are allowed. The `skin` object owns shape/object definitions, order, names, colors, and primitive geometry edited in this folder.
 
-## Hosted/Launch Payload Boundary
-- Launch payloads may seed this tool, but they do not become workspace-owned internals.
-- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
-- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
+## Publish Output
+Publish only to `tools.skin-editor`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
 
 ## Invalid JSON Behavior
-- Reject malformed JSON before state mutation.
-- Reject missing required fields from the schema baseline.
-- Reject unsupported top-level fields when the schema disallows extras.
-- Keep export/save/publish disabled until the current payload validates.
-- Show a tool-specific error that names the failing field or control group.
+- malformed JSON
+- `skin` that is missing when publishing a skin
+- invalid primitive/object geometry
+- missing selected object values during visual sync
+- unsupported top-level fields
 
 ## Manual Test Plan
 - Load or paste a valid skin JSON payload.

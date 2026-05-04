@@ -1,13 +1,13 @@
 # Vector Map Editor Reengineering Design
 
-Task: PR_26124_022-tighten-tool-design-docs
+Task: PR_26124_023-finalize-tool-design-docs
 Classification: rebuildable tool
 Core priority: core-10
 Source folder: `tools/Vector Map Editor`
 Publish target: `tools.vector-map-editor`
 
 ## Tool Purpose
-Vector map authoring. This tool owns `vectorMapDocument`, object geometry, transforms, collision preview/export, validation, and publish to `tools.vector-map-editor`.
+Vector map authoring. Vector Map Editor owns `vectorMapDocument`, object geometry, transforms, collision preview/export, validation, and publish to `tools.vector-map-editor`.
 
 ## Exact Folder/Files Inspected
 - `tools/Vector Map Editor/editor/VectorMapCollisionTester.js`
@@ -157,22 +157,21 @@ Remove or rename:
 Add:
 - Validate Vector Map Document
 - Publish `tools.vector-map-editor`
-- explicit invalid point/style/fill diagnostics
+- point/style/fill diagnostics
 
 ## JSON Contract Owned By This Tool
-Baseline schema: `tools/schemas/tools/vector-map-editor.schema.json`. Required top-level fields: vectorMapDocument. Allowed top-level fields: vectorMapDocument. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
+Owned JSON is the vector-map-editor payload. Required field is `vectorMapDocument`; no other top-level fields are allowed. The vector map document owns map dimensions, background, objects, object kinds, styles, transforms, and points.
 
-## Hosted/Launch Payload Boundary
-- Launch payloads may seed this tool, but they do not become workspace-owned internals.
-- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
-- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
+## Publish Output
+Publish only to `tools.vector-map-editor`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
 
 ## Invalid JSON Behavior
-- Reject malformed JSON before state mutation.
-- Reject missing required fields from the schema baseline.
-- Reject unsupported top-level fields when the schema disallows extras.
-- Keep export/save/publish disabled until the current payload validates.
-- Show a tool-specific error that names the failing field or control group.
+- malformed JSON
+- missing `vectorMapDocument`
+- nonnumeric map dimensions or points
+- objects without name/kind/style/points
+- closed objects without fill
+- unsupported top-level fields
 
 ## Manual Test Plan
 - Create or load a vector map document.

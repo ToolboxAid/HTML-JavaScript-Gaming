@@ -1,13 +1,13 @@
 # Replay Visualizer Reengineering Design
 
-Task: PR_26124_022-tighten-tool-design-docs
+Task: PR_26124_023-finalize-tool-design-docs
 Classification: rebuildable tool
 Core priority: core-16
 Source folder: `tools/Replay Visualizer`
 Publish target: `tools.replay-visualizer`
 
 ## Tool Purpose
-Replay event visualization. This tool owns `events`, playback controls, scrubber state, validation, export, and publish to `tools.replay-visualizer`.
+Replay event visualization. Replay Visualizer owns `events`, playback controls, scrubber state, validation, export, and publish to `tools.replay-visualizer`.
 
 ## Exact Folder/Files Inspected
 - `tools/Replay Visualizer/how_to_use.html`
@@ -66,19 +66,17 @@ Add:
 - Publish `tools.replay-visualizer`
 
 ## JSON Contract Owned By This Tool
-Baseline schema: `tools/schemas/tools/replay-visualizer.schema.json`. Required top-level fields: events. Allowed top-level fields: events. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
+Owned JSON is the replay-visualizer payload. Required field is `events`; no other top-level fields are allowed. Events data owns replay time, event type, event ordering, and playback inspection output.
 
-## Hosted/Launch Payload Boundary
-- Launch payloads may seed this tool, but they do not become workspace-owned internals.
-- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
-- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
+## Publish Output
+Publish only to `tools.replay-visualizer`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
 
 ## Invalid JSON Behavior
-- Reject malformed JSON before state mutation.
-- Reject missing required fields from the schema baseline.
-- Reject unsupported top-level fields when the schema disallows extras.
-- Keep export/save/publish disabled until the current payload validates.
-- Show a tool-specific error that names the failing field or control group.
+- malformed JSON
+- missing `events`
+- `events` that is not an array
+- events without valid time/type data
+- unsupported top-level fields
 
 ## Manual Test Plan
 - Load valid replay events.

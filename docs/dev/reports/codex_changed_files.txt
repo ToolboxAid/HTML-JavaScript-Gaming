@@ -1,4 +1,4 @@
-# Changed files for PR_26124_022-tighten-tool-design-docs
+# Changed files for PR_26124_023-finalize-tool-design-docs
 
 Included in delta:
 M docs/design/tools/3d-asset-viewer/REENGINEERING_DESIGN.md
@@ -7,24 +7,17 @@ M docs/design/tools/3d-json-payload/REENGINEERING_DESIGN.md
 M docs/design/tools/asset-browser/REENGINEERING_DESIGN.md
 M docs/design/tools/asset-manager-v2/REENGINEERING_DESIGN.md
 M docs/design/tools/asset-pipeline/REENGINEERING_DESIGN.md
-D docs/design/tools/codex/REENGINEERING_DESIGN.md
-D docs/design/tools/common/REENGINEERING_DESIGN.md
-D docs/design/tools/dev/REENGINEERING_DESIGN.md
 M docs/design/tools/palette-browser/REENGINEERING_DESIGN.md
 M docs/design/tools/palette-manager-v2/REENGINEERING_DESIGN.md
 M docs/design/tools/parallax-editor/REENGINEERING_DESIGN.md
 M docs/design/tools/performance-profiler/REENGINEERING_DESIGN.md
 M docs/design/tools/physics-sandbox/REENGINEERING_DESIGN.md
-D docs/design/tools/preview/REENGINEERING_DESIGN.md
 M docs/design/tools/replay-visualizer/REENGINEERING_DESIGN.md
-D docs/design/tools/schemas/REENGINEERING_DESIGN.md
-D docs/design/tools/shared/REENGINEERING_DESIGN.md
 M docs/design/tools/skin-editor/REENGINEERING_DESIGN.md
 M docs/design/tools/sprite-editor/REENGINEERING_DESIGN.md
 M docs/design/tools/state-inspector/REENGINEERING_DESIGN.md
 M docs/design/tools/svg-asset-studio-v2/REENGINEERING_DESIGN.md
 M docs/design/tools/svg-asset-studio/REENGINEERING_DESIGN.md
-D docs/design/tools/templates/REENGINEERING_DESIGN.md
 M docs/design/tools/tile-map-editor/REENGINEERING_DESIGN.md
 M docs/design/tools/tile-model-converter/REENGINEERING_DESIGN.md
 M docs/design/tools/tilemap-studio-v2/REENGINEERING_DESIGN.md
@@ -35,8 +28,5 @@ M docs/design/tools/workspace-manager/REENGINEERING_DESIGN.md
 M docs/design/tools/workspace-v2/REENGINEERING_DESIGN.md
 M docs/dev/reports/codex_changed_files.txt
 M docs/dev/reports/codex_review.diff
-A docs/dev/reports/tool_design_tighten_summary.md
+A docs/dev/reports/tool_design_finalize_summary.md
 M docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
-
-Not included:
-D docs/design/tools.zip (pre-existing unrelated workspace change)

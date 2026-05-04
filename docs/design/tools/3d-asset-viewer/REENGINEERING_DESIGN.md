@@ -1,13 +1,13 @@
 # 3D Asset Viewer Reengineering Design
 
-Task: PR_26124_022-tighten-tool-design-docs
+Task: PR_26124_023-finalize-tool-design-docs
 Classification: rebuildable tool
 Core priority: core-12
 Source folder: `tools/3D Asset Viewer`
 Publish target: `tools.3d-asset-viewer`
 
 ## Tool Purpose
-Read-only 3D asset inspection. This tool owns `asset3d` validation, inspection report generation, export, and publish to `tools.3d-asset-viewer` when a report payload is required.
+Read-only 3D asset inspection. 3D Asset Viewer owns `asset3d` validation, inspection report generation, export, and publish to `tools.3d-asset-viewer` when a report payload is required.
 
 ## Exact Folder/Files Inspected
 - `tools/3D Asset Viewer/how_to_use.html`
@@ -48,19 +48,16 @@ Add:
 - Publish `tools.3d-asset-viewer` report
 
 ## JSON Contract Owned By This Tool
-Baseline schema: `tools/schemas/tools/3d-asset-viewer.schema.json`. Required top-level fields: asset3d. Allowed top-level fields: asset3d. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
+Owned JSON is the 3d-asset-viewer payload. Required field is `asset3d`; no other top-level fields are allowed. Inspection output is read-only and derived from the loaded 3D asset payload.
 
-## Hosted/Launch Payload Boundary
-- Launch payloads may seed this tool, but they do not become workspace-owned internals.
-- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
-- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
+## Publish Output
+Publish only to `tools.3d-asset-viewer`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
 
 ## Invalid JSON Behavior
-- Reject malformed JSON before state mutation.
-- Reject missing required fields from the schema baseline.
-- Reject unsupported top-level fields when the schema disallows extras.
-- Keep export/save/publish disabled until the current payload validates.
-- Show a tool-specific error that names the failing field or control group.
+- malformed JSON
+- missing `asset3d`
+- asset data the inspector cannot summarize
+- unsupported top-level fields
 
 ## Manual Test Plan
 - Paste a valid `asset3d` payload and inspect it.

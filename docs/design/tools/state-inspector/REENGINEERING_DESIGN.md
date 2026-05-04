@@ -1,13 +1,13 @@
 # State Inspector Reengineering Design
 
-Task: PR_26124_022-tighten-tool-design-docs
+Task: PR_26124_023-finalize-tool-design-docs
 Classification: rebuildable tool
 Core priority: core-15
 Source folder: `tools/State Inspector`
 Publish target: `tools.state-inspector`
 
 ## Tool Purpose
-State snapshot inspection. This tool owns `snapshot`, JSON loading, tree/summary inspection, export, and publish to `tools.state-inspector`.
+State snapshot inspection. State Inspector owns `snapshot`, JSON loading, tree/summary inspection, export, and publish to `tools.state-inspector`.
 
 ## Exact Folder/Files Inspected
 - `tools/State Inspector/how_to_use.html`
@@ -46,7 +46,7 @@ Keep:
 - inspection/summary output panels
 
 Remove or rename:
-- workspace-managed state mutation assumptions
+- cross-tool state mutation assumptions
 
 Add:
 - Validate Snapshot
@@ -54,19 +54,16 @@ Add:
 - Publish `tools.state-inspector`
 
 ## JSON Contract Owned By This Tool
-Baseline schema: `tools/schemas/tools/state-inspector.schema.json`. Required top-level fields: snapshot. Allowed top-level fields: snapshot. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
+Owned JSON is the state-inspector payload. Required field is `snapshot`; no other top-level fields are allowed. Snapshot data is inspected and summarized by this folder without mutating source state.
 
-## Hosted/Launch Payload Boundary
-- Launch payloads may seed this tool, but they do not become workspace-owned internals.
-- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
-- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
+## Publish Output
+Publish only to `tools.state-inspector`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
 
 ## Invalid JSON Behavior
-- Reject malformed JSON before state mutation.
-- Reject missing required fields from the schema baseline.
-- Reject unsupported top-level fields when the schema disallows extras.
-- Keep export/save/publish disabled until the current payload validates.
-- Show a tool-specific error that names the failing field or control group.
+- malformed JSON
+- missing `snapshot`
+- snapshot values the inspector cannot traverse
+- unsupported top-level fields
 
 ## Manual Test Plan
 - Paste a valid snapshot and load it.

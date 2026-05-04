@@ -1,13 +1,13 @@
 # Palette Browser Reengineering Design
 
-Task: PR_26124_022-tighten-tool-design-docs
+Task: PR_26124_023-finalize-tool-design-docs
 Classification: global tool
 Core priority: core-01
 Source folder: `tools/Palette Browser`
 Publish target: `tools.palette-browser`
 
 ## Tool Purpose
-Global palette authoring and selection. This tool owns palette JSON import, validation, swatch editing, export, and publish to `tools.palette-browser`.
+Global palette authoring only. Palette Browser owns palette JSON import, validation, swatch editing, export, and publish to `tools.palette-browser`.
 
 ## Exact Folder/Files Inspected
 - `tools/Palette Browser/how_to_use.html`
@@ -76,35 +76,34 @@ Global palette authoring and selection. This tool owns palette JSON import, vali
 Keep:
 - palette search/list
 - palette name editing
-- swatch color/name/symbol inputs
+- swatch color/name/symbol fields
 - new/duplicate/rename/delete palette
 - add/delete swatch
 - import/copy/export palette JSON
 
 Remove or rename:
-- replace `Use in Workspace Manager` wording with explicit publish/launch-payload wording
+- rename `Use in Workspace Manager` to a palette publish action
 
 Add:
-- dedicated Validate Palette action
-- Publish `tools.palette-browser` action
-- invalid JSON panel that names missing fields and unsupported top-level keys
+- Validate Palette
+- Publish `tools.palette-browser`
+- field-level palette validation status
 
 ## JSON Contract Owned By This Tool
-Baseline schema: `tools/schemas/tools/palette-browser.schema.json`. Required top-level fields: schema, version, name, swatches. Allowed top-level fields: $schema, schema, version, id, name, source, sourceId, locked, swatches. Additional top-level properties are rejected by the current schema. The tool owns import/load, validation, edit/process, export/save, and publish of this payload. Workspace may pass a launch payload, but nested JSON remains tool-owned.
+Owned JSON is the Palette Browser direct palette payload. Required fields are `schema`, `version`, `name`, and `swatches`. Optional fields are `$schema`, `id`, `source`, `sourceId`, and `locked`. Each swatch must be palette data only: symbol/name/color values owned by Palette Browser.
 
-## Hosted/Launch Payload Boundary
-- Launch payloads may seed this tool, but they do not become workspace-owned internals.
-- toolState copies may be created later from the published output, but the copied JSON must still match this tool contract.
-- Use file/path/name fields for assets. Do not persist `imageDataUrl`.
+## Publish Output
+Publish only to `tools.palette-browser`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
 
 ## Invalid JSON Behavior
-- Reject malformed JSON before state mutation.
-- Reject missing required fields from the schema baseline.
-- Reject unsupported top-level fields when the schema disallows extras.
-- Keep export/save/publish disabled until the current payload validates.
-- Show a tool-specific error that names the failing field or control group.
+- malformed JSON
+- missing `schema`, `version`, `name`, or `swatches`
+- `swatches` that is not an array
+- swatches with invalid symbol/name/color values
+- unsupported top-level fields
 
 ## Manual Test Plan
-- Open the folder directly and confirm built-in palettes render.
+- Open `tools/Palette Browser/index.html` and confirm built-in palettes render first.
 - Create a custom palette, add a swatch, validate, export, copy, and re-import it.
-- Try malformed JSON, a palette without `swatches`, and a swatch with an invalid hex color; each case must be rejected before publish.
+- Confirm publish output is only `tools.palette-browser`.
+- Try malformed JSON, a palette without `swatches`, and an invalid color; each must block export/publish.
