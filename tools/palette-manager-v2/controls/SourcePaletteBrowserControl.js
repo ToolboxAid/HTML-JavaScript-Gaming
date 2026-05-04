@@ -1,11 +1,4 @@
 import { SwatchRow } from "../modules/SwatchRow.js";
-import { sanitizeText } from "../modules/paletteUtils.js";
-
-const SOURCE_LABELS = Object.freeze({
-  crayola: "Crayola",
-  w3c: "W3C",
-  javascript: "JavaScript"
-});
 
 export class SourcePaletteBrowserControl {
   constructor({ documentRef, refs, app }) {
@@ -40,9 +33,8 @@ export class SourcePaletteBrowserControl {
 
     visibleSwatches.forEach((swatch) => {
       const userIndex = this.app.findUserSwatchIndex(swatch);
-      this.refs.sourceSwatchList.appendChild(SwatchRow.create(this.document, swatch, {
+      this.refs.sourceSwatchList.appendChild(SwatchRow.createSourceTile(this.document, swatch, {
         pinned: userIndex >= 0,
-        selected: false,
         onSelect: () => this.app.browseSourceSwatch(swatch),
         onTack: () => {
           if (userIndex >= 0) {
@@ -60,7 +52,7 @@ export class SourcePaletteBrowserControl {
     this.app.getSourcePaletteIds().forEach((sourceId) => {
       const option = this.document.createElement("option");
       option.value = sourceId;
-      option.textContent = SOURCE_LABELS[sourceId] || sanitizeText(sourceId);
+      option.textContent = this.app.getSourcePaletteLabel(sourceId);
       this.refs.sourcePaletteSelect.appendChild(option);
     });
   }

@@ -6,7 +6,7 @@
 
 .palette-manager-v2__layout {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr) 360px;
+  grid-template-columns: 340px minmax(0, 1fr) 360px;
   gap: 16px;
   min-height: calc(100vh - 180px);
 }
@@ -96,6 +96,10 @@
   gap: 12px;
 }
 
+.palette-manager-v2__form-grid--stacked {
+  grid-template-columns: 1fr;
+}
+
 .palette-manager-v2__controls {
   display: flex;
   flex-wrap: wrap;
@@ -109,6 +113,17 @@
   max-height: 520px;
   overflow-y: auto;
   align-content: start;
+}
+
+.palette-manager-v2__source-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 10px;
+  min-height: 0;
+  max-height: 620px;
+  overflow-y: auto;
+  align-content: start;
+  padding-right: 4px;
 }
 
 .palette-manager-v2__swatch-row {
@@ -166,21 +181,108 @@
   overflow-wrap: anywhere;
 }
 
+.palette-manager-v2__swatch-meta,
+.palette-manager-v2__source-tooltip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 8px;
+}
+
+.palette-manager-v2__swatch-meta dt,
+.palette-manager-v2__source-tooltip dt {
+  font-weight: 700;
+}
+
+.palette-manager-v2__swatch-meta dd,
+.palette-manager-v2__source-tooltip dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .palette-manager-v2__pin-button {
   width: 34px;
   height: 34px;
   padding: 0;
   border-radius: 50%;
-  border: 1px solid currentColor;
-  color: #ffffff;
+  border: 0;
+  background: transparent;
+  color: #b3261e;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
 }
 
 .palette-manager-v2__pin-button.is-pinned {
-  background: #188038;
+  color: #188038;
 }
 
-.palette-manager-v2__pin-button:not(.is-pinned) {
-  background: #b3261e;
+.palette-manager-v2__pin-button:focus-visible {
+  outline: 2px solid var(--accent, #ddd6fe);
+  outline-offset: 2px;
+}
+
+.palette-manager-v2__pin-icon {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+.palette-manager-v2__source-tile {
+  position: relative;
+  min-width: 0;
+  min-height: 108px;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 8px;
+  background: var(--surface-inline, rgba(25, 12, 55, 0.74));
+  cursor: pointer;
+  padding: 8px;
+  overflow: hidden;
+}
+
+.palette-manager-v2__source-tile:focus-visible {
+  outline: 2px solid var(--accent, #ddd6fe);
+  outline-offset: 2px;
+}
+
+.palette-manager-v2__source-tile-chip {
+  display: block;
+  width: 100%;
+  min-height: 90px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+  background: var(--swatch-color, #000000);
+}
+
+.palette-manager-v2__pin-button--tile {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+.palette-manager-v2__source-tooltip {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  max-height: calc(100% - 12px);
+  overflow: auto;
+  opacity: 0;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.88);
+  color: #ffffff;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  padding: 6px;
+  transition: opacity 120ms ease;
+}
+
+.palette-manager-v2__source-tile:hover .palette-manager-v2__source-tooltip,
+.palette-manager-v2__source-tile:focus-within .palette-manager-v2__source-tooltip,
+.palette-manager-v2__source-tile:focus .palette-manager-v2__source-tooltip {
+  opacity: 1;
 }
 
 .palette-manager-v2__json-preview {

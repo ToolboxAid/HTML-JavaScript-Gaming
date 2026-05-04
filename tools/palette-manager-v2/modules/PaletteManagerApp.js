@@ -50,6 +50,7 @@ export class PaletteManagerApp {
     this.globalPaletteToolKey = paletteSource.GLOBAL_PALETTE_TOOL_KEY;
     this.hexColorPattern = paletteSource.HEX_COLOR_PATTERN;
     this.sourcePalettes = paletteSource.SOURCE_PALETTES;
+    this.sourcePaletteLabels = paletteSource.SOURCE_PALETTE_LABELS || {};
     this.sourcePaletteIds = Object.keys(this.sourcePalettes);
     this.refs = collectRefs(documentRef);
     this.validator = new PaletteValidationService({
@@ -107,6 +108,10 @@ export class PaletteManagerApp {
 
   getSourcePaletteIds() {
     return this.sourcePaletteIds.slice();
+  }
+
+  getSourcePaletteLabel(sourceId) {
+    return sanitizeText(this.sourcePaletteLabels[sourceId]) || sanitizeText(sourceId);
   }
 
   getCurrentSourcePaletteId() {

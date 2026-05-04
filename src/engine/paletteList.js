@@ -1236,15 +1236,28 @@ function freezeLegacyPaletteMap(paletteMap) {
     return Object.freeze(paletteMap);
 }
 
-const SOURCE_PALETTES = Object.freeze({
-    crayola: Object.freeze([...createSourcePalette('crayola', palettesList.crayola032)]),
-    w3c: Object.freeze([...createSourcePalette('w3c', palettesList.w3c)]),
-    javascript: Object.freeze([...createSourcePalette('javascript', palettesList.javascript)])
-});
+function createSourcePaletteMap(paletteMap) {
+    return Object.freeze(Object.fromEntries(
+        Object.entries(paletteMap)
+            .filter(([, swatches]) => Array.isArray(swatches))
+            .map(([paletteId, swatches]) => [paletteId, Object.freeze([...createSourcePalette(paletteId, swatches)])])
+            .filter(([, swatches]) => swatches.length > 0)
+    ));
+}
+
+function createSourcePaletteLabels(sourcePalettes) {
+    return Object.freeze(Object.fromEntries(
+        Object.keys(sourcePalettes).map((paletteId) => [paletteId, paletteId])
+    ));
+}
+
+const SOURCE_PALETTES = createSourcePaletteMap(palettesList);
+const SOURCE_PALETTE_LABELS = createSourcePaletteLabels(SOURCE_PALETTES);
 
 const PALETTE_LIST = Object.freeze({
     GLOBAL_PALETTE_TOOL_KEY,
     HEX_COLOR_PATTERN,
+    SOURCE_PALETTE_LABELS,
     SOURCE_PALETTES
 });
 

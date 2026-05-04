@@ -17,30 +17,111 @@ export class SwatchRow {
     name.className = "palette-manager-v2__swatch-name";
     name.textContent = swatch.name;
 
-    const meta = documentRef.createElement("p");
-    meta.className = "palette-manager-v2__swatch-meta";
-    meta.textContent = `${swatch.symbol} | ${swatch.hex} | ${swatch.source}`;
+    const meta = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__swatch-meta");
 
     copy.append(name, meta);
 
-    const tack = documentRef.createElement("button");
-    tack.type = "button";
-    tack.className = "palette-manager-v2__pin-button";
-    tack.classList.toggle("is-pinned", Boolean(options.pinned));
-    tack.textContent = "Tack";
-    tack.title = options.pinned ? "Remove pinned swatch" : "Pin to user palette";
-    tack.setAttribute("aria-label", tack.title);
-    tack.addEventListener("click", (event) => {
-      event.stopPropagation();
-      if (typeof options.onTack === "function") {
-        options.onTack();
-      }
-    });
+    const tack = SwatchRow.createTackButton(documentRef, options);
 
     row.append(chip, copy, tack);
     if (typeof options.onSelect === "function") {
       row.addEventListener("click", options.onSelect);
     }
     return row;
+  }
+
+  static createSourceTile(documentRef, swatch, options = {}) {
+    const tile = documentRef.createElement("div");
+    tile.className = "palette-manager-v2__source-tile";
+    tile.tabIndex = 0;
+    tile.setAttribute("role", "button");
+    tile.setAttribute("aria-label", `Browse ${swatch.name}`);
+    tile.style.setProperty("--swatch-color", swatch.hex);
+    tile.title = `${swatch.name}\n${swatch.symbol}\n${swatch.hex}\n${swatch.source}`;
+    tile.addEventListener("click", () => {
+      if (typeof options.onSelect === "function") {
+        options.onSelect();
+      }
+    });
+    tile.addEventListener("keydown", (event) => {
+      if (event.target !== tile) {
+        return;
+      }
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      event.preventDefault();
+      if (typeof options.onSelect === "function") {
+        options.onSelect();
+      }
+    });
+
+    const chip = documentRef.createElement("span");
+    chip.className = "palette-manager-v2__source-tile-chip";
+    chip.setAttribute("aria-hidden", "true");
+
+    const tack = SwatchRow.createTackButton(documentRef, options);
+    tack.classList.add("palette-manager-v2__pin-button--tile");
+
+    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__source-tooltip");
+    details.setAttribute("aria-hidden", "true");
+
+    tile.append(chip, tack, details);
+    return tile;
+  }
+
+  static createDetailsBlock(documentRef, swatch, className) {
+    const details = documentRef.createElement("dl");
+    details.className = className;
+    [
+      ["Name", swatch.name],
+      ["Symbol", swatch.symbol],
+      ["Hex", swatch.hex],
+      ["Source", swatch.source]
+    ].forEach(([label, value]) => {
+      const term = documentRef.createElement("dt");
+      term.textContent = label;
+      const description = documentRef.createElement("dd");
+      description.textContent = value;
+      details.append(term, description);
+    });
+    return details;
+  }
+
+  static createTackButton(documentRef, options = {}) {
+    const tack = documentRef.createElement("button");
+    tack.type = "button";
+    tack.className = "palette-manager-v2__pin-button";
+    tack.classList.toggle("is-pinned", Boolean(options.pinned));
+    tack.title = options.pinned ? "Remove pinned swatch" : "Pin to user palette";
+    tack.setAttribute("aria-label", tack.title);
+    tack.appendChild(SwatchRow.createThumbtackIcon(documentRef));
+    tack.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (typeof options.onTack === "function") {
+        options.onTack();
+      }
+    });
+    return tack;
+  }
+
+  static createThumbtackIcon(documentRef) {
+    const namespace = "http://www.w3.org/2000/svg";
+    const svg = documentRef.createElementNS(namespace, "svg");
+    svg.setAttribute("class", "palette-manager-v2__pin-icon");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+
+    const path = documentRef.createElementNS(namespace, "path");
+    path.setAttribute("class", "palette-manager-v2__pin-icon-shape");
+    path.setAttribute("d", "M8.7 3.5h6.6l-.7 5.2 3.7 3.7v2.2h-5.1L12 21.2 10.8 14.6H5.7v-2.2l3.7-3.7-.7-5.2Z");
+    path.setAttribute("fill", "currentColor");
+    path.setAttribute("stroke", "#000000");
+    path.setAttribute("stroke-linejoin", "round");
+    path.setAttribute("stroke-width", "1.8");
+    svg.appendChild(path);
+    return svg;
   }
 }

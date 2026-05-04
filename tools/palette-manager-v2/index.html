@@ -23,6 +23,43 @@
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
         <details class="palette-manager-v2__accordion" open>
           <summary class="palette-manager-v2__accordion-summary">
+            <span>Selected Swatch</span>
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
+            <h2 id="editorTitle">Selected Swatch</h2>
+            <div id="selectedSwatchPreview" class="palette-manager-v2__preview" aria-label="Selected swatch preview"></div>
+            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked">
+              <label class="palette-manager-v2__field">
+                Symbol
+                <input id="swatchSymbolInput" type="text" maxlength="1" autocomplete="off" />
+              </label>
+              <label class="palette-manager-v2__field">
+                Hex
+                <input id="swatchHexInput" type="text" maxlength="7" autocomplete="off" placeholder="#RRGGBB" />
+              </label>
+              <label class="palette-manager-v2__field">
+                Name
+                <input id="swatchNameInput" type="text" autocomplete="off" />
+              </label>
+              <label class="palette-manager-v2__field">
+                Source
+                <input id="swatchSourceInput" type="text" autocomplete="off" />
+              </label>
+            </div>
+            <div class="palette-manager-v2__controls">
+              <button id="addSwatchButton" type="button">Add User Swatch</button>
+              <button id="updateSwatchButton" type="button">Update Selected</button>
+              <button id="removeSwatchButton" type="button">Remove Selected</button>
+              <button id="clearFormButton" type="button">Clear Form</button>
+            </div>
+          </div>
+        </details>
+      </aside>
+
+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
             <span>User Palette</span>
             <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
           </summary>
@@ -34,54 +71,21 @@
 
         <details class="palette-manager-v2__accordion" open>
           <summary class="palette-manager-v2__accordion-summary">
-            <span>Browse Palettes</span>
+            <span>Add User Swatch</span>
             <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
           </summary>
           <div class="palette-manager-v2__accordion-content">
             <label class="palette-manager-v2__field">
               Source palette
-              <select id="sourcePaletteSelect">
-                <option value="crayola">Crayola</option>
-                <option value="w3c">W3C</option>
-                <option value="javascript">JavaScript</option>
-              </select>
+              <select id="sourcePaletteSelect"></select>
             </label>
             <label class="palette-manager-v2__field">
               Search source swatches
               <input id="sourceSearchInput" type="search" autocomplete="off" />
             </label>
-            <div id="sourceSwatchList" class="palette-manager-v2__list" aria-label="Browse palette swatches"></div>
+            <div id="sourceSwatchList" class="palette-manager-v2__source-grid" aria-label="Browse palette swatches"></div>
           </div>
         </details>
-      </aside>
-
-      <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
-        <h2 id="editorTitle">Selected Swatch</h2>
-        <div id="selectedSwatchPreview" class="palette-manager-v2__preview" aria-label="Selected swatch preview"></div>
-        <div class="palette-manager-v2__form-grid">
-          <label class="palette-manager-v2__field">
-            Symbol
-            <input id="swatchSymbolInput" type="text" maxlength="1" autocomplete="off" />
-          </label>
-          <label class="palette-manager-v2__field">
-            Hex
-            <input id="swatchHexInput" type="text" maxlength="7" autocomplete="off" placeholder="#RRGGBB" />
-          </label>
-          <label class="palette-manager-v2__field">
-            Name
-            <input id="swatchNameInput" type="text" autocomplete="off" />
-          </label>
-          <label class="palette-manager-v2__field">
-            Source
-            <input id="swatchSourceInput" type="text" autocomplete="off" />
-          </label>
-        </div>
-        <div class="palette-manager-v2__controls">
-          <button id="addSwatchButton" type="button">Add User Swatch</button>
-          <button id="updateSwatchButton" type="button">Update Selected</button>
-          <button id="removeSwatchButton" type="button">Remove Selected</button>
-          <button id="clearFormButton" type="button">Clear Form</button>
-        </div>
       </main>
 
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
