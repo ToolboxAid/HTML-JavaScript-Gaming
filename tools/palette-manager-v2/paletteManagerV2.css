@@ -46,14 +46,19 @@
 
 .palette-manager-v2__panel--center .palette-manager-v2__accordion[open] {
   flex: 1 1 0;
+  overflow: hidden;
 }
 
 .palette-manager-v2__panel--center .palette-manager-v2__accordion-content {
   display: flex;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+}
+
+.palette-manager-v2__panel--center .palette-manager-v2__accordion-content > :not(.palette-manager-v2__tile-grid) {
+  flex: 0 0 auto;
 }
 
 .palette-manager-v2__accordion {
@@ -143,13 +148,24 @@
   flex-wrap: wrap;
 }
 
-.palette-manager-v2__sort-row > .palette-manager-v2__field {
+.palette-manager-v2__sort-row > .palette-manager-v2__field:not(.palette-manager-v2__size-field) {
   flex: 1 1 320px;
 }
 
 .palette-manager-v2__size-field {
-  flex: 0 0 84px;
+  flex: 0 0 auto;
   margin-left: auto;
+}
+
+.palette-manager-v2__size-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.palette-manager-v2__size-button {
+  min-width: 70px;
 }
 
 .palette-manager-v2__sort-button {
@@ -190,11 +206,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--swatch-tile-width), 1fr));
   gap: 10px;
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  height: 0;
   min-height: 0;
   overflow-y: auto;
   overflow-x: visible;
   align-content: start;
+  overscroll-behavior: contain;
   padding-right: 4px;
   padding-bottom: 150px;
 }
@@ -222,6 +240,7 @@
 
 .palette-manager-v2__tile-grid--user {
   max-height: none;
+  overflow-y: auto;
 }
 
 .palette-manager-v2__tile-grid--source {

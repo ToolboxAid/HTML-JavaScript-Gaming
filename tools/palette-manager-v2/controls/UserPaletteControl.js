@@ -10,17 +10,14 @@ export class UserPaletteControl {
   bind() {
     this.renderSortOptions();
     this.renderSizeOptions();
-    this.refs.userSwatchSizeSelect.addEventListener("change", () => {
-      this.app.setSwatchSize(this.refs.userSwatchSizeSelect.value);
-    });
   }
 
   render() {
     const swatches = this.app.getUserSwatches();
     this.refs.userPaletteCount.textContent = `${swatches.length} user swatches`;
-    this.refs.userSwatchSizeSelect.value = this.app.getSwatchSize();
-    this.refs.userSwatchList.dataset.swatchSize = this.app.getSwatchSize();
+    this.refs.userSwatchList.dataset.swatchSize = this.app.getUserSwatchSize();
     this.renderActiveSortButton();
+    this.renderActiveSizeButton();
     this.refs.userSwatchList.replaceChildren();
 
     if (swatches.length === 0) {
@@ -59,19 +56,35 @@ export class UserPaletteControl {
   }
 
   renderSizeOptions() {
-    this.refs.userSwatchSizeSelect.replaceChildren();
+    this.refs.userSwatchSizeControls.replaceChildren();
     this.app.getSwatchSizeOptions().forEach((size) => {
-      const option = this.document.createElement("option");
-      option.value = size.value;
-      option.textContent = size.label;
-      this.refs.userSwatchSizeSelect.appendChild(option);
+      const button = this.document.createElement("button");
+      button.type = "button";
+      button.className = "palette-manager-v2__sort-button palette-manager-v2__size-button";
+      button.dataset.swatchSize = size.value;
+      button.setAttribute("role", "radio");
+      button.textContent = size.label;
+      button.addEventListener("click", () => {
+        this.app.setUserSwatchSize(size.value);
+      });
+      this.refs.userSwatchSizeControls.appendChild(button);
     });
+    this.renderActiveSizeButton();
   }
 
   renderActiveSortButton() {
     const activeMode = this.app.getUserSortMode();
     this.refs.userPaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
       const isActive = button.dataset.sortMode === activeMode;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-checked", String(isActive));
+    });
+  }
+
+  renderActiveSizeButton() {
+    const activeSize = this.app.getUserSwatchSize();
+    this.refs.userSwatchSizeControls.querySelectorAll("[data-swatch-size]").forEach((button) => {
+      const isActive = button.dataset.swatchSize === activeSize;
       button.classList.toggle("is-active", isActive);
       button.setAttribute("aria-checked", String(isActive));
     });

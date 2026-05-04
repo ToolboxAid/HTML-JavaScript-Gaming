@@ -9,12 +9,12 @@ import { cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUti
 const REQUIRED_REF_IDS = Object.freeze([
   "userPaletteCount",
   "userPaletteSortControls",
-  "userSwatchSizeSelect",
+  "userSwatchSizeControls",
   "userSwatchList",
   "sourcePaletteSelect",
   "sourceSearchInput",
   "sourcePaletteSortControls",
-  "sourceSwatchSizeSelect",
+  "sourceSwatchSizeControls",
   "sourceSwatchList",
   "editorTitle",
   "selectedSwatchPreview",
@@ -36,10 +36,14 @@ const REQUIRED_REF_IDS = Object.freeze([
 ]);
 
 const SWATCH_SIZE_OPTIONS = Object.freeze([
-  Object.freeze({ value: "small", label: "Sm" }),
-  Object.freeze({ value: "medium", label: "Me" }),
-  Object.freeze({ value: "large", label: "Lg" })
+  Object.freeze({ value: "small", label: "Small" }),
+  Object.freeze({ value: "medium", label: "Medium" }),
+  Object.freeze({ value: "large", label: "Large" })
 ]);
+
+function isValidSwatchSize(swatchSize) {
+  return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
+}
 
 function collectRefs(documentRef) {
   return REQUIRED_REF_IDS.reduce((refs, id) => {
@@ -75,7 +79,8 @@ export class PaletteManagerApp {
       sourceSearch: "",
       userSortMode: "hue",
       sourceSortMode: "hue",
-      swatchSize: "large",
+      userSwatchSize: "large",
+      sourceSwatchSize: "large",
       errors: [],
       status: "Ready."
     };
@@ -144,8 +149,12 @@ export class PaletteManagerApp {
     return this.state.sourceSortMode;
   }
 
-  getSwatchSize() {
-    return this.state.swatchSize;
+  getUserSwatchSize() {
+    return this.state.userSwatchSize;
+  }
+
+  getSourceSwatchSize() {
+    return this.state.sourceSwatchSize;
   }
 
   getSourcePaletteIds() {
@@ -219,11 +228,19 @@ export class PaletteManagerApp {
     this.render();
   }
 
-  setSwatchSize(swatchSize) {
-    if (!SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize)) {
+  setUserSwatchSize(swatchSize) {
+    if (!isValidSwatchSize(swatchSize)) {
       return;
     }
-    this.state.swatchSize = swatchSize;
+    this.state.userSwatchSize = swatchSize;
+    this.render();
+  }
+
+  setSourceSwatchSize(swatchSize) {
+    if (!isValidSwatchSize(swatchSize)) {
+      return;
+    }
+    this.state.sourceSwatchSize = swatchSize;
     this.render();
   }
 
