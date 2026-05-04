@@ -1,434 +1,230 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 5255f164..0be9cde0 100644
+index 0be9cde0..caaf0367 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,27 +1,38 @@
--# Codex Commands - PR_26124_065-palette-manager-validation-clear-in-viewer
-+# Codex Commands - PR_26124_066-palette-manager-final-baseline-hardening
+@@ -1,40 +1,21 @@
+-# Codex Commands - PR_26124_066-palette-manager-final-baseline-hardening
++# Codex Commands - PR_26124_068-palette-manager-pin-style-append-only
  
- ## Workflow
- - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
- - Used `.codex/skills/repo-build/SKILL.md`.
- - Checked git status before implementation.
--- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md`.
-+- Created `docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md`.
- - Read the active BUILD doc before changing runtime files.
--- Updated `tools/palette-manager-v2/index.html`.
-+- Inspected only `tools/palette-manager-v2`.
-+- Updated `tools/palette-manager-v2/modules/SwatchRow.js`.
-+- Updated `tools/palette-manager-v2/modules/PaletteManagerApp.js`.
- - Updated `tools/palette-manager-v2/paletteManagerV2.css`.
--- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md`.
-+- Created `docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md`.
-+
-+## Audit Commands
-+- `rg --files tools/palette-manager-v2`
-+- `rg -n '<details|</details|<summary|</summary|viewer-actions|clearTagModeCheckbox|tag-clear-mode|clear.*checkbox|Clear|sourceScrollTop|requestAnimationFrame|sortRowsByTag|applySortDirection|pin-button|menu-sample|menu-actions|validation-header|validation-actions' tools/palette-manager-v2`
-+- `rg -n 'SwatchRow\\.create\\(|createDetailsBlock|swatch-row|swatch-copy|swatch-name|swatch-meta|swatch-chip|right-accordion--import \\.palette-manager-v2__controls|viewer-actions|clearTagModeCheckbox|tag-clear-mode|removeSelectedSwatch' tools/palette-manager-v2`
-+- Node refs/IDs audit for duplicate IDs and missing required refs.
+-## Workflow
+-- Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
+-- Used `.codex/skills/repo-build/SKILL.md`.
+-- Checked git status before implementation.
+-- Created `docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md`.
+-- Read the active BUILD doc before changing runtime files.
+-- Inspected only `tools/palette-manager-v2`.
+-- Updated `tools/palette-manager-v2/modules/SwatchRow.js`.
+-- Updated `tools/palette-manager-v2/modules/PaletteManagerApp.js`.
+-- Updated `tools/palette-manager-v2/paletteManagerV2.css`.
+-- Created `docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md`.
+-
+-## Audit Commands
+-- `rg --files tools/palette-manager-v2`
+-- `rg -n '<details|</details|<summary|</summary|viewer-actions|clearTagModeCheckbox|tag-clear-mode|clear.*checkbox|Clear|sourceScrollTop|requestAnimationFrame|sortRowsByTag|applySortDirection|pin-button|menu-sample|menu-actions|validation-header|validation-actions' tools/palette-manager-v2`
+-- `rg -n 'SwatchRow\\.create\\(|createDetailsBlock|swatch-row|swatch-copy|swatch-name|swatch-meta|swatch-chip|right-accordion--import \\.palette-manager-v2__controls|viewer-actions|clearTagModeCheckbox|tag-clear-mode|removeSelectedSwatch' tools/palette-manager-v2`
+-- Node refs/IDs audit for duplicate IDs and missing required refs.
++```bash
++npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_068-palette-manager-pin-style-append-only. Follow PROJECT_INSTRUCTIONS.md exactly."
++```
  
  ## Validation Commands
--- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation using Playwright from Node.
-+- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- Targeted served-browser Palette Manager V2 final hardening validation using Playwright from Node.
- - `git diff --check`
- - `npm run test:workspace-v2`
- - `git diff --cached --check`
- - `npm run codex:review-artifacts`
--- Python `zipfile` packaging for `tmp/PR_26124_065-palette-manager-validation-clear-in-viewer_delta.zip`
-+- Python `zipfile` packaging for `tmp/PR_26124_066-palette-manager-final-baseline-hardening_delta.zip`
+-- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
+-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
+-- Targeted served-browser Palette Manager V2 final hardening validation using Playwright from Node.
+-- `git diff --check`
+-- `npm run test:workspace-v2`
+-- `git diff --cached --check`
+-- `npm run codex:review-artifacts`
+-- Python `zipfile` packaging for `tmp/PR_26124_066-palette-manager-final-baseline-hardening_delta.zip`
  
- ## Validation Outcome
--- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear validation: PASS.
--- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
-+- JavaScript syntax checks: PASS.
-+- Targeted served-browser Palette Manager V2 final hardening validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warning for changed Palette Manager CSS.
- - `git diff --cached --check`: PASS.
- - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
- - Review artifacts: generated.
+-## Validation Outcome
+-- JavaScript syntax checks: PASS.
+-- Targeted served-browser Palette Manager V2 final hardening validation: PASS.
+-- `git diff --check`: PASS with Git LF-to-CRLF warning for changed Palette Manager CSS.
+-- `git diff --cached --check`: PASS.
+-- `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
+-- Review artifacts: generated.
+-- Repo-structured delta ZIP: generated.
+-- Full samples smoke test: skipped by instruction.
++```bash
++node --input-type=module <css append-only validation>
++git diff --check -- tools/palette-manager-v2/paletteManagerV2.css
++npm run test:workspace-v2
++```
++
++## Playwright
++
++`npm run test:workspace-v2` was requested as the Playwright validation gate. It failed because `package.json` does not define the `test:workspace-v2` script.
++
++## Full Samples
++
++Full samples smoke test was skipped by instruction.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index ebb0de10..41ca7e57 100644
+index 41ca7e57..72d9b530 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Move Palette Manager validation Clear into viewer header - PR_26124_065-palette-manager-validation-clear-in-viewer
-+Harden Palette Manager baseline by removing stale row artifacts - PR_26124_066-palette-manager-final-baseline-hardening
-diff --git a/docs/dev/reports/PR_26124_066_report.md b/docs/dev/reports/PR_26124_066_report.md
+-Harden Palette Manager baseline by removing stale row artifacts - PR_26124_066-palette-manager-final-baseline-hardening
++Append Palette Manager tile pin override at CSS EOF - PR_26124_068-palette-manager-pin-style-append-only
+diff --git a/docs/dev/reports/PR_26124_068_report.md b/docs/dev/reports/PR_26124_068_report.md
 new file mode 100644
-index 00000000..cd9d115f
+index 00000000..36199123
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_066_report.md
-@@ -0,0 +1,37 @@
-+# PR_26124_066-palette-manager-final-baseline-hardening Report
++++ b/docs/dev/reports/PR_26124_068_report.md
+@@ -0,0 +1,30 @@
++# PR_26124_068-palette-manager-pin-style-append-only Report
 +
 +## Summary
-+Performed a final focused hardening pass for Palette Manager V2 before using it as the base pattern for the next tool rebuilds.
++Appended the requested Palette Manager V2 tile pin button override block at the bottom of `paletteManagerV2.css`.
 +
 +## Changes
-+- Removed stale row/list swatch rendering code that is no longer used by the tile-based User Palette and Sample Palette Swatch views.
-+- Removed matching dead row/list CSS selectors.
-+- Removed the unused `removeSelectedSwatch` method left over from the removed selected-swatch delete control.
-+- Removed a stale Import accordion controls CSS override after Import/Copy/Export actions moved to `menuSample`.
++- Added the exact requested append-only CSS block:
++  - `background: #ffffff88 !important;`
++  - `border: none !important;`
++  - `outline: none !important;`
++  - `box-shadow: none !important;`
 +
-+## Preserved Behavior
-+- Validation/Error Viewer Clear remains in the viewer header and still clears only displayed history.
-+- User Palette Clear Checkboxes behavior is unchanged.
-+- Source/Sample Palette individual pin/unpin scroll preservation is unchanged.
-+- User Palette Tag sort keeps untagged swatches last.
-+- Import JSON, Copy JSON, and Export JSON remain centered in `menuSample`.
-+- Pin button sizing was not changed.
-+- The shared platform header `details/summary` wrapper was preserved because it is owned by the platform shell, not Palette Manager accordion behavior.
++## Scope Confirmation
++- Runtime code unchanged.
++- HTML unchanged.
++- JavaScript unchanged.
++- Existing CSS rules were not modified, removed, refactored, or merged.
++- `tools/shared`, workspace/toolState/session behavior, sample JSON, schemas, and dependencies were not touched.
 +
 +## Validation
-+- `node --check tools/palette-manager-v2/modules/SwatchRow.js`: PASS.
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- Targeted served-browser Palette Manager V2 final hardening validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warning for changed Palette Manager CSS.
++- CSS append-only EOF validation: PASS.
++- `git diff --check -- tools/palette-manager-v2/paletteManagerV2.css`: PASS with Git LF-to-CRLF warning for the CSS file.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
-+- Full samples smoke test: skipped because this PR is limited to Palette Manager V2 hardening and sample JSON remains out of scope.
++- Full samples smoke test: skipped because this PR is Palette Manager V2 CSS-only and full samples were explicitly out of scope.
 +
 +## Manual Test Notes
 +1. Open Palette Manager V2.
-+2. Confirm all Palette Manager panels use accordionV2 and no app-level `details`/`summary` accordions appear.
-+3. Confirm Validation/Error Viewer Clear stays in the viewer header and future validation errors display after Clear.
-+4. Confirm User Palette Clear Checkboxes clears only checked user swatches.
-+5. Confirm source palette individual pin/unpin preserves source grid scroll.
-+6. Confirm User Palette Tag descending sort keeps untagged swatches last.
-+7. Confirm Import/Copy/Export remain centered in `menuSample`.
-+8. Confirm tile pin size appears unchanged.
-diff --git a/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md
++2. Confirm source/user swatch tile pin buttons retain their current visual behavior.
++3. Confirm pin size and layout are unchanged.
++4. Confirm no other Palette Manager layout or behavior changed.
+diff --git a/docs/pr/PR_26124_068-palette-manager-pin-style-append-only/APPLY_PR.md b/docs/pr/PR_26124_068-palette-manager-pin-style-append-only/APPLY_PR.md
 new file mode 100644
-index 00000000..095c1fe5
+index 00000000..112867a4
 --- /dev/null
-+++ b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md
-@@ -0,0 +1,40 @@
-+# APPLY_PR - PR_26124_066-palette-manager-final-baseline-hardening
++++ b/docs/pr/PR_26124_068-palette-manager-pin-style-append-only/APPLY_PR.md
+@@ -0,0 +1,20 @@
++# APPLY_PR - PR_26124_068-palette-manager-pin-style-append-only
 +
 +## Summary
-+Completed the Palette Manager V2 final baseline hardening pass by removing concrete stale/dead artifacts from the current tile-based implementation.
++Completed the append-only Palette Manager V2 pin style override exactly as requested.
 +
 +## Applied Changes
-+- Removed unused legacy row/list swatch rendering method `SwatchRow.create`.
-+- Removed unused `SwatchRow.createDetailsBlock`, which was only used by the removed row/list renderer.
-+- Removed unused `PaletteManagerApp.removeSelectedSwatch`, left over from the removed selected-swatch delete control.
-+- Removed dead CSS for legacy row/list swatch classes:
-+  - `.palette-manager-v2__swatch-row`
-+  - `.palette-manager-v2__swatch-chip`
-+  - `.palette-manager-v2__swatch-copy`
-+  - `.palette-manager-v2__swatch-name`
-+  - `.palette-manager-v2__swatch-meta`
-+- Removed stale Import accordion `.palette-manager-v2__controls` override after JSON buttons moved to `menuSample`.
-+- Preserved the shared platform header `details/summary` wrapper because it is consumed by `tools/shared/platformShell.js` and is not a Palette Manager accordion.
-+
-+## Audit Findings
-+- No Palette Manager app-level old `details`/`summary` accordion markup remains.
-+- No duplicate tag controls or duplicate Clear controls were found.
-+- Validation/Error Viewer Clear remains inside its viewer header.
-+- User Palette Clear Checkboxes behavior remains unchanged.
-+- Source/Sample Palette scroll preservation remains unchanged.
-+- Tag sort keeps untagged swatches last.
-+- Import/Copy/Export buttons remain centered in `menuSample`.
-+- Pin size was not changed.
++- Appended the required `.palette-manager-v2__pin-button--tile` CSS block to the very end of `tools/palette-manager-v2/paletteManagerV2.css`.
++- Kept the existing Palette Manager CSS untouched.
++- Preserved the provided `!important` flags.
 +
 +## Validation
-+- `node --check tools/palette-manager-v2/modules/SwatchRow.js`: PASS.
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- Targeted served-browser Palette Manager V2 final hardening validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warning for changed Palette Manager CSS.
++- CSS append-only EOF validation: PASS.
++- `git diff --check -- tools/palette-manager-v2/paletteManagerV2.css`: PASS with Git LF-to-CRLF warning for the CSS file.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Artifacts
 +- Review diff: `docs/dev/reports/codex_review.diff`
 +- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_066-palette-manager-final-baseline-hardening_delta.zip`
-diff --git a/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md
++- Delta ZIP: `tmp/PR_26124_068-palette-manager-pin-style-append-only_delta.zip`
+diff --git a/docs/pr/PR_26124_068-palette-manager-pin-style-append-only/BUILD_PR.md b/docs/pr/PR_26124_068-palette-manager-pin-style-append-only/BUILD_PR.md
 new file mode 100644
-index 00000000..14d1eb94
+index 00000000..71a6e431
 --- /dev/null
-+++ b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md
-@@ -0,0 +1,48 @@
-+# BUILD_PR - PR_26124_066-palette-manager-final-baseline-hardening
++++ b/docs/pr/PR_26124_068-palette-manager-pin-style-append-only/BUILD_PR.md
+@@ -0,0 +1,37 @@
++# BUILD_PR - PR_26124_068-palette-manager-pin-style-append-only
 +
 +## Purpose
-+Perform one scoped Palette Manager V2 final hardening pass by removing only concrete stale/dead/duplicate artifacts found in `tools/palette-manager-v2`.
++Perform one append-only Palette Manager V2 CSS change by placing the requested tile pin button override block at the very end of `paletteManagerV2.css`.
 +
 +## Scope
-+- `tools/palette-manager-v2/*`
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts only.
 +
 +## Implementation
-+1. Inspect only files under `tools/palette-manager-v2`.
-+2. Verify the hardening checklist:
-+   - no old `details`/`summary` accordion markup remains,
-+   - no duplicate or dead CSS override blocks remain,
-+   - no unused event handlers, refs, or stale IDs from rejected/rolled-back PRs remain,
-+   - no duplicate tag controls or duplicate Clear controls remain,
-+   - Validation/Error Viewer Clear remains inside its viewer header,
-+   - User Palette Clear checkbox behavior remains unchanged,
-+   - Sample Palette scroll preservation remains unchanged,
-+   - Tag sort keeps untagged swatches last,
-+   - Import/Copy/Export remain centered in `menuSample`,
-+   - pin size is not changed.
-+3. Fix only concrete stale/dead/duplicate artifacts found by that inspection.
-+4. Do not change runtime behavior unless the change removes a concrete stale/dead/duplicate artifact.
++1. Inspect the current end of `tools/palette-manager-v2/paletteManagerV2.css`.
++2. Append exactly this CSS block at the end of the file:
++
++```css
++.palette-manager-v2__pin-button--tile {
++  background: #ffffff88 !important;
++  border: none !important;
++  outline: none !important;
++  box-shadow: none !important;
++}
++```
++
++3. Do not edit, remove, refactor, or merge any existing CSS rules.
++4. Do not change JavaScript, HTML, shared code, schemas, sample JSON, or dependencies.
 +
 +## Boundaries
-+- Do not change Clear checkbox behavior.
-+- Do not change tag sorting behavior except to preserve existing untagged-last behavior if a stale artifact is found.
-+- Do not change source/sample pin scroll preservation.
-+- Do not change pin button size.
-+- Do not change Validation/Error Viewer behavior.
++- This is CSS-only for Palette Manager V2.
++- The change must be append-only at the bottom of the file.
++- Existing pin button size and layout must be preserved.
++- Keep all `!important` flags in the appended block.
 +- Do not touch workspace/toolState/session behavior.
-+- Do not touch sample JSON.
-+- Do not modify `tools/shared`.
-+- Do not add dependencies.
-+- Do not broadly refactor Palette Manager V2.
 +
 +## Validation
-+- Syntax check changed JavaScript files.
-+- Run targeted served-browser Palette Manager V2 hardening validation for:
-+  - no `details`/`summary` in Palette Manager app markup,
-+  - Validation/Error Viewer Clear placement and behavior,
-+  - User Palette checkbox clear behavior,
-+  - source pin/unpin scroll preservation,
-+  - Tag descending sort keeps untagged swatches last,
-+  - `menuSample` actions remain centered.
++- Run a CSS append-only validation that confirms the exact requested block is at EOF.
++- Run `git diff --check`.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_068-palette-manager-pin-style-append-only/PLAN_PR.md b/docs/pr/PR_26124_068-palette-manager-pin-style-append-only/PLAN_PR.md
 new file mode 100644
-index 00000000..4496a3ad
+index 00000000..2e5e3ae9
 --- /dev/null
-+++ b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md
-@@ -0,0 +1,51 @@
-+# PLAN_PR - PR_26124_066-palette-manager-final-baseline-hardening
++++ b/docs/pr/PR_26124_068-palette-manager-pin-style-append-only/PLAN_PR.md
+@@ -0,0 +1,35 @@
++# PLAN_PR - PR_26124_068-palette-manager-pin-style-append-only
 +
 +## Goal
-+Perform a final focused Palette Manager V2 hardening pass before using it as the base pattern for future tool rebuilds.
++Append the requested Palette Manager V2 tile pin button override block to the end of the Palette Manager CSS file.
 +
 +## Scope
-+- `tools/palette-manager-v2/*`
++- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts only.
 +
 +## Boundaries
-+- Do not change behavior unless fixing a concrete stale/dead/duplicate artifact.
-+- Do not touch workspace/toolState/session behavior.
-+- Do not touch sample JSON.
-+- Do not modify `tools/shared`.
-+- Do not add dependencies.
-+- Avoid broad refactor.
-+
-+## Audit Checklist
-+1. Confirm no old `details`/`summary` accordion markup remains in Palette Manager V2.
-+2. Check for duplicate or dead CSS override blocks.
-+3. Check for unused event handlers, refs, or stale IDs from rejected/rolled-back PRs.
-+4. Check for duplicate tag controls or duplicate Clear controls.
-+5. Confirm Validation/Error Viewer Clear remains inside its viewer header.
-+6. Confirm User Palette Clear checkbox behavior remains unchanged.
-+7. Confirm Sample Palette scroll preservation remains unchanged.
-+8. Confirm Tag sort keeps untagged swatches last.
-+9. Confirm Import/Copy/Export buttons remain centered in `menuSample`.
-+10. Confirm pin size is not changed.
++- Do not modify existing CSS.
++- Do not remove existing rules.
++- Do not refactor or merge styles.
++- Append the requested block only at the bottom of `paletteManagerV2.css`.
++- Keep the provided `!important` flags.
++- Do not touch JavaScript, HTML, `tools/shared`, workspace/toolState/session behavior, sample JSON, or dependencies.
 +
 +## Implementation Plan
-+1. Inspect only `tools/palette-manager-v2`.
-+2. Fix only concrete stale/dead/duplicate artifacts found by the audit.
-+3. Preserve all listed behaviors and layout contracts.
-+4. Document any audit-only findings in the report.
++1. Read the existing end of `tools/palette-manager-v2/paletteManagerV2.css`.
++2. Append the exact requested `.palette-manager-v2__pin-button--tile` CSS block at end of file.
++3. Validate that the final CSS content ends with that exact block.
++4. Confirm the runtime diff is CSS-only.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only hardening pass.
++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this CSS-only Palette Manager V2 override.
 +- Expected pass behavior: Workspace V2 validation remains green.
 +- Expected fail behavior: missing script or Workspace V2 regression is reported.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open Palette Manager V2.
-+2. Confirm all accordions use accordionV2 UI, not old `details`/`summary`.
-+3. Confirm Validation/Error Viewer Clear is in the viewer header and still clears only displayed history.
-+4. Confirm User Palette checkbox clearing is unchanged.
-+5. Confirm source palette individual pin/unpin preserves source grid scroll.
-+6. Confirm User Palette Tag descending sort keeps untagged swatches last.
-+7. Confirm Import JSON, Copy JSON, and Export JSON remain centered in `menuSample`.
-+8. Confirm pin button size is unchanged.
-diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 79ab8f0a..3ac0824b 100644
---- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
-+++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -898,14 +898,6 @@ export class PaletteManagerApp {
-     return true;
-   }
- 
--  removeSelectedSwatch() {
--    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
--      this.setActionState(["Select a user swatch before removing."], "No user swatch selected.");
--      return false;
--    }
--    return this.removeUserSwatch(this.state.selectedUserIndex);
--  }
--
-   removeUserSwatch(index) {
-     const swatch = this.state.userSwatches[index];
-     if (!swatch) {
-diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
-index d45a6d2d..91cc08a8 100644
---- a/tools/palette-manager-v2/modules/SwatchRow.js
-+++ b/tools/palette-manager-v2/modules/SwatchRow.js
-@@ -1,37 +1,4 @@
- export class SwatchRow {
--  static create(documentRef, swatch, options = {}) {
--    const row = documentRef.createElement("div");
--    row.className = "palette-manager-v2__swatch-row";
--    if (options.selected) {
--      row.classList.add("is-selected");
--    }
--
--    const chip = documentRef.createElement("span");
--    chip.className = "palette-manager-v2__swatch-chip";
--    chip.style.background = swatch.hex;
--    chip.title = SwatchRow.createTooltipText(swatch);
--
--    const copy = documentRef.createElement("div");
--    copy.className = "palette-manager-v2__swatch-copy";
--
--    const name = documentRef.createElement("p");
--    name.className = "palette-manager-v2__swatch-name";
--    name.textContent = swatch.name;
--
--    const meta = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__swatch-meta");
--
--    copy.append(name, meta);
--
--    const tack = SwatchRow.createTackButton(documentRef, options);
--
--    row.title = SwatchRow.createTooltipText(swatch);
--    row.append(chip, copy, tack);
--    if (typeof options.onSelect === "function") {
--      row.addEventListener("click", options.onSelect);
--    }
--    return row;
--  }
--
-   static createSourceTile(documentRef, swatch, options = {}) {
-     return SwatchRow.createTile(documentRef, swatch, {
-       ...options,
-@@ -119,25 +86,6 @@ export class SwatchRow {
-     ].join("\n");
-   }
- 
--  static createDetailsBlock(documentRef, swatch, className) {
--    const details = documentRef.createElement("dl");
--    details.className = className;
--    [
--      ["Name", swatch.name],
--      ["Symbol", swatch.symbol],
--      ["Hex", swatch.hex],
--      ["Source", swatch.source],
--      ["Tags", Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"]
--    ].forEach(([label, value]) => {
--      const term = documentRef.createElement("dt");
--      term.textContent = label;
--      const description = documentRef.createElement("dd");
--      description.textContent = value;
--      details.append(term, description);
--    });
--    return details;
--  }
--
-   static createTackButton(documentRef, options = {}) {
-     const tack = documentRef.createElement("button");
-     tack.type = "button";
++2. Confirm source/user swatch tile pin buttons retain their current visual behavior.
++3. Confirm the appended tile pin styling does not change pin size or layout.
++4. Confirm no other Palette Manager CSS behavior changed.
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index 7fb1f803..3fdc80c0 100644
+index 3fdc80c0..c93fad2e 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -130,10 +130,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   overflow: hidden;
+@@ -729,3 +729,10 @@ body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palet
+     justify-content: flex-start;
+   }
  }
- 
--.palette-manager-v2__right-accordion--import .palette-manager-v2__controls {
--  flex: 0 0 auto;
--}
--
- .palette-manager-v2__right-accordion--import .palette-manager-v2__json-preview {
-   flex: 1 1 auto;
-   min-height: 0;
-@@ -596,72 +592,17 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   height: 20px;
- }
- 
--.palette-manager-v2__swatch-row {
--  min-height: 44px;
--  display: grid;
--  grid-template-columns: 36px minmax(0, 1fr) 42px;
--  align-items: center;
--  gap: 8px;
--  border: 1px solid var(--pm-line);
--  border-radius: 8px;
--  background: var(--pm-surface);
--  padding: 6px;
--}
--
--.palette-manager-v2__swatch-row.is-selected {
--  border-color: var(--pm-accent);
--}
--
--.palette-manager-v2__swatch-chip,
- .palette-manager-v2__preview {
-   border: 1px solid rgba(255, 255, 255, 0.24);
-   border-radius: 6px;
-   background: #000000;
- }
- 
--.palette-manager-v2__swatch-chip {
--  width: 32px;
--  height: 32px;
--}
--
- .palette-manager-v2__preview {
-   width: 100%;
-   aspect-ratio: 8 / 3;
- }
- 
--.palette-manager-v2__swatch-copy {
--  min-width: 0;
--}
--
--.palette-manager-v2__swatch-name,
--.palette-manager-v2__swatch-meta {
--  margin: 0;
--}
--
--.palette-manager-v2__swatch-name {
--  font-weight: 700;
--  overflow-wrap: anywhere;
--}
--
--.palette-manager-v2__swatch-meta {
--  color: var(--pm-text-muted);
--  font-size: 0.9rem;
--  overflow-wrap: anywhere;
--  display: grid;
--  grid-template-columns: auto minmax(0, 1fr);
--  gap: 2px 8px;
--}
--
--.palette-manager-v2__swatch-meta dt {
--  font-weight: 700;
--}
--
--.palette-manager-v2__swatch-meta dd {
--  min-width: 0;
--  margin: 0;
--  overflow-wrap: anywhere;
--}
--
- .palette-manager-v2__json-preview {
-   min-height: 180px;
-   max-height: clamp(220px, 36vh, 460px);
++
++.palette-manager-v2__pin-button--tile {
++  background: #ffffff88 !important;
++  border: none !important;
++  outline: none !important;
++  box-shadow: none !important;
++}

@@ -729,3 +729,10 @@ body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palet
     justify-content: flex-start;
   }
 }
+
+.palette-manager-v2__pin-button--tile {
+  background: #ffffff88 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}

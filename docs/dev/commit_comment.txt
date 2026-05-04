@@ -1,1 +1,1 @@
-Harden Palette Manager baseline by removing stale row artifacts - PR_26124_066-palette-manager-final-baseline-hardening
+Append Palette Manager tile pin override at CSS EOF - PR_26124_068-palette-manager-pin-style-append-only
