@@ -544,3 +544,23 @@ body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palet
     justify-content: flex-start;
   }
 }
+
+
+/* Pin button style update */
+.palette-manager-v2__pin-button--tile {
+  background: #ffffff88 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  margin: 5px !important;
+}
+/* Shrink pin button + icon 50% */
+.palette-manager-v2__pin-button--tile {
+  width: 24px;
+  height: 24px;
+}
+
+.palette-manager-v2__pin-button--tile .palette-manager-v2__pin-icon {
+  width: 20px;
+  height: 20px;
+}
