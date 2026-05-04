@@ -1,6 +1,6 @@
 # Tools Reengineering Index
 
-Task: PR_26124_023-finalize-tool-design-docs
+Task: PR_26124_024
 
 This index separates rebuild anchors from transitional references and support folders. All source paths are exact folders under `tools/*`.
 
@@ -23,13 +23,13 @@ This index separates rebuild anchors from transitional references and support fo
 | `state-inspector` | `tools/State Inspector` | rebuildable tool | core-15 | tools.state-inspector | core rebuild lane |
 | `replay-visualizer` | `tools/Replay Visualizer` | rebuildable tool | core-16 | tools.replay-visualizer | core rebuild lane |
 | `performance-profiler` | `tools/Performance Profiler` | rebuildable tool | core-17 | tools.performance-profiler | core rebuild lane |
-| `asset-manager-v2` | `tools/asset-manager-v2` | transitional/quarantine tool | deferred | none | deferred until corresponding core tool is rebuilt |
-| `palette-manager-v2` | `tools/palette-manager-v2` | transitional/quarantine tool | deferred | none | deferred until corresponding core tool is rebuilt |
-| `svg-asset-studio-v2` | `tools/svg-asset-studio-v2` | transitional/quarantine tool | deferred | none | deferred until corresponding core tool is rebuilt |
-| `tilemap-studio-v2` | `tools/tilemap-studio-v2` | transitional/quarantine tool | deferred | none | deferred until corresponding core tool is rebuilt |
-| `vector-map-editor-v2` | `tools/vector-map-editor-v2` | transitional/quarantine tool | deferred | none | deferred until corresponding core tool is rebuilt |
-| `workspace-manager` | `tools/Workspace Manager` | transitional/quarantine tool | deferred | none | reference only; not a rebuild anchor |
-| `workspace-v2` | `tools/workspace-v2` | transitional/quarantine tool | deferred | none | reference only; not a rebuild anchor |
+| `palette-manager-v2` | `tools/palette-manager-v2` | transitional/quarantine tool | deferred | reference-only | deferred transitional cleanup; not a core rebuild anchor |
+| `asset-manager-v2` | `tools/asset-manager-v2` | transitional/quarantine tool | deferred | reference-only | deferred transitional cleanup; not a core rebuild anchor |
+| `svg-asset-studio-v2` | `tools/svg-asset-studio-v2` | transitional/quarantine tool | deferred | reference-only | deferred transitional cleanup; not a core rebuild anchor |
+| `tilemap-studio-v2` | `tools/tilemap-studio-v2` | transitional/quarantine tool | deferred | reference-only | deferred transitional cleanup; not a core rebuild anchor |
+| `vector-map-editor-v2` | `tools/vector-map-editor-v2` | transitional/quarantine tool | deferred | reference-only | deferred transitional cleanup; not a core rebuild anchor |
+| `workspace-v2` | `tools/workspace-v2` | transitional/quarantine tool | deferred | reference-only | deferred transitional cleanup; not a core rebuild anchor |
+| `workspace-manager` | `tools/Workspace Manager` | transitional/quarantine tool | deferred | reference-only | deferred transitional cleanup; not a core rebuild anchor |
 | `schemas` | `tools/schemas` | schema folder | reference-only | none | schema baseline only; no schema changes in this PR |
 | `codex` | `tools/codex` | support folder | reference-only | none | reference only; no normal rebuild doc |
 | `common` | `tools/common` | support folder | reference-only | none | reference only; no normal rebuild doc |
@@ -41,6 +41,6 @@ This index separates rebuild anchors from transitional references and support fo
 ## Classification Definitions
 - `global tool`: a launchable global surface. Palette Browser is the only core rebuild anchor in this group.
 - `rebuildable tool`: non-transitional launchable tool with an owned JSON contract and `tools.<toolId>` publish target.
-- `transitional/quarantine tool`: V2 or workspace bridge retained as deferred reference only.
+- `transitional/quarantine tool`: deferred reference folder retained only for later cleanup.
 - `support folder`: shared/reference infrastructure only; it is not a normal tool rebuild target and has no `REENGINEERING_DESIGN.md`.
 - `schema folder`: current contract baseline only; no schema changes are part of this PR.

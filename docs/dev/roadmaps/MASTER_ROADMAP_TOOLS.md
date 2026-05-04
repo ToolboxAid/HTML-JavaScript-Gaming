@@ -1,34 +1,34 @@
 # MASTER_ROADMAP_TOOLS
 
-Task: PR_26124_023-finalize-tool-design-docs
+Task: PR_26124_024
 
 ## Core Tool Rebuild
-- [.] Palette Browser: rebuild first as the global palette source of truth for `tools.palette-browser`.
-- [ ] Asset Browser: rebuild approved asset browsing, import-plan validation, and `tools.asset-browser` publish.
-- [ ] Asset Pipeline: rebuild pipeline payload validation, normalized output, and `tools.asset-pipeline` publish.
-- [ ] SVG Asset Studio: rebuild vector asset authoring, validation, export, and `tools.svg-asset-studio` publish.
-- [ ] Sprite Editor: rebuild sprite project editing, validation, export, and `tools.sprite-editor` publish.
-- [ ] Skin Editor: rebuild primitive skin editing, validation, export, and `tools.skin-editor` publish.
-- [ ] Tilemap Studio: rebuild tile map/layer authoring, validation, export, and `tools.tile-map-editor` publish.
-- [ ] Tile Model Converter: rebuild candidate/conversion validation, normalized output, and `tools.tile-model-converter` publish.
-- [ ] Parallax Scene Studio: rebuild parallax document editing, validation, export, and `tools.parallax-editor` publish.
-- [ ] Vector Map Editor: rebuild vector map geometry editing, validation, export, and `tools.vector-map-editor` publish.
-- [ ] 3D JSON Payload: rebuild map payload normalization, validation, export, and `tools.3d-json-payload` publish.
-- [ ] 3D Asset Viewer: rebuild read-only asset inspection, validation report export, and `tools.3d-asset-viewer` publish.
-- [ ] 3D Camera Path Editor: rebuild waypoint editing, path validation, export, and `tools.3d-camera-path-editor` publish.
-- [ ] Physics Sandbox: rebuild physics body validation, step preview, export, and `tools.physics-sandbox` publish.
-- [ ] State Inspector: rebuild snapshot validation, inspection report export, and `tools.state-inspector` publish.
-- [ ] Replay Visualizer: rebuild replay event validation, playback controls, export, and `tools.replay-visualizer` publish.
-- [ ] Performance Profiler: rebuild profile settings validation, report export, and `tools.performance-profiler` publish.
+- [.] Palette Browser: rebuild first as the global palette source of truth; publish `tools.palette-browser`.
+- [ ] Asset Browser: rebuild approved asset browsing and manifest validation; publish `tools.asset-browser`.
+- [ ] Asset Pipeline: rebuild pipeline payload validation and normalized output; publish `tools.asset-pipeline`.
+- [ ] SVG Asset Studio: rebuild vector asset authoring, validation, and export; publish `tools.svg-asset-studio`.
+- [ ] Sprite Editor: rebuild sprite project editing, validation, and export; publish `tools.sprite-editor`.
+- [ ] Skin Editor: rebuild primitive skin editing, validation, and export; publish `tools.skin-editor`.
+- [ ] Tilemap Studio: rebuild tile map/layer authoring, validation, and export; publish `tools.tile-map-editor`.
+- [ ] Tile Model Converter: rebuild candidate conversion validation and normalized output; publish `tools.tile-model-converter`.
+- [ ] Parallax Scene Studio: rebuild parallax document editing, validation, and export; publish `tools.parallax-editor`.
+- [ ] Vector Map Editor: rebuild vector map geometry editing, validation, and export; publish `tools.vector-map-editor`.
+- [ ] 3D JSON Payload: rebuild map payload normalization, validation, and export; publish `tools.3d-json-payload`.
+- [ ] 3D Asset Viewer: rebuild read-only asset inspection and report export; publish `tools.3d-asset-viewer`.
+- [ ] 3D Camera Path Editor: rebuild waypoint editing, path validation, and export; publish `tools.3d-camera-path-editor`.
+- [ ] Physics Sandbox: rebuild physics body validation, step preview, and export; publish `tools.physics-sandbox`.
+- [ ] State Inspector: rebuild snapshot validation and inspection report export; publish `tools.state-inspector`.
+- [ ] Replay Visualizer: rebuild replay event validation, playback controls, and export; publish `tools.replay-visualizer`.
+- [ ] Performance Profiler: rebuild profile settings validation and report export; publish `tools.performance-profiler`.
 
 ## Deferred Transitional Cleanup
-- [ ] palette-manager-v2: review after Palette Browser is rebuilt.
-- [ ] asset-manager-v2: review after Asset Browser and Asset Pipeline are rebuilt.
-- [ ] svg-asset-studio-v2: review after SVG Asset Studio is rebuilt.
-- [ ] tilemap-studio-v2: review after Tilemap Studio is rebuilt.
-- [ ] vector-map-editor-v2: review after Vector Map Editor is rebuilt.
-- [ ] workspace-v2: review after core publish contracts are stable; keep it out of the core lane.
-- [ ] Workspace Manager: review after core publish contracts are stable; keep it out of the core lane.
+- [ ] palette-manager-v2: deferred transitional cleanup after corresponding core contracts are stable.
+- [ ] asset-manager-v2: deferred transitional cleanup after corresponding core contracts are stable.
+- [ ] svg-asset-studio-v2: deferred transitional cleanup after corresponding core contracts are stable.
+- [ ] tilemap-studio-v2: deferred transitional cleanup after corresponding core contracts are stable.
+- [ ] vector-map-editor-v2: deferred transitional cleanup after corresponding core contracts are stable.
+- [ ] workspace-v2: deferred transitional cleanup after corresponding core contracts are stable.
+- [ ] Workspace Manager: deferred transitional cleanup after corresponding core contracts are stable.
 
 ## Deferred References
 - [ ] Support folders remain reference-only: common, shared, dev, preview, codex, templates.

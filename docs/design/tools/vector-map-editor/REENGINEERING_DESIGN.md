@@ -1,15 +1,15 @@
 # Vector Map Editor Reengineering Design
 
-Task: PR_26124_023-finalize-tool-design-docs
+Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-10
 Source folder: `tools/Vector Map Editor`
 Publish target: `tools.vector-map-editor`
 
 ## Tool Purpose
-Vector map authoring. Vector Map Editor owns `vectorMapDocument`, object geometry, transforms, collision preview/export, validation, and publish to `tools.vector-map-editor`.
+Vector Map Editor owns vector map document import, validation, geometry editing, export, and publish to `tools.vector-map-editor`.
 
-## Exact Folder/Files Inspected
+## Folder/Files Inspected
 - `tools/Vector Map Editor/editor/VectorMapCollisionTester.js`
 - `tools/Vector Map Editor/editor/VectorMapDocument.js`
 - `tools/Vector Map Editor/editor/VectorMapEditorApp.js`
@@ -30,150 +30,183 @@ Vector map authoring. Vector Map Editor owns `vectorMapDocument`, object geometr
 - `tools/Vector Map Editor/TOOLS_INDEX_ENTRY.html`
 - `tools/Vector Map Editor/vectorMapEditor.css`
 
-## Exact Current Controls Found
-- `tools/Vector Map Editor/index.html`: `button#newDocumentButton` - New
-- `tools/Vector Map Editor/index.html`: `button[button]#undoButton` - Undo
-- `tools/Vector Map Editor/index.html`: `button[button]#redoButton` - Redo
-- `tools/Vector Map Editor/index.html`: `button#saveDocumentButton` - Save JSON
-- `tools/Vector Map Editor/index.html`: `button#exportRuntimeButton` - Export Runtime
-- `tools/Vector Map Editor/index.html`: `input[file]#loadDocumentInput` - loadDocumentInput
-- `tools/Vector Map Editor/index.html`: `select#workspaceModeSelect` - 2D Edit 3D Wireframe JSON Edit
-- `tools/Vector Map Editor/index.html`: `select#toolModeSelect` - Select Point Line Polyline Polygon Move Rotate Set Center Collision Vector Pan Delete
-- `tools/Vector Map Editor/index.html`: `button#toggleJsonDockButton` - JSON Dock
-- `tools/Vector Map Editor/index.html`: `input[number]#snapSizeInput` - snapSizeInput
-- `tools/Vector Map Editor/index.html`: `button[button]#zoomOutButton` - Zoom Out
-- `tools/Vector Map Editor/index.html`: `button[button]#zoomResetButton` - Reset Zoom
-- `tools/Vector Map Editor/index.html`: `button[button]#zoomInButton` - Zoom In
-- `tools/Vector Map Editor/index.html`: `button#duplicateObjectButton` - Duplicate
-- `tools/Vector Map Editor/index.html`: `button#deleteObjectButton` - Delete
-- `tools/Vector Map Editor/index.html`: `input[text]#documentNameInput` - documentNameInput
-- `tools/Vector Map Editor/index.html`: `input[number]#documentWidthInput` - documentWidthInput
-- `tools/Vector Map Editor/index.html`: `input[number]#documentHeightInput` - documentHeightInput
-- `tools/Vector Map Editor/index.html`: `input[text]#documentBackgroundInput` - documentBackgroundInput
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Objects
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Document
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Collision Result
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Keyboard & Mouse
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Selected Object
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Center Point
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Rotation
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Appearance
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Collision Flags
-- `tools/Vector Map Editor/index.html`: `button[button]` - + Points
-- `tools/Vector Map Editor/index.html`: `button#jsonValidateButton` - Validate
-- `tools/Vector Map Editor/index.html`: `button#jsonApplyButton` - Apply
-- `tools/Vector Map Editor/index.html`: `button#jsonPrettyPrintButton` - Pretty Print
-- `tools/Vector Map Editor/index.html`: `button#jsonRevertButton` - Revert
-- `tools/Vector Map Editor/index.html`: `textarea#jsonEditor` - jsonEditor
-- `tools/Vector Map Editor/index.html`: `input[text]#selectedObjectNameInput` - selectedObjectNameInput
-- `tools/Vector Map Editor/index.html`: `input[text]#selectedObjectKindInput` - selectedObjectKindInput
-- `tools/Vector Map Editor/index.html`: `input[text]#selectedObjectSpaceInput` - selectedObjectSpaceInput
-- `tools/Vector Map Editor/index.html`: `button#autoCenterBoundsButton` - Bounds
-- `tools/Vector Map Editor/index.html`: `button#autoCenterCentroidButton` - Centroid
-- `tools/Vector Map Editor/index.html`: `button#autoCenterOriginButton` - Origin
-- `tools/Vector Map Editor/index.html`: `button#autoCenterSelectionButton` - Selection
-- `tools/Vector Map Editor/index.html`: `input[number]#centerXInput` - centerXInput
-- `tools/Vector Map Editor/index.html`: `input[number]#centerYInput` - centerYInput
-- `tools/Vector Map Editor/index.html`: `input[number]#centerZInput` - centerZInput
-- `tools/Vector Map Editor/index.html`: `button#applyCenterButton` - Apply XYZ
-- `tools/Vector Map Editor/index.html`: `button#setCenterFromSelectionButton` - Use Selected Point
-- `tools/Vector Map Editor/index.html`: `button#rotationXDownButton` - -
-- `tools/Vector Map Editor/index.html`: `input[number]#rotationXInput` - rotationXInput
-- `tools/Vector Map Editor/index.html`: `button#rotationXUpButton` - +
-- `tools/Vector Map Editor/index.html`: `button#rotationYDownButton` - -
-- `tools/Vector Map Editor/index.html`: `input[number]#rotationYInput` - rotationYInput
-- `tools/Vector Map Editor/index.html`: `button#rotationYUpButton` - +
-- `tools/Vector Map Editor/index.html`: `button#rotationZDownButton` - -
-- `tools/Vector Map Editor/index.html`: `input[number]#rotationZInput` - rotationZInput
-- `tools/Vector Map Editor/index.html`: `button#rotationZUpButton` - +
-- `tools/Vector Map Editor/index.html`: `button#applyRotationButton` - Apply Rotation
-- `tools/Vector Map Editor/index.html`: `button#resetRotationButton` - Reset Rotation
-- `tools/Vector Map Editor/index.html`: `input[number]#rotatePointsDegreesInput` - rotatePointsDegreesInput
-- `tools/Vector Map Editor/index.html`: `button#rotatePointsDegreesButton` - Rotate Points
-- `tools/Vector Map Editor/index.html`: `button#spinAllPointsButton` - Spin 360
-- `tools/Vector Map Editor/index.html`: `input[color]#objectStrokeInput` - objectStrokeInput
-- `tools/Vector Map Editor/index.html`: `input[text]#objectFillInput` - null or #rrggbb
-- `tools/Vector Map Editor/index.html`: `input[number]#objectLineWidthInput` - objectLineWidthInput
-- `tools/Vector Map Editor/index.html`: `select#objectColorModeSelect` - Object Point-to-point
-- `tools/Vector Map Editor/index.html`: `input[color]#selectedPointColorInput` - selectedPointColorInput
-- `tools/Vector Map Editor/index.html`: `button#applyPointColorButton` - Apply Point Color
-- `tools/Vector Map Editor/index.html`: `input[checkbox]#flagCollidableInput` - flagCollidableInput
-- `tools/Vector Map Editor/index.html`: `input[checkbox]#flagDeadlyInput` - flagDeadlyInput
-- `tools/Vector Map Editor/index.html`: `input[checkbox]#flagTriggerInput` - flagTriggerInput
-- `tools/Vector Map Editor/index.html`: `input[checkbox]#flagSpawnBlockerInput` - flagSpawnBlockerInput
-- `tools/Vector Map Editor/index.html`: `input[checkbox]#flagProjectileBlockerInput` - flagProjectileBlockerInput
-- `tools/Vector Map Editor/index.html`: `input[checkbox]#flagPlayerOnlyInput` - flagPlayerOnlyInput
-- `tools/Vector Map Editor/index.html`: `input[checkbox]#flagEnemyOnlyInput` - flagEnemyOnlyInput
-- `tools/Vector Map Editor/index.html`: `input[text]#flagTagInput` - wall / trigger / zone
+## Controls: Control -> Action -> JSON Effect
+| Control | Action | JSON effect |
+|---|---|---|
+| `tools/Vector Map Editor/index.html`: `input[file]#loadDocumentInput` - loadDocumentInput | Chooses a local file for vector map document import/load. | Replaces or merges tool-owned vector map document only after the import validates. |
+| `tools/Vector Map Editor/index.html`: `input[number]#snapSizeInput` - 10 | Edits the active vector map feature or geometry field. | Updates the draft vector map document field represented by `snapSizeInput` before validation. |
+| `tools/Vector Map Editor/index.html`: `input[text]#documentNameInput` - untitled | Edits the active vector map feature or geometry field. | Updates the draft vector map document field represented by `documentNameInput` before validation. |
+| `tools/Vector Map Editor/index.html`: `input[number]#documentWidthInput` - 1280 | Edits the active vector map feature or geometry field. | Updates the draft vector map document field represented by `documentWidthInput` before validation. |
+| `tools/Vector Map Editor/index.html`: `input[number]#documentHeightInput` - 720 | Edits the active vector map feature or geometry field. | Updates the draft vector map document field represented by `documentHeightInput` before validation. |
+| `tools/Vector Map Editor/index.html`: `input[text]#documentBackgroundInput` - #000000 | Edits the current vector map document through `documentBackgroundInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[text]#selectedObjectNameInput` - selectedObjectNameInput | Edits the active vector map feature or geometry field. | Updates the draft vector map document field represented by `selectedObjectNameInput` before validation. |
+| `tools/Vector Map Editor/index.html`: `input[text]#selectedObjectKindInput` - selectedObjectKindInput | Edits the active vector map feature or geometry field. | Updates the draft vector map document field represented by `selectedObjectKindInput` before validation. |
+| `tools/Vector Map Editor/index.html`: `input[text]#selectedObjectSpaceInput` - selectedObjectSpaceInput | Edits the current vector map document through `selectedObjectSpaceInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[number]#centerXInput` - centerXInput | Edits the current vector map document through `centerXInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[number]#centerYInput` - centerYInput | Edits the current vector map document through `centerYInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[number]#centerZInput` - centerZInput | Edits the current vector map document through `centerZInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[number]#rotationXInput` - rotationXInput | Edits the current vector map document through `rotationXInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[number]#rotationYInput` - rotationYInput | Edits the current vector map document through `rotationYInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[number]#rotationZInput` - rotationZInput | Edits the current vector map document through `rotationZInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[number]#rotatePointsDegreesInput` - 15 | Edits the current vector map document through `rotatePointsDegreesInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[color]#objectStrokeInput` - #ffffff | Edits the current vector map document through `objectStrokeInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[text]#objectFillInput` - null or #rrggbb | Edits the current vector map document through `objectFillInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[number]#objectLineWidthInput` - 2 | Edits the active vector map feature or geometry field. | Updates the draft vector map document field represented by `objectLineWidthInput` before validation. |
+| `tools/Vector Map Editor/index.html`: `input[color]#selectedPointColorInput` - #ffffff | Edits the active vector map feature or geometry color/value field. | Updates the draft vector map document field represented by `selectedPointColorInput` before validation. |
+| `tools/Vector Map Editor/index.html`: `input[checkbox]#flagCollidableInput` - flagCollidableInput | Edits the current vector map document through `flagCollidableInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[checkbox]#flagDeadlyInput` - flagDeadlyInput | Edits the current vector map document through `flagDeadlyInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[checkbox]#flagTriggerInput` - flagTriggerInput | Edits the current vector map document through `flagTriggerInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[checkbox]#flagSpawnBlockerInput` - flagSpawnBlockerInput | Edits the current vector map document through `flagSpawnBlockerInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[checkbox]#flagProjectileBlockerInput` - flagProjectileBlockerInput | Edits the current vector map document through `flagProjectileBlockerInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[checkbox]#flagPlayerOnlyInput` - flagPlayerOnlyInput | Edits the current vector map document through `flagPlayerOnlyInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[checkbox]#flagEnemyOnlyInput` - flagEnemyOnlyInput | Edits the current vector map document through `flagEnemyOnlyInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `input[text]#flagTagInput` - wall / trigger / zone | Edits the current vector map document through `flagTagInput`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `button#newDocumentButton` - New | Creates or resets a draft vector map document. | Initializes tool-owned vector map document data; tools.vector-map-editor is unchanged until validation and publish/export. |
+| `tools/Vector Map Editor/index.html`: `button[button]#undoButton` - Undo | Triggers the current vector map document UI action for `Undo`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]#redoButton` - Redo | Triggers the current vector map document UI action for `Redo`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#saveDocumentButton` - Save JSON | Exports the validated vector map document. | Serializes the validated vector map document as the tools.vector-map-editor output shape. |
+| `tools/Vector Map Editor/index.html`: `button#exportRuntimeButton` - Export Runtime | Exports the validated vector map document. | Serializes the validated vector map document as the tools.vector-map-editor output shape. |
+| `tools/Vector Map Editor/index.html`: `select#workspaceModeSelect` - 2D Edit 3D Wireframe JSON Edit | Edits the current vector map document through `workspaceModeSelect`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `select#toolModeSelect` - Select Point Line Polyline Polygon Move Rotate Set Center Collision Vector Pan Delete | Edits the current vector map document through `toolModeSelect`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `button#toggleJsonDockButton` - JSON Dock | Triggers the current vector map document UI action for `JSON Dock`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]#zoomOutButton` - Zoom Out | Triggers the current vector map document UI action for `Zoom Out`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]#zoomResetButton` - Reset Zoom | Creates or resets a draft vector map document. | Initializes tool-owned vector map document data; tools.vector-map-editor is unchanged until validation and publish/export. |
+| `tools/Vector Map Editor/index.html`: `button[button]#zoomInButton` - Zoom In | Triggers the current vector map document UI action for `Zoom In`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#duplicateObjectButton` - Duplicate | Duplicates the selected vector map feature or geometry. | Adds a copied vector map feature or geometry to the draft vector map document; publish waits for validation. |
+| `tools/Vector Map Editor/index.html`: `button#deleteObjectButton` - Delete | Removes or clears the selected vector map feature or geometry. | Deletes that data from the draft vector map document; publish waits for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Objects | Triggers the current vector map document UI action for `+ Objects`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Document | Triggers the current vector map document UI action for `+ Document`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Collision Result | Triggers the current vector map document UI action for `+ Collision Result`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Keyboard &amp; Mouse | Triggers the current vector map document UI action for `+ Keyboard &amp; Mouse`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Selected Object | Triggers the current vector map document UI action for `+ Selected Object`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Center Point | Triggers the current vector map document UI action for `+ Center Point`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Rotation | Triggers the current vector map document UI action for `+ Rotation`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Appearance | Triggers the current vector map document UI action for `+ Appearance`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Collision Flags | Triggers the current vector map document UI action for `+ Collision Flags`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button[button]` - + Points | Triggers the current vector map document UI action for `+ Points`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#jsonValidateButton` - Validate | Validates the current vector map document. | Updates validation status; blocks tools.vector-map-editor output when errors are present. |
+| `tools/Vector Map Editor/index.html`: `button#jsonApplyButton` - Apply | Publishes or applies the validated vector map document. | Writes the validated output shape to tools.vector-map-editor. |
+| `tools/Vector Map Editor/index.html`: `button#jsonPrettyPrintButton` - Pretty Print | Triggers the current vector map document UI action for `Pretty Print`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#jsonRevertButton` - Revert | Triggers the current vector map document UI action for `Revert`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `textarea#jsonEditor` - jsonEditor | Edits or loads vector map document text. | Parses into the tool-owned vector map document; malformed or schema-invalid content must not publish. |
+| `tools/Vector Map Editor/index.html`: `button#autoCenterBoundsButton` - Bounds | Triggers the current vector map document UI action for `Bounds`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#autoCenterCentroidButton` - Centroid | Triggers the current vector map document UI action for `Centroid`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#autoCenterOriginButton` - Origin | Triggers the current vector map document UI action for `Origin`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#autoCenterSelectionButton` - Selection | Triggers the current vector map document UI action for `Selection`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#applyCenterButton` - Apply XYZ | Publishes or applies the validated vector map document. | Writes the validated output shape to tools.vector-map-editor. |
+| `tools/Vector Map Editor/index.html`: `button#setCenterFromSelectionButton` - Use Selected Point | Publishes or applies the validated vector map document. | Writes the validated output shape to tools.vector-map-editor. |
+| `tools/Vector Map Editor/index.html`: `button#rotationXDownButton` - - | Triggers the current vector map document UI action for `-`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#rotationXUpButton` - + | Triggers the current vector map document UI action for `+`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#rotationYDownButton` - - | Triggers the current vector map document UI action for `-`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#rotationYUpButton` - + | Triggers the current vector map document UI action for `+`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#rotationZDownButton` - - | Triggers the current vector map document UI action for `-`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#rotationZUpButton` - + | Triggers the current vector map document UI action for `+`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#applyRotationButton` - Apply Rotation | Publishes or applies the validated vector map document. | Writes the validated output shape to tools.vector-map-editor. |
+| `tools/Vector Map Editor/index.html`: `button#resetRotationButton` - Reset Rotation | Creates or resets a draft vector map document. | Initializes tool-owned vector map document data; tools.vector-map-editor is unchanged until validation and publish/export. |
+| `tools/Vector Map Editor/index.html`: `button#rotatePointsDegreesButton` - Rotate Points | Triggers the current vector map document UI action for `Rotate Points`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `button#spinAllPointsButton` - Spin 360 | Triggers the current vector map document UI action for `Spin 360`. | May update draft vector map document data; tools.vector-map-editor publish must wait for validation. |
+| `tools/Vector Map Editor/index.html`: `select#objectColorModeSelect` - Object Point-to-point | Edits the current vector map document through `objectColorModeSelect`. | Updates draft vector map document data and requires validation before tools.vector-map-editor publish. |
+| `tools/Vector Map Editor/index.html`: `button#applyPointColorButton` - Apply Point Color | Publishes or applies the validated vector map document. | Writes the validated output shape to tools.vector-map-editor. |
 
-## Current Panels And Surfaces Found
+## Panels And Surfaces Found
+- `tools/Vector Map Editor/how_to_use.html`: `.tools-platform-surface`
+- `tools/Vector Map Editor/index.html`: `.canvas-layer`
+- `tools/Vector Map Editor/index.html`: `.canvas-shell`
+- `tools/Vector Map Editor/index.html`: `.field-grid`
+- `tools/Vector Map Editor/index.html`: `.flag-grid`
+- `tools/Vector Map Editor/index.html`: `.json-editor`
+- `tools/Vector Map Editor/index.html`: `.object-list`
+- `tools/Vector Map Editor/index.html`: `.panel-accordion`
+- `tools/Vector Map Editor/index.html`: `.panel-accordion__body`
+- `tools/Vector Map Editor/index.html`: `.panel-accordion__summary`
+- `tools/Vector Map Editor/index.html`: `.sidebar`
+- `tools/Vector Map Editor/index.html`: `.single-field-grid`
 - `tools/Vector Map Editor/index.html`: `.toolbar`
 - `tools/Vector Map Editor/index.html`: `.toolbar-group`
-- `tools/Vector Map Editor/index.html`: `.tools-platform-control-cluster--preview`
-- `tools/Vector Map Editor/index.html`: `.toolbar-readout`
 - `tools/Vector Map Editor/index.html`: `.toolbar-link`
-- `tools/Vector Map Editor/index.html`: `.sidebar`
-- `tools/Vector Map Editor/index.html`: `.tools-platform-resize-panel`
-- `tools/Vector Map Editor/index.html`: `.panel-accordion`
-- `tools/Vector Map Editor/index.html`: `.panel-accordion__summary`
-- `tools/Vector Map Editor/index.html`: `.panel-accordion__body`
-- `tools/Vector Map Editor/index.html`: `.object-list`
-- `tools/Vector Map Editor/index.html`: `.field-grid`
-- `tools/Vector Map Editor/index.html`: `.canvas-shell`
-- `tools/Vector Map Editor/index.html`: `.canvas-layer`
+- `tools/Vector Map Editor/index.html`: `.toolbar-readout`
+- `tools/Vector Map Editor/index.html`: `.tools-platform-control-cluster--preview`
 - `tools/Vector Map Editor/index.html`: `.tools-platform-dock-panel`
-- `tools/Vector Map Editor/index.html`: `.single-field-grid`
-- `tools/Vector Map Editor/index.html`: `.flag-grid`
-- `tools/Vector Map Editor/index.html`: `.statusbar`
+- `tools/Vector Map Editor/index.html`: `.tools-platform-resize-panel`
+- `tools/Vector Map Editor/index.html`: `.vector-editor-page`
+- `tools/Vector Map Editor/index.html`: `.vector-editor-page-root`
+- `tools/Vector Map Editor/index.html`: `.zoom-controls`
 
-## Exact Current Functions And Classes
-- `tools/Vector Map Editor/editor/VectorMapCollisionTester.js`: class VectorMapCollisionTester; function buildSegments; function distance; function isCollisionEnabled; function segmentIntersection; method test
-- `tools/Vector Map Editor/editor/VectorMapDocument.js`: class VectorMapDocument; function clone; function nextId; function normalizeDegrees; method addObject; method addPointToObject; method createEmptyDocument; method duplicateObject; method getData; method getObjectById; method getObjects; method normalizeDocument; method normalizeFlags; method normalizeObject; method normalizePoint; method removeObject; method removePoint; method renameObject; method replacePoints; method setData; method setDocumentProperties; method setMode; method setObjectCenter; method setObjectFlags; method setObjectRotation; method setObjectStyle; method setPointColor; method toJSON; method updatePoint
-- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`: class VectorMapEditorApp; function buildPresetLoadedStatus; function normalizeDegrees; function normalizeSamplePresetPath; function parseNumericInput; function step; method applyAbsoluteRotationFromInputs; method applyHistorySnapshot; method beginPointerHistoryEntry; method cacheElements; method cancelSpinAnimation; method commitHistorySnapshot; method completePendingHistoryEntry; method createHistorySnapshot; method createInteractionController; method emitVectorMapControlReadiness; method formatRotationReadout; method getCanvasCenter; method getCanvasPosition; method getDeleteHistoryLabel; method getInteractionMeta; method getOverlayPanels; method getOverlaySidebar; method getPointerHistoryLabel; method handleOverlayAccordionToggle; method markInteracting; method performHistoryAction; method readCenterInputs; method readFlagsInputs; method readStyleInputs; method redo; method render; method resizeCanvas; method setStatus; method setUxLifecycleState; method spinSelectedObject360; method start; method syncCollisionSummary; method syncDocumentFromInputs; method syncFullscreenLayoutHeight; method syncHistoryControls; method syncJsonEditor; method syncObjectList; method syncOverlayToggleButtons; method syncSelectionFields; method syncStatus; method syncUIFromDocument; method syncUxContractState; method toggleOverlayPanel; method tryLoadPresetFromQuery; method undo; method updateCursorStatus; method updateRotationDisplayFromInputs; method wireEvents; method wireSpinButton
-- `tools/Vector Map Editor/editor/VectorMapFullscreenController.js`: class VectorMapFullscreenController; method syncBodyClass; method toggle
-- `tools/Vector Map Editor/editor/VectorMapHistoryManager.js`: class VectorMapHistoryManager; function clone; method canRedo; method canUndo; method push; method redo; method reset; method undo
-- `tools/Vector Map Editor/editor/VectorMapInteractionController.js`: class VectorMapInteractionController; function distanceSquared; function pointInBounds; method cancelPendingShape; method clearCollisionResult; method deleteSelection; method doubleClick; method getCollisionHit; method getCollisionVector; method getHitTarget; method getHoverPoint; method getView; method pointerDown; method pointerMove; method pointerUp; method resetView; method screenToWorld; method setToolMode; method setView; method snap; method stepZoom; method zoomAtPosition
-- `tools/Vector Map Editor/editor/VectorMapJsonEditor.js`: class VectorMapJsonEditor; method getValue; method prettyPrint; method revert; method setValue; method validate
-- `tools/Vector Map Editor/editor/VectorMapRenderer2D.js`: class VectorMapRenderer2D; method drawAxes; method drawCenter; method drawCollisionVector; method drawGrid; method drawHover; method drawObject; method render; method toScreen
-- `tools/Vector Map Editor/editor/VectorMapRenderer3D.js`: class VectorMapRenderer3D; method drawAxes; method drawCenter; method drawCollisionVector; method drawGrid; method drawObject; method project; method render
-- `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js`: class VectorMapRuntimeExporter; method build; method download
-- `tools/Vector Map Editor/editor/VectorMapSelectionModel.js`: class VectorMapSelectionModel; method clear; method getSelection; method getSelectionBounds; method getSelectionCenter; method hasObject; method hasPoint; method isSelectedObject; method selectObject; method selectPoint
-- `tools/Vector Map Editor/editor/VectorMapSerializer.js`: class VectorMapSerializer; method download; method parseJSON; method readFile; method toPrettyJSON
-- `tools/Vector Map Editor/editor/VectorMapTransformController.js`: class VectorMapTransformController; function normalizeDegrees; function rotateAroundCenter; function toRadians; method applyRotation; method autoCenterByBounds; method autoCenterByCentroid; method autoCenterByOrigin; method autoCenterBySelection; method resetRotation; method setCenter; method translateSelection
-- `tools/Vector Map Editor/main.js`: function applyHostedWorkspacePayload; function bootVectorMapEditor; function readHostedVectorMapDocument; function startVectorMapEditor; method destroy; method getApi
+## Current Component/Class/Function Inventory
+- `tools/Vector Map Editor/editor/VectorMapCollisionTester.js`: VectorMapCollisionTester; buildSegments; distance; isCollisionEnabled; segmentIntersection; test
+- `tools/Vector Map Editor/editor/VectorMapDocument.js`: VectorMapDocument; addObject; addPointToObject; clone; createEmptyDocument; duplicateObject; getData; getObjectById; getObjects; nextId; normalizeDegrees; normalizeDocument; normalizeFlags; normalizeObject; normalizePoint; removeObject; removePoint; renameObject; replacePoints; setData; setDocumentProperties; setMode; setObjectCenter; setObjectFlags; setObjectRotation; setObjectStyle; setPointColor; toJSON; updatePoint
+- `tools/Vector Map Editor/editor/VectorMapEditorApp.js`: VectorMapEditorApp; applyAbsoluteRotationFromInputs; applyHistorySnapshot; beginPointerHistoryEntry; buildPresetLoadedStatus; cacheElements; cancelSpinAnimation; commitHistorySnapshot; completePendingHistoryEntry; createHistorySnapshot; createInteractionController; emitVectorMapControlReadiness; formatRotationReadout; getCanvasCenter; getCanvasPosition; getDeleteHistoryLabel; getInteractionMeta; getOverlayPanels; getOverlaySidebar; getPointerHistoryLabel; handleOverlayAccordionToggle; markInteracting; normalizeDegrees; normalizeSamplePresetPath; parseNumericInput; performHistoryAction; readCenterInputs; readFlagsInputs; readStyleInputs; redo; render; resizeCanvas; setStatus; setUxLifecycleState; spinSelectedObject360; start; step; syncCollisionSummary; syncDocumentFromInputs; syncFullscreenLayoutHeight; syncHistoryControls; syncJsonEditor; syncObjectList; syncOverlayToggleButtons; syncSelectionFields; syncStatus; syncUIFromDocument; syncUxContractState; toggleOverlayPanel; tryLoadPresetFromQuery; undo; updateCursorStatus; updateRotationDisplayFromInputs; wireEvents; wireSpinButton
+- `tools/Vector Map Editor/editor/VectorMapFullscreenController.js`: VectorMapFullscreenController; syncBodyClass; toggle
+- `tools/Vector Map Editor/editor/VectorMapHistoryManager.js`: VectorMapHistoryManager; canRedo; canUndo; clone; push; redo; reset; undo
+- `tools/Vector Map Editor/editor/VectorMapInteractionController.js`: VectorMapInteractionController; cancelPendingShape; clearCollisionResult; deleteSelection; distanceSquared; doubleClick; getCollisionHit; getCollisionVector; getHitTarget; getHoverPoint; getView; pointInBounds; pointerDown; pointerMove; pointerUp; resetView; screenToWorld; setToolMode; setView; snap; stepZoom; zoomAtPosition
+- `tools/Vector Map Editor/editor/VectorMapJsonEditor.js`: VectorMapJsonEditor; getValue; prettyPrint; revert; setValue; validate
+- `tools/Vector Map Editor/editor/VectorMapRenderer2D.js`: VectorMapRenderer2D; drawAxes; drawCenter; drawCollisionVector; drawGrid; drawHover; drawObject; render; toScreen
+- `tools/Vector Map Editor/editor/VectorMapRenderer3D.js`: VectorMapRenderer3D; drawAxes; drawCenter; drawCollisionVector; drawGrid; drawObject; project; render
+- `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js`: VectorMapRuntimeExporter; build; download
+- `tools/Vector Map Editor/editor/VectorMapSelectionModel.js`: VectorMapSelectionModel; clear; getSelection; getSelectionBounds; getSelectionCenter; hasObject; hasPoint; isSelectedObject; selectObject; selectPoint
+- `tools/Vector Map Editor/editor/VectorMapSerializer.js`: VectorMapSerializer; download; parseJSON; readFile; toPrettyJSON
+- `tools/Vector Map Editor/editor/VectorMapTransformController.js`: VectorMapTransformController; applyRotation; autoCenterByBounds; autoCenterByCentroid; autoCenterByOrigin; autoCenterBySelection; normalizeDegrees; resetRotation; rotateAroundCenter; setCenter; toRadians; translateSelection
+- `tools/Vector Map Editor/main.js`: applyHostedWorkspacePayload; bootVectorMapEditor; getApi; readHostedVectorMapDocument; registerToolBootContract; startVectorMapEditor
 
 ## Target Controls
 Keep:
-- map metadata controls
-- object list controls
 - geometry editing controls
-- style/transform controls
-- 2D/3D preview surfaces
-- JSON editor/export controls
+- map preview controls
+- import/export controls
 
 Remove or rename:
-- runtime/game assumptions from the contract authoring path
+- unvalidated geometry publish paths
 
 Add:
-- Validate Vector Map Document
+- Validate Vector Map
 - Publish `tools.vector-map-editor`
-- point/style/fill diagnostics
+- feature/geometry diagnostics
 
-## JSON Contract Owned By This Tool
-Owned JSON is the vector-map-editor payload. Required field is `vectorMapDocument`; no other top-level fields are allowed. The vector map document owns map dimensions, background, objects, object kinds, styles, transforms, and points.
+## JSON Schema/Input Contract Currently Expected
+Tool receives validated payload and owns behavior for vector map document. Current contract baseline: `tools/schemas/tools/vector-map-editor.schema.json` (Vector Map Editor Payload).
+Required keys: `vectorMapDocument`.
+Optional keys: none identified for this contract.
 
-## Publish Output
-Publish only to `tools.vector-map-editor`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
+Tool-owned JSON responsibilities:
+- import/load: parse incoming vector map document and reject it before mutation when invalid
+- validate: apply the current vector map document contract before export, copy, or publish
+- edit/process: mutate only vector map document fields owned by Vector Map Editor
+- export/save: serialize the validated vector map document as the tools.vector-map-editor output shape
+- publish: write only the validated tools.vector-map-editor value produced by Vector Map Editor
+- copy/create payload: create copied payload text from the validated vector map document, not from unvalidated draft UI state
 
-## Invalid JSON Behavior
+## Valid JSON Behavior
+- accepts the schema-defined vector map document
+- keeps feature/geometry edits inside the vector map payload
+- publishes only validated vector map JSON
+
+## Invalid JSON Rejection Behavior
 - malformed JSON
-- missing `vectorMapDocument`
-- nonnumeric map dimensions or points
-- objects without name/kind/style/points
-- closed objects without fill
+- payload shape outside `vector-map-editor.schema.json`
+- invalid feature/geometry data
 - unsupported top-level fields
 
-## Manual Test Plan
-- Create or load a vector map document.
-- Add/edit an object, change style/points, and export JSON.
-- Try missing `vectorMapDocument`, nonnumeric points, and closed objects without fill; publish must stay blocked.
+## Published Output
+Published Output:
+```jsonc
+tools.vector-map-editor = {
+  "vectorMapDocument": "jsonValue"
+}
+```
+
+## Playwright Expectations
+- load `tools/Vector Map Editor/index.html` without console errors
+- edit geometry and confirm output JSON updates
+- reject invalid vector map JSON
+
+## Manual Test Expectations
+- Open `tools/Vector Map Editor/index.html` and confirm geometry controls render.
+- Edit a vector feature/geometry, validate, export, and re-import.
+- Try malformed JSON and invalid geometry; each must block publish.
+
+## Known Gaps
+- Geometry validation should identify the failing feature.
+- Publish should be gated by map validation.
+
+## Rebuild Order Priority
+core-10: rebuild in the core tool lane after earlier priorities are stable.

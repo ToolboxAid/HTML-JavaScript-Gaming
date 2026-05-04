@@ -1,75 +1,100 @@
 # Asset Pipeline Reengineering Design
 
-Task: PR_26124_023-finalize-tool-design-docs
+Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-03
 Source folder: `tools/Asset Pipeline`
 Publish target: `tools.asset-pipeline`
 
 ## Tool Purpose
-Pipeline payload validation and normalization. Asset Pipeline owns `pipelinePayload`, normalized pipeline output, and publish to `tools.asset-pipeline`.
+Asset Pipeline owns pipeline payload import, validation, processing/normalization, export, and publish to `tools.asset-pipeline`.
 
-## Exact Folder/Files Inspected
+## Folder/Files Inspected
 - `tools/Asset Pipeline/how_to_use.html`
 - `tools/Asset Pipeline/index.html`
 - `tools/Asset Pipeline/main.js`
 - `tools/Asset Pipeline/README.md`
 
-## Exact Current Controls Found
-- `tools/Asset Pipeline/index.html`: `button[button]#runAssetPipelineButton` - Run Pipeline
-- `tools/Asset Pipeline/index.html`: `button[button]#loadPipelineFromPresetButton` - Load Launch Preset
-- `tools/Asset Pipeline/index.html`: `button[button]#loadPipelineFromWorkspaceButton` - Load Workspace State
-- `tools/Asset Pipeline/index.html`: `button[button]#loadPipelineJsonFileButton` - Load JSON File
-- `tools/Asset Pipeline/index.html`: `input[file]#pipelineJsonFileInput` - pipelineJsonFileInput
-- `tools/Asset Pipeline/index.html`: `textarea#assetPipelineInput` - assetPipelineInput
-- `tools/Asset Pipeline/main.js`: `runAssetPipelineButton` via runButton
-- `tools/Asset Pipeline/main.js`: `loadPipelineFromPresetButton` via loadFromPresetButton
-- `tools/Asset Pipeline/main.js`: `loadPipelineFromWorkspaceButton` via loadFromWorkspaceButton
-- `tools/Asset Pipeline/main.js`: `loadPipelineJsonFileButton` via loadJsonFileButton
-- `tools/Asset Pipeline/main.js`: `pipelineJsonFileInput` via jsonFileInput
-- `tools/Asset Pipeline/main.js`: `assetPipelineStatus` via statusText
-- `tools/Asset Pipeline/main.js`: `assetPipelineInput` via input
-- `tools/Asset Pipeline/main.js`: `assetPipelineOutput` via output
+## Controls: Control -> Action -> JSON Effect
+| Control | Action | JSON effect |
+|---|---|---|
+| `tools/Asset Pipeline/index.html`: `input[file]#pipelineJsonFileInput` - pipelineJsonFileInput | Chooses a local file for asset pipeline payload import/load. | Replaces or merges tool-owned asset pipeline payload only after the import validates. |
+| `tools/Asset Pipeline/index.html`: `button[button]#runAssetPipelineButton` - Run Pipeline | Processes the current asset pipeline payload. | Updates tool-owned derived data/report fields that must validate before tools.asset-pipeline publish. |
+| `tools/Asset Pipeline/index.html`: `button[button]#loadPipelineFromPresetButton` - Load Launch Preset | Starts asset pipeline payload import/load. | Reads incoming JSON into the tool-owned asset pipeline payload only after validation succeeds. |
+| `tools/Asset Pipeline/index.html`: `button[button]#loadPipelineFromWorkspaceButton` - Load Workspace State | Starts asset pipeline payload import/load. | Reads incoming JSON into the tool-owned asset pipeline payload only after validation succeeds. |
+| `tools/Asset Pipeline/index.html`: `button[button]#loadPipelineJsonFileButton` - Load JSON File | Starts asset pipeline payload import/load. | Reads incoming JSON into the tool-owned asset pipeline payload only after validation succeeds. |
+| `tools/Asset Pipeline/index.html`: `textarea#assetPipelineInput` - assetPipelineInput | Edits the current asset pipeline payload through `assetPipelineInput`. | Updates draft asset pipeline payload data and requires validation before tools.asset-pipeline publish. |
 
-## Current Panels And Surfaces Found
-- `tools/Asset Pipeline/index.html`: `.debug-tool-shell`
+## Panels And Surfaces Found
+- `tools/Asset Pipeline/how_to_use.html`: `.tools-platform-surface`
 - `tools/Asset Pipeline/index.html`: `.app-shell`
-- `tools/Asset Pipeline/index.html`: `.panel`
-- `tools/Asset Pipeline/index.html`: `.debug-tool-panel`
 - `tools/Asset Pipeline/index.html`: `.debug-tool-grid`
+- `tools/Asset Pipeline/index.html`: `.debug-tool-panel`
+- `tools/Asset Pipeline/index.html`: `.debug-tool-shell`
+- `tools/Asset Pipeline/index.html`: `.panel`
 
-## Exact Current Functions And Classes
-- `tools/Asset Pipeline/main.js`: function appendDomainRecord; function appendDomainRecordsFromCatalogEntries; function appendDomainRecordsFromToolIntegration; function applyLaunchContextToPayload; function bootAssetPipelineTool; function buildCatalogPathCandidates; function buildPipelinePayloadFromWorkspace; function buildPresetLoadedStatus; function buildPresetLoadedWithContextStatus; function cloneJson; function createEmptyDomainInputs; function deriveGameIdFromManifest; function extractPipelinePayloadFromSource; function getInputPayload; function inferDomainFromCatalogKind; function inferSourceToolIdForDomain; function loadPipelineFromJsonFile; function loadPipelineFromWorkspaceState; function loadPipelinePayloadIntoInput; function normalizeAssetId; function normalizeCatalogPath; function normalizeExplicitCatalogPath; function normalizeSamplePresetPath; function normalizeText; function parseJsonObjectString; function readActiveProjectManifest; function readLaunchContextFromQuery; function readWorkspaceAssetCatalog; function rewrite; function runPipeline; function setInputValue; function setOutput; function setStatus; function toSlug; function tryLoadPresetFromQuery; method applyProjectState; method captureProjectState; method getApi; method registerToolBootContract
+## Current Component/Class/Function Inventory
+- `tools/Asset Pipeline/main.js`: appendDomainRecord; appendDomainRecordsFromCatalogEntries; appendDomainRecordsFromToolIntegration; applyLaunchContextToPayload; applyProjectState; bootAssetPipelineTool; buildCatalogPathCandidates; buildPipelinePayloadFromWorkspace; buildPresetLoadedStatus; buildPresetLoadedWithContextStatus; captureProjectState; cloneJson; createEmptyDomainInputs; deriveGameIdFromManifest; extractPipelinePayloadFromSource; getApi; getInputPayload; inferDomainFromCatalogKind; inferSourceToolIdForDomain; loadPipelineFromJsonFile; loadPipelineFromWorkspaceState; loadPipelinePayloadIntoInput; normalizeAssetId; normalizeCatalogPath; normalizeExplicitCatalogPath; normalizeSamplePresetPath; normalizeText; parseJsonObjectString; readActiveProjectManifest; readLaunchContextFromQuery; readWorkspaceAssetCatalog; registerToolBootContract; rewrite; runPipeline; setInputValue; setOutput; setStatus; toSlug; tryLoadPresetFromQuery
 
 ## Target Controls
 Keep:
-- Run Pipeline
-- Load Launch Preset
-- Load JSON File
-- pipeline JSON textarea
-- output report
+- pipeline input fields
+- processing/action buttons
+- output/report panels
 
 Remove or rename:
-- `Load Workspace State` as a source of nested tool JSON truth
+- implicit processing that changes JSON before validation
 
 Add:
 - Validate Pipeline Payload
-- Export normalized pipeline JSON
 - Publish `tools.asset-pipeline`
+- step-level pipeline errors
 
-## JSON Contract Owned By This Tool
-Owned JSON is the asset-pipeline payload. Required field is `pipelinePayload`; no other top-level fields are allowed. Pipeline internals are derived from this one payload and the tool controls that load, run, and export it.
+## JSON Schema/Input Contract Currently Expected
+Tool receives validated payload and owns behavior for asset pipeline payload. Current contract baseline: `tools/schemas/tools/asset-pipeline.schema.json` (asset-pipeline Payload).
+Required keys: `pipelinePayload`.
+Optional keys: none identified for this contract.
 
-## Publish Output
-Publish only to `tools.asset-pipeline`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
+Tool-owned JSON responsibilities:
+- import/load: parse incoming asset pipeline payload and reject it before mutation when invalid
+- validate: apply the current asset pipeline payload contract before export, copy, or publish
+- edit/process: mutate only asset pipeline payload fields owned by Asset Pipeline
+- export/save: serialize the validated asset pipeline payload as the tools.asset-pipeline output shape
+- publish: write only the validated tools.asset-pipeline value produced by Asset Pipeline
+- copy/create payload: create copied payload text from the validated asset pipeline payload, not from unvalidated draft UI state
 
-## Invalid JSON Behavior
+## Valid JSON Behavior
+- accepts the schema-defined asset pipeline payload
+- keeps processing output inside the tool-owned payload
+- exports the normalized pipeline result after validation
+
+## Invalid JSON Rejection Behavior
 - malformed JSON
-- missing `pipelinePayload`
-- `pipelinePayload` that cannot be normalized by the pipeline runner
+- payload shape outside `asset-pipeline.schema.json`
+- pipeline steps/artifacts that fail required fields
 - unsupported top-level fields
 
-## Manual Test Plan
-- Load a launch preset and run the pipeline.
-- Load a JSON file matching `pipelinePayload` and export normalized output.
-- Try empty JSON, malformed JSON, and a payload without `pipelinePayload`; each must fail before export.
+## Published Output
+Published Output:
+```jsonc
+tools.asset-pipeline = {
+  "pipelinePayload": "jsonValue"
+}
+```
+
+## Playwright Expectations
+- load `tools/Asset Pipeline/index.html` without console errors
+- run the current pipeline controls against a valid payload
+- confirm invalid payloads block export/publish
+
+## Manual Test Expectations
+- Open `tools/Asset Pipeline/index.html` and run the existing processing flow.
+- Load a valid pipeline payload, validate it, and export/publish the normalized result.
+- Try malformed JSON and a payload missing required pipeline data; each must block publish.
+
+## Known Gaps
+- Processing controls need clearer separation between preview output and published JSON.
+- Pipeline validation should identify the failing step or artifact.
+
+## Rebuild Order Priority
+core-03: rebuild in the core tool lane after earlier priorities are stable.

@@ -1,68 +1,97 @@
 # 3D JSON Payload Reengineering Design
 
-Task: PR_26124_023-finalize-tool-design-docs
+Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-11
 Source folder: `tools/3D JSON Payload`
 Publish target: `tools.3d-json-payload`
 
 ## Tool Purpose
-3D map payload normalization. 3D JSON Payload owns `mapPayload`, normalization, invalid JSON rejection, export, and publish to `tools.3d-json-payload`.
+3D JSON Payload owns map payload import, validation, normalization, export, and publish to `tools.3d-json-payload`.
 
-## Exact Folder/Files Inspected
+## Folder/Files Inspected
 - `tools/3D JSON Payload/how_to_use.html`
 - `tools/3D JSON Payload/index.html`
 - `tools/3D JSON Payload/main.js`
 - `tools/3D JSON Payload/README.md`
 
-## Exact Current Controls Found
-- `tools/3D JSON Payload/index.html`: `button[button]#normalize3dMapButton` - Normalize JSON Payload
-- `tools/3D JSON Payload/index.html`: `button[button]#openHowToUse3dMapButton` - How to Use
-- `tools/3D JSON Payload/index.html`: `textarea#map3dInput` - map3dInput
-- `tools/3D JSON Payload/main.js`: `normalize3dMapButton` via normalizeButton
-- `tools/3D JSON Payload/main.js`: `openHowToUse3dMapButton` via howToUseButton
-- `tools/3D JSON Payload/main.js`: `map3dStatus` via statusText
-- `tools/3D JSON Payload/main.js`: `map3dInput` via input
-- `tools/3D JSON Payload/main.js`: `map3dOutput` via output
+## Controls: Control -> Action -> JSON Effect
+| Control | Action | JSON effect |
+|---|---|---|
+| `tools/3D JSON Payload/index.html`: `button[button]#normalize3dMapButton` - Normalize JSON Payload | Processes the current 3D JSON map payload. | Updates tool-owned derived data/report fields that must validate before tools.3d-json-payload publish. |
+| `tools/3D JSON Payload/index.html`: `button[button]#openHowToUse3dMapButton` - How to Use | Starts 3D JSON map payload import/load. | Reads incoming JSON into the tool-owned 3D JSON map payload only after validation succeeds. |
+| `tools/3D JSON Payload/index.html`: `textarea#map3dInput` - map3dInput | Edits the current 3D JSON map payload through `map3dInput`. | Updates draft 3D JSON map payload data and requires validation before tools.3d-json-payload publish. |
 
-## Current Panels And Surfaces Found
-- `tools/3D JSON Payload/index.html`: `.debug-tool-shell`
+## Panels And Surfaces Found
+- `tools/3D JSON Payload/how_to_use.html`: `.tools-platform-surface`
 - `tools/3D JSON Payload/index.html`: `.app-shell`
-- `tools/3D JSON Payload/index.html`: `.panel`
-- `tools/3D JSON Payload/index.html`: `.debug-tool-panel`
 - `tools/3D JSON Payload/index.html`: `.debug-tool-grid`
+- `tools/3D JSON Payload/index.html`: `.debug-tool-panel`
+- `tools/3D JSON Payload/index.html`: `.debug-tool-shell`
+- `tools/3D JSON Payload/index.html`: `.panel`
 
-## Exact Current Functions And Classes
-- `tools/3D JSON Payload/main.js`: function boot3dMapEditor; function buildPresetLoadedStatus; function normalizeMapPayload; function normalizeMapPayloadAction; function normalizeSamplePresetPath; function sanitizeNumber; function setStatus; function tryLoadPresetFromQuery; method getApi; method registerToolBootContract
+## Current Component/Class/Function Inventory
+- `tools/3D JSON Payload/main.js`: boot3dMapEditor; buildPresetLoadedStatus; getApi; normalizeMapPayload; normalizeMapPayloadAction; normalizeSamplePresetPath; registerToolBootContract; sanitizeNumber; setStatus; tryLoadPresetFromQuery
 
 ## Target Controls
 Keep:
-- Normalize JSON Payload
-- How to Use
-- map input textarea
-- normalized output panel
+- payload input controls
+- normalize/validate controls
+- preview/report controls
 
 Remove or rename:
-- none identified in the current folder
+- normalization output that skips schema validation
 
 Add:
-- Load 3D Payload JSON
-- Export normalized map payload
+- Validate 3D Payload
 - Publish `tools.3d-json-payload`
+- field-level payload diagnostics
 
-## JSON Contract Owned By This Tool
-Owned JSON is the 3d-json-payload payload. Required field is `mapPayload`; no other top-level fields are allowed. The normalized output is derived only from the map payload text loaded in this folder.
+## JSON Schema/Input Contract Currently Expected
+Tool receives validated payload and owns behavior for 3D JSON map payload. Current contract baseline: `tools/schemas/tools/3d-json-payload.schema.json` (3d-json-payload Payload).
+Required keys: `mapPayload`.
+Optional keys: none identified for this contract.
 
-## Publish Output
-Publish only to `tools.3d-json-payload`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
+Tool-owned JSON responsibilities:
+- import/load: parse incoming 3D JSON map payload and reject it before mutation when invalid
+- validate: apply the current 3D JSON map payload contract before export, copy, or publish
+- edit/process: mutate only 3D JSON map payload fields owned by 3D JSON Payload
+- export/save: serialize the validated 3D JSON map payload as the tools.3d-json-payload output shape
+- publish: write only the validated tools.3d-json-payload value produced by 3D JSON Payload
+- copy/create payload: create copied payload text from the validated 3D JSON map payload, not from unvalidated draft UI state
 
-## Invalid JSON Behavior
+## Valid JSON Behavior
+- accepts the schema-defined 3D map payload
+- normalizes data only inside the tool-owned payload
+- publishes only validated 3D JSON
+
+## Invalid JSON Rejection Behavior
 - malformed JSON
-- missing `mapPayload`
-- map payload values the normalizer cannot process
+- payload shape outside `3d-json-payload.schema.json`
+- invalid map/object fields
 - unsupported top-level fields
 
-## Manual Test Plan
-- Paste a valid `mapPayload` document and normalize it.
-- Export/copy the normalized output.
-- Try malformed JSON and JSON without `mapPayload`; output and publish must stay blocked.
+## Published Output
+Published Output:
+```jsonc
+tools.3d-json-payload = {
+  "mapPayload": "jsonValue"
+}
+```
+
+## Playwright Expectations
+- load `tools/3D JSON Payload/index.html` without console errors
+- validate/normalize a valid payload
+- reject invalid 3D payload JSON
+
+## Manual Test Expectations
+- Open `tools/3D JSON Payload/index.html` and confirm payload/report controls render.
+- Load a valid 3D payload, normalize, validate, export, and publish.
+- Try malformed JSON and an invalid map field; each must block publish.
+
+## Known Gaps
+- Normalization and publish need distinct states.
+- Diagnostics should identify the failing payload path.
+
+## Rebuild Order Priority
+core-11: rebuild in the core tool lane after earlier priorities are stable.

@@ -1,116 +1,131 @@
 # Skin Editor Reengineering Design
 
-Task: PR_26124_023-finalize-tool-design-docs
+Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-06
 Source folder: `tools/Skin Editor`
 Publish target: `tools.skin-editor`
 
 ## Tool Purpose
-Primitive skin editing. Skin Editor owns `skin`, optional `projectId`, object ordering, color/style editing, export, and publish to `tools.skin-editor`.
+Skin Editor owns primitive skin import, validation, editing, export, and publish to `tools.skin-editor`.
 
-## Exact Folder/Files Inspected
+## Folder/Files Inspected
 - `tools/Skin Editor/how_to_use.html`
 - `tools/Skin Editor/index.html`
 - `tools/Skin Editor/main.js`
 - `tools/Skin Editor/README.md`
 - `tools/Skin Editor/skinEditor.css`
 
-## Exact Current Controls Found
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorLoadButton` - Load Active Skin
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorSaveOverrideButton` - Apply Skin Override
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorClearOverrideButton` - Clear Override
-- `tools/Skin Editor/index.html`: `input[file]#skinEditorImportInput` - skinEditorImportInput
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorExportButton` - Export Skin JSON
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorOpenGameButton` - Open Game
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorHowToUseButton` - How to Use
-- `tools/Skin Editor/index.html`: `select#skinEditorNewShapeType` - Arc Capsule Circle HUD Color Line Oval Polygon Rectangle Ring Sector Square Star Triangle Walls (1-4) ---------------...
-- `tools/Skin Editor/index.html`: `input[text]#skinEditorNewShapeName` - example: paddle, hudText, hudPanel
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorAddShapeButton` - Add
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorRenameObjectButton` - Rename
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorDeleteObjectButton` - Delete
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorFlattenObjectsButton` - Flatten
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorMoveObjectUpButton` - Move Up
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorMoveObjectDownButton` - Move Down
-- `tools/Skin Editor/index.html`: `textarea#skinEditorInput` - skinEditorInput
-- `tools/Skin Editor/index.html`: `button[button]#skinEditorSyncVisualButton` - Sync Visual From JSON
-- `tools/Skin Editor/main.js`: `skinEditorLoadButton` via loadButton
-- `tools/Skin Editor/main.js`: `skinEditorSaveOverrideButton` via saveOverrideButton
-- `tools/Skin Editor/main.js`: `skinEditorClearOverrideButton` via clearOverrideButton
-- `tools/Skin Editor/main.js`: `skinEditorImportInput` via importInput
-- `tools/Skin Editor/main.js`: `skinEditorExportButton` via exportButton
-- `tools/Skin Editor/main.js`: `skinEditorOpenGameButton` via openGameButton
-- `tools/Skin Editor/main.js`: `skinEditorHowToUseButton` via howToUseButton
-- `tools/Skin Editor/main.js`: `skinEditorSyncVisualButton` via syncVisualButton
-- `tools/Skin Editor/main.js`: `skinEditorStatus` via statusText
-- `tools/Skin Editor/main.js`: `skinEditorInput` via input
-- `tools/Skin Editor/main.js`: `skinEditorSummary` via summary
-- `tools/Skin Editor/main.js`: `skinEditorContextGame` via contextGame
-- `tools/Skin Editor/main.js`: `skinEditorContextSchema` via contextSchema
-- `tools/Skin Editor/main.js`: `skinEditorContextSource` via contextSource
-- `tools/Skin Editor/main.js`: `skinEditorNewShapeType` via newShapeType
-- `tools/Skin Editor/main.js`: `skinEditorNewShapeName` via newShapeName
-- `tools/Skin Editor/main.js`: `skinEditorAddShapeButton` via addShapeButton
-- `tools/Skin Editor/main.js`: `skinEditorRenameObjectButton` via renameObjectButton
-- `tools/Skin Editor/main.js`: `skinEditorDeleteObjectButton` via deleteObjectButton
-- `tools/Skin Editor/main.js`: `skinEditorFlattenObjectsButton` via flattenObjectsButton
-- `tools/Skin Editor/main.js`: `skinEditorMoveObjectUpButton` via moveObjectUpButton
-- `tools/Skin Editor/main.js`: `skinEditorMoveObjectDownButton` via moveObjectDownButton
-- `tools/Skin Editor/main.js`: `skinEditorObjectList` via objectList
-- `tools/Skin Editor/main.js`: `skinEditorPaletteList` via paletteList
-- `tools/Skin Editor/main.js`: `skinEditorSelectedObjectName` via selectedObjectName
-- `tools/Skin Editor/main.js`: `skinEditorSelectedObjectColor` via selectedObjectColor
-- `tools/Skin Editor/main.js`: `skinEditorObjectControls` via objectControls
-- `tools/Skin Editor/main.js`: `skinEditorPreviewCanvas` via previewCanvas
-- `tools/Skin Editor/main.js`: `skinEditorPreviewNote` via previewNote
+## Controls: Control -> Action -> JSON Effect
+| Control | Action | JSON effect |
+|---|---|---|
+| `tools/Skin Editor/index.html`: `input[file]#skinEditorImportInput` - skinEditorImportInput | Chooses a local file for skin payload import/load. | Replaces or merges tool-owned skin payload only after the import validates. |
+| `tools/Skin Editor/index.html`: `input[text]#skinEditorNewShapeName` - example: paddle, hudText, hudPanel | Edits the active skin primitive or property field. | Updates the draft skin payload field represented by `skinEditorNewShapeName` before validation. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorLoadButton` - Load Active Skin | Starts skin payload import/load. | Reads incoming JSON into the tool-owned skin payload only after validation succeeds. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorSaveOverrideButton` - Apply Skin Override | Exports the validated skin payload. | Serializes the validated skin payload as the tools.skin-editor output shape. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorClearOverrideButton` - Clear Override | Removes or clears the selected skin primitive or property. | Deletes that data from the draft skin payload; publish waits for validation. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorExportButton` - Export Skin JSON | Exports the validated skin payload. | Serializes the validated skin payload as the tools.skin-editor output shape. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorOpenGameButton` - Open Game | Starts skin payload import/load. | Reads incoming JSON into the tool-owned skin payload only after validation succeeds. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorHowToUseButton` - How to Use | Publishes or applies the validated skin payload. | Writes the validated output shape to tools.skin-editor. |
+| `tools/Skin Editor/index.html`: `select#skinEditorNewShapeType` - Arc Capsule Circle HUD Color Line Oval Polygon Rectangle Ring Sector Square Star Triangle Walls (1-4) -------------------- Flattened | Edits the active skin primitive or property field. | Updates the draft skin payload field represented by `skinEditorNewShapeType` before validation. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorAddShapeButton` - Add | Adds a new skin primitive or property. | Appends schema-owned data to the draft skin payload; publish waits for validation. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorRenameObjectButton` - Rename | Renames the selected skin primitive or property. | Updates the draft skin payload name/id field before validation. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorDeleteObjectButton` - Delete | Removes or clears the selected skin primitive or property. | Deletes that data from the draft skin payload; publish waits for validation. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorFlattenObjectsButton` - Flatten | Triggers the current skin payload UI action for `Flatten`. | May update draft skin payload data; tools.skin-editor publish must wait for validation. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorMoveObjectUpButton` - Move Up | Triggers the current skin payload UI action for `Move Up`. | May update draft skin payload data; tools.skin-editor publish must wait for validation. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorMoveObjectDownButton` - Move Down | Triggers the current skin payload UI action for `Move Down`. | May update draft skin payload data; tools.skin-editor publish must wait for validation. |
+| `tools/Skin Editor/index.html`: `textarea#skinEditorInput` - skinEditorInput | Edits the current skin payload through `skinEditorInput`. | Updates draft skin payload data and requires validation before tools.skin-editor publish. |
+| `tools/Skin Editor/index.html`: `button[button]#skinEditorSyncVisualButton` - Sync Visual From JSON | Triggers the current skin payload UI action for `Sync Visual From JSON`. | May update draft skin payload data; tools.skin-editor publish must wait for validation. |
 
-## Current Panels And Surfaces Found
-- `tools/Skin Editor/index.html`: `.debug-tool-shell`
+## Panels And Surfaces Found
+- `tools/Skin Editor/how_to_use.html`: `.tools-platform-surface`
 - `tools/Skin Editor/index.html`: `.app-shell`
-- `tools/Skin Editor/index.html`: `.panel`
 - `tools/Skin Editor/index.html`: `.debug-tool-panel`
-- `tools/Skin Editor/index.html`: `.skin-editor-object-list`
+- `tools/Skin Editor/index.html`: `.debug-tool-shell`
+- `tools/Skin Editor/index.html`: `.panel`
 - `tools/Skin Editor/index.html`: `.skin-editor-canvas-panel`
 - `tools/Skin Editor/index.html`: `.skin-editor-canvas-wrap`
-- `tools/Skin Editor/index.html`: `.skin-editor-preview-canvas`
-- `tools/Skin Editor/index.html`: `.skin-editor-palette-list`
+- `tools/Skin Editor/index.html`: `.skin-editor-chip`
+- `tools/Skin Editor/index.html`: `.skin-editor-column`
+- `tools/Skin Editor/index.html`: `.skin-editor-column--left`
+- `tools/Skin Editor/index.html`: `.skin-editor-column--right`
+- `tools/Skin Editor/index.html`: `.skin-editor-context`
+- `tools/Skin Editor/index.html`: `.skin-editor-empty`
+- `tools/Skin Editor/index.html`: `.skin-editor-field`
+- `tools/Skin Editor/index.html`: `.skin-editor-json`
 - `tools/Skin Editor/index.html`: `.skin-editor-list`
+- `tools/Skin Editor/index.html`: `.skin-editor-object-list`
+- `tools/Skin Editor/index.html`: `.skin-editor-object-order-actions`
+- `tools/Skin Editor/index.html`: `.skin-editor-palette-list`
+- `tools/Skin Editor/index.html`: `.skin-editor-preview-canvas`
+- `tools/Skin Editor/index.html`: `.skin-editor-section`
+- `tools/Skin Editor/index.html`: `.skin-editor-section--shape-add`
+- `tools/Skin Editor/index.html`: `.skin-editor-shape-add-row`
+- `tools/Skin Editor/index.html`: `.skin-editor-workbench`
 
-## Exact Current Functions And Classes
-- `tools/Skin Editor/main.js`: function addShapeFromControls; function applyPaletteColorToSelectedObject; function applySkinOverride; function bindEvents; function bootSkinEditor; function buildNormalizedSkinDocument; function clampNumericProperty; function clearSkinOverride; function createBasicField; function createShapePreset; function deepClone; function deleteObjectFromControls; function downloadTextFile; function drawObjectInPreview; function drawRegularPolygonPath; function drawSelectedObjectPreview; function drawStarPath; function ensureSelectedObjectKey; function ensureUniqueObjectKey; function exportSkinJson; function extractPresetPayload; function extractRawSkinForValidation; function flattenSelectedObjects; function formatSummary; function getGameOptionById; function getObjectKeys; function getRawSkinShapeIssues; function getSelectedGameOption; function getSelectedObjectColorPropertyKeys; function getSelectedObjectColorValue; function getSelectedObjectKeysInObjectOrder; function getSelectedShapeTypeValue; function getSkinShapeIssues; function getValidSelectedObjectKeys; function hasObjectKey; function importSkinJsonFromFile; function inferShapeTypeFromObjectKey; function inferShapeTypeFromSelectedObject; function isFlattenIneligibleObjectKey; function isPositiveDimensionKey; function loadActiveSkinForSelectedGame; function loadPresetFromQuery; function moveSelectedObjectByOffset; function normalizeObjectKey; function normalizeObjectKeyPreserveCase; function normalizeSamplePresetPath; function normalizeText; function numberStep; function openSelectedGame; function parseEditorSkin; function parseHexForPicker; function renameObjectFromControls; function renderObjectControls; function renderObjectList; function renderPaletteList; function renderWorkbench; function resolveActiveGameOption; function resolveCurrentSkinDocument; function sanitizePositiveDimensionsInDocument; function selectObjectKey; function setCurrentSkinDocument; function setObjectPropertyValue; function setObjectSelected; function setPreviewNote; function setSelectedObjectColorLabel; function setSelectedObjectNameLabel; function setStatus; function setSummary; function syncSelectedObjectUiFromSelection; function syncShapeTypeControlFromSelection; function syncVisualFromJson; function toDownloadName; function toObject; function toObjectCentricSkinDocument; function updateAddShapeButtonState; function updateContextChips; function updateEditorFromState; function updateFlattenButtonState; function updateObjectOrderButtonState; function wrapAngleDegrees; method destroy; method getApi
+## Current Component/Class/Function Inventory
+- `tools/Skin Editor/main.js`: addShapeFromControls; applyPaletteColorToSelectedObject; applySkinOverride; bindEvents; bootSkinEditor; buildNormalizedSkinDocument; clampNumericProperty; clearSkinOverride; createBasicField; createShapePreset; deepClone; deleteObjectFromControls; downloadTextFile; drawObjectInPreview; drawRegularPolygonPath; drawSelectedObjectPreview; drawStarPath; ensureSelectedObjectKey; ensureUniqueObjectKey; exportSkinJson; extractPresetPayload; extractRawSkinForValidation; flattenSelectedObjects; formatSummary; getApi; getGameOptionById; getObjectKeys; getRawSkinShapeIssues; getSelectedGameOption; getSelectedObjectColorPropertyKeys; getSelectedObjectColorValue; getSelectedObjectKeysInObjectOrder; getSelectedShapeTypeValue; getSkinShapeIssues; getValidSelectedObjectKeys; hasObjectKey; importSkinJsonFromFile; inferShapeTypeFromObjectKey; inferShapeTypeFromSelectedObject; isFlattenIneligibleObjectKey; isPositiveDimensionKey; loadActiveSkinForSelectedGame; loadPresetFromQuery; moveSelectedObjectByOffset; normalizeObjectKey; normalizeObjectKeyPreserveCase; normalizeSamplePresetPath; normalizeText; numberStep; openSelectedGame; parseEditorSkin; parseHexForPicker; registerToolBootContract; renameObjectFromControls; renderObjectControls; renderObjectList; renderPaletteList; renderWorkbench; resolveActiveGameOption; resolveCurrentSkinDocument; sanitizePositiveDimensionsInDocument; selectObjectKey; setCurrentSkinDocument; setObjectPropertyValue; setObjectSelected; setPreviewNote; setSelectedObjectColorLabel; setSelectedObjectNameLabel; setStatus; setSummary; syncSelectedObjectUiFromSelection; syncShapeTypeControlFromSelection; syncVisualFromJson; toDownloadName; toObject; toObjectCentricSkinDocument; updateAddShapeButtonState; updateContextChips; updateEditorFromState; updateFlattenButtonState; updateObjectOrderButtonState; wrapAngleDegrees
 
 ## Target Controls
 Keep:
-- Load Active Skin
-- Apply Skin Override
-- Clear Override
-- Export Skin JSON
-- shape type/name controls
-- add/rename/delete/flatten/move object controls
-- Sync Visual From JSON
+- skin primitive controls
+- property editing controls
+- preview/export controls
 
 Remove or rename:
-- `Open Game` as a required validation path for Skin Editor JSON
+- implicit publish from preview-only changes
 
 Add:
-- visible Import Skin JSON action
-- Validate Skin JSON
+- Validate Skin
 - Publish `tools.skin-editor`
+- primitive/property validation messages
 
-## JSON Contract Owned By This Tool
-Owned JSON is the skin-editor payload. Optional top-level fields are `projectId` and `skin`; no other top-level fields are allowed. The `skin` object owns shape/object definitions, order, names, colors, and primitive geometry edited in this folder.
+## JSON Schema/Input Contract Currently Expected
+Tool receives validated payload and owns behavior for skin payload. Current contract baseline: `tools/schemas/tools/skin-editor.schema.json` (skin-editor Payload).
+Required keys: none assigned for this reference folder.
+Optional keys: `projectId`, `skin`.
 
-## Publish Output
-Publish only to `tools.skin-editor`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
+Tool-owned JSON responsibilities:
+- import/load: parse incoming skin payload and reject it before mutation when invalid
+- validate: apply the current skin payload contract before export, copy, or publish
+- edit/process: mutate only skin payload fields owned by Skin Editor
+- export/save: serialize the validated skin payload as the tools.skin-editor output shape
+- publish: write only the validated tools.skin-editor value produced by Skin Editor
+- copy/create payload: create copied payload text from the validated skin payload, not from unvalidated draft UI state
 
-## Invalid JSON Behavior
+## Valid JSON Behavior
+- accepts the schema-defined skin payload
+- keeps primitive edits inside the tool-owned skin object
+- publishes only validated skin JSON
+
+## Invalid JSON Rejection Behavior
 - malformed JSON
-- `skin` that is missing when publishing a skin
-- invalid primitive/object geometry
-- missing selected object values during visual sync
+- payload shape outside `skin-editor.schema.json`
+- missing required skin primitive/property data
 - unsupported top-level fields
 
-## Manual Test Plan
-- Load or paste a valid skin JSON payload.
-- Add, rename, move, recolor, and export a shape.
-- Try malformed JSON, a missing `skin` object, and invalid object geometry; publish must stay blocked.
+## Published Output
+Published Output:
+```jsonc
+tools.skin-editor = {
+  "projectId": "string", // optional
+  "skin": "jsonValue" // optional
+}
+```
+
+## Playwright Expectations
+- load `tools/Skin Editor/index.html` without console errors
+- edit a primitive/property and confirm output updates
+- reject invalid skin JSON
+
+## Manual Test Expectations
+- Open `tools/Skin Editor/index.html` and confirm the skin editor and preview surfaces render.
+- Edit a skin primitive/property, validate, export, and re-import.
+- Try malformed JSON and an invalid primitive/property; each must block publish.
+
+## Known Gaps
+- Preview edits need explicit validation before publish.
+- Primitive validation should identify the exact failing field.
+
+## Rebuild Order Priority
+core-06: rebuild in the core tool lane after earlier priorities are stable.

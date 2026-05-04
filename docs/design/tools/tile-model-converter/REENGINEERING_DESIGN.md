@@ -1,66 +1,97 @@
 # Tile Model Converter Reengineering Design
 
-Task: PR_26124_023-finalize-tool-design-docs
+Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-08
 Source folder: `tools/Tile Model Converter`
 Publish target: `tools.tile-model-converter`
 
 ## Tool Purpose
-Tile model conversion. Tile Model Converter owns `candidate`, `conversion`, conversion validation, normalized output, and publish to `tools.tile-model-converter`.
+Tile Model Converter owns candidate import, conversion validation, normalized output export, and publish to `tools.tile-model-converter`.
 
-## Exact Folder/Files Inspected
+## Folder/Files Inspected
 - `tools/Tile Model Converter/how_to_use.html`
 - `tools/Tile Model Converter/index.html`
 - `tools/Tile Model Converter/main.js`
 - `tools/Tile Model Converter/README.md`
 
-## Exact Current Controls Found
-- `tools/Tile Model Converter/index.html`: `button[button]#runConverterButton` - Run Conversion
-- `tools/Tile Model Converter/index.html`: `textarea#converterInput` - converterInput
-- `tools/Tile Model Converter/main.js`: `runConverterButton` via runButton
-- `tools/Tile Model Converter/main.js`: `converterStatus` via statusText
-- `tools/Tile Model Converter/main.js`: `converterInput` via input
-- `tools/Tile Model Converter/main.js`: `converterOutput` via output
+## Controls: Control -> Action -> JSON Effect
+| Control | Action | JSON effect |
+|---|---|---|
+| `tools/Tile Model Converter/index.html`: `button[button]#runConverterButton` - Run Conversion | Processes the current tile model conversion payload. | Updates tool-owned derived data/report fields that must validate before tools.tile-model-converter publish. |
+| `tools/Tile Model Converter/index.html`: `textarea#converterInput` - converterInput | Edits the current tile model conversion payload through `converterInput`. | Updates draft tile model conversion payload data and requires validation before tools.tile-model-converter publish. |
 
-## Current Panels And Surfaces Found
-- `tools/Tile Model Converter/index.html`: `.debug-tool-shell`
+## Panels And Surfaces Found
+- `tools/Tile Model Converter/how_to_use.html`: `.tools-platform-surface`
 - `tools/Tile Model Converter/index.html`: `.app-shell`
-- `tools/Tile Model Converter/index.html`: `.panel`
-- `tools/Tile Model Converter/index.html`: `.debug-tool-panel`
 - `tools/Tile Model Converter/index.html`: `.debug-tool-grid`
+- `tools/Tile Model Converter/index.html`: `.debug-tool-panel`
+- `tools/Tile Model Converter/index.html`: `.debug-tool-shell`
+- `tools/Tile Model Converter/index.html`: `.panel`
 
-## Exact Current Functions And Classes
-- `tools/Tile Model Converter/main.js`: function bootTileModelConverter; function buildPresetLoadedStatus; function getInputPayload; function normalizeSamplePresetPath; function runConversion; function setStatus; function tryLoadPresetFromQuery; method getApi; method registerToolBootContract
+## Current Component/Class/Function Inventory
+- `tools/Tile Model Converter/main.js`: bootTileModelConverter; buildPresetLoadedStatus; getApi; getInputPayload; normalizeSamplePresetPath; registerToolBootContract; runConversion; setStatus; tryLoadPresetFromQuery
 
 ## Target Controls
 Keep:
-- Run Converter
-- converter input textarea
-- converter output panel
+- candidate input controls
+- conversion action controls
+- result/report controls
 
 Remove or rename:
-- none identified in the current folder
+- conversion output that bypasses validation
 
 Add:
-- Load Converter JSON
-- Export Conversion JSON
+- Validate Conversion
 - Publish `tools.tile-model-converter`
+- candidate/result diagnostics
 
-## JSON Contract Owned By This Tool
-Owned JSON is the tile-model-converter payload. Required fields are `candidate` and `conversion`; no other top-level fields are allowed. Candidate input and conversion settings together produce the normalized conversion output.
+## JSON Schema/Input Contract Currently Expected
+Tool receives validated payload and owns behavior for tile model conversion payload. Current contract baseline: `tools/schemas/tools/tile-model-converter.schema.json` (tile-model-converter Payload).
+Required keys: `candidate`, `conversion`.
+Optional keys: none identified for this contract.
 
-## Publish Output
-Publish only to `tools.tile-model-converter`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
+Tool-owned JSON responsibilities:
+- import/load: parse incoming tile model conversion payload and reject it before mutation when invalid
+- validate: apply the current tile model conversion payload contract before export, copy, or publish
+- edit/process: mutate only tile model conversion payload fields owned by Tile Model Converter
+- export/save: serialize the validated tile model conversion payload as the tools.tile-model-converter output shape
+- publish: write only the validated tools.tile-model-converter value produced by Tile Model Converter
+- copy/create payload: create copied payload text from the validated tile model conversion payload, not from unvalidated draft UI state
 
-## Invalid JSON Behavior
+## Valid JSON Behavior
+- accepts schema-defined candidate/conversion data
+- produces normalized conversion output after validation
+- publishes only the validated conversion payload
+
+## Invalid JSON Rejection Behavior
 - malformed JSON
-- missing `candidate`
-- missing `conversion`
-- candidate/conversion shapes the converter cannot normalize
-- unsupported top-level fields
+- payload shape outside `tile-model-converter.schema.json`
+- invalid candidate data
+- conversion result outside the schema
 
-## Manual Test Plan
-- Paste a valid candidate/conversion payload and run conversion.
-- Export the normalized conversion result.
-- Try malformed JSON and payloads missing `candidate` or `conversion`; output and publish must stay blocked.
+## Published Output
+Published Output:
+```jsonc
+tools.tile-model-converter = {
+  "candidate": "jsonValue",
+  "conversion": "jsonValue"
+}
+```
+
+## Playwright Expectations
+- load `tools/Tile Model Converter/index.html` without console errors
+- run conversion for a valid candidate
+- reject invalid candidate JSON
+
+## Manual Test Expectations
+- Open `tools/Tile Model Converter/index.html` and confirm candidate/result surfaces render.
+- Load a valid candidate, run conversion, validate, export, and publish.
+- Try malformed JSON and an invalid candidate; each must block publish.
+
+## Known Gaps
+- Conversion diagnostics should identify source candidate problems.
+- Publish should be gated by conversion validation.
+
+## Rebuild Order Priority
+core-08: rebuild in the core tool lane after earlier priorities are stable.

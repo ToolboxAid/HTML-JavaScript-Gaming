@@ -1,194 +1,166 @@
 # Parallax Scene Studio Reengineering Design
 
-Task: PR_26124_023-finalize-tool-design-docs
+Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-09
 Source folder: `tools/Parallax Scene Studio`
 Publish target: `tools.parallax-editor`
 
 ## Tool Purpose
-Parallax scene authoring. Parallax Scene Studio owns `parallaxDocument`, optional `tilemapDocumentPath`, optional `vectorAssetSvgPath`, layer controls, validation, export, and publish to `tools.parallax-editor`.
+Parallax Scene Studio owns parallax document import, validation, layer editing, export, and publish to `tools.parallax-editor`.
 
-## Exact Folder/Files Inspected
+## Folder/Files Inspected
 - `tools/Parallax Scene Studio/how_to_use.html`
 - `tools/Parallax Scene Studio/index.html`
 - `tools/Parallax Scene Studio/main.js`
 - `tools/Parallax Scene Studio/parallaxEditor.css`
 - `tools/Parallax Scene Studio/README.md`
 
-## Exact Current Controls Found
-- `tools/Parallax Scene Studio/index.html`: `button[button]#newProjectButton` - New Project
-- `tools/Parallax Scene Studio/index.html`: `button[button]#loadProjectButton` - Load Project
-- `tools/Parallax Scene Studio/index.html`: `input[file]#loadProjectInput` - loadProjectInput
-- `tools/Parallax Scene Studio/index.html`: `button[button]#saveProjectButton` - Save Project
-- `tools/Parallax Scene Studio/index.html`: `button[button]#loadAssetRegistryButton` - Load Assets Registry
-- `tools/Parallax Scene Studio/index.html`: `input[file]#loadAssetRegistryInput` - loadAssetRegistryInput
-- `tools/Parallax Scene Studio/index.html`: `button[button]#saveAssetRegistryButton` - Save Assets Registry
-- `tools/Parallax Scene Studio/index.html`: `button[button]#simulateButton` - Simulate
-- `tools/Parallax Scene Studio/index.html`: `button[button]#playSimulationButton` - Play
-- `tools/Parallax Scene Studio/index.html`: `button[button]#pauseSimulationButton` - Pause
-- `tools/Parallax Scene Studio/index.html`: `button[button]#restartSimulationButton` - Restart Position
-- `tools/Parallax Scene Studio/index.html`: `button[button]#exitSimulationButton` - Exit Simulation
-- `tools/Parallax Scene Studio/index.html`: `button[button]#exportParallaxPatchButton` - Export Tilemap Patch
-- `tools/Parallax Scene Studio/index.html`: `button[button]#packageProjectButton` - Package Project
-- `tools/Parallax Scene Studio/index.html`: `input[text]#projectNameInput` - projectNameInput
-- `tools/Parallax Scene Studio/index.html`: `input[number]#mapWidthInput` - mapWidthInput
-- `tools/Parallax Scene Studio/index.html`: `input[number]#mapHeightInput` - mapHeightInput
-- `tools/Parallax Scene Studio/index.html`: `input[number]#tileSizeInput` - tileSizeInput
-- `tools/Parallax Scene Studio/index.html`: `button[button]#applyMapMetaButton` - Apply Map Meta
-- `tools/Parallax Scene Studio/index.html`: `input[text]#newLayerNameInput` - newLayerNameInput
-- `tools/Parallax Scene Studio/index.html`: `button[button]#addLayerButton` - Add Layer
-- `tools/Parallax Scene Studio/index.html`: `button[button]#removeLayerButton` - Remove Layer
-- `tools/Parallax Scene Studio/index.html`: `button[button]#duplicateLayerButton` - Duplicate
-- `tools/Parallax Scene Studio/index.html`: `button[button]#moveLayerUpButton` - Move Up
-- `tools/Parallax Scene Studio/index.html`: `button[button]#moveLayerDownButton` - Move Down
-- `tools/Parallax Scene Studio/index.html`: `input[range]#cameraXInput` - cameraXInput
-- `tools/Parallax Scene Studio/index.html`: `input[range]#cameraYInput` - cameraYInput
-- `tools/Parallax Scene Studio/index.html`: `button[button]` - + Parallax Layers
-- `tools/Parallax Scene Studio/index.html`: `button[button]` - + Preview Camera
-- `tools/Parallax Scene Studio/index.html`: `button[button]` - + Selected Layer
-- `tools/Parallax Scene Studio/index.html`: `button[button]` - + Image Assignment
-- `tools/Parallax Scene Studio/index.html`: `button[button]` - + Scroll + Repeat
-- `tools/Parallax Scene Studio/index.html`: `button[button]` - + Boundaries
-- `tools/Parallax Scene Studio/index.html`: `button[button]` - + Remediation
-- `tools/Parallax Scene Studio/index.html`: `input[text]#layerNameInput` - layerNameInput
-- `tools/Parallax Scene Studio/index.html`: `input[number]#layerDrawOrderInput` - layerDrawOrderInput
-- `tools/Parallax Scene Studio/index.html`: `input[number]#layerOpacityInput` - layerOpacityInput
-- `tools/Parallax Scene Studio/index.html`: `select#layerVisibleSelect` - Visible Hidden
-- `tools/Parallax Scene Studio/index.html`: `input[text]#layerImageSourceInput` - assets/backgrounds/clouds.png
-- `tools/Parallax Scene Studio/index.html`: `button[button]#applyImageSourceButton` - Apply Source
-- `tools/Parallax Scene Studio/index.html`: `input[file]#layerImageFileInput` - layerImageFileInput
-- `tools/Parallax Scene Studio/index.html`: `input[number]#scrollFactorXInput` - scrollFactorXInput
-- `tools/Parallax Scene Studio/index.html`: `input[number]#scrollFactorYInput` - scrollFactorYInput
-- `tools/Parallax Scene Studio/index.html`: `input[number]#offsetXInput` - offsetXInput
-- `tools/Parallax Scene Studio/index.html`: `input[number]#offsetYInput` - offsetYInput
-- `tools/Parallax Scene Studio/index.html`: `select#repeatXSelect` - Repeat No Repeat
-- `tools/Parallax Scene Studio/index.html`: `select#repeatYSelect` - Repeat No Repeat
-- `tools/Parallax Scene Studio/index.html`: `select#wrapModeSelect` - Wrap Clamp
-- `tools/Parallax Scene Studio/index.html`: `button[button]#applyLayerSettingsButton` - Apply Layer Settings
-- `tools/Parallax Scene Studio/index.html`: `button[button]#inspectRemediationButton` - Inspect Issues
-- `tools/Parallax Scene Studio/index.html`: `button[button]#jumpToProblemButton` - Jump to Problem
-- `tools/Parallax Scene Studio/index.html`: `button[button]#applyRemediationButton` - Apply Suggested Fix
-- `tools/Parallax Scene Studio/index.html`: `button[button]#refreshExperienceButton` - Refresh Pipeline View
-- `tools/Parallax Scene Studio/index.html`: `button[button]#refreshDebugVisualizationButton` - Refresh Debug View
-- `tools/Parallax Scene Studio/main.js`: `newProjectButton` via newProjectButton
-- `tools/Parallax Scene Studio/main.js`: `loadProjectButton` via loadProjectButton
-- `tools/Parallax Scene Studio/main.js`: `loadProjectInput` via loadProjectInput
-- `tools/Parallax Scene Studio/main.js`: `saveProjectButton` via saveProjectButton
-- `tools/Parallax Scene Studio/main.js`: `loadAssetRegistryButton` via loadAssetRegistryButton
-- `tools/Parallax Scene Studio/main.js`: `loadAssetRegistryInput` via loadAssetRegistryInput
-- `tools/Parallax Scene Studio/main.js`: `saveAssetRegistryButton` via saveAssetRegistryButton
-- `tools/Parallax Scene Studio/main.js`: `simulateButton` via simulateButton
-- `tools/Parallax Scene Studio/main.js`: `playSimulationButton` via playSimulationButton
-- `tools/Parallax Scene Studio/main.js`: `pauseSimulationButton` via pauseSimulationButton
-- `tools/Parallax Scene Studio/main.js`: `restartSimulationButton` via restartSimulationButton
-- `tools/Parallax Scene Studio/main.js`: `exitSimulationButton` via exitSimulationButton
-- `tools/Parallax Scene Studio/main.js`: `exportParallaxPatchButton` via exportParallaxPatchButton
-- `tools/Parallax Scene Studio/main.js`: `packageProjectButton` via packageProjectButton
-- `tools/Parallax Scene Studio/main.js`: `remediationSummaryText` via remediationSummaryText
-- `tools/Parallax Scene Studio/main.js`: `experienceSummaryText` via experienceSummaryText
-- `tools/Parallax Scene Studio/main.js`: `experienceDetailsText` via experienceDetailsText
-- `tools/Parallax Scene Studio/main.js`: `refreshExperienceButton` via refreshExperienceButton
-- `tools/Parallax Scene Studio/main.js`: `debugSummaryText` via debugSummaryText
-- `tools/Parallax Scene Studio/main.js`: `debugDetailsText` via debugDetailsText
-- `tools/Parallax Scene Studio/main.js`: `refreshDebugVisualizationButton` via refreshDebugVisualizationButton
-- `tools/Parallax Scene Studio/main.js`: `inspectRemediationButton` via inspectRemediationButton
-- `tools/Parallax Scene Studio/main.js`: `jumpToProblemButton` via jumpToProblemButton
-- `tools/Parallax Scene Studio/main.js`: `applyRemediationButton` via applyRemediationButton
-- `tools/Parallax Scene Studio/main.js`: `projectNameInput` via projectNameInput
-- `tools/Parallax Scene Studio/main.js`: `mapWidthInput` via mapWidthInput
-- `tools/Parallax Scene Studio/main.js`: `mapHeightInput` via mapHeightInput
-- `tools/Parallax Scene Studio/main.js`: `tileSizeInput` via tileSizeInput
-- `tools/Parallax Scene Studio/main.js`: `applyMapMetaButton` via applyMapMetaButton
-- `tools/Parallax Scene Studio/main.js`: `layerList` via layerList
-- `tools/Parallax Scene Studio/main.js`: `newLayerNameInput` via newLayerNameInput
-- `tools/Parallax Scene Studio/main.js`: `addLayerButton` via addLayerButton
-- `tools/Parallax Scene Studio/main.js`: `removeLayerButton` via removeLayerButton
-- `tools/Parallax Scene Studio/main.js`: `duplicateLayerButton` via duplicateLayerButton
-- `tools/Parallax Scene Studio/main.js`: `moveLayerUpButton` via moveLayerUpButton
-- `tools/Parallax Scene Studio/main.js`: `moveLayerDownButton` via moveLayerDownButton
-- `tools/Parallax Scene Studio/main.js`: `cameraXInput` via cameraXInput
-- `tools/Parallax Scene Studio/main.js`: `cameraYInput` via cameraYInput
-- `tools/Parallax Scene Studio/main.js`: `cameraReadout` via cameraReadout
-- `tools/Parallax Scene Studio/main.js`: `layerNameInput` via layerNameInput
-- `tools/Parallax Scene Studio/main.js`: `layerDrawOrderInput` via layerDrawOrderInput
-- `tools/Parallax Scene Studio/main.js`: `layerOpacityInput` via layerOpacityInput
-- `tools/Parallax Scene Studio/main.js`: `layerVisibleSelect` via layerVisibleSelect
-- `tools/Parallax Scene Studio/main.js`: `layerImageSourceInput` via layerImageSourceInput
-- `tools/Parallax Scene Studio/main.js`: `applyImageSourceButton` via applyImageSourceButton
-- `tools/Parallax Scene Studio/main.js`: `layerImageFileInput` via layerImageFileInput
-- `tools/Parallax Scene Studio/main.js`: `scrollFactorXInput` via scrollFactorXInput
-- `tools/Parallax Scene Studio/main.js`: `scrollFactorYInput` via scrollFactorYInput
-- `tools/Parallax Scene Studio/main.js`: `offsetXInput` via offsetXInput
-- `tools/Parallax Scene Studio/main.js`: `offsetYInput` via offsetYInput
-- `tools/Parallax Scene Studio/main.js`: `repeatXSelect` via repeatXSelect
-- `tools/Parallax Scene Studio/main.js`: `repeatYSelect` via repeatYSelect
-- `tools/Parallax Scene Studio/main.js`: `wrapModeSelect` via wrapModeSelect
-- `tools/Parallax Scene Studio/main.js`: `applyLayerSettingsButton` via applyLayerSettingsButton
-- `tools/Parallax Scene Studio/main.js`: `previewMeta` via previewMeta
-- `tools/Parallax Scene Studio/main.js`: `simulationContext` via simulationContext
-- `tools/Parallax Scene Studio/main.js`: `previewDetailsText` via previewDetailsText
-- `tools/Parallax Scene Studio/main.js`: `statusText` via statusText
-- `tools/Parallax Scene Studio/main.js`: `leftSidebar` via leftSidebar
-- `tools/Parallax Scene Studio/main.js`: `rightSidebar` via rightSidebar
-- `tools/Parallax Scene Studio/main.js`: `previewCanvas` via previewCanvas
+## Controls: Control -> Action -> JSON Effect
+| Control | Action | JSON effect |
+|---|---|---|
+| `tools/Parallax Scene Studio/index.html`: `input[file]#loadProjectInput` - loadProjectInput | Chooses a local file for parallax document import/load. | Replaces or merges tool-owned parallax document only after the import validates. |
+| `tools/Parallax Scene Studio/index.html`: `input[file]#loadAssetRegistryInput` - loadAssetRegistryInput | Chooses a local file for parallax document import/load. | Replaces or merges tool-owned parallax document only after the import validates. |
+| `tools/Parallax Scene Studio/index.html`: `input[text]#projectNameInput` - untitled-map | Edits the active parallax layer or scene property field. | Updates the draft parallax document field represented by `projectNameInput` before validation. |
+| `tools/Parallax Scene Studio/index.html`: `input[number]#mapWidthInput` - 32 | Edits the active parallax layer or scene property field. | Updates the draft parallax document field represented by `mapWidthInput` before validation. |
+| `tools/Parallax Scene Studio/index.html`: `input[number]#mapHeightInput` - 18 | Edits the active parallax layer or scene property field. | Updates the draft parallax document field represented by `mapHeightInput` before validation. |
+| `tools/Parallax Scene Studio/index.html`: `input[number]#tileSizeInput` - 24 | Edits the active parallax layer or scene property field. | Updates the draft parallax document field represented by `tileSizeInput` before validation. |
+| `tools/Parallax Scene Studio/index.html`: `input[text]#newLayerNameInput` - Parallax Layer | Edits the active parallax layer or scene property field. | Updates the draft parallax document field represented by `newLayerNameInput` before validation. |
+| `tools/Parallax Scene Studio/index.html`: `input[range]#cameraXInput` - 0 | Edits the current parallax document through `cameraXInput`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `input[range]#cameraYInput` - 0 | Edits the current parallax document through `cameraYInput`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `input[text]#layerNameInput` - layerNameInput | Edits the active parallax layer or scene property field. | Updates the draft parallax document field represented by `layerNameInput` before validation. |
+| `tools/Parallax Scene Studio/index.html`: `input[number]#layerDrawOrderInput` - 0 | Edits the current parallax document through `layerDrawOrderInput`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `input[number]#layerOpacityInput` - 1 | Edits the current parallax document through `layerOpacityInput`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `input[text]#layerImageSourceInput` - assets/backgrounds/clouds.png | Edits the active parallax layer or scene property field. | Updates the draft parallax document field represented by `layerImageSourceInput` before validation. |
+| `tools/Parallax Scene Studio/index.html`: `input[file]#layerImageFileInput` - layerImageFileInput | Chooses a local file for parallax document import/load. | Replaces or merges tool-owned parallax document only after the import validates. |
+| `tools/Parallax Scene Studio/index.html`: `input[number]#scrollFactorXInput` - 0.5 | Edits the current parallax document through `scrollFactorXInput`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `input[number]#scrollFactorYInput` - 0.5 | Edits the current parallax document through `scrollFactorYInput`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `input[number]#offsetXInput` - 0 | Edits the current parallax document through `offsetXInput`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `input[number]#offsetYInput` - 0 | Edits the current parallax document through `offsetYInput`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#newProjectButton` - New Project | Creates or resets a draft parallax document. | Initializes tool-owned parallax document data; tools.parallax-editor is unchanged until validation and publish/export. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#loadProjectButton` - Load Project | Starts parallax document import/load. | Reads incoming JSON into the tool-owned parallax document only after validation succeeds. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#saveProjectButton` - Save Project | Exports the validated parallax document. | Serializes the validated parallax document as the tools.parallax-editor output shape. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#loadAssetRegistryButton` - Load Assets Registry | Starts parallax document import/load. | Reads incoming JSON into the tool-owned parallax document only after validation succeeds. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#saveAssetRegistryButton` - Save Assets Registry | Exports the validated parallax document. | Serializes the validated parallax document as the tools.parallax-editor output shape. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#simulateButton` - Simulate | Processes the current parallax document. | Updates tool-owned derived data/report fields that must validate before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#playSimulationButton` - Play | Controls preview/playback for the current parallax document. | No tools.parallax-editor JSON change unless a schema-owned playback setting is explicitly edited. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#pauseSimulationButton` - Pause | Controls preview/playback for the current parallax document. | No tools.parallax-editor JSON change unless a schema-owned playback setting is explicitly edited. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#restartSimulationButton` - Restart Position | Triggers the current parallax document UI action for `Restart Position`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#exitSimulationButton` - Exit Simulation | Triggers the current parallax document UI action for `Exit Simulation`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#exportParallaxPatchButton` - Export Tilemap Patch | Exports the validated parallax document. | Serializes the validated parallax document as the tools.parallax-editor output shape. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#packageProjectButton` - Package Project | Triggers the current parallax document UI action for `Package Project`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#applyMapMetaButton` - Apply Map Meta | Publishes or applies the validated parallax document. | Writes the validated output shape to tools.parallax-editor. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#addLayerButton` - Add Layer | Adds a new parallax layer or scene property. | Appends schema-owned data to the draft parallax document; publish waits for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#removeLayerButton` - Remove Layer | Removes or clears the selected parallax layer or scene property. | Deletes that data from the draft parallax document; publish waits for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#duplicateLayerButton` - Duplicate | Duplicates the selected parallax layer or scene property. | Adds a copied parallax layer or scene property to the draft parallax document; publish waits for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#moveLayerUpButton` - Move Up | Triggers the current parallax document UI action for `Move Up`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#moveLayerDownButton` - Move Down | Triggers the current parallax document UI action for `Move Down`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]` - + Parallax Layers | Triggers the current parallax document UI action for `+ Parallax Layers`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]` - + Preview Camera | Triggers the current parallax document UI action for `+ Preview Camera`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]` - + Selected Layer | Triggers the current parallax document UI action for `+ Selected Layer`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]` - + Image Assignment | Triggers the current parallax document UI action for `+ Image Assignment`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]` - + Scroll + Repeat | Triggers the current parallax document UI action for `+ Scroll + Repeat`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]` - + Boundaries | Triggers the current parallax document UI action for `+ Boundaries`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]` - + Remediation | Triggers the current parallax document UI action for `+ Remediation`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `select#layerVisibleSelect` - Visible Hidden | Edits the current parallax document through `layerVisibleSelect`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#applyImageSourceButton` - Apply Source | Publishes or applies the validated parallax document. | Writes the validated output shape to tools.parallax-editor. |
+| `tools/Parallax Scene Studio/index.html`: `select#repeatXSelect` - Repeat No Repeat | Edits the current parallax document through `repeatXSelect`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `select#repeatYSelect` - Repeat No Repeat | Edits the current parallax document through `repeatYSelect`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `select#wrapModeSelect` - Wrap Clamp | Edits the current parallax document through `wrapModeSelect`. | Updates draft parallax document data and requires validation before tools.parallax-editor publish. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#applyLayerSettingsButton` - Apply Layer Settings | Publishes or applies the validated parallax document. | Writes the validated output shape to tools.parallax-editor. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#inspectRemediationButton` - Inspect Issues | Triggers the current parallax document UI action for `Inspect Issues`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#jumpToProblemButton` - Jump to Problem | Triggers the current parallax document UI action for `Jump to Problem`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#applyRemediationButton` - Apply Suggested Fix | Publishes or applies the validated parallax document. | Writes the validated output shape to tools.parallax-editor. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#refreshExperienceButton` - Refresh Pipeline View | Triggers the current parallax document UI action for `Refresh Pipeline View`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
+| `tools/Parallax Scene Studio/index.html`: `button[button]#refreshDebugVisualizationButton` - Refresh Debug View | Triggers the current parallax document UI action for `Refresh Debug View`. | May update draft parallax document data; tools.parallax-editor publish must wait for validation. |
 
-## Current Panels And Surfaces Found
+## Panels And Surfaces Found
+- `tools/Parallax Scene Studio/how_to_use.html`: `.tools-platform-surface`
 - `tools/Parallax Scene Studio/index.html`: `.app-shell`
-- `tools/Parallax Scene Studio/index.html`: `.toolbar`
-- `tools/Parallax Scene Studio/index.html`: `.toolbar-group`
-- `tools/Parallax Scene Studio/index.html`: `.tools-platform-layout-grid`
-- `tools/Parallax Scene Studio/index.html`: `.sidebar`
-- `tools/Parallax Scene Studio/index.html`: `.left-sidebar`
-- `tools/Parallax Scene Studio/index.html`: `.tools-platform-resize-panel`
-- `tools/Parallax Scene Studio/index.html`: `.panel-accordion`
-- `tools/Parallax Scene Studio/index.html`: `.panel-accordion__summary`
-- `tools/Parallax Scene Studio/index.html`: `.panel-accordion__body`
 - `tools/Parallax Scene Studio/index.html`: `.layer-list`
+- `tools/Parallax Scene Studio/index.html`: `.left-sidebar`
+- `tools/Parallax Scene Studio/index.html`: `.panel-accordion`
+- `tools/Parallax Scene Studio/index.html`: `.panel-accordion__body`
+- `tools/Parallax Scene Studio/index.html`: `.panel-accordion__summary`
+- `tools/Parallax Scene Studio/index.html`: `.parallax-editor-page`
+- `tools/Parallax Scene Studio/index.html`: `.parallax-editor-page-root`
+- `tools/Parallax Scene Studio/index.html`: `.preview-details-text`
 - `tools/Parallax Scene Studio/index.html`: `.preview-panel`
-- `tools/Parallax Scene Studio/index.html`: `.tools-platform-dock-panel`
 - `tools/Parallax Scene Studio/index.html`: `.preview-toolbar`
 - `tools/Parallax Scene Studio/index.html`: `.preview-wrap`
-- `tools/Parallax Scene Studio/index.html`: `.preview-details-text`
-- `tools/Parallax Scene Studio/index.html`: `.status-text`
 - `tools/Parallax Scene Studio/index.html`: `.right-sidebar`
+- `tools/Parallax Scene Studio/index.html`: `.sidebar`
+- `tools/Parallax Scene Studio/index.html`: `.toolbar`
+- `tools/Parallax Scene Studio/index.html`: `.toolbar-group`
+- `tools/Parallax Scene Studio/index.html`: `.tools-platform-dock-panel`
+- `tools/Parallax Scene Studio/index.html`: `.tools-platform-layout-grid`
+- `tools/Parallax Scene Studio/index.html`: `.tools-platform-resize-panel`
 - `tools/Parallax Scene Studio/index.html`: `.usage-list`
 
-## Exact Current Functions And Classes
-- `tools/Parallax Scene Studio/main.js`: class ParallaxEditorApp; function applyProjectSystemState; function bootParallaxSceneStudio; function buildPresetLoadedStatus; function clamp; function cloneDeep; function createDefaultLayer; function createDownload; function createInitialParallaxDocument; function createRegistryManagedParallaxSaveDocument; function createTilemapParallaxPatch; function drawTraversalMarker; function extractParallaxDocument; function extractParallaxDocumentFromSamplePreset; function getLayerVisualColor; function isStrictWorkspaceParallaxSnapshot; function mod; function normalizeDrawOrderSequence; function normalizeLayer; function normalizeMapMeta; function normalizeSamplePresetPath; function sanitizeAssetRefs; function sanitizeParallaxDocument; function sortLayersByOrder; function summarizeGraphFindings; function tick; method addLayer; method advanceSimulationCamera; method applyBasicLayerFields; method applyExtendedLayerSettings; method applyImageSourceFromInput; method applyMapMetaFromInputs; method applyParallaxDocument; method applyRemediationAction; method applySimulationCameraAtProgress; method assignLocalImageFile; method attachEvents; method bindRuntimeStateSync; method captureRefs; method clearTransientLayerImageSources; method configureSimulationTraverse; method destroy; method drawFallbackLayer; method drawSingleLayer; method duplicateSelectedLayer; method ensureSimulationViewportFocus; method enterSimulationMode; method exitSimulationMode; method getApi; method getLayerImageRecord; method getOverlayPanels; method getOverlaySidebar; method getSelectedLayer; method getSimulationProgress; method getTransientLayerImageSource; method handleCameraChange; method handleExportTilemapPatch; method handleLoadAssetRegistry; method handleLoadProject; method handleNewProject; method handleOverlayAccordionToggle; method handlePackageProject; method handleSaveAssetRegistry; method handleSaveProject; method init; method inspectRemediationActions; method invalidateImageCache; method jumpToRemediationProblem; method moveSelectedLayer; method pauseSimulation; method publishLivePreviewSync; method queueLivePreviewSync; method refreshDebugVisualizationSnapshot; method refreshExperienceSnapshot; method refreshSimulationActionState; method removeSelectedLayer; method renderAll; method renderLayerList; method renderPreview; method renderSelectedLayerFields; method resolveAssetRefsFromRegistry; method resolveLayerImageUrl; method restartSimulationPosition; method resumeSimulation; method setTransientLayerImageSource; method startSimulationLoop; method syncAssetRegistryFromDocument; method syncFullscreenState; method syncInputsFromDocument; method syncOverlayToggleButtons; method toggleOverlayPanel; method touchDocument; method tryLoadPresetFromQuery; method updateCameraInputBounds; method updateDebugVisualizationUI; method updateEditorExperienceUI; method updateRemediationUI; method updateSimulationContextReadout; method updateStatus; method validateProjectAssets
+## Current Component/Class/Function Inventory
+- `tools/Parallax Scene Studio/main.js`: ParallaxEditorApp; addLayer; advanceSimulationCamera; applyBasicLayerFields; applyExtendedLayerSettings; applyImageSourceFromInput; applyMapMetaFromInputs; applyParallaxDocument; applyProjectSystemState; applyRemediationAction; applySimulationCameraAtProgress; assignLocalImageFile; attachEvents; bindRuntimeStateSync; bootParallaxSceneStudio; buildPresetLoadedStatus; captureRefs; clamp; clearTransientLayerImageSources; cloneDeep; configureSimulationTraverse; createDefaultLayer; createDownload; createInitialParallaxDocument; createRegistryManagedParallaxSaveDocument; createTilemapParallaxPatch; drawFallbackLayer; drawSingleLayer; drawTraversalMarker; duplicateSelectedLayer; ensureSimulationViewportFocus; enterSimulationMode; exitSimulationMode; extractParallaxDocument; extractParallaxDocumentFromSamplePreset; getApi; getLayerImageRecord; getLayerVisualColor; getOverlayPanels; getOverlaySidebar; getSelectedLayer; getSimulationProgress; getTransientLayerImageSource; handleCameraChange; handleExportTilemapPatch; handleLoadAssetRegistry; handleLoadProject; handleNewProject; handleOverlayAccordionToggle; handlePackageProject; handleSaveAssetRegistry; handleSaveProject; init; inspectRemediationActions; invalidateImageCache; isStrictWorkspaceParallaxSnapshot; jumpToRemediationProblem; mod; moveSelectedLayer; normalizeDrawOrderSequence; normalizeLayer; normalizeMapMeta; normalizeSamplePresetPath; pauseSimulation; publishLivePreviewSync; queueLivePreviewSync; refreshDebugVisualizationSnapshot; refreshExperienceSnapshot; refreshSimulationActionState; registerToolBootContract; removeSelectedLayer; renderAll; renderLayerList; renderPreview; renderSelectedLayerFields; resolveAssetRefsFromRegistry; resolveLayerImageUrl; restartSimulationPosition; resumeSimulation; sanitizeAssetRefs; sanitizeParallaxDocument; setTransientLayerImageSource; sortLayersByOrder; startSimulationLoop; summarizeGraphFindings; syncAssetRegistryFromDocument; syncFullscreenState; syncInputsFromDocument; syncOverlayToggleButtons; tick; toggleOverlayPanel; touchDocument; tryLoadPresetFromQuery; updateCameraInputBounds; updateDebugVisualizationUI; updateEditorExperienceUI; updateRemediationUI; updateSimulationContextReadout; updateStatus; validateProjectAssets
 
 ## Target Controls
 Keep:
-- project load/save
-- asset registry load/save
-- map metadata controls
-- layer add/remove/duplicate/move controls
-- camera range controls
-- layer opacity/draw order/visibility/image source/repeat/wrap controls
-- tilemap patch export
+- parallax layer controls
+- scene preview controls
+- import/export controls
 
 Remove or rename:
-- local image import as a persisted source of truth for parallax JSON
+- preview-only state leaking into published parallax JSON
 
 Add:
 - Validate Parallax Document
 - Publish `tools.parallax-editor`
-- layer source/reference diagnostics
+- layer/property validation messages
 
-## JSON Contract Owned By This Tool
-Owned JSON is the parallax-editor payload. Allowed top-level fields are `parallaxDocument`, `tilemapDocumentPath`, and `vectorAssetSvgPath`. The parallax document owns map metadata, layer order, layer image source values, scroll factors, offsets, repeat flags, wrap mode, and boundaries.
+## JSON Schema/Input Contract Currently Expected
+Tool receives validated payload and owns behavior for parallax document. Current contract baseline: `tools/schemas/tools/parallax-editor.schema.json` (parallax-editor Payload).
+Required keys: none assigned for this reference folder.
+Optional keys: `parallaxDocument`, `tilemapDocumentPath`, `vectorAssetSvgPath`.
 
-## Publish Output
-Publish only to `tools.parallax-editor`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
+Tool-owned JSON responsibilities:
+- import/load: parse incoming parallax document and reject it before mutation when invalid
+- validate: apply the current parallax document contract before export, copy, or publish
+- edit/process: mutate only parallax document fields owned by Parallax Scene Studio
+- export/save: serialize the validated parallax document as the tools.parallax-editor output shape
+- publish: write only the validated tools.parallax-editor value produced by Parallax Scene Studio
+- copy/create payload: create copied payload text from the validated parallax document, not from unvalidated draft UI state
 
-## Invalid JSON Behavior
+## Valid JSON Behavior
+- accepts the schema-defined parallax document
+- allows schema-defined linked path fields when present
+- publishes only validated parallax JSON
+
+## Invalid JSON Rejection Behavior
 - malformed JSON
-- parallax documents without usable map/layer data when publishing
-- invalid layer opacity/draw order/scroll/offset values
-- invalid image source value
+- payload shape outside `parallax-editor.schema.json`
+- invalid layer/property data
 - unsupported top-level fields
 
-## Manual Test Plan
-- Create or load a parallax project.
-- Edit map metadata, add a layer, set image source, and export.
-- Try malformed JSON, invalid layer opacity, and invalid image source values; publish must stay blocked.
+## Published Output
+Published Output:
+```jsonc
+tools.parallax-editor = {
+  "parallaxDocument": "jsonValue", // optional
+  "tilemapDocumentPath": "jsonValue", // optional
+  "vectorAssetSvgPath": "jsonValue" // optional
+}
+```
+
+## Playwright Expectations
+- load `tools/Parallax Scene Studio/index.html` without console errors
+- edit a layer/property and confirm output JSON updates
+- reject invalid parallax JSON
+
+## Manual Test Expectations
+- Open `tools/Parallax Scene Studio/index.html` and confirm layer and preview controls render.
+- Edit a parallax layer/property, validate, export, and re-import.
+- Try malformed JSON and an invalid layer; each must block publish.
+
+## Known Gaps
+- Layer validation should identify the failing layer.
+- Publish should remain separate from preview playback state.
+
+## Rebuild Order Priority
+core-09: rebuild in the core tool lane after earlier priorities are stable.

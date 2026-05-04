@@ -1,65 +1,96 @@
 # 3D Asset Viewer Reengineering Design
 
-Task: PR_26124_023-finalize-tool-design-docs
+Task: PR_26124_024
 Classification: rebuildable tool
 Core priority: core-12
 Source folder: `tools/3D Asset Viewer`
 Publish target: `tools.3d-asset-viewer`
 
 ## Tool Purpose
-Read-only 3D asset inspection. 3D Asset Viewer owns `asset3d` validation, inspection report generation, export, and publish to `tools.3d-asset-viewer` when a report payload is required.
+3D Asset Viewer owns 3D asset inspection payload import, validation, report export, and publish to `tools.3d-asset-viewer`.
 
-## Exact Folder/Files Inspected
+## Folder/Files Inspected
 - `tools/3D Asset Viewer/how_to_use.html`
 - `tools/3D Asset Viewer/index.html`
 - `tools/3D Asset Viewer/main.js`
 - `tools/3D Asset Viewer/README.md`
 
-## Exact Current Controls Found
-- `tools/3D Asset Viewer/index.html`: `button[button]#inspect3dAssetButton` - Inspect Asset
-- `tools/3D Asset Viewer/index.html`: `textarea#asset3dInput` - asset3dInput
-- `tools/3D Asset Viewer/main.js`: `inspect3dAssetButton` via inspectButton
-- `tools/3D Asset Viewer/main.js`: `asset3dStatus` via statusText
-- `tools/3D Asset Viewer/main.js`: `asset3dInput` via input
-- `tools/3D Asset Viewer/main.js`: `asset3dOutput` via output
+## Controls: Control -> Action -> JSON Effect
+| Control | Action | JSON effect |
+|---|---|---|
+| `tools/3D Asset Viewer/index.html`: `button[button]#inspect3dAssetButton` - Inspect Asset | Triggers the current 3D asset viewer payload UI action for `Inspect Asset`. | May update draft 3D asset viewer payload data; tools.3d-asset-viewer publish must wait for validation. |
+| `tools/3D Asset Viewer/index.html`: `textarea#asset3dInput` - asset3dInput | Edits the current 3D asset viewer payload through `asset3dInput`. | Updates draft 3D asset viewer payload data and requires validation before tools.3d-asset-viewer publish. |
 
-## Current Panels And Surfaces Found
-- `tools/3D Asset Viewer/index.html`: `.debug-tool-shell`
+## Panels And Surfaces Found
+- `tools/3D Asset Viewer/how_to_use.html`: `.tools-platform-surface`
 - `tools/3D Asset Viewer/index.html`: `.app-shell`
-- `tools/3D Asset Viewer/index.html`: `.panel`
-- `tools/3D Asset Viewer/index.html`: `.debug-tool-panel`
 - `tools/3D Asset Viewer/index.html`: `.debug-tool-grid`
+- `tools/3D Asset Viewer/index.html`: `.debug-tool-panel`
+- `tools/3D Asset Viewer/index.html`: `.debug-tool-shell`
+- `tools/3D Asset Viewer/index.html`: `.panel`
 
-## Exact Current Functions And Classes
-- `tools/3D Asset Viewer/main.js`: function boot3dAssetViewer; function buildPresetLoadedStatus; function computeBounds; function inspectAssetPayload; function normalizeAssetPayload; function normalizeSamplePresetPath; function sanitizeNumber; function setStatus; function tryLoadPresetFromQuery; method getApi; method registerToolBootContract
+## Current Component/Class/Function Inventory
+- `tools/3D Asset Viewer/main.js`: boot3dAssetViewer; buildPresetLoadedStatus; computeBounds; getApi; inspectAssetPayload; normalizeAssetPayload; normalizeSamplePresetPath; registerToolBootContract; sanitizeNumber; setStatus; tryLoadPresetFromQuery
 
 ## Target Controls
 Keep:
-- Inspect Asset
-- asset input textarea
-- inspection output panel
+- asset selection controls
+- viewer/camera controls
+- inspection/report export controls
 
 Remove or rename:
-- editing controls from the viewer path
+- viewer-only camera state from published asset JSON unless schema-owned
 
 Add:
-- Load 3D Asset JSON
-- Export inspection report
-- Publish `tools.3d-asset-viewer` report
+- Validate 3D Asset Payload
+- Publish `tools.3d-asset-viewer`
+- inspection diagnostics
 
-## JSON Contract Owned By This Tool
-Owned JSON is the 3d-asset-viewer payload. Required field is `asset3d`; no other top-level fields are allowed. Inspection output is read-only and derived from the loaded 3D asset payload.
+## JSON Schema/Input Contract Currently Expected
+Tool receives validated payload and owns behavior for 3D asset viewer payload. Current contract baseline: `tools/schemas/tools/3d-asset-viewer.schema.json` (3d-asset-viewer Payload).
+Required keys: `asset3d`.
+Optional keys: none identified for this contract.
 
-## Publish Output
-Publish only to `tools.3d-asset-viewer`. The published value must match the tool-owned contract above and must be produced by this folder's validation/export path.
+Tool-owned JSON responsibilities:
+- import/load: parse incoming 3D asset viewer payload and reject it before mutation when invalid
+- validate: apply the current 3D asset viewer payload contract before export, copy, or publish
+- edit/process: mutate only 3D asset viewer payload fields owned by 3D Asset Viewer
+- export/save: serialize the validated 3D asset viewer payload as the tools.3d-asset-viewer output shape
+- publish: write only the validated tools.3d-asset-viewer value produced by 3D Asset Viewer
+- copy/create payload: create copied payload text from the validated 3D asset viewer payload, not from unvalidated draft UI state
 
-## Invalid JSON Behavior
+## Valid JSON Behavior
+- accepts the schema-defined 3D asset viewer payload
+- uses viewer controls for inspection without mutating unrelated JSON
+- publishes only validated asset inspection output
+
+## Invalid JSON Rejection Behavior
 - malformed JSON
-- missing `asset3d`
-- asset data the inspector cannot summarize
+- payload shape outside `3d-asset-viewer.schema.json`
+- invalid asset reference or inspection setting
 - unsupported top-level fields
 
-## Manual Test Plan
-- Paste a valid `asset3d` payload and inspect it.
-- Confirm bounds/diagnostics output is deterministic.
-- Try malformed JSON and JSON without `asset3d`; report export and publish must stay blocked.
+## Published Output
+Published Output:
+```jsonc
+tools.3d-asset-viewer = {
+  "asset3d": "jsonValue"
+}
+```
+
+## Playwright Expectations
+- load `tools/3D Asset Viewer/index.html` without console errors
+- exercise viewer controls against a valid payload
+- reject invalid 3D asset viewer JSON
+
+## Manual Test Expectations
+- Open `tools/3D Asset Viewer/index.html` and confirm the viewer/inspection controls render.
+- Load a valid 3D asset payload, inspect it, validate, export, and publish.
+- Try malformed JSON and an invalid asset reference; each must block publish.
+
+## Known Gaps
+- Viewer state and published payload should be clearly separated.
+- Validation diagnostics should identify the failing asset field.
+
+## Rebuild Order Priority
+core-12: rebuild in the core tool lane after earlier priorities are stable.
