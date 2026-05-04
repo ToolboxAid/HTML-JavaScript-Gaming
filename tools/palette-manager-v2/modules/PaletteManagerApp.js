@@ -998,15 +998,15 @@ export class PaletteManagerApp {
     });
   }
 
-  rejectImport(errors) {
-    this.setActionState(errors, "Import rejected.");
+  rejectImport(errors, status = "Import rejected.") {
+    this.setActionState(errors, status);
   }
 
-  importPaletteDocument(documentValue) {
+  importPaletteDocument(documentValue, options = {}) {
     const importResult = this.validator.extractImportedPaletteDocument(documentValue);
     if (importResult.errors.length > 0) {
-      this.setActionState(importResult.errors, "Import rejected.");
-      return;
+      this.setActionState(importResult.errors, sanitizeText(options.failureStatus) || "Import rejected.");
+      return false;
     }
 
     this.state.userSwatches = importResult.swatches.map(cloneSwatch);
@@ -1015,7 +1015,8 @@ export class PaletteManagerApp {
     this.checkedUserSwatchIndexes.clear();
     this.editorControl.clearForm();
     this.resetHistorySnapshot();
-    this.setActionState([], `Imported ${this.state.userSwatches.length} user swatches.`);
+    this.setActionState([], sanitizeText(options.successStatus) || `Imported ${this.state.userSwatches.length} user swatches.`);
+    return true;
   }
 
   preparePaletteDocument(blockedStatus) {

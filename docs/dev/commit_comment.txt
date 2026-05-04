@@ -1,1 +1,1 @@
-Fix Palette Manager V2 sample launch registration id - PR_26124_075-palette-browser-launch-registration-fix
+Load Palette Manager V2 sample presets from URL params - PR_26124_076-palette-manager-url-preset-load

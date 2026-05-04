@@ -52,13 +52,36 @@ export class PaletteValidationService {
     return swatches.flatMap((swatch, index) => this.validateSwatch(swatch, `swatches[${index}]`));
   }
 
+  getDirectPaletteSource(documentValue) {
+    return sanitizeText(documentValue?.sourceId)
+      || sanitizeText(documentValue?.source)
+      || sanitizeText(documentValue?.name);
+  }
+
+  cloneImportedSwatches(swatches, source) {
+    const cleanSource = sanitizeText(source);
+    return swatches.map((swatch) => cloneSwatch({
+      ...swatch,
+      source: sanitizeText(swatch?.source) || cleanSource
+    }));
+  }
+
   extractImportedPaletteDocument(documentValue) {
     if (!isObjectRecord(documentValue)) {
       return { swatches: null, errors: ["Imported JSON must be an object."] };
     }
 
+    if (Array.isArray(documentValue.swatches)) {
+      const swatches = this.cloneImportedSwatches(
+        documentValue.swatches,
+        this.getDirectPaletteSource(documentValue)
+      );
+      const errors = this.validateUserSwatches(swatches);
+      return { swatches: errors.length > 0 ? null : swatches, errors };
+    }
+
     if (!isObjectRecord(documentValue.tools)) {
-      return { swatches: null, errors: ["Imported JSON must contain a tools object."] };
+      return { swatches: null, errors: ["Imported JSON must contain a tools object or a direct swatches array."] };
     }
 
     const paletteValue = documentValue.tools[this.globalPaletteToolKey];
@@ -70,8 +93,8 @@ export class PaletteValidationService {
       return { swatches: null, errors: [`tools.${this.globalPaletteToolKey}.swatches must be an array.`] };
     }
 
-    const errors = this.validateUserSwatches(paletteValue.swatches);
-    const swatches = paletteValue.swatches.map(cloneSwatch);
+    const swatches = this.cloneImportedSwatches(paletteValue.swatches, "");
+    const errors = this.validateUserSwatches(swatches);
     return { swatches: errors.length > 0 ? null : swatches, errors };
   }
 }
