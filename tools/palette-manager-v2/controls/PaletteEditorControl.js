@@ -175,6 +175,9 @@ export class PaletteEditorControl {
       return;
     }
     availableTags.forEach((tag) => {
+      const tagItem = this.refs.availableTagList.ownerDocument.createElement("span");
+      tagItem.className = "palette-manager-v2__tag-item";
+
       const button = this.refs.availableTagList.ownerDocument.createElement("button");
       button.type = "button";
       button.className = "palette-manager-v2__tag-pill palette-manager-v2__tag-toggle";
@@ -185,7 +188,19 @@ export class PaletteEditorControl {
       button.addEventListener("click", () => {
         this.app.toggleTagOnSelectedSwatch(tag);
       });
-      this.refs.availableTagList.appendChild(button);
+
+      const deleteButton = this.refs.availableTagList.ownerDocument.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "palette-manager-v2__tag-delete";
+      deleteButton.setAttribute("aria-label", `Delete tag ${tag}`);
+      deleteButton.title = `Delete tag ${tag}`;
+      deleteButton.textContent = "x";
+      deleteButton.addEventListener("click", () => {
+        this.app.deleteAvailableTag(tag);
+      });
+
+      tagItem.append(button, deleteButton);
+      this.refs.availableTagList.appendChild(tagItem);
     });
   }
 

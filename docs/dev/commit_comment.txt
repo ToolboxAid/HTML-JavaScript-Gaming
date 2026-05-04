@@ -1,1 +1,1 @@
-Normalize Palette Manager tags and guard duplicate swatches - PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards
+Add Palette Manager tag delete and Tag sort UI - PR_26124_053-palette-manager-tag-delete-and-sort-ui

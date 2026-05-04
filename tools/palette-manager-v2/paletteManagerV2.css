@@ -229,6 +229,12 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   gap: 8px;
 }
 
+.palette-manager-v2__field--source-control {
+  grid-template-columns: minmax(142px, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
 .palette-manager-v2__field input,
 .palette-manager-v2__field select {
   width: 100%;
@@ -295,12 +301,34 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   padding: 4px 8px;
 }
 
+.palette-manager-v2__tag-item {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .palette-manager-v2__tag-toggle {
   cursor: pointer;
 }
 
 .palette-manager-v2__tag-remove {
   cursor: pointer;
+}
+
+.palette-manager-v2__tag-delete {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--pm-line);
+  border-radius: 999px;
+  background: rgba(179, 38, 30, 0.18);
+  color: inherit;
+  cursor: pointer;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0;
 }
 
 .palette-manager-v2__tag-toggle.is-active {

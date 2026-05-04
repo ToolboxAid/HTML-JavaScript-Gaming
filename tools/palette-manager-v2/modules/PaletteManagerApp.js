@@ -50,8 +50,20 @@ const SWATCH_SIZE_OPTIONS = Object.freeze([
   Object.freeze({ value: "large", label: "Large" })
 ]);
 
+const USER_SORT_MODES = Object.freeze([
+  Object.freeze({ value: "hue", label: "Hue" }),
+  Object.freeze({ value: "saturation", label: "Saturation" }),
+  Object.freeze({ value: "brightness", label: "Brightness" }),
+  Object.freeze({ value: "name", label: "Name" }),
+  Object.freeze({ value: "tag", label: "Tag" })
+]);
+
 function isValidSwatchSize(swatchSize) {
   return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
+}
+
+function isValidUserSortMode(sortMode) {
+  return USER_SORT_MODES.some((mode) => mode.value === sortMode);
 }
 
 function isUserDefinedSwatch(swatch) {
@@ -70,6 +82,26 @@ function isSameText(left, right) {
 
 function getRgbHexKey(hex) {
   return normalizeHex(hex).slice(0, 7);
+}
+
+function getTagSortKey(swatch) {
+  return sortUniqueTags(swatch?.tags)[0] || "";
+}
+
+function sortRowsByTag(rows) {
+  const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+  return (Array.isArray(rows) ? rows : [])
+    .map((row, index) => ({ row, index, tagKey: getTagSortKey(row?.swatch) }))
+    .sort((left, right) => {
+      if (!left.tagKey && right.tagKey) {
+        return 1;
+      }
+      if (left.tagKey && !right.tagKey) {
+        return -1;
+      }
+      return collator.compare(left.tagKey, right.tagKey) || left.index - right.index;
+    })
+    .map((entry) => entry.row);
 }
 
 function collectRefs(documentRef) {
@@ -154,6 +186,9 @@ export class PaletteManagerApp {
       index,
       swatch: cloneSwatch(swatch)
     }));
+    if (this.state.userSortMode === "tag") {
+      return sortRowsByTag(rows);
+    }
     return this.sortService.sortRows(rows, this.state.userSortMode);
   }
 
@@ -163,6 +198,10 @@ export class PaletteManagerApp {
 
   getSortModes() {
     return this.sortService.getSortModes();
+  }
+
+  getUserSortModes() {
+    return USER_SORT_MODES.map((mode) => ({ ...mode }));
   }
 
   getSwatchSizeOptions() {
@@ -256,7 +295,7 @@ export class PaletteManagerApp {
   }
 
   setUserSortMode(sortMode) {
-    if (!this.sortService.isValidSortMode(sortMode)) {
+    if (!isValidUserSortMode(sortMode)) {
       return;
     }
     this.state.userSortMode = sortMode;
@@ -497,6 +536,29 @@ export class PaletteManagerApp {
       return this.removeTagFromSelectedSwatch(cleanTag);
     }
     return this.addTagToSelectedSwatch(cleanTag);
+  }
+
+  deleteAvailableTag(tag) {
+    const cleanTag = normalizeTags([tag])[0] || "";
+    if (!cleanTag) {
+      return false;
+    }
+
+    const tagIsUsed = this.state.userSwatches.some((swatch) => {
+      return normalizeTags(swatch.tags).some((existingTag) => existingTag === cleanTag);
+    });
+    if (tagIsUsed) {
+      this.setActionState([`Tag "${cleanTag}" is used by a User Palette swatch and cannot be deleted.`], "Tag delete blocked.");
+      return false;
+    }
+
+    if (!this.state.availableTags.includes(cleanTag)) {
+      return false;
+    }
+
+    this.state.availableTags = this.state.availableTags.filter((availableTag) => availableTag !== cleanTag);
+    this.setActionState([], `Deleted tag ${cleanTag}.`);
+    return true;
   }
 
   removeSelectedSwatch() {

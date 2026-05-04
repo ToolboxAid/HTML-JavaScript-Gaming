@@ -40,7 +40,7 @@ export class UserPaletteControl {
 
   renderSortOptions() {
     this.refs.userPaletteSortControls.replaceChildren();
-    this.app.getSortModes().forEach((mode) => {
+    this.app.getUserSortModes().forEach((mode) => {
       const button = this.document.createElement("button");
       button.type = "button";
       button.className = "palette-manager-v2__sort-button";

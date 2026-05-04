@@ -1,57 +1,58 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index bad0d308..749c0e34 100644
+index 749c0e34..7ca0a641 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,27 +1,28 @@
--# Codex Commands - PR_26124_051-palette-manager-tags-accordion-and-label-cleanup
-+# Codex Commands - PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards
+@@ -1,28 +1,28 @@
+-# Codex Commands - PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards
++# Codex Commands - PR_26124_053-palette-manager-tag-delete-and-sort-ui
 
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
  - Used `.codex/skills/repo-build/SKILL.md`.
--- Created `docs/pr/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup/BUILD_PR.md`.
-+- Created `docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/BUILD_PR.md`.
+-- Created `docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/BUILD_PR.md`.
++- Created `docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/BUILD_PR.md`.
  - Updated Palette Manager V2 only.
--- Created `docs/pr/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup/APPLY_PR.md`.
-+- Created `docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/APPLY_PR.md`.
+-- Created `docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/APPLY_PR.md`.
++- Created `docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/APPLY_PR.md`.
 
  ## Validation Commands
  - `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
++- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
  - `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
--- Targeted served-browser Palette Manager V2 Tags accordion and label cleanup check using Playwright from Node.
-+- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
-+- Targeted served-browser Palette Manager V2 tag normalization, duplicate guard, and selected-tag removal check using Playwright from Node.
+-- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
+-- Targeted served-browser Palette Manager V2 tag normalization, duplicate guard, and selected-tag removal check using Playwright from Node.
++- Targeted served-browser Palette Manager V2 tag delete, Tag sort, and compact source-control check using Playwright from Node.
  - `git diff --check`
  - `git diff --cached --check`
  - `npm run test:workspace-v2`
  - `npm run codex:review-artifacts`
--- Python `zipfile` packaging for `tmp/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup_delta.zip`
-+- Python `zipfile` packaging for `tmp/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards_delta.zip`
+-- Python `zipfile` packaging for `tmp/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards_delta.zip`
++- Python `zipfile` packaging for `tmp/PR_26124_053-palette-manager-tag-delete-and-sort-ui_delta.zip`
 
  ## Validation Outcome
  - JavaScript syntax checks: PASS.
  - Targeted served-browser Palette Manager V2 behavior check: PASS.
--- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files.
-+- `git diff --check`: PASS.
+-- `git diff --check`: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files.
  - `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
  - Review artifacts: generated.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index ea574ffb..78a0e800 100644
+index 78a0e800..63d7b4b9 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Move Palette Manager tags into left accordion and clean labels - PR_26124_051-palette-manager-tags-accordion-and-label-cleanup
-+Normalize Palette Manager tags and guard duplicate swatches - PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards
-diff --git a/docs/dev/reports/PR_26124_052_report.md b/docs/dev/reports/PR_26124_052_report.md
+-Normalize Palette Manager tags and guard duplicate swatches - PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards
++Add Palette Manager tag delete and Tag sort UI - PR_26124_053-palette-manager-tag-delete-and-sort-ui
+diff --git a/docs/dev/reports/PR_26124_053_report.md b/docs/dev/reports/PR_26124_053_report.md
 new file mode 100644
-index 00000000..e0024e11
+index 00000000..93db2c8a
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_052_report.md
-@@ -0,0 +1,32 @@
-+# PR_26124_052 Report - Palette Manager Tag Normalization and Duplicate Guards
++++ b/docs/dev/reports/PR_26124_053_report.md
+@@ -0,0 +1,38 @@
++# PR_26124_053 Report - Palette Manager Tag Delete and Sort UI
 +
 +## Scope
 +- Updated Palette Manager V2 only.
@@ -59,114 +60,122 @@ index 00000000..e0024e11
 +- Did not modify workspace/toolState/session behavior.
 +- Did not modify sample JSON.
 +- Did not modify `tools/shared`.
++- Did not modify shared accordionV2.
 +- Did not add dependencies.
 +
 +## Implementation
-+- Removed Source and Tags form rows from the Add accordion.
-+- Kept Add form data limited to symbol, hex, and name.
-+- Preserved `User Added` source assignment in app logic.
-+- Preserved existing selected swatch source values.
-+- Added duplicate guards for user swatch name, RGB/hex, and symbol on Add and Update.
-+- Added selected tag button behavior that removes the clicked tag from the selected swatch.
-+- Kept tag suggestions and available tag list behavior.
-+- Confirmed tag display/export uses lowercase normalized tags.
++- Restored the Add accordion title to `User Defined Swatch`.
++- Kept the Add button label as `User Defined Swatch`.
++- Added available-tag delete buttons in the Tags accordion.
++- Preserved available-tag toggle behavior for selected swatches.
++- Added delete blocking when a tag is still used by any User Palette swatch.
++- Added local User Palette `Tag` sort mode without changing shared sort services.
++- Kept Source Palette sort modes at Hue, Saturation, Brightness, and Name.
++- Compacted Source palette and Search source swatches controls into two-column rows.
 +
 +## Validation
 +- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
++- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
 +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- `node --check tools/palette-manager-v2/modules/paletteUtils.js`: PASS.
 +- Targeted served-browser Palette Manager V2 validation: PASS.
-+- `git diff --check`: PASS.
-+- `git diff --cached --check`: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files.
 +- `npm run test:workspace-v2`: FAIL. The repository `package.json` has no `test:workspace-v2` script.
 +- Full samples smoke test: skipped by instruction.
 +
-+## Notes
-+- The targeted browser check covered removed Add fields, lowercase tag export, tag suggestions, selected-tag removal, duplicate Add blocking, and duplicate Update blocking.
-diff --git a/docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/APPLY_PR.md b/docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/APPLY_PR.md
++## Targeted Browser Coverage
++- Confirmed Add accordion title and Add button label.
++- Confirmed User Palette sort includes `Tag`.
++- Confirmed Source Palette sort does not include `Tag`.
++- Confirmed used tag delete is blocked with a validation/error message.
++- Confirmed unused tag delete removes the tag from the available tag list.
++- Confirmed Tag sort places tagged swatches before untagged swatches.
++- Confirmed Source palette and Search source swatches controls use compact source-control rows.
+diff --git a/docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/APPLY_PR.md b/docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/APPLY_PR.md
 new file mode 100644
-index 00000000..1fcafada
+index 00000000..6c43cae1
 --- /dev/null
-+++ b/docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/APPLY_PR.md
-@@ -0,0 +1,27 @@
-+# APPLY_PR - PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards
++++ b/docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/APPLY_PR.md
+@@ -0,0 +1,29 @@
++# APPLY_PR - PR_26124_053-palette-manager-tag-delete-and-sort-ui
 +
 +## Summary
-+Implemented the Palette Manager V2 tag normalization and duplicate guard cleanup.
++Implemented the Palette Manager V2 tag delete and User Palette Tag sort UI update.
 +
 +## Applied Changes
-+- Tags are normalized to lowercase through Palette Manager V2 tag handling and export/import flows.
-+- Add accordion no longer exposes Source or Tags fields.
-+- Selected Swatch tag pills can be clicked to remove that tag from the selected swatch.
-+- Add and Update now reject duplicate user-defined swatch names, RGB/hex values, and symbols.
-+- Duplicate validation messages identify the duplicate field that blocked the action.
-+- Palette Manager V2 usage docs describe lowercase tags, duplicate guards, and selected-tag removal.
++- Restored the Add accordion title to `User Defined Swatch`.
++- Preserved the Add button label as `User Defined Swatch`.
++- Added a visible delete affordance beside each available tag in the Tags accordion.
++- Tag toggle buttons still add/remove that tag from the currently selected swatch.
++- Tag deletion is blocked while any User Palette swatch uses that tag.
++- Added User Palette `Tag` sorting.
++- Tag sorting uses normalized lowercase tag text and places untagged swatches after tagged swatches.
++- Kept Source Palette sort options unchanged.
++- Compact Source palette and Search source swatches controls now render as label/input rows.
 +
 +## Validation
 +- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
++- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
 +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- `node --check tools/palette-manager-v2/modules/paletteUtils.js`: PASS.
-+- `git diff --check`: PASS.
-+- `git diff --cached --check`: PASS.
 +- Targeted served-browser Palette Manager V2 validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Artifacts
 +- Review diff: `docs/dev/reports/codex_review.diff`
 +- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards_delta.zip`
-diff --git a/docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/BUILD_PR.md b/docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/BUILD_PR.md
++- Delta ZIP: `tmp/PR_26124_053-palette-manager-tag-delete-and-sort-ui_delta.zip`
+diff --git a/docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/BUILD_PR.md b/docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/BUILD_PR.md
 new file mode 100644
-index 00000000..2b022ef3
+index 00000000..8e22a7bf
 --- /dev/null
-+++ b/docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/BUILD_PR.md
++++ b/docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/BUILD_PR.md
 @@ -0,0 +1,35 @@
-+# BUILD_PR - PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards
++# BUILD_PR - PR_26124_053-palette-manager-tag-delete-and-sort-ui
 +
 +## Purpose
-+Implement one scoped Palette Manager V2 update: lowercase tag normalization, duplicate guards for user-defined swatch fields, Add accordion field cleanup, and selected-tag removal.
++Implement one scoped Palette Manager V2 UI update for tag deletion, Tag sorting, compact source controls, and accordion naming.
 +
 +## Scope
 +- `tools/palette-manager-v2/*`
 +- PR workflow docs and required review artifacts only.
 +
 +## Implementation
-+1. Force all tag values to lowercase when added, displayed, stored, imported, and exported.
-+2. Prevent duplicate User Defined/Add swatch values for:
-+   - `name`,
-+   - RGB/hex,
-+   - `symbol`.
-+3. Duplicate validation must block Add and Update with clear validation/error messages.
-+4. Remove Source field/textbox from the Add accordion.
-+5. Remove Tags field/textbox from the Add accordion.
-+6. In Selected Swatch, clicking an existing tag button removes that tag from the selected swatch.
-+7. Preserve valid tag import/export roundtrip after lowercase normalization.
-+8. Preserve pin/unpin, sort, search, size, import/export, and accordion behavior.
++1. Restore the Add accordion title to `User Defined Swatch`.
++2. Keep the Add button label as `User Defined Swatch`.
++3. In the Tags accordion, each available tag must keep its tag-toggle button behavior.
++4. Add a separate visible delete affordance for each available tag.
++5. Delete an available tag only when no User Palette swatch currently uses the tag.
++6. When tag deletion is blocked, show a clear validation/error message.
++7. Add User Palette sort mode `Tag`.
++8. Tag sort must sort by normalized lowercase tag text and put swatches without tags after tagged swatches.
++9. Keep Source Palette sort modes unchanged.
++10. Compact Source palette and Search source swatches controls into label/input rows.
 +
 +## Boundaries
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
-+- Do not add dependencies.
 +- Do not modify shared accordionV2.
++- Do not modify shared sort services.
++- Do not add dependencies.
 +- Do not broaden changes beyond Palette Manager V2 behavior and PR workflow docs.
 +
 +## Validation
-+- Syntax check changed files.
-+- Run targeted served-browser Palette Manager V2 tag normalization, duplicate guard, and selected-tag removal check.
++- Syntax check changed JavaScript files.
++- Run targeted served-browser Palette Manager V2 tag delete, tag sort, and compact source-control check.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/PLAN_PR.md b/docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/PLAN_PR.md b/docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/PLAN_PR.md
 new file mode 100644
-index 00000000..55a05769
+index 00000000..4a507a72
 --- /dev/null
-+++ b/docs/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/PLAN_PR.md
-@@ -0,0 +1,40 @@
-+# PLAN_PR - PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards
++++ b/docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/PLAN_PR.md
+@@ -0,0 +1,45 @@
++# PLAN_PR - PR_26124_053-palette-manager-tag-delete-and-sort-ui
 +
 +## Goal
-+Normalize Palette Manager V2 tags to lowercase everywhere and add duplicate guards for user-defined swatch identity fields.
++Update Palette Manager V2 tag management and sorting UI without changing shared services or palette JSON contracts.
 +
 +## Scope
 +- `tools/palette-manager-v2/*`
@@ -176,295 +185,275 @@ index 00000000..55a05769
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
-+- Do not add dependencies.
 +- Do not modify shared accordionV2.
-+- Preserve pin/unpin, sort, search, size, import/export, and tag roundtrip behavior.
++- Do not modify shared sort services.
++- Do not add dependencies.
++- Preserve pin/unpin, source search, swatch size, import/export, lowercase tag normalization, and duplicate user swatch guards.
 +
 +## Implementation Plan
-+1. Force tag normalization to lowercase in Palette Manager V2 swatch utilities.
-+2. Ensure displayed, stored, imported, and exported tags use lowercase normalized values.
-+3. Add duplicate validation for User Defined/Add swatch `name`, `hex`, and `symbol`.
-+4. Block Add and Update when a duplicate is found, with clear validation/error messages.
-+5. Remove Source field from the Add accordion.
-+6. Remove Tags field from the Add accordion.
-+7. Allow clicking an existing tag in Selected Swatch to remove it from the selected swatch.
++1. Restore the Add accordion title to `User Defined Swatch`.
++2. Preserve the Add button label as `User Defined Swatch`.
++3. Add a visible delete affordance for each tag in the Tags accordion.
++4. Block tag deletion when any User Palette swatch still uses that tag and show a clear validation/error message.
++5. Delete unused tags from the available tag list when no user swatch uses them.
++6. Add `Tag` as a User Palette sort option.
++7. Sort tagged swatches by normalized lowercase tag text and place swatches without tags after tagged swatches.
++8. Keep Source Palette sort options unchanged.
++9. Compact the Sample Palette Swatch source/search controls into label/input rows.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- Expected pass behavior: Workspace V2 validation remains green after Palette Manager V2-only changes.
-+- Expected fail behavior: failures identify Workspace V2 regressions or a missing validation command.
++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by the Palette Manager V2-only UI update.
++- Expected pass behavior: Workspace V2 validation remains green.
++- Expected fail behavior: missing script or Workspace V2 regression is reported.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
-+1. Open Palette Manager V2 through a local server.
-+2. Add a tag with uppercase letters and confirm it displays/exports lowercase.
-+3. Import palette JSON with uppercase tags and confirm export emits lowercase tags.
-+4. Attempt to add duplicate user swatches by name, hex, and symbol and confirm Add is blocked.
-+5. Attempt to update a swatch into duplicate name, hex, and symbol and confirm Update is blocked.
-+6. Confirm Add accordion no longer has Source or Tags fields.
-+7. Click a tag inside Selected Swatch and confirm it is removed from the selected swatch.
-diff --git a/tools/palette-manager-v2/README.md b/tools/palette-manager-v2/README.md
-index 05f4ee0b..7ab617b2 100644
---- a/tools/palette-manager-v2/README.md
-+++ b/tools/palette-manager-v2/README.md
-@@ -12,9 +12,11 @@ Palette Manager V2 is the runtime tool for editing the global palette data store
-
- ## Workflow
- - Add and edit user-defined swatches from the Add accordion. Swatches created with Add use `User Added` as their source.
--- Add shows populated form data only for selected `User Added` swatches; source-palette selections clear the form.
--- Selected Swatch shows selected details with symbol, hex, name, source, and current tags read-only.
-+- Add shows populated symbol, hex, and name data only for selected `User Added` swatches; source-palette selections clear the form.
-+- Add and Update reject duplicate user swatch names, RGB/hex values, and symbols.
-+- Selected Swatch shows selected details with symbol, hex, name, source, and current tags. Click a selected tag to remove it from the selected swatch.
- - Use the Tags accordion to add typed tags or toggle existing user palette tags on the currently selected swatch.
-+- Tags are normalized to lowercase when added, imported, displayed, stored, copied, and exported.
- - Browse Crayola, W3C, and JavaScript source palettes without editing the source lists.
- - Use the red tack to copy a source swatch into the user palette.
- - Use the green tack to remove a pinned/user swatch when `isSwatchUsedByTool(swatch)` allows removal.
++1. Open Palette Manager V2.
++2. Confirm the left Add accordion title reads `User Defined Swatch`.
++3. Confirm the Add button still reads `User Defined Swatch`.
++4. Add a swatch, add a tag, and confirm clicking the tag text still toggles it on/off for the selected swatch.
++5. Confirm clicking the tag delete affordance blocks deletion while the tag is used.
++6. Remove the tag from all swatches, then delete it from the Tags accordion.
++7. Confirm User Palette sort includes `Tag` and orders tagged swatches before untagged swatches.
++8. Confirm Sample Palette Swatch Source palette and Search source swatches controls render as compact label/input rows.
 diff --git a/tools/palette-manager-v2/controls/PaletteEditorControl.js b/tools/palette-manager-v2/controls/PaletteEditorControl.js
-index a6fd7405..911fecc9 100644
+index 911fecc9..b87bf7d9 100644
 --- a/tools/palette-manager-v2/controls/PaletteEditorControl.js
 +++ b/tools/palette-manager-v2/controls/PaletteEditorControl.js
-@@ -1,4 +1,4 @@
--import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modules/paletteUtils.js";
-+import { cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modules/paletteUtils.js";
-
- const MAX_TAG_SUGGESTIONS = 6;
-
-@@ -13,7 +13,6 @@ export class PaletteEditorControl {
-     this.app = app;
-     this.hexColorPattern = hexColorPattern;
-     this.selectedTags = [];
--    this.userDefinedTags = [];
-     this.tagSuggestionIndex = -1;
-   }
-
-@@ -72,9 +71,6 @@ export class PaletteEditorControl {
-     this.refs.swatchSymbolInput.value = cleanSwatch.symbol;
-     this.refs.swatchHexInput.value = cleanSwatch.hex;
-     this.refs.swatchNameInput.value = cleanSwatch.name;
--    this.refs.swatchSourceInput.value = cleanSwatch.source || USER_ADDED_SOURCE;
--    this.userDefinedTags = normalizeTags(cleanSwatch.tags);
--    this.renderUserDefinedTagList();
-     this.renderUserDefinedSwatchPreview(cleanSwatch);
-   }
-
-@@ -82,9 +78,6 @@ export class PaletteEditorControl {
-     this.refs.swatchSymbolInput.value = "";
-     this.refs.swatchHexInput.value = "";
-     this.refs.swatchNameInput.value = "";
--    this.refs.swatchSourceInput.value = "";
--    this.userDefinedTags = [];
--    this.renderUserDefinedTagList();
-     this.renderUserDefinedSwatchPreview({ hex: "" });
-   }
-
-@@ -92,9 +85,7 @@ export class PaletteEditorControl {
-     return {
-       symbol: sanitizeText(this.refs.swatchSymbolInput.value),
-       hex: normalizeHex(this.refs.swatchHexInput.value),
--      name: sanitizeText(this.refs.swatchNameInput.value),
--      source: sanitizeText(this.refs.swatchSourceInput.value),
--      tags: normalizeTags(this.userDefinedTags)
-+      name: sanitizeText(this.refs.swatchNameInput.value)
-     };
-   }
-
-@@ -166,11 +157,11 @@ export class PaletteEditorControl {
-   }
-
-   renderSelectedTagList() {
--    this.renderTagList(this.refs.selectedSwatchTagList, this.selectedTags);
--  }
--
--  renderUserDefinedTagList() {
--    this.renderTagList(this.refs.userDefinedSwatchTagList, this.userDefinedTags);
-+    this.renderTagList(this.refs.selectedSwatchTagList, this.selectedTags, {
-+      onClick: (tag) => {
-+        this.app.removeTagFromSelectedSwatch(tag);
-+      }
-+    });
-   }
-
-   renderAvailableTagList() {
-@@ -198,7 +189,7 @@ export class PaletteEditorControl {
-     });
-   }
-
--  renderTagList(container, tags) {
-+  renderTagList(container, tags, options = {}) {
-     container.replaceChildren();
-     const cleanTags = normalizeTags(tags);
-     if (cleanTags.length === 0) {
-@@ -209,9 +200,18 @@ export class PaletteEditorControl {
+@@ -175,6 +175,9 @@ export class PaletteEditorControl {
        return;
      }
-     cleanTags.forEach((tag) => {
--      const pill = container.ownerDocument.createElement("span");
-+      const pill = typeof options.onClick === "function"
-+        ? container.ownerDocument.createElement("button")
-+        : container.ownerDocument.createElement("span");
-       pill.className = "palette-manager-v2__tag-pill";
-       pill.textContent = tag;
-+      if (typeof options.onClick === "function") {
-+        pill.type = "button";
-+        pill.classList.add("palette-manager-v2__tag-remove");
-+        pill.addEventListener("click", () => {
-+          options.onClick(tag);
-+        });
-+      }
-       container.appendChild(pill);
+     availableTags.forEach((tag) => {
++      const tagItem = this.refs.availableTagList.ownerDocument.createElement("span");
++      tagItem.className = "palette-manager-v2__tag-item";
++
+       const button = this.refs.availableTagList.ownerDocument.createElement("button");
+       button.type = "button";
+       button.className = "palette-manager-v2__tag-pill palette-manager-v2__tag-toggle";
+@@ -185,7 +188,19 @@ export class PaletteEditorControl {
+       button.addEventListener("click", () => {
+         this.app.toggleTagOnSelectedSwatch(tag);
+       });
+-      this.refs.availableTagList.appendChild(button);
++
++      const deleteButton = this.refs.availableTagList.ownerDocument.createElement("button");
++      deleteButton.type = "button";
++      deleteButton.className = "palette-manager-v2__tag-delete";
++      deleteButton.setAttribute("aria-label", `Delete tag ${tag}`);
++      deleteButton.title = `Delete tag ${tag}`;
++      deleteButton.textContent = "x";
++      deleteButton.addEventListener("click", () => {
++        this.app.deleteAvailableTag(tag);
++      });
++
++      tagItem.append(button, deleteButton);
++      this.refs.availableTagList.appendChild(tagItem);
      });
    }
-diff --git a/tools/palette-manager-v2/how_to_use.html b/tools/palette-manager-v2/how_to_use.html
-index bcee092b..b27f18d2 100644
---- a/tools/palette-manager-v2/how_to_use.html
-+++ b/tools/palette-manager-v2/how_to_use.html
-@@ -17,15 +17,15 @@
-     </section>
-     <section class="card">
-       <h2>Selected Swatch</h2>
--      <p>Selected Swatch displays symbol, hex, name, source, and tags as read-only details.</p>
-+      <p>Selected Swatch displays symbol, hex, name, source, and tags. Click a selected tag to remove it from the selected swatch.</p>
-     </section>
-     <section class="card">
-       <h2>Add</h2>
--      <p>Add shows populated form data only when the selected user palette swatch was created as <code>User Added</code>. Source-palette selections clear the form data.</p>
-+      <p>Add shows symbol, hex, and name form data only when the selected user palette swatch was created as <code>User Added</code>. Source-palette selections clear the form data, and duplicate names, RGB/hex values, or symbols are blocked.</p>
-     </section>
-     <section class="card">
-       <h2>Tags</h2>
--      <p>Tags lists existing user palette tags. Click a tag to toggle it on the selected swatch, or enter a new tag name and add it to the selected swatch.</p>
-+      <p>Tags lists existing user palette tags. Click a tag to toggle it on the selected swatch, or enter a new tag name and add it to the selected swatch. Tags are stored in lowercase.</p>
-     </section>
-     <section class="card">
-       <h2>Browse Palettes</h2>
+
+diff --git a/tools/palette-manager-v2/controls/UserPaletteControl.js b/tools/palette-manager-v2/controls/UserPaletteControl.js
+index 256be57f..349fb50e 100644
+--- a/tools/palette-manager-v2/controls/UserPaletteControl.js
++++ b/tools/palette-manager-v2/controls/UserPaletteControl.js
+@@ -40,7 +40,7 @@ export class UserPaletteControl {
+
+   renderSortOptions() {
+     this.refs.userPaletteSortControls.replaceChildren();
+-    this.app.getSortModes().forEach((mode) => {
++    this.app.getUserSortModes().forEach((mode) => {
+       const button = this.document.createElement("button");
+       button.type = "button";
+       button.className = "palette-manager-v2__sort-button";
 diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 1a043825..77553f0e 100644
+index d10361c1..9a46f384 100644
 --- a/tools/palette-manager-v2/index.html
 +++ b/tools/palette-manager-v2/index.html
 @@ -56,7 +56,7 @@
 
          <details class="palette-manager-v2__accordion" open>
            <summary class="palette-manager-v2__accordion-summary">
--            <span>User Defined Swatch</span>
-+            <span>Add</span>
+-            <span>Add</span>
++            <span>User Defined Swatch</span>
              <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
            </summary>
            <div class="palette-manager-v2__accordion-content">
-@@ -74,14 +74,6 @@
-                 Name
-                 <input id="swatchNameInput" type="text" autocomplete="off" />
-               </label>
--              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
--                Source
--                <input id="swatchSourceInput" type="text" autocomplete="off" readonly />
--              </label>
--              <div class="palette-manager-v2__field palette-manager-v2__field--compact">
--                <span>Tags</span>
--                <div id="userDefinedSwatchTagList" class="palette-manager-v2__tag-list" aria-label="User defined swatch tags"></div>
--              </div>
-             </div>
-             <div class="palette-manager-v2__controls">
-               <button id="addSwatchButton" type="button">Add</button>
+@@ -130,11 +130,11 @@
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+           </button>
+           <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
+-            <label class="palette-manager-v2__field">
++            <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
+               Source palette
+               <select id="sourcePaletteSelect"></select>
+             </label>
+-            <label class="palette-manager-v2__field">
++            <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
+               Search source swatches
+               <input id="sourceSearchInput" type="search" autocomplete="off" />
+             </label>
 diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 1ff97bca..ba9d8708 100644
+index ba9d8708..9fccce37 100644
 --- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
 +++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -25,11 +25,9 @@ const REQUIRED_REF_IDS = Object.freeze([
-   "selectedSwatchSourceInput",
-   "selectedSwatchTagList",
-   "userDefinedSwatchPreview",
--  "userDefinedSwatchTagList",
-   "swatchSymbolInput",
-   "swatchHexInput",
-   "swatchNameInput",
--  "swatchSourceInput",
-   "availableTagList",
-   "tagEntryInput",
-   "tagSuggestions",
-@@ -66,6 +64,14 @@ function sortUniqueTags(tags) {
-     .sort((left, right) => collator.compare(left, right));
+@@ -50,10 +50,22 @@ const SWATCH_SIZE_OPTIONS = Object.freeze([
+   Object.freeze({ value: "large", label: "Large" })
+ ]);
+
++const USER_SORT_MODES = Object.freeze([
++  Object.freeze({ value: "hue", label: "Hue" }),
++  Object.freeze({ value: "saturation", label: "Saturation" }),
++  Object.freeze({ value: "brightness", label: "Brightness" }),
++  Object.freeze({ value: "name", label: "Name" }),
++  Object.freeze({ value: "tag", label: "Tag" })
++]);
++
+ function isValidSwatchSize(swatchSize) {
+   return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
  }
 
-+function isSameText(left, right) {
-+  return sanitizeText(left).toLowerCase() === sanitizeText(right).toLowerCase();
++function isValidUserSortMode(sortMode) {
++  return USER_SORT_MODES.some((mode) => mode.value === sortMode);
 +}
 +
-+function getRgbHexKey(hex) {
-+  return normalizeHex(hex).slice(0, 7);
+ function isUserDefinedSwatch(swatch) {
+   return sanitizeText(swatch?.source) === USER_ADDED_SOURCE;
+ }
+@@ -72,6 +84,26 @@ function getRgbHexKey(hex) {
+   return normalizeHex(hex).slice(0, 7);
+ }
+
++function getTagSortKey(swatch) {
++  return sortUniqueTags(swatch?.tags)[0] || "";
++}
++
++function sortRowsByTag(rows) {
++  const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
++  return (Array.isArray(rows) ? rows : [])
++    .map((row, index) => ({ row, index, tagKey: getTagSortKey(row?.swatch) }))
++    .sort((left, right) => {
++      if (!left.tagKey && right.tagKey) {
++        return 1;
++      }
++      if (left.tagKey && !right.tagKey) {
++        return -1;
++      }
++      return collator.compare(left.tagKey, right.tagKey) || left.index - right.index;
++    })
++    .map((entry) => entry.row);
 +}
 +
  function collectRefs(documentRef) {
    return REQUIRED_REF_IDS.reduce((refs, id) => {
      const element = documentRef.getElementById(id);
-@@ -297,6 +303,26 @@ export class PaletteManagerApp {
-     this.state.availableTags = sortUniqueTags([...this.state.availableTags, ...normalizeTags(tags)]);
+@@ -154,6 +186,9 @@ export class PaletteManagerApp {
+       index,
+       swatch: cloneSwatch(swatch)
+     }));
++    if (this.state.userSortMode === "tag") {
++      return sortRowsByTag(rows);
++    }
+     return this.sortService.sortRows(rows, this.state.userSortMode);
    }
 
-+  validateUniqueUserSwatchFields(swatch, ignoredIndex) {
-+    const cleanSwatch = cloneSwatch(swatch);
-+    const issues = [];
-+    this.state.userSwatches.forEach((existingSwatch, index) => {
-+      if (index === ignoredIndex) {
-+        return;
-+      }
-+      if (isSameText(existingSwatch.name, cleanSwatch.name)) {
-+        issues.push(`Duplicate user swatch name: ${cleanSwatch.name}.`);
-+      }
-+      if (getRgbHexKey(existingSwatch.hex) === getRgbHexKey(cleanSwatch.hex)) {
-+        issues.push(`Duplicate user swatch RGB/hex: ${getRgbHexKey(cleanSwatch.hex)}.`);
-+      }
-+      if (isSameText(existingSwatch.symbol, cleanSwatch.symbol)) {
-+        issues.push(`Duplicate user swatch symbol: ${cleanSwatch.symbol}.`);
-+      }
-+    });
-+    return Array.from(new Set(issues));
+@@ -165,6 +200,10 @@ export class PaletteManagerApp {
+     return this.sortService.getSortModes();
+   }
+
++  getUserSortModes() {
++    return USER_SORT_MODES.map((mode) => ({ ...mode }));
 +  }
 +
-   clearEditorForm(status) {
-     this.state.selectedUserIndex = -1;
-     this.editorControl.clearForm();
-@@ -327,7 +353,10 @@ export class PaletteManagerApp {
+   getSwatchSizeOptions() {
+     return SWATCH_SIZE_OPTIONS.map((size) => ({ ...size }));
+   }
+@@ -256,7 +295,7 @@ export class PaletteManagerApp {
+   }
 
-   addUserSwatch(swatch) {
-     const cleanSwatch = cloneSwatch({ ...swatch, source: USER_ADDED_SOURCE });
--    const errors = this.validator.validateSwatch(cleanSwatch, "new swatch");
-+    const errors = [
-+      ...this.validator.validateSwatch(cleanSwatch, "new swatch"),
-+      ...this.validateUniqueUserSwatchFields(cleanSwatch, -1)
-+    ];
-     if (errors.length > 0) {
-       this.setActionState(errors, "User swatch was not added.");
-       return;
-@@ -353,8 +382,15 @@ export class PaletteManagerApp {
+   setUserSortMode(sortMode) {
+-    if (!this.sortService.isValidSortMode(sortMode)) {
++    if (!isValidUserSortMode(sortMode)) {
        return;
      }
+     this.state.userSortMode = sortMode;
+@@ -499,6 +538,29 @@ export class PaletteManagerApp {
+     return this.addTagToSelectedSwatch(cleanTag);
+   }
 
--    const cleanSwatch = cloneSwatch({ ...swatch, source: existingSwatch.source });
--    const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
-+    const cleanSwatch = cloneSwatch({
-+      ...swatch,
-+      source: existingSwatch.source,
-+      tags: existingSwatch.tags
++  deleteAvailableTag(tag) {
++    const cleanTag = normalizeTags([tag])[0] || "";
++    if (!cleanTag) {
++      return false;
++    }
++
++    const tagIsUsed = this.state.userSwatches.some((swatch) => {
++      return normalizeTags(swatch.tags).some((existingTag) => existingTag === cleanTag);
 +    });
-+    const errors = [
-+      ...this.validator.validateSwatch(cleanSwatch, "selected swatch"),
-+      ...this.validateUniqueUserSwatchFields(cleanSwatch, this.state.selectedUserIndex)
-+    ];
-     if (errors.length > 0) {
-       this.setActionState(errors, "Selected swatch was not updated.");
-       return;
++    if (tagIsUsed) {
++      this.setActionState([`Tag "${cleanTag}" is used by a User Palette swatch and cannot be deleted.`], "Tag delete blocked.");
++      return false;
++    }
++
++    if (!this.state.availableTags.includes(cleanTag)) {
++      return false;
++    }
++
++    this.state.availableTags = this.state.availableTags.filter((availableTag) => availableTag !== cleanTag);
++    this.setActionState([], `Deleted tag ${cleanTag}.`);
++    return true;
++  }
++
+   removeSelectedSwatch() {
+     if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
+       this.setActionState(["Select a user swatch before removing."], "No user swatch selected.");
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index a5ddfe42..f41cbdff 100644
+index f41cbdff..34a53e3a 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -299,6 +299,10 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+@@ -229,6 +229,12 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   gap: 8px;
+ }
+
++.palette-manager-v2__field--source-control {
++  grid-template-columns: minmax(142px, auto) minmax(0, 1fr);
++  align-items: center;
++  gap: 8px;
++}
++
+ .palette-manager-v2__field input,
+ .palette-manager-v2__field select {
+   width: 100%;
+@@ -295,6 +301,13 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   padding: 4px 8px;
+ }
+
++.palette-manager-v2__tag-item {
++  min-width: 0;
++  display: inline-flex;
++  align-items: center;
++  gap: 4px;
++}
++
+ .palette-manager-v2__tag-toggle {
+   cursor: pointer;
+ }
+@@ -303,6 +316,21 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
    cursor: pointer;
  }
 
-+.palette-manager-v2__tag-remove {
++.palette-manager-v2__tag-delete {
++  width: 24px;
++  height: 24px;
++  display: inline-grid;
++  place-items: center;
++  border: 1px solid var(--pm-line);
++  border-radius: 999px;
++  background: rgba(179, 38, 30, 0.18);
++  color: inherit;
 +  cursor: pointer;
++  font-weight: 800;
++  line-height: 1;
++  padding: 0;
 +}
 +
  .palette-manager-v2__tag-toggle.is-active {
