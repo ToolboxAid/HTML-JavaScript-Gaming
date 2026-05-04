@@ -130,10 +130,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   overflow: hidden;
 }
 
-.palette-manager-v2__right-accordion--import .palette-manager-v2__controls {
-  flex: 0 0 auto;
-}
-
 .palette-manager-v2__right-accordion--import .palette-manager-v2__json-preview {
   flex: 1 1 auto;
   min-height: 0;
@@ -596,70 +592,15 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   height: 20px;
 }
 
-.palette-manager-v2__swatch-row {
-  min-height: 44px;
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) 42px;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--pm-line);
-  border-radius: 8px;
-  background: var(--pm-surface);
-  padding: 6px;
-}
-
-.palette-manager-v2__swatch-row.is-selected {
-  border-color: var(--pm-accent);
-}
-
-.palette-manager-v2__swatch-chip,
 .palette-manager-v2__preview {
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 6px;
   background: #000000;
 }
 
-.palette-manager-v2__swatch-chip {
-  width: 32px;
-  height: 32px;
-}
-
 .palette-manager-v2__preview {
   width: 100%;
   aspect-ratio: 8 / 3;
-}
-
-.palette-manager-v2__swatch-copy {
-  min-width: 0;
-}
-
-.palette-manager-v2__swatch-name,
-.palette-manager-v2__swatch-meta {
-  margin: 0;
-}
-
-.palette-manager-v2__swatch-name {
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-
-.palette-manager-v2__swatch-meta {
-  color: var(--pm-text-muted);
-  font-size: 0.9rem;
-  overflow-wrap: anywhere;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 2px 8px;
-}
-
-.palette-manager-v2__swatch-meta dt {
-  font-weight: 700;
-}
-
-.palette-manager-v2__swatch-meta dd {
-  min-width: 0;
-  margin: 0;
-  overflow-wrap: anywhere;
 }
 
 .palette-manager-v2__json-preview {

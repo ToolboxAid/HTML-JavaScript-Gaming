@@ -1,37 +1,4 @@
 export class SwatchRow {
-  static create(documentRef, swatch, options = {}) {
-    const row = documentRef.createElement("div");
-    row.className = "palette-manager-v2__swatch-row";
-    if (options.selected) {
-      row.classList.add("is-selected");
-    }
-
-    const chip = documentRef.createElement("span");
-    chip.className = "palette-manager-v2__swatch-chip";
-    chip.style.background = swatch.hex;
-    chip.title = SwatchRow.createTooltipText(swatch);
-
-    const copy = documentRef.createElement("div");
-    copy.className = "palette-manager-v2__swatch-copy";
-
-    const name = documentRef.createElement("p");
-    name.className = "palette-manager-v2__swatch-name";
-    name.textContent = swatch.name;
-
-    const meta = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__swatch-meta");
-
-    copy.append(name, meta);
-
-    const tack = SwatchRow.createTackButton(documentRef, options);
-
-    row.title = SwatchRow.createTooltipText(swatch);
-    row.append(chip, copy, tack);
-    if (typeof options.onSelect === "function") {
-      row.addEventListener("click", options.onSelect);
-    }
-    return row;
-  }
-
   static createSourceTile(documentRef, swatch, options = {}) {
     return SwatchRow.createTile(documentRef, swatch, {
       ...options,
@@ -117,25 +84,6 @@ export class SwatchRow {
       `Source: ${swatch.source}`,
       `Tags: ${Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"}`
     ].join("\n");
-  }
-
-  static createDetailsBlock(documentRef, swatch, className) {
-    const details = documentRef.createElement("dl");
-    details.className = className;
-    [
-      ["Name", swatch.name],
-      ["Symbol", swatch.symbol],
-      ["Hex", swatch.hex],
-      ["Source", swatch.source],
-      ["Tags", Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"]
-    ].forEach(([label, value]) => {
-      const term = documentRef.createElement("dt");
-      term.textContent = label;
-      const description = documentRef.createElement("dd");
-      description.textContent = value;
-      details.append(term, description);
-    });
-    return details;
   }
 
   static createTackButton(documentRef, options = {}) {

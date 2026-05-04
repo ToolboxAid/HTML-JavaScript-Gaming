@@ -1,146 +1,188 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index e148fe65..5255f164 100644
+index 5255f164..0be9cde0 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,28 +1,27 @@
--# Codex Commands - PR_26124_064-palette-manager-source-pin-scroll-preserve
-+# Codex Commands - PR_26124_065-palette-manager-validation-clear-in-viewer
+@@ -1,27 +1,38 @@
+-# Codex Commands - PR_26124_065-palette-manager-validation-clear-in-viewer
++# Codex Commands - PR_26124_066-palette-manager-final-baseline-hardening
  
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
  - Used `.codex/skills/repo-build/SKILL.md`.
  - Checked git status before implementation.
--- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md`.
-+- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md`.
+-- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md`.
++- Created `docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md`.
  - Read the active BUILD doc before changing runtime files.
--- Updated only `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`.
--- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md`.
-+- Updated `tools/palette-manager-v2/index.html`.
-+- Updated `tools/palette-manager-v2/paletteManagerV2.css`.
-+- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md`.
+-- Updated `tools/palette-manager-v2/index.html`.
++- Inspected only `tools/palette-manager-v2`.
++- Updated `tools/palette-manager-v2/modules/SwatchRow.js`.
++- Updated `tools/palette-manager-v2/modules/PaletteManagerApp.js`.
+ - Updated `tools/palette-manager-v2/paletteManagerV2.css`.
+-- Created `docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md`.
++- Created `docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md`.
++
++## Audit Commands
++- `rg --files tools/palette-manager-v2`
++- `rg -n '<details|</details|<summary|</summary|viewer-actions|clearTagModeCheckbox|tag-clear-mode|clear.*checkbox|Clear|sourceScrollTop|requestAnimationFrame|sortRowsByTag|applySortDirection|pin-button|menu-sample|menu-actions|validation-header|validation-actions' tools/palette-manager-v2`
++- `rg -n 'SwatchRow\\.create\\(|createDetailsBlock|swatch-row|swatch-copy|swatch-name|swatch-meta|swatch-chip|right-accordion--import \\.palette-manager-v2__controls|viewer-actions|clearTagModeCheckbox|tag-clear-mode|removeSelectedSwatch' tools/palette-manager-v2`
++- Node refs/IDs audit for duplicate IDs and missing required refs.
  
  ## Validation Commands
--- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
--- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation using Playwright from Node.
-+- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation using Playwright from Node.
+-- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation using Playwright from Node.
++- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
++- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
++- Targeted served-browser Palette Manager V2 final hardening validation using Playwright from Node.
  - `git diff --check`
  - `npm run test:workspace-v2`
  - `git diff --cached --check`
  - `npm run codex:review-artifacts`
--- Python `zipfile` packaging for `tmp/PR_26124_064-palette-manager-source-pin-scroll-preserve_delta.zip`
-+- Python `zipfile` packaging for `tmp/PR_26124_065-palette-manager-validation-clear-in-viewer_delta.zip`
+-- Python `zipfile` packaging for `tmp/PR_26124_065-palette-manager-validation-clear-in-viewer_delta.zip`
++- Python `zipfile` packaging for `tmp/PR_26124_066-palette-manager-final-baseline-hardening_delta.zip`
  
  ## Validation Outcome
--- JavaScript syntax check: PASS.
--- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation: PASS.
--- `git diff --check`: PASS with Git LF-to-CRLF warning for generated review artifact.
-+- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
+-- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear validation: PASS.
+-- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
++- JavaScript syntax checks: PASS.
++- Targeted served-browser Palette Manager V2 final hardening validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warning for changed Palette Manager CSS.
  - `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
  - Review artifacts: generated.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index c5251306..ebb0de10 100644
+index ebb0de10..41ca7e57 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Preserve Palette Manager source scroll after pin render - PR_26124_064-palette-manager-source-pin-scroll-preserve
-+Move Palette Manager validation Clear into viewer header - PR_26124_065-palette-manager-validation-clear-in-viewer
-diff --git a/docs/dev/reports/PR_26124_065_report.md b/docs/dev/reports/PR_26124_065_report.md
+-Move Palette Manager validation Clear into viewer header - PR_26124_065-palette-manager-validation-clear-in-viewer
++Harden Palette Manager baseline by removing stale row artifacts - PR_26124_066-palette-manager-final-baseline-hardening
+diff --git a/docs/dev/reports/PR_26124_066_report.md b/docs/dev/reports/PR_26124_066_report.md
 new file mode 100644
-index 00000000..e7fbd6ee
+index 00000000..cd9d115f
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_065_report.md
-@@ -0,0 +1,26 @@
-+# PR_26124_065-palette-manager-validation-clear-in-viewer Report
++++ b/docs/dev/reports/PR_26124_066_report.md
+@@ -0,0 +1,37 @@
++# PR_26124_066-palette-manager-final-baseline-hardening Report
 +
 +## Summary
-+Implemented a Palette Manager V2-only UI placement update for Validation/Error Viewer Clear.
++Performed a final focused hardening pass for Palette Manager V2 before using it as the base pattern for the next tool rebuilds.
 +
 +## Changes
-+- The Validation/Error Viewer Clear button now appears in the Validation/Error Viewer header/control area.
-+- The old in-content Clear button wrapper was removed.
-+- The existing Clear behavior is preserved:
-+  - displayed status/errors are cleared,
-+  - palette state is not changed,
-+  - the next validation/error event displays normally.
++- Removed stale row/list swatch rendering code that is no longer used by the tile-based User Palette and Sample Palette Swatch views.
++- Removed matching dead row/list CSS selectors.
++- Removed the unused `removeSelectedSwatch` method left over from the removed selected-swatch delete control.
++- Removed a stale Import accordion controls CSS override after Import/Copy/Export actions moved to `menuSample`.
++
++## Preserved Behavior
++- Validation/Error Viewer Clear remains in the viewer header and still clears only displayed history.
++- User Palette Clear Checkboxes behavior is unchanged.
++- Source/Sample Palette individual pin/unpin scroll preservation is unchanged.
++- User Palette Tag sort keeps untagged swatches last.
++- Import JSON, Copy JSON, and Export JSON remain centered in `menuSample`.
++- Pin button sizing was not changed.
++- The shared platform header `details/summary` wrapper was preserved because it is owned by the platform shell, not Palette Manager accordion behavior.
 +
 +## Validation
-+- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
++- `node --check tools/palette-manager-v2/modules/SwatchRow.js`: PASS.
++- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
++- Targeted served-browser Palette Manager V2 final hardening validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warning for changed Palette Manager CSS.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
-+- Full samples smoke test: skipped because this PR is limited to Palette Manager V2 Validation/Error Viewer UI placement and sample JSON remains out of scope.
++- Full samples smoke test: skipped because this PR is limited to Palette Manager V2 hardening and sample JSON remains out of scope.
 +
 +## Manual Test Notes
 +1. Open Palette Manager V2.
-+2. Confirm `Clear` is in the Validation/Error Viewer header/control area.
-+3. Trigger a validation error.
-+4. Click `Clear` and confirm displayed status/errors are removed.
-+5. Trigger another validation error and confirm it displays normally.
-+6. Confirm palette state, swatch state, tags, sorting, pinning, import/export data, pin button size, and source/sample pin scroll behavior are unchanged.
-diff --git a/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md
++2. Confirm all Palette Manager panels use accordionV2 and no app-level `details`/`summary` accordions appear.
++3. Confirm Validation/Error Viewer Clear stays in the viewer header and future validation errors display after Clear.
++4. Confirm User Palette Clear Checkboxes clears only checked user swatches.
++5. Confirm source palette individual pin/unpin preserves source grid scroll.
++6. Confirm User Palette Tag descending sort keeps untagged swatches last.
++7. Confirm Import/Copy/Export remain centered in `menuSample`.
++8. Confirm tile pin size appears unchanged.
+diff --git a/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md
 new file mode 100644
-index 00000000..3c8041d0
+index 00000000..095c1fe5
 --- /dev/null
-+++ b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md
-@@ -0,0 +1,23 @@
-+# APPLY_PR - PR_26124_065-palette-manager-validation-clear-in-viewer
++++ b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md
+@@ -0,0 +1,40 @@
++# APPLY_PR - PR_26124_066-palette-manager-final-baseline-hardening
 +
 +## Summary
-+Moved Palette Manager V2 Validation/Error Viewer Clear into the viewer header/control area while preserving clear behavior.
++Completed the Palette Manager V2 final baseline hardening pass by removing concrete stale/dead artifacts from the current tile-based implementation.
 +
 +## Applied Changes
-+- Wrapped the Validation/Error Viewer accordion header in a local header/action container.
-+- Moved `#clearValidationViewerButton` into that Validation/Error Viewer header/action container.
-+- Removed the old in-content `palette-manager-v2__viewer-actions` wrapper.
-+- Kept `#clearValidationViewerButton` unchanged so the existing validation controller binding remains intact.
-+- Added scoped CSS for the Validation/Error Viewer header/action layout.
-+- Preserved Clear behavior: visible validation/error history is cleared, palette data is unchanged, and future validation/error events display normally.
++- Removed unused legacy row/list swatch rendering method `SwatchRow.create`.
++- Removed unused `SwatchRow.createDetailsBlock`, which was only used by the removed row/list renderer.
++- Removed unused `PaletteManagerApp.removeSelectedSwatch`, left over from the removed selected-swatch delete control.
++- Removed dead CSS for legacy row/list swatch classes:
++  - `.palette-manager-v2__swatch-row`
++  - `.palette-manager-v2__swatch-chip`
++  - `.palette-manager-v2__swatch-copy`
++  - `.palette-manager-v2__swatch-name`
++  - `.palette-manager-v2__swatch-meta`
++- Removed stale Import accordion `.palette-manager-v2__controls` override after JSON buttons moved to `menuSample`.
++- Preserved the shared platform header `details/summary` wrapper because it is consumed by `tools/shared/platformShell.js` and is not a Palette Manager accordion.
++
++## Audit Findings
++- No Palette Manager app-level old `details`/`summary` accordion markup remains.
++- No duplicate tag controls or duplicate Clear controls were found.
++- Validation/Error Viewer Clear remains inside its viewer header.
++- User Palette Clear Checkboxes behavior remains unchanged.
++- Source/Sample Palette scroll preservation remains unchanged.
++- Tag sort keeps untagged swatches last.
++- Import/Copy/Export buttons remain centered in `menuSample`.
++- Pin size was not changed.
 +
 +## Validation
-+- Targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
++- `node --check tools/palette-manager-v2/modules/SwatchRow.js`: PASS.
++- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
++- Targeted served-browser Palette Manager V2 final hardening validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warning for changed Palette Manager CSS.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Artifacts
 +- Review diff: `docs/dev/reports/codex_review.diff`
 +- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_065-palette-manager-validation-clear-in-viewer_delta.zip`
-diff --git a/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md
++- Delta ZIP: `tmp/PR_26124_066-palette-manager-final-baseline-hardening_delta.zip`
+diff --git a/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md
 new file mode 100644
-index 00000000..fdc36d5d
+index 00000000..14d1eb94
 --- /dev/null
-+++ b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md
-@@ -0,0 +1,37 @@
-+# BUILD_PR - PR_26124_065-palette-manager-validation-clear-in-viewer
++++ b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md
+@@ -0,0 +1,48 @@
++# BUILD_PR - PR_26124_066-palette-manager-final-baseline-hardening
 +
 +## Purpose
-+Implement one scoped Palette Manager V2 UI placement fix: move Validation/Error Viewer Clear into the Validation/Error Viewer header/control area without changing clear behavior.
++Perform one scoped Palette Manager V2 final hardening pass by removing only concrete stale/dead/duplicate artifacts found in `tools/palette-manager-v2`.
 +
 +## Scope
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
++- `tools/palette-manager-v2/*`
 +- PR workflow docs and required review artifacts only.
 +
 +## Implementation
-+1. Wrap the Validation/Error Viewer accordion header in a local header/action container, matching the existing User Palette and Sample Palette Swatch pattern.
-+2. Move `#clearValidationViewerButton` into that Validation/Error Viewer header/action container.
-+3. Remove the old in-content `palette-manager-v2__viewer-actions` wrapper.
-+4. Keep `#clearValidationViewerButton` unchanged so `PaletteValidationErrorControl.js` continues to bind it without runtime logic changes.
-+5. Add only scoped CSS needed for the Validation/Error Viewer header/action layout.
-+6. Preserve existing Clear behavior:
-+   - Clear removes displayed validation/error history.
-+   - Clear does not change palette state, swatch state, tags, sorting, pinning, or import/export data.
-+   - The next validation/error event displays normally.
++1. Inspect only files under `tools/palette-manager-v2`.
++2. Verify the hardening checklist:
++   - no old `details`/`summary` accordion markup remains,
++   - no duplicate or dead CSS override blocks remain,
++   - no unused event handlers, refs, or stale IDs from rejected/rolled-back PRs remain,
++   - no duplicate tag controls or duplicate Clear controls remain,
++   - Validation/Error Viewer Clear remains inside its viewer header,
++   - User Palette Clear checkbox behavior remains unchanged,
++   - Sample Palette scroll preservation remains unchanged,
++   - Tag sort keeps untagged swatches last,
++   - Import/Copy/Export remain centered in `menuSample`,
++   - pin size is not changed.
++3. Fix only concrete stale/dead/duplicate artifacts found by that inspection.
++4. Do not change runtime behavior unless the change removes a concrete stale/dead/duplicate artifact.
 +
 +## Boundaries
-+- Do not change Clear tag checkbox behavior.
-+- Do not change tag sorting.
++- Do not change Clear checkbox behavior.
++- Do not change tag sorting behavior except to preserve existing untagged-last behavior if a stale artifact is found.
 +- Do not change source/sample pin scroll preservation.
 +- Do not change pin button size.
++- Do not change Validation/Error Viewer behavior.
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
@@ -148,137 +190,245 @@ index 00000000..fdc36d5d
 +- Do not broadly refactor Palette Manager V2.
 +
 +## Validation
-+- Syntax check changed files if any JavaScript changes are made.
-+- Run targeted served-browser Palette Manager V2 Validation/Error Viewer Clear placement and behavior validation.
++- Syntax check changed JavaScript files.
++- Run targeted served-browser Palette Manager V2 hardening validation for:
++  - no `details`/`summary` in Palette Manager app markup,
++  - Validation/Error Viewer Clear placement and behavior,
++  - User Palette checkbox clear behavior,
++  - source pin/unpin scroll preservation,
++  - Tag descending sort keeps untagged swatches last,
++  - `menuSample` actions remain centered.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md
 new file mode 100644
-index 00000000..251cb5fa
+index 00000000..4496a3ad
 --- /dev/null
-+++ b/docs/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md
-@@ -0,0 +1,42 @@
-+# PLAN_PR - PR_26124_065-palette-manager-validation-clear-in-viewer
++++ b/docs/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md
+@@ -0,0 +1,51 @@
++# PLAN_PR - PR_26124_066-palette-manager-final-baseline-hardening
 +
 +## Goal
-+Move Palette Manager V2 Validation/Error Viewer Clear into the Validation/Error Viewer header/control area while preserving display-only clear behavior.
++Perform a final focused Palette Manager V2 hardening pass before using it as the base pattern for future tool rebuilds.
 +
 +## Scope
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
++- `tools/palette-manager-v2/*`
 +- PR workflow docs and required review artifacts only.
 +
 +## Boundaries
-+- Do not change Clear tag checkbox behavior.
-+- Do not change tag sorting.
-+- Do not change source/sample pin scroll preservation.
-+- Do not change pin button size.
++- Do not change behavior unless fixing a concrete stale/dead/duplicate artifact.
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
 +- Do not add dependencies.
 +- Avoid broad refactor.
 +
++## Audit Checklist
++1. Confirm no old `details`/`summary` accordion markup remains in Palette Manager V2.
++2. Check for duplicate or dead CSS override blocks.
++3. Check for unused event handlers, refs, or stale IDs from rejected/rolled-back PRs.
++4. Check for duplicate tag controls or duplicate Clear controls.
++5. Confirm Validation/Error Viewer Clear remains inside its viewer header.
++6. Confirm User Palette Clear checkbox behavior remains unchanged.
++7. Confirm Sample Palette scroll preservation remains unchanged.
++8. Confirm Tag sort keeps untagged swatches last.
++9. Confirm Import/Copy/Export buttons remain centered in `menuSample`.
++10. Confirm pin size is not changed.
++
 +## Implementation Plan
-+1. Move `#clearValidationViewerButton` from Validation/Error Viewer content into its header/control area.
-+2. Match the sibling header/action pattern used by User Palette and Sample Palette Swatch.
-+3. Keep `#clearValidationViewerButton` id unchanged so existing behavior remains wired.
-+4. Keep Validation/Error Viewer Clear behavior unchanged: clear visible history only, then show future validation/action events normally.
-+5. Add scoped CSS for the Validation/Error Viewer header/action row.
++1. Inspect only `tools/palette-manager-v2`.
++2. Fix only concrete stale/dead/duplicate artifacts found by the audit.
++3. Preserve all listed behaviors and layout contracts.
++4. Document any audit-only findings in the report.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only UI placement update.
++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only hardening pass.
 +- Expected pass behavior: Workspace V2 validation remains green.
 +- Expected fail behavior: missing script or Workspace V2 regression is reported.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open Palette Manager V2.
-+2. Confirm the Validation/Error Viewer Clear button appears in the Validation/Error Viewer header/control area.
-+3. Trigger a validation error.
-+4. Click Clear and confirm displayed status/errors are removed.
-+5. Trigger another validation error and confirm it displays normally.
-+6. Confirm palette state, swatch state, tags, sorting, pinning, import/export data, pin button size, and source/sample pin scroll behavior are unchanged.
-diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index fd0575bf..8b30bcc4 100644
---- a/tools/palette-manager-v2/index.html
-+++ b/tools/palette-manager-v2/index.html
-@@ -189,14 +189,16 @@
-         </section>
++2. Confirm all accordions use accordionV2 UI, not old `details`/`summary`.
++3. Confirm Validation/Error Viewer Clear is in the viewer header and still clears only displayed history.
++4. Confirm User Palette checkbox clearing is unchanged.
++5. Confirm source palette individual pin/unpin preserves source grid scroll.
++6. Confirm User Palette Tag descending sort keeps untagged swatches last.
++7. Confirm Import JSON, Copy JSON, and Export JSON remain centered in `menuSample`.
++8. Confirm pin button size is unchanged.
+diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
+index 79ab8f0a..3ac0824b 100644
+--- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
++++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
+@@ -898,14 +898,6 @@ export class PaletteManagerApp {
+     return true;
+   }
  
-         <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--validation is-open" data-accordion-v2-open="true">
--          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
--            <span>Validation/Error Viewer</span>
--            <span class="accordion-v2__icon" aria-hidden="true">+</span>
--          </button>
--          <div id="validationErrorAccordionContent" class="accordion-v2__content">
--            <div class="palette-manager-v2__viewer-actions">
-+          <div class="palette-manager-v2__validation-header">
-+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
-+              <span>Validation/Error Viewer</span>
-+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+            </button>
-+            <div class="palette-manager-v2__validation-actions" aria-label="Validation/Error Viewer controls">
-               <button id="clearValidationViewerButton" type="button">Clear</button>
-             </div>
-+          </div>
-+          <div id="validationErrorAccordionContent" class="accordion-v2__content">
-             <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
-             <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
-           </div>
+-  removeSelectedSwatch() {
+-    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
+-      this.setActionState(["Select a user swatch before removing."], "No user swatch selected.");
+-      return false;
+-    }
+-    return this.removeUserSwatch(this.state.selectedUserIndex);
+-  }
+-
+   removeUserSwatch(index) {
+     const swatch = this.state.userSwatches[index];
+     if (!swatch) {
+diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
+index d45a6d2d..91cc08a8 100644
+--- a/tools/palette-manager-v2/modules/SwatchRow.js
++++ b/tools/palette-manager-v2/modules/SwatchRow.js
+@@ -1,37 +1,4 @@
+ export class SwatchRow {
+-  static create(documentRef, swatch, options = {}) {
+-    const row = documentRef.createElement("div");
+-    row.className = "palette-manager-v2__swatch-row";
+-    if (options.selected) {
+-      row.classList.add("is-selected");
+-    }
+-
+-    const chip = documentRef.createElement("span");
+-    chip.className = "palette-manager-v2__swatch-chip";
+-    chip.style.background = swatch.hex;
+-    chip.title = SwatchRow.createTooltipText(swatch);
+-
+-    const copy = documentRef.createElement("div");
+-    copy.className = "palette-manager-v2__swatch-copy";
+-
+-    const name = documentRef.createElement("p");
+-    name.className = "palette-manager-v2__swatch-name";
+-    name.textContent = swatch.name;
+-
+-    const meta = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__swatch-meta");
+-
+-    copy.append(name, meta);
+-
+-    const tack = SwatchRow.createTackButton(documentRef, options);
+-
+-    row.title = SwatchRow.createTooltipText(swatch);
+-    row.append(chip, copy, tack);
+-    if (typeof options.onSelect === "function") {
+-      row.addEventListener("click", options.onSelect);
+-    }
+-    return row;
+-  }
+-
+   static createSourceTile(documentRef, swatch, options = {}) {
+     return SwatchRow.createTile(documentRef, swatch, {
+       ...options,
+@@ -119,25 +86,6 @@ export class SwatchRow {
+     ].join("\n");
+   }
+ 
+-  static createDetailsBlock(documentRef, swatch, className) {
+-    const details = documentRef.createElement("dl");
+-    details.className = className;
+-    [
+-      ["Name", swatch.name],
+-      ["Symbol", swatch.symbol],
+-      ["Hex", swatch.hex],
+-      ["Source", swatch.source],
+-      ["Tags", Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"]
+-    ].forEach(([label, value]) => {
+-      const term = documentRef.createElement("dt");
+-      term.textContent = label;
+-      const description = documentRef.createElement("dd");
+-      description.textContent = value;
+-      details.append(term, description);
+-    });
+-    return details;
+-  }
+-
+   static createTackButton(documentRef, options = {}) {
+     const tack = documentRef.createElement("button");
+     tack.type = "button";
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index c3cda204..7fb1f803 100644
+index 7fb1f803..3fdc80c0 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -162,12 +162,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   flex: 0 0 auto;
+@@ -130,10 +130,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   overflow: hidden;
  }
  
--.palette-manager-v2__viewer-actions {
+-.palette-manager-v2__right-accordion--import .palette-manager-v2__controls {
 -  flex: 0 0 auto;
--  display: flex;
--  justify-content: flex-end;
 -}
 -
- .palette-manager-v2__right-accordion--validation .palette-manager-v2__errors {
+ .palette-manager-v2__right-accordion--import .palette-manager-v2__json-preview {
    flex: 1 1 auto;
    min-height: 0;
-@@ -371,7 +365,8 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+@@ -596,72 +592,17 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   height: 20px;
  }
  
- .palette-manager-v2__user-palette-header,
--.palette-manager-v2__source-palette-header {
-+.palette-manager-v2__source-palette-header,
-+.palette-manager-v2__validation-header {
-   flex: 0 0 auto;
-   display: flex;
-   align-items: stretch;
-@@ -380,13 +375,15 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+-.palette-manager-v2__swatch-row {
+-  min-height: 44px;
+-  display: grid;
+-  grid-template-columns: 36px minmax(0, 1fr) 42px;
+-  align-items: center;
+-  gap: 8px;
+-  border: 1px solid var(--pm-line);
+-  border-radius: 8px;
+-  background: var(--pm-surface);
+-  padding: 6px;
+-}
+-
+-.palette-manager-v2__swatch-row.is-selected {
+-  border-color: var(--pm-accent);
+-}
+-
+-.palette-manager-v2__swatch-chip,
+ .palette-manager-v2__preview {
+   border: 1px solid rgba(255, 255, 255, 0.24);
+   border-radius: 6px;
+   background: #000000;
  }
  
- .palette-manager-v2__user-palette-header .accordion-v2__header,
--.palette-manager-v2__source-palette-header .accordion-v2__header {
-+.palette-manager-v2__source-palette-header .accordion-v2__header,
-+.palette-manager-v2__validation-header .accordion-v2__header {
-   flex: 1 1 auto;
-   width: auto;
+-.palette-manager-v2__swatch-chip {
+-  width: 32px;
+-  height: 32px;
+-}
+-
+ .palette-manager-v2__preview {
+   width: 100%;
+   aspect-ratio: 8 / 3;
  }
  
- .palette-manager-v2__user-palette-actions,
--.palette-manager-v2__source-palette-actions {
-+.palette-manager-v2__source-palette-actions,
-+.palette-manager-v2__validation-actions {
-   flex: 0 0 auto;
-   display: flex;
-   align-items: center;
-@@ -395,7 +392,8 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   flex-wrap: wrap;
- }
- 
--.palette-manager-v2__source-palette-actions {
-+.palette-manager-v2__source-palette-actions,
-+.palette-manager-v2__validation-actions {
-   justify-content: flex-end;
-   margin-left: auto;
- }
+-.palette-manager-v2__swatch-copy {
+-  min-width: 0;
+-}
+-
+-.palette-manager-v2__swatch-name,
+-.palette-manager-v2__swatch-meta {
+-  margin: 0;
+-}
+-
+-.palette-manager-v2__swatch-name {
+-  font-weight: 700;
+-  overflow-wrap: anywhere;
+-}
+-
+-.palette-manager-v2__swatch-meta {
+-  color: var(--pm-text-muted);
+-  font-size: 0.9rem;
+-  overflow-wrap: anywhere;
+-  display: grid;
+-  grid-template-columns: auto minmax(0, 1fr);
+-  gap: 2px 8px;
+-}
+-
+-.palette-manager-v2__swatch-meta dt {
+-  font-weight: 700;
+-}
+-
+-.palette-manager-v2__swatch-meta dd {
+-  min-width: 0;
+-  margin: 0;
+-  overflow-wrap: anywhere;
+-}
+-
+ .palette-manager-v2__json-preview {
+   min-height: 180px;
+   max-height: clamp(220px, 36vh, 460px);

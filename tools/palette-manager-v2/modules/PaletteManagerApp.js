@@ -898,14 +898,6 @@ export class PaletteManagerApp {
     return true;
   }
 
-  removeSelectedSwatch() {
-    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-      this.setActionState(["Select a user swatch before removing."], "No user swatch selected.");
-      return false;
-    }
-    return this.removeUserSwatch(this.state.selectedUserIndex);
-  }
-
   removeUserSwatch(index) {
     const swatch = this.state.userSwatches[index];
     if (!swatch) {

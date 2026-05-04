@@ -1,1 +1,1 @@
-Move Palette Manager validation Clear into viewer header - PR_26124_065-palette-manager-validation-clear-in-viewer
+Harden Palette Manager baseline by removing stale row artifacts - PR_26124_066-palette-manager-final-baseline-hardening
