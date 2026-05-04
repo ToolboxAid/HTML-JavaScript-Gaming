@@ -18,7 +18,8 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   width: calc(100% - 32px);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 12px;
   margin: 16px 16px 0;
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
@@ -28,13 +29,20 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
 }
 
 .palette-manager-v2__menu-label {
+  flex: 1 1 0;
   font-weight: 800;
 }
 
+.palette-manager-v2__menu-sample::after {
+  content: "";
+  flex: 1 1 0;
+}
+
 .palette-manager-v2__menu-actions {
+  flex: 0 1 auto;
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 8px;
 }
 

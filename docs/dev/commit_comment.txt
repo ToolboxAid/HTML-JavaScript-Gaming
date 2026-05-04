@@ -1,1 +1,1 @@
-Move Palette Manager JSON actions to menu and hide used tag deletes - PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility
+Center Palette Manager menu JSON actions - PR_26124_055-palette-manager-center-menu-actions
