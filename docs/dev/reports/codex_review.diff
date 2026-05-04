@@ -1,162 +1,964 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 9ddd7d47..66a0bb8d 100644
+index 66a0bb8d..373b15d0 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,26 +1,28 @@
--# Codex Commands - PR_26124_055-palette-manager-center-menu-actions
-+# Codex Commands - PR_26124_056-palette-manager-sort-toggle-direction
+@@ -1,28 +1,30 @@
+-# Codex Commands - PR_26124_056-palette-manager-sort-toggle-direction
++# Codex Commands - PR_26124_057-palette-manager-source-pin-all
 
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
  - Used `.codex/skills/repo-build/SKILL.md`.
--- Created `docs/pr/PR_26124_055-palette-manager-center-menu-actions/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_055-palette-manager-center-menu-actions/BUILD_PR.md`.
-+- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md`.
+-- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md`.
++- Created `docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md`.
  - Updated Palette Manager V2 only.
--- Created `docs/pr/PR_26124_055-palette-manager-center-menu-actions/APPLY_PR.md`.
-+- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md`.
+-- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md`.
++- Created `docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md`.
 
  ## Validation Commands
--- CSS-only change; no JavaScript syntax check required.
--- Targeted served-browser Palette Manager V2 menu alignment check using Playwright from Node.
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
+ - `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
+-- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
+ - `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+-- Targeted served-browser Palette Manager V2 sort toggle and direction indicator check using Playwright from Node.
 +- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
-+- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-+- Targeted served-browser Palette Manager V2 sort toggle and direction indicator check using Playwright from Node.
++- Targeted served-browser Palette Manager V2 source sort and `Pin All` validation using Playwright from Node.
++- Targeted served-browser `Pin All` source dropdown placement and size validation using Playwright from Node.
  - `git diff --check`
  - `npm run test:workspace-v2`
  - `git diff --cached --check`
  - `npm run codex:review-artifacts`
--- Python `zipfile` packaging for `tmp/PR_26124_055-palette-manager-center-menu-actions_delta.zip`
-+- Python `zipfile` packaging for `tmp/PR_26124_056-palette-manager-sort-toggle-direction_delta.zip`
+-- Python `zipfile` packaging for `tmp/PR_26124_056-palette-manager-sort-toggle-direction_delta.zip`
++- Python `zipfile` packaging for `tmp/PR_26124_057-palette-manager-source-pin-all_delta_2.zip`
 
  ## Validation Outcome
--- JavaScript syntax checks: not applicable; CSS-only implementation.
-+- JavaScript syntax checks: PASS.
+ - JavaScript syntax checks: PASS.
  - Targeted served-browser Palette Manager V2 behavior check: PASS.
--- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files already in the working tree.
+-- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files already in the working tree.
++- Targeted served-browser `Pin All` placement and size check: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warning for `tools/palette-manager-v2/index.html`.
  - `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
  - Review artifacts: generated.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index f88822e8..3ed43fa5 100644
+index 3ed43fa5..62fedaa9 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Center Palette Manager menu JSON actions - PR_26124_055-palette-manager-center-menu-actions
-+Add Palette Manager sort direction toggles - PR_26124_056-palette-manager-sort-toggle-direction
-diff --git a/docs/dev/reports/PR_26124_056_report.md b/docs/dev/reports/PR_26124_056_report.md
+-Add Palette Manager sort direction toggles - PR_26124_056-palette-manager-sort-toggle-direction
++Add Palette Manager source Pin All action - PR_26124_057-palette-manager-source-pin-all
+diff --git a/docs/dev/reports/PR_26124_057_report.md b/docs/dev/reports/PR_26124_057_report.md
 new file mode 100644
-index 00000000..a31e8914
+index 00000000..cb379715
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_056_report.md
-@@ -0,0 +1,36 @@
-+# PR_26124_056 Report - Palette Manager Sort Toggle Direction
-+
-+## Scope
-+- Updated Palette Manager V2 sort JavaScript only.
-+- Added PR workflow docs and review artifacts.
-+- Did not modify workspace/toolState/session behavior.
-+- Did not modify sample JSON.
-+- Did not modify `tools/shared`.
-+- Did not add dependencies.
-+
-+## Implementation
-+- Replaced single sort-mode state with independent sort key and direction state for User Palette and Source Palette.
-+- Added local Palette Manager sort options that include Tag for both palettes.
-+- Preserved shared Hue, Saturation, Brightness, and Name ascending sorting by using the existing sort service, then reversing for descending.
-+- Added local Tag sorting by normalized lowercase tag text.
-+- Added first-click ascending behavior even when the default active sort key is clicked.
-+- Added active button direction labels using `▲` and `▼`.
-+
-+## Validation
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
-+- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
-+- Targeted served-browser Palette Manager V2 sort toggle validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files already in the working tree.
-+- `npm run test:workspace-v2`: FAIL. The repository `package.json` has no `test:workspace-v2` script.
-+- Full samples smoke test: skipped by instruction.
-+
-+## Targeted Browser Coverage
-+- Confirmed User Palette and Source Palette sort controls both include Tag.
-+- Confirmed default active Hue shows ascending.
-+- Confirmed first click on default Source Hue keeps ascending.
-+- Confirmed second click on Source Hue toggles descending.
-+- Confirmed clicking Source Name resets to ascending.
-+- Confirmed User Name ascending and descending order.
-+- Confirmed User Tag ascending and descending order, including untagged swatches.
-+- Confirmed User and Source sort direction state remain independent.
-diff --git a/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md
-new file mode 100644
-index 00000000..008671ce
---- /dev/null
-+++ b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md
-@@ -0,0 +1,29 @@
-+# APPLY_PR - PR_26124_056-palette-manager-sort-toggle-direction
++++ b/docs/dev/reports/PR_26124_057_report.md
+@@ -0,0 +1,43 @@
++# PR_26124_057-palette-manager-source-pin-all Report
 +
 +## Summary
-+Implemented independent sort key and direction toggles for Palette Manager V2 User Palette and Source Palette controls.
++Palette Manager V2 now supports a Sample Palette Swatch `Pin All` action for the current filtered source swatch view, and Sample Palette Swatch sort no longer includes `Tag`.
++
++## Files Changed
++- `docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md`
++- `docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md`
++- `docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md`
++- `docs/dev/codex_commands.md`
++- `docs/dev/commit_comment.txt`
++- `docs/dev/reports/PR_26124_057_report.md`
++- `tools/palette-manager-v2/index.html`
++- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
++- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
++- `tools/palette-manager-v2/paletteManagerV2.css`
++
++## Validation
++- JavaScript syntax checks: PASS.
++- Targeted served-browser Palette Manager V2 validation: PASS.
++- Targeted served-browser `Pin All` source dropdown placement and size validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warning for `tools/palette-manager-v2/index.html`.
++- `npm run test:workspace-v2`: FAIL because the script is missing from `package.json`.
++- Full samples smoke test: skipped by instruction.
++
++## Playwright Coverage
++Targeted served-browser validation confirmed:
++- Sample Palette Swatch sort keys are Hue, Saturation, Brightness, and Name.
++- User Palette sort keys still include Tag.
++- `Pin All` respects the current source search/filter.
++- Duplicate `Pin All` attempts are skipped and counted.
++- Source pins export without tags.
++- Individual source pin/unpin behavior still works.
++- `Pin All` renders to the right of the Source palette dropdown and is at least 10px taller than the dropdown.
++
++## Manual Test
++1. Open `tools/palette-manager-v2/index.html` through a local server.
++2. Confirm Sample Palette Swatch sort omits Tag.
++3. Confirm User Palette sort still includes Tag.
++4. Filter source swatches, click `Pin All`, and confirm only visible swatches are pinned.
++5. Click `Pin All` again and confirm the status reports duplicates skipped.
++6. Export JSON and confirm pinned source swatches do not include tags.
++7. Confirm `Pin All` appears to the right of the Source palette dropdown.
+diff --git a/docs/dev/reports/codex_changed_files.txt b/docs/dev/reports/codex_changed_files.txt
+index 9a8c0f11..49c33b5e 100644
+--- a/docs/dev/reports/codex_changed_files.txt
++++ b/docs/dev/reports/codex_changed_files.txt
+@@ -1,28 +1,13 @@
+ # git status --short
+ M  docs/dev/codex_commands.md
+ M  docs/dev/commit_comment.txt
+-A  docs/dev/reports/PR_26124_056_report.md
+-M  docs/dev/reports/codex_changed_files.txt
+-MM docs/dev/reports/codex_review.diff
+-A  docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md
+-A  docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md
+-A  docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md
++A  docs/dev/reports/PR_26124_057_report.md
++A  docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md
++A  docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md
++A  docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md
+ M  tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
+-M  tools/palette-manager-v2/controls/UserPaletteControl.js
+- M tools/palette-manager-v2/index.html
++M  tools/palette-manager-v2/index.html
+ M  tools/palette-manager-v2/modules/PaletteManagerApp.js
+- M tools/palette-manager-v2/paletteManagerV2.css
+
+-# git diff --cached --stat
+-docs/dev/codex_commands.md                         |  20 +-
+- docs/dev/commit_comment.txt                        |   2 +-
+- docs/dev/reports/PR_26124_056_report.md            |  36 ++
+- docs/dev/reports/codex_changed_files.txt           |  31 +-
+- docs/dev/reports/codex_review.diff                 | 537 ++++++++++++++++-----
+- .../APPLY_PR.md                                    |  29 ++
+- .../BUILD_PR.md                                    |  40 ++
+- .../PLAN_PR.md                                     |  44 ++
+- .../controls/SourcePaletteBrowserControl.js        |  17 +-
+- .../controls/UserPaletteControl.js                 |  17 +-
+- .../modules/PaletteManagerApp.js                   | 100 +++-
+- 11 files changed, 675 insertions(+), 198 deletions(-)
++# git diff --stat
++(no output)
+diff --git a/docs/dev/reports/codex_review.diff b/docs/dev/reports/codex_review.diff
+index 9e2e2452..a9d9c143 100644
+--- a/docs/dev/reports/codex_review.diff
++++ b/docs/dev/reports/codex_review.diff
+@@ -1,162 +1,163 @@
+ diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
+-index 9ddd7d47..66a0bb8d 100644
++index 66a0bb8d..7ce744bb 100644
+ --- a/docs/dev/codex_commands.md
+ +++ b/docs/dev/codex_commands.md
+-@@ -1,26 +1,28 @@
+--# Codex Commands - PR_26124_055-palette-manager-center-menu-actions
+-+# Codex Commands - PR_26124_056-palette-manager-sort-toggle-direction
++@@ -1,28 +1,28 @@
++-# Codex Commands - PR_26124_056-palette-manager-sort-toggle-direction
+++# Codex Commands - PR_26124_057-palette-manager-source-pin-all
+
+  ## Workflow
+  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
+  - Used `.codex/skills/repo-build/SKILL.md`.
+--- Created `docs/pr/PR_26124_055-palette-manager-center-menu-actions/PLAN_PR.md`.
+--- Created `docs/pr/PR_26124_055-palette-manager-center-menu-actions/BUILD_PR.md`.
+-+- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md`.
+-+- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md`.
++-- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md`.
++-- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md`.
+++- Created `docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md`.
+++- Created `docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md`.
+  - Updated Palette Manager V2 only.
+--- Created `docs/pr/PR_26124_055-palette-manager-center-menu-actions/APPLY_PR.md`.
+-+- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md`.
++-- Created `docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md`.
+++- Created `docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md`.
+
+  ## Validation Commands
+--- CSS-only change; no JavaScript syntax check required.
+--- Targeted served-browser Palette Manager V2 menu alignment check using Playwright from Node.
+-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
++ - `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
++-- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
++ - `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
++-- Targeted served-browser Palette Manager V2 sort toggle and direction indicator check using Playwright from Node.
+ +- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
+-+- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+-+- Targeted served-browser Palette Manager V2 sort toggle and direction indicator check using Playwright from Node.
+++- Targeted served-browser Palette Manager V2 source sort and `Pin All` validation using Playwright from Node.
+  - `git diff --check`
+  - `npm run test:workspace-v2`
+  - `git diff --cached --check`
+  - `npm run codex:review-artifacts`
+--- Python `zipfile` packaging for `tmp/PR_26124_055-palette-manager-center-menu-actions_delta.zip`
+-+- Python `zipfile` packaging for `tmp/PR_26124_056-palette-manager-sort-toggle-direction_delta.zip`
++-- Python `zipfile` packaging for `tmp/PR_26124_056-palette-manager-sort-toggle-direction_delta.zip`
+++- Python `zipfile` packaging for `tmp/PR_26124_057-palette-manager-source-pin-all_delta.zip`
+
+  ## Validation Outcome
+--- JavaScript syntax checks: not applicable; CSS-only implementation.
+-+- JavaScript syntax checks: PASS.
++ - JavaScript syntax checks: PASS.
+  - Targeted served-browser Palette Manager V2 behavior check: PASS.
+--- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files.
+-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files already in the working tree.
++-- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files already in the working tree.
+++- `git diff --check`: PASS with Git LF-to-CRLF warning for `tools/palette-manager-v2/index.html`.
+  - `git diff --cached --check`: PASS.
+  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
+  - Review artifacts: generated.
+ diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
+-index f88822e8..3ed43fa5 100644
++index 3ed43fa5..62fedaa9 100644
+ --- a/docs/dev/commit_comment.txt
+ +++ b/docs/dev/commit_comment.txt
+ @@ -1 +1 @@
+--Center Palette Manager menu JSON actions - PR_26124_055-palette-manager-center-menu-actions
+-+Add Palette Manager sort direction toggles - PR_26124_056-palette-manager-sort-toggle-direction
+-diff --git a/docs/dev/reports/PR_26124_056_report.md b/docs/dev/reports/PR_26124_056_report.md
++-Add Palette Manager sort direction toggles - PR_26124_056-palette-manager-sort-toggle-direction
+++Add Palette Manager source Pin All action - PR_26124_057-palette-manager-source-pin-all
++diff --git a/docs/dev/reports/PR_26124_057_report.md b/docs/dev/reports/PR_26124_057_report.md
+ new file mode 100644
+-index 00000000..a31e8914
++index 00000000..5fa71715
+ --- /dev/null
+-+++ b/docs/dev/reports/PR_26124_056_report.md
+-@@ -0,0 +1,36 @@
+-+# PR_26124_056 Report - Palette Manager Sort Toggle Direction
+++++ b/docs/dev/reports/PR_26124_057_report.md
++@@ -0,0 +1,39 @@
+++# PR_26124_057-palette-manager-source-pin-all Report
+ +
+-+## Scope
+-+- Updated Palette Manager V2 sort JavaScript only.
+-+- Added PR workflow docs and review artifacts.
+-+- Did not modify workspace/toolState/session behavior.
+-+- Did not modify sample JSON.
+-+- Did not modify `tools/shared`.
+-+- Did not add dependencies.
+++## Summary
+++Palette Manager V2 now supports a Sample Palette Swatch `Pin All` action for the current filtered source swatch view, and Sample Palette Swatch sort no longer includes `Tag`.
+ +
+-+## Implementation
+-+- Replaced single sort-mode state with independent sort key and direction state for User Palette and Source Palette.
+-+- Added local Palette Manager sort options that include Tag for both palettes.
+-+- Preserved shared Hue, Saturation, Brightness, and Name ascending sorting by using the existing sort service, then reversing for descending.
+-+- Added local Tag sorting by normalized lowercase tag text.
+-+- Added first-click ascending behavior even when the default active sort key is clicked.
+-+- Added active button direction labels using `▲` and `▼`.
+++## Files Changed
+++- `docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md`
+++- `docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md`
+++- `docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md`
+++- `docs/dev/codex_commands.md`
+++- `docs/dev/commit_comment.txt`
+++- `docs/dev/reports/PR_26124_057_report.md`
+++- `tools/palette-manager-v2/index.html`
+++- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
+++- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
+ +
+ +## Validation
+-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+-+- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
+-+- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
+-+- Targeted served-browser Palette Manager V2 sort toggle validation: PASS.
+-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files already in the working tree.
+-+- `npm run test:workspace-v2`: FAIL. The repository `package.json` has no `test:workspace-v2` script.
+++- JavaScript syntax checks: PASS.
+++- Targeted served-browser Palette Manager V2 validation: PASS.
+++- `git diff --check`: PASS with Git LF-to-CRLF warning for `tools/palette-manager-v2/index.html`.
+++- `npm run test:workspace-v2`: FAIL because the script is missing from `package.json`.
+ +- Full samples smoke test: skipped by instruction.
+ +
+-+## Targeted Browser Coverage
+-+- Confirmed User Palette and Source Palette sort controls both include Tag.
+-+- Confirmed default active Hue shows ascending.
+-+- Confirmed first click on default Source Hue keeps ascending.
+-+- Confirmed second click on Source Hue toggles descending.
+-+- Confirmed clicking Source Name resets to ascending.
+-+- Confirmed User Name ascending and descending order.
+-+- Confirmed User Tag ascending and descending order, including untagged swatches.
+-+- Confirmed User and Source sort direction state remain independent.
+-diff --git a/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md
+++## Playwright Coverage
+++Targeted served-browser validation confirmed:
+++- Sample Palette Swatch sort keys are Hue, Saturation, Brightness, and Name.
+++- User Palette sort keys still include Tag.
+++- `Pin All` respects the current source search/filter.
+++- Duplicate `Pin All` attempts are skipped and counted.
+++- Source pins export without tags.
+++- Individual source pin/unpin behavior still works.
+++
+++## Manual Test
+++1. Open `tools/palette-manager-v2/index.html` through a local server.
+++2. Confirm Sample Palette Swatch sort omits Tag.
+++3. Confirm User Palette sort still includes Tag.
+++4. Filter source swatches, click `Pin All`, and confirm only visible swatches are pinned.
+++5. Click `Pin All` again and confirm the status reports duplicates skipped.
+++6. Export JSON and confirm pinned source swatches do not include tags.
++diff --git a/docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md b/docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md
+ new file mode 100644
+-index 00000000..008671ce
++index 00000000..3471576c
+ --- /dev/null
+-+++ b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md
+-@@ -0,0 +1,29 @@
+-+# APPLY_PR - PR_26124_056-palette-manager-sort-toggle-direction
+++++ b/docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md
++@@ -0,0 +1,28 @@
+++# APPLY_PR - PR_26124_057-palette-manager-source-pin-all
+ +
+ +## Summary
+-+Implemented independent sort key and direction toggles for Palette Manager V2 User Palette and Source Palette controls.
+++Implemented Palette Manager V2 Sample Palette Swatch `Pin All` for currently visible source swatches and removed `Tag` sorting from Sample Palette Swatch only.
+ +
+ +## Applied Changes
+-+- User Palette now tracks sort key and direction independently.
+-+- Source Palette now tracks sort key and direction independently.
+-+- Both sort controls include Hue, Saturation, Brightness, Name, and Tag.
+-+- First click on a sort option applies ascending sort.
+-+- Repeated clicks on the active sort option toggle descending and ascending.
+-+- Clicking a different sort option resets that palette direction to ascending.
+-+- Active sort buttons show `▲` for ascending and `▼` for descending.
+-+- Non-Tag sorting preserves the existing shared ascending sort behavior and reverses for descending.
+-+- Tag sorting uses normalized lowercase tag text and reverses correctly for descending.
+++- User Palette sort keeps Hue, Saturation, Brightness, Name, and Tag.
+++- Sample Palette Swatch sort now shows Hue, Saturation, Brightness, and Name only.
+++- Added a `Pin All` button to Sample Palette Swatch.
+++- `Pin All` pins only the currently visible/filtered source swatches.
+++- `Pin All` skips duplicates using the existing user duplicate guards for name, RGB/hex, and symbol.
+++- `Pin All` reports pinned and skipped counts in the status area.
+++- Source pins do not carry tags into User Palette export data.
+++- Individual source pin/unpin behavior remains intact.
+ +
+ +## Validation
+ +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
+-+- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
+ +- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
+-+- Targeted served-browser Palette Manager V2 sort toggle validation: PASS.
+-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files already in the working tree.
+++- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
+++- Targeted served-browser Palette Manager V2 source sort and `Pin All` validation: PASS.
+++- `git diff --check`: PASS with Git LF-to-CRLF warning for `tools/palette-manager-v2/index.html`.
+ +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
+ +- Full samples smoke test: skipped by instruction.
+ +
+ +## Artifacts
+ +- Review diff: `docs/dev/reports/codex_review.diff`
+ +- Changed files: `docs/dev/reports/codex_changed_files.txt`
+-+- Delta ZIP: `tmp/PR_26124_056-palette-manager-sort-toggle-direction_delta.zip`
+-diff --git a/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md
+++- Delta ZIP: `tmp/PR_26124_057-palette-manager-source-pin-all_delta.zip`
++diff --git a/docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md b/docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md
+ new file mode 100644
+-index 00000000..8f508ed4
++index 00000000..297030a8
+ --- /dev/null
+-+++ b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md
+++++ b/docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md
+ @@ -0,0 +1,40 @@
+-+# BUILD_PR - PR_26124_056-palette-manager-sort-toggle-direction
+++# BUILD_PR - PR_26124_057-palette-manager-source-pin-all
+ +
+ +## Purpose
+-+Implement one scoped Palette Manager V2 sort update: toggle ascending/descending direction independently for User Palette and Sample/Source Palette sort controls.
+++Implement one scoped Palette Manager V2 update: add Sample Palette Swatch `Pin All` for visible filtered source swatches and remove `Tag` sorting from Sample Palette Swatch only.
+ +
+ +## Scope
+ +- `tools/palette-manager-v2/*`
+ +- PR workflow docs and required review artifacts only.
+ +
+ +## Implementation
+-+1. Track current sort key and sort direction for User Palette.
+-+2. Track current sort key and sort direction for Source Palette.
+-+3. Sort controls for both palettes must include:
+++1. User Palette sort controls must keep:
+ +   - Hue
+ +   - Saturation
+ +   - Brightness
+ +   - Name
+ +   - Tag
+-+4. First click on a sort option applies ascending sort.
+-+5. Clicking the active sort option toggles descending.
+-+6. Clicking the active sort option again toggles back to ascending.
+-+7. Clicking a different sort option resets direction to ascending.
+-+8. Active sort buttons must visually indicate direction with `▲` or `▼`.
+-+9. Hue, Saturation, and Brightness use numeric ascending/descending behavior.
+-+10. Name uses case-insensitive ascending/descending string behavior.
+-+11. Tag uses normalized lowercase tag text.
+-+12. Tag ascending places swatches with no tags after tagged swatches; descending reverses that order.
+++2. Sample Palette Swatch sort controls must include only:
+++   - Hue
+++   - Saturation
+++   - Brightness
+++   - Name
+++3. Add a `Pin All` button to Sample Palette Swatch.
+++4. `Pin All` must operate on `getVisibleSourceSwatches()` so current search/filter results are respected.
+++5. Each pinned swatch must keep source palette tracking and must not gain tags.
+++6. Duplicate skips must use the existing user swatch duplicate guards for name, RGB/hex, and symbol.
+++7. `Pin All` must report pinned and skipped counts in the validation/status area.
+++8. Individual pin/unpin behavior must remain intact.
+ +
+ +## Boundaries
+ +- Do not touch workspace/toolState/session behavior.
+@@ -167,19 +168,19 @@ index 00000000..8f508ed4
+ +
+ +## Validation
+ +- Syntax check changed JavaScript files.
+-+- Run targeted served-browser Palette Manager V2 sort toggle and direction indicator check.
+++- Run targeted served-browser Palette Manager V2 source sort and `Pin All` validation.
+ +- Run `npm run test:workspace-v2`.
+ +- Skip the full samples smoke test.
+-diff --git a/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md
++diff --git a/docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md b/docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md
+ new file mode 100644
+-index 00000000..7184730d
++index 00000000..0f06e6ad
+ --- /dev/null
+-+++ b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md
+-@@ -0,0 +1,44 @@
+-+# PLAN_PR - PR_26124_056-palette-manager-sort-toggle-direction
+++++ b/docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md
++@@ -0,0 +1,46 @@
+++# PLAN_PR - PR_26124_057-palette-manager-source-pin-all
+ +
+ +## Goal
+-+Add independent ascending/descending toggle behavior to Palette Manager V2 User Palette and Sample/Source Palette sort controls.
+++Add a Palette Manager V2 Sample Palette Swatch `Pin All` action and remove `Tag` sorting from Sample Palette Swatch while keeping `Tag` sorting for User Palette.
+ +
+ +## Scope
+ +- `tools/palette-manager-v2/*`
+@@ -190,23 +191,25 @@ index 00000000..7184730d
+ +- Do not touch sample JSON.
+ +- Do not modify `tools/shared`.
+ +- Do not add dependencies.
+-+- Preserve existing sorting logic where possible.
+-+- Preserve pin/unpin, search, size, import/export behavior, lowercase tag normalization, and duplicate user-defined guards.
+++- Preserve accordionV2 behavior.
+++- Preserve import/export behavior.
+++- Preserve individual pin/unpin behavior.
+++- Avoid broad refactor.
+ +
+ +## Implementation Plan
+-+1. Track sort key and sort direction independently for User Palette and Source Palette.
+-+2. Add `Tag` to both User Palette and Source Palette sort controls.
+-+3. On first click of a sort option, sort ascending.
+-+4. On repeated clicks of the active sort option, toggle ascending and descending.
+-+5. On click of a different sort option, switch to that key and reset to ascending.
+-+6. Render active sort buttons with `▲` for ascending and `▼` for descending.
+-+7. Keep inactive sort button labels unchanged.
+-+8. Preserve existing shared Hue, Saturation, Brightness, and Name ascending sort behavior, reversing it for descending.
+-+9. Sort Tag by normalized lowercase tag text, with no-tag swatches after tagged swatches in ascending order and reversed for descending.
+++1. Keep User Palette sort options as Hue, Saturation, Brightness, Name, and Tag.
+++2. Restrict Sample Palette Swatch sort options to Hue, Saturation, Brightness, and Name.
+++3. Add a `Pin All` button to the Sample Palette Swatch controls.
+++4. Wire `Pin All` to the currently visible/filtered source swatches.
+++5. Copy each visible source swatch into User Palette with the current source palette id.
+++6. Do not add tags to Sample Palette Swatch pins.
+++7. Skip swatches that fail the existing user duplicate guards for name, RGB/hex, or symbol.
+++8. Show a clear status with pinned and skipped counts.
+++9. Keep individual source swatch pin/unpin behavior unchanged.
+ +
+ +## Playwright
+ +- Command: `npm run test:workspace-v2`
+-+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by the Palette Manager V2-only sort update.
+++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by the Palette Manager V2-only source pin update.
+ +- Expected pass behavior: Workspace V2 validation remains green.
+ +- Expected fail behavior: missing script or Workspace V2 regression is reported.
+ +- Full samples smoke test: skipped by instruction.
+@@ -214,284 +217,179 @@ index 00000000..7184730d
+ +## Manual Validation
+ +1. Open Palette Manager V2.
+ +2. Confirm User Palette sort shows Hue, Saturation, Brightness, Name, and Tag.
+-+3. Confirm Source Palette sort shows Hue, Saturation, Brightness, Name, and Tag.
+-+4. Click a sort option once and confirm its active label shows `▲`.
+-+5. Click the same option again and confirm it shows `▼` and reverses order.
+-+6. Click it again and confirm it returns to `▲`.
+-+7. Click a different sort option and confirm it resets to `▲`.
+-+8. Confirm User Palette and Source Palette keep independent sort key/direction state.
+++3. Confirm Sample Palette Swatch sort shows Hue, Saturation, Brightness, and Name only.
+++4. Search Sample Palette Swatch to filter visible swatches.
+++5. Click `Pin All` and confirm only visible swatches are added to User Palette.
+++6. Click `Pin All` again and confirm duplicates are skipped with a clear pinned/skipped status.
+++7. Confirm individual source swatch pin/unpin still works.
+++8. Export JSON and confirm pinned source swatches roundtrip without tags.
+ diff --git a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
+-index 923842ec..6ae3275b 100644
++index 6ae3275b..ccbbb5bb 100644
+ --- a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
+ +++ b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
+-@@ -64,15 +64,16 @@ export class SourcePaletteBrowserControl {
+-
+-   renderSortOptions() {
+-     this.refs.sourcePaletteSortControls.replaceChildren();
+--    this.app.getSortModes().forEach((mode) => {
+-+    this.app.getSourceSortOptions().forEach((option) => {
+-       const button = this.document.createElement("button");
+-       button.type = "button";
+-       button.className = "palette-manager-v2__sort-button";
+--      button.dataset.sortMode = mode.value;
+-+      button.dataset.sortKey = option.value;
+-+      button.dataset.sortLabel = option.label;
+-       button.setAttribute("role", "radio");
+--      button.textContent = mode.label;
+-+      button.textContent = option.label;
+-       button.addEventListener("click", () => {
+--        this.app.setSourceSortMode(mode.value);
+-+        this.app.setSourceSortKey(option.value);
+-       });
+-       this.refs.sourcePaletteSortControls.appendChild(button);
+-     });
+-@@ -97,11 +98,13 @@ export class SourcePaletteBrowserControl {
+-   }
+-
+-   renderActiveSortButton() {
+--    const activeMode = this.app.getSourceSortMode();
+--    this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
+--      const isActive = button.dataset.sortMode === activeMode;
+-+    const activeKey = this.app.getSourceSortKey();
+-+    const directionIndicator = this.app.getSourceSortDirection() === "descending" ? "▼" : "▲";
+-+    this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-key]").forEach((button) => {
+-+      const isActive = button.dataset.sortKey === activeKey;
+-       button.classList.toggle("is-active", isActive);
+-       button.setAttribute("aria-checked", String(isActive));
+-+      button.textContent = isActive ? `${button.dataset.sortLabel} ${directionIndicator}` : button.dataset.sortLabel;
+-     });
+-   }
+-
+-diff --git a/tools/palette-manager-v2/controls/UserPaletteControl.js b/tools/palette-manager-v2/controls/UserPaletteControl.js
+-index 349fb50e..3847c020 100644
+---- a/tools/palette-manager-v2/controls/UserPaletteControl.js
+-+++ b/tools/palette-manager-v2/controls/UserPaletteControl.js
+-@@ -40,15 +40,16 @@ export class UserPaletteControl {
+-
+-   renderSortOptions() {
+-     this.refs.userPaletteSortControls.replaceChildren();
+--    this.app.getUserSortModes().forEach((mode) => {
+-+    this.app.getUserSortOptions().forEach((option) => {
+-       const button = this.document.createElement("button");
+-       button.type = "button";
+-       button.className = "palette-manager-v2__sort-button";
+--      button.dataset.sortMode = mode.value;
+-+      button.dataset.sortKey = option.value;
+-+      button.dataset.sortLabel = option.label;
+-       button.setAttribute("role", "radio");
+--      button.textContent = mode.label;
+-+      button.textContent = option.label;
+-       button.addEventListener("click", () => {
+--        this.app.setUserSortMode(mode.value);
+-+        this.app.setUserSortKey(option.value);
+-       });
+-       this.refs.userPaletteSortControls.appendChild(button);
+-     });
+-@@ -73,11 +74,13 @@ export class UserPaletteControl {
+-   }
+-
+-   renderActiveSortButton() {
+--    const activeMode = this.app.getUserSortMode();
+--    this.refs.userPaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
+--      const isActive = button.dataset.sortMode === activeMode;
+-+    const activeKey = this.app.getUserSortKey();
+-+    const directionIndicator = this.app.getUserSortDirection() === "descending" ? "▼" : "▲";
+-+    this.refs.userPaletteSortControls.querySelectorAll("[data-sort-key]").forEach((button) => {
+-+      const isActive = button.dataset.sortKey === activeKey;
+-       button.classList.toggle("is-active", isActive);
+-       button.setAttribute("aria-checked", String(isActive));
+-+      button.textContent = isActive ? `${button.dataset.sortLabel} ${directionIndicator}` : button.dataset.sortLabel;
++@@ -17,6 +17,9 @@ export class SourcePaletteBrowserControl {
++     this.refs.sourceSearchInput.addEventListener("input", () => {
++       this.app.setSourceSearch(this.refs.sourceSearchInput.value);
+      });
+++    this.refs.pinAllSourceButton.addEventListener("click", () => {
+++      this.app.pinVisibleSourceSwatches();
+++    });
+    }
+
++   render() {
++diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
++index 72443386..65404ceb 100644
++--- a/tools/palette-manager-v2/index.html
+++++ b/tools/palette-manager-v2/index.html
++@@ -147,6 +147,9 @@
++               Search source swatches
++               <input id="sourceSearchInput" type="search" autocomplete="off" />
++             </label>
+++            <div class="palette-manager-v2__controls">
+++              <button id="pinAllSourceButton" type="button">Pin All</button>
+++            </div>
++             <div class="palette-manager-v2__sort-row">
++               <div class="palette-manager-v2__field">
++                 <span>Sort source palette</span>
+ diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
+-index 624873f8..25857c4b 100644
++index 25857c4b..1d7437ed 100644
+ --- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
+ +++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
+-@@ -50,7 +50,7 @@ const SWATCH_SIZE_OPTIONS = Object.freeze([
+-   Object.freeze({ value: "large", label: "Large" })
++@@ -15,6 +15,7 @@ const REQUIRED_REF_IDS = Object.freeze([
++   "userSwatchList",
++   "sourcePaletteSelect",
++   "sourceSearchInput",
+++  "pinAllSourceButton",
++   "sourcePaletteSortControls",
++   "sourceSwatchSizeControls",
++   "sourceSwatchList",
++@@ -58,6 +59,10 @@ const PALETTE_SORT_OPTIONS = Object.freeze([
++   Object.freeze({ value: "tag", label: "Tag" })
+  ]);
+
+--const USER_SORT_MODES = Object.freeze([
+-+const PALETTE_SORT_OPTIONS = Object.freeze([
+-   Object.freeze({ value: "hue", label: "Hue" }),
+-   Object.freeze({ value: "saturation", label: "Saturation" }),
+-   Object.freeze({ value: "brightness", label: "Brightness" }),
+-@@ -62,8 +62,8 @@ function isValidSwatchSize(swatchSize) {
+++const SOURCE_PALETTE_SORT_OPTIONS = Object.freeze(
+++  PALETTE_SORT_OPTIONS.filter((option) => option.value !== "tag")
+++);
+++
++ function isValidSwatchSize(swatchSize) {
+    return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
+  }
+-
+--function isValidUserSortMode(sortMode) {
+--  return USER_SORT_MODES.some((mode) => mode.value === sortMode);
+-+function isValidSortKey(sortKey) {
+-+  return PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
+- }
+-
+- function isUserDefinedSwatch(swatch) {
+-@@ -88,9 +88,13 @@ function getTagSortKey(swatch) {
+-   return sortUniqueTags(swatch?.tags)[0] || "";
++@@ -66,6 +71,10 @@ function isValidSortKey(sortKey) {
++   return PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
+  }
+
+--function sortRowsByTag(rows) {
+-+function applySortDirection(entries, sortDirection) {
+-+  return sortDirection === "descending" ? entries.slice().reverse() : entries;
+-+}
+-+
+-+function sortRowsByTag(rows, sortDirection) {
+-   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+--  return (Array.isArray(rows) ? rows : [])
+-+  const sortedRows = (Array.isArray(rows) ? rows : [])
+-     .map((row, index) => ({ row, index, tagKey: getTagSortKey(row?.swatch) }))
+-     .sort((left, right) => {
+-       if (!left.tagKey && right.tagKey) {
+-@@ -102,6 +106,19 @@ function sortRowsByTag(rows) {
+-       return collator.compare(left.tagKey, right.tagKey) || left.index - right.index;
+-     })
+-     .map((entry) => entry.row);
+-+  return applySortDirection(sortedRows, sortDirection);
+-+}
+-+
+-+function sortSwatchesByTag(swatches, sortDirection) {
+-+  const rows = (Array.isArray(swatches) ? swatches : []).map((swatch, index) => ({
+-+    index,
+-+    swatch
+-+  }));
+-+  return sortRowsByTag(rows, sortDirection).map((row) => row.swatch);
+++function isValidSourceSortKey(sortKey) {
+++  return SOURCE_PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
+ +}
+ +
+-+function toggleSortDirection(sortDirection) {
+-+  return sortDirection === "ascending" ? "descending" : "ascending";
++ function isUserDefinedSwatch(swatch) {
++   return sanitizeText(swatch?.source) === USER_ADDED_SOURCE;
++ }
++@@ -109,14 +118,6 @@ function sortRowsByTag(rows, sortDirection) {
++   return applySortDirection(sortedRows, sortDirection);
+  }
+
+- function collectRefs(documentRef) {
+-@@ -136,8 +153,12 @@ export class PaletteManagerApp {
+-       selectedUserIndex: -1,
+-       sourcePaletteId: this.sourcePaletteIds[0] || "",
+-       sourceSearch: "",
+--      userSortMode: "hue",
+--      sourceSortMode: "hue",
+-+      userSortKey: "hue",
+-+      userSortDirection: "ascending",
+-+      userSortHasUserChoice: false,
+-+      sourceSortKey: "hue",
+-+      sourceSortDirection: "ascending",
+-+      sourceSortHasUserChoice: false,
+-       userSwatchSize: "large",
+-       sourceSwatchSize: "large",
+-       availableTags: [],
+-@@ -186,34 +207,42 @@ export class PaletteManagerApp {
+-       index,
+-       swatch: cloneSwatch(swatch)
+-     }));
+--    if (this.state.userSortMode === "tag") {
+--      return sortRowsByTag(rows);
+-+    if (this.state.userSortKey === "tag") {
+-+      return sortRowsByTag(rows, this.state.userSortDirection);
+-     }
+--    return this.sortService.sortRows(rows, this.state.userSortMode);
+-+    return applySortDirection(this.sortService.sortRows(rows, this.state.userSortKey), this.state.userSortDirection);
+-   }
+-
+-   getSelectedUserIndex() {
+-     return this.state.selectedUserIndex;
+-   }
+-
+--  getSortModes() {
+--    return this.sortService.getSortModes();
+-+  getUserSortOptions() {
+-+    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
++-function sortSwatchesByTag(swatches, sortDirection) {
++-  const rows = (Array.isArray(swatches) ? swatches : []).map((swatch, index) => ({
++-    index,
++-    swatch
++-  }));
++-  return sortRowsByTag(rows, sortDirection).map((row) => row.swatch);
++-}
++-
++ function toggleSortDirection(sortDirection) {
++   return sortDirection === "ascending" ? "descending" : "ascending";
++ }
++@@ -222,7 +223,7 @@ export class PaletteManagerApp {
+    }
+
+--  getUserSortModes() {
+--    return USER_SORT_MODES.map((mode) => ({ ...mode }));
+-+  getSourceSortOptions() {
+-+    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
++   getSourceSortOptions() {
++-    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
+++    return SOURCE_PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
+    }
+
+    getSwatchSizeOptions() {
+-     return SWATCH_SIZE_OPTIONS.map((size) => ({ ...size }));
+-   }
+-
+--  getUserSortMode() {
+--    return this.state.userSortMode;
+-+  getUserSortKey() {
+-+    return this.state.userSortKey;
+-+  }
+-+
+-+  getUserSortDirection() {
+-+    return this.state.userSortDirection;
+-   }
+-
+--  getSourceSortMode() {
+--    return this.state.sourceSortMode;
+-+  getSourceSortKey() {
+-+    return this.state.sourceSortKey;
+-+  }
+-+
+-+  getSourceSortDirection() {
+-+    return this.state.sourceSortDirection;
+-   }
+-
+-   getUserSwatchSize() {
+-@@ -267,7 +296,7 @@ export class PaletteManagerApp {
++@@ -292,7 +293,9 @@ export class PaletteManagerApp {
++     const swatches = this.sourcePalettes[this.state.sourcePaletteId] || [];
++     const query = sanitizeText(this.state.sourceSearch).toLowerCase();
++     const toSourceSwatch = (swatch) => cloneSwatch({
++-      ...swatch,
+++      symbol: swatch.symbol,
+++      hex: swatch.hex,
+++      name: swatch.name,
+        source: swatch.source || this.state.sourcePaletteId
+      });
+      if (!query) {
+--      return this.sortService.sortSwatches(swatches.map(toSourceSwatch), this.state.sourceSortMode);
+-+      return this.sortVisibleSourceSwatches(swatches.map(toSourceSwatch));
+-     }
+-     const visibleSwatches = swatches
+-       .filter((swatch) => {
+-@@ -276,7 +305,14 @@ export class PaletteManagerApp {
+-           || swatch.symbol.toLowerCase().includes(query);
+-       })
+-       .map(toSourceSwatch);
+--    return this.sortService.sortSwatches(visibleSwatches, this.state.sourceSortMode);
+-+    return this.sortVisibleSourceSwatches(visibleSwatches);
+-+  }
+-+
+-+  sortVisibleSourceSwatches(swatches) {
+-+    if (this.state.sourceSortKey === "tag") {
+-+      return sortSwatchesByTag(swatches, this.state.sourceSortDirection);
+-+    }
+-+    return applySortDirection(this.sortService.sortSwatches(swatches, this.state.sourceSortKey), this.state.sourceSortDirection);
++@@ -309,9 +312,6 @@ export class PaletteManagerApp {
+    }
+
+-   setSourcePaletteId(sourcePaletteId) {
+-@@ -294,19 +330,31 @@ export class PaletteManagerApp {
+-     this.render();
++   sortVisibleSourceSwatches(swatches) {
++-    if (this.state.sourceSortKey === "tag") {
++-      return sortSwatchesByTag(swatches, this.state.sourceSortDirection);
++-    }
++     return applySortDirection(this.sortService.sortSwatches(swatches, this.state.sourceSortKey), this.state.sourceSortDirection);
+    }
+
+--  setUserSortMode(sortMode) {
+--    if (!isValidUserSortMode(sortMode)) {
+-+  setUserSortKey(sortKey) {
+-+    if (!isValidSortKey(sortKey)) {
+-       return;
+-     }
+--    this.state.userSortMode = sortMode;
+-+    if (this.state.userSortKey === sortKey && this.state.userSortHasUserChoice) {
+-+      this.state.userSortDirection = toggleSortDirection(this.state.userSortDirection);
+-+    } else {
+-+      this.state.userSortKey = sortKey;
+-+      this.state.userSortDirection = "ascending";
+-+      this.state.userSortHasUserChoice = true;
+-+    }
+-     this.render();
++@@ -345,7 +345,7 @@ export class PaletteManagerApp {
+    }
+
+--  setSourceSortMode(sortMode) {
+--    if (!this.sortService.isValidSortMode(sortMode)) {
+-+  setSourceSortKey(sortKey) {
+-+    if (!isValidSortKey(sortKey)) {
++   setSourceSortKey(sortKey) {
++-    if (!isValidSortKey(sortKey)) {
+++    if (!isValidSourceSortKey(sortKey)) {
+        return;
+      }
+--    this.state.sourceSortMode = sortMode;
+-+    if (this.state.sourceSortKey === sortKey && this.state.sourceSortHasUserChoice) {
+-+      this.state.sourceSortDirection = toggleSortDirection(this.state.sourceSortDirection);
+-+    } else {
+-+      this.state.sourceSortKey = sortKey;
+-+      this.state.sourceSortDirection = "ascending";
+-+      this.state.sourceSortHasUserChoice = true;
+-+    }
+-     this.render();
++     if (this.state.sourceSortKey === sortKey && this.state.sourceSortHasUserChoice) {
++@@ -648,6 +648,7 @@ export class PaletteManagerApp {
++
++   pinSourceSwatch(swatch, sourcePaletteId) {
++     const pinnedSwatch = cloneSwatch({ ...swatch, source: sourcePaletteId });
+++    delete pinnedSwatch.tags;
++     const errors = this.validator.validateSwatch(pinnedSwatch, "source swatch");
++     if (errors.length > 0) {
++       this.setActionState(errors, "Source swatch was not pinned.");
++@@ -662,6 +663,45 @@ export class PaletteManagerApp {
++     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
+    }
++
+++  pinVisibleSourceSwatches() {
+++    const visibleSwatches = this.getVisibleSourceSwatches();
+++    let pinnedCount = 0;
+++    let skippedCount = 0;
+++    let lastPinnedIndex = -1;
+++    const skipReasons = [];
+++
+++    visibleSwatches.forEach((swatch) => {
+++      const pinnedSwatch = cloneSwatch({
+++        symbol: swatch.symbol,
+++        hex: swatch.hex,
+++        name: swatch.name,
+++        source: this.state.sourcePaletteId
+++      });
+++      const errors = [
+++        ...this.validator.validateSwatch(pinnedSwatch, "source swatch"),
+++        ...this.validateUniqueUserSwatchFields(pinnedSwatch, -1)
+++      ];
+++      if (errors.length > 0) {
+++        skippedCount += 1;
+++        skipReasons.push(...errors);
+++        return;
+++      }
+++
+++      this.state.userSwatches.push(pinnedSwatch);
+++      pinnedCount += 1;
+++      lastPinnedIndex = this.state.userSwatches.length - 1;
+++    });
+++
+++    if (lastPinnedIndex >= 0) {
+++      this.state.selectedUserIndex = lastPinnedIndex;
+++      this.editorControl.showSwatch(this.state.userSwatches[lastPinnedIndex]);
+++      this.editorControl.clearUserDefinedSwatch();
+++    }
+++
+++    const status = `Pinned ${pinnedCount} source swatches. Skipped ${skippedCount} duplicate or invalid swatches.`;
+++    this.setActionState(Array.from(new Set(skipReasons)), status);
+++  }
+++
++   findUserSwatchIndex(swatch) {
++     const targetKey = swatchKey(swatch);
++     return this.state.userSwatches.findIndex((entry) => swatchKey(entry) === targetKey);
+diff --git a/docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md b/docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md
+new file mode 100644
+index 00000000..dcebd298
+--- /dev/null
++++ b/docs/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md
+@@ -0,0 +1,30 @@
++# APPLY_PR - PR_26124_057-palette-manager-source-pin-all
++
++## Summary
++Implemented Palette Manager V2 Sample Palette Swatch `Pin All` for currently visible source swatches and removed `Tag` sorting from Sample Palette Swatch only.
 +
 +## Applied Changes
-+- User Palette now tracks sort key and direction independently.
-+- Source Palette now tracks sort key and direction independently.
-+- Both sort controls include Hue, Saturation, Brightness, Name, and Tag.
-+- First click on a sort option applies ascending sort.
-+- Repeated clicks on the active sort option toggle descending and ascending.
-+- Clicking a different sort option resets that palette direction to ascending.
-+- Active sort buttons show `▲` for ascending and `▼` for descending.
-+- Non-Tag sorting preserves the existing shared ascending sort behavior and reverses for descending.
-+- Tag sorting uses normalized lowercase tag text and reverses correctly for descending.
++- User Palette sort keeps Hue, Saturation, Brightness, Name, and Tag.
++- Sample Palette Swatch sort now shows Hue, Saturation, Brightness, and Name only.
++- Added a `Pin All` button to Sample Palette Swatch.
++- `Pin All` pins only the currently visible/filtered source swatches.
++- `Pin All` skips duplicates using the existing user duplicate guards for name, RGB/hex, and symbol.
++- `Pin All` reports pinned and skipped counts in the status area.
++- `Pin All` sits to the right of the Source palette dropdown and is 10px taller than the dropdown.
++- Source pins do not carry tags into User Palette export data.
++- Individual source pin/unpin behavior remains intact.
 +
 +## Validation
 +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
 +- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
-+- Targeted served-browser Palette Manager V2 sort toggle validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS files already in the working tree.
++- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
++- Targeted served-browser Palette Manager V2 source sort and `Pin All` validation: PASS.
++- Targeted served-browser `Pin All` source dropdown placement and size validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warning for `tools/palette-manager-v2/index.html`.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Artifacts
 +- Review diff: `docs/dev/reports/codex_review.diff`
 +- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_056-palette-manager-sort-toggle-direction_delta.zip`
-diff --git a/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md
++- Delta ZIP: `tmp/PR_26124_057-palette-manager-source-pin-all_delta_2.zip`
+diff --git a/docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md b/docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md
 new file mode 100644
-index 00000000..8f508ed4
+index 00000000..db59be0a
 --- /dev/null
-+++ b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md
-@@ -0,0 +1,40 @@
-+# BUILD_PR - PR_26124_056-palette-manager-sort-toggle-direction
++++ b/docs/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md
+@@ -0,0 +1,42 @@
++# BUILD_PR - PR_26124_057-palette-manager-source-pin-all
 +
 +## Purpose
-+Implement one scoped Palette Manager V2 sort update: toggle ascending/descending direction independently for User Palette and Sample/Source Palette sort controls.
++Implement one scoped Palette Manager V2 update: add Sample Palette Swatch `Pin All` for visible filtered source swatches and remove `Tag` sorting from Sample Palette Swatch only.
 +
 +## Scope
 +- `tools/palette-manager-v2/*`
 +- PR workflow docs and required review artifacts only.
 +
 +## Implementation
-+1. Track current sort key and sort direction for User Palette.
-+2. Track current sort key and sort direction for Source Palette.
-+3. Sort controls for both palettes must include:
++1. User Palette sort controls must keep:
 +   - Hue
 +   - Saturation
 +   - Brightness
 +   - Name
 +   - Tag
-+4. First click on a sort option applies ascending sort.
-+5. Clicking the active sort option toggles descending.
-+6. Clicking the active sort option again toggles back to ascending.
-+7. Clicking a different sort option resets direction to ascending.
-+8. Active sort buttons must visually indicate direction with `▲` or `▼`.
-+9. Hue, Saturation, and Brightness use numeric ascending/descending behavior.
-+10. Name uses case-insensitive ascending/descending string behavior.
-+11. Tag uses normalized lowercase tag text.
-+12. Tag ascending places swatches with no tags after tagged swatches; descending reverses that order.
++2. Sample Palette Swatch sort controls must include only:
++   - Hue
++   - Saturation
++   - Brightness
++   - Name
++3. Add a `Pin All` button to Sample Palette Swatch.
++4. `Pin All` must sit to the right of the Source palette dropdown and be 10px taller than the dropdown.
++5. `Pin All` must operate on `getVisibleSourceSwatches()` so current search/filter results are respected.
++6. Each pinned swatch must keep source palette tracking and must not gain tags.
++7. Duplicate skips must use the existing user swatch duplicate guards for name, RGB/hex, and symbol.
++8. `Pin All` must report pinned and skipped counts in the validation/status area.
++9. Individual pin/unpin behavior must remain intact.
 +
 +## Boundaries
 +- Do not touch workspace/toolState/session behavior.
@@ -167,19 +969,20 @@ index 00000000..8f508ed4
 +
 +## Validation
 +- Syntax check changed JavaScript files.
-+- Run targeted served-browser Palette Manager V2 sort toggle and direction indicator check.
++- Run targeted served-browser Palette Manager V2 source sort and `Pin All` validation.
++- Run targeted served-browser `Pin All` source dropdown placement and size validation.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md b/docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md
 new file mode 100644
-index 00000000..7184730d
+index 00000000..d79191d1
 --- /dev/null
-+++ b/docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md
-@@ -0,0 +1,44 @@
-+# PLAN_PR - PR_26124_056-palette-manager-sort-toggle-direction
++++ b/docs/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md
+@@ -0,0 +1,48 @@
++# PLAN_PR - PR_26124_057-palette-manager-source-pin-all
 +
 +## Goal
-+Add independent ascending/descending toggle behavior to Palette Manager V2 User Palette and Sample/Source Palette sort controls.
++Add a Palette Manager V2 Sample Palette Swatch `Pin All` action and remove `Tag` sorting from Sample Palette Swatch while keeping `Tag` sorting for User Palette.
 +
 +## Scope
 +- `tools/palette-manager-v2/*`
@@ -190,23 +993,26 @@ index 00000000..7184730d
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
 +- Do not add dependencies.
-+- Preserve existing sorting logic where possible.
-+- Preserve pin/unpin, search, size, import/export behavior, lowercase tag normalization, and duplicate user-defined guards.
++- Preserve accordionV2 behavior.
++- Preserve import/export behavior.
++- Preserve individual pin/unpin behavior.
++- Avoid broad refactor.
 +
 +## Implementation Plan
-+1. Track sort key and sort direction independently for User Palette and Source Palette.
-+2. Add `Tag` to both User Palette and Source Palette sort controls.
-+3. On first click of a sort option, sort ascending.
-+4. On repeated clicks of the active sort option, toggle ascending and descending.
-+5. On click of a different sort option, switch to that key and reset to ascending.
-+6. Render active sort buttons with `▲` for ascending and `▼` for descending.
-+7. Keep inactive sort button labels unchanged.
-+8. Preserve existing shared Hue, Saturation, Brightness, and Name ascending sort behavior, reversing it for descending.
-+9. Sort Tag by normalized lowercase tag text, with no-tag swatches after tagged swatches in ascending order and reversed for descending.
++1. Keep User Palette sort options as Hue, Saturation, Brightness, Name, and Tag.
++2. Restrict Sample Palette Swatch sort options to Hue, Saturation, Brightness, and Name.
++3. Add a `Pin All` button to the Sample Palette Swatch controls.
++4. Place `Pin All` to the right of the Source palette dropdown and make it 10px taller than the dropdown.
++5. Wire `Pin All` to the currently visible/filtered source swatches.
++6. Copy each visible source swatch into User Palette with the current source palette id.
++7. Do not add tags to Sample Palette Swatch pins.
++8. Skip swatches that fail the existing user duplicate guards for name, RGB/hex, or symbol.
++9. Show a clear status with pinned and skipped counts.
++10. Keep individual source swatch pin/unpin behavior unchanged.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by the Palette Manager V2-only sort update.
++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by the Palette Manager V2-only source pin update.
 +- Expected pass behavior: Workspace V2 validation remains green.
 +- Expected fail behavior: missing script or Workspace V2 regression is reported.
 +- Full samples smoke test: skipped by instruction.
@@ -214,284 +1020,216 @@ index 00000000..7184730d
 +## Manual Validation
 +1. Open Palette Manager V2.
 +2. Confirm User Palette sort shows Hue, Saturation, Brightness, Name, and Tag.
-+3. Confirm Source Palette sort shows Hue, Saturation, Brightness, Name, and Tag.
-+4. Click a sort option once and confirm its active label shows `▲`.
-+5. Click the same option again and confirm it shows `▼` and reverses order.
-+6. Click it again and confirm it returns to `▲`.
-+7. Click a different sort option and confirm it resets to `▲`.
-+8. Confirm User Palette and Source Palette keep independent sort key/direction state.
++3. Confirm Sample Palette Swatch sort shows Hue, Saturation, Brightness, and Name only.
++4. Search Sample Palette Swatch to filter visible swatches.
++5. Click `Pin All` and confirm only visible swatches are added to User Palette.
++6. Click `Pin All` again and confirm duplicates are skipped with a clear pinned/skipped status.
++7. Confirm individual source swatch pin/unpin still works.
++8. Export JSON and confirm pinned source swatches roundtrip without tags.
++9. Confirm `Pin All` sits to the right of the Source palette dropdown.
 diff --git a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-index 923842ec..6ae3275b 100644
+index 6ae3275b..ccbbb5bb 100644
 --- a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
 +++ b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-@@ -64,15 +64,16 @@ export class SourcePaletteBrowserControl {
-
-   renderSortOptions() {
-     this.refs.sourcePaletteSortControls.replaceChildren();
--    this.app.getSortModes().forEach((mode) => {
-+    this.app.getSourceSortOptions().forEach((option) => {
-       const button = this.document.createElement("button");
-       button.type = "button";
-       button.className = "palette-manager-v2__sort-button";
--      button.dataset.sortMode = mode.value;
-+      button.dataset.sortKey = option.value;
-+      button.dataset.sortLabel = option.label;
-       button.setAttribute("role", "radio");
--      button.textContent = mode.label;
-+      button.textContent = option.label;
-       button.addEventListener("click", () => {
--        this.app.setSourceSortMode(mode.value);
-+        this.app.setSourceSortKey(option.value);
-       });
-       this.refs.sourcePaletteSortControls.appendChild(button);
+@@ -17,6 +17,9 @@ export class SourcePaletteBrowserControl {
+     this.refs.sourceSearchInput.addEventListener("input", () => {
+       this.app.setSourceSearch(this.refs.sourceSearchInput.value);
      });
-@@ -97,11 +98,13 @@ export class SourcePaletteBrowserControl {
++    this.refs.pinAllSourceButton.addEventListener("click", () => {
++      this.app.pinVisibleSourceSwatches();
++    });
    }
 
-   renderActiveSortButton() {
--    const activeMode = this.app.getSourceSortMode();
--    this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
--      const isActive = button.dataset.sortMode === activeMode;
-+    const activeKey = this.app.getSourceSortKey();
-+    const directionIndicator = this.app.getSourceSortDirection() === "descending" ? "▼" : "▲";
-+    this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-key]").forEach((button) => {
-+      const isActive = button.dataset.sortKey === activeKey;
-       button.classList.toggle("is-active", isActive);
-       button.setAttribute("aria-checked", String(isActive));
-+      button.textContent = isActive ? `${button.dataset.sortLabel} ${directionIndicator}` : button.dataset.sortLabel;
-     });
-   }
-
-diff --git a/tools/palette-manager-v2/controls/UserPaletteControl.js b/tools/palette-manager-v2/controls/UserPaletteControl.js
-index 349fb50e..3847c020 100644
---- a/tools/palette-manager-v2/controls/UserPaletteControl.js
-+++ b/tools/palette-manager-v2/controls/UserPaletteControl.js
-@@ -40,15 +40,16 @@ export class UserPaletteControl {
-
-   renderSortOptions() {
-     this.refs.userPaletteSortControls.replaceChildren();
--    this.app.getUserSortModes().forEach((mode) => {
-+    this.app.getUserSortOptions().forEach((option) => {
-       const button = this.document.createElement("button");
-       button.type = "button";
-       button.className = "palette-manager-v2__sort-button";
--      button.dataset.sortMode = mode.value;
-+      button.dataset.sortKey = option.value;
-+      button.dataset.sortLabel = option.label;
-       button.setAttribute("role", "radio");
--      button.textContent = mode.label;
-+      button.textContent = option.label;
-       button.addEventListener("click", () => {
--        this.app.setUserSortMode(mode.value);
-+        this.app.setUserSortKey(option.value);
-       });
-       this.refs.userPaletteSortControls.appendChild(button);
-     });
-@@ -73,11 +74,13 @@ export class UserPaletteControl {
-   }
-
-   renderActiveSortButton() {
--    const activeMode = this.app.getUserSortMode();
--    this.refs.userPaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
--      const isActive = button.dataset.sortMode === activeMode;
-+    const activeKey = this.app.getUserSortKey();
-+    const directionIndicator = this.app.getUserSortDirection() === "descending" ? "▼" : "▲";
-+    this.refs.userPaletteSortControls.querySelectorAll("[data-sort-key]").forEach((button) => {
-+      const isActive = button.dataset.sortKey === activeKey;
-       button.classList.toggle("is-active", isActive);
-       button.setAttribute("aria-checked", String(isActive));
-+      button.textContent = isActive ? `${button.dataset.sortLabel} ${directionIndicator}` : button.dataset.sortLabel;
-     });
-   }
-
+   render() {
+diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
+index 72443386..2bc94a48 100644
+--- a/tools/palette-manager-v2/index.html
++++ b/tools/palette-manager-v2/index.html
+@@ -139,10 +139,13 @@
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+           </button>
+           <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
+-            <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
+-              Source palette
+-              <select id="sourcePaletteSelect"></select>
+-            </label>
++            <div class="palette-manager-v2__source-palette-row">
++              <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
++                Source palette
++                <select id="sourcePaletteSelect"></select>
++              </label>
++              <button id="pinAllSourceButton" class="palette-manager-v2__pin-all-source-button" type="button">Pin All</button>
++            </div>
+             <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
+               Search source swatches
+               <input id="sourceSearchInput" type="search" autocomplete="off" />
 diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 624873f8..25857c4b 100644
+index 25857c4b..1d7437ed 100644
 --- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
 +++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -50,7 +50,7 @@ const SWATCH_SIZE_OPTIONS = Object.freeze([
-   Object.freeze({ value: "large", label: "Large" })
+@@ -15,6 +15,7 @@ const REQUIRED_REF_IDS = Object.freeze([
+   "userSwatchList",
+   "sourcePaletteSelect",
+   "sourceSearchInput",
++  "pinAllSourceButton",
+   "sourcePaletteSortControls",
+   "sourceSwatchSizeControls",
+   "sourceSwatchList",
+@@ -58,6 +59,10 @@ const PALETTE_SORT_OPTIONS = Object.freeze([
+   Object.freeze({ value: "tag", label: "Tag" })
  ]);
 
--const USER_SORT_MODES = Object.freeze([
-+const PALETTE_SORT_OPTIONS = Object.freeze([
-   Object.freeze({ value: "hue", label: "Hue" }),
-   Object.freeze({ value: "saturation", label: "Saturation" }),
-   Object.freeze({ value: "brightness", label: "Brightness" }),
-@@ -62,8 +62,8 @@ function isValidSwatchSize(swatchSize) {
++const SOURCE_PALETTE_SORT_OPTIONS = Object.freeze(
++  PALETTE_SORT_OPTIONS.filter((option) => option.value !== "tag")
++);
++
+ function isValidSwatchSize(swatchSize) {
    return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
  }
-
--function isValidUserSortMode(sortMode) {
--  return USER_SORT_MODES.some((mode) => mode.value === sortMode);
-+function isValidSortKey(sortKey) {
-+  return PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
+@@ -66,6 +71,10 @@ function isValidSortKey(sortKey) {
+   return PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
  }
 
++function isValidSourceSortKey(sortKey) {
++  return SOURCE_PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
++}
++
  function isUserDefinedSwatch(swatch) {
-@@ -88,9 +88,13 @@ function getTagSortKey(swatch) {
-   return sortUniqueTags(swatch?.tags)[0] || "";
+   return sanitizeText(swatch?.source) === USER_ADDED_SOURCE;
+ }
+@@ -109,14 +118,6 @@ function sortRowsByTag(rows, sortDirection) {
+   return applySortDirection(sortedRows, sortDirection);
  }
 
--function sortRowsByTag(rows) {
-+function applySortDirection(entries, sortDirection) {
-+  return sortDirection === "descending" ? entries.slice().reverse() : entries;
-+}
-+
-+function sortRowsByTag(rows, sortDirection) {
-   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
--  return (Array.isArray(rows) ? rows : [])
-+  const sortedRows = (Array.isArray(rows) ? rows : [])
-     .map((row, index) => ({ row, index, tagKey: getTagSortKey(row?.swatch) }))
-     .sort((left, right) => {
-       if (!left.tagKey && right.tagKey) {
-@@ -102,6 +106,19 @@ function sortRowsByTag(rows) {
-       return collator.compare(left.tagKey, right.tagKey) || left.index - right.index;
-     })
-     .map((entry) => entry.row);
-+  return applySortDirection(sortedRows, sortDirection);
-+}
-+
-+function sortSwatchesByTag(swatches, sortDirection) {
-+  const rows = (Array.isArray(swatches) ? swatches : []).map((swatch, index) => ({
-+    index,
-+    swatch
-+  }));
-+  return sortRowsByTag(rows, sortDirection).map((row) => row.swatch);
-+}
-+
-+function toggleSortDirection(sortDirection) {
-+  return sortDirection === "ascending" ? "descending" : "ascending";
+-function sortSwatchesByTag(swatches, sortDirection) {
+-  const rows = (Array.isArray(swatches) ? swatches : []).map((swatch, index) => ({
+-    index,
+-    swatch
+-  }));
+-  return sortRowsByTag(rows, sortDirection).map((row) => row.swatch);
+-}
+-
+ function toggleSortDirection(sortDirection) {
+   return sortDirection === "ascending" ? "descending" : "ascending";
  }
-
- function collectRefs(documentRef) {
-@@ -136,8 +153,12 @@ export class PaletteManagerApp {
-       selectedUserIndex: -1,
-       sourcePaletteId: this.sourcePaletteIds[0] || "",
-       sourceSearch: "",
--      userSortMode: "hue",
--      sourceSortMode: "hue",
-+      userSortKey: "hue",
-+      userSortDirection: "ascending",
-+      userSortHasUserChoice: false,
-+      sourceSortKey: "hue",
-+      sourceSortDirection: "ascending",
-+      sourceSortHasUserChoice: false,
-       userSwatchSize: "large",
-       sourceSwatchSize: "large",
-       availableTags: [],
-@@ -186,34 +207,42 @@ export class PaletteManagerApp {
-       index,
-       swatch: cloneSwatch(swatch)
-     }));
--    if (this.state.userSortMode === "tag") {
--      return sortRowsByTag(rows);
-+    if (this.state.userSortKey === "tag") {
-+      return sortRowsByTag(rows, this.state.userSortDirection);
-     }
--    return this.sortService.sortRows(rows, this.state.userSortMode);
-+    return applySortDirection(this.sortService.sortRows(rows, this.state.userSortKey), this.state.userSortDirection);
+@@ -222,7 +223,7 @@ export class PaletteManagerApp {
    }
 
-   getSelectedUserIndex() {
-     return this.state.selectedUserIndex;
-   }
-
--  getSortModes() {
--    return this.sortService.getSortModes();
-+  getUserSortOptions() {
-+    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
-   }
-
--  getUserSortModes() {
--    return USER_SORT_MODES.map((mode) => ({ ...mode }));
-+  getSourceSortOptions() {
-+    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
+   getSourceSortOptions() {
+-    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
++    return SOURCE_PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
    }
 
    getSwatchSizeOptions() {
-     return SWATCH_SIZE_OPTIONS.map((size) => ({ ...size }));
-   }
-
--  getUserSortMode() {
--    return this.state.userSortMode;
-+  getUserSortKey() {
-+    return this.state.userSortKey;
-+  }
-+
-+  getUserSortDirection() {
-+    return this.state.userSortDirection;
-   }
-
--  getSourceSortMode() {
--    return this.state.sourceSortMode;
-+  getSourceSortKey() {
-+    return this.state.sourceSortKey;
-+  }
-+
-+  getSourceSortDirection() {
-+    return this.state.sourceSortDirection;
-   }
-
-   getUserSwatchSize() {
-@@ -267,7 +296,7 @@ export class PaletteManagerApp {
+@@ -292,7 +293,9 @@ export class PaletteManagerApp {
+     const swatches = this.sourcePalettes[this.state.sourcePaletteId] || [];
+     const query = sanitizeText(this.state.sourceSearch).toLowerCase();
+     const toSourceSwatch = (swatch) => cloneSwatch({
+-      ...swatch,
++      symbol: swatch.symbol,
++      hex: swatch.hex,
++      name: swatch.name,
        source: swatch.source || this.state.sourcePaletteId
      });
      if (!query) {
--      return this.sortService.sortSwatches(swatches.map(toSourceSwatch), this.state.sourceSortMode);
-+      return this.sortVisibleSourceSwatches(swatches.map(toSourceSwatch));
+@@ -309,9 +312,6 @@ export class PaletteManagerApp {
+   }
+
+   sortVisibleSourceSwatches(swatches) {
+-    if (this.state.sourceSortKey === "tag") {
+-      return sortSwatchesByTag(swatches, this.state.sourceSortDirection);
+-    }
+     return applySortDirection(this.sortService.sortSwatches(swatches, this.state.sourceSortKey), this.state.sourceSortDirection);
+   }
+
+@@ -345,7 +345,7 @@ export class PaletteManagerApp {
+   }
+
+   setSourceSortKey(sortKey) {
+-    if (!isValidSortKey(sortKey)) {
++    if (!isValidSourceSortKey(sortKey)) {
+       return;
      }
-     const visibleSwatches = swatches
-       .filter((swatch) => {
-@@ -276,7 +305,14 @@ export class PaletteManagerApp {
-           || swatch.symbol.toLowerCase().includes(query);
-       })
-       .map(toSourceSwatch);
--    return this.sortService.sortSwatches(visibleSwatches, this.state.sourceSortMode);
-+    return this.sortVisibleSourceSwatches(visibleSwatches);
+     if (this.state.sourceSortKey === sortKey && this.state.sourceSortHasUserChoice) {
+@@ -648,6 +648,7 @@ export class PaletteManagerApp {
+
+   pinSourceSwatch(swatch, sourcePaletteId) {
+     const pinnedSwatch = cloneSwatch({ ...swatch, source: sourcePaletteId });
++    delete pinnedSwatch.tags;
+     const errors = this.validator.validateSwatch(pinnedSwatch, "source swatch");
+     if (errors.length > 0) {
+       this.setActionState(errors, "Source swatch was not pinned.");
+@@ -662,6 +663,45 @@ export class PaletteManagerApp {
+     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
+   }
+
++  pinVisibleSourceSwatches() {
++    const visibleSwatches = this.getVisibleSourceSwatches();
++    let pinnedCount = 0;
++    let skippedCount = 0;
++    let lastPinnedIndex = -1;
++    const skipReasons = [];
++
++    visibleSwatches.forEach((swatch) => {
++      const pinnedSwatch = cloneSwatch({
++        symbol: swatch.symbol,
++        hex: swatch.hex,
++        name: swatch.name,
++        source: this.state.sourcePaletteId
++      });
++      const errors = [
++        ...this.validator.validateSwatch(pinnedSwatch, "source swatch"),
++        ...this.validateUniqueUserSwatchFields(pinnedSwatch, -1)
++      ];
++      if (errors.length > 0) {
++        skippedCount += 1;
++        skipReasons.push(...errors);
++        return;
++      }
++
++      this.state.userSwatches.push(pinnedSwatch);
++      pinnedCount += 1;
++      lastPinnedIndex = this.state.userSwatches.length - 1;
++    });
++
++    if (lastPinnedIndex >= 0) {
++      this.state.selectedUserIndex = lastPinnedIndex;
++      this.editorControl.showSwatch(this.state.userSwatches[lastPinnedIndex]);
++      this.editorControl.clearUserDefinedSwatch();
++    }
++
++    const status = `Pinned ${pinnedCount} source swatches. Skipped ${skippedCount} duplicate or invalid swatches.`;
++    this.setActionState(Array.from(new Set(skipReasons)), status);
 +  }
 +
-+  sortVisibleSourceSwatches(swatches) {
-+    if (this.state.sourceSortKey === "tag") {
-+      return sortSwatchesByTag(swatches, this.state.sourceSortDirection);
-+    }
-+    return applySortDirection(this.sortService.sortSwatches(swatches, this.state.sourceSortKey), this.state.sourceSortDirection);
-   }
+   findUserSwatchIndex(swatch) {
+     const targetKey = swatchKey(swatch);
+     return this.state.userSwatches.findIndex((entry) => swatchKey(entry) === targetKey);
+diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
+index 250052e9..d9fa6907 100644
+--- a/tools/palette-manager-v2/paletteManagerV2.css
++++ b/tools/palette-manager-v2/paletteManagerV2.css
+@@ -259,6 +259,23 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   gap: 8px;
+ }
 
-   setSourcePaletteId(sourcePaletteId) {
-@@ -294,19 +330,31 @@ export class PaletteManagerApp {
-     this.render();
-   }
-
--  setUserSortMode(sortMode) {
--    if (!isValidUserSortMode(sortMode)) {
-+  setUserSortKey(sortKey) {
-+    if (!isValidSortKey(sortKey)) {
-       return;
-     }
--    this.state.userSortMode = sortMode;
-+    if (this.state.userSortKey === sortKey && this.state.userSortHasUserChoice) {
-+      this.state.userSortDirection = toggleSortDirection(this.state.userSortDirection);
-+    } else {
-+      this.state.userSortKey = sortKey;
-+      this.state.userSortDirection = "ascending";
-+      this.state.userSortHasUserChoice = true;
-+    }
-     this.render();
-   }
-
--  setSourceSortMode(sortMode) {
--    if (!this.sortService.isValidSortMode(sortMode)) {
-+  setSourceSortKey(sortKey) {
-+    if (!isValidSortKey(sortKey)) {
-       return;
-     }
--    this.state.sourceSortMode = sortMode;
-+    if (this.state.sourceSortKey === sortKey && this.state.sourceSortHasUserChoice) {
-+      this.state.sourceSortDirection = toggleSortDirection(this.state.sourceSortDirection);
-+    } else {
-+      this.state.sourceSortKey = sortKey;
-+      this.state.sourceSortDirection = "ascending";
-+      this.state.sourceSortHasUserChoice = true;
-+    }
-     this.render();
-   }
++.palette-manager-v2__source-palette-row {
++  display: flex;
++  align-items: end;
++  gap: 10px;
++  flex-wrap: wrap;
++}
++
++.palette-manager-v2__source-palette-row .palette-manager-v2__field--source-control {
++  flex: 1 1 320px;
++}
++
++.palette-manager-v2__pin-all-source-button {
++  flex: 0 0 auto;
++  min-height: 44px;
++  padding-inline: 20px;
++}
++
+ .palette-manager-v2__field input,
+ .palette-manager-v2__field select {
+   width: 100%;

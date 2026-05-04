@@ -15,6 +15,7 @@ const REQUIRED_REF_IDS = Object.freeze([
   "userSwatchList",
   "sourcePaletteSelect",
   "sourceSearchInput",
+  "pinAllSourceButton",
   "sourcePaletteSortControls",
   "sourceSwatchSizeControls",
   "sourceSwatchList",
@@ -58,12 +59,20 @@ const PALETTE_SORT_OPTIONS = Object.freeze([
   Object.freeze({ value: "tag", label: "Tag" })
 ]);
 
+const SOURCE_PALETTE_SORT_OPTIONS = Object.freeze(
+  PALETTE_SORT_OPTIONS.filter((option) => option.value !== "tag")
+);
+
 function isValidSwatchSize(swatchSize) {
   return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
 }
 
 function isValidSortKey(sortKey) {
   return PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
+}
+
+function isValidSourceSortKey(sortKey) {
+  return SOURCE_PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
 }
 
 function isUserDefinedSwatch(swatch) {
@@ -107,14 +116,6 @@ function sortRowsByTag(rows, sortDirection) {
     })
     .map((entry) => entry.row);
   return applySortDirection(sortedRows, sortDirection);
-}
-
-function sortSwatchesByTag(swatches, sortDirection) {
-  const rows = (Array.isArray(swatches) ? swatches : []).map((swatch, index) => ({
-    index,
-    swatch
-  }));
-  return sortRowsByTag(rows, sortDirection).map((row) => row.swatch);
 }
 
 function toggleSortDirection(sortDirection) {
@@ -222,7 +223,7 @@ export class PaletteManagerApp {
   }
 
   getSourceSortOptions() {
-    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
+    return SOURCE_PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
   }
 
   getSwatchSizeOptions() {
@@ -292,7 +293,9 @@ export class PaletteManagerApp {
     const swatches = this.sourcePalettes[this.state.sourcePaletteId] || [];
     const query = sanitizeText(this.state.sourceSearch).toLowerCase();
     const toSourceSwatch = (swatch) => cloneSwatch({
-      ...swatch,
+      symbol: swatch.symbol,
+      hex: swatch.hex,
+      name: swatch.name,
       source: swatch.source || this.state.sourcePaletteId
     });
     if (!query) {
@@ -309,9 +312,6 @@ export class PaletteManagerApp {
   }
 
   sortVisibleSourceSwatches(swatches) {
-    if (this.state.sourceSortKey === "tag") {
-      return sortSwatchesByTag(swatches, this.state.sourceSortDirection);
-    }
     return applySortDirection(this.sortService.sortSwatches(swatches, this.state.sourceSortKey), this.state.sourceSortDirection);
   }
 
@@ -345,7 +345,7 @@ export class PaletteManagerApp {
   }
 
   setSourceSortKey(sortKey) {
-    if (!isValidSortKey(sortKey)) {
+    if (!isValidSourceSortKey(sortKey)) {
       return;
     }
     if (this.state.sourceSortKey === sortKey && this.state.sourceSortHasUserChoice) {
@@ -648,6 +648,7 @@ export class PaletteManagerApp {
 
   pinSourceSwatch(swatch, sourcePaletteId) {
     const pinnedSwatch = cloneSwatch({ ...swatch, source: sourcePaletteId });
+    delete pinnedSwatch.tags;
     const errors = this.validator.validateSwatch(pinnedSwatch, "source swatch");
     if (errors.length > 0) {
       this.setActionState(errors, "Source swatch was not pinned.");
@@ -660,6 +661,45 @@ export class PaletteManagerApp {
     this.editorControl.showSwatch(pinnedSwatch);
     this.editorControl.clearUserDefinedSwatch();
     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
+  }
+
+  pinVisibleSourceSwatches() {
+    const visibleSwatches = this.getVisibleSourceSwatches();
+    let pinnedCount = 0;
+    let skippedCount = 0;
+    let lastPinnedIndex = -1;
+    const skipReasons = [];
+
+    visibleSwatches.forEach((swatch) => {
+      const pinnedSwatch = cloneSwatch({
+        symbol: swatch.symbol,
+        hex: swatch.hex,
+        name: swatch.name,
+        source: this.state.sourcePaletteId
+      });
+      const errors = [
+        ...this.validator.validateSwatch(pinnedSwatch, "source swatch"),
+        ...this.validateUniqueUserSwatchFields(pinnedSwatch, -1)
+      ];
+      if (errors.length > 0) {
+        skippedCount += 1;
+        skipReasons.push(...errors);
+        return;
+      }
+
+      this.state.userSwatches.push(pinnedSwatch);
+      pinnedCount += 1;
+      lastPinnedIndex = this.state.userSwatches.length - 1;
+    });
+
+    if (lastPinnedIndex >= 0) {
+      this.state.selectedUserIndex = lastPinnedIndex;
+      this.editorControl.showSwatch(this.state.userSwatches[lastPinnedIndex]);
+      this.editorControl.clearUserDefinedSwatch();
+    }
+
+    const status = `Pinned ${pinnedCount} source swatches. Skipped ${skippedCount} duplicate or invalid swatches.`;
+    this.setActionState(Array.from(new Set(skipReasons)), status);
   }
 
   findUserSwatchIndex(swatch) {

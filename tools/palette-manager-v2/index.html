@@ -139,10 +139,13 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
-            <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
-              Source palette
-              <select id="sourcePaletteSelect"></select>
-            </label>
+            <div class="palette-manager-v2__source-palette-row">
+              <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
+                Source palette
+                <select id="sourcePaletteSelect"></select>
+              </label>
+              <button id="pinAllSourceButton" class="palette-manager-v2__pin-all-source-button" type="button">Pin All</button>
+            </div>
             <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
               Search source swatches
               <input id="sourceSearchInput" type="search" autocomplete="off" />

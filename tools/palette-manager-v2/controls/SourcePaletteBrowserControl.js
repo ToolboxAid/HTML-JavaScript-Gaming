@@ -17,6 +17,9 @@ export class SourcePaletteBrowserControl {
     this.refs.sourceSearchInput.addEventListener("input", () => {
       this.app.setSourceSearch(this.refs.sourceSearchInput.value);
     });
+    this.refs.pinAllSourceButton.addEventListener("click", () => {
+      this.app.pinVisibleSourceSwatches();
+    });
   }
 
   render() {

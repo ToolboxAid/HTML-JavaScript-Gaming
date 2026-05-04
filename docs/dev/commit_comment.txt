@@ -1,1 +1,1 @@
-Add Palette Manager sort direction toggles - PR_26124_056-palette-manager-sort-toggle-direction
+Add Palette Manager source Pin All action - PR_26124_057-palette-manager-source-pin-all
