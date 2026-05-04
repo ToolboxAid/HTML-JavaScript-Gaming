@@ -1,1 +1,1 @@
-Rollback uncommitted Palette Manager shared-removal attempt - PR_26124_072-palette-manager-rollback-shared-removal
+Add Palette Manager V2 Playwright baseline coverage - PR_26124_073-palette-manager-playwright-baseline

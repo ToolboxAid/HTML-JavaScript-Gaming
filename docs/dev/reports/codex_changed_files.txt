@@ -1,10 +1,11 @@
 # git status --short
 M  docs/dev/codex_commands.md
 M  docs/dev/commit_comment.txt
-A  docs/dev/reports/PR_26124_072_rollback_report.md
-A  docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/APPLY_PR.md
-A  docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/BUILD_PR.md
-A  docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/PLAN_PR.md
+A  docs/dev/reports/PR_26124_073_report.md
+A  docs/pr/PR_26124_073-palette-manager-playwright-baseline/APPLY_PR.md
+A  docs/pr/PR_26124_073-palette-manager-playwright-baseline/BUILD_PR.md
+A  docs/pr/PR_26124_073-palette-manager-playwright-baseline/PLAN_PR.md
+A  tests/tools/PaletteManagerV2Baseline.test.mjs
 
 # git diff --stat
 (no output)
