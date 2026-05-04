@@ -50,7 +50,7 @@ const SWATCH_SIZE_OPTIONS = Object.freeze([
   Object.freeze({ value: "large", label: "Large" })
 ]);
 
-const USER_SORT_MODES = Object.freeze([
+const PALETTE_SORT_OPTIONS = Object.freeze([
   Object.freeze({ value: "hue", label: "Hue" }),
   Object.freeze({ value: "saturation", label: "Saturation" }),
   Object.freeze({ value: "brightness", label: "Brightness" }),
@@ -62,8 +62,8 @@ function isValidSwatchSize(swatchSize) {
   return SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize);
 }
 
-function isValidUserSortMode(sortMode) {
-  return USER_SORT_MODES.some((mode) => mode.value === sortMode);
+function isValidSortKey(sortKey) {
+  return PALETTE_SORT_OPTIONS.some((option) => option.value === sortKey);
 }
 
 function isUserDefinedSwatch(swatch) {
@@ -88,9 +88,13 @@ function getTagSortKey(swatch) {
   return sortUniqueTags(swatch?.tags)[0] || "";
 }
 
-function sortRowsByTag(rows) {
+function applySortDirection(entries, sortDirection) {
+  return sortDirection === "descending" ? entries.slice().reverse() : entries;
+}
+
+function sortRowsByTag(rows, sortDirection) {
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
-  return (Array.isArray(rows) ? rows : [])
+  const sortedRows = (Array.isArray(rows) ? rows : [])
     .map((row, index) => ({ row, index, tagKey: getTagSortKey(row?.swatch) }))
     .sort((left, right) => {
       if (!left.tagKey && right.tagKey) {
@@ -102,6 +106,19 @@ function sortRowsByTag(rows) {
       return collator.compare(left.tagKey, right.tagKey) || left.index - right.index;
     })
     .map((entry) => entry.row);
+  return applySortDirection(sortedRows, sortDirection);
+}
+
+function sortSwatchesByTag(swatches, sortDirection) {
+  const rows = (Array.isArray(swatches) ? swatches : []).map((swatch, index) => ({
+    index,
+    swatch
+  }));
+  return sortRowsByTag(rows, sortDirection).map((row) => row.swatch);
+}
+
+function toggleSortDirection(sortDirection) {
+  return sortDirection === "ascending" ? "descending" : "ascending";
 }
 
 function collectRefs(documentRef) {
@@ -136,8 +153,12 @@ export class PaletteManagerApp {
       selectedUserIndex: -1,
       sourcePaletteId: this.sourcePaletteIds[0] || "",
       sourceSearch: "",
-      userSortMode: "hue",
-      sourceSortMode: "hue",
+      userSortKey: "hue",
+      userSortDirection: "ascending",
+      userSortHasUserChoice: false,
+      sourceSortKey: "hue",
+      sourceSortDirection: "ascending",
+      sourceSortHasUserChoice: false,
       userSwatchSize: "large",
       sourceSwatchSize: "large",
       availableTags: [],
@@ -186,34 +207,42 @@ export class PaletteManagerApp {
       index,
       swatch: cloneSwatch(swatch)
     }));
-    if (this.state.userSortMode === "tag") {
-      return sortRowsByTag(rows);
+    if (this.state.userSortKey === "tag") {
+      return sortRowsByTag(rows, this.state.userSortDirection);
     }
-    return this.sortService.sortRows(rows, this.state.userSortMode);
+    return applySortDirection(this.sortService.sortRows(rows, this.state.userSortKey), this.state.userSortDirection);
   }
 
   getSelectedUserIndex() {
     return this.state.selectedUserIndex;
   }
 
-  getSortModes() {
-    return this.sortService.getSortModes();
+  getUserSortOptions() {
+    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
   }
 
-  getUserSortModes() {
-    return USER_SORT_MODES.map((mode) => ({ ...mode }));
+  getSourceSortOptions() {
+    return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
   }
 
   getSwatchSizeOptions() {
     return SWATCH_SIZE_OPTIONS.map((size) => ({ ...size }));
   }
 
-  getUserSortMode() {
-    return this.state.userSortMode;
+  getUserSortKey() {
+    return this.state.userSortKey;
   }
 
-  getSourceSortMode() {
-    return this.state.sourceSortMode;
+  getUserSortDirection() {
+    return this.state.userSortDirection;
+  }
+
+  getSourceSortKey() {
+    return this.state.sourceSortKey;
+  }
+
+  getSourceSortDirection() {
+    return this.state.sourceSortDirection;
   }
 
   getUserSwatchSize() {
@@ -267,7 +296,7 @@ export class PaletteManagerApp {
       source: swatch.source || this.state.sourcePaletteId
     });
     if (!query) {
-      return this.sortService.sortSwatches(swatches.map(toSourceSwatch), this.state.sourceSortMode);
+      return this.sortVisibleSourceSwatches(swatches.map(toSourceSwatch));
     }
     const visibleSwatches = swatches
       .filter((swatch) => {
@@ -276,7 +305,14 @@ export class PaletteManagerApp {
           || swatch.symbol.toLowerCase().includes(query);
       })
       .map(toSourceSwatch);
-    return this.sortService.sortSwatches(visibleSwatches, this.state.sourceSortMode);
+    return this.sortVisibleSourceSwatches(visibleSwatches);
+  }
+
+  sortVisibleSourceSwatches(swatches) {
+    if (this.state.sourceSortKey === "tag") {
+      return sortSwatchesByTag(swatches, this.state.sourceSortDirection);
+    }
+    return applySortDirection(this.sortService.sortSwatches(swatches, this.state.sourceSortKey), this.state.sourceSortDirection);
   }
 
   setSourcePaletteId(sourcePaletteId) {
@@ -294,19 +330,31 @@ export class PaletteManagerApp {
     this.render();
   }
 
-  setUserSortMode(sortMode) {
-    if (!isValidUserSortMode(sortMode)) {
+  setUserSortKey(sortKey) {
+    if (!isValidSortKey(sortKey)) {
       return;
     }
-    this.state.userSortMode = sortMode;
+    if (this.state.userSortKey === sortKey && this.state.userSortHasUserChoice) {
+      this.state.userSortDirection = toggleSortDirection(this.state.userSortDirection);
+    } else {
+      this.state.userSortKey = sortKey;
+      this.state.userSortDirection = "ascending";
+      this.state.userSortHasUserChoice = true;
+    }
     this.render();
   }
 
-  setSourceSortMode(sortMode) {
-    if (!this.sortService.isValidSortMode(sortMode)) {
+  setSourceSortKey(sortKey) {
+    if (!isValidSortKey(sortKey)) {
       return;
     }
-    this.state.sourceSortMode = sortMode;
+    if (this.state.sourceSortKey === sortKey && this.state.sourceSortHasUserChoice) {
+      this.state.sourceSortDirection = toggleSortDirection(this.state.sourceSortDirection);
+    } else {
+      this.state.sourceSortKey = sortKey;
+      this.state.sourceSortDirection = "ascending";
+      this.state.sourceSortHasUserChoice = true;
+    }
     this.render();
   }
 

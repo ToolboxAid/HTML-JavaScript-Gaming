@@ -40,15 +40,16 @@ export class UserPaletteControl {
 
   renderSortOptions() {
     this.refs.userPaletteSortControls.replaceChildren();
-    this.app.getUserSortModes().forEach((mode) => {
+    this.app.getUserSortOptions().forEach((option) => {
       const button = this.document.createElement("button");
       button.type = "button";
       button.className = "palette-manager-v2__sort-button";
-      button.dataset.sortMode = mode.value;
+      button.dataset.sortKey = option.value;
+      button.dataset.sortLabel = option.label;
       button.setAttribute("role", "radio");
-      button.textContent = mode.label;
+      button.textContent = option.label;
       button.addEventListener("click", () => {
-        this.app.setUserSortMode(mode.value);
+        this.app.setUserSortKey(option.value);
       });
       this.refs.userPaletteSortControls.appendChild(button);
     });
@@ -73,11 +74,13 @@ export class UserPaletteControl {
   }
 
   renderActiveSortButton() {
-    const activeMode = this.app.getUserSortMode();
-    this.refs.userPaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
-      const isActive = button.dataset.sortMode === activeMode;
+    const activeKey = this.app.getUserSortKey();
+    const directionIndicator = this.app.getUserSortDirection() === "descending" ? "▼" : "▲";
+    this.refs.userPaletteSortControls.querySelectorAll("[data-sort-key]").forEach((button) => {
+      const isActive = button.dataset.sortKey === activeKey;
       button.classList.toggle("is-active", isActive);
       button.setAttribute("aria-checked", String(isActive));
+      button.textContent = isActive ? `${button.dataset.sortLabel} ${directionIndicator}` : button.dataset.sortLabel;
     });
   }
 

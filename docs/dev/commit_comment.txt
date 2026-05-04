@@ -1,1 +1,1 @@
-Center Palette Manager menu JSON actions - PR_26124_055-palette-manager-center-menu-actions
+Add Palette Manager sort direction toggles - PR_26124_056-palette-manager-sort-toggle-direction

@@ -28,16 +28,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   padding: 10px 14px;
 }
 
-.palette-manager-v2__menu-label {
-  flex: 1 1 0;
-  font-weight: 800;
-}
-
-.palette-manager-v2__menu-sample::after {
-  content: "";
-  flex: 1 1 0;
-}
-
 .palette-manager-v2__menu-actions {
   flex: 0 1 auto;
   display: flex;

@@ -1,22 +1,28 @@
 # git status --short
 M  docs/dev/codex_commands.md
 M  docs/dev/commit_comment.txt
-A  docs/dev/reports/PR_26124_055_report.md
+A  docs/dev/reports/PR_26124_056_report.md
 M  docs/dev/reports/codex_changed_files.txt
 MM docs/dev/reports/codex_review.diff
-A  docs/pr/PR_26124_055-palette-manager-center-menu-actions/APPLY_PR.md
-A  docs/pr/PR_26124_055-palette-manager-center-menu-actions/BUILD_PR.md
-A  docs/pr/PR_26124_055-palette-manager-center-menu-actions/PLAN_PR.md
-M  tools/palette-manager-v2/paletteManagerV2.css
+A  docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md
+A  docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md
+A  docs/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md
+M  tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
+M  tools/palette-manager-v2/controls/UserPaletteControl.js
+ M tools/palette-manager-v2/index.html
+M  tools/palette-manager-v2/modules/PaletteManagerApp.js
+ M tools/palette-manager-v2/paletteManagerV2.css
 
 # git diff --cached --stat
-docs/dev/codex_commands.md                         |   20 +-
- docs/dev/commit_comment.txt                        |    2 +-
- docs/dev/reports/PR_26124_055_report.md            |   27 +
- docs/dev/reports/codex_changed_files.txt           |   29 +-
- docs/dev/reports/codex_review.diff                 | 1115 +++-----------------
- .../APPLY_PR.md                                    |   23 +
- .../BUILD_PR.md                                    |   28 +
- .../PLAN_PR.md                                     |   37 +
- tools/palette-manager-v2/paletteManagerV2.css      |   12 +-
- 9 files changed, 270 insertions(+), 1023 deletions(-)
+docs/dev/codex_commands.md                         |  20 +-
+ docs/dev/commit_comment.txt                        |   2 +-
+ docs/dev/reports/PR_26124_056_report.md            |  36 ++
+ docs/dev/reports/codex_changed_files.txt           |  31 +-
+ docs/dev/reports/codex_review.diff                 | 537 ++++++++++++++++-----
+ .../APPLY_PR.md                                    |  29 ++
+ .../BUILD_PR.md                                    |  40 ++
+ .../PLAN_PR.md                                     |  44 ++
+ .../controls/SourcePaletteBrowserControl.js        |  17 +-
+ .../controls/UserPaletteControl.js                 |  17 +-
+ .../modules/PaletteManagerApp.js                   | 100 +++-
+ 11 files changed, 675 insertions(+), 198 deletions(-)

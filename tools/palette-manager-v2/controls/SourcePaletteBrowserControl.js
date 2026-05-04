@@ -64,15 +64,16 @@ export class SourcePaletteBrowserControl {
 
   renderSortOptions() {
     this.refs.sourcePaletteSortControls.replaceChildren();
-    this.app.getSortModes().forEach((mode) => {
+    this.app.getSourceSortOptions().forEach((option) => {
       const button = this.document.createElement("button");
       button.type = "button";
       button.className = "palette-manager-v2__sort-button";
-      button.dataset.sortMode = mode.value;
+      button.dataset.sortKey = option.value;
+      button.dataset.sortLabel = option.label;
       button.setAttribute("role", "radio");
-      button.textContent = mode.label;
+      button.textContent = option.label;
       button.addEventListener("click", () => {
-        this.app.setSourceSortMode(mode.value);
+        this.app.setSourceSortKey(option.value);
       });
       this.refs.sourcePaletteSortControls.appendChild(button);
     });
@@ -97,11 +98,13 @@ export class SourcePaletteBrowserControl {
   }
 
   renderActiveSortButton() {
-    const activeMode = this.app.getSourceSortMode();
-    this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
-      const isActive = button.dataset.sortMode === activeMode;
+    const activeKey = this.app.getSourceSortKey();
+    const directionIndicator = this.app.getSourceSortDirection() === "descending" ? "▼" : "▲";
+    this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-key]").forEach((button) => {
+      const isActive = button.dataset.sortKey === activeKey;
       button.classList.toggle("is-active", isActive);
       button.setAttribute("aria-checked", String(isActive));
+      button.textContent = isActive ? `${button.dataset.sortLabel} ${directionIndicator}` : button.dataset.sortLabel;
     });
   }
 
