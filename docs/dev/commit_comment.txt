@@ -1,1 +1,1 @@
-Add Workspace V2 and full tool reengineering design docs with explicit ownership boundaries and contract inventories - PR_26124_020-workspace-tools-reengineering-design-docs
+Replace Palette Manager center accordions with local accordionV2 layout - PR_26124_043-palette-manager-accordion-v2

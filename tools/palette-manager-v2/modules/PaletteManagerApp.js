@@ -87,6 +87,7 @@ export class PaletteManagerApp {
   }
 
   init() {
+    this.bindCenterAccordionV2();
     this.editorControl = new PaletteEditorControl({
       refs: this.refs,
       app: this,
@@ -107,6 +108,33 @@ export class PaletteManagerApp {
       this.setActionState(["src/engine/paletteList.js did not provide source palettes."], "Source palettes unavailable.", false);
     }
     this.render();
+  }
+
+  bindCenterAccordionV2() {
+    const root = this.document.querySelector("[data-accordion-v2-root]");
+    if (!root) {
+      throw new Error("Palette Manager V2 missing accordionV2 root.");
+    }
+
+    root.querySelectorAll("[data-accordion-v2-panel]").forEach((panel) => {
+      const toggle = panel.querySelector("[data-accordion-v2-toggle]");
+      const content = panel.querySelector("[data-accordion-v2-content]");
+      if (!toggle || !content) {
+        throw new Error("Palette Manager V2 accordionV2 panel is incomplete.");
+      }
+
+      const setOpen = (isOpen) => {
+        panel.classList.toggle("is-open", isOpen);
+        panel.dataset.accordionV2Open = String(isOpen);
+        toggle.setAttribute("aria-expanded", String(isOpen));
+        content.hidden = !isOpen;
+      };
+
+      setOpen(panel.dataset.accordionV2Open !== "false");
+      toggle.addEventListener("click", () => {
+        setOpen(!panel.classList.contains("is-open"));
+      });
+    });
   }
 
   render() {

@@ -57,13 +57,13 @@
         </details>
       </aside>
 
-      <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
-        <details class="palette-manager-v2__accordion" open>
-          <summary class="palette-manager-v2__accordion-summary">
+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center" data-accordion-v2-root>
+        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
+          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="userPaletteAccordionContent">
             <span>User Palette</span>
-            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="palette-manager-v2__accordion-content">
+            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
+          </button>
+          <div id="userPaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
             <div class="palette-manager-v2__sort-row">
               <div class="palette-manager-v2__field">
                 <span>Sort user palette</span>
@@ -77,14 +77,14 @@
             <div id="userPaletteCount" class="palette-manager-v2__meta">0 user swatches</div>
             <div id="userSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--user" aria-label="User palette swatches"></div>
           </div>
-        </details>
+        </section>
 
-        <details class="palette-manager-v2__accordion" open>
-          <summary class="palette-manager-v2__accordion-summary">
+        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
+          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
             <span>Add User Swatch</span>
-            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="palette-manager-v2__accordion-content">
+            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
+          </button>
+          <div id="sourcePaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
             <label class="palette-manager-v2__field">
               Source palette
               <select id="sourcePaletteSelect"></select>
@@ -105,7 +105,7 @@
             </div>
             <div id="sourceSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--source" aria-label="Browse palette swatches"></div>
           </div>
-        </details>
+        </section>
       </main>
 
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
