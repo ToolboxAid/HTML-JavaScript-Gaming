@@ -1,21 +1,24 @@
-# Codex Commands - PR_26124_046-right-column-height-balance
+# Codex Commands - PR_26124_047-palette-manager-right-column-and-hex-fixes
 
 ## Workflow
 - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
-- Read `docs/pr/PR_26124_046-right-column-height-balance/PLAN_PR.md`.
-- Created `docs/pr/PR_26124_046-right-column-height-balance/BUILD_PR.md`.
-- Updated `tools/palette-manager-v2/paletteManagerV2.css`.
-- Created `docs/pr/PR_26124_046-right-column-height-balance/APPLY_PR.md`.
+- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md`.
+- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md`.
+- Updated Palette Manager V2 only.
+- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md`.
 
 ## Validation Commands
-- Targeted browser layout check using Playwright from Node against `tools/palette-manager-v2/index.html`.
+- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
+- `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`
+- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
+- Targeted served-browser Palette Manager V2 check using Playwright from Node.
 - `git diff --check`
-- `git diff --name-only -- '*.js'`
 - `npm run test:workspace-v2`
 
 ## Validation Outcome
-- Targeted browser layout check: PASS.
-- `git diff --check`: PASS with Git line-ending warning for `tools/palette-manager-v2/paletteManagerV2.css`.
-- JavaScript syntax checks: no JavaScript files changed.
+- JavaScript syntax checks: PASS.
+- Targeted served-browser Palette Manager V2 check: PASS.
+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed files.
 - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
 - Full samples smoke test: skipped by instruction.

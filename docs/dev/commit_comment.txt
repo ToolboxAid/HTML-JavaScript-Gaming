@@ -1,1 +1,1 @@
-Balance Palette Manager right column section heights - PR_26124_046-right-column-height-balance
+Fix Palette Manager right column, source locking, and alpha hex input - PR_26124_047-palette-manager-right-column-and-hex-fixes

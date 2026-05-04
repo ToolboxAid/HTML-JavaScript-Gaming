@@ -1,3 +1,5 @@
+export const USER_ADDED_SOURCE = "User Added";
+
 export function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }

@@ -22,7 +22,7 @@ export class PaletteValidationService {
     if (!hex) {
       issues.push(`${cleanLabel}.hex is required.`);
     } else if (!this.hexColorPattern.test(hex)) {
-      issues.push(`${cleanLabel}.hex must be #RRGGBB.`);
+      issues.push(`${cleanLabel}.hex must be #RRGGBB or #RRGGBBAA.`);
     }
     if (!name) {
       issues.push(`${cleanLabel}.name is required.`);

@@ -37,7 +37,7 @@
               </label>
               <label class="palette-manager-v2__field">
                 Hex
-                <input id="swatchHexInput" type="text" maxlength="7" autocomplete="off" placeholder="#RRGGBB" />
+                <input id="swatchHexInput" type="text" maxlength="9" autocomplete="off" placeholder="#RRGGBBAA" />
               </label>
               <label class="palette-manager-v2__field">
                 Name
@@ -45,7 +45,7 @@
               </label>
               <label class="palette-manager-v2__field">
                 Source
-                <input id="swatchSourceInput" type="text" autocomplete="off" />
+                <input id="swatchSourceInput" type="text" autocomplete="off" readonly />
               </label>
             </div>
             <div class="palette-manager-v2__controls">
@@ -110,12 +110,12 @@
       </main>
 
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
-        <details class="palette-manager-v2__accordion" open>
-          <summary class="palette-manager-v2__accordion-summary">
+        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--import is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="importExportAccordionContent">
             <span>Import/Export</span>
-            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="palette-manager-v2__accordion-content">
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="importExportAccordionContent" class="accordion-v2__content">
             <div class="palette-manager-v2__controls">
               <button id="importPaletteButton" type="button">Import JSON</button>
               <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
@@ -124,18 +124,18 @@
             </div>
             <pre id="paletteJsonPreview" class="palette-manager-v2__json-preview">No user palette data.</pre>
           </div>
-        </details>
+        </section>
 
-        <details class="palette-manager-v2__accordion" open>
-          <summary class="palette-manager-v2__accordion-summary">
+        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--validation is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
             <span>Validation/Error Viewer</span>
-            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="palette-manager-v2__accordion-content">
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="validationErrorAccordionContent" class="accordion-v2__content">
             <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
             <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
           </div>
-        </details>
+        </section>
       </aside>
     </div>
   </div>

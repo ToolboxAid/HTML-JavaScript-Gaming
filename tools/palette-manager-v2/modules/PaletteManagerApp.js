@@ -4,7 +4,9 @@ import { PaletteValidationErrorControl } from "../controls/PaletteValidationErro
 import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
 import { UserPaletteControl } from "../controls/UserPaletteControl.js";
 import { PaletteValidationService } from "./PaletteValidationService.js";
-import { cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUtils.js";
+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUtils.js";
+
+const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
 
 const REQUIRED_REF_IDS = Object.freeze([
   "userPaletteCount",
@@ -63,7 +65,7 @@ export class PaletteManagerApp {
     this.sortService = sortService;
     this.usageService = usageService;
     this.globalPaletteToolKey = paletteSource.GLOBAL_PALETTE_TOOL_KEY;
-    this.hexColorPattern = paletteSource.HEX_COLOR_PATTERN;
+    this.hexColorPattern = USER_HEX_COLOR_PATTERN;
     this.sourcePalettes = paletteSource.SOURCE_PALETTES;
     this.sourcePaletteLabels = paletteSource.SOURCE_PALETTE_LABELS || {};
     this.sourcePaletteIds = Object.keys(this.sourcePalettes);
@@ -275,7 +277,7 @@ export class PaletteManagerApp {
   }
 
   addUserSwatch(swatch) {
-    const cleanSwatch = cloneSwatch(swatch);
+    const cleanSwatch = cloneSwatch({ ...swatch, source: USER_ADDED_SOURCE });
     const errors = this.validator.validateSwatch(cleanSwatch, "new swatch");
     if (errors.length > 0) {
       this.setActionState(errors, "User swatch was not added.");
@@ -294,7 +296,8 @@ export class PaletteManagerApp {
       return;
     }
 
-    const cleanSwatch = cloneSwatch(swatch);
+    const existingSwatch = this.state.userSwatches[this.state.selectedUserIndex];
+    const cleanSwatch = cloneSwatch({ ...swatch, source: existingSwatch.source });
     const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
     if (errors.length > 0) {
       this.setActionState(errors, "Selected swatch was not updated.");

@@ -1,4 +1,4 @@
-import { cloneSwatch, normalizeHex, sanitizeText } from "../modules/paletteUtils.js";
+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText } from "../modules/paletteUtils.js";
 
 export class PaletteEditorControl {
   constructor({ refs, app, hexColorPattern }) {
@@ -26,7 +26,7 @@ export class PaletteEditorControl {
   }
 
   clearForm() {
-    this.showSwatch({ symbol: "", hex: "", name: "", source: "" }, "Selected Swatch");
+    this.showSwatch({ symbol: "", hex: "", name: "", source: USER_ADDED_SOURCE }, "Selected Swatch");
   }
 
   showSwatch(swatch, title) {
@@ -36,6 +36,7 @@ export class PaletteEditorControl {
     this.refs.swatchHexInput.value = cleanSwatch.hex;
     this.refs.swatchNameInput.value = cleanSwatch.name;
     this.refs.swatchSourceInput.value = cleanSwatch.source;
+    this.refs.swatchSourceInput.readOnly = true;
     this.renderSelectedSwatchPreview(cleanSwatch);
   }
 
