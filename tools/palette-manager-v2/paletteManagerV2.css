@@ -161,18 +161,6 @@
   padding-bottom: 150px;
 }
 
-.palette-manager-v2__source-entry {
-  position: relative;
-  min-width: 0;
-  display: grid;
-  z-index: 1;
-}
-
-.palette-manager-v2__source-entry:hover,
-.palette-manager-v2__source-entry:focus-within {
-  z-index: 20;
-}
-
 .palette-manager-v2__swatch-row {
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr) 42px;
@@ -284,7 +272,15 @@
   background: var(--surface-inline, rgba(25, 12, 55, 0.74));
   cursor: pointer;
   padding: 8px;
-  overflow: hidden;
+  overflow: visible;
+  z-index: 1;
+}
+
+.palette-manager-v2__source-tile:hover,
+.palette-manager-v2__source-tile:focus,
+.palette-manager-v2__source-tile:focus-within {
+  z-index: 20;
+  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.34), 0 12px 24px rgba(0, 0, 0, 0.28);
 }
 
 .palette-manager-v2__source-tile:focus-visible {
@@ -314,6 +310,8 @@
   left: 0;
   z-index: 30;
   width: 100%;
+  box-sizing: border-box;
+  margin: 0;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.88);
@@ -325,9 +323,11 @@
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
 }
 
-.palette-manager-v2__source-entry:hover .palette-manager-v2__source-details,
-.palette-manager-v2__source-entry:focus-within .palette-manager-v2__source-details {
+.palette-manager-v2__source-tile:hover .palette-manager-v2__source-details,
+.palette-manager-v2__source-tile:focus .palette-manager-v2__source-details,
+.palette-manager-v2__source-tile:focus-within .palette-manager-v2__source-details {
   display: grid;
+  width: 150px;
 }
 
 .palette-manager-v2__json-preview {
