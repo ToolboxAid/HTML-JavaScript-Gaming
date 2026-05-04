@@ -1,1 +1,1 @@
-Add Palette Manager heading controls and preserve source pin scroll - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
+Keep untagged swatches last in Palette Manager Tag sort - PR_26124_063-palette-manager-tag-sort-untagged-last

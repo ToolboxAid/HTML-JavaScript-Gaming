@@ -123,6 +123,7 @@ function applySortDirection(entries, sortDirection) {
 
 function sortRowsByTag(rows, sortDirection) {
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+  const tagDirection = sortDirection === "descending" ? -1 : 1;
   const sortedRows = (Array.isArray(rows) ? rows : [])
     .map((row, index) => ({ row, index, tagKey: getTagSortKey(row?.swatch) }))
     .sort((left, right) => {
@@ -132,10 +133,10 @@ function sortRowsByTag(rows, sortDirection) {
       if (left.tagKey && !right.tagKey) {
         return -1;
       }
-      return collator.compare(left.tagKey, right.tagKey) || left.index - right.index;
+      return (collator.compare(left.tagKey, right.tagKey) * tagDirection) || left.index - right.index;
     })
     .map((entry) => entry.row);
-  return applySortDirection(sortedRows, sortDirection);
+  return sortedRows;
 }
 
 function toggleSortDirection(sortDirection) {
