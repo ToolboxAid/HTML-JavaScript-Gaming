@@ -1,13 +1,13 @@
 # git status --short
 M  docs/dev/codex_commands.md
 M  docs/dev/commit_comment.txt
-A  docs/dev/reports/PR_26124_070_report.md
-A  docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/APPLY_PR.md
-A  docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/BUILD_PR.md
-A  docs/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/PLAN_PR.md
+A  docs/dev/reports/PR_26124_071_report.md
+A  docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/APPLY_PR.md
+A  docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/BUILD_PR.md
+A  docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/PLAN_PR.md
+M  tools/palette-manager-v2/index.html
+A  tools/palette-manager-v2/paletteManagerShell.js
 M  tools/palette-manager-v2/paletteManagerV2.css
-?? tools/common.zip
-?? tools/palette-manager-v2.zip
 
 # git diff --stat
 (no output)

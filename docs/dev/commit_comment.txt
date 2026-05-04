@@ -1,1 +1,1 @@
-Remove dead Palette Manager CSS overrides - PR_26124_070-palette-manager-css-dead-override-cleanup
+Remove Palette Manager dependency on tools shared shell - PR_26124_071-palette-manager-remove-tools-shared-shell
