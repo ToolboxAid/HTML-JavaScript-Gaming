@@ -1,1 +1,1 @@
-Extract accordionV2 into shared theme component and reuse it in Palette Manager - PR_26124_044-accordionv2-theme-extract
+Expand Palette Manager layout when platform header is hidden - PR_26124_045-palette-manager-hidden-header-wide-layout

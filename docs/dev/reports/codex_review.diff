@@ -1,284 +1,152 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 7773a1fc..ebb69ca9 100644
+index ebb69ca9..17d5dc4f 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,12 +1,13 @@
--# PR_26124_043-palette-manager-accordion-v2
-+# PR_26124_044-accordionv2-theme-extract
+@@ -1,7 +1,7 @@
+-# PR_26124_044-accordionv2-theme-extract
++# PR_26124_045-palette-manager-hidden-header-wide-layout
 
  ```bash
--npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_043-palette-manager-accordion-v2. Follow PROJECT_INSTRUCTIONS.md exactly. Rewrite only palette-manager-v2 center accordion HTML/JS/CSS to use a local accordionV2 structure instead of details/summary."
-+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_044-accordionv2-theme-extract. Follow PROJECT_INSTRUCTIONS.md exactly. Move the working accordionV2 implementation from palette-manager-v2 into src/engine/theme/accordionV2 and update palette-manager-v2 to use the shared accordionV2 without behavior changes."
+-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_044-accordionv2-theme-extract. Follow PROJECT_INSTRUCTIONS.md exactly. Move the working accordionV2 implementation from palette-manager-v2 into src/engine/theme/accordionV2 and update palette-manager-v2 to use the shared accordionV2 without behavior changes."
++npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_045-palette-manager-hidden-header-wide-layout. Follow PROJECT_INSTRUCTIONS.md exactly. Update only palette-manager-v2 layout behavior when the shared platform header/details area is hidden."
  ```
 
  ## Validation Commands
-
- ```bash
-+node --check src/engine/theme/accordionV2/accordionV2.js
- node --check tools/palette-manager-v2/modules/PaletteManagerApp.js
- npm run test:workspace-v2
- ```
-@@ -14,7 +15,7 @@ npm run test:workspace-v2
+@@ -15,7 +15,8 @@ npm run test:workspace-v2
  ## Manual Validation
 
  - Open `tools/palette-manager-v2/index.html`.
--- Confirm User Palette and Add User Swatch use accordionV2 button headers.
-+- Confirm User Palette and Add User Swatch use shared `.accordion-v2` classes.
- - Confirm both open panels share center height.
- - Collapse either panel and confirm the other fills available center height.
- - Confirm source select, search, sort, size, pin, and unpin still work.
+-- Confirm User Palette and Add User Swatch use shared `.accordion-v2` classes.
+-- Confirm both open panels share center height.
+-- Collapse either panel and confirm the other fills available center height.
+-- Confirm source select, search, sort, size, pin, and unpin still work.
++- Confirm normal layout is unchanged.
++- Click `Hide Header and Details`.
++- Confirm left/right panels anchor to the viewport sides.
++- Confirm center fills the space between them and uses available height.
++- Confirm accordionV2 behavior remains unchanged.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 4f163037..10f6cbdd 100644
+index 10f6cbdd..3ab721a3 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Replace Palette Manager center accordions with local accordionV2 layout - PR_26124_043-palette-manager-accordion-v2
-+Extract accordionV2 into shared theme component and reuse it in Palette Manager - PR_26124_044-accordionv2-theme-extract
-diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index b3fd9f02..03551dc8 100644
---- a/tools/palette-manager-v2/index.html
-+++ b/tools/palette-manager-v2/index.html
-@@ -6,6 +6,7 @@
-   <title>Palette Manager V2</title>
-   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
-   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
-+  <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
-   <link rel="stylesheet" href="../shared/platformShell.css" />
-   <link rel="stylesheet" href="./paletteManagerV2.css" />
- </head>
-@@ -57,13 +58,13 @@
-         </details>
-       </aside>
-
--      <main class="palette-manager-v2__panel palette-manager-v2__panel--center" data-accordion-v2-root>
--        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
--          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="userPaletteAccordionContent">
-+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
-+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
-             <span>User Palette</span>
--            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-           </button>
--          <div id="userPaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
-+          <div id="userPaletteAccordionContent" class="accordion-v2__content">
-             <div class="palette-manager-v2__sort-row">
-               <div class="palette-manager-v2__field">
-                 <span>Sort user palette</span>
-@@ -79,12 +80,12 @@
-           </div>
-         </section>
-
--        <section class="palette-manager-v2__accordion-v2 is-open" data-accordion-v2-panel data-accordion-v2-open="true">
--          <button class="palette-manager-v2__accordion-v2-header" type="button" data-accordion-v2-toggle aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
-+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
-             <span>Add User Swatch</span>
--            <span class="palette-manager-v2__accordion-v2-icon" aria-hidden="true">+</span>
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-           </button>
--          <div id="sourcePaletteAccordionContent" class="palette-manager-v2__accordion-v2-content" data-accordion-v2-content>
-+          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
-             <label class="palette-manager-v2__field">
-               Source palette
-               <select id="sourcePaletteSelect"></select>
-@@ -142,6 +143,7 @@
-   <div data-tools-platform-status></div>
-   <script type="module" src="../shared/platformShell.js"></script>
-   <script src="../../src/engine/paletteList.js"></script>
-+  <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
-   <script type="module" src="./main.js"></script>
-   <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
- </body>
-diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 755bb701..724e5c3a 100644
---- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
-+++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -87,7 +87,6 @@ export class PaletteManagerApp {
-   }
-
-   init() {
--    this.bindCenterAccordionV2();
-     this.editorControl = new PaletteEditorControl({
-       refs: this.refs,
-       app: this,
-@@ -110,33 +109,6 @@ export class PaletteManagerApp {
-     this.render();
-   }
-
--  bindCenterAccordionV2() {
--    const root = this.document.querySelector("[data-accordion-v2-root]");
--    if (!root) {
--      throw new Error("Palette Manager V2 missing accordionV2 root.");
--    }
--
--    root.querySelectorAll("[data-accordion-v2-panel]").forEach((panel) => {
--      const toggle = panel.querySelector("[data-accordion-v2-toggle]");
--      const content = panel.querySelector("[data-accordion-v2-content]");
--      if (!toggle || !content) {
--        throw new Error("Palette Manager V2 accordionV2 panel is incomplete.");
--      }
--
--      const setOpen = (isOpen) => {
--        panel.classList.toggle("is-open", isOpen);
--        panel.dataset.accordionV2Open = String(isOpen);
--        toggle.setAttribute("aria-expanded", String(isOpen));
--        content.hidden = !isOpen;
--      };
--
--      setOpen(panel.dataset.accordionV2Open !== "false");
--      toggle.addEventListener("click", () => {
--        setOpen(!panel.classList.contains("is-open"));
--      });
--    });
--  }
--
-   render() {
-     this.controls.forEach((control) => {
-       if (typeof control.render === "function") {
+-Extract accordionV2 into shared theme component and reuse it in Palette Manager - PR_26124_044-accordionv2-theme-extract
++Expand Palette Manager layout when platform header is hidden - PR_26124_045-palette-manager-hidden-header-wide-layout
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index eb6b3061..28a09a74 100644
+index 28a09a74..b07bad66 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -130,83 +130,17 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   overflow: hidden;
+@@ -446,6 +446,63 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
+   color: #ffd6d6;
  }
 
--.palette-manager-v2__accordion-v2 {
--  min-width: 0;
--  min-height: 0;
--  display: flex;
--  flex-direction: column;
--  border: 1px solid var(--pm-line);
--  border-radius: 8px;
--  background: var(--pm-surface);
--  overflow: hidden;
--}
--
--.palette-manager-v2__accordion-v2.is-open {
--  flex: 1 1 0;
--}
--
--.palette-manager-v2__accordion-v2:not(.is-open) {
--  flex: 0 0 auto;
--}
--
--.palette-manager-v2__accordion-v2-header {
--  flex: 0 0 44px;
--  width: 100%;
--  min-height: 44px;
--  display: flex;
--  align-items: center;
--  justify-content: space-between;
--  gap: 10px;
--  border: 0;
--  background: transparent;
--  color: inherit;
--  cursor: pointer;
--  font: inherit;
--  font-weight: 700;
--  padding: 10px 12px;
--  text-align: left;
--}
--
--.palette-manager-v2__accordion-v2-header:focus-visible {
--  outline: 2px solid var(--pm-accent);
--  outline-offset: -4px;
--}
--
--.palette-manager-v2__accordion-v2-icon {
--  flex: 0 0 auto;
--  width: 22px;
--  height: 22px;
--  display: inline-grid;
--  place-items: center;
--  border: 1px solid var(--pm-line);
--  border-radius: 999px;
--  line-height: 1;
--}
--
--.palette-manager-v2__accordion-v2.is-open .palette-manager-v2__accordion-v2-icon {
--  transform: rotate(45deg);
--}
--
--.palette-manager-v2__accordion-v2-content {
--  flex: 1 1 auto;
--  min-height: 0;
--  display: flex;
--  flex-direction: column;
--  gap: 12px;
--  border-top: 1px solid var(--pm-line);
--  overflow: hidden;
--  padding: 12px;
--}
--
--.palette-manager-v2__accordion-v2-content[hidden] {
--  display: none;
-+.palette-manager-v2__panel--center .accordion-v2 {
-+  --accordion-v2-accent: var(--pm-accent);
-+  --accordion-v2-line: var(--pm-line);
-+  --accordion-v2-surface: var(--pm-surface);
- }
-
--.palette-manager-v2__accordion-v2-content > :not(.palette-manager-v2__tile-grid) {
-+.palette-manager-v2__panel--center .accordion-v2__content > :not(.palette-manager-v2__tile-grid) {
-   flex: 0 0 auto;
- }
-
--.palette-manager-v2__accordion-v2-content .palette-manager-v2__tile-grid {
-+.palette-manager-v2__panel--center .accordion-v2__content .palette-manager-v2__tile-grid {
-   flex: 1 1 auto;
-   max-height: none;
- }
-diff --git a/docs/dev/reports/PR_26124_044_report.md b/docs/dev/reports/PR_26124_044_report.md
++html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] > .palette-manager-v2,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] > .palette-manager-v2 {
++  flex: 1 1 auto;
++  min-width: 0;
++  max-width: none;
++  min-height: 0;
++  width: 100%;
++  display: flex;
++  flex-direction: column;
++  margin: 0;
++  padding: 8px 12px;
++  overflow: hidden;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout {
++  flex: 1 1 auto;
++  grid-template-columns: 340px minmax(0, 1fr) 360px;
++  width: 100%;
++  height: 100%;
++  min-height: 0;
++  align-items: stretch;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel {
++  min-height: 0;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left,
++html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right {
++  position: static;
++  align-self: stretch;
++  height: 100%;
++  max-height: none;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--left {
++  justify-self: start;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--right {
++  justify-self: end;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--center,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__panel--center {
++  align-self: stretch;
++  height: 100%;
++  min-height: 0;
++  max-height: none;
++}
++
+ @media (max-width: 1180px) {
+   .palette-manager-v2__layout {
+     grid-template-columns: 1fr;
+diff --git a/docs/dev/reports/PR_26124_045_report.md b/docs/dev/reports/PR_26124_045_report.md
 new file mode 100644
-index 00000000..1e807f5e
+index 00000000..a5dd2dd1
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_044_report.md
-@@ -0,0 +1,51 @@
-+# PR_26124_044 Report
++++ b/docs/dev/reports/PR_26124_045_report.md
+@@ -0,0 +1,49 @@
++# PR_26124_045 Report
 +
 +## Purpose
-+Extract the Palette Manager accordionV2 implementation into a reusable theme component.
++Update Palette Manager V2 layout only when the shared platform header/details area is hidden.
 +
 +## Changes
-+- Added `src/engine/theme/accordionV2/accordionV2.css`.
-+- Added `src/engine/theme/accordionV2/accordionV2.js`.
-+- Updated Palette Manager V2 center accordions to use shared generic `.accordion-v2` class names.
-+- Imported shared accordionV2 CSS and JS into Palette Manager.
-+- Removed Palette Manager-local accordionV2 behavior from `PaletteManagerApp`.
-+- Removed Palette Manager-local accordionV2 CSS rules.
++- Added CSS overrides scoped to the existing platform hidden-header/fullscreen state.
++- Expanded Palette Manager to full available width only when hidden-header state is active.
++- Anchored left and right panels to their grid edges in hidden-header state.
++- Let the center panel fill the horizontal space and available viewport height in hidden-header state.
++- Preserved normal non-hidden-header layout.
 +
 +## Boundaries Confirmed
-+- Shared accordionV2 has no Palette Manager dependencies.
-+- No palette JSON logic changes.
-+- No source palette logic changes.
++- No workspace/toolState/session changes.
++- No sample JSON changes.
 +- No `tools/shared` changes.
-+- No workspace/toolState/session/sample JSON changes.
++- No shared accordionV2 changes.
 +- No dependencies added.
 +
 +## Validation
++- No PR045 JS files changed.
 +- `node --check src/engine/theme/accordionV2/accordionV2.js` -> PASS
 +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
-+- `git diff --check` for changed implementation and PLAN doc -> PASS with existing Git LF/CRLF warnings
-+- Shared component boundary search -> PASS
-+- Browser/manual layout validation at 1440x960 -> PASS
++- `git diff --check` -> PASS with existing Git LF/CRLF warning
++- Browser/manual layout validation at 1920x1000 -> PASS
 +- `npm run test:workspace-v2` -> FAIL: missing npm script
 +
 +## Playwright
 +- Required command was executed but failed before tests ran because `test:workspace-v2` is not defined in `package.json`.
-+- Expected pass behavior after script restoration: Workspace V2 validation should pass with Palette Manager consuming the shared accordionV2 component.
-+- Expected fail behavior: any Workspace V2 launch/tool validation failure should identify the broken lifecycle or tool interaction.
++- Expected pass behavior after script restoration: Workspace V2 validation should pass with Palette Manager hidden-header layout overrides.
++- Expected fail behavior: Workspace V2 failures should identify a lifecycle or tool validation regression.
 +
 +## Manual Validation Details
-+- Center panel contains zero `details`/`summary` elements after render.
-+- Center panel uses two shared `.accordion-v2` sections.
-+- Center panel contains zero Palette Manager-local accordionV2 classes.
-+- Both open accordionV2 panels shared height equally.
-+- Collapsing User Palette made Add User Swatch fill remaining center height.
-+- Collapsing Add User Swatch made User Palette fill remaining center height.
-+- User and source swatch grids retained internal vertical scrolling.
-+- Source palette select, search input, sort buttons, size buttons, and tile pin button remained present.
++- Normal layout remained capped at `1600px`.
++- Clicking `Hide Header and Details` entered existing platform fullscreen state.
++- Hidden-header layout expanded to full viewport width.
++- Left panel anchored near the left edge.
++- Right panel anchored near the right edge.
++- Center panel filled the space between left and right panels.
++- Center panel used available viewport height.
++- accordionV2 panel count and open state remained unchanged.
 +- No horizontal page overflow was detected.
 +
 +## Full Samples Smoke
@@ -286,92 +154,93 @@ index 00000000..1e807f5e
 +- Sample JSON remains out of scope until the sample alignment phase.
 +
 +## Roadmap
-+- No roadmap status change was made because this PR extracts a reusable component without a matching pending roadmap status item.
-diff --git a/docs/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md b/docs/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md
++- No roadmap status change was made because this PR is a focused Palette Manager layout correction without a matching pending roadmap status item.
+diff --git a/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md
 new file mode 100644
-index 00000000..4b44358f
+index 00000000..5a62d033
 --- /dev/null
-+++ b/docs/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md
-@@ -0,0 +1,28 @@
-+# APPLY_PR - PR_26124_044-accordionv2-theme-extract
++++ b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md
+@@ -0,0 +1,30 @@
++# APPLY_PR - PR_26124_045-palette-manager-hidden-header-wide-layout
 +
 +## Apply Summary
-+Applied the accordionV2 theme extraction and updated Palette Manager V2 to use the shared component.
++Applied the Palette Manager hidden-header wide layout override.
 +
 +## Result
-+- Shared accordionV2 CSS/JS now lives under `src/engine/theme/accordionV2/`.
-+- Palette Manager center accordions use generic shared class names.
-+- Palette Manager retains the same center panel open/collapse behavior.
-+- Palette Manager-local accordion behavior was removed from `PaletteManagerApp`.
++- Normal Palette Manager layout remains unchanged.
++- When the platform header/details area is hidden, Palette Manager uses the full available width.
++- Left and right panels anchor to their sides.
++- The center panel fills the remaining width and available height.
++- accordionV2 behavior remains unchanged.
 +
 +## Review Artifacts
 +- `docs/dev/reports/codex_review.diff`
 +- `docs/dev/reports/codex_changed_files.txt`
-+- `tmp/PR_26124_044-accordionv2-theme-extract_delta.zip`
++- `tmp/PR_26124_045-palette-manager-hidden-header-wide-layout_delta.zip`
 +
 +## Validation Result
-+- Targeted JS syntax checks passed.
-+- Browser/manual layout validation passed.
++- CSS/manual layout validation passed.
++- Related JS syntax checks passed.
 +- `npm run test:workspace-v2` could not run because the npm script is missing from `package.json`.
 +- Full samples smoke test was not run.
 +
 +## Manual Apply Check
 +1. Open `tools/palette-manager-v2/index.html`.
-+2. Confirm User Palette and Add User Swatch use `.accordion-v2` classes.
-+3. Confirm both center panels share height when open.
-+4. Collapse either center panel and confirm the other fills available center height.
-+5. Confirm source select, search, sort, size, pin, and unpin still work.
-diff --git a/docs/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md b/docs/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md
++2. Confirm normal layout is unchanged.
++3. Click `Hide Header and Details`.
++4. Confirm left/right panels anchor to the viewport sides.
++5. Confirm center fills the space between them and uses available height.
++6. Confirm accordionV2 open/collapse behavior is unchanged.
+diff --git a/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md
 new file mode 100644
-index 00000000..aa0af5bb
+index 00000000..dd868de1
 --- /dev/null
-+++ b/docs/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md
-@@ -0,0 +1,54 @@
-+# BUILD_PR - PR_26124_044-accordionv2-theme-extract
++++ b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md
+@@ -0,0 +1,53 @@
++# BUILD_PR - PR_26124_045-palette-manager-hidden-header-wide-layout
 +
 +## Scope Applied
-+- Extracted the working Palette Manager center accordionV2 behavior into `src/engine/theme/accordionV2/`.
-+- Updated Palette Manager V2 to consume the shared accordionV2 CSS/JS and generic class names.
-+- Did not change palette JSON logic, source palette logic, workspace/toolState/session code, sample JSON, games, or `tools/shared`.
-+- Did not add dependencies.
++- Updated only `tools/palette-manager-v2/paletteManagerV2.css`.
++- Added Palette Manager layout overrides scoped to the existing platform hidden-header/fullscreen state.
++- Did not modify workspace/toolState/session code, sample JSON, `tools/shared`, shared accordionV2 behavior, or dependencies.
 +
 +## Files Changed
-+- `src/engine/theme/accordionV2/accordionV2.css`
-+- `src/engine/theme/accordionV2/accordionV2.js`
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
 +- `tools/palette-manager-v2/paletteManagerV2.css`
-+- `docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md`
-+- `docs/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md`
-+- `docs/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md`
++- `docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md`
++- `docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md`
++- `docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md`
 +- `docs/dev/codex_commands.md`
 +- `docs/dev/commit_comment.txt`
-+- `docs/dev/reports/PR_26124_044_report.md`
++- `docs/dev/reports/PR_26124_045_report.md`
 +- `docs/dev/reports/codex_review.diff`
 +- `docs/dev/reports/codex_changed_files.txt`
 +
 +## Implementation
-+- Added generic `.accordion-v2`, `.accordion-v2__header`, `.accordion-v2__icon`, and `.accordion-v2__content` CSS.
-+- Added minimal shared JS to initialize existing `.accordion-v2` panels and toggle `is-open`, `aria-expanded`, `hidden`, and `data-accordion-v2-open`.
-+- Replaced Palette Manager center local accordion classes with generic shared classes.
-+- Imported shared accordionV2 CSS/JS into Palette Manager.
-+- Removed Palette Manager-local accordionV2 binding from `PaletteManagerApp`.
-+- Kept Palette Manager-specific center sizing rules in Palette Manager CSS, using generic accordion selectors only where layout needs tool context.
++- Consumed existing platform hidden-header state:
++  - `html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"]`
++  - `body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"]`
++- In hidden-header state only:
++  - Palette Manager app shell expands to full available width.
++  - Left panel anchors to the left grid edge.
++  - Right panel anchors to the right grid edge.
++  - Center panel fills the remaining horizontal space.
++  - Layout and panels use available viewport height.
++- Normal non-hidden-header layout rules were left unchanged.
 +
 +## Validation
++- No PR045 JS files changed.
 +- `node --check src/engine/theme/accordionV2/accordionV2.js` -> PASS
 +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js` -> PASS
-+- `git diff --check -- src/engine/theme/accordionV2 tools/palette-manager-v2/index.html tools/palette-manager-v2/modules/PaletteManagerApp.js tools/palette-manager-v2/paletteManagerV2.css docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md` -> PASS with existing Git LF/CRLF warnings
-+- Shared component boundary search -> PASS: no Palette Manager, workspace, toolState, session, sample JSON, or `tools/shared` references in `src/engine/theme/accordionV2/`
-+- Browser/manual layout validation at 1440x960 -> PASS:
-+  - center panel has zero `details`/`summary` elements
-+  - center panel has two shared `.accordion-v2` sections
-+  - center panel has zero Palette Manager-local accordionV2 classes
-+  - both open panels share height
-+  - User collapsed makes Add User Swatch fill remaining center height
-+  - Add User Swatch collapsed makes User Palette fill remaining center height
-+  - user/source grids retain `overflow-y: auto`
-+  - source select, search, sort buttons, size buttons, and tile pin button remain present
++- `git diff --check` -> PASS with existing Git LF/CRLF warning
++- Browser/manual layout validation at 1920x1000 -> PASS:
++  - normal layout remained capped at `1600px`
++  - clicking `Hide Header and Details` entered existing platform fullscreen state
++  - hidden-header layout expanded to full viewport width
++  - left panel anchored near the left edge
++  - right panel anchored near the right edge
++  - center panel filled the horizontal space between left and right panels
++  - center panel used available viewport height
++  - accordionV2 panel count and open state remained unchanged
 +  - no horizontal page overflow
 +- `npm run test:workspace-v2` -> FAIL before test execution because `package.json` has no `test:workspace-v2` script.
 +
@@ -381,167 +250,53 @@ index 00000000..aa0af5bb
 +
 +## Known Validation Blocker
 +- The required Workspace V2 npm validation command is unavailable in the current `package.json`.
-diff --git a/docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md b/docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md
 new file mode 100644
-index 00000000..266ca6b2
+index 00000000..b072acf7
 --- /dev/null
-+++ b/docs/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md
++++ b/docs/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md
 @@ -0,0 +1,44 @@
-+# PLAN_PR - PR_26124_044-accordionv2-theme-extract
++# PLAN_PR - PR_26124_045-palette-manager-hidden-header-wide-layout
 +
 +## Goal
-+Move the working Palette Manager accordionV2 implementation into a reusable theme component under `src/engine/theme/accordionV2/`.
++Update Palette Manager V2 layout only when the shared platform header/details area is hidden.
++
++## Existing Platform State
++- `tools/shared/platformShell.js` already applies fullscreen/hidden-header state through `html:fullscreen`, `tools-platform-fullscreen-active`, and `data-tools-platform-fullscreen`.
++- Palette Manager will consume that existing state with CSS only.
 +
 +## Scope
-+- `src/engine/theme/accordionV2/accordionV2.css`
-+- `src/engine/theme/accordionV2/accordionV2.js`
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
 +- `tools/palette-manager-v2/paletteManagerV2.css`
 +- Workflow docs/reports required by `docs/dev/PROJECT_INSTRUCTIONS.md`
 +
 +## Boundaries
-+- Do not change accordion behavior.
-+- Do not change palette JSON logic.
-+- Do not change source palette logic.
-+- Do not touch workspace, toolState, session, games, or sample JSON.
++- Do not change normal non-hidden-header layout.
++- Do not change accordionV2 behavior.
++- Do not change workspace/toolState/session code.
++- Do not change sample JSON.
 +- Do not modify `tools/shared`.
++- Do not modify shared `accordionV2`.
 +- Do not add dependencies.
-+- Do not introduce abstraction beyond accordionV2.
++- Do not broad refactor.
 +
 +## Implementation Plan
-+1. Create `src/engine/theme/accordionV2/accordionV2.css` with generic `accordion-v2` class names and no Palette Manager selectors.
-+2. Create `src/engine/theme/accordionV2/accordionV2.js` with minimal toggle behavior for existing multi-open accordion behavior.
-+3. Update Palette Manager center markup to use shared generic accordion class names.
-+4. Import shared accordionV2 CSS and JS from Palette Manager.
-+5. Remove Palette Manager local accordionV2 behavior/CSS now owned by the shared theme component.
-+6. Run syntax checks for changed JS/HTML/CSS where applicable.
-+7. Run `npm run test:workspace-v2`.
-+8. Skip the full samples smoke test.
++1. Add Palette Manager CSS overrides scoped to the existing hidden-header/fullscreen platform state.
++2. In hidden-header state, let the app shell use full available width.
++3. Anchor left and right panels to their grid edges and let the center column fill remaining horizontal space.
++4. In hidden-header state, make the Palette Manager root/layout/panels consume available viewport height.
++5. Preserve normal non-hidden-header layout by keeping all overrides under hidden-header/fullscreen selectors.
++6. Run CSS/manual layout validation and requested validation commands.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- Expected pass behavior: Workspace V2 validation remains green after Palette Manager consumes the shared accordionV2 component.
-+- Expected fail behavior: failures identify Workspace V2 launch/tool lifecycle regressions or a missing validation command.
++- Expected pass behavior: Workspace V2 validation remains green after the Palette Manager hidden-header layout override.
++- Expected fail behavior: failures identify Workspace V2 validation regressions or a missing validation command.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open `tools/palette-manager-v2/index.html`.
-+2. Confirm User Palette and Add User Swatch use shared `.accordion-v2` markup.
-+3. Confirm both open panels share center height.
-+4. Collapse either panel and confirm the other fills available center height.
-+5. Confirm source select, search, sort, size, pin, and unpin still work.
-diff --git a/src/engine/theme/accordionV2/accordionV2.css b/src/engine/theme/accordionV2/accordionV2.css
-new file mode 100644
-index 00000000..c7e2c12f
---- /dev/null
-+++ b/src/engine/theme/accordionV2/accordionV2.css
-@@ -0,0 +1,71 @@
-+.accordion-v2 {
-+  min-width: 0;
-+  min-height: 0;
-+  display: flex;
-+  flex-direction: column;
-+  border: 1px solid var(--accordion-v2-line, var(--line, rgba(221, 214, 254, 0.26)));
-+  border-radius: 8px;
-+  background: var(--accordion-v2-surface, var(--surface-inline, rgba(18, 16, 28, 0.78)));
-+  overflow: hidden;
-+}
-+
-+.accordion-v2.is-open {
-+  flex: 1 1 0;
-+}
-+
-+.accordion-v2:not(.is-open) {
-+  flex: 0 0 auto;
-+}
-+
-+.accordion-v2__header {
-+  flex: 0 0 44px;
-+  width: 100%;
-+  min-height: 44px;
-+  display: flex;
-+  align-items: center;
-+  justify-content: space-between;
-+  gap: 10px;
-+  border: 0;
-+  background: transparent;
-+  color: inherit;
-+  cursor: pointer;
-+  font: inherit;
-+  font-weight: 700;
-+  padding: 10px 12px;
-+  text-align: left;
-+}
-+
-+.accordion-v2__header:focus-visible {
-+  outline: 2px solid var(--accordion-v2-accent, var(--accent, #ddd6fe));
-+  outline-offset: -4px;
-+}
-+
-+.accordion-v2__icon {
-+  flex: 0 0 auto;
-+  width: 22px;
-+  height: 22px;
-+  display: inline-grid;
-+  place-items: center;
-+  border: 1px solid var(--accordion-v2-line, var(--line, rgba(221, 214, 254, 0.26)));
-+  border-radius: 999px;
-+  line-height: 1;
-+}
-+
-+.accordion-v2.is-open .accordion-v2__icon {
-+  transform: rotate(45deg);
-+}
-+
-+.accordion-v2__content {
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  display: flex;
-+  flex-direction: column;
-+  gap: 12px;
-+  border-top: 1px solid var(--accordion-v2-line, var(--line, rgba(221, 214, 254, 0.26)));
-+  overflow: hidden;
-+  padding: 12px;
-+}
-+
-+.accordion-v2__content[hidden] {
-+  display: none;
-+}
-diff --git a/src/engine/theme/accordionV2/accordionV2.js b/src/engine/theme/accordionV2/accordionV2.js
-new file mode 100644
-index 00000000..cf9f50a7
---- /dev/null
-+++ b/src/engine/theme/accordionV2/accordionV2.js
-@@ -0,0 +1,31 @@
-+function setAccordionV2Open(panel, isOpen) {
-+  const header = panel.querySelector(".accordion-v2__header");
-+  const content = panel.querySelector(".accordion-v2__content");
-+  if (!header || !content) {
-+    return;
-+  }
-+
-+  panel.classList.toggle("is-open", isOpen);
-+  panel.dataset.accordionV2Open = String(isOpen);
-+  header.setAttribute("aria-expanded", String(isOpen));
-+  content.hidden = !isOpen;
-+}
-+
-+function mountAccordionV2(root = document) {
-+  root.querySelectorAll(".accordion-v2").forEach((panel) => {
-+    const header = panel.querySelector(".accordion-v2__header");
-+    if (!header || header.dataset.accordionV2Bound === "true") {
-+      return;
-+    }
-+
-+    header.dataset.accordionV2Bound = "true";
-+    setAccordionV2Open(panel, panel.dataset.accordionV2Open !== "false");
-+    header.addEventListener("click", () => {
-+      setAccordionV2Open(panel, !panel.classList.contains("is-open"));
-+    });
-+  });
-+}
-+
-+mountAccordionV2();
-+
-+export { mountAccordionV2, setAccordionV2Open };
++2. Confirm normal layout is unchanged before hiding the header/details area.
++3. Click `Hide Header and Details`.
++4. Confirm left column anchors left, right column anchors right, and center fills remaining horizontal space.
++5. Confirm center panel uses available viewport height.
++6. Confirm accordionV2 open/collapse behavior remains unchanged.

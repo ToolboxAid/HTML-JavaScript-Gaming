@@ -1,7 +1,7 @@
-# PR_26124_044-accordionv2-theme-extract
+# PR_26124_045-palette-manager-hidden-header-wide-layout
 
 ```bash
-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_044-accordionv2-theme-extract. Follow PROJECT_INSTRUCTIONS.md exactly. Move the working accordionV2 implementation from palette-manager-v2 into src/engine/theme/accordionV2 and update palette-manager-v2 to use the shared accordionV2 without behavior changes."
+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_045-palette-manager-hidden-header-wide-layout. Follow PROJECT_INSTRUCTIONS.md exactly. Update only palette-manager-v2 layout behavior when the shared platform header/details area is hidden."
 ```
 
 ## Validation Commands
@@ -15,7 +15,8 @@ npm run test:workspace-v2
 ## Manual Validation
 
 - Open `tools/palette-manager-v2/index.html`.
-- Confirm User Palette and Add User Swatch use shared `.accordion-v2` classes.
-- Confirm both open panels share center height.
-- Collapse either panel and confirm the other fills available center height.
-- Confirm source select, search, sort, size, pin, and unpin still work.
+- Confirm normal layout is unchanged.
+- Click `Hide Header and Details`.
+- Confirm left/right panels anchor to the viewport sides.
+- Confirm center fills the space between them and uses available height.
+- Confirm accordionV2 behavior remains unchanged.
