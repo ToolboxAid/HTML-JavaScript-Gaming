@@ -1,1 +1,1 @@
-Add Palette Manager undo redo history and batch tag selection - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
+Add Palette Manager heading controls and preserve source pin scroll - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll

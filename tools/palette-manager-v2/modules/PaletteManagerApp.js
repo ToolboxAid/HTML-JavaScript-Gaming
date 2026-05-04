@@ -37,6 +37,7 @@ const REQUIRED_REF_IDS = Object.freeze([
   "tagEntryInput",
   "tagSuggestions",
   "addTagButton",
+  "clearUserPaletteSelectionButton",
   "addSwatchButton",
   "updateSwatchButton",
   "clearFormButton",
@@ -344,6 +345,15 @@ export class PaletteManagerApp {
       this.checkedUserSwatchIndexes.delete(index);
     }
     this.render();
+  }
+
+  clearUserSwatchChecks() {
+    if (this.checkedUserSwatchIndexes.size === 0) {
+      this.setActionState([], "No user palette selections to clear.");
+      return;
+    }
+    this.checkedUserSwatchIndexes.clear();
+    this.setActionState([], "Cleared user palette selections.");
   }
 
   shiftCheckedUserSwatchIndexesAfterRemove(removedIndex) {

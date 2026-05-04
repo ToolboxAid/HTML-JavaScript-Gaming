@@ -10,12 +10,17 @@ export class UserPaletteControl {
   bind() {
     this.renderSortOptions();
     this.renderSizeOptions();
+    this.refs.clearUserPaletteSelectionButton.addEventListener("click", () => {
+      this.app.clearUserSwatchChecks();
+    });
   }
 
   render() {
     const swatches = this.app.getUserSwatches();
+    const checkedCount = this.app.getCheckedUserSwatchCount();
     this.refs.userPaletteCount.textContent = `${swatches.length} user swatches`;
-    this.refs.userPaletteSelectedCount.textContent = `${this.app.getCheckedUserSwatchCount()} selected`;
+    this.refs.userPaletteSelectedCount.textContent = `${checkedCount} selected`;
+    this.refs.clearUserPaletteSelectionButton.disabled = checkedCount === 0;
     this.refs.userSwatchList.dataset.swatchSize = this.app.getUserSwatchSize();
     this.renderActiveSortButton();
     this.renderActiveSizeButton();

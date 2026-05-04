@@ -214,17 +214,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   gap: 8px;
 }
 
-.palette-manager-v2__source-palette-row {
-  display: flex;
-  align-items: end;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.palette-manager-v2__source-palette-row .palette-manager-v2__field--source-control {
-  flex: 1 1 320px;
-}
-
 .palette-manager-v2__pin-all-source-button {
   flex: 0 0 auto;
   min-height: 25px;
@@ -342,8 +331,11 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   gap: 8px;
 }
 
-.palette-manager-v2__tag-entry > button {
-  justify-self: start;
+.palette-manager-v2__tag-entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .palette-manager-v2__tag-suggestions {
@@ -376,6 +368,40 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.palette-manager-v2__user-palette-header,
+.palette-manager-v2__source-palette-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding-right: 10px;
+}
+
+.palette-manager-v2__user-palette-header .accordion-v2__header,
+.palette-manager-v2__source-palette-header .accordion-v2__header {
+  flex: 1 1 auto;
+  width: auto;
+}
+
+.palette-manager-v2__user-palette-actions,
+.palette-manager-v2__source-palette-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.palette-manager-v2__source-palette-actions {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.palette-manager-v2__field--source-header {
+  min-width: 260px;
 }
 
 .palette-manager-v2__sort-row > .palette-manager-v2__field:not(.palette-manager-v2__size-field) {

@@ -18,8 +18,14 @@ export class SourcePaletteBrowserControl {
       this.app.setSourceSearch(this.refs.sourceSearchInput.value);
     });
     this.refs.pinAllSourceButton.addEventListener("click", () => {
-      this.app.pinVisibleSourceSwatches();
+      this.preserveSourceScrollDuring(() => this.app.pinVisibleSourceSwatches());
     });
+  }
+
+  preserveSourceScrollDuring(action) {
+    const sourceScrollTop = this.refs.sourceSwatchList.scrollTop;
+    action();
+    this.refs.sourceSwatchList.scrollTop = sourceScrollTop;
   }
 
   render() {
@@ -45,11 +51,13 @@ export class SourcePaletteBrowserControl {
         pinned: userIndex >= 0,
         onSelect: () => this.app.browseSourceSwatch(swatch),
         onTack: () => {
-          if (userIndex >= 0) {
-            this.app.removeUserSwatch(userIndex);
-            return;
-          }
-          this.app.pinSourceSwatch(swatch, this.app.getCurrentSourcePaletteId());
+          this.preserveSourceScrollDuring(() => {
+            if (userIndex >= 0) {
+              this.app.removeUserSwatch(userIndex);
+              return;
+            }
+            this.app.pinSourceSwatch(swatch, this.app.getCurrentSourcePaletteId());
+          });
         }
       }));
     });

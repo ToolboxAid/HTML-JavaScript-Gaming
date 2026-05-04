@@ -21,8 +21,6 @@
 
   <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
     <div class="palette-manager-v2__menu-actions">
-      <button id="undoPaletteButton" type="button">Undo</button>
-      <button id="redoPaletteButton" type="button">Redo</button>
       <button id="importPaletteButton" type="button">Import JSON</button>
       <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
       <button id="copyPaletteButton" type="button">Copy JSON</button>
@@ -106,7 +104,9 @@
                 Tag name
                 <input id="tagEntryInput" type="text" autocomplete="off" />
               </label>
-              <button id="addTagButton" type="button">Add</button>
+              <div class="palette-manager-v2__tag-entry-actions">
+                <button id="addTagButton" type="button">Add</button>
+              </div>
               <div id="tagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Tag suggestions"></div>
             </div>
           </div>
@@ -115,10 +115,17 @@
 
       <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
         <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
-            <span>User Palette</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
+          <div class="palette-manager-v2__user-palette-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
+              <span>User Palette</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
+            <div class="palette-manager-v2__user-palette-actions" aria-label="User palette history controls">
+              <button id="undoPaletteButton" type="button">Undo</button>
+              <button id="redoPaletteButton" type="button">Redo</button>
+              <button id="clearUserPaletteSelectionButton" type="button">Clear Checkboxes</button>
+            </div>
+          </div>
           <div id="userPaletteAccordionContent" class="accordion-v2__content">
             <div class="palette-manager-v2__sort-row">
               <div class="palette-manager-v2__field">
@@ -137,18 +144,20 @@
         </section>
 
         <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
-            <span>Sample Palette Swatch</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
-            <div class="palette-manager-v2__source-palette-row">
-              <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
+          <div class="palette-manager-v2__source-palette-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
+              <span>Sample Palette Swatch</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
+            <div class="palette-manager-v2__source-palette-actions" aria-label="Source palette controls">
+              <label class="palette-manager-v2__field palette-manager-v2__field--source-control palette-manager-v2__field--source-header">
                 Source palette
                 <select id="sourcePaletteSelect"></select>
               </label>
               <button id="pinAllSourceButton" class="palette-manager-v2__pin-all-source-button" type="button">Pin All</button>
             </div>
+          </div>
+          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
             <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
               Search source swatches
               <input id="sourceSearchInput" type="search" autocomplete="off" />
