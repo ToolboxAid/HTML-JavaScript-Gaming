@@ -1,693 +1,205 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index c4531bb5..354022cc 100644
+index 354022cc..9cf8f128 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,20 +1,28 @@
--# Codex Commands - PR_26124_070-palette-manager-css-dead-override-cleanup
-+# Codex Commands - PR_26124_071-palette-manager-remove-tools-shared-shell
- 
+@@ -1,28 +1,26 @@
+-# Codex Commands - PR_26124_071-palette-manager-remove-tools-shared-shell
++# Codex Commands - PR_26124_072-palette-manager-rollback-shared-removal
+
  ```bash
--npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_070-palette-manager-css-dead-override-cleanup. Follow PROJECT_INSTRUCTIONS.md exactly."
-+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_071-palette-manager-remove-tools-shared-shell. Follow PROJECT_INSTRUCTIONS.md exactly."
+-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_071-palette-manager-remove-tools-shared-shell. Follow PROJECT_INSTRUCTIONS.md exactly."
++npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_072-palette-manager-rollback-shared-removal. Follow PROJECT_INSTRUCTIONS.md exactly."
  ```
- 
+
  ## Validation Commands
- 
+
  ```bash
--node --input-type=module <css structural cleanup validation>
--git diff --check -- tools/palette-manager-v2/paletteManagerV2.css
-+node --check tools/palette-manager-v2/paletteManagerShell.js
-+node --check tools/palette-manager-v2/main.js
-+node --input-type=module <tools/shared shell dependency validation>
-+node --input-type=module <css structural validation>
-+node --input-type=module <targeted Palette Manager local shell Playwright validation>
-+node tests/tools/ToolLayoutDockingControlNormalization.test.mjs
-+node tests/tools/ToolEntryLaunchContract.test.mjs
-+git diff --check -- tools/palette-manager-v2/index.html tools/palette-manager-v2/paletteManagerV2.css tools/palette-manager-v2/paletteManagerShell.js
++git status --short
++git diff -- tools/palette-manager-v2
+ node --check tools/palette-manager-v2/paletteManagerShell.js
+ node --check tools/palette-manager-v2/main.js
+-node --input-type=module <tools/shared shell dependency validation>
+-node --input-type=module <css structural validation>
+-node --input-type=module <targeted Palette Manager local shell Playwright validation>
+-node tests/tools/ToolLayoutDockingControlNormalization.test.mjs
+-node tests/tools/ToolEntryLaunchContract.test.mjs
+-git diff --check -- tools/palette-manager-v2/index.html tools/palette-manager-v2/paletteManagerV2.css tools/palette-manager-v2/paletteManagerShell.js
++git diff --check
  npm run test:workspace-v2
++npm run codex:review-artifacts
  ```
- 
+
  ## Playwright
- 
--`npm run test:workspace-v2` was requested as the Playwright validation gate. It failed because `package.json` does not define the `test:workspace-v2` script.
-+Targeted Palette Manager V2 local shell Playwright validation passed. It confirmed the page no longer loads `platformShell` assets, local header/status render, hide/show summary behavior works, Palette Manager controls render, and menuSample actions remain centered.
-+
-+`npm run test:workspace-v2` was also requested as the default gate. It failed because `package.json` does not define the `test:workspace-v2` script.
- 
+
+-Targeted Palette Manager V2 local shell Playwright validation passed. It confirmed the page no longer loads `platformShell` assets, local header/status render, hide/show summary behavior works, Palette Manager controls render, and menuSample actions remain centered.
++No Palette Manager behavior change is expected. The default requested gate is `npm run test:workspace-v2`.
+
+-`npm run test:workspace-v2` was also requested as the default gate. It failed because `package.json` does not define the `test:workspace-v2` script.
++`npm run test:workspace-v2` failed because `package.json` does not define the `test:workspace-v2` script.
+
  ## Full Samples
- 
+
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index c026297f..da9d97f1 100644
+index da9d97f1..b2c88ce2 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Remove dead Palette Manager CSS overrides - PR_26124_070-palette-manager-css-dead-override-cleanup
-+Remove Palette Manager dependency on tools shared shell - PR_26124_071-palette-manager-remove-tools-shared-shell
-diff --git a/docs/dev/reports/PR_26124_071_report.md b/docs/dev/reports/PR_26124_071_report.md
+-Remove Palette Manager dependency on tools shared shell - PR_26124_071-palette-manager-remove-tools-shared-shell
++Rollback uncommitted Palette Manager shared-removal attempt - PR_26124_072-palette-manager-rollback-shared-removal
+diff --git a/docs/dev/reports/PR_26124_072_rollback_report.md b/docs/dev/reports/PR_26124_072_rollback_report.md
 new file mode 100644
-index 00000000..c6659a29
+index 00000000..3e3cd2b9
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_071_report.md
-@@ -0,0 +1,43 @@
-+# PR_26124_071-palette-manager-remove-tools-shared-shell Report
++++ b/docs/dev/reports/PR_26124_072_rollback_report.md
+@@ -0,0 +1,30 @@
++# PR_26124_072 Palette Manager Rollback Shared Removal
 +
 +## Summary
-+Palette Manager V2 no longer loads or depends on `tools/shared/platformShell.css` or `tools/shared/platformShell.js`.
++The uncommitted shared-removal attempt was already absent from tracked Palette Manager V2 files. The rollback pass confirmed `tools/palette-manager-v2` matches `HEAD` and removed leftover ignored/untracked artifacts from the abandoned attempt.
 +
-+## Changes
-+- Removed direct shared platform shell CSS/JS imports from Palette Manager V2.
-+- Added `paletteManagerShell.js` as a local shell owner for:
-+  - header frame rendering,
-+  - status bar rendering,
-+  - Hide Header and Details / Show Header and Details summary state,
-+  - fullscreen state class/attribute synchronization.
-+- Added local CSS for the shell frame/status/app bounds/resize/fullscreen/control styles that Palette Manager still requires.
-+- Kept existing asserted layout class names such as `tools-platform-layout-grid` and `tools-platform-resize-panel`, but the behavior is now supplied by Palette Manager-local CSS/JS.
++## Runtime Files
++- No tracked `tools/palette-manager-v2` runtime files changed in this rollback PR.
++- `git diff --exit-code -- tools/palette-manager-v2` passed.
 +
-+## Preserved
-+- Current palette behavior.
-+- menuSample layout and actions.
-+- accordionV2 behavior.
-+- User/source grid scrolling.
-+- Right-column spacing and sizing behavior.
-+- Fullscreen/header state behavior.
-+- EOF pin-button override and pin size/styling.
-+- Manual CSS comments were preserved.
++## Removed Local Artifacts
++- `tmp/PR_26124_072-palette-manager-shared-removal-review-fix_delta.zip`
++- Empty untracked directory `docs/pr/PR_26124_072-palette-manager-shared-removal-review-fix/`
++
++## Files Added Or Updated For Workflow
++- `docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/PLAN_PR.md`
++- `docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/BUILD_PR.md`
++- `docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/APPLY_PR.md`
++- `docs/dev/codex_commands.md`
++- `docs/dev/commit_comment.txt`
++- `docs/dev/reports/codex_review.diff`
++- `docs/dev/reports/codex_changed_files.txt`
 +
 +## Validation
-+- `node --check tools/palette-manager-v2/paletteManagerShell.js`: PASS.
-+- `node --check tools/palette-manager-v2/main.js`: PASS.
-+- Palette Manager tools/shared shell dependency validation: PASS.
-+- Palette Manager CSS structural validation: PASS.
-+- Targeted Palette Manager local shell Playwright validation: PASS.
-+- `node tests/tools/ToolLayoutDockingControlNormalization.test.mjs`: PASS.
-+- `node tests/tools/ToolEntryLaunchContract.test.mjs`: PASS.
-+- `git diff --check -- tools/palette-manager-v2/index.html tools/palette-manager-v2/paletteManagerV2.css tools/palette-manager-v2/paletteManagerShell.js`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS.
-+- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
-+- Full samples smoke test: skipped because this PR is Palette Manager V2-only and full samples were explicitly out of scope.
-+
-+## Manual Test Notes
-+1. Open Palette Manager V2.
-+2. Confirm the header/details area renders on load and the summary says `Hide Header and Details`.
-+3. Click Hide Header and Details and confirm the header collapses and the app remains usable in the wide/fullscreen layout.
-+4. Exit fullscreen or show details and confirm the header returns.
-+5. Confirm menuSample, accordions, tile grids, right column, pin buttons, import/export, and palette editing behavior are unchanged.
-diff --git a/docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/APPLY_PR.md b/docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/APPLY_PR.md
++- PASS: `git status --short`
++- PASS: `node --check tools/palette-manager-v2/paletteManagerShell.js`
++- PASS: `node --check tools/palette-manager-v2/main.js`
++- PASS: `git diff --exit-code -- tools/palette-manager-v2`
++- PASS: `git diff --check`
++- FAIL: `npm run test:workspace-v2` is unavailable because `package.json` does not define a `test:workspace-v2` script.
++- SKIPPED: full samples smoke test, by instruction.
+diff --git a/docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/APPLY_PR.md b/docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/APPLY_PR.md
 new file mode 100644
-index 00000000..455cd53d
+index 00000000..97f9582b
 --- /dev/null
-+++ b/docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/APPLY_PR.md
-@@ -0,0 +1,29 @@
-+# APPLY_PR - PR_26124_071-palette-manager-remove-tools-shared-shell
++++ b/docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/APPLY_PR.md
+@@ -0,0 +1,33 @@
++# APPLY_PR - PR_26124_072-palette-manager-rollback-shared-removal
 +
 +## Summary
-+Removed Palette Manager V2 dependency on `tools/shared/platformShell.css` and `tools/shared/platformShell.js` by moving the required visible shell behavior into Palette Manager V2-local files.
++Rollback check completed. Palette Manager V2 has no tracked diff from `HEAD`, so it already matches the last committed working state.
 +
 +## Applied Changes
-+- Removed the `../shared/platformShell.css` stylesheet import from `tools/palette-manager-v2/index.html`.
-+- Removed the `../shared/platformShell.js` script import from `tools/palette-manager-v2/index.html`.
-+- Added local shell host attributes for Palette Manager header, summary, and status elements.
-+- Added `tools/palette-manager-v2/paletteManagerShell.js` for local header/status rendering, Hide Header and Details / Show Header and Details behavior, and fullscreen state synchronization.
-+- Added Palette Manager-local CSS for the shell frame, status bar, app-shell bounds, resize-panel behavior, fullscreen summary handling, and control focus/disabled styling previously supplied by the shared shell stylesheet.
-+- Preserved menuSample, accordionV2, scroll behavior, right-column spacing, current palette behavior, and EOF pin-button override.
++- Removed the ignored leftover ZIP from the abandoned shared-removal attempt:
++  - `tmp/PR_26124_072-palette-manager-shared-removal-review-fix_delta.zip`
++- Removed the empty untracked abandoned docs directory:
++  - `docs/pr/PR_26124_072-palette-manager-shared-removal-review-fix/`
++- Created rollback workflow docs and review artifacts.
++
++## Palette Manager Runtime Result
++- No tracked `tools/palette-manager-v2` files required changes.
++- `tools/palette-manager-v2` matches `HEAD`.
++- No new runtime behavior was introduced.
++- No CSS refactor was performed.
++- No `tools/shared`, workspace/toolState/session, or sample JSON files were touched.
 +
 +## Validation
-+- `node --check tools/palette-manager-v2/paletteManagerShell.js`: PASS.
-+- `node --check tools/palette-manager-v2/main.js`: PASS.
-+- Palette Manager tools/shared shell dependency validation: PASS.
-+- Palette Manager CSS structural validation: PASS.
-+- Targeted Palette Manager local shell Playwright validation: PASS.
-+- `node tests/tools/ToolLayoutDockingControlNormalization.test.mjs`: PASS.
-+- `node tests/tools/ToolEntryLaunchContract.test.mjs`: PASS.
-+- `git diff --check -- tools/palette-manager-v2/index.html tools/palette-manager-v2/paletteManagerV2.css tools/palette-manager-v2/paletteManagerShell.js`: PASS with Git LF-to-CRLF warnings for changed HTML/CSS.
-+- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
-+- Full samples smoke test: skipped by instruction.
++- PASS: `git status --short` showed only intended rollback workflow docs after cleanup.
++- PASS: `node --check tools/palette-manager-v2/paletteManagerShell.js`
++- PASS: `node --check tools/palette-manager-v2/main.js`
++- PASS: `git diff --exit-code -- tools/palette-manager-v2`
++- PASS: `git diff --check`
++- FAIL: `npm run test:workspace-v2` is unavailable because `package.json` does not define a `test:workspace-v2` script.
++- SKIPPED: full samples smoke test, by instruction.
 +
-+## Artifacts
-+- Review diff: `docs/dev/reports/codex_review.diff`
-+- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_071-palette-manager-remove-tools-shared-shell_delta.zip`
-diff --git a/docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/BUILD_PR.md b/docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/BUILD_PR.md
++## Manual Test
++1. Open `tools/palette-manager-v2/index.html`.
++2. Confirm Palette Manager V2 renders with the committed header/details behavior.
++3. Confirm Hide Header and Details / Show Header and Details behaves as before.
++4. Confirm menuSample, accordionV2 sections, tags, sorting, pin/unpin, Pin All, validation clear, and import/copy/export behave as before.
+diff --git a/docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/BUILD_PR.md b/docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/BUILD_PR.md
 new file mode 100644
-index 00000000..adb06bb6
+index 00000000..40dd1334
 --- /dev/null
-+++ b/docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/BUILD_PR.md
-@@ -0,0 +1,46 @@
-+# BUILD_PR - PR_26124_071-palette-manager-remove-tools-shared-shell
++++ b/docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/BUILD_PR.md
+@@ -0,0 +1,31 @@
++# BUILD_PR - PR_26124_072-palette-manager-rollback-shared-removal
 +
 +## Purpose
-+Perform one scoped Palette Manager V2 shell extraction by removing direct `tools/shared` platform shell imports and replacing the required visible shell behavior with tool-local code and CSS.
++Perform one rollback-only PR by removing the uncommitted PR_26124_072 shared-removal attempt and ensuring Palette Manager V2 matches the last committed working state.
 +
 +## Scope
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+- `tools/palette-manager-v2/paletteManagerShell.js`
-+- PR workflow docs and required review artifacts.
++- `tools/palette-manager-v2/*`
++- Required PR workflow docs and review artifacts.
 +
 +## Implementation
-+1. Remove these Palette Manager V2 dependencies:
-+   - `<link rel="stylesheet" href="../shared/platformShell.css" />`
-+   - `<script type="module" src="../shared/platformShell.js"></script>`
-+2. Add a local shell script at `tools/palette-manager-v2/paletteManagerShell.js` with no imports from `tools/shared`.
-+3. The local shell script must:
-+   - add the surface classes/attributes Palette Manager CSS needs,
-+   - render a local Palette Manager header frame into the header host,
-+   - render a local status bar into the status host,
-+   - set summary text and attributes for expanded/collapsed/fullscreen states,
-+   - preserve Hide Header and Details / Show Header and Details behavior,
-+   - preserve fullscreen state class/attribute synchronization.
-+4. Update Palette Manager HTML hosts from shared-shell ownership to local shell ownership while preserving visible structure.
-+5. Add local CSS in `paletteManagerV2.css` for the header/status/app-shell/resize/fullscreen/control styles that were previously supplied by `platformShell.css`.
-+6. Keep menuSample, accordionV2 behavior, scroll behavior, right-column spacing, pin styling, and palette behavior unchanged.
++1. Check `git status --short` and staged file state.
++2. If any tracked Palette Manager V2 changes from the shared-removal attempt remain, restore them from `HEAD`.
++3. If new files or ignored ZIP artifacts from the shared-removal attempt remain, remove them.
++4. Do not make new Palette Manager V2 behavior changes.
++5. Document the rollback result and validation.
 +
 +## Boundaries
 +- Do not modify `tools/shared`.
-+- Do not import from `tools/shared`.
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
-+- Do not change shared accordionV2 behavior.
-+- Do not clean up unrelated CSS.
-+- Do not remove manual CSS comments unless directly required.
-+- Do not change pin styling or size.
-+- Do not add dependencies.
-+- Avoid broad refactor.
++- Do not refactor CSS.
++- Do not move reusable CSS.
++- Do not introduce behavior.
++- Do not run the full samples smoke test.
 +
 +## Validation
-+- Syntax check changed JavaScript files.
-+- Run a local dependency validation confirming Palette Manager V2 no longer references `../shared/platformShell.css` or `../shared/platformShell.js`.
-+- Run a CSS structural validation confirming braces are balanced and the EOF pin override remains in place.
-+- Run targeted Palette Manager V2 served-browser Playwright validation if Playwright/browser support is available.
++- Confirm `git status --short` shows only intended rollback workflow changes after cleanup.
++- Syntax check restored Palette Manager V2 JavaScript files.
++- Confirm no tracked `tools/palette-manager-v2` diff remains against `HEAD`.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/PLAN_PR.md b/docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/PLAN_PR.md b/docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/PLAN_PR.md
 new file mode 100644
-index 00000000..37136af8
+index 00000000..4f97f587
 --- /dev/null
-+++ b/docs/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/PLAN_PR.md
-@@ -0,0 +1,58 @@
-+# PLAN_PR - PR_26124_071-palette-manager-remove-tools-shared-shell
++++ b/docs/pr/PR_26124_072-palette-manager-rollback-shared-removal/PLAN_PR.md
+@@ -0,0 +1,39 @@
++# PLAN_PR - PR_26124_072-palette-manager-rollback-shared-removal
 +
 +## Goal
-+Remove Palette Manager V2 dependency on `tools/shared/platformShell.css`, `tools/shared/platformShell.js`, and shared runtime layout behavior while preserving the current Palette Manager surface behavior.
++Rollback the uncommitted PR_26124_072 shared-removal attempt and leave Palette Manager V2 matching the last committed working state.
 +
 +## Scope
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+- `tools/palette-manager-v2/paletteManagerShell.js`
-+- PR workflow docs and required review artifacts.
++- `tools/palette-manager-v2/*`
++- Required PR workflow docs and review artifacts.
 +
 +## Boundaries
++- Rollback only.
++- Do not introduce new behavior.
++- Do not refactor CSS.
++- Do not move reusable CSS.
++- Do not attempt partial fixes.
 +- Do not modify `tools/shared`.
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
-+- Do not change shared accordionV2 behavior.
-+- Do not clean up unrelated CSS.
-+- Do not remove manual CSS comments unless directly required.
-+- Do not change pin styling or size.
-+- Do not add dependencies.
-+- Avoid broad refactor.
++- Do not run the full samples smoke test.
 +
 +## Implementation Plan
-+1. Remove Palette Manager V2 imports of `../shared/platformShell.css` and `../shared/platformShell.js`.
-+2. Keep existing Palette Manager layout class names where local tests already assert them.
-+3. Add a local `paletteManagerShell.js` that:
-+   - mounts the Palette Manager header/details shell into the local header host,
-+   - mounts the local status bar,
-+   - owns Hide Header and Details / Show Header and Details summary behavior,
-+   - owns fullscreen state classes/attributes that Palette Manager CSS already consumes.
-+4. Add local Palette Manager CSS for only the shared-shell styles Palette Manager still needs:
-+   - body surface variables/background,
-+   - header/status frame,
-+   - app-shell bounds,
-+   - resize-panel behavior,
-+   - fullscreen summary/layout behavior,
-+   - local control focus/disabled styling.
-+5. Preserve menuSample, accordionV2, scroll behavior, right-column spacing, and EOF pin override behavior.
++1. Inspect the working tree and staged area for uncommitted PR_26124_072 shared-removal changes.
++2. Restore Palette Manager V2 files from `HEAD` if any tracked differences remain.
++3. Remove ignored or untracked artifacts left by the abandoned shared-removal attempt.
++4. Confirm `tools/palette-manager-v2` matches the last committed state.
++5. Produce rollback workflow docs, review artifacts, and a repo-structured delta ZIP.
 +
 +## Playwright
-+- Targeted Palette Manager V2 served-browser validation will verify:
-+  - no `tools/shared/platformShell.*` assets are loaded,
-+  - header/details summary renders,
-+  - Hide Header and Details collapse behavior remains,
-+  - Palette Manager app controls render,
-+  - menuSample buttons remain centered.
-+- Command: targeted inline Playwright validation if Playwright is available.
-+- Default gate: `npm run test:workspace-v2`
-+- Expected pass behavior: Palette Manager loads without shared shell assets and Workspace V2 validation remains green.
-+- Expected fail behavior: missing Playwright/browser install, missing `test:workspace-v2` script, or runtime regression is reported.
-+- Full samples smoke test: skipped by instruction.
++- `npm run test:workspace-v2` remains the requested default Playwright gate.
++- Expected pass behavior: Workspace V2 validation runs successfully if the script exists.
++- Expected fail behavior: the command reports that the script is unavailable if `package.json` does not define it.
++- Targeted Palette Manager served-page checks are not expected to change behavior because this PR is rollback-only.
 +
 +## Manual Validation
-+1. Open Palette Manager V2.
-+2. Confirm the header/details area is visible on load.
-+3. Click Hide Header and Details, then confirm the header collapses and the wide layout/fullscreen presentation remains usable.
-+4. Exit fullscreen or show details and confirm the header returns.
-+5. Confirm menuSample, accordions, scroll areas, right-column spacing, pin styling, and palette behavior are unchanged.
-diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 8b30bcc4..d4436d7d 100644
---- a/tools/palette-manager-v2/index.html
-+++ b/tools/palette-manager-v2/index.html
-@@ -7,15 +7,14 @@
-   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
-   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
-   <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
--  <link rel="stylesheet" href="../shared/platformShell.css" />
-   <link rel="stylesheet" href="./paletteManagerV2.css" />
- </head>
--<body class="tools-platform-tool-page hub-page-tools" data-tool-id="palette-manager-v2" data-tools-platform-page="tool">
-+<body class="tools-platform-tool-page hub-page-tools" data-tool-id="palette-manager-v2">
-   <details class="is-collapsible" open>
--    <summary class="is-collapsible__summary" data-tools-platform-summary></summary>
-+    <summary class="is-collapsible__summary" data-palette-manager-v2-summary></summary>
-     <div class="is-collapsible__content">
-       <div id="shared-theme-header"></div>
--      <div data-tools-platform-header></div>
-+      <div data-palette-manager-v2-header></div>
-     </div>
-   </details>
- 
-@@ -207,8 +206,8 @@
-     </div>
-   </div>
- 
--  <div data-tools-platform-status></div>
--  <script type="module" src="../shared/platformShell.js"></script>
-+  <div data-palette-manager-v2-status></div>
-+  <script type="module" src="./paletteManagerShell.js"></script>
-   <script src="../../src/engine/paletteList.js"></script>
-   <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
-   <script type="module" src="./main.js"></script>
-diff --git a/tools/palette-manager-v2/paletteManagerShell.js b/tools/palette-manager-v2/paletteManagerShell.js
-new file mode 100644
-index 00000000..995d3b52
---- /dev/null
-+++ b/tools/palette-manager-v2/paletteManagerShell.js
-@@ -0,0 +1,186 @@
-+const TOOL_ID = "palette-manager-v2";
-+const TOOL_NAME = "Palette Manager V2";
-+const TOOL_DESCRIPTION = "Global palette manager for tools.palette-browser user swatches and browse-only source palette pinning.";
-+const HEADER_TEXT = `${TOOL_NAME} - ${TOOL_DESCRIPTION}`;
-+const INTRO_TEXT = `${TOOL_NAME}: ${TOOL_DESCRIPTION}`;
-+
-+let suppressFullscreenSync = false;
-+
-+function escapeHtml(value) {
-+  return String(value ?? "")
-+    .replace(/&/g, "&amp;")
-+    .replace(/</g, "&lt;")
-+    .replace(/>/g, "&gt;")
-+    .replace(/"/g, "&quot;")
-+    .replace(/'/g, "&#39;");
-+}
-+
-+function getHeaderDetails() {
-+  return document.querySelector(".is-collapsible");
-+}
-+
-+function getSummaryElement() {
-+  return document.querySelector("[data-palette-manager-v2-summary]");
-+}
-+
-+function getHeaderHost() {
-+  return document.querySelector("[data-palette-manager-v2-header]");
-+}
-+
-+function getStatusHost() {
-+  return document.querySelector("[data-palette-manager-v2-status]");
-+}
-+
-+function applyFullscreenState(isActive) {
-+  document.body.classList.toggle("tools-platform-fullscreen-active", isActive);
-+  document.documentElement.classList.toggle("tools-platform-fullscreen-active", isActive);
-+  if (isActive) {
-+    document.body.setAttribute("data-tools-platform-fullscreen", "1");
-+    document.documentElement.setAttribute("data-tools-platform-fullscreen", "1");
-+  } else {
-+    document.body.removeAttribute("data-tools-platform-fullscreen");
-+    document.documentElement.removeAttribute("data-tools-platform-fullscreen");
-+  }
-+}
-+
-+function updateSummary() {
-+  const details = getHeaderDetails();
-+  const summary = getSummaryElement();
-+  if (!(details instanceof HTMLDetailsElement) || !(summary instanceof HTMLElement)) {
-+    return;
-+  }
-+
-+  const isFullscreen = Boolean(document.fullscreenElement);
-+  const isExpanded = details.open === true;
-+  summary.textContent = isExpanded
-+    ? "Hide Header and Details"
-+    : (isFullscreen ? HEADER_TEXT : "Show Header and Details");
-+
-+  if (isFullscreen) {
-+    summary.style.maxWidth = "calc(100vw - 24px)";
-+    summary.style.whiteSpace = "nowrap";
-+    summary.style.overflow = "hidden";
-+    summary.style.textOverflow = "ellipsis";
-+  } else {
-+    summary.style.removeProperty("max-width");
-+    summary.style.removeProperty("white-space");
-+    summary.style.removeProperty("overflow");
-+    summary.style.removeProperty("text-overflow");
-+  }
-+
-+  summary.setAttribute("data-tools-platform-summary-active", "1");
-+  summary.setAttribute("data-tools-platform-summary-error", "0");
-+  summary.setAttribute("data-tools-platform-summary-state", isExpanded ? "expanded" : "collapsed");
-+  summary.setAttribute("data-tools-platform-summary-mode", isFullscreen ? "fullscreen" : "normal");
-+  summary.setAttribute("data-tool-id", TOOL_ID);
-+  summary.setAttribute("title", `${HEADER_TEXT}\n${INTRO_TEXT}`);
-+}
-+
-+function renderHeader() {
-+  const headerHost = getHeaderHost();
-+  if (!(headerHost instanceof HTMLElement)) {
-+    return;
-+  }
-+
-+  headerHost.innerHTML = `
-+    <section class="tools-platform-frame palette-manager-v2__local-shell-frame">
-+      <div class="tools-platform-frame__accordion-content">
-+        <div class="tools-platform-frame__accordion-summary">
-+          <div class="tools-platform-frame__summary-copy">
-+            <h1 class="tools-platform-frame__title" data-tool-id="${escapeHtml(TOOL_ID)}">${escapeHtml(TOOL_NAME)}</h1>
-+            <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface</h2>
-+          </div>
-+          <div class="tools-platform-frame__summary-meta">
-+            <div class="tools-platform-frame__meta">Tool-local shell, engine theme, and palette state are active.</div>
-+          </div>
-+        </div>
-+        <div class="tools-platform-frame__topline">
-+          <p class="tools-platform-frame__description">${escapeHtml(TOOL_DESCRIPTION)}</p>
-+        </div>
-+      </div>
-+    </section>
-+  `;
-+}
-+
-+function renderStatus() {
-+  const statusHost = getStatusHost();
-+  if (!(statusHost instanceof HTMLElement)) {
-+    return;
-+  }
-+
-+  statusHost.innerHTML = `
-+    <div class="tools-platform-statusbar palette-manager-v2__local-statusbar">
-+      <span>Palette Manager V2 local shell is active.</span>
-+      <span>${escapeHtml(TOOL_NAME)} | No active workspace</span>
-+      <span>Palette data key: tools.palette-browser</span>
-+    </div>
-+  `;
-+}
-+
-+async function enterFullscreenIfAvailable() {
-+  if (document.fullscreenElement || !document.fullscreenEnabled) {
-+    return;
-+  }
-+  if (typeof document.documentElement?.requestFullscreen !== "function") {
-+    return;
-+  }
-+  try {
-+    await document.documentElement.requestFullscreen();
-+  } catch {
-+    // Non-fatal: collapsed header state remains usable without fullscreen.
-+  }
-+}
-+
-+async function exitFullscreenIfActive() {
-+  if (!document.fullscreenElement || typeof document.exitFullscreen !== "function") {
-+    return;
-+  }
-+  try {
-+    await document.exitFullscreen();
-+  } catch {
-+    // Non-fatal: the fullscreenchange listener will resync if the browser exits later.
-+  }
-+}
-+
-+function bindHeaderDetails() {
-+  const details = getHeaderDetails();
-+  if (!(details instanceof HTMLDetailsElement)) {
-+    return;
-+  }
-+
-+  details.addEventListener("toggle", () => {
-+    updateSummary();
-+    if (suppressFullscreenSync) {
-+      suppressFullscreenSync = false;
-+      return;
-+    }
-+
-+    if (details.open) {
-+      void exitFullscreenIfActive();
-+      return;
-+    }
-+
-+    void enterFullscreenIfAvailable();
-+  });
-+
-+  document.addEventListener("fullscreenchange", () => {
-+    const isFullscreen = Boolean(document.fullscreenElement);
-+    applyFullscreenState(isFullscreen);
-+    if (!isFullscreen && !details.open) {
-+      suppressFullscreenSync = true;
-+      details.open = true;
-+    }
-+    updateSummary();
-+  });
-+}
-+
-+function initPaletteManagerShell() {
-+  document.body.classList.add("tools-platform-surface", "palette-manager-v2-local-shell");
-+  applyFullscreenState(Boolean(document.fullscreenElement));
-+  renderHeader();
-+  renderStatus();
-+  bindHeaderDetails();
-+  updateSummary();
-+}
-+
-+initPaletteManagerShell();
-diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index 04c17e7b..3c7ca292 100644
---- a/tools/palette-manager-v2/paletteManagerV2.css
-+++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -9,10 +9,151 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] {
- 
- body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > .is-collapsible,
- body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > .palette-manager-v2__menu-sample,
--body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-platform-status] {
-+body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-palette-manager-v2-status] {
-   flex: 0 0 auto;
- }
- 
-+body.tools-platform-tool-page[data-tool-id="palette-manager-v2"].tools-platform-surface {
-+  --tools-space-2: 10px;
-+  --tools-type-body: 0.95rem;
-+  --tools-type-meta: 0.82rem;
-+  --tools-shell-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
-+  --tools-shell-shadow-strong: 0 20px 44px rgba(0, 0, 0, 0.26);
-+  min-height: 100vh;
-+  min-height: 100dvh;
-+  color: var(--text, #f7f4ff);
-+  background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
-+  font-size: var(--tools-type-body);
-+  line-height: 1.45;
-+  letter-spacing: 0.005em;
-+}
-+
-+[data-palette-manager-v2-header],
-+[data-palette-manager-v2-status] {
-+  display: block;
-+  width: calc(100% - 32px);
-+  margin: 10px auto;
-+}
-+
-+[data-palette-manager-v2-header] {
-+  width: calc(100% - 140px);
-+}
-+
-+.tools-platform-frame,
-+.tools-platform-statusbar {
-+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-+  border-radius: 18px;
-+  background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
-+  box-shadow: var(--tools-shell-shadow);
-+}
-+
-+.tools-platform-frame {
-+  padding: 12px 14px;
-+}
-+
-+.tools-platform-frame__accordion-content {
-+  display: grid;
-+  grid-template-columns: minmax(0, 1fr);
-+  gap: 10px;
-+}
-+
-+.tools-platform-frame__accordion-summary {
-+  display: flex;
-+  align-items: center;
-+  justify-content: space-between;
-+  gap: 12px;
-+  border-radius: 12px;
-+  background: #4c1d95;
-+  padding: 8px 10px;
-+}
-+
-+.tools-platform-frame__summary-copy {
-+  min-width: 0;
-+  display: flex;
-+  flex-direction: column;
-+}
-+
-+.tools-platform-frame__summary-meta {
-+  display: flex;
-+  align-items: center;
-+  gap: 10px;
-+}
-+
-+.tools-platform-frame__title {
-+  margin: 0;
-+  color: #ffffff;
-+  font-size: clamp(1.08rem, 1.6vw, 1.24rem);
-+  line-height: 1.2;
-+}
-+
-+.tools-platform-frame__eyebrow,
-+.tools-platform-frame__meta,
-+.tools-platform-frame__description {
-+  margin: 0;
-+  color: var(--muted, #e9ddff);
-+}
-+
-+.tools-platform-frame__eyebrow {
-+  font-size: clamp(0.96rem, 1.2vw, 1.06rem);
-+}
-+
-+.tools-platform-frame__meta,
-+.tools-platform-frame__description,
-+.tools-platform-statusbar {
-+  font-size: var(--tools-type-meta);
-+}
-+
-+.tools-platform-frame__topline {
-+  min-width: 0;
-+  max-width: 100%;
-+}
-+
-+.tools-platform-statusbar {
-+  display: flex;
-+  align-items: center;
-+  justify-content: space-between;
-+  gap: 12px;
-+  flex-wrap: wrap;
-+  padding: 8px 12px;
-+  color: var(--muted, #e9ddff);
-+}
-+
-+body.tools-platform-surface .palette-manager-v2.app-shell {
-+  width: min(1600px, calc(100% - 32px));
-+  margin: 0 auto 16px;
-+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-+  border-radius: 20px;
-+  box-shadow: var(--tools-shell-shadow-strong);
-+  overflow: hidden;
-+}
-+
-+body.tools-platform-surface :is(button, input, select, textarea) {
-+  border-color: var(--line, rgba(221, 214, 254, 0.26)) !important;
-+  border-radius: 10px !important;
-+}
-+
-+body.tools-platform-surface button:disabled {
-+  opacity: 0.62;
-+  cursor: not-allowed;
-+  filter: saturate(0.72);
-+  box-shadow: none;
-+}
-+
-+body.tools-platform-surface :is(button, input, select, textarea):focus-visible {
-+  outline: 2px solid var(--accent, #ddd6fe);
-+  outline-offset: 2px;
-+}
-+
-+body.tools-platform-surface :is(input, select, textarea) {
-+  border: 1px solid var(--surface-border, rgba(221, 214, 254, 0.22));
-+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
-+  color: var(--text, #f7f4ff);
-+}
-+
-+body.tools-platform-surface :is(input, select, textarea):hover {
-+  border-color: var(--card-hover-border, #c4b5fd);
-+}
-+
- .palette-manager-v2__menu-sample {
-   box-sizing: border-box;
-   width: calc(100% - 32px);
-@@ -63,7 +204,7 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
- .palette-manager-v2__layout {
-   display: grid;
-   grid-template-columns: 340px minmax(0, 1fr) 360px;
--  gap: 16px;
-+  gap: 14px;
-   width: 100%;
-   min-width: 0;
-   min-height: 0;
-@@ -637,6 +778,31 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   color: #ffd6d6;
- }
- 
-+html:fullscreen body.tools-platform-surface {
-+  height: 100dvh;
-+  display: flex;
-+  flex-direction: column;
-+  overflow: hidden;
-+}
-+
-+html:fullscreen body.tools-platform-surface > .is-collapsible,
-+html:fullscreen body.tools-platform-surface > [data-palette-manager-v2-status] {
-+  flex: 0 0 auto;
-+}
-+
-+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"] {
-+  display: inline-block;
-+  max-width: min(calc(100vw - 24px), calc(100dvw - 24px));
-+  color: #ffffff;
-+  font-size: 0.98rem;
-+  font-weight: 700;
-+  line-height: 1.2;
-+  overflow: hidden;
-+  padding: 8px 12px;
-+  text-overflow: ellipsis;
-+  white-space: nowrap;
-+}
-+
- html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] > .palette-manager-v2,
- body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] > .palette-manager-v2 {
-   flex: 1 1 auto;
-@@ -716,6 +882,23 @@ body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palet
-   }
- }
- 
-+@media (min-width: 1201px) {
-+  body.tools-platform-surface .tools-platform-resize-panel {
-+    min-width: 220px;
-+    max-width: min(42vw, 520px);
-+    resize: horizontal;
-+    overflow: auto;
-+  }
-+}
-+
-+@media (max-width: 1200px) {
-+  body.tools-platform-surface .tools-platform-resize-panel {
-+    max-width: none;
-+    max-height: none;
-+    resize: none;
-+  }
-+}
-+
- @media (max-width: 640px) {
-   .palette-manager-v2 {
-     padding: 10px;
++1. Open `tools/palette-manager-v2/index.html`.
++2. Confirm Palette Manager V2 renders with the last committed header/details behavior.
++3. Confirm Hide Header and Details / Show Header and Details behaves as before.
++4. Confirm menuSample, accordions, tags, sorting, pin/unpin, Pin All, validation clear, and import/copy/export are unchanged.
++5. Confirm no sample launch validation is required; full samples smoke test is out of scope.

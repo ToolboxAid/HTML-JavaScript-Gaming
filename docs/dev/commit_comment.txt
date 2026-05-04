@@ -1,1 +1,1 @@
-Remove Palette Manager dependency on tools shared shell - PR_26124_071-palette-manager-remove-tools-shared-shell
+Rollback uncommitted Palette Manager shared-removal attempt - PR_26124_072-palette-manager-rollback-shared-removal
