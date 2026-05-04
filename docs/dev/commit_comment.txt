@@ -1,1 +1,1 @@
-Load Palette Manager V2 sample presets from URL params - PR_26124_076-palette-manager-url-preset-load
+Finalize Palette Manager V2 exit-pass cleanup - PR_26124_077-palette-manager-final-exit-pass

@@ -1,215 +1,89 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index a8fc23b5..ae8b5047 100644
+index ae8b5047..462ea4db 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,14 +1,17 @@
--# Codex Commands - PR_26124_075-palette-browser-launch-registration-fix
-+# Codex Commands - PR_26124_076-palette-manager-url-preset-load
+@@ -1,16 +1,17 @@
+-# Codex Commands - PR_26124_076-palette-manager-url-preset-load
++# Codex Commands - PR_26124_077-palette-manager-final-exit-pass
  
  ```bash
--npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_075-palette-browser-launch-registration-fix. Follow PROJECT_INSTRUCTIONS.md exactly."
-+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_076-palette-manager-url-preset-load. Follow PROJECT_INSTRUCTIONS.md exactly."
+-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_076-palette-manager-url-preset-load. Follow PROJECT_INSTRUCTIONS.md exactly."
++npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_077-palette-manager-final-exit-pass. Follow PROJECT_INSTRUCTIONS.md exactly."
  ```
  
  ## Validation Commands
  
  ```bash
--node --input-type=module <sample metadata registry validation>
--node --input-type=module <targeted Samples index launch validation>
-+node --check tools/palette-manager-v2/main.js
-+node --check tools/palette-manager-v2/modules/PaletteManagerApp.js
-+node --check tools/palette-manager-v2/modules/PaletteValidationService.js
-+node tests/tools/PaletteManagerV2Baseline.test.mjs
-+node --input-type=module <targeted Palette Manager V2 URL preset validation>
+ node --check tools/palette-manager-v2/main.js
++node --check tools/palette-manager-v2/paletteManagerShell.js
+ node --check tools/palette-manager-v2/modules/PaletteManagerApp.js
+-node --check tools/palette-manager-v2/modules/PaletteValidationService.js
+ node tests/tools/PaletteManagerV2Baseline.test.mjs
++node --input-type=module <targeted Palette Manager V2 exit-pass audit>
+ node --input-type=module <targeted Palette Manager V2 URL preset validation>
  git diff --check
  npm run test:workspace-v2
- npm run codex:review-artifacts
-@@ -16,7 +19,7 @@ npm run codex:review-artifacts
+@@ -19,7 +20,7 @@ npm run codex:review-artifacts
  
  ## Playwright
  
--Targeted Samples index launch validation confirms palette-backed samples no longer render `Tool "palette-browser" is not registered in toolRegistry.` and their launch links resolve to Palette Manager V2.
-+Targeted Palette Manager V2 validation confirms the tool baseline still loads and that a `samplePresetPath` URL loads sample palette JSON into active Palette Manager V2 state.
+-Targeted Palette Manager V2 validation confirms the tool baseline still loads and that a `samplePresetPath` URL loads sample palette JSON into active Palette Manager V2 state.
++Targeted Palette Manager V2 validation confirms baseline controls, validation clear placement, pin scroll preservation, Tag sort untagged-last behavior, and URL preset loading remain stable.
  
  `npm run test:workspace-v2` failed because `package.json` does not define the `test:workspace-v2` script.
  
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index fa01d587..aa8b5149 100644
+index aa8b5149..83e847f4 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Fix Palette Manager V2 sample launch registration id - PR_26124_075-palette-browser-launch-registration-fix
-+Load Palette Manager V2 sample presets from URL params - PR_26124_076-palette-manager-url-preset-load
-diff --git a/tools/palette-manager-v2/main.js b/tools/palette-manager-v2/main.js
-index 52ef12b1..58ed92f3 100644
---- a/tools/palette-manager-v2/main.js
-+++ b/tools/palette-manager-v2/main.js
-@@ -18,6 +18,72 @@ function reportBootstrapError(error) {
-   console.error(error);
+-Load Palette Manager V2 sample presets from URL params - PR_26124_076-palette-manager-url-preset-load
++Finalize Palette Manager V2 exit-pass cleanup - PR_26124_077-palette-manager-final-exit-pass
+diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
+index 3c7ca292..a168a560 100644
+--- a/tools/palette-manager-v2/paletteManagerV2.css
++++ b/tools/palette-manager-v2/paletteManagerV2.css
+@@ -252,14 +252,6 @@ body.tools-platform-surface :is(input, select, textarea):hover {
+   --accordion-v2-line: var(--pm-line);
+   --accordion-v2-surface: var(--pm-surface);
+ }
+-/*
+-
+-.palette-manager-v2__right-accordion--import {
+-  flex: 0 0 auto;
+-  min-height: 0;
+-  overflow: hidden;
+-}
+-*/
+ 
+ .palette-manager-v2__right-accordion--import.is-open {
+   flex: 1 1 auto;
+@@ -267,14 +259,6 @@ body.tools-platform-surface :is(input, select, textarea):hover {
+   overflow: hidden;
  }
  
-+function normalizeSamplePresetPath(samplePresetPath) {
-+  const cleanPath = typeof samplePresetPath === "string"
-+    ? samplePresetPath.trim().replace(/\\/g, "/")
-+    : "";
-+  if (!cleanPath || cleanPath.includes("..") || !cleanPath.startsWith("/samples/")) {
-+    return "";
-+  }
-+  return cleanPath;
-+}
-+
-+function getSamplePresetLabel(searchParams, samplePresetPath) {
-+  const sampleId = (searchParams.get("sampleId") || "").trim();
-+  const sampleTitle = (searchParams.get("sampleTitle") || "").trim();
-+  if (sampleId && sampleTitle) {
-+    return `sample ${sampleId} (${sampleTitle})`;
-+  }
-+  if (sampleId) {
-+    return `sample ${sampleId}`;
-+  }
-+  if (sampleTitle) {
-+    return sampleTitle;
-+  }
-+  return samplePresetPath;
-+}
-+
-+async function loadSamplePresetFromUrl(app) {
-+  const searchParams = new URLSearchParams(window.location.search);
-+  const samplePresetPath = searchParams.get("samplePresetPath");
-+  if (!samplePresetPath) {
-+    return;
-+  }
-+
-+  const presetPath = normalizeSamplePresetPath(samplePresetPath);
-+  if (!presetPath) {
-+    app.rejectImport([`samplePresetPath is invalid: ${samplePresetPath}`], "Sample preset load failed.");
-+    return;
-+  }
-+
-+  let response;
-+  try {
-+    response = await fetch(presetPath, { cache: "no-store" });
-+  } catch (error) {
-+    const message = error instanceof Error ? error.message : String(error);
-+    app.rejectImport([`Sample preset fetch failed for ${presetPath}: ${message}`], "Sample preset load failed.");
-+    return;
-+  }
-+
-+  if (!response.ok) {
-+    app.rejectImport([`Sample preset fetch failed (${response.status}) for ${presetPath}.`], "Sample preset load failed.");
-+    return;
-+  }
-+
-+  let documentValue;
-+  try {
-+    documentValue = await response.json();
-+  } catch {
-+    app.rejectImport([`Sample preset is not valid JSON: ${presetPath}.`], "Sample preset load failed.");
-+    return;
-+  }
-+
-+  app.importPaletteDocument(documentValue, {
-+    failureStatus: "Sample preset load failed.",
-+    successStatus: `Loaded ${getSamplePresetLabel(searchParams, presetPath)} palette preset.`
-+  });
-+}
-+
- try {
-   const app = new PaletteManagerApp({
-     documentRef: document,
-@@ -27,6 +93,7 @@ try {
-   });
-   app.init();
-   window.paletteManagerV2App = app.getPublicApi();
-+  void loadSamplePresetFromUrl(app);
- } catch (error) {
-   reportBootstrapError(error);
+-/*
+-.palette-manager-v2__right-accordion--import .accordion-v2__content {
+-  flex: 1 1 auto;
+-  min-height: 0;
+-  overflow: hidden;
+-}
+-*/
+-
+ .palette-manager-v2__right-accordion--import .palette-manager-v2__json-preview {
+   flex: 1 1 auto;
+   min-height: 0;
+@@ -325,13 +309,6 @@ body.tools-platform-surface :is(input, select, textarea):hover {
+   flex: 0 0 auto;
  }
-diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 3ac0824b..324ea23b 100644
---- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
-+++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -998,15 +998,15 @@ export class PaletteManagerApp {
-     });
-   }
  
--  rejectImport(errors) {
--    this.setActionState(errors, "Import rejected.");
-+  rejectImport(errors, status = "Import rejected.") {
-+    this.setActionState(errors, status);
-   }
- 
--  importPaletteDocument(documentValue) {
-+  importPaletteDocument(documentValue, options = {}) {
-     const importResult = this.validator.extractImportedPaletteDocument(documentValue);
-     if (importResult.errors.length > 0) {
--      this.setActionState(importResult.errors, "Import rejected.");
--      return;
-+      this.setActionState(importResult.errors, sanitizeText(options.failureStatus) || "Import rejected.");
-+      return false;
-     }
- 
-     this.state.userSwatches = importResult.swatches.map(cloneSwatch);
-@@ -1015,7 +1015,8 @@ export class PaletteManagerApp {
-     this.checkedUserSwatchIndexes.clear();
-     this.editorControl.clearForm();
-     this.resetHistorySnapshot();
--    this.setActionState([], `Imported ${this.state.userSwatches.length} user swatches.`);
-+    this.setActionState([], sanitizeText(options.successStatus) || `Imported ${this.state.userSwatches.length} user swatches.`);
-+    return true;
-   }
- 
-   preparePaletteDocument(blockedStatus) {
-diff --git a/tools/palette-manager-v2/modules/PaletteValidationService.js b/tools/palette-manager-v2/modules/PaletteValidationService.js
-index e8cc0aa9..ae8f0782 100644
---- a/tools/palette-manager-v2/modules/PaletteValidationService.js
-+++ b/tools/palette-manager-v2/modules/PaletteValidationService.js
-@@ -52,13 +52,36 @@ export class PaletteValidationService {
-     return swatches.flatMap((swatch, index) => this.validateSwatch(swatch, `swatches[${index}]`));
-   }
- 
-+  getDirectPaletteSource(documentValue) {
-+    return sanitizeText(documentValue?.sourceId)
-+      || sanitizeText(documentValue?.source)
-+      || sanitizeText(documentValue?.name);
-+  }
-+
-+  cloneImportedSwatches(swatches, source) {
-+    const cleanSource = sanitizeText(source);
-+    return swatches.map((swatch) => cloneSwatch({
-+      ...swatch,
-+      source: sanitizeText(swatch?.source) || cleanSource
-+    }));
-+  }
-+
-   extractImportedPaletteDocument(documentValue) {
-     if (!isObjectRecord(documentValue)) {
-       return { swatches: null, errors: ["Imported JSON must be an object."] };
-     }
- 
-+    if (Array.isArray(documentValue.swatches)) {
-+      const swatches = this.cloneImportedSwatches(
-+        documentValue.swatches,
-+        this.getDirectPaletteSource(documentValue)
-+      );
-+      const errors = this.validateUserSwatches(swatches);
-+      return { swatches: errors.length > 0 ? null : swatches, errors };
-+    }
-+
-     if (!isObjectRecord(documentValue.tools)) {
--      return { swatches: null, errors: ["Imported JSON must contain a tools object."] };
-+      return { swatches: null, errors: ["Imported JSON must contain a tools object or a direct swatches array."] };
-     }
- 
-     const paletteValue = documentValue.tools[this.globalPaletteToolKey];
-@@ -70,8 +93,8 @@ export class PaletteValidationService {
-       return { swatches: null, errors: [`tools.${this.globalPaletteToolKey}.swatches must be an array.`] };
-     }
- 
--    const errors = this.validateUserSwatches(paletteValue.swatches);
--    const swatches = paletteValue.swatches.map(cloneSwatch);
-+    const swatches = this.cloneImportedSwatches(paletteValue.swatches, "");
-+    const errors = this.validateUserSwatches(swatches);
-     return { swatches: errors.length > 0 ? null : swatches, errors };
-   }
- }
+-/*
+-.palette-manager-v2__panel--center .accordion-v2__content .palette-manager-v2__tile-grid {
+-  flex: 1 1 auto;
+-  max-height: none;
+-}
+-*/
+-
+ .palette-manager-v2__field {
+   min-width: 0;
+   display: grid;
