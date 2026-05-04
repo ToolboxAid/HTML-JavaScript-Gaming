@@ -12,7 +12,7 @@ const REQUIRED_REF_IDS = Object.freeze([
   "userSwatchList",
   "sourcePaletteSelect",
   "sourceSearchInput",
-  "sourcePaletteSortSelect",
+  "sourcePaletteSortControls",
   "sourceSwatchList",
   "editorTitle",
   "selectedSwatchPreview",

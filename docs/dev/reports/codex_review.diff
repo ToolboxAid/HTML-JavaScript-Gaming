@@ -1,518 +1,207 @@
 diff --git a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-index d7644364..a9a2b610 100644
+index a9a2b610..c8761215 100644
 --- a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
 +++ b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-@@ -9,17 +9,22 @@ export class SourcePaletteBrowserControl {
-
-   bind() {
-     this.renderSourceOptions();
-+    this.renderSortOptions();
-     this.refs.sourcePaletteSelect.addEventListener("change", () => {
-       this.app.setSourcePaletteId(this.refs.sourcePaletteSelect.value);
-     });
+@@ -16,15 +16,12 @@ export class SourcePaletteBrowserControl {
      this.refs.sourceSearchInput.addEventListener("input", () => {
        this.app.setSourceSearch(this.refs.sourceSearchInput.value);
      });
-+    this.refs.sourcePaletteSortSelect.addEventListener("change", () => {
-+      this.app.setSourceSortMode(this.refs.sourcePaletteSortSelect.value);
-+    });
+-    this.refs.sourcePaletteSortSelect.addEventListener("change", () => {
+-      this.app.setSourceSortMode(this.refs.sourcePaletteSortSelect.value);
+-    });
    }
 
    render() {
      this.refs.sourcePaletteSelect.value = this.app.getCurrentSourcePaletteId();
      this.refs.sourceSearchInput.value = this.app.getSourceSearch();
-+    this.refs.sourcePaletteSortSelect.value = this.app.getSourceSortMode();
+-    this.refs.sourcePaletteSortSelect.value = this.app.getSourceSortMode();
++    this.renderActiveSortButton();
      this.refs.sourceSwatchList.replaceChildren();
 
      const visibleSwatches = this.app.getVisibleSourceSwatches();
-@@ -56,4 +61,14 @@ export class SourcePaletteBrowserControl {
-       this.refs.sourcePaletteSelect.appendChild(option);
+@@ -63,12 +60,27 @@ export class SourcePaletteBrowserControl {
+   }
+
+   renderSortOptions() {
+-    this.refs.sourcePaletteSortSelect.replaceChildren();
++    this.refs.sourcePaletteSortControls.replaceChildren();
+     this.app.getSortModes().forEach((mode) => {
+-      const option = this.document.createElement("option");
+-      option.value = mode.value;
+-      option.textContent = mode.label;
+-      this.refs.sourcePaletteSortSelect.appendChild(option);
++      const button = this.document.createElement("button");
++      button.type = "button";
++      button.className = "palette-manager-v2__sort-button";
++      button.dataset.sortMode = mode.value;
++      button.textContent = mode.value === "original" ? "Original" : mode.label;
++      button.addEventListener("click", () => {
++        this.app.setSourceSortMode(mode.value);
++      });
++      this.refs.sourcePaletteSortControls.appendChild(button);
++    });
++    this.renderActiveSortButton();
++  }
++
++  renderActiveSortButton() {
++    const activeMode = this.app.getSourceSortMode();
++    this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
++      const isActive = button.dataset.sortMode === activeMode;
++      button.classList.toggle("is-active", isActive);
++      button.setAttribute("aria-pressed", String(isActive));
      });
    }
-+
-+  renderSortOptions() {
-+    this.refs.sourcePaletteSortSelect.replaceChildren();
-+    this.app.getSortModes().forEach((mode) => {
-+      const option = this.document.createElement("option");
-+      option.value = mode.value;
-+      option.textContent = mode.label;
-+      this.refs.sourcePaletteSortSelect.appendChild(option);
-+    });
-+  }
- }
-diff --git a/tools/palette-manager-v2/controls/UserPaletteControl.js b/tools/palette-manager-v2/controls/UserPaletteControl.js
-index 8044b540..7717ecfd 100644
---- a/tools/palette-manager-v2/controls/UserPaletteControl.js
-+++ b/tools/palette-manager-v2/controls/UserPaletteControl.js
-@@ -7,11 +7,17 @@ export class UserPaletteControl {
-     this.app = app;
-   }
-
--  bind() {}
-+  bind() {
-+    this.renderSortOptions();
-+    this.refs.userPaletteSortSelect.addEventListener("change", () => {
-+      this.app.setUserSortMode(this.refs.userPaletteSortSelect.value);
-+    });
-+  }
-
-   render() {
-     const swatches = this.app.getUserSwatches();
-     this.refs.userPaletteCount.textContent = `${swatches.length} user swatches`;
-+    this.refs.userPaletteSortSelect.value = this.app.getUserSortMode();
-     this.refs.userSwatchList.replaceChildren();
-
-     if (swatches.length === 0) {
-@@ -22,7 +28,7 @@ export class UserPaletteControl {
-       return;
-     }
-
--    swatches.forEach((swatch, index) => {
-+    this.app.getVisibleUserSwatchRows().forEach(({ swatch, index }) => {
-       this.refs.userSwatchList.appendChild(SwatchRow.create(this.document, swatch, {
-         pinned: true,
-         selected: index === this.app.getSelectedUserIndex(),
-@@ -31,4 +37,14 @@ export class UserPaletteControl {
-       }));
-     });
-   }
-+
-+  renderSortOptions() {
-+    this.refs.userPaletteSortSelect.replaceChildren();
-+    this.app.getSortModes().forEach((mode) => {
-+      const option = this.document.createElement("option");
-+      option.value = mode.value;
-+      option.textContent = mode.label;
-+      this.refs.userPaletteSortSelect.appendChild(option);
-+    });
-+  }
  }
 diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 5d7dc146..347f6de9 100644
+index 347f6de9..907f11d8 100644
 --- a/tools/palette-manager-v2/index.html
 +++ b/tools/palette-manager-v2/index.html
-@@ -64,6 +64,10 @@
-             <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
-           </summary>
-           <div class="palette-manager-v2__accordion-content">
-+            <label class="palette-manager-v2__field">
-+              Sort user palette
-+              <select id="userPaletteSortSelect"></select>
-+            </label>
-             <div id="userPaletteCount" class="palette-manager-v2__meta">0 user swatches</div>
-             <div id="userSwatchList" class="palette-manager-v2__list" aria-label="User palette swatches"></div>
-           </div>
-@@ -83,6 +87,10 @@
+@@ -87,10 +87,10 @@
                Search source swatches
                <input id="sourceSearchInput" type="search" autocomplete="off" />
              </label>
-+            <label class="palette-manager-v2__field">
-+              Sort source palette
-+              <select id="sourcePaletteSortSelect"></select>
-+            </label>
+-            <label class="palette-manager-v2__field">
+-              Sort source palette
+-              <select id="sourcePaletteSortSelect"></select>
+-            </label>
++            <div class="palette-manager-v2__field">
++              <span>Sort source palette</span>
++              <div id="sourcePaletteSortControls" class="palette-manager-v2__sort-buttons" role="group" aria-label="Sort source palette"></div>
++            </div>
              <div id="sourceSwatchList" class="palette-manager-v2__source-grid" aria-label="Browse palette swatches"></div>
            </div>
          </details>
-diff --git a/tools/palette-manager-v2/main.js b/tools/palette-manager-v2/main.js
-index 23aa7499..52ef12b1 100644
---- a/tools/palette-manager-v2/main.js
-+++ b/tools/palette-manager-v2/main.js
-@@ -1,4 +1,5 @@
- import { PaletteUsageService } from "../common/PaletteUsageService.js";
-+import { PaletteSortService } from "../common/PaletteSortService.js";
- import { PaletteManagerApp } from "./modules/PaletteManagerApp.js";
-
- function resolvePaletteSource() {
-@@ -21,6 +22,7 @@ try {
-   const app = new PaletteManagerApp({
-     documentRef: document,
-     paletteSource: resolvePaletteSource(),
-+    sortService: new PaletteSortService(),
-     usageService: new PaletteUsageService()
-   });
-   app.init();
 diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index 9cd51cc7..d2202881 100644
+index d2202881..86b164c4 100644
 --- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
 +++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -8,9 +8,11 @@ import { cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUti
-
- const REQUIRED_REF_IDS = Object.freeze([
-   "userPaletteCount",
-+  "userPaletteSortSelect",
+@@ -12,7 +12,7 @@ const REQUIRED_REF_IDS = Object.freeze([
    "userSwatchList",
    "sourcePaletteSelect",
    "sourceSearchInput",
-+  "sourcePaletteSortSelect",
+-  "sourcePaletteSortSelect",
++  "sourcePaletteSortControls",
    "sourceSwatchList",
    "editorTitle",
    "selectedSwatchPreview",
-@@ -43,9 +45,10 @@ function collectRefs(documentRef) {
- }
-
- export class PaletteManagerApp {
--  constructor({ documentRef, paletteSource, usageService }) {
-+  constructor({ documentRef, paletteSource, sortService, usageService }) {
-     this.document = documentRef;
-     this.paletteSource = paletteSource;
-+    this.sortService = sortService;
-     this.usageService = usageService;
-     this.globalPaletteToolKey = paletteSource.GLOBAL_PALETTE_TOOL_KEY;
-     this.hexColorPattern = paletteSource.HEX_COLOR_PATTERN;
-@@ -62,6 +65,8 @@ export class PaletteManagerApp {
-       selectedUserIndex: -1,
-       sourcePaletteId: this.sourcePaletteIds[0] || "",
-       sourceSearch: "",
-+      userSortMode: "original",
-+      sourceSortMode: "original",
-       errors: [],
-       status: "Ready."
-     };
-@@ -102,10 +107,30 @@ export class PaletteManagerApp {
-     return this.state.userSwatches.map(cloneSwatch);
-   }
-
-+  getVisibleUserSwatchRows() {
-+    const rows = this.state.userSwatches.map((swatch, index) => ({
-+      index,
-+      swatch: cloneSwatch(swatch)
-+    }));
-+    return this.sortService.sortRows(rows, this.state.userSortMode);
-+  }
-+
-   getSelectedUserIndex() {
-     return this.state.selectedUserIndex;
-   }
-
-+  getSortModes() {
-+    return this.sortService.getSortModes();
-+  }
-+
-+  getUserSortMode() {
-+    return this.state.userSortMode;
-+  }
-+
-+  getSourceSortMode() {
-+    return this.state.sourceSortMode;
-+  }
-+
-   getSourcePaletteIds() {
-     return this.sourcePaletteIds.slice();
-   }
-@@ -134,15 +159,16 @@ export class PaletteManagerApp {
-     const swatches = this.sourcePalettes[this.state.sourcePaletteId] || [];
-     const query = sanitizeText(this.state.sourceSearch).toLowerCase();
-     if (!query) {
--      return swatches.map(cloneSwatch);
-+      return this.sortService.sortSwatches(swatches.map(cloneSwatch), this.state.sourceSortMode);
-     }
--    return swatches
-+    const visibleSwatches = swatches
-       .filter((swatch) => {
-         return swatch.name.toLowerCase().includes(query)
-           || swatch.hex.toLowerCase().includes(query)
-           || swatch.symbol.toLowerCase().includes(query);
-       })
-       .map(cloneSwatch);
-+    return this.sortService.sortSwatches(visibleSwatches, this.state.sourceSortMode);
-   }
-
-   setSourcePaletteId(sourcePaletteId) {
-@@ -160,6 +186,22 @@ export class PaletteManagerApp {
-     this.render();
-   }
-
-+  setUserSortMode(sortMode) {
-+    if (!this.sortService.isValidSortMode(sortMode)) {
-+      return;
-+    }
-+    this.state.userSortMode = sortMode;
-+    this.render();
-+  }
-+
-+  setSourceSortMode(sortMode) {
-+    if (!this.sortService.isValidSortMode(sortMode)) {
-+      return;
-+    }
-+    this.state.sourceSortMode = sortMode;
-+    this.render();
-+  }
-+
-   setActionState(errors, status, shouldRender = true) {
-     this.state.errors = Array.isArray(errors) ? errors : [];
-     this.state.status = sanitizeText(status) || "Ready.";
-diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
-index 6c9811f6..2670eb99 100644
---- a/tools/palette-manager-v2/modules/SwatchRow.js
-+++ b/tools/palette-manager-v2/modules/SwatchRow.js
-@@ -31,6 +31,9 @@ export class SwatchRow {
-   }
-
-   static createSourceTile(documentRef, swatch, options = {}) {
-+    const entry = documentRef.createElement("div");
-+    entry.className = "palette-manager-v2__source-entry";
-+
-     const tile = documentRef.createElement("div");
-     tile.className = "palette-manager-v2__source-tile";
-     tile.tabIndex = 0;
-@@ -63,11 +66,11 @@ export class SwatchRow {
-     const tack = SwatchRow.createTackButton(documentRef, options);
-     tack.classList.add("palette-manager-v2__pin-button--tile");
-
--    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__source-tooltip");
--    details.setAttribute("aria-hidden", "true");
-+    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__source-details");
-
--    tile.append(chip, tack, details);
--    return tile;
-+    tile.append(chip, tack);
-+    entry.append(tile, details);
-+    return entry;
-   }
-
-   static createDetailsBlock(documentRef, swatch, className) {
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index c0830deb..64c4c406 100644
+index 64c4c406..b2eae3b0 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -126,6 +126,17 @@
-   padding-right: 4px;
+@@ -30,6 +30,12 @@
+   display: flex;
+   flex-direction: column;
+   gap: 14px;
++  overflow: visible;
++}
++
++.palette-manager-v2__panel--center .palette-manager-v2__accordion,
++.palette-manager-v2__panel--center .palette-manager-v2__accordion-content {
++  overflow: visible;
  }
 
-+.palette-manager-v2__source-entry {
-+  min-width: 0;
-+  display: grid;
+ .palette-manager-v2__accordion {
+@@ -106,6 +112,33 @@
+   gap: 8px;
+ }
+
++.palette-manager-v2__sort-buttons {
++  display: flex;
++  flex-wrap: wrap;
 +  gap: 8px;
 +}
 +
-+.palette-manager-v2__source-entry:hover,
-+.palette-manager-v2__source-entry:focus-within {
-+  grid-column: 1 / -1;
++.palette-manager-v2__sort-button {
++  min-height: 34px;
++  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  border-radius: 8px;
++  background: rgba(0, 0, 0, 0.18);
++  color: inherit;
++  cursor: pointer;
++  padding: 6px 10px;
 +}
 +
- .palette-manager-v2__swatch-row {
++.palette-manager-v2__sort-button.is-active {
++  border-color: var(--accent, #ddd6fe);
++  background: rgba(221, 214, 254, 0.22);
++  box-shadow: inset 0 0 0 1px var(--accent, #ddd6fe);
++}
++
++.palette-manager-v2__sort-button:focus-visible {
++  outline: 2px solid var(--accent, #ddd6fe);
++  outline-offset: 2px;
++}
++
+ .palette-manager-v2__list {
    display: grid;
-   grid-template-columns: 36px minmax(0, 1fr) 42px;
-@@ -182,19 +193,19 @@
+   gap: 8px;
+@@ -122,19 +155,22 @@
+   min-height: 0;
+   max-height: 620px;
+   overflow-y: auto;
++  overflow-x: visible;
+   align-content: start;
+   padding-right: 4px;
++  padding-bottom: 150px;
  }
 
- .palette-manager-v2__swatch-meta,
--.palette-manager-v2__source-tooltip {
-+.palette-manager-v2__source-details {
-   display: grid;
-   grid-template-columns: auto minmax(0, 1fr);
-   gap: 2px 8px;
- }
-
- .palette-manager-v2__swatch-meta dt,
--.palette-manager-v2__source-tooltip dt {
-+.palette-manager-v2__source-details dt {
-   font-weight: 700;
- }
-
- .palette-manager-v2__swatch-meta dd,
--.palette-manager-v2__source-tooltip dd {
-+.palette-manager-v2__source-details dd {
+ .palette-manager-v2__source-entry {
++  position: relative;
    min-width: 0;
-   margin: 0;
-   overflow-wrap: anywhere;
-@@ -260,29 +271,22 @@
-   right: 6px;
+   display: grid;
+-  gap: 8px;
++  z-index: 1;
  }
 
--.palette-manager-v2__source-tooltip {
--  position: absolute;
--  left: 6px;
--  right: 6px;
--  bottom: 6px;
--  max-height: calc(100% - 12px);
--  overflow: auto;
--  opacity: 0;
--  pointer-events: none;
-+.palette-manager-v2__source-details {
-+  display: none;
-+  width: 100%;
+ .palette-manager-v2__source-entry:hover,
+ .palette-manager-v2__source-entry:focus-within {
+-  grid-column: 1 / -1;
++  z-index: 20;
+ }
+
+ .palette-manager-v2__swatch-row {
+@@ -273,6 +309,10 @@
+
+ .palette-manager-v2__source-details {
+   display: none;
++  position: absolute;
++  top: calc(100% + 8px);
++  left: 0;
++  z-index: 30;
+   width: 100%;
    border: 1px solid rgba(255, 255, 255, 0.24);
    border-radius: 6px;
-   background: rgba(0, 0, 0, 0.88);
-   color: #ffffff;
--  font-size: 0.78rem;
--  line-height: 1.25;
--  padding: 6px;
--  transition: opacity 120ms ease;
-+  font-size: 0.88rem;
-+  line-height: 1.35;
-+  padding: 8px;
-+  overflow-wrap: anywhere;
+@@ -282,6 +322,7 @@
+   line-height: 1.35;
+   padding: 8px;
+   overflow-wrap: anywhere;
++  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
  }
 
--.palette-manager-v2__source-tile:hover .palette-manager-v2__source-tooltip,
--.palette-manager-v2__source-tile:focus-within .palette-manager-v2__source-tooltip,
--.palette-manager-v2__source-tile:focus .palette-manager-v2__source-tooltip {
--  opacity: 1;
-+.palette-manager-v2__source-entry:hover .palette-manager-v2__source-details,
-+.palette-manager-v2__source-entry:focus-within .palette-manager-v2__source-details {
-+  display: grid;
- }
+ .palette-manager-v2__source-entry:hover .palette-manager-v2__source-details,
 
- .palette-manager-v2__json-preview {
-
-diff --git a/docs/dev/reports/PR_26124_029_report.md b/docs/dev/reports/PR_26124_029_report.md
+diff --git a/docs/dev/reports/PR_26124_030_report.md b/docs/dev/reports/PR_26124_030_report.md
 new file mode 100644
 index 00000000..00000000
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_029_report.md
-@@ -0,0 +1,25 @@
-+# PR_26124_029 Palette Hover And Sort Controls
++++ b/docs/dev/reports/PR_26124_030_report.md
+@@ -0,0 +1,19 @@
++# PR_26124_030 Palette Hover Popover And Sort Buttons
 +
 +## Summary
-+- Moved source swatch details out of the color tile overlay and into a below-tile details panel.
-+- Hover/focus details now show name, symbol, hex, and source without overlapping neighboring tiles.
-+- Added User Palette sort selector.
-+- Added Source Palette sort selector.
-+- Added reusable `tools/common/PaletteSortService.js` for original/source order, hue, saturation, brightness, and name sorting.
-+- Sorting is view-only and does not mutate `tools.palette-browser.swatches` or read-only source palettes.
-+
-+## Sort Note
-+- Existing archive confirmed a prior palette sort set of Name, Hue, Saturation, and Lightness in `docs/archive/tools/SpriteEditor_old_keep/modules/controlSurfaceRightPanel.js`.
-+- The new Brightness option uses the same HSL lightness metric while keeping the requested Name option.
++- Converted source palette sort from dropdown to generated buttons: Original, Hue, Saturation, Brightness, Name.
++- Added active source sort button styling through `.is-active` and `aria-pressed`.
++- Kept User Palette sort as the existing dropdown.
++- Changed source swatch details back to an absolute popover positioned below the hovered/focused tile.
++- Kept the popover out of layout flow so it can overlap tiles below without shifting the grid.
++- Kept source palette data sourced from `src/engine/paletteList.js` only.
 +
 +## Validation
-+- `node --check tools/common/PaletteSortService.js`
-+- `node --check tools/palette-manager-v2/main.js`
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
-+- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
 +- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-+- Sort service smoke check confirmed original order returns unchanged ordering and name sort does not mutate the source array.
++- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
++- `node --check tools/palette-manager-v2/main.js`
++- `node --check tools/common/PaletteSortService.js`
++- `git diff --check` passed with line-ending warnings only.
 +
 +## Package
-+- Delta ZIP: `tmp/PR_26124_029-palette-hover-and-sort-controls_delta.zip`
-
-diff --git a/tools/common/PaletteSortService.js b/tools/common/PaletteSortService.js
-new file mode 100644
-index 00000000..00000000
---- /dev/null
-+++ b/tools/common/PaletteSortService.js
-@@ -0,0 +1,121 @@
-+const PALETTE_SORT_MODES = Object.freeze([
-+  Object.freeze({ value: "original", label: "Original / source order" }),
-+  Object.freeze({ value: "hue", label: "Hue" }),
-+  Object.freeze({ value: "saturation", label: "Saturation" }),
-+  Object.freeze({ value: "brightness", label: "Brightness" }),
-+  Object.freeze({ value: "name", label: "Name" })
-+]);
-+
-+function normalizeText(value) {
-+  return typeof value === "string" ? value.trim() : "";
-+}
-+
-+function hexToRgb(hex) {
-+  const value = normalizeText(hex).replace(/^#/u, "");
-+  if (!/^[0-9A-Fa-f]{6}$/u.test(value)) {
-+    return null;
-+  }
-+  return {
-+    r: Number.parseInt(value.slice(0, 2), 16) / 255,
-+    g: Number.parseInt(value.slice(2, 4), 16) / 255,
-+    b: Number.parseInt(value.slice(4, 6), 16) / 255
-+  };
-+}
-+
-+function rgbToHsl(rgb) {
-+  if (!rgb) {
-+    return { h: Number.POSITIVE_INFINITY, s: Number.POSITIVE_INFINITY, l: Number.POSITIVE_INFINITY };
-+  }
-+
-+  const max = Math.max(rgb.r, rgb.g, rgb.b);
-+  const min = Math.min(rgb.r, rgb.g, rgb.b);
-+  const lightness = (max + min) / 2;
-+  const delta = max - min;
-+
-+  if (delta === 0) {
-+    return { h: 0, s: 0, l: lightness };
-+  }
-+
-+  const saturation = lightness > 0.5
-+    ? delta / (2 - max - min)
-+    : delta / (max + min);
-+
-+  let hue = 0;
-+  if (max === rgb.r) {
-+    hue = (rgb.g - rgb.b) / delta + (rgb.g < rgb.b ? 6 : 0);
-+  } else if (max === rgb.g) {
-+    hue = (rgb.b - rgb.r) / delta + 2;
-+  } else {
-+    hue = (rgb.r - rgb.g) / delta + 4;
-+  }
-+
-+  return { h: hue / 6, s: saturation, l: lightness };
-+}
-+
-+function swatchMetrics(swatch) {
-+  return rgbToHsl(hexToRgb(swatch?.hex));
-+}
-+
-+function compareNumbers(left, right) {
-+  return left === right ? 0 : left - right;
-+}
-+
-+function compareByMode(left, right, mode, collator) {
-+  if (mode === "name") {
-+    return collator.compare(normalizeText(left.swatch?.name), normalizeText(right.swatch?.name));
-+  }
-+  if (mode === "hue") {
-+    return compareNumbers(left.metrics.h, right.metrics.h)
-+      || compareNumbers(left.metrics.s, right.metrics.s)
-+      || compareNumbers(left.metrics.l, right.metrics.l);
-+  }
-+  if (mode === "saturation") {
-+    return compareNumbers(left.metrics.s, right.metrics.s)
-+      || compareNumbers(left.metrics.h, right.metrics.h)
-+      || compareNumbers(left.metrics.l, right.metrics.l);
-+  }
-+  if (mode === "brightness") {
-+    return compareNumbers(left.metrics.l, right.metrics.l)
-+      || compareNumbers(left.metrics.h, right.metrics.h)
-+      || compareNumbers(left.metrics.s, right.metrics.s);
-+  }
-+  return 0;
-+}
-+
-+export class PaletteSortService {
-+  getSortModes() {
-+    return PALETTE_SORT_MODES.map((mode) => ({ ...mode }));
-+  }
-+
-+  isValidSortMode(mode) {
-+    return PALETTE_SORT_MODES.some((entry) => entry.value === mode);
-+  }
-+
-+  sortSwatches(swatches, mode) {
-+    if (!this.isValidSortMode(mode) || mode === "original") {
-+      return Array.isArray(swatches) ? swatches.slice() : [];
-+    }
-+
-+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
-+    return (Array.isArray(swatches) ? swatches : [])
-+      .map((swatch, index) => ({ swatch, index, metrics: swatchMetrics(swatch) }))
-+      .sort((left, right) => {
-+        return compareByMode(left, right, mode, collator) || left.index - right.index;
-+      })
-+      .map((entry) => entry.swatch);
-+  }
-+
-+  sortRows(rows, mode) {
-+    if (!this.isValidSortMode(mode) || mode === "original") {
-+      return Array.isArray(rows) ? rows.slice() : [];
-+    }
-+
-+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
-+    return (Array.isArray(rows) ? rows : [])
-+      .map((row, index) => ({ row, index, swatch: row?.swatch, metrics: swatchMetrics(row?.swatch) }))
-+      .sort((left, right) => {
-+        return compareByMode(left, right, mode, collator) || left.index - right.index;
-+      })
-+      .map((entry) => entry.row);
-+  }
-+}
++- Delta ZIP: `tmp/PR_26124_030-palette-hover-popover-and-sort-buttons_delta.zip`

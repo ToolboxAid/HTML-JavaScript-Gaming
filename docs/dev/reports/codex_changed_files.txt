@@ -1,25 +1,17 @@
 # git status --short
 M docs/dev/reports/codex_review.diff
  M tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
- M tools/palette-manager-v2/controls/UserPaletteControl.js
  M tools/palette-manager-v2/index.html
- M tools/palette-manager-v2/main.js
  M tools/palette-manager-v2/modules/PaletteManagerApp.js
- M tools/palette-manager-v2/modules/SwatchRow.js
  M tools/palette-manager-v2/paletteManagerV2.css
-?? docs/dev/reports/PR_26124_029_report.md
-?? tools/common/PaletteSortService.js
+?? docs/dev/reports/PR_26124_030_report.md
 
 # git diff --stat (excluding codex review artifacts)
-.../controls/SourcePaletteBrowserControl.js        | 15 +++++++
- .../controls/UserPaletteControl.js                 | 20 ++++++++-
- tools/palette-manager-v2/index.html                |  8 ++++
- tools/palette-manager-v2/main.js                   |  2 +
- .../modules/PaletteManagerApp.js                   | 48 ++++++++++++++++++++--
- tools/palette-manager-v2/modules/SwatchRow.js      | 11 +++--
- tools/palette-manager-v2/paletteManagerV2.css      | 44 +++++++++++---------
- 7 files changed, 119 insertions(+), 29 deletions(-)
+.../controls/SourcePaletteBrowserControl.js        | 30 ++++++++++-----
+ tools/palette-manager-v2/index.html                |  8 ++--
+ .../modules/PaletteManagerApp.js                   |  2 +-
+ tools/palette-manager-v2/paletteManagerV2.css      | 45 +++++++++++++++++++++-
+ 4 files changed, 69 insertions(+), 16 deletions(-)
 
 # untracked file additions
- docs/dev/reports/PR_26124_029_report.md | 25 +
- tools/common/PaletteSortService.js | 121 +
+ docs/dev/reports/PR_26124_030_report.md | 19 +

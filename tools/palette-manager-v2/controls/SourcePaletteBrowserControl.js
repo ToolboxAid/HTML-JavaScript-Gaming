@@ -16,15 +16,12 @@ export class SourcePaletteBrowserControl {
     this.refs.sourceSearchInput.addEventListener("input", () => {
       this.app.setSourceSearch(this.refs.sourceSearchInput.value);
     });
-    this.refs.sourcePaletteSortSelect.addEventListener("change", () => {
-      this.app.setSourceSortMode(this.refs.sourcePaletteSortSelect.value);
-    });
   }
 
   render() {
     this.refs.sourcePaletteSelect.value = this.app.getCurrentSourcePaletteId();
     this.refs.sourceSearchInput.value = this.app.getSourceSearch();
-    this.refs.sourcePaletteSortSelect.value = this.app.getSourceSortMode();
+    this.renderActiveSortButton();
     this.refs.sourceSwatchList.replaceChildren();
 
     const visibleSwatches = this.app.getVisibleSourceSwatches();
@@ -63,12 +60,27 @@ export class SourcePaletteBrowserControl {
   }
 
   renderSortOptions() {
-    this.refs.sourcePaletteSortSelect.replaceChildren();
+    this.refs.sourcePaletteSortControls.replaceChildren();
     this.app.getSortModes().forEach((mode) => {
-      const option = this.document.createElement("option");
-      option.value = mode.value;
-      option.textContent = mode.label;
-      this.refs.sourcePaletteSortSelect.appendChild(option);
+      const button = this.document.createElement("button");
+      button.type = "button";
+      button.className = "palette-manager-v2__sort-button";
+      button.dataset.sortMode = mode.value;
+      button.textContent = mode.value === "original" ? "Original" : mode.label;
+      button.addEventListener("click", () => {
+        this.app.setSourceSortMode(mode.value);
+      });
+      this.refs.sourcePaletteSortControls.appendChild(button);
+    });
+    this.renderActiveSortButton();
+  }
+
+  renderActiveSortButton() {
+    const activeMode = this.app.getSourceSortMode();
+    this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
+      const isActive = button.dataset.sortMode === activeMode;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
     });
   }
 }
