@@ -1,5 +1,4 @@
 const PALETTE_SORT_MODES = Object.freeze([
-  Object.freeze({ value: "original", label: "Original / source order" }),
   Object.freeze({ value: "hue", label: "Hue" }),
   Object.freeze({ value: "saturation", label: "Saturation" }),
   Object.freeze({ value: "brightness", label: "Brightness" }),
@@ -92,7 +91,7 @@ export class PaletteSortService {
   }
 
   sortSwatches(swatches, mode) {
-    if (!this.isValidSortMode(mode) || mode === "original") {
+    if (!this.isValidSortMode(mode)) {
       return Array.isArray(swatches) ? swatches.slice() : [];
     }
 
@@ -106,7 +105,7 @@ export class PaletteSortService {
   }
 
   sortRows(rows, mode) {
-    if (!this.isValidSortMode(mode) || mode === "original") {
+    if (!this.isValidSortMode(mode)) {
       return Array.isArray(rows) ? rows.slice() : [];
     }
 

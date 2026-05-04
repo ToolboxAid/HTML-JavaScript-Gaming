@@ -1,111 +1,82 @@
-diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
-index 2670eb99..6e66e66e 100644
---- a/tools/palette-manager-v2/modules/SwatchRow.js
-+++ b/tools/palette-manager-v2/modules/SwatchRow.js
-@@ -31,9 +31,6 @@ export class SwatchRow {
+diff --git a/tools/common/PaletteSortService.js b/tools/common/PaletteSortService.js
+index 338b7ad2..f9db35d4 100644
+--- a/tools/common/PaletteSortService.js
++++ b/tools/common/PaletteSortService.js
+@@ -1,5 +1,4 @@
+ const PALETTE_SORT_MODES = Object.freeze([
+-  Object.freeze({ value: "original", label: "Original / source order" }),
+   Object.freeze({ value: "hue", label: "Hue" }),
+   Object.freeze({ value: "saturation", label: "Saturation" }),
+   Object.freeze({ value: "brightness", label: "Brightness" }),
+@@ -92,7 +91,7 @@ export class PaletteSortService {
    }
 
-   static createSourceTile(documentRef, swatch, options = {}) {
--    const entry = documentRef.createElement("div");
--    entry.className = "palette-manager-v2__source-entry";
--
-     const tile = documentRef.createElement("div");
-     tile.className = "palette-manager-v2__source-tile";
-     tile.tabIndex = 0;
-@@ -68,9 +65,8 @@ export class SwatchRow {
+   sortSwatches(swatches, mode) {
+-    if (!this.isValidSortMode(mode) || mode === "original") {
++    if (!this.isValidSortMode(mode)) {
+       return Array.isArray(swatches) ? swatches.slice() : [];
+     }
 
-     const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__source-details");
-
--    tile.append(chip, tack);
--    entry.append(tile, details);
--    return entry;
-+    tile.append(chip, tack, details);
-+    return tile;
+@@ -106,7 +105,7 @@ export class PaletteSortService {
    }
 
-   static createDetailsBlock(documentRef, swatch, className) {
-diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index b2eae3b0..11f536b2 100644
---- a/tools/palette-manager-v2/paletteManagerV2.css
-+++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -161,18 +161,6 @@
-   padding-bottom: 150px;
- }
+   sortRows(rows, mode) {
+-    if (!this.isValidSortMode(mode) || mode === "original") {
++    if (!this.isValidSortMode(mode)) {
+       return Array.isArray(rows) ? rows.slice() : [];
+     }
 
--.palette-manager-v2__source-entry {
--  position: relative;
--  min-width: 0;
--  display: grid;
--  z-index: 1;
--}
--
--.palette-manager-v2__source-entry:hover,
--.palette-manager-v2__source-entry:focus-within {
--  z-index: 20;
--}
--
- .palette-manager-v2__swatch-row {
-   display: grid;
-   grid-template-columns: 36px minmax(0, 1fr) 42px;
-@@ -284,7 +272,15 @@
-   background: var(--surface-inline, rgba(25, 12, 55, 0.74));
-   cursor: pointer;
-   padding: 8px;
--  overflow: hidden;
-+  overflow: visible;
-+  z-index: 1;
-+}
-+
-+.palette-manager-v2__source-tile:hover,
-+.palette-manager-v2__source-tile:focus,
-+.palette-manager-v2__source-tile:focus-within {
-+  z-index: 20;
-+  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.34), 0 12px 24px rgba(0, 0, 0, 0.28);
- }
-
- .palette-manager-v2__source-tile:focus-visible {
-@@ -314,6 +310,8 @@
-   left: 0;
-   z-index: 30;
-   width: 100%;
-+  box-sizing: border-box;
-+  margin: 0;
-   border: 1px solid rgba(255, 255, 255, 0.24);
-   border-radius: 6px;
-   background: rgba(0, 0, 0, 0.88);
-@@ -325,8 +323,9 @@
-   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
- }
-
--.palette-manager-v2__source-entry:hover .palette-manager-v2__source-details,
--.palette-manager-v2__source-entry:focus-within .palette-manager-v2__source-details {
-+.palette-manager-v2__source-tile:hover .palette-manager-v2__source-details,
-+.palette-manager-v2__source-tile:focus .palette-manager-v2__source-details,
-+.palette-manager-v2__source-tile:focus-within .palette-manager-v2__source-details {
-   display: grid;
- }
-
-diff --git a/docs/dev/reports/PR_26124_031_report.md b/docs/dev/reports/PR_26124_031_report.md
+diff --git a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
+index c8761215..d377ca06 100644
+--- a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
++++ b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
+@@ -66,7 +66,7 @@ export class SourcePaletteBrowserControl {
+       button.type = "button";
+       button.className = "palette-manager-v2__sort-button";
+       button.dataset.sortMode = mode.value;
+-      button.textContent = mode.value === "original" ? "Original" : mode.label;
++      button.textContent = mode.label;
+       button.addEventListener("click", () => {
+         this.app.setSourceSortMode(mode.value);
+       });
+diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
+index 86b164c4..59180d5c 100644
+--- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
++++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
+@@ -65,8 +65,8 @@ export class PaletteManagerApp {
+       selectedUserIndex: -1,
+       sourcePaletteId: this.sourcePaletteIds[0] || "",
+       sourceSearch: "",
+-      userSortMode: "original",
+-      sourceSortMode: "original",
++      userSortMode: "hue",
++      sourceSortMode: "hue",
+       errors: [],
+       status: "Ready."
+     };
+diff --git a/docs/dev/reports/PR_26124_032_report.md b/docs/dev/reports/PR_26124_032_report.md
 new file mode 100644
-index 00000000..5bd33718
+index 00000000..83801cde
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_031_report.md
-@@ -0,0 +1,18 @@
-+# PR_26124_031 Palette Hover Overlay No Layout Shift Report
++++ b/docs/dev/reports/PR_26124_032_report.md
+@@ -0,0 +1,20 @@
++# PR_26124_032 Remove Original Sort Option Report
 +
 +## Scope
-+- Updated Palette Manager V2 source swatch hover behavior only.
-+- No schema, sample JSON, games, workspace, toolState, session, or tools/shared changes.
++- Removed the `Original` source palette sort option.
++- Kept Palette Manager controls class-based.
++- Did not modify stored palette swatch order, schemas, sample JSON, games, or tools/shared.
 +
 +## Changes
-+- Moved source hover details into the source tile DOM node so the tile is the fixed-size positioning anchor.
-+- Removed the source-entry wrapper and related CSS so hover no longer introduces an extra layout surface.
-+- Kept hover feedback to z-index and shadow on the existing tile box.
-+- Kept hover details as an absolutely positioned popover below the tile, hidden outside normal document flow.
++- Removed `original` from `PaletteSortService` sort modes and sort bypass checks.
++- Source palette sort buttons now render directly from the remaining sort mode labels.
++- Palette Manager initial sort state now uses `hue` so Hue is the default active source sort.
 +
 +## Validation
-+- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
-+- `git diff --check`
++- `node --check tools/common/PaletteSortService.js`
++- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
++- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
++- `rg "original|Original" tools/common/PaletteSortService.js tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js tools/palette-manager-v2/controls/UserPaletteControl.js tools/palette-manager-v2/modules/PaletteManagerApp.js`
 +
 +## Packaging
-+- Delta ZIP: `tmp/PR_26124_031-palette-hover-overlay-no-layout-shift_delta.zip`
++- Delta ZIP: `tmp/PR_26124_032-remove-original-sort-option_delta.zip`

@@ -1,3 +1,4 @@
-docs/dev/reports/PR_26124_031_report.md
-tools/palette-manager-v2/modules/SwatchRow.js
-tools/palette-manager-v2/paletteManagerV2.css
+docs/dev/reports/PR_26124_032_report.md
+tools/common/PaletteSortService.js
+tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
+tools/palette-manager-v2/modules/PaletteManagerApp.js

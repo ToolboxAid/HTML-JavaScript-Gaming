@@ -66,7 +66,7 @@ export class SourcePaletteBrowserControl {
       button.type = "button";
       button.className = "palette-manager-v2__sort-button";
       button.dataset.sortMode = mode.value;
-      button.textContent = mode.value === "original" ? "Original" : mode.label;
+      button.textContent = mode.label;
       button.addEventListener("click", () => {
         this.app.setSourceSortMode(mode.value);
       });

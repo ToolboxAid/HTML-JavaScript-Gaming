@@ -65,8 +65,8 @@ export class PaletteManagerApp {
       selectedUserIndex: -1,
       sourcePaletteId: this.sourcePaletteIds[0] || "",
       sourceSearch: "",
-      userSortMode: "original",
-      sourceSortMode: "original",
+      userSortMode: "hue",
+      sourceSortMode: "hue",
       errors: [],
       status: "Ready."
     };
