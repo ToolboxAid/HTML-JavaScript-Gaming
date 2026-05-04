@@ -19,6 +19,16 @@
     </div>
   </details>
 
+  <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
+    <span class="palette-manager-v2__menu-label">menuSample</span>
+    <div class="palette-manager-v2__menu-actions">
+      <button id="importPaletteButton" type="button">Import JSON</button>
+      <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
+      <button id="copyPaletteButton" type="button">Copy JSON</button>
+      <button id="exportPaletteButton" type="button">Export JSON</button>
+    </div>
+  </nav>
+
   <div class="palette-manager-v2 app-shell">
     <div class="palette-manager-v2__layout tools-platform-layout-grid">
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
@@ -76,7 +86,7 @@
               </label>
             </div>
             <div class="palette-manager-v2__controls">
-              <button id="addSwatchButton" type="button">User Defined Swatch</button>
+              <button id="addSwatchButton" type="button">Add</button>
               <button id="updateSwatchButton" type="button">Update</button>
               <button id="clearFormButton" type="button">Clear Form</button>
             </div>
@@ -156,16 +166,10 @@
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
         <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--import is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="importExportAccordionContent">
-            <span>Import/Export</span>
+            <span>Palette JSON</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="importExportAccordionContent" class="accordion-v2__content">
-            <div class="palette-manager-v2__controls">
-              <button id="importPaletteButton" type="button">Import JSON</button>
-              <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
-              <button id="copyPaletteButton" type="button">Copy JSON</button>
-              <button id="exportPaletteButton" type="button">Export JSON</button>
-            </div>
             <pre id="paletteJsonPreview" class="palette-manager-v2__json-preview">No user palette data.</pre>
           </div>
         </section>

@@ -189,17 +189,19 @@ export class PaletteEditorControl {
         this.app.toggleTagOnSelectedSwatch(tag);
       });
 
-      const deleteButton = this.refs.availableTagList.ownerDocument.createElement("button");
-      deleteButton.type = "button";
-      deleteButton.className = "palette-manager-v2__tag-delete";
-      deleteButton.setAttribute("aria-label", `Delete tag ${tag}`);
-      deleteButton.title = `Delete tag ${tag}`;
-      deleteButton.textContent = "x";
-      deleteButton.addEventListener("click", () => {
-        this.app.deleteAvailableTag(tag);
-      });
-
-      tagItem.append(button, deleteButton);
+      tagItem.appendChild(button);
+      if (!this.app.isTagUsedByUserPalette(tag)) {
+        const deleteButton = this.refs.availableTagList.ownerDocument.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "palette-manager-v2__tag-delete";
+        deleteButton.setAttribute("aria-label", `Delete tag ${tag}`);
+        deleteButton.title = `Delete tag ${tag}`;
+        deleteButton.textContent = "x";
+        deleteButton.addEventListener("click", () => {
+          this.app.deleteAvailableTag(tag);
+        });
+        tagItem.appendChild(deleteButton);
+      }
       this.refs.availableTagList.appendChild(tagItem);
     });
   }

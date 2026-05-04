@@ -1,23 +1,23 @@
-# Codex Commands - PR_26124_053-palette-manager-tag-delete-and-sort-ui
+# Codex Commands - PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility
 
 ## Workflow
 - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
 - Used `.codex/skills/repo-build/SKILL.md`.
-- Created `docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/PLAN_PR.md`.
-- Created `docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/BUILD_PR.md`.
+- Created `docs/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/PLAN_PR.md`.
+- Created `docs/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/BUILD_PR.md`.
 - Updated Palette Manager V2 only.
-- Created `docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/APPLY_PR.md`.
+- Created `docs/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/APPLY_PR.md`.
 
 ## Validation Commands
 - `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
-- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
 - `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
-- Targeted served-browser Palette Manager V2 tag delete, Tag sort, and compact source-control check using Playwright from Node.
+- `node --check tools/palette-manager-v2/controls/PaletteImportExportControl.js`
+- Targeted served-browser Palette Manager V2 menu JSON action and tag delete visibility check using Playwright from Node.
 - `git diff --check`
 - `git diff --cached --check`
 - `npm run test:workspace-v2`
 - `npm run codex:review-artifacts`
-- Python `zipfile` packaging for `tmp/PR_26124_053-palette-manager-tag-delete-and-sort-ui_delta.zip`
+- Python `zipfile` packaging for `tmp/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility_delta.zip`
 
 ## Validation Outcome
 - JavaScript syntax checks: PASS.

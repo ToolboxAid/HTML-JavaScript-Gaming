@@ -8,8 +8,34 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] {
 }
 
 body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > .is-collapsible,
+body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > .palette-manager-v2__menu-sample,
 body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-platform-status] {
   flex: 0 0 auto;
+}
+
+.palette-manager-v2__menu-sample {
+  box-sizing: border-box;
+  width: calc(100% - 32px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 16px 0;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 8px;
+  background: var(--panel, rgba(30, 24, 48, 0.92));
+  padding: 10px 14px;
+}
+
+.palette-manager-v2__menu-label {
+  font-weight: 800;
+}
+
+.palette-manager-v2__menu-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .palette-manager-v2 {

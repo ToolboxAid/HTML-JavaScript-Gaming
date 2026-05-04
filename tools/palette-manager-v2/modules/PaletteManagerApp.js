@@ -538,16 +538,23 @@ export class PaletteManagerApp {
     return this.addTagToSelectedSwatch(cleanTag);
   }
 
+  isTagUsedByUserPalette(tag) {
+    const cleanTag = normalizeTags([tag])[0] || "";
+    if (!cleanTag) {
+      return false;
+    }
+    return this.state.userSwatches.some((swatch) => {
+      return normalizeTags(swatch.tags).some((existingTag) => existingTag === cleanTag);
+    });
+  }
+
   deleteAvailableTag(tag) {
     const cleanTag = normalizeTags([tag])[0] || "";
     if (!cleanTag) {
       return false;
     }
 
-    const tagIsUsed = this.state.userSwatches.some((swatch) => {
-      return normalizeTags(swatch.tags).some((existingTag) => existingTag === cleanTag);
-    });
-    if (tagIsUsed) {
+    if (this.isTagUsedByUserPalette(cleanTag)) {
       this.setActionState([`Tag "${cleanTag}" is used by a User Palette swatch and cannot be deleted.`], "Tag delete blocked.");
       return false;
     }

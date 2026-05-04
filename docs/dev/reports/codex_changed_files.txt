@@ -1,30 +1,28 @@
 # git status --short
 M  docs/dev/codex_commands.md
 M  docs/dev/commit_comment.txt
-A  docs/dev/reports/PR_26124_053_report.md
-M  docs/dev/reports/codex_changed_files.txt
+A  docs/dev/reports/PR_26124_054_report.md
+MM docs/dev/reports/codex_changed_files.txt
 MM docs/dev/reports/codex_review.diff
-A  docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/APPLY_PR.md
-A  docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/BUILD_PR.md
-A  docs/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/PLAN_PR.md
+A  docs/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/APPLY_PR.md
+A  docs/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/BUILD_PR.md
+A  docs/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/PLAN_PR.md
 M  tools/palette-manager-v2/controls/PaletteEditorControl.js
-M  tools/palette-manager-v2/controls/UserPaletteControl.js
 M  tools/palette-manager-v2/index.html
 M  tools/palette-manager-v2/modules/PaletteManagerApp.js
 M  tools/palette-manager-v2/paletteManagerV2.css
 
 # git diff --cached --stat
-docs/dev/codex_commands.md                         |  16 +-
+docs/dev/codex_commands.md                         |  14 +-
  docs/dev/commit_comment.txt                        |   2 +-
- docs/dev/reports/PR_26124_053_report.md            |  38 ++
- docs/dev/reports/codex_changed_files.txt           |  31 +-
- docs/dev/reports/codex_review.diff                 | 635 ++++++++++-----------
- .../APPLY_PR.md                                    |  29 +
- .../BUILD_PR.md                                    |  35 ++
- .../PLAN_PR.md                                     |  45 ++
- .../controls/PaletteEditorControl.js               |  17 +-
- .../controls/UserPaletteControl.js                 |   2 +-
- tools/palette-manager-v2/index.html                |   6 +-
- .../modules/PaletteManagerApp.js                   |  64 ++-
- tools/palette-manager-v2/paletteManagerV2.css      |  28 +
- 13 files changed, 586 insertions(+), 362 deletions(-)
+ docs/dev/reports/PR_26124_054_report.md            |  38 ++
+ docs/dev/reports/codex_changed_files.txt           |  34 +-
+ docs/dev/reports/codex_review.diff                 | 512 +++++++++------------
+ .../APPLY_PR.md                                    |  28 ++
+ .../BUILD_PR.md                                    |  37 ++
+ .../PLAN_PR.md                                     |  43 ++
+ .../controls/PaletteEditorControl.js               |  24 +-
+ tools/palette-manager-v2/index.html                |  20 +-
+ .../modules/PaletteManagerApp.js                   |  15 +-
+ tools/palette-manager-v2/paletteManagerV2.css      |  26 ++
+ 12 files changed, 437 insertions(+), 356 deletions(-)
