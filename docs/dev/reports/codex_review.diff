@@ -1,258 +1,549 @@
-diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
-index 83bc8fd5..092ff1ee 100644
---- a/tools/palette-manager-v2/modules/SwatchRow.js
-+++ b/tools/palette-manager-v2/modules/SwatchRow.js
-@@ -9,6 +9,7 @@ export class SwatchRow {
-     const chip = documentRef.createElement("span");
-     chip.className = "palette-manager-v2__swatch-chip";
-     chip.style.background = swatch.hex;
-+    chip.title = SwatchRow.createTooltipText(swatch);
-
-     const copy = documentRef.createElement("div");
-     copy.className = "palette-manager-v2__swatch-copy";
-@@ -23,6 +24,7 @@ export class SwatchRow {
-
-     const tack = SwatchRow.createTackButton(documentRef, options);
-
-+    row.title = SwatchRow.createTooltipText(swatch);
-     row.append(chip, copy, tack);
-     if (typeof options.onSelect === "function") {
-       row.addEventListener("click", options.onSelect);
-@@ -56,7 +58,7 @@ export class SwatchRow {
-     tile.setAttribute("role", "button");
-     tile.setAttribute("aria-label", options.ariaLabel || `Select ${swatch.name}`);
-     tile.style.setProperty("--swatch-color", swatch.hex);
--    tile.title = `${swatch.name}\n${swatch.symbol}\n${swatch.hex}\n${swatch.source}`;
-+    tile.title = SwatchRow.createTooltipText(swatch);
-     tile.addEventListener("click", () => {
-       if (typeof options.onSelect === "function") {
-         options.onSelect();
-@@ -82,12 +84,19 @@ export class SwatchRow {
-     const tack = SwatchRow.createTackButton(documentRef, options);
-     tack.classList.add("palette-manager-v2__pin-button--tile");
-
--    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__swatch-details");
--
--    tile.append(chip, tack, details);
-+    tile.append(chip, tack);
-     return tile;
-   }
-
-+  static createTooltipText(swatch) {
-+    return [
-+      `Name: ${swatch.name}`,
-+      `Symbol: ${swatch.symbol}`,
-+      `Hex: ${swatch.hex}`,
-+      `Source: ${swatch.source}`
-+    ].join("\n");
-+  }
-+
-   static createDetailsBlock(documentRef, swatch, className) {
-     const details = documentRef.createElement("dl");
-     details.className = className;
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index 2e18c3e1..33195c49 100644
+index 33195c49..bb160ed1 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -32,35 +32,14 @@
- }
-
- .palette-manager-v2__panel--center {
--  display: flex;
--  flex-direction: column;
--  gap: 14px;
--  overflow: hidden;
--}
--
--.palette-manager-v2__panel--center .palette-manager-v2__accordion {
--  display: flex;
--  flex-direction: column;
-+  height: 100%;
+@@ -1,29 +1,59 @@
++body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] {
++  min-height: 100vh;
++  min-height: 100dvh;
++  display: flex;
++  flex-direction: column;
++  overflow: hidden;
++}
++
++body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > .is-collapsible,
++body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-platform-status] {
++  flex: 0 0 auto;
++}
++
+ .palette-manager-v2 {
++  --pm-line: var(--line, rgba(221, 214, 254, 0.26));
++  --pm-panel: var(--panel, rgba(30, 24, 48, 0.92));
++  --pm-surface: var(--surface-inline, rgba(18, 16, 28, 0.78));
++  --pm-surface-strong: rgba(0, 0, 0, 0.24);
++  --pm-text-muted: var(--muted, #c4b5fd);
++  --pm-accent: var(--accent, #ddd6fe);
++  --pm-danger: #b3261e;
++  --pm-success: #188038;
++
+   box-sizing: border-box;
+-  height: calc(100vh - 180px);
++  flex: 1 1 auto;
    min-height: 0;
--}
--
--.palette-manager-v2__panel--center .palette-manager-v2__accordion[open] {
--  flex: 1 1 0;
--  overflow: hidden;
--}
--
--.palette-manager-v2__panel--center .palette-manager-v2__accordion-content {
-   display: flex;
--  flex: 1 1 0;
-   flex-direction: column;
--  min-height: 0;
-+  gap: 14px;
++  width: 100%;
+   padding: 16px;
    overflow: hidden;
  }
 
--.palette-manager-v2__panel--center .palette-manager-v2__accordion-content > :not(.palette-manager-v2__tile-grid) {
--  flex: 0 0 auto;
--}
--
- .palette-manager-v2__accordion {
-   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++.palette-manager-v2 *,
++.palette-manager-v2 *::before,
++.palette-manager-v2 *::after {
++  box-sizing: border-box;
++}
++
+ .palette-manager-v2__layout {
+   display: grid;
+   grid-template-columns: 340px minmax(0, 1fr) 360px;
+   gap: 16px;
++  width: 100%;
+   height: 100%;
++  min-width: 0;
+   min-height: 0;
+ }
+
+ .palette-manager-v2__panel {
+-  box-sizing: border-box;
+   min-width: 0;
+   min-height: 0;
+   height: 100%;
+-  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  border: 1px solid var(--pm-line);
    border-radius: 8px;
-@@ -129,13 +108,9 @@
-   grid-template-columns: 1fr;
+-  background: var(--panel, rgba(39, 18, 82, 0.86));
++  background: var(--pm-panel);
+   padding: 14px;
+-  overflow: hidden;
++  overflow: auto;
  }
 
--.palette-manager-v2__controls {
+ .palette-manager-v2__panel--left,
+@@ -32,18 +62,17 @@
+ }
+
+ .palette-manager-v2__panel--center {
+-  height: 100%;
+-  min-height: 0;
 -  display: flex;
--  flex-wrap: wrap;
--  gap: 8px;
+-  flex-direction: column;
++  display: grid;
++  align-content: start;
+   gap: 14px;
+-  overflow: hidden;
++  overflow: auto;
+ }
+
+ .palette-manager-v2__accordion {
+-  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  min-width: 0;
++  border: 1px solid var(--pm-line);
+   border-radius: 8px;
+-  background: var(--surface-inline, rgba(25, 12, 55, 0.74));
++  background: var(--pm-surface);
+   overflow: hidden;
+ }
+
+@@ -51,16 +80,20 @@
+   margin-top: 14px;
+ }
+
++.palette-manager-v2__panel--center .palette-manager-v2__accordion + .palette-manager-v2__accordion {
++  margin-top: 0;
++}
++
+ .palette-manager-v2__accordion-summary {
++  min-height: 44px;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 10px;
+-  min-height: 44px;
+   padding: 10px 12px;
+   cursor: pointer;
+-  list-style: none;
+   font-weight: 700;
++  list-style: none;
+ }
+
+ .palette-manager-v2__accordion-summary::-webkit-details-marker {
+@@ -68,12 +101,14 @@
+ }
+
+ .palette-manager-v2__accordion-icon {
++  flex: 0 0 auto;
+   width: 22px;
+   height: 22px;
+   display: inline-grid;
+   place-items: center;
+-  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+-  border-radius: 50%;
++  border: 1px solid var(--pm-line);
++  border-radius: 999px;
++  line-height: 1;
+ }
+
+ .palette-manager-v2__accordion[open] .palette-manager-v2__accordion-icon {
+@@ -84,10 +119,11 @@
+   display: grid;
+   gap: 12px;
+   padding: 12px;
+-  border-top: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  border-top: 1px solid var(--pm-line);
+ }
+
+ .palette-manager-v2__field {
++  min-width: 0;
+   display: grid;
+   gap: 6px;
+   font-weight: 700;
+@@ -96,6 +132,7 @@
+ .palette-manager-v2__field input,
+ .palette-manager-v2__field select {
+   width: 100%;
++  min-width: 0;
+ }
+
+ .palette-manager-v2__form-grid {
+@@ -116,9 +153,14 @@
+   gap: 8px;
+ }
+
++.palette-manager-v2__controls {
++  align-items: center;
++}
++
+ .palette-manager-v2__sort-row {
+   display: flex;
+   align-items: end;
++  justify-content: space-between;
+   gap: 12px;
+   flex-wrap: wrap;
+ }
+@@ -136,28 +178,28 @@
+   justify-content: flex-end;
+ }
+
+-.palette-manager-v2__size-button {
+-  min-width: 70px;
 -}
 -
--.palette-manager-v2__sort-buttons {
-+.palette-manager-v2__controls,
-+.palette-manager-v2__sort-buttons,
-+.palette-manager-v2__size-buttons {
-   display: flex;
-   flex-wrap: wrap;
-   gap: 8px;
-@@ -158,10 +133,7 @@
+ .palette-manager-v2__sort-button {
+   min-height: 34px;
+-  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  border: 1px solid var(--pm-line);
+   border-radius: 8px;
+-  background: rgba(0, 0, 0, 0.18);
++  background: rgba(0, 0, 0, 0.2);
+   color: inherit;
+   cursor: pointer;
+   padding: 6px 10px;
  }
 
- .palette-manager-v2__size-buttons {
--  display: flex;
-   justify-content: flex-end;
--  gap: 8px;
--  flex-wrap: wrap;
++.palette-manager-v2__size-button {
++  min-width: 70px;
++}
++
+ .palette-manager-v2__sort-button.is-active {
+-  border-color: var(--accent, #ddd6fe);
++  border-color: var(--pm-accent);
+   background: rgba(221, 214, 254, 0.22);
+-  box-shadow: inset 0 0 0 1px var(--accent, #ddd6fe);
++  box-shadow: inset 0 0 0 1px var(--pm-accent);
  }
 
- .palette-manager-v2__size-button {
-@@ -189,32 +161,22 @@
+ .palette-manager-v2__sort-button:focus-visible {
+-  outline: 2px solid var(--accent, #ddd6fe);
++  outline: 2px solid var(--pm-accent);
    outline-offset: 2px;
  }
 
--.palette-manager-v2__list {
--  display: grid;
--  gap: 8px;
--  min-height: 0;
--  max-height: 520px;
--  overflow-y: auto;
--  align-content: start;
--}
--
- .palette-manager-v2__tile-grid {
-   --swatch-tile-width: 112px;
-   --swatch-tile-height: 108px;
+@@ -167,16 +209,16 @@
    --swatch-chip-height: 90px;
    --swatch-tile-padding: 8px;
-+
+
++  min-height: 0;
    display: grid;
-   grid-template-columns: repeat(auto-fill, minmax(var(--swatch-tile-width), 1fr));
+-  grid-template-columns: repeat(auto-fill, minmax(var(--swatch-tile-width), 1fr));
++  grid-template-columns: repeat(auto-fill, minmax(var(--swatch-tile-width), var(--swatch-tile-width)));
++  justify-content: start;
++  align-content: start;
    gap: 10px;
--  flex: 1 1 0;
--  height: 0;
-   min-height: 0;
+-  min-height: 0;
    overflow-y: auto;
-   overflow-x: visible;
-   align-content: start;
+-  overflow-x: visible;
+-  align-content: start;
++  overflow-x: hidden;
    overscroll-behavior: contain;
-   padding-right: 4px;
--  padding-bottom: 150px;
-+  padding-bottom: 8px;
+-  padding-right: 4px;
+-  padding-bottom: 8px;
++  padding: 0 4px 8px 0;
  }
 
  .palette-manager-v2__tile-grid[data-swatch-size="small"] {
-@@ -239,12 +201,13 @@
- }
+@@ -202,28 +244,103 @@
 
  .palette-manager-v2__tile-grid--user {
--  max-height: none;
-+  max-height: clamp(180px, 24vh, 320px);
-   overflow-y: auto;
+   max-height: clamp(180px, 24vh, 320px);
+-  overflow-y: auto;
  }
 
  .palette-manager-v2__tile-grid--source {
--  max-height: none;
-+  max-height: clamp(360px, 48vh, 620px);
-+  overflow-y: auto;
+   max-height: clamp(360px, 48vh, 620px);
+-  overflow-y: auto;
++}
++
++.palette-manager-v2__swatch-tile {
++  position: relative;
++  width: var(--swatch-tile-width);
++  height: var(--swatch-tile-height);
++  min-width: 0;
++  border: 1px solid var(--pm-line);
++  border-radius: 8px;
++  background: var(--pm-surface);
++  cursor: pointer;
++  padding: var(--swatch-tile-padding);
++  overflow: hidden;
++}
++
++.palette-manager-v2__swatch-tile:hover,
++.palette-manager-v2__swatch-tile:focus,
++.palette-manager-v2__swatch-tile:focus-within {
++  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.34);
++}
++
++.palette-manager-v2__swatch-tile.is-selected {
++  border-color: var(--pm-accent);
++}
++
++.palette-manager-v2__swatch-tile:focus-visible {
++  outline: 2px solid var(--pm-accent);
++  outline-offset: 2px;
++}
++
++.palette-manager-v2__swatch-tile-chip {
++  display: block;
++  width: 100%;
++  height: var(--swatch-chip-height);
++  border: 1px solid rgba(255, 255, 255, 0.24);
++  border-radius: 6px;
++  background: var(--swatch-color, #000000);
++}
++
++.palette-manager-v2__source-tile,
++.palette-manager-v2__user-tile {
++  isolation: isolate;
++}
++
++.palette-manager-v2__pin-button {
++  width: 34px;
++  height: 34px;
++  display: inline-grid;
++  place-items: center;
++  padding: 0;
++  border: 0;
++  border-radius: 999px;
++  background: rgba(255, 255, 255, 0.72);
++  color: var(--pm-danger);
++  cursor: pointer;
++}
++
++.palette-manager-v2__pin-button.is-pinned {
++  color: var(--pm-success);
++}
++
++.palette-manager-v2__pin-button:focus-visible {
++  outline: 2px solid var(--pm-accent);
++  outline-offset: 2px;
++}
++
++.palette-manager-v2__pin-button--tile {
++  position: absolute;
++  top: 6px;
++  right: 6px;
++  z-index: 1;
++}
++
++.palette-manager-v2__pin-icon {
++  width: 26px;
++  height: 26px;
++  display: block;
  }
 
  .palette-manager-v2__swatch-row {
-@@ -302,20 +265,17 @@
-   overflow-wrap: anywhere;
- }
-
--.palette-manager-v2__swatch-meta,
--.palette-manager-v2__swatch-details {
-+.palette-manager-v2__swatch-meta {
++  min-height: 44px;
    display: grid;
-   grid-template-columns: auto minmax(0, 1fr);
-   gap: 2px 8px;
+   grid-template-columns: 36px minmax(0, 1fr) 42px;
+   align-items: center;
+   gap: 8px;
+-  min-height: 44px;
+-  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  border: 1px solid var(--pm-line);
+   border-radius: 8px;
+-  background: var(--surface-inline, rgba(25, 12, 55, 0.74));
++  background: var(--pm-surface);
+   padding: 6px;
  }
 
--.palette-manager-v2__swatch-meta dt,
--.palette-manager-v2__swatch-details dt {
-+.palette-manager-v2__swatch-meta dt {
-   font-weight: 700;
+ .palette-manager-v2__swatch-row.is-selected {
+-  border-color: var(--accent, #ddd6fe);
++  border-color: var(--pm-accent);
  }
 
--.palette-manager-v2__swatch-meta dd,
--.palette-manager-v2__swatch-details dd {
-+.palette-manager-v2__swatch-meta dd {
-   min-width: 0;
-   margin: 0;
+ .palette-manager-v2__swatch-chip,
+@@ -260,7 +377,7 @@
+
+ .palette-manager-v2__swatch-meta,
+ .palette-manager-v2__meta {
+-  color: var(--muted, #c4b5fd);
++  color: var(--pm-text-muted);
+   font-size: 0.9rem;
    overflow-wrap: anywhere;
-@@ -393,32 +353,6 @@
-   right: 6px;
+ }
+@@ -281,107 +398,73 @@
+   overflow-wrap: anywhere;
  }
 
--.palette-manager-v2__swatch-details {
--  display: none;
--  position: absolute;
--  top: calc(100% + 8px);
--  left: 0;
--  z-index: 30;
--  width: max(100%, 150px);
--  box-sizing: border-box;
--  margin: 0;
--  border: 1px solid rgba(255, 255, 255, 0.24);
--  border-radius: 6px;
--  background: rgba(0, 0, 0, 0.88);
--  color: #ffffff;
--  font-size: 0.88rem;
--  line-height: 1.35;
--  padding: 8px;
--  overflow-wrap: anywhere;
--  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+-.palette-manager-v2__pin-button {
+-  width: 34px;
+-  height: 34px;
+-  padding: 0;
+-  border-radius: 50%;
+-  border: 0;
+-  background: transparent;
+-  color: #b3261e;
+-  display: inline-grid;
+-  place-items: center;
+-  cursor: pointer;
 -}
 -
--.palette-manager-v2__swatch-tile:hover .palette-manager-v2__swatch-details,
--.palette-manager-v2__swatch-tile:focus .palette-manager-v2__swatch-details,
--.palette-manager-v2__swatch-tile:focus-within .palette-manager-v2__swatch-details {
--  display: grid;
+-.palette-manager-v2__pin-button.is-pinned {
+-  color: #188038;
+-}
+-
+-.palette-manager-v2__pin-button:focus-visible {
+-  outline: 2px solid var(--accent, #ddd6fe);
+-  outline-offset: 2px;
+-}
+-
+-.palette-manager-v2__pin-icon {
+-  width: 26px;
+-  height: 26px;
+-  display: block;
+-}
+-
+-.palette-manager-v2__swatch-tile {
+-  position: relative;
+-  min-width: 0;
+-  min-height: var(--swatch-tile-height);
+-  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+-  border-radius: 8px;
+-  background: var(--surface-inline, rgba(25, 12, 55, 0.74));
+-  cursor: pointer;
+-  padding: var(--swatch-tile-padding);
+-  overflow: visible;
+-  z-index: 1;
+-}
+-
+-.palette-manager-v2__swatch-tile:hover,
+-.palette-manager-v2__swatch-tile:focus,
+-.palette-manager-v2__swatch-tile:focus-within {
+-  z-index: 20;
+-  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.34), 0 12px 24px rgba(0, 0, 0, 0.28);
+-}
+-
+-.palette-manager-v2__swatch-tile.is-selected {
+-  border-color: var(--accent, #ddd6fe);
+-}
+-
+-.palette-manager-v2__swatch-tile:focus-visible {
+-  outline: 2px solid var(--accent, #ddd6fe);
+-  outline-offset: 2px;
+-}
+-
+-.palette-manager-v2__swatch-tile-chip {
+-  display: block;
+-  width: 100%;
+-  min-height: var(--swatch-chip-height);
+-  border: 1px solid rgba(255, 255, 255, 0.24);
+-  border-radius: 6px;
+-  background: var(--swatch-color, #000000);
+-}
+-
+-.palette-manager-v2__pin-button--tile {
+-  position: absolute;
+-  top: 6px;
+-  right: 6px;
 -}
 -
  .palette-manager-v2__json-preview {
-   min-height: 220px;
-   max-height: 420px;
-diff --git a/docs/dev/reports/PR_26124_041_report.md b/docs/dev/reports/PR_26124_041_report.md
+-  min-height: 220px;
+-  max-height: 420px;
++  min-height: 180px;
++  max-height: clamp(220px, 36vh, 460px);
+   margin: 0;
+   overflow: auto;
+   white-space: pre-wrap;
+   overflow-wrap: anywhere;
+-  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  border: 1px solid var(--pm-line);
+   border-radius: 8px;
+-  background: rgba(0, 0, 0, 0.24);
++  background: var(--pm-surface-strong);
+   padding: 12px;
+ }
+
+ .palette-manager-v2__status {
+   min-height: 24px;
+-  color: var(--muted, #c4b5fd);
++  color: var(--pm-text-muted);
+ }
+
+ .palette-manager-v2__errors {
++  max-height: clamp(120px, 22vh, 260px);
+   display: grid;
+   gap: 6px;
+   margin: 0;
++  overflow: auto;
+   padding-left: 18px;
+   color: #ffd6d6;
+ }
+
+-@media (max-width: 1120px) {
+-  .palette-manager-v2__layout,
++@media (max-width: 1180px) {
++  body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] {
++    overflow: auto;
++  }
++
++  .palette-manager-v2 {
++    overflow: visible;
++  }
++
++  .palette-manager-v2__layout {
++    grid-template-columns: 1fr;
++    height: auto;
++  }
++
++  .palette-manager-v2__panel {
++    height: auto;
++  }
++
+   .palette-manager-v2__form-grid {
+     grid-template-columns: 1fr;
+   }
+ }
++
++@media (max-width: 640px) {
++  .palette-manager-v2 {
++    padding: 10px;
++  }
++
++  .palette-manager-v2__sort-row {
++    align-items: stretch;
++  }
++
++  .palette-manager-v2__sort-row > .palette-manager-v2__field,
++  .palette-manager-v2__size-field {
++    flex: 1 1 100%;
++    margin-left: 0;
++  }
++
++  .palette-manager-v2__size-buttons {
++    justify-content: flex-start;
++  }
++}
+diff --git a/docs/dev/reports/PR_26124_042_report.md b/docs/dev/reports/PR_26124_042_report.md
 new file mode 100644
-index 00000000..5e8c7a0e
+index 00000000..cda36fa8
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_041_report.md
-@@ -0,0 +1,22 @@
-+# PR_26124_041 Report
++++ b/docs/dev/reports/PR_26124_042_report.md
+@@ -0,0 +1,40 @@
++# PR_26124_042 Report
 +
 +## Purpose
-+Remove Palette Manager swatch hover overlay boxes while preserving native tooltip information.
++Rebuild Palette Manager V2 CSS cleanly instead of continuing to patch legacy layout rules.
 +
 +## Changes
-+- Removed creation of `.palette-manager-v2__swatch-details` hover detail panels from swatch tiles.
-+- Removed CSS rules for `.palette-manager-v2__swatch-details` and its hover/focus display behavior.
-+- Added centralized native tooltip text with name, symbol, hex, and source.
-+- Applied tooltip text to swatch rows, row chips, and swatch tiles.
++- Replaced `tools/palette-manager-v2/paletteManagerV2.css` with a clean stylesheet built around the current Palette Manager class surface.
++- Added scoped tool-page flex layout so the Palette Manager root fills the available area between the shared header and status footer.
++- Rebuilt the three-column layout with fixed left/right panels and a flexible center panel.
++- Kept center accordions in normal flow with stable internal scroll areas for User Palette and Source Palette grids.
++- Rebuilt shared swatch tile styling for uniform Small, Medium, and Large tile sizes through existing `data-swatch-size` attributes.
++- Kept radio-button-style sort and size controls with wrapping, active states, and sort-left/size-right alignment.
++- Rebuilt thumbtack placement so the SVG pin remains visible without shifting tile layout.
++- Kept selected swatch, import/export, JSON preview, status, and error panels usable with internal scrolling where needed.
++- Did not add hover overlay CSS or `.palette-manager-v2__swatch-details`.
 +
 +## Scope Checks
-+- Tile size behavior unchanged.
-+- Sort behavior unchanged.
-+- Pin/thumbtack behavior unchanged.
-+- Scroll behavior unchanged.
-+- JSON structure and palette logic unchanged.
++- No HTML changes.
++- No JS changes.
++- Palette JSON logic unchanged.
++- Source palette logic unchanged.
 +- `tools/shared` unchanged.
++- Sample JSON unchanged.
++- No workspace, toolState, or session logic added.
 +
 +## Validation
-+- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
-+- Targeted search confirmed no remaining `swatch-details` references in Palette Manager JS/CSS.
++- CSS/source check confirmed no `.palette-manager-v2__swatch-details` selectors or DOM targets remain in Palette Manager CSS/HTML/JS.
++- `git diff --check -- tools/palette-manager-v2/paletteManagerV2.css` passed with only the existing Git LF/CRLF warning.
++- Browser render/manual UI validation at 1440x960 confirmed:
++  - no horizontal page overflow
++  - three-column layout resolves as fixed left, flexible center, fixed right
++  - Palette Manager root ends before the status footer
++  - User and Source grids use internal vertical scrolling
++  - swatch tiles are uniform
++  - native tooltip includes name, symbol, hex, and source
++  - no hover overlay DOM exists
++  - thumbtack button is visible
++
++## Syntax Checks
++- Not run; no JS or HTML changed.
