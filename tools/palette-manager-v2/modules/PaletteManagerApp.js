@@ -25,11 +25,9 @@ const REQUIRED_REF_IDS = Object.freeze([
   "selectedSwatchSourceInput",
   "selectedSwatchTagList",
   "userDefinedSwatchPreview",
-  "userDefinedSwatchTagList",
   "swatchSymbolInput",
   "swatchHexInput",
   "swatchNameInput",
-  "swatchSourceInput",
   "availableTagList",
   "tagEntryInput",
   "tagSuggestions",
@@ -64,6 +62,14 @@ function sortUniqueTags(tags) {
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
   return Array.from(new Set(normalizeTags(tags)))
     .sort((left, right) => collator.compare(left, right));
+}
+
+function isSameText(left, right) {
+  return sanitizeText(left).toLowerCase() === sanitizeText(right).toLowerCase();
+}
+
+function getRgbHexKey(hex) {
+  return normalizeHex(hex).slice(0, 7);
 }
 
 function collectRefs(documentRef) {
@@ -297,6 +303,26 @@ export class PaletteManagerApp {
     this.state.availableTags = sortUniqueTags([...this.state.availableTags, ...normalizeTags(tags)]);
   }
 
+  validateUniqueUserSwatchFields(swatch, ignoredIndex) {
+    const cleanSwatch = cloneSwatch(swatch);
+    const issues = [];
+    this.state.userSwatches.forEach((existingSwatch, index) => {
+      if (index === ignoredIndex) {
+        return;
+      }
+      if (isSameText(existingSwatch.name, cleanSwatch.name)) {
+        issues.push(`Duplicate user swatch name: ${cleanSwatch.name}.`);
+      }
+      if (getRgbHexKey(existingSwatch.hex) === getRgbHexKey(cleanSwatch.hex)) {
+        issues.push(`Duplicate user swatch RGB/hex: ${getRgbHexKey(cleanSwatch.hex)}.`);
+      }
+      if (isSameText(existingSwatch.symbol, cleanSwatch.symbol)) {
+        issues.push(`Duplicate user swatch symbol: ${cleanSwatch.symbol}.`);
+      }
+    });
+    return Array.from(new Set(issues));
+  }
+
   clearEditorForm(status) {
     this.state.selectedUserIndex = -1;
     this.editorControl.clearForm();
@@ -327,7 +353,10 @@ export class PaletteManagerApp {
 
   addUserSwatch(swatch) {
     const cleanSwatch = cloneSwatch({ ...swatch, source: USER_ADDED_SOURCE });
-    const errors = this.validator.validateSwatch(cleanSwatch, "new swatch");
+    const errors = [
+      ...this.validator.validateSwatch(cleanSwatch, "new swatch"),
+      ...this.validateUniqueUserSwatchFields(cleanSwatch, -1)
+    ];
     if (errors.length > 0) {
       this.setActionState(errors, "User swatch was not added.");
       return;
@@ -353,8 +382,15 @@ export class PaletteManagerApp {
       return;
     }
 
-    const cleanSwatch = cloneSwatch({ ...swatch, source: existingSwatch.source });
-    const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
+    const cleanSwatch = cloneSwatch({
+      ...swatch,
+      source: existingSwatch.source,
+      tags: existingSwatch.tags
+    });
+    const errors = [
+      ...this.validator.validateSwatch(cleanSwatch, "selected swatch"),
+      ...this.validateUniqueUserSwatchFields(cleanSwatch, this.state.selectedUserIndex)
+    ];
     if (errors.length > 0) {
       this.setActionState(errors, "Selected swatch was not updated.");
       return;

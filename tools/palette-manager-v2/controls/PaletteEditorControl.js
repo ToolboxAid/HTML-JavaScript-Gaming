@@ -1,4 +1,4 @@
-import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modules/paletteUtils.js";
+import { cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modules/paletteUtils.js";
 
 const MAX_TAG_SUGGESTIONS = 6;
 
@@ -13,7 +13,6 @@ export class PaletteEditorControl {
     this.app = app;
     this.hexColorPattern = hexColorPattern;
     this.selectedTags = [];
-    this.userDefinedTags = [];
     this.tagSuggestionIndex = -1;
   }
 
@@ -72,9 +71,6 @@ export class PaletteEditorControl {
     this.refs.swatchSymbolInput.value = cleanSwatch.symbol;
     this.refs.swatchHexInput.value = cleanSwatch.hex;
     this.refs.swatchNameInput.value = cleanSwatch.name;
-    this.refs.swatchSourceInput.value = cleanSwatch.source || USER_ADDED_SOURCE;
-    this.userDefinedTags = normalizeTags(cleanSwatch.tags);
-    this.renderUserDefinedTagList();
     this.renderUserDefinedSwatchPreview(cleanSwatch);
   }
 
@@ -82,9 +78,6 @@ export class PaletteEditorControl {
     this.refs.swatchSymbolInput.value = "";
     this.refs.swatchHexInput.value = "";
     this.refs.swatchNameInput.value = "";
-    this.refs.swatchSourceInput.value = "";
-    this.userDefinedTags = [];
-    this.renderUserDefinedTagList();
     this.renderUserDefinedSwatchPreview({ hex: "" });
   }
 
@@ -92,9 +85,7 @@ export class PaletteEditorControl {
     return {
       symbol: sanitizeText(this.refs.swatchSymbolInput.value),
       hex: normalizeHex(this.refs.swatchHexInput.value),
-      name: sanitizeText(this.refs.swatchNameInput.value),
-      source: sanitizeText(this.refs.swatchSourceInput.value),
-      tags: normalizeTags(this.userDefinedTags)
+      name: sanitizeText(this.refs.swatchNameInput.value)
     };
   }
 
@@ -166,11 +157,11 @@ export class PaletteEditorControl {
   }
 
   renderSelectedTagList() {
-    this.renderTagList(this.refs.selectedSwatchTagList, this.selectedTags);
-  }
-
-  renderUserDefinedTagList() {
-    this.renderTagList(this.refs.userDefinedSwatchTagList, this.userDefinedTags);
+    this.renderTagList(this.refs.selectedSwatchTagList, this.selectedTags, {
+      onClick: (tag) => {
+        this.app.removeTagFromSelectedSwatch(tag);
+      }
+    });
   }
 
   renderAvailableTagList() {
@@ -198,7 +189,7 @@ export class PaletteEditorControl {
     });
   }
 
-  renderTagList(container, tags) {
+  renderTagList(container, tags, options = {}) {
     container.replaceChildren();
     const cleanTags = normalizeTags(tags);
     if (cleanTags.length === 0) {
@@ -209,9 +200,18 @@ export class PaletteEditorControl {
       return;
     }
     cleanTags.forEach((tag) => {
-      const pill = container.ownerDocument.createElement("span");
+      const pill = typeof options.onClick === "function"
+        ? container.ownerDocument.createElement("button")
+        : container.ownerDocument.createElement("span");
       pill.className = "palette-manager-v2__tag-pill";
       pill.textContent = tag;
+      if (typeof options.onClick === "function") {
+        pill.type = "button";
+        pill.classList.add("palette-manager-v2__tag-remove");
+        pill.addEventListener("click", () => {
+          options.onClick(tag);
+        });
+      }
       container.appendChild(pill);
     });
   }

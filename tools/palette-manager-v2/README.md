@@ -12,9 +12,11 @@ Palette Manager V2 is the runtime tool for editing the global palette data store
 
 ## Workflow
 - Add and edit user-defined swatches from the Add accordion. Swatches created with Add use `User Added` as their source.
-- Add shows populated form data only for selected `User Added` swatches; source-palette selections clear the form.
-- Selected Swatch shows selected details with symbol, hex, name, source, and current tags read-only.
+- Add shows populated symbol, hex, and name data only for selected `User Added` swatches; source-palette selections clear the form.
+- Add and Update reject duplicate user swatch names, RGB/hex values, and symbols.
+- Selected Swatch shows selected details with symbol, hex, name, source, and current tags. Click a selected tag to remove it from the selected swatch.
 - Use the Tags accordion to add typed tags or toggle existing user palette tags on the currently selected swatch.
+- Tags are normalized to lowercase when added, imported, displayed, stored, copied, and exported.
 - Browse Crayola, W3C, and JavaScript source palettes without editing the source lists.
 - Use the red tack to copy a source swatch into the user palette.
 - Use the green tack to remove a pinned/user swatch when `isSwatchUsedByTool(swatch)` allows removal.

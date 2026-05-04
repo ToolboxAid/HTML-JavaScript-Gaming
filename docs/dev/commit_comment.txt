@@ -1,1 +1,1 @@
-Move Palette Manager tags into left accordion and clean labels - PR_26124_051-palette-manager-tags-accordion-and-label-cleanup
+Normalize Palette Manager tags and guard duplicate swatches - PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards

@@ -299,6 +299,10 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   cursor: pointer;
 }
 
+.palette-manager-v2__tag-remove {
+  cursor: pointer;
+}
+
 .palette-manager-v2__tag-toggle.is-active {
   border-color: var(--pm-accent);
   background: rgba(221, 214, 254, 0.28);
