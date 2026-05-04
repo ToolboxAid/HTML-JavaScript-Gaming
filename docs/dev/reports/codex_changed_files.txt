@@ -1,10 +1,11 @@
 # git status --short
 M  docs/dev/codex_commands.md
 M  docs/dev/commit_comment.txt
-A  docs/dev/reports/PR_26124_074_report.md
-A  docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md
-A  docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md
-A  docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md
+A  docs/dev/reports/PR_26124_075_report.md
+A  docs/pr/PR_26124_075-palette-browser-launch-registration-fix/APPLY_PR.md
+A  docs/pr/PR_26124_075-palette-browser-launch-registration-fix/BUILD_PR.md
+A  docs/pr/PR_26124_075-palette-browser-launch-registration-fix/PLAN_PR.md
+M  samples/metadata/samples.index.metadata.json
 
 # git diff --stat
 (no output)

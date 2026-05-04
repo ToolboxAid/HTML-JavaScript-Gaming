@@ -556,10 +556,10 @@
       "preview": "/samples/phase-02/0213/assets/images/preview.svg",
       "href": "./phase-02/0213/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-manager-v2"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-02/0213/sample.0213.palette.json"
         }
       ]
@@ -639,10 +639,10 @@
       "preview": "/samples/phase-02/0219/assets/images/preview.svg",
       "href": "./phase-02/0219/index.html",
       "classValues": ["engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-manager-v2"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-02/0219/sample.0219.palette.json"
         }
       ]
@@ -769,10 +769,10 @@
       "preview": "/samples/phase-03/0301/assets/images/preview.svg",
       "href": "./phase-03/0301/index.html",
       "classValues": ["engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/moveRectWithTilemapCollision", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-manager-v2"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-03/0301/sample.0301.palette.json"
         }
       ]
@@ -788,10 +788,10 @@
       "preview": "/samples/phase-03/0302/assets/images/preview.svg",
       "href": "./phase-03/0302/index.html",
       "classValues": ["engine/animation/index/AnimationController", "engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/moveRectWithTilemapCollision", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-manager-v2"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-03/0302/sample.0302.palette.json"
         }
       ]
@@ -878,10 +878,10 @@
       "preview": "/samples/phase-03/0308/assets/images/preview.svg",
       "href": "./phase-03/0308/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-manager-v2"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-03/0308/sample.0308.palette.json"
         }
       ]
@@ -945,10 +945,10 @@
       "preview": "/samples/phase-03/0313/assets/images/preview.svg",
       "href": "./phase-03/0313/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-manager-v2"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-03/0313/sample.0313.palette.json"
         }
       ]
@@ -1882,10 +1882,10 @@
       "preview": "/samples/phase-09/0901/assets/images/preview.svg",
       "href": "./phase-09/0901/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/rendering/index/drawVectorShape", "engine/rendering/index/transformPoints", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-manager-v2"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-09/0901/sample.0901.palette.json"
         }
       ]
@@ -1937,10 +1937,10 @@
       "preview": "/samples/phase-09/0905/assets/images/preview.svg",
       "href": "./phase-09/0905/index.html",
       "classValues": ["engine/collision/index/areMasksColliding", "engine/collision/index/createRasterMask", "engine/collision/index/getMaskBounds", "engine/collision/index/isColliding", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-manager-v2"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-09/0905/sample.0905.palette.json"
         }
       ]
@@ -2112,10 +2112,10 @@
       "preview": "/samples/phase-12/1204/assets/images/preview.svg",
       "href": "./phase-12/1204/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-manager-v2"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-12/1204/sample.1204.palette.json"
         }
       ]
@@ -2169,10 +2169,10 @@
       "preview": "/samples/phase-12/1208/assets/images/preview.svg",
       "href": "./phase-12/1208/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
-      "toolHints": ["palette-browser", "tile-map-editor", "parallax-editor"],
+      "toolHints": ["palette-manager-v2", "tile-map-editor", "parallax-editor"],
       "roundtripToolPresets": [
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-12/1208/sample.1208.palette.json"
         },
         {
@@ -2840,7 +2840,7 @@
       "preview": "/samples/phase-14/1414/assets/images/preview.svg",
       "href": "./phase-14/1414/index.html",
       "classValues": ["engine/scene/index/Scene"],
-      "toolHints": ["sprite-editor", "palette-browser"],
+      "toolHints": ["sprite-editor", "palette-manager-v2"],
       "roundtripToolPresets": [
         {
           "toolId": "sprite-editor",
@@ -2848,7 +2848,7 @@
           "palettePath": "/samples/phase-14/1414/sample.1414.palette.json"
         },
         {
-          "toolId": "palette-browser",
+          "toolId": "palette-manager-v2",
           "presetPath": "/samples/phase-14/1414/sample.1414.palette.json"
         }
       ]

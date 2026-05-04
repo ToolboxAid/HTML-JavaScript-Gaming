@@ -1,23 +1,23 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 698f16b1..96fda30b 100644
+index 96fda30b..a8fc23b5 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
 @@ -1,14 +1,14 @@
--# Codex Commands - PR_26124_073-palette-manager-playwright-baseline
-+# Codex Commands - PR_26124_074-sample-palette-json-audit-and-fix
+-# Codex Commands - PR_26124_074-sample-palette-json-audit-and-fix
++# Codex Commands - PR_26124_075-palette-browser-launch-registration-fix
 
  ```bash
--npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_073-palette-manager-playwright-baseline. Follow PROJECT_INSTRUCTIONS.md exactly."
-+npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_074-sample-palette-json-audit-and-fix. Follow PROJECT_INSTRUCTIONS.md exactly."
+-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_074-sample-palette-json-audit-and-fix. Follow PROJECT_INSTRUCTIONS.md exactly."
++npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_075-palette-browser-launch-registration-fix. Follow PROJECT_INSTRUCTIONS.md exactly."
  ```
 
  ## Validation Commands
 
  ```bash
--node --check tests/tools/PaletteManagerV2Baseline.test.mjs
--node tests/tools/PaletteManagerV2Baseline.test.mjs
-+node --input-type=module <sample palette JSON audit/fix>
-+node --input-type=module <sample palette JSON validation>
+-node --input-type=module <sample palette JSON audit/fix>
+-node --input-type=module <sample palette JSON validation>
++node --input-type=module <sample metadata registry validation>
++node --input-type=module <targeted Samples index launch validation>
  git diff --check
  npm run test:workspace-v2
  npm run codex:review-artifacts
@@ -25,203 +25,335 @@ index 698f16b1..96fda30b 100644
 
  ## Playwright
 
--The targeted Palette Manager V2 Playwright baseline validates page load, console/runtime cleanliness, menuSample actions, accordion toggles, Validation/Error Viewer Clear placement, source pin scroll preservation, and Tag sort untagged-last behavior.
-+No targeted Playwright impact is expected because this PR changes sample palette JSON data only. The default requested gate is `npm run test:workspace-v2`.
+-No targeted Playwright impact is expected because this PR changes sample palette JSON data only. The default requested gate is `npm run test:workspace-v2`.
++Targeted Samples index launch validation confirms palette-backed samples no longer render `Tool "palette-browser" is not registered in toolRegistry.` and their launch links resolve to Palette Manager V2.
 
  `npm run test:workspace-v2` failed because `package.json` does not define the `test:workspace-v2` script.
 
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 056d226a..252284af 100644
+index 252284af..fa01d587 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Add Palette Manager V2 Playwright baseline coverage - PR_26124_073-palette-manager-playwright-baseline
-+Audit and fix sample palette JSON schema compliance - PR_26124_074-sample-palette-json-audit-and-fix
-diff --git a/docs/dev/reports/PR_26124_074_report.md b/docs/dev/reports/PR_26124_074_report.md
+-Audit and fix sample palette JSON schema compliance - PR_26124_074-sample-palette-json-audit-and-fix
++Fix Palette Manager V2 sample launch registration id - PR_26124_075-palette-browser-launch-registration-fix
+diff --git a/docs/dev/reports/PR_26124_075_report.md b/docs/dev/reports/PR_26124_075_report.md
 new file mode 100644
-index 00000000..3cb2c29e
+index 00000000..8712c59c
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_074_report.md
-@@ -0,0 +1,45 @@
-+# PR_26124_074 Sample Palette JSON Audit And Fix
++++ b/docs/dev/reports/PR_26124_075_report.md
+@@ -0,0 +1,32 @@
++# PR_26124_075 Palette Browser Launch Registration Fix
 +
 +## Summary
-+Audited all sample palette JSON files against the requested palette swatch contract. No sample palette JSON files required changes.
-+
-+## Files Audited
-+- `samples/**/*.palette.json`
-+- Count: 20 files
-+
-+## Pattern Note
-+The requested literal pattern `samples/**/palette.*.*.json` did not match files in this repository. The repo's sample palette files use `sample.<id>.palette.json`, so the audit target was `samples/**/*.palette.json`.
-+
-+## Contract Checked
-+- Required swatch fields:
-+  - `symbol`: one-character string
-+  - `hex`: `#RRGGBB` or `#RRGGBBAA`
-+  - `name`: non-empty string
-+- Optional swatch field:
-+  - `tags`: array of lowercase non-empty strings
-+- Extra swatch properties are rejected by the audit.
-+- Duplicate swatches are rejected within each palette by duplicate `name`, `hex`, or `symbol`.
-+
-+## Result
-+- No invalid JSON files.
-+- No schema violations.
-+- No duplicate swatches.
-+- No tag normalization changes required.
-+- No sample palette JSON files changed.
++Corrected palette-backed sample launch metadata to use the active `palette-manager-v2` tool id instead of the `palette-browser` data key.
 +
 +## Files Changed
-+- `docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md`
-+- `docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md`
-+- `docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md`
++- `samples/metadata/samples.index.metadata.json`
++- `docs/pr/PR_26124_075-palette-browser-launch-registration-fix/PLAN_PR.md`
++- `docs/pr/PR_26124_075-palette-browser-launch-registration-fix/BUILD_PR.md`
++- `docs/pr/PR_26124_075-palette-browser-launch-registration-fix/APPLY_PR.md`
 +- `docs/dev/codex_commands.md`
 +- `docs/dev/commit_comment.txt`
 +- `docs/dev/reports/codex_review.diff`
 +- `docs/dev/reports/codex_changed_files.txt`
 +
++## Notes
++- `palette-browser` remains the palette data contract key.
++- `palette-manager-v2` is the active launch/runtime tool id in `tools/toolRegistry.js`.
++- No registry alias was added because the repo alias resolver currently returns the input id unchanged.
++- No sample palette JSON files were modified.
++- No tools, workspace/toolState/session files, sample launch code, or fallback/default data were modified.
++
 +## Validation
-+- PASS: read-only sample palette audit.
-+- PASS: sample palette JSON contract validation, 20 files.
-+- PASS: `git diff -- samples`
++- PASS: `samples.index.metadata.json` JSON parse.
++- PASS: targeted metadata registry validation:
++  - 11 `palette-manager-v2` tool hints,
++  - 11 `palette-manager-v2` roundtrip preset mappings,
++  - no `palette-browser` launch ids remain in sample metadata.
++- PASS: targeted served Samples index launch validation confirmed the old registry error is gone and sample 0213 links to Palette Manager V2.
 +- PASS: `git diff --check`
 +- FAIL: `npm run test:workspace-v2` is unavailable because `package.json` does not define a `test:workspace-v2` script.
 +- SKIPPED: full samples smoke test, by instruction.
-diff --git a/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md
+diff --git a/docs/pr/PR_26124_075-palette-browser-launch-registration-fix/APPLY_PR.md b/docs/pr/PR_26124_075-palette-browser-launch-registration-fix/APPLY_PR.md
 new file mode 100644
-index 00000000..b477ecc0
+index 00000000..f9b0653b
 --- /dev/null
-+++ b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md
-@@ -0,0 +1,34 @@
-+# APPLY_PR - PR_26124_074-sample-palette-json-audit-and-fix
++++ b/docs/pr/PR_26124_075-palette-browser-launch-registration-fix/APPLY_PR.md
+@@ -0,0 +1,36 @@
++# APPLY_PR - PR_26124_075-palette-browser-launch-registration-fix
 +
 +## Summary
-+Audited all sample palette JSON files. No sample palette JSON changes were required because all audited files already match the requested swatch contract.
++Fixed palette-backed sample launch registration by updating sample metadata launch ids from the palette data key `palette-browser` to the active tool id `palette-manager-v2`.
 +
-+## Audit Result
-+- Audited 20 files matching `samples/**/*.palette.json`.
-+- The requested literal pattern `samples/**/palette.*.*.json` has no matches in this repository.
-+- No invalid JSON files were found.
-+- No swatches with missing or invalid `symbol`, `hex`, or `name` were found.
-+- No extra swatch properties were found.
-+- No uppercase or invalid tags were found.
-+- No duplicate swatches by `name`, `hex`, or `symbol` were found within a palette.
++## Applied Changes
++- Updated `samples/metadata/samples.index.metadata.json`:
++  - `toolHints[]`: `palette-browser` -> `palette-manager-v2`
++  - `roundtripToolPresets[].toolId`: `palette-browser` -> `palette-manager-v2`
++- Preserved existing palette preset paths.
++- Preserved sample palette JSON files.
++- Did not add a registry alias because `resolveToolIdAlias` does not currently implement aliases.
 +
 +## Runtime/Data Result
-+- No sample palette JSON files were modified.
-+- No tools were modified.
-+- No workspace/toolState/session files were modified.
-+- No sample launch code was modified.
-+- No fallback/default data was added.
++- Samples index now resolves palette-backed launch links through the active `palette-manager-v2` registry entry.
++- Palette data contract keys such as `tools.palette-browser` remain unchanged.
++- No tools, workspace/toolState/session files, sample launch code, or sample palette JSON files were changed.
 +
 +## Validation
-+- PASS: read-only audit of all `samples/**/*.palette.json` files.
-+- PASS: schema/contract validation of all 20 sample palette JSON files.
-+- PASS: `git diff -- samples` produced no diff.
++- PASS: parsed `samples/metadata/samples.index.metadata.json`.
++- PASS: targeted metadata registry validation for sample `toolHints` and `roundtripToolPresets`.
++- PASS: targeted served Samples index launch validation confirmed:
++  - no `Tool "palette-browser" is not registered in toolRegistry.` message,
++  - the tool filter includes `palette-manager-v2`,
++  - the tool filter does not include `palette-browser`,
++  - sample 0213 links to `/tools/palette-manager-v2/index.html` with its palette preset path.
 +- PASS: `git diff --check`
 +- FAIL: `npm run test:workspace-v2` is unavailable because `package.json` does not define a `test:workspace-v2` script.
 +- SKIPPED: full samples smoke test, by instruction.
 +
 +## Manual Test
-+1. Review the 20 `samples/**/*.palette.json` files if desired.
-+2. Confirm no sample palette JSON diff exists for this PR.
-+3. Confirm sample launch code was not modified.
-+4. Full samples smoke test remains out of scope by instruction.
-diff --git a/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md
++1. Open `samples/index.html`.
++2. Search for sample `0213`.
++3. Confirm no `Tool "palette-browser" is not registered in toolRegistry.` message appears.
++4. Confirm the sample has an `Open Palette Manager V2` launch link.
++5. Confirm sample palette JSON files were not changed.
+diff --git a/docs/pr/PR_26124_075-palette-browser-launch-registration-fix/BUILD_PR.md b/docs/pr/PR_26124_075-palette-browser-launch-registration-fix/BUILD_PR.md
 new file mode 100644
-index 00000000..78e2383c
+index 00000000..21350d97
 --- /dev/null
-+++ b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md
-@@ -0,0 +1,39 @@
-+# BUILD_PR - PR_26124_074-sample-palette-json-audit-and-fix
++++ b/docs/pr/PR_26124_075-palette-browser-launch-registration-fix/BUILD_PR.md
+@@ -0,0 +1,34 @@
++# BUILD_PR - PR_26124_075-palette-browser-launch-registration-fix
 +
 +## Purpose
-+Perform one scoped data cleanup: audit and fix sample palette JSON files so their swatches match the current palette schema contract.
++Perform one scoped launch metadata fix so palette-backed samples use the active Palette Manager V2 launch id instead of the palette data key.
 +
 +## Scope
-+- `samples/**/*.palette.json`
++- `samples/metadata/samples.index.metadata.json`
++- Targeted validation test file only if required.
 +- Required PR workflow docs and review artifacts.
 +
-+## Pattern Note
-+The requested literal pattern `samples/**/palette.*.*.json` has no matches in this repository. The actual sample palette JSON files use `sample.<id>.palette.json`, so the executable target set is `samples/**/*.palette.json`.
-+
 +## Implementation
-+1. Enumerate `samples/**/*.palette.json`.
-+2. Parse and rewrite only files requiring schema fixes.
-+3. Preserve top-level palette metadata already allowed by `tools/schemas/tools/palette-browser.schema.json`.
-+4. Normalize each swatch to:
-+   - `symbol`: one-character string,
-+   - `hex`: `#RRGGBB` or `#RRGGBBAA`,
-+   - `name`: non-empty string,
-+   - optional `tags`: lowercase non-empty strings.
-+5. Remove extra swatch properties.
-+6. Remove duplicate swatches within a palette by duplicate `name`, `hex`, or `symbol`, preserving the first occurrence.
-+7. Keep JSON formatting stable and compact for primitive arrays where tags exist.
++1. Update only palette sample launch metadata:
++   - `toolHints[]`: `palette-browser` -> `palette-manager-v2`
++   - `roundtripToolPresets[].toolId`: `palette-browser` -> `palette-manager-v2`
++2. Preserve existing `presetPath` values.
++3. Preserve `tools.palette-browser` data keys and sample palette JSON files.
++4. Do not add registry aliases because `resolveToolIdAlias` does not currently implement aliases.
 +
 +## Boundaries
 +- Do not modify tools.
 +- Do not modify workspace/toolState/session behavior.
++- Do not touch sample palette JSON files.
 +- Do not modify sample launch code.
 +- Do not add fallback/default data.
 +- Do not add dependencies.
 +- Do not run the full samples smoke test.
 +
 +## Validation
-+- Syntax check every `samples/**/*.palette.json` file by parsing JSON.
-+- Validate every `samples/**/*.palette.json` file against the current palette swatch contract.
++- Syntax check changed JSON files by parsing.
++- Run targeted metadata registry validation for sample `toolHints` and `roundtripToolPresets`.
++- Run targeted Samples index launch validation that reproduces the registration-error surface.
 +- Run `npm run test:workspace-v2`.
 +- Run `git diff --check`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_075-palette-browser-launch-registration-fix/PLAN_PR.md b/docs/pr/PR_26124_075-palette-browser-launch-registration-fix/PLAN_PR.md
 new file mode 100644
-index 00000000..51bc01e4
+index 00000000..8c2b7974
 --- /dev/null
-+++ b/docs/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md
-@@ -0,0 +1,46 @@
-+# PLAN_PR - PR_26124_074-sample-palette-json-audit-and-fix
++++ b/docs/pr/PR_26124_075-palette-browser-launch-registration-fix/PLAN_PR.md
+@@ -0,0 +1,42 @@
++# PLAN_PR - PR_26124_075-palette-browser-launch-registration-fix
 +
 +## Goal
-+Audit sample palette JSON files and fix schema violations against the current palette browser swatch contract.
++Fix sample launch registration for palette sample roundtrip links so samples no longer report `Tool "palette-browser" is not registered in toolRegistry.`
 +
 +## Scope
-+- `samples/**/*.palette.json`
++- `samples/metadata/samples.index.metadata.json`
++- Targeted launch validation test if needed.
 +- Required PR workflow docs and review artifacts.
-+
-+## Pattern Note
-+The requested literal pattern `samples/**/palette.*.*.json` does not match files in this repository. The sample palette files are named `sample.<id>.palette.json`, so this PR audits and fixes only `samples/**/*.palette.json`.
 +
 +## Boundaries
 +- Do not modify tools.
-+- Do not modify workspace/toolState/session behavior.
++- Do not modify unrelated tool metadata.
++- Do not touch workspace/toolState/session behavior.
++- Do not touch sample palette JSON files.
 +- Do not modify sample launch code.
 +- Do not add fallback/default data.
 +- Do not add dependencies.
 +- Do not run the full samples smoke test.
-+- Avoid broad refactor outside sample palette JSON.
++
++## Implementation Decision
++The active tool registry id is `palette-manager-v2`. The palette data contract key remains `palette-browser`, but that key is not the launch id. The repo's alias resolver currently returns the input id unchanged, so adding a `palette-browser` alias would introduce a new alias pattern instead of using the active tool identity consistently.
 +
 +## Implementation Plan
-+1. Enumerate all `samples/**/*.palette.json` files.
-+2. Parse each JSON file.
-+3. Validate top-level palette document shape using the existing `tools/schemas/tools/palette-browser.schema.json` contract.
-+4. For each swatch, keep only valid contract properties:
-+   - required `symbol`, `hex`, `name`;
-+   - optional `tags`.
-+5. Normalize swatch tags to lowercase non-empty strings.
-+6. Remove invalid/extra swatch properties.
-+7. Detect duplicate swatches by `name`, `hex`, and `symbol` within each palette and preserve the first occurrence.
-+8. Preserve intended palette content while making only schema corrections.
++1. Update sample metadata `toolHints` entries from `palette-browser` to `palette-manager-v2`.
++2. Update matching `roundtripToolPresets[].toolId` entries from `palette-browser` to `palette-manager-v2`.
++3. Preserve existing palette preset paths, palette JSON files, and data contract keys.
++4. Validate that every sample tool hint and roundtrip preset tool id maps to a registered active tool, excluding the existing `workspace-manager` special case.
++5. Run a targeted samples index launch validation that confirms no `Tool "palette-browser" is not registered in toolRegistry.` issue is rendered.
 +
 +## Playwright
-+- Default requested gate: `npm run test:workspace-v2`.
-+- Expected pass behavior: Workspace V2 validation runs successfully if the script exists.
-+- Expected fail behavior: the command reports that the script is unavailable if `package.json` does not define it.
-+- No targeted Playwright impact is expected because this PR changes sample palette JSON data only.
++- Targeted command validates the Samples index page no longer renders the palette-browser registration error.
++- Expected pass behavior: samples with palette preset links render Palette Manager V2 launch links and no unregistered palette-browser issue.
++- Expected fail behavior: the page contains the old registration error or active palette metadata does not resolve through the registry.
++- Default requested gate: `npm run test:workspace-v2`
 +
 +## Manual Validation
-+1. Open each changed `sample.<id>.palette.json` file.
-+2. Confirm the file is valid JSON.
-+3. Confirm each swatch has `symbol`, `hex`, and `name`.
-+4. Confirm optional tags are lowercase arrays of strings.
-+5. Confirm no sample launch code was modified.
-+6. Full samples smoke test remains out of scope by instruction.
++1. Open `samples/index.html`.
++2. Filter or search for a palette-backed sample such as 0213, 0308, or 0313.
++3. Confirm no `Tool "palette-browser" is not registered in toolRegistry.` message is shown.
++4. Confirm the palette launch action opens Palette Manager V2.
++5. Confirm sample palette JSON files were not changed.
+diff --git a/samples/metadata/samples.index.metadata.json b/samples/metadata/samples.index.metadata.json
+index 69cc6f8b..b0da6ff9 100644
+--- a/samples/metadata/samples.index.metadata.json
++++ b/samples/metadata/samples.index.metadata.json
+@@ -556,10 +556,10 @@
+       "preview": "/samples/phase-02/0213/assets/images/preview.svg",
+       "href": "./phase-02/0213/index.html",
+       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene"],
+-      "toolHints": ["palette-browser"],
++      "toolHints": ["palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-02/0213/sample.0213.palette.json"
+         }
+       ]
+@@ -639,10 +639,10 @@
+       "preview": "/samples/phase-02/0219/assets/images/preview.svg",
+       "href": "./phase-02/0219/index.html",
+       "classValues": ["engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
+-      "toolHints": ["palette-browser"],
++      "toolHints": ["palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-02/0219/sample.0219.palette.json"
+         }
+       ]
+@@ -769,10 +769,10 @@
+       "preview": "/samples/phase-03/0301/assets/images/preview.svg",
+       "href": "./phase-03/0301/index.html",
+       "classValues": ["engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/moveRectWithTilemapCollision", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
+-      "toolHints": ["palette-browser"],
++      "toolHints": ["palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-03/0301/sample.0301.palette.json"
+         }
+       ]
+@@ -788,10 +788,10 @@
+       "preview": "/samples/phase-03/0302/assets/images/preview.svg",
+       "href": "./phase-03/0302/index.html",
+       "classValues": ["engine/animation/index/AnimationController", "engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/moveRectWithTilemapCollision", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
+-      "toolHints": ["palette-browser"],
++      "toolHints": ["palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-03/0302/sample.0302.palette.json"
+         }
+       ]
+@@ -878,10 +878,10 @@
+       "preview": "/samples/phase-03/0308/assets/images/preview.svg",
+       "href": "./phase-03/0308/index.html",
+       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
+-      "toolHints": ["palette-browser"],
++      "toolHints": ["palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-03/0308/sample.0308.palette.json"
+         }
+       ]
+@@ -945,10 +945,10 @@
+       "preview": "/samples/phase-03/0313/assets/images/preview.svg",
+       "href": "./phase-03/0313/index.html",
+       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
+-      "toolHints": ["palette-browser"],
++      "toolHints": ["palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-03/0313/sample.0313.palette.json"
+         }
+       ]
+@@ -1882,10 +1882,10 @@
+       "preview": "/samples/phase-09/0901/assets/images/preview.svg",
+       "href": "./phase-09/0901/index.html",
+       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/rendering/index/drawVectorShape", "engine/rendering/index/transformPoints", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
+-      "toolHints": ["palette-browser"],
++      "toolHints": ["palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-09/0901/sample.0901.palette.json"
+         }
+       ]
+@@ -1937,10 +1937,10 @@
+       "preview": "/samples/phase-09/0905/assets/images/preview.svg",
+       "href": "./phase-09/0905/index.html",
+       "classValues": ["engine/collision/index/areMasksColliding", "engine/collision/index/createRasterMask", "engine/collision/index/getMaskBounds", "engine/collision/index/isColliding", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
+-      "toolHints": ["palette-browser"],
++      "toolHints": ["palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-09/0905/sample.0905.palette.json"
+         }
+       ]
+@@ -2112,10 +2112,10 @@
+       "preview": "/samples/phase-12/1204/assets/images/preview.svg",
+       "href": "./phase-12/1204/index.html",
+       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
+-      "toolHints": ["palette-browser"],
++      "toolHints": ["palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-12/1204/sample.1204.palette.json"
+         }
+       ]
+@@ -2169,10 +2169,10 @@
+       "preview": "/samples/phase-12/1208/assets/images/preview.svg",
+       "href": "./phase-12/1208/index.html",
+       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
+-      "toolHints": ["palette-browser", "tile-map-editor", "parallax-editor"],
++      "toolHints": ["palette-manager-v2", "tile-map-editor", "parallax-editor"],
+       "roundtripToolPresets": [
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-12/1208/sample.1208.palette.json"
+         },
+         {
+@@ -2840,7 +2840,7 @@
+       "preview": "/samples/phase-14/1414/assets/images/preview.svg",
+       "href": "./phase-14/1414/index.html",
+       "classValues": ["engine/scene/index/Scene"],
+-      "toolHints": ["sprite-editor", "palette-browser"],
++      "toolHints": ["sprite-editor", "palette-manager-v2"],
+       "roundtripToolPresets": [
+         {
+           "toolId": "sprite-editor",
+@@ -2848,7 +2848,7 @@
+           "palettePath": "/samples/phase-14/1414/sample.1414.palette.json"
+         },
+         {
+-          "toolId": "palette-browser",
++          "toolId": "palette-manager-v2",
+           "presetPath": "/samples/phase-14/1414/sample.1414.palette.json"
+         }
+       ]

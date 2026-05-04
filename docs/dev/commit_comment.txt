@@ -1,1 +1,1 @@
-Audit and fix sample palette JSON schema compliance - PR_26124_074-sample-palette-json-audit-and-fix
+Fix Palette Manager V2 sample launch registration id - PR_26124_075-palette-browser-launch-registration-fix
