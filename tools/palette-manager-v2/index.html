@@ -64,10 +64,16 @@
             <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
           </summary>
           <div class="palette-manager-v2__accordion-content">
-            <label class="palette-manager-v2__field">
-              Sort user palette
-              <select id="userPaletteSortSelect"></select>
-            </label>
+            <div class="palette-manager-v2__sort-row">
+              <div class="palette-manager-v2__field">
+                <span>Sort user palette</span>
+                <div id="userPaletteSortControls" class="palette-manager-v2__sort-buttons" role="radiogroup" aria-label="Sort user palette"></div>
+              </div>
+              <label class="palette-manager-v2__field palette-manager-v2__size-field">
+                Size
+                <select id="userSwatchSizeSelect"></select>
+              </label>
+            </div>
             <div id="userPaletteCount" class="palette-manager-v2__meta">0 user swatches</div>
             <div id="userSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--user" aria-label="User palette swatches"></div>
           </div>
@@ -90,11 +96,11 @@
             <div class="palette-manager-v2__sort-row">
               <div class="palette-manager-v2__field">
                 <span>Sort source palette</span>
-                <div id="sourcePaletteSortControls" class="palette-manager-v2__sort-buttons" role="group" aria-label="Sort source palette"></div>
+                <div id="sourcePaletteSortControls" class="palette-manager-v2__sort-buttons" role="radiogroup" aria-label="Sort source palette"></div>
               </div>
               <label class="palette-manager-v2__field palette-manager-v2__size-field">
-                Swatch size
-                <select id="swatchSizeSelect"></select>
+                Size
+                <select id="sourceSwatchSizeSelect"></select>
               </label>
             </div>
             <div id="sourceSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--source" aria-label="Browse palette swatches"></div>

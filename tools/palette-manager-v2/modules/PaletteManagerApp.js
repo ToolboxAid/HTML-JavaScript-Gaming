@@ -8,12 +8,13 @@ import { cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUti
 
 const REQUIRED_REF_IDS = Object.freeze([
   "userPaletteCount",
-  "userPaletteSortSelect",
+  "userPaletteSortControls",
+  "userSwatchSizeSelect",
   "userSwatchList",
   "sourcePaletteSelect",
   "sourceSearchInput",
   "sourcePaletteSortControls",
-  "swatchSizeSelect",
+  "sourceSwatchSizeSelect",
   "sourceSwatchList",
   "editorTitle",
   "selectedSwatchPreview",
@@ -35,9 +36,9 @@ const REQUIRED_REF_IDS = Object.freeze([
 ]);
 
 const SWATCH_SIZE_OPTIONS = Object.freeze([
-  Object.freeze({ value: "small", label: "Small" }),
-  Object.freeze({ value: "medium", label: "Medium" }),
-  Object.freeze({ value: "large", label: "Large" })
+  Object.freeze({ value: "small", label: "Sm" }),
+  Object.freeze({ value: "medium", label: "Me" }),
+  Object.freeze({ value: "large", label: "Lg" })
 ]);
 
 function collectRefs(documentRef) {

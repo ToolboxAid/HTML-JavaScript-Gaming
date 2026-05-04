@@ -17,15 +17,15 @@ export class SourcePaletteBrowserControl {
     this.refs.sourceSearchInput.addEventListener("input", () => {
       this.app.setSourceSearch(this.refs.sourceSearchInput.value);
     });
-    this.refs.swatchSizeSelect.addEventListener("change", () => {
-      this.app.setSwatchSize(this.refs.swatchSizeSelect.value);
+    this.refs.sourceSwatchSizeSelect.addEventListener("change", () => {
+      this.app.setSwatchSize(this.refs.sourceSwatchSizeSelect.value);
     });
   }
 
   render() {
     this.refs.sourcePaletteSelect.value = this.app.getCurrentSourcePaletteId();
     this.refs.sourceSearchInput.value = this.app.getSourceSearch();
-    this.refs.swatchSizeSelect.value = this.app.getSwatchSize();
+    this.refs.sourceSwatchSizeSelect.value = this.app.getSwatchSize();
     this.refs.sourceSwatchList.dataset.swatchSize = this.app.getSwatchSize();
     this.renderActiveSortButton();
     this.refs.sourceSwatchList.replaceChildren();
@@ -72,6 +72,7 @@ export class SourcePaletteBrowserControl {
       button.type = "button";
       button.className = "palette-manager-v2__sort-button";
       button.dataset.sortMode = mode.value;
+      button.setAttribute("role", "radio");
       button.textContent = mode.label;
       button.addEventListener("click", () => {
         this.app.setSourceSortMode(mode.value);
@@ -82,12 +83,12 @@ export class SourcePaletteBrowserControl {
   }
 
   renderSizeOptions() {
-    this.refs.swatchSizeSelect.replaceChildren();
+    this.refs.sourceSwatchSizeSelect.replaceChildren();
     this.app.getSwatchSizeOptions().forEach((size) => {
       const option = this.document.createElement("option");
       option.value = size.value;
       option.textContent = size.label;
-      this.refs.swatchSizeSelect.appendChild(option);
+      this.refs.sourceSwatchSizeSelect.appendChild(option);
     });
   }
 
@@ -96,7 +97,7 @@ export class SourcePaletteBrowserControl {
     this.refs.sourcePaletteSortControls.querySelectorAll("[data-sort-mode]").forEach((button) => {
       const isActive = button.dataset.sortMode === activeMode;
       button.classList.toggle("is-active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
+      button.setAttribute("aria-checked", String(isActive));
     });
   }
 }
