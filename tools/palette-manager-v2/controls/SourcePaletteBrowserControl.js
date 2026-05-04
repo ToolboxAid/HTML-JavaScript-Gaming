@@ -9,17 +9,22 @@ export class SourcePaletteBrowserControl {
 
   bind() {
     this.renderSourceOptions();
+    this.renderSortOptions();
     this.refs.sourcePaletteSelect.addEventListener("change", () => {
       this.app.setSourcePaletteId(this.refs.sourcePaletteSelect.value);
     });
     this.refs.sourceSearchInput.addEventListener("input", () => {
       this.app.setSourceSearch(this.refs.sourceSearchInput.value);
     });
+    this.refs.sourcePaletteSortSelect.addEventListener("change", () => {
+      this.app.setSourceSortMode(this.refs.sourcePaletteSortSelect.value);
+    });
   }
 
   render() {
     this.refs.sourcePaletteSelect.value = this.app.getCurrentSourcePaletteId();
     this.refs.sourceSearchInput.value = this.app.getSourceSearch();
+    this.refs.sourcePaletteSortSelect.value = this.app.getSourceSortMode();
     this.refs.sourceSwatchList.replaceChildren();
 
     const visibleSwatches = this.app.getVisibleSourceSwatches();
@@ -54,6 +59,16 @@ export class SourcePaletteBrowserControl {
       option.value = sourceId;
       option.textContent = this.app.getSourcePaletteLabel(sourceId);
       this.refs.sourcePaletteSelect.appendChild(option);
+    });
+  }
+
+  renderSortOptions() {
+    this.refs.sourcePaletteSortSelect.replaceChildren();
+    this.app.getSortModes().forEach((mode) => {
+      const option = this.document.createElement("option");
+      option.value = mode.value;
+      option.textContent = mode.label;
+      this.refs.sourcePaletteSortSelect.appendChild(option);
     });
   }
 }

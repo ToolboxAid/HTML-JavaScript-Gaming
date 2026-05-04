@@ -8,9 +8,11 @@ import { cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUti
 
 const REQUIRED_REF_IDS = Object.freeze([
   "userPaletteCount",
+  "userPaletteSortSelect",
   "userSwatchList",
   "sourcePaletteSelect",
   "sourceSearchInput",
+  "sourcePaletteSortSelect",
   "sourceSwatchList",
   "editorTitle",
   "selectedSwatchPreview",
@@ -43,9 +45,10 @@ function collectRefs(documentRef) {
 }
 
 export class PaletteManagerApp {
-  constructor({ documentRef, paletteSource, usageService }) {
+  constructor({ documentRef, paletteSource, sortService, usageService }) {
     this.document = documentRef;
     this.paletteSource = paletteSource;
+    this.sortService = sortService;
     this.usageService = usageService;
     this.globalPaletteToolKey = paletteSource.GLOBAL_PALETTE_TOOL_KEY;
     this.hexColorPattern = paletteSource.HEX_COLOR_PATTERN;
@@ -62,6 +65,8 @@ export class PaletteManagerApp {
       selectedUserIndex: -1,
       sourcePaletteId: this.sourcePaletteIds[0] || "",
       sourceSearch: "",
+      userSortMode: "original",
+      sourceSortMode: "original",
       errors: [],
       status: "Ready."
     };
@@ -102,8 +107,28 @@ export class PaletteManagerApp {
     return this.state.userSwatches.map(cloneSwatch);
   }
 
+  getVisibleUserSwatchRows() {
+    const rows = this.state.userSwatches.map((swatch, index) => ({
+      index,
+      swatch: cloneSwatch(swatch)
+    }));
+    return this.sortService.sortRows(rows, this.state.userSortMode);
+  }
+
   getSelectedUserIndex() {
     return this.state.selectedUserIndex;
+  }
+
+  getSortModes() {
+    return this.sortService.getSortModes();
+  }
+
+  getUserSortMode() {
+    return this.state.userSortMode;
+  }
+
+  getSourceSortMode() {
+    return this.state.sourceSortMode;
   }
 
   getSourcePaletteIds() {
@@ -134,15 +159,16 @@ export class PaletteManagerApp {
     const swatches = this.sourcePalettes[this.state.sourcePaletteId] || [];
     const query = sanitizeText(this.state.sourceSearch).toLowerCase();
     if (!query) {
-      return swatches.map(cloneSwatch);
+      return this.sortService.sortSwatches(swatches.map(cloneSwatch), this.state.sourceSortMode);
     }
-    return swatches
+    const visibleSwatches = swatches
       .filter((swatch) => {
         return swatch.name.toLowerCase().includes(query)
           || swatch.hex.toLowerCase().includes(query)
           || swatch.symbol.toLowerCase().includes(query);
       })
       .map(cloneSwatch);
+    return this.sortService.sortSwatches(visibleSwatches, this.state.sourceSortMode);
   }
 
   setSourcePaletteId(sourcePaletteId) {
@@ -157,6 +183,22 @@ export class PaletteManagerApp {
 
   setSourceSearch(sourceSearch) {
     this.state.sourceSearch = sanitizeText(sourceSearch);
+    this.render();
+  }
+
+  setUserSortMode(sortMode) {
+    if (!this.sortService.isValidSortMode(sortMode)) {
+      return;
+    }
+    this.state.userSortMode = sortMode;
+    this.render();
+  }
+
+  setSourceSortMode(sortMode) {
+    if (!this.sortService.isValidSortMode(sortMode)) {
+      return;
+    }
+    this.state.sourceSortMode = sortMode;
     this.render();
   }
 

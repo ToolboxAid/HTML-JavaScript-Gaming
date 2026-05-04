@@ -1,4 +1,5 @@
 import { PaletteUsageService } from "../common/PaletteUsageService.js";
+import { PaletteSortService } from "../common/PaletteSortService.js";
 import { PaletteManagerApp } from "./modules/PaletteManagerApp.js";
 
 function resolvePaletteSource() {
@@ -21,6 +22,7 @@ try {
   const app = new PaletteManagerApp({
     documentRef: document,
     paletteSource: resolvePaletteSource(),
+    sortService: new PaletteSortService(),
     usageService: new PaletteUsageService()
   });
   app.init();

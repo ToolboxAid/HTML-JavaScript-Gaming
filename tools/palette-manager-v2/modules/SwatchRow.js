@@ -31,6 +31,9 @@ export class SwatchRow {
   }
 
   static createSourceTile(documentRef, swatch, options = {}) {
+    const entry = documentRef.createElement("div");
+    entry.className = "palette-manager-v2__source-entry";
+
     const tile = documentRef.createElement("div");
     tile.className = "palette-manager-v2__source-tile";
     tile.tabIndex = 0;
@@ -63,11 +66,11 @@ export class SwatchRow {
     const tack = SwatchRow.createTackButton(documentRef, options);
     tack.classList.add("palette-manager-v2__pin-button--tile");
 
-    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__source-tooltip");
-    details.setAttribute("aria-hidden", "true");
+    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__source-details");
 
-    tile.append(chip, tack, details);
-    return tile;
+    tile.append(chip, tack);
+    entry.append(tile, details);
+    return entry;
   }
 
   static createDetailsBlock(documentRef, swatch, className) {
