@@ -55,7 +55,7 @@ export async function run() {
     );
     assert.equal(
       actions[3].href,
-      "../Palette Browser/index.html?view=manage&sourceToolId=sprite-editor"
+      "../palette-manager-v2/index.html?view=manage&sourceToolId=sprite-editor"
     );
 
     const validAsset = createAssetHandoff({

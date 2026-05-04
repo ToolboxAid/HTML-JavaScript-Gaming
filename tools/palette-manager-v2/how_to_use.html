@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Palette Manager V2 - How To Use</title>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+</head>
+<body class="hub-page-tools">
+  <div id="shared-theme-header"></div>
+  <main class="wrap tools-platform-surface">
+    <h1>Palette Manager V2: How To Use</h1>
+    <section class="card">
+      <h2>User Palette</h2>
+      <p>Add or select user swatches, edit symbol, hex, name, and source, then update or remove the selected row.</p>
+    </section>
+    <section class="card">
+      <h2>Browse Palettes</h2>
+      <p>Choose Crayola, W3C, or JavaScript, search the browse-only list, and use the red tack to copy a swatch into the user palette.</p>
+    </section>
+    <section class="card">
+      <h2>Pinning</h2>
+      <p>A red tack copies a source swatch into <code>tools.palette-browser.swatches</code> with its source. A green tack attempts removal and blocks if <code>isSwatchUsedByTool(swatch)</code> reports usage.</p>
+    </section>
+    <section class="card">
+      <h2>Import/Export</h2>
+      <p>Import must be valid JSON with <code>tools.palette-browser.swatches</code>. Export and copy emit that same global key.</p>
+    </section>
+  </main>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>

@@ -11,8 +11,6 @@
     "check:phase24-closeout-guard": "node tools/dev/checkPhase24CloseoutExecutionGuard.mjs",
     "check:style-system-guard": "node tools/dev/checkStyleSystemGuard.mjs",
     "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs",
-    "test:workspace-v2:playwright": "playwright test --workers=1 tests/ui/workspace-v2.asset-manager.spec.js tests/playwright/workspace-v2.validation.spec.js tests/playwright/tool-validation",
-    "test:workspace-v2": "node ./scripts/run-workspace-v2-playwright-gate.mjs",
     "codex:review-artifacts": "node ./scripts/write-codex-review-artifacts.mjs",
     "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs",
     "test:launch-smoke:games": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --games",

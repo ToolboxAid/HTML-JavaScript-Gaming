@@ -215,25 +215,8 @@ function createAssetBrowserAdapter() {
   };
 }
 
-function createPaletteBrowserAdapter() {
-  const api = readToolApi("palette-browser", "paletteBrowserApp");
-  if (!api || typeof api.captureProjectState !== "function" || typeof api.applyProjectState !== "function") {
-    return buildUnavailableAdapter("palette-browser");
-  }
-
-  return {
-    toolId: "palette-browser",
-    ready: true,
-    getProjectName() {
-      return "Shared Palette Workflow";
-    },
-    captureState() {
-      return cloneValue(api.captureProjectState());
-    },
-    applyState(state) {
-      return api.applyProjectState(cloneValue(state)) === true;
-    }
-  };
+function createPaletteManagerAdapter() {
+  return buildUnavailableAdapter("palette-manager-v2");
 }
 
 function createAssetPipelineAdapter() {
@@ -271,8 +254,8 @@ export function getProjectAdapter(toolId) {
       return createSpriteAdapter();
     case "asset-browser":
       return createAssetBrowserAdapter();
-    case "palette-browser":
-      return createPaletteBrowserAdapter();
+    case "palette-manager-v2":
+      return createPaletteManagerAdapter();
     case "asset-pipeline":
       return createAssetPipelineAdapter();
     default:

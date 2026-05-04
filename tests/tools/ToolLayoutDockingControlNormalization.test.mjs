@@ -33,8 +33,8 @@ export async function run() {
     /tools-platform-resize-panel" data-panel-side="right"/
   ]);
 
-  assertIncludesAll("tools/Palette Browser/index.html", [
-    /palette-browser__layout tools-platform-layout-grid/,
+  assertIncludesAll("tools/palette-manager-v2/index.html", [
+    /palette-manager-v2__layout tools-platform-layout-grid/,
     /tools-platform-resize-panel" data-panel-side="left"/,
     /tools-platform-resize-panel" data-panel-side="right"/
   ]);

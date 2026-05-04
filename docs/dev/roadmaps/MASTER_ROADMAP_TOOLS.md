@@ -1,9 +1,9 @@
 # MASTER_ROADMAP_TOOLS
 
-Task: PR_26124_025-remove-v2-common-rebuild-surface
+Task: PR_26124_026
 
 ## Core Tool Rebuild
-- [.] Palette Browser: rebuild first as the global palette source of truth; publish `tools.palette-browser`.
+- [x] Palette Manager V2: rebuilt first as the global palette source of truth; runtime id `palette-manager-v2`; publish `tools.palette-browser`.
 - [ ] Asset Browser: rebuild approved asset browsing and manifest validation; publish `tools.asset-browser`.
 - [ ] Asset Pipeline: rebuild pipeline payload validation and normalized output; publish `tools.asset-pipeline`.
 - [ ] SVG Asset Studio: rebuild vector asset authoring, validation, and export; publish `tools.svg-asset-studio`.
@@ -22,7 +22,8 @@ Task: PR_26124_025-remove-v2-common-rebuild-surface
 - [ ] Performance Profiler: rebuild profile settings validation and report export; publish `tools.performance-profiler`.
 
 ## Deferred References
-- [x] Transitional V2/workspace rebuild surface removed before Palette Browser rebuild.
+- [x] Transitional V2/workspace rebuild surface removed before Palette Manager V2 rebuild.
+- [x] Workspace V2 Playwright gate removed from the active test surface.
 - [x] Unused common support files removed after confirming no remaining imports.
 - [ ] Support folders remain reference-only: shared, dev, preview, codex, templates.
 - [ ] Schemas remain the current contract baseline until a schema-scoped PR.

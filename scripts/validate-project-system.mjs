@@ -14,7 +14,7 @@ const REQUIRED_ACTIVE_TOOL_NAMES = [
   "Parallax Scene Studio",
   "Sprite Editor",
   "Asset Browser / Import Hub",
-  "Palette Browser / Manager"
+  "Palette Manager V2"
 ];
 
 const REQUIRED_SHARED_FILES = [
@@ -54,8 +54,8 @@ const TOOL_BOOTSTRAP_CHECKS = [
     pattern: "window.assetBrowserApp ="
   },
   {
-    file: "tools/Palette Browser/main.js",
-    pattern: "window.paletteBrowserApp ="
+    file: "tools/palette-manager-v2/main.js",
+    pattern: "window.paletteManagerV2App ="
   }
 ];
 

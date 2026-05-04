@@ -44,11 +44,11 @@ const TOOL_EXPECTED_CONTRACTS = Object.freeze({
     optionalPayloadShape: Object.freeze(["palette", "metadata", "sprites"]),
     paletteCapable: true
   }),
-  "palette-browser": Object.freeze({
-    requiredPayloadShape: CANONICAL_PALETTE_REQUIRED_FIELDS,
-    optionalPayloadShape: Object.freeze(["source"]),
+  "palette-manager-v2": Object.freeze({
+    requiredPayloadShape: Object.freeze(["swatches"]),
+    optionalPayloadShape: Object.freeze([]),
     paletteCapable: true,
-    canonicalPaletteExpected: true
+    canonicalPaletteExpected: false
   })
 });
 

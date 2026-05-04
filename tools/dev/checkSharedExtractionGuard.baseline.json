@@ -2152,16 +2152,6 @@
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "tools/Palette Browser/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/Palette Browser/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
       "file": "tools/Parallax Scene Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"

@@ -12,7 +12,7 @@ const FIRST_CLASS_TOOL_INDEXES = Object.freeze([
   { toolId: "svg-asset-studio", indexPath: "../../tools/SVG Asset Studio/index.html" },
   { toolId: "tile-map-editor", indexPath: "../../tools/Tilemap Studio/index.html" },
   { toolId: "parallax-editor", indexPath: "../../tools/Parallax Scene Studio/index.html" },
-  { toolId: "palette-browser", indexPath: "../../tools/Palette Browser/index.html" },
+  { toolId: "palette-manager-v2", indexPath: "../../tools/palette-manager-v2/index.html" },
   { toolId: "state-inspector", indexPath: "../../tools/State Inspector/index.html" },
   { toolId: "replay-visualizer", indexPath: "../../tools/Replay Visualizer/index.html" },
   { toolId: "performance-profiler", indexPath: "../../tools/Performance Profiler/index.html" },
@@ -55,11 +55,11 @@ export async function run() {
       );
       assert.equal(
         actions[2].href,
-        `../Palette Browser/index.html?view=browse&sourceToolId=${toolId}`
+        `../palette-manager-v2/index.html?view=browse&sourceToolId=${toolId}`
       );
       assert.equal(
         actions[3].href,
-        `../Palette Browser/index.html?view=manage&sourceToolId=${toolId}`
+        `../palette-manager-v2/index.html?view=manage&sourceToolId=${toolId}`
       );
     });
   } finally {
@@ -70,6 +70,6 @@ export async function run() {
     const fileUrl = new URL(indexPath, import.meta.url);
     const html = readFileSync(fileUrl, "utf8");
     assert.match(html, new RegExp(`data-tool-id="${toolId}"`));
-    assert.match(html, /<script type="module" src="\.\.\/shared\/platformShell\.js"><\/script>/);
+    assert.match(html, /<script type="module" src="\.\.\/shared\/platformShell\.js"><\/script>|import\("\.\.\/shared\/platformShell\.js"\)/);
   });
 }

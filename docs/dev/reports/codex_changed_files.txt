@@ -1,39 +1,86 @@
-docs/design/tools/asset-manager-v2/REENGINEERING_DESIGN.md
+# git status --short
+D .github/workflows/workspace-v2-playwright.yml
+ M docs/design/tools/TOOLS_REENGINEERING_INDEX.md
+ D docs/design/tools/palette-browser/REENGINEERING_DESIGN.md
+ M docs/dev/reports/codex_changed_files.txt
+ M docs/dev/reports/codex_review.diff
+ M docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
+ M package.json
+ M scripts/audit-sample-json-ownership.mjs
+ D scripts/run-workspace-v2-playwright-gate.mjs
+ M scripts/sync-tool-hints-from-workspace-manager.mjs
+ D scripts/update-tool-completion-audit-from-playwright.mjs
+ M scripts/validate-active-tools-surface.mjs
+ M scripts/validate-project-system.mjs
+ D tests/asset-manager.spec.js
+ D tests/playwright/tool-validation/workspace-v2.tool-validation.spec.js
+ D tests/playwright/workspace-v2.validation.spec.js
+ M tests/tools/AssetUsageIntegration.test.mjs
+ M tests/tools/ToolEntryLaunchContract.test.mjs
+ M tests/tools/ToolLayoutDockingControlNormalization.test.mjs
+ M tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
+ D tests/ui/workspace-v2.asset-manager.spec.js
+ D "tools/Palette Browser/README.md"
+ D "tools/Palette Browser/assets/images/preview.svg"
+ D "tools/Palette Browser/how_to_use.html"
+ D "tools/Palette Browser/index.html"
+ D "tools/Palette Browser/main.js"
+ D "tools/Palette Browser/paletteBrowser.css"
+ M tools/dev/checkSharedExtractionGuard.baseline.json
+ M tools/shared/assetUsageIntegration.js
+ M tools/shared/documentModeGuards.js
+ M tools/shared/platformShell.js
+ M tools/shared/projectSystemAdapters.js
+ M tools/shared/projectToolIntegration.js
+ M tools/shared/toolLoadDiagnostics.js
+ M tools/templates/starter-project-template/config/starter.project.json
+ M tools/toolRegistry.js
+?? docs/design/tools/palette-manager-v2/
+?? docs/dev/reports/PR_26124_026_report.md
+?? tools/palette-manager-v2/
+
+# git diff --stat
+.github/workflows/workspace-v2-playwright.yml      |   39 -
+ docs/design/tools/TOOLS_REENGINEERING_INDEX.md     |    6 +-
+ .../tools/palette-browser/REENGINEERING_DESIGN.md  |  134 ---
+ docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md          |    7 +-
+ package.json                                       |    2 -
+ scripts/audit-sample-json-ownership.mjs            |    6 +-
+ scripts/run-workspace-v2-playwright-gate.mjs       |   72 --
+ scripts/sync-tool-hints-from-workspace-manager.mjs |    2 +-
+ ...pdate-tool-completion-audit-from-playwright.mjs |  216 -----
+ scripts/validate-active-tools-surface.mjs          |    5 +-
+ scripts/validate-project-system.mjs                |    6 +-
+ tests/asset-manager.spec.js                        |   24 -
+ .../workspace-v2.tool-validation.spec.js           |  208 ----
+ tests/playwright/workspace-v2.validation.spec.js   |  252 -----
+ tests/tools/AssetUsageIntegration.test.mjs         |    2 +-
+ tests/tools/ToolEntryLaunchContract.test.mjs       |    8 +-
+ .../ToolLayoutDockingControlNormalization.test.mjs |    4 +-
+ .../ToolWorkspaceSchemaManifestBoundaries.test.mjs |   12 +-
+ tests/ui/workspace-v2.asset-manager.spec.js        |  118 ---
+ tools/Palette Browser/README.md                    |   22 -
+ tools/Palette Browser/assets/images/preview.svg    |   84 --
+ tools/Palette Browser/how_to_use.html              |   71 --
+ tools/Palette Browser/index.html                   |   90 --
+ tools/Palette Browser/main.js                      | 1023 --------------------
+ tools/Palette Browser/paletteBrowser.css           |  254 -----
+ tools/dev/checkSharedExtractionGuard.baseline.json |   10 -
+ tools/shared/assetUsageIntegration.js              |   12 +-
+ tools/shared/documentModeGuards.js                 |    4 +-
+ tools/shared/platformShell.js                      |   19 +-
+ tools/shared/projectSystemAdapters.js              |   25 +-
+ tools/shared/projectToolIntegration.js             |   16 +-
+ tools/shared/toolLoadDiagnostics.js                |    8 +-
+ .../config/starter.project.json                    |    4 +-
+ tools/toolRegistry.js                              |   18 +-
+ 34 files changed, 68 insertions(+), 2715 deletions(-)
+
+# untracked files included in codex_review.diff
 docs/design/tools/palette-manager-v2/REENGINEERING_DESIGN.md
-docs/design/tools/svg-asset-studio-v2/REENGINEERING_DESIGN.md
-docs/design/tools/tilemap-studio-v2/REENGINEERING_DESIGN.md
-docs/design/tools/TOOLS_REENGINEERING_INDEX.md
-docs/design/tools/vector-map-editor-v2/REENGINEERING_DESIGN.md
-docs/design/tools/workspace-manager/REENGINEERING_DESIGN.md
-docs/design/tools/workspace-v2/REENGINEERING_DESIGN.md
-docs/dev/reports/codex_changed_files.txt
-docs/dev/reports/codex_review.diff
-docs/dev/reports/tool_surface_removal_summary.md
-docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
-tools/asset-manager-v2/index.html
-tools/asset-manager-v2/index.js
-tools/common/sessionContext.js
-tools/common/toolContract.js
-tools/common/toolLayout.css
-tools/index.html
+docs/dev/reports/PR_26124_026_report.md
+tools/palette-manager-v2/how_to_use.html
 tools/palette-manager-v2/index.html
-tools/palette-manager-v2/index.js
-tools/renderToolsIndex.js
-tools/shared/documentModeGuards.js
-tools/shared/platformShell.js
-tools/shared/toolHostRuntime.js
-tools/shared/toolLaunchSSoT.js
-tools/shared/toolLaunchSSoTData.js
-tools/svg-asset-studio-v2/index.html
-tools/svg-asset-studio-v2/index.js
-tools/tilemap-studio-v2/index.html
-tools/tilemap-studio-v2/index.js
-tools/vector-map-editor-v2/index.html
-tools/vector-map-editor-v2/index.js
-tools/Workspace Manager/how_to_use.html
-tools/Workspace Manager/index.html
-tools/Workspace Manager/main.js
-tools/Workspace Manager/README.md
-tools/Workspace Manager/toolHost.css
-tools/workspace-v2/index.html
-tools/workspace-v2/index.js
+tools/palette-manager-v2/main.js
+tools/palette-manager-v2/paletteManagerV2.css
+tools/palette-manager-v2/README.md

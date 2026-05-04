@@ -1,0 +1,217 @@
+.palette-manager-v2 {
+  min-height: 0;
+  padding: 16px;
+  overflow-x: hidden;
+}
+
+.palette-manager-v2__layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) 360px;
+  gap: 16px;
+  min-height: calc(100vh - 180px);
+}
+
+.palette-manager-v2__panel {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 8px;
+  background: var(--panel, rgba(39, 18, 82, 0.86));
+  padding: 14px;
+  overflow: hidden;
+}
+
+.palette-manager-v2__panel--left,
+.palette-manager-v2__panel--right {
+  width: 100%;
+}
+
+.palette-manager-v2__panel--center {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.palette-manager-v2__accordion {
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 8px;
+  background: var(--surface-inline, rgba(25, 12, 55, 0.74));
+  overflow: hidden;
+}
+
+.palette-manager-v2__accordion + .palette-manager-v2__accordion {
+  margin-top: 14px;
+}
+
+.palette-manager-v2__accordion-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+}
+
+.palette-manager-v2__accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.palette-manager-v2__accordion-icon {
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 50%;
+}
+
+.palette-manager-v2__accordion[open] .palette-manager-v2__accordion-icon {
+  transform: rotate(45deg);
+}
+
+.palette-manager-v2__accordion-content {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+}
+
+.palette-manager-v2__field {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.palette-manager-v2__field input,
+.palette-manager-v2__field select {
+  width: 100%;
+}
+
+.palette-manager-v2__form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.palette-manager-v2__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.palette-manager-v2__list {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  max-height: 520px;
+  overflow-y: auto;
+  align-content: start;
+}
+
+.palette-manager-v2__swatch-row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 42px;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 8px;
+  background: var(--surface-inline, rgba(25, 12, 55, 0.74));
+  padding: 6px;
+}
+
+.palette-manager-v2__swatch-row.is-selected {
+  border-color: var(--accent, #ddd6fe);
+}
+
+.palette-manager-v2__swatch-chip,
+.palette-manager-v2__preview {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+  background: #000000;
+}
+
+.palette-manager-v2__swatch-chip {
+  width: 32px;
+  height: 32px;
+}
+
+.palette-manager-v2__preview {
+  width: 100%;
+  aspect-ratio: 8 / 3;
+}
+
+.palette-manager-v2__swatch-copy {
+  min-width: 0;
+}
+
+.palette-manager-v2__swatch-name,
+.palette-manager-v2__swatch-meta,
+.palette-manager-v2__meta {
+  margin: 0;
+}
+
+.palette-manager-v2__swatch-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.palette-manager-v2__swatch-meta,
+.palette-manager-v2__meta {
+  color: var(--muted, #c4b5fd);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.palette-manager-v2__pin-button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  color: #ffffff;
+}
+
+.palette-manager-v2__pin-button.is-pinned {
+  background: #188038;
+}
+
+.palette-manager-v2__pin-button:not(.is-pinned) {
+  background: #b3261e;
+}
+
+.palette-manager-v2__json-preview {
+  min-height: 220px;
+  max-height: 420px;
+  margin: 0;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.24);
+  padding: 12px;
+}
+
+.palette-manager-v2__status {
+  min-height: 24px;
+  color: var(--muted, #c4b5fd);
+}
+
+.palette-manager-v2__errors {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  color: #ffd6d6;
+}
+
+@media (max-width: 1120px) {
+  .palette-manager-v2__layout,
+  .palette-manager-v2__form-grid {
+    grid-template-columns: 1fr;
+  }
+}

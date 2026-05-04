@@ -62,7 +62,7 @@ function inferIntendedToolUseCase(fileIdentity, metadataRefs) {
     return "sample-local companion JSON";
   }
   if (token === "palette") {
-    return "palette-browser (canonical palette payload)";
+    return "palette-manager-v2";
   }
   if (token === "workspace-all-tools") {
     return "workspace-manager integration manifest";
@@ -80,7 +80,7 @@ function resolveEntryPoint(toolRegistryMap, intendedToolUseCase) {
     .filter(Boolean);
   const entryPoints = [];
   for (const id of ids) {
-    const resolvedId = id === "palette" ? "palette-browser" : id;
+    const resolvedId = id === "palette" ? "palette-manager-v2" : id;
     const tool = toolRegistryMap.get(resolvedId);
     if (tool?.entryPoint) {
       entryPoints.push(`/tools/${tool.entryPoint}`);
@@ -125,7 +125,7 @@ function evaluateFit({ folderSampleId, fileName, fileIdentity, metadataRefs }) {
     if (expectedToken === toolId) {
       return true;
     }
-    if (expectedToken === "palette" && toolId === "palette-browser") {
+    if (expectedToken === "palette" && toolId === "palette-manager-v2") {
       return true;
     }
     return false;

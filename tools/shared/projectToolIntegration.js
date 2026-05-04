@@ -12,8 +12,7 @@ const TOOL_DATA_CONTRACT_IDS = Object.freeze({
   "sprite-editor": "tool-state.sprite-editor/1",
   "vector-map-editor": "tool-state.vector-map-editor/1",
   "svg-asset-studio": "tool-state.svg-asset-studio/1",
-  "asset-browser": "tool-state.asset-browser/1",
-  "palette-browser": "tool-state.palette-browser/1"
+  "asset-browser": "tool-state.asset-browser/1"
 });
 
 function normalizeId(value) {
@@ -214,14 +213,6 @@ export function normalizeToolStateForProjectManifest(toolId, rawState) {
     return nextState;
   }
 
-  if (safeToolId === "palette-browser") {
-    const nextState = cloneValue(state);
-    if (Object.prototype.hasOwnProperty.call(nextState, "selectedPaletteId")) {
-      nextState.selectedPaletteId = normalizeId(nextState.selectedPaletteId);
-    }
-    return nextState;
-  }
-
   return cloneValue(state);
 }
 
@@ -316,11 +307,6 @@ export function extractToolAssetReferences(toolId, rawState) {
 
   if (safeToolId === "asset-browser") {
     addAssetRef(refs, "assetIds", state?.selectedAssetId);
-    return refs;
-  }
-
-  if (safeToolId === "palette-browser") {
-    addAssetRef(refs, "paletteIds", state?.selectedPaletteId);
     return refs;
   }
 

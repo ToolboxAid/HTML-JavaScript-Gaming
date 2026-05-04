@@ -43,12 +43,12 @@ export async function run() {
     assert.equal(existsSync(absolutePath), false);
   });
 
-  const paletteBrowserSource = readFileSync(new URL("../../tools/Palette Browser/main.js", import.meta.url), "utf8");
-  assert.match(paletteBrowserSource, /function duplicateSelectedPalette\(/);
-  assert.match(paletteBrowserSource, /createCustomPalette\(nextName, palette\.swatches\)/);
-  assert.match(paletteBrowserSource, /Duplicate a built-in palette before editing swatches\./);
-  assert.match(paletteBrowserSource, /Shared palette is locked to .*Edit swatches instead\./);
-  assert.match(paletteBrowserSource, /if \(isReadOnlyPalette\(palette\)\) \{\s*return;\s*\}/s);
+  const paletteManagerSource = readFileSync(new URL("../../tools/palette-manager-v2/main.js", import.meta.url), "utf8");
+  assert.match(paletteManagerSource, /const GLOBAL_PALETTE_TOOL_KEY = "palette-browser";/);
+  assert.match(paletteManagerSource, /const SOURCE_PALETTES = Object\.freeze/);
+  assert.match(paletteManagerSource, /export function isSwatchUsedByTool\(\) \{\s*return false;\s*\}/s);
+  assert.match(paletteManagerSource, /window\.paletteManagerV2App =/);
+  assert.doesNotMatch(paletteManagerSource, /paletteBrowserApp|toolState|sessionStorage/);
 
   const spriteEditorSource = readFileSync(new URL("../../tools/Sprite Editor/modules/spriteEditorApp.js", import.meta.url), "utf8");
   assert.match(spriteEditorSource, /image\/png/);

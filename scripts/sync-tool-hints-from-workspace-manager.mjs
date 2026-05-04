@@ -28,7 +28,7 @@ const GAME_TOOLS_MANIFEST_SCHEMA = "html-js-gaming.game-asset-manifest";
 const GAME_TOOLS_MANIFEST_VERSION = 1;
 
 const KIND_TO_TOOLS_USED = Object.freeze({
-  palette: ["palette-browser"],
+  palette: ["palette-manager-v2"],
   skin: ["skin-editor"],
   sprite: ["sprite-editor"],
   tilemap: ["tile-map-editor"],

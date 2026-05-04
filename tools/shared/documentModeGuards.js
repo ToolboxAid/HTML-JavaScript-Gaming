@@ -51,7 +51,7 @@ function navigateToTool(toolId, options = {}) {
 
 const TOOL_REGISTRY_BY_ID = new Map([
   ["state-inspector", { displayName: "State Inspector", entryPoint: "State Inspector/index.html" }],
-  ["palette-browser", { displayName: "Palette Browser / Manager", entryPoint: "Palette Browser/index.html" }],
+  ["palette-manager-v2", { displayName: "Palette Manager V2", entryPoint: "palette-manager-v2/index.html" }],
   ["sprite-editor", { displayName: "Sprite Editor", entryPoint: "Sprite Editor/index.html" }],
   ["tile-map-editor", { displayName: "Tilemap Studio", entryPoint: "Tilemap Studio/index.html" }],
   ["parallax-editor", { displayName: "Parallax Scene Studio", entryPoint: "Parallax Scene Studio/index.html" }],
@@ -84,7 +84,7 @@ function inferToolIdFromDocument(rawDocument) {
     && !Array.isArray(rawDocument.frames)
     && !Array.isArray(rawDocument.layers)
   ) {
-    return "palette-browser";
+    return "palette-manager-v2";
   }
   if (
     Array.isArray(rawDocument.objects)

@@ -24,7 +24,7 @@
       "type": "palette",
       "displayName": "Vector Native Primary Palette",
       "sourcePath": "templates/vector-native-arcade/assets/palettes/vector-native-primary.palette.json",
-      "sourceToolId": "palette-browser",
+      "sourceToolId": "palette-manager-v2",
       "updatedAt": "2026-04-05T00:00:00.000Z",
       "metadata": {
         "validationRole": "palette"
@@ -68,7 +68,7 @@
         "type": "palette",
         "displayName": "Vector Native Primary Palette",
         "sourcePath": "templates/vector-native-arcade/assets/palettes/vector-native-primary.palette.json",
-        "sourceToolId": "palette-browser"
+        "sourceToolId": "palette-manager-v2"
       }
     ]
   },

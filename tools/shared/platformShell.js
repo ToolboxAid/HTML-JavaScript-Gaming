@@ -36,6 +36,7 @@ const TOOLS_PLATFORM_LOGGER = new Logger({ channel: "tools.platform", level: "de
 const TOOLS_PLATFORM_BOOT_MS = Date.now();
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
+const GLOBAL_PALETTE_TOOL_KEY = "palette-browser";
 const WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY = "toolboxaid.toolsPlatform.launchSignature";
 const TOOL_STATE_STORAGE_KEY_PREFIX = "toolboxaid.";
 const STANDARDIZED_TOOL_HEADER_IDS = new Set([
@@ -497,11 +498,11 @@ function resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId) {
     return null;
   }
 
-  if (directToolId === "palette-browser") {
+  if (directToolId === GLOBAL_PALETTE_TOOL_KEY) {
     const isDirectPaletteDocument = scopedPreset.schema === "html-js-gaming.palette"
       && Array.isArray(scopedPreset.swatches);
     if (!isDirectPaletteDocument) {
-      console.warn(`[tools.platform] workspace scoped preset rejected: key="${directToolId}" must be direct palette JSON for palette-browser.`);
+      console.warn(`[tools.platform] workspace scoped preset rejected: key="${directToolId}" must be direct palette JSON for tools.palette-browser.`);
       return null;
     }
     return scopedPreset;
@@ -548,7 +549,7 @@ function summarizeEmbeddedToolPayloadDocument(toolId = "", scopedToolState = nul
     ? scopedToolState.payload
     : {};
   const toolLabel = normalizeTextValue(scopedToolState.tool || normalizedToolId);
-  const directPalette = normalizedToolId === "palette-browser" && Array.isArray(scopedToolState.swatches)
+  const directPalette = normalizedToolId === GLOBAL_PALETTE_TOOL_KEY && Array.isArray(scopedToolState.swatches)
     ? scopedToolState
     : null;
   if (directPalette) {
@@ -1195,8 +1196,8 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   const tools = source.tools && typeof source.tools === "object" && !Array.isArray(source.tools)
     ? source.tools
     : {};
-  const paletteBrowserSection = tools["palette-browser"] && typeof tools["palette-browser"] === "object" && !Array.isArray(tools["palette-browser"])
-    ? tools["palette-browser"]
+  const paletteBrowserSection = tools[GLOBAL_PALETTE_TOOL_KEY] && typeof tools[GLOBAL_PALETTE_TOOL_KEY] === "object" && !Array.isArray(tools[GLOBAL_PALETTE_TOOL_KEY])
+    ? tools[GLOBAL_PALETTE_TOOL_KEY]
     : null;
   const isDirectPalettePayload = paletteBrowserSection?.schema === "html-js-gaming.palette"
     && Array.isArray(paletteBrowserSection.swatches);
@@ -1456,7 +1457,7 @@ function renderToolAssetBadge(toolId = "") {
     ? normalizeTextValue(workspaceScopedSvgAssetLabelForStatus)
     : "";
   const acceptedKinds = resolveAcceptedAssetKindsForTool(normalizedToolId);
-  if (normalizedToolId === "palette-browser") {
+  if (normalizedToolId === "palette-manager-v2") {
     const palette = readSharedPaletteHandoff();
     const paletteLabel = palette?.displayName || embeddedPayloadSummary || "none";
     const paletteTitle = palette?.displayName
@@ -1603,7 +1604,7 @@ function renderToolLinks(currentToolId) {
     if (!lockState.workspaceReady) {
       return true;
     }
-    if (toolId === "palette-browser") {
+    if (toolId === "palette-manager-v2") {
       return false;
     }
     if (lockState.hasToolState(toolId)) {
@@ -1893,7 +1894,7 @@ function applyDocumentMetadata(currentTool) {
   const workspaceContext = isWorkspaceManagerContext();
   const lockState = resolveWorkspaceToolLockState();
   const isToolSurfacePage = getPageMode() !== "landing";
-  const isPaletteBrowser = currentTool?.id === "palette-browser";
+  const isPaletteBrowser = currentTool?.id === "palette-manager-v2";
   const workspaceMissingLock = workspaceContext && isToolSurfacePage && !lockState.workspaceReady;
   const paletteMissingLock = workspaceContext
     && isToolSurfacePage
@@ -1903,7 +1904,7 @@ function applyDocumentMetadata(currentTool) {
   const shouldLockToolSurface = workspaceMissingLock || paletteMissingLock;
   const lockMessage = workspaceMissingLock
     ? "Create or open a workspace to use this tool."
-    : "Select a shared palette in Palette Browser to use this tool.";
+    : "Select a shared palette in Palette Manager V2 to use this tool.";
   document.body.classList.toggle("tools-platform-workspace-context", workspaceContext);
   document.body.classList.toggle("tools-platform-workspace-tool-locked", shouldLockToolSurface);
   if (lastLockedSurfaceElement) {

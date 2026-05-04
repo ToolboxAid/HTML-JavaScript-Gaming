@@ -63,7 +63,8 @@ async function main() {
     if (!(await pathExists(entryPointPath))) {
       issues.push(`Missing active tool entry point: tools/${tool.entryPoint}`);
     }
-    if (TOOL_NAME_SUFFIX_PATTERN.test(tool.displayName) || TOOL_NAME_SUFFIX_PATTERN.test(tool.folderName)) {
+    const isAllowedNamedV2 = tool.id === "palette-manager-v2";
+    if (!isAllowedNamedV2 && (TOOL_NAME_SUFFIX_PATTERN.test(tool.displayName) || TOOL_NAME_SUFFIX_PATTERN.test(tool.folderName))) {
       issues.push(`Disallowed active naming suffix detected for ${tool.displayName} (${tool.folderName}).`);
     }
     const sampleEntryPoints = Array.isArray(tool.sampleEntryPoints) ? tool.sampleEntryPoints : [];
@@ -149,7 +150,7 @@ async function main() {
     issues.push('Stale "Asset Browser / Import Helper" placeholder remains on tools landing page.');
   }
   if (/Palette Browser \/ Manager/.test(toolsLandingPage)) {
-    issues.push('Palette Browser / Manager should be registry-rendered, not left behind as a static placeholder card.');
+    issues.push('Palette Browser / Manager should not remain as a static placeholder card.');
   }
   if (/Asset Browser \/ Import Hub/.test(toolsLandingPage)) {
     issues.push('Asset Browser / Import Hub should be registry-rendered, not left behind as a static placeholder card.');

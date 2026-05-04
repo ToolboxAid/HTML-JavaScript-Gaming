@@ -193,23 +193,23 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "palette-browser",
-    name: "Palette Browser / Manager",
-    displayName: "Palette Browser / Manager",
+    id: "palette-manager-v2",
+    name: "Palette Manager V2",
+    displayName: "Palette Manager V2",
     shortLabel: "Palette",
-    path: "Palette Browser",
-    folderName: "Palette Browser",
-    entryPoint: "Palette Browser/index.html",
-    description: "Shared palette browsing and management surface for engine palettes and local editable palette workflows.",
+    path: "palette-manager-v2",
+    folderName: "palette-manager-v2",
+    entryPoint: "palette-manager-v2/index.html",
+    description: "Global palette manager for tools.palette-browser user swatches and browse-only source palette pinning.",
     showcaseTag: "Palettes",
-    showcaseStatus: "Shared Contract Ready",
+    showcaseStatus: "Global Palette Ready",
     active: true,
     legacy: false,
     order: 7,
     sampleEntryPoints: [
       {
         label: "README",
-        path: "Palette Browser/README.md"
+        path: "palette-manager-v2/README.md"
       }
     ],
     visibleInToolsList: true

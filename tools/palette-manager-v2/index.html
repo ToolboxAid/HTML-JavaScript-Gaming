@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Palette Manager V2</title>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="./paletteManagerV2.css" />
+</head>
+<body class="tools-platform-tool-page hub-page-tools" data-tool-id="palette-manager-v2" data-tools-platform-page="tool">
+  <details class="is-collapsible" open>
+    <summary class="is-collapsible__summary" data-tools-platform-summary></summary>
+    <div class="is-collapsible__content">
+      <div id="shared-theme-header"></div>
+      <div data-tools-platform-header></div>
+    </div>
+  </details>
+
+  <div class="palette-manager-v2 app-shell">
+    <div class="palette-manager-v2__layout tools-platform-layout-grid">
+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
+            <span>User Palette</span>
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
+            <div id="userPaletteCount" class="palette-manager-v2__meta">0 user swatches</div>
+            <div id="userSwatchList" class="palette-manager-v2__list" aria-label="User palette swatches"></div>
+          </div>
+        </details>
+
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
+            <span>Browse Palettes</span>
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
+            <label class="palette-manager-v2__field">
+              Source palette
+              <select id="sourcePaletteSelect">
+                <option value="crayola">Crayola</option>
+                <option value="w3c">W3C</option>
+                <option value="javascript">JavaScript</option>
+              </select>
+            </label>
+            <label class="palette-manager-v2__field">
+              Search source swatches
+              <input id="sourceSearchInput" type="search" autocomplete="off" />
+            </label>
+            <div id="sourceSwatchList" class="palette-manager-v2__list" aria-label="Browse palette swatches"></div>
+          </div>
+        </details>
+      </aside>
+
+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
+        <h2 id="editorTitle">Selected Swatch</h2>
+        <div id="selectedSwatchPreview" class="palette-manager-v2__preview" aria-label="Selected swatch preview"></div>
+        <div class="palette-manager-v2__form-grid">
+          <label class="palette-manager-v2__field">
+            Symbol
+            <input id="swatchSymbolInput" type="text" maxlength="1" autocomplete="off" />
+          </label>
+          <label class="palette-manager-v2__field">
+            Hex
+            <input id="swatchHexInput" type="text" maxlength="7" autocomplete="off" placeholder="#RRGGBB" />
+          </label>
+          <label class="palette-manager-v2__field">
+            Name
+            <input id="swatchNameInput" type="text" autocomplete="off" />
+          </label>
+          <label class="palette-manager-v2__field">
+            Source
+            <input id="swatchSourceInput" type="text" autocomplete="off" />
+          </label>
+        </div>
+        <div class="palette-manager-v2__controls">
+          <button id="addSwatchButton" type="button">Add User Swatch</button>
+          <button id="updateSwatchButton" type="button">Update Selected</button>
+          <button id="removeSwatchButton" type="button">Remove Selected</button>
+          <button id="clearFormButton" type="button">Clear Form</button>
+        </div>
+      </main>
+
+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
+            <span>Import/Export</span>
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
+            <div class="palette-manager-v2__controls">
+              <button id="importPaletteButton" type="button">Import JSON</button>
+              <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
+              <button id="copyPaletteButton" type="button">Copy JSON</button>
+              <button id="exportPaletteButton" type="button">Export JSON</button>
+            </div>
+            <pre id="paletteJsonPreview" class="palette-manager-v2__json-preview">No user palette data.</pre>
+          </div>
+        </details>
+
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
+            <span>Validation/Error Viewer</span>
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
+            <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
+            <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
+          </div>
+        </details>
+      </aside>
+    </div>
+  </div>
+
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>

@@ -178,17 +178,17 @@ export function getSharedShellActions(currentToolId, pageMode = "tool") {
     },
     {
       id: "browse-palettes",
-      targetToolId: "palette-browser",
+      targetToolId: "palette-manager-v2",
       label: SHARED_ACTION_LABELS.browsePalettes,
-      href: getSharedToolHref("palette-browser", pageMode, { view: "browse", sourceToolId: currentToolId }),
-      current: currentToolId === "palette-browser" && view !== "manage"
+      href: getSharedToolHref("palette-manager-v2", pageMode, { view: "browse", sourceToolId: currentToolId }),
+      current: currentToolId === "palette-manager-v2" && view !== "manage"
     },
     {
       id: "manage-palettes",
-      targetToolId: "palette-browser",
+      targetToolId: "palette-manager-v2",
       label: SHARED_ACTION_LABELS.managePalettes,
-      href: getSharedToolHref("palette-browser", pageMode, { view: "manage", sourceToolId: currentToolId }),
-      current: currentToolId === "palette-browser" && view === "manage"
+      href: getSharedToolHref("palette-manager-v2", pageMode, { view: "manage", sourceToolId: currentToolId }),
+      current: currentToolId === "palette-manager-v2" && view === "manage"
     }
   ];
 }
