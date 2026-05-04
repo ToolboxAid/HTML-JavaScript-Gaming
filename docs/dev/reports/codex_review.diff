@@ -1,380 +1,522 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 5b363cfb..cd2d225d 100644
+index cd2d225d..d45f1206 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,24 +1,23 @@
--# Codex Commands - PR_26124_047-palette-manager-right-column-and-hex-fixes
-+# Codex Commands - PR_26124_048-palette-manager-right-accordion-v2
-
+@@ -1,23 +1,34 @@
+-# Codex Commands - PR_26124_048-palette-manager-right-accordion-v2
++# Codex Commands - PR_26124_049-palette-manager-swatch-tags-and-selected-layout
+ 
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
--- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md`.
--- Updated Palette Manager V2 only.
--- Created `docs/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md`.
-+- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md`.
-+- Updated Palette Manager V2 right-column markup and CSS only.
-+- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md`.
-
+-- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md`.
+-- Updated Palette Manager V2 right-column markup and CSS only.
+-- Created `docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md`.
++- Used `.codex/skills/repo-build/SKILL.md`.
++- Created `docs/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/BUILD_PR.md`.
++- Updated Palette Manager V2 and the palette swatch schema only.
++- Created `docs/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/APPLY_PR.md`.
+ 
  ## Validation Commands
--- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
--- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
--- `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`
--- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
--- Targeted served-browser Palette Manager V2 check using Playwright from Node.
-+- `git diff --name-only -- '*.js'`
-+- Targeted served-browser Palette Manager V2 right-column check using Playwright from Node.
+-- `git diff --name-only -- '*.js'`
+-- Targeted served-browser Palette Manager V2 right-column check using Playwright from Node.
++- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
++- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
++- `node --check tools/palette-manager-v2/modules/PaletteValidationService.js`
++- `node --check tools/palette-manager-v2/modules/paletteUtils.js`
++- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
++- Palette schema/import validation with positive and negative tag/hex samples using Node.
++- Targeted served-browser Palette Manager V2 selected/user-defined/tag/source check using Playwright from Node.
  - `git diff --check`
-+- `git diff --cached --check`
+ - `git diff --cached --check`
  - `npm run test:workspace-v2`
-
++- `npm run codex:review-artifacts`
++- Python `zipfile` packaging for `tmp/PR_26124_049-palette-manager-swatch-tags-and-selected-layout_delta.zip`
+ 
  ## Validation Outcome
--- JavaScript syntax checks: PASS.
--- Targeted served-browser Palette Manager V2 check: PASS.
-+- JavaScript syntax checks: no JavaScript files changed by PR048.
-+- Targeted served-browser Palette Manager V2 right-column check: PASS.
- - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed files.
-+- `git diff --cached --check`: PASS.
+-- JavaScript syntax checks: no JavaScript files changed by PR048.
+-- Targeted served-browser Palette Manager V2 right-column check: PASS.
+-- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed files.
++- JavaScript syntax checks: PASS.
++- Palette schema/import validation: PASS.
++- Targeted served-browser Palette Manager V2 behavior check: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed HTML/schema files.
+ - `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
++- Review artifacts: generated.
++- Repo-structured delta ZIP: generated.
  - Full samples smoke test: skipped by instruction.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 274de88b..6409893b 100644
+index 6409893b..07aca01d 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Fix Palette Manager right column, source locking, and alpha hex input - PR_26124_047-palette-manager-right-column-and-hex-fixes
-+Move Palette Manager right column to accordionV2 - PR_26124_048-palette-manager-right-accordion-v2
+-Move Palette Manager right column to accordionV2 - PR_26124_048-palette-manager-right-accordion-v2
++Add Palette Manager swatch tags and selected layout split - PR_26124_049-palette-manager-swatch-tags-and-selected-layout
+diff --git a/tools/palette-manager-v2/README.md b/tools/palette-manager-v2/README.md
+index d6b7ec86..693d1174 100644
+--- a/tools/palette-manager-v2/README.md
++++ b/tools/palette-manager-v2/README.md
+@@ -6,12 +6,14 @@ Palette Manager V2 is the runtime tool for editing the global palette data store
+ - Runtime tool id: `palette-manager-v2`
+ - Global data key: `tools.palette-browser`
+ - Managed data: `tools.palette-browser.swatches`
+-- Swatch shape: `{ "symbol": "A", "hex": "#RRGGBB or #RRGGBBAA", "name": "Color Name", "source": "source-id" }`
++- Swatch shape: `{ "symbol": "A", "hex": "#RRGGBB or #RRGGBBAA", "name": "Color Name", "source": "source-id", "tags": ["optional-tag"] }`
++- Optional tags are stored as an array of non-empty strings.
+ - Read-only source palettes: `src/engine/paletteList.js`
+ 
+ ## Workflow
+-- Add, edit, and remove user swatches from the User Palette accordion. Swatches created with Add User Swatch use `User Added` as their source.
++- Add, edit, and remove user swatches from the User Palette and User Defined Swatch accordions. Swatches created with Add User Swatch use `User Added` as their source.
++- Selected Swatch shows selected details with symbol, hex, name, and source read-only. Tags remain editable from Selected Swatch and offer suggestions from tags already used in the active palette.
+ - Browse Crayola, W3C, and JavaScript source palettes without editing the source lists.
+ - Use the red tack to copy a source swatch into the user palette.
+ - Use the green tack to remove a pinned/user swatch when `isSwatchUsedByTool(swatch)` allows removal.
+-- Import, copy, and export the exact `tools.palette-browser` JSON wrapper.
++- Import, copy, and export the exact `tools.palette-browser` JSON wrapper, including swatch tags when present.
+diff --git a/tools/palette-manager-v2/controls/PaletteEditorControl.js b/tools/palette-manager-v2/controls/PaletteEditorControl.js
+index c85fb5a5..bf43d467 100644
+--- a/tools/palette-manager-v2/controls/PaletteEditorControl.js
++++ b/tools/palette-manager-v2/controls/PaletteEditorControl.js
+@@ -1,4 +1,8 @@
+-import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText } from "../modules/paletteUtils.js";
++import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modules/paletteUtils.js";
++
++function tagsToInputValue(tags) {
++  return normalizeTags(tags).join(", ");
++}
+ 
+ export class PaletteEditorControl {
+   constructor({ refs, app, hexColorPattern }) {
+@@ -9,7 +13,10 @@ export class PaletteEditorControl {
+ 
+   bind() {
+     this.refs.swatchHexInput.addEventListener("input", () => {
+-      this.renderSelectedSwatchPreview(this.readFormSwatch());
++      this.renderUserDefinedSwatchPreview(this.readFormSwatch());
++    });
++    this.refs.selectedSwatchTagsInput.addEventListener("change", () => {
++      this.app.updateSelectedSwatchTags(this.readSelectedTags());
+     });
+     this.refs.addSwatchButton.addEventListener("click", () => {
+       this.app.addUserSwatch(this.readFormSwatch());
+@@ -26,18 +33,33 @@ export class PaletteEditorControl {
+   }
+ 
+   clearForm() {
+-    this.showSwatch({ symbol: "", hex: "", name: "", source: USER_ADDED_SOURCE }, "Selected Swatch");
++    this.showSwatch({ symbol: "", hex: "", name: "", source: "", tags: [] }, "Selected Swatch");
++    this.showUserDefinedSwatch({ symbol: "", hex: "", name: "", source: USER_ADDED_SOURCE, tags: [] });
++  }
++
++  render() {
++    this.renderTagSuggestions();
+   }
+ 
+   showSwatch(swatch, title) {
+     const cleanSwatch = cloneSwatch(swatch);
+-    this.refs.editorTitle.textContent = sanitizeText(title) || "Selected Swatch";
++    this.refs.editorTitle.textContent = sanitizeText(cleanSwatch.name) || sanitizeText(title) || "Selected Swatch";
++    this.refs.selectedSwatchSymbolInput.value = cleanSwatch.symbol;
++    this.refs.selectedSwatchHexInput.value = cleanSwatch.hex;
++    this.refs.selectedSwatchNameInput.value = cleanSwatch.name;
++    this.refs.selectedSwatchSourceInput.value = cleanSwatch.source;
++    this.refs.selectedSwatchTagsInput.value = tagsToInputValue(cleanSwatch.tags);
++    this.renderSelectedSwatchPreview(cleanSwatch);
++  }
++
++  showUserDefinedSwatch(swatch) {
++    const cleanSwatch = cloneSwatch(swatch);
+     this.refs.swatchSymbolInput.value = cleanSwatch.symbol;
+     this.refs.swatchHexInput.value = cleanSwatch.hex;
+     this.refs.swatchNameInput.value = cleanSwatch.name;
+-    this.refs.swatchSourceInput.value = cleanSwatch.source;
+-    this.refs.swatchSourceInput.readOnly = true;
+-    this.renderSelectedSwatchPreview(cleanSwatch);
++    this.refs.swatchSourceInput.value = cleanSwatch.source || USER_ADDED_SOURCE;
++    this.refs.swatchTagsInput.value = tagsToInputValue(cleanSwatch.tags);
++    this.renderUserDefinedSwatchPreview(cleanSwatch);
+   }
+ 
+   readFormSwatch() {
+@@ -45,12 +67,31 @@ export class PaletteEditorControl {
+       symbol: sanitizeText(this.refs.swatchSymbolInput.value),
+       hex: normalizeHex(this.refs.swatchHexInput.value),
+       name: sanitizeText(this.refs.swatchNameInput.value),
+-      source: sanitizeText(this.refs.swatchSourceInput.value)
++      source: sanitizeText(this.refs.swatchSourceInput.value),
++      tags: normalizeTags(this.refs.swatchTagsInput.value)
+     };
+   }
+ 
++  readSelectedTags() {
++    return normalizeTags(this.refs.selectedSwatchTagsInput.value);
++  }
++
+   renderSelectedSwatchPreview(swatch) {
+     const hex = normalizeHex(swatch?.hex);
+     this.refs.selectedSwatchPreview.style.background = this.hexColorPattern.test(hex) ? hex : "#000000";
+   }
++
++  renderUserDefinedSwatchPreview(swatch) {
++    const hex = normalizeHex(swatch?.hex);
++    this.refs.userDefinedSwatchPreview.style.background = this.hexColorPattern.test(hex) ? hex : "#000000";
++  }
++
++  renderTagSuggestions() {
++    this.refs.swatchTagSuggestions.replaceChildren();
++    this.app.getTagSuggestions().forEach((tag) => {
++      const option = this.refs.swatchTagSuggestions.ownerDocument.createElement("option");
++      option.value = tag;
++      this.refs.swatchTagSuggestions.appendChild(option);
++    });
++  }
+ }
+diff --git a/tools/palette-manager-v2/how_to_use.html b/tools/palette-manager-v2/how_to_use.html
+index 6bf02ce7..66003062 100644
+--- a/tools/palette-manager-v2/how_to_use.html
++++ b/tools/palette-manager-v2/how_to_use.html
+@@ -13,7 +13,11 @@
+     <h1>Palette Manager V2: How To Use</h1>
+     <section class="card">
+       <h2>User Palette</h2>
+-      <p>Add or select user swatches, edit symbol, hex, and name, then update or remove the selected row. User-created swatches use <code>User Added</code> as their source.</p>
++      <p>Add or select user swatches, then use User Defined Swatch to edit symbol, hex, name, and tags before updating or removing the selected swatch. User-created swatches use <code>User Added</code> as their source.</p>
++    </section>
++    <section class="card">
++      <h2>Selected Swatch</h2>
++      <p>Selected Swatch displays symbol, hex, name, and source as read-only details. Tags remain editable there and offer suggestions from tags already used in the active palette.</p>
+     </section>
+     <section class="card">
+       <h2>Browse Palettes</h2>
+@@ -25,7 +29,7 @@
+     </section>
+     <section class="card">
+       <h2>Import/Export</h2>
+-      <p>Import must be valid JSON with <code>tools.palette-browser.swatches</code>. Export and copy emit that same global key.</p>
++      <p>Import must be valid JSON with <code>tools.palette-browser.swatches</code>. Export and copy emit that same global key, including optional tag arrays when present.</p>
+     </section>
+   </main>
+   <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 5a5c2b0a..9e00d5fd 100644
+index 9e00d5fd..a5cafae9 100644
 --- a/tools/palette-manager-v2/index.html
 +++ b/tools/palette-manager-v2/index.html
-@@ -110,12 +110,12 @@
-       </main>
-
-       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
--        <details class="palette-manager-v2__accordion" open>
--          <summary class="palette-manager-v2__accordion-summary">
-+        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--import is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="importExportAccordionContent">
-             <span>Import/Export</span>
--            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
--          </summary>
--          <div class="palette-manager-v2__accordion-content">
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="importExportAccordionContent" class="accordion-v2__content">
-             <div class="palette-manager-v2__controls">
-               <button id="importPaletteButton" type="button">Import JSON</button>
-               <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
-@@ -124,18 +124,18 @@
+@@ -30,6 +30,38 @@
+           <div class="palette-manager-v2__accordion-content">
+             <h2 id="editorTitle">Selected Swatch</h2>
+             <div id="selectedSwatchPreview" class="palette-manager-v2__preview" aria-label="Selected swatch preview"></div>
++            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked">
++              <label class="palette-manager-v2__field">
++                Symbol
++                <input id="selectedSwatchSymbolInput" type="text" autocomplete="off" readonly />
++              </label>
++              <label class="palette-manager-v2__field">
++                Hex
++                <input id="selectedSwatchHexInput" type="text" autocomplete="off" readonly />
++              </label>
++              <label class="palette-manager-v2__field">
++                Name
++                <input id="selectedSwatchNameInput" type="text" autocomplete="off" readonly />
++              </label>
++              <label class="palette-manager-v2__field">
++                Source
++                <input id="selectedSwatchSourceInput" type="text" autocomplete="off" readonly />
++              </label>
++              <label class="palette-manager-v2__field">
++                Tags
++                <input id="selectedSwatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
++              </label>
++            </div>
++          </div>
++        </details>
++
++        <details class="palette-manager-v2__accordion" open>
++          <summary class="palette-manager-v2__accordion-summary">
++            <span>User Defined Swatch</span>
++            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
++          </summary>
++          <div class="palette-manager-v2__accordion-content">
++            <div id="userDefinedSwatchPreview" class="palette-manager-v2__preview" aria-label="User defined swatch preview"></div>
+             <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked">
+               <label class="palette-manager-v2__field">
+                 Symbol
+@@ -47,10 +79,15 @@
+                 Source
+                 <input id="swatchSourceInput" type="text" autocomplete="off" readonly />
+               </label>
++              <label class="palette-manager-v2__field">
++                Tags
++                <input id="swatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
++              </label>
++              <datalist id="swatchTagSuggestions"></datalist>
              </div>
-             <pre id="paletteJsonPreview" class="palette-manager-v2__json-preview">No user palette data.</pre>
-           </div>
--        </details>
-+        </section>
-
--        <details class="palette-manager-v2__accordion" open>
--          <summary class="palette-manager-v2__accordion-summary">
-+        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--validation is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="validationErrorAccordionContent">
-             <span>Validation/Error Viewer</span>
--            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
--          </summary>
--          <div class="palette-manager-v2__accordion-content">
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="validationErrorAccordionContent" class="accordion-v2__content">
-             <div id="paletteStatus" class="palette-manager-v2__status" role="status">Ready.</div>
-             <ul id="paletteErrorList" class="palette-manager-v2__errors" aria-label="Validation errors"></ul>
-           </div>
--        </details>
-+        </section>
-       </aside>
-     </div>
-   </div>
-diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index ed5b09d2..98e0fb46 100644
---- a/tools/palette-manager-v2/paletteManagerV2.css
-+++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -75,46 +75,75 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   overflow: hidden;
+             <div class="palette-manager-v2__controls">
+               <button id="addSwatchButton" type="button">Add User Swatch</button>
+-              <button id="updateSwatchButton" type="button">Update Selected</button>
++              <button id="updateSwatchButton" type="button">Update Swatch</button>
+               <button id="removeSwatchButton" type="button">Remove Selected</button>
+               <button id="clearFormButton" type="button">Clear Form</button>
+             </div>
+diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
+index cd2b6076..e74b869d 100644
+--- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
++++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
+@@ -4,7 +4,7 @@ import { PaletteValidationErrorControl } from "../controls/PaletteValidationErro
+ import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
+ import { UserPaletteControl } from "../controls/UserPaletteControl.js";
+ import { PaletteValidationService } from "./PaletteValidationService.js";
+-import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUtils.js";
++import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText, swatchKey } from "./paletteUtils.js";
+ 
+ const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
+ 
+@@ -20,10 +20,18 @@ const REQUIRED_REF_IDS = Object.freeze([
+   "sourceSwatchList",
+   "editorTitle",
+   "selectedSwatchPreview",
++  "selectedSwatchSymbolInput",
++  "selectedSwatchHexInput",
++  "selectedSwatchNameInput",
++  "selectedSwatchSourceInput",
++  "selectedSwatchTagsInput",
++  "userDefinedSwatchPreview",
+   "swatchSymbolInput",
+   "swatchHexInput",
+   "swatchNameInput",
+   "swatchSourceInput",
++  "swatchTagsInput",
++  "swatchTagSuggestions",
+   "addSwatchButton",
+   "updateSwatchButton",
+   "removeSwatchButton",
+@@ -183,11 +191,21 @@ export class PaletteManagerApp {
+     return Array.from(new Set([...this.state.errors, ...this.validator.validateUserSwatches(this.state.userSwatches)]));
+   }
+ 
++  getTagSuggestions() {
++    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
++    return Array.from(new Set(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags))))
++      .sort((left, right) => collator.compare(left, right));
++  }
++
+   getVisibleSourceSwatches() {
+     const swatches = this.sourcePalettes[this.state.sourcePaletteId] || [];
+     const query = sanitizeText(this.state.sourceSearch).toLowerCase();
++    const toSourceSwatch = (swatch) => cloneSwatch({
++      ...swatch,
++      source: swatch.source || this.state.sourcePaletteId
++    });
+     if (!query) {
+-      return this.sortService.sortSwatches(swatches.map(cloneSwatch), this.state.sourceSortMode);
++      return this.sortService.sortSwatches(swatches.map(toSourceSwatch), this.state.sourceSortMode);
+     }
+     const visibleSwatches = swatches
+       .filter((swatch) => {
+@@ -195,7 +213,7 @@ export class PaletteManagerApp {
+           || swatch.hex.toLowerCase().includes(query)
+           || swatch.symbol.toLowerCase().includes(query);
+       })
+-      .map(cloneSwatch);
++      .map(toSourceSwatch);
+     return this.sortService.sortSwatches(visibleSwatches, this.state.sourceSortMode);
+   }
+ 
+@@ -266,13 +284,18 @@ export class PaletteManagerApp {
+       return;
+     }
+     this.state.selectedUserIndex = index;
+-    this.editorControl.showSwatch(swatch, `Editing ${swatch.name}`);
++    this.editorControl.showSwatch(swatch, swatch.name);
++    this.editorControl.showUserDefinedSwatch(swatch);
+     this.render();
+   }
+ 
+   browseSourceSwatch(swatch) {
+     this.state.selectedUserIndex = -1;
+-    this.editorControl.showSwatch(swatch, `Browsing ${swatch.name}`);
++    this.editorControl.showSwatch(swatch, swatch.name);
++    this.editorControl.showUserDefinedSwatch({
++      ...swatch,
++      source: USER_ADDED_SOURCE
++    });
+     this.render();
+   }
+ 
+@@ -286,7 +309,8 @@ export class PaletteManagerApp {
+ 
+     this.state.userSwatches.push(cleanSwatch);
+     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
+-    this.editorControl.showSwatch(cleanSwatch, `Editing ${cleanSwatch.name}`);
++    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
++    this.editorControl.showUserDefinedSwatch(cleanSwatch);
+     this.setActionState([], `Added ${cleanSwatch.name}.`);
+   }
+ 
+@@ -305,10 +329,33 @@ export class PaletteManagerApp {
+     }
+ 
+     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
+-    this.editorControl.showSwatch(cleanSwatch, `Editing ${cleanSwatch.name}`);
++    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
++    this.editorControl.showUserDefinedSwatch(cleanSwatch);
+     this.setActionState([], `Updated ${cleanSwatch.name}.`);
+   }
+ 
++  updateSelectedSwatchTags(tags) {
++    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
++      this.setActionState(["Select a user swatch before updating tags."], "No user swatch selected.");
++      return;
++    }
++
++    const cleanSwatch = cloneSwatch({
++      ...this.state.userSwatches[this.state.selectedUserIndex],
++      tags: normalizeTags(tags)
++    });
++    const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
++    if (errors.length > 0) {
++      this.setActionState(errors, "Selected swatch tags were not updated.");
++      return;
++    }
++
++    this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
++    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
++    this.editorControl.showUserDefinedSwatch(cleanSwatch);
++    this.setActionState([], `Updated tags for ${cleanSwatch.name}.`);
++  }
++
+   removeSelectedSwatch() {
+     if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
+       this.setActionState(["Select a user swatch before removing."], "No user swatch selected.");
+@@ -349,7 +396,8 @@ export class PaletteManagerApp {
+ 
+     this.state.userSwatches.push(pinnedSwatch);
+     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
+-    this.editorControl.showSwatch(pinnedSwatch, `Editing ${pinnedSwatch.name}`);
++    this.editorControl.showSwatch(pinnedSwatch, pinnedSwatch.name);
++    this.editorControl.showUserDefinedSwatch(pinnedSwatch);
+     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
+   }
+ 
+diff --git a/tools/palette-manager-v2/modules/PaletteValidationService.js b/tools/palette-manager-v2/modules/PaletteValidationService.js
+index 393e27cc..e8cc0aa9 100644
+--- a/tools/palette-manager-v2/modules/PaletteValidationService.js
++++ b/tools/palette-manager-v2/modules/PaletteValidationService.js
+@@ -13,6 +13,7 @@ export class PaletteValidationService {
+     const hex = normalizeHex(swatch?.hex);
+     const name = sanitizeText(swatch?.name);
+     const source = sanitizeText(swatch?.source);
++    const tags = swatch?.tags;
+ 
+     if (!symbol) {
+       issues.push(`${cleanLabel}.symbol is required.`);
+@@ -30,6 +31,17 @@ export class PaletteValidationService {
+     if (!source) {
+       issues.push(`${cleanLabel}.source is required.`);
+     }
++    if (tags !== undefined) {
++      if (!Array.isArray(tags)) {
++        issues.push(`${cleanLabel}.tags must be an array of strings.`);
++      } else {
++        tags.forEach((tag, index) => {
++          if (typeof tag !== "string" || !sanitizeText(tag)) {
++            issues.push(`${cleanLabel}.tags[${index}] must be a non-empty string.`);
++          }
++        });
++      }
++    }
+     return issues;
+   }
+ 
+@@ -58,8 +70,8 @@ export class PaletteValidationService {
+       return { swatches: null, errors: [`tools.${this.globalPaletteToolKey}.swatches must be an array.`] };
+     }
+ 
++    const errors = this.validateUserSwatches(paletteValue.swatches);
+     const swatches = paletteValue.swatches.map(cloneSwatch);
+-    const errors = this.validateUserSwatches(swatches);
+     return { swatches: errors.length > 0 ? null : swatches, errors };
+   }
  }
-
--.palette-manager-v2__panel.palette-manager-v2__panel--right {
-+.palette-manager-v2__panel.palette-manager-v2__panel--right.tools-platform-resize-panel {
-   display: flex;
-   flex-direction: column;
-+  justify-content: space-between;
-   gap: 14px;
-   overflow: hidden;
+diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
+index 092ff1ee..9beda4fa 100644
+--- a/tools/palette-manager-v2/modules/SwatchRow.js
++++ b/tools/palette-manager-v2/modules/SwatchRow.js
+@@ -93,7 +93,8 @@ export class SwatchRow {
+       `Name: ${swatch.name}`,
+       `Symbol: ${swatch.symbol}`,
+       `Hex: ${swatch.hex}`,
+-      `Source: ${swatch.source}`
++      `Source: ${swatch.source}`,
++      `Tags: ${Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"}`
+     ].join("\n");
+   }
+ 
+@@ -104,7 +105,8 @@ export class SwatchRow {
+       ["Name", swatch.name],
+       ["Symbol", swatch.symbol],
+       ["Hex", swatch.hex],
+-      ["Source", swatch.source]
++      ["Source", swatch.source],
++      ["Tags", Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"]
+     ].forEach(([label, value]) => {
+       const term = documentRef.createElement("dt");
+       term.textContent = label;
+diff --git a/tools/palette-manager-v2/modules/paletteUtils.js b/tools/palette-manager-v2/modules/paletteUtils.js
+index 2d8ba1ef..47f3c7e7 100644
+--- a/tools/palette-manager-v2/modules/paletteUtils.js
++++ b/tools/palette-manager-v2/modules/paletteUtils.js
+@@ -8,13 +8,28 @@ export function normalizeHex(value) {
+   return sanitizeText(value).toUpperCase();
  }
-
--.palette-manager-v2__panel--right > .palette-manager-v2__accordion {
--  margin-top: 0;
-+.palette-manager-v2__panel--right .accordion-v2 {
-+  --accordion-v2-accent: var(--pm-accent);
-+  --accordion-v2-line: var(--pm-line);
-+  --accordion-v2-surface: var(--pm-surface);
- }
-
--.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child {
-+.palette-manager-v2__right-accordion--import {
-   flex: 0 0 auto;
-   min-height: 0;
-   overflow: hidden;
- }
-
--.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child[open] {
-+.palette-manager-v2__right-accordion--import.is-open {
-   flex: 1 1 auto;
-   min-height: 0;
--  overflow: auto;
--  display: flex;
--  flex-direction: column;
-+  overflow: hidden;
+ 
++export function normalizeTags(value) {
++  if (Array.isArray(value)) {
++    return value.map(sanitizeText).filter(Boolean);
++  }
++  if (typeof value === "string") {
++    return value.split(",").map(sanitizeText).filter(Boolean);
++  }
++  return [];
 +}
 +
-+.palette-manager-v2__right-accordion--import .accordion-v2__content {
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  overflow: hidden;
+ export function cloneSwatch(swatch) {
+-  return {
++  const cleanSwatch = {
+     symbol: sanitizeText(swatch?.symbol),
+     hex: normalizeHex(swatch?.hex),
+     name: sanitizeText(swatch?.name),
+     source: sanitizeText(swatch?.source)
+   };
++  const tags = normalizeTags(swatch?.tags);
++  if (tags.length > 0) {
++    cleanSwatch.tags = tags;
++  }
++  return cleanSwatch;
  }
-
--.palette-manager-v2__panel--right > .palette-manager-v2__accordion:first-child > .palette-manager-v2__accordion-content {
-+.palette-manager-v2__right-accordion--import .palette-manager-v2__controls {
-+  flex: 0 0 auto;
-+}
-+
-+.palette-manager-v2__right-accordion--import .palette-manager-v2__json-preview {
-   flex: 1 1 auto;
-   min-height: 0;
-+  max-height: none;
-+  height: auto;
-   overflow: auto;
- }
-
--.palette-manager-v2__panel--right > .palette-manager-v2__accordion:nth-child(2) {
-+.palette-manager-v2__right-accordion--validation {
-   flex: 0 0 auto;
-   max-height: clamp(120px, 22vh, 260px);
-+  overflow: hidden;
-+}
-+
-+.palette-manager-v2__right-accordion--validation.is-open {
-+  flex: 0 0 auto;
-+}
-+
-+.palette-manager-v2__right-accordion--validation .accordion-v2__content {
-+  flex: 1 1 auto;
-+  min-height: 0;
-   overflow: auto;
- }
-
--.palette-manager-v2__panel--right > .palette-manager-v2__accordion:nth-child(2)[open] {
--  display: flex;
--  flex-direction: column;
-+.palette-manager-v2__right-accordion--validation .palette-manager-v2__status {
-+  flex: 0 0 auto;
-+}
-+
-+.palette-manager-v2__right-accordion--validation .palette-manager-v2__errors {
-+  flex: 1 1 auto;
-+  min-height: 0;
-+  max-height: none;
-+  overflow: auto;
- }
-
- .palette-manager-v2__accordion {
-@@ -130,10 +159,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   margin-top: 14px;
- }
-
--.palette-manager-v2__panel--right > .palette-manager-v2__accordion + .palette-manager-v2__accordion {
--  margin-top: 0;
--}
--
- .palette-manager-v2__accordion-summary {
-   flex: 0 0 44px;
-   min-height: 44px;
-diff --git a/docs/dev/reports/PR_26124_048_report.md b/docs/dev/reports/PR_26124_048_report.md
-new file mode 100644
-index 00000000..7986dbbf
---- /dev/null
-+++ b/docs/dev/reports/PR_26124_048_report.md
-@@ -0,0 +1,46 @@
-+# PR_26124_048-palette-manager-right-accordion-v2 Report
-+
-+## Summary
-+Palette Manager V2 right-column Import/Export and Validation/Error Viewer now use shared accordionV2 markup. Right-column CSS now sizes the accordionV2 sections so Import/Export owns the flexible space and Validation/Error Viewer remains compact at the bottom.
-+
-+## Changed Runtime Files
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+
-+## Scope Confirmation
-+- No workspace/toolState/session logic changed.
-+- No sample JSON changed.
-+- No `tools/shared` files changed.
-+- Shared accordionV2 behavior was not modified.
-+- No dependencies added.
-+- Left and center panel behavior was not modified.
-+
-+## Targeted Browser Check
-+PASS using a local static server and Playwright.
-+
-+Validated:
-+- Right column contains no `details` or `summary` elements.
-+- Right Import/Export and Validation/Error Viewer are `section.accordion-v2`.
-+- Import/Export opens and collapses through accordionV2 class, dataset, `aria-expanded`, and hidden-content behavior.
-+- Collapsed Import/Export is header-only.
-+- Open Import/Export flex-fills the space above Validation/Error Viewer.
-+- JSON preview starts near the buttons, reaches the Import/Export content bottom, and scrolls internally for long content.
-+- Validation/Error Viewer is non-growing, compact, bottom-anchored, and internally scrollable.
-+- No right-column overflow below the panel.
-+
-+## Validation Results
-+- JavaScript syntax checks: no JavaScript files changed by PR048.
-+- `git diff --check`: PASS.
-+  - Warning observed: Git reports LF will be replaced by CRLF for changed files when Git next touches them.
-+- `git diff --cached --check`: PASS.
-+- `npm run test:workspace-v2`: FAIL.
-+  - Failure reason: `npm` reports missing script `test:workspace-v2`.
-+- Full samples smoke test: skipped by instruction.
-+
-+## Manual Validation
-+1. Open `tools/palette-manager-v2/index.html` through a local server.
-+2. Confirm right-column accordions match center-column accordionV2 behavior.
-+3. Collapse Import/Export and confirm only the header remains visible.
-+4. Open Import/Export and confirm the JSON preview fills to the bottom of the panel.
-+5. Add or import enough JSON to make the preview overflow and confirm it scrolls internally.
-+6. Confirm Validation/Error Viewer remains anchored at the bottom and does not overflow below the right column.
-diff --git a/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md
-new file mode 100644
-index 00000000..7ddefbb2
---- /dev/null
-+++ b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md
-@@ -0,0 +1,33 @@
-+# APPLY_PR - PR_26124_048-palette-manager-right-accordion-v2
-+
-+## Applied Change
-+Replaced Palette Manager V2 right-column `details`/`summary` accordions with shared accordionV2 markup and right-column-only sizing rules.
-+
-+## Runtime Files Changed
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+
-+## Behavior
-+- Import/Export now uses `section.accordion-v2` with a shared `accordion-v2__header` and `accordion-v2__content`.
-+- Validation/Error Viewer now uses `section.accordion-v2` with a shared `accordion-v2__header` and `accordion-v2__content`.
-+- Collapsed Import/Export is header-only.
-+- Open Import/Export fills the available right-column height above Validation/Error Viewer.
-+- JSON preview starts directly below the buttons, stretches to the bottom of the Import/Export content area, and scrolls internally.
-+- Validation/Error Viewer remains compact, bottom-anchored, and internally scrollable.
-+- Right column clips overflow so content does not extend below the right panel.
-+
-+## Validation
-+- JavaScript syntax checks: no JavaScript files changed by PR048.
-+- Targeted served-browser Palette Manager V2 right-column check: PASS.
-+- `git diff --check`: PASS with Git line-ending warnings for changed files.
-+- `git diff --cached --check`: PASS.
-+- `npm run test:workspace-v2`: FAILED because the repository has no `test:workspace-v2` script.
-+- Full samples smoke test: skipped by instruction.
-+
-+## Manual Test
-+1. Open Palette Manager V2 through a local server.
-+2. Confirm the right Import/Export and Validation/Error Viewer panels use the same accordionV2 toggle style as the center column.
-+3. Collapse Import/Export and confirm it is header-only.
-+4. Open Import/Export and confirm it fills available height above Validation/Error Viewer.
-+5. Confirm the JSON preview begins near the buttons, reaches the bottom of Import/Export, and scrolls internally for long JSON.
-+6. Confirm Validation/Error Viewer remains compact at the bottom and scrolls internally if errors overflow.
-diff --git a/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md
-new file mode 100644
-index 00000000..e8aefabe
---- /dev/null
-+++ b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md
-@@ -0,0 +1,34 @@
-+# BUILD_PR - PR_26124_048-palette-manager-right-accordion-v2
-+
-+## Purpose
-+Use shared accordionV2 for Palette Manager V2 right-column accordions and fix right-column height ownership around Import/Export and Validation/Error Viewer.
-+
-+## Scope
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+- PR workflow docs and required review artifacts only.
-+
-+## Implementation
-+1. Convert right-column Import/Export from `details`/`summary` to `section.accordion-v2`.
-+2. Convert right-column Validation/Error Viewer from `details`/`summary` to `section.accordion-v2`.
-+3. Preserve right-column control IDs and content.
-+4. Add right-column-only accordionV2 sizing rules:
-+   - Import/Export collapsed: header only.
-+   - Import/Export open: fills available height above Validation/Error Viewer.
-+   - JSON preview: flexes from below buttons to the bottom of Import/Export and scrolls internally.
-+   - Validation/Error Viewer: bottom-anchored, compact, and internally scrollable.
-+5. Remove old right-column details/summary sizing overrides.
-+
-+## Boundaries
-+- Do not change workspace/toolState/session behavior.
-+- Do not touch sample JSON.
-+- Do not modify `tools/shared`.
-+- Do not modify shared accordionV2 behavior.
-+- Do not add dependencies.
-+- Do not alter left or center panel behavior.
-+
-+## Validation
-+- Syntax check changed files.
-+- Run targeted served-browser Palette Manager V2 right-column check.
-+- Run `npm run test:workspace-v2`.
-+- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md
-new file mode 100644
-index 00000000..61546fe9
---- /dev/null
-+++ b/docs/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md
-@@ -0,0 +1,44 @@
-+# PLAN_PR - PR_26124_048-palette-manager-right-accordion-v2
-+
-+## Goal
-+Replace Palette Manager V2 right-column `details`/`summary` accordions with shared accordionV2 markup and right-column sizing rules.
-+
-+## Scope
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
-+- Workflow docs/reports required by `docs/dev/PROJECT_INSTRUCTIONS.md`
-+
-+## Boundaries
-+- Do not touch workspace/toolState/session logic.
-+- Do not touch sample JSON.
-+- Do not modify `tools/shared`.
-+- Do not modify shared accordionV2 behavior.
-+- Do not add dependencies.
-+- Do not broadly refactor Palette Manager V2.
-+- Do not change left or center panel behavior.
-+
-+## Implementation Plan
-+1. Replace right-column Import/Export `details` markup with shared accordionV2 markup.
-+2. Replace right-column Validation/Error Viewer `details` markup with shared accordionV2 markup.
-+3. Keep existing right-column button/input/status/list IDs so Palette Manager controls continue binding without behavior changes.
-+4. Add right-column-only accordionV2 CSS so:
-+   - collapsed Import/Export is header-only,
-+   - open Import/Export fills the remaining height above Validation/Error Viewer,
-+   - JSON preview fills the Import/Export content area and scrolls internally,
-+   - Validation/Error Viewer remains bottom-anchored, compact, and internally scrollable.
-+5. Remove obsolete right-column details/summary CSS overrides.
-+6. Run targeted syntax/layout validation and the requested Workspace V2 command.
-+
-+## Playwright
-+- Command: `npm run test:workspace-v2`
-+- Expected pass behavior: Workspace V2 validation remains green after the Palette Manager V2 right-column markup/CSS change.
-+- Expected fail behavior: failures identify Workspace V2 regressions or a missing validation command.
-+- Full samples smoke test: skipped by instruction.
-+
-+## Manual Validation
-+1. Open Palette Manager V2 through a local server.
-+2. Confirm Import/Export and Validation/Error Viewer use the same accordionV2 toggle behavior as the center column.
-+3. Collapse Import/Export and confirm it is header-only.
-+4. Open Import/Export and confirm it fills remaining right-column height above Validation/Error Viewer.
-+5. Confirm JSON preview starts near the buttons, stretches to the bottom of Import/Export, and scrolls internally.
-+6. Confirm Validation/Error Viewer remains compact at the bottom and scrolls internally when needed.
+ 
+ export function swatchKey(swatch) {
+diff --git a/tools/schemas/tools/palette-browser.schema.json b/tools/schemas/tools/palette-browser.schema.json
+index 1c939ac3..e544f66d 100644
+--- a/tools/schemas/tools/palette-browser.schema.json
++++ b/tools/schemas/tools/palette-browser.schema.json
+@@ -63,6 +63,17 @@
+         "name": {
+           "type": "string",
+           "minLength": 1
++        },
++        "source": {
++          "type": "string",
++          "minLength": 1
++        },
++        "tags": {
++          "type": "array",
++          "items": {
++            "type": "string",
++            "minLength": 1
++          }
+         }
+       }
+     }

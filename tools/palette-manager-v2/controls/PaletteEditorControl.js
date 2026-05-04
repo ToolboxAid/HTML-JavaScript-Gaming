@@ -1,4 +1,8 @@
-import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText } from "../modules/paletteUtils.js";
+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modules/paletteUtils.js";
+
+function tagsToInputValue(tags) {
+  return normalizeTags(tags).join(", ");
+}
 
 export class PaletteEditorControl {
   constructor({ refs, app, hexColorPattern }) {
@@ -9,7 +13,10 @@ export class PaletteEditorControl {
 
   bind() {
     this.refs.swatchHexInput.addEventListener("input", () => {
-      this.renderSelectedSwatchPreview(this.readFormSwatch());
+      this.renderUserDefinedSwatchPreview(this.readFormSwatch());
+    });
+    this.refs.selectedSwatchTagsInput.addEventListener("change", () => {
+      this.app.updateSelectedSwatchTags(this.readSelectedTags());
     });
     this.refs.addSwatchButton.addEventListener("click", () => {
       this.app.addUserSwatch(this.readFormSwatch());
@@ -26,18 +33,33 @@ export class PaletteEditorControl {
   }
 
   clearForm() {
-    this.showSwatch({ symbol: "", hex: "", name: "", source: USER_ADDED_SOURCE }, "Selected Swatch");
+    this.showSwatch({ symbol: "", hex: "", name: "", source: "", tags: [] }, "Selected Swatch");
+    this.showUserDefinedSwatch({ symbol: "", hex: "", name: "", source: USER_ADDED_SOURCE, tags: [] });
+  }
+
+  render() {
+    this.renderTagSuggestions();
   }
 
   showSwatch(swatch, title) {
     const cleanSwatch = cloneSwatch(swatch);
-    this.refs.editorTitle.textContent = sanitizeText(title) || "Selected Swatch";
+    this.refs.editorTitle.textContent = sanitizeText(cleanSwatch.name) || sanitizeText(title) || "Selected Swatch";
+    this.refs.selectedSwatchSymbolInput.value = cleanSwatch.symbol;
+    this.refs.selectedSwatchHexInput.value = cleanSwatch.hex;
+    this.refs.selectedSwatchNameInput.value = cleanSwatch.name;
+    this.refs.selectedSwatchSourceInput.value = cleanSwatch.source;
+    this.refs.selectedSwatchTagsInput.value = tagsToInputValue(cleanSwatch.tags);
+    this.renderSelectedSwatchPreview(cleanSwatch);
+  }
+
+  showUserDefinedSwatch(swatch) {
+    const cleanSwatch = cloneSwatch(swatch);
     this.refs.swatchSymbolInput.value = cleanSwatch.symbol;
     this.refs.swatchHexInput.value = cleanSwatch.hex;
     this.refs.swatchNameInput.value = cleanSwatch.name;
-    this.refs.swatchSourceInput.value = cleanSwatch.source;
-    this.refs.swatchSourceInput.readOnly = true;
-    this.renderSelectedSwatchPreview(cleanSwatch);
+    this.refs.swatchSourceInput.value = cleanSwatch.source || USER_ADDED_SOURCE;
+    this.refs.swatchTagsInput.value = tagsToInputValue(cleanSwatch.tags);
+    this.renderUserDefinedSwatchPreview(cleanSwatch);
   }
 
   readFormSwatch() {
@@ -45,12 +67,31 @@ export class PaletteEditorControl {
       symbol: sanitizeText(this.refs.swatchSymbolInput.value),
       hex: normalizeHex(this.refs.swatchHexInput.value),
       name: sanitizeText(this.refs.swatchNameInput.value),
-      source: sanitizeText(this.refs.swatchSourceInput.value)
+      source: sanitizeText(this.refs.swatchSourceInput.value),
+      tags: normalizeTags(this.refs.swatchTagsInput.value)
     };
+  }
+
+  readSelectedTags() {
+    return normalizeTags(this.refs.selectedSwatchTagsInput.value);
   }
 
   renderSelectedSwatchPreview(swatch) {
     const hex = normalizeHex(swatch?.hex);
     this.refs.selectedSwatchPreview.style.background = this.hexColorPattern.test(hex) ? hex : "#000000";
+  }
+
+  renderUserDefinedSwatchPreview(swatch) {
+    const hex = normalizeHex(swatch?.hex);
+    this.refs.userDefinedSwatchPreview.style.background = this.hexColorPattern.test(hex) ? hex : "#000000";
+  }
+
+  renderTagSuggestions() {
+    this.refs.swatchTagSuggestions.replaceChildren();
+    this.app.getTagSuggestions().forEach((tag) => {
+      const option = this.refs.swatchTagSuggestions.ownerDocument.createElement("option");
+      option.value = tag;
+      this.refs.swatchTagSuggestions.appendChild(option);
+    });
   }
 }

@@ -8,13 +8,28 @@ export function normalizeHex(value) {
   return sanitizeText(value).toUpperCase();
 }
 
+export function normalizeTags(value) {
+  if (Array.isArray(value)) {
+    return value.map(sanitizeText).filter(Boolean);
+  }
+  if (typeof value === "string") {
+    return value.split(",").map(sanitizeText).filter(Boolean);
+  }
+  return [];
+}
+
 export function cloneSwatch(swatch) {
-  return {
+  const cleanSwatch = {
     symbol: sanitizeText(swatch?.symbol),
     hex: normalizeHex(swatch?.hex),
     name: sanitizeText(swatch?.name),
     source: sanitizeText(swatch?.source)
   };
+  const tags = normalizeTags(swatch?.tags);
+  if (tags.length > 0) {
+    cleanSwatch.tags = tags;
+  }
+  return cleanSwatch;
 }
 
 export function swatchKey(swatch) {

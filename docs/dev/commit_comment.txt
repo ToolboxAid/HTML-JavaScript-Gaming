@@ -1,1 +1,1 @@
-Move Palette Manager right column to accordionV2 - PR_26124_048-palette-manager-right-accordion-v2
+Add Palette Manager swatch tags and selected layout split - PR_26124_049-palette-manager-swatch-tags-and-selected-layout

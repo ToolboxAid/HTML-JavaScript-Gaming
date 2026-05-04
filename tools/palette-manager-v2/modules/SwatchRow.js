@@ -93,7 +93,8 @@ export class SwatchRow {
       `Name: ${swatch.name}`,
       `Symbol: ${swatch.symbol}`,
       `Hex: ${swatch.hex}`,
-      `Source: ${swatch.source}`
+      `Source: ${swatch.source}`,
+      `Tags: ${Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"}`
     ].join("\n");
   }
 
@@ -104,7 +105,8 @@ export class SwatchRow {
       ["Name", swatch.name],
       ["Symbol", swatch.symbol],
       ["Hex", swatch.hex],
-      ["Source", swatch.source]
+      ["Source", swatch.source],
+      ["Tags", Array.isArray(swatch.tags) && swatch.tags.length > 0 ? swatch.tags.join(", ") : "None"]
     ].forEach(([label, value]) => {
       const term = documentRef.createElement("dt");
       term.textContent = label;

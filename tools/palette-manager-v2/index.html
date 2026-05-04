@@ -33,6 +33,38 @@
             <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked">
               <label class="palette-manager-v2__field">
                 Symbol
+                <input id="selectedSwatchSymbolInput" type="text" autocomplete="off" readonly />
+              </label>
+              <label class="palette-manager-v2__field">
+                Hex
+                <input id="selectedSwatchHexInput" type="text" autocomplete="off" readonly />
+              </label>
+              <label class="palette-manager-v2__field">
+                Name
+                <input id="selectedSwatchNameInput" type="text" autocomplete="off" readonly />
+              </label>
+              <label class="palette-manager-v2__field">
+                Source
+                <input id="selectedSwatchSourceInput" type="text" autocomplete="off" readonly />
+              </label>
+              <label class="palette-manager-v2__field">
+                Tags
+                <input id="selectedSwatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
+              </label>
+            </div>
+          </div>
+        </details>
+
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
+            <span>User Defined Swatch</span>
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
+            <div id="userDefinedSwatchPreview" class="palette-manager-v2__preview" aria-label="User defined swatch preview"></div>
+            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked">
+              <label class="palette-manager-v2__field">
+                Symbol
                 <input id="swatchSymbolInput" type="text" maxlength="1" autocomplete="off" />
               </label>
               <label class="palette-manager-v2__field">
@@ -47,10 +79,15 @@
                 Source
                 <input id="swatchSourceInput" type="text" autocomplete="off" readonly />
               </label>
+              <label class="palette-manager-v2__field">
+                Tags
+                <input id="swatchTagsInput" type="text" autocomplete="off" list="swatchTagSuggestions" />
+              </label>
+              <datalist id="swatchTagSuggestions"></datalist>
             </div>
             <div class="palette-manager-v2__controls">
               <button id="addSwatchButton" type="button">Add User Swatch</button>
-              <button id="updateSwatchButton" type="button">Update Selected</button>
+              <button id="updateSwatchButton" type="button">Update Swatch</button>
               <button id="removeSwatchButton" type="button">Remove Selected</button>
               <button id="clearFormButton" type="button">Clear Form</button>
             </div>
@@ -82,7 +119,7 @@
 
         <section class="accordion-v2 is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
-            <span>Add User Swatch</span>
+            <span>Sample Palette Swatch</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="sourcePaletteAccordionContent" class="accordion-v2__content">

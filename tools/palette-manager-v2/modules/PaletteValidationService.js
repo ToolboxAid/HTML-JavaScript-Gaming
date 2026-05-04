@@ -13,6 +13,7 @@ export class PaletteValidationService {
     const hex = normalizeHex(swatch?.hex);
     const name = sanitizeText(swatch?.name);
     const source = sanitizeText(swatch?.source);
+    const tags = swatch?.tags;
 
     if (!symbol) {
       issues.push(`${cleanLabel}.symbol is required.`);
@@ -29,6 +30,17 @@ export class PaletteValidationService {
     }
     if (!source) {
       issues.push(`${cleanLabel}.source is required.`);
+    }
+    if (tags !== undefined) {
+      if (!Array.isArray(tags)) {
+        issues.push(`${cleanLabel}.tags must be an array of strings.`);
+      } else {
+        tags.forEach((tag, index) => {
+          if (typeof tag !== "string" || !sanitizeText(tag)) {
+            issues.push(`${cleanLabel}.tags[${index}] must be a non-empty string.`);
+          }
+        });
+      }
     }
     return issues;
   }
@@ -58,8 +70,8 @@ export class PaletteValidationService {
       return { swatches: null, errors: [`tools.${this.globalPaletteToolKey}.swatches must be an array.`] };
     }
 
+    const errors = this.validateUserSwatches(paletteValue.swatches);
     const swatches = paletteValue.swatches.map(cloneSwatch);
-    const errors = this.validateUserSwatches(swatches);
     return { swatches: errors.length > 0 ? null : swatches, errors };
   }
 }

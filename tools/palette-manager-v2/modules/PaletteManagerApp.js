@@ -4,7 +4,7 @@ import { PaletteValidationErrorControl } from "../controls/PaletteValidationErro
 import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
 import { UserPaletteControl } from "../controls/UserPaletteControl.js";
 import { PaletteValidationService } from "./PaletteValidationService.js";
-import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, sanitizeText, swatchKey } from "./paletteUtils.js";
+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText, swatchKey } from "./paletteUtils.js";
 
 const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
 
@@ -20,10 +20,18 @@ const REQUIRED_REF_IDS = Object.freeze([
   "sourceSwatchList",
   "editorTitle",
   "selectedSwatchPreview",
+  "selectedSwatchSymbolInput",
+  "selectedSwatchHexInput",
+  "selectedSwatchNameInput",
+  "selectedSwatchSourceInput",
+  "selectedSwatchTagsInput",
+  "userDefinedSwatchPreview",
   "swatchSymbolInput",
   "swatchHexInput",
   "swatchNameInput",
   "swatchSourceInput",
+  "swatchTagsInput",
+  "swatchTagSuggestions",
   "addSwatchButton",
   "updateSwatchButton",
   "removeSwatchButton",
@@ -183,11 +191,21 @@ export class PaletteManagerApp {
     return Array.from(new Set([...this.state.errors, ...this.validator.validateUserSwatches(this.state.userSwatches)]));
   }
 
+  getTagSuggestions() {
+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+    return Array.from(new Set(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags))))
+      .sort((left, right) => collator.compare(left, right));
+  }
+
   getVisibleSourceSwatches() {
     const swatches = this.sourcePalettes[this.state.sourcePaletteId] || [];
     const query = sanitizeText(this.state.sourceSearch).toLowerCase();
+    const toSourceSwatch = (swatch) => cloneSwatch({
+      ...swatch,
+      source: swatch.source || this.state.sourcePaletteId
+    });
     if (!query) {
-      return this.sortService.sortSwatches(swatches.map(cloneSwatch), this.state.sourceSortMode);
+      return this.sortService.sortSwatches(swatches.map(toSourceSwatch), this.state.sourceSortMode);
     }
     const visibleSwatches = swatches
       .filter((swatch) => {
@@ -195,7 +213,7 @@ export class PaletteManagerApp {
           || swatch.hex.toLowerCase().includes(query)
           || swatch.symbol.toLowerCase().includes(query);
       })
-      .map(cloneSwatch);
+      .map(toSourceSwatch);
     return this.sortService.sortSwatches(visibleSwatches, this.state.sourceSortMode);
   }
 
@@ -266,13 +284,18 @@ export class PaletteManagerApp {
       return;
     }
     this.state.selectedUserIndex = index;
-    this.editorControl.showSwatch(swatch, `Editing ${swatch.name}`);
+    this.editorControl.showSwatch(swatch, swatch.name);
+    this.editorControl.showUserDefinedSwatch(swatch);
     this.render();
   }
 
   browseSourceSwatch(swatch) {
     this.state.selectedUserIndex = -1;
-    this.editorControl.showSwatch(swatch, `Browsing ${swatch.name}`);
+    this.editorControl.showSwatch(swatch, swatch.name);
+    this.editorControl.showUserDefinedSwatch({
+      ...swatch,
+      source: USER_ADDED_SOURCE
+    });
     this.render();
   }
 
@@ -286,7 +309,8 @@ export class PaletteManagerApp {
 
     this.state.userSwatches.push(cleanSwatch);
     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
-    this.editorControl.showSwatch(cleanSwatch, `Editing ${cleanSwatch.name}`);
+    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
+    this.editorControl.showUserDefinedSwatch(cleanSwatch);
     this.setActionState([], `Added ${cleanSwatch.name}.`);
   }
 
@@ -305,8 +329,31 @@ export class PaletteManagerApp {
     }
 
     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
-    this.editorControl.showSwatch(cleanSwatch, `Editing ${cleanSwatch.name}`);
+    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
+    this.editorControl.showUserDefinedSwatch(cleanSwatch);
     this.setActionState([], `Updated ${cleanSwatch.name}.`);
+  }
+
+  updateSelectedSwatchTags(tags) {
+    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
+      this.setActionState(["Select a user swatch before updating tags."], "No user swatch selected.");
+      return;
+    }
+
+    const cleanSwatch = cloneSwatch({
+      ...this.state.userSwatches[this.state.selectedUserIndex],
+      tags: normalizeTags(tags)
+    });
+    const errors = this.validator.validateSwatch(cleanSwatch, "selected swatch");
+    if (errors.length > 0) {
+      this.setActionState(errors, "Selected swatch tags were not updated.");
+      return;
+    }
+
+    this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
+    this.editorControl.showSwatch(cleanSwatch, cleanSwatch.name);
+    this.editorControl.showUserDefinedSwatch(cleanSwatch);
+    this.setActionState([], `Updated tags for ${cleanSwatch.name}.`);
   }
 
   removeSelectedSwatch() {
@@ -349,7 +396,8 @@ export class PaletteManagerApp {
 
     this.state.userSwatches.push(pinnedSwatch);
     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
-    this.editorControl.showSwatch(pinnedSwatch, `Editing ${pinnedSwatch.name}`);
+    this.editorControl.showSwatch(pinnedSwatch, pinnedSwatch.name);
+    this.editorControl.showUserDefinedSwatch(pinnedSwatch);
     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
   }
 
