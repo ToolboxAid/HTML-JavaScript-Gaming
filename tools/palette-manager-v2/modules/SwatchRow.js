@@ -9,6 +9,7 @@ export class SwatchRow {
     const chip = documentRef.createElement("span");
     chip.className = "palette-manager-v2__swatch-chip";
     chip.style.background = swatch.hex;
+    chip.title = SwatchRow.createTooltipText(swatch);
 
     const copy = documentRef.createElement("div");
     copy.className = "palette-manager-v2__swatch-copy";
@@ -23,6 +24,7 @@ export class SwatchRow {
 
     const tack = SwatchRow.createTackButton(documentRef, options);
 
+    row.title = SwatchRow.createTooltipText(swatch);
     row.append(chip, copy, tack);
     if (typeof options.onSelect === "function") {
       row.addEventListener("click", options.onSelect);
@@ -56,7 +58,7 @@ export class SwatchRow {
     tile.setAttribute("role", "button");
     tile.setAttribute("aria-label", options.ariaLabel || `Select ${swatch.name}`);
     tile.style.setProperty("--swatch-color", swatch.hex);
-    tile.title = `${swatch.name}\n${swatch.symbol}\n${swatch.hex}\n${swatch.source}`;
+    tile.title = SwatchRow.createTooltipText(swatch);
     tile.addEventListener("click", () => {
       if (typeof options.onSelect === "function") {
         options.onSelect();
@@ -82,10 +84,17 @@ export class SwatchRow {
     const tack = SwatchRow.createTackButton(documentRef, options);
     tack.classList.add("palette-manager-v2__pin-button--tile");
 
-    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__swatch-details");
-
-    tile.append(chip, tack, details);
+    tile.append(chip, tack);
     return tile;
+  }
+
+  static createTooltipText(swatch) {
+    return [
+      `Name: ${swatch.name}`,
+      `Symbol: ${swatch.symbol}`,
+      `Hex: ${swatch.hex}`,
+      `Source: ${swatch.source}`
+    ].join("\n");
   }
 
   static createDetailsBlock(documentRef, swatch, className) {

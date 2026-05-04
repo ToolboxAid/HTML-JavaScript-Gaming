@@ -1,2 +1,3 @@
-docs/dev/reports/PR_26124_040_report.md
+docs/dev/reports/PR_26124_041_report.md
+tools/palette-manager-v2/modules/SwatchRow.js
 tools/palette-manager-v2/paletteManagerV2.css

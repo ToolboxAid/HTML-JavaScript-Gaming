@@ -265,20 +265,17 @@
   overflow-wrap: anywhere;
 }
 
-.palette-manager-v2__swatch-meta,
-.palette-manager-v2__swatch-details {
+.palette-manager-v2__swatch-meta {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 2px 8px;
 }
 
-.palette-manager-v2__swatch-meta dt,
-.palette-manager-v2__swatch-details dt {
+.palette-manager-v2__swatch-meta dt {
   font-weight: 700;
 }
 
-.palette-manager-v2__swatch-meta dd,
-.palette-manager-v2__swatch-details dd {
+.palette-manager-v2__swatch-meta dd {
   min-width: 0;
   margin: 0;
   overflow-wrap: anywhere;
@@ -354,32 +351,6 @@
   position: absolute;
   top: 6px;
   right: 6px;
-}
-
-.palette-manager-v2__swatch-details {
-  display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 30;
-  width: max(100%, 150px);
-  box-sizing: border-box;
-  margin: 0;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.88);
-  color: #ffffff;
-  font-size: 0.88rem;
-  line-height: 1.35;
-  padding: 8px;
-  overflow-wrap: anywhere;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
-}
-
-.palette-manager-v2__swatch-tile:hover .palette-manager-v2__swatch-details,
-.palette-manager-v2__swatch-tile:focus .palette-manager-v2__swatch-details,
-.palette-manager-v2__swatch-tile:focus-within .palette-manager-v2__swatch-details {
-  display: grid;
 }
 
 .palette-manager-v2__json-preview {

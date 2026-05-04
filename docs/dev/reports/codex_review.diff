@@ -1,23 +1,74 @@
+diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
+index 83bc8fd5..092ff1ee 100644
+--- a/tools/palette-manager-v2/modules/SwatchRow.js
++++ b/tools/palette-manager-v2/modules/SwatchRow.js
+@@ -9,6 +9,7 @@ export class SwatchRow {
+     const chip = documentRef.createElement("span");
+     chip.className = "palette-manager-v2__swatch-chip";
+     chip.style.background = swatch.hex;
++    chip.title = SwatchRow.createTooltipText(swatch);
+
+     const copy = documentRef.createElement("div");
+     copy.className = "palette-manager-v2__swatch-copy";
+@@ -23,6 +24,7 @@ export class SwatchRow {
+
+     const tack = SwatchRow.createTackButton(documentRef, options);
+
++    row.title = SwatchRow.createTooltipText(swatch);
+     row.append(chip, copy, tack);
+     if (typeof options.onSelect === "function") {
+       row.addEventListener("click", options.onSelect);
+@@ -56,7 +58,7 @@ export class SwatchRow {
+     tile.setAttribute("role", "button");
+     tile.setAttribute("aria-label", options.ariaLabel || `Select ${swatch.name}`);
+     tile.style.setProperty("--swatch-color", swatch.hex);
+-    tile.title = `${swatch.name}\n${swatch.symbol}\n${swatch.hex}\n${swatch.source}`;
++    tile.title = SwatchRow.createTooltipText(swatch);
+     tile.addEventListener("click", () => {
+       if (typeof options.onSelect === "function") {
+         options.onSelect();
+@@ -82,12 +84,19 @@ export class SwatchRow {
+     const tack = SwatchRow.createTackButton(documentRef, options);
+     tack.classList.add("palette-manager-v2__pin-button--tile");
+
+-    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__swatch-details");
+-
+-    tile.append(chip, tack, details);
++    tile.append(chip, tack);
+     return tile;
+   }
+
++  static createTooltipText(swatch) {
++    return [
++      `Name: ${swatch.name}`,
++      `Symbol: ${swatch.symbol}`,
++      `Hex: ${swatch.hex}`,
++      `Source: ${swatch.source}`
++    ].join("\n");
++  }
++
+   static createDetailsBlock(documentRef, swatch, className) {
+     const details = documentRef.createElement("dl");
+     details.className = className;
 diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index 2e18c3e1..50dd4dce 100644
+index 2e18c3e1..33195c49 100644
 --- a/tools/palette-manager-v2/paletteManagerV2.css
 +++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -32,6 +32,8 @@
+@@ -32,35 +32,14 @@
  }
 
  .palette-manager-v2__panel--center {
-+  height: 100%;
-+  min-height: 0;
-   display: flex;
-   flex-direction: column;
-   gap: 14px;
-@@ -39,26 +41,7 @@
- }
-
- .palette-manager-v2__panel--center .palette-manager-v2__accordion {
 -  display: flex;
 -  flex-direction: column;
--  min-height: 0;
+-  gap: 14px;
+-  overflow: hidden;
+-}
+-
+-.palette-manager-v2__panel--center .palette-manager-v2__accordion {
+-  display: flex;
+-  flex-direction: column;
++  height: 100%;
+   min-height: 0;
 -}
 -
 -.palette-manager-v2__panel--center .palette-manager-v2__accordion[open] {
@@ -26,19 +77,50 @@ index 2e18c3e1..50dd4dce 100644
 -}
 -
 -.palette-manager-v2__panel--center .palette-manager-v2__accordion-content {
--  display: flex;
+   display: flex;
 -  flex: 1 1 0;
--  flex-direction: column;
-   min-height: 0;
--  overflow: hidden;
--}
--
--.palette-manager-v2__panel--center .palette-manager-v2__accordion-content > :not(.palette-manager-v2__tile-grid) {
--  flex: 0 0 auto;
+   flex-direction: column;
+-  min-height: 0;
++  gap: 14px;
+   overflow: hidden;
  }
 
+-.palette-manager-v2__panel--center .palette-manager-v2__accordion-content > :not(.palette-manager-v2__tile-grid) {
+-  flex: 0 0 auto;
+-}
+-
  .palette-manager-v2__accordion {
-@@ -189,15 +172,6 @@
+   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+   border-radius: 8px;
+@@ -129,13 +108,9 @@
+   grid-template-columns: 1fr;
+ }
+
+-.palette-manager-v2__controls {
+-  display: flex;
+-  flex-wrap: wrap;
+-  gap: 8px;
+-}
+-
+-.palette-manager-v2__sort-buttons {
++.palette-manager-v2__controls,
++.palette-manager-v2__sort-buttons,
++.palette-manager-v2__size-buttons {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 8px;
+@@ -158,10 +133,7 @@
+ }
+
+ .palette-manager-v2__size-buttons {
+-  display: flex;
+   justify-content: flex-end;
+-  gap: 8px;
+-  flex-wrap: wrap;
+ }
+
+ .palette-manager-v2__size-button {
+@@ -189,32 +161,22 @@
    outline-offset: 2px;
  }
 
@@ -54,7 +136,9 @@ index 2e18c3e1..50dd4dce 100644
  .palette-manager-v2__tile-grid {
    --swatch-tile-width: 112px;
    --swatch-tile-height: 108px;
-@@ -206,15 +180,13 @@
+   --swatch-chip-height: 90px;
+   --swatch-tile-padding: 8px;
++
    display: grid;
    grid-template-columns: repeat(auto-fill, minmax(var(--swatch-tile-width), 1fr));
    gap: 10px;
@@ -71,12 +155,12 @@ index 2e18c3e1..50dd4dce 100644
  }
 
  .palette-manager-v2__tile-grid[data-swatch-size="small"] {
-@@ -239,12 +211,13 @@
+@@ -239,12 +201,13 @@
  }
 
  .palette-manager-v2__tile-grid--user {
 -  max-height: none;
-+  max-height: clamp(220px, 28vh, 360px);
++  max-height: clamp(180px, 24vh, 320px);
    overflow-y: auto;
  }
 
@@ -87,29 +171,88 @@ index 2e18c3e1..50dd4dce 100644
  }
 
  .palette-manager-v2__swatch-row {
-diff --git a/docs/dev/reports/PR_26124_040_report.md b/docs/dev/reports/PR_26124_040_report.md
+@@ -302,20 +265,17 @@
+   overflow-wrap: anywhere;
+ }
+
+-.palette-manager-v2__swatch-meta,
+-.palette-manager-v2__swatch-details {
++.palette-manager-v2__swatch-meta {
+   display: grid;
+   grid-template-columns: auto minmax(0, 1fr);
+   gap: 2px 8px;
+ }
+
+-.palette-manager-v2__swatch-meta dt,
+-.palette-manager-v2__swatch-details dt {
++.palette-manager-v2__swatch-meta dt {
+   font-weight: 700;
+ }
+
+-.palette-manager-v2__swatch-meta dd,
+-.palette-manager-v2__swatch-details dd {
++.palette-manager-v2__swatch-meta dd {
+   min-width: 0;
+   margin: 0;
+   overflow-wrap: anywhere;
+@@ -393,32 +353,6 @@
+   right: 6px;
+ }
+
+-.palette-manager-v2__swatch-details {
+-  display: none;
+-  position: absolute;
+-  top: calc(100% + 8px);
+-  left: 0;
+-  z-index: 30;
+-  width: max(100%, 150px);
+-  box-sizing: border-box;
+-  margin: 0;
+-  border: 1px solid rgba(255, 255, 255, 0.24);
+-  border-radius: 6px;
+-  background: rgba(0, 0, 0, 0.88);
+-  color: #ffffff;
+-  font-size: 0.88rem;
+-  line-height: 1.35;
+-  padding: 8px;
+-  overflow-wrap: anywhere;
+-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+-}
+-
+-.palette-manager-v2__swatch-tile:hover .palette-manager-v2__swatch-details,
+-.palette-manager-v2__swatch-tile:focus .palette-manager-v2__swatch-details,
+-.palette-manager-v2__swatch-tile:focus-within .palette-manager-v2__swatch-details {
+-  display: grid;
+-}
+-
+ .palette-manager-v2__json-preview {
+   min-height: 220px;
+   max-height: 420px;
+diff --git a/docs/dev/reports/PR_26124_041_report.md b/docs/dev/reports/PR_26124_041_report.md
 new file mode 100644
-index 00000000..f0ac4eaa
+index 00000000..5e8c7a0e
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_040_report.md
-@@ -0,0 +1,20 @@
-+# PR_26124_040 Report
++++ b/docs/dev/reports/PR_26124_041_report.md
+@@ -0,0 +1,22 @@
++# PR_26124_041 Report
 +
 +## Purpose
-+Increase the Palette Manager source palette grid usable height while preserving stable internal scrolling.
++Remove Palette Manager swatch hover overlay boxes while preserving native tooltip information.
 +
 +## Changes
-+- Updated `tools/palette-manager-v2/paletteManagerV2.css` so `.palette-manager-v2__tile-grid--source` uses `max-height: clamp(360px, 48vh, 620px);`.
-+- Kept the User Palette grid stable at `max-height: clamp(220px, 28vh, 360px);`.
-+- Left the center panel accordion flow unchanged; no flex-fill accordion behavior was added.
++- Removed creation of `.palette-manager-v2__swatch-details` hover detail panels from swatch tiles.
++- Removed CSS rules for `.palette-manager-v2__swatch-details` and its hover/focus display behavior.
++- Added centralized native tooltip text with name, symbol, hex, and source.
++- Applied tooltip text to swatch rows, row chips, and swatch tiles.
 +
 +## Scope Checks
-+- Runtime/data logic unchanged.
-+- JSON behavior unchanged.
++- Tile size behavior unchanged.
++- Sort behavior unchanged.
++- Pin/thumbtack behavior unchanged.
++- Scroll behavior unchanged.
++- JSON structure and palette logic unchanged.
 +- `tools/shared` unchanged.
-+- No workspace, toolState, or session logic added.
 +
 +## Validation
-+- CSS/manual validation: confirmed the source grid keeps `overflow-y: auto`, the base tile grid keeps `overflow-x: visible`, and the user grid retains its previous stable viewport behavior.
-+- CSS/manual validation: confirmed center accordion content remains in normal grid flow and no center-panel open-accordion flex-fill rule was introduced.
-+- `git diff --check -- tools/palette-manager-v2/paletteManagerV2.css` passed with only the existing Git LF/CRLF warning.
++- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
++- Targeted search confirmed no remaining `swatch-details` references in Palette Manager JS/CSS.
