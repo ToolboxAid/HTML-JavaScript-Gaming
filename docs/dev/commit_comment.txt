@@ -1,1 +1,1 @@
-Keep untagged swatches last in Palette Manager Tag sort - PR_26124_063-palette-manager-tag-sort-untagged-last
+Preserve Palette Manager source scroll after pin render - PR_26124_064-palette-manager-source-pin-scroll-preserve

@@ -1,1714 +1,211 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 7416dcab..60ecaa63 100644
+index 3d48e7ee..e148fe65 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,32 +1,30 @@
--# Codex Commands - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
-+# Codex Commands - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
+@@ -1,28 +1,28 @@
+-# Codex Commands - PR_26124_063-palette-manager-tag-sort-untagged-last
++# Codex Commands - PR_26124_064-palette-manager-source-pin-scroll-preserve
  
  ## Workflow
  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
  - Used `.codex/skills/repo-build/SKILL.md`.
  - Checked git status before implementation.
--- Searched `src/` for undo/history/command stack classes and found no suitable reusable stack for Palette Manager V2 user palette mutations.
--- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md`.
--- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md`.
-+- Created `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md`.
-+- Created `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md`.
+-- Created `docs/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/PLAN_PR.md`.
+-- Created `docs/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/BUILD_PR.md`.
++- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md`.
++- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md`.
  - Read the active BUILD doc before changing runtime files.
- - Updated Palette Manager V2 only.
--- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md`.
-+- Created `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md`.
+-- Updated only `tools/palette-manager-v2/modules/PaletteManagerApp.js`.
+-- Created `docs/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/APPLY_PR.md`.
++- Updated only `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`.
++- Created `docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md`.
  
  ## Validation Commands
- - `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
--- `node --check tools/palette-manager-v2/modules/PaletteHistoryStack.js`
--- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
- - `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
- - `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
--- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin validation using Playwright from Node.
+-- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
+-- Targeted served-browser Palette Manager V2 Tag ascending/descending sort validation using Playwright from Node.
 +- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-+- Targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation validation using Playwright from Node.
++- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation using Playwright from Node.
  - `git diff --check`
  - `npm run test:workspace-v2`
  - `git diff --cached --check`
  - `npm run codex:review-artifacts`
--- Python `zipfile` packaging for `tmp/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select_delta.zip`
-+- Python `zipfile` packaging for `tmp/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll_delta.zip`
+-- Python `zipfile` packaging for `tmp/PR_26124_063-palette-manager-tag-sort-untagged-last_delta.zip`
++- Python `zipfile` packaging for `tmp/PR_26124_064-palette-manager-source-pin-scroll-preserve_delta.zip`
  
  ## Validation Outcome
- - JavaScript syntax checks: PASS.
--- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin check: PASS.
-+- Targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation check: PASS.
- - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
+ - JavaScript syntax check: PASS.
+-- Targeted served-browser Palette Manager V2 Tag sort validation: PASS.
+-- `git diff --check`: PASS.
++- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warning for generated review artifact.
  - `git diff --cached --check`: PASS.
  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
+ - Review artifacts: generated.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index c0056458..f0e0d545 100644
+index 4f675d1b..c5251306 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Add Palette Manager undo redo history and batch tag selection - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
-+Add Palette Manager heading controls and preserve source pin scroll - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
-diff --git a/docs/dev/reports/PR_26124_061_report.md b/docs/dev/reports/PR_26124_061_report.md
+-Keep untagged swatches last in Palette Manager Tag sort - PR_26124_063-palette-manager-tag-sort-untagged-last
++Preserve Palette Manager source scroll after pin render - PR_26124_064-palette-manager-source-pin-scroll-preserve
+diff --git a/docs/dev/reports/PR_26124_064_report.md b/docs/dev/reports/PR_26124_064_report.md
 new file mode 100644
-index 00000000..b788b53a
+index 00000000..aef49575
 --- /dev/null
-+++ b/docs/dev/reports/PR_26124_061_report.md
-@@ -0,0 +1,49 @@
-+# PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll Report
++++ b/docs/dev/reports/PR_26124_064_report.md
+@@ -0,0 +1,24 @@
++# PR_26124_064-palette-manager-source-pin-scroll-preserve Report
 +
 +## Summary
-+Palette Manager V2 now supports heading action controls, clearing User Palette checkbox selections, and preserving Sample Palette scroll position while source pins render.
++Implemented a Palette Manager V2-only source grid scroll preservation timing fix.
 +
-+## Files Changed
-+- `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md`
-+- `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md`
-+- `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md`
-+- `docs/dev/codex_commands.md`
-+- `docs/dev/commit_comment.txt`
-+- `docs/dev/reports/PR_26124_061_report.md`
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
-+- `tools/palette-manager-v2/controls/UserPaletteControl.js`
-+- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
++## Changes
++- `SourcePaletteBrowserControl.preserveSourceScrollDuring` now captures the source grid scroll position before the pin/unpin action.
++- The source grid scroll position is restored with `requestAnimationFrame` after the app render replaces the source grid contents.
++- Pin/unpin behavior itself is unchanged.
++- Pin All still uses the same helper and may benefit naturally from the post-render restore path.
 +
 +## Validation
-+- JavaScript syntax checks: PASS.
-+- Targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
-+- `npm run test:workspace-v2`: FAIL because the script is missing from `package.json`.
-+- Full samples smoke test: skipped by instruction.
++- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
++- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warning for generated review artifact.
++- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
++- Full samples smoke test: skipped because this PR is limited to Palette Manager V2 source grid scroll timing and sample JSON remains out of scope.
 +
-+## Targeted Browser Coverage
-+- `Undo` and `Redo` no longer appear in `menuSample`.
-+- `Undo` and `Redo` appear in the User Palette accordion heading area.
-+- `Source palette` and `Pin All` appear in the Sample Palette Swatch accordion heading area.
-+- Normal Add Tag still adds a lowercase-normalized tag to the selected swatch.
-+- Normal Add Tag applies a lowercase-normalized tag to checked User Palette swatches.
-+- User Palette `Clear` clears checked swatch checkboxes.
-+- Individual Sample Palette pin preserves the Sample Palette grid scroll position.
-+- Pin All preserves the Sample Palette grid scroll position.
-+
-+## Manual Test
-+1. Open Palette Manager V2 through a local server.
-+2. Confirm `Undo` and `Redo` are in the User Palette accordion heading area.
-+3. Confirm `menuSample` contains only `Import JSON`, `Copy JSON`, and `Export JSON`.
-+4. Confirm `Source palette` and `Pin All` are in the Sample Palette Swatch accordion heading area.
-+5. Add a user swatch and add a mixed-case tag.
-+6. Check two User Palette swatches and confirm the selected count updates.
-+7. Click the User Palette `Clear` button and confirm both checkboxes clear.
-+8. Add a tag and confirm tag Add behavior still applies to the selected swatch or checked swatches.
-+9. Scroll the Sample Palette grid down and click an individual pin button.
-+10. Confirm the Sample Palette grid does not jump back to the top.
-+11. Scroll the Sample Palette grid down and click `Pin All`.
-+12. Confirm the Sample Palette grid does not jump back to the top.
-diff --git a/docs/dev/reports/codex_changed_files.txt b/docs/dev/reports/codex_changed_files.txt
-index 0977082c..93c7f699 100644
---- a/docs/dev/reports/codex_changed_files.txt
-+++ b/docs/dev/reports/codex_changed_files.txt
-@@ -1,21 +1,19 @@
- # git status --short
- M  docs/dev/codex_commands.md
- M  docs/dev/commit_comment.txt
--A  docs/dev/reports/PR_26124_060_report.md
-+A  docs/dev/reports/PR_26124_061_report.md
-  M docs/dev/reports/codex_changed_files.txt
-  M docs/dev/reports/codex_review.diff
--A  docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md
--A  docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md
--A  docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md
--M  tools/palette-manager-v2/controls/PaletteEditorControl.js
-+A  docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md
-+A  docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md
-+A  docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md
-+M  tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
- M  tools/palette-manager-v2/controls/UserPaletteControl.js
- M  tools/palette-manager-v2/index.html
--A  tools/palette-manager-v2/modules/PaletteHistoryStack.js
- M  tools/palette-manager-v2/modules/PaletteManagerApp.js
--M  tools/palette-manager-v2/modules/SwatchRow.js
- M  tools/palette-manager-v2/paletteManagerV2.css
- 
- # git diff --stat
--docs/dev/reports/codex_changed_files.txt |  15 +-
-- docs/dev/reports/codex_review.diff       | 962 +++++++++++++++++++++++--------
-- 2 files changed, 737 insertions(+), 240 deletions(-)
-\ No newline at end of file
-+docs/dev/reports/codex_changed_files.txt |   18 +-
-+ docs/dev/reports/codex_review.diff       | 1021 ++++++++++--------------------
-+ 2 files changed, 330 insertions(+), 709 deletions(-)
-\ No newline at end of file
-diff --git a/docs/dev/reports/codex_review.diff b/docs/dev/reports/codex_review.diff
-index d31db812..3bd0e0f9 100644
---- a/docs/dev/reports/codex_review.diff
-+++ b/docs/dev/reports/codex_review.diff
-@@ -1,145 +1,138 @@
- diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
--index 25568512..7416dcab 100644
-+index 7416dcab..60ecaa63 100644
- --- a/docs/dev/codex_commands.md
- +++ b/docs/dev/codex_commands.md
--@@ -1,26 +1,32 @@
---# Codex Commands - PR_26124_059-validation-viewer-clear-and-error-consolidation
--+# Codex Commands - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
-+@@ -1,32 +1,30 @@
-+-# Codex Commands - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
-++# Codex Commands - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
-  
-  ## Workflow
-  - Read `docs/dev/PROJECT_INSTRUCTIONS.md`.
-  - Used `.codex/skills/repo-build/SKILL.md`.
---- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md`.
---- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md`.
--+- Checked git status before implementation.
--+- Searched `src/` for undo/history/command stack classes and found no suitable reusable stack for Palette Manager V2 user palette mutations.
--+- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md`.
--+- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md`.
--+- Read the active BUILD doc before changing runtime files.
-+ - Checked git status before implementation.
-+-- Searched `src/` for undo/history/command stack classes and found no suitable reusable stack for Palette Manager V2 user palette mutations.
-+-- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md`.
-+-- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md`.
-++- Created `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md`.
-++- Created `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md`.
-+ - Read the active BUILD doc before changing runtime files.
-  - Updated Palette Manager V2 only.
---- Created `docs/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md`.
--+- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md`.
-+-- Created `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md`.
-++- Created `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md`.
-  
-  ## Validation Commands
-  - `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`
---- `node --check tools/palette-manager-v2/controls/PaletteValidationErrorControl.js`
---- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation validation using Playwright from Node.
--+- `node --check tools/palette-manager-v2/modules/PaletteHistoryStack.js`
--+- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
--+- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
--+- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
--+- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin validation using Playwright from Node.
-+-- `node --check tools/palette-manager-v2/modules/PaletteHistoryStack.js`
-+-- `node --check tools/palette-manager-v2/modules/SwatchRow.js`
-+ - `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`
-+ - `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`
-+-- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin validation using Playwright from Node.
-++- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-++- Targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation validation using Playwright from Node.
-  - `git diff --check`
-  - `npm run test:workspace-v2`
-  - `git diff --cached --check`
-  - `npm run codex:review-artifacts`
---- Python `zipfile` packaging for `tmp/PR_26124_059-validation-viewer-clear-and-error-consolidation_delta.zip`
--+- Python `zipfile` packaging for `tmp/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select_delta.zip`
-+-- Python `zipfile` packaging for `tmp/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select_delta.zip`
-++- Python `zipfile` packaging for `tmp/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll_delta.zip`
-  
-  ## Validation Outcome
-  - JavaScript syntax checks: PASS.
---- Targeted served-browser Palette Manager V2 validation viewer and duplicate consolidation check: PASS.
--+- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin check: PASS.
-+-- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin check: PASS.
-++- Targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation check: PASS.
-  - `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
-  - `git diff --cached --check`: PASS.
-  - `npm run test:workspace-v2`: FAILED because the script is missing from `package.json`.
- diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
--index 3cae9f95..c0056458 100644
-+index c0056458..f0e0d545 100644
- --- a/docs/dev/commit_comment.txt
- +++ b/docs/dev/commit_comment.txt
- @@ -1 +1 @@
---Add Palette Manager validation viewer clear and consolidate duplicate errors - PR_26124_059-validation-viewer-clear-and-error-consolidation
--+Add Palette Manager undo redo history and batch tag selection - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
--diff --git a/docs/dev/reports/PR_26124_060_report.md b/docs/dev/reports/PR_26124_060_report.md
-+-Add Palette Manager undo redo history and batch tag selection - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
-++Add Palette Manager heading controls and preserve source pin scroll - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
-+diff --git a/docs/dev/reports/PR_26124_061_report.md b/docs/dev/reports/PR_26124_061_report.md
- new file mode 100644
--index 00000000..92943768
-+index 00000000..b788b53a
- --- /dev/null
--+++ b/docs/dev/reports/PR_26124_060_report.md
--@@ -0,0 +1,55 @@
--+# PR_26124_060-palette-manager-undo-redo-and-multi-tag-select Report
-++++ b/docs/dev/reports/PR_26124_061_report.md
-+@@ -0,0 +1,49 @@
-++# PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll Report
- +
- +## Summary
--+Palette Manager V2 now supports local undo/redo for user palette mutations, checkbox multi-select on User Palette swatches, and batch tag application from the Tags accordion.
--+
--+## Existing History Search
--+- Searched under `src/` for undo/history/command stack classes.
--+- No suitable reusable undo/history/command stack class was found for Palette Manager V2 user palette mutations.
--+- Implemented the smallest local history stack in `tools/palette-manager-v2/modules/PaletteHistoryStack.js`.
-++Palette Manager V2 now supports heading action controls, clearing User Palette checkbox selections, and preserving Sample Palette scroll position while source pins render.
- +
- +## Files Changed
--+- `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md`
--+- `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md`
--+- `docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md`
-++- `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md`
-++- `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md`
-++- `docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md`
- +- `docs/dev/codex_commands.md`
- +- `docs/dev/commit_comment.txt`
--+- `docs/dev/reports/PR_26124_060_report.md`
-++- `docs/dev/reports/PR_26124_061_report.md`
- +- `tools/palette-manager-v2/index.html`
- +- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
--+- `tools/palette-manager-v2/modules/PaletteHistoryStack.js`
--+- `tools/palette-manager-v2/modules/SwatchRow.js`
- +- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
- +- `tools/palette-manager-v2/controls/UserPaletteControl.js`
-++- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
- +- `tools/palette-manager-v2/paletteManagerV2.css`
- +
- +## Validation
- +- JavaScript syntax checks: PASS.
--+- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin validation: PASS.
-++- Targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation validation: PASS.
- +- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
- +- `npm run test:workspace-v2`: FAIL because the script is missing from `package.json`.
- +- Full samples smoke test: skipped by instruction.
- +
- +## Targeted Browser Coverage
--+- Undo and Redo start disabled.
--+- Adding a user swatch enables Undo.
--+- Undo removes the added swatch and enables Redo.
--+- Redo restores the swatch and selected swatch display.
--+- User Palette checkbox click does not select the tile.
--+- Selected-count status updates when User Palette checkboxes are checked.
--+- Add Tag applies a lowercase tag to all checked User Palette swatches.
--+- Existing tag click removes the tag from all checked User Palette swatches when all checked swatches have it.
--+- Undo/redo restores batch tag mutations.
--+- Source swatch pin adds a user swatch.
--+- Undo/redo restores source pin mutations.
-++- `Undo` and `Redo` no longer appear in `menuSample`.
-++- `Undo` and `Redo` appear in the User Palette accordion heading area.
-++- `Source palette` and `Pin All` appear in the Sample Palette Swatch accordion heading area.
-++- Normal Add Tag still adds a lowercase-normalized tag to the selected swatch.
-++- Normal Add Tag applies a lowercase-normalized tag to checked User Palette swatches.
-++- User Palette `Clear` clears checked swatch checkboxes.
-++- Individual Sample Palette pin preserves the Sample Palette grid scroll position.
-++- Pin All preserves the Sample Palette grid scroll position.
- +
- +## Manual Test
- +1. Open Palette Manager V2 through a local server.
--+2. Add a user swatch, click `Undo`, and confirm it is removed.
--+3. Click `Redo` and confirm the swatch returns with selected details restored.
--+4. Add a second user swatch.
--+5. Check both User Palette tile checkboxes and confirm the selected count is `2 selected`.
--+6. Type a mixed-case tag in the Tags accordion and click `Add`.
--+7. Confirm the lowercase tag appears on both checked swatches.
--+8. Click the tag in the Tags accordion and confirm it toggles across the checked swatches.
--+9. Pin a source swatch and confirm Undo/Redo restores the pin state.
--diff --git a/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md
-++2. Confirm `Undo` and `Redo` are in the User Palette accordion heading area.
-++3. Confirm `menuSample` contains only `Import JSON`, `Copy JSON`, and `Export JSON`.
-++4. Confirm `Source palette` and `Pin All` are in the Sample Palette Swatch accordion heading area.
-++5. Add a user swatch and add a mixed-case tag.
-++6. Check two User Palette swatches and confirm the selected count updates.
-++7. Click the User Palette `Clear` button and confirm both checkboxes clear.
-++8. Add a tag and confirm tag Add behavior still applies to the selected swatch or checked swatches.
-++9. Scroll the Sample Palette grid down and click an individual pin button.
-++10. Confirm the Sample Palette grid does not jump back to the top.
-++11. Scroll the Sample Palette grid down and click `Pin All`.
-++12. Confirm the Sample Palette grid does not jump back to the top.
-+diff --git a/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md
- new file mode 100644
--index 00000000..f56780c2
-+index 00000000..477c1a67
- --- /dev/null
--+++ b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md
--@@ -0,0 +1,31 @@
--+# APPLY_PR - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
-++++ b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md
-+@@ -0,0 +1,30 @@
-++# APPLY_PR - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
- +
- +## Summary
--+Added local Palette Manager V2 undo/redo history, User Palette multi-select checkboxes, and batch tag application from the Tags accordion.
-++Added Palette heading actions, User Palette selection Clear, and Sample Palette scroll preservation while pinning.
- +
- +## Applied Changes
--+- Added `Undo` and `Redo` buttons to the `menuSample` nav.
--+- Added local `PaletteHistoryStack` for Palette Manager V2 user palette mutation snapshots.
--+- Tracked user swatch add, update, remove/unpin, source pin, Pin All, tag add/remove, batch tag changes, and unused tag deletion.
--+- Restored user swatches, selected user swatch index, and available unused tags on undo/redo.
--+- Added checkbox selection to User Palette tiles without changing tile selection click behavior.
--+- Added selected-count status near User Palette controls.
--+- Made Tags accordion Add Tag and tag toggle actions batch across checked User Palette swatches.
--+- Preserved selected-swatch tag behavior when no User Palette checkboxes are checked.
-++- Removed `Undo` and `Redo` from `menuSample`.
-++- Added User Palette heading actions with `Undo`, `Redo`, and `Clear`.
-++- Added Sample Palette Swatch heading actions with `Source palette` and `Pin All`.
-++- Preserved existing undo/redo behavior and refs.
-++- Added a `Clear` button that clears User Palette swatch checkboxes.
-++- Left Tags accordion Add behavior unchanged.
- +- Preserved lowercase tag normalization and duplicate tag avoidance.
-++- Preserved Sample Palette grid scroll position for individual pin/unpin actions.
-++- Preserved Sample Palette grid scroll position for Pin All.
- +
- +## Validation
- +- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
--+- `node --check tools/palette-manager-v2/modules/PaletteHistoryStack.js`: PASS.
--+- `node --check tools/palette-manager-v2/modules/SwatchRow.js`: PASS.
- +- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
- +- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
--+- Targeted served-browser Palette Manager V2 undo/redo, multi-select, batch tag, and source pin validation: PASS.
-++- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
-++- Targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation validation: PASS.
- +- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
- +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
- +- Full samples smoke test: skipped by instruction.
-@@ -147,717 +140,348 @@ index 00000000..f56780c2
- +## Artifacts
- +- Review diff: `docs/dev/reports/codex_review.diff`
- +- Changed files: `docs/dev/reports/codex_changed_files.txt`
--+- Delta ZIP: `tmp/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select_delta.zip`
--diff --git a/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md
-++- Delta ZIP: `tmp/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll_delta.zip`
-+diff --git a/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md
- new file mode 100644
--index 00000000..07763843
-+index 00000000..cb773e5b
- --- /dev/null
--+++ b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md
--@@ -0,0 +1,55 @@
--+# BUILD_PR - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
-++++ b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md
-+@@ -0,0 +1,40 @@
-++# BUILD_PR - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
- +
- +## Purpose
--+Implement one scoped Palette Manager V2 update: local undo/redo history for user palette mutations plus User Palette multi-select and batch tag application.
-++Implement one scoped Palette Manager V2 refinement: Palette heading action controls, User Palette selection clear button, and Sample Palette scroll preservation during pin actions.
- +
- +## Scope
- +- `tools/palette-manager-v2/index.html`
- +- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
--+- `tools/palette-manager-v2/modules/SwatchRow.js`
--+- `tools/palette-manager-v2/modules/PaletteHistoryStack.js`
- +- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
- +- `tools/palette-manager-v2/controls/UserPaletteControl.js`
-++- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
- +- `tools/palette-manager-v2/paletteManagerV2.css`
- +- PR workflow docs and required review artifacts only.
- +
--+## Source History Search Result
--+Search `src/` for undo/history/command stack classes before changing runtime files.
--+
--+Result: no reusable undo/history/command stack class suitable for Palette Manager V2 user palette mutations was found under `src/`; implement the smallest local Palette Manager V2 history stack.
--+
- +## Implementation
--+1. Add `Undo` and `Redo` buttons to the existing `menuSample` button group.
--+2. Add a local `PaletteHistoryStack` module under `tools/palette-manager-v2/modules/`.
--+3. Snapshot and restore:
--+   - user swatches
--+   - selected user swatch index
--+   - available unused tag list
--+4. Record history for:
--+   - add user swatch
--+   - update user swatch
--+   - remove/unpin swatch
--+   - pin source swatch
--+   - Pin All source swatches
--+   - add/remove tag
--+   - batch add/remove tag
--+   - delete unused tag
--+5. Do not record view-only changes such as sort, search, size, accordion open/close, or source swatch browse.
--+6. Add a checkbox to each User Palette tile with click handling isolated from tile selection.
--+7. Add selected-count display near User Palette controls.
--+8. Preserve single selected-swatch tag behavior when no User Palette checkboxes are selected.
--+9. When one or more User Palette checkboxes are selected, apply Add Tag and existing tag clicks across checked swatches.
--+10. Avoid duplicate tags and preserve lowercase tag normalization.
-++1. Move `Undo` and `Redo` out of the `menuSample` nav.
-++2. Add User Palette heading actions containing `Undo`, `Redo`, and `Clear` beside the accordion toggle header.
-++3. Preserve existing Undo/Redo refs and behavior.
-++4. Add a `Clear` button to the User Palette heading action area.
-++5. Add the `Clear` button to Palette Manager required refs.
-++6. Make `Clear` clear User Palette swatch checkboxes only.
-++7. Leave Add Tag behavior unchanged.
-++8. Preserve lowercase tag normalization and duplicate tag avoidance.
-++9. Move `Source palette` and `Pin All` into the Sample Palette Swatch heading action area.
-++10. Preserve Sample Palette grid scroll position around individual source pin/unpin actions.
-++11. Preserve Sample Palette grid scroll position around Pin All where possible.
- +
- +## Boundaries
- +- Do not touch workspace/toolState/session behavior.
- +- Do not touch sample JSON.
- +- Do not modify `tools/shared`.
- +- Do not add dependencies.
-++- Do not change shared accordionV2 behavior.
- +- Do not broadly refactor Palette Manager V2.
- +
- +## Validation
- +- Syntax check changed JavaScript files.
--+- Run targeted served-browser Palette Manager V2 undo/redo, multi-select, and batch tag validation.
-++- Run targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation validation.
- +- Run `npm run test:workspace-v2`.
- +- Skip the full samples smoke test.
--diff --git a/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md
-+diff --git a/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md
- new file mode 100644
--index 00000000..cc4f9741
-+index 00000000..574191a4
- --- /dev/null
--+++ b/docs/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md
--@@ -0,0 +1,48 @@
--+# PLAN_PR - PR_26124_060-palette-manager-undo-redo-and-multi-tag-select
-++++ b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md
-+@@ -0,0 +1,49 @@
-++# PLAN_PR - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
- +
- +## Goal
--+Add Palette Manager V2 undo/redo history for user palette mutations, add User Palette multi-select checkboxes, and support batch tag application from the Tags accordion.
-++Refine Palette Manager V2 heading controls, User Palette selection clearing, and Sample Palette scroll preservation while pinning.
- +
- +## Scope
- +- `tools/palette-manager-v2/*`
--+- Existing `src/` undo/history class consumption only if a suitable class exists.
- +- PR workflow docs and required review artifacts only.
- +
--+## Existing History Search
--+- Search under `src/` for undo/history/command stack classes before implementation.
--+- If a reusable undo/history stack is not found, implement the smallest local Palette Manager V2 history stack.
--+
- +## Boundaries
- +- Do not touch workspace/toolState/session behavior.
- +- Do not touch sample JSON.
- +- Do not modify `tools/shared`.
- +- Do not add dependencies.
- +- Preserve accordionV2 behavior.
--+- Preserve import/export, sort, search, size, pin/unpin, and Pin All behavior.
-++- Preserve import/export, sort, search, size, pin/unpin, Pin All, multi-select, and existing tag behavior.
- +- Avoid broad refactor.
- +
- +## Implementation Plan
--+1. Add Undo and Redo buttons to the existing `menuSample` nav.
--+2. Track user palette mutation snapshots for add, update, remove/unpin, pin, Pin All, tag add/remove, batch tag changes, and unused tag deletion.
--+3. Restore user palette state, selected swatch state, and available unused tag state safely during undo/redo.
--+4. Add a checkbox to each User Palette tile without changing tile selection behavior.
--+5. Add selected-count status near User Palette controls.
--+6. When User Palette checkboxes are selected, make Tags accordion tag clicks and Add Tag apply to the checked swatches.
--+7. When no checkboxes are selected, preserve the current selected-swatch tag behavior.
--+8. Preserve lowercase tag normalization and duplicate tag avoidance.
-++1. Add a `Clear` button to the User Palette heading action area.
-++2. Make the `Clear` button clear User Palette swatch checkboxes only.
-++3. Do not change tag Add behavior; it continues to add tags to the selected swatch or checked swatches.
-++4. Preserve lowercase tag normalization and duplicate tag avoidance.
-++5. Move `Undo` and `Redo` out of `menuSample`.
-++6. Place `Undo` and `Redo` in the User Palette accordion heading action area.
-++7. Preserve existing undo/redo behavior.
-++8. Move `Source palette` and `Pin All` into the Sample Palette Swatch accordion heading action area.
-++9. Preserve Sample Palette grid scroll position during individual pin/unpin actions.
-++10. Preserve Sample Palette grid scroll position for Pin All where possible.
- +
- +## Playwright
- +- Command: `npm run test:workspace-v2`
--+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only UI/history update.
-++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only UI behavior update.
- +- Expected pass behavior: Workspace V2 validation remains green.
- +- Expected fail behavior: missing script or Workspace V2 regression is reported.
- +- Full samples smoke test: skipped by instruction.
- +
- +## Manual Validation
- +1. Open Palette Manager V2.
--+2. Add a user swatch, click Undo, and confirm the swatch is removed and Redo becomes available.
--+3. Click Redo and confirm the swatch returns and selection is restored safely.
--+4. Pin a source swatch and confirm Undo removes the pinned swatch.
--+5. Select multiple User Palette checkboxes and confirm the selected count updates.
--+6. Add a tag from the Tags accordion and confirm the tag is applied to all checked swatches in lowercase without duplicates.
--+7. Click an existing tag while multiple swatches are checked and confirm the tag toggles across the checked swatches.
--diff --git a/tools/palette-manager-v2/controls/PaletteEditorControl.js b/tools/palette-manager-v2/controls/PaletteEditorControl.js
--index 1901c037..e8707126 100644
----- a/tools/palette-manager-v2/controls/PaletteEditorControl.js
--+++ b/tools/palette-manager-v2/controls/PaletteEditorControl.js
--@@ -2,11 +2,6 @@ import { cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "../modul
-- 
-- const MAX_TAG_SUGGESTIONS = 6;
-- 
---function tagsContainTag(tags, tag) {
---  const cleanTag = sanitizeText(tag).toLowerCase();
---  return Boolean(cleanTag) && normalizeTags(tags).some((existingTag) => existingTag.toLowerCase() === cleanTag);
---}
---
-- export class PaletteEditorControl {
--   constructor({ refs, app, hexColorPattern }) {
--     this.refs = refs;
--@@ -120,7 +115,7 @@ export class PaletteEditorControl {
--     if (!cleanTag) {
--       return;
--     }
---    if (this.app.addTagToSelectedSwatch(cleanTag)) {
--+    if (this.app.addTagFromTagControl(cleanTag)) {
--       this.refs.tagEntryInput.value = "";
--       this.tagSuggestionIndex = -1;
--     }
--@@ -181,12 +176,12 @@ export class PaletteEditorControl {
--       const button = this.refs.availableTagList.ownerDocument.createElement("button");
--       button.type = "button";
--       button.className = "palette-manager-v2__tag-pill palette-manager-v2__tag-toggle";
---      const isActive = tagsContainTag(this.selectedTags, tag);
--+      const isActive = this.app.isTagActiveForTagControl(tag, this.selectedTags);
--       button.classList.toggle("is-active", isActive);
--       button.setAttribute("aria-pressed", String(isActive));
--       button.textContent = tag;
--       button.addEventListener("click", () => {
---        this.app.toggleTagOnSelectedSwatch(tag);
--+        this.app.toggleTagFromTagControl(tag);
--       });
-++2. Confirm `Undo` and `Redo` are in the User Palette accordion heading area and no longer appear in `menuSample`.
-++3. Add a user swatch and add a lowercase-normalized tag.
-++4. Check multiple User Palette swatches and confirm the selected count updates.
-++5. Click the User Palette `Clear` button and confirm all User Palette checkboxes are cleared.
-++6. Add a tag and confirm tag Add behavior still applies to the selected swatch or checked swatches.
-++7. Confirm `Source palette` and `Pin All` are in the Sample Palette Swatch accordion heading area.
-++8. Scroll the Sample Palette grid down and click an individual pin button.
-++9. Confirm the Sample Palette grid remains at the same scroll position after pinning.
-++10. Scroll the Sample Palette grid down and click `Pin All`.
-++11. Confirm the Sample Palette grid does not jump back to the top.
-+diff --git a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-+index 783e731d..6fbdf15d 100644
-+--- a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-++++ b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-+@@ -18,10 +18,16 @@ export class SourcePaletteBrowserControl {
-+       this.app.setSourceSearch(this.refs.sourceSearchInput.value);
-+     });
-+     this.refs.pinAllSourceButton.addEventListener("click", () => {
-+-      this.app.pinVisibleSourceSwatches();
-++      this.preserveSourceScrollDuring(() => this.app.pinVisibleSourceSwatches());
-+     });
-+   }
-  
--       tagItem.appendChild(button);
-++  preserveSourceScrollDuring(action) {
-++    const sourceScrollTop = this.refs.sourceSwatchList.scrollTop;
-++    action();
-++    this.refs.sourceSwatchList.scrollTop = sourceScrollTop;
-++  }
-++
-+   render() {
-+     this.refs.sourcePaletteSelect.value = this.app.getCurrentSourcePaletteId();
-+     this.refs.sourceSearchInput.value = this.app.getSourceSearch();
-+@@ -45,11 +51,13 @@ export class SourcePaletteBrowserControl {
-+         pinned: userIndex >= 0,
-+         onSelect: () => this.app.browseSourceSwatch(swatch),
-+         onTack: () => {
-+-          if (userIndex >= 0) {
-+-            this.app.removeUserSwatch(userIndex);
-+-            return;
-+-          }
-+-          this.app.pinSourceSwatch(swatch, this.app.getCurrentSourcePaletteId());
-++          this.preserveSourceScrollDuring(() => {
-++            if (userIndex >= 0) {
-++              this.app.removeUserSwatch(userIndex);
-++              return;
-++            }
-++            this.app.pinSourceSwatch(swatch, this.app.getCurrentSourcePaletteId());
-++          });
-+         }
-+       }));
-+     });
- diff --git a/tools/palette-manager-v2/controls/UserPaletteControl.js b/tools/palette-manager-v2/controls/UserPaletteControl.js
--index 3847c020..c705d811 100644
-+index c705d811..8fdf320c 100644
- --- a/tools/palette-manager-v2/controls/UserPaletteControl.js
- +++ b/tools/palette-manager-v2/controls/UserPaletteControl.js
--@@ -15,6 +15,7 @@ export class UserPaletteControl {
-+@@ -10,12 +10,17 @@ export class UserPaletteControl {
-+   bind() {
-+     this.renderSortOptions();
-+     this.renderSizeOptions();
-++    this.refs.clearUserPaletteSelectionButton.addEventListener("click", () => {
-++      this.app.clearUserSwatchChecks();
-++    });
-+   }
-+ 
-    render() {
-      const swatches = this.app.getUserSwatches();
-++    const checkedCount = this.app.getCheckedUserSwatchCount();
-      this.refs.userPaletteCount.textContent = `${swatches.length} user swatches`;
--+    this.refs.userPaletteSelectedCount.textContent = `${this.app.getCheckedUserSwatchCount()} selected`;
-+-    this.refs.userPaletteSelectedCount.textContent = `${this.app.getCheckedUserSwatchCount()} selected`;
-++    this.refs.userPaletteSelectedCount.textContent = `${checkedCount} selected`;
-++    this.refs.clearUserPaletteSelectionButton.disabled = checkedCount === 0;
-      this.refs.userSwatchList.dataset.swatchSize = this.app.getUserSwatchSize();
-      this.renderActiveSortButton();
-      this.renderActiveSizeButton();
--@@ -32,7 +33,10 @@ export class UserPaletteControl {
--       this.refs.userSwatchList.appendChild(SwatchRow.createUserTile(this.document, swatch, {
--         pinned: true,
--         selected: index === this.app.getSelectedUserIndex(),
--+        checked: this.app.isUserSwatchChecked(index),
--+        showCheckbox: true,
--         onSelect: () => this.app.selectUserSwatch(index),
--+        onCheck: (isChecked) => this.app.setUserSwatchChecked(index, isChecked),
--         onTack: () => this.app.removeUserSwatch(index)
--       }));
--     });
- diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
--index 0bcbc805..730ee004 100644
-+index 730ee004..a0acdb9e 100644
- --- a/tools/palette-manager-v2/index.html
- +++ b/tools/palette-manager-v2/index.html
--@@ -21,6 +21,8 @@
-+@@ -21,8 +21,6 @@
-  
-    <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
-      <div class="palette-manager-v2__menu-actions">
--+      <button id="undoPaletteButton" type="button">Undo</button>
--+      <button id="redoPaletteButton" type="button">Redo</button>
-+-      <button id="undoPaletteButton" type="button">Undo</button>
-+-      <button id="redoPaletteButton" type="button">Redo</button>
-        <button id="importPaletteButton" type="button">Import JSON</button>
-        <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
-        <button id="copyPaletteButton" type="button">Copy JSON</button>
--@@ -129,6 +131,7 @@
--               </div>
-+@@ -106,7 +104,9 @@
-+                 Tag name
-+                 <input id="tagEntryInput" type="text" autocomplete="off" />
-+               </label>
-+-              <button id="addTagButton" type="button">Add</button>
-++              <div class="palette-manager-v2__tag-entry-actions">
-++                <button id="addTagButton" type="button">Add</button>
-++              </div>
-+               <div id="tagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Tag suggestions"></div>
-              </div>
--             <div id="userPaletteCount" class="palette-manager-v2__meta">0 user swatches</div>
--+            <div id="userPaletteSelectedCount" class="palette-manager-v2__meta palette-manager-v2__selected-count">0 selected</div>
--             <div id="userSwatchList" class="palette-manager-v2__tile-grid palette-manager-v2__tile-grid--user" aria-label="User palette swatches"></div>
-            </div>
-+@@ -115,10 +115,17 @@
-+ 
-+       <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
-+         <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
-+-            <span>User Palette</span>
-+-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+-          </button>
-++          <div class="palette-manager-v2__user-palette-header">
-++            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
-++              <span>User Palette</span>
-++              <span class="accordion-v2__icon" aria-hidden="true">+</span>
-++            </button>
-++            <div class="palette-manager-v2__user-palette-actions" aria-label="User palette history controls">
-++              <button id="undoPaletteButton" type="button">Undo</button>
-++              <button id="redoPaletteButton" type="button">Redo</button>
-++              <button id="clearUserPaletteSelectionButton" type="button">Clear</button>
-++            </div>
-++          </div>
-+           <div id="userPaletteAccordionContent" class="accordion-v2__content">
-+             <div class="palette-manager-v2__sort-row">
-+               <div class="palette-manager-v2__field">
-+@@ -137,18 +144,20 @@
-          </section>
--diff --git a/tools/palette-manager-v2/modules/PaletteHistoryStack.js b/tools/palette-manager-v2/modules/PaletteHistoryStack.js
--new file mode 100644
--index 00000000..90823246
----- /dev/null
--+++ b/tools/palette-manager-v2/modules/PaletteHistoryStack.js
--@@ -0,0 +1,63 @@
--+import { cloneSwatch, normalizeTags } from "./paletteUtils.js";
--+
--+function cloneSnapshot(snapshot = {}) {
--+  return {
--+    userSwatches: Array.isArray(snapshot.userSwatches) ? snapshot.userSwatches.map(cloneSwatch) : [],
--+    selectedUserIndex: Number.isInteger(snapshot.selectedUserIndex) ? snapshot.selectedUserIndex : -1,
--+    availableTags: normalizeTags(snapshot.availableTags)
--+  };
--+}
--+
--+function snapshotsMatch(left, right) {
--+  return JSON.stringify(left) === JSON.stringify(right);
--+}
--+
--+export class PaletteHistoryStack {
--+  constructor(initialSnapshot) {
--+    this.undoStack = [];
--+    this.redoStack = [];
--+    this.currentSnapshot = cloneSnapshot(initialSnapshot);
--+  }
--+
--+  reset(snapshot) {
--+    this.undoStack = [];
--+    this.redoStack = [];
--+    this.currentSnapshot = cloneSnapshot(snapshot);
--+  }
--+
--+  record(snapshot) {
--+    const nextSnapshot = cloneSnapshot(snapshot);
--+    if (snapshotsMatch(this.currentSnapshot, nextSnapshot)) {
--+      return;
--+    }
--+    this.undoStack.push(cloneSnapshot(this.currentSnapshot));
--+    this.currentSnapshot = nextSnapshot;
--+    this.redoStack = [];
--+  }
--+
--+  canUndo() {
--+    return this.undoStack.length > 0;
--+  }
--+
--+  canRedo() {
--+    return this.redoStack.length > 0;
--+  }
--+
--+  undo() {
--+    if (!this.canUndo()) {
--+      return null;
--+    }
--+    this.redoStack.push(cloneSnapshot(this.currentSnapshot));
--+    this.currentSnapshot = this.undoStack.pop();
--+    return cloneSnapshot(this.currentSnapshot);
--+  }
--+
--+  redo() {
--+    if (!this.canRedo()) {
--+      return null;
--+    }
--+    this.undoStack.push(cloneSnapshot(this.currentSnapshot));
--+    this.currentSnapshot = this.redoStack.pop();
--+    return cloneSnapshot(this.currentSnapshot);
--+  }
--+}
-+ 
-+         <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
-+-            <span>Sample Palette Swatch</span>
-+-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+-          </button>
-+-          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
-+-            <div class="palette-manager-v2__source-palette-row">
-+-              <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
-++          <div class="palette-manager-v2__source-palette-header">
-++            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
-++              <span>Sample Palette Swatch</span>
-++              <span class="accordion-v2__icon" aria-hidden="true">+</span>
-++            </button>
-++            <div class="palette-manager-v2__source-palette-actions" aria-label="Source palette controls">
-++              <label class="palette-manager-v2__field palette-manager-v2__field--source-control palette-manager-v2__field--source-header">
-+                 Source palette
-+                 <select id="sourcePaletteSelect"></select>
-+               </label>
-+               <button id="pinAllSourceButton" class="palette-manager-v2__pin-all-source-button" type="button">Pin All</button>
-+             </div>
-++          </div>
-++          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
-+             <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
-+               Search source swatches
-+               <input id="sourceSearchInput" type="search" autocomplete="off" />
- diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
--index 6b0377c8..bf062f13 100644
-+index bf062f13..e7669c38 100644
- --- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
- +++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
--@@ -3,13 +3,17 @@ import { PaletteImportExportControl } from "../controls/PaletteImportExportContr
-- import { PaletteValidationErrorControl } from "../controls/PaletteValidationErrorControl.js";
-- import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
-- import { UserPaletteControl } from "../controls/UserPaletteControl.js";
--+import { PaletteHistoryStack } from "./PaletteHistoryStack.js";
-- import { PaletteValidationService } from "./PaletteValidationService.js";
-- import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "./paletteUtils.js";
-- 
-- const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
-- 
-- const REQUIRED_REF_IDS = Object.freeze([
--+  "undoPaletteButton",
--+  "redoPaletteButton",
--   "userPaletteCount",
--+  "userPaletteSelectedCount",
--   "userPaletteSortControls",
--   "userSwatchSizeControls",
--   "userSwatchList",
--@@ -182,6 +186,8 @@ export class PaletteManagerApp {
--       errors: [],
--       status: "Ready."
--     };
--+    this.checkedUserSwatchIndexes = new Set();
--+    this.historyStack = new PaletteHistoryStack(this.createHistorySnapshot());
--   }
-- 
--   init() {
--@@ -198,6 +204,7 @@ export class PaletteManagerApp {
--       new PaletteValidationErrorControl({ documentRef: this.document, refs: this.refs, app: this })
--     ];
-- 
--+    this.bindHistoryControls();
--     this.controls.forEach((control) => control.bind());
--     this.editorControl.clearForm();
-- 
--@@ -213,6 +220,83 @@ export class PaletteManagerApp {
--         control.render();
--       }
--     });
--+    this.renderHistoryButtons();
--+  }
--+
--+  bindHistoryControls() {
--+    this.refs.undoPaletteButton.addEventListener("click", () => {
--+      this.undoPaletteChange();
--+    });
--+    this.refs.redoPaletteButton.addEventListener("click", () => {
--+      this.redoPaletteChange();
--+    });
--+  }
--+
--+  renderHistoryButtons() {
--+    this.refs.undoPaletteButton.disabled = !this.historyStack.canUndo();
--+    this.refs.redoPaletteButton.disabled = !this.historyStack.canRedo();
--+  }
--+
--+  createHistorySnapshot() {
--+    return {
--+      userSwatches: this.state.userSwatches.map(cloneSwatch),
--+      selectedUserIndex: this.state.selectedUserIndex,
--+      availableTags: this.state.availableTags.slice()
--+    };
--+  }
--+
--+  recordHistorySnapshot() {
--+    this.historyStack.record(this.createHistorySnapshot());
--+  }
--+
--+  resetHistorySnapshot() {
--+    this.historyStack.reset(this.createHistorySnapshot());
--+  }
--+
--+  restoreHistorySnapshot(snapshot, status) {
--+    this.state.userSwatches = snapshot.userSwatches.map(cloneSwatch);
--+    this.state.selectedUserIndex = Number.isInteger(snapshot.selectedUserIndex)
--+      && snapshot.selectedUserIndex >= 0
--+      && snapshot.selectedUserIndex < this.state.userSwatches.length
--+      ? snapshot.selectedUserIndex
--+      : -1;
--+    this.setAvailableTags(snapshot.availableTags);
--+    this.checkedUserSwatchIndexes.clear();
--+    this.renderSelectedSwatchState();
--+    this.setActionState([], status, false);
--+    this.render();
--+  }
--+
--+  renderSelectedSwatchState() {
--+    const selectedSwatch = this.getSelectedSwatch();
--+    if (!selectedSwatch) {
--+      this.editorControl.clearForm();
--+      return;
--+    }
--+    this.editorControl.showSwatch(selectedSwatch);
--+    if (isUserDefinedSwatch(selectedSwatch)) {
--+      this.editorControl.showUserDefinedSwatch(selectedSwatch);
--+    } else {
--+      this.editorControl.clearUserDefinedSwatch();
--+    }
--+  }
--+
--+  undoPaletteChange() {
--+    const snapshot = this.historyStack.undo();
--+    if (!snapshot) {
--+      this.setActionState([], "No palette changes to undo.");
--+      return;
--+    }
--+    this.restoreHistorySnapshot(snapshot, "Undid palette change.");
--+  }
--+
--+  redoPaletteChange() {
--+    const snapshot = this.historyStack.redo();
--+    if (!snapshot) {
--+      this.setActionState([], "No palette changes to redo.");
--+      return;
--+    }
--+    this.restoreHistorySnapshot(snapshot, "Redid palette change.");
--   }
-- 
--   getUserSwatches() {
--@@ -234,6 +318,48 @@ export class PaletteManagerApp {
--     return this.state.selectedUserIndex;
-+@@ -37,6 +37,7 @@ const REQUIRED_REF_IDS = Object.freeze([
-+   "tagEntryInput",
-+   "tagSuggestions",
-+   "addTagButton",
-++  "clearUserPaletteSelectionButton",
-+   "addSwatchButton",
-+   "updateSwatchButton",
-+   "clearFormButton",
-+@@ -346,6 +347,15 @@ export class PaletteManagerApp {
-+     this.render();
-    }
-  
--+  getCheckedUserSwatchCount() {
--+    return this.getCheckedUserSwatchIndexes().length;
--+  }
--+
--+  getCheckedUserSwatchIndexes() {
--+    const checkedIndexes = Array.from(this.checkedUserSwatchIndexes)
--+      .filter((index) => Number.isInteger(index) && index >= 0 && index < this.state.userSwatches.length)
--+      .sort((left, right) => left - right);
--+    this.checkedUserSwatchIndexes = new Set(checkedIndexes);
--+    return checkedIndexes;
--+  }
--+
--+  isUserSwatchChecked(index) {
--+    return this.getCheckedUserSwatchIndexes().includes(index);
--+  }
--+
--+  setUserSwatchChecked(index, isChecked) {
--+    if (!this.state.userSwatches[index]) {
-++  clearUserSwatchChecks() {
-++    if (this.checkedUserSwatchIndexes.size === 0) {
-++      this.setActionState([], "No user palette selections to clear.");
- +      return;
- +    }
--+    if (isChecked) {
--+      this.checkedUserSwatchIndexes.add(index);
--+    } else {
--+      this.checkedUserSwatchIndexes.delete(index);
--+    }
--+    this.render();
--+  }
--+
--+  shiftCheckedUserSwatchIndexesAfterRemove(removedIndex) {
--+    const checkedIndexes = [];
--+    this.checkedUserSwatchIndexes.forEach((index) => {
--+      if (!Number.isInteger(index) || index === removedIndex) {
--+        return;
--+      }
--+      const nextIndex = index > removedIndex ? index - 1 : index;
--+      if (nextIndex >= 0 && nextIndex < this.state.userSwatches.length) {
--+        checkedIndexes.push(nextIndex);
--+      }
--+    });
--+    this.checkedUserSwatchIndexes = new Set(checkedIndexes);
--+  }
--+
--   getUserSortOptions() {
--     return PALETTE_SORT_OPTIONS.map((option) => ({ ...option }));
--   }
--@@ -480,6 +606,7 @@ export class PaletteManagerApp {
--     this.mergeAvailableTags(cleanSwatch.tags);
--     this.editorControl.showSwatch(cleanSwatch);
--     this.editorControl.showUserDefinedSwatch(cleanSwatch);
--+    this.recordHistorySnapshot();
--     this.setActionState([], `Added ${cleanSwatch.name}.`);
--   }
-- 
--@@ -517,6 +644,7 @@ export class PaletteManagerApp {
--     } else {
--       this.editorControl.clearUserDefinedSwatch();
--     }
--+    this.recordHistorySnapshot();
--     this.setActionState([], `Updated ${cleanSwatch.name}.`);
--   }
-- 
--@@ -555,6 +683,7 @@ export class PaletteManagerApp {
--     } else {
--       this.editorControl.clearUserDefinedSwatch();
--     }
--+    this.recordHistorySnapshot();
--     this.setActionState([], `Added ${cleanTag} to ${cleanSwatch.name}.`);
--     return true;
--   }
--@@ -594,6 +723,7 @@ export class PaletteManagerApp {
--     } else {
--       this.editorControl.clearUserDefinedSwatch();
--     }
--+    this.recordHistorySnapshot();
--     this.setActionState([], `Removed ${cleanTag} from ${cleanSwatch.name}.`);
--     return true;
--   }
--@@ -612,6 +742,120 @@ export class PaletteManagerApp {
--     return this.addTagToSelectedSwatch(cleanTag);
--   }
-- 
--+  addTagFromTagControl(tag) {
--+    if (this.getCheckedUserSwatchCount() > 0) {
--+      return this.addTagToCheckedUserSwatches(tag);
--+    }
--+    return this.addTagToSelectedSwatch(tag);
--+  }
--+
--+  toggleTagFromTagControl(tag) {
--+    if (this.getCheckedUserSwatchCount() > 0) {
--+      return this.toggleTagOnCheckedUserSwatches(tag);
--+    }
--+    return this.toggleTagOnSelectedSwatch(tag);
--+  }
--+
--+  isTagActiveForTagControl(tag, selectedTags) {
--+    const cleanTag = normalizeTags([tag])[0] || "";
--+    if (!cleanTag) {
--+      return false;
--+    }
--+    const checkedIndexes = this.getCheckedUserSwatchIndexes();
--+    if (checkedIndexes.length === 0) {
--+      return normalizeTags(selectedTags).includes(cleanTag);
--+    }
--+    return checkedIndexes.every((index) => {
--+      return normalizeTags(this.state.userSwatches[index]?.tags).includes(cleanTag);
--+    });
--+  }
--+
--+  addTagToCheckedUserSwatches(tag) {
--+    const cleanTag = normalizeTags([tag])[0] || "";
--+    if (!cleanTag) {
--+      return false;
--+    }
--+    return this.updateCheckedUserSwatchTags(cleanTag, true);
--+  }
--+
--+  removeTagFromCheckedUserSwatches(tag) {
--+    const cleanTag = normalizeTags([tag])[0] || "";
--+    if (!cleanTag) {
--+      return false;
--+    }
--+    return this.updateCheckedUserSwatchTags(cleanTag, false);
--+  }
--+
--+  toggleTagOnCheckedUserSwatches(tag) {
--+    const cleanTag = normalizeTags([tag])[0] || "";
--+    if (!cleanTag) {
--+      return false;
--+    }
--+    const checkedIndexes = this.getCheckedUserSwatchIndexes();
--+    if (checkedIndexes.length === 0) {
--+      return this.toggleTagOnSelectedSwatch(cleanTag);
--+    }
--+    const everyCheckedSwatchHasTag = checkedIndexes.every((index) => {
--+      return normalizeTags(this.state.userSwatches[index]?.tags).includes(cleanTag);
--+    });
--+    return everyCheckedSwatchHasTag
--+      ? this.removeTagFromCheckedUserSwatches(cleanTag)
--+      : this.addTagToCheckedUserSwatches(cleanTag);
--+  }
--+
--+  updateCheckedUserSwatchTags(tag, shouldAddTag) {
--+    const checkedIndexes = this.getCheckedUserSwatchIndexes();
--+    if (checkedIndexes.length === 0) {
--+      return shouldAddTag ? this.addTagToSelectedSwatch(tag) : this.removeTagFromSelectedSwatch(tag);
--+    }
--+
--+    const updates = [];
--+    const errors = [];
--+    checkedIndexes.forEach((index) => {
--+      const swatch = this.state.userSwatches[index];
--+      if (!swatch) {
--+        return;
--+      }
--+      const existingTags = normalizeTags(swatch.tags);
--+      const hasTag = existingTags.includes(tag);
--+      if ((shouldAddTag && hasTag) || (!shouldAddTag && !hasTag)) {
--+        return;
--+      }
--+      const nextTags = shouldAddTag ? [...existingTags, tag] : existingTags.filter((existingTag) => existingTag !== tag);
--+      const cleanSwatch = cloneSwatch({ ...swatch, tags: nextTags });
--+      const swatchErrors = this.validator.validateSwatch(cleanSwatch, `selected swatch ${index + 1}`);
--+      if (swatchErrors.length > 0) {
--+        errors.push(...swatchErrors);
--+        return;
--+      }
--+      updates.push({ index, swatch: cleanSwatch });
--+    });
--+
--+    if (errors.length > 0) {
--+      this.setActionState(errors, shouldAddTag ? "Selected swatch tags were not added." : "Selected swatch tags were not removed.");
--+      return false;
--+    }
--+    if (updates.length === 0) {
--+      this.setActionState([], shouldAddTag
--+        ? `${tag} is already on selected swatches.`
--+        : `${tag} is not on selected swatches.`);
--+      return false;
--+    }
--+
--+    updates.forEach((update) => {
--+      this.state.userSwatches[update.index] = update.swatch;
--+    });
--+    if (shouldAddTag) {
--+      this.mergeAvailableTags([tag]);
--+    }
--+    this.renderSelectedSwatchState();
--+    this.recordHistorySnapshot();
--+    this.setActionState([], shouldAddTag
--+      ? `Added ${tag} to ${updates.length} selected swatches.`
--+      : `Removed ${tag} from ${updates.length} selected swatches.`);
--+    return true;
--+  }
--+
--   isTagUsedByUserPalette(tag) {
--     const cleanTag = normalizeTags([tag])[0] || "";
--     if (!cleanTag) {
--@@ -638,6 +882,7 @@ export class PaletteManagerApp {
--     }
-- 
--     this.state.availableTags = this.state.availableTags.filter((availableTag) => availableTag !== cleanTag);
--+    this.recordHistorySnapshot();
--     this.setActionState([], `Deleted tag ${cleanTag}.`);
--     return true;
--   }
--@@ -668,6 +913,8 @@ export class PaletteManagerApp {
--     } else if (this.state.selectedUserIndex > index) {
--       this.state.selectedUserIndex -= 1;
--     }
--+    this.shiftCheckedUserSwatchIndexesAfterRemove(index);
--+    this.recordHistorySnapshot();
--     this.setActionState([], `Removed ${swatch.name}.`);
--     return true;
--   }
--@@ -693,6 +940,7 @@ export class PaletteManagerApp {
--     this.mergeAvailableTags(pinnedSwatch.tags);
--     this.editorControl.showSwatch(pinnedSwatch);
--     this.editorControl.clearUserDefinedSwatch();
--+    this.recordHistorySnapshot();
--     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
--   }
-- 
--@@ -730,6 +978,9 @@ export class PaletteManagerApp {
--       this.editorControl.showSwatch(this.state.userSwatches[lastPinnedIndex]);
--       this.editorControl.clearUserDefinedSwatch();
--     }
--+    if (pinnedCount > 0) {
--+      this.recordHistorySnapshot();
--+    }
-- 
--     const status = `Pinned ${pinnedCount} source swatches. Skipped ${skippedCount} duplicate or invalid swatches.`;
--     this.setActionState(Array.from(new Set(skipReasons)), status);
--@@ -758,7 +1009,9 @@ export class PaletteManagerApp {
--     this.state.userSwatches = importResult.swatches.map(cloneSwatch);
--     this.setAvailableTags(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags)));
--     this.state.selectedUserIndex = -1;
- +    this.checkedUserSwatchIndexes.clear();
--     this.editorControl.clearForm();
--+    this.resetHistorySnapshot();
--     this.setActionState([], `Imported ${this.state.userSwatches.length} user swatches.`);
--   }
-- 
--diff --git a/tools/palette-manager-v2/modules/SwatchRow.js b/tools/palette-manager-v2/modules/SwatchRow.js
--index 9beda4fa..d45a6d2d 100644
----- a/tools/palette-manager-v2/modules/SwatchRow.js
--+++ b/tools/palette-manager-v2/modules/SwatchRow.js
--@@ -84,10 +84,31 @@ export class SwatchRow {
--     const tack = SwatchRow.createTackButton(documentRef, options);
--     tack.classList.add("palette-manager-v2__pin-button--tile");
-- 
--+    if (options.showCheckbox) {
--+      tile.appendChild(SwatchRow.createSelectCheckbox(documentRef, options));
--+    }
--     tile.append(chip, tack);
--     return tile;
--   }
-- 
--+  static createSelectCheckbox(documentRef, options = {}) {
--+    const checkbox = documentRef.createElement("input");
--+    checkbox.type = "checkbox";
--+    checkbox.className = "palette-manager-v2__swatch-select-checkbox";
--+    checkbox.checked = Boolean(options.checked);
--+    checkbox.title = "Select swatch for batch tag changes";
--+    checkbox.setAttribute("aria-label", checkbox.title);
--+    checkbox.addEventListener("click", (event) => {
--+      event.stopPropagation();
--+    });
--+    checkbox.addEventListener("change", () => {
--+      if (typeof options.onCheck === "function") {
--+        options.onCheck(checkbox.checked);
--+      }
--+    });
--+    return checkbox;
-++    this.setActionState([], "Cleared user palette selections.");
- +  }
- +
--   static createTooltipText(swatch) {
--     return [
--       `Name: ${swatch.name}`,
-+   shiftCheckedUserSwatchIndexesAfterRemove(removedIndex) {
-+     const checkedIndexes = [];
-+     this.checkedUserSwatchIndexes.forEach((index) => {
- diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
--index 57637249..2a3c5d7e 100644
-+index 40888a87..11316432 100644
- --- a/tools/palette-manager-v2/paletteManagerV2.css
- +++ b/tools/palette-manager-v2/paletteManagerV2.css
--@@ -424,6 +424,10 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
--   overflow-wrap: anywhere;
-+@@ -214,17 +214,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-+   gap: 8px;
-  }
-  
--+.palette-manager-v2__selected-count {
--+  font-weight: 700;
--+}
--+
-- .palette-manager-v2__tile-grid {
--   --swatch-tile-width: 112px;
--   --swatch-tile-height: 108px;
--@@ -501,6 +505,23 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
--   background: var(--swatch-color, #000000);
-+-.palette-manager-v2__source-palette-row {
-+-  display: flex;
-+-  align-items: end;
-+-  gap: 10px;
-+-  flex-wrap: wrap;
-+-}
-+-
-+-.palette-manager-v2__source-palette-row .palette-manager-v2__field--source-control {
-+-  flex: 1 1 320px;
-+-}
-+-
-+ .palette-manager-v2__pin-all-source-button {
-+   flex: 0 0 auto;
-+   min-height: 25px;
-+@@ -342,8 +331,11 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-+   gap: 8px;
-  }
-  
--+.palette-manager-v2__swatch-select-checkbox {
--+  position: absolute;
--+  top: 10px;
--+  left: 10px;
--+  z-index: 2;
--+  width: 18px;
--+  height: 18px;
--+  margin: 0;
--+  accent-color: var(--pm-accent);
--+  cursor: pointer;
-+-.palette-manager-v2__tag-entry > button {
-+-  justify-self: start;
-++.palette-manager-v2__tag-entry-actions {
-++  display: flex;
-++  align-items: center;
-++  gap: 10px;
-++  flex-wrap: wrap;
-+ }
-+ 
-+ .palette-manager-v2__tag-suggestions {
-+@@ -378,6 +370,40 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-+   flex-wrap: wrap;
-+ }
-+ 
-++.palette-manager-v2__user-palette-header,
-++.palette-manager-v2__source-palette-header {
-++  flex: 0 0 auto;
-++  display: flex;
-++  align-items: stretch;
-++  gap: 8px;
-++  padding-right: 10px;
-++}
-++
-++.palette-manager-v2__user-palette-header .accordion-v2__header,
-++.palette-manager-v2__source-palette-header .accordion-v2__header {
-++  flex: 1 1 auto;
-++  width: auto;
- +}
- +
--+.palette-manager-v2__tile-grid[data-swatch-size="small"] .palette-manager-v2__swatch-select-checkbox {
--+  width: 16px;
--+  height: 16px;
-++.palette-manager-v2__user-palette-actions,
-++.palette-manager-v2__source-palette-actions {
-++  flex: 0 0 auto;
-++  display: flex;
-++  align-items: center;
-++  justify-content: center;
-++  gap: 8px;
-++  flex-wrap: wrap;
- +}
- +
-- .palette-manager-v2__source-tile,
-- .palette-manager-v2__user-tile {
--   isolation: isolate;
-++.palette-manager-v2__source-palette-actions {
-++  justify-content: flex-end;
-++}
-++
-++.palette-manager-v2__field--source-header {
-++  grid-template-columns: auto minmax(150px, 1fr);
-++  min-width: 260px;
-++}
-++
-+ .palette-manager-v2__sort-row > .palette-manager-v2__field:not(.palette-manager-v2__size-field) {
-+   flex: 1 1 320px;
-+ }
-diff --git a/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md
++## Manual Test Notes
++1. Open Palette Manager V2.
++2. Scroll the Sample/Source Palette grid down.
++3. Click an individual red pin and confirm the source grid remains at the same scroll position after render.
++4. Click an individual green pin/unpin and confirm the source grid remains at the same scroll position after render.
++5. Confirm Clear checkbox behavior, tag sorting, pin button size, and Validation/Error Viewer behavior are unchanged.
+diff --git a/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md
 new file mode 100644
-index 00000000..477c1a67
+index 00000000..3e1aa3ea
 --- /dev/null
-+++ b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md
-@@ -0,0 +1,30 @@
-+# APPLY_PR - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
++++ b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md
+@@ -0,0 +1,23 @@
++# APPLY_PR - PR_26124_064-palette-manager-source-pin-scroll-preserve
 +
 +## Summary
-+Added Palette heading actions, User Palette selection Clear, and Sample Palette scroll preservation while pinning.
++Updated Palette Manager V2 source grid scroll preservation so individual source pin/unpin restores scroll position after render.
 +
 +## Applied Changes
-+- Removed `Undo` and `Redo` from `menuSample`.
-+- Added User Palette heading actions with `Undo`, `Redo`, and `Clear`.
-+- Added Sample Palette Swatch heading actions with `Source palette` and `Pin All`.
-+- Preserved existing undo/redo behavior and refs.
-+- Added a `Clear` button that clears User Palette swatch checkboxes.
-+- Left Tags accordion Add behavior unchanged.
-+- Preserved lowercase tag normalization and duplicate tag avoidance.
-+- Preserved Sample Palette grid scroll position for individual pin/unpin actions.
-+- Preserved Sample Palette grid scroll position for Pin All.
++- Updated `preserveSourceScrollDuring` in `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`.
++- Preserved `sourceSwatchList.scrollTop` before the existing pin/unpin action.
++- Restored `sourceSwatchList.scrollTop` inside `requestAnimationFrame` after render.
++- Kept existing pin/unpin behavior unchanged.
++- Did not change Clear checkbox behavior, tag sorting, pin button size, or Validation/Error Viewer behavior.
 +
 +## Validation
-+- `node --check tools/palette-manager-v2/modules/PaletteManagerApp.js`: PASS.
-+- `node --check tools/palette-manager-v2/controls/PaletteEditorControl.js`: PASS.
-+- `node --check tools/palette-manager-v2/controls/UserPaletteControl.js`: PASS.
 +- `node --check tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`: PASS.
-+- Targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation validation: PASS.
-+- `git diff --check`: PASS with Git LF-to-CRLF warnings for changed Palette Manager files.
++- Targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation: PASS.
++- `git diff --check`: PASS with Git LF-to-CRLF warning for generated review artifact.
 +- `npm run test:workspace-v2`: FAIL, `package.json` does not define `test:workspace-v2`.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Artifacts
 +- Review diff: `docs/dev/reports/codex_review.diff`
 +- Changed files: `docs/dev/reports/codex_changed_files.txt`
-+- Delta ZIP: `tmp/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll_delta.zip`
-diff --git a/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md
++- Delta ZIP: `tmp/PR_26124_064-palette-manager-source-pin-scroll-preserve_delta.zip`
+diff --git a/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md
 new file mode 100644
-index 00000000..cb773e5b
+index 00000000..e5f725e3
 --- /dev/null
-+++ b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md
-@@ -0,0 +1,40 @@
-+# BUILD_PR - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
++++ b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md
+@@ -0,0 +1,32 @@
++# BUILD_PR - PR_26124_064-palette-manager-source-pin-scroll-preserve
 +
 +## Purpose
-+Implement one scoped Palette Manager V2 refinement: Palette heading action controls, User Palette selection clear button, and Sample Palette scroll preservation during pin actions.
++Implement one scoped Palette Manager V2 source grid scroll preservation fix for individual source swatch pin/unpin.
 +
 +## Scope
-+- `tools/palette-manager-v2/index.html`
-+- `tools/palette-manager-v2/modules/PaletteManagerApp.js`
-+- `tools/palette-manager-v2/controls/PaletteEditorControl.js`
-+- `tools/palette-manager-v2/controls/UserPaletteControl.js`
 +- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
-+- `tools/palette-manager-v2/paletteManagerV2.css`
 +- PR workflow docs and required review artifacts only.
 +
 +## Implementation
-+1. Move `Undo` and `Redo` out of the `menuSample` nav.
-+2. Add User Palette heading actions containing `Undo`, `Redo`, and `Clear` beside the accordion toggle header.
-+3. Preserve existing Undo/Redo refs and behavior.
-+4. Add a `Clear` button to the User Palette heading action area.
-+5. Add the `Clear` button to Palette Manager required refs.
-+6. Make `Clear` clear User Palette swatch checkboxes only.
-+7. Leave Add Tag behavior unchanged.
-+8. Preserve lowercase tag normalization and duplicate tag avoidance.
-+9. Move `Source palette` and `Pin All` into the Sample Palette Swatch heading action area.
-+10. Preserve Sample Palette grid scroll position around individual source pin/unpin actions.
-+11. Preserve Sample Palette grid scroll position around Pin All where possible.
++1. Update `preserveSourceScrollDuring` in `SourcePaletteBrowserControl.js`.
++2. Capture `this.refs.sourceSwatchList.scrollTop` before executing the action.
++3. Execute the existing action without changing pin/unpin behavior.
++4. Restore `this.refs.sourceSwatchList.scrollTop` inside `requestAnimationFrame` after render.
++5. Keep Pin All behavior unchanged except for natural benefit from the same helper if it uses that helper.
 +
 +## Boundaries
++- Do not change Clear checkbox behavior.
++- Do not change tag sorting.
++- Do not change pin button size.
++- Do not change Validation/Error Viewer behavior.
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
 +- Do not add dependencies.
-+- Do not change shared accordionV2 behavior.
 +- Do not broadly refactor Palette Manager V2.
 +
 +## Validation
 +- Syntax check changed JavaScript files.
-+- Run targeted served-browser Palette Manager V2 selection clear, heading action placement, tag add, and source scroll preservation validation.
++- Run targeted served-browser Palette Manager V2 individual source pin/unpin scroll preservation validation.
 +- Run `npm run test:workspace-v2`.
 +- Skip the full samples smoke test.
-diff --git a/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md
+diff --git a/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md
 new file mode 100644
-index 00000000..574191a4
+index 00000000..97e09774
 --- /dev/null
-+++ b/docs/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md
-@@ -0,0 +1,49 @@
-+# PLAN_PR - PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll
++++ b/docs/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md
+@@ -0,0 +1,43 @@
++# PLAN_PR - PR_26124_064-palette-manager-source-pin-scroll-preserve
 +
 +## Goal
-+Refine Palette Manager V2 heading controls, User Palette selection clearing, and Sample Palette scroll preservation while pinning.
++Make Palette Manager V2 Sample/Source Palette individual pin/unpin preserve the current source grid scroll position reliably after render.
 +
 +## Scope
-+- `tools/palette-manager-v2/*`
++- `tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js`
 +- PR workflow docs and required review artifacts only.
 +
 +## Boundaries
++- Do not change Clear checkbox behavior.
++- Do not change tag sorting.
++- Do not change pin button size.
++- Do not change Validation/Error Viewer behavior.
 +- Do not touch workspace/toolState/session behavior.
 +- Do not touch sample JSON.
 +- Do not modify `tools/shared`.
 +- Do not add dependencies.
-+- Preserve accordionV2 behavior.
-+- Preserve import/export, sort, search, size, pin/unpin, Pin All, multi-select, and existing tag behavior.
 +- Avoid broad refactor.
 +
 +## Implementation Plan
-+1. Add a `Clear` button to the User Palette heading action area.
-+2. Make the `Clear` button clear User Palette swatch checkboxes only.
-+3. Do not change tag Add behavior; it continues to add tags to the selected swatch or checked swatches.
-+4. Preserve lowercase tag normalization and duplicate tag avoidance.
-+5. Move `Undo` and `Redo` out of `menuSample`.
-+6. Place `Undo` and `Redo` in the User Palette accordion heading action area.
-+7. Preserve existing undo/redo behavior.
-+8. Move `Source palette` and `Pin All` into the Sample Palette Swatch accordion heading action area.
-+9. Preserve Sample Palette grid scroll position during individual pin/unpin actions.
-+10. Preserve Sample Palette grid scroll position for Pin All where possible.
++1. Update `SourcePaletteBrowserControl.js` scroll preservation helper.
++2. Capture `sourceSwatchList.scrollTop` before pin/unpin action triggers render.
++3. Restore `sourceSwatchList.scrollTop` in `requestAnimationFrame` after render completes.
++4. Keep existing pin/unpin behavior unchanged.
++5. Let Pin All continue using the same helper if already wired through it.
 +
 +## Playwright
 +- Command: `npm run test:workspace-v2`
-+- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only UI behavior update.
++- What Playwright validates: Workspace V2/tool lifecycle coverage remains unchanged by this Palette Manager V2-only source-grid scroll timing update.
 +- Expected pass behavior: Workspace V2 validation remains green.
 +- Expected fail behavior: missing script or Workspace V2 regression is reported.
 +- Full samples smoke test: skipped by instruction.
 +
 +## Manual Validation
 +1. Open Palette Manager V2.
-+2. Confirm `Undo` and `Redo` are in the User Palette accordion heading area and no longer appear in `menuSample`.
-+3. Add a user swatch and add a lowercase-normalized tag.
-+4. Check multiple User Palette swatches and confirm the selected count updates.
-+5. Click the User Palette `Clear` button and confirm all User Palette checkboxes are cleared.
-+6. Add a tag and confirm tag Add behavior still applies to the selected swatch or checked swatches.
-+7. Confirm `Source palette` and `Pin All` are in the Sample Palette Swatch accordion heading area.
-+8. Scroll the Sample Palette grid down and click an individual pin button.
-+9. Confirm the Sample Palette grid remains at the same scroll position after pinning.
-+10. Scroll the Sample Palette grid down and click `Pin All`.
-+11. Confirm the Sample Palette grid does not jump back to the top.
++2. Ensure the Sample/Source Palette grid has enough swatches to scroll.
++3. Scroll the Sample/Source Palette grid down.
++4. Click an individual red pin.
++5. Confirm the source grid remains at the same scroll position after render.
++6. Click an individual green pin/unpin.
++7. Confirm the source grid remains at the same scroll position after render.
++8. Confirm Clear checkbox behavior, tag sorting, pin button size, and Validation/Error Viewer behavior are unchanged.
 diff --git a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-index 783e731d..6fbdf15d 100644
+index 6fbdf15d..d2de66d0 100644
 --- a/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
 +++ b/tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js
-@@ -18,10 +18,16 @@ export class SourcePaletteBrowserControl {
-       this.app.setSourceSearch(this.refs.sourceSearchInput.value);
-     });
-     this.refs.pinAllSourceButton.addEventListener("click", () => {
--      this.app.pinVisibleSourceSwatches();
-+      this.preserveSourceScrollDuring(() => this.app.pinVisibleSourceSwatches());
-     });
-   }
- 
-+  preserveSourceScrollDuring(action) {
-+    const sourceScrollTop = this.refs.sourceSwatchList.scrollTop;
-+    action();
-+    this.refs.sourceSwatchList.scrollTop = sourceScrollTop;
-+  }
-+
-   render() {
-     this.refs.sourcePaletteSelect.value = this.app.getCurrentSourcePaletteId();
-     this.refs.sourceSearchInput.value = this.app.getSourceSearch();
-@@ -45,11 +51,13 @@ export class SourcePaletteBrowserControl {
-         pinned: userIndex >= 0,
-         onSelect: () => this.app.browseSourceSwatch(swatch),
-         onTack: () => {
--          if (userIndex >= 0) {
--            this.app.removeUserSwatch(userIndex);
--            return;
--          }
--          this.app.pinSourceSwatch(swatch, this.app.getCurrentSourcePaletteId());
-+          this.preserveSourceScrollDuring(() => {
-+            if (userIndex >= 0) {
-+              this.app.removeUserSwatch(userIndex);
-+              return;
-+            }
-+            this.app.pinSourceSwatch(swatch, this.app.getCurrentSourcePaletteId());
-+          });
-         }
-       }));
-     });
-diff --git a/tools/palette-manager-v2/controls/UserPaletteControl.js b/tools/palette-manager-v2/controls/UserPaletteControl.js
-index c705d811..8fdf320c 100644
---- a/tools/palette-manager-v2/controls/UserPaletteControl.js
-+++ b/tools/palette-manager-v2/controls/UserPaletteControl.js
-@@ -10,12 +10,17 @@ export class UserPaletteControl {
-   bind() {
-     this.renderSortOptions();
-     this.renderSizeOptions();
-+    this.refs.clearUserPaletteSelectionButton.addEventListener("click", () => {
-+      this.app.clearUserSwatchChecks();
+@@ -25,7 +25,9 @@ export class SourcePaletteBrowserControl {
+   preserveSourceScrollDuring(action) {
+     const sourceScrollTop = this.refs.sourceSwatchList.scrollTop;
+     action();
+-    this.refs.sourceSwatchList.scrollTop = sourceScrollTop;
++    requestAnimationFrame(() => {
++      this.refs.sourceSwatchList.scrollTop = sourceScrollTop;
 +    });
    }
  
    render() {
-     const swatches = this.app.getUserSwatches();
-+    const checkedCount = this.app.getCheckedUserSwatchCount();
-     this.refs.userPaletteCount.textContent = `${swatches.length} user swatches`;
--    this.refs.userPaletteSelectedCount.textContent = `${this.app.getCheckedUserSwatchCount()} selected`;
-+    this.refs.userPaletteSelectedCount.textContent = `${checkedCount} selected`;
-+    this.refs.clearUserPaletteSelectionButton.disabled = checkedCount === 0;
-     this.refs.userSwatchList.dataset.swatchSize = this.app.getUserSwatchSize();
-     this.renderActiveSortButton();
-     this.renderActiveSizeButton();
-diff --git a/tools/palette-manager-v2/index.html b/tools/palette-manager-v2/index.html
-index 730ee004..fd0575bf 100644
---- a/tools/palette-manager-v2/index.html
-+++ b/tools/palette-manager-v2/index.html
-@@ -21,8 +21,6 @@
- 
-   <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
-     <div class="palette-manager-v2__menu-actions">
--      <button id="undoPaletteButton" type="button">Undo</button>
--      <button id="redoPaletteButton" type="button">Redo</button>
-       <button id="importPaletteButton" type="button">Import JSON</button>
-       <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
-       <button id="copyPaletteButton" type="button">Copy JSON</button>
-@@ -106,7 +104,9 @@
-                 Tag name
-                 <input id="tagEntryInput" type="text" autocomplete="off" />
-               </label>
--              <button id="addTagButton" type="button">Add</button>
-+              <div class="palette-manager-v2__tag-entry-actions">
-+                <button id="addTagButton" type="button">Add</button>
-+              </div>
-               <div id="tagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Tag suggestions"></div>
-             </div>
-           </div>
-@@ -115,10 +115,17 @@
- 
-       <main class="palette-manager-v2__panel palette-manager-v2__panel--center">
-         <section class="accordion-v2 is-open" data-accordion-v2-open="true">
--          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
--            <span>User Palette</span>
--            <span class="accordion-v2__icon" aria-hidden="true">+</span>
--          </button>
-+          <div class="palette-manager-v2__user-palette-header">
-+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userPaletteAccordionContent">
-+              <span>User Palette</span>
-+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+            </button>
-+            <div class="palette-manager-v2__user-palette-actions" aria-label="User palette history controls">
-+              <button id="undoPaletteButton" type="button">Undo</button>
-+              <button id="redoPaletteButton" type="button">Redo</button>
-+              <button id="clearUserPaletteSelectionButton" type="button">Clear Checkboxes</button>
-+            </div>
-+          </div>
-           <div id="userPaletteAccordionContent" class="accordion-v2__content">
-             <div class="palette-manager-v2__sort-row">
-               <div class="palette-manager-v2__field">
-@@ -137,18 +144,20 @@
-         </section>
- 
-         <section class="accordion-v2 is-open" data-accordion-v2-open="true">
--          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
--            <span>Sample Palette Swatch</span>
--            <span class="accordion-v2__icon" aria-hidden="true">+</span>
--          </button>
--          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
--            <div class="palette-manager-v2__source-palette-row">
--              <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
-+          <div class="palette-manager-v2__source-palette-header">
-+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourcePaletteAccordionContent">
-+              <span>Sample Palette Swatch</span>
-+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+            </button>
-+            <div class="palette-manager-v2__source-palette-actions" aria-label="Source palette controls">
-+              <label class="palette-manager-v2__field palette-manager-v2__field--source-control palette-manager-v2__field--source-header">
-                 Source palette
-                 <select id="sourcePaletteSelect"></select>
-               </label>
-               <button id="pinAllSourceButton" class="palette-manager-v2__pin-all-source-button" type="button">Pin All</button>
-             </div>
-+          </div>
-+          <div id="sourcePaletteAccordionContent" class="accordion-v2__content">
-             <label class="palette-manager-v2__field palette-manager-v2__field--source-control">
-               Search source swatches
-               <input id="sourceSearchInput" type="search" autocomplete="off" />
-diff --git a/tools/palette-manager-v2/modules/PaletteManagerApp.js b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-index bf062f13..e7669c38 100644
---- a/tools/palette-manager-v2/modules/PaletteManagerApp.js
-+++ b/tools/palette-manager-v2/modules/PaletteManagerApp.js
-@@ -37,6 +37,7 @@ const REQUIRED_REF_IDS = Object.freeze([
-   "tagEntryInput",
-   "tagSuggestions",
-   "addTagButton",
-+  "clearUserPaletteSelectionButton",
-   "addSwatchButton",
-   "updateSwatchButton",
-   "clearFormButton",
-@@ -346,6 +347,15 @@ export class PaletteManagerApp {
-     this.render();
-   }
- 
-+  clearUserSwatchChecks() {
-+    if (this.checkedUserSwatchIndexes.size === 0) {
-+      this.setActionState([], "No user palette selections to clear.");
-+      return;
-+    }
-+    this.checkedUserSwatchIndexes.clear();
-+    this.setActionState([], "Cleared user palette selections.");
-+  }
-+
-   shiftCheckedUserSwatchIndexesAfterRemove(removedIndex) {
-     const checkedIndexes = [];
-     this.checkedUserSwatchIndexes.forEach((index) => {
-diff --git a/tools/palette-manager-v2/paletteManagerV2.css b/tools/palette-manager-v2/paletteManagerV2.css
-index 40888a87..c3cda204 100644
---- a/tools/palette-manager-v2/paletteManagerV2.css
-+++ b/tools/palette-manager-v2/paletteManagerV2.css
-@@ -214,17 +214,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   gap: 8px;
- }
- 
--.palette-manager-v2__source-palette-row {
--  display: flex;
--  align-items: end;
--  gap: 10px;
--  flex-wrap: wrap;
--}
--
--.palette-manager-v2__source-palette-row .palette-manager-v2__field--source-control {
--  flex: 1 1 320px;
--}
--
- .palette-manager-v2__pin-all-source-button {
-   flex: 0 0 auto;
-   min-height: 25px;
-@@ -342,8 +331,11 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   gap: 8px;
- }
- 
--.palette-manager-v2__tag-entry > button {
--  justify-self: start;
-+.palette-manager-v2__tag-entry-actions {
-+  display: flex;
-+  align-items: center;
-+  gap: 10px;
-+  flex-wrap: wrap;
- }
- 
- .palette-manager-v2__tag-suggestions {
-@@ -378,6 +370,40 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
-   flex-wrap: wrap;
- }
- 
-+.palette-manager-v2__user-palette-header,
-+.palette-manager-v2__source-palette-header {
-+  flex: 0 0 auto;
-+  display: flex;
-+  align-items: stretch;
-+  gap: 8px;
-+  padding-right: 10px;
-+}
-+
-+.palette-manager-v2__user-palette-header .accordion-v2__header,
-+.palette-manager-v2__source-palette-header .accordion-v2__header {
-+  flex: 1 1 auto;
-+  width: auto;
-+}
-+
-+.palette-manager-v2__user-palette-actions,
-+.palette-manager-v2__source-palette-actions {
-+  flex: 0 0 auto;
-+  display: flex;
-+  align-items: center;
-+  justify-content: center;
-+  gap: 8px;
-+  flex-wrap: wrap;
-+}
-+
-+.palette-manager-v2__source-palette-actions {
-+  justify-content: flex-end;
-+  margin-left: auto;
-+}
-+
-+.palette-manager-v2__field--source-header {
-+  min-width: 260px;
-+}
-+
- .palette-manager-v2__sort-row > .palette-manager-v2__field:not(.palette-manager-v2__size-field) {
-   flex: 1 1 320px;
- }

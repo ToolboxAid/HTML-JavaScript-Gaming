@@ -25,7 +25,9 @@ export class SourcePaletteBrowserControl {
   preserveSourceScrollDuring(action) {
     const sourceScrollTop = this.refs.sourceSwatchList.scrollTop;
     action();
-    this.refs.sourceSwatchList.scrollTop = sourceScrollTop;
+    requestAnimationFrame(() => {
+      this.refs.sourceSwatchList.scrollTop = sourceScrollTop;
+    });
   }
 
   render() {
