@@ -1,64 +1,77 @@
-# 3D Camera Path Editor Reengineering Design (3d-camera-path-editor)
+# 3D Camera Path Editor Reengineering Design
 
-## Purpose
-- Baseline 3D camera path editor for waypoint timeline authoring and deterministic JSON export.
+Task: PR_26124_021-tool-folder-design-reset
+Tool ID: `3d-camera-path-editor`
+Source folder: `tools/3D Camera Path Editor`
 
-## Current V1 Capability
-- Active in registry-driven tools surface.
-- Runtime entry point: `3D Camera Path Editor/index.html`.
-- Runtime implementation file: `tools/3D Camera Path Editor/main.js`.
+## 1. Tool Purpose
+Edit 3D camera waypoint paths and export deterministic camera path JSON.
 
-## Current V2 / Workspace Status
-- Legacy/first-class tool present in registry; not fully mapped into Workspace V2 toolState lane.
-- Workspace integration classification:
-  - global tool: no
-  - toolState-capable tool: no
-  - published `tools.*` output candidate: yes
-- Readiness: Needs additional schema/contract alignment
+## 2. Folder/Files Inspected
+- `tools/3D Camera Path Editor/how_to_use.html`
+- `tools/3D Camera Path Editor/index.html`
+- `tools/3D Camera Path Editor/main.js`
+- `tools/3D Camera Path Editor/README.md`
 
-## Expected JSON Schema/Input
-- Schema ref: `tools/schemas/tools/3d-camera-path-editor.schema.json`. Required root keys: `cameraPath`. Defined root properties: `cameraPath`.
+Skipped from inspection for this design reset: sample/data JSON, image assets, generated preview assets, and schema history notes outside the current contract baseline.
 
-## Valid JSON Load Behavior (Target)
-- Parse incoming tool payload once.
-- Validate against the tool schema/contract before rendering.
-- Render the fully valid state and expose clear contract readout text.
+## 3. Current Controls/Buttons/Inputs/Selects/Textareas/Tables/Panels
+Counts found: buttons 2, inputs 0, selects 0, textareas 1, tables 0, inferred DOM controls/panels 5.
+- `tools/3D Camera Path Editor/index.html`: button[button] #addCameraPointButton - Add Waypoint
+- `tools/3D Camera Path Editor/index.html`: button[button] #normalizeCameraPathButton - Normalize Path
+- `tools/3D Camera Path Editor/index.html`: textarea #cameraPathInput - cameraPathInput
+- `tools/3D Camera Path Editor/main.js`: button #addCameraPointButton - inferred from JS DOM lookup
+- `tools/3D Camera Path Editor/main.js`: button #normalizeCameraPathButton - inferred from JS DOM lookup
+- `tools/3D Camera Path Editor/main.js`: panel #cameraPathStatus - inferred from JS DOM lookup
+- `tools/3D Camera Path Editor/main.js`: input #cameraPathInput - inferred from JS DOM lookup
+- `tools/3D Camera Path Editor/main.js`: panel #cameraPathOutput - inferred from JS DOM lookup
+- Panels/surfaces found:
+  - `tools/3D Camera Path Editor/index.html`: .debug-tool-shell
+  - `tools/3D Camera Path Editor/index.html`: .app-shell
+  - `tools/3D Camera Path Editor/index.html`: .panel
+  - `tools/3D Camera Path Editor/index.html`: .debug-tool-panel
+  - `tools/3D Camera Path Editor/index.html`: .debug-tool-grid
 
-## Invalid JSON Rejection Behavior (Target)
-- Reject before rendering domain state.
-- Show one clear actionable invalid message.
-- Avoid fallback/default injections and avoid mutating inbound payload structure.
+## 4. Current Component/Class/Function Inventory
+- `tools/3D Camera Path Editor/main.js`: function addWaypoint; function boot3dCameraPathEditor; function buildPresetLoadedStatus; function normalizeCameraPath; function normalizeCameraPathPayload; function normalizeSamplePresetPath; function parseInputPayload; function sanitizeNumber; function setStatus; function tryLoadPresetFromQuery; method getApi; method registerToolBootContract
 
-## Current Components/Functions
-- Top-level functions: `sanitizeNumber()`, `normalizeCameraPathPayload()`, `normalizeSamplePresetPath()`, `buildPresetLoadedStatus()`, `setStatus()`, `parseInputPayload()`, `normalizeCameraPath()`, `addWaypoint()`, `boot3dCameraPathEditor()`.
+## 5. JSON Schema/Input Contract Currently Expected
+Schema baseline: `tools/schemas/tools/3d-camera-path-editor.schema.json`. Title: 3d-camera-path-editor Payload. Required top-level fields: cameraPath. Allowed top-level fields: cameraPath. Additional top-level properties: rejected.
 
-## Target Components/Functions
-- Separate explicit JSON contract functions (`import`, `validate`, `load`, `export`) from view-only rendering methods.
-- Keep tool-specific logic inside the tool runtime; avoid Workspace V2 owning tool-specific compare/merge/edit behavior.
-- Keep one visible invalid-state path that blocks render before any partial state draws.
+JSON handling signals found: download/export, safeParseJson, schema, tools.*.
 
-## Tool-Owned JSON Functions
-- Import: `normalizeCameraPathPayload()`, `buildPresetLoadedStatus()`, `parseInputPayload()`
-- Validate: `sanitizeNumber()`, `normalizeCameraPathPayload()`, `normalizeSamplePresetPath()`, `normalizeCameraPath()`
-- Edit/process: `addWaypoint()`, `boot3dCameraPathEditor()`
-- Export: No explicit export helper surfaced in current file inventory.
-- Add/copy to Workspace toolState: Not yet explicit in current tool runtime.
-- Publish to `tools.3d-camera-path-editor`: Supported as target ownership in design; concrete publish path varies by tool.
-- Compare/merge for own schema: Not currently tool-local; Workspace V2 has cross-toolState compare/merge UI today.
+## 6. Valid JSON Behavior
+Valid JSON must parse cleanly, match the current schema baseline or tool-owned normalized shape, update the local editor/preview state, and remain exportable as path/file-field JSON without embedding `imageDataUrl`.
 
-## Workspace Integration Contract
-- Workspace launch path exists via tools index/workspace-manager registry entry points.
-- Explicit Workspace V2 toolState contract is not yet completed for this tool.
+## 7. Invalid JSON Rejection Behavior
+Malformed JSON, missing required fields, unsupported top-level fields, wrong nested types, and empty required editor payloads must be rejected in the tool UI before export/save/publish.
 
-## Playwright Expectations
-- Valid payload path should show visible valid-state surface.
-- Invalid payload path should show visible invalid-state surface and hide valid state.
-- Workspace launch handoff should open the tool with hostContext/toolState payload when applicable.
+## 8. Tool-Owned JSON Responsibilities
+- import/load: tool-owned; load files, pasted JSON, or hosted session payloads inside the tool.
+- validate: tool-owned validation against the current schema/input contract before state mutation.
+- edit/process: tool-owned editor or processing state.
+- export/save: tool-owned normalized JSON/export artifacts.
+- publish to `tools.3d-camera-path-editor` if applicable: yes, publish normalized output under `tools.3d-camera-path-editor` when this tool is the producer.
+- copy/create toolState if applicable: only if a future workspace flow copies a published `tools.*` entry into a toolState; the tool JSON remains tool-owned.
 
-## Manual Test Expectations
-- Launch from `tools/index.html` and confirm baseline UI renders.
-- Launch from Workspace V2 when applicable and confirm payload handoff path.
-- Provide an invalid JSON contract and confirm the tool blocks render with explicit error.
+## 9. Workspace Integration Contract
+- Workspace validates and launches only.
+- Workspace may provide `hostContextId`, launch URL state, or a workspace manifest shell, but it does not manage tool JSON internals.
+- The tool owns its JSON behavior after launch: import/load, validate, edit/process, export/save, publish output, and any copy/create `toolState` behavior listed above.
+- Workspace rejection should stop at invalid launch/session/manifest envelope; nested payload rules stay with the tool.
 
-## Known Gaps
-- Tool is not fully in the current Workspace V2 toolState-capable Playwright lane.
+## 10. Published `tools.*` Output Contract For Games/Samples
+Published output key: `tools.3d-camera-path-editor`. The value must match the current contract baseline, contain only JSON-safe values, use file/path/name fields for assets, and never persist `imageDataUrl`. Games and samples should consume the published payload as data, not as workspace-managed tool internals.
+
+## 11. Playwright Expectations
+Open `tools/3D Camera Path Editor/index.html`; verify the page renders without console errors, expected controls are present, valid JSON/session data reaches the success state, and invalid JSON/session data stays in the tool-owned rejection path. No Playwright run is expected for this documentation-only PR.
+
+## 12. Manual Test Expectations
+Manually launch `tools/3D Camera Path Editor/index.html`, exercise import/load controls or hosted launch parameters, confirm edit/process controls do not delegate JSON internals to workspace, export/save the normalized output, and confirm invalid JSON blocks export/save.
+
+## 13. Known Gaps
+- Controls need cleanup during the tool rebuild so import, validate, edit/process, export/save, and publish actions are explicit.
+- Playwright/manual checks are documented as expectations only; this PR does not change runtime behavior or add tests.
+
+## 14. Rebuild Order Priority
+P18: 3D Camera Path Editor. This priority is used by `docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` and keeps the rebuild anchored on Palette / Palette Browser first, then dependent tool families.

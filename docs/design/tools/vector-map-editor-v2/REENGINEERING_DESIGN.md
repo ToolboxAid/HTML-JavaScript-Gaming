@@ -1,65 +1,79 @@
-# vector-map-editor-v2 Reengineering Design (vector-map-editor-v2)
+# Vector Map Editor V2 Reengineering Design
 
-## Purpose
-- See tool runtime file for current behavior.
+Task: PR_26124_021-tool-folder-design-reset
+Tool ID: `vector-map-editor-v2`
+Source folder: `tools/vector-map-editor-v2`
 
-## Current V1 Capability
-- Not part of V1 active registry.
-- Runtime entry point: `vector-map-editor-v2/index.html`.
-- Runtime implementation file: `tools/vector-map-editor-v2/index.js`.
+## 1. Tool Purpose
+Read hosted vector map documents, validate `payloadJson.vectorMapDocument`, and render map previews from session JSON.
 
-## Current V2 / Workspace Status
-- PASS in current Workspace V2 audit coverage.
-- Workspace integration classification:
-  - global tool: no
-  - toolState-capable tool: yes
-  - published `tools.*` output candidate: yes
-- Readiness: In active lane
+## 2. Folder/Files Inspected
+- `tools/vector-map-editor-v2/index.html`
+- `tools/vector-map-editor-v2/index.js`
 
-## Expected JSON Schema/Input
-- Current fixture contract (no dedicated schema file in `tools/schemas/tools`): `version`, `toolId`, and `payloadJson` with `payloadJson.vectorMapDocument`.
+Skipped from inspection for this design reset: sample/data JSON, image assets, generated preview assets, and schema history notes outside the current contract baseline.
 
-## Valid JSON Load Behavior (Target)
-- Parse incoming tool payload once.
-- Validate against the tool schema/contract before rendering.
-- Render the fully valid state and expose clear contract readout text.
+## 3. Current Controls/Buttons/Inputs/Selects/Textareas/Tables/Panels
+Counts found: buttons 1, inputs 0, selects 0, textareas 0, tables 0, inferred DOM controls/panels 10.
+- `tools/vector-map-editor-v2/index.html`: button[button] #vectorMapV2BackButton - Back
+- `tools/vector-map-editor-v2/index.js`: button #vectorMapV2BackButton - inferred from JS DOM lookup
+- `tools/vector-map-editor-v2/index.js`: panel #vectorMapV2SessionReadout - inferred from JS DOM lookup
+- `tools/vector-map-editor-v2/index.js`: panel #vectorMapV2ContractReadout - inferred from JS DOM lookup
+- `tools/vector-map-editor-v2/index.js`: panel #vectorMapV2WorkspaceReadout - inferred from JS DOM lookup
+- `tools/vector-map-editor-v2/index.js`: panel #vectorMapV2State - inferred from JS DOM lookup
+- `tools/vector-map-editor-v2/index.js`: panel #vectorMapV2EmptyState - inferred from JS DOM lookup
+- `tools/vector-map-editor-v2/index.js`: panel #vectorMapV2InvalidState - inferred from JS DOM lookup
+- `tools/vector-map-editor-v2/index.js`: panel #vectorMapV2ValidState - inferred from JS DOM lookup
+- `tools/vector-map-editor-v2/index.js`: panel #vectorMapV2ObjectList - inferred from JS DOM lookup
+- `tools/vector-map-editor-v2/index.js`: panel #vectorMapV2Stage - inferred from JS DOM lookup
+- Panels/surfaces found:
+  - `tools/vector-map-editor-v2/index.html`: .page-shell
+  - `tools/vector-map-editor-v2/index.html`: .vector-map-v2-grid
+  - `tools/vector-map-editor-v2/index.html`: .vector-map-v2-panel
+  - `tools/vector-map-editor-v2/index.html`: .vector-map-v2-object-list
+  - `tools/vector-map-editor-v2/index.html`: .vector-map-v2-stage
 
-## Invalid JSON Rejection Behavior (Target)
-- Reject before rendering domain state.
-- Show one clear actionable invalid message.
-- Avoid fallback/default injections and avoid mutating inbound payload structure.
+## 4. Current Component/Class/Function Inventory
+- `tools/vector-map-editor-v2/index.js`: class VectorMapEditorV2; method buildRuntimeSnapshot; method buildToolUrl; method goBack; method handleNavigationState; method handleSessionVersion; method loadContract; method logStructuredError; method optionalUrlStateSummary; method readSession; method readUrlState; method registerSnapshotHook; method renderError; method renderMissing; method renderNavigation; method renderVectorMap; method toolLabel
 
-## Current Components/Functions
-- Class `VectorMapEditorV2` in `tools/vector-map-editor-v2/index.js`.
-- Class methods: `constructor()`, `goBack()`, `handleNavigationState()`, `readUrlState()`, `toolLabel()`, `renderNavigation()`, `buildToolUrl()`, `optionalUrlStateSummary()`, `handleSessionVersion()`, `buildRuntimeSnapshot()`, `registerSnapshotHook()`, `logStructuredError()`, `readSession()`, `loadContract()`, `renderVectorMap()`, `renderMissing()`, `renderError()`.
+## 5. JSON Schema/Input Contract Currently Expected
+Hosted session context: `version: "v2"`, `toolId: "vector-map-editor-v2"`, and `payloadJson.vectorMapDocument`. The vector map needs non-empty `name`, positive numeric `width`/`height`, non-empty `background`, and `objects[]`. Each object needs `name`, `kind`, `style.stroke`, positive `style.lineWidth`, and `points[]`; closed objects require `style.fill`.
 
-## Target Components/Functions
-- Separate explicit JSON contract functions (`import`, `validate`, `load`, `export`) from view-only rendering methods.
-- Keep tool-specific logic inside the tool runtime; avoid Workspace V2 owning tool-specific compare/merge/edit behavior.
-- Keep one visible invalid-state path that blocks render before any partial state draws.
+JSON handling signals found: hostContextId, JSON.parse, sessionStorage.
 
-## Tool-Owned JSON Functions
-- Import: `readUrlState()`, `readSession()`, `loadContract()`
-- Validate: No explicit validate helper surfaced in current file inventory.
-- Edit/process: `renderNavigation()`, `renderVectorMap()`, `renderMissing()`, `renderError()`
-- Export: No explicit export helper surfaced in current file inventory.
-- Add/copy to Workspace toolState: Not yet explicit in current tool runtime.
-- Publish to `tools.vector-map-editor-v2`: Supported as target ownership in design; concrete publish path varies by tool.
-- Compare/merge for own schema: Not currently tool-local; Workspace V2 has cross-toolState compare/merge UI today.
+## 6. Valid JSON Behavior
+Valid JSON must parse cleanly, match the hosted session or workspace manifest contract, stay under the current size limits where enforced, and render or persist only after the tool-owned validation path succeeds.
 
-## Workspace Integration Contract
-- Workspace passes: `hostContextId` URL param + `sessionStorage[hostContextId]` toolState payload.
-- Tool returns/publishes: current runtime writes are mostly read-only; explicit publish back is coordinated in Workspace V2 `promote*` actions.
+## 7. Invalid JSON Rejection Behavior
+Malformed JSON, missing session data, wrong `toolId`, unsupported keys, wrong nested payload shape, and oversized payloads must produce an error state and block workspace writes or launches.
 
-## Playwright Expectations
-- Valid payload path should show visible valid-state surface.
-- Invalid payload path should show visible invalid-state surface and hide valid state.
-- Workspace launch handoff should open the tool with hostContext/toolState payload when applicable.
+## 8. Tool-Owned JSON Responsibilities
+- import/load: tool-owned; load files, pasted JSON, or hosted session payloads inside the tool.
+- validate: tool-owned validation against the current schema/input contract before state mutation.
+- edit/process: tool-owned editor or processing state.
+- export/save: tool-owned normalized JSON/export artifacts.
+- publish to `tools.vector-map-editor-v2` if applicable: yes, publish normalized output under `tools.vector-map-editor-v2` when this tool is the producer.
+- copy/create toolState if applicable: yes where applicable: copy/create hosted `toolState` payloads using `version`, `toolId`, and `payloadJson` only.
 
-## Manual Test Expectations
-- Launch from `tools/index.html` and confirm baseline UI renders.
-- Launch from Workspace V2 when applicable and confirm payload handoff path.
-- Provide an invalid JSON contract and confirm the tool blocks render with explicit error.
+## 9. Workspace Integration Contract
+- Workspace validates and launches only.
+- Workspace may provide `hostContextId`, launch URL state, or a workspace manifest shell, but it does not manage tool JSON internals.
+- The tool owns its JSON behavior after launch: import/load, validate, edit/process, export/save, publish output, and any copy/create `toolState` behavior listed above.
+- Workspace rejection should stop at invalid launch/session/manifest envelope; nested payload rules stay with the tool.
 
-## Known Gaps
-- No additional gaps recorded in this pass beyond normal contract hardening and test expansion.
+## 10. Published `tools.*` Output Contract For Games/Samples
+Published output key: `tools.vector-map-editor-v2`. The value must match the current contract baseline, contain only JSON-safe values, use file/path/name fields for assets, and never persist `imageDataUrl`. Games and samples should consume the published payload as data, not as workspace-managed tool internals.
+
+## 11. Playwright Expectations
+Open `tools/vector-map-editor-v2/index.html`; verify the page renders without console errors, expected controls are present, valid JSON/session data reaches the success state, and invalid JSON/session data stays in the tool-owned rejection path. No Playwright run is expected for this documentation-only PR.
+
+## 12. Manual Test Expectations
+Manually launch `tools/vector-map-editor-v2/index.html`, exercise import/load controls or hosted launch parameters, confirm edit/process controls do not delegate JSON internals to workspace, export/save the normalized output, and confirm invalid JSON blocks export/save.
+
+## 13. Known Gaps
+- Dedicated schema alignment is still needed for this folder-level contract.
+- Controls need cleanup during the tool rebuild so import, validate, edit/process, export/save, and publish actions are explicit.
+- Playwright/manual checks are documented as expectations only; this PR does not change runtime behavior or add tests.
+
+## 14. Rebuild Order Priority
+P15: Vector Map Editor V2. This priority is used by `docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` and keeps the rebuild anchored on Palette / Palette Browser first, then dependent tool families.

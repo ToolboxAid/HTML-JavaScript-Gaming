@@ -1,65 +1,77 @@
-# palette-manager-v2 Reengineering Design (palette-manager-v2)
+# Palette Manager V2 Reengineering Design
 
-## Purpose
-- See tool runtime file for current behavior.
+Task: PR_26124_021-tool-folder-design-reset
+Tool ID: `palette-manager-v2`
+Source folder: `tools/palette-manager-v2`
 
-## Current V1 Capability
-- Not part of V1 active registry.
-- Runtime entry point: `palette-manager-v2/index.html`.
-- Runtime implementation file: `tools/palette-manager-v2/index.js`.
+## 1. Tool Purpose
+Read a hosted palette document from session state, validate `payloadJson.paletteDocument`, and display the active palette without workspace-owned JSON internals.
 
-## Current V2 / Workspace Status
-- PASS in current Workspace V2 audit coverage.
-- Workspace integration classification:
-  - global tool: yes
-  - toolState-capable tool: no
-  - published `tools.*` output candidate: no
-- Readiness: Needs additional schema/contract alignment
+## 2. Folder/Files Inspected
+- `tools/palette-manager-v2/index.html`
+- `tools/palette-manager-v2/index.js`
 
-## Expected JSON Schema/Input
-- Current fixture contract (no dedicated schema file in `tools/schemas/tools`): `version`, `toolId`, and `payloadJson` with `payloadJson.paletteDocument`.
+Skipped from inspection for this design reset: sample/data JSON, image assets, generated preview assets, and schema history notes outside the current contract baseline.
 
-## Valid JSON Load Behavior (Target)
-- Parse incoming tool payload once.
-- Validate against the tool schema/contract before rendering.
-- Render the fully valid state and expose clear contract readout text.
+## 3. Current Controls/Buttons/Inputs/Selects/Textareas/Tables/Panels
+Counts found: buttons 2, inputs 0, selects 0, textareas 0, tables 0, inferred DOM controls/panels 9.
+- `tools/palette-manager-v2/index.html`: button[button] #paletteManagerBackButton - Back
+- `tools/palette-manager-v2/index.html`: button[button] #paletteManagerOpenVectorMapEditorV2Button - Open in Vector Map Editor V2
+- `tools/palette-manager-v2/index.js`: button #paletteManagerBackButton - inferred from JS DOM lookup
+- `tools/palette-manager-v2/index.js`: button #paletteManagerOpenVectorMapEditorV2Button - inferred from JS DOM lookup
+- `tools/palette-manager-v2/index.js`: panel #paletteManagerSessionReadout - inferred from JS DOM lookup
+- `tools/palette-manager-v2/index.js`: panel #paletteManagerContractReadout - inferred from JS DOM lookup
+- `tools/palette-manager-v2/index.js`: panel #paletteManagerWorkspaceReadout - inferred from JS DOM lookup
+- `tools/palette-manager-v2/index.js`: panel #paletteManagerState - inferred from JS DOM lookup
+- `tools/palette-manager-v2/index.js`: panel #paletteManagerEmptyState - inferred from JS DOM lookup
+- `tools/palette-manager-v2/index.js`: panel #paletteManagerInvalidState - inferred from JS DOM lookup
+- `tools/palette-manager-v2/index.js`: panel #paletteManagerValidState - inferred from JS DOM lookup
+- Panels/surfaces found:
+  - `tools/palette-manager-v2/index.html`: .page-shell
+  - `tools/palette-manager-v2/index.html`: .palette-manager-v2-grid
+  - `tools/palette-manager-v2/index.html`: .palette-manager-v2-panel
 
-## Invalid JSON Rejection Behavior (Target)
-- Reject before rendering domain state.
-- Show one clear actionable invalid message.
-- Avoid fallback/default injections and avoid mutating inbound payload structure.
+## 4. Current Component/Class/Function Inventory
+- `tools/palette-manager-v2/index.js`: class PaletteManagerV2; method buildRuntimeSnapshot; method buildToolUrl; method goBack; method handleNavigationState; method handleSessionVersion; method loadContract; method logStructuredError; method openVectorMapEditorV2; method optionalUrlStateSummary; method readSession; method readUrlState; method registerSnapshotHook; method renderError; method renderMissing; method renderNavigation; method renderPalette; method toolLabel
 
-## Current Components/Functions
-- Class `PaletteManagerV2` in `tools/palette-manager-v2/index.js`.
-- Class methods: `constructor()`, `goBack()`, `openVectorMapEditorV2()`, `handleNavigationState()`, `readUrlState()`, `toolLabel()`, `renderNavigation()`, `buildToolUrl()`, `optionalUrlStateSummary()`, `handleSessionVersion()`, `buildRuntimeSnapshot()`, `registerSnapshotHook()`, `logStructuredError()`, `readSession()`, `loadContract()`, `renderPalette()`, `renderMissing()`, `renderError()`.
+## 5. JSON Schema/Input Contract Currently Expected
+Hosted session context: `version: "v2"`, `toolId: "palette-manager-v2"`, and `payloadJson.paletteDocument`. `paletteDocument.name` must be a non-empty string. `paletteDocument.swatches` must be an array of objects with `symbol` as one character, `name` as a non-empty string, and `hex` as `#RRGGBB` or `#RRGGBBAA`. The folder rejects `paletteJson`, `payloadJson.assetCatalog`, and `paletteDocument.colors`.
 
-## Target Components/Functions
-- Separate explicit JSON contract functions (`import`, `validate`, `load`, `export`) from view-only rendering methods.
-- Keep tool-specific logic inside the tool runtime; avoid Workspace V2 owning tool-specific compare/merge/edit behavior.
-- Keep one visible invalid-state path that blocks render before any partial state draws.
+JSON handling signals found: hostContextId, JSON.parse, sessionStorage, validate.
 
-## Tool-Owned JSON Functions
-- Import: `readUrlState()`, `readSession()`, `loadContract()`
-- Validate: No explicit validate helper surfaced in current file inventory.
-- Edit/process: `openVectorMapEditorV2()`, `renderNavigation()`, `renderPalette()`, `renderMissing()`, `renderError()`
-- Export: No explicit export helper surfaced in current file inventory.
-- Add/copy to Workspace toolState: Not yet explicit in current tool runtime.
-- Publish to `tools.palette-manager-v2`: Not currently a published tools.* ownership target.
-- Compare/merge for own schema: Not currently tool-local; Workspace V2 has cross-toolState compare/merge UI today.
+## 6. Valid JSON Behavior
+Valid JSON is only accepted when a consuming tool or support script explicitly calls this folder. There is no standalone publish/import flow owned by this folder.
 
-## Workspace Integration Contract
-- Workspace passes: `hostContextId` URL param + toolState payload for validation/render.
-- Tool returns/publishes: read-only render; no Workspace publish path in current lane.
+## 7. Invalid JSON Rejection Behavior
+Invalid JSON is rejected by the consuming helper/script path. This folder should not silently repair or publish malformed tool payloads.
 
-## Playwright Expectations
-- Valid payload path should show visible valid-state surface.
-- Invalid payload path should show visible invalid-state surface and hide valid state.
-- Workspace launch handoff should open the tool with hostContext/toolState payload when applicable.
+## 8. Tool-Owned JSON Responsibilities
+- import/load: support-only; no standalone tool import flow unless a consuming script invokes it.
+- validate: support-only validation helpers where present.
+- edit/process: support modules may process values for callers; no workspace editing of internals.
+- export/save: support-only unless a maintenance script writes its own artifact.
+- publish to `tools.palette-manager-v2` if applicable: no standalone published output in this folder.
+- copy/create toolState if applicable: yes where applicable: copy/create hosted `toolState` payloads using `version`, `toolId`, and `payloadJson` only.
 
-## Manual Test Expectations
-- Launch from `tools/index.html` and confirm baseline UI renders.
-- Launch from Workspace V2 when applicable and confirm payload handoff path.
-- Provide an invalid JSON contract and confirm the tool blocks render with explicit error.
+## 9. Workspace Integration Contract
+- Workspace validates and launches only.
+- Workspace may provide `hostContextId`, launch URL state, or a workspace manifest shell, but it does not manage tool JSON internals.
+- The tool owns its JSON behavior after launch: import/load, validate, edit/process, export/save, publish output, and any copy/create `toolState` behavior listed above.
+- Workspace rejection should stop at invalid launch/session/manifest envelope; nested payload rules stay with the tool.
 
-## Known Gaps
-- Palette manager is intentionally excluded from Workspace V2 toolState producer flow; palette ownership is global via `tools.palette-browser`.
+## 10. Published `tools.*` Output Contract For Games/Samples
+No `tools.*` game/sample output is owned by this folder in the reset design. Consuming tools may use helpers from this folder, but persisted game/sample payloads must come from the owning launchable tool.
+
+## 11. Playwright Expectations
+Open `tools/palette-manager-v2/index.html`; verify the page renders without console errors, expected controls are present, valid JSON/session data reaches the success state, and invalid JSON/session data stays in the tool-owned rejection path. No Playwright run is expected for this documentation-only PR.
+
+## 12. Manual Test Expectations
+Manually launch `tools/palette-manager-v2/index.html`, exercise import/load controls or hosted launch parameters, confirm edit/process controls do not delegate JSON internals to workspace, export/save the normalized output, and confirm invalid JSON blocks export/save.
+
+## 13. Known Gaps
+- Dedicated schema alignment is still needed for this folder-level contract.
+- Keep this folder support-only unless a future BUILD explicitly promotes a launchable/publishable contract.
+- Playwright/manual checks are documented as expectations only; this PR does not change runtime behavior or add tests.
+
+## 14. Rebuild Order Priority
+P02: Palette Manager V2. This priority is used by `docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` and keeps the rebuild anchored on Palette / Palette Browser first, then dependent tool families.

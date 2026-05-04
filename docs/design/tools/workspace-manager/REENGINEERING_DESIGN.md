@@ -1,64 +1,68 @@
-# Workspace Manager Reengineering Design (workspace-manager)
+# Workspace Manager Reengineering Design
 
-## Purpose
-- See tool runtime file for current behavior.
+Task: PR_26124_021-tool-folder-design-reset
+Tool ID: `workspace-manager`
+Source folder: `tools/Workspace Manager`
 
-## Current V1 Capability
-- Not part of V1 active registry.
-- Runtime entry point: `Workspace Manager/index.html`.
-- Runtime implementation file: `tools/Workspace Manager/main.js`.
+## 1. Tool Purpose
+Launch and coordinate workspace-level tool sessions while leaving JSON import, validation, edit, and export behavior inside each tool.
 
-## Current V2 / Workspace Status
-- Status not fully audited in current Workspace V2 lane.
-- Workspace integration classification:
-  - global tool: yes
-  - toolState-capable tool: no
-  - published `tools.*` output candidate: no
-- Readiness: Needs additional schema/contract alignment
+## 2. Folder/Files Inspected
+- `tools/Workspace Manager/how_to_use.html`
+- `tools/Workspace Manager/index.html`
+- `tools/Workspace Manager/main.js`
+- `tools/Workspace Manager/README.md`
+- `tools/Workspace Manager/toolHost.css`
 
-## Expected JSON Schema/Input
-- Schema contract is not yet explicitly defined in `tools/schemas/tools` for this tool id.
+Skipped from inspection for this design reset: sample/data JSON, image assets, generated preview assets, and schema history notes outside the current contract baseline.
 
-## Valid JSON Load Behavior (Target)
-- Parse incoming tool payload once.
-- Validate against the tool schema/contract before rendering.
-- Render the fully valid state and expose clear contract readout text.
+## 3. Current Controls/Buttons/Inputs/Selects/Textareas/Tables/Panels
+Counts found: buttons 0, inputs 0, selects 0, textareas 0, tables 0, inferred DOM controls/panels 0.
+- No buttons, inputs, selects, textareas, tables, or direct control lookups were found in the inspected files.
+- Panels/surfaces found:
+  - `tools/Workspace Manager/index.html`: .tool-host-workspace
+  - `tools/Workspace Manager/index.html`: .tool-host-workspace__mount
 
-## Invalid JSON Rejection Behavior (Target)
-- Reject before rendering domain state.
-- Show one clear actionable invalid message.
-- Avoid fallback/default injections and avoid mutating inbound payload structure.
+## 4. Current Component/Class/Function Inventory
+- `tools/Workspace Manager/main.js`: function applyToolsUsedFilterForGame; function applyWorkspaceShellStateToMountedTool; function bindEvents; function bindPagerDelegatedEvents; function bindPagerMessageBridge; function bindWorkspaceShellStateBridge; function bindWorkspaceToolTileClickHandlers; function classifyWorkspaceManifestTools; function deriveGameAssetCatalogPath; function extractWorkspaceManifestExplicitLaunchInputs; function getSelectedToolIndex; function inferAssetTypeFromDirectPayload; function init; function isPlainObject; function isWorkspaceManifestSource; function keyMatchesPropertyNameSchema; function launchWorkspaceToolFromClickedTile; function logWorkspaceManifestToolDiagnostics; function logWorkspaceToolLaunch; function mountGameFrame; function mountSelectedTool; function normalizeGameAssetCatalogEntries; function normalizeGameHref; function normalizeLocalHrefParam; function normalizeTextParam; function normalizeToken; function normalizeToolsUsedList; function normalizeWorkspaceShellMessageState; function observeWorkspaceToolTiles; function parseGameAssetCatalogPayload; function readDirectPayloadDocument; function readGameAssetCatalog; function readGameEntryById; function readInitialGameId; function readInitialToolId; function readLaunchUrlProof; function readRawToolIdFromQuery; function readRegistryEntryUrl; function readRequestedToolIdFromQuery; function readSamplePresetPathFromQuery; function readSelectedToolId; function readWorkspaceDirectCardLabel; function readWorkspaceManifestToolDiagnosticsFromSamplePreset; function readWorkspaceSchemaContract; function refreshPagerRefs; function renderMountDiagnostic; function resolveJsonPointer; function selectToolByOffset; function setCurrentLabel; function shouldBlockLoadedSvgWorkspaceTileOverwrite; function shouldMountGameFrameFromQuery; function summarizeDirectToolPayloadLabel; function syncControlState; function syncSelectedToolState; function traceSvgTileWrite; function traceWorkspaceRegistryResolve; function traceWorkspaceToolClick; function traceWorkspaceToolTileRender; function unmountGameFrame; function updateStandaloneHref; ... 12 more
 
-## Current Components/Functions
-- Top-level functions: `deriveGameAssetCatalogPath()`, `normalizeGameAssetCatalogEntries()`, `parseGameAssetCatalogPayload()`, `refreshPagerRefs()`, `normalizeTextParam()`, `normalizeToken()`, `readRegistryEntryUrl()`, `traceWorkspaceRegistryResolve()`, `traceWorkspaceToolTileRender()`, `traceWorkspaceToolClick()`, `launchWorkspaceToolFromClickedTile()`, `bindWorkspaceToolTileClickHandlers()`, `observeWorkspaceToolTiles()`, `normalizeToolsUsedList()`, `normalizeLocalHrefParam()`, `isPlainObject()`, `readDirectPayloadDocument()`, `inferAssetTypeFromDirectPayload()`, `summarizeDirectToolPayloadLabel()`, `readWorkspaceDirectCardLabel()`, `writeSharedBindingsFromDirectPayload()`, `readLaunchUrlProof()`, `logWorkspaceToolLaunch()`, `resolveJsonPointer()`, `validateJsonValueAgainstSchema()`, `validateNode()`, `readSamplePresetPathFromQuery()`, `isWorkspaceManifestSource()`, `classifyWorkspaceManifestTools()`, `extractWorkspaceManifestExplicitLaunchInputs()`, `logWorkspaceManifestToolDiagnostics()`, `readSelectedToolId()`, `writeSelectedToolId()`, `traceSvgTileWrite()`, `shouldBlockLoadedSvgWorkspaceTileOverwrite()`, `writeStatus()`, `renderMountDiagnostic()`, `setCurrentLabel()`, `writeSwitchMeta()`, `getSelectedToolIndex()`, `updateSwitchMeta()`, `selectToolByOffset()`, `updateStandaloneHref()`, `writeQueryToolId()`, `readInitialToolId()`, `readRequestedToolIdFromQuery()`, `readRawToolIdFromQuery()`, `readInitialGameId()`, `shouldMountGameFrameFromQuery()`, `normalizeGameHref()`, `unmountGameFrame()`, `syncControlState()`, `syncSelectedToolState()`, `applyToolsUsedFilterForGame()`, `bindPagerDelegatedEvents()`, `bindPagerMessageBridge()`, `normalizeWorkspaceShellMessageState()`, `applyWorkspaceShellStateToMountedTool()`, `bindWorkspaceShellStateBridge()`, `mountSelectedTool()`, `bindEvents()`.
+## 5. JSON Schema/Input Contract Currently Expected
+Workspace Manager launches and coordinates sessions. It does not own a publishable tool payload and should not validate or rewrite another tool JSON contract.
 
-## Target Components/Functions
-- Separate explicit JSON contract functions (`import`, `validate`, `load`, `export`) from view-only rendering methods.
-- Keep tool-specific logic inside the tool runtime; avoid Workspace V2 owning tool-specific compare/merge/edit behavior.
-- Keep one visible invalid-state path that blocks render before any partial state draws.
+JSON handling signals found: download/export, hostContextId, JSON.stringify, schema, tools.*, validate.
 
-## Tool-Owned JSON Functions
-- Import: `parseGameAssetCatalogPayload()`, `readRegistryEntryUrl()`, `readDirectPayloadDocument()`, `inferAssetTypeFromDirectPayload()`, `summarizeDirectToolPayloadLabel()`, `readWorkspaceDirectCardLabel()`, `writeSharedBindingsFromDirectPayload()`, `readLaunchUrlProof()`, `readSamplePresetPathFromQuery()`, `readSelectedToolId()`, `shouldBlockLoadedSvgWorkspaceTileOverwrite()`, `readInitialToolId()`, `readRequestedToolIdFromQuery()`, `readRawToolIdFromQuery()`, `readInitialGameId()`
-- Validate: `normalizeGameAssetCatalogEntries()`, `normalizeTextParam()`, `normalizeToken()`, `normalizeToolsUsedList()`, `normalizeLocalHrefParam()`, `validateJsonValueAgainstSchema()`, `validateNode()`, `normalizeGameHref()`, `normalizeWorkspaceShellMessageState()`
-- Edit/process: `traceWorkspaceToolTileRender()`, `readDirectPayloadDocument()`, `renderMountDiagnostic()`, `updateSwitchMeta()`, `updateStandaloneHref()`, `applyToolsUsedFilterForGame()`, `applyWorkspaceShellStateToMountedTool()`
-- Export: `writeSharedBindingsFromDirectPayload()`
-- Add/copy to Workspace toolState: `writeSharedBindingsFromDirectPayload()`, `writeSelectedToolId()`, `traceSvgTileWrite()`, `shouldBlockLoadedSvgWorkspaceTileOverwrite()`, `writeStatus()`, `writeSwitchMeta()`, `writeQueryToolId()`
-- Publish to `tools.workspace-manager`: Not currently a published tools.* ownership target.
-- Compare/merge for own schema: Not currently tool-local; Workspace V2 has cross-toolState compare/merge UI today.
+## 6. Valid JSON Behavior
+Valid JSON is only accepted when a consuming tool or support script explicitly calls this folder. There is no standalone publish/import flow owned by this folder.
 
-## Workspace Integration Contract
-- Workspace launch path exists via tools index/workspace-manager registry entry points.
-- Explicit Workspace V2 toolState contract is not yet completed for this tool.
+## 7. Invalid JSON Rejection Behavior
+Invalid JSON is rejected by the consuming helper/script path. This folder should not silently repair or publish malformed tool payloads.
 
-## Playwright Expectations
-- Valid payload path should show visible valid-state surface.
-- Invalid payload path should show visible invalid-state surface and hide valid state.
-- Workspace launch handoff should open the tool with hostContext/toolState payload when applicable.
+## 8. Tool-Owned JSON Responsibilities
+- import/load: support-only; no standalone tool import flow unless a consuming script invokes it.
+- validate: support-only validation helpers where present.
+- edit/process: support modules may process values for callers; no workspace editing of internals.
+- export/save: support-only unless a maintenance script writes its own artifact.
+- publish to `tools.workspace-manager` if applicable: no standalone published output in this folder.
+- copy/create toolState if applicable: no.
 
-## Manual Test Expectations
-- Launch from `tools/index.html` and confirm baseline UI renders.
-- Launch from Workspace V2 when applicable and confirm payload handoff path.
-- Provide an invalid JSON contract and confirm the tool blocks render with explicit error.
+## 9. Workspace Integration Contract
+- Workspace validates and launches only.
+- Workspace may provide `hostContextId`, launch URL state, or a workspace manifest shell, but it does not manage tool JSON internals.
+- The tool owns its JSON behavior after launch: import/load, validate, edit/process, export/save, publish output, and any copy/create `toolState` behavior listed above.
+- Workspace rejection should stop at invalid launch/session/manifest envelope; nested payload rules stay with the tool.
 
-## Known Gaps
-- No dedicated tool schema reference found under `tools/schemas/tools` for this tool id.
+## 10. Published `tools.*` Output Contract For Games/Samples
+No `tools.*` game/sample output is owned by this folder in the reset design. Consuming tools may use helpers from this folder, but persisted game/sample payloads must come from the owning launchable tool.
+
+## 11. Playwright Expectations
+Open `tools/Workspace Manager/index.html`; verify the page renders without console errors, expected controls are present, valid JSON/session data reaches the success state, and invalid JSON/session data stays in the tool-owned rejection path. No Playwright run is expected for this documentation-only PR.
+
+## 12. Manual Test Expectations
+Manually launch `tools/Workspace Manager/index.html`, exercise import/load controls or hosted launch parameters, confirm edit/process controls do not delegate JSON internals to workspace, export/save the normalized output, and confirm invalid JSON blocks export/save.
+
+## 13. Known Gaps
+- Keep this folder support-only unless a future BUILD explicitly promotes a launchable/publishable contract.
+- Playwright/manual checks are documented as expectations only; this PR does not change runtime behavior or add tests.
+
+## 14. Rebuild Order Priority
+P23: Workspace Manager. This priority is used by `docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` and keeps the rebuild anchored on Palette / Palette Browser first, then dependent tool families.
