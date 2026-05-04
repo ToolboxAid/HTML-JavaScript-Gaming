@@ -1,1 +1,1 @@
-Append Palette Manager tile pin override at CSS EOF - PR_26124_068-palette-manager-pin-style-append-only
+Verify Palette Manager left accordions already use accordionV2 - PR_26124_069-palette-manager-left-accordionv2-cleanup
