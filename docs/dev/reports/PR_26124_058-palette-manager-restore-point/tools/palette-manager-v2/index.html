@@ -31,12 +31,12 @@
   <div class="palette-manager-v2 app-shell">
     <div class="palette-manager-v2__layout tools-platform-layout-grid">
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
-        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="selectedSwatchAccordionContent">
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
             <span>Selected Swatch</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="selectedSwatchAccordionContent" class="accordion-v2__content">
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
             <div id="selectedSwatchPreview" class="palette-manager-v2__preview" aria-label="Selected swatch preview"></div>
             <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked palette-manager-v2__form-grid--compact">
               <label class="palette-manager-v2__field palette-manager-v2__field--compact">
@@ -61,14 +61,14 @@
               </div>
             </div>
           </div>
-        </section>
+        </details>
 
-        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userDefinedSwatchAccordionContent">
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
             <span>User Defined Swatch</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="userDefinedSwatchAccordionContent" class="accordion-v2__content">
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
             <div id="userDefinedSwatchPreview" class="palette-manager-v2__preview" aria-label="User defined swatch preview"></div>
             <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked palette-manager-v2__form-grid--compact">
               <label class="palette-manager-v2__field palette-manager-v2__field--compact">
@@ -90,14 +90,14 @@
               <button id="clearFormButton" type="button">Clear Form</button>
             </div>
           </div>
-        </section>
+        </details>
 
-        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="tagsAccordionContent">
+        <details class="palette-manager-v2__accordion" open>
+          <summary class="palette-manager-v2__accordion-summary">
             <span>Tags</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="tagsAccordionContent" class="accordion-v2__content">
+            <span class="palette-manager-v2__accordion-icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="palette-manager-v2__accordion-content">
             <div id="availableTagList" class="palette-manager-v2__tag-list palette-manager-v2__tag-list--available" aria-label="Available user palette tags"></div>
             <div class="palette-manager-v2__tag-entry">
               <label class="palette-manager-v2__field palette-manager-v2__field--compact">
@@ -108,7 +108,7 @@
               <div id="tagSuggestions" class="palette-manager-v2__tag-suggestions" role="listbox" aria-label="Tag suggestions"></div>
             </div>
           </div>
-        </section>
+        </details>
       </aside>
 
       <main class="palette-manager-v2__panel palette-manager-v2__panel--center">

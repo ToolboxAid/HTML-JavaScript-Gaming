@@ -40,7 +40,7 @@ export class SourcePaletteBrowserControl {
     }
 
     visibleSwatches.forEach((swatch) => {
-      const userIndex = this.app.findDuplicateUserSwatchIndex(swatch);
+      const userIndex = this.app.findUserSwatchIndex(swatch);
       this.refs.sourceSwatchList.appendChild(SwatchRow.createSourceTile(this.document, swatch, {
         pinned: userIndex >= 0,
         onSelect: () => this.app.browseSourceSwatch(swatch),

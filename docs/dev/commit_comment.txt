@@ -1,1 +1,1 @@
-Add Palette Manager source Pin All action - PR_26124_057-palette-manager-source-pin-all
+Harden Palette Manager baseline with restore point - PR_26124_058-palette-manager-baseline-restore-and-hardening

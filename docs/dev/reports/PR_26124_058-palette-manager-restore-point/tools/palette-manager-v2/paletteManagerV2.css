@@ -102,6 +102,7 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
 .palette-manager-v2__panel.palette-manager-v2__panel--right.tools-platform-resize-panel {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 14px;
   overflow: hidden;
 }
@@ -169,15 +170,65 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   overflow: auto;
 }
 
-.palette-manager-v2__panel--left .accordion-v2,
+.palette-manager-v2__accordion {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--pm-line);
+  border-radius: 8px;
+  background: var(--pm-surface);
+  overflow: hidden;
+}
+
+.palette-manager-v2__accordion + .palette-manager-v2__accordion {
+  margin-top: 14px;
+}
+
+.palette-manager-v2__accordion-summary {
+  flex: 0 0 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 700;
+  list-style: none;
+}
+
+.palette-manager-v2__accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.palette-manager-v2__accordion-icon {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--pm-line);
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.palette-manager-v2__accordion[open] .palette-manager-v2__accordion-icon {
+  transform: rotate(45deg);
+}
+
+.palette-manager-v2__accordion-content {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid var(--pm-line);
+  overflow: hidden;
+}
+
 .palette-manager-v2__panel--center .accordion-v2 {
   --accordion-v2-accent: var(--pm-accent);
   --accordion-v2-line: var(--pm-line);
   --accordion-v2-surface: var(--pm-surface);
-}
-
-.palette-manager-v2__left-accordion + .palette-manager-v2__left-accordion {
-  margin-top: 14px;
 }
 
 .palette-manager-v2__panel--center .accordion-v2__content > :not(.palette-manager-v2__tile-grid) {
@@ -509,7 +560,6 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   border: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.72);
-  box-shadow: none;
   color: var(--pm-danger);
   cursor: pointer;
 }
@@ -528,21 +578,12 @@ body.tools-platform-tool-page[data-tool-id="palette-manager-v2"] > [data-tools-p
   top: 6px;
   right: 6px;
   z-index: 1;
-  width: 24px;
-  height: 24px;
-  margin: 5px;
-  background: #ffffff88;
 }
 
 .palette-manager-v2__pin-icon {
   width: 26px;
   height: 26px;
   display: block;
-}
-
-.palette-manager-v2__pin-button--tile .palette-manager-v2__pin-icon {
-  width: 20px;
-  height: 20px;
 }
 
 .palette-manager-v2__swatch-row {
@@ -736,4 +777,24 @@ body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palet
   .palette-manager-v2__size-buttons {
     justify-content: flex-start;
   }
+}
+
+
+/* Pin button style update */
+.palette-manager-v2__pin-button--tile {
+  background: #ffffff88 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  margin: 5px !important;
+}
+/* Shrink pin button + icon 50% */
+.palette-manager-v2__pin-button--tile {
+  width: 24px;
+  height: 24px;
+}
+
+.palette-manager-v2__pin-button--tile .palette-manager-v2__pin-icon {
+  width: 20px;
+  height: 20px;
 }

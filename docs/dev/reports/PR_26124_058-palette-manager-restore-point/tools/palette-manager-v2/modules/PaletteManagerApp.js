@@ -4,7 +4,7 @@ import { PaletteValidationErrorControl } from "../controls/PaletteValidationErro
 import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
 import { UserPaletteControl } from "../controls/UserPaletteControl.js";
 import { PaletteValidationService } from "./PaletteValidationService.js";
-import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "./paletteUtils.js";
+import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText, swatchKey } from "./paletteUtils.js";
 
 const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
 
@@ -500,13 +500,13 @@ export class PaletteManagerApp {
       return false;
     }
 
-    const cleanTag = normalizeTags([tag])[0] || "";
+    const cleanTag = sanitizeText(tag);
     if (!cleanTag) {
       return false;
     }
 
     const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
-    if (existingTags.includes(cleanTag)) {
+    if (existingTags.some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
       this.mergeAvailableTags([cleanTag]);
       this.setActionState([], `${cleanTag} is already on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
       return false;
@@ -539,13 +539,13 @@ export class PaletteManagerApp {
       return false;
     }
 
-    const cleanTag = normalizeTags([tag])[0] || "";
+    const cleanTag = sanitizeText(tag);
     if (!cleanTag) {
       return false;
     }
 
     const existingTags = normalizeTags(this.state.userSwatches[this.state.selectedUserIndex].tags);
-    const nextTags = existingTags.filter((existingTag) => existingTag !== cleanTag);
+    const nextTags = existingTags.filter((existingTag) => existingTag.toLowerCase() !== cleanTag.toLowerCase());
     if (nextTags.length === existingTags.length) {
       this.setActionState([], `${cleanTag} is not on ${this.state.userSwatches[this.state.selectedUserIndex].name}.`);
       return false;
@@ -579,8 +579,8 @@ export class PaletteManagerApp {
       return false;
     }
 
-    const cleanTag = normalizeTags([tag])[0] || "";
-    if (normalizeTags(selectedSwatch.tags).includes(cleanTag)) {
+    const cleanTag = sanitizeText(tag);
+    if (normalizeTags(selectedSwatch.tags).some((existingTag) => existingTag.toLowerCase() === cleanTag.toLowerCase())) {
       return this.removeTagFromSelectedSwatch(cleanTag);
     }
     return this.addTagToSelectedSwatch(cleanTag);
@@ -647,16 +647,9 @@ export class PaletteManagerApp {
   }
 
   pinSourceSwatch(swatch, sourcePaletteId) {
-    const pinnedSwatch = cloneSwatch({
-      symbol: swatch.symbol,
-      hex: swatch.hex,
-      name: swatch.name,
-      source: sourcePaletteId
-    });
-    const errors = [
-      ...this.validator.validateSwatch(pinnedSwatch, "source swatch"),
-      ...this.validateUniqueUserSwatchFields(pinnedSwatch, -1)
-    ];
+    const pinnedSwatch = cloneSwatch({ ...swatch, source: sourcePaletteId });
+    delete pinnedSwatch.tags;
+    const errors = this.validator.validateSwatch(pinnedSwatch, "source swatch");
     if (errors.length > 0) {
       this.setActionState(errors, "Source swatch was not pinned.");
       return;
@@ -709,13 +702,9 @@ export class PaletteManagerApp {
     this.setActionState(Array.from(new Set(skipReasons)), status);
   }
 
-  findDuplicateUserSwatchIndex(swatch) {
-    const cleanSwatch = cloneSwatch(swatch);
-    return this.state.userSwatches.findIndex((existingSwatch) => {
-      return isSameText(existingSwatch.name, cleanSwatch.name)
-        || getRgbHexKey(existingSwatch.hex) === getRgbHexKey(cleanSwatch.hex)
-        || isSameText(existingSwatch.symbol, cleanSwatch.symbol);
-    });
+  findUserSwatchIndex(swatch) {
+    const targetKey = swatchKey(swatch);
+    return this.state.userSwatches.findIndex((entry) => swatchKey(entry) === targetKey);
   }
 
   rejectImport(errors) {
