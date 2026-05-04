@@ -31,11 +31,30 @@ export class SwatchRow {
   }
 
   static createSourceTile(documentRef, swatch, options = {}) {
+    return SwatchRow.createTile(documentRef, swatch, {
+      ...options,
+      ariaLabel: `Browse ${swatch.name}`,
+      variantClassName: "palette-manager-v2__source-tile"
+    });
+  }
+
+  static createUserTile(documentRef, swatch, options = {}) {
+    return SwatchRow.createTile(documentRef, swatch, {
+      ...options,
+      ariaLabel: `Edit ${swatch.name}`,
+      variantClassName: "palette-manager-v2__user-tile"
+    });
+  }
+
+  static createTile(documentRef, swatch, options = {}) {
     const tile = documentRef.createElement("div");
-    tile.className = "palette-manager-v2__source-tile";
+    tile.className = `palette-manager-v2__swatch-tile ${options.variantClassName || ""}`.trim();
+    if (options.selected) {
+      tile.classList.add("is-selected");
+    }
     tile.tabIndex = 0;
     tile.setAttribute("role", "button");
-    tile.setAttribute("aria-label", `Browse ${swatch.name}`);
+    tile.setAttribute("aria-label", options.ariaLabel || `Select ${swatch.name}`);
     tile.style.setProperty("--swatch-color", swatch.hex);
     tile.title = `${swatch.name}\n${swatch.symbol}\n${swatch.hex}\n${swatch.source}`;
     tile.addEventListener("click", () => {
@@ -57,13 +76,13 @@ export class SwatchRow {
     });
 
     const chip = documentRef.createElement("span");
-    chip.className = "palette-manager-v2__source-tile-chip";
+    chip.className = "palette-manager-v2__swatch-tile-chip";
     chip.setAttribute("aria-hidden", "true");
 
     const tack = SwatchRow.createTackButton(documentRef, options);
     tack.classList.add("palette-manager-v2__pin-button--tile");
 
-    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__source-details");
+    const details = SwatchRow.createDetailsBlock(documentRef, swatch, "palette-manager-v2__swatch-details");
 
     tile.append(chip, tack, details);
     return tile;

@@ -18,6 +18,7 @@ export class UserPaletteControl {
     const swatches = this.app.getUserSwatches();
     this.refs.userPaletteCount.textContent = `${swatches.length} user swatches`;
     this.refs.userPaletteSortSelect.value = this.app.getUserSortMode();
+    this.refs.userSwatchList.dataset.swatchSize = this.app.getSwatchSize();
     this.refs.userSwatchList.replaceChildren();
 
     if (swatches.length === 0) {
@@ -29,7 +30,7 @@ export class UserPaletteControl {
     }
 
     this.app.getVisibleUserSwatchRows().forEach(({ swatch, index }) => {
-      this.refs.userSwatchList.appendChild(SwatchRow.create(this.document, swatch, {
+      this.refs.userSwatchList.appendChild(SwatchRow.createUserTile(this.document, swatch, {
         pinned: true,
         selected: index === this.app.getSelectedUserIndex(),
         onSelect: () => this.app.selectUserSwatch(index),

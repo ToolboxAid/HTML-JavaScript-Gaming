@@ -13,6 +13,7 @@ const REQUIRED_REF_IDS = Object.freeze([
   "sourcePaletteSelect",
   "sourceSearchInput",
   "sourcePaletteSortControls",
+  "swatchSizeSelect",
   "sourceSwatchList",
   "editorTitle",
   "selectedSwatchPreview",
@@ -31,6 +32,12 @@ const REQUIRED_REF_IDS = Object.freeze([
   "paletteJsonPreview",
   "paletteStatus",
   "paletteErrorList"
+]);
+
+const SWATCH_SIZE_OPTIONS = Object.freeze([
+  Object.freeze({ value: "small", label: "Small" }),
+  Object.freeze({ value: "medium", label: "Medium" }),
+  Object.freeze({ value: "large", label: "Large" })
 ]);
 
 function collectRefs(documentRef) {
@@ -67,6 +74,7 @@ export class PaletteManagerApp {
       sourceSearch: "",
       userSortMode: "hue",
       sourceSortMode: "hue",
+      swatchSize: "large",
       errors: [],
       status: "Ready."
     };
@@ -123,12 +131,20 @@ export class PaletteManagerApp {
     return this.sortService.getSortModes();
   }
 
+  getSwatchSizeOptions() {
+    return SWATCH_SIZE_OPTIONS.map((size) => ({ ...size }));
+  }
+
   getUserSortMode() {
     return this.state.userSortMode;
   }
 
   getSourceSortMode() {
     return this.state.sourceSortMode;
+  }
+
+  getSwatchSize() {
+    return this.state.swatchSize;
   }
 
   getSourcePaletteIds() {
@@ -199,6 +215,14 @@ export class PaletteManagerApp {
       return;
     }
     this.state.sourceSortMode = sortMode;
+    this.render();
+  }
+
+  setSwatchSize(swatchSize) {
+    if (!SWATCH_SIZE_OPTIONS.some((size) => size.value === swatchSize)) {
+      return;
+    }
+    this.state.swatchSize = swatchSize;
     this.render();
   }
 

@@ -118,6 +118,22 @@
   gap: 8px;
 }
 
+.palette-manager-v2__sort-row {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.palette-manager-v2__sort-row > .palette-manager-v2__field {
+  flex: 1 1 320px;
+}
+
+.palette-manager-v2__size-field {
+  flex: 0 0 150px;
+  margin-left: auto;
+}
+
 .palette-manager-v2__sort-button {
   min-height: 34px;
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
@@ -148,17 +164,49 @@
   align-content: start;
 }
 
-.palette-manager-v2__source-grid {
+.palette-manager-v2__tile-grid {
+  --swatch-tile-width: 112px;
+  --swatch-tile-height: 108px;
+  --swatch-chip-height: 90px;
+  --swatch-tile-padding: 8px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--swatch-tile-width), 1fr));
   gap: 10px;
   min-height: 0;
-  max-height: 620px;
   overflow-y: auto;
   overflow-x: visible;
   align-content: start;
   padding-right: 4px;
   padding-bottom: 150px;
+}
+
+.palette-manager-v2__tile-grid[data-swatch-size="small"] {
+  --swatch-tile-width: 72px;
+  --swatch-tile-height: 68px;
+  --swatch-chip-height: 50px;
+  --swatch-tile-padding: 6px;
+}
+
+.palette-manager-v2__tile-grid[data-swatch-size="medium"] {
+  --swatch-tile-width: 92px;
+  --swatch-tile-height: 88px;
+  --swatch-chip-height: 70px;
+  --swatch-tile-padding: 7px;
+}
+
+.palette-manager-v2__tile-grid[data-swatch-size="large"] {
+  --swatch-tile-width: 112px;
+  --swatch-tile-height: 108px;
+  --swatch-chip-height: 90px;
+  --swatch-tile-padding: 8px;
+}
+
+.palette-manager-v2__tile-grid--user {
+  max-height: 520px;
+}
+
+.palette-manager-v2__tile-grid--source {
+  max-height: 620px;
 }
 
 .palette-manager-v2__swatch-row {
@@ -217,19 +265,19 @@
 }
 
 .palette-manager-v2__swatch-meta,
-.palette-manager-v2__source-details {
+.palette-manager-v2__swatch-details {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 2px 8px;
 }
 
 .palette-manager-v2__swatch-meta dt,
-.palette-manager-v2__source-details dt {
+.palette-manager-v2__swatch-details dt {
   font-weight: 700;
 }
 
 .palette-manager-v2__swatch-meta dd,
-.palette-manager-v2__source-details dd {
+.palette-manager-v2__swatch-details dd {
   min-width: 0;
   margin: 0;
   overflow-wrap: anywhere;
@@ -263,35 +311,39 @@
   display: block;
 }
 
-.palette-manager-v2__source-tile {
+.palette-manager-v2__swatch-tile {
   position: relative;
   min-width: 0;
-  min-height: 108px;
+  min-height: var(--swatch-tile-height);
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 8px;
   background: var(--surface-inline, rgba(25, 12, 55, 0.74));
   cursor: pointer;
-  padding: 8px;
+  padding: var(--swatch-tile-padding);
   overflow: visible;
   z-index: 1;
 }
 
-.palette-manager-v2__source-tile:hover,
-.palette-manager-v2__source-tile:focus,
-.palette-manager-v2__source-tile:focus-within {
+.palette-manager-v2__swatch-tile:hover,
+.palette-manager-v2__swatch-tile:focus,
+.palette-manager-v2__swatch-tile:focus-within {
   z-index: 20;
   box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.34), 0 12px 24px rgba(0, 0, 0, 0.28);
 }
 
-.palette-manager-v2__source-tile:focus-visible {
+.palette-manager-v2__swatch-tile.is-selected {
+  border-color: var(--accent, #ddd6fe);
+}
+
+.palette-manager-v2__swatch-tile:focus-visible {
   outline: 2px solid var(--accent, #ddd6fe);
   outline-offset: 2px;
 }
 
-.palette-manager-v2__source-tile-chip {
+.palette-manager-v2__swatch-tile-chip {
   display: block;
   width: 100%;
-  min-height: 90px;
+  min-height: var(--swatch-chip-height);
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 6px;
   background: var(--swatch-color, #000000);
@@ -303,13 +355,13 @@
   right: 6px;
 }
 
-.palette-manager-v2__source-details {
+.palette-manager-v2__swatch-details {
   display: none;
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
   z-index: 30;
-  width: 100%;
+  width: max(100%, 150px);
   box-sizing: border-box;
   margin: 0;
   border: 1px solid rgba(255, 255, 255, 0.24);
@@ -323,11 +375,10 @@
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
 }
 
-.palette-manager-v2__source-tile:hover .palette-manager-v2__source-details,
-.palette-manager-v2__source-tile:focus .palette-manager-v2__source-details,
-.palette-manager-v2__source-tile:focus-within .palette-manager-v2__source-details {
+.palette-manager-v2__swatch-tile:hover .palette-manager-v2__swatch-details,
+.palette-manager-v2__swatch-tile:focus .palette-manager-v2__swatch-details,
+.palette-manager-v2__swatch-tile:focus-within .palette-manager-v2__swatch-details {
   display: grid;
-  width: 150px;
 }
 
 .palette-manager-v2__json-preview {
