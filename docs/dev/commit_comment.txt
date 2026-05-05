@@ -1,1 +1,1 @@
-Reorder Preview Generator V2 examples - PR_26126_024-preview-generator-v2-examples-order
+Support phase-wide Preview Generator V2 samples - PR_26126_025-preview-generator-v2-phase-wildcard-support

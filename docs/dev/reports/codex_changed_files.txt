@@ -1,7 +1,35 @@
-# git status --short
-M  docs/dev/codex_commands.md
+# intended PR_26126_025 delta files
+A  docs/dev/codex_commands.md
 M  docs/dev/commit_comment.txt
+M  docs/dev/reports/codex_changed_files.txt
+M  docs/dev/reports/codex_review.diff
 M  tools/preview-generator-v2/index.html
 
-# git diff --stat
-(no output)
+# implementation diff source
+git diff HEAD^ HEAD -- tools/preview-generator-v2/index.html
+git diff --cached -- docs/dev/codex_commands.md docs/dev/commit_comment.txt
+
+# scoped validation: staged changes under samples/games/start_of_day/tools/shared/tools/schemas
+(none)
+
+# unstaged sample preview SVG changes present in worktree and excluded from this PR package
+M samples/phase-01/0106/assets/images/preview.svg
+ M samples/phase-01/0108/assets/images/preview.svg
+ M samples/phase-01/0109/assets/images/preview.svg
+ M samples/phase-01/0111/assets/images/preview.svg
+ M samples/phase-01/0112/assets/images/preview.svg
+ M samples/phase-01/0113/assets/images/preview.svg
+ M samples/phase-01/0114/assets/images/preview.svg
+ M samples/phase-01/0115/assets/images/preview.svg
+ M samples/phase-01/0116/assets/images/preview.svg
+ M samples/phase-01/0118/assets/images/preview.svg
+ M samples/phase-01/0119/assets/images/preview.svg
+ M samples/phase-01/0120/assets/images/preview.svg
+ M samples/phase-01/0121/assets/images/preview.svg
+ M samples/phase-01/0122/assets/images/preview.svg
+ M samples/phase-01/0123/assets/images/preview.svg
+ M samples/phase-01/0124/assets/images/preview.svg
+
+# tool diff stat
+tools/preview-generator-v2/index.html | 86 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 80 insertions(+), 6 deletions(-)
