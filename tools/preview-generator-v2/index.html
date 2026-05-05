@@ -40,29 +40,27 @@
       overflow: hidden;
     }
 
-    .preview-generator-v2__output-summary,
-    .preview-generator-v2__output-summary.is-open {
-      flex: 0 0 auto;
-      overflow: visible;
-    }
-
-    .preview-generator-v2__output-summary .accordion-v2__content {
+    .preview-generator-v2__output-summary {
       flex: 0 0 auto;
       display: grid;
       gap: 6px;
-      overflow: visible;
+      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
       padding: 8px;
-    }
-
-    .preview-generator-v2__output-summary .accordion-v2__header {
-      flex-basis: 34px;
-      min-height: 34px;
-      padding: 7px 10px;
+      overflow: visible;
     }
 
     .preview-generator-v2__output-summary .preview-generator-v2__value {
       min-height: 28px;
       padding: 4px 8px;
+    }
+
+    .preview-generator-v2__section-heading {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1rem;
+      line-height: 1.2;
     }
 
     .preview-generator-v2__stack {
@@ -111,7 +109,9 @@
     }
 
     .preview-generator-v2__summary-field {
-      grid-template-columns: 132px minmax(0, 1fr);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
     }
 
     .preview-generator-v2__paths-input {
@@ -301,15 +301,14 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="targetSourceAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
-            <fieldset class="preview-generator-v2__radio-group">
-              <legend>Target type</legend>
-              <label class="preview-generator-v2__radio-option" for="targetTypeSamples">
-                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
-                <span>Samples</span>
-              </label>
+            <fieldset class="preview-generator-v2__radio-group" aria-label="Target source">
               <label class="preview-generator-v2__radio-option" for="targetTypeGames">
                 <input id="targetTypeGames" type="radio" name="targetType" value="games" />
                 <span>Games</span>
+              </label>
+              <label class="preview-generator-v2__radio-option" for="targetTypeSamples">
+                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
+                <span>Samples</span>
               </label>
               <label class="preview-generator-v2__radio-option" for="targetTypeTools">
                 <input id="targetTypeTools" type="radio" name="targetType" value="tools" />
@@ -375,27 +374,24 @@ samples/phase-13/1303/index.html
 1305
 
 Games examples:
-games/Bouncing-ball/index.html
-Bouncing-ball
+games\&lt;gamename&gt;\index.html
+&lt;gamename&gt;
 
 Tools examples:
-tools/Vector Map Editor/index.html
-Vector Map Editor"></textarea>
+tools\&lt;toolname&gt;\index.html
+&lt;toolname&gt;"></textarea>
       </main>
 
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
-        <section class="accordion-v2 palette-manager-v2__right-accordion preview-generator-v2__output-summary is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryAccordionContent">
-            <span>Output Summary</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="outputSummaryAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
-            <div class="palette-manager-v2__field palette-manager-v2__field--compact preview-generator-v2__summary-field">
+        <section id="outputSummary" class="preview-generator-v2__output-summary" aria-labelledby="outputSummaryTitle">
+          <h2 id="outputSummaryTitle" class="preview-generator-v2__section-heading">Output Summary</h2>
+          <div id="outputSummaryContent" class="preview-generator-v2__stack">
+            <div class="preview-generator-v2__summary-field">
               <span>Write folder sample</span>
               <div id="writeFolderSampleValue" class="preview-generator-v2__value">samples\phaseXX\XXXX\assets\images</div>
             </div>
 
-            <div class="palette-manager-v2__field palette-manager-v2__field--compact preview-generator-v2__summary-field">
+            <div class="preview-generator-v2__summary-field">
               <span>Write folder</span>
               <div id="writeFolderActualValue" class="preview-generator-v2__value">not available yet</div>
             </div>
@@ -721,11 +717,11 @@ Vector Map Editor"></textarea>
         return;
       }
       if (targetType === "games") {
-        writeFolderSampleValueEl.textContent = `games\\Game Name\\${assetFolder}`;
+        writeFolderSampleValueEl.textContent = `games\\<gamename>\\${assetFolder}`;
         return;
       }
       if (targetType === "tools") {
-        writeFolderSampleValueEl.textContent = `tools\\Tool Name\\${assetFolder}`;
+        writeFolderSampleValueEl.textContent = `tools\\<toolname>\\${assetFolder}`;
       }
     }
 

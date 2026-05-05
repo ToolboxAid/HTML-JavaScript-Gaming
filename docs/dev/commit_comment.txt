@@ -1,1 +1,1 @@
-Polish Preview Generator V2 layout and collapsed header behavior - PR_26126_014-preview-generator-v2-layout-polish
+Polish Preview Generator V2 output targets and summary controls - PR_26126_015-preview-generator-v2-output-target-polish
