@@ -1,5 +1,8 @@
+import { AccordionSection } from "./AccordionSection.js";
+
 class AssetFolderControl {
   constructor({ documentRef = document } = {}) {
+    this.accordion = new AccordionSection({ content: documentRef.getElementById("assetFolderContent") });
     this.assetFolderInput = documentRef.getElementById("assetFolder");
   }
 

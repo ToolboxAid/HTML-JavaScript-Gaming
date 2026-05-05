@@ -1,5 +1,8 @@
+import { AccordionSection } from "./AccordionSection.js";
+
 class PathsOrIdsControl {
   constructor({ documentRef = document } = {}) {
+    this.accordion = new AccordionSection({ content: documentRef.getElementById("pathsOrIdsContent") });
     this.sampleListInput = documentRef.getElementById("sampleList");
   }
 

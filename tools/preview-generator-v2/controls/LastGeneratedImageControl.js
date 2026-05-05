@@ -1,5 +1,8 @@
+import { AccordionSection } from "./AccordionSection.js";
+
 class LastGeneratedImageControl {
   constructor({ documentRef = document } = {}) {
+    this.accordion = new AccordionSection({ content: documentRef.getElementById("lastGeneratedImageContent") });
     this.lastGeneratedImageEmptyEl = documentRef.getElementById("lastGeneratedImageEmpty");
     this.lastGeneratedImagePreviewEl = documentRef.getElementById("lastGeneratedImagePreview");
     this.lastGeneratedImageEl = documentRef.getElementById("lastGeneratedImage");

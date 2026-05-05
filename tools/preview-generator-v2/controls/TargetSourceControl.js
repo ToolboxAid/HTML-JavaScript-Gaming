@@ -1,5 +1,8 @@
+import { AccordionSection } from "./AccordionSection.js";
+
 class TargetSourceControl {
   constructor({ documentRef = document } = {}) {
+    this.accordion = new AccordionSection({ content: documentRef.getElementById("targetSourceContent") });
     this.targetTypeInputs = Array.from(documentRef.querySelectorAll('input[name="targetType"]'));
     this.baseUrlInput = documentRef.getElementById("baseUrl");
   }

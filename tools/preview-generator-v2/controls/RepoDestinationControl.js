@@ -1,5 +1,8 @@
+import { AccordionSection } from "./AccordionSection.js";
+
 class RepoDestinationControl {
   constructor({ documentRef = document } = {}) {
+    this.accordion = new AccordionSection({ content: documentRef.getElementById("repoDestinationContent") });
     this.pickRepoBtn = documentRef.getElementById("pickRepoBtn");
     this.repoSelectedValueEl = documentRef.getElementById("repoSelectedValue");
   }

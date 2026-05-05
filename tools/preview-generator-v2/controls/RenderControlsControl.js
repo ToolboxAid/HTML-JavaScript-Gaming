@@ -1,5 +1,8 @@
+import { AccordionSection } from "./AccordionSection.js";
+
 class RenderControlsControl {
   constructor({ documentRef = document } = {}) {
+    this.accordion = new AccordionSection({ content: documentRef.getElementById("renderControlsContent") });
     this.waitMsInput = documentRef.getElementById("waitMs");
     this.forceRewriteInput = documentRef.getElementById("forceRewrite");
   }

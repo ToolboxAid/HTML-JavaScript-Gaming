@@ -1,0 +1,58 @@
+PR_26126_043 Preview Generator V2 accordion abstraction
+
+Scope
+- Updated Preview Generator V2 structure only.
+- Added tools/preview-generator-v2/controls/AccordionSection.js.
+- Removed the Preview Generator V2 runtime script dependency on src/engine/theme/accordionV2/accordionV2.js.
+- Continued to use src/engine/theme/accordionV2/accordionV2.css for existing styling.
+- No samples, schemas, tools/shared, or start_of_day files were modified.
+
+AccordionSection responsibilities
+- Owns expand/collapse event wiring for one accordion section.
+- Reads the current open state from data-accordion-v2-open.
+- Updates is-open, data-accordion-v2-open, aria-expanded, and content.hidden.
+- Updates the icon state with data-accordion-v2-icon-state while preserving the existing plus/rotated-plus visual behavior.
+- Guards against duplicate binding with data-accordion-v2-bound.
+
+Controls using AccordionSection
+- RepoDestinationControl owns Repo Destination accordion behavior.
+- TargetSourceControl owns Target Source accordion behavior.
+- AssetFolderControl owns Asset folder accordion behavior.
+- CaptureModeControl owns Capture mode accordion behavior.
+- RenderControlsControl owns Render Controls accordion behavior.
+- PathsOrIdsControl owns Paths or IDs accordion behavior.
+- LastGeneratedImageControl owns Last Generated Image accordion behavior.
+- OutputSummaryControl owns Output Summary accordion behavior.
+
+Duplicate logic check
+- Accordion-specific click binding and open/closed state mutation are present only in AccordionSection.js under tools/preview-generator-v2.
+- No Preview Generator V2 reference to accordionV2.js, mountAccordionV2, or setAccordionV2Open remains.
+- Non-accordion event handlers remain in their owning controls.
+
+Validation
+- JavaScript syntax check passed for tools/preview-generator-v2/*.js.
+- JavaScript syntax check passed for tools/preview-generator-v2/controls/*.js.
+- JavaScript syntax check passed for tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
+- Direct Playwright accordion probe passed for:
+  - repoDestinationContent
+  - targetSourceContent
+  - assetFolderContent
+  - captureModeContent
+  - renderControlsContent
+  - outputSummaryContent
+- npm run test:workspace-v2 passed.
+
+Playwright
+- The direct probe verified left and right accordion headers toggle content.hidden and aria-expanded closed/open.
+- npm run test:workspace-v2 ran tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
+- Result: 1 passed.
+
+Full samples smoke test
+- Skipped intentionally.
+- Reason: this PR is Preview Generator V2 structure-only and does not modify sample JSON, sample loading, or shared sample framework behavior.
+
+Manual validation
+- Open tools/preview-generator-v2/index.html.
+- Toggle each left-column accordion and Output Summary.
+- Confirm visual behavior, icon behavior, and content visibility match the previous tool behavior.
+- Confirm Generate Preview remains disabled until required fields are present.

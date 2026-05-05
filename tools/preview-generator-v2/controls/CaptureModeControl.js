@@ -1,5 +1,8 @@
+import { AccordionSection } from "./AccordionSection.js";
+
 class CaptureModeControl {
   constructor({ documentRef = document } = {}) {
+    this.accordion = new AccordionSection({ content: documentRef.getElementById("captureModeContent") });
     this.captureModeInputs = Array.from(documentRef.querySelectorAll('input[name="captureMode"]'));
   }
 
