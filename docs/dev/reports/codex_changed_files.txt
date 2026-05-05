@@ -3,17 +3,10 @@ M  docs/dev/codex_commands.md
 M  docs/dev/commit_comment.txt
 M  docs/dev/reports/codex_changed_files.txt
 M  docs/dev/reports/codex_review.diff
- M samples/phase-02/0224/assets/images/preview.svg
- M samples/phase-02/0225/assets/images/preview.svg
- M samples/phase-02/0226/assets/images/preview.svg
- M samples/phase-02/0227/assets/images/preview.svg
 M  tools/preview-generator-v2/index.html
 
 # git diff --cached --stat
-docs/dev/codex_commands.md            |  79 ++++++++++++++--------------
- docs/dev/commit_comment.txt           |   2 +-
- tools/preview-generator-v2/index.html |  91 ++++++++++++++++++++++++++++++++
- 3 files changed, 119 insertions(+), 53 deletions(-)
-
-# unstaged sample changes
-Unstaged sample preview SVG changes were present in the worktree and were not staged or packaged for this PR.
+docs/dev/codex_commands.md            | 71 ++++++++++++++++++-----------------
+ docs/dev/commit_comment.txt           |  2 +-
+ tools/preview-generator-v2/index.html | 21 +++++------
+ 3 files changed, 46 insertions(+), 48 deletions(-)

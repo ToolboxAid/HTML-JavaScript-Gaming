@@ -470,10 +470,6 @@
                 <input id="forceRewrite" type="checkbox" />
                 <span>Force rewrite</span>
               </label>
-              <label class="preview-generator-v2__radio-option" for="onlyCaptureTimeout">
-                <input id="onlyCaptureTimeout" type="checkbox" checked />
-                <span>Only rewrite if preview.svg contains literal "Capture timeout"</span>
-              </label>
             </fieldset>
           </div>
         </section>
@@ -557,7 +553,6 @@ tools\&lt;toolname&gt;\index.html
     const assetFolderInput = document.getElementById("assetFolder");
     const sampleListInput = document.getElementById("sampleList");
     const forceRewriteInput = document.getElementById("forceRewrite");
-    const onlyCaptureTimeoutInput = document.getElementById("onlyCaptureTimeout");
     const statusEl = document.getElementById("status");
     const logEl = document.getElementById("log");
     const clearLogBtn = document.getElementById("clearLogBtn");
@@ -1093,14 +1088,11 @@ tools\&lt;toolname&gt;\index.html
         return { rewrite: true, reason: "missing-preview" };
       }
 
-      if (onlyCaptureTimeoutInput.checked) {
-        if (existing.includes(CAPTURE_TIMEOUT_MARKER)) {
-          return { rewrite: true, reason: "literal-capture-timeout-found" };
-        }
-        return { rewrite: false, reason: "no-literal-capture-timeout" };
+      if (existing.includes(CAPTURE_TIMEOUT_MARKER)) {
+        return { rewrite: true, reason: "literal-capture-timeout-found" };
       }
 
-      return { rewrite: true, reason: "rewrite-allowed" };
+      return { rewrite: false, reason: "existing-preview-without-capture-timeout" };
     }
 
     async function writePreview(targetDirHandle, svgContent) {
@@ -1305,8 +1297,14 @@ tools\&lt;toolname&gt;\index.html
 
       if (!decision.rewrite) {
         log(`SKIP ${label}  (${decision.reason})`);
+        if (decision.reason === "existing-preview-without-capture-timeout") {
+          log(`Existing ${OUTPUT_NAME} does not contain ${CAPTURE_TIMEOUT_MARKER}; skipping rewrite.`);
+        }
         log(`CHK  ${getFullOutputPath(entry)}`);
         return { id: label, status: "skipped", reason: decision.reason };
+      }
+      if (decision.reason === "literal-capture-timeout-found") {
+        log(`Existing ${OUTPUT_NAME} contains ${CAPTURE_TIMEOUT_MARKER}; rewriting.`);
       }
 
       const url = `${baseUrl}/${entry.samplePath}`;
@@ -1461,7 +1459,6 @@ tools\&lt;toolname&gt;\index.html
         log(`Asset folder: ${getAssetFolderDisplayPath()}`);
         log(`Capture mode: ${getCaptureModeLabel()}`);
         log(`Force rewrite: ${forceRewriteInput.checked}`);
-        log(`Only literal Capture timeout: ${onlyCaptureTimeoutInput.checked}`);
         log("");
 
         const results = [];

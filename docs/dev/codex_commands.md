@@ -1,7 +1,7 @@
-# Codex Commands - PR_26126_021-preview-generator-v2-last-generated-placement
+# Codex Commands - PR_26126_022-preview-generator-v2-no-inline-style-and-auto-rewrite
 
 ```bash
-codex run "Create PR_26126_021-preview-generator-v2-last-generated-placement. Fix Preview Generator V2 UI only. Preserve existing generation behavior. Under the \"Paths or IDs\" control in the left panel, add a \"Last Generated Image\" section that displays the most recently generated preview. This must update on every Generate Preview action, replace the previous image (no history), and show an empty state before first generate. Keep it within the left panel accordion flow, directly below the Paths or IDs control. Do not move existing controls. Do not modify samples. Do not add schema. Produce review artifacts."
+codex run "Create PR_26126_022-preview-generator-v2-no-inline-style-and-auto-rewrite. Fix Preview Generator V2 UI/behavior only. Preserve existing generation behavior. Remove all inline style attributes from HTML; move styling into the existing Preview Generator V2 stylesheet/classes using Palette Manager V2 style conventions. Do not show the text \"Only rewrite if preview.svg contains literal \\\"Capture timeout\\\"\" in the UI. Instead, if an existing preview.svg exists, automatically test its contents; only rewrite/regenerate when preview.svg contains the literal text \"Capture timeout\". If preview.svg exists and does not contain that text, skip rewrite and log the decision in the status textarea. Do not modify samples. Do not add schema. Produce review artifacts."
 ```
 
 ## Validation Commands
@@ -36,72 +36,73 @@ await page.addInitScript(() => {
   class FakeFileHandle {
     constructor(path, existing = null) { this.kind = 'file'; this.name = path.split('/').pop(); this.path = path; this._existing = existing; }
     async getFile() { return new FakeFile(this._existing || ''); }
-    async createWritable() { const path = this.path; return { async write(content) { writes.push({ path, content: String(content) }); }, async close() {} }; }
+    async createWritable() { const handle = this; const path = this.path; return { async write(content) { writes.push({ path, content: String(content) }); handle._existing = String(content); }, async close() {} }; }
   }
   class FakeDirectoryHandle {
     constructor(name = 'HTML-JavaScript-Gaming', path = '') { this.kind = 'directory'; this.name = name; this.path = path; this.children = new Map(); }
     async getDirectoryHandle(name) { const key = `dir:${name}`; if (!this.children.has(key)) { const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeDirectoryHandle(name, nextPath)); } return this.children.get(key); }
     async getFileHandle(name, options = {}) { const key = `file:${name}`; if (!this.children.has(key)) { if (!options.create) throw new DOMException('Not found', 'NotFoundError'); const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeFileHandle(nextPath)); } return this.children.get(key); }
   }
+  async function addFile(root, path, text) {
+    const parts = path.split('/').filter(Boolean);
+    let current = root;
+    for (const part of parts.slice(0, -1)) current = await current.getDirectoryHandle(part);
+    const fileHandle = await current.getFileHandle(parts.at(-1), { create: true });
+    fileHandle._existing = text;
+  }
   window.__previewGeneratorV2Writes = writes;
-  window.showDirectoryPicker = async () => new FakeDirectoryHandle();
+  window.__previewGeneratorV2Root = new FakeDirectoryHandle();
+  window.__previewGeneratorV2Ready = (async () => {
+    await addFile(window.__previewGeneratorV2Root, 'samples/phase-01/0107/assets/images/preview.svg', '<svg><text>Healthy preview</text></svg>');
+    await addFile(window.__previewGeneratorV2Root, 'samples/phase-01/0102/assets/images/preview.svg', '<svg><text>Capture timeout</text></svg>');
+  })();
+  window.showDirectoryPicker = async () => {
+    await window.__previewGeneratorV2Ready;
+    return window.__previewGeneratorV2Root;
+  };
 });
 
 await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: 'domcontentloaded' });
 await page.waitForSelector('#shared-theme-header');
 await page.waitForFunction(() => Array.from(document.querySelectorAll('.preview-generator-v2 .accordion-v2__header')).every((header) => header.dataset.accordionV2Bound === 'true'));
-
-const textareaBox = await page.locator('#sampleList').boundingBox();
-const lastGeneratedBox = await page.locator('#lastGeneratedImageSection').boundingBox();
-if (!textareaBox || !lastGeneratedBox || lastGeneratedBox.y <= textareaBox.y) throw new Error('Last Generated Image should render below Paths or IDs input.');
-if (!(await page.locator('#lastGeneratedImageEmpty').isVisible())) throw new Error('Last Generated Image empty state should be visible before first generate.');
-if (await page.locator('#lastGeneratedImagePreview').isVisible()) throw new Error('Last Generated Image preview should be hidden before first generate.');
+const bodyText = await page.locator('body').innerText();
+if (bodyText.includes('Only rewrite if preview.svg contains literal')) throw new Error('Manual capture-timeout rewrite text should not be visible.');
+const previewInlineStyleCount = await page.locator('.preview-generator-v2 [style]').count();
+if (previewInlineStyleCount !== 0) throw new Error(`Expected no inline style attributes inside Preview Generator V2 UI, got ${previewInlineStyleCount}`);
 
 await page.fill('#baseUrl', server.baseUrl);
 await page.fill('#waitMs', '3000');
 await page.fill('#sampleList', '0107');
-await page.check('#forceRewrite');
 await page.check('#targetTypeSamples');
 await page.click('#pickRepoBtn');
 await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
 await page.click('#executeBtn');
-await page.waitForFunction(() => document.getElementById('lastGeneratedImagePreview') && !document.getElementById('lastGeneratedImagePreview').hidden, null, { timeout: 35000 });
-if (await page.locator('#lastGeneratedImageEmpty').isVisible()) throw new Error('Last Generated Image empty state should hide after generate.');
-const firstSrc = await page.locator('#lastGeneratedImage').getAttribute('src');
-const firstMeta = await page.locator('#lastGeneratedImageMeta').innerText();
-if (!firstSrc?.startsWith('blob:')) throw new Error(`Last Generated Image should use an object URL, got ${firstSrc}`);
-if (!firstMeta.includes('0107')) throw new Error(`Last Generated Image meta should include first generated label, got ${firstMeta}`);
-await page.waitForFunction(() => (window.__previewGeneratorV2Writes || []).length === 1);
+await page.waitForFunction(() => document.getElementById('log').textContent.includes('existing-preview-without-capture-timeout'), null, { timeout: 35000 });
+let writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
+if (writes.length !== 0) throw new Error(`Existing healthy preview should skip rewrite, got ${writes.length} writes.`);
 
+await page.click('#clearLogBtn');
 await page.fill('#sampleList', '0102');
 await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
 await page.click('#executeBtn');
-await page.waitForFunction((previousSrc) => {
-  const img = document.getElementById('lastGeneratedImage');
-  return img && img.getAttribute('src') && img.getAttribute('src') !== previousSrc;
-}, firstSrc, { timeout: 35000 });
-const secondSrc = await page.locator('#lastGeneratedImage').getAttribute('src');
-const secondMeta = await page.locator('#lastGeneratedImageMeta').innerText();
-if (!secondSrc?.startsWith('blob:')) throw new Error(`Replacement Last Generated Image should use an object URL, got ${secondSrc}`);
-if (secondSrc === firstSrc) throw new Error('Last Generated Image should replace the prior object URL.');
-if (!secondMeta.includes('0102')) throw new Error(`Last Generated Image meta should include second generated label, got ${secondMeta}`);
-await page.waitForFunction(() => (window.__previewGeneratorV2Writes || []).length === 2);
-const writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
-if (!writes[0].path.endsWith('samples/phase-01/0107/assets/images/preview.svg')) throw new Error(`Unexpected first write path: ${writes[0].path}`);
-if (!writes[1].path.endsWith('samples/phase-01/0102/assets/images/preview.svg')) throw new Error(`Unexpected second write path: ${writes[1].path}`);
+await page.waitForFunction(() => document.getElementById('log').textContent.includes('contains Capture timeout; rewriting'), null, { timeout: 35000 });
+await page.waitForFunction(() => document.getElementById('lastGeneratedImagePreview') && !document.getElementById('lastGeneratedImagePreview').hidden, null, { timeout: 35000 });
+writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
+if (writes.length !== 1) throw new Error(`Existing Capture timeout preview should rewrite once, got ${writes.length} writes.`);
+if (!writes[0].path.endsWith('samples/phase-01/0102/assets/images/preview.svg')) throw new Error(`Unexpected rewrite path: ${writes[0].path}`);
 if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
 await browser.close();
 await server.close();
-console.log('preview-generator-v2 last generated image placement smoke valid');
+console.log('preview-generator-v2 automatic capture-timeout rewrite gate smoke valid');
 '@ | node --input-type=module -
 ```
 
 ## Notes
 
-The targeted Playwright smoke validates the empty state, placement below `Paths or IDs`, first generated preview render, and second Generate Preview replacement without history.
+The targeted Playwright smoke validates the visible manual capture-timeout checkbox text is absent, Preview Generator V2-owned UI has no inline style attributes, existing healthy previews skip rewrite with a status log, and existing timeout previews rewrite and update Last Generated Image.
 
 `npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
 
-Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 UI only.
+Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 UI/behavior only.
 
-An unrelated unstaged sample preview SVG change was present before this PR and was left untouched.
+Unstaged sample preview SVG changes were present before this PR and were left untouched.
