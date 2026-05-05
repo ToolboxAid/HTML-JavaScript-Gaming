@@ -8,137 +8,36 @@
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
-  <link rel="stylesheet" href="../shared/preview/preview-pages.css" />
+  <link rel="stylesheet" href="../palette-manager-v2/paletteManagerV2.css" />
   <style>
-    body.tools-platform-tool-page {
+    body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] {
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
       overflow-x: hidden;
-      background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
       color: var(--text, #f7f4ff);
+      background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
     }
 
-    .preview-generator-v2__header {
+    body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .is-collapsible,
+    body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-manager-v2__menu-sample {
+      flex: 0 0 auto;
+    }
+
+    [data-preview-generator-v2-header] {
+      display: block;
       width: calc(100% - 32px);
       margin: 10px auto;
     }
 
-    .preview-generator-v2__header-frame {
-      margin-top: 10px;
-      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-      border-radius: 18px;
-      background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
-      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
-      padding: 12px 14px;
-    }
-
-    .preview-generator-v2__header-frame h1 {
-      margin: 0;
-      color: #ffffff;
-      font-size: clamp(1.08rem, 1.6vw, 1.24rem);
-      line-height: 1.2;
-    }
-
-    .preview-generator-v2__header-frame p {
-      margin: 6px 0 0;
-      color: var(--muted, #e9ddff);
-    }
-
-    .palette-manager-v2__menu-sample {
-      box-sizing: border-box;
-      width: calc(100% - 32px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin: 16px 16px 0;
-      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-      border-radius: 8px;
-      background: var(--panel, rgba(30, 24, 48, 0.92));
-      padding: 10px 14px;
-    }
-
-    .palette-manager-v2__menu-actions {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .preview-generator-v2 {
-      box-sizing: border-box;
+    .preview-generator-v2__center-panel {
       flex: 1 1 auto;
-      min-height: 0;
-      width: 100%;
-      padding: 16px;
-      overflow: visible;
-    }
-
-    .preview-generator-v2 *,
-    .preview-generator-v2 *::before,
-    .preview-generator-v2 *::after {
-      box-sizing: border-box;
-    }
-
-    .preview-generator-v2__layout {
-      display: grid;
-      grid-template-columns: 360px minmax(0, 1fr) 360px;
-      gap: 14px;
-      width: 100%;
-      min-width: 0;
-      min-height: 0;
-      align-items: stretch;
-    }
-
-    .preview-generator-v2__panel {
-      min-width: 0;
-      min-height: 0;
-      height: calc(100vh - 220px);
-      height: calc(100dvh - 220px);
-      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-      border-radius: 8px;
-      background: var(--panel, rgba(30, 24, 48, 0.92));
-      padding: 14px;
-      overflow: auto;
-    }
-
-    .preview-generator-v2__panel--left,
-    .preview-generator-v2__panel--right {
-      width: 100%;
-      position: sticky;
-      top: 16px;
-    }
-
-    .preview-generator-v2__panel--center {
-      min-height: 420px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .preview-generator-v2__panel .accordion-v2 + .accordion-v2 {
-      margin-top: 14px;
-    }
-
-    .preview-generator-v2__paths-panel {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    .preview-generator-v2__paths-panel .accordion-v2__content {
-      height: 100%;
       min-height: 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-    }
-
-    .preview-generator-v2 .row,
-    .preview-generator-v2 .note {
-      margin: 0;
     }
 
     .preview-generator-v2__stack {
@@ -146,63 +45,91 @@
       gap: 12px;
     }
 
-    .preview-generator-v2__field {
+    .preview-generator-v2__radio-group {
+      min-width: 0;
       display: grid;
       gap: 8px;
-      min-width: 0;
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    .preview-generator-v2__radio-group legend {
       font-weight: 700;
+      padding: 0;
     }
 
-    .preview-generator-v2__field input {
-      width: 100%;
-      min-width: 0;
-    }
-
-    .preview-generator-v2__field--compact {
-      grid-template-columns: 132px minmax(0, 1fr);
+    .preview-generator-v2__radio-option {
+      display: inline-flex;
       align-items: center;
-    }
-
-    .preview-generator-v2__inline-group {
-      display: grid;
       gap: 8px;
+      font-weight: 600;
     }
 
-    .preview-generator-v2__inline-group > label:first-child,
-    .preview-generator-v2__field > label:first-child {
-      font-weight: 700;
+    .preview-generator-v2__note {
+      margin: 0;
+      color: var(--pm-text-muted, #c4b5fd);
+      font-size: 0.9rem;
     }
 
-    .preview-generator-v2__controls {
+    .preview-generator-v2__value {
+      min-height: 36px;
+      min-width: 0;
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      align-items: center;
+      overflow-wrap: anywhere;
+      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: var(--pm-surface-strong, rgba(0, 0, 0, 0.24));
+      color: var(--text, #f7f4ff);
+      padding: 7px 9px;
     }
 
-    .preview-generator-v2__paths-field {
+    .preview-generator-v2__paths-input {
       flex: 1 1 auto;
       min-height: 0;
-    }
-
-    #sampleList {
       width: 100%;
-      min-height: 0;
-      height: 100%;
       resize: none;
       overflow: auto;
+      line-height: 1.45;
       font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
     }
 
+    .preview-generator-v2__status-accordion {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .preview-generator-v2__status-accordion .accordion-v2__content {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .preview-generator-v2__status-text {
+      flex: 0 0 auto;
+      margin: 0 0 10px;
+    }
+
     #log {
-      min-height: 360px;
-      max-height: none;
+      flex: 1 1 auto;
+      min-height: 260px;
       overflow: auto;
       white-space: pre-wrap;
-      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
       border-radius: 8px;
-      background: rgba(0, 0, 0, 0.24);
-      color: var(--muted, #c4b5fd);
+      background: var(--pm-surface-strong, rgba(0, 0, 0, 0.24));
+      color: var(--pm-text-muted, #c4b5fd);
       padding: 10px;
+    }
+
+    @media (max-width: 1180px) {
+      #sampleList {
+        min-height: 360px;
+      }
     }
 
     #frame {
@@ -214,165 +141,141 @@
       border: 0;
       visibility: hidden;
     }
-
-    body.tools-platform-tool-page :is(button, input, textarea) {
-      border-radius: 10px;
-    }
-
-    body.tools-platform-tool-page :is(input, textarea) {
-      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-      background: var(--surface-inline, rgba(43, 16, 91, 0.9));
-      color: var(--text, #f7f4ff);
-    }
-
-    @media (max-width: 1180px) {
-      .preview-generator-v2__layout {
-        grid-template-columns: 1fr;
-      }
-
-      .preview-generator-v2__panel {
-        height: auto;
-        min-height: 0;
-      }
-
-      .preview-generator-v2__panel--left,
-      .preview-generator-v2__panel--right {
-        position: static;
-      }
-
-      #sampleList {
-        min-height: 360px;
-      }
-    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 
-<body class="tools-platform-tool-page hub-page-tools" data-tool-id="preview-generator-v2">
-  <details class="is-collapsible preview-generator-v2__header" open>
+<body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="preview-generator-v2">
+  <details class="is-collapsible" open>
     <summary class="is-collapsible__summary">Hide Header and Details</summary>
     <div class="is-collapsible__content">
       <div id="shared-theme-header"></div>
-      <section class="tools-platform-frame preview-generator-v2__header-frame">
-        <h1>Preview SVG Generator</h1>
-        <p>Generate preview.svg files for samples, games, and tools.</p>
-      </section>
+      <div data-preview-generator-v2-header>
+        <section class="tools-platform-frame preview-generator-v2__local-shell-frame">
+          <div class="tools-platform-frame__accordion-content">
+            <div class="tools-platform-frame__accordion-summary">
+              <div class="tools-platform-frame__summary-copy">
+                <h1 class="tools-platform-frame__title" data-tool-id="preview-generator-v2">Preview SVG Generator</h1>
+                <h2 class="tools-platform-frame__eyebrow">Preview Generator V2</h2>
+              </div>
+              <div class="tools-platform-frame__summary-meta">
+                <div class="tools-platform-frame__meta">Generate preview.svg files for samples, games, and tools.</div>
+              </div>
+            </div>
+            <div class="tools-platform-frame__topline">
+              <p class="tools-platform-frame__description">Existing preview generation behavior is preserved in the Palette Manager-style shell.</p>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </details>
 
   <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
     <div class="palette-manager-v2__menu-actions">
       <button id="executeBtn" type="button" disabled>Generate Preview</button>
+      <button id="stopBtn" type="button" disabled>Stop</button>
     </div>
   </nav>
 
-  <div class="preview-generator-v2 app-shell">
-    <div class="preview-generator-v2__layout tools-platform-layout-grid">
-      <aside class="preview-generator-v2__panel preview-generator-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
-        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+  <div class="palette-manager-v2 preview-generator-v2 app-shell">
+    <div class="palette-manager-v2__layout preview-generator-v2__layout tools-platform-layout-grid">
+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationAccordionContent">
             <span>Repo Destination</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="repoDestinationAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
-            <div class="row preview-generator-v2__field preview-generator-v2__field--compact">
-              <label>Repo selected</label>
-              <div id="repoSelectedValue" class="value-box">not selected</div>
+            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
+              <span>Repo selected</span>
+              <div id="repoSelectedValue" class="preview-generator-v2__value">not selected</div>
             </div>
 
-            <div class="row preview-generator-v2__controls">
-              <button id="pickRepoBtn">Pick Repo Folder</button>
-              <button id="stopBtn" disabled>Stop</button>
+            <div class="palette-manager-v2__controls">
+              <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
             </div>
 
-            <div class="note">
+            <p class="preview-generator-v2__note">
               Pick the repo root folder, for example <code>HTML-JavaScript-Gaming</code>.
-            </div>
+            </p>
           </div>
         </section>
 
-        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="targetSourceAccordionContent">
             <span>Target Source</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="targetSourceAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
-            <div class="row preview-generator-v2__inline-group">
-              <label>Target type</label>
-              <span class="inline">
+            <fieldset class="preview-generator-v2__radio-group">
+              <legend>Target type</legend>
+              <label class="preview-generator-v2__radio-option" for="targetTypeSamples">
                 <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
-                <label for="targetTypeSamples" class="inline-label">Samples</label>
-              </span>
-              <span class="inline">
+                <span>Samples</span>
+              </label>
+              <label class="preview-generator-v2__radio-option" for="targetTypeGames">
                 <input id="targetTypeGames" type="radio" name="targetType" value="games" />
-                <label for="targetTypeGames" class="inline-label">Games</label>
-              </span>
-              <span class="inline">
+                <span>Games</span>
+              </label>
+              <label class="preview-generator-v2__radio-option" for="targetTypeTools">
                 <input id="targetTypeTools" type="radio" name="targetType" value="tools" />
-                <label for="targetTypeTools" class="inline-label">Tools</label>
-              </span>
-            </div>
+                <span>Tools</span>
+              </label>
+            </fieldset>
 
-            <div class="row preview-generator-v2__field">
-              <label for="baseUrl">Base URL</label>
+            <label class="palette-manager-v2__field" for="baseUrl">
+              <span>Base URL</span>
               <input id="baseUrl" type="text" value="http://127.0.0.1:5500" />
-            </div>
+            </label>
           </div>
         </section>
 
-        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsAccordionContent">
             <span>Render Controls</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="renderControlsAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
-            <div class="row preview-generator-v2__field">
-              <label for="waitMs">Wait before capture</label>
+            <label class="palette-manager-v2__field" for="waitMs">
+              <span>Wait before capture</span>
               <input id="waitMs" type="number" value="3500" min="3000" step="500" />
-            </div>
+            </label>
 
-            <div class="row preview-generator-v2__field">
-              <label for="assetFolder">Asset folder</label>
+            <label class="palette-manager-v2__field" for="assetFolder">
+              <span>Asset folder</span>
               <input id="assetFolder" type="text" value="assets/images" />
-            </div>
+            </label>
 
-            <div class="row preview-generator-v2__inline-group">
-              <label>Options</label>
-              <span class="inline">
+            <fieldset class="preview-generator-v2__radio-group">
+              <legend>Options</legend>
+              <label class="preview-generator-v2__radio-option" for="forceRewrite">
                 <input id="forceRewrite" type="checkbox" />
-                <label for="forceRewrite" class="inline-label">Force rewrite</label>
-              </span>
-              <span class="inline">
+                <span>Force rewrite</span>
+              </label>
+              <label class="preview-generator-v2__radio-option" for="onlyCaptureTimeout">
                 <input id="onlyCaptureTimeout" type="checkbox" checked />
-                <label for="onlyCaptureTimeout" class="inline-label">Only rewrite if preview.svg contains literal "Capture timeout"</label>
-              </span>
-            </div>
+                <span>Only rewrite if preview.svg contains literal "Capture timeout"</span>
+              </label>
+            </fieldset>
 
-            <div class="row preview-generator-v2__inline-group">
-              <label>Capture mode</label>
-              <span class="inline">
+            <fieldset class="preview-generator-v2__radio-group">
+              <legend>Capture mode</legend>
+              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
                 <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
-                <label for="captureModeFullScreen" class="inline-label">Full Screen (1600x900 HTML Page)</label>
-              </span>
-              <span class="inline">
+                <span>Full Screen (1600x900 HTML Page)</span>
+              </label>
+              <label class="preview-generator-v2__radio-option" for="captureModeCanvasOnly">
                 <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
-                <label for="captureModeCanvasOnly" class="inline-label">Canvas Only</label>
-              </span>
-            </div>
+                <span>Canvas Only</span>
+              </label>
+            </fieldset>
           </div>
         </section>
       </aside>
 
-      <main class="preview-generator-v2__panel preview-generator-v2__panel--center">
-        <section class="accordion-v2 preview-generator-v2__paths-panel is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="pathsAccordionContent">
-            <span>Paths or IDs</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="pathsAccordionContent" class="accordion-v2__content">
-            <div class="row preview-generator-v2__field preview-generator-v2__paths-field">
-              <label for="sampleList">Paths or IDs</label>
-              <textarea id="sampleList" placeholder="Samples examples:
+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center preview-generator-v2__center-panel">
+        <textarea id="sampleList" class="preview-generator-v2__paths-input" aria-label="Paths or IDs" placeholder="Samples examples:
 samples/phase-01/0102/index.html
 samples/phase-13/1303/index.html
 0107
@@ -385,37 +288,34 @@ Bouncing-ball
 Tools examples:
 tools/Vector Map Editor/index.html
 Vector Map Editor"></textarea>
-            </div>
-          </div>
-        </section>
       </main>
 
-      <aside class="preview-generator-v2__panel preview-generator-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
-        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
+        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--import is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryAccordionContent">
             <span>Output Summary</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="outputSummaryAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
-            <div class="row preview-generator-v2__field preview-generator-v2__field--compact">
-              <label>Write folder as sample</label>
-              <div id="writeFolderSampleValue" class="value-box">samples\phase-XX\XXXX\assets</div>
+            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
+              <span>Write folder sample</span>
+              <div id="writeFolderSampleValue" class="preview-generator-v2__value">samples\phaseXX\XXXX\assets\images</div>
             </div>
 
-            <div class="row preview-generator-v2__field preview-generator-v2__field--compact">
-              <label>Write folder</label>
-              <div id="writeFolderActualValue" class="value-box">not available yet</div>
+            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
+              <span>Write folder</span>
+              <div id="writeFolderActualValue" class="preview-generator-v2__value">not available yet</div>
             </div>
           </div>
         </section>
 
-        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 palette-manager-v2__right-accordion preview-generator-v2__status-accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
             <span>Status</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="statusAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
-            <div id="status" class="row">Repo folder: not selected</div>
+          <div id="statusAccordionContent" class="accordion-v2__content">
+            <div id="status" class="preview-generator-v2__status-text">Repo folder: not selected</div>
             <div id="log"></div>
           </div>
         </section>
@@ -454,6 +354,16 @@ Vector Map Editor"></textarea>
     let repoDirHandle = null;
     let stopRequested = false;
     let repoDisplayName = "";
+
+    function getRepoDestinationDisplayName(handle) {
+      const handleName = String(handle?.name || "").trim();
+      return handleName || "selected repo folder";
+    }
+
+    function setRepoDestinationDisplayName(displayName) {
+      repoSelectedValueEl.textContent = displayName;
+      repoSelectedValueEl.setAttribute("title", displayName);
+    }
 
     function log(message = "") {
       const now = new Date().toLocaleTimeString();
@@ -1245,9 +1155,9 @@ Vector Map Editor"></textarea>
       pickRepoBtn.addEventListener("click", async () => {
         try {
           repoDirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
-          repoDisplayName = repoDirHandle.name || "selected folder";
+          repoDisplayName = getRepoDestinationDisplayName(repoDirHandle);
 
-          repoSelectedValueEl.textContent = repoDisplayName;
+          setRepoDestinationDisplayName(repoDisplayName);
           statusEl.textContent = `Repo folder: ${repoDisplayName}`;
           executeBtn.disabled = false;
 

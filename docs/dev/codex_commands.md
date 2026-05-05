@@ -1,13 +1,13 @@
-# Codex Commands - PR_26126_012-preview-generator-v2-reskin-from-working-base
+# Codex Commands - PR_26126_013-preview-generator-v2-reskin-fixes
 
 ```bash
-codex run "Create PR_26126_012-preview-generator-v2-reskin-from-working-base. Using tools/preview-generator-v2/index.html (cold copy of preview.html), perform a reskin only. Do not change or break existing functionality, logic, or behavior. Do not remove existing inputs or labels; keep them and regroup them. Apply Palette Manager layout and header. Add NAV using palette-manager-v2__menu-sample with ONLY Generate Preview button. Reorganize UI: Left column groups existing controls into Repo Destination (rename Game Destination; folder selection behavior unchanged), Target Source, and Render Controls. Center column replaces visual Main Preview with a Paths or IDs input box (reuse existing input if present). Right column places Output Summary with Status under it. Do not add JSON UI. Do not create a schema. Do not modify samples. Ensure all existing preview generation still works after layout changes. Produce review artifacts."
+codex run "Create PR_26126_013-preview-generator-v2-reskin-fixes. Fix Preview Generator V2 reskin only. Preserve existing preview.html functionality. Remove all copied preview.html CSS and use only Palette Manager V2-style HTML/classes plus Preview Generator V2 wrapper classes where needed. Move STOP into the Palette Manager-style NAV next to Generate Preview. Fix Repo selected so it populates correctly from the selected repo destination/folder. Remove the Repo Sample control entirely. Populate the write folder sample text as \"samples\\phaseXX\\XXXX\\assets\\images\". Ensure Write folder is populated correctly. Remove the \"Paths or IDs\" label/field wrapper from the center column structure shown in preview-generator-v2__paths-field. Move the existing textarea to the top of the layout/control flow. Do not add JSON UI. Do not create schema. Do not modify samples. Update targeted tests if needed and produce review artifacts."
 ```
 
 ## Validation Commands
 
 ```bash
-git diff --check -- tools/preview-generator-v2/index.html tools/toolRegistry.js docs/dev/codex_commands.md docs/dev/commit_comment.txt
+git diff --check -- tools/preview-generator-v2/index.html docs/dev/codex_commands.md docs/dev/commit_comment.txt
 git diff --name-only -- samples games start_of_day tools/shared tools/schemas
 npm run test:workspace-v2
 npm run codex:review-artifacts
@@ -63,7 +63,7 @@ await page.addInitScript(() => {
     }
   }
   class FakeDirectoryHandle {
-    constructor(name = 'HTML-JavaScript-Gaming', path = '') {
+    constructor(name = 'SelectedRepoFolder', path = '') {
       this.kind = 'directory';
       this.name = name;
       this.path = path;
@@ -99,8 +99,8 @@ await page.waitForSelector('#shared-theme-header');
 const requiredSelectors = [
   '.palette-manager-v2__menu-sample',
   '#executeBtn',
-  '#pickRepoBtn',
   '#stopBtn',
+  '#pickRepoBtn',
   '#targetTypeSamples',
   '#targetTypeGames',
   '#targetTypeTools',
@@ -127,8 +127,25 @@ for (const selector of requiredSelectors) {
 }
 
 const menuButtons = await page.locator('.palette-manager-v2__menu-sample button').evaluateAll((buttons) => buttons.map((button) => button.textContent.trim()));
-if (JSON.stringify(menuButtons) !== JSON.stringify(['Generate Preview'])) {
+if (JSON.stringify(menuButtons) !== JSON.stringify(['Generate Preview', 'Stop'])) {
   throw new Error(`Unexpected menu buttons: ${JSON.stringify(menuButtons)}`);
+}
+
+const hasCopiedPreviewCss = await page.locator('link[href*="shared/preview/preview-pages.css"]').count();
+if (hasCopiedPreviewCss !== 0) {
+  throw new Error('Copied preview stylesheet is still loaded.');
+}
+const copiedClassCounts = await page.evaluate(() => ({
+  row: document.querySelectorAll('.row').length,
+  inline: document.querySelectorAll('.inline').length,
+  inlineLabel: document.querySelectorAll('.inline-label').length,
+  valueBox: document.querySelectorAll('.value-box').length,
+  pathsField: document.querySelectorAll('.preview-generator-v2__paths-field').length
+}));
+for (const [name, count] of Object.entries(copiedClassCounts)) {
+  if (count !== 0) {
+    throw new Error(`Copied preview class still present: ${name}=${count}`);
+  }
 }
 
 const forbiddenSelectors = [
@@ -146,10 +163,22 @@ for (const selector of forbiddenSelectors) {
 }
 
 const sectionNames = await page.locator('.accordion-v2__header span:first-child').evaluateAll((items) => items.map((item) => item.textContent.trim()));
-for (const expected of ['Repo Destination', 'Target Source', 'Render Controls', 'Paths or IDs', 'Output Summary', 'Status']) {
+for (const expected of ['Repo Destination', 'Target Source', 'Render Controls', 'Output Summary', 'Status']) {
   if (!sectionNames.includes(expected)) {
     throw new Error(`Missing section: ${expected}`);
   }
+}
+if (sectionNames.includes('Paths or IDs')) {
+  throw new Error('Paths or IDs accordion header should not exist.');
+}
+
+if (await page.locator('label[for="sampleList"]').count() !== 0) {
+  throw new Error('Paths or IDs field label wrapper should not exist.');
+}
+
+const initialSampleText = await page.locator('#writeFolderSampleValue').innerText();
+if (initialSampleText !== 'samples\\phaseXX\\XXXX\\assets\\images') {
+  throw new Error(`Unexpected write-folder sample text: ${initialSampleText}`);
 }
 
 await page.fill('#baseUrl', server.baseUrl);
@@ -158,6 +187,11 @@ await page.fill('#sampleList', '0107');
 await page.check('#forceRewrite');
 await page.click('#pickRepoBtn');
 await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
+const repoSelected = await page.locator('#repoSelectedValue').innerText();
+if (repoSelected !== 'SelectedRepoFolder') {
+  throw new Error(`Repo selected did not populate from folder handle: ${repoSelected}`);
+}
+await page.waitForFunction(() => document.getElementById('writeFolderActualValue').textContent === 'samples\\phase-01\\0107\\assets\\images');
 await page.click('#executeBtn');
 await page.waitForFunction(() => document.getElementById('log').textContent.includes('===== SUMMARY ====='), null, { timeout: 35000 });
 const writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
@@ -175,17 +209,13 @@ if (errors.length || consoleErrors.length) {
 }
 await browser.close();
 await server.close();
-console.log('preview-generator-v2 reskin browser smoke valid');
+console.log('preview-generator-v2 reskin fixes browser smoke valid');
 '@ | node --input-type=module -
 ```
 
 ## Notes
 
-`tools/preview-generator-v2/index.html` remains the cold-copy working generator base with the existing inline generator script and functional element IDs preserved.
-
-The reskin only regroups the existing controls into Palette Manager-style header, menu, panels, and accordion sections. The nav contains only `Generate Preview`, using the existing `executeBtn` behavior.
-
-The targeted Playwright smoke verifies the reskinned layout, absence of JSON/schema UI controls, and the existing generator path by writing a fake `preview.svg` through the File System Access API shim.
+The targeted browser smoke validates the Palette Manager-style reskin fixes, confirms Stop is in the nav, verifies the old copied preview CSS/classes are gone, checks the write-folder text behavior, and exercises the existing preview generation write path.
 
 `npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
 
