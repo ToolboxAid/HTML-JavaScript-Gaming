@@ -4,7 +4,7 @@ import { PreviewGeneratorV2RepoAccess } from './PreviewGeneratorV2RepoAccess.js'
 import { PreviewGeneratorV2Capture } from './PreviewGeneratorV2Capture.js';
 
 const OUTPUT_NAME = "preview.svg";
-const CAPTURE_TIMEOUT_MARKER = "Capture timeout";
+const CAPTURE_TIMEOUT_MARKER = PreviewGeneratorV2Capture.CAPTURE_TIMEOUT_MARKER;
 
 const runtimeParams = new URLSearchParams(window.location.search);
 const isRuntimeMode = runtimeParams.get("mode") === "runtime";
@@ -18,202 +18,13 @@ const logger = new PreviewGeneratorV2Logger({
   statusEl: ui.statusLog.getStatusElement(),
   logEl: ui.statusLog.getLogElement()
 });
-const frame = ui.previewFrame.getFrame();
+const capture = new PreviewGeneratorV2Capture({
+  ui,
+  frame: ui.previewFrame.getFrame()
+});
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function initializeRuntimeCaptureMode() {
-  const samplePath = String(runtimeParams.get("sample") || "").trim();
-  const width = Math.max(1, Number(runtimeParams.get("w") || 640));
-  const height = Math.max(1, Number(runtimeParams.get("h") || 360));
-  const settleMs = Math.max(0, Number(runtimeParams.get("settle") || 3000));
-  const timeoutMs = Math.max(1000, Number(runtimeParams.get("timeout") || 12000));
-  const captureModeParam = String(runtimeParams.get("capture") || "canvasOnly").trim();
-  const runtimeCaptureMode = /^fullscreen/i.test(captureModeParam) ? "fullscreen" : "canvasOnly";
-
-  function setStatus(status) {
-    document.body.setAttribute("data-capture-status", status);
-    document.title = "capture:" + status;
-  }
-
-  const bodyChildren = Array.from(document.body.children);
-  for (const node of bodyChildren) {
-    node.style.display = "none";
-  }
-  document.body.style.margin = "0";
-  document.body.style.background = "#000";
-  document.body.style.overflow = "hidden";
-
-  frame.style.display = "block";
-  frame.style.position = "fixed";
-  frame.style.width = "1px";
-  frame.style.height = "1px";
-  frame.style.left = "-10000px";
-  frame.style.top = "-10000px";
-  frame.style.border = "0";
-  frame.style.visibility = "hidden";
-  frame.setAttribute("sandbox", "allow-scripts allow-same-origin");
-
-  const outputCanvas = document.createElement("canvas");
-  outputCanvas.id = "runtimeCaptureSurface";
-  outputCanvas.width = width;
-  outputCanvas.height = height;
-  outputCanvas.style.display = "block";
-  outputCanvas.style.width = "100vw";
-  outputCanvas.style.height = "100vh";
-  outputCanvas.style.background = "#000";
-  document.body.appendChild(outputCanvas);
-
-  const ctx = outputCanvas.getContext("2d");
-  if (!ctx) {
-    setStatus("error");
-    return;
-  }
-
-  function writeLabel(text, color) {
-    ctx.fillStyle = "#0b1020";
-    ctx.fillRect(0, 0, width, height);
-    ctx.strokeStyle = "#334e7a";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(10, 10, width - 20, height - 20);
-    ctx.fillStyle = color;
-    ctx.font = "600 18px monospace";
-    ctx.fillText(text, 20, 40);
-  }
-
-  function drawSourceCanvas(sourceCanvas) {
-    const sw = sourceCanvas.width || sourceCanvas.clientWidth || width;
-    const sh = sourceCanvas.height || sourceCanvas.clientHeight || height;
-    if (!sw || !sh) {
-      throw new Error("Canvas has invalid size.");
-    }
-
-    const scale = Math.max(width / sw, height / sh);
-    const dw = sw * scale;
-    const dh = sh * scale;
-    const dx = (width - dw) * 0.5;
-    const dy = (height - dh) * 0.5;
-
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, width, height);
-    ctx.drawImage(sourceCanvas, dx, dy, dw, dh);
-  }
-
-  function fail(message) {
-    writeLabel(message, "#ff9ca8");
-    setStatus("error");
-  }
-
-  if (!samplePath) {
-    fail("Missing sample parameter");
-    return;
-  }
-
-  writeLabel("Loading sample...", "#a5c0e6");
-  setStatus("loading");
-
-  const startTime = Date.now();
-  let settled = false;
-
-  async function captureFullScreenCanvas(frameDoc) {
-    const html2canvasFn = window.html2canvas;
-    if (typeof html2canvasFn !== "function") {
-      throw new Error("Full Screen capture failed: html2canvas is unavailable. Use Canvas Only or ensure html2canvas loads before using Full Screen.");
-    }
-
-    const frameBody = frameDoc.body;
-    if (!frameBody) {
-      throw new Error("Full Screen capture failed because the target document has no body.");
-    }
-
-    try {
-      const captureSize = PreviewGeneratorV2Capture.getAvailableFullScreenCaptureSize(document, window, width, height);
-      return await html2canvasFn(frameBody, {
-        backgroundColor: "#000000",
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        width: captureSize.width,
-        height: captureSize.height,
-        windowWidth: captureSize.width,
-        windowHeight: captureSize.height,
-        scrollX: 0,
-        scrollY: 0,
-        onclone: (clonedDoc) => {
-          sanitizeClonedToolDocument(clonedDoc);
-        }
-      });
-    } catch (error) {
-      throw new Error(`Full Screen capture failed: ${error.message}`);
-    }
-  }
-
-  async function attemptCapture() {
-    try {
-      const frameDoc = frame.contentDocument;
-      if (!frameDoc) {
-        throw new Error("Frame document unavailable.");
-      }
-
-      let sourceCanvas;
-      if (runtimeCaptureMode === "fullscreen") {
-        sourceCanvas = await captureFullScreenCanvas(frameDoc);
-      } else {
-        sourceCanvas = frameDoc.querySelector("canvas");
-      }
-
-      if (!sourceCanvas) {
-        if (Date.now() - startTime > timeoutMs) {
-          fail("Canvas not found");
-          return;
-        }
-        requestAnimationFrame(() => {
-          attemptCapture();
-        });
-        return;
-      }
-
-      if (!settled) {
-        settled = true;
-        setTimeout(() => {
-          attemptCapture();
-        }, settleMs);
-        return;
-      }
-
-      drawSourceCanvas(sourceCanvas);
-      setStatus("ready");
-    } catch (error) {
-      if (runtimeCaptureMode === "fullscreen") {
-        fail(error.message);
-        return;
-      }
-
-      if (Date.now() - startTime > timeoutMs) {
-        fail("Capture timeout");
-        return;
-      }
-      requestAnimationFrame(() => {
-        attemptCapture();
-      });
-    }
-  }
-
-  frame.addEventListener("load", () => {
-    requestAnimationFrame(() => {
-      attemptCapture();
-    });
-  }, { once: true });
-
-  frame.src = samplePath;
-
-  setTimeout(() => {
-    if (document.body.getAttribute("data-capture-status") !== "ready") {
-      fail("Capture timeout");
-    }
-  }, timeoutMs + settleMs + 800);
 }
 
 function normalizeSlashes(value) {
