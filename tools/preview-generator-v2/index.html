@@ -211,12 +211,15 @@ tools\&lt;toolname&gt;\index.html
           </div>
         </section>
 
-        <section id="statusAccordion" class="preview-generator-v2__status-block">
+        <section id="statusAccordion" class="accordion-v2 preview-generator-v2__status-block is-open" data-accordion-v2-open="true">
           <div class="preview-generator-v2__status-header-row">
-            <h2 class="preview-generator-v2__status-heading">Status</h2>
+            <button class="accordion-v2__header preview-generator-v2__status-accordion-header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
+              <span>Status</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
             <button id="clearLogBtn" class="preview-generator-v2__status-clear-button" type="button">Clear</button>
           </div>
-          <div id="statusAccordionContent" class="preview-generator-v2__status-content">
+          <div id="statusAccordionContent" class="accordion-v2__content preview-generator-v2__status-content">
             <div id="status" class="preview-generator-v2__status-text" hidden></div>
             <div id="log">Ready.
 </div>

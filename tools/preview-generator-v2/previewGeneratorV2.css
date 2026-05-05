@@ -218,6 +218,10 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
   padding: 8px;
 }
 
+.preview-generator-v2__status-content[hidden] {
+  display: none;
+}
+
 .preview-generator-v2__status-header-row {
   flex: 0 0 auto;
   display: flex;
@@ -225,21 +229,17 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
   justify-content: space-between;
   gap: 8px;
   min-width: 0;
-  padding: 8px 10px;
   border-bottom: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
 }
 
-.preview-generator-v2__status-heading {
+.preview-generator-v2__status-accordion-header {
   flex: 1 1 auto;
   min-width: 0;
-  margin: 0;
-  color: var(--pm-text, #f7f4ff);
-  font-size: 0.95rem;
-  font-weight: 700;
 }
 
 .preview-generator-v2__status-clear-button {
   flex: 0 0 auto;
+  margin-right: 10px;
 }
 
 .preview-generator-v2__status-text {

@@ -1,0 +1,48 @@
+PR_26126_046 Preview Generator V2 Status accordion restore
+
+Scope
+- Updated Preview Generator V2 Status control only.
+- Updated tools/preview-generator-v2/index.html.
+- Updated tools/preview-generator-v2/controls/StatusLogControl.js.
+- Updated tools/preview-generator-v2/previewGeneratorV2.css for Status accordion layout/hidden state.
+- Extended tests/playwright/PreviewGeneratorV2Baseline.spec.mjs to include Status accordion coverage.
+- No samples, schemas, or start_of_day files were modified.
+
+Implementation
+- Converted #statusAccordion to an accordion-v2 section.
+- Added a Status accordion toggle button with aria-controls="statusAccordionContent".
+- Kept Clear as a separate button on the same header row, outside the toggle button.
+- Wired StatusLogControl to use AccordionSection with #statusAccordionContent.
+- Added a scoped hidden-content rule so the log textarea/content hides when Status is collapsed.
+
+Behavior preserved
+- Status logging still writes through the existing logger/status control path.
+- Clear still clears the logging/status textarea.
+- Status remains expanded by default.
+- No generation logic changed.
+- Other controls were not modified.
+
+Validation
+- JavaScript syntax check passed for tools/preview-generator-v2/*.js.
+- JavaScript syntax check passed for tools/preview-generator-v2/controls/*.js.
+- JavaScript syntax check passed for tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
+- npm run test:workspace-v2 passed.
+- Result: 3 passed.
+- Confirmed no samples, schemas, or start_of_day changes.
+
+Playwright coverage
+- Existing accordion helper now verifies icon state for closed/open.
+- Status accordion is included in the accordion coverage list.
+- Test verifies #statusAccordionContent hides/shows through the shared accordion behavior.
+- Test verifies #clearLogBtn remains visible after accordion toggling.
+
+Full samples smoke test
+- Skipped intentionally.
+- Reason: this PR is a targeted Preview Generator V2 Status control change and does not modify sample JSON, sample launch code, or shared sample runtime behavior.
+
+Manual validation
+- Open tools/preview-generator-v2/index.html.
+- Collapse Status and confirm the log textarea hides.
+- Expand Status and confirm the log textarea returns.
+- Confirm the icon rotates/updates with open/closed state.
+- Click Clear and confirm the log output clears.

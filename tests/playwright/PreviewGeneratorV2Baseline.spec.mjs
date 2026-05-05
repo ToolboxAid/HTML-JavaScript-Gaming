@@ -317,10 +317,12 @@ test.describe("Preview Generator V2 baseline", () => {
         "assetFolderContent",
         "captureModeContent",
         "renderControlsContent",
-        "outputSummaryContent"
+        "outputSummaryContent",
+        "statusAccordionContent"
       ]) {
         await expectAccordionToggles(page, contentId);
       }
+      await expect(page.locator("#clearLogBtn")).toBeVisible();
 
       expect(pageErrors).toEqual([]);
     } finally {
