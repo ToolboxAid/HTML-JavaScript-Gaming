@@ -1,70 +1,39 @@
 # Full git status --short
-MM docs/dev/codex_commands.md
-MM docs/dev/commit_comment.txt
-M  docs/dev/reports/codex_changed_files.txt
-MM docs/dev/reports/codex_review.diff
-M  samples/phase-02/0201/assets/images/preview.svg
-M  samples/phase-02/0202/assets/images/preview.svg
-M  samples/phase-02/0203/assets/images/preview.svg
-M  samples/phase-02/0204/assets/images/preview.svg
-M  samples/phase-02/0205/assets/images/preview.svg
-M  samples/phase-02/0207/assets/images/preview.svg
-M  samples/phase-02/0208/assets/images/preview.svg
-M  samples/phase-02/0209/assets/images/preview.svg
- M samples/phase-02/0210/assets/images/preview.svg
-M  samples/phase-02/0211/assets/images/preview.svg
-M  samples/phase-02/0212/assets/images/preview.svg
-M  samples/phase-02/0213/assets/images/preview.svg
-M  samples/phase-02/0214/assets/images/preview.svg
-M  samples/phase-02/0215/assets/images/preview.svg
-M  samples/phase-02/0216/assets/images/preview.svg
-M  samples/phase-02/0217/assets/images/preview.svg
-M  samples/phase-02/0219/assets/images/preview.svg
-M  samples/phase-02/0222/assets/images/preview.svg
-M  samples/phase-02/0224/assets/images/preview.svg
- M samples/phase-02/0225/assets/images/preview.svg
- M samples/phase-02/0226/assets/images/preview.svg
- M samples/phase-02/0227/assets/images/preview.svg
- M samples/phase-12/1212/assets/images/preview.svg
- M samples/phase-12/1213/assets/images/preview.svg
- M samples/phase-12/1214/assets/images/preview.svg
- M samples/phase-12/1215/assets/images/preview.svg
- M samples/phase-12/1216/assets/images/preview.svg
- M samples/phase-12/1217/assets/images/preview.svg
- M samples/phase-12/1218/assets/images/preview.svg
- M samples/phase-12/1219/assets/images/preview.svg
- M samples/phase-12/1220/assets/images/preview.svg
-MM tools/preview-generator-v2/index.html
+ M docs/design/tools/TOOLS_REENGINEERING_INDEX.md
+ M docs/dev/codex_commands.md
+ M docs/dev/commit_comment.txt
+ M docs/dev/reports/codex_review.diff
+ M tools/preview-generator-v2/index.html
+ D tools/preview.zip
+ D tools/preview/preview_svg_generator.html
+?? docs/dev/reports/preview_generator_v2_class_responsibilities.md
+?? tools/preview-generator-v2/previewGeneratorV2.js
 
 # PR scoped git diff --cached --stat
- docs/dev/codex_commands.md            | 44 +++++++++++++++++++++---------
- docs/dev/commit_comment.txt           |  2 +-
- tools/preview-generator-v2/index.html | 51 ++++++++++++++++++++---------------
- 3 files changed, 62 insertions(+), 35 deletions(-)
 
 # PR scoped git diff --stat
- docs/dev/codex_commands.md            |  34 +++---
- docs/dev/commit_comment.txt           |   2 +-
- docs/dev/reports/codex_review.diff    | 215 +++++++++++++++++++++++++---------
- tools/preview-generator-v2/index.html |  17 ++-
- 4 files changed, 191 insertions(+), 77 deletions(-)
+ docs/design/tools/TOOLS_REENGINEERING_INDEX.md |    1 -
+ docs/dev/codex_commands.md                     |   47 +-
+ docs/dev/commit_comment.txt                    |    2 +-
+ tools/preview-generator-v2/index.html          | 1238 +-----------------------
+ tools/preview.zip                              |  Bin 19111 -> 0 bytes
+ tools/preview/preview_svg_generator.html       | 1042 --------------------
+ 6 files changed, 24 insertions(+), 2306 deletions(-)
+
+# New file diff stat: tools/preview-generator-v2/previewGeneratorV2.js
+ .../preview-generator-v2/previewGeneratorV2.js     | 1317 ++++++++++++++++++++
+ 1 file changed, 1317 insertions(+)
+
+# New file diff stat: docs/dev/reports/preview_generator_v2_class_responsibilities.md
+ .../reports/preview_generator_v2_class_responsibilities.md    | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 # Full git diff --stat
- docs/dev/codex_commands.md                      |  34 ++--
- docs/dev/commit_comment.txt                     |   2 +-
- docs/dev/reports/codex_review.diff              | 215 +++++++++++++++++-------
- samples/phase-02/0210/assets/images/preview.svg |   6 +-
- samples/phase-02/0225/assets/images/preview.svg |  24 +--
- samples/phase-02/0226/assets/images/preview.svg |  21 +--
- samples/phase-02/0227/assets/images/preview.svg |  21 +--
- samples/phase-12/1212/assets/images/preview.svg |  17 +-
- samples/phase-12/1213/assets/images/preview.svg |  17 +-
- samples/phase-12/1214/assets/images/preview.svg |  17 +-
- samples/phase-12/1215/assets/images/preview.svg |  40 +++--
- samples/phase-12/1216/assets/images/preview.svg |  40 +++--
- samples/phase-12/1217/assets/images/preview.svg |  40 +++--
- samples/phase-12/1218/assets/images/preview.svg |  17 +-
- samples/phase-12/1219/assets/images/preview.svg |  17 +-
- samples/phase-12/1220/assets/images/preview.svg |  17 +-
- tools/preview-generator-v2/index.html           |  17 +-
- 17 files changed, 299 insertions(+), 263 deletions(-)
+ docs/design/tools/TOOLS_REENGINEERING_INDEX.md |    1 -
+ docs/dev/codex_commands.md                     |   47 +-
+ docs/dev/commit_comment.txt                    |    2 +-
+ docs/dev/reports/codex_review.diff             | 3958 ++++++++++++++++++++++--
+ tools/preview-generator-v2/index.html          | 1238 +-------
+ tools/preview.zip                              |  Bin 19111 -> 0 bytes
+ tools/preview/preview_svg_generator.html       | 1042 -------
+ 7 files changed, 3728 insertions(+), 2560 deletions(-)

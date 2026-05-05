@@ -26,7 +26,6 @@ This index lists the remaining rebuild anchors, schema baseline, and support fol
 | `schemas` | `tools/schemas` | schema folder | reference-only | none | schema baseline only; no schema changes in this PR |
 | `codex` | `tools/codex` | support folder | reference-only | none | reference only; no normal rebuild doc |
 | `dev` | `tools/dev` | support folder | reference-only | none | reference only; no normal rebuild doc |
-| `preview` | `tools/preview` | support folder | reference-only | none | reference only; no normal rebuild doc |
 | `shared` | `tools/shared` | support folder | reference-only | none | reference only; no normal rebuild doc |
 | `templates` | `tools/templates` | support folder | reference-only | none | reference only; no normal rebuild doc |
 
