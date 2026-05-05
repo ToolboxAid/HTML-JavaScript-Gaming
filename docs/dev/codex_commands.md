@@ -1,29 +1,20 @@
-# Codex Commands - PR_26124_077-palette-manager-final-exit-pass
+# Codex Commands - PR_26126_002-preview-tool-detailed-design
 
 ```bash
-npx @openai/codex run --model gpt-5.5 --reasoning high "Run full workflow for PR_26124_077-palette-manager-final-exit-pass. Follow PROJECT_INSTRUCTIONS.md exactly."
+codex run "Create PR_26126_002-preview-tool-detailed-design. Add a detailed design document for tools/preview/index.html covering capabilities, UI regions, control placement, input/output contracts, error states, preview modes, and export actions. No implementation code. Do not modify samples. Place design under docs/pr/PR_26126_002-preview-tool-detailed-design.md and produce required review artifacts."
 ```
 
 ## Validation Commands
 
 ```bash
-node --check tools/palette-manager-v2/main.js
-node --check tools/palette-manager-v2/paletteManagerShell.js
-node --check tools/palette-manager-v2/modules/PaletteManagerApp.js
-node tests/tools/PaletteManagerV2Baseline.test.mjs
-node --input-type=module <targeted Palette Manager V2 exit-pass audit>
-node --input-type=module <targeted Palette Manager V2 URL preset validation>
-git diff --check
-npm run test:workspace-v2
+git diff --check -- docs/pr/PR_26126_002-preview-tool-detailed-design.md docs/dev/codex_commands.md docs/dev/commit_comment.txt
 npm run codex:review-artifacts
 ```
 
 ## Playwright
 
-Targeted Palette Manager V2 validation confirms baseline controls, validation clear placement, pin scroll preservation, Tag sort untagged-last behavior, and URL preset loading remain stable.
-
-`npm run test:workspace-v2` failed because `package.json` does not define the `test:workspace-v2` script.
+No Playwright impact. This PR is a documentation/design-only PR for the Preview tool and does not modify implementation code.
 
 ## Full Samples
 
-Full samples smoke test was skipped by instruction.
+Full samples smoke test was skipped because this PR is documentation-only and sample files are out of scope.

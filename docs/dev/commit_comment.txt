@@ -1,1 +1,1 @@
-Finalize Palette Manager V2 exit-pass cleanup - PR_26124_077-palette-manager-final-exit-pass
+Add Preview tool detailed design - PR_26126_002-preview-tool-detailed-design
