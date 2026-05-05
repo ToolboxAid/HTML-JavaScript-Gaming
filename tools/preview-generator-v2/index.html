@@ -3,58 +3,376 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Preview SVG Generator</title>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
   <link rel="stylesheet" href="../shared/preview/preview-pages.css" />
+  <style>
+    body.tools-platform-tool-page {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
+      color: var(--text, #f7f4ff);
+    }
+
+    .preview-generator-v2__header {
+      width: calc(100% - 32px);
+      margin: 10px auto;
+    }
+
+    .preview-generator-v2__header-frame {
+      margin-top: 10px;
+      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+      border-radius: 18px;
+      background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+      padding: 12px 14px;
+    }
+
+    .preview-generator-v2__header-frame h1 {
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(1.08rem, 1.6vw, 1.24rem);
+      line-height: 1.2;
+    }
+
+    .preview-generator-v2__header-frame p {
+      margin: 6px 0 0;
+      color: var(--muted, #e9ddff);
+    }
+
+    .palette-manager-v2__menu-sample {
+      box-sizing: border-box;
+      width: calc(100% - 32px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 16px 16px 0;
+      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: var(--panel, rgba(30, 24, 48, 0.92));
+      padding: 10px 14px;
+    }
+
+    .palette-manager-v2__menu-actions {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .preview-generator-v2 {
+      box-sizing: border-box;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      padding: 16px;
+      overflow: visible;
+    }
+
+    .preview-generator-v2 *,
+    .preview-generator-v2 *::before,
+    .preview-generator-v2 *::after {
+      box-sizing: border-box;
+    }
+
+    .preview-generator-v2__layout {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr) 360px;
+      gap: 14px;
+      width: 100%;
+      min-width: 0;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    .preview-generator-v2__panel {
+      min-width: 0;
+      min-height: 0;
+      height: calc(100vh - 220px);
+      height: calc(100dvh - 220px);
+      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: var(--panel, rgba(30, 24, 48, 0.92));
+      padding: 14px;
+      overflow: auto;
+    }
+
+    .preview-generator-v2__panel--left,
+    .preview-generator-v2__panel--right {
+      width: 100%;
+      position: sticky;
+      top: 16px;
+    }
+
+    .preview-generator-v2__panel--center {
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .preview-generator-v2__panel .accordion-v2 + .accordion-v2 {
+      margin-top: 14px;
+    }
+
+    .preview-generator-v2__paths-panel {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .preview-generator-v2__paths-panel .accordion-v2__content {
+      height: 100%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .preview-generator-v2 .row,
+    .preview-generator-v2 .note {
+      margin: 0;
+    }
+
+    .preview-generator-v2__stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .preview-generator-v2__field {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+      font-weight: 700;
+    }
+
+    .preview-generator-v2__field input {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .preview-generator-v2__field--compact {
+      grid-template-columns: 132px minmax(0, 1fr);
+      align-items: center;
+    }
+
+    .preview-generator-v2__inline-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .preview-generator-v2__inline-group > label:first-child,
+    .preview-generator-v2__field > label:first-child {
+      font-weight: 700;
+    }
+
+    .preview-generator-v2__controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .preview-generator-v2__paths-field {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    #sampleList {
+      width: 100%;
+      min-height: 0;
+      height: 100%;
+      resize: none;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    }
+
+    #log {
+      min-height: 360px;
+      max-height: none;
+      overflow: auto;
+      white-space: pre-wrap;
+      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.24);
+      color: var(--muted, #c4b5fd);
+      padding: 10px;
+    }
+
+    #frame {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      left: -10000px;
+      top: -10000px;
+      border: 0;
+      visibility: hidden;
+    }
+
+    body.tools-platform-tool-page :is(button, input, textarea) {
+      border-radius: 10px;
+    }
+
+    body.tools-platform-tool-page :is(input, textarea) {
+      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+      background: var(--surface-inline, rgba(43, 16, 91, 0.9));
+      color: var(--text, #f7f4ff);
+    }
+
+    @media (max-width: 1180px) {
+      .preview-generator-v2__layout {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-generator-v2__panel {
+        height: auto;
+        min-height: 0;
+      }
+
+      .preview-generator-v2__panel--left,
+      .preview-generator-v2__panel--right {
+        position: static;
+      }
+
+      #sampleList {
+        min-height: 360px;
+      }
+    }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 
-<body>
-  <h1>Preview SVG Generator</h1>
+<body class="tools-platform-tool-page hub-page-tools" data-tool-id="preview-generator-v2">
+  <details class="is-collapsible preview-generator-v2__header" open>
+    <summary class="is-collapsible__summary">Hide Header and Details</summary>
+    <div class="is-collapsible__content">
+      <div id="shared-theme-header"></div>
+      <section class="tools-platform-frame preview-generator-v2__header-frame">
+        <h1>Preview SVG Generator</h1>
+        <p>Generate preview.svg files for samples, games, and tools.</p>
+      </section>
+    </div>
+  </details>
 
-  <div class="row">
-    <label>Target type</label>
-    <span class="inline">
-      <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
-      <label for="targetTypeSamples" class="inline-label">Samples</label>
-    </span>
-    <span class="inline">
-      <input id="targetTypeGames" type="radio" name="targetType" value="games" />
-      <label for="targetTypeGames" class="inline-label">Games</label>
-    </span>
-    <span class="inline">
-      <input id="targetTypeTools" type="radio" name="targetType" value="tools" />
-      <label for="targetTypeTools" class="inline-label">Tools</label>
-    </span>
-  </div>
+  <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
+    <div class="palette-manager-v2__menu-actions">
+      <button id="executeBtn" type="button" disabled>Generate Preview</button>
+    </div>
+  </nav>
 
-  <div class="row">
-    <label for="baseUrl">Base URL</label>
-    <input id="baseUrl" type="text" value="http://127.0.0.1:5500" />
-  </div>
+  <div class="preview-generator-v2 app-shell">
+    <div class="preview-generator-v2__layout tools-platform-layout-grid">
+      <aside class="preview-generator-v2__panel preview-generator-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationAccordionContent">
+            <span>Repo Destination</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="repoDestinationAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
+            <div class="row preview-generator-v2__field preview-generator-v2__field--compact">
+              <label>Repo selected</label>
+              <div id="repoSelectedValue" class="value-box">not selected</div>
+            </div>
 
-  <div class="row">
-    <label for="waitMs">Wait before capture</label>
-    <input id="waitMs" type="number" value="3500" min="3000" step="500" />
-  </div>
+            <div class="row preview-generator-v2__controls">
+              <button id="pickRepoBtn">Pick Repo Folder</button>
+              <button id="stopBtn" disabled>Stop</button>
+            </div>
 
-  <div class="row">
-    <label>Repo selected</label>
-    <div id="repoSelectedValue" class="value-box">not selected</div>
-  </div>
+            <div class="note">
+              Pick the repo root folder, for example <code>HTML-JavaScript-Gaming</code>.
+            </div>
+          </div>
+        </section>
 
-  <div class="row">
-    <label for="assetFolder">Asset folder</label>
-    <input id="assetFolder" type="text" value="assets/images" />
-  </div>
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="targetSourceAccordionContent">
+            <span>Target Source</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="targetSourceAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
+            <div class="row preview-generator-v2__inline-group">
+              <label>Target type</label>
+              <span class="inline">
+                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
+                <label for="targetTypeSamples" class="inline-label">Samples</label>
+              </span>
+              <span class="inline">
+                <input id="targetTypeGames" type="radio" name="targetType" value="games" />
+                <label for="targetTypeGames" class="inline-label">Games</label>
+              </span>
+              <span class="inline">
+                <input id="targetTypeTools" type="radio" name="targetType" value="tools" />
+                <label for="targetTypeTools" class="inline-label">Tools</label>
+              </span>
+            </div>
 
-  <div class="row">
-    <label>Write folder as sample</label>
-    <div id="writeFolderSampleValue" class="value-box">samples\phase-XX\XXXX\assets</div>
-  </div>
+            <div class="row preview-generator-v2__field">
+              <label for="baseUrl">Base URL</label>
+              <input id="baseUrl" type="text" value="http://127.0.0.1:5500" />
+            </div>
+          </div>
+        </section>
 
-  <div class="row">
-    <label for="sampleList">Paths or IDs</label>
-    <textarea id="sampleList" placeholder="Samples examples:
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsAccordionContent">
+            <span>Render Controls</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="renderControlsAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
+            <div class="row preview-generator-v2__field">
+              <label for="waitMs">Wait before capture</label>
+              <input id="waitMs" type="number" value="3500" min="3000" step="500" />
+            </div>
+
+            <div class="row preview-generator-v2__field">
+              <label for="assetFolder">Asset folder</label>
+              <input id="assetFolder" type="text" value="assets/images" />
+            </div>
+
+            <div class="row preview-generator-v2__inline-group">
+              <label>Options</label>
+              <span class="inline">
+                <input id="forceRewrite" type="checkbox" />
+                <label for="forceRewrite" class="inline-label">Force rewrite</label>
+              </span>
+              <span class="inline">
+                <input id="onlyCaptureTimeout" type="checkbox" checked />
+                <label for="onlyCaptureTimeout" class="inline-label">Only rewrite if preview.svg contains literal "Capture timeout"</label>
+              </span>
+            </div>
+
+            <div class="row preview-generator-v2__inline-group">
+              <label>Capture mode</label>
+              <span class="inline">
+                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
+                <label for="captureModeFullScreen" class="inline-label">Full Screen (1600x900 HTML Page)</label>
+              </span>
+              <span class="inline">
+                <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
+                <label for="captureModeCanvasOnly" class="inline-label">Canvas Only</label>
+              </span>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <main class="preview-generator-v2__panel preview-generator-v2__panel--center">
+        <section class="accordion-v2 preview-generator-v2__paths-panel is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="pathsAccordionContent">
+            <span>Paths or IDs</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="pathsAccordionContent" class="accordion-v2__content">
+            <div class="row preview-generator-v2__field preview-generator-v2__paths-field">
+              <label for="sampleList">Paths or IDs</label>
+              <textarea id="sampleList" placeholder="Samples examples:
 samples/phase-01/0102/index.html
 samples/phase-13/1303/index.html
 0107
@@ -67,52 +385,45 @@ Bouncing-ball
 Tools examples:
 tools/Vector Map Editor/index.html
 Vector Map Editor"></textarea>
-  </div>
+            </div>
+          </div>
+        </section>
+      </main>
 
-  <div class="row">
-    <label>Options</label>
-    <span class="inline">
-      <input id="forceRewrite" type="checkbox" />
-      <label for="forceRewrite" class="inline-label">Force rewrite</label>
-    </span>
-    <span class="inline">
-      <input id="onlyCaptureTimeout" type="checkbox" checked />
-      <label for="onlyCaptureTimeout" class="inline-label">Only rewrite if preview.svg contains literal "Capture timeout"</label>
-    </span>
-  </div>
+      <aside class="preview-generator-v2__panel preview-generator-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryAccordionContent">
+            <span>Output Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="outputSummaryAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
+            <div class="row preview-generator-v2__field preview-generator-v2__field--compact">
+              <label>Write folder as sample</label>
+              <div id="writeFolderSampleValue" class="value-box">samples\phase-XX\XXXX\assets</div>
+            </div>
 
-  <div class="row">
-    <label>Capture mode</label>
-    <span class="inline">
-      <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
-      <label for="captureModeFullScreen" class="inline-label">Full Screen (1600x900 HTML Page)</label>
-    </span>
-    <span class="inline">
-      <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
-      <label for="captureModeCanvasOnly" class="inline-label">Canvas Only</label>
-    </span>
-  </div>
+            <div class="row preview-generator-v2__field preview-generator-v2__field--compact">
+              <label>Write folder</label>
+              <div id="writeFolderActualValue" class="value-box">not available yet</div>
+            </div>
+          </div>
+        </section>
 
-  <div class="row">
-    <button id="pickRepoBtn">Pick Repo Folder</button>
-    <button id="executeBtn" disabled>Execute</button>
-    <button id="stopBtn" disabled>Stop</button>
-  </div>
-
-  <div id="status" class="row">Repo folder: not selected</div>
-
-  <div class="note">
-    Pick the repo root folder, for example <code>HTML-JavaScript-Gaming</code>.
-  </div>
-
-  <div class="row">
-    <label>Write folder</label>
-    <div id="writeFolderActualValue" class="value-box">not available yet</div>
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
+            <span>Status</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="statusAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
+            <div id="status" class="row">Repo folder: not selected</div>
+            <div id="log"></div>
+          </div>
+        </section>
+      </aside>
+    </div>
   </div>
 
   <iframe id="frame" title="sample-loader"></iframe>
-
-  <div id="log"></div>
 
   <script>
     const OUTPUT_NAME = "preview.svg";
@@ -1037,6 +1348,8 @@ Vector Map Editor"></textarea>
       updatePathPreviewLabels();
     }
   </script>
+  <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 
 </html>

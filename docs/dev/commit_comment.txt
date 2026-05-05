@@ -1,1 +1,1 @@
-Rollback Preview Generator V2 rewrites and cold-copy working generator - PR_26126_011-preview-generator-v2-rollback-and-cold-copy
+Reskin Preview Generator V2 from working base without behavior changes - PR_26126_012-preview-generator-v2-reskin-from-working-base
