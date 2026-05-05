@@ -1,7 +1,7 @@
-# PR_26126_003 - Preview Tool Layout Spec
+# PR_26126_003 - Preview Generator V2 Layout Spec
 
 ## Purpose
-Convert the Preview tool design into a concrete layout specification for the future `tools/preview/index.html` rebuild.
+Convert the Preview Generator V2 design into a concrete layout specification for the future `tools/preview/index.html` rebuild.
 
 This PR is documentation only. It defines target regions, control placement, DOM ids/classes, `toolState` shape, and interaction flows. It does not implement runtime code and does not modify samples.
 
@@ -10,18 +10,19 @@ This PR is documentation only. It defines target regions, control placement, DOM
 - Target tool id: `preview`
 - Design source: `docs/pr/PR_26126_002-preview-tool-detailed-design.md`
 - Current behavior reference: `tools/preview/preview_svg_generator.html`
+- Official display name: `Preview Generator V2`
 
 ## Layout Goals
-- Make Preview a launchable first-class tool surface.
+- Make Preview Generator V2 a launchable first-class tool surface.
 - Keep capture configuration visible while a batch is running.
 - Put visual output in the center so users can inspect the capture result before export.
 - Put file/output metadata and validation detail in a right panel.
 - Keep export/write actions grouped in the footer.
 - Use Palette Manager V2 as the base layout and interaction pattern for header shell, panel structure, control grouping, and accordion behavior.
-- Preserve the Preview tool boundary: no sample JSON, no game JSON, no workspace manifest mutation, and no silent fallback data.
+- Preserve the Preview Generator V2 boundary: no sample JSON, no game JSON, no workspace manifest mutation, and no silent fallback data.
 
 ## Palette Manager Base Pattern
-The Preview tool must use Palette Manager V2 as its layout and interaction reference, not the older standalone preview generator page.
+Preview Generator V2 must use Palette Manager V2 as its layout and interaction reference, not the older standalone preview generator page.
 
 Required base pattern:
 - Use a local tool shell with the same high-level shape as Palette Manager:
@@ -40,7 +41,7 @@ Required base pattern:
 - Keep write/export actions separated from configuration controls, following the Palette Manager menu/action separation pattern.
 - Keep left and right panels independently scrollable when content exceeds available height.
 - Keep the center column as a flex column so the main preview area and the last generated preview section can size predictably.
-- Do not reuse Palette Manager class names directly; use Preview-owned classes that mirror the pattern.
+- Do not reuse Palette Manager class names directly; use Preview Generator V2-owned classes that mirror the pattern.
 - Do not add workspace/toolState/session behavior from Palette Manager.
 
 ## Header Usage Requirements
@@ -48,7 +49,10 @@ The rebuilt `tools/preview/index.html` must use Palette Manager-style header beh
 
 - The first page element is a collapsible header/details area.
 - The header area includes `#shared-theme-header`.
-- The local header host describes Preview as a tool-local shell.
+- The local header host describes Preview Generator V2 as a tool-local shell.
+- The platform shell display name/title is exactly `Preview Generator V2`.
+- The platform shell `shortDescription` is the source for the local header subtitle/description.
+- Target `shortDescription`: `Generate preview.svg assets for samples, games, and tools.`
 - Hide Header and Details / Show Header and Details behavior should match the Palette Manager interaction pattern.
 - Header status must remain display-only.
 - Header status must not mutate source, capture, output, or export state.
@@ -65,7 +69,7 @@ Purpose:
 - Provide compact validation status.
 
 Contents:
-- Tool title.
+- Tool title: `Preview Generator V2`.
 - Current target type summary.
 - Current validation status.
 - Current repo/root status.
@@ -223,8 +227,8 @@ Primary ids/classes:
 
 | Control | ID | Type | Placement | State Effect |
 | --- | --- | --- | --- | --- |
-| Tool title | `previewToolTitle` | text | Header left | No state mutation. |
-| Tool subtitle | `previewToolSubtitle` | text | Header left under title | No state mutation. |
+| Tool title | `previewToolTitle` | text | Header left | Displays `Preview Generator V2`; no state mutation. |
+| Tool subtitle | `previewToolSubtitle` | text | Header left under title | Displays platform shell `shortDescription`; no state mutation. |
 | Validation status | `previewValidationStatus` | status text | Header right | Mirrors `validation.status`. |
 | Repo status | `previewRepoStatus` | status text | Header right | Mirrors `repo.status`. |
 
@@ -389,7 +393,7 @@ body#previewToolPage.preview-tool-page.tools-platform-tool-page
 
 ## State Model
 
-The Preview tool owns a local `toolState` document for UI and run configuration. This state is not sample JSON and is not workspace manifest JSON.
+Preview Generator V2 owns a local `toolState` document for UI and run configuration. This state is not sample JSON and is not workspace manifest JSON.
 
 Target `toolState` shape:
 
@@ -486,7 +490,7 @@ Target `toolState` shape:
 - Do not silently substitute fallback images, placeholder captures, or generated fallback SVGs into the last generated preview.
 
 ## Strict JSON Input Rules
-- The Preview tool accepts only its own `toolState` shape for saved UI/run configuration.
+- Preview Generator V2 accepts only its own `toolState` shape for saved UI/run configuration.
 - It must reject unknown `schema` or unsupported `version` values.
 - It must reject unknown top-level keys unless a future schema explicitly adds them.
 - It must reject invalid enum values for source, target type, capture mode, background, validation status, and run status.

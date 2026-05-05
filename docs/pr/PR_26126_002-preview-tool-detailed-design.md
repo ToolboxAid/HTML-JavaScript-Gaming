@@ -1,9 +1,9 @@
-# PR_26126_002 - Preview Tool Detailed Design
+# PR_26126_002 - Preview Generator V2 Detailed Design
 
 ## Purpose
-Design the rebuild target for the Preview tool as a clean, launchable tool surface at `tools/preview/index.html`.
+Design the rebuild target for Preview Generator V2 as a clean, launchable tool surface at `tools/preview/index.html`.
 
-Current repo state note: `tools/preview/index.html` is not present. The current inspected source for Preview behavior is `tools/preview/preview_svg_generator.html`. This design treats `tools/preview/index.html` as the intended rebuilt entrypoint and uses the existing generator file as the current behavior baseline.
+Current repo state note: `tools/preview/index.html` is not present. The current inspected source for Preview Generator V2 behavior is `tools/preview/preview_svg_generator.html`. This design treats `tools/preview/index.html` as the intended rebuilt entrypoint and uses the existing generator file as the current behavior baseline.
 
 ## Source Inspected
 - `tools/preview/preview_svg_generator.html`
@@ -29,17 +29,19 @@ No sample JSON, sample launch code, games, workspace, or runtime implementation 
 - Logs per-target progress, output path, warnings, failures, and summary counts.
 
 ## Rebuild Goal
-Create a first-class Preview tool at `tools/preview/index.html` that preserves the useful current generator behavior while making the UI, contracts, errors, preview modes, and export actions explicit.
+Create a first-class Preview Generator V2 tool at `tools/preview/index.html` that preserves the useful current generator behavior while making the UI, contracts, errors, preview modes, and export actions explicit.
 
-The Preview tool should remain a file-generation utility. It should not own game/sample JSON, workspace state, toolState, or `tools.*` published JSON.
+Preview Generator V2 should remain a file-generation utility. It should not own game/sample JSON, workspace state, toolState, or `tools.*` published JSON.
 
 ## UI Regions
 
 ### Header
-Purpose: Identify the tool and explain that it generates `preview.svg` assets.
+Purpose: Identify Preview Generator V2 and explain that it generates `preview.svg` assets.
 
 Target placement:
 - Top of `tools/preview/index.html`.
+- Platform shell title/display name uses `Preview Generator V2`.
+- Platform shell `shortDescription` uses: `Generate preview.svg assets for samples, games, and tools.`
 - Include a concise status line for repo access and current run state.
 - Avoid embedding sample or game-specific assumptions in the header.
 
@@ -313,7 +315,7 @@ Failure fallback output produces:
 ### JSON Output
 No JSON output is owned by this tool.
 
-The Preview tool must not publish or mutate:
+Preview Generator V2 must not publish or mutate:
 - `tools.preview`
 - `tools.palette-browser`
 - workspace manifest JSON
@@ -465,7 +467,7 @@ The log should receive the most vertical space. Configuration controls should re
 No Playwright implementation is included in this PR.
 
 Future Playwright should validate:
-- Preview tool page loads.
+- Preview Generator V2 page loads.
 - Target type controls switch modes.
 - Base URL, wait, asset folder, options, and capture mode controls are visible.
 - Execute remains disabled until repo selection is simulated or abstracted.

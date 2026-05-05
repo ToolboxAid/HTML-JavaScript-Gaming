@@ -1,1 +1,1 @@
-Refine Preview tool layout spec from Palette Manager pattern - PR_26126_004-preview-tool-layout-refinement
+Normalize Preview Generator V2 naming in design docs - PR_26126_005-preview-generator-v2-naming
