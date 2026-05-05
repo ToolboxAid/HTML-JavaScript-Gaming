@@ -1,7 +1,7 @@
-# Codex Commands - PR_26126_013-preview-generator-v2-reskin-fixes
+# Codex Commands - PR_26126_014-preview-generator-v2-layout-polish
 
 ```bash
-codex run "Create PR_26126_013-preview-generator-v2-reskin-fixes. Fix Preview Generator V2 reskin only. Preserve existing preview.html functionality. Remove all copied preview.html CSS and use only Palette Manager V2-style HTML/classes plus Preview Generator V2 wrapper classes where needed. Move STOP into the Palette Manager-style NAV next to Generate Preview. Fix Repo selected so it populates correctly from the selected repo destination/folder. Remove the Repo Sample control entirely. Populate the write folder sample text as \"samples\\phaseXX\\XXXX\\assets\\images\". Ensure Write folder is populated correctly. Remove the \"Paths or IDs\" label/field wrapper from the center column structure shown in preview-generator-v2__paths-field. Move the existing textarea to the top of the layout/control flow. Do not add JSON UI. Do not create schema. Do not modify samples. Update targeted tests if needed and produce review artifacts."
+codex run "Create PR_26126_014-preview-generator-v2-layout-polish. Fix Preview Generator V2 UI polish only. Preserve existing generation behavior. Fix Hide Header & Details so it enters the same fullscreen/collapsed-header behavior used by Palette Manager V2. Move Pick Repo Folder above Repo Selected. Status must not use an accordion; render Status as a normal compact status block. Reduce Output Summary height so it fits content instead of stretching tall; keep Write folder sample and Write folder compact and readable. Do not modify samples. Do not add schema. Produce review artifacts."
 ```
 
 ## Validation Commands
@@ -34,60 +34,16 @@ await page.route('https://cdn.jsdelivr.net/**', async (route) => {
 });
 await page.addInitScript(() => {
   const writes = [];
-  class FakeFile {
-    constructor(text) {
-      this._text = text;
-    }
-    async text() {
-      return this._text;
-    }
-  }
+  class FakeFile { constructor(text) { this._text = text; } async text() { return this._text; } }
   class FakeFileHandle {
-    constructor(path, existing = null) {
-      this.kind = 'file';
-      this.name = path.split('/').pop();
-      this.path = path;
-      this._existing = existing;
-    }
-    async getFile() {
-      return new FakeFile(this._existing || '');
-    }
-    async createWritable() {
-      const path = this.path;
-      return {
-        async write(content) {
-          writes.push({ path, content: String(content) });
-        },
-        async close() {}
-      };
-    }
+    constructor(path, existing = null) { this.kind = 'file'; this.name = path.split('/').pop(); this.path = path; this._existing = existing; }
+    async getFile() { return new FakeFile(this._existing || ''); }
+    async createWritable() { const path = this.path; return { async write(content) { writes.push({ path, content: String(content) }); }, async close() {} }; }
   }
   class FakeDirectoryHandle {
-    constructor(name = 'SelectedRepoFolder', path = '') {
-      this.kind = 'directory';
-      this.name = name;
-      this.path = path;
-      this.children = new Map();
-    }
-    async getDirectoryHandle(name) {
-      const key = `dir:${name}`;
-      if (!this.children.has(key)) {
-        const nextPath = this.path ? `${this.path}/${name}` : name;
-        this.children.set(key, new FakeDirectoryHandle(name, nextPath));
-      }
-      return this.children.get(key);
-    }
-    async getFileHandle(name, options = {}) {
-      const key = `file:${name}`;
-      if (!this.children.has(key)) {
-        if (!options.create) {
-          throw new DOMException('Not found', 'NotFoundError');
-        }
-        const nextPath = this.path ? `${this.path}/${name}` : name;
-        this.children.set(key, new FakeFileHandle(nextPath));
-      }
-      return this.children.get(key);
-    }
+    constructor(name = 'SelectedRepoFolder', path = '') { this.kind = 'directory'; this.name = name; this.path = path; this.children = new Map(); }
+    async getDirectoryHandle(name) { const key = `dir:${name}`; if (!this.children.has(key)) { const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeDirectoryHandle(name, nextPath)); } return this.children.get(key); }
+    async getFileHandle(name, options = {}) { const key = `file:${name}`; if (!this.children.has(key)) { if (!options.create) { throw new DOMException('Not found', 'NotFoundError'); } const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeFileHandle(nextPath)); } return this.children.get(key); }
   }
   window.__previewGeneratorV2Writes = writes;
   window.showDirectoryPicker = async () => new FakeDirectoryHandle();
@@ -95,91 +51,25 @@ await page.addInitScript(() => {
 
 await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: 'domcontentloaded' });
 await page.waitForSelector('#shared-theme-header');
+await page.waitForFunction(() => document.querySelector('[data-preview-generator-v2-summary]')?.dataset.toolsPlatformSummaryActive === '1');
 
-const requiredSelectors = [
-  '.palette-manager-v2__menu-sample',
-  '#executeBtn',
-  '#stopBtn',
-  '#pickRepoBtn',
-  '#targetTypeSamples',
-  '#targetTypeGames',
-  '#targetTypeTools',
-  '#baseUrl',
-  '#waitMs',
-  '#assetFolder',
-  '#forceRewrite',
-  '#onlyCaptureTimeout',
-  '#captureModeFullScreen',
-  '#captureModeCanvasOnly',
-  '#sampleList',
-  '#repoSelectedValue',
-  '#writeFolderSampleValue',
-  '#writeFolderActualValue',
-  '#status',
-  '#log',
-  '#frame'
-];
-for (const selector of requiredSelectors) {
-  const locator = page.locator(selector);
-  if (await locator.count() !== 1) {
-    throw new Error(`Expected one ${selector}`);
-  }
-}
+const repoOrder = await page.locator('#repoDestinationAccordionContent > *').evaluateAll((nodes) => nodes.map((node) => node.textContent.trim().replace(/\s+/g, ' ')));
+if (!repoOrder[0].includes('Pick Repo Folder') || !repoOrder[1].includes('Repo selected')) throw new Error(`Repo destination order is wrong: ${JSON.stringify(repoOrder)}`);
+if (await page.locator('#statusAccordionContent').count() !== 0) throw new Error('Status accordion content still exists.');
+if (await page.locator('.accordion-v2__header span:text-is("Status")').count() !== 0) throw new Error('Status is still rendered as an accordion header.');
+if (await page.locator('.preview-generator-v2__status-block #status').count() !== 1) throw new Error('Status block does not contain status text.');
 
-const menuButtons = await page.locator('.palette-manager-v2__menu-sample button').evaluateAll((buttons) => buttons.map((button) => button.textContent.trim()));
-if (JSON.stringify(menuButtons) !== JSON.stringify(['Generate Preview', 'Stop'])) {
-  throw new Error(`Unexpected menu buttons: ${JSON.stringify(menuButtons)}`);
-}
-
-const hasCopiedPreviewCss = await page.locator('link[href*="shared/preview/preview-pages.css"]').count();
-if (hasCopiedPreviewCss !== 0) {
-  throw new Error('Copied preview stylesheet is still loaded.');
-}
-const copiedClassCounts = await page.evaluate(() => ({
-  row: document.querySelectorAll('.row').length,
-  inline: document.querySelectorAll('.inline').length,
-  inlineLabel: document.querySelectorAll('.inline-label').length,
-  valueBox: document.querySelectorAll('.value-box').length,
-  pathsField: document.querySelectorAll('.preview-generator-v2__paths-field').length
-}));
-for (const [name, count] of Object.entries(copiedClassCounts)) {
-  if (count !== 0) {
-    throw new Error(`Copied preview class still present: ${name}=${count}`);
-  }
-}
-
-const forbiddenSelectors = [
-  '#applyToGameButton',
-  '#exportImageButton',
-  '#destinationDataInput',
-  'textarea[aria-label*="JSON" i]',
-  'textarea[id*="json" i]',
-  'pre[id*="json" i]'
-];
-for (const selector of forbiddenSelectors) {
-  if (await page.locator(selector).count() !== 0) {
-    throw new Error(`Forbidden JSON/action UI found: ${selector}`);
-  }
-}
-
-const sectionNames = await page.locator('.accordion-v2__header span:first-child').evaluateAll((items) => items.map((item) => item.textContent.trim()));
-for (const expected of ['Repo Destination', 'Target Source', 'Render Controls', 'Output Summary', 'Status']) {
-  if (!sectionNames.includes(expected)) {
-    throw new Error(`Missing section: ${expected}`);
-  }
-}
-if (sectionNames.includes('Paths or IDs')) {
-  throw new Error('Paths or IDs accordion header should not exist.');
-}
-
-if (await page.locator('label[for="sampleList"]').count() !== 0) {
-  throw new Error('Paths or IDs field label wrapper should not exist.');
-}
-
+const outputFlex = await page.locator('.preview-generator-v2__output-summary').evaluate((node) => getComputedStyle(node).flexGrow);
+if (outputFlex !== '0') throw new Error(`Output Summary should not flex-grow; got ${outputFlex}`);
 const initialSampleText = await page.locator('#writeFolderSampleValue').innerText();
-if (initialSampleText !== 'samples\\phaseXX\\XXXX\\assets\\images') {
-  throw new Error(`Unexpected write-folder sample text: ${initialSampleText}`);
-}
+if (initialSampleText !== 'samples\\phaseXX\\XXXX\\assets\\images') throw new Error(`Unexpected write-folder sample text: ${initialSampleText}`);
+
+const summary = page.locator('[data-preview-generator-v2-summary]');
+await summary.click();
+await page.waitForFunction(() => document.querySelector('.is-collapsible')?.open === false);
+await page.waitForFunction(() => document.querySelector('[data-preview-generator-v2-summary]')?.dataset.toolsPlatformSummaryState === 'collapsed');
+await summary.click();
+await page.waitForFunction(() => document.querySelector('.is-collapsible')?.open === true);
 
 await page.fill('#baseUrl', server.baseUrl);
 await page.fill('#waitMs', '3000');
@@ -187,36 +77,24 @@ await page.fill('#sampleList', '0107');
 await page.check('#forceRewrite');
 await page.click('#pickRepoBtn');
 await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
-const repoSelected = await page.locator('#repoSelectedValue').innerText();
-if (repoSelected !== 'SelectedRepoFolder') {
-  throw new Error(`Repo selected did not populate from folder handle: ${repoSelected}`);
-}
 await page.waitForFunction(() => document.getElementById('writeFolderActualValue').textContent === 'samples\\phase-01\\0107\\assets\\images');
 await page.click('#executeBtn');
 await page.waitForFunction(() => document.getElementById('log').textContent.includes('===== SUMMARY ====='), null, { timeout: 35000 });
 const writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
-if (writes.length !== 1) {
-  throw new Error(`Expected exactly one preview write, got ${writes.length}`);
-}
-if (!writes[0].path.endsWith('samples/phase-01/0107/assets/images/preview.svg')) {
-  throw new Error(`Unexpected write path: ${writes[0].path}`);
-}
-if (!writes[0].content.includes('<svg')) {
-  throw new Error('Generated content is not SVG-like.');
-}
-if (errors.length || consoleErrors.length) {
-  throw new Error([...errors, ...consoleErrors].join(' | '));
-}
+if (writes.length !== 1) throw new Error(`Expected exactly one preview write, got ${writes.length}`);
+if (!writes[0].path.endsWith('samples/phase-01/0107/assets/images/preview.svg')) throw new Error(`Unexpected write path: ${writes[0].path}`);
+if (!writes[0].content.includes('<svg')) throw new Error('Generated content is not SVG-like.');
+if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
 await browser.close();
 await server.close();
-console.log('preview-generator-v2 reskin fixes browser smoke valid');
+console.log('preview-generator-v2 layout polish browser smoke valid');
 '@ | node --input-type=module -
 ```
 
 ## Notes
 
-The targeted browser smoke validates the Palette Manager-style reskin fixes, confirms Stop is in the nav, verifies the old copied preview CSS/classes are gone, checks the write-folder text behavior, and exercises the existing preview generation write path.
+The targeted Playwright smoke validates the Preview Generator V2 layout polish, including Palette Manager-style collapsed header behavior, Pick Repo order, normal Status block, compact Output Summary sizing, and the existing preview generation write path.
 
 `npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
 
-Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 only.
+Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 UI polish only.

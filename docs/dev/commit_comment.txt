@@ -1,1 +1,1 @@
-Fix Preview Generator V2 reskin without changing generator behavior - PR_26126_013-preview-generator-v2-reskin-fixes
+Polish Preview Generator V2 layout and collapsed header behavior - PR_26126_014-preview-generator-v2-layout-polish

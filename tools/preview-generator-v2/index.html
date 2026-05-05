@@ -40,6 +40,31 @@
       overflow: hidden;
     }
 
+    .preview-generator-v2__output-summary,
+    .preview-generator-v2__output-summary.is-open {
+      flex: 0 0 auto;
+      overflow: visible;
+    }
+
+    .preview-generator-v2__output-summary .accordion-v2__content {
+      flex: 0 0 auto;
+      display: grid;
+      gap: 6px;
+      overflow: visible;
+      padding: 8px;
+    }
+
+    .preview-generator-v2__output-summary .accordion-v2__header {
+      flex-basis: 34px;
+      min-height: 34px;
+      padding: 7px 10px;
+    }
+
+    .preview-generator-v2__output-summary .preview-generator-v2__value {
+      min-height: 28px;
+      padding: 4px 8px;
+    }
+
     .preview-generator-v2__stack {
       display: grid;
       gap: 12px;
@@ -85,6 +110,10 @@
       padding: 7px 9px;
     }
 
+    .preview-generator-v2__summary-field {
+      grid-template-columns: 132px minmax(0, 1fr);
+    }
+
     .preview-generator-v2__paths-input {
       flex: 1 1 auto;
       min-height: 0;
@@ -95,23 +124,30 @@
       font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
     }
 
-    .preview-generator-v2__status-accordion {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    .preview-generator-v2__status-accordion .accordion-v2__content {
+    .preview-generator-v2__status-block {
       flex: 1 1 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
+      gap: 8px;
+      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
+      padding: 12px;
       overflow: hidden;
+    }
+
+    .preview-generator-v2__status-heading {
+      flex: 0 0 auto;
+      margin: 0;
+      color: #ffffff;
+      font-size: 1rem;
+      line-height: 1.2;
     }
 
     .preview-generator-v2__status-text {
       flex: 0 0 auto;
-      margin: 0 0 10px;
+      margin: 0;
     }
 
     #log {
@@ -132,6 +168,63 @@
       }
     }
 
+    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] > .palette-manager-v2,
+    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] > .palette-manager-v2 {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: none;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 8px 12px;
+      overflow: hidden;
+    }
+
+    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout,
+    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout {
+      flex: 1 1 auto;
+      grid-template-columns: 340px minmax(0, 1fr) 360px;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel,
+    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel {
+      min-height: 0;
+    }
+
+    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left,
+    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right,
+    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left,
+    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right {
+      position: static;
+      align-self: stretch;
+      height: 100%;
+      max-height: none;
+    }
+
+    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left,
+    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left {
+      justify-self: start;
+    }
+
+    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right,
+    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right {
+      justify-self: end;
+    }
+
+    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--center,
+    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--center {
+      align-self: stretch;
+      height: 100%;
+      min-height: 0;
+      max-height: none;
+    }
+
     #frame {
       position: absolute;
       width: 1px;
@@ -147,7 +240,7 @@
 
 <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="preview-generator-v2">
   <details class="is-collapsible" open>
-    <summary class="is-collapsible__summary">Hide Header and Details</summary>
+    <summary class="is-collapsible__summary" data-preview-generator-v2-summary>Hide Header and Details</summary>
     <div class="is-collapsible__content">
       <div id="shared-theme-header"></div>
       <div data-preview-generator-v2-header>
@@ -187,13 +280,13 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="repoDestinationAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
+            <div class="palette-manager-v2__controls">
+              <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
+            </div>
+
             <div class="palette-manager-v2__field palette-manager-v2__field--compact">
               <span>Repo selected</span>
               <div id="repoSelectedValue" class="preview-generator-v2__value">not selected</div>
-            </div>
-
-            <div class="palette-manager-v2__controls">
-              <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
             </div>
 
             <p class="preview-generator-v2__note">
@@ -291,33 +384,28 @@ Vector Map Editor"></textarea>
       </main>
 
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
-        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--import is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 palette-manager-v2__right-accordion preview-generator-v2__output-summary is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryAccordionContent">
             <span>Output Summary</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="outputSummaryAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
-            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
+            <div class="palette-manager-v2__field palette-manager-v2__field--compact preview-generator-v2__summary-field">
               <span>Write folder sample</span>
               <div id="writeFolderSampleValue" class="preview-generator-v2__value">samples\phaseXX\XXXX\assets\images</div>
             </div>
 
-            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
+            <div class="palette-manager-v2__field palette-manager-v2__field--compact preview-generator-v2__summary-field">
               <span>Write folder</span>
               <div id="writeFolderActualValue" class="preview-generator-v2__value">not available yet</div>
             </div>
           </div>
         </section>
 
-        <section class="accordion-v2 palette-manager-v2__right-accordion preview-generator-v2__status-accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
-            <span>Status</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="statusAccordionContent" class="accordion-v2__content">
-            <div id="status" class="preview-generator-v2__status-text">Repo folder: not selected</div>
-            <div id="log"></div>
-          </div>
+        <section class="preview-generator-v2__status-block" aria-labelledby="statusBlockTitle">
+          <h2 id="statusBlockTitle" class="preview-generator-v2__status-heading">Status</h2>
+          <div id="status" class="preview-generator-v2__status-text">Repo folder: not selected</div>
+          <div id="log"></div>
         </section>
       </aside>
     </div>
@@ -1257,6 +1345,139 @@ Vector Map Editor"></textarea>
 
       updatePathPreviewLabels();
     }
+  </script>
+  <script type="module">
+    const PREVIEW_GENERATOR_TOOL_ID = "preview-generator-v2";
+    const PREVIEW_GENERATOR_TOOL_NAME = "Preview SVG Generator";
+    const PREVIEW_GENERATOR_TOOL_DESCRIPTION = "Generate preview.svg files for samples, games, and tools.";
+    const PREVIEW_GENERATOR_HEADER_TEXT = `${PREVIEW_GENERATOR_TOOL_NAME} - ${PREVIEW_GENERATOR_TOOL_DESCRIPTION}`;
+    const PREVIEW_GENERATOR_INTRO_TEXT = `Preview Generator V2: ${PREVIEW_GENERATOR_TOOL_DESCRIPTION}`;
+    const previewGeneratorRuntimeParams = new URLSearchParams(window.location.search);
+
+    let suppressPreviewGeneratorFullscreenSync = false;
+
+    function getPreviewGeneratorHeaderDetails() {
+      return document.querySelector(".is-collapsible");
+    }
+
+    function getPreviewGeneratorSummaryElement() {
+      return document.querySelector("[data-preview-generator-v2-summary]");
+    }
+
+    function applyPreviewGeneratorFullscreenState(isActive) {
+      document.body.classList.toggle("tools-platform-fullscreen-active", isActive);
+      document.documentElement.classList.toggle("tools-platform-fullscreen-active", isActive);
+      if (isActive) {
+        document.body.setAttribute("data-tools-platform-fullscreen", "1");
+        document.documentElement.setAttribute("data-tools-platform-fullscreen", "1");
+      } else {
+        document.body.removeAttribute("data-tools-platform-fullscreen");
+        document.documentElement.removeAttribute("data-tools-platform-fullscreen");
+      }
+    }
+
+    function updatePreviewGeneratorSummary() {
+      const details = getPreviewGeneratorHeaderDetails();
+      const summary = getPreviewGeneratorSummaryElement();
+      if (!(details instanceof HTMLDetailsElement) || !(summary instanceof HTMLElement)) {
+        return;
+      }
+
+      const isFullscreen = Boolean(document.fullscreenElement);
+      const isExpanded = details.open === true;
+      summary.textContent = isExpanded
+        ? "Hide Header and Details"
+        : (isFullscreen ? PREVIEW_GENERATOR_HEADER_TEXT : "Show Header and Details");
+
+      if (isFullscreen) {
+        summary.style.maxWidth = "calc(100vw - 24px)";
+        summary.style.whiteSpace = "nowrap";
+        summary.style.overflow = "hidden";
+        summary.style.textOverflow = "ellipsis";
+      } else {
+        summary.style.removeProperty("max-width");
+        summary.style.removeProperty("white-space");
+        summary.style.removeProperty("overflow");
+        summary.style.removeProperty("text-overflow");
+      }
+
+      summary.setAttribute("data-tools-platform-summary-active", "1");
+      summary.setAttribute("data-tools-platform-summary-error", "0");
+      summary.setAttribute("data-tools-platform-summary-state", isExpanded ? "expanded" : "collapsed");
+      summary.setAttribute("data-tools-platform-summary-mode", isFullscreen ? "fullscreen" : "normal");
+      summary.setAttribute("data-tool-id", PREVIEW_GENERATOR_TOOL_ID);
+      summary.setAttribute("title", `${PREVIEW_GENERATOR_HEADER_TEXT}\n${PREVIEW_GENERATOR_INTRO_TEXT}`);
+    }
+
+    async function enterPreviewGeneratorFullscreenIfAvailable() {
+      if (document.fullscreenElement || !document.fullscreenEnabled) {
+        return;
+      }
+      if (typeof document.documentElement?.requestFullscreen !== "function") {
+        return;
+      }
+      try {
+        await document.documentElement.requestFullscreen();
+      } catch {
+        // Non-fatal: collapsed header state remains usable without fullscreen.
+      }
+    }
+
+    async function exitPreviewGeneratorFullscreenIfActive() {
+      if (!document.fullscreenElement || typeof document.exitFullscreen !== "function") {
+        return;
+      }
+      try {
+        await document.exitFullscreen();
+      } catch {
+        // Non-fatal: the fullscreenchange listener will resync if the browser exits later.
+      }
+    }
+
+    function bindPreviewGeneratorHeaderDetails() {
+      const details = getPreviewGeneratorHeaderDetails();
+      if (!(details instanceof HTMLDetailsElement)) {
+        return;
+      }
+
+      details.addEventListener("toggle", () => {
+        updatePreviewGeneratorSummary();
+        if (suppressPreviewGeneratorFullscreenSync) {
+          suppressPreviewGeneratorFullscreenSync = false;
+          return;
+        }
+
+        if (details.open) {
+          void exitPreviewGeneratorFullscreenIfActive();
+          return;
+        }
+
+        void enterPreviewGeneratorFullscreenIfAvailable();
+      });
+
+      document.addEventListener("fullscreenchange", () => {
+        const isFullscreen = Boolean(document.fullscreenElement);
+        applyPreviewGeneratorFullscreenState(isFullscreen);
+        if (!isFullscreen && !details.open) {
+          suppressPreviewGeneratorFullscreenSync = true;
+          details.open = true;
+        }
+        updatePreviewGeneratorSummary();
+      });
+    }
+
+    function initPreviewGeneratorShell() {
+      if (previewGeneratorRuntimeParams.get("mode") === "runtime") {
+        return;
+      }
+
+      document.body.classList.add("tools-platform-surface", "preview-generator-v2-local-shell");
+      applyPreviewGeneratorFullscreenState(Boolean(document.fullscreenElement));
+      bindPreviewGeneratorHeaderDetails();
+      updatePreviewGeneratorSummary();
+    }
+
+    initPreviewGeneratorShell();
   </script>
   <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
   <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>

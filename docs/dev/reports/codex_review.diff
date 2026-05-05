@@ -1,727 +1,601 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 527a568d..e5e42a15 100644
+index e5e42a15..c9ad44b1 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,13 +1,13 @@
--# Codex Commands - PR_26126_012-preview-generator-v2-reskin-from-working-base
-+# Codex Commands - PR_26126_013-preview-generator-v2-reskin-fixes
+@@ -1,7 +1,7 @@
+-# Codex Commands - PR_26126_013-preview-generator-v2-reskin-fixes
++# Codex Commands - PR_26126_014-preview-generator-v2-layout-polish
  
  ```bash
--codex run "Create PR_26126_012-preview-generator-v2-reskin-from-working-base. Using tools/preview-generator-v2/index.html (cold copy of preview.html), perform a reskin only. Do not change or break existing functionality, logic, or behavior. Do not remove existing inputs or labels; keep them and regroup them. Apply Palette Manager layout and header. Add NAV using palette-manager-v2__menu-sample with ONLY Generate Preview button. Reorganize UI: Left column groups existing controls into Repo Destination (rename Game Destination; folder selection behavior unchanged), Target Source, and Render Controls. Center column replaces visual Main Preview with a Paths or IDs input box (reuse existing input if present). Right column places Output Summary with Status under it. Do not add JSON UI. Do not create a schema. Do not modify samples. Ensure all existing preview generation still works after layout changes. Produce review artifacts."
-+codex run "Create PR_26126_013-preview-generator-v2-reskin-fixes. Fix Preview Generator V2 reskin only. Preserve existing preview.html functionality. Remove all copied preview.html CSS and use only Palette Manager V2-style HTML/classes plus Preview Generator V2 wrapper classes where needed. Move STOP into the Palette Manager-style NAV next to Generate Preview. Fix Repo selected so it populates correctly from the selected repo destination/folder. Remove the Repo Sample control entirely. Populate the write folder sample text as \"samples\\phaseXX\\XXXX\\assets\\images\". Ensure Write folder is populated correctly. Remove the \"Paths or IDs\" label/field wrapper from the center column structure shown in preview-generator-v2__paths-field. Move the existing textarea to the top of the layout/control flow. Do not add JSON UI. Do not create schema. Do not modify samples. Update targeted tests if needed and produce review artifacts."
+-codex run "Create PR_26126_013-preview-generator-v2-reskin-fixes. Fix Preview Generator V2 reskin only. Preserve existing preview.html functionality. Remove all copied preview.html CSS and use only Palette Manager V2-style HTML/classes plus Preview Generator V2 wrapper classes where needed. Move STOP into the Palette Manager-style NAV next to Generate Preview. Fix Repo selected so it populates correctly from the selected repo destination/folder. Remove the Repo Sample control entirely. Populate the write folder sample text as \"samples\\phaseXX\\XXXX\\assets\\images\". Ensure Write folder is populated correctly. Remove the \"Paths or IDs\" label/field wrapper from the center column structure shown in preview-generator-v2__paths-field. Move the existing textarea to the top of the layout/control flow. Do not add JSON UI. Do not create schema. Do not modify samples. Update targeted tests if needed and produce review artifacts."
++codex run "Create PR_26126_014-preview-generator-v2-layout-polish. Fix Preview Generator V2 UI polish only. Preserve existing generation behavior. Fix Hide Header & Details so it enters the same fullscreen/collapsed-header behavior used by Palette Manager V2. Move Pick Repo Folder above Repo Selected. Status must not use an accordion; render Status as a normal compact status block. Reduce Output Summary height so it fits content instead of stretching tall; keep Write folder sample and Write folder compact and readable. Do not modify samples. Do not add schema. Produce review artifacts."
  ```
  
  ## Validation Commands
- 
- ```bash
--git diff --check -- tools/preview-generator-v2/index.html tools/toolRegistry.js docs/dev/codex_commands.md docs/dev/commit_comment.txt
-+git diff --check -- tools/preview-generator-v2/index.html docs/dev/codex_commands.md docs/dev/commit_comment.txt
- git diff --name-only -- samples games start_of_day tools/shared tools/schemas
- npm run test:workspace-v2
- npm run codex:review-artifacts
-@@ -63,7 +63,7 @@ await page.addInitScript(() => {
-     }
+@@ -34,60 +34,16 @@ await page.route('https://cdn.jsdelivr.net/**', async (route) => {
+ });
+ await page.addInitScript(() => {
+   const writes = [];
+-  class FakeFile {
+-    constructor(text) {
+-      this._text = text;
+-    }
+-    async text() {
+-      return this._text;
+-    }
+-  }
++  class FakeFile { constructor(text) { this._text = text; } async text() { return this._text; } }
+   class FakeFileHandle {
+-    constructor(path, existing = null) {
+-      this.kind = 'file';
+-      this.name = path.split('/').pop();
+-      this.path = path;
+-      this._existing = existing;
+-    }
+-    async getFile() {
+-      return new FakeFile(this._existing || '');
+-    }
+-    async createWritable() {
+-      const path = this.path;
+-      return {
+-        async write(content) {
+-          writes.push({ path, content: String(content) });
+-        },
+-        async close() {}
+-      };
+-    }
++    constructor(path, existing = null) { this.kind = 'file'; this.name = path.split('/').pop(); this.path = path; this._existing = existing; }
++    async getFile() { return new FakeFile(this._existing || ''); }
++    async createWritable() { const path = this.path; return { async write(content) { writes.push({ path, content: String(content) }); }, async close() {} }; }
    }
    class FakeDirectoryHandle {
--    constructor(name = 'HTML-JavaScript-Gaming', path = '') {
-+    constructor(name = 'SelectedRepoFolder', path = '') {
-       this.kind = 'directory';
-       this.name = name;
-       this.path = path;
-@@ -99,8 +99,8 @@ await page.waitForSelector('#shared-theme-header');
- const requiredSelectors = [
-   '.palette-manager-v2__menu-sample',
-   '#executeBtn',
--  '#pickRepoBtn',
-   '#stopBtn',
-+  '#pickRepoBtn',
-   '#targetTypeSamples',
-   '#targetTypeGames',
-   '#targetTypeTools',
-@@ -127,10 +127,27 @@ for (const selector of requiredSelectors) {
- }
- 
- const menuButtons = await page.locator('.palette-manager-v2__menu-sample button').evaluateAll((buttons) => buttons.map((button) => button.textContent.trim()));
--if (JSON.stringify(menuButtons) !== JSON.stringify(['Generate Preview'])) {
-+if (JSON.stringify(menuButtons) !== JSON.stringify(['Generate Preview', 'Stop'])) {
-   throw new Error(`Unexpected menu buttons: ${JSON.stringify(menuButtons)}`);
- }
- 
-+const hasCopiedPreviewCss = await page.locator('link[href*="shared/preview/preview-pages.css"]').count();
-+if (hasCopiedPreviewCss !== 0) {
-+  throw new Error('Copied preview stylesheet is still loaded.');
-+}
-+const copiedClassCounts = await page.evaluate(() => ({
-+  row: document.querySelectorAll('.row').length,
-+  inline: document.querySelectorAll('.inline').length,
-+  inlineLabel: document.querySelectorAll('.inline-label').length,
-+  valueBox: document.querySelectorAll('.value-box').length,
-+  pathsField: document.querySelectorAll('.preview-generator-v2__paths-field').length
-+}));
-+for (const [name, count] of Object.entries(copiedClassCounts)) {
-+  if (count !== 0) {
-+    throw new Error(`Copied preview class still present: ${name}=${count}`);
-+  }
-+}
-+
- const forbiddenSelectors = [
-   '#applyToGameButton',
-   '#exportImageButton',
-@@ -146,11 +163,23 @@ for (const selector of forbiddenSelectors) {
- }
- 
- const sectionNames = await page.locator('.accordion-v2__header span:first-child').evaluateAll((items) => items.map((item) => item.textContent.trim()));
--for (const expected of ['Repo Destination', 'Target Source', 'Render Controls', 'Paths or IDs', 'Output Summary', 'Status']) {
-+for (const expected of ['Repo Destination', 'Target Source', 'Render Controls', 'Output Summary', 'Status']) {
-   if (!sectionNames.includes(expected)) {
-     throw new Error(`Missing section: ${expected}`);
+-    constructor(name = 'SelectedRepoFolder', path = '') {
+-      this.kind = 'directory';
+-      this.name = name;
+-      this.path = path;
+-      this.children = new Map();
+-    }
+-    async getDirectoryHandle(name) {
+-      const key = `dir:${name}`;
+-      if (!this.children.has(key)) {
+-        const nextPath = this.path ? `${this.path}/${name}` : name;
+-        this.children.set(key, new FakeDirectoryHandle(name, nextPath));
+-      }
+-      return this.children.get(key);
+-    }
+-    async getFileHandle(name, options = {}) {
+-      const key = `file:${name}`;
+-      if (!this.children.has(key)) {
+-        if (!options.create) {
+-          throw new DOMException('Not found', 'NotFoundError');
+-        }
+-        const nextPath = this.path ? `${this.path}/${name}` : name;
+-        this.children.set(key, new FakeFileHandle(nextPath));
+-      }
+-      return this.children.get(key);
+-    }
++    constructor(name = 'SelectedRepoFolder', path = '') { this.kind = 'directory'; this.name = name; this.path = path; this.children = new Map(); }
++    async getDirectoryHandle(name) { const key = `dir:${name}`; if (!this.children.has(key)) { const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeDirectoryHandle(name, nextPath)); } return this.children.get(key); }
++    async getFileHandle(name, options = {}) { const key = `file:${name}`; if (!this.children.has(key)) { if (!options.create) { throw new DOMException('Not found', 'NotFoundError'); } const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeFileHandle(nextPath)); } return this.children.get(key); }
    }
- }
-+if (sectionNames.includes('Paths or IDs')) {
-+  throw new Error('Paths or IDs accordion header should not exist.');
-+}
+   window.__previewGeneratorV2Writes = writes;
+   window.showDirectoryPicker = async () => new FakeDirectoryHandle();
+@@ -95,91 +51,25 @@ await page.addInitScript(() => {
+ 
+ await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: 'domcontentloaded' });
+ await page.waitForSelector('#shared-theme-header');
++await page.waitForFunction(() => document.querySelector('[data-preview-generator-v2-summary]')?.dataset.toolsPlatformSummaryActive === '1');
+ 
+-const requiredSelectors = [
+-  '.palette-manager-v2__menu-sample',
+-  '#executeBtn',
+-  '#stopBtn',
+-  '#pickRepoBtn',
+-  '#targetTypeSamples',
+-  '#targetTypeGames',
+-  '#targetTypeTools',
+-  '#baseUrl',
+-  '#waitMs',
+-  '#assetFolder',
+-  '#forceRewrite',
+-  '#onlyCaptureTimeout',
+-  '#captureModeFullScreen',
+-  '#captureModeCanvasOnly',
+-  '#sampleList',
+-  '#repoSelectedValue',
+-  '#writeFolderSampleValue',
+-  '#writeFolderActualValue',
+-  '#status',
+-  '#log',
+-  '#frame'
+-];
+-for (const selector of requiredSelectors) {
+-  const locator = page.locator(selector);
+-  if (await locator.count() !== 1) {
+-    throw new Error(`Expected one ${selector}`);
+-  }
+-}
+-
+-const menuButtons = await page.locator('.palette-manager-v2__menu-sample button').evaluateAll((buttons) => buttons.map((button) => button.textContent.trim()));
+-if (JSON.stringify(menuButtons) !== JSON.stringify(['Generate Preview', 'Stop'])) {
+-  throw new Error(`Unexpected menu buttons: ${JSON.stringify(menuButtons)}`);
+-}
+-
+-const hasCopiedPreviewCss = await page.locator('link[href*="shared/preview/preview-pages.css"]').count();
+-if (hasCopiedPreviewCss !== 0) {
+-  throw new Error('Copied preview stylesheet is still loaded.');
+-}
+-const copiedClassCounts = await page.evaluate(() => ({
+-  row: document.querySelectorAll('.row').length,
+-  inline: document.querySelectorAll('.inline').length,
+-  inlineLabel: document.querySelectorAll('.inline-label').length,
+-  valueBox: document.querySelectorAll('.value-box').length,
+-  pathsField: document.querySelectorAll('.preview-generator-v2__paths-field').length
+-}));
+-for (const [name, count] of Object.entries(copiedClassCounts)) {
+-  if (count !== 0) {
+-    throw new Error(`Copied preview class still present: ${name}=${count}`);
+-  }
+-}
+-
+-const forbiddenSelectors = [
+-  '#applyToGameButton',
+-  '#exportImageButton',
+-  '#destinationDataInput',
+-  'textarea[aria-label*="JSON" i]',
+-  'textarea[id*="json" i]',
+-  'pre[id*="json" i]'
+-];
+-for (const selector of forbiddenSelectors) {
+-  if (await page.locator(selector).count() !== 0) {
+-    throw new Error(`Forbidden JSON/action UI found: ${selector}`);
+-  }
+-}
+-
+-const sectionNames = await page.locator('.accordion-v2__header span:first-child').evaluateAll((items) => items.map((item) => item.textContent.trim()));
+-for (const expected of ['Repo Destination', 'Target Source', 'Render Controls', 'Output Summary', 'Status']) {
+-  if (!sectionNames.includes(expected)) {
+-    throw new Error(`Missing section: ${expected}`);
+-  }
+-}
+-if (sectionNames.includes('Paths or IDs')) {
+-  throw new Error('Paths or IDs accordion header should not exist.');
+-}
+-
+-if (await page.locator('label[for="sampleList"]').count() !== 0) {
+-  throw new Error('Paths or IDs field label wrapper should not exist.');
+-}
++const repoOrder = await page.locator('#repoDestinationAccordionContent > *').evaluateAll((nodes) => nodes.map((node) => node.textContent.trim().replace(/\s+/g, ' ')));
++if (!repoOrder[0].includes('Pick Repo Folder') || !repoOrder[1].includes('Repo selected')) throw new Error(`Repo destination order is wrong: ${JSON.stringify(repoOrder)}`);
++if (await page.locator('#statusAccordionContent').count() !== 0) throw new Error('Status accordion content still exists.');
++if (await page.locator('.accordion-v2__header span:text-is("Status")').count() !== 0) throw new Error('Status is still rendered as an accordion header.');
++if (await page.locator('.preview-generator-v2__status-block #status').count() !== 1) throw new Error('Status block does not contain status text.');
+ 
++const outputFlex = await page.locator('.preview-generator-v2__output-summary').evaluate((node) => getComputedStyle(node).flexGrow);
++if (outputFlex !== '0') throw new Error(`Output Summary should not flex-grow; got ${outputFlex}`);
+ const initialSampleText = await page.locator('#writeFolderSampleValue').innerText();
+-if (initialSampleText !== 'samples\\phaseXX\\XXXX\\assets\\images') {
+-  throw new Error(`Unexpected write-folder sample text: ${initialSampleText}`);
+-}
++if (initialSampleText !== 'samples\\phaseXX\\XXXX\\assets\\images') throw new Error(`Unexpected write-folder sample text: ${initialSampleText}`);
 +
-+if (await page.locator('label[for="sampleList"]').count() !== 0) {
-+  throw new Error('Paths or IDs field label wrapper should not exist.');
-+}
-+
-+const initialSampleText = await page.locator('#writeFolderSampleValue').innerText();
-+if (initialSampleText !== 'samples\\phaseXX\\XXXX\\assets\\images') {
-+  throw new Error(`Unexpected write-folder sample text: ${initialSampleText}`);
-+}
++const summary = page.locator('[data-preview-generator-v2-summary]');
++await summary.click();
++await page.waitForFunction(() => document.querySelector('.is-collapsible')?.open === false);
++await page.waitForFunction(() => document.querySelector('[data-preview-generator-v2-summary]')?.dataset.toolsPlatformSummaryState === 'collapsed');
++await summary.click();
++await page.waitForFunction(() => document.querySelector('.is-collapsible')?.open === true);
  
  await page.fill('#baseUrl', server.baseUrl);
  await page.fill('#waitMs', '3000');
-@@ -158,6 +187,11 @@ await page.fill('#sampleList', '0107');
+@@ -187,36 +77,24 @@ await page.fill('#sampleList', '0107');
  await page.check('#forceRewrite');
  await page.click('#pickRepoBtn');
  await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
-+const repoSelected = await page.locator('#repoSelectedValue').innerText();
-+if (repoSelected !== 'SelectedRepoFolder') {
-+  throw new Error(`Repo selected did not populate from folder handle: ${repoSelected}`);
-+}
-+await page.waitForFunction(() => document.getElementById('writeFolderActualValue').textContent === 'samples\\phase-01\\0107\\assets\\images');
+-const repoSelected = await page.locator('#repoSelectedValue').innerText();
+-if (repoSelected !== 'SelectedRepoFolder') {
+-  throw new Error(`Repo selected did not populate from folder handle: ${repoSelected}`);
+-}
+ await page.waitForFunction(() => document.getElementById('writeFolderActualValue').textContent === 'samples\\phase-01\\0107\\assets\\images');
  await page.click('#executeBtn');
  await page.waitForFunction(() => document.getElementById('log').textContent.includes('===== SUMMARY ====='), null, { timeout: 35000 });
  const writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
-@@ -175,17 +209,13 @@ if (errors.length || consoleErrors.length) {
- }
+-if (writes.length !== 1) {
+-  throw new Error(`Expected exactly one preview write, got ${writes.length}`);
+-}
+-if (!writes[0].path.endsWith('samples/phase-01/0107/assets/images/preview.svg')) {
+-  throw new Error(`Unexpected write path: ${writes[0].path}`);
+-}
+-if (!writes[0].content.includes('<svg')) {
+-  throw new Error('Generated content is not SVG-like.');
+-}
+-if (errors.length || consoleErrors.length) {
+-  throw new Error([...errors, ...consoleErrors].join(' | '));
+-}
++if (writes.length !== 1) throw new Error(`Expected exactly one preview write, got ${writes.length}`);
++if (!writes[0].path.endsWith('samples/phase-01/0107/assets/images/preview.svg')) throw new Error(`Unexpected write path: ${writes[0].path}`);
++if (!writes[0].content.includes('<svg')) throw new Error('Generated content is not SVG-like.');
++if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
  await browser.close();
  await server.close();
--console.log('preview-generator-v2 reskin browser smoke valid');
-+console.log('preview-generator-v2 reskin fixes browser smoke valid');
+-console.log('preview-generator-v2 reskin fixes browser smoke valid');
++console.log('preview-generator-v2 layout polish browser smoke valid');
  '@ | node --input-type=module -
  ```
  
  ## Notes
  
--`tools/preview-generator-v2/index.html` remains the cold-copy working generator base with the existing inline generator script and functional element IDs preserved.
--
--The reskin only regroups the existing controls into Palette Manager-style header, menu, panels, and accordion sections. The nav contains only `Generate Preview`, using the existing `executeBtn` behavior.
--
--The targeted Playwright smoke verifies the reskinned layout, absence of JSON/schema UI controls, and the existing generator path by writing a fake `preview.svg` through the File System Access API shim.
-+The targeted browser smoke validates the Palette Manager-style reskin fixes, confirms Stop is in the nav, verifies the old copied preview CSS/classes are gone, checks the write-folder text behavior, and exercises the existing preview generation write path.
+-The targeted browser smoke validates the Palette Manager-style reskin fixes, confirms Stop is in the nav, verifies the old copied preview CSS/classes are gone, checks the write-folder text behavior, and exercises the existing preview generation write path.
++The targeted Playwright smoke validates the Preview Generator V2 layout polish, including Palette Manager-style collapsed header behavior, Pick Repo order, normal Status block, compact Output Summary sizing, and the existing preview generation write path.
  
  `npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
  
+-Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 only.
++Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 UI polish only.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index f1082a2a..a1db3920 100644
+index a1db3920..19f44b24 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Reskin Preview Generator V2 from working base without behavior changes - PR_26126_012-preview-generator-v2-reskin-from-working-base
-+Fix Preview Generator V2 reskin without changing generator behavior - PR_26126_013-preview-generator-v2-reskin-fixes
+-Fix Preview Generator V2 reskin without changing generator behavior - PR_26126_013-preview-generator-v2-reskin-fixes
++Polish Preview Generator V2 layout and collapsed header behavior - PR_26126_014-preview-generator-v2-layout-polish
 diff --git a/tools/preview-generator-v2/index.html b/tools/preview-generator-v2/index.html
-index abe9e246..9a364997 100644
+index 9a364997..551632cb 100644
 --- a/tools/preview-generator-v2/index.html
 +++ b/tools/preview-generator-v2/index.html
-@@ -8,203 +8,130 @@
-   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
-   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
-   <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
--  <link rel="stylesheet" href="../shared/preview/preview-pages.css" />
-+  <link rel="stylesheet" href="../palette-manager-v2/paletteManagerV2.css" />
-   <style>
--    body.tools-platform-tool-page {
-+    body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] {
-       min-height: 100vh;
-       min-height: 100dvh;
-       display: flex;
-       flex-direction: column;
-+      overflow-y: auto;
-       overflow-x: hidden;
--      background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
-       color: var(--text, #f7f4ff);
--    }
--
--    .preview-generator-v2__header {
--      width: calc(100% - 32px);
--      margin: 10px auto;
--    }
--
--    .preview-generator-v2__header-frame {
--      margin-top: 10px;
--      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
--      border-radius: 18px;
-       background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
--      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
--      padding: 12px 14px;
-     }
- 
--    .preview-generator-v2__header-frame h1 {
--      margin: 0;
--      color: #ffffff;
--      font-size: clamp(1.08rem, 1.6vw, 1.24rem);
--      line-height: 1.2;
-+    body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .is-collapsible,
-+    body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-manager-v2__menu-sample {
-+      flex: 0 0 auto;
-     }
- 
--    .preview-generator-v2__header-frame p {
--      margin: 6px 0 0;
--      color: var(--muted, #e9ddff);
--    }
--
--    .palette-manager-v2__menu-sample {
--      box-sizing: border-box;
-+    [data-preview-generator-v2-header] {
-+      display: block;
-       width: calc(100% - 32px);
--      display: flex;
--      align-items: center;
--      justify-content: center;
--      flex-wrap: wrap;
--      gap: 12px;
--      margin: 16px 16px 0;
--      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
--      border-radius: 8px;
--      background: var(--panel, rgba(30, 24, 48, 0.92));
--      padding: 10px 14px;
--    }
--
--    .palette-manager-v2__menu-actions {
--      display: flex;
--      justify-content: center;
--      gap: 8px;
--    }
--
--    .preview-generator-v2 {
--      box-sizing: border-box;
--      flex: 1 1 auto;
--      min-height: 0;
--      width: 100%;
--      padding: 16px;
--      overflow: visible;
--    }
--
--    .preview-generator-v2 *,
--    .preview-generator-v2 *::before,
--    .preview-generator-v2 *::after {
--      box-sizing: border-box;
--    }
--
--    .preview-generator-v2__layout {
--      display: grid;
--      grid-template-columns: 360px minmax(0, 1fr) 360px;
--      gap: 14px;
--      width: 100%;
--      min-width: 0;
--      min-height: 0;
--      align-items: stretch;
--    }
--
--    .preview-generator-v2__panel {
--      min-width: 0;
--      min-height: 0;
--      height: calc(100vh - 220px);
--      height: calc(100dvh - 220px);
--      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
--      border-radius: 8px;
--      background: var(--panel, rgba(30, 24, 48, 0.92));
--      padding: 14px;
--      overflow: auto;
--    }
--
--    .preview-generator-v2__panel--left,
--    .preview-generator-v2__panel--right {
--      width: 100%;
--      position: sticky;
--      top: 16px;
--    }
--
--    .preview-generator-v2__panel--center {
--      min-height: 420px;
--      display: flex;
--      flex-direction: column;
--      overflow: hidden;
--    }
--
--    .preview-generator-v2__panel .accordion-v2 + .accordion-v2 {
--      margin-top: 14px;
-+      margin: 10px auto;
-     }
- 
--    .preview-generator-v2__paths-panel {
-+    .preview-generator-v2__center-panel {
-       flex: 1 1 auto;
-       min-height: 0;
--      overflow: hidden;
--    }
--
--    .preview-generator-v2__paths-panel .accordion-v2__content {
--      height: 100%;
--      min-height: 0;
-       display: flex;
-       flex-direction: column;
+@@ -40,6 +40,31 @@
        overflow: hidden;
      }
  
--    .preview-generator-v2 .row,
--    .preview-generator-v2 .note {
--      margin: 0;
--    }
--
++    .preview-generator-v2__output-summary,
++    .preview-generator-v2__output-summary.is-open {
++      flex: 0 0 auto;
++      overflow: visible;
++    }
++
++    .preview-generator-v2__output-summary .accordion-v2__content {
++      flex: 0 0 auto;
++      display: grid;
++      gap: 6px;
++      overflow: visible;
++      padding: 8px;
++    }
++
++    .preview-generator-v2__output-summary .accordion-v2__header {
++      flex-basis: 34px;
++      min-height: 34px;
++      padding: 7px 10px;
++    }
++
++    .preview-generator-v2__output-summary .preview-generator-v2__value {
++      min-height: 28px;
++      padding: 4px 8px;
++    }
++
      .preview-generator-v2__stack {
        display: grid;
        gap: 12px;
+@@ -85,6 +110,10 @@
+       padding: 7px 9px;
      }
  
--    .preview-generator-v2__field {
-+    .preview-generator-v2__radio-group {
-+      min-width: 0;
-       display: grid;
-       gap: 8px;
--      min-width: 0;
--      font-weight: 700;
-+      border: 0;
-+      padding: 0;
-+      margin: 0;
-     }
- 
--    .preview-generator-v2__field input {
--      width: 100%;
--      min-width: 0;
-+    .preview-generator-v2__radio-group legend {
-+      font-weight: 700;
-+      padding: 0;
-     }
- 
--    .preview-generator-v2__field--compact {
--      grid-template-columns: 132px minmax(0, 1fr);
-+    .preview-generator-v2__radio-option {
-+      display: inline-flex;
-       align-items: center;
--    }
--
--    .preview-generator-v2__inline-group {
--      display: grid;
-       gap: 8px;
-+      font-weight: 600;
-     }
- 
--    .preview-generator-v2__inline-group > label:first-child,
--    .preview-generator-v2__field > label:first-child {
--      font-weight: 700;
-+    .preview-generator-v2__note {
-+      margin: 0;
-+      color: var(--pm-text-muted, #c4b5fd);
-+      font-size: 0.9rem;
-     }
- 
--    .preview-generator-v2__controls {
-+    .preview-generator-v2__value {
-+      min-height: 36px;
-+      min-width: 0;
-       display: flex;
--      flex-wrap: wrap;
--      gap: 8px;
-+      align-items: center;
-+      overflow-wrap: anywhere;
-+      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
-+      border-radius: 8px;
-+      background: var(--pm-surface-strong, rgba(0, 0, 0, 0.24));
-+      color: var(--text, #f7f4ff);
-+      padding: 7px 9px;
-     }
- 
--    .preview-generator-v2__paths-field {
-+    .preview-generator-v2__paths-input {
++    .preview-generator-v2__summary-field {
++      grid-template-columns: 132px minmax(0, 1fr);
++    }
++
+     .preview-generator-v2__paths-input {
        flex: 1 1 auto;
        min-height: 0;
--    }
--
--    #sampleList {
-       width: 100%;
--      min-height: 0;
--      height: 100%;
-       resize: none;
-       overflow: auto;
-+      line-height: 1.45;
+@@ -95,23 +124,30 @@
        font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
      }
  
-+    .preview-generator-v2__status-accordion {
-+      flex: 1 1 auto;
-+      min-height: 0;
-+      overflow: hidden;
-+    }
-+
-+    .preview-generator-v2__status-accordion .accordion-v2__content {
-+      flex: 1 1 auto;
-+      min-height: 0;
-+      display: flex;
-+      flex-direction: column;
-+      overflow: hidden;
-+    }
-+
-+    .preview-generator-v2__status-text {
-+      flex: 0 0 auto;
-+      margin: 0 0 10px;
-+    }
-+
-     #log {
--      min-height: 360px;
--      max-height: none;
-+      flex: 1 1 auto;
-+      min-height: 260px;
-       overflow: auto;
-       white-space: pre-wrap;
--      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+-    .preview-generator-v2__status-accordion {
+-      flex: 1 1 auto;
+-      min-height: 0;
+-      overflow: hidden;
+-    }
+-
+-    .preview-generator-v2__status-accordion .accordion-v2__content {
++    .preview-generator-v2__status-block {
+       flex: 1 1 auto;
+       min-height: 0;
+       display: flex;
+       flex-direction: column;
++      gap: 8px;
 +      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
-       border-radius: 8px;
--      background: rgba(0, 0, 0, 0.24);
--      color: var(--muted, #c4b5fd);
-+      background: var(--pm-surface-strong, rgba(0, 0, 0, 0.24));
-+      color: var(--pm-text-muted, #c4b5fd);
-       padding: 10px;
++      border-radius: 8px;
++      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
++      padding: 12px;
+       overflow: hidden;
      }
  
-+    @media (max-width: 1180px) {
-+      #sampleList {
-+        min-height: 360px;
-+      }
++    .preview-generator-v2__status-heading {
++      flex: 0 0 auto;
++      margin: 0;
++      color: #ffffff;
++      font-size: 1rem;
++      line-height: 1.2;
++    }
++
+     .preview-generator-v2__status-text {
+       flex: 0 0 auto;
+-      margin: 0 0 10px;
++      margin: 0;
+     }
+ 
+     #log {
+@@ -132,6 +168,63 @@
+       }
+     }
+ 
++    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] > .palette-manager-v2,
++    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] > .palette-manager-v2 {
++      flex: 1 1 auto;
++      min-width: 0;
++      max-width: none;
++      min-height: 0;
++      width: 100%;
++      display: flex;
++      flex-direction: column;
++      margin: 0;
++      padding: 8px 12px;
++      overflow: hidden;
++    }
++
++    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout,
++    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout {
++      flex: 1 1 auto;
++      grid-template-columns: 340px minmax(0, 1fr) 360px;
++      width: 100%;
++      height: 100%;
++      min-height: 0;
++      align-items: stretch;
++    }
++
++    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel,
++    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel {
++      min-height: 0;
++    }
++
++    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left,
++    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right,
++    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left,
++    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right {
++      position: static;
++      align-self: stretch;
++      height: 100%;
++      max-height: none;
++    }
++
++    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left,
++    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left {
++      justify-self: start;
++    }
++
++    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right,
++    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right {
++      justify-self: end;
++    }
++
++    html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--center,
++    body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--center {
++      align-self: stretch;
++      height: 100%;
++      min-height: 0;
++      max-height: none;
 +    }
 +
      #frame {
        position: absolute;
        width: 1px;
-@@ -214,165 +141,141 @@
-       border: 0;
-       visibility: hidden;
-     }
--
--    body.tools-platform-tool-page :is(button, input, textarea) {
--      border-radius: 10px;
--    }
--
--    body.tools-platform-tool-page :is(input, textarea) {
--      border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
--      background: var(--surface-inline, rgba(43, 16, 91, 0.9));
--      color: var(--text, #f7f4ff);
--    }
--
--    @media (max-width: 1180px) {
--      .preview-generator-v2__layout {
--        grid-template-columns: 1fr;
--      }
--
--      .preview-generator-v2__panel {
--        height: auto;
--        min-height: 0;
--      }
--
--      .preview-generator-v2__panel--left,
--      .preview-generator-v2__panel--right {
--        position: static;
--      }
--
--      #sampleList {
--        min-height: 360px;
--      }
--    }
-   </style>
-   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
- </head>
+@@ -147,7 +240,7 @@
  
--<body class="tools-platform-tool-page hub-page-tools" data-tool-id="preview-generator-v2">
--  <details class="is-collapsible preview-generator-v2__header" open>
-+<body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="preview-generator-v2">
-+  <details class="is-collapsible" open>
-     <summary class="is-collapsible__summary">Hide Header and Details</summary>
+ <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="preview-generator-v2">
+   <details class="is-collapsible" open>
+-    <summary class="is-collapsible__summary">Hide Header and Details</summary>
++    <summary class="is-collapsible__summary" data-preview-generator-v2-summary>Hide Header and Details</summary>
      <div class="is-collapsible__content">
        <div id="shared-theme-header"></div>
--      <section class="tools-platform-frame preview-generator-v2__header-frame">
--        <h1>Preview SVG Generator</h1>
--        <p>Generate preview.svg files for samples, games, and tools.</p>
--      </section>
-+      <div data-preview-generator-v2-header>
-+        <section class="tools-platform-frame preview-generator-v2__local-shell-frame">
-+          <div class="tools-platform-frame__accordion-content">
-+            <div class="tools-platform-frame__accordion-summary">
-+              <div class="tools-platform-frame__summary-copy">
-+                <h1 class="tools-platform-frame__title" data-tool-id="preview-generator-v2">Preview SVG Generator</h1>
-+                <h2 class="tools-platform-frame__eyebrow">Preview Generator V2</h2>
-+              </div>
-+              <div class="tools-platform-frame__summary-meta">
-+                <div class="tools-platform-frame__meta">Generate preview.svg files for samples, games, and tools.</div>
-+              </div>
-+            </div>
-+            <div class="tools-platform-frame__topline">
-+              <p class="tools-platform-frame__description">Existing preview generation behavior is preserved in the Palette Manager-style shell.</p>
-+            </div>
-+          </div>
-+        </section>
-+      </div>
-     </div>
-   </details>
- 
-   <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
-     <div class="palette-manager-v2__menu-actions">
-       <button id="executeBtn" type="button" disabled>Generate Preview</button>
-+      <button id="stopBtn" type="button" disabled>Stop</button>
-     </div>
-   </nav>
- 
--  <div class="preview-generator-v2 app-shell">
--    <div class="preview-generator-v2__layout tools-platform-layout-grid">
--      <aside class="preview-generator-v2__panel preview-generator-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
--        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+  <div class="palette-manager-v2 preview-generator-v2 app-shell">
-+    <div class="palette-manager-v2__layout preview-generator-v2__layout tools-platform-layout-grid">
-+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
-+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationAccordionContent">
-             <span>Repo Destination</span>
+       <div data-preview-generator-v2-header>
+@@ -187,15 +280,15 @@
              <span class="accordion-v2__icon" aria-hidden="true">+</span>
            </button>
            <div id="repoDestinationAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
--            <div class="row preview-generator-v2__field preview-generator-v2__field--compact">
--              <label>Repo selected</label>
--              <div id="repoSelectedValue" class="value-box">not selected</div>
-+            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
-+              <span>Repo selected</span>
-+              <div id="repoSelectedValue" class="preview-generator-v2__value">not selected</div>
-             </div>
- 
--            <div class="row preview-generator-v2__controls">
--              <button id="pickRepoBtn">Pick Repo Folder</button>
--              <button id="stopBtn" disabled>Stop</button>
 +            <div class="palette-manager-v2__controls">
 +              <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
++            </div>
++
+             <div class="palette-manager-v2__field palette-manager-v2__field--compact">
+               <span>Repo selected</span>
+               <div id="repoSelectedValue" class="preview-generator-v2__value">not selected</div>
              </div>
  
--            <div class="note">
-+            <p class="preview-generator-v2__note">
+-            <div class="palette-manager-v2__controls">
+-              <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
+-            </div>
+-
+             <p class="preview-generator-v2__note">
                Pick the repo root folder, for example <code>HTML-JavaScript-Gaming</code>.
--            </div>
-+            </p>
-           </div>
-         </section>
- 
--        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="targetSourceAccordionContent">
-             <span>Target Source</span>
-             <span class="accordion-v2__icon" aria-hidden="true">+</span>
-           </button>
-           <div id="targetSourceAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
--            <div class="row preview-generator-v2__inline-group">
--              <label>Target type</label>
--              <span class="inline">
-+            <fieldset class="preview-generator-v2__radio-group">
-+              <legend>Target type</legend>
-+              <label class="preview-generator-v2__radio-option" for="targetTypeSamples">
-                 <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
--                <label for="targetTypeSamples" class="inline-label">Samples</label>
--              </span>
--              <span class="inline">
-+                <span>Samples</span>
-+              </label>
-+              <label class="preview-generator-v2__radio-option" for="targetTypeGames">
-                 <input id="targetTypeGames" type="radio" name="targetType" value="games" />
--                <label for="targetTypeGames" class="inline-label">Games</label>
--              </span>
--              <span class="inline">
-+                <span>Games</span>
-+              </label>
-+              <label class="preview-generator-v2__radio-option" for="targetTypeTools">
-                 <input id="targetTypeTools" type="radio" name="targetType" value="tools" />
--                <label for="targetTypeTools" class="inline-label">Tools</label>
--              </span>
--            </div>
-+                <span>Tools</span>
-+              </label>
-+            </fieldset>
- 
--            <div class="row preview-generator-v2__field">
--              <label for="baseUrl">Base URL</label>
-+            <label class="palette-manager-v2__field" for="baseUrl">
-+              <span>Base URL</span>
-               <input id="baseUrl" type="text" value="http://127.0.0.1:5500" />
--            </div>
-+            </label>
-           </div>
-         </section>
- 
--        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsAccordionContent">
-             <span>Render Controls</span>
-             <span class="accordion-v2__icon" aria-hidden="true">+</span>
-           </button>
-           <div id="renderControlsAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
--            <div class="row preview-generator-v2__field">
--              <label for="waitMs">Wait before capture</label>
-+            <label class="palette-manager-v2__field" for="waitMs">
-+              <span>Wait before capture</span>
-               <input id="waitMs" type="number" value="3500" min="3000" step="500" />
--            </div>
-+            </label>
- 
--            <div class="row preview-generator-v2__field">
--              <label for="assetFolder">Asset folder</label>
-+            <label class="palette-manager-v2__field" for="assetFolder">
-+              <span>Asset folder</span>
-               <input id="assetFolder" type="text" value="assets/images" />
--            </div>
-+            </label>
- 
--            <div class="row preview-generator-v2__inline-group">
--              <label>Options</label>
--              <span class="inline">
-+            <fieldset class="preview-generator-v2__radio-group">
-+              <legend>Options</legend>
-+              <label class="preview-generator-v2__radio-option" for="forceRewrite">
-                 <input id="forceRewrite" type="checkbox" />
--                <label for="forceRewrite" class="inline-label">Force rewrite</label>
--              </span>
--              <span class="inline">
-+                <span>Force rewrite</span>
-+              </label>
-+              <label class="preview-generator-v2__radio-option" for="onlyCaptureTimeout">
-                 <input id="onlyCaptureTimeout" type="checkbox" checked />
--                <label for="onlyCaptureTimeout" class="inline-label">Only rewrite if preview.svg contains literal "Capture timeout"</label>
--              </span>
--            </div>
-+                <span>Only rewrite if preview.svg contains literal "Capture timeout"</span>
-+              </label>
-+            </fieldset>
- 
--            <div class="row preview-generator-v2__inline-group">
--              <label>Capture mode</label>
--              <span class="inline">
-+            <fieldset class="preview-generator-v2__radio-group">
-+              <legend>Capture mode</legend>
-+              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
-                 <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
--                <label for="captureModeFullScreen" class="inline-label">Full Screen (1600x900 HTML Page)</label>
--              </span>
--              <span class="inline">
-+                <span>Full Screen (1600x900 HTML Page)</span>
-+              </label>
-+              <label class="preview-generator-v2__radio-option" for="captureModeCanvasOnly">
-                 <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
--                <label for="captureModeCanvasOnly" class="inline-label">Canvas Only</label>
--              </span>
--            </div>
-+                <span>Canvas Only</span>
-+              </label>
-+            </fieldset>
-           </div>
-         </section>
-       </aside>
- 
--      <main class="preview-generator-v2__panel preview-generator-v2__panel--center">
--        <section class="accordion-v2 preview-generator-v2__paths-panel is-open" data-accordion-v2-open="true">
--          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="pathsAccordionContent">
--            <span>Paths or IDs</span>
--            <span class="accordion-v2__icon" aria-hidden="true">+</span>
--          </button>
--          <div id="pathsAccordionContent" class="accordion-v2__content">
--            <div class="row preview-generator-v2__field preview-generator-v2__paths-field">
--              <label for="sampleList">Paths or IDs</label>
--              <textarea id="sampleList" placeholder="Samples examples:
-+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center preview-generator-v2__center-panel">
-+        <textarea id="sampleList" class="preview-generator-v2__paths-input" aria-label="Paths or IDs" placeholder="Samples examples:
- samples/phase-01/0102/index.html
- samples/phase-13/1303/index.html
- 0107
-@@ -385,37 +288,34 @@ Bouncing-ball
- Tools examples:
- tools/Vector Map Editor/index.html
- Vector Map Editor"></textarea>
--            </div>
--          </div>
--        </section>
+             </p>
+@@ -291,33 +384,28 @@ Vector Map Editor"></textarea>
        </main>
  
--      <aside class="preview-generator-v2__panel preview-generator-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
--        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
-+        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--import is-open" data-accordion-v2-open="true">
+       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
+-        <section class="accordion-v2 palette-manager-v2__right-accordion palette-manager-v2__right-accordion--import is-open" data-accordion-v2-open="true">
++        <section class="accordion-v2 palette-manager-v2__right-accordion preview-generator-v2__output-summary is-open" data-accordion-v2-open="true">
            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryAccordionContent">
              <span>Output Summary</span>
              <span class="accordion-v2__icon" aria-hidden="true">+</span>
            </button>
            <div id="outputSummaryAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
--            <div class="row preview-generator-v2__field preview-generator-v2__field--compact">
--              <label>Write folder as sample</label>
--              <div id="writeFolderSampleValue" class="value-box">samples\phase-XX\XXXX\assets</div>
-+            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
-+              <span>Write folder sample</span>
-+              <div id="writeFolderSampleValue" class="preview-generator-v2__value">samples\phaseXX\XXXX\assets\images</div>
+-            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
++            <div class="palette-manager-v2__field palette-manager-v2__field--compact preview-generator-v2__summary-field">
+               <span>Write folder sample</span>
+               <div id="writeFolderSampleValue" class="preview-generator-v2__value">samples\phaseXX\XXXX\assets\images</div>
              </div>
  
--            <div class="row preview-generator-v2__field preview-generator-v2__field--compact">
--              <label>Write folder</label>
--              <div id="writeFolderActualValue" class="value-box">not available yet</div>
-+            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
-+              <span>Write folder</span>
-+              <div id="writeFolderActualValue" class="preview-generator-v2__value">not available yet</div>
+-            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
++            <div class="palette-manager-v2__field palette-manager-v2__field--compact preview-generator-v2__summary-field">
+               <span>Write folder</span>
+               <div id="writeFolderActualValue" class="preview-generator-v2__value">not available yet</div>
              </div>
            </div>
          </section>
  
--        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
-+        <section class="accordion-v2 palette-manager-v2__right-accordion preview-generator-v2__status-accordion is-open" data-accordion-v2-open="true">
-           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
-             <span>Status</span>
-             <span class="accordion-v2__icon" aria-hidden="true">+</span>
-           </button>
--          <div id="statusAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
--            <div id="status" class="row">Repo folder: not selected</div>
-+          <div id="statusAccordionContent" class="accordion-v2__content">
-+            <div id="status" class="preview-generator-v2__status-text">Repo folder: not selected</div>
-             <div id="log"></div>
-           </div>
+-        <section class="accordion-v2 palette-manager-v2__right-accordion preview-generator-v2__status-accordion is-open" data-accordion-v2-open="true">
+-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
+-            <span>Status</span>
+-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+-          </button>
+-          <div id="statusAccordionContent" class="accordion-v2__content">
+-            <div id="status" class="preview-generator-v2__status-text">Repo folder: not selected</div>
+-            <div id="log"></div>
+-          </div>
++        <section class="preview-generator-v2__status-block" aria-labelledby="statusBlockTitle">
++          <h2 id="statusBlockTitle" class="preview-generator-v2__status-heading">Status</h2>
++          <div id="status" class="preview-generator-v2__status-text">Repo folder: not selected</div>
++          <div id="log"></div>
          </section>
-@@ -455,6 +355,16 @@ Vector Map Editor"></textarea>
-     let stopRequested = false;
-     let repoDisplayName = "";
- 
-+    function getRepoDestinationDisplayName(handle) {
-+      const handleName = String(handle?.name || "").trim();
-+      return handleName || "selected repo folder";
+       </aside>
+     </div>
+@@ -1258,6 +1346,139 @@ Vector Map Editor"></textarea>
+       updatePathPreviewLabels();
+     }
+   </script>
++  <script type="module">
++    const PREVIEW_GENERATOR_TOOL_ID = "preview-generator-v2";
++    const PREVIEW_GENERATOR_TOOL_NAME = "Preview SVG Generator";
++    const PREVIEW_GENERATOR_TOOL_DESCRIPTION = "Generate preview.svg files for samples, games, and tools.";
++    const PREVIEW_GENERATOR_HEADER_TEXT = `${PREVIEW_GENERATOR_TOOL_NAME} - ${PREVIEW_GENERATOR_TOOL_DESCRIPTION}`;
++    const PREVIEW_GENERATOR_INTRO_TEXT = `Preview Generator V2: ${PREVIEW_GENERATOR_TOOL_DESCRIPTION}`;
++    const previewGeneratorRuntimeParams = new URLSearchParams(window.location.search);
++
++    let suppressPreviewGeneratorFullscreenSync = false;
++
++    function getPreviewGeneratorHeaderDetails() {
++      return document.querySelector(".is-collapsible");
 +    }
 +
-+    function setRepoDestinationDisplayName(displayName) {
-+      repoSelectedValueEl.textContent = displayName;
-+      repoSelectedValueEl.setAttribute("title", displayName);
++    function getPreviewGeneratorSummaryElement() {
++      return document.querySelector("[data-preview-generator-v2-summary]");
 +    }
 +
-     function log(message = "") {
-       const now = new Date().toLocaleTimeString();
-       logEl.textContent += `[${now}] ${message}\n`;
-@@ -1245,9 +1155,9 @@ Vector Map Editor"></textarea>
-       pickRepoBtn.addEventListener("click", async () => {
-         try {
-           repoDirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
--          repoDisplayName = repoDirHandle.name || "selected folder";
-+          repoDisplayName = getRepoDestinationDisplayName(repoDirHandle);
- 
--          repoSelectedValueEl.textContent = repoDisplayName;
-+          setRepoDestinationDisplayName(repoDisplayName);
-           statusEl.textContent = `Repo folder: ${repoDisplayName}`;
-           executeBtn.disabled = false;
- 
++    function applyPreviewGeneratorFullscreenState(isActive) {
++      document.body.classList.toggle("tools-platform-fullscreen-active", isActive);
++      document.documentElement.classList.toggle("tools-platform-fullscreen-active", isActive);
++      if (isActive) {
++        document.body.setAttribute("data-tools-platform-fullscreen", "1");
++        document.documentElement.setAttribute("data-tools-platform-fullscreen", "1");
++      } else {
++        document.body.removeAttribute("data-tools-platform-fullscreen");
++        document.documentElement.removeAttribute("data-tools-platform-fullscreen");
++      }
++    }
++
++    function updatePreviewGeneratorSummary() {
++      const details = getPreviewGeneratorHeaderDetails();
++      const summary = getPreviewGeneratorSummaryElement();
++      if (!(details instanceof HTMLDetailsElement) || !(summary instanceof HTMLElement)) {
++        return;
++      }
++
++      const isFullscreen = Boolean(document.fullscreenElement);
++      const isExpanded = details.open === true;
++      summary.textContent = isExpanded
++        ? "Hide Header and Details"
++        : (isFullscreen ? PREVIEW_GENERATOR_HEADER_TEXT : "Show Header and Details");
++
++      if (isFullscreen) {
++        summary.style.maxWidth = "calc(100vw - 24px)";
++        summary.style.whiteSpace = "nowrap";
++        summary.style.overflow = "hidden";
++        summary.style.textOverflow = "ellipsis";
++      } else {
++        summary.style.removeProperty("max-width");
++        summary.style.removeProperty("white-space");
++        summary.style.removeProperty("overflow");
++        summary.style.removeProperty("text-overflow");
++      }
++
++      summary.setAttribute("data-tools-platform-summary-active", "1");
++      summary.setAttribute("data-tools-platform-summary-error", "0");
++      summary.setAttribute("data-tools-platform-summary-state", isExpanded ? "expanded" : "collapsed");
++      summary.setAttribute("data-tools-platform-summary-mode", isFullscreen ? "fullscreen" : "normal");
++      summary.setAttribute("data-tool-id", PREVIEW_GENERATOR_TOOL_ID);
++      summary.setAttribute("title", `${PREVIEW_GENERATOR_HEADER_TEXT}\n${PREVIEW_GENERATOR_INTRO_TEXT}`);
++    }
++
++    async function enterPreviewGeneratorFullscreenIfAvailable() {
++      if (document.fullscreenElement || !document.fullscreenEnabled) {
++        return;
++      }
++      if (typeof document.documentElement?.requestFullscreen !== "function") {
++        return;
++      }
++      try {
++        await document.documentElement.requestFullscreen();
++      } catch {
++        // Non-fatal: collapsed header state remains usable without fullscreen.
++      }
++    }
++
++    async function exitPreviewGeneratorFullscreenIfActive() {
++      if (!document.fullscreenElement || typeof document.exitFullscreen !== "function") {
++        return;
++      }
++      try {
++        await document.exitFullscreen();
++      } catch {
++        // Non-fatal: the fullscreenchange listener will resync if the browser exits later.
++      }
++    }
++
++    function bindPreviewGeneratorHeaderDetails() {
++      const details = getPreviewGeneratorHeaderDetails();
++      if (!(details instanceof HTMLDetailsElement)) {
++        return;
++      }
++
++      details.addEventListener("toggle", () => {
++        updatePreviewGeneratorSummary();
++        if (suppressPreviewGeneratorFullscreenSync) {
++          suppressPreviewGeneratorFullscreenSync = false;
++          return;
++        }
++
++        if (details.open) {
++          void exitPreviewGeneratorFullscreenIfActive();
++          return;
++        }
++
++        void enterPreviewGeneratorFullscreenIfAvailable();
++      });
++
++      document.addEventListener("fullscreenchange", () => {
++        const isFullscreen = Boolean(document.fullscreenElement);
++        applyPreviewGeneratorFullscreenState(isFullscreen);
++        if (!isFullscreen && !details.open) {
++          suppressPreviewGeneratorFullscreenSync = true;
++          details.open = true;
++        }
++        updatePreviewGeneratorSummary();
++      });
++    }
++
++    function initPreviewGeneratorShell() {
++      if (previewGeneratorRuntimeParams.get("mode") === "runtime") {
++        return;
++      }
++
++      document.body.classList.add("tools-platform-surface", "preview-generator-v2-local-shell");
++      applyPreviewGeneratorFullscreenState(Boolean(document.fullscreenElement));
++      bindPreviewGeneratorHeaderDetails();
++      updatePreviewGeneratorSummary();
++    }
++
++    initPreviewGeneratorShell();
++  </script>
+   <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
+   <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+ </body>
