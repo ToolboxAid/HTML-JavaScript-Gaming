@@ -1,0 +1,39 @@
+PR_26126_048 Preview Generator V2 accordion edge cases
+
+Scope
+- Updated Preview Generator V2 Playwright coverage only.
+- No runtime tool behavior was changed.
+- No samples, schemas, or start_of_day files were modified.
+
+Edge-case audit
+- Browser measurement verified all accordion sections initialize open with matching aria-expanded and icon state.
+- Browser measurement verified all accordion sections respond on first click.
+- Browser measurement verified collapsed content height is zero and display is none.
+- Browser measurement verified reopened sections restore visible content.
+- Browser measurement verified Paths or IDs restores its flex/stretch behavior after reopening.
+- Browser measurement verified Status, Paths or IDs, and Last Generated Image behave correctly.
+
+Playwright coverage added
+- The shared accordion test helper now verifies initial open state before clicking.
+- The helper verifies icon state before collapse, after collapse, and after reopen.
+- The helper verifies content hidden state and display state after collapse/reopen.
+- The helper verifies collapsed content height is zero.
+- The helper verifies collapsed section flex resolves to header-only sizing.
+- The helper verifies collapsed section height is smaller than its expanded height.
+
+Validation
+- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs passed.
+- npm run test:workspace-v2 passed.
+- Result: 3 passed.
+- Confirmed no samples, schemas, or start_of_day changes.
+- Search found no Preview Generator V2 references to accordionV2.js, mountAccordionV2, or setAccordionV2Open.
+
+Full samples smoke test
+- Skipped intentionally.
+- Reason: this PR is a targeted Preview Generator V2 accordion edge-case coverage pass and does not modify sample JSON, sample launch code, or shared sample runtime behavior.
+
+Manual validation
+- Open tools/preview-generator-v2/index.html.
+- On first click, collapse each accordion and confirm it immediately closes.
+- Confirm no hidden content leaves a visible gap.
+- Reopen Status, Paths or IDs, and Last Generated Image and confirm each restores its expected layout.

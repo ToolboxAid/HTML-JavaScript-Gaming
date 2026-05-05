@@ -113,18 +113,45 @@ async function expectAccordionToggles(page, contentId) {
   const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
   const content = page.locator(`#${contentId}`);
   const icon = header.locator(".accordion-v2__icon");
+  const readLayout = async () => await page.evaluate((id) => {
+    const contentEl = document.getElementById(id);
+    const section = contentEl.closest(".accordion-v2");
+    return {
+      sectionHeight: section.getBoundingClientRect().height,
+      contentHeight: contentEl.getBoundingClientRect().height,
+      sectionFlex: getComputedStyle(section).flex,
+      contentDisplay: getComputedStyle(contentEl).display,
+      contentHidden: contentEl.hidden
+    };
+  }, contentId);
+
   await expect(header).toBeVisible();
   await expect(content).toBeVisible();
+  await expect(header).toHaveAttribute("aria-expanded", "true");
+  await expect(icon).toHaveAttribute("data-accordion-v2-icon-state", "open");
+  const expandedLayout = await readLayout();
+  expect(expandedLayout.contentHidden).toBe(false);
+  expect(expandedLayout.contentDisplay).not.toBe("none");
 
   await header.click();
   await expect(content).toBeHidden();
   await expect(header).toHaveAttribute("aria-expanded", "false");
   await expect(icon).toHaveAttribute("data-accordion-v2-icon-state", "closed");
+  const collapsedLayout = await readLayout();
+  expect(collapsedLayout.contentHidden).toBe(true);
+  expect(collapsedLayout.contentDisplay).toBe("none");
+  expect(collapsedLayout.contentHeight).toBe(0);
+  expect(collapsedLayout.sectionHeight).toBeLessThan(expandedLayout.sectionHeight);
+  expect(collapsedLayout.sectionFlex).toContain("0 0");
 
   await header.click();
   await expect(content).toBeVisible();
   await expect(header).toHaveAttribute("aria-expanded", "true");
   await expect(icon).toHaveAttribute("data-accordion-v2-icon-state", "open");
+  const reopenedLayout = await readLayout();
+  expect(reopenedLayout.contentHidden).toBe(false);
+  expect(reopenedLayout.contentDisplay).not.toBe("none");
+  expect(reopenedLayout.contentHeight).toBeGreaterThan(0);
 }
 
 async function expectPathsOrIdsAccordionToggles(page) {
