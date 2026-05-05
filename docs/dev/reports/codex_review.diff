@@ -1,189 +1,532 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index eda6fa14..f31a8068 100644
+index f31a8068..e79f3c47 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,19 +1,19 @@
--# Codex Commands - PR_26126_004-preview-tool-layout-refinement
-+# Codex Commands - PR_26126_005-preview-generator-v2-naming
+@@ -1,19 +1,20 @@
+-# Codex Commands - PR_26126_005-preview-generator-v2-naming
++# Codex Commands - PR_26126_006-preview-generator-v2-action-contract
  
  ```bash
--codex run "Create PR_26126_004-preview-tool-layout-refinement. Update the preview tool layout spec to explicitly use Palette Manager as the base layout and interaction pattern (panel structure, control grouping, header usage). Add requirement: center column must include a 'last generated preview' section at the bottom showing the most recent rendered image. Define its placement, sizing, and behavior (replaces on new render, no history, no fallback). Keep strict JSON input rules. No implementation code. Do not modify samples. Update docs/pr/PR_26126_003-preview-tool-layout-spec.md and produce review artifacts."
-+codex run "Create PR_26126_005-preview-generator-v2-naming. Update all Preview Generator V2 design docs to use the official name \"Preview Generator V2\". Ensure consistency across title, header (platformShell shortDescription usage), layout spec, and references to the tool. Do not change functionality. Do not modify samples. Update docs/pr files and produce review artifacts."
+-codex run "Create PR_26126_005-preview-generator-v2-naming. Update all Preview Generator V2 design docs to use the official name \"Preview Generator V2\". Ensure consistency across title, header (platformShell shortDescription usage), layout spec, and references to the tool. Do not change functionality. Do not modify samples. Update docs/pr files and produce review artifacts."
++codex run "Create PR_26126_006-preview-generator-v2-action-contract. Correct the Preview Generator V2 design docs: Preview Generator V2 must not have its own schema. It launches without knowing the target purpose until the user selects a target radio option. Define the Game radio behavior: when Game is selected and a preview image is generated, the output updates the existing tools/schemas/tools/asset-browser.schema.json-compatible JSON by adding/updating the preview image for that game. Remove any requirement for tools/schemas/tools/preview-generator-v2.schema.json. Keep strict validation against the destination schema. No implementation code. Do not modify samples. Produce review artifacts."
  ```
  
  ## Validation Commands
  
  ```bash
--git diff --check -- docs/pr/PR_26126_003-preview-tool-layout-spec.md docs/dev/codex_commands.md docs/dev/commit_comment.txt
-+git diff --check -- docs/pr/PR_26126_002-preview-tool-detailed-design.md docs/pr/PR_26126_003-preview-tool-layout-spec.md docs/dev/codex_commands.md docs/dev/commit_comment.txt
+ git diff --check -- docs/pr/PR_26126_002-preview-tool-detailed-design.md docs/pr/PR_26126_003-preview-tool-layout-spec.md docs/dev/codex_commands.md docs/dev/commit_comment.txt
++rg -n 'html-js-gaming\.tool\.preview|Target `toolState`|Preview Generator V2 accepts only its own' docs/pr/PR_26126_002-preview-tool-detailed-design.md docs/pr/PR_26126_003-preview-tool-layout-spec.md
  npm run codex:review-artifacts
  ```
  
  ## Playwright
  
--No Playwright impact. This PR refines documentation/layout specification only and does not modify implementation code.
-+No Playwright impact. This PR is a documentation naming consistency pass and does not modify implementation code.
+-No Playwright impact. This PR is a documentation naming consistency pass and does not modify implementation code.
++No Playwright impact. This PR is a documentation-only action contract correction and does not modify implementation code.
  
  ## Full Samples
  
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index a5e6b128..ae104580 100644
+index ae104580..8d9395f6 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Refine Preview tool layout spec from Palette Manager pattern - PR_26126_004-preview-tool-layout-refinement
-+Normalize Preview Generator V2 naming in design docs - PR_26126_005-preview-generator-v2-naming
+-Normalize Preview Generator V2 naming in design docs - PR_26126_005-preview-generator-v2-naming
++Correct Preview Generator V2 destination action contract - PR_26126_006-preview-generator-v2-action-contract
 diff --git a/docs/pr/PR_26126_002-preview-tool-detailed-design.md b/docs/pr/PR_26126_002-preview-tool-detailed-design.md
-index 0a9969e3..63e4af8a 100644
+index 63e4af8a..53ba233d 100644
 --- a/docs/pr/PR_26126_002-preview-tool-detailed-design.md
 +++ b/docs/pr/PR_26126_002-preview-tool-detailed-design.md
-@@ -1,9 +1,9 @@
--# PR_26126_002 - Preview Tool Detailed Design
-+# PR_26126_002 - Preview Generator V2 Detailed Design
- 
- ## Purpose
--Design the rebuild target for the Preview tool as a clean, launchable tool surface at `tools/preview/index.html`.
-+Design the rebuild target for Preview Generator V2 as a clean, launchable tool surface at `tools/preview/index.html`.
- 
--Current repo state note: `tools/preview/index.html` is not present. The current inspected source for Preview behavior is `tools/preview/preview_svg_generator.html`. This design treats `tools/preview/index.html` as the intended rebuilt entrypoint and uses the existing generator file as the current behavior baseline.
-+Current repo state note: `tools/preview/index.html` is not present. The current inspected source for Preview Generator V2 behavior is `tools/preview/preview_svg_generator.html`. This design treats `tools/preview/index.html` as the intended rebuilt entrypoint and uses the existing generator file as the current behavior baseline.
- 
- ## Source Inspected
- - `tools/preview/preview_svg_generator.html`
-@@ -29,17 +29,19 @@ No sample JSON, sample launch code, games, workspace, or runtime implementation
- - Logs per-target progress, output path, warnings, failures, and summary counts.
- 
+@@ -31,7 +31,9 @@ No sample JSON, sample launch code, games, workspace, or runtime implementation
  ## Rebuild Goal
--Create a first-class Preview tool at `tools/preview/index.html` that preserves the useful current generator behavior while making the UI, contracts, errors, preview modes, and export actions explicit.
-+Create a first-class Preview Generator V2 tool at `tools/preview/index.html` that preserves the useful current generator behavior while making the UI, contracts, errors, preview modes, and export actions explicit.
+ Create a first-class Preview Generator V2 tool at `tools/preview/index.html` that preserves the useful current generator behavior while making the UI, contracts, errors, preview modes, and export actions explicit.
  
--The Preview tool should remain a file-generation utility. It should not own game/sample JSON, workspace state, toolState, or `tools.*` published JSON.
-+Preview Generator V2 should remain a file-generation utility. It should not own game/sample JSON, workspace state, toolState, or `tools.*` published JSON.
+-Preview Generator V2 should remain a file-generation utility. It should not own game/sample JSON, workspace state, toolState, or `tools.*` published JSON.
++Preview Generator V2 should remain a file-generation utility plus a destination-aware asset registration helper. It must not own game/sample JSON, workspace state, toolState, `tools.*` published JSON, or a dedicated Preview Generator V2 schema.
++
++No file named `tools/schemas/tools/preview-generator-v2.schema.json` is required or allowed by this design. Preview Generator V2 validates only the selected destination contract after the user chooses a target type.
  
  ## UI Regions
  
- ### Header
--Purpose: Identify the tool and explain that it generates `preview.svg` assets.
-+Purpose: Identify Preview Generator V2 and explain that it generates `preview.svg` assets.
+@@ -55,9 +57,12 @@ Current controls:
  
- Target placement:
- - Top of `tools/preview/index.html`.
-+- Platform shell title/display name uses `Preview Generator V2`.
-+- Platform shell `shortDescription` uses: `Generate preview.svg assets for samples, games, and tools.`
- - Include a concise status line for repo access and current run state.
- - Avoid embedding sample or game-specific assumptions in the header.
+ Target behavior:
+ - Keep as radio-button-style controls.
++- No target type is assumed at launch.
++- Target-specific controls, validation, and export behavior remain idle until the user selects Samples, Games, or Tools.
+ - Samples mode resolves `0107` and `samples/phase-01/0107/index.html`.
+ - Games mode resolves `Bouncing-ball` and `games/Bouncing-ball/index.html`.
+ - Tools mode resolves `Vector Map Editor` and `tools/Vector Map Editor/index.html`.
++- Games mode selects `tools/schemas/tools/asset-browser.schema.json` as the destination schema for preview asset registration.
  
-@@ -313,7 +315,7 @@ Failure fallback output produces:
+ ### Capture Source Region
+ Purpose: Configure where targets are loaded from and how long capture waits.
+@@ -128,7 +133,7 @@ Target behavior:
+ - Canvas Only captures the first canvas from the loaded target document.
+ - Full Screen captures the target body at 1600x900 using `html2canvas` when available.
+ - Full Screen falls back to best available element/canvas capture when `html2canvas` fails.
+-- Capture mode changes should not mutate any sample, game, tool, or JSON payload.
++- Capture mode changes do not mutate any sample, game, tool, or destination JSON payload.
+ 
+ ### Action Region
+ Purpose: Run and control capture.
+@@ -313,15 +318,45 @@ Failure fallback output produces:
+ ```
+ 
  ### JSON Output
- No JSON output is owned by this tool.
+-No JSON output is owned by this tool.
++Preview Generator V2 does not own an independent JSON output contract and must not create or require `tools/schemas/tools/preview-generator-v2.schema.json`.
  
--The Preview tool must not publish or mutate:
-+Preview Generator V2 must not publish or mutate:
+-Preview Generator V2 must not publish or mutate:
++Preview Generator V2 must not publish:
  - `tools.preview`
  - `tools.palette-browser`
  - workspace manifest JSON
-@@ -465,7 +467,7 @@ The log should receive the most vertical space. Configuration controls should re
- No Playwright implementation is included in this PR.
+ - toolState JSON
+ - sample JSON
+-- game JSON
++
++Destination JSON is selected by target radio after launch. Until the user selects a target type, there is no destination purpose and no destination JSON validation.
++
++Game radio behavior:
++- Selecting Games sets the destination contract to `tools/schemas/tools/asset-browser.schema.json`.
++- The user must provide or select an existing asset-browser-compatible JSON payload before JSON update/export.
++- Preview Generator V2 validates the existing destination JSON against `tools/schemas/tools/asset-browser.schema.json` before any mutation.
++- After a game preview image is generated, the tool adds or updates exactly one asset entry for that game's preview image.
++- The destination JSON must validate against `tools/schemas/tools/asset-browser.schema.json` again after the update and before save.
++- If either validation pass fails, the JSON update is rejected and the generated SVG file state is reported separately.
++
++Game preview asset entry shape:
++
++```json
++{
++  "assets": {
++    "image.<normalized-game-id>.preview": {
++      "path": "games/<GameFolder>/assets/images/preview.svg",
++      "kind": "image",
++      "source": "asset-browser"
++    }
++  }
++}
++```
++
++The actual asset key must satisfy the asset-browser schema asset key pattern. `<normalized-game-id>` is the lower-kebab normalized game folder/name segment used only for the asset key. Existing unrelated asset entries must be preserved.
++
++Samples and Tools radio behavior:
++- Samples and Tools may generate `preview.svg` files.
++- They do not have a JSON destination update contract in this design PR.
++- JSON mutation for Samples or Tools is blocked until a future PR defines an explicit destination schema.
  
- Future Playwright should validate:
--- Preview tool page loads.
-+- Preview Generator V2 page loads.
- - Target type controls switch modes.
- - Base URL, wait, asset folder, options, and capture mode controls are visible.
- - Execute remains disabled until repo selection is simulated or abstracted.
+ The generated SVG may contain a data URL image because it is the preview asset file content, not a persisted runtime/workspace JSON contract.
+ 
+@@ -338,10 +373,13 @@ Expected UI:
+ 
+ ### Input Errors
+ - Empty target list.
++- No target radio option selected.
+ - Unrecognized sample ID/path.
+ - Unsupported target type.
+ - Invalid or missing base URL.
+ - Missing expected target directory.
++- Missing Game destination asset JSON when Games export requests JSON registration.
++- Destination asset JSON does not validate against `tools/schemas/tools/asset-browser.schema.json`.
+ 
+ Expected UI:
+ - Keep batch alive where possible.
+@@ -418,7 +456,8 @@ Action: Processes the parsed target list sequentially.
+ Output effect:
+ - May write `preview.svg` files.
+ - Updates log and summary.
+-- Does not mutate JSON or sample source files.
++- Does not mutate sample source files.
++- In Games mode only, may update the selected asset-browser-compatible destination JSON after a successful preview image generation and strict destination schema validation.
+ 
+ ### Stop
+ Action: Sets a stop-request flag.
+@@ -435,6 +474,17 @@ Output effect:
+ - Writes only when rules allow.
+ - Logs `SKIP`, `RUN`, `OUT`, `URL`, `OK`, `WARN`, or `FAIL`.
+ 
++### Game Asset JSON Registration
++Action: Adds or updates the generated game preview asset in the selected destination JSON.
++
++Output effect:
++- Reads the existing asset-browser-compatible JSON.
++- Validates it against `tools/schemas/tools/asset-browser.schema.json`.
++- Adds or replaces `assets["image.<normalized-game-id>.preview"]`.
++- Uses `kind: "image"` and `source: "asset-browser"` to remain schema-compatible.
++- Validates the updated JSON against `tools/schemas/tools/asset-browser.schema.json`.
++- Saves only if the updated destination JSON is valid.
++
+ ## Security And Browser Constraints
+ - Requires a secure context for File System Access API.
+ - Requires same-origin or CORS-compatible rendering for canvas serialization.
+@@ -454,6 +504,8 @@ The log should receive the most vertical space. Configuration controls should re
+ ## Rebuild Acceptance Criteria
+ - `tools/preview/index.html` exists as the launchable entrypoint.
+ - Existing behavior from `preview_svg_generator.html` is represented or deliberately retired.
++- Launch does not assume Samples, Games, or Tools until the user selects a target radio option.
++- No Preview Generator V2 schema file exists or is required.
+ - Controls are grouped by purpose and remain visible at common desktop widths.
+ - Execute is blocked until repo root and target list are valid.
+ - Generated output path is visible before execution.
+@@ -461,6 +513,7 @@ The log should receive the most vertical space. Configuration controls should re
+ - Stop preserves current-target integrity.
+ - Errors are visible and included in the final summary.
+ - No sample JSON or workspace/toolState JSON is touched.
++- Games mode validates existing and updated destination JSON against `tools/schemas/tools/asset-browser.schema.json` before saving preview asset registration.
+ - No silent fallback data is used for runtime contracts.
+ 
+ ## Playwright Expectations
+@@ -478,6 +531,7 @@ Future Playwright should validate:
+ ## Manual Test Expectations
+ Manual implementation validation should include:
+ - Open `tools/preview/index.html`.
++- Confirm no target purpose is selected before the user chooses Samples, Games, or Tools.
+ - Pick repo root.
+ - Enter a known sample ID.
+ - Confirm output path preview points to `samples/phase-XX/XXXX/assets/images`.
+@@ -485,6 +539,8 @@ Manual implementation validation should include:
+ - Confirm `preview.svg` is written.
+ - Run Full Screen capture for a tool page.
+ - Confirm `preview.svg` is written or a clear fallback SVG is produced.
++- Select Games, generate a known game preview, and confirm the selected destination asset JSON receives or updates one schema-valid `image.<normalized-game-id>.preview` entry.
++- Confirm invalid asset-browser destination JSON is rejected before save.
+ - Confirm Stop ends the batch after the active target.
+ - Confirm no sample JSON changes appear in `git status`.
+ 
 diff --git a/docs/pr/PR_26126_003-preview-tool-layout-spec.md b/docs/pr/PR_26126_003-preview-tool-layout-spec.md
-index deb6b52b..80d5838c 100644
+index 80d5838c..108245d7 100644
 --- a/docs/pr/PR_26126_003-preview-tool-layout-spec.md
 +++ b/docs/pr/PR_26126_003-preview-tool-layout-spec.md
-@@ -1,7 +1,7 @@
--# PR_26126_003 - Preview Tool Layout Spec
-+# PR_26126_003 - Preview Generator V2 Layout Spec
- 
+@@ -3,7 +3,7 @@
  ## Purpose
--Convert the Preview tool design into a concrete layout specification for the future `tools/preview/index.html` rebuild.
-+Convert the Preview Generator V2 design into a concrete layout specification for the future `tools/preview/index.html` rebuild.
+ Convert the Preview Generator V2 design into a concrete layout specification for the future `tools/preview/index.html` rebuild.
  
- This PR is documentation only. It defines target regions, control placement, DOM ids/classes, `toolState` shape, and interaction flows. It does not implement runtime code and does not modify samples.
+-This PR is documentation only. It defines target regions, control placement, DOM ids/classes, `toolState` shape, and interaction flows. It does not implement runtime code and does not modify samples.
++This PR is documentation only. It defines target regions, control placement, DOM ids/classes, local runtime state, destination action contracts, and interaction flows. It does not implement runtime code and does not modify samples.
  
-@@ -10,18 +10,19 @@ This PR is documentation only. It defines target regions, control placement, DOM
- - Target tool id: `preview`
+ ## Scope
+ - Target entrypoint: `tools/preview/index.html`
+@@ -11,6 +11,8 @@ This PR is documentation only. It defines target regions, control placement, DOM
  - Design source: `docs/pr/PR_26126_002-preview-tool-detailed-design.md`
  - Current behavior reference: `tools/preview/preview_svg_generator.html`
-+- Official display name: `Preview Generator V2`
+ - Official display name: `Preview Generator V2`
++- No Preview Generator V2 schema file: `tools/schemas/tools/preview-generator-v2.schema.json` must not be created or required.
++- Game destination schema: `tools/schemas/tools/asset-browser.schema.json`
  
  ## Layout Goals
--- Make Preview a launchable first-class tool surface.
-+- Make Preview Generator V2 a launchable first-class tool surface.
- - Keep capture configuration visible while a batch is running.
- - Put visual output in the center so users can inspect the capture result before export.
+ - Make Preview Generator V2 a launchable first-class tool surface.
+@@ -19,7 +21,8 @@ This PR is documentation only. It defines target regions, control placement, DOM
  - Put file/output metadata and validation detail in a right panel.
  - Keep export/write actions grouped in the footer.
  - Use Palette Manager V2 as the base layout and interaction pattern for header shell, panel structure, control grouping, and accordion behavior.
--- Preserve the Preview tool boundary: no sample JSON, no game JSON, no workspace manifest mutation, and no silent fallback data.
-+- Preserve the Preview Generator V2 boundary: no sample JSON, no game JSON, no workspace manifest mutation, and no silent fallback data.
+-- Preserve the Preview Generator V2 boundary: no sample JSON, no game JSON, no workspace manifest mutation, and no silent fallback data.
++- Preserve the Preview Generator V2 boundary: no sample JSON, no workspace manifest mutation, no dedicated Preview Generator V2 schema, and no silent fallback data.
++- Launch with no assumed target purpose; target-specific validation begins only after the user selects Samples, Games, or Tools.
  
  ## Palette Manager Base Pattern
--The Preview tool must use Palette Manager V2 as its layout and interaction reference, not the older standalone preview generator page.
-+Preview Generator V2 must use Palette Manager V2 as its layout and interaction reference, not the older standalone preview generator page.
- 
- Required base pattern:
- - Use a local tool shell with the same high-level shape as Palette Manager:
-@@ -40,7 +41,7 @@ Required base pattern:
- - Keep write/export actions separated from configuration controls, following the Palette Manager menu/action separation pattern.
- - Keep left and right panels independently scrollable when content exceeds available height.
+ Preview Generator V2 must use Palette Manager V2 as its layout and interaction reference, not the older standalone preview generator page.
+@@ -43,6 +46,7 @@ Required base pattern:
  - Keep the center column as a flex column so the main preview area and the last generated preview section can size predictably.
--- Do not reuse Palette Manager class names directly; use Preview-owned classes that mirror the pattern.
-+- Do not reuse Palette Manager class names directly; use Preview Generator V2-owned classes that mirror the pattern.
+ - Do not reuse Palette Manager class names directly; use Preview Generator V2-owned classes that mirror the pattern.
  - Do not add workspace/toolState/session behavior from Palette Manager.
++- Do not add a Preview Generator V2 JSON schema.
  
  ## Header Usage Requirements
-@@ -48,7 +49,10 @@ The rebuilt `tools/preview/index.html` must use Palette Manager-style header beh
+ The rebuilt `tools/preview/index.html` must use Palette Manager-style header behavior:
+@@ -172,7 +176,7 @@ Behavior:
+ - Does not replace the previous successful image when validation or rendering fails.
+ - If no successful render has occurred, show an empty-state message only.
+ - Does not write files and does not mutate JSON.
+-- Does not store `imageDataUrl` or rendered pixels in `toolState`.
++- Does not store `imageDataUrl` or rendered pixels in local runtime state.
+ - May display derived metadata such as target id, mode, dimensions, and render time.
  
- - The first page element is a collapsible header/details area.
- - The header area includes `#shared-theme-header`.
--- The local header host describes Preview as a tool-local shell.
-+- The local header host describes Preview Generator V2 as a tool-local shell.
-+- The platform shell display name/title is exactly `Preview Generator V2`.
-+- The platform shell `shortDescription` is the source for the local header subtitle/description.
-+- Target `shortDescription`: `Generate preview.svg assets for samples, games, and tools.`
- - Hide Header and Details / Show Header and Details behavior should match the Palette Manager interaction pattern.
- - Header status must remain display-only.
- - Header status must not mutate source, capture, output, or export state.
-@@ -65,7 +69,7 @@ Purpose:
- - Provide compact validation status.
- 
- Contents:
--- Tool title.
-+- Tool title: `Preview Generator V2`.
- - Current target type summary.
- - Current validation status.
- - Current repo/root status.
-@@ -223,8 +227,8 @@ Primary ids/classes:
- 
+ ### Region 4: Right Panel Properties
+@@ -237,10 +241,11 @@ Primary ids/classes:
  | Control | ID | Type | Placement | State Effect |
  | --- | --- | --- | --- | --- |
--| Tool title | `previewToolTitle` | text | Header left | No state mutation. |
--| Tool subtitle | `previewToolSubtitle` | text | Header left under title | No state mutation. |
-+| Tool title | `previewToolTitle` | text | Header left | Displays `Preview Generator V2`; no state mutation. |
-+| Tool subtitle | `previewToolSubtitle` | text | Header left under title | Displays platform shell `shortDescription`; no state mutation. |
- | Validation status | `previewValidationStatus` | status text | Header right | Mirrors `validation.status`. |
- | Repo status | `previewRepoStatus` | status text | Header right | Mirrors `repo.status`. |
+ | Input source | `previewInputSource` | radio/segmented | Left panel, first section | Sets `source.inputSource`. |
+-| Target type | `previewTargetType` | radio/segmented | Left panel, first section | Sets `source.targetType`. |
++| Target type | `previewTargetType` | radio/segmented | Left panel, first section | Sets `source.targetType`; no default is selected at launch. |
+ | Target entries | `previewTargetEntries` | textarea | Left panel, source section | Sets `source.entriesText`. |
+ | Base URL | `previewBaseUrl` | text input | Left panel, source section | Sets `source.baseUrl`. |
+ | Sample/runtime URL | `previewRuntimeUrl` | text input | Left panel, source section | Sets `source.runtimeUrl` when input source is URL. |
++| Destination asset JSON | `previewDestinationAssetJson` | file/path picker or text input | Left panel, output section, visible for Games | Points to existing asset-browser-compatible JSON; no Preview Generator V2 schema is used. |
+ | Capture mode selector | `previewModeSelector` | radio/segmented | Left panel, preview section | Sets `preview.mode`. |
+ | Wait before capture | `previewWaitMs` | number input | Left panel, preview section | Sets `capture.waitMs`. |
+ | Capture timeout | `previewTimeoutMs` | number input | Left panel, preview section | Sets `capture.timeoutMs`. |
+@@ -338,6 +343,8 @@ body#previewToolPage.preview-tool-page.tools-platform-tool-page
  
-@@ -389,7 +393,7 @@ body#previewToolPage.preview-tool-page.tools-platform-tool-page
+         section.preview-tool__control-section.preview-tool__control-section--output
+           div.preview-tool__section-header
++          label.preview-tool__field.preview-tool__field--destination-asset-json
++            input#previewDestinationAssetJson.preview-tool__input
+           label.preview-tool__field.preview-tool__field--asset-folder
+             input#previewAssetFolder.preview-tool__input
+           label.preview-tool__field.preview-tool__field--output-filename
+@@ -391,19 +398,19 @@ body#previewToolPage.preview-tool-page.tools-platform-tool-page
+   div.preview-tool__local-statusbar[data-preview-tool-status]
+ ```
  
- ## State Model
+-## State Model
++## Local Runtime State Model
  
--The Preview tool owns a local `toolState` document for UI and run configuration. This state is not sample JSON and is not workspace manifest JSON.
-+Preview Generator V2 owns a local `toolState` document for UI and run configuration. This state is not sample JSON and is not workspace manifest JSON.
+-Preview Generator V2 owns a local `toolState` document for UI and run configuration. This state is not sample JSON and is not workspace manifest JSON.
++Preview Generator V2 owns local in-memory state for UI and run configuration. This state is not a persisted tool JSON contract, is not sample JSON, is not workspace manifest JSON, and must not require `tools/schemas/tools/preview-generator-v2.schema.json`.
  
- Target `toolState` shape:
+-Target `toolState` shape:
++Launch state has no selected target purpose. `source.targetType` starts as `null` and becomes `samples`, `games`, or `tools` only after the user selects a target radio option.
++
++Target local state shape:
  
-@@ -486,7 +490,7 @@ Target `toolState` shape:
+ ```json
+ {
+-  "schema": "html-js-gaming.tool.preview",
+-  "version": 1,
+   "source": {
+     "inputSource": "target-list",
+-    "targetType": "samples",
++    "targetType": null,
+     "entriesText": "",
+     "baseUrl": "http://127.0.0.1:5500",
+     "runtimeUrl": ""
+@@ -421,7 +428,13 @@ Target `toolState` shape:
+     "assetFolder": "assets/images",
+     "filename": "preview.svg",
+     "forceRewrite": false,
+-    "rewriteTimeoutOnly": true
++    "rewriteTimeoutOnly": true,
++    "destinationAssetJsonPath": ""
++  },
++  "destination": {
++    "schemaId": "",
++    "assetKey": "",
++    "status": "not-selected"
+   },
+   "repo": {
+     "name": "",
+@@ -453,35 +466,38 @@ Target `toolState` shape:
+ ```
+ 
+ ### State Ownership Rules
+-- `toolState.source` stores user-entered load inputs.
+-- `toolState.capture` stores preview capture configuration.
+-- `toolState.view` stores visual inspection settings only.
+-- `toolState.output` stores export/write configuration.
+-- `toolState.repo` stores display-safe repo state only; browser directory handles are runtime-only and must not be serialized.
+-- `toolState.validation` stores current validation display state.
+-- `toolState.run` stores current run display state.
+-- Generated SVG content is not stored in `toolState`; it is an export artifact.
+-- Last generated preview pixels are not stored in `toolState`.
+-- `toolState.run.lastGenerated` may store metadata only; it must not store `imageDataUrl`, Blob URLs, SVG text, PNG data, or canvas pixels.
++- `source` stores user-entered load inputs.
++- `source.targetType` has no default target purpose.
++- `capture` stores preview capture configuration.
++- `view` stores visual inspection settings only.
++- `output` stores export/write configuration.
++- `destination` stores the selected destination schema and asset key metadata after target radio selection.
++- `repo` stores display-safe repo state only; browser directory handles are runtime-only and must not be serialized.
++- `validation` stores current validation display state.
++- `run` stores current run display state.
++- Generated SVG content is not stored in local state; it is an export artifact.
++- Last generated preview pixels are not stored in local state.
++- `run.lastGenerated` may store metadata only; it must not store `imageDataUrl`, Blob URLs, SVG text, PNG data, or canvas pixels.
+ - Iframe document state is runtime-only and must not be serialized.
+ 
+ ### Valid State Requirements
+-- `schema` must equal `html-js-gaming.tool.preview`.
+-- `version` must be `1`.
+ - `source.inputSource` must be one of `target-list`, `runtime-url`.
+-- `source.targetType` must be one of `samples`, `games`, `tools`.
++- `source.targetType` must be `null` before selection or one of `samples`, `games`, `tools` after selection.
++- Render, validate, and export actions are blocked while `source.targetType` is `null`.
+ - `capture.mode` must be one of `canvas-only`, `fullscreen-1600`.
+ - `capture.waitMs` must be at least `3000`.
+ - `capture.timeoutMs` must be at least `1000`.
+ - `view.zoom` must be a positive number.
+ - `view.background` must be one of `checkerboard`, `solid`, `transparent`.
+ - `output.filename` must be `preview.svg` for the initial rebuild.
++- If `source.targetType` is `games`, `destination.schemaId` must be `tools/schemas/tools/asset-browser.schema.json` before JSON update/export.
++- If `source.targetType` is `samples` or `tools`, `destination.schemaId` remains empty unless a future PR defines a destination schema.
+ - `validation.messages` must be an array of strings.
+ - `run.lastGenerated.targetId`, `mode`, and `renderedAt` must be strings.
+ - `run.lastGenerated.width` and `height` must be finite non-negative numbers.
+ 
+ ### Invalid State Behavior
+-- Reject invalid `toolState` before rendering.
++- Reject invalid local runtime state before rendering.
+ - Show validation errors in `#previewValidationDetails`.
+ - Set `#previewValidationStatus` to invalid/error state.
+ - Do not partially render invalid input into the preview surface.
+@@ -489,15 +505,45 @@ Target `toolState` shape:
+ - Do not silently substitute default target entries, sample paths, or output folders.
  - Do not silently substitute fallback images, placeholder captures, or generated fallback SVGs into the last generated preview.
  
- ## Strict JSON Input Rules
--- The Preview tool accepts only its own `toolState` shape for saved UI/run configuration.
-+- Preview Generator V2 accepts only its own `toolState` shape for saved UI/run configuration.
- - It must reject unknown `schema` or unsupported `version` values.
- - It must reject unknown top-level keys unless a future schema explicitly adds them.
- - It must reject invalid enum values for source, target type, capture mode, background, validation status, and run status.
+-## Strict JSON Input Rules
+-- Preview Generator V2 accepts only its own `toolState` shape for saved UI/run configuration.
+-- It must reject unknown `schema` or unsupported `version` values.
+-- It must reject unknown top-level keys unless a future schema explicitly adds them.
+-- It must reject invalid enum values for source, target type, capture mode, background, validation status, and run status.
+-- It must reject non-string validation messages.
+-- It must reject serialized browser handles, Blob URLs, image data URLs, rendered SVG text, canvas pixels, or iframe document content in `toolState`.
+-- It must not read sample JSON, game JSON, workspace manifest JSON, or Palette Manager JSON as Preview configuration.
+-- It must not persist generated image data in JSON.
++## Destination JSON Validation Rules
++- Preview Generator V2 has no dedicated JSON schema and must not require `tools/schemas/tools/preview-generator-v2.schema.json`.
++- Preview Generator V2 launches without knowing the destination purpose until the user selects a target radio option.
++- The target radio option selects the destination contract, if one exists.
++- Games selects `tools/schemas/tools/asset-browser.schema.json` as the destination schema.
++- Samples and Tools have no destination JSON update contract in this design PR.
++- Destination JSON must be validated before mutation and again after mutation.
++- Invalid destination JSON is rejected before save.
++- Unknown destination schemas are rejected.
++- Serialized browser handles, Blob URLs, image data URLs, rendered SVG text, canvas pixels, or iframe document content must not be written into destination JSON.
++- Preview Generator V2 must not read sample JSON, game JSON, workspace manifest JSON, Palette Manager JSON, or any Preview Generator V2 schema as Preview configuration.
++- Preview Generator V2 must not persist generated image data in JSON.
++
++### Game Destination Contract
++When `source.targetType` is `games`, Preview Generator V2 updates only an existing `tools/schemas/tools/asset-browser.schema.json`-compatible JSON payload.
++
++Update shape:
++
++```json
++{
++  "assets": {
++    "image.<normalized-game-id>.preview": {
++      "path": "games/<GameFolder>/assets/images/preview.svg",
++      "kind": "image",
++      "source": "asset-browser"
++    }
++  }
++}
++```
++
++Rules:
++- Preserve all existing unrelated `assets` entries.
++- Add the game preview entry when it is missing.
++- Replace only the game preview entry when it already exists.
++- The asset key must match the asset-browser schema image key pattern.
++- The asset entry must use `kind: "image"`.
++- The asset entry must use `source: "asset-browser"` because that is schema-valid.
++- The output path must point to the generated preview image for the selected game.
++- The updated JSON must validate against `tools/schemas/tools/asset-browser.schema.json` before save.
+ 
+ ## Interaction Flow: Load To Validate To Render To Export
+ 
+@@ -506,7 +552,7 @@ Trigger:
+ - User clicks `#previewLoadButton`.
+ 
+ Steps:
+-1. Read `toolState.source`.
++1. Read local `source` state.
+ 2. If `inputSource` is `target-list`, parse `#previewTargetEntries`.
+ 3. If `inputSource` is `runtime-url`, parse `#previewRuntimeUrl`.
+ 4. Resolve entries to normalized target records.
+@@ -514,6 +560,7 @@ Steps:
+ 6. Set `run.status` to `loaded`.
+ 
+ Failure states:
++- No target radio option selected.
+ - Empty target entries.
+ - Unsupported target type.
+ - Invalid sample ID/path.
+@@ -525,18 +572,22 @@ Trigger:
+ - Validation also runs automatically before Render or Export.
+ 
+ Steps:
+-1. Validate `toolState` shape.
++1. Validate local runtime state.
+ 2. Validate source target records.
+ 3. Validate repo selection if export/write action is requested.
+ 4. Validate output folder and filename.
+ 5. Validate capture mode.
+-6. Write messages to `#previewValidationDetails`.
+-7. Mirror validation result in `#previewValidationStatus`.
++6. If Games is selected and JSON registration is requested, validate the destination JSON against `tools/schemas/tools/asset-browser.schema.json`.
++7. Write messages to `#previewValidationDetails`.
++8. Mirror validation result in `#previewValidationStatus`.
+ 
+ Failure states:
+ - Missing repo for export.
+ - Invalid output path.
+ - Missing target.
++- No target radio option selected.
++- Games selected but no existing asset-browser-compatible destination JSON selected.
++- Destination JSON fails `tools/schemas/tools/asset-browser.schema.json` validation.
+ - Capture mode unavailable.
+ - Browser lacks File System Access API.
+ 
+@@ -553,7 +604,7 @@ Steps:
+ 5. Draw result into `#previewSurface`.
+ 6. Replace `#previewLastGeneratedImage` with the latest successful render.
+ 7. Update `#previewLastGeneratedMeta` with target id, mode, dimensions, and render time.
+-8. Update `toolState.run.lastGenerated` metadata only.
++8. Update `run.lastGenerated` metadata only.
+ 9. Update `#previewExportPreview` with output metadata.
+ 10. Update `run.status` to `rendered`.
+ 
+@@ -576,14 +627,19 @@ Steps:
+ 2. Ensure one current target and one rendered preview exist.
+ 3. Build `preview.svg`.
+ 4. Write to `<target-folder>/<assetFolder>/<filename>`.
+-5. Update `#previewOutputProperties`.
+-6. Append result to `#previewRunLog`.
++5. If the selected target type is Games, validate and update the selected asset-browser-compatible destination JSON with the game preview image entry.
++6. Validate the updated destination JSON against `tools/schemas/tools/asset-browser.schema.json`.
++7. Save the destination JSON only after it validates.
++8. Update `#previewOutputProperties`.
++9. Append result to `#previewRunLog`.
+ 
+ Failure states:
+ - No repo handle.
+ - No rendered preview.
+ - Write denied.
+ - Target output folder missing and cannot be created.
++- Games selected but no destination asset JSON is selected.
++- Destination asset JSON fails validation before or after update.
+ 
+ ### Flow 5: Export Batch
+ Trigger:
+@@ -598,6 +654,7 @@ Steps:
+    - load;
+    - render;
+    - export or skip;
++   - when target type is Games, validate and update the asset-browser-compatible destination JSON for the generated preview image;
+    - append log entry.
+ 5. Honor Stop only between targets.
+ 6. Update run summary.
+@@ -724,8 +781,9 @@ Right panel `#previewOutputProperties` must show:
+ - No CSS implementation.
+ - No JavaScript implementation.
+ - No schema file changes.
++- No `tools/schemas/tools/preview-generator-v2.schema.json`.
+ - No sample JSON changes.
+-- No game JSON changes.
++- No generic game JSON changes outside the selected asset-browser-compatible destination JSON.
+ - No workspace/toolState persistence implementation.
+ - No dependency changes.
+ 
+@@ -733,14 +791,18 @@ Right panel `#previewOutputProperties` must show:
+ - `tools/preview/index.html` contains the five exact regions.
+ - The page shell, header behavior, three-column grid, accordionV2 grouping, and action separation follow the Palette Manager V2 base pattern.
+ - All controls use the ids named in this spec.
++- The page launches with no assumed target radio selection.
+ - Footer write/export actions are separated from left-panel configuration controls.
+ - Main preview surface remains centered and inspectable.
+ - Center column includes `#previewLastGeneratedSection` at the bottom.
+ - Last generated preview replaces only on successful render, keeps no history, and shows no fallback image.
+ - Right panel shows validation and output properties.
+-- `toolState` validates before render.
+-- `toolState` never stores generated image data, SVG text, Blob URLs, or `imageDataUrl`.
+-- Invalid `toolState` is rejected before partial render.
++- No Preview Generator V2 schema exists or is required.
++- Local runtime state validates before render.
++- Local runtime state never stores generated image data, SVG text, Blob URLs, or `imageDataUrl`.
++- Invalid local runtime state is rejected before partial render.
++- Games mode updates only `tools/schemas/tools/asset-browser.schema.json`-compatible destination JSON.
++- Games mode validates destination JSON before and after adding/updating the preview image asset entry.
+ - Load -> Validate -> Render -> Export flow is explicit.
+ - Export writes `preview.svg` only after validation.
+ - Samples remain unmodified except for intentional generated `preview.svg` assets during manual use.

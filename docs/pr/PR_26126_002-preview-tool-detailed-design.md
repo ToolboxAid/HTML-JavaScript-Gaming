@@ -31,7 +31,9 @@ No sample JSON, sample launch code, games, workspace, or runtime implementation 
 ## Rebuild Goal
 Create a first-class Preview Generator V2 tool at `tools/preview/index.html` that preserves the useful current generator behavior while making the UI, contracts, errors, preview modes, and export actions explicit.
 
-Preview Generator V2 should remain a file-generation utility. It should not own game/sample JSON, workspace state, toolState, or `tools.*` published JSON.
+Preview Generator V2 should remain a file-generation utility plus a destination-aware asset registration helper. It must not own game/sample JSON, workspace state, toolState, `tools.*` published JSON, or a dedicated Preview Generator V2 schema.
+
+No file named `tools/schemas/tools/preview-generator-v2.schema.json` is required or allowed by this design. Preview Generator V2 validates only the selected destination contract after the user chooses a target type.
 
 ## UI Regions
 
@@ -55,9 +57,12 @@ Current controls:
 
 Target behavior:
 - Keep as radio-button-style controls.
+- No target type is assumed at launch.
+- Target-specific controls, validation, and export behavior remain idle until the user selects Samples, Games, or Tools.
 - Samples mode resolves `0107` and `samples/phase-01/0107/index.html`.
 - Games mode resolves `Bouncing-ball` and `games/Bouncing-ball/index.html`.
 - Tools mode resolves `Vector Map Editor` and `tools/Vector Map Editor/index.html`.
+- Games mode selects `tools/schemas/tools/asset-browser.schema.json` as the destination schema for preview asset registration.
 
 ### Capture Source Region
 Purpose: Configure where targets are loaded from and how long capture waits.
@@ -128,7 +133,7 @@ Target behavior:
 - Canvas Only captures the first canvas from the loaded target document.
 - Full Screen captures the target body at 1600x900 using `html2canvas` when available.
 - Full Screen falls back to best available element/canvas capture when `html2canvas` fails.
-- Capture mode changes should not mutate any sample, game, tool, or JSON payload.
+- Capture mode changes do not mutate any sample, game, tool, or destination JSON payload.
 
 ### Action Region
 Purpose: Run and control capture.
@@ -313,15 +318,45 @@ Failure fallback output produces:
 ```
 
 ### JSON Output
-No JSON output is owned by this tool.
+Preview Generator V2 does not own an independent JSON output contract and must not create or require `tools/schemas/tools/preview-generator-v2.schema.json`.
 
-Preview Generator V2 must not publish or mutate:
+Preview Generator V2 must not publish:
 - `tools.preview`
 - `tools.palette-browser`
 - workspace manifest JSON
 - toolState JSON
 - sample JSON
-- game JSON
+
+Destination JSON is selected by target radio after launch. Until the user selects a target type, there is no destination purpose and no destination JSON validation.
+
+Game radio behavior:
+- Selecting Games sets the destination contract to `tools/schemas/tools/asset-browser.schema.json`.
+- The user must provide or select an existing asset-browser-compatible JSON payload before JSON update/export.
+- Preview Generator V2 validates the existing destination JSON against `tools/schemas/tools/asset-browser.schema.json` before any mutation.
+- After a game preview image is generated, the tool adds or updates exactly one asset entry for that game's preview image.
+- The destination JSON must validate against `tools/schemas/tools/asset-browser.schema.json` again after the update and before save.
+- If either validation pass fails, the JSON update is rejected and the generated SVG file state is reported separately.
+
+Game preview asset entry shape:
+
+```json
+{
+  "assets": {
+    "image.<normalized-game-id>.preview": {
+      "path": "games/<GameFolder>/assets/images/preview.svg",
+      "kind": "image",
+      "source": "asset-browser"
+    }
+  }
+}
+```
+
+The actual asset key must satisfy the asset-browser schema asset key pattern. `<normalized-game-id>` is the lower-kebab normalized game folder/name segment used only for the asset key. Existing unrelated asset entries must be preserved.
+
+Samples and Tools radio behavior:
+- Samples and Tools may generate `preview.svg` files.
+- They do not have a JSON destination update contract in this design PR.
+- JSON mutation for Samples or Tools is blocked until a future PR defines an explicit destination schema.
 
 The generated SVG may contain a data URL image because it is the preview asset file content, not a persisted runtime/workspace JSON contract.
 
@@ -338,10 +373,13 @@ Expected UI:
 
 ### Input Errors
 - Empty target list.
+- No target radio option selected.
 - Unrecognized sample ID/path.
 - Unsupported target type.
 - Invalid or missing base URL.
 - Missing expected target directory.
+- Missing Game destination asset JSON when Games export requests JSON registration.
+- Destination asset JSON does not validate against `tools/schemas/tools/asset-browser.schema.json`.
 
 Expected UI:
 - Keep batch alive where possible.
@@ -418,7 +456,8 @@ Action: Processes the parsed target list sequentially.
 Output effect:
 - May write `preview.svg` files.
 - Updates log and summary.
-- Does not mutate JSON or sample source files.
+- Does not mutate sample source files.
+- In Games mode only, may update the selected asset-browser-compatible destination JSON after a successful preview image generation and strict destination schema validation.
 
 ### Stop
 Action: Sets a stop-request flag.
@@ -434,6 +473,17 @@ Action: Decides whether to write or skip a target.
 Output effect:
 - Writes only when rules allow.
 - Logs `SKIP`, `RUN`, `OUT`, `URL`, `OK`, `WARN`, or `FAIL`.
+
+### Game Asset JSON Registration
+Action: Adds or updates the generated game preview asset in the selected destination JSON.
+
+Output effect:
+- Reads the existing asset-browser-compatible JSON.
+- Validates it against `tools/schemas/tools/asset-browser.schema.json`.
+- Adds or replaces `assets["image.<normalized-game-id>.preview"]`.
+- Uses `kind: "image"` and `source: "asset-browser"` to remain schema-compatible.
+- Validates the updated JSON against `tools/schemas/tools/asset-browser.schema.json`.
+- Saves only if the updated destination JSON is valid.
 
 ## Security And Browser Constraints
 - Requires a secure context for File System Access API.
@@ -454,6 +504,8 @@ The log should receive the most vertical space. Configuration controls should re
 ## Rebuild Acceptance Criteria
 - `tools/preview/index.html` exists as the launchable entrypoint.
 - Existing behavior from `preview_svg_generator.html` is represented or deliberately retired.
+- Launch does not assume Samples, Games, or Tools until the user selects a target radio option.
+- No Preview Generator V2 schema file exists or is required.
 - Controls are grouped by purpose and remain visible at common desktop widths.
 - Execute is blocked until repo root and target list are valid.
 - Generated output path is visible before execution.
@@ -461,6 +513,7 @@ The log should receive the most vertical space. Configuration controls should re
 - Stop preserves current-target integrity.
 - Errors are visible and included in the final summary.
 - No sample JSON or workspace/toolState JSON is touched.
+- Games mode validates existing and updated destination JSON against `tools/schemas/tools/asset-browser.schema.json` before saving preview asset registration.
 - No silent fallback data is used for runtime contracts.
 
 ## Playwright Expectations
@@ -478,6 +531,7 @@ Future Playwright should validate:
 ## Manual Test Expectations
 Manual implementation validation should include:
 - Open `tools/preview/index.html`.
+- Confirm no target purpose is selected before the user chooses Samples, Games, or Tools.
 - Pick repo root.
 - Enter a known sample ID.
 - Confirm output path preview points to `samples/phase-XX/XXXX/assets/images`.
@@ -485,6 +539,8 @@ Manual implementation validation should include:
 - Confirm `preview.svg` is written.
 - Run Full Screen capture for a tool page.
 - Confirm `preview.svg` is written or a clear fallback SVG is produced.
+- Select Games, generate a known game preview, and confirm the selected destination asset JSON receives or updates one schema-valid `image.<normalized-game-id>.preview` entry.
+- Confirm invalid asset-browser destination JSON is rejected before save.
 - Confirm Stop ends the batch after the active target.
 - Confirm no sample JSON changes appear in `git status`.
 

@@ -1,1 +1,1 @@
-Normalize Preview Generator V2 naming in design docs - PR_26126_005-preview-generator-v2-naming
+Correct Preview Generator V2 destination action contract - PR_26126_006-preview-generator-v2-action-contract
