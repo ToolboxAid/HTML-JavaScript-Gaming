@@ -208,38 +208,49 @@
     .preview-generator-v2__status-block {
       flex: 1 1 auto;
       min-height: 0;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
+      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: var(--pm-surface, rgba(40, 25, 84, 0.72));
     }
 
-    .preview-generator-v2__status-block .accordion-v2__content {
+    .preview-generator-v2__status-content {
       flex: 1 1 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      padding: 8px;
     }
 
     .preview-generator-v2 .accordion-v2__content[hidden] {
       display: none;
     }
 
-    .preview-generator-v2__accordion-header-row {
+    .preview-generator-v2__status-header-row {
       flex: 0 0 auto;
       display: flex;
-      align-items: stretch;
+      align-items: center;
+      justify-content: space-between;
       gap: 8px;
       min-width: 0;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
     }
 
-    .preview-generator-v2__accordion-header-row .accordion-v2__header {
+    .preview-generator-v2__status-heading {
       flex: 1 1 auto;
-      width: auto;
+      min-width: 0;
+      margin: 0;
+      color: var(--pm-text, #f7f4ff);
+      font-size: 0.95rem;
+      font-weight: 700;
     }
 
     .preview-generator-v2__status-clear-button {
       flex: 0 0 auto;
-      align-self: center;
-      margin-right: 8px;
     }
 
     .preview-generator-v2__status-text {
@@ -444,8 +455,8 @@
                 <span>Canvas Only</span>
               </label>
               <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
-                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
-                <span>Full Screen (1600x900 HTML Page)</span>
+                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen" />
+                <span>Full Screen</span>
               </label>
             </fieldset>
           </div>
@@ -520,15 +531,12 @@ tools\&lt;toolname&gt;\index.html
           </div>
         </section>
 
-        <section id="statusAccordion" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__status-block is-open" data-accordion-v2-open="true">
-          <div class="preview-generator-v2__accordion-header-row">
-            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
-              <span>Status</span>
-              <span class="accordion-v2__icon" aria-hidden="true">+</span>
-            </button>
+        <section id="statusAccordion" class="preview-generator-v2__status-block">
+          <div class="preview-generator-v2__status-header-row">
+            <h2 class="preview-generator-v2__status-heading">Status</h2>
             <button id="clearLogBtn" class="preview-generator-v2__status-clear-button" type="button">Clear</button>
           </div>
-          <div id="statusAccordionContent" class="accordion-v2__content">
+          <div id="statusAccordionContent" class="preview-generator-v2__status-content">
             <div id="status" class="preview-generator-v2__status-text" hidden></div>
             <div id="log">Ready.
 </div>
@@ -633,7 +641,31 @@ tools\&lt;toolname&gt;\index.html
     function getCaptureModeLabel(modeValue = getSelectedCaptureMode()) {
       return modeValue === "canvasOnly"
         ? "Canvas Only"
-        : "Full Screen (1600x900 HTML Page)";
+        : "Full Screen";
+    }
+
+    function getAvailableFullScreenCaptureSize(doc = document, win = window, fallbackWidth = 1, fallbackHeight = 1) {
+      const root = doc?.documentElement;
+      const body = doc?.body;
+      const width = Math.max(1, Math.ceil(
+        win?.innerWidth
+          || root?.clientWidth
+          || body?.clientWidth
+          || root?.scrollWidth
+          || body?.scrollWidth
+          || fallbackWidth
+          || 1
+      ));
+      const height = Math.max(1, Math.ceil(
+        win?.innerHeight
+          || root?.clientHeight
+          || body?.clientHeight
+          || root?.scrollHeight
+          || body?.scrollHeight
+          || fallbackHeight
+          || 1
+      ));
+      return { width, height };
     }
 
     function initializeRuntimeCaptureMode() {
@@ -643,7 +675,7 @@ tools\&lt;toolname&gt;\index.html
       const settleMs = Math.max(0, Number(runtimeParams.get("settle") || 3000));
       const timeoutMs = Math.max(1000, Number(runtimeParams.get("timeout") || 12000));
       const captureModeParam = String(runtimeParams.get("capture") || "canvasOnly").trim();
-      const runtimeCaptureMode = captureModeParam === "fullscreen1600" ? "fullscreen1600" : "canvasOnly";
+      const runtimeCaptureMode = /^fullscreen/i.test(captureModeParam) ? "fullscreen" : "canvasOnly";
 
       function setStatus(status) {
         document.body.setAttribute("data-capture-status", status);
@@ -732,7 +764,7 @@ tools\&lt;toolname&gt;\index.html
       async function captureFullScreenCanvas(frameDoc) {
         const html2canvasFn = window.html2canvas;
         if (typeof html2canvasFn !== "function") {
-          throw new Error("Full Screen capture requires html2canvas. Use Canvas Only or ensure html2canvas loads before using Full Screen (1600x900 HTML Page).");
+          throw new Error("Full Screen capture failed: html2canvas is unavailable. Use Canvas Only or ensure html2canvas loads before using Full Screen.");
         }
 
         const frameBody = frameDoc.body;
@@ -741,20 +773,24 @@ tools\&lt;toolname&gt;\index.html
         }
 
         try {
+          const captureSize = getAvailableFullScreenCaptureSize(document, window, width, height);
           return await html2canvasFn(frameBody, {
             backgroundColor: "#000000",
             useCORS: true,
             allowTaint: true,
             logging: false,
-            width: 1600,
-            height: 900,
-            windowWidth: 1600,
-            windowHeight: 900,
+            width: captureSize.width,
+            height: captureSize.height,
+            windowWidth: captureSize.width,
+            windowHeight: captureSize.height,
             scrollX: 0,
-            scrollY: 0
+            scrollY: 0,
+            onclone: (clonedDoc) => {
+              sanitizeClonedToolDocument(clonedDoc);
+            }
           });
         } catch (error) {
-          throw new Error(`Full Screen capture failed at 1600x900. html2canvas may not support CSS color functions such as color(...). Use Canvas Only or replace unsupported CSS before fullscreen capture. ${error.message}`);
+          throw new Error(`Full Screen capture failed: ${error.message}`);
         }
       }
 
@@ -766,7 +802,7 @@ tools\&lt;toolname&gt;\index.html
           }
 
           let sourceCanvas;
-          if (runtimeCaptureMode === "fullscreen1600") {
+          if (runtimeCaptureMode === "fullscreen") {
             sourceCanvas = await captureFullScreenCanvas(frameDoc);
           } else {
             sourceCanvas = frameDoc.querySelector("canvas");
@@ -794,7 +830,7 @@ tools\&lt;toolname&gt;\index.html
           drawSourceCanvas(sourceCanvas);
           setStatus("ready");
         } catch (error) {
-          if (runtimeCaptureMode === "fullscreen1600") {
+          if (runtimeCaptureMode === "fullscreen") {
             fail(error.message);
             return;
           }
@@ -1230,16 +1266,141 @@ tools\&lt;toolname&gt;\index.html
       });
     }
 
-    function sanitizeClonedToolDocument(clonedDoc) {
-      const all = clonedDoc.querySelectorAll("*");
-      for (const el of all) {
-        const style = el.style;
-        if (!style) continue;
-        const bg = style.backgroundImage || "";
-        if (/gradient/i.test(bg)) {
-          style.backgroundImage = "none";
+    const UNSUPPORTED_COLOR_FUNCTION_PROPERTIES = [
+      "background",
+      "background-color",
+      "border-block-color",
+      "border-block-end-color",
+      "border-block-start-color",
+      "border-bottom-color",
+      "border-color",
+      "border-inline-color",
+      "border-inline-end-color",
+      "border-inline-start-color",
+      "border-left-color",
+      "border-right-color",
+      "border-top-color",
+      "box-shadow",
+      "caret-color",
+      "color",
+      "column-rule-color",
+      "fill",
+      "outline-color",
+      "scrollbar-color",
+      "stop-color",
+      "stroke",
+      "text-decoration-color",
+      "text-emphasis-color",
+      "text-shadow"
+    ];
+
+    function replaceUnsupportedColorFunctions(value, fallback = "#000000") {
+      const source = String(value || "");
+      const lower = source.toLowerCase();
+      let result = "";
+      let index = 0;
+      let changed = false;
+
+      while (index < source.length) {
+        const matchIndex = lower.indexOf("color(", index);
+        if (matchIndex < 0) {
+          result += source.slice(index);
+          break;
+        }
+
+        result += source.slice(index, matchIndex);
+        let cursor = matchIndex + "color(".length;
+        let depth = 1;
+        while (cursor < source.length && depth > 0) {
+          const char = source[cursor];
+          if (char === "(") depth += 1;
+          if (char === ")") depth -= 1;
+          cursor += 1;
+        }
+
+        if (depth === 0) {
+          result += fallback;
+          changed = true;
+          index = cursor;
+        } else {
+          result += source.slice(matchIndex);
+          index = source.length;
         }
       }
+
+      return changed ? result : source;
+    }
+
+    function sanitizeStyleDeclaration(style) {
+      if (!style) return;
+
+      const properties = Array.from(style);
+      for (const property of properties) {
+        const value = style.getPropertyValue(property);
+        if (!value || !/color\(/i.test(value)) continue;
+        style.setProperty(
+          property,
+          replaceUnsupportedColorFunctions(value),
+          style.getPropertyPriority(property)
+        );
+      }
+
+      const bg = style.backgroundImage || "";
+      if (/gradient/i.test(bg)) {
+        style.backgroundImage = "none";
+      }
+    }
+
+    function sanitizeCssRules(rules) {
+      if (!rules) return;
+
+      for (const rule of Array.from(rules)) {
+        sanitizeStyleDeclaration(rule.style);
+        sanitizeCssRules(rule.cssRules);
+      }
+    }
+
+    function sanitizeComputedColorStyles(clonedDoc) {
+      const clonedWindow = clonedDoc.defaultView;
+      if (!clonedWindow || typeof clonedWindow.getComputedStyle !== "function") {
+        return;
+      }
+
+      const all = clonedDoc.querySelectorAll("*");
+      for (const el of all) {
+        const computed = clonedWindow.getComputedStyle(el);
+        for (const property of UNSUPPORTED_COLOR_FUNCTION_PROPERTIES) {
+          const value = computed.getPropertyValue(property);
+          if (!value || !/color\(/i.test(value)) continue;
+          el.style.setProperty(property, replaceUnsupportedColorFunctions(value), "important");
+        }
+
+        const backgroundImage = computed.getPropertyValue("background-image") || "";
+        if (/gradient/i.test(backgroundImage)) {
+          el.style.setProperty("background-image", "none", "important");
+        }
+      }
+    }
+
+    function sanitizeClonedToolDocument(clonedDoc) {
+      for (const styleNode of clonedDoc.querySelectorAll("style")) {
+        if (!/color\(/i.test(styleNode.textContent || "")) continue;
+        styleNode.textContent = replaceUnsupportedColorFunctions(styleNode.textContent);
+      }
+
+      for (const sheet of Array.from(clonedDoc.styleSheets || [])) {
+        try {
+          sanitizeCssRules(sheet.cssRules);
+        } catch {
+        }
+      }
+
+      const all = clonedDoc.querySelectorAll("*");
+      for (const el of all) {
+        sanitizeStyleDeclaration(el.style);
+      }
+
+      sanitizeComputedColorStyles(clonedDoc);
 
       const canvases = clonedDoc.querySelectorAll("canvas");
       for (const canvas of canvases) {
@@ -1286,7 +1447,7 @@ tools\&lt;toolname&gt;\index.html
       return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
     }
 
-    async function extractFullPageSvg1600(doc) {
+    async function extractFullPageSvg(doc) {
       const win = frame.contentWindow;
       if (!win) {
         throw new Error("Full Screen capture failed because the target frame window is unavailable.");
@@ -1294,15 +1455,14 @@ tools\&lt;toolname&gt;\index.html
 
       const html2canvasFn = window.html2canvas || win.html2canvas;
       if (typeof html2canvasFn !== "function") {
-        throw new Error("Full Screen capture requires html2canvas. Use Canvas Only or ensure html2canvas loads before using Full Screen (1600x900 HTML Page).");
+        throw new Error("Full Screen capture failed: html2canvas is unavailable. Use Canvas Only or ensure html2canvas loads before using Full Screen.");
       }
 
       const body = doc.body;
       if (!body) {
         throw new Error("Full Screen capture failed because the target document has no body.");
       }
-      const fullWidth = 1600;
-      const fullHeight = 900;
+      const captureSize = getAvailableFullScreenCaptureSize(document, window, body.scrollWidth, body.scrollHeight);
 
       try {
         const canvas = await html2canvasFn(body, {
@@ -1310,10 +1470,10 @@ tools\&lt;toolname&gt;\index.html
           useCORS: true,
           allowTaint: true,
           logging: false,
-          width: fullWidth,
-          height: fullHeight,
-          windowWidth: fullWidth,
-          windowHeight: fullHeight,
+          width: captureSize.width,
+          height: captureSize.height,
+          windowWidth: captureSize.width,
+          windowHeight: captureSize.height,
           scrollX: 0,
           scrollY: 0,
           onclone: (clonedDoc) => {
@@ -1323,7 +1483,7 @@ tools\&lt;toolname&gt;\index.html
 
         return buildCanvasWrappedSvg(canvas);
       } catch (error) {
-        throw new Error(`Full Screen capture failed at 1600x900. html2canvas may not support CSS color functions such as color(...). Use Canvas Only or replace unsupported CSS before fullscreen capture. ${error.message}`);
+        throw new Error(`Full Screen capture failed: ${error.message}`);
       }
     }
 
@@ -1338,7 +1498,7 @@ tools\&lt;toolname&gt;\index.html
     async function extractSvgFromFrame(entry) {
       const doc = frame.contentDocument;
       if (!doc) {
-        if (getSelectedCaptureMode() === "fullscreen1600") {
+        if (getSelectedCaptureMode() === "fullscreen") {
           throw new Error("Full Screen capture failed because the target frame document is unavailable.");
         }
         return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
@@ -1348,7 +1508,7 @@ tools\&lt;toolname&gt;\index.html
         return extractCanvasOnlySvg(doc);
       }
 
-      return await extractFullPageSvg1600(doc);
+      return await extractFullPageSvg(doc);
     }
 
     async function triggerGameStart() {

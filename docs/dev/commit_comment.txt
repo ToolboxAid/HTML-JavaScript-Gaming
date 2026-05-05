@@ -1,1 +1,1 @@
-Use native viewport sizing for Preview Generator V2 fullscreen capture - PR_26126_029-preview-generator-v2-fullscreen-native-size
+Remove status accordion affordance and sanitize fullscreen capture CSS colors - PR_26126_030-preview-generator-v2-status-header-and-fullscreen-css-fix

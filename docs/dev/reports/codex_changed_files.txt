@@ -1,6 +1,6 @@
-# PR_26126_029-preview-generator-v2-fullscreen-native-size
+# PR_26126_030-preview-generator-v2-status-header-and-fullscreen-css-fix
 
-PR_029 files:
+PR_030 files:
 - docs/dev/codex_commands.md
 - docs/dev/commit_comment.txt
 - docs/dev/reports/codex_changed_files.txt
@@ -8,12 +8,15 @@ PR_029 files:
 - tools/preview-generator-v2/index.html
 
 Validation notes:
-- Preview Generator V2 no longer contains `1600`, `900`, `1600x900`, `fullscreen1600`, `Full Screen (` or `failed at` in the active tool file.
+- Status section no longer contains `accordion-v2__header` or `accordion-v2__icon` markup.
+- Clear remains in the Status header row as a normal button.
+- Full Screen capture calls `sanitizeClonedToolDocument` from both fullscreen `html2canvas` paths.
+- The cloned capture DOM normalizes unsupported CSS `color(...)` values in style elements, CSS rules, inline styles, and computed color-related properties.
 - Inline scripts in `tools/preview-generator-v2/index.html` parse successfully with `new Function`.
-- `git diff --check` passed for the PR_029 target files.
+- `git diff --check` passed for the PR_030 target files.
 - `npm run test:workspace-v2` is unavailable because the script is not defined in the current `package.json`.
 - `npm test` still fails in the existing shared extraction guard baseline outside this PR scope.
 
-Existing workspace changes excluded from this PR_029 ZIP:
+Existing workspace changes excluded from this PR_030 ZIP:
 - Staged PR_028 sample-local README changes.
 - Unstaged `samples/phase-12/*/assets/images/preview.svg` changes.
