@@ -1,446 +1,1583 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index e79f3c47..4be6ecf2 100644
+index 4be6ecf2..fe04f788 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,20 +1,20 @@
--# Codex Commands - PR_26126_006-preview-generator-v2-action-contract
-+# Codex Commands - PR_26126_007-preview-generator-v2-radio-contract
+@@ -1,21 +1,24 @@
+-# Codex Commands - PR_26126_007-preview-generator-v2-radio-contract
++# Codex Commands - PR_26126_008-preview-generator-v2-first-pass
  
  ```bash
--codex run "Create PR_26126_006-preview-generator-v2-action-contract. Correct the Preview Generator V2 design docs: Preview Generator V2 must not have its own schema. It launches without knowing the target purpose until the user selects a target radio option. Define the Game radio behavior: when Game is selected and a preview image is generated, the output updates the existing tools/schemas/tools/asset-browser.schema.json-compatible JSON by adding/updating the preview image for that game. Remove any requirement for tools/schemas/tools/preview-generator-v2.schema.json. Keep strict validation against the destination schema. No implementation code. Do not modify samples. Produce review artifacts."
-+codex run "Create PR_26126_007-preview-generator-v2-radio-contract. Update Preview Generator V2 design docs to explicitly require native HTML radio inputs for target selection using <input type=\"radio\" name=\"group1\" value=\"...\"> pattern. Define that all target modes (e.g., Game) must use this radio group, no custom UI controls, no dropdowns, no toggles. Specify that selection drives destination schema behavior (e.g., Game updates asset-browser schema JSON preview field). Reinforce no fallback and no schema ownership. No implementation code. Do not modify samples. Produce review artifacts."
+-codex run "Create PR_26126_007-preview-generator-v2-radio-contract. Update Preview Generator V2 design docs to explicitly require native HTML radio inputs for target selection using <input type=\"radio\" name=\"group1\" value=\"...\"> pattern. Define that all target modes (e.g., Game) must use this radio group, no custom UI controls, no dropdowns, no toggles. Specify that selection drives destination schema behavior (e.g., Game updates asset-browser schema JSON preview field). Reinforce no fallback and no schema ownership. No implementation code. Do not modify samples. Produce review artifacts."
++codex run "Create PR_26126_008-preview-generator-v2-first-pass. Build Preview Generator V2 in one pass using Palette Manager as the base layout/code pattern. Use the exact Palette Manager platform header and NAV style. NAV buttons must be Generate Preview, Apply to Game, Export Image, with Generate Preview in NAV. Do not show JSON UI. Preview Generator V2 owns no schema. Implement native radio target selection with name=\"previewTarget\" and values including game. Build 3-column UI: left target/source/status, center main preview plus Last Generated Preview at bottom, right render/output controls. For Game target, generated preview should update asset-browser-compatible destination data for that game, validated against the destination schema only. No fallback data, no hidden defaults, no partial render on invalid destination data. Include targeted Playwright coverage for skeleton render, radio selection, generate/apply/export button states, and no visible JSON controls. Do not modify samples. Produce review artifacts."
  ```
  
  ## Validation Commands
  
  ```bash
- git diff --check -- docs/pr/PR_26126_002-preview-tool-detailed-design.md docs/pr/PR_26126_003-preview-tool-layout-spec.md docs/dev/codex_commands.md docs/dev/commit_comment.txt
--rg -n 'html-js-gaming\.tool\.preview|Target `toolState`|Preview Generator V2 accepts only its own' docs/pr/PR_26126_002-preview-tool-detailed-design.md docs/pr/PR_26126_003-preview-tool-layout-spec.md
-+rg -n 'name="group1"|previewTargetModeGame|dropdowns|toggles|asset-browser.schema.json|preview-generator-v2.schema.json' docs/pr/PR_26126_002-preview-tool-detailed-design.md docs/pr/PR_26126_003-preview-tool-layout-spec.md
+-git diff --check -- docs/pr/PR_26126_002-preview-tool-detailed-design.md docs/pr/PR_26126_003-preview-tool-layout-spec.md docs/dev/codex_commands.md docs/dev/commit_comment.txt
+-rg -n 'name="group1"|previewTargetModeGame|dropdowns|toggles|asset-browser.schema.json|preview-generator-v2.schema.json' docs/pr/PR_26126_002-preview-tool-detailed-design.md docs/pr/PR_26126_003-preview-tool-layout-spec.md
++node --check tools/preview/main.js
++node --check tools/preview/previewGeneratorShell.js
++node --check tests/tools/PreviewGeneratorV2FirstPass.test.mjs
++node tests/tools/PreviewGeneratorV2FirstPass.test.mjs
++git diff --check -- tools/preview/index.html tools/preview/main.js tools/preview/previewGeneratorShell.js tools/preview/previewGeneratorV2.css tests/tools/PreviewGeneratorV2FirstPass.test.mjs docs/dev/codex_commands.md docs/dev/commit_comment.txt
  npm run codex:review-artifacts
  ```
  
  ## Playwright
  
--No Playwright impact. This PR is a documentation-only action contract correction and does not modify implementation code.
-+No Playwright impact. This PR is a documentation-only radio contract correction and does not modify implementation code.
+-No Playwright impact. This PR is a documentation-only radio contract correction and does not modify implementation code.
++Targeted Playwright coverage is in `tests/tools/PreviewGeneratorV2FirstPass.test.mjs`.
  
  ## Full Samples
  
+-Full samples smoke test was skipped because this PR is documentation-only and sample files are out of scope.
++Full samples smoke test was skipped because this PR is scoped to the Preview Generator V2 tool and targeted Playwright coverage.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 8d9395f6..5774037f 100644
+index 5774037f..d35f90ca 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Correct Preview Generator V2 destination action contract - PR_26126_006-preview-generator-v2-action-contract
-+Define Preview Generator V2 native target radio contract - PR_26126_007-preview-generator-v2-radio-contract
-diff --git a/docs/pr/PR_26126_002-preview-tool-detailed-design.md b/docs/pr/PR_26126_002-preview-tool-detailed-design.md
-index 53ba233d..8c364c05 100644
---- a/docs/pr/PR_26126_002-preview-tool-detailed-design.md
-+++ b/docs/pr/PR_26126_002-preview-tool-detailed-design.md
-@@ -50,19 +50,31 @@ Target placement:
- ### Target Selection Region
- Purpose: Select what kind of entry is being captured.
- 
--Current controls:
-+Current inspected controls:
- - `input#targetTypeSamples[type=radio][name=targetType][value=samples]`
- - `input#targetTypeGames[type=radio][name=targetType][value=games]`
- - `input#targetTypeTools[type=radio][name=targetType][value=tools]`
- 
-+Target native radio contract:
+-Define Preview Generator V2 native target radio contract - PR_26126_007-preview-generator-v2-radio-contract
++Build Preview Generator V2 first-pass UI and coverage - PR_26126_008-preview-generator-v2-first-pass
+diff --git a/tests/tools/PreviewGeneratorV2FirstPass.test.mjs b/tests/tools/PreviewGeneratorV2FirstPass.test.mjs
+new file mode 100644
+index 00000000..c0eb6b0e
+--- /dev/null
++++ b/tests/tools/PreviewGeneratorV2FirstPass.test.mjs
+@@ -0,0 +1,127 @@
++import assert from "node:assert/strict";
++import { chromium } from "@playwright/test";
++import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
 +
-+```html
-+<input id="previewTargetModeSample" type="radio" name="group1" value="sample">
-+<input id="previewTargetModeGame" type="radio" name="group1" value="game">
-+<input id="previewTargetModeTool" type="radio" name="group1" value="tool">
-+```
++const TOOL_PATH = "/tools/preview/index.html";
 +
- Target behavior:
--- Keep as radio-button-style controls.
--- No target type is assumed at launch.
--- Target-specific controls, validation, and export behavior remain idle until the user selects Samples, Games, or Tools.
--- Samples mode resolves `0107` and `samples/phase-01/0107/index.html`.
--- Games mode resolves `Bouncing-ball` and `games/Bouncing-ball/index.html`.
--- Tools mode resolves `Vector Map Editor` and `tools/Vector Map Editor/index.html`.
--- Games mode selects `tools/schemas/tools/asset-browser.schema.json` as the destination schema for preview asset registration.
-+- Target selection must use native HTML radio inputs only.
-+- Every target mode must belong to the same native radio group: `name="group1"`.
-+- Do not implement target mode selection with custom segmented controls, dropdowns, toggle buttons, div/button state, or ARIA-only radio substitutes.
-+- No target type is assumed at launch; none of the `group1` radios is checked by default.
-+- Target-specific controls, validation, and export behavior remain idle until the user selects Sample, Game, or Tool.
-+- Sample mode resolves `0107` and `samples/phase-01/0107/index.html`.
-+- Game mode resolves `Bouncing-ball` and `games/Bouncing-ball/index.html`.
-+- Tool mode resolves `Vector Map Editor` and `tools/Vector Map Editor/index.html`.
-+- Game mode selects `tools/schemas/tools/asset-browser.schema.json` as the destination schema for preview asset registration.
-+- Game mode updates the asset-browser-compatible preview field/entry for the generated game preview image.
-+- If no `group1` radio is selected, validation, render, export, and destination JSON update actions are blocked with no fallback target mode.
- 
- ### Capture Source Region
- Purpose: Configure where targets are loaded from and how long capture waits.
-@@ -179,9 +191,9 @@ Target behavior:
- 
- | Region | Control | Current ID | Target Placement | Primary Action |
- | --- | --- | --- | --- | --- |
--| Target Selection | Samples radio | `targetTypeSamples` | Top-left controls | Resolve entries as sample IDs/paths. |
--| Target Selection | Games radio | `targetTypeGames` | Top-left controls | Resolve entries as game names/paths. |
--| Target Selection | Tools radio | `targetTypeTools` | Top-left controls | Resolve entries as tool names/paths. |
-+| Target Selection | Sample radio | `previewTargetModeSample` | Top-left controls | Native `input[type=radio][name=group1][value=sample]`; resolves entries as sample IDs/paths. |
-+| Target Selection | Game radio | `previewTargetModeGame` | Top-left controls | Native `input[type=radio][name=group1][value=game]`; resolves entries as game names/paths and selects asset-browser destination schema behavior. |
-+| Target Selection | Tool radio | `previewTargetModeTool` | Top-left controls | Native `input[type=radio][name=group1][value=tool]`; resolves entries as tool names/paths. |
- | Capture Source | Base URL input | `baseUrl` | Main configuration panel | Builds iframe URL prefix. |
- | Capture Source | Wait input | `waitMs` | Main configuration panel | Sets settle delay before capture. |
- | Repo And Output | Pick Repo button | `pickRepoBtn` | Output configuration panel | Opens File System Access repo picker. |
-@@ -206,7 +218,7 @@ Required inputs:
- - repo root selected through File System Access API;
- - base URL;
- - at least one target entry;
--- target type, when an entry is not a fully qualified `samples/`, `games/`, or `tools/` path.
-+- one selected native target radio from `name="group1"`.
- 
- Optional inputs:
- - wait milliseconds;
-@@ -219,7 +231,7 @@ Each entry resolves to:
- 
- ```json
- {
--  "targetType": "samples | games | tools",
-+  "targetType": "sample | game | tool",
-   "samplePath": "relative/path/to/index.html"
- }
- ```
-@@ -330,10 +342,10 @@ Preview Generator V2 must not publish:
- Destination JSON is selected by target radio after launch. Until the user selects a target type, there is no destination purpose and no destination JSON validation.
- 
- Game radio behavior:
--- Selecting Games sets the destination contract to `tools/schemas/tools/asset-browser.schema.json`.
-+- Selecting the native `input[type=radio][name=group1][value=game]` sets the destination contract to `tools/schemas/tools/asset-browser.schema.json`.
- - The user must provide or select an existing asset-browser-compatible JSON payload before JSON update/export.
- - Preview Generator V2 validates the existing destination JSON against `tools/schemas/tools/asset-browser.schema.json` before any mutation.
--- After a game preview image is generated, the tool adds or updates exactly one asset entry for that game's preview image.
-+- After a game preview image is generated, the tool adds or updates exactly one asset-browser-compatible preview field/entry for that game's preview image.
- - The destination JSON must validate against `tools/schemas/tools/asset-browser.schema.json` again after the update and before save.
- - If either validation pass fails, the JSON update is rejected and the generated SVG file state is reported separately.
- 
-@@ -353,10 +365,10 @@ Game preview asset entry shape:
- 
- The actual asset key must satisfy the asset-browser schema asset key pattern. `<normalized-game-id>` is the lower-kebab normalized game folder/name segment used only for the asset key. Existing unrelated asset entries must be preserved.
- 
--Samples and Tools radio behavior:
--- Samples and Tools may generate `preview.svg` files.
-+Sample and Tool radio behavior:
-+- Sample and Tool modes may generate `preview.svg` files.
- - They do not have a JSON destination update contract in this design PR.
--- JSON mutation for Samples or Tools is blocked until a future PR defines an explicit destination schema.
-+- JSON mutation for Sample or Tool is blocked until a future PR defines an explicit destination schema.
- 
- The generated SVG may contain a data URL image because it is the preview asset file content, not a persisted runtime/workspace JSON contract.
- 
-@@ -373,12 +385,12 @@ Expected UI:
- 
- ### Input Errors
- - Empty target list.
--- No target radio option selected.
-+- No native `group1` target radio option selected.
- - Unrecognized sample ID/path.
- - Unsupported target type.
- - Invalid or missing base URL.
- - Missing expected target directory.
--- Missing Game destination asset JSON when Games export requests JSON registration.
-+- Missing Game destination asset JSON when Game export requests JSON registration.
- - Destination asset JSON does not validate against `tools/schemas/tools/asset-browser.schema.json`.
- 
- Expected UI:
-@@ -457,7 +469,7 @@ Output effect:
- - May write `preview.svg` files.
- - Updates log and summary.
- - Does not mutate sample source files.
--- In Games mode only, may update the selected asset-browser-compatible destination JSON after a successful preview image generation and strict destination schema validation.
-+- In Game mode only, may update the selected asset-browser-compatible destination JSON after a successful preview image generation and strict destination schema validation.
- 
- ### Stop
- Action: Sets a stop-request flag.
-@@ -480,7 +492,7 @@ Action: Adds or updates the generated game preview asset in the selected destina
- Output effect:
- - Reads the existing asset-browser-compatible JSON.
- - Validates it against `tools/schemas/tools/asset-browser.schema.json`.
--- Adds or replaces `assets["image.<normalized-game-id>.preview"]`.
-+- Adds or replaces `assets["image.<normalized-game-id>.preview"]`, the schema-compatible preview field/entry for that game.
- - Uses `kind: "image"` and `source: "asset-browser"` to remain schema-compatible.
- - Validates the updated JSON against `tools/schemas/tools/asset-browser.schema.json`.
- - Saves only if the updated destination JSON is valid.
-@@ -504,7 +516,8 @@ The log should receive the most vertical space. Configuration controls should re
- ## Rebuild Acceptance Criteria
- - `tools/preview/index.html` exists as the launchable entrypoint.
- - Existing behavior from `preview_svg_generator.html` is represented or deliberately retired.
--- Launch does not assume Samples, Games, or Tools until the user selects a target radio option.
-+- Launch does not assume Sample, Game, or Tool until the user selects a native `group1` target radio option.
-+- Target mode selection uses only native `input[type=radio][name=group1]` controls.
- - No Preview Generator V2 schema file exists or is required.
- - Controls are grouped by purpose and remain visible at common desktop widths.
- - Execute is blocked until repo root and target list are valid.
-@@ -513,7 +526,7 @@ The log should receive the most vertical space. Configuration controls should re
- - Stop preserves current-target integrity.
- - Errors are visible and included in the final summary.
- - No sample JSON or workspace/toolState JSON is touched.
--- Games mode validates existing and updated destination JSON against `tools/schemas/tools/asset-browser.schema.json` before saving preview asset registration.
-+- Game mode validates existing and updated destination JSON against `tools/schemas/tools/asset-browser.schema.json` before saving preview asset registration.
- - No silent fallback data is used for runtime contracts.
- 
- ## Playwright Expectations
-@@ -521,7 +534,8 @@ No Playwright implementation is included in this PR.
- 
- Future Playwright should validate:
- - Preview Generator V2 page loads.
--- Target type controls switch modes.
-+- Target type controls are native `input[type=radio][name=group1]` controls.
-+- Sample, Game, and Tool radios switch modes.
- - Base URL, wait, asset folder, options, and capture mode controls are visible.
- - Execute remains disabled until repo selection is simulated or abstracted.
- - Input parsing can be unit-tested separately from File System Access writes.
-@@ -531,7 +545,8 @@ Future Playwright should validate:
- ## Manual Test Expectations
- Manual implementation validation should include:
- - Open `tools/preview/index.html`.
--- Confirm no target purpose is selected before the user chooses Samples, Games, or Tools.
-+- Confirm no target purpose is selected before the user chooses Sample, Game, or Tool.
-+- Confirm target mode controls are native radio inputs with `name="group1"`.
- - Pick repo root.
- - Enter a known sample ID.
- - Confirm output path preview points to `samples/phase-XX/XXXX/assets/images`.
-@@ -539,7 +554,7 @@ Manual implementation validation should include:
- - Confirm `preview.svg` is written.
- - Run Full Screen capture for a tool page.
- - Confirm `preview.svg` is written or a clear fallback SVG is produced.
--- Select Games, generate a known game preview, and confirm the selected destination asset JSON receives or updates one schema-valid `image.<normalized-game-id>.preview` entry.
-+- Select Game, generate a known game preview, and confirm the selected destination asset JSON receives or updates one schema-valid `image.<normalized-game-id>.preview` entry.
- - Confirm invalid asset-browser destination JSON is rejected before save.
- - Confirm Stop ends the batch after the active target.
- - Confirm no sample JSON changes appear in `git status`.
-diff --git a/docs/pr/PR_26126_003-preview-tool-layout-spec.md b/docs/pr/PR_26126_003-preview-tool-layout-spec.md
-index 108245d7..ebdb8916 100644
---- a/docs/pr/PR_26126_003-preview-tool-layout-spec.md
-+++ b/docs/pr/PR_26126_003-preview-tool-layout-spec.md
-@@ -13,6 +13,7 @@ This PR is documentation only. It defines target regions, control placement, DOM
- - Official display name: `Preview Generator V2`
- - No Preview Generator V2 schema file: `tools/schemas/tools/preview-generator-v2.schema.json` must not be created or required.
- - Game destination schema: `tools/schemas/tools/asset-browser.schema.json`
-+- Target mode selection contract: native HTML radio inputs only, using `name="group1"`.
- 
- ## Layout Goals
- - Make Preview Generator V2 a launchable first-class tool surface.
-@@ -22,7 +23,7 @@ This PR is documentation only. It defines target regions, control placement, DOM
- - Keep export/write actions grouped in the footer.
- - Use Palette Manager V2 as the base layout and interaction pattern for header shell, panel structure, control grouping, and accordion behavior.
- - Preserve the Preview Generator V2 boundary: no sample JSON, no workspace manifest mutation, no dedicated Preview Generator V2 schema, and no silent fallback data.
--- Launch with no assumed target purpose; target-specific validation begins only after the user selects Samples, Games, or Tools.
-+- Launch with no assumed target purpose; target-specific validation begins only after the user selects a native Sample, Game, or Tool radio input in `name="group1"`.
- 
- ## Palette Manager Base Pattern
- Preview Generator V2 must use Palette Manager V2 as its layout and interaction reference, not the older standalone preview generator page.
-@@ -47,6 +48,7 @@ Required base pattern:
- - Do not reuse Palette Manager class names directly; use Preview Generator V2-owned classes that mirror the pattern.
- - Do not add workspace/toolState/session behavior from Palette Manager.
- - Do not add a Preview Generator V2 JSON schema.
-+- Do not use custom controls, dropdowns, toggles, segmented buttons, div/button state, or ARIA-only radio substitutes for target mode selection.
- 
- ## Header Usage Requirements
- The rebuilt `tools/preview/index.html` must use Palette Manager-style header behavior:
-@@ -99,7 +101,7 @@ Purpose:
- 
- Contents:
- - Input source selector.
--- Target type selector.
-+- Target type selector using native `input[type=radio][name=group1]` controls.
- - Target path/list input.
- - Base URL input.
- - Capture mode selector.
-@@ -241,11 +243,14 @@ Primary ids/classes:
- | Control | ID | Type | Placement | State Effect |
- | --- | --- | --- | --- | --- |
- | Input source | `previewInputSource` | radio/segmented | Left panel, first section | Sets `source.inputSource`. |
--| Target type | `previewTargetType` | radio/segmented | Left panel, first section | Sets `source.targetType`; no default is selected at launch. |
-+| Target type | `previewTargetModeGroup` | native radio fieldset | Left panel, first section | Owns native `input[type=radio][name=group1]`; sets `source.targetType`; no default is selected at launch. |
-+| Sample target radio | `previewTargetModeSample` | native radio input | Inside `previewTargetModeGroup` | Uses `type="radio" name="group1" value="sample"`; selects Sample mode. |
-+| Game target radio | `previewTargetModeGame` | native radio input | Inside `previewTargetModeGroup` | Uses `type="radio" name="group1" value="game"`; selects Game mode and asset-browser destination schema behavior. |
-+| Tool target radio | `previewTargetModeTool` | native radio input | Inside `previewTargetModeGroup` | Uses `type="radio" name="group1" value="tool"`; selects Tool mode. |
- | Target entries | `previewTargetEntries` | textarea | Left panel, source section | Sets `source.entriesText`. |
- | Base URL | `previewBaseUrl` | text input | Left panel, source section | Sets `source.baseUrl`. |
- | Sample/runtime URL | `previewRuntimeUrl` | text input | Left panel, source section | Sets `source.runtimeUrl` when input source is URL. |
--| Destination asset JSON | `previewDestinationAssetJson` | file/path picker or text input | Left panel, output section, visible for Games | Points to existing asset-browser-compatible JSON; no Preview Generator V2 schema is used. |
-+| Destination asset JSON | `previewDestinationAssetJson` | file/path picker or text input | Left panel, output section, visible for Game | Points to existing asset-browser-compatible JSON; no Preview Generator V2 schema is used. |
- | Capture mode selector | `previewModeSelector` | radio/segmented | Left panel, preview section | Sets `preview.mode`. |
- | Wait before capture | `previewWaitMs` | number input | Left panel, preview section | Sets `capture.waitMs`. |
- | Capture timeout | `previewTimeoutMs` | number input | Left panel, preview section | Sets `capture.timeoutMs`. |
-@@ -299,6 +304,16 @@ Primary ids/classes:
- 
- Ids and classes only; this is not implementation markup.
- 
-+The target mode fieldset must bind to native radio inputs with these attributes:
++function createFailureMessage(label, details) {
++  return `${label}: ${details}`;
++}
 +
-+```html
-+<input id="previewTargetModeSample" type="radio" name="group1" value="sample">
-+<input id="previewTargetModeGame" type="radio" name="group1" value="game">
-+<input id="previewTargetModeTool" type="radio" name="group1" value="tool">
-+```
++async function assertButtonState(locator, expectedEnabled, label) {
++  await locator.waitFor({ state: "visible" });
++  assert.equal(await locator.isEnabled(), expectedEnabled, `${label} enabled state should be ${expectedEnabled}.`);
++}
 +
-+These three inputs are the only allowed target mode selector. No dropdown, toggle, segmented custom control, button group, div state, or ARIA-only replacement may select Sample, Game, or Tool mode.
++async function assertNoVisibleJsonControls(page) {
++  const visibleJsonText = await page.locator("body").innerText();
++  assert.equal(/\bJSON\b/i.test(visibleJsonText), false, "Preview Generator V2 should not show visible JSON UI text.");
++  assert.equal(await page.locator("textarea:visible").count(), 0, "Preview Generator V2 should not show visible JSON textareas.");
++  assert.equal(await page.locator("pre:visible").count(), 0, "Preview Generator V2 should not show visible JSON preview blocks.");
++}
 +
- ```html
- body#previewToolPage.preview-tool-page.tools-platform-tool-page
-   details.preview-tool__shell-details
-@@ -321,7 +336,10 @@ body#previewToolPage.preview-tool-page.tools-platform-tool-page
-         section.preview-tool__control-section.preview-tool__control-section--source
-           div.preview-tool__section-header
-           div#previewInputSource.preview-tool__segmented-control
--          div#previewTargetType.preview-tool__segmented-control
-+          fieldset#previewTargetModeGroup.preview-tool__target-radio-group
-+            input#previewTargetModeSample.preview-tool__radio
-+            input#previewTargetModeGame.preview-tool__radio
-+            input#previewTargetModeTool.preview-tool__radio
-           label.preview-tool__field.preview-tool__field--target-entries
-             textarea#previewTargetEntries.preview-tool__textarea
-           label.preview-tool__field.preview-tool__field--base-url
-@@ -402,7 +420,7 @@ body#previewToolPage.preview-tool-page.tools-platform-tool-page
- 
- Preview Generator V2 owns local in-memory state for UI and run configuration. This state is not a persisted tool JSON contract, is not sample JSON, is not workspace manifest JSON, and must not require `tools/schemas/tools/preview-generator-v2.schema.json`.
- 
--Launch state has no selected target purpose. `source.targetType` starts as `null` and becomes `samples`, `games`, or `tools` only after the user selects a target radio option.
-+Launch state has no selected target purpose. `source.targetType` starts as `null` and becomes `sample`, `game`, or `tool` only after the user selects one native target radio input from `name="group1"`.
- 
- Target local state shape:
- 
-@@ -482,16 +500,18 @@ Target local state shape:
- 
- ### Valid State Requirements
- - `source.inputSource` must be one of `target-list`, `runtime-url`.
--- `source.targetType` must be `null` before selection or one of `samples`, `games`, `tools` after selection.
-+- `source.targetType` must be `null` before selection or one of `sample`, `game`, `tool` after selection.
- - Render, validate, and export actions are blocked while `source.targetType` is `null`.
-+- `source.targetType` must be derived only from the checked `input[type=radio][name=group1]`.
-+- Custom UI state, dropdown values, toggle state, URL defaults, and fallback defaults must not set target mode.
- - `capture.mode` must be one of `canvas-only`, `fullscreen-1600`.
- - `capture.waitMs` must be at least `3000`.
- - `capture.timeoutMs` must be at least `1000`.
- - `view.zoom` must be a positive number.
- - `view.background` must be one of `checkerboard`, `solid`, `transparent`.
- - `output.filename` must be `preview.svg` for the initial rebuild.
--- If `source.targetType` is `games`, `destination.schemaId` must be `tools/schemas/tools/asset-browser.schema.json` before JSON update/export.
--- If `source.targetType` is `samples` or `tools`, `destination.schemaId` remains empty unless a future PR defines a destination schema.
-+- If `source.targetType` is `game`, `destination.schemaId` must be `tools/schemas/tools/asset-browser.schema.json` before JSON update/export.
-+- If `source.targetType` is `sample` or `tool`, `destination.schemaId` remains empty unless a future PR defines a destination schema.
- - `validation.messages` must be an array of strings.
- - `run.lastGenerated.targetId`, `mode`, and `renderedAt` must be strings.
- - `run.lastGenerated.width` and `height` must be finite non-negative numbers.
-@@ -507,10 +527,11 @@ Target local state shape:
- 
- ## Destination JSON Validation Rules
- - Preview Generator V2 has no dedicated JSON schema and must not require `tools/schemas/tools/preview-generator-v2.schema.json`.
--- Preview Generator V2 launches without knowing the destination purpose until the user selects a target radio option.
--- The target radio option selects the destination contract, if one exists.
--- Games selects `tools/schemas/tools/asset-browser.schema.json` as the destination schema.
--- Samples and Tools have no destination JSON update contract in this design PR.
-+- Preview Generator V2 launches without knowing the destination purpose until the user selects a native target radio option in `name="group1"`.
-+- The checked `group1` radio option is the only source of target mode and destination contract selection.
-+- Game selects `tools/schemas/tools/asset-browser.schema.json` as the destination schema.
-+- Sample and Tool have no destination JSON update contract in this design PR.
-+- No selected `group1` radio means no destination schema, no render/export, and no fallback mode.
- - Destination JSON must be validated before mutation and again after mutation.
- - Invalid destination JSON is rejected before save.
- - Unknown destination schemas are rejected.
-@@ -519,7 +540,7 @@ Target local state shape:
- - Preview Generator V2 must not persist generated image data in JSON.
- 
- ### Game Destination Contract
--When `source.targetType` is `games`, Preview Generator V2 updates only an existing `tools/schemas/tools/asset-browser.schema.json`-compatible JSON payload.
-+When `source.targetType` is `game`, Preview Generator V2 updates only an existing `tools/schemas/tools/asset-browser.schema.json`-compatible JSON payload.
- 
- Update shape:
- 
-@@ -537,8 +558,8 @@ Update shape:
- 
- Rules:
- - Preserve all existing unrelated `assets` entries.
--- Add the game preview entry when it is missing.
--- Replace only the game preview entry when it already exists.
-+- Add the game preview field/entry when it is missing.
-+- Replace only the game preview field/entry when it already exists.
- - The asset key must match the asset-browser schema image key pattern.
- - The asset entry must use `kind: "image"`.
- - The asset entry must use `source: "asset-browser"` because that is schema-valid.
-@@ -560,7 +581,7 @@ Steps:
- 6. Set `run.status` to `loaded`.
- 
- Failure states:
--- No target radio option selected.
-+- No native `group1` target radio option selected.
- - Empty target entries.
- - Unsupported target type.
- - Invalid sample ID/path.
-@@ -577,7 +598,7 @@ Steps:
- 3. Validate repo selection if export/write action is requested.
- 4. Validate output folder and filename.
- 5. Validate capture mode.
--6. If Games is selected and JSON registration is requested, validate the destination JSON against `tools/schemas/tools/asset-browser.schema.json`.
-+6. If Game is selected and JSON registration is requested, validate the destination JSON against `tools/schemas/tools/asset-browser.schema.json`.
- 7. Write messages to `#previewValidationDetails`.
- 8. Mirror validation result in `#previewValidationStatus`.
- 
-@@ -585,8 +606,8 @@ Failure states:
- - Missing repo for export.
- - Invalid output path.
- - Missing target.
--- No target radio option selected.
--- Games selected but no existing asset-browser-compatible destination JSON selected.
-+- No native `group1` target radio option selected.
-+- Game selected but no existing asset-browser-compatible destination JSON selected.
- - Destination JSON fails `tools/schemas/tools/asset-browser.schema.json` validation.
- - Capture mode unavailable.
- - Browser lacks File System Access API.
-@@ -627,7 +648,7 @@ Steps:
- 2. Ensure one current target and one rendered preview exist.
- 3. Build `preview.svg`.
- 4. Write to `<target-folder>/<assetFolder>/<filename>`.
--5. If the selected target type is Games, validate and update the selected asset-browser-compatible destination JSON with the game preview image entry.
-+5. If the selected target type is Game, validate and update the selected asset-browser-compatible destination JSON with the game preview image field/entry.
- 6. Validate the updated destination JSON against `tools/schemas/tools/asset-browser.schema.json`.
- 7. Save the destination JSON only after it validates.
- 8. Update `#previewOutputProperties`.
-@@ -638,7 +659,7 @@ Failure states:
- - No rendered preview.
- - Write denied.
- - Target output folder missing and cannot be created.
--- Games selected but no destination asset JSON is selected.
-+- Game selected but no destination asset JSON is selected.
- - Destination asset JSON fails validation before or after update.
- 
- ### Flow 5: Export Batch
-@@ -654,7 +675,7 @@ Steps:
-    - load;
-    - render;
-    - export or skip;
--   - when target type is Games, validate and update the asset-browser-compatible destination JSON for the generated preview image;
-+   - when target type is Game, validate and update the asset-browser-compatible destination JSON for the generated preview image;
-    - append log entry.
- 5. Honor Stop only between targets.
- 6. Update run summary.
-@@ -792,6 +813,8 @@ Right panel `#previewOutputProperties` must show:
- - The page shell, header behavior, three-column grid, accordionV2 grouping, and action separation follow the Palette Manager V2 base pattern.
- - All controls use the ids named in this spec.
- - The page launches with no assumed target radio selection.
-+- Target mode selection uses only native `input[type=radio][name=group1]` controls.
-+- Sample, Game, and Tool target modes are not exposed through dropdowns, toggles, segmented custom controls, button groups, div state, or ARIA-only replacements.
- - Footer write/export actions are separated from left-panel configuration controls.
- - Main preview surface remains centered and inspectable.
- - Center column includes `#previewLastGeneratedSection` at the bottom.
-@@ -801,8 +824,8 @@ Right panel `#previewOutputProperties` must show:
- - Local runtime state validates before render.
- - Local runtime state never stores generated image data, SVG text, Blob URLs, or `imageDataUrl`.
- - Invalid local runtime state is rejected before partial render.
--- Games mode updates only `tools/schemas/tools/asset-browser.schema.json`-compatible destination JSON.
--- Games mode validates destination JSON before and after adding/updating the preview image asset entry.
-+- Game mode updates only `tools/schemas/tools/asset-browser.schema.json`-compatible destination JSON.
-+- Game mode validates destination JSON before and after adding/updating the preview image asset entry.
- - Load -> Validate -> Render -> Export flow is explicit.
- - Export writes `preview.svg` only after validation.
- - Samples remain unmodified except for intentional generated `preview.svg` assets during manual use.
++async function run() {
++  const server = await startRepoServer();
++  const consoleErrors = [];
++  const pageErrors = [];
++  const failedRequests = [];
++  let browser;
++
++  try {
++    browser = await chromium.launch({ headless: true });
++    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
++    page.on("console", (message) => {
++      if (message.type() === "error") {
++        consoleErrors.push(message.text());
++      }
++    });
++    page.on("pageerror", (error) => {
++      pageErrors.push(error.message);
++    });
++    page.on("requestfailed", (request) => {
++      failedRequests.push(`${request.url()} ${request.failure()?.errorText || "failed"}`);
++    });
++
++    await page.goto(`${server.baseUrl}${TOOL_PATH}`, { waitUntil: "networkidle" });
++    await page.locator(".preview-generator-v2.app-shell").waitFor({ state: "visible" });
++
++    assert.equal(await page.locator(".tools-platform-frame__title", { hasText: "Preview Generator V2" }).count(), 1);
++    assert.equal(await page.locator("nav.preview-generator-v2__menu-sample[aria-label=\"menuSample\"]").count(), 1);
++    assert.equal(await page.locator(".preview-generator-v2__panel").count(), 3, "Preview Generator V2 should render three panels.");
++    assert.equal(await page.locator("#previewCanvas").count(), 1, "Main preview canvas should exist.");
++    assert.equal(await page.locator("#lastGeneratedPreviewSection").count(), 1, "Last Generated Preview section should exist.");
++
++    const generateButton = page.locator("#generatePreviewButton");
++    const applyButton = page.locator("#applyToGameButton");
++    const exportButton = page.locator("#exportImageButton");
++    await assertButtonState(generateButton, false, "Generate Preview initial");
++    await assertButtonState(applyButton, false, "Apply to Game initial");
++    await assertButtonState(exportButton, false, "Export Image initial");
++
++    const targetRadios = page.locator('input[type="radio"][name="previewTarget"]');
++    assert.equal(await targetRadios.count(), 3, "Target selection should use three native previewTarget radios.");
++    assert.deepEqual(
++      (await targetRadios.evaluateAll((inputs) => inputs.map((input) => input.value).sort())),
++      ["game", "sample", "tool"],
++      "Target radio values should include game, sample, and tool."
++    );
++    assert.equal(await page.locator("select#previewTargetModeGroup, select[name=\"previewTarget\"]").count(), 0);
++
++    await assertNoVisibleJsonControls(page);
++
++    await page.locator("#previewTargetModeSample").check();
++    await page.locator("#previewTargetInput").fill("0107");
++    await page.waitForFunction(() => !document.getElementById("generatePreviewButton")?.disabled);
++    await assertButtonState(generateButton, true, "Generate Preview after Sample selection");
++    await assertButtonState(applyButton, false, "Apply to Game remains disabled for Sample");
++    await assertButtonState(exportButton, false, "Export Image before generation");
++
++    await generateButton.click();
++    await page.waitForFunction(() => Boolean(document.getElementById("lastGeneratedPreviewImage")?.getAttribute("src")));
++    await assertButtonState(exportButton, true, "Export Image after generation");
++    await assertButtonState(applyButton, false, "Apply to Game remains disabled after Sample generation");
++
++    await page.locator("#previewTargetModeGame").check();
++    await page.locator("#previewTargetInput").fill("Bouncing-ball");
++    await page.waitForFunction(() => document.getElementById("generatePreviewButton")?.disabled === true);
++    await assertButtonState(generateButton, false, "Generate Preview blocked for Game without destination data");
++
++    const destinationValidation = await page.evaluate(() => {
++      return globalThis.previewGeneratorV2App.setDestinationData({ assets: {} });
++    });
++    assert.equal(destinationValidation.valid, true, "Test destination data should validate.");
++    await page.waitForFunction(() => !document.getElementById("generatePreviewButton")?.disabled);
++    await assertButtonState(generateButton, true, "Generate Preview enabled for Game with valid destination data");
++
++    await generateButton.click();
++    await page.waitForFunction(() => !document.getElementById("applyToGameButton")?.disabled);
++    await assertButtonState(applyButton, true, "Apply to Game enabled after Game generation");
++    await applyButton.click();
++
++    const destinationData = await page.evaluate(() => globalThis.previewGeneratorV2App.getDestinationData());
++    assert.deepEqual(
++      destinationData.assets["image.bouncing-ball.preview"],
++      {
++        path: "games/Bouncing-ball/assets/images/preview.svg",
++        kind: "image",
++        source: "asset-browser"
++      },
++      "Apply to Game should add the schema-compatible game preview asset entry."
++    );
++
++    await exportButton.click({ trial: true });
++    await assertNoVisibleJsonControls(page);
++
++    assert.deepEqual(pageErrors, [], createFailureMessage("page errors", pageErrors.join(" | ")));
++    assert.deepEqual(consoleErrors, [], createFailureMessage("console errors", consoleErrors.join(" | ")));
++    assert.deepEqual(failedRequests, [], createFailureMessage("failed requests", failedRequests.join(" | ")));
++    console.log("Preview Generator V2 first pass Playwright coverage: PASS");
++  } finally {
++    if (browser) {
++      await browser.close();
++    }
++    await server.close();
++  }
++}
++
++await run();
+diff --git a/tools/preview/index.html b/tools/preview/index.html
+new file mode 100644
+index 00000000..530cd27c
+--- /dev/null
++++ b/tools/preview/index.html
+@@ -0,0 +1,171 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++  <meta charset="UTF-8" />
++  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++  <title>Preview Generator V2</title>
++  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
++  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
++  <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
++  <link rel="stylesheet" href="./previewGeneratorV2.css" />
++</head>
++<body class="tools-platform-tool-page hub-page-tools" data-tool-id="preview-generator-v2">
++  <details class="is-collapsible" open>
++    <summary class="is-collapsible__summary" data-preview-generator-v2-summary></summary>
++    <div class="is-collapsible__content">
++      <div id="shared-theme-header"></div>
++      <div data-preview-generator-v2-header></div>
++    </div>
++  </details>
++
++  <nav class="preview-generator-v2__menu-sample" aria-label="menuSample">
++    <div class="preview-generator-v2__menu-actions">
++      <button id="generatePreviewButton" type="button" disabled>Generate Preview</button>
++      <button id="applyToGameButton" type="button" disabled>Apply to Game</button>
++      <button id="exportImageButton" type="button" disabled>Export Image</button>
++    </div>
++  </nav>
++
++  <div class="preview-generator-v2 app-shell">
++    <div class="preview-generator-v2__layout tools-platform-layout-grid">
++      <aside class="preview-generator-v2__panel preview-generator-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
++        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="previewTargetAccordionContent">
++            <span>Target Source</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="previewTargetAccordionContent" class="accordion-v2__content">
++            <fieldset id="previewTargetModeGroup" class="preview-generator-v2__radio-group">
++              <legend>Target mode</legend>
++              <label>
++                <input id="previewTargetModeSample" type="radio" name="previewTarget" value="sample" />
++                Sample
++              </label>
++              <label>
++                <input id="previewTargetModeGame" type="radio" name="previewTarget" value="game" />
++                Game
++              </label>
++              <label>
++                <input id="previewTargetModeTool" type="radio" name="previewTarget" value="tool" />
++                Tool
++              </label>
++            </fieldset>
++
++            <label class="preview-generator-v2__field">
++              Target name or path
++              <input id="previewTargetInput" type="text" autocomplete="off" placeholder="Choose a mode first" />
++            </label>
++
++            <label class="preview-generator-v2__field">
++              Source URL
++              <input id="previewSourceUrlInput" type="url" autocomplete="off" placeholder="Optional inspected page URL" />
++            </label>
++          </div>
++        </section>
++
++        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="previewStatusAccordionContent">
++            <span>Status</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="previewStatusAccordionContent" class="accordion-v2__content">
++            <div id="previewStatus" class="preview-generator-v2__status" role="status">Select a target mode to begin.</div>
++            <ul id="previewErrorList" class="preview-generator-v2__errors" aria-label="Preview validation errors"></ul>
++          </div>
++        </section>
++      </aside>
++
++      <main class="preview-generator-v2__panel preview-generator-v2__panel--center">
++        <section class="accordion-v2 preview-generator-v2__main-preview is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="mainPreviewAccordionContent">
++            <span>Main Preview</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="mainPreviewAccordionContent" class="accordion-v2__content">
++            <div id="previewViewport" class="preview-generator-v2__viewport">
++              <canvas id="previewCanvas" class="preview-generator-v2__canvas" width="960" height="540" aria-label="Generated preview canvas"></canvas>
++              <div id="previewEmptyState" class="preview-generator-v2__empty-state">No preview generated.</div>
++            </div>
++          </div>
++        </section>
++
++        <section id="lastGeneratedPreviewSection" class="accordion-v2 preview-generator-v2__last-generated is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="lastGeneratedPreviewAccordionContent">
++            <span>Last Generated Preview</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="lastGeneratedPreviewAccordionContent" class="accordion-v2__content">
++            <figure class="preview-generator-v2__last-generated-frame">
++              <img id="lastGeneratedPreviewImage" alt="Last generated preview" />
++              <figcaption id="lastGeneratedPreviewMeta">No generated preview.</figcaption>
++            </figure>
++          </div>
++        </section>
++      </main>
++
++      <aside class="preview-generator-v2__panel preview-generator-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
++        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsAccordionContent">
++            <span>Render Controls</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="renderControlsAccordionContent" class="accordion-v2__content">
++            <fieldset class="preview-generator-v2__radio-group">
++              <legend>Preview mode</legend>
++              <label>
++                <input id="previewModeCanvas" type="radio" name="previewMode" value="canvas" checked />
++                Canvas
++              </label>
++              <label>
++                <input id="previewModeWide" type="radio" name="previewMode" value="wide" />
++                Wide
++              </label>
++            </fieldset>
++
++            <label class="preview-generator-v2__field">
++              Output file
++              <input id="previewOutputNameInput" type="text" value="preview.svg" autocomplete="off" />
++            </label>
++          </div>
++        </section>
++
++        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="gameDestinationAccordionContent">
++            <span>Game Destination</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="gameDestinationAccordionContent" class="accordion-v2__content">
++            <p class="preview-generator-v2__meta">Game mode requires valid destination data before rendering.</p>
++            <button id="loadDestinationDataButton" type="button">Load Destination Data</button>
++            <input id="destinationDataInput" type="file" accept=".json,application/json" hidden />
++            <div id="destinationDataStatus" class="preview-generator-v2__status">No destination data loaded.</div>
++          </div>
++        </section>
++
++        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryAccordionContent">
++            <span>Output Summary</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="outputSummaryAccordionContent" class="accordion-v2__content">
++            <dl id="previewOutputSummary" class="preview-generator-v2__summary">
++              <dt>Mode</dt>
++              <dd id="previewSummaryMode">Not selected</dd>
++              <dt>Destination</dt>
++              <dd id="previewSummaryDestination">Not ready</dd>
++              <dt>Image</dt>
++              <dd id="previewSummaryImage">Not generated</dd>
++            </dl>
++          </div>
++        </section>
++      </aside>
++    </div>
++  </div>
++
++  <div data-preview-generator-v2-status></div>
++  <script type="module" src="./previewGeneratorShell.js"></script>
++  <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
++  <script type="module" src="./main.js"></script>
++  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
++</body>
++</html>
+diff --git a/tools/preview/main.js b/tools/preview/main.js
+new file mode 100644
+index 00000000..87226794
+--- /dev/null
++++ b/tools/preview/main.js
+@@ -0,0 +1,493 @@
++const ASSET_BROWSER_SCHEMA_PATH = "/tools/schemas/tools/asset-browser.schema.json";
++const BEZEL_ASSET_KEY_PATTERN = /^image\.[a-z0-9-]+\.[a-z0-9-]+(?:\.[a-z0-9-]+)*\.bezel$/;
++const ASSET_KEY_PATTERN = /^(?!image\.[a-z0-9-]+\.[a-z0-9-]+(?:\.[a-z0-9-]+)*\.bezel$)(image|audio|font|svg|data|other)\.[a-z0-9-]+\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
++const ASSET_KINDS = Object.freeze(["image", "audio", "font", "svg", "data", "other"]);
++const ASSET_SOURCES = Object.freeze(["workspace-manager", "asset-browser", "manifest"]);
++
++const refs = Object.freeze({
++  generateButton: document.getElementById("generatePreviewButton"),
++  applyButton: document.getElementById("applyToGameButton"),
++  exportButton: document.getElementById("exportImageButton"),
++  targetRadios: Array.from(document.querySelectorAll('input[name="previewTarget"]')),
++  targetInput: document.getElementById("previewTargetInput"),
++  sourceUrlInput: document.getElementById("previewSourceUrlInput"),
++  previewModeRadios: Array.from(document.querySelectorAll('input[name="previewMode"]')),
++  outputNameInput: document.getElementById("previewOutputNameInput"),
++  loadDestinationButton: document.getElementById("loadDestinationDataButton"),
++  destinationInput: document.getElementById("destinationDataInput"),
++  destinationStatus: document.getElementById("destinationDataStatus"),
++  status: document.getElementById("previewStatus"),
++  errorList: document.getElementById("previewErrorList"),
++  canvas: document.getElementById("previewCanvas"),
++  emptyState: document.getElementById("previewEmptyState"),
++  lastGeneratedImage: document.getElementById("lastGeneratedPreviewImage"),
++  lastGeneratedMeta: document.getElementById("lastGeneratedPreviewMeta"),
++  summaryMode: document.getElementById("previewSummaryMode"),
++  summaryDestination: document.getElementById("previewSummaryDestination"),
++  summaryImage: document.getElementById("previewSummaryImage")
++});
++
++const state = {
++  targetMode: null,
++  targetText: "",
++  sourceUrl: "",
++  previewMode: "canvas",
++  outputName: "preview.svg",
++  destinationData: null,
++  destinationValid: false,
++  destinationErrors: [],
++  schemaAvailable: false,
++  generated: null,
++  applied: false
++};
++
++function isPlainObject(value) {
++  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
++}
++
++function cloneJson(value) {
++  return JSON.parse(JSON.stringify(value));
++}
++
++function setStatus(message, mode = "neutral") {
++  refs.status.textContent = message;
++  refs.status.classList.toggle("is-valid", mode === "valid");
++  refs.status.classList.toggle("is-invalid", mode === "invalid");
++}
++
++function setDestinationStatus(message, mode = "neutral") {
++  refs.destinationStatus.textContent = message;
++  refs.destinationStatus.classList.toggle("is-valid", mode === "valid");
++  refs.destinationStatus.classList.toggle("is-invalid", mode === "invalid");
++}
++
++function setErrors(errors) {
++  refs.errorList.replaceChildren();
++  errors.forEach((error) => {
++    const item = document.createElement("li");
++    item.textContent = error;
++    refs.errorList.append(item);
++  });
++}
++
++function getSelectedRadioValue(name) {
++  const selected = document.querySelector(`input[name="${name}"]:checked`);
++  return selected instanceof HTMLInputElement ? selected.value : null;
++}
++
++function getPreviewMode() {
++  return getSelectedRadioValue("previewMode") || "canvas";
++}
++
++function normalizeGameId(value) {
++  return String(value || "")
++    .trim()
++    .replace(/^games[\\/]/i, "")
++    .replace(/[\\/](index\.html?)?$/i, "")
++    .split(/[\\/]/)[0]
++    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/^-+|-+$/g, "");
++}
++
++function resolveGameFolder(value) {
++  const rawValue = String(value || "").trim();
++  const withoutPrefix = rawValue.replace(/^games[\\/]/i, "");
++  const firstSegment = withoutPrefix.split(/[\\/]/)[0] || withoutPrefix;
++  return firstSegment.trim();
++}
++
++function getAssetEntryKeyForGame(gameName) {
++  const normalized = normalizeGameId(gameName);
++  return normalized ? `image.${normalized}.preview` : "";
++}
++
++function getPreviewPathForGame(gameName) {
++  const folder = resolveGameFolder(gameName);
++  return folder ? `games/${folder}/assets/images/preview.svg` : "";
++}
++
++function validateAssetEntry(key, value) {
++  const errors = [];
++  const isBezel = BEZEL_ASSET_KEY_PATTERN.test(key);
++  const isAsset = ASSET_KEY_PATTERN.test(key);
++  if (!isBezel && !isAsset) {
++    errors.push(`Invalid asset key: ${key}`);
++  }
++  if (!isPlainObject(value)) {
++    errors.push(`Asset ${key} must be an object.`);
++    return errors;
++  }
++
++  const requiredFields = ["path", "kind", "source"];
++  requiredFields.forEach((field) => {
++    if (!(field in value)) {
++      errors.push(`Asset ${key} is missing ${field}.`);
++    }
++  });
++
++  const allowedFields = new Set(["path", "kind", "source", "stretchOverride"]);
++  Object.keys(value).forEach((field) => {
++    if (!allowedFields.has(field)) {
++      errors.push(`Asset ${key} has unsupported field ${field}.`);
++    }
++  });
++
++  if (typeof value.path !== "string" || value.path.trim() === "") {
++    errors.push(`Asset ${key} path must be a non-empty string.`);
++  }
++  if (!ASSET_KINDS.includes(value.kind)) {
++    errors.push(`Asset ${key} kind is not allowed.`);
++  }
++  if (!ASSET_SOURCES.includes(value.source)) {
++    errors.push(`Asset ${key} source is not allowed.`);
++  }
++  if (!isBezel && Object.hasOwn(value, "stretchOverride")) {
++    errors.push(`Asset ${key} cannot use stretchOverride.`);
++  }
++  if (Object.hasOwn(value, "stretchOverride")) {
++    const stretch = value.stretchOverride;
++    if (!isPlainObject(stretch) || typeof stretch.uniformEdgeStretchPx !== "number" || stretch.uniformEdgeStretchPx < 0) {
++      errors.push(`Asset ${key} stretchOverride is invalid.`);
++    }
++    if (isPlainObject(stretch)) {
++      Object.keys(stretch).forEach((field) => {
++        if (field !== "uniformEdgeStretchPx") {
++          errors.push(`Asset ${key} stretchOverride has unsupported field ${field}.`);
++        }
++      });
++    }
++  }
++  return errors;
++}
++
++function validateAssetBrowserPayload(payload) {
++  const errors = [];
++  if (!isPlainObject(payload)) {
++    return { valid: false, errors: ["Destination data must be an object."] };
++  }
++
++  const allowedTopLevel = new Set(["assets", "assetBrowserPreset", "approvedAssets", "importHubPreset"]);
++  Object.keys(payload).forEach((field) => {
++    if (!allowedTopLevel.has(field)) {
++      errors.push(`Unsupported top-level field: ${field}`);
++    }
++  });
++
++  if (!isPlainObject(payload.assets)) {
++    errors.push("Destination data must include an assets object.");
++  } else {
++    Object.entries(payload.assets).forEach(([key, value]) => {
++      errors.push(...validateAssetEntry(key, value));
++    });
++  }
++
++  return { valid: errors.length === 0, errors };
++}
++
++function validateForGenerate() {
++  const errors = [];
++  if (!state.targetMode) {
++    errors.push("Select a target mode.");
++  }
++  if (!state.targetText) {
++    errors.push("Enter a target name or path.");
++  }
++  if (state.outputName !== "preview.svg") {
++    errors.push("Output file must be preview.svg for this pass.");
++  }
++  if (state.targetMode === "game") {
++    if (!state.schemaAvailable) {
++      errors.push("Destination schema is not available.");
++    }
++    if (!state.destinationValid) {
++      errors.push("Load valid destination data before generating a game preview.");
++    }
++    if (!getAssetEntryKeyForGame(state.targetText)) {
++      errors.push("Game target cannot produce a valid asset key.");
++    }
++  }
++  return errors;
++}
++
++function updateStateFromControls() {
++  state.targetMode = getSelectedRadioValue("previewTarget");
++  state.targetText = refs.targetInput.value.trim();
++  state.sourceUrl = refs.sourceUrlInput.value.trim();
++  state.previewMode = getPreviewMode();
++  state.outputName = refs.outputNameInput.value.trim();
++}
++
++function updateSummary() {
++  refs.summaryMode.textContent = state.targetMode
++    ? `${state.targetMode} / ${state.previewMode}`
++    : "Not selected";
++  refs.summaryDestination.textContent = state.targetMode === "game"
++    ? (state.destinationValid ? "Ready for Game" : "Not ready")
++    : "No destination update";
++  refs.summaryImage.textContent = state.generated
++    ? `${state.generated.width}x${state.generated.height}`
++    : "Not generated";
++}
++
++function updateButtons() {
++  updateStateFromControls();
++  const generateErrors = validateForGenerate();
++  refs.generateButton.disabled = generateErrors.length > 0;
++  refs.applyButton.disabled = !(state.targetMode === "game" && state.generated && state.destinationValid);
++  refs.exportButton.disabled = !state.generated;
++  updateSummary();
++}
++
++function clearGeneratedPreview() {
++  state.generated = null;
++  state.applied = false;
++  refs.lastGeneratedImage.removeAttribute("src");
++  refs.lastGeneratedMeta.textContent = "No generated preview.";
++  refs.emptyState.classList.remove("is-hidden");
++}
++
++function drawGeneratedPreview() {
++  const context = refs.canvas.getContext("2d");
++  if (!context) {
++    throw new Error("Canvas rendering context unavailable.");
++  }
++
++  const width = refs.canvas.width;
++  const height = refs.canvas.height;
++  const targetLabel = state.targetText;
++  const targetModeLabel = state.targetMode ? state.targetMode.toUpperCase() : "UNKNOWN";
++  const sourceLabel = state.sourceUrl || "No source URL provided";
++  const gradient = context.createLinearGradient(0, 0, width, height);
++  gradient.addColorStop(0, "#111827");
++  gradient.addColorStop(0.46, "#263859");
++  gradient.addColorStop(1, "#7f1d1d");
++
++  context.clearRect(0, 0, width, height);
++  context.fillStyle = gradient;
++  context.fillRect(0, 0, width, height);
++  context.strokeStyle = "rgba(255,255,255,0.36)";
++  context.lineWidth = 8;
++  context.strokeRect(24, 24, width - 48, height - 48);
++
++  context.fillStyle = "#ffffff";
++  context.font = "700 54px system-ui, sans-serif";
++  context.fillText("Preview Generator V2", 56, 116);
++  context.font = "700 42px system-ui, sans-serif";
++  context.fillText(targetLabel.slice(0, 34), 56, 224);
++  context.font = "600 26px system-ui, sans-serif";
++  context.fillStyle = "#ddd6fe";
++  context.fillText(`Target: ${targetModeLabel}`, 56, 286);
++  context.fillText(`Mode: ${state.previewMode}`, 56, 326);
++  context.fillText(sourceLabel.slice(0, 62), 56, 366);
++
++  const dataUrl = refs.canvas.toDataURL("image/png");
++  const generatedAt = new Date().toISOString();
++  state.generated = {
++    dataUrl,
++    generatedAt,
++    width,
++    height,
++    targetMode: state.targetMode,
++    targetText: state.targetText
++  };
++  state.applied = false;
++
++  refs.lastGeneratedImage.src = dataUrl;
++  refs.lastGeneratedMeta.textContent = `${targetModeLabel} | ${targetLabel} | ${generatedAt}`;
++  refs.emptyState.classList.add("is-hidden");
++}
++
++function buildUpdatedDestinationData() {
++  if (state.targetMode !== "game" || !state.generated || !state.destinationValid) {
++    return { valid: false, errors: ["Game preview and valid destination data are required."] };
++  }
++
++  const nextData = cloneJson(state.destinationData);
++  nextData.assets = isPlainObject(nextData.assets) ? nextData.assets : {};
++  const assetKey = getAssetEntryKeyForGame(state.targetText);
++  const path = getPreviewPathForGame(state.targetText);
++  nextData.assets[assetKey] = {
++    path,
++    kind: "image",
++    source: "asset-browser"
++  };
++
++  const validation = validateAssetBrowserPayload(nextData);
++  return {
++    valid: validation.valid,
++    errors: validation.errors,
++    data: nextData,
++    assetKey,
++    path
++  };
++}
++
++function handleGeneratePreview() {
++  updateStateFromControls();
++  const errors = validateForGenerate();
++  if (errors.length > 0) {
++    setErrors(errors);
++    setStatus("Preview generation blocked.", "invalid");
++    return;
++  }
++
++  setErrors([]);
++  drawGeneratedPreview();
++  setStatus("Preview generated.", "valid");
++  updateButtons();
++}
++
++function handleApplyToGame() {
++  updateStateFromControls();
++  const result = buildUpdatedDestinationData();
++  if (!result.valid) {
++    setErrors(result.errors);
++    setStatus("Apply to Game blocked.", "invalid");
++    return;
++  }
++
++  state.destinationData = result.data;
++  state.destinationValid = true;
++  state.destinationErrors = [];
++  state.applied = true;
++  setErrors([]);
++  setStatus(`Applied preview asset ${result.assetKey}.`, "valid");
++  setDestinationStatus(`Destination data updated: ${result.assetKey}`, "valid");
++  updateButtons();
++}
++
++function downloadBlob(blob, filename) {
++  const link = document.createElement("a");
++  const url = URL.createObjectURL(blob);
++  link.href = url;
++  link.download = filename;
++  document.body.append(link);
++  link.click();
++  link.remove();
++  setTimeout(() => URL.revokeObjectURL(url), 0);
++}
++
++function handleExportImage() {
++  if (!state.generated) {
++    setErrors(["Generate a preview before exporting."]);
++    setStatus("Export blocked.", "invalid");
++    return;
++  }
++
++  const svgText = [
++    `<svg xmlns="http://www.w3.org/2000/svg" width="${state.generated.width}" height="${state.generated.height}" viewBox="0 0 ${state.generated.width} ${state.generated.height}">`,
++    `  <image href="${state.generated.dataUrl}" width="100%" height="100%" />`,
++    "</svg>"
++  ].join("\n");
++  downloadBlob(new Blob([svgText], { type: "image/svg+xml" }), "preview.svg");
++  setStatus("Image export started.", "valid");
++}
++
++function setDestinationData(payload) {
++  const cloned = cloneJson(payload);
++  const validation = validateAssetBrowserPayload(cloned);
++  state.destinationData = validation.valid ? cloned : null;
++  state.destinationValid = validation.valid;
++  state.destinationErrors = validation.errors.slice();
++  state.generated = null;
++  state.applied = false;
++  if (validation.valid) {
++    setDestinationStatus("Destination data is valid.", "valid");
++    setErrors([]);
++  } else {
++    setDestinationStatus("Destination data failed validation.", "invalid");
++    setErrors(validation.errors);
++  }
++  clearGeneratedPreview();
++  updateButtons();
++  return validation;
++}
++
++async function handleDestinationFileSelected() {
++  const file = refs.destinationInput.files?.[0];
++  if (!file) {
++    return;
++  }
++
++  try {
++    const text = await file.text();
++    const parsed = JSON.parse(text);
++    setDestinationData(parsed);
++  } catch (error) {
++    state.destinationData = null;
++    state.destinationValid = false;
++    state.destinationErrors = [error instanceof Error ? error.message : String(error)];
++    setDestinationStatus("Destination data could not be loaded.", "invalid");
++    setErrors(state.destinationErrors);
++    clearGeneratedPreview();
++    updateButtons();
++  } finally {
++    refs.destinationInput.value = "";
++  }
++}
++
++async function loadDestinationSchema() {
++  try {
++    const response = await fetch(ASSET_BROWSER_SCHEMA_PATH, { cache: "no-store" });
++    state.schemaAvailable = response.ok;
++  } catch {
++    state.schemaAvailable = false;
++  }
++  updateButtons();
++}
++
++function handleInputChanged() {
++  updateStateFromControls();
++  clearGeneratedPreview();
++  setErrors([]);
++  if (!state.targetMode) {
++    setStatus("Select a target mode to begin.");
++  } else if (state.targetMode === "game" && !state.destinationValid) {
++    setStatus("Game mode requires valid destination data before rendering.");
++  } else if (!state.targetText) {
++    setStatus("Enter a target name or path.");
++  } else {
++    setStatus("Ready to generate preview.", "valid");
++  }
++  updateButtons();
++}
++
++function bindEvents() {
++  refs.targetRadios.forEach((radio) => {
++    radio.addEventListener("change", handleInputChanged);
++  });
++  refs.previewModeRadios.forEach((radio) => {
++    radio.addEventListener("change", handleInputChanged);
++  });
++  refs.targetInput.addEventListener("input", handleInputChanged);
++  refs.sourceUrlInput.addEventListener("input", handleInputChanged);
++  refs.outputNameInput.addEventListener("input", handleInputChanged);
++  refs.generateButton.addEventListener("click", handleGeneratePreview);
++  refs.applyButton.addEventListener("click", handleApplyToGame);
++  refs.exportButton.addEventListener("click", handleExportImage);
++  refs.loadDestinationButton.addEventListener("click", () => refs.destinationInput.click());
++  refs.destinationInput.addEventListener("change", () => {
++    void handleDestinationFileSelected();
++  });
++}
++
++function initPreviewGeneratorV2() {
++  bindEvents();
++  clearGeneratedPreview();
++  setErrors([]);
++  setStatus("Select a target mode to begin.");
++  setDestinationStatus("No destination data loaded.");
++  updateButtons();
++  void loadDestinationSchema();
++
++  globalThis.previewGeneratorV2App = Object.freeze({
++    getState: () => cloneJson(state),
++    getDestinationData: () => (state.destinationData ? cloneJson(state.destinationData) : null),
++    setDestinationData,
++    validateAssetBrowserPayload
++  });
++}
++
++initPreviewGeneratorV2();
+diff --git a/tools/preview/previewGeneratorShell.js b/tools/preview/previewGeneratorShell.js
+new file mode 100644
+index 00000000..bda498d1
+--- /dev/null
++++ b/tools/preview/previewGeneratorShell.js
+@@ -0,0 +1,186 @@
++const TOOL_ID = "preview-generator-v2";
++const TOOL_NAME = "Preview Generator V2";
++const TOOL_DESCRIPTION = "Generate preview.svg assets for samples, games, and tools.";
++const HEADER_TEXT = `${TOOL_NAME} - ${TOOL_DESCRIPTION}`;
++const INTRO_TEXT = `${TOOL_NAME}: ${TOOL_DESCRIPTION}`;
++
++let suppressFullscreenSync = false;
++
++function escapeHtml(value) {
++  return String(value ?? "")
++    .replace(/&/g, "&amp;")
++    .replace(/</g, "&lt;")
++    .replace(/>/g, "&gt;")
++    .replace(/"/g, "&quot;")
++    .replace(/'/g, "&#39;");
++}
++
++function getHeaderDetails() {
++  return document.querySelector(".is-collapsible");
++}
++
++function getSummaryElement() {
++  return document.querySelector("[data-preview-generator-v2-summary]");
++}
++
++function getHeaderHost() {
++  return document.querySelector("[data-preview-generator-v2-header]");
++}
++
++function getStatusHost() {
++  return document.querySelector("[data-preview-generator-v2-status]");
++}
++
++function applyFullscreenState(isActive) {
++  document.body.classList.toggle("tools-platform-fullscreen-active", isActive);
++  document.documentElement.classList.toggle("tools-platform-fullscreen-active", isActive);
++  if (isActive) {
++    document.body.setAttribute("data-tools-platform-fullscreen", "1");
++    document.documentElement.setAttribute("data-tools-platform-fullscreen", "1");
++  } else {
++    document.body.removeAttribute("data-tools-platform-fullscreen");
++    document.documentElement.removeAttribute("data-tools-platform-fullscreen");
++  }
++}
++
++function updateSummary() {
++  const details = getHeaderDetails();
++  const summary = getSummaryElement();
++  if (!(details instanceof HTMLDetailsElement) || !(summary instanceof HTMLElement)) {
++    return;
++  }
++
++  const isFullscreen = Boolean(document.fullscreenElement);
++  const isExpanded = details.open === true;
++  summary.textContent = isExpanded
++    ? "Hide Header and Details"
++    : (isFullscreen ? HEADER_TEXT : "Show Header and Details");
++
++  if (isFullscreen) {
++    summary.style.maxWidth = "calc(100vw - 24px)";
++    summary.style.whiteSpace = "nowrap";
++    summary.style.overflow = "hidden";
++    summary.style.textOverflow = "ellipsis";
++  } else {
++    summary.style.removeProperty("max-width");
++    summary.style.removeProperty("white-space");
++    summary.style.removeProperty("overflow");
++    summary.style.removeProperty("text-overflow");
++  }
++
++  summary.setAttribute("data-tools-platform-summary-active", "1");
++  summary.setAttribute("data-tools-platform-summary-error", "0");
++  summary.setAttribute("data-tools-platform-summary-state", isExpanded ? "expanded" : "collapsed");
++  summary.setAttribute("data-tools-platform-summary-mode", isFullscreen ? "fullscreen" : "normal");
++  summary.setAttribute("data-tool-id", TOOL_ID);
++  summary.setAttribute("title", `${HEADER_TEXT}\n${INTRO_TEXT}`);
++}
++
++function renderHeader() {
++  const headerHost = getHeaderHost();
++  if (!(headerHost instanceof HTMLElement)) {
++    return;
++  }
++
++  headerHost.innerHTML = `
++    <section class="tools-platform-frame preview-generator-v2__local-shell-frame">
++      <div class="tools-platform-frame__accordion-content">
++        <div class="tools-platform-frame__accordion-summary">
++          <div class="tools-platform-frame__summary-copy">
++            <h1 class="tools-platform-frame__title" data-tool-id="${escapeHtml(TOOL_ID)}">${escapeHtml(TOOL_NAME)}</h1>
++            <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface</h2>
++          </div>
++          <div class="tools-platform-frame__summary-meta">
++            <div class="tools-platform-frame__meta">Tool-local shell, engine theme, and destination validation are active.</div>
++          </div>
++        </div>
++        <div class="tools-platform-frame__topline">
++          <p class="tools-platform-frame__description">${escapeHtml(TOOL_DESCRIPTION)}</p>
++        </div>
++      </div>
++    </section>
++  `;
++}
++
++function renderStatus() {
++  const statusHost = getStatusHost();
++  if (!(statusHost instanceof HTMLElement)) {
++    return;
++  }
++
++  statusHost.innerHTML = `
++    <div class="tools-platform-statusbar preview-generator-v2__local-statusbar">
++      <span>Preview Generator V2 local shell is active.</span>
++      <span>${escapeHtml(TOOL_NAME)} | No active workspace</span>
++      <span>Destination schema is selected by target mode.</span>
++    </div>
++  `;
++}
++
++async function enterFullscreenIfAvailable() {
++  if (document.fullscreenElement || !document.fullscreenEnabled) {
++    return;
++  }
++  if (typeof document.documentElement?.requestFullscreen !== "function") {
++    return;
++  }
++  try {
++    await document.documentElement.requestFullscreen();
++  } catch {
++    // Non-fatal: collapsed header state remains usable without fullscreen.
++  }
++}
++
++async function exitFullscreenIfActive() {
++  if (!document.fullscreenElement || typeof document.exitFullscreen !== "function") {
++    return;
++  }
++  try {
++    await document.exitFullscreen();
++  } catch {
++    // Non-fatal: the fullscreenchange listener will resync if the browser exits later.
++  }
++}
++
++function bindHeaderDetails() {
++  const details = getHeaderDetails();
++  if (!(details instanceof HTMLDetailsElement)) {
++    return;
++  }
++
++  details.addEventListener("toggle", () => {
++    updateSummary();
++    if (suppressFullscreenSync) {
++      suppressFullscreenSync = false;
++      return;
++    }
++
++    if (details.open) {
++      void exitFullscreenIfActive();
++      return;
++    }
++
++    void enterFullscreenIfAvailable();
++  });
++
++  document.addEventListener("fullscreenchange", () => {
++    const isFullscreen = Boolean(document.fullscreenElement);
++    applyFullscreenState(isFullscreen);
++    if (!isFullscreen && !details.open) {
++      suppressFullscreenSync = true;
++      details.open = true;
++    }
++    updateSummary();
++  });
++}
++
++function initPreviewGeneratorShell() {
++  document.body.classList.add("tools-platform-surface", "preview-generator-v2-local-shell");
++  applyFullscreenState(Boolean(document.fullscreenElement));
++  renderHeader();
++  renderStatus();
++  bindHeaderDetails();
++  updateSummary();
++}
++
++initPreviewGeneratorShell();
+diff --git a/tools/preview/previewGeneratorV2.css b/tools/preview/previewGeneratorV2.css
+new file mode 100644
+index 00000000..8aedc1e2
+--- /dev/null
++++ b/tools/preview/previewGeneratorV2.css
+@@ -0,0 +1,534 @@
++body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] {
++  min-height: 100vh;
++  min-height: 100dvh;
++  display: flex;
++  flex-direction: column;
++  overflow-y: auto;
++  overflow-x: hidden;
++}
++
++body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .is-collapsible,
++body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .preview-generator-v2__menu-sample,
++body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > [data-preview-generator-v2-status] {
++  flex: 0 0 auto;
++}
++
++body.tools-platform-tool-page[data-tool-id="preview-generator-v2"].tools-platform-surface {
++  --tools-space-2: 10px;
++  --tools-type-body: 0.95rem;
++  --tools-type-meta: 0.82rem;
++  --tools-shell-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
++  --tools-shell-shadow-strong: 0 20px 44px rgba(0, 0, 0, 0.26);
++  min-height: 100vh;
++  min-height: 100dvh;
++  color: var(--text, #f7f4ff);
++  background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
++  font-size: var(--tools-type-body);
++  line-height: 1.45;
++  letter-spacing: 0.005em;
++}
++
++[data-preview-generator-v2-header],
++[data-preview-generator-v2-status] {
++  display: block;
++  width: calc(100% - 32px);
++  margin: 10px auto;
++}
++
++[data-preview-generator-v2-header] {
++  width: calc(100% - 140px);
++}
++
++.tools-platform-frame,
++.tools-platform-statusbar {
++  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  border-radius: 18px;
++  background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
++  box-shadow: var(--tools-shell-shadow);
++}
++
++.tools-platform-frame {
++  padding: 12px 14px;
++}
++
++.tools-platform-frame__accordion-content {
++  display: grid;
++  grid-template-columns: minmax(0, 1fr);
++  gap: 10px;
++}
++
++.tools-platform-frame__accordion-summary {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 12px;
++  border-radius: 12px;
++  background: #4c1d95;
++  padding: 8px 10px;
++}
++
++.tools-platform-frame__summary-copy {
++  min-width: 0;
++  display: flex;
++  flex-direction: column;
++}
++
++.tools-platform-frame__summary-meta {
++  display: flex;
++  align-items: center;
++  gap: 10px;
++}
++
++.tools-platform-frame__title {
++  margin: 0;
++  color: #ffffff;
++  font-size: clamp(1.08rem, 1.6vw, 1.24rem);
++  line-height: 1.2;
++}
++
++.tools-platform-frame__eyebrow,
++.tools-platform-frame__meta,
++.tools-platform-frame__description {
++  margin: 0;
++  color: var(--muted, #e9ddff);
++}
++
++.tools-platform-frame__eyebrow {
++  font-size: clamp(0.96rem, 1.2vw, 1.06rem);
++}
++
++.tools-platform-frame__meta,
++.tools-platform-frame__description,
++.tools-platform-statusbar {
++  font-size: var(--tools-type-meta);
++}
++
++.tools-platform-frame__topline {
++  min-width: 0;
++  max-width: 100%;
++}
++
++.tools-platform-statusbar {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 12px;
++  flex-wrap: wrap;
++  padding: 8px 12px;
++  color: var(--muted, #e9ddff);
++}
++
++body.tools-platform-surface .preview-generator-v2.app-shell {
++  width: min(1600px, calc(100% - 32px));
++  margin: 0 auto 16px;
++  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  border-radius: 20px;
++  box-shadow: var(--tools-shell-shadow-strong);
++  overflow: hidden;
++}
++
++body.tools-platform-surface :is(button, input, select, textarea) {
++  border-color: var(--line, rgba(221, 214, 254, 0.26)) !important;
++  border-radius: 10px !important;
++}
++
++body.tools-platform-surface button:disabled {
++  opacity: 0.62;
++  cursor: not-allowed;
++  filter: saturate(0.72);
++  box-shadow: none;
++}
++
++body.tools-platform-surface :is(button, input, select, textarea):focus-visible {
++  outline: 2px solid var(--accent, #ddd6fe);
++  outline-offset: 2px;
++}
++
++body.tools-platform-surface :is(input, select, textarea) {
++  border: 1px solid var(--surface-border, rgba(221, 214, 254, 0.22));
++  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
++  color: var(--text, #f7f4ff);
++}
++
++body.tools-platform-surface :is(input, select, textarea):hover {
++  border-color: var(--card-hover-border, #c4b5fd);
++}
++
++.preview-generator-v2__menu-sample {
++  box-sizing: border-box;
++  width: calc(100% - 32px);
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  flex-wrap: wrap;
++  gap: 12px;
++  margin: 16px 16px 0;
++  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
++  border-radius: 8px;
++  background: var(--panel, rgba(30, 24, 48, 0.92));
++  padding: 10px 14px;
++}
++
++.preview-generator-v2__menu-actions {
++  flex: 0 1 auto;
++  display: flex;
++  flex-wrap: wrap;
++  justify-content: center;
++  gap: 8px;
++}
++
++.preview-generator-v2 {
++  --pg-line: var(--line, rgba(221, 214, 254, 0.26));
++  --pg-panel: var(--panel, rgba(30, 24, 48, 0.92));
++  --pg-surface: var(--surface-inline, rgba(18, 16, 28, 0.78));
++  --pg-surface-strong: rgba(0, 0, 0, 0.24);
++  --pg-muted: var(--muted, #c4b5fd);
++  --pg-accent: var(--accent, #ddd6fe);
++  --pg-danger: #ffd6d6;
++  --pg-success: #b8f7cf;
++
++  box-sizing: border-box;
++  flex: 1 1 auto;
++  min-height: 0;
++  width: 100%;
++  padding: 16px;
++  overflow: visible;
++}
++
++.preview-generator-v2 *,
++.preview-generator-v2 *::before,
++.preview-generator-v2 *::after {
++  box-sizing: border-box;
++}
++
++.preview-generator-v2__layout {
++  display: grid;
++  grid-template-columns: 340px minmax(0, 1fr) 360px;
++  gap: 14px;
++  width: 100%;
++  min-width: 0;
++  min-height: 0;
++  align-items: stretch;
++}
++
++.preview-generator-v2__panel {
++  min-width: 0;
++  min-height: 0;
++  border: 1px solid var(--pg-line);
++  border-radius: 8px;
++  background: var(--pg-panel);
++  padding: 14px;
++  overflow: auto;
++}
++
++.preview-generator-v2__panel--left,
++.preview-generator-v2__panel--right {
++  width: 100%;
++  height: calc(100vh - 220px);
++  height: calc(100dvh - 220px);
++  position: sticky;
++  top: 16px;
++}
++
++.preview-generator-v2__panel--center {
++  height: calc(100vh - 220px);
++  height: calc(100dvh - 220px);
++  min-height: 420px;
++  display: flex;
++  flex-direction: column;
++  gap: 14px;
++  overflow: hidden;
++}
++
++.preview-generator-v2__panel .accordion-v2 {
++  --accordion-v2-accent: var(--pg-accent);
++  --accordion-v2-line: var(--pg-line);
++  --accordion-v2-surface: var(--pg-surface);
++}
++
++.preview-generator-v2__panel .accordion-v2 + .accordion-v2 {
++  margin-top: 14px;
++}
++
++.preview-generator-v2__panel--center .accordion-v2 {
++  min-height: 0;
++}
++
++.preview-generator-v2__main-preview {
++  flex: 1 1 auto;
++  overflow: hidden;
++}
++
++.preview-generator-v2__last-generated {
++  flex: 0 0 clamp(160px, 24vh, 260px);
++  overflow: hidden;
++}
++
++.preview-generator-v2__main-preview .accordion-v2__content,
++.preview-generator-v2__last-generated .accordion-v2__content {
++  height: 100%;
++  min-height: 0;
++  overflow: hidden;
++}
++
++.preview-generator-v2__field,
++.preview-generator-v2__radio-group {
++  min-width: 0;
++  display: grid;
++  gap: 8px;
++  margin: 0;
++  font-weight: 700;
++}
++
++.preview-generator-v2__field input {
++  width: 100%;
++  min-width: 0;
++}
++
++.preview-generator-v2__radio-group {
++  border: 1px solid var(--pg-line);
++  border-radius: 8px;
++  background: var(--pg-surface-strong);
++  padding: 10px;
++}
++
++.preview-generator-v2__radio-group legend {
++  padding: 0 4px;
++  color: var(--pg-muted);
++  font-size: 0.88rem;
++}
++
++.preview-generator-v2__radio-group label {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  font-weight: 700;
++}
++
++.preview-generator-v2__radio-group input[type="radio"] {
++  width: 18px;
++  height: 18px;
++  accent-color: var(--pg-accent);
++}
++
++.preview-generator-v2__status,
++.preview-generator-v2__meta {
++  margin: 0;
++  color: var(--pg-muted);
++  font-size: 0.9rem;
++  overflow-wrap: anywhere;
++}
++
++.preview-generator-v2__status.is-valid {
++  color: var(--pg-success);
++}
++
++.preview-generator-v2__status.is-invalid {
++  color: var(--pg-danger);
++}
++
++.preview-generator-v2__errors {
++  display: grid;
++  gap: 6px;
++  margin: 0;
++  padding-left: 18px;
++  color: var(--pg-danger);
++}
++
++.preview-generator-v2__viewport {
++  position: relative;
++  min-height: 0;
++  height: 100%;
++  display: grid;
++  place-items: center;
++  overflow: hidden;
++  border: 1px solid var(--pg-line);
++  border-radius: 8px;
++  background:
++    linear-gradient(45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%),
++    linear-gradient(-45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%),
++    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.08) 75%),
++    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.08) 75%);
++  background-color: rgba(0, 0, 0, 0.18);
++  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
++  background-size: 20px 20px;
++}
++
++.preview-generator-v2__canvas {
++  width: min(100%, 960px);
++  max-height: 100%;
++  aspect-ratio: 16 / 9;
++  border-radius: 8px;
++  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.32);
++  background: #111827;
++}
++
++.preview-generator-v2__empty-state {
++  position: absolute;
++  inset: auto;
++  border: 1px solid var(--pg-line);
++  border-radius: 999px;
++  background: rgba(0, 0, 0, 0.42);
++  color: var(--pg-muted);
++  padding: 8px 14px;
++  pointer-events: none;
++}
++
++.preview-generator-v2__empty-state.is-hidden {
++  display: none;
++}
++
++.preview-generator-v2__last-generated-frame {
++  height: 100%;
++  min-height: 0;
++  display: grid;
++  grid-template-rows: minmax(0, 1fr) auto;
++  gap: 8px;
++  margin: 0;
++}
++
++.preview-generator-v2__last-generated-frame img {
++  width: 100%;
++  height: 100%;
++  min-height: 0;
++  display: block;
++  object-fit: contain;
++  border: 1px solid var(--pg-line);
++  border-radius: 8px;
++  background: var(--pg-surface-strong);
++}
++
++.preview-generator-v2__last-generated-frame img:not([src]),
++.preview-generator-v2__last-generated-frame img[src=""] {
++  visibility: hidden;
++}
++
++.preview-generator-v2__last-generated-frame figcaption {
++  color: var(--pg-muted);
++  font-size: 0.9rem;
++}
++
++.preview-generator-v2__summary {
++  display: grid;
++  grid-template-columns: auto minmax(0, 1fr);
++  gap: 8px 12px;
++  margin: 0;
++}
++
++.preview-generator-v2__summary dt {
++  color: var(--pg-muted);
++  font-weight: 800;
++}
++
++.preview-generator-v2__summary dd {
++  min-width: 0;
++  margin: 0;
++  overflow-wrap: anywhere;
++}
++
++html:fullscreen body.tools-platform-surface {
++  height: 100dvh;
++  display: flex;
++  flex-direction: column;
++  overflow: hidden;
++}
++
++html:fullscreen body.tools-platform-surface > .is-collapsible,
++html:fullscreen body.tools-platform-surface > [data-preview-generator-v2-status] {
++  flex: 0 0 auto;
++}
++
++html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"] {
++  display: inline-block;
++  max-width: min(calc(100vw - 24px), calc(100dvw - 24px));
++  color: #ffffff;
++  font-size: 0.98rem;
++  font-weight: 700;
++  line-height: 1.2;
++  overflow: hidden;
++  padding: 8px 12px;
++  text-overflow: ellipsis;
++  white-space: nowrap;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] > .preview-generator-v2,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] > .preview-generator-v2 {
++  flex: 1 1 auto;
++  min-width: 0;
++  max-width: none;
++  min-height: 0;
++  width: 100%;
++  display: flex;
++  flex-direction: column;
++  margin: 0;
++  padding: 8px 12px;
++  overflow: hidden;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .preview-generator-v2__layout,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .preview-generator-v2__layout {
++  flex: 1 1 auto;
++  grid-template-columns: 340px minmax(0, 1fr) 360px;
++  width: 100%;
++  height: 100%;
++  min-height: 0;
++  align-items: stretch;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .preview-generator-v2__panel,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .preview-generator-v2__panel {
++  min-height: 0;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .preview-generator-v2__panel--left,
++html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .preview-generator-v2__panel--right,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .preview-generator-v2__panel--left,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .preview-generator-v2__panel--right {
++  position: static;
++  align-self: stretch;
++  height: 100%;
++  max-height: none;
++}
++
++html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .preview-generator-v2__panel--center,
++body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .preview-generator-v2__panel--center {
++  align-self: stretch;
++  height: 100%;
++  min-height: 0;
++  max-height: none;
++}
++
++@media (max-width: 1180px) {
++  .preview-generator-v2__layout {
++    grid-template-columns: 1fr;
++  }
++
++  .preview-generator-v2__panel--left,
++  .preview-generator-v2__panel--right {
++    height: auto;
++    position: static;
++  }
++
++  .preview-generator-v2__panel--center {
++    height: calc(100vh - 160px);
++    height: calc(100dvh - 160px);
++    min-height: 520px;
++  }
++}
++
++@media (min-width: 1201px) {
++  body.tools-platform-surface .tools-platform-resize-panel {
++    min-width: 220px;
++    max-width: min(42vw, 520px);
++    resize: horizontal;
++    overflow: auto;
++  }
++}
++
++@media (max-width: 1200px) {
++  body.tools-platform-surface .tools-platform-resize-panel {
++    max-width: none;
++    max-height: none;
++    resize: none;
++  }
++}
