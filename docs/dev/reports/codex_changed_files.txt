@@ -1,8 +1,16 @@
 # git status --short
 M docs/dev/codex_commands.md
  M docs/dev/commit_comment.txt
+?? docs/pr/PR_26126_003-preview-tool-layout-spec.md
 
 # git diff --stat
-docs/dev/codex_commands.md  | 19 +++++--------------
+docs/dev/codex_commands.md  | 10 +++++-----
  docs/dev/commit_comment.txt |  2 +-
- 2 files changed, 6 insertions(+), 15 deletions(-)
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+# New design doc diff --stat
+.../pr/PR_26126_003-preview-tool-layout-spec.md    | 619 +++++++++++++++++++++
+ 1 file changed, 619 insertions(+)
+
+# Scope note
+PR_26126_003 is documentation/layout-spec only. No samples or runtime code were modified.

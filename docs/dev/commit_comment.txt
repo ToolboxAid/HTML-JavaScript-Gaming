@@ -1,1 +1,1 @@
-Add Preview tool detailed design - PR_26126_002-preview-tool-detailed-design
+Add Preview tool layout spec - PR_26126_003-preview-tool-layout-spec
