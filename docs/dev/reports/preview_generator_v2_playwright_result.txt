@@ -1,4 +1,4 @@
-# Preview Generator V2 Playwright Result - PR_26126_037
+# Preview Generator V2 Playwright Result - PR_26126_039
 
 Coverage:
 - tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
@@ -6,15 +6,15 @@ Coverage:
 What the test validates:
 - Preview Generator V2 launches from /tools/preview-generator-v2/index.html through the repo HTTP server.
 - The Preview Generator V2 app shell is visible.
+- tools/common/toolShellCommon.css is loaded.
 - The Preview Generator V2 heading is visible.
 - menuSample nav exists.
 - Generate Preview and Stop buttons are visible and initially disabled.
 - Games is the default target source.
 - Paths or IDs input is visible.
 - Status block is visible.
-- Repo Destination accordion collapses and reopens with aria-expanded state changes.
-- tools/common/toolShellCommon.css is loaded.
 - Consolidated common style declarations are applied to header, accordion, app shell, and fullscreen layout targets.
+- Repo Destination accordion collapses and reopens with aria-expanded state changes.
 - No page errors are emitted during the launch/toggle path.
 
 Command run:
@@ -32,4 +32,4 @@ Workspace V2 default command:
 - Result: FAIL, package.json does not define a test:workspace-v2 script.
 
 Full samples smoke test:
-- Skipped. This PR modifies Preview Generator V2 CSS structure and targeted Playwright coverage only; it does not modify samples or shared sample loading.
+- Skipped. This PR is a Preview Generator V2 final hardening review pass and does not modify samples or shared sample loading.
