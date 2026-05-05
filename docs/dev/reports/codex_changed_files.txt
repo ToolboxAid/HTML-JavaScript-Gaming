@@ -1,10 +1,10 @@
 # git status --short
- M docs/dev/reports/preview_generator_v2_playwright_result.txt
-?? docs/dev/reports/preview_generator_v2_final_review.txt
+ M package.json
+?? docs/dev/reports/preview_generator_v2_playwright_coverage.txt
 
-# PR_26126_039 diff stat excluding generated review artifact files
- docs/dev/reports/preview_generator_v2_playwright_result.txt | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-# New file diff stat: docs/dev/reports/preview_generator_v2_final_review.txt
- .../reports/preview_generator_v2_final_review.txt  | 70 ++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
+# PR_26126_040 diff stat excluding generated review artifact files
+ package.json | 1 +
+ 1 file changed, 1 insertion(+)
+# New file diff stat: docs/dev/reports/preview_generator_v2_playwright_coverage.txt
+ .../preview_generator_v2_playwright_coverage.txt   | 46 ++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)

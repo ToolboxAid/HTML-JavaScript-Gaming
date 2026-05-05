@@ -1,0 +1,46 @@
+# Preview Generator V2 Playwright Coverage - PR_26126_040
+
+Reviewed:
+- docs/dev/reports/preview_generator_v2_playwright_result.txt
+- tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+- package.json
+
+Coverage decision:
+- Preview Generator V2 is already explicitly covered by Playwright.
+- No duplicate Playwright test was added.
+
+Existing Playwright coverage:
+- Launches tools/preview-generator-v2/index.html through the repo HTTP server.
+- Verifies the Preview Generator V2 app shell is visible.
+- Verifies tools/common/toolShellCommon.css is loaded.
+- Verifies the Preview Generator V2 heading is visible.
+- Verifies menuSample nav exists.
+- Verifies Generate Preview and Stop render and begin disabled.
+- Verifies Games is the default target source.
+- Verifies Paths or IDs input is visible.
+- Verifies Status block is visible.
+- Verifies common style declarations apply to header, accordion, app shell, and fullscreen layout targets.
+- Verifies Repo Destination accordion collapses and reopens with aria-expanded state changes.
+- Verifies no page errors during the launch/toggle path.
+
+Broken hooks:
+- No broken Preview Generator V2 selectors, IDs, or Playwright hooks were found.
+- No UI behavior changes were made.
+
+Validation gap fixed:
+- package.json did not define npm run test:workspace-v2.
+- Added test:workspace-v2 as the repository validation command for the existing Preview Generator V2 Playwright baseline.
+
+Validation run:
+- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+- npm run test:workspace-v2
+
+Result:
+- PASS: npm run test:workspace-v2 passed.
+- PASS: 1 Playwright test passed.
+
+Scope guard:
+- No samples modified.
+- No schemas added or modified.
+- No start_of_day folders modified.
+- No duplicate Playwright tests added.

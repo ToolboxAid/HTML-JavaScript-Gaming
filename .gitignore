@@ -19,7 +19,7 @@ tests/results/
 tmp/
 
 # Codex files
-codex_review.diff
 codex_changed_files.txt
 docs/dev/reports/codex_changed_files.txt
+codex_review.diff
 docs/dev/reports/codex_review.diff
