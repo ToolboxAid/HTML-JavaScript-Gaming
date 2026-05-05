@@ -18,6 +18,8 @@ node_modules/
 tests/results/
 tmp/
 
-
+# Codex files
 codex_review.diff
 codex_changed_files.txt
+docs/dev/reports/codex_changed_files.txt
+docs/dev/reports/codex_review.diff

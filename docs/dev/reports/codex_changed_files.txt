@@ -1,32 +1,7 @@
 # git status --short
- M .gitignore
- M docs/dev/codex_commands.md
- M docs/dev/commit_comment.txt
- M docs/dev/reports/preview_generator_v2_playwright_result.txt
- M tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
- M tools/preview-generator-v2/index.html
- M tools/preview-generator-v2/previewGeneratorV2.css
-?? docs/dev/reports/preview_generator_v2_common_styles_applied.txt
-?? docs/dev/reports/preview_generator_v2_shared_removed.txt
-?? tools/common/toolShellCommon.css
+?? docs/dev/reports/preview_generator_v2_unexpected_changes_reverted.txt
 
-# Note
-.gitignore is present in the worktree status but is unrelated to PR_26126_037 and is excluded from the PR-scoped review diff/stat.
-
-# PR-scoped diff stat excluding unrelated .gitignore and generated review artifact files
- docs/dev/codex_commands.md                         | 20 +++---
- docs/dev/commit_comment.txt                        |  2 +-
- .../preview_generator_v2_playwright_result.txt     | 13 ++--
- .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 35 ++++++++++
- tools/preview-generator-v2/index.html              | 29 +++++----
- tools/preview-generator-v2/previewGeneratorV2.css  | 75 ----------------------
- 6 files changed, 66 insertions(+), 108 deletions(-)
-# New file diff stat: docs/dev/reports/preview_generator_v2_common_styles_applied.txt
- .../preview_generator_v2_common_styles_applied.txt | 53 ++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
-# New file diff stat: docs/dev/reports/preview_generator_v2_shared_removed.txt
- .../preview_generator_v2_shared_removed.txt        | 39 ++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
-# New file diff stat: tools/common/toolShellCommon.css
- NUL => tools/common/toolShellCommon.css | 66 +++++++++++++++++++++++++++++++++
- 1 file changed, 66 insertions(+)
+# PR_26126_038 diff stat excluding generated review artifact files
+# New file diff stat: docs/dev/reports/preview_generator_v2_unexpected_changes_reverted.txt
+ ...ew_generator_v2_unexpected_changes_reverted.txt | 42 ++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
