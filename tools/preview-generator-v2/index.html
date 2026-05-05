@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Preview SVG Generator</title>
+  <title>Preview Generator V2</title>
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
@@ -345,8 +345,8 @@
           <div class="tools-platform-frame__accordion-content">
             <div class="tools-platform-frame__accordion-summary">
               <div class="tools-platform-frame__summary-copy">
-                <h1 class="tools-platform-frame__title" data-tool-id="preview-generator-v2">Preview SVG Generator</h1>
-                <h2 class="tools-platform-frame__eyebrow">Preview Generator V2</h2>
+                <h1 class="tools-platform-frame__title" data-tool-id="preview-generator-v2">Preview Generator V2</h1>
+                <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface</h2>
               </div>
               <div class="tools-platform-frame__summary-meta">
                 <div class="tools-platform-frame__meta">Generate preview.svg files for samples, games, and tools.</div>
@@ -427,8 +427,7 @@
           </button>
           <div id="assetFolderContent" class="accordion-v2__content preview-generator-v2__stack">
             <label class="palette-manager-v2__field" for="assetFolder">
-              <span>Asset folder</span>
-              <input id="assetFolder" type="text" value="assets/images" />
+              <input id="assetFolder" type="text" value="assets/images" aria-label="Asset folder" />
             </label>
           </div>
         </section>
@@ -439,15 +438,14 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="captureModeContent" class="accordion-v2__content preview-generator-v2__stack">
-            <fieldset class="preview-generator-v2__radio-group">
-              <legend>Capture mode</legend>
-              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
-                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
-                <span>Full Screen (1600x900 HTML Page)</span>
-              </label>
+            <fieldset class="preview-generator-v2__radio-group" aria-label="Capture mode">
               <label class="preview-generator-v2__radio-option" for="captureModeCanvasOnly">
                 <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
                 <span>Canvas Only</span>
+              </label>
+              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
+                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
+                <span>Full Screen (1600x900 HTML Page)</span>
               </label>
             </fieldset>
           </div>
@@ -1541,10 +1539,10 @@ tools\&lt;toolname&gt;\index.html
   </script>
   <script type="module">
     const PREVIEW_GENERATOR_TOOL_ID = "preview-generator-v2";
-    const PREVIEW_GENERATOR_TOOL_NAME = "Preview SVG Generator";
-    const PREVIEW_GENERATOR_TOOL_DESCRIPTION = "Generate preview.svg files for samples, games, and tools.";
+    const PREVIEW_GENERATOR_TOOL_NAME = "Preview Generator V2";
+    const PREVIEW_GENERATOR_TOOL_DESCRIPTION = "First-Class Tools Surface";
     const PREVIEW_GENERATOR_HEADER_TEXT = `${PREVIEW_GENERATOR_TOOL_NAME} - ${PREVIEW_GENERATOR_TOOL_DESCRIPTION}`;
-    const PREVIEW_GENERATOR_INTRO_TEXT = `Preview Generator V2: ${PREVIEW_GENERATOR_TOOL_DESCRIPTION}`;
+    const PREVIEW_GENERATOR_INTRO_TEXT = PREVIEW_GENERATOR_TOOL_DESCRIPTION;
     const previewGeneratorRuntimeParams = new URLSearchParams(window.location.search);
 
     let suppressPreviewGeneratorFullscreenSync = false;

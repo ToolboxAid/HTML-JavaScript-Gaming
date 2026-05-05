@@ -1,1 +1,1 @@
-Automate Preview Generator V2 capture-timeout rewrite gate - PR_26126_022-preview-generator-v2-no-inline-style-and-auto-rewrite
+Normalize Preview Generator V2 labels - PR_26126_023-preview-generator-v2-label-consistency
