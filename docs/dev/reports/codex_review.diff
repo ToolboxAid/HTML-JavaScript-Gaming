@@ -1,285 +1,326 @@
-diff --git a/tools/preview-generator-v2/index.html b/tools/preview-generator-v2/index.html
-index e237fea0..12e918d2 100644
---- a/tools/preview-generator-v2/index.html
-+++ b/tools/preview-generator-v2/index.html
-@@ -480,6 +480,7 @@ games\&lt;gamename&gt;\index.html
- &lt;gamename&gt;
- 
- Samples examples:
-+samples/phase-xx
- samples/phase-01/0102/index.html
- samples/phase-13/1303/index.html
- 0107
-@@ -897,8 +898,13 @@ tools\&lt;toolname&gt;\index.html
-       }
- 
-       try {
--        const entry = await resolveEntry(lines[0]);
--        writeFolderActualValueEl.textContent = getWriteFolderDisplayPath(entry);
-+        const entries = await resolveEntries(lines[0]);
-+        if (entries.length > 1 && entries[0].targetType === "samples") {
-+          writeFolderActualValueEl.textContent = normalizeSlashes(`samples/phase-${entries[0].phase}/*/${getAssetFolderRelativePath()}`);
-+          return;
-+        }
-+
-+        writeFolderActualValueEl.textContent = entries.length ? getWriteFolderDisplayPath(entries[0]) : "not available yet";
-       } catch {
-         writeFolderActualValueEl.textContent = "not available yet";
-       }
-@@ -917,6 +923,54 @@ tools\&lt;toolname&gt;\index.html
-       return await parentHandle.getFileHandle(name, { create });
-     }
- 
-+    function getSamplePhaseFolderMatch(inputLine) {
-+      return String(inputLine || "")
-+        .trim()
-+        .replaceAll("\\", "/")
-+        .replace(/^\/+|\/+$/g, "")
-+        .match(/^samples\/phase-?(\d{2})$/i);
-+    }
-+
-+    async function hasIndexHtml(directoryHandle) {
-+      try {
-+        await getFileHandle(directoryHandle, "index.html", false);
-+        return true;
-+      } catch {
-+        return false;
-+      }
-+    }
-+
-+    async function resolveSamplePhase(phase) {
-+      if (!repoDirHandle) {
-+        throw new Error("Pick the repo folder before using a phase folder input.");
-+      }
-+
-+      const samplesDir = await getDirectoryHandle(repoDirHandle, "samples");
-+      const phaseDir = await getDirectoryHandle(samplesDir, `phase-${phase}`);
-+      if (typeof phaseDir.entries !== "function") {
-+        throw new Error(`Cannot list samples/phase-${phase}.`);
-+      }
-+
-+      const sampleEntries = [];
-+      for await (const [name, handle] of phaseDir.entries()) {
-+        if (!handle || handle.kind !== "directory" || !/^\d{4}$/.test(name)) continue;
-+        if (!(await hasIndexHtml(handle))) continue;
-+        sampleEntries.push({
-+          targetType: "samples",
-+          id: name,
-+          phase,
-+          samplePath: `samples/phase-${phase}/${name}/index.html`
-+        });
-+      }
-+
-+      sampleEntries.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
-+      if (!sampleEntries.length) {
-+        throw new Error(`No sample index.html entries found in samples/phase-${phase}.`);
-+      }
-+
-+      return sampleEntries;
-+    }
-+
-     async function resolveSample(inputLine) {
-       const raw = inputLine.trim();
-       if (!raw) return null;
-@@ -1013,6 +1067,16 @@ tools\&lt;toolname&gt;\index.html
-       throw new Error(`Unsupported target type: ${targetType}`);
-     }
- 
-+    async function resolveEntries(inputLine) {
-+      const phaseMatch = getSamplePhaseFolderMatch(inputLine);
-+      if (phaseMatch) {
-+        return await resolveSamplePhase(phaseMatch[1]);
-+      }
-+
-+      const entry = await resolveEntry(inputLine);
-+      return entry ? [entry] : [];
-+    }
-+
-     async function getTargetDirHandle(repoHandle, entry) {
-       if (entry.targetType === "samples") {
-         const samplesDir = await getDirectoryHandle(repoHandle, "samples");
-@@ -1469,10 +1533,20 @@ tools\&lt;toolname&gt;\index.html
-             }
- 
-             try {
--              const entry = await resolveEntry(line);
--              if (!entry) continue;
--              const result = await processOne(entry, baseUrl, waitMs);
--              results.push(result);
-+              const entries = await resolveEntries(line);
-+              if (entries.length > 1) {
-+                log(`Resolved ${entries.length} samples from ${line}.`);
-+              }
-+
-+              for (const entry of entries) {
-+                if (stopRequested) {
-+                  log("Stop requested. Ending run.");
-+                  break;
-+                }
-+
-+                const result = await processOne(entry, baseUrl, waitMs);
-+                results.push(result);
-+              }
-             } catch (error) {
-               log(`FAIL INPUT  ${line}  (${error.message})`);
-               log("");
-
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-new file mode 100644
-index 00000000..6d3e2b19
---- /dev/null
+index 6d3e2b19..41fcf58b 100644
+--- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -0,0 +1,146 @@
-+# Codex Commands - PR_26126_025-preview-generator-v2-phase-wildcard-support
-+
-+```bash
-+codex run "Create PR_26126_025-preview-generator-v2-phase-wildcard-support. Update Preview Generator V2 to support phase-wide sample generation. Add \"samples/phase-xx\" to the Samples examples as a valid input pattern meaning generate previews for all sample images in that phase folder. Implement supporting code so when the Paths or IDs input receives a phase folder pattern such as samples/phase-01 or samples/phase-xx, the tool resolves all eligible sample index.html entries/images under that phase and processes them using the existing preview generation behavior. Preserve existing single sample and game behavior. Do not modify samples. Do not add schema. Produce review artifacts."
-+```
-+
-+## Validation Commands
-+
-+```bash
-+git diff --check -- tools/preview-generator-v2/index.html docs/dev/codex_commands.md docs/dev/commit_comment.txt
-+git diff --cached --name-only -- samples games start_of_day tools/shared tools/schemas
-+npm run test:workspace-v2
-+npm run codex:review-artifacts
-+```
-+
-+```powershell
-+@'
-+import { chromium } from '@playwright/test';
-+import { startRepoServer } from './tests/helpers/playwrightRepoServer.mjs';
-+
-+const server = await startRepoServer();
-+const browser = await chromium.launch({ headless: true });
-+const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
-+const errors = [];
-+const consoleErrors = [];
-+page.on('pageerror', (error) => errors.push(error.message));
-+page.on('console', (message) => {
-+  if (message.type() === 'error') consoleErrors.push(message.text());
-+});
-+await page.route('https://cdn.jsdelivr.net/**', async (route) => {
-+  await route.fulfill({ status: 200, contentType: 'text/javascript', body: 'window.html2canvas = window.html2canvas || undefined;' });
-+});
-+await page.route('**/samples/phase-01/**/index.html', async (route) => {
-+  await route.fulfill({
-+    status: 200,
-+    contentType: 'text/html',
-+    body: '<!doctype html><html><body><canvas id="c" width="12" height="12"></canvas><script>const c=document.getElementById("c");const ctx=c.getContext("2d");ctx.fillStyle="#00ff00";ctx.fillRect(0,0,12,12);</script></body></html>'
-+  });
-+});
-+await page.addInitScript(() => {
-+  const writes = [];
-+  class FakeFile {
-+    constructor(text) { this._text = text; }
-+    async text() { return this._text; }
-+  }
-+  class FakeFileHandle {
-+    constructor(name, path, text = '') { this.kind = 'file'; this.name = name; this.path = path; this._text = text; }
-+    async getFile() { return new FakeFile(this._text); }
-+    async createWritable() {
-+      const handle = this;
-+      return {
-+        async write(content) {
-+          handle._text = String(content);
-+          writes.push({ path: handle.path, content: String(content) });
-+        },
-+        async close() {}
-+      };
-+    }
-+  }
-+  class FakeDirectoryHandle {
-+    constructor(name = 'HTML-JavaScript-Gaming', path = '') { this.kind = 'directory'; this.name = name; this.path = path; this.children = new Map(); }
-+    async getDirectoryHandle(name, options = {}) {
-+      const key = `dir:${name}`;
-+      if (!this.children.has(key)) {
-+        if (!options.create) throw new DOMException('Not found', 'NotFoundError');
-+        const nextPath = this.path ? `${this.path}/${name}` : name;
-+        this.children.set(key, new FakeDirectoryHandle(name, nextPath));
-+      }
-+      return this.children.get(key);
-+    }
-+    async getFileHandle(name, options = {}) {
-+      const key = `file:${name}`;
-+      if (!this.children.has(key)) {
-+        if (!options.create) throw new DOMException('Not found', 'NotFoundError');
-+        const nextPath = this.path ? `${this.path}/${name}` : name;
-+        this.children.set(key, new FakeFileHandle(name, nextPath));
-+      }
-+      return this.children.get(key);
-+    }
-+    async *entries() {
-+      const sorted = Array.from(this.children.values()).sort((a, b) => b.name.localeCompare(a.name));
-+      for (const child of sorted) yield [child.name, child];
-+    }
-+  }
-+  async function addFile(root, path, text = '') {
-+    const parts = path.split('/').filter(Boolean);
-+    let current = root;
-+    for (const part of parts.slice(0, -1)) current = await current.getDirectoryHandle(part, { create: true });
-+    const fileHandle = await current.getFileHandle(parts.at(-1), { create: true });
-+    fileHandle._text = text;
-+  }
-+  async function addDir(root, path) {
-+    const parts = path.split('/').filter(Boolean);
-+    let current = root;
-+    for (const part of parts) current = await current.getDirectoryHandle(part, { create: true });
-+  }
-+  window.__previewGeneratorV2Writes = writes;
-+  window.__previewGeneratorV2Root = new FakeDirectoryHandle();
-+  window.__previewGeneratorV2Ready = (async () => {
-+    await addFile(window.__previewGeneratorV2Root, 'samples/phase-01/0101/index.html');
-+    await addFile(window.__previewGeneratorV2Root, 'samples/phase-01/0102/index.html');
-+    await addDir(window.__previewGeneratorV2Root, 'samples/phase-01/0199');
-+  })();
-+  window.showDirectoryPicker = async () => {
-+    await window.__previewGeneratorV2Ready;
-+    return window.__previewGeneratorV2Root;
-+  };
-+});
-+
-+await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: 'domcontentloaded' });
-+await page.waitForSelector('#sampleList');
-+const placeholder = await page.locator('#sampleList').getAttribute('placeholder');
-+if (!placeholder.includes('samples/phase-xx')) throw new Error('Phase-wide sample example is missing.');
-+await page.fill('#baseUrl', server.baseUrl);
-+await page.fill('#waitMs', '1');
-+await page.fill('#sampleList', 'samples/phase-01');
-+await page.check('#targetTypeSamples');
-+await page.click('#pickRepoBtn');
-+await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
-+await page.click('#executeBtn');
-+await page.waitForFunction(() => document.getElementById('log').textContent.includes('Done.'), null, { timeout: 20000 });
-+const logText = await page.locator('#log').innerText();
-+if (!logText.includes('Resolved 2 samples from samples/phase-01.')) throw new Error(`Missing phase resolution log: ${logText}`);
-+if (!logText.includes('OK   0101') || !logText.includes('OK   0102')) throw new Error(`Expected both phase samples to process: ${logText}`);
-+if (logText.includes('0199')) throw new Error(`Sample folder without index.html should be skipped: ${logText}`);
-+const writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
-+const paths = writes.map((write) => write.path).sort();
-+const expectedPaths = [
-+  'samples/phase-01/0101/assets/images/preview.svg',
-+  'samples/phase-01/0102/assets/images/preview.svg'
-+];
-+if (JSON.stringify(paths) !== JSON.stringify(expectedPaths)) throw new Error(`Unexpected writes: ${paths.join(' | ')}`);
-+if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
-+await browser.close();
-+await server.close();
-+console.log('preview-generator-v2 phase-wide sample generation smoke valid');
-+'@ | node --input-type=module -
-+```
-+
-+## Notes
-+
-+The targeted Playwright smoke validates that the `samples/phase-xx` example is present, `samples/phase-01` expands through the selected repo folder into indexed sample entries, non-indexed folders are skipped, and the existing preview generation path writes `preview.svg` for each resolved sample.
-+
-+`npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
-+
-+Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 phase-folder resolution and uses targeted browser coverage instead.
+@@ -1,146 +1,24 @@
+-# Codex Commands - PR_26126_025-preview-generator-v2-phase-wildcard-support
++# Codex Commands - PR_26126_026-locate-missing-samples
+
+ ```bash
+-codex run "Create PR_26126_025-preview-generator-v2-phase-wildcard-support. Update Preview Generator V2 to support phase-wide sample generation. Add \"samples/phase-xx\" to the Samples examples as a valid input pattern meaning generate previews for all sample images in that phase folder. Implement supporting code so when the Paths or IDs input receives a phase folder pattern such as samples/phase-01 or samples/phase-xx, the tool resolves all eligible sample index.html entries/images under that phase and processes them using the existing preview generation behavior. Preserve existing single sample and game behavior. Do not modify samples. Do not add schema. Produce review artifacts."
++codex run "Create PR_26126_026-locate-missing-samples. Do not modify code. Perform a repo search to determine where sample IDs 0125, 0126, and 0127 are defined or referenced. Search for these IDs across samples, metadata, tool hints, and any index/registry files. Report exact file paths where they exist, or explicitly confirm they do not exist as folders under samples/phase-* directories. If they are referenced but missing physically, identify the source (metadata, index, or generator logic) that is producing them. Output findings only in docs/dev/reports/missing_samples_0125_0126_0127.txt. Produce review artifacts."
+ ```
+
+ ## Validation Commands
+
+ ```bash
+-git diff --check -- tools/preview-generator-v2/index.html docs/dev/codex_commands.md docs/dev/commit_comment.txt
+-git diff --cached --name-only -- samples games start_of_day tools/shared tools/schemas
+-npm run test:workspace-v2
++Get-ChildItem -Path samples -Directory -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -in @('0125','0126','0127') } | Select-Object -ExpandProperty FullName
++rg -n --hidden --no-ignore --glob '!node_modules/**' --glob '!.git/**' --glob '!tmp/**' --glob '!**/*.svg' --glob '!**/*.png' --glob '!**/*.jpg' --glob '!**/*.jpeg' --glob '!**/*.gif' --glob '!**/*.zip' "\b(0125|0126|0127)\b" samples docs tools src scripts tests games package.json *.json *.md
++Select-String -Path tools/preview-generator-v2/index.html -Pattern 'resolveSamplePhase|phaseDir.entries|hasIndexHtml|sampleEntries.push|sampleEntries.sort|No sample index.html' -Context 2,3
++Select-String -Path @('scripts/generate-sample-manifest.mjs','scripts/generate-samples-index.mjs','scripts/generate-runtime-sample-previews.mjs') -Pattern 'readdir|phase-|index.html|samplesDir|sampleId|id' -Context 2,3
++Select-String -Path samples/metadata/metadataReference.js,samples/metadata/samples.index.metadata.json -Pattern '0125|0126|0127|0124|0101|phase-01' -Context 1,2
++rg -n "0225|0226|0227" samples/metadata/samples.index.metadata.json samples/index.html samples/index.render.js --glob '!**/*.svg'
++rg -n -i "executeSample|execute sample|sample-card|samples-phase-list|samples-pinned-list|buildSampleRows|createSampleCard" samples/index.html samples/index.render.js samples/metadata/samples.index.metadata.json
++git diff --check -- docs/dev/reports/missing_samples_0125_0126_0127.txt docs/dev/codex_commands.md docs/dev/commit_comment.txt
++git diff --cached --name-only -- samples games start_of_day tools src scripts tests
+ npm run codex:review-artifacts
+ ```
+
+-```powershell
+-@'
+-import { chromium } from '@playwright/test';
+-import { startRepoServer } from './tests/helpers/playwrightRepoServer.mjs';
+-
+-const server = await startRepoServer();
+-const browser = await chromium.launch({ headless: true });
+-const page = await browser.newPage({ viewport: { width: 1366, height: 900 } });
+-const errors = [];
+-const consoleErrors = [];
+-page.on('pageerror', (error) => errors.push(error.message));
+-page.on('console', (message) => {
+-  if (message.type() === 'error') consoleErrors.push(message.text());
+-});
+-await page.route('https://cdn.jsdelivr.net/**', async (route) => {
+-  await route.fulfill({ status: 200, contentType: 'text/javascript', body: 'window.html2canvas = window.html2canvas || undefined;' });
+-});
+-await page.route('**/samples/phase-01/**/index.html', async (route) => {
+-  await route.fulfill({
+-    status: 200,
+-    contentType: 'text/html',
+-    body: '<!doctype html><html><body><canvas id="c" width="12" height="12"></canvas><script>const c=document.getElementById("c");const ctx=c.getContext("2d");ctx.fillStyle="#00ff00";ctx.fillRect(0,0,12,12);</script></body></html>'
+-  });
+-});
+-await page.addInitScript(() => {
+-  const writes = [];
+-  class FakeFile {
+-    constructor(text) { this._text = text; }
+-    async text() { return this._text; }
+-  }
+-  class FakeFileHandle {
+-    constructor(name, path, text = '') { this.kind = 'file'; this.name = name; this.path = path; this._text = text; }
+-    async getFile() { return new FakeFile(this._text); }
+-    async createWritable() {
+-      const handle = this;
+-      return {
+-        async write(content) {
+-          handle._text = String(content);
+-          writes.push({ path: handle.path, content: String(content) });
+-        },
+-        async close() {}
+-      };
+-    }
+-  }
+-  class FakeDirectoryHandle {
+-    constructor(name = 'HTML-JavaScript-Gaming', path = '') { this.kind = 'directory'; this.name = name; this.path = path; this.children = new Map(); }
+-    async getDirectoryHandle(name, options = {}) {
+-      const key = `dir:${name}`;
+-      if (!this.children.has(key)) {
+-        if (!options.create) throw new DOMException('Not found', 'NotFoundError');
+-        const nextPath = this.path ? `${this.path}/${name}` : name;
+-        this.children.set(key, new FakeDirectoryHandle(name, nextPath));
+-      }
+-      return this.children.get(key);
+-    }
+-    async getFileHandle(name, options = {}) {
+-      const key = `file:${name}`;
+-      if (!this.children.has(key)) {
+-        if (!options.create) throw new DOMException('Not found', 'NotFoundError');
+-        const nextPath = this.path ? `${this.path}/${name}` : name;
+-        this.children.set(key, new FakeFileHandle(name, nextPath));
+-      }
+-      return this.children.get(key);
+-    }
+-    async *entries() {
+-      const sorted = Array.from(this.children.values()).sort((a, b) => b.name.localeCompare(a.name));
+-      for (const child of sorted) yield [child.name, child];
+-    }
+-  }
+-  async function addFile(root, path, text = '') {
+-    const parts = path.split('/').filter(Boolean);
+-    let current = root;
+-    for (const part of parts.slice(0, -1)) current = await current.getDirectoryHandle(part, { create: true });
+-    const fileHandle = await current.getFileHandle(parts.at(-1), { create: true });
+-    fileHandle._text = text;
+-  }
+-  async function addDir(root, path) {
+-    const parts = path.split('/').filter(Boolean);
+-    let current = root;
+-    for (const part of parts) current = await current.getDirectoryHandle(part, { create: true });
+-  }
+-  window.__previewGeneratorV2Writes = writes;
+-  window.__previewGeneratorV2Root = new FakeDirectoryHandle();
+-  window.__previewGeneratorV2Ready = (async () => {
+-    await addFile(window.__previewGeneratorV2Root, 'samples/phase-01/0101/index.html');
+-    await addFile(window.__previewGeneratorV2Root, 'samples/phase-01/0102/index.html');
+-    await addDir(window.__previewGeneratorV2Root, 'samples/phase-01/0199');
+-  })();
+-  window.showDirectoryPicker = async () => {
+-    await window.__previewGeneratorV2Ready;
+-    return window.__previewGeneratorV2Root;
+-  };
+-});
+-
+-await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: 'domcontentloaded' });
+-await page.waitForSelector('#sampleList');
+-const placeholder = await page.locator('#sampleList').getAttribute('placeholder');
+-if (!placeholder.includes('samples/phase-xx')) throw new Error('Phase-wide sample example is missing.');
+-await page.fill('#baseUrl', server.baseUrl);
+-await page.fill('#waitMs', '1');
+-await page.fill('#sampleList', 'samples/phase-01');
+-await page.check('#targetTypeSamples');
+-await page.click('#pickRepoBtn');
+-await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
+-await page.click('#executeBtn');
+-await page.waitForFunction(() => document.getElementById('log').textContent.includes('Done.'), null, { timeout: 20000 });
+-const logText = await page.locator('#log').innerText();
+-if (!logText.includes('Resolved 2 samples from samples/phase-01.')) throw new Error(`Missing phase resolution log: ${logText}`);
+-if (!logText.includes('OK   0101') || !logText.includes('OK   0102')) throw new Error(`Expected both phase samples to process: ${logText}`);
+-if (logText.includes('0199')) throw new Error(`Sample folder without index.html should be skipped: ${logText}`);
+-const writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
+-const paths = writes.map((write) => write.path).sort();
+-const expectedPaths = [
+-  'samples/phase-01/0101/assets/images/preview.svg',
+-  'samples/phase-01/0102/assets/images/preview.svg'
+-];
+-if (JSON.stringify(paths) !== JSON.stringify(expectedPaths)) throw new Error(`Unexpected writes: ${paths.join(' | ')}`);
+-if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
+-await browser.close();
+-await server.close();
+-console.log('preview-generator-v2 phase-wide sample generation smoke valid');
+-'@ | node --input-type=module -
+-```
+-
+ ## Notes
+
+-The targeted Playwright smoke validates that the `samples/phase-xx` example is present, `samples/phase-01` expands through the selected repo folder into indexed sample entries, non-indexed folders are skipped, and the existing preview generation path writes `preview.svg` for each resolved sample.
+-
+-`npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
+-
+-Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 phase-folder resolution and uses targeted browser coverage instead.
++No Playwright impact. This PR is search/report only and does not modify runtime code, samples, schemas, or tests.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 77ddda95..0d4d6332 100644
+index 0d4d6332..0cffa076 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Reorder Preview Generator V2 examples - PR_26126_024-preview-generator-v2-examples-order
-+Support phase-wide Preview Generator V2 samples - PR_26126_025-preview-generator-v2-phase-wildcard-support
+-Support phase-wide Preview Generator V2 samples - PR_26126_025-preview-generator-v2-phase-wildcard-support
++Locate missing sample IDs 0125-0127 - PR_26126_026-locate-missing-samples
+diff --git a/docs/dev/reports/codex_changed_files.txt b/docs/dev/reports/codex_changed_files.txt
+index da0b6f44..13e269d9 100644
+--- a/docs/dev/reports/codex_changed_files.txt
++++ b/docs/dev/reports/codex_changed_files.txt
+@@ -1,35 +1,19 @@
+-# intended PR_26126_025 delta files
+-A  docs/dev/codex_commands.md
+-M  docs/dev/commit_comment.txt
+-M  docs/dev/reports/codex_changed_files.txt
+-M  docs/dev/reports/codex_review.diff
+-M  tools/preview-generator-v2/index.html
++# PR_26126_026-locate-missing-samples
+
+-# implementation diff source
+-git diff HEAD^ HEAD -- tools/preview-generator-v2/index.html
+-git diff --cached -- docs/dev/codex_commands.md docs/dev/commit_comment.txt
++Staged PR files:
++- docs/dev/codex_commands.md
++- docs/dev/commit_comment.txt
++- docs/dev/reports/codex_changed_files.txt
++- docs/dev/reports/codex_review.diff
++- docs/dev/reports/missing_samples_0125_0126_0127.txt
+
+-# scoped validation: staged changes under samples/games/start_of_day/tools/shared/tools/schemas
+-(none)
+-
+-# unstaged sample preview SVG changes present in worktree and excluded from this PR package
+-M samples/phase-01/0106/assets/images/preview.svg
+- M samples/phase-01/0108/assets/images/preview.svg
+- M samples/phase-01/0109/assets/images/preview.svg
+- M samples/phase-01/0111/assets/images/preview.svg
+- M samples/phase-01/0112/assets/images/preview.svg
+- M samples/phase-01/0113/assets/images/preview.svg
+- M samples/phase-01/0114/assets/images/preview.svg
+- M samples/phase-01/0115/assets/images/preview.svg
+- M samples/phase-01/0116/assets/images/preview.svg
+- M samples/phase-01/0118/assets/images/preview.svg
+- M samples/phase-01/0119/assets/images/preview.svg
+- M samples/phase-01/0120/assets/images/preview.svg
+- M samples/phase-01/0121/assets/images/preview.svg
+- M samples/phase-01/0122/assets/images/preview.svg
+- M samples/phase-01/0123/assets/images/preview.svg
+- M samples/phase-01/0124/assets/images/preview.svg
+-
+-# tool diff stat
+-tools/preview-generator-v2/index.html | 86 ++++++++++++++++++++++++++++++++---
+- 1 file changed, 80 insertions(+), 6 deletions(-)
++Unstaged files excluded from this docs-only PR:
++- samples/phase-12/1212/assets/images/preview.svg
++- samples/phase-12/1213/assets/images/preview.svg
++- samples/phase-12/1214/assets/images/preview.svg
++- samples/phase-12/1215/assets/images/preview.svg
++- samples/phase-12/1216/assets/images/preview.svg
++- samples/phase-12/1217/assets/images/preview.svg
++- samples/phase-12/1218/assets/images/preview.svg
++- samples/phase-12/1219/assets/images/preview.svg
++- samples/phase-12/1220/assets/images/preview.svg
+diff --git a/docs/dev/reports/missing_samples_0125_0126_0127.txt b/docs/dev/reports/missing_samples_0125_0126_0127.txt
+new file mode 100644
+index 00000000..79552ad0
+--- /dev/null
++++ b/docs/dev/reports/missing_samples_0125_0126_0127.txt
+@@ -0,0 +1,93 @@
++PR_26126_026-locate-missing-samples
++
++Scope:
++- Search only.
++- No code changes.
++- No sample changes.
++- Target IDs: 0125, 0126, 0127.
++
++Follow-up clarification for visible sample index cards:
++- The user-provided visible cards are Sample 0225, Sample 0226, and Sample 0227, not 0125, 0126, and 0127.
++- If the intended IDs were 0225, 0226, and 0227, they are present and are not missing.
++- Physical folders exist:
++  - samples/phase-02/0225
++  - samples/phase-02/0226
++  - samples/phase-02/0227
++- samples/index.html does not contain these card entries as static text. It provides the containers:
++  - samples/index.html:33 contains #samples-pinned-list.
++  - samples/index.html:72 contains #samples-phase-list.
++- samples/index.html:79 loads samples/index.render.js, and the rendered cards are produced from samples/metadata/samples.index.metadata.json.
++- samples/index.render.js:4 defines METADATA_PATH as "./metadata/samples.index.metadata.json".
++- samples/index.render.js:174 starts buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap).
++- samples/index.render.js:311 creates cards with class "card-link sample-card".
++- samples/index.render.js:465 reads #samples-phase-list.
++- samples/index.render.js:499 builds the rendered model from metadata.
++- Exact metadata entries for the visible cards:
++  - samples/metadata/samples.index.metadata.json:722 defines id "0225".
++  - samples/metadata/samples.index.metadata.json:724 defines title "Projectile Lab".
++  - samples/metadata/samples.index.metadata.json:726 points to "./phase-02/0225/index.html".
++  - samples/metadata/samples.index.metadata.json:734 defines id "0226".
++  - samples/metadata/samples.index.metadata.json:736 defines title "Primitive Skin Editor Breakout Readiness".
++  - samples/metadata/samples.index.metadata.json:738 points to "./phase-02/0226/index.html".
++  - samples/metadata/samples.index.metadata.json:748 defines id "0227".
++  - samples/metadata/samples.index.metadata.json:750 defines title "Primitive Skin Editor Pong Readiness".
++  - samples/metadata/samples.index.metadata.json:752 points to "./phase-02/0227/index.html".
++- No literal executeSample symbol was found in samples/index.html, samples/index.render.js, or samples/metadata/samples.index.metadata.json. The visible launch/card behavior is the rendered sample-card path above.
++
++Physical sample folder check:
++- samples/phase-01/0125: does not exist.
++- samples/phase-01/0126: does not exist.
++- samples/phase-01/0127: does not exist.
++- Recursive check under samples/phase-* found no folder named 0125, 0126, or 0127.
++- samples/phase-01 currently ends at samples/phase-01/0124.
++
++Exact ID text search:
++- Search command used:
++  rg -n --hidden --no-ignore --glob '!node_modules/**' --glob '!.git/**' --glob '!tmp/**' --glob '!**/*.svg' --glob '!**/*.png' --glob '!**/*.jpg' --glob '!**/*.jpeg' --glob '!**/*.gif' --glob '!**/*.zip' "\b(0125|0126|0127)\b" samples docs tools src scripts tests games package.json *.json *.md
++
++0125:
++- No exact text references found in searched samples, metadata, tool hints, index/registry files, docs, tools, src, scripts, tests, or games.
++
++0126:
++- No exact text references found in searched samples, metadata, tool hints, index/registry files, docs, tools, src, scripts, tests, or games.
++
++0127:
++- docs/pr/BUILD_PR_LEVEL_11_105_REMOVE_BROKEN_SAMPLE_TOOL_BINDINGS.md:143
++  - "- works for 1215, 1216, 0127."
++- docs/pr/BUILD_PR_LEVEL_11_105_REMOVE_BROKEN_SAMPLE_TOOL_BINDINGS.md:147
++  - "- Keep SVG Asset Studio references for samples 1215, 1216, 0127 if validation still passes and they load."
++- No physical samples/phase-01/0127 folder exists.
++- No active sample metadata, index, tool hint, registry, or generator source was found that defines sample 0127.
++
++Metadata and index findings:
++- samples/metadata/samples.index.metadata.json contains phase-01 entries through 0124.
++- samples/metadata/samples.index.metadata.json:379 defines id "0124"; no 0125, 0126, or 0127 entries appear after it.
++- samples/metadata/metadataReference.js has no 0125, 0126, or 0127 references.
++- samples/index.html has no exact 0125, 0126, or 0127 references.
++
++Generator/source findings:
++- tools/preview-generator-v2/index.html:943 starts resolveSamplePhase(phase).
++- tools/preview-generator-v2/index.html:955 enumerates phaseDir.entries().
++- tools/preview-generator-v2/index.html:956 filters to physical directory names matching four digits.
++- tools/preview-generator-v2/index.html:957 requires index.html via hasIndexHtml(handle).
++- tools/preview-generator-v2/index.html:958 only pushes entries discovered from those physical folders.
++- This means Preview Generator V2 phase-wide generation cannot synthesize 0125, 0126, or 0127 when those folders are absent.
++
++- scripts/generate-samples-index.mjs:33 discovers phase directories from the filesystem.
++- scripts/generate-samples-index.mjs:64 builds sampleIds from physical four-digit sample directories.
++- scripts/generate-samples-index.mjs:80 checks each sample directory for index.html.
++- scripts/generate-samples-index.mjs:250 validates metadata against canonical physical samples.
++- scripts/generate-samples-index.mjs:275 rejects metadata sample IDs that are not canonical physical samples.
++- This index generator does not produce missing 0125, 0126, or 0127 IDs from metadata alone.
++
++- scripts/generate-runtime-sample-previews.mjs:18 discovers phase directories from the filesystem.
++- scripts/generate-runtime-sample-previews.mjs:28 builds sampleIds from physical four-digit sample directories.
++- scripts/generate-runtime-sample-previews.mjs:34 checks each sample directory for index.html.
++- This runtime preview generator does not produce missing 0125, 0126, or 0127 IDs when folders are absent.
++
++Conclusion:
++- 0125 and 0126 are neither present physically nor referenced by searched repo text sources.
++- 0127 is referenced only by an old PR/build document and is not present physically.
++- No active metadata, index, registry, tool hint, or generator logic was found that produces 0125, 0126, or 0127.
++- If 0125, 0126, or 0127 appear in current UI/runtime output, the source is likely stale generated/test output or external input rather than current sample metadata, index, registry, or generator logic.
++- The current samples/index.html page can show 0225, 0226, and 0227 because those IDs are present in samples/metadata/samples.index.metadata.json and exist physically under samples/phase-02.
