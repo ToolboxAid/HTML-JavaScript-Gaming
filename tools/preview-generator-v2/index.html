@@ -732,26 +732,30 @@ tools\&lt;toolname&gt;\index.html
       async function captureFullScreenCanvas(frameDoc) {
         const html2canvasFn = window.html2canvas;
         if (typeof html2canvasFn !== "function") {
-          return frameDoc.querySelector("canvas");
+          throw new Error("Full Screen capture requires html2canvas. Use Canvas Only or ensure html2canvas loads before using Full Screen (1600x900 HTML Page).");
         }
 
         const frameBody = frameDoc.body;
         if (!frameBody) {
-          return null;
+          throw new Error("Full Screen capture failed because the target document has no body.");
         }
 
-        return await html2canvasFn(frameBody, {
-          backgroundColor: "#000000",
-          useCORS: true,
-          allowTaint: true,
-          logging: false,
-          width: 1600,
-          height: 900,
-          windowWidth: 1600,
-          windowHeight: 900,
-          scrollX: 0,
-          scrollY: 0
-        });
+        try {
+          return await html2canvasFn(frameBody, {
+            backgroundColor: "#000000",
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            width: 1600,
+            height: 900,
+            windowWidth: 1600,
+            windowHeight: 900,
+            scrollX: 0,
+            scrollY: 0
+          });
+        } catch (error) {
+          throw new Error(`Full Screen capture failed at 1600x900. html2canvas may not support CSS color functions such as color(...). Use Canvas Only or replace unsupported CSS before fullscreen capture. ${error.message}`);
+        }
       }
 
       async function attemptCapture() {
@@ -789,7 +793,12 @@ tools\&lt;toolname&gt;\index.html
 
           drawSourceCanvas(sourceCanvas);
           setStatus("ready");
-        } catch (_) {
+        } catch (error) {
+          if (runtimeCaptureMode === "fullscreen1600") {
+            fail(error.message);
+            return;
+          }
+
           if (Date.now() - startTime > timeoutMs) {
             fail("Capture timeout");
             return;
@@ -1280,15 +1289,18 @@ tools\&lt;toolname&gt;\index.html
     async function extractFullPageSvg1600(doc) {
       const win = frame.contentWindow;
       if (!win) {
-        return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
+        throw new Error("Full Screen capture failed because the target frame window is unavailable.");
       }
 
       const html2canvasFn = window.html2canvas || win.html2canvas;
       if (typeof html2canvasFn !== "function") {
-        return extractBestToolFallbackSvg(doc);
+        throw new Error("Full Screen capture requires html2canvas. Use Canvas Only or ensure html2canvas loads before using Full Screen (1600x900 HTML Page).");
       }
 
       const body = doc.body;
+      if (!body) {
+        throw new Error("Full Screen capture failed because the target document has no body.");
+      }
       const fullWidth = 1600;
       const fullHeight = 900;
 
@@ -1311,8 +1323,7 @@ tools\&lt;toolname&gt;\index.html
 
         return buildCanvasWrappedSvg(canvas);
       } catch (error) {
-        log(`WARN tool full-page capture failed, using fallback (${error.message})`);
-        return extractBestToolFallbackSvg(doc);
+        throw new Error(`Full Screen capture failed at 1600x900. html2canvas may not support CSS color functions such as color(...). Use Canvas Only or replace unsupported CSS before fullscreen capture. ${error.message}`);
       }
     }
 
@@ -1327,6 +1338,9 @@ tools\&lt;toolname&gt;\index.html
     async function extractSvgFromFrame(entry) {
       const doc = frame.contentDocument;
       if (!doc) {
+        if (getSelectedCaptureMode() === "fullscreen1600") {
+          throw new Error("Full Screen capture failed because the target frame document is unavailable.");
+        }
         return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
       }
 

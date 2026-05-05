@@ -1,1 +1,1 @@
-Locate missing sample IDs 0125-0127 - PR_26126_026-locate-missing-samples
+Document sample-local contracts and harden fullscreen preview capture - PR_26126_028-sample-local-readme-and-fullscreen-capture-fix

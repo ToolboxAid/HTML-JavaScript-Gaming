@@ -1,24 +1,34 @@
-# Codex Commands - PR_26126_026-locate-missing-samples
+# Codex Commands - PR_26126_028-sample-local-readme-and-fullscreen-capture-fix
 
 ```bash
-codex run "Create PR_26126_026-locate-missing-samples. Do not modify code. Perform a repo search to determine where sample IDs 0125, 0126, and 0127 are defined or referenced. Search for these IDs across samples, metadata, tool hints, and any index/registry files. Report exact file paths where they exist, or explicitly confirm they do not exist as folders under samples/phase-* directories. If they are referenced but missing physically, identify the source (metadata, index, or generator logic) that is producing them. Output findings only in docs/dev/reports/missing_samples_0125_0126_0127.txt. Produce review artifacts."
+codex run "Create PR_26126_028-sample-local-readme-and-fullscreen-capture-fix. Fix Preview Generator V2 documentation and capture behavior. Add a README.md template under existing sample folders using the pattern samples/phase-xx/XXXX/README.md. The README must explain where the sample implementation actually lives, how the sample folder/index.html launches or bypasses into that code, and how Preview Generator V2 should discover/launch the sample without assuming numeric folders. Do not add a root samples README. Do not modify sample JSON. Also fix Full Screen (1600x900 HTML Page) capture so it does not silently fall back to non-fullscreen capture when html-to-image/html2canvas fails on unsupported CSS color functions such as color(...). For fullscreen mode, capture must either use the intended 1600x900 viewport/full-page path or fail clearly with an actionable error; do not mark OK when fallback was used for fullscreen. Preserve Canvas Only behavior. Produce review artifacts."
 ```
 
 ## Validation Commands
 
 ```bash
-Get-ChildItem -Path samples -Directory -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -in @('0125','0126','0127') } | Select-Object -ExpandProperty FullName
-rg -n --hidden --no-ignore --glob '!node_modules/**' --glob '!.git/**' --glob '!tmp/**' --glob '!**/*.svg' --glob '!**/*.png' --glob '!**/*.jpg' --glob '!**/*.jpeg' --glob '!**/*.gif' --glob '!**/*.zip' "\b(0125|0126|0127)\b" samples docs tools src scripts tests games package.json *.json *.md
-Select-String -Path tools/preview-generator-v2/index.html -Pattern 'resolveSamplePhase|phaseDir.entries|hasIndexHtml|sampleEntries.push|sampleEntries.sort|No sample index.html' -Context 2,3
-Select-String -Path @('scripts/generate-sample-manifest.mjs','scripts/generate-samples-index.mjs','scripts/generate-runtime-sample-previews.mjs') -Pattern 'readdir|phase-|index.html|samplesDir|sampleId|id' -Context 2,3
-Select-String -Path samples/metadata/metadataReference.js,samples/metadata/samples.index.metadata.json -Pattern '0125|0126|0127|0124|0101|phase-01' -Context 1,2
-rg -n "0225|0226|0227" samples/metadata/samples.index.metadata.json samples/index.html samples/index.render.js --glob '!**/*.svg'
-rg -n -i "executeSample|execute sample|sample-card|samples-phase-list|samples-pinned-list|buildSampleRows|createSampleCard" samples/index.html samples/index.render.js samples/metadata/samples.index.metadata.json
-git diff --check -- docs/dev/reports/missing_samples_0125_0126_0127.txt docs/dev/codex_commands.md docs/dev/commit_comment.txt
-git diff --cached --name-only -- samples games start_of_day tools src scripts tests
+$sampleDirs = Get-ChildItem samples -Directory -Filter 'phase-*' | Sort-Object Name | ForEach-Object { Get-ChildItem $_.FullName -Directory | Where-Object { $_.Name -match '^\d{4}$' } | Sort-Object FullName }
+$missingReadmes = $sampleDirs | Where-Object { !(Test-Path (Join-Path $_.FullName 'README.md')) }
+if ($missingReadmes) { $missingReadmes.FullName; throw "Missing sample README files." }
+if (Test-Path samples/README.md) { throw "Unexpected root samples/README.md" }
+$sampleReadmes = $sampleDirs | ForEach-Object { Join-Path $_.FullName 'README.md' }
+rg -n "SAMPLE_LOCAL_CONTRACT_README|Preview Generator V2 discovers samples|SKIP|FAIL|games/<gamename>|index.html is the only discovery" $sampleReadmes
+rg -n "Full Screen capture failed|html2canvas may not support CSS color functions|extractBestToolFallbackSvg|using fallback" tools/preview-generator-v2/index.html
+git diff --check
+git diff --cached --name-only -- '*.json' start_of_day tools/shared tools/schemas
+npm run test:workspace-v2
+npm test
 npm run codex:review-artifacts
 ```
 
-## Notes
+## Playwright
 
-No Playwright impact. This PR is search/report only and does not modify runtime code, samples, schemas, or tests.
+No Playwright test was added. This PR changes documentation and Preview Generator V2 fullscreen capture error handling only. `npm run test:workspace-v2` was attempted but is not defined in the current `package.json`.
+
+## Test Notes
+
+`npm test` was attempted as the available default test gate and failed in the existing shared extraction guard baseline before this PR's changed Preview Generator V2 code or README files were involved. The reported violations are outside this PR scope.
+
+## Manual Test
+
+Use Preview Generator V2 with Canvas Only to confirm existing canvas capture still works. Use Full Screen (1600x900 HTML Page) on a target with unsupported CSS color functions and confirm it logs a clear `FAIL` instead of silently falling back to a non-fullscreen capture.
