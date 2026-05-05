@@ -1,1 +1,1 @@
-Place Preview Generator V2 target controls and keep Generate visibly gated - PR_26126_020-preview-generator-v2-target-source-and-control-placement
+Add Preview Generator V2 last generated image preview - PR_26126_021-preview-generator-v2-last-generated-placement

@@ -1,14 +1,14 @@
-# Codex Commands - PR_26126_020-preview-generator-v2-target-source-and-control-placement
+# Codex Commands - PR_26126_021-preview-generator-v2-last-generated-placement
 
 ```bash
-codex run "Create PR_26126_020-preview-generator-v2-target-source-and-control-placement. Fix Preview Generator V2 UI only. Preserve existing generation behavior. Default Target Source to Games. Generate Preview must be visible but disabled/greyed out until required fields are provided; do not hide it. Move Capture mode into its own accordion/control section above Render Controls with options \"Full Screen (1600x900 HTML Page)\" and \"Canvas Only\". Move Asset folder into its own accordion/control section below Target Source with value \"assets/images\". Left and right columns must continue to use working accordion sections. Do not modify samples. Do not add schema. Produce review artifacts."
+codex run "Create PR_26126_021-preview-generator-v2-last-generated-placement. Fix Preview Generator V2 UI only. Preserve existing generation behavior. Under the \"Paths or IDs\" control in the left panel, add a \"Last Generated Image\" section that displays the most recently generated preview. This must update on every Generate Preview action, replace the previous image (no history), and show an empty state before first generate. Keep it within the left panel accordion flow, directly below the Paths or IDs control. Do not move existing controls. Do not modify samples. Do not add schema. Produce review artifacts."
 ```
 
 ## Validation Commands
 
 ```bash
 git diff --check -- tools/preview-generator-v2/index.html docs/dev/codex_commands.md docs/dev/commit_comment.txt
-git diff --name-only -- samples games start_of_day tools/shared tools/schemas
+git diff --cached --name-only -- samples games start_of_day tools/shared tools/schemas
 npm run test:workspace-v2
 npm run codex:review-artifacts
 ```
@@ -51,66 +51,57 @@ await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { wai
 await page.waitForSelector('#shared-theme-header');
 await page.waitForFunction(() => Array.from(document.querySelectorAll('.preview-generator-v2 .accordion-v2__header')).every((header) => header.dataset.accordionV2Bound === 'true'));
 
-async function assertAccordion(selector) {
-  const header = page.locator(`${selector} .accordion-v2__header`).first();
-  const content = page.locator(`${selector} .accordion-v2__content`).first();
-  if (await header.count() !== 1) throw new Error(`${selector} missing accordion header`);
-  if (await content.count() !== 1) throw new Error(`${selector} missing accordion content`);
-  await header.click();
-  await page.waitForFunction((target) => document.querySelector(`${target} .accordion-v2__header`)?.getAttribute('aria-expanded') === 'false', selector);
-  const collapsed = await content.evaluate((node) => ({ hidden: node.hidden, display: getComputedStyle(node).display, height: node.getBoundingClientRect().height }));
-  if (!collapsed.hidden || collapsed.display !== 'none' || collapsed.height !== 0) throw new Error(`${selector} did not collapse cleanly`);
-  await header.click();
-  await page.waitForFunction((target) => document.querySelector(`${target} .accordion-v2__header`)?.getAttribute('aria-expanded') === 'true', selector);
-}
+const textareaBox = await page.locator('#sampleList').boundingBox();
+const lastGeneratedBox = await page.locator('#lastGeneratedImageSection').boundingBox();
+if (!textareaBox || !lastGeneratedBox || lastGeneratedBox.y <= textareaBox.y) throw new Error('Last Generated Image should render below Paths or IDs input.');
+if (!(await page.locator('#lastGeneratedImageEmpty').isVisible())) throw new Error('Last Generated Image empty state should be visible before first generate.');
+if (await page.locator('#lastGeneratedImagePreview').isVisible()) throw new Error('Last Generated Image preview should be hidden before first generate.');
 
-const leftHeaders = await page.locator('.preview-generator-v2__left-accordion .accordion-v2__header').evaluateAll((headers) => headers.map((header) => header.textContent.trim().replace(/\s+/g, ' ')));
-const expectedLeftHeaders = ['Repo Destination +', 'Target Source +', 'Asset folder +', 'Capture mode +', 'Render Controls +'];
-if (JSON.stringify(leftHeaders) !== JSON.stringify(expectedLeftHeaders)) throw new Error(`Unexpected left accordion order: ${JSON.stringify(leftHeaders)}`);
-
-for (const selector of [
-  '.preview-generator-v2__left-accordion:nth-of-type(1)',
-  '.preview-generator-v2__left-accordion:nth-of-type(2)',
-  '.preview-generator-v2__left-accordion:nth-of-type(3)',
-  '.preview-generator-v2__left-accordion:nth-of-type(4)',
-  '.preview-generator-v2__left-accordion:nth-of-type(5)',
-  '#outputSummary',
-  '#statusAccordion'
-]) {
-  await assertAccordion(selector);
-}
-
-if (!(await page.locator('#targetTypeGames').isChecked())) throw new Error('Games should be the default Target Source.');
-if (await page.locator('#targetTypeSamples').isChecked()) throw new Error('Samples should not be default Target Source.');
-if ((await page.locator('#assetFolder').inputValue()) !== 'assets/images') throw new Error('Asset folder should remain assets/images.');
-if (!(await page.locator('#executeBtn').isVisible())) throw new Error('Generate Preview should be visible before required fields are provided.');
-if (!(await page.locator('#executeBtn').isDisabled())) throw new Error('Generate Preview should be disabled before required fields are provided.');
 await page.fill('#baseUrl', server.baseUrl);
 await page.fill('#waitMs', '3000');
 await page.fill('#sampleList', '0107');
 await page.check('#forceRewrite');
-if (!(await page.locator('#executeBtn').isVisible()) || !(await page.locator('#executeBtn').isDisabled())) throw new Error('Generate Preview should remain visible and disabled until repo folder is selected.');
 await page.check('#targetTypeSamples');
 await page.click('#pickRepoBtn');
 await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
-await page.waitForFunction(() => document.getElementById('writeFolderActualValue').textContent === 'samples\\phase-01\\0107\\assets\\images');
 await page.click('#executeBtn');
-await page.waitForFunction(() => document.getElementById('log').textContent.includes('===== SUMMARY ====='), null, { timeout: 35000 });
+await page.waitForFunction(() => document.getElementById('lastGeneratedImagePreview') && !document.getElementById('lastGeneratedImagePreview').hidden, null, { timeout: 35000 });
+if (await page.locator('#lastGeneratedImageEmpty').isVisible()) throw new Error('Last Generated Image empty state should hide after generate.');
+const firstSrc = await page.locator('#lastGeneratedImage').getAttribute('src');
+const firstMeta = await page.locator('#lastGeneratedImageMeta').innerText();
+if (!firstSrc?.startsWith('blob:')) throw new Error(`Last Generated Image should use an object URL, got ${firstSrc}`);
+if (!firstMeta.includes('0107')) throw new Error(`Last Generated Image meta should include first generated label, got ${firstMeta}`);
+await page.waitForFunction(() => (window.__previewGeneratorV2Writes || []).length === 1);
+
+await page.fill('#sampleList', '0102');
+await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
+await page.click('#executeBtn');
+await page.waitForFunction((previousSrc) => {
+  const img = document.getElementById('lastGeneratedImage');
+  return img && img.getAttribute('src') && img.getAttribute('src') !== previousSrc;
+}, firstSrc, { timeout: 35000 });
+const secondSrc = await page.locator('#lastGeneratedImage').getAttribute('src');
+const secondMeta = await page.locator('#lastGeneratedImageMeta').innerText();
+if (!secondSrc?.startsWith('blob:')) throw new Error(`Replacement Last Generated Image should use an object URL, got ${secondSrc}`);
+if (secondSrc === firstSrc) throw new Error('Last Generated Image should replace the prior object URL.');
+if (!secondMeta.includes('0102')) throw new Error(`Last Generated Image meta should include second generated label, got ${secondMeta}`);
+await page.waitForFunction(() => (window.__previewGeneratorV2Writes || []).length === 2);
 const writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
-if (writes.length !== 1) throw new Error(`Expected exactly one preview write, got ${writes.length}`);
-if (!writes[0].path.endsWith('samples/phase-01/0107/assets/images/preview.svg')) throw new Error(`Unexpected write path: ${writes[0].path}`);
-if (!writes[0].content.includes('<svg')) throw new Error('Generated content is not SVG-like.');
+if (!writes[0].path.endsWith('samples/phase-01/0107/assets/images/preview.svg')) throw new Error(`Unexpected first write path: ${writes[0].path}`);
+if (!writes[1].path.endsWith('samples/phase-01/0102/assets/images/preview.svg')) throw new Error(`Unexpected second write path: ${writes[1].path}`);
 if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
 await browser.close();
 await server.close();
-console.log('preview-generator-v2 target source and control placement smoke valid');
+console.log('preview-generator-v2 last generated image placement smoke valid');
 '@ | node --input-type=module -
 ```
 
 ## Notes
 
-The targeted Playwright smoke validates default Games target, visible disabled Generate Preview gating, Asset folder and Capture mode section placement, working left/right accordions, and preserved preview generation after switching to Samples.
+The targeted Playwright smoke validates the empty state, placement below `Paths or IDs`, first generated preview render, and second Generate Preview replacement without history.
 
 `npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
 
 Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 UI only.
+
+An unrelated unstaged sample preview SVG change was present before this PR and was left untouched.

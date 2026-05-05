@@ -144,6 +144,67 @@
       font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
     }
 
+    .preview-generator-v2__last-generated-section {
+      flex: 0 0 auto;
+      min-width: 0;
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
+      padding: 10px;
+    }
+
+    .preview-generator-v2__last-generated-empty {
+      min-height: 120px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed var(--pm-line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      color: var(--pm-text-muted, #c4b5fd);
+      text-align: center;
+      padding: 12px;
+    }
+
+    .preview-generator-v2__last-generated-empty[hidden] {
+      display: none;
+    }
+
+    .preview-generator-v2__last-generated-preview {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+      margin: 0;
+    }
+
+    .preview-generator-v2__last-generated-preview[hidden] {
+      display: none;
+    }
+
+    .preview-generator-v2__last-generated-frame {
+      min-height: 120px;
+      max-height: 220px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: var(--pm-surface-strong, rgba(0, 0, 0, 0.24));
+    }
+
+    .preview-generator-v2__last-generated-frame img {
+      max-width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .preview-generator-v2__last-generated-preview figcaption {
+      color: var(--pm-text-muted, #c4b5fd);
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
     .preview-generator-v2__status-block {
       flex: 1 1 auto;
       min-height: 0;
@@ -433,6 +494,16 @@ games\&lt;gamename&gt;\index.html
 Tools examples:
 tools\&lt;toolname&gt;\index.html
 &lt;toolname&gt;"></textarea>
+        <section id="lastGeneratedImageSection" class="preview-generator-v2__last-generated-section" aria-labelledby="lastGeneratedImageTitle">
+          <h2 id="lastGeneratedImageTitle" class="preview-generator-v2__section-heading">Last Generated Image</h2>
+          <div id="lastGeneratedImageEmpty" class="preview-generator-v2__last-generated-empty">No preview generated yet.</div>
+          <figure id="lastGeneratedImagePreview" class="preview-generator-v2__last-generated-preview" hidden>
+            <div class="preview-generator-v2__last-generated-frame">
+              <img id="lastGeneratedImage" alt="Most recently generated preview" />
+            </div>
+            <figcaption id="lastGeneratedImageMeta">No preview generated yet.</figcaption>
+          </figure>
+        </section>
       </main>
 
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
@@ -491,6 +562,10 @@ tools\&lt;toolname&gt;\index.html
     const logEl = document.getElementById("log");
     const clearLogBtn = document.getElementById("clearLogBtn");
     const frame = document.getElementById("frame");
+    const lastGeneratedImageEmptyEl = document.getElementById("lastGeneratedImageEmpty");
+    const lastGeneratedImagePreviewEl = document.getElementById("lastGeneratedImagePreview");
+    const lastGeneratedImageEl = document.getElementById("lastGeneratedImage");
+    const lastGeneratedImageMetaEl = document.getElementById("lastGeneratedImageMeta");
 
     const repoSelectedValueEl = document.getElementById("repoSelectedValue");
     const writeFolderSampleValueEl = document.getElementById("writeFolderSampleValue");
@@ -505,6 +580,7 @@ tools\&lt;toolname&gt;\index.html
     let stopRequested = false;
     let repoDisplayName = "";
     let isGenerating = false;
+    let lastGeneratedImageObjectUrl = "";
 
     function getRepoDestinationDisplayName(handle) {
       const handleName = String(handle?.name || "").trim();
@@ -536,6 +612,19 @@ tools\&lt;toolname&gt;\index.html
       const canGenerate = hasRequiredGenerateFields();
       executeBtn.hidden = false;
       executeBtn.disabled = isGenerating || !canGenerate;
+    }
+
+    function setLastGeneratedImage(svgContent, label) {
+      if (lastGeneratedImageObjectUrl) {
+        URL.revokeObjectURL(lastGeneratedImageObjectUrl);
+      }
+
+      const blob = new Blob([svgContent], { type: "image/svg+xml" });
+      lastGeneratedImageObjectUrl = URL.createObjectURL(blob);
+      lastGeneratedImageEl.src = lastGeneratedImageObjectUrl;
+      lastGeneratedImageMetaEl.textContent = `Last generated: ${label}`;
+      lastGeneratedImageEmptyEl.hidden = true;
+      lastGeneratedImagePreviewEl.hidden = false;
     }
 
     function sleep(ms) {
@@ -1237,6 +1326,7 @@ tools\&lt;toolname&gt;\index.html
 
         const svgContent = await extractSvgFromFrame(entry);
         await writePreview(targetDirHandle, svgContent);
+        setLastGeneratedImage(svgContent, label);
 
         const stillHasTimeout = svgContent.includes(CAPTURE_TIMEOUT_MARKER);
         if (stillHasTimeout) {
@@ -1251,6 +1341,7 @@ tools\&lt;toolname&gt;\index.html
       } catch (error) {
         const fallback = buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
         await writePreview(targetDirHandle, fallback);
+        setLastGeneratedImage(fallback, label);
         log(`FAIL ${label}  (${error.message})`);
         log("");
         return { id: label, status: "failed", reason: error.message };
