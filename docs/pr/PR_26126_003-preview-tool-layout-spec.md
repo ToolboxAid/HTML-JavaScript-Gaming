@@ -17,12 +17,47 @@ This PR is documentation only. It defines target regions, control placement, DOM
 - Put visual output in the center so users can inspect the capture result before export.
 - Put file/output metadata and validation detail in a right panel.
 - Keep export/write actions grouped in the footer.
+- Use Palette Manager V2 as the base layout and interaction pattern for header shell, panel structure, control grouping, and accordion behavior.
 - Preserve the Preview tool boundary: no sample JSON, no game JSON, no workspace manifest mutation, and no silent fallback data.
+
+## Palette Manager Base Pattern
+The Preview tool must use Palette Manager V2 as its layout and interaction reference, not the older standalone preview generator page.
+
+Required base pattern:
+- Use a local tool shell with the same high-level shape as Palette Manager:
+  - `body.tools-platform-tool-page[data-tool-id="preview"]`
+  - top collapsible header/details shell
+  - `#shared-theme-header`
+  - local tool header host
+  - `.preview-tool.app-shell`
+  - `.preview-tool__layout.tools-platform-layout-grid`
+- Use a three-column panel structure:
+  - fixed/resizable left panel for controls;
+  - flexible center panel for preview rendering;
+  - fixed/resizable right panel for properties, validation, and logs.
+- Use Palette Manager-style accordionV2 sections for grouped controls and property panels.
+- Use Palette Manager-style section header/action rows where an accordion header needs buttons beside it.
+- Keep write/export actions separated from configuration controls, following the Palette Manager menu/action separation pattern.
+- Keep left and right panels independently scrollable when content exceeds available height.
+- Keep the center column as a flex column so the main preview area and the last generated preview section can size predictably.
+- Do not reuse Palette Manager class names directly; use Preview-owned classes that mirror the pattern.
+- Do not add workspace/toolState/session behavior from Palette Manager.
+
+## Header Usage Requirements
+The rebuilt `tools/preview/index.html` must use Palette Manager-style header behavior:
+
+- The first page element is a collapsible header/details area.
+- The header area includes `#shared-theme-header`.
+- The local header host describes Preview as a tool-local shell.
+- Hide Header and Details / Show Header and Details behavior should match the Palette Manager interaction pattern.
+- Header status must remain display-only.
+- Header status must not mutate source, capture, output, or export state.
+- The app surface starts below the header as `.preview-tool.app-shell`.
 
 ## Page Regions
 
 ### Region 1: Header
-Placement: top full-width band.
+Placement: top full-width collapsible shell, matching Palette Manager header usage.
 
 Purpose:
 - Identify the tool.
@@ -38,7 +73,10 @@ Contents:
 Primary ids/classes:
 - `#previewToolPage`
 - `.preview-tool`
+- `.preview-tool-local-shell`
 - `.preview-tool__header`
+- `[data-preview-tool-header]`
+- `[data-preview-tool-status]`
 - `#previewToolTitle`
 - `#previewToolSubtitle`
 - `#previewValidationStatus`
@@ -87,9 +125,11 @@ Contents:
 - Empty state.
 - Error state overlay.
 - Zoom readout.
+- Last generated preview section anchored at the bottom.
 
 Primary ids/classes:
 - `.preview-tool__panel--main`
+- `.preview-tool__center-section`
 - `.preview-tool__viewport-toolbar`
 - `#previewViewportModeLabel`
 - `#previewZoomValue`
@@ -98,6 +138,38 @@ Primary ids/classes:
 - `#previewCaptureFrame`
 - `#previewEmptyState`
 - `#previewErrorOverlay`
+- `#previewLastGeneratedSection`
+- `#previewLastGeneratedPreview`
+- `#previewLastGeneratedImage`
+- `#previewLastGeneratedMeta`
+
+### Center Column Last Generated Preview
+Placement: bottom of the center column, below the main preview viewport.
+
+Purpose:
+- Show the most recent successfully rendered image.
+- Provide a stable visual checkpoint before export.
+- Keep the current render result visible when the main viewport changes zoom or target focus.
+
+Sizing:
+- Full width of the center panel.
+- Fixed flex band at the bottom of the center column.
+- Target height: `clamp(160px, 24vh, 260px)`.
+- Minimum height: `140px`.
+- Maximum height: `280px`.
+- Internal image area uses `object-fit: contain`.
+- It must not force the whole page to scroll.
+
+Behavior:
+- Replaces its image on each successful render.
+- Keeps only the most recent rendered image.
+- Does not keep history.
+- Does not show a generated fallback image.
+- Does not replace the previous successful image when validation or rendering fails.
+- If no successful render has occurred, show an empty-state message only.
+- Does not write files and does not mutate JSON.
+- Does not store `imageDataUrl` or rendered pixels in `toolState`.
+- May display derived metadata such as target id, mode, dimensions, and render time.
 
 ### Region 4: Right Panel Properties
 Placement: fixed-width right column.
@@ -186,6 +258,10 @@ Primary ids/classes:
 | Capture frame | `previewCaptureFrame` | iframe | Hidden/technical inside main panel | Loads source target for capture. |
 | Empty state | `previewEmptyState` | panel | Inside viewport | Visible before load/render. |
 | Error overlay | `previewErrorOverlay` | panel | Inside viewport | Visible on validation/capture errors. |
+| Last generated preview section | `previewLastGeneratedSection` | section | Center panel bottom | Holds the latest successful render only. |
+| Last generated preview | `previewLastGeneratedPreview` | container | Inside last generated section | Displays latest successful render image area. |
+| Last generated image | `previewLastGeneratedImage` | image/canvas placeholder | Inside last generated preview | Replaced after each successful render; not persisted in JSON. |
+| Last generated metadata | `previewLastGeneratedMeta` | text | Last generated section footer/header | Shows latest target/mode/dimensions/render time. |
 
 ### Right Panel Controls
 
@@ -215,8 +291,14 @@ Primary ids/classes:
 Ids and classes only; this is not implementation markup.
 
 ```html
-body#previewToolPage.preview-tool-page
-  div.preview-tool
+body#previewToolPage.preview-tool-page.tools-platform-tool-page
+  details.preview-tool__shell-details
+    summary.preview-tool__shell-summary
+    div.preview-tool__shell-content
+      div#shared-theme-header
+      div.preview-tool__local-header[data-preview-tool-header]
+
+  div.preview-tool.app-shell
     header.preview-tool__header
       div.preview-tool__header-copy
         h1#previewToolTitle.preview-tool__title
@@ -262,14 +344,21 @@ body#previewToolPage.preview-tool-page
             input#previewRewriteTimeoutOnly.preview-tool__toggle
 
       main.preview-tool__panel.preview-tool__panel--main
-        div.preview-tool__viewport-toolbar
-          div#previewViewportModeLabel.preview-tool__viewport-mode
-          div#previewZoomValue.preview-tool__zoom-value
-        div#previewViewport.preview-tool__viewport
-          canvas#previewSurface.preview-tool__surface
-          iframe#previewCaptureFrame.preview-tool__capture-frame
-          div#previewEmptyState.preview-tool__empty-state
-          div#previewErrorOverlay.preview-tool__error-overlay
+        section.preview-tool__center-section.preview-tool__center-section--viewport.accordion-v2
+          div.preview-tool__viewport-toolbar
+            div#previewViewportModeLabel.preview-tool__viewport-mode
+            div#previewZoomValue.preview-tool__zoom-value
+          div#previewViewport.preview-tool__viewport
+            canvas#previewSurface.preview-tool__surface
+            iframe#previewCaptureFrame.preview-tool__capture-frame
+            div#previewEmptyState.preview-tool__empty-state
+            div#previewErrorOverlay.preview-tool__error-overlay
+
+        section#previewLastGeneratedSection.preview-tool__center-section.preview-tool__center-section--last-generated.accordion-v2
+          div.preview-tool__section-header
+          div#previewLastGeneratedPreview.preview-tool__last-generated-preview
+            div#previewLastGeneratedImage.preview-tool__last-generated-image
+          div#previewLastGeneratedMeta.preview-tool__last-generated-meta
 
       aside.preview-tool__panel.preview-tool__panel--right
         section.preview-tool__properties.preview-tool__properties--target
@@ -294,6 +383,8 @@ body#previewToolPage.preview-tool-page
       div.preview-tool__actions.preview-tool__actions--secondary
         button#previewStopButton.preview-tool__button
         button#previewClearLogButton.preview-tool__button
+
+  div.preview-tool__local-statusbar[data-preview-tool-status]
 ```
 
 ## State Model
@@ -339,6 +430,13 @@ Target `toolState` shape:
   "run": {
     "status": "idle",
     "activeTargetId": "",
+    "lastGenerated": {
+      "targetId": "",
+      "mode": "",
+      "width": 0,
+      "height": 0,
+      "renderedAt": ""
+    },
     "stopRequested": false,
     "summary": {
       "written": 0,
@@ -359,6 +457,8 @@ Target `toolState` shape:
 - `toolState.validation` stores current validation display state.
 - `toolState.run` stores current run display state.
 - Generated SVG content is not stored in `toolState`; it is an export artifact.
+- Last generated preview pixels are not stored in `toolState`.
+- `toolState.run.lastGenerated` may store metadata only; it must not store `imageDataUrl`, Blob URLs, SVG text, PNG data, or canvas pixels.
 - Iframe document state is runtime-only and must not be serialized.
 
 ### Valid State Requirements
@@ -373,13 +473,27 @@ Target `toolState` shape:
 - `view.background` must be one of `checkerboard`, `solid`, `transparent`.
 - `output.filename` must be `preview.svg` for the initial rebuild.
 - `validation.messages` must be an array of strings.
+- `run.lastGenerated.targetId`, `mode`, and `renderedAt` must be strings.
+- `run.lastGenerated.width` and `height` must be finite non-negative numbers.
 
 ### Invalid State Behavior
 - Reject invalid `toolState` before rendering.
 - Show validation errors in `#previewValidationDetails`.
 - Set `#previewValidationStatus` to invalid/error state.
 - Do not partially render invalid input into the preview surface.
+- Do not update `#previewLastGeneratedImage` from invalid input.
 - Do not silently substitute default target entries, sample paths, or output folders.
+- Do not silently substitute fallback images, placeholder captures, or generated fallback SVGs into the last generated preview.
+
+## Strict JSON Input Rules
+- The Preview tool accepts only its own `toolState` shape for saved UI/run configuration.
+- It must reject unknown `schema` or unsupported `version` values.
+- It must reject unknown top-level keys unless a future schema explicitly adds them.
+- It must reject invalid enum values for source, target type, capture mode, background, validation status, and run status.
+- It must reject non-string validation messages.
+- It must reject serialized browser handles, Blob URLs, image data URLs, rendered SVG text, canvas pixels, or iframe document content in `toolState`.
+- It must not read sample JSON, game JSON, workspace manifest JSON, or Palette Manager JSON as Preview configuration.
+- It must not persist generated image data in JSON.
 
 ## Interaction Flow: Load To Validate To Render To Export
 
@@ -433,8 +547,11 @@ Steps:
 3. Wait for frame load and settle delay.
 4. Capture based on `capture.mode`.
 5. Draw result into `#previewSurface`.
-6. Update `#previewExportPreview` with output metadata.
-7. Update `run.status` to `rendered`.
+6. Replace `#previewLastGeneratedImage` with the latest successful render.
+7. Update `#previewLastGeneratedMeta` with target id, mode, dimensions, and render time.
+8. Update `toolState.run.lastGenerated` metadata only.
+9. Update `#previewExportPreview` with output metadata.
+10. Update `run.status` to `rendered`.
 
 Canvas-only behavior:
 - Capture first canvas from target document.
@@ -443,6 +560,8 @@ Canvas-only behavior:
 Fullscreen behavior:
 - Capture the target document at 1600x900.
 - If full capture fails, render an explicit failure overlay rather than silently pretending success.
+- Failed validation or rendering must not replace the last generated preview.
+- No fallback image is inserted into the last generated preview.
 
 ### Flow 4: Export SVG
 Trigger:
@@ -608,11 +727,15 @@ Right panel `#previewOutputProperties` must show:
 
 ## Acceptance Checklist For Future Implementation
 - `tools/preview/index.html` contains the five exact regions.
+- The page shell, header behavior, three-column grid, accordionV2 grouping, and action separation follow the Palette Manager V2 base pattern.
 - All controls use the ids named in this spec.
 - Footer write/export actions are separated from left-panel configuration controls.
 - Main preview surface remains centered and inspectable.
+- Center column includes `#previewLastGeneratedSection` at the bottom.
+- Last generated preview replaces only on successful render, keeps no history, and shows no fallback image.
 - Right panel shows validation and output properties.
 - `toolState` validates before render.
+- `toolState` never stores generated image data, SVG text, Blob URLs, or `imageDataUrl`.
 - Invalid `toolState` is rejected before partial render.
 - Load -> Validate -> Render -> Export flow is explicit.
 - Export writes `preview.svg` only after validation.

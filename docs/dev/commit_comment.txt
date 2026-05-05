@@ -1,1 +1,1 @@
-Add Preview tool layout spec - PR_26126_003-preview-tool-layout-spec
+Refine Preview tool layout spec from Palette Manager pattern - PR_26126_004-preview-tool-layout-refinement
