@@ -1,24 +1,28 @@
 # git status --short
 M docs/dev/codex_commands.md
  M docs/dev/commit_comment.txt
- M docs/dev/reports/codex_changed_files.txt
- M docs/dev/reports/codex_review.diff
- M tests/tools/PreviewGeneratorV2FirstPass.test.mjs
- A tools/preview-generator-v2/index.html
- A tools/preview-generator-v2/main.js
- A tools/preview-generator-v2/previewGeneratorShell.js
- A tools/preview-generator-v2/previewGeneratorV2.css
+ D tests/tools/PreviewGeneratorV2FirstPass.test.mjs
+ M tools/preview-generator-v2/index.html
+ D tools/preview-generator-v2/main.js
+ D tools/preview-generator-v2/previewGeneratorShell.js
+ D tools/preview-generator-v2/previewGeneratorV2.css
+ D tools/preview/index.html
+ D tools/preview/main.js
+ D tools/preview/previewGeneratorShell.js
+ D tools/preview/previewGeneratorV2.css
  M tools/toolRegistry.js
 
 # git diff --stat
-docs/dev/codex_commands.md                         |   19 +-
+docs/dev/codex_commands.md                         |   17 +-
  docs/dev/commit_comment.txt                        |    2 +-
- docs/dev/reports/codex_changed_files.txt           |   32 +-
- docs/dev/reports/codex_review.diff                 | 6646 ++++++++++++++++++--
- tests/tools/PreviewGeneratorV2FirstPass.test.mjs   |  144 +-
- tools/preview-generator-v2/index.html              |  188 +
- tools/preview-generator-v2/main.js                 |  932 +++
- .../preview-generator-v2/previewGeneratorShell.js  |  186 +
- tools/preview-generator-v2/previewGeneratorV2.css  |  490 ++
- tools/toolRegistry.js                              |   18 +
- 10 files changed, 8041 insertions(+), 616 deletions(-)
+ tests/tools/PreviewGeneratorV2FirstPass.test.mjs   |  157 ---
+ tools/preview-generator-v2/index.html              | 1182 +++++++++++++++++---
+ tools/preview-generator-v2/main.js                 |  932 ---------------
+ .../preview-generator-v2/previewGeneratorShell.js  |  186 ---
+ tools/preview-generator-v2/previewGeneratorV2.css  |  490 --------
+ tools/preview/index.html                           |  171 ---
+ tools/preview/main.js                              |  493 --------
+ tools/preview/previewGeneratorShell.js             |  186 ---
+ tools/preview/previewGeneratorV2.css               |  534 ---------
+ tools/toolRegistry.js                              |    4 +-
+ 12 files changed, 1029 insertions(+), 3325 deletions(-)
