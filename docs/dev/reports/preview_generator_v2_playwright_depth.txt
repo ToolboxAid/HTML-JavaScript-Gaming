@@ -1,0 +1,57 @@
+PR_26126_044 Preview Generator V2 Playwright depth
+
+Scope
+- Extended tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
+- Added one minimal Preview Generator V2 CSS fix because the deeper accordion test found a real right-column collapse bug.
+- No samples, schemas, or start_of_day files were modified.
+
+Playwright coverage added
+- Generate Preview required-field state:
+  - disabled before a repo destination is selected.
+  - remains disabled when only Paths or IDs is filled.
+  - becomes enabled after a repo destination is selected and required existing defaults remain valid.
+- Target Source default:
+  - verifies Games is selected by default.
+- Accordion behavior:
+  - verifies close/open state for left-column sections:
+    - Repo Destination
+    - Target Source
+    - Asset folder
+    - Capture mode
+    - Render Controls
+  - verifies close/open state for right-column Output Summary.
+- Paths or IDs input:
+  - verifies the input accepts text.
+  - verifies it remains visible.
+  - verifies it uses the expected stretch-related styling and width inside its accordion content.
+- Status log:
+  - verifies Clear empties the status log output area.
+- Phase input behavior:
+  - uses a browser-side fake File System Access repo handle.
+  - verifies samples/phase-01 is resolved by directory enumeration.
+  - verifies only folders with index.html are processed.
+  - verifies missing numeric folders and file entries are not processed.
+  - verifies preview.svg write targets the enumerated sample folder only.
+
+Bug found and fixed
+- Output Summary content received the hidden attribute but stayed visually visible because a Preview Generator V2 CSS rule overrode the shared hidden rule.
+- Added a scoped hidden override:
+  .preview-generator-v2__output-summary .accordion-v2__content[hidden] { display: none; }
+- This preserves intended accordion behavior and does not alter generation logic.
+
+Validation
+- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs passed.
+- npm run test:workspace-v2 passed.
+- Result: 3 passed.
+- Confirmed no samples, schemas, or start_of_day changes.
+
+Full samples smoke test
+- Skipped intentionally.
+- Reason: this PR adds targeted Preview Generator V2 Playwright coverage and does not modify sample JSON or the shared sample runtime.
+
+Manual validation
+- Open tools/preview-generator-v2/index.html.
+- Confirm Generate Preview is disabled until required fields are present.
+- Toggle left-column accordions and Output Summary.
+- Enter text into Paths or IDs and confirm it remains visible in the center panel.
+- Use Clear in Status and confirm the log output clears.

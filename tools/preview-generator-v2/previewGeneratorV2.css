@@ -50,6 +50,10 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
   padding: 8px;
 }
 
+.preview-generator-v2__output-summary .accordion-v2__content[hidden] {
+  display: none;
+}
+
 .preview-generator-v2__output-summary .accordion-v2__header {
   flex-basis: 38px;
   min-height: 38px;
