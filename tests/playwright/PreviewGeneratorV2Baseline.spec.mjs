@@ -112,16 +112,75 @@ async function openPreviewGenerator(page, { withFakeRepo = false, validSampleIds
 async function expectAccordionToggles(page, contentId) {
   const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
   const content = page.locator(`#${contentId}`);
+  const icon = header.locator(".accordion-v2__icon");
   await expect(header).toBeVisible();
   await expect(content).toBeVisible();
 
   await header.click();
   await expect(content).toBeHidden();
   await expect(header).toHaveAttribute("aria-expanded", "false");
+  await expect(icon).toHaveAttribute("data-accordion-v2-icon-state", "closed");
 
   await header.click();
   await expect(content).toBeVisible();
   await expect(header).toHaveAttribute("aria-expanded", "true");
+  await expect(icon).toHaveAttribute("data-accordion-v2-icon-state", "open");
+}
+
+async function expectPathsOrIdsAccordionToggles(page) {
+  const header = page.locator('.accordion-v2__header[aria-controls="pathsOrIdsContent"]');
+  const content = page.locator("#pathsOrIdsContent");
+  const textarea = page.locator("#sampleList");
+  const icon = header.locator(".accordion-v2__icon");
+
+  const readLayout = async () => await page.evaluate(() => {
+    const section = document.querySelector(".preview-generator-v2__paths-section");
+    const contentEl = document.getElementById("pathsOrIdsContent");
+    const textareaEl = document.getElementById("sampleList");
+    return {
+      sectionFlex: getComputedStyle(section).flex,
+      sectionHeight: section.getBoundingClientRect().height,
+      contentDisplay: getComputedStyle(contentEl).display,
+      contentHidden: contentEl.hidden,
+      textareaHeight: textareaEl.getBoundingClientRect().height,
+      textareaHidden: textareaEl.checkVisibility ? !textareaEl.checkVisibility() : textareaEl.offsetParent === null
+    };
+  });
+
+  await expect(header).toBeVisible();
+  await expect(content).toBeVisible();
+  await expect(textarea).toBeVisible();
+  const expanded = await readLayout();
+  expect(expanded.sectionFlex).toContain("1 1");
+  expect(expanded.contentDisplay).toBe("flex");
+  expect(expanded.contentHidden).toBe(false);
+  expect(expanded.textareaHeight).toBeGreaterThan(0);
+  expect(expanded.textareaHidden).toBe(false);
+
+  await header.click();
+  await expect(content).toBeHidden();
+  await expect(textarea).toBeHidden();
+  await expect(header).toHaveAttribute("aria-expanded", "false");
+  await expect(icon).toHaveAttribute("data-accordion-v2-icon-state", "closed");
+  const collapsed = await readLayout();
+  expect(collapsed.sectionFlex).toContain("0 0");
+  expect(collapsed.contentDisplay).toBe("none");
+  expect(collapsed.contentHidden).toBe(true);
+  expect(collapsed.textareaHeight).toBe(0);
+  expect(collapsed.textareaHidden).toBe(true);
+  expect(collapsed.sectionHeight).toBeLessThanOrEqual(expanded.sectionHeight);
+
+  await header.click();
+  await expect(content).toBeVisible();
+  await expect(textarea).toBeVisible();
+  await expect(header).toHaveAttribute("aria-expanded", "true");
+  await expect(icon).toHaveAttribute("data-accordion-v2-icon-state", "open");
+  const reopened = await readLayout();
+  expect(reopened.sectionFlex).toContain("1 1");
+  expect(reopened.contentDisplay).toBe("flex");
+  expect(reopened.contentHidden).toBe(false);
+  expect(reopened.textareaHeight).toBeGreaterThan(0);
+  expect(reopened.textareaHidden).toBe(false);
 }
 
 test.describe("Preview Generator V2 baseline", () => {
@@ -243,6 +302,7 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(pathsLayout.resize).toBe("none");
       expect(pathsLayout.contentHeight - pathsLayout.inputHeight).toBeLessThan(40);
       expect(pathsLayout.contentWidth - pathsLayout.inputWidth).toBeLessThan(40);
+      await expectPathsOrIdsAccordionToggles(page);
 
       await page.locator("#pickRepoBtn").click();
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");

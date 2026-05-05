@@ -1,0 +1,45 @@
+PR_26126_045 Preview Generator V2 Paths accordion collapse fix
+
+Scope
+- Updated Preview Generator V2 accordion behavior only.
+- Updated tools/preview-generator-v2/previewGeneratorV2.css.
+- Extended tests/playwright/PreviewGeneratorV2Baseline.spec.mjs to assert the Paths or IDs collapse/expand contract.
+- No samples, schemas, or start_of_day files were modified.
+
+Fix
+- The Paths or IDs section had a center-panel stretch rule that applied whether the accordion was open or collapsed.
+- Changed the stretch rule to apply only when .preview-generator-v2__paths-section.is-open is present.
+- Added a collapsed rule so .preview-generator-v2__paths-section:not(.is-open) returns to header-only sizing.
+- Added an explicit hidden-content guard for .preview-generator-v2__paths-section .accordion-v2__content[hidden].
+
+Behavior preserved
+- Expanded Paths or IDs keeps the stretched center layout.
+- Collapsed Paths or IDs hides the content area and textarea.
+- Reopened Paths or IDs restores the stretched textarea/content layout.
+- Accordion aria-expanded and data-accordion-v2-icon-state continue to update through AccordionSection.
+- Generation behavior was not changed.
+
+Validation
+- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs passed.
+- npm run test:workspace-v2 passed.
+- Result: 3 passed.
+- Confirmed no samples, schemas, or start_of_day changes.
+
+Playwright coverage
+- Added a specific Paths or IDs accordion assertion that verifies:
+  - expanded content is visible and flex-stretched.
+  - collapsed content is hidden.
+  - textarea is hidden when collapsed.
+  - collapsed Paths section is no longer flex-stretched.
+  - reopened content is visible and flex-stretched again.
+  - icon state changes closed/open.
+
+Full samples smoke test
+- Skipped intentionally.
+- Reason: this PR is a targeted Preview Generator V2 accordion/CSS fix and does not modify sample JSON, sample launch code, or shared sample runtime behavior.
+
+Manual validation
+- Open tools/preview-generator-v2/index.html.
+- Collapse Paths or IDs and confirm only the header remains visible.
+- Reopen Paths or IDs and confirm the textarea returns and fills the available center space.
+- Confirm Generate Preview behavior is unchanged.

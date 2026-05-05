@@ -22,14 +22,23 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
   overflow: hidden;
 }
 
-.preview-generator-v2__center-panel .preview-generator-v2__paths-section {
+.preview-generator-v2__center-panel .preview-generator-v2__paths-section.is-open {
   flex: 1 1 auto;
+  min-height: 0;
+}
+
+.preview-generator-v2__center-panel .preview-generator-v2__paths-section:not(.is-open) {
+  flex: 0 0 auto;
   min-height: 0;
 }
 
 .preview-generator-v2__paths-section .accordion-v2__content {
   flex: 1 1 auto;
   min-height: 0;
+}
+
+.preview-generator-v2__paths-section .accordion-v2__content[hidden] {
+  display: none;
 }
 
 .preview-generator-v2__left-accordion .accordion-v2__content {
