@@ -1,0 +1,53 @@
+# Preview Generator V2 Common Styles Applied - PR_26126_037
+
+Common stylesheet added:
+- tools/common/toolShellCommon.css
+
+Preview Generator V2 consumption:
+- tools/preview-generator-v2/index.html now links ../common/toolShellCommon.css.
+- Preview Generator V2 markup now uses generic tool-shell-common classes for shared shell/header/accordion/fullscreen layout declarations.
+
+Consolidated declaration blocks:
+
+1. Header frame host sizing
+- Moved from tools/preview-generator-v2/previewGeneratorV2.css [data-preview-generator-v2-header].
+- Added common class: .tool-shell-common__header-frame.
+- Declaration block: display: block; width: calc(100% - 32px); margin: 10px auto.
+
+2. Accordion color variable binding
+- Moved from local Preview Generator V2 accordion selectors.
+- Added common class: .tool-shell-common__accordion.
+- Declaration block: --accordion-v2-accent: var(--pm-accent); --accordion-v2-line: var(--pm-line); --accordion-v2-surface: var(--pm-surface).
+
+3. Fullscreen root sizing
+- Moved from Preview Generator V2 local fullscreen root selector.
+- Added common class: .tool-shell-common__fullscreen-root.
+- Declaration block preserved exactly: flex root, width 100%, min/max constraints, column flex, margin 0, padding 8px 12px, overflow hidden.
+
+4. Fullscreen layout sizing
+- Moved from Preview Generator V2 local fullscreen layout selector.
+- Added common class: .tool-shell-common__fullscreen-layout.
+- Declaration block preserved exactly: flex 1 1 auto; grid-template-columns 340px minmax(0, 1fr) 360px; width/height 100%; min-height 0; align-items stretch.
+
+5. Fullscreen panel sizing
+- Moved from Preview Generator V2 local fullscreen panel selectors.
+- Added common classes:
+  - .tool-shell-common__fullscreen-panel
+  - .tool-shell-common__fullscreen-side-panel
+  - .tool-shell-common__fullscreen-panel-left
+  - .tool-shell-common__fullscreen-panel-right
+  - .tool-shell-common__fullscreen-center-panel
+- Declaration blocks preserved exactly from the Preview Generator V2 local CSS.
+
+6. Hidden accordion content duplicate
+- Removed local .preview-generator-v2 .accordion-v2__content[hidden] duplicate.
+- Behavior remains covered by src/engine/theme/accordionV2/accordionV2.css.
+
+Visual behavior:
+- The moved declarations are identical to the local declarations they replaced.
+- The Preview Generator V2 Playwright baseline asserts that the common stylesheet loads and that the consolidated header, accordion, and fullscreen layout styles are applied.
+
+Deferred candidates:
+- Body shell near-duplicate with Palette Manager remains local because Preview Generator V2 adds tool-specific color/background.
+- Preview-only flex column overlap remains local because it is not yet cross-tool common.
+- Last Generated Image hidden state remains local because it targets Preview Generator V2-specific elements.

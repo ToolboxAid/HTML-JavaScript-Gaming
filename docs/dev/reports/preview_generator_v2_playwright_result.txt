@@ -1,11 +1,6 @@
-# Preview Generator V2 Playwright Result - PR_26126_036
+# Preview Generator V2 Playwright Result - PR_26126_037
 
-Coverage before this PR:
-- No existing Playwright spec under the configured Playwright roots launched tools/preview-generator-v2/index.html.
-- tests/playwright existed but contained no runnable spec files.
-- tests/ui existed but contained no runnable spec files.
-
-Coverage added:
+Coverage:
 - tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 
 What the test validates:
@@ -18,6 +13,8 @@ What the test validates:
 - Paths or IDs input is visible.
 - Status block is visible.
 - Repo Destination accordion collapses and reopens with aria-expanded state changes.
+- tools/common/toolShellCommon.css is loaded.
+- Consolidated common style declarations are applied to header, accordion, app shell, and fullscreen layout targets.
 - No page errors are emitted during the launch/toggle path.
 
 Command run:
@@ -35,4 +32,4 @@ Workspace V2 default command:
 - Result: FAIL, package.json does not define a test:workspace-v2 script.
 
 Full samples smoke test:
-- Skipped. This PR is a Preview Generator V2 audit/test-hook PR and does not modify samples or shared sample loading.
+- Skipped. This PR modifies Preview Generator V2 CSS structure and targeted Playwright coverage only; it does not modify samples or shared sample loading.

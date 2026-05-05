@@ -17,3 +17,7 @@ NEXT_COMMAND.txt
 node_modules/
 tests/results/
 tmp/
+
+
+codex_review.diff
+codex_changed_files.txt

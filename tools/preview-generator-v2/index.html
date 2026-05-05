@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
   <link rel="stylesheet" href="../palette-manager-v2/paletteManagerV2.css" />
+  <link rel="stylesheet" href="../common/toolShellCommon.css" />
   <link rel="stylesheet" href="./previewGeneratorV2.css" />
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
@@ -18,7 +19,7 @@
     <summary class="is-collapsible__summary" data-preview-generator-v2-summary>Hide Header and Details</summary>
     <div class="is-collapsible__content">
       <div id="shared-theme-header"></div>
-      <div data-preview-generator-v2-header>
+      <div class="tool-shell-common__header-frame" data-preview-generator-v2-header>
         <section class="tools-platform-frame preview-generator-v2__local-shell-frame">
           <div class="tools-platform-frame__accordion-content">
             <div class="tools-platform-frame__accordion-summary">
@@ -46,10 +47,10 @@
     </div>
   </nav>
 
-  <div class="palette-manager-v2 preview-generator-v2 app-shell">
-    <div class="palette-manager-v2__layout preview-generator-v2__layout tools-platform-layout-grid">
-      <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
+  <div class="palette-manager-v2 preview-generator-v2 app-shell tool-shell-common__fullscreen-root">
+    <div class="palette-manager-v2__layout preview-generator-v2__layout tools-platform-layout-grid tool-shell-common__fullscreen-layout">
+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-left" data-panel-side="left">
+        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationContent">
             <span>Repo Destination</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -70,7 +71,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="targetSourceContent">
             <span>Target Source</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -98,7 +99,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="assetFolderContent">
             <span>Asset folder</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -110,7 +111,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="captureModeContent">
             <span>Capture mode</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -129,7 +130,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsContent">
             <span>Render Controls</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -151,8 +152,8 @@
         </section>
       </aside>
 
-      <main class="palette-manager-v2__panel palette-manager-v2__panel--center preview-generator-v2__center-panel">
-        <section class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__paths-section is-open" data-accordion-v2-open="true">
+      <main class="palette-manager-v2__panel palette-manager-v2__panel--center preview-generator-v2__center-panel tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-center-panel">
+        <section class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__paths-section tool-shell-common__accordion is-open" data-accordion-v2-open="true">
           <button id="pathsOrIdsTitle" class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="pathsOrIdsContent">
             <span>Paths or IDs</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -174,7 +175,7 @@ tools\&lt;toolname&gt;\index.html
 &lt;toolname&gt;"></textarea>
           </div>
         </section>
-        <section id="lastGeneratedImageSection" class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__last-generated-section is-open" data-accordion-v2-open="true" aria-labelledby="lastGeneratedImageTitle">
+        <section id="lastGeneratedImageSection" class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__last-generated-section tool-shell-common__accordion is-open" data-accordion-v2-open="true" aria-labelledby="lastGeneratedImageTitle">
           <button id="lastGeneratedImageTitle" class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="lastGeneratedImageContent">
             <span>Last Generated Image</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -191,8 +192,8 @@ tools\&lt;toolname&gt;\index.html
         </section>
       </main>
 
-      <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
-        <section id="outputSummary" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__output-summary is-open" data-accordion-v2-open="true">
+      <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" data-panel-side="right">
+        <section id="outputSummary" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__output-summary tool-shell-common__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryContent">
             <span>Output Summary</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>

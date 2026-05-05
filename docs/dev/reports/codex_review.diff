@@ -1,370 +1,546 @@
-# git diff -- . excluding generated review artifact files
+# PR-scoped review diff excluding unrelated .gitignore and generated review artifact files
 
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index eef9830c..0a97a770 100644
+index 0a97a770..252994b8 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -1,77 +1,35 @@
--# Codex Commands - PR_26126_035-preview-generator-v2-file-split-and-control-classes
-+# Codex Commands - PR_26126_036-preview-generator-v2-shared-dependency-and-style-audit
- 
+@@ -1,15 +1,15 @@
+-# Codex Commands - PR_26126_036-preview-generator-v2-shared-dependency-and-style-audit
++# Codex Commands - PR_26126_037-preview-generator-v2-remove-shared-and-consolidate-common
+
  ```bash
--codex run "Create PR_26126_035-preview-generator-v2-file-split-and-control-classes. Fix Preview Generator V2 structure only. Preserve current working behavior exactly. Remove all inline style blocks and inline script blocks from tools/preview-generator-v2/index.html. Move CSS into external stylesheet files. Move JavaScript into external module files. Use one class per JavaScript file. Give each UI control/section its own class. Keep a small app/bootstrap entry file only for wiring classes together. Preserve existing IDs and DOM behavior unless a rename is required for correctness. Do not rewrite generation logic. Do not add schema. Do not modify samples. Do not modify start_of_day folders. Produce review artifacts and class ownership notes."
-+codex run "Create PR_26126_036-preview-generator-v2-shared-dependency-and-style-audit. Audit Preview Generator V2 structure and validation only. Verify tools/shared dependencies, report common CSS declaration candidates by comparing declaration bodies, verify Playwright launches Preview Generator V2, repair minimal Playwright coverage only if needed, do not modify samples, do not add schema, do not modify start_of_day folders, and produce required review artifacts."
+-codex run "Create PR_26126_036-preview-generator-v2-shared-dependency-and-style-audit. Audit Preview Generator V2 structure and validation only. Verify tools/shared dependencies, report common CSS declaration candidates by comparing declaration bodies, verify Playwright launches Preview Generator V2, repair minimal Playwright coverage only if needed, do not modify samples, do not add schema, do not modify start_of_day folders, and produce required review artifacts."
++codex run "Create PR_26126_037-preview-generator-v2-remove-shared-and-consolidate-common. Fix Preview Generator V2 based on audit findings. Preserve existing behavior exactly. Remove all tools/shared dependencies from Preview Generator V2, consolidate safe repeated CSS declarations into common styles, update Preview Generator V2 to consume those common styles, verify Playwright, do not modify samples, do not add schema, do not modify start_of_day folders, and produce required reports."
  ```
- 
+
  ## Validation Commands
- 
+
  ```powershell
-+rg -n "tools/shared|../shared|../../tools/shared|platformShell|shared/" tools/preview-generator-v2 tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-+if ($LASTEXITCODE -eq 1) { Write-Output "no tools/shared references found"; $global:LASTEXITCODE = 0 }
-+rg -n "<link|<script|import .* from" tools/preview-generator-v2 tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-+
+-rg -n "tools/shared|../shared|../../tools/shared|platformShell|shared/" tools/preview-generator-v2 tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
++rg -n "tools/shared|../shared|../../tools/shared|platformShell|shared/" tools/preview-generator-v2 tools/common tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+ if ($LASTEXITCODE -eq 1) { Write-Output "no tools/shared references found"; $global:LASTEXITCODE = 0 }
+-rg -n "<link|<script|import .* from" tools/preview-generator-v2 tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
++rg -n "<link|<script|import .* from" tools/preview-generator-v2 tools/common tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+
  $files = Get-ChildItem -Path tools/preview-generator-v2 -Recurse -Filter *.js | Select-Object -ExpandProperty FullName
  foreach ($file in $files) {
-   node --check $file
-   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+@@ -18,18 +18,18 @@ foreach ($file in $files) {
  }
--@'
--const fs = require('fs');
--const html = fs.readFileSync('tools/preview-generator-v2/index.html', 'utf8');
--if (/<style\b/i.test(html) || /<\/style>/i.test(html)) throw new Error('Inline style block remains');
--const inlineScripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>/gi)];
--if (inlineScripts.length) throw new Error(`Inline script block remains: ${inlineScripts.length}`);
--if (!html.includes('./previewGeneratorV2.css')) throw new Error('External CSS link missing');
--if (!html.includes('./previewGeneratorV2.bootstrap.js')) throw new Error('Bootstrap module missing');
--console.log('index has no inline style/script blocks');
--'@ | node -
--@'
--const fs = require('fs');
--const path = require('path');
--const root = 'tools/preview-generator-v2';
--const files = [];
--function walk(dir) {
--  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
--    const full = path.join(dir, entry.name);
--    if (entry.isDirectory()) walk(full);
--    if (entry.isFile() && entry.name.endsWith('.js')) files.push(full);
--  }
--}
--walk(root);
--for (const file of files) {
--  const text = fs.readFileSync(file, 'utf8');
--  const classes = [...text.matchAll(/\bclass\s+[A-Za-z0-9_]+/g)].map(match => match[0]);
--  if (classes.length > 1) throw new Error(`${file} has more than one class: ${classes.join(', ')}`);
--}
--console.log('one class per js file check ok');
--'@ | node -
--@'
--const fs = require('fs');
--const path = require('path');
--const root = 'tools/preview-generator-v2';
--const files = [];
--function walk(dir) {
--  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
--    const full = path.join(dir, entry.name);
--    if (entry.isDirectory()) walk(full);
--    if (entry.isFile() && entry.name.endsWith('.js')) files.push(full);
--  }
--}
--walk(root);
--for (const file of files) {
--  const text = fs.readFileSync(file, 'utf8');
--  for (const match of text.matchAll(/from\s+["'](.+?)["']/g)) {
--    const target = path.resolve(path.dirname(file), match[1]);
--    if (!fs.existsSync(target)) throw new Error(`${file} imports missing ${match[1]}`);
--  }
--}
--console.log('local module imports resolve');
--'@ | node -
-+node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-+npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list
- git status --short -- samples tools/schemas start_of_day
--git diff --check -- tools/preview-generator-v2 docs/dev/codex_commands.md docs/dev/commit_comment.txt docs/dev/reports/preview_generator_v2_class_responsibilities.md docs/dev/reports/codex_review.diff docs/dev/reports/codex_changed_files.txt
-+git diff --check -- tools/preview-generator-v2 tests/playwright docs/dev/codex_commands.md docs/dev/commit_comment.txt docs/dev/reports/preview_generator_v2_shared_dependency_audit.txt docs/dev/reports/preview_generator_v2_common_style_candidates.txt docs/dev/reports/preview_generator_v2_playwright_result.txt
+ node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+ npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list
+-git status --short -- samples tools/schemas start_of_day
+-git diff --check -- tools/preview-generator-v2 tests/playwright docs/dev/codex_commands.md docs/dev/commit_comment.txt docs/dev/reports/preview_generator_v2_shared_dependency_audit.txt docs/dev/reports/preview_generator_v2_common_style_candidates.txt docs/dev/reports/preview_generator_v2_playwright_result.txt
++git status --short -- samples tools/schemas start_of_day tests/results
++git diff --check -- tools/preview-generator-v2 tools/common tests/playwright docs/dev/codex_commands.md docs/dev/commit_comment.txt docs/dev/reports/preview_generator_v2_shared_removed.txt docs/dev/reports/preview_generator_v2_common_styles_applied.txt docs/dev/reports/preview_generator_v2_playwright_result.txt
  npm run test:workspace-v2
  ```
- 
+
  ## Playwright
- 
--No new Playwright test was added. This PR is a file split and class ownership cleanup for Preview Generator V2 only; existing behavior is intended to remain unchanged. `npm run test:workspace-v2` is attempted as the standard command if available.
-+Playwright validates that Preview Generator V2 launches, the main shell/menu/status controls render, Generate Preview and Stop start disabled, Games is the default target source, and a working accordion collapses/reopens without page errors.
-+
-+Expected pass behavior: the targeted Playwright test passes with one launched tool page.
-+
-+Expected fail behavior: the test fails if the tool cannot load, controls are missing, the default target source changes unexpectedly, accordion behavior is broken, or page errors are emitted.
- 
+
+-Playwright validates that Preview Generator V2 launches, the main shell/menu/status controls render, Generate Preview and Stop start disabled, Games is the default target source, and a working accordion collapses/reopens without page errors.
++Playwright validates that Preview Generator V2 launches, the main shell/menu/status controls render, Generate Preview and Stop start disabled, Games is the default target source, a working accordion collapses/reopens, the common stylesheet loads, and the consolidated common style declarations are active.
+
+-Expected pass behavior: the targeted Playwright test passes with one launched tool page.
++Expected pass behavior: the targeted Playwright test passes with one launched tool page and no page errors.
+
+-Expected fail behavior: the test fails if the tool cannot load, controls are missing, the default target source changes unexpectedly, accordion behavior is broken, or page errors are emitted.
++Expected fail behavior: the test fails if the tool cannot load, controls are missing, common styles are not applied, accordion behavior is broken, or page errors are emitted.
+
  ## Test Notes
- 
-@@ -79,4 +37,6 @@ No new Playwright test was added. This PR is a file split and class ownership cl
- 
+
+@@ -37,6 +37,6 @@ Expected fail behavior: the test fails if the tool cannot load, controls are mis
+
  ## Manual Test
- 
--Open Preview Generator V2 and confirm the page loads with the same layout and controls. Pick a repo, verify Generate Preview gating, run a small known path, use Stop/Clear, and confirm Last Generated Image and Output Summary update as before.
-+Open `tools/preview-generator-v2/index.html`, confirm the tool shell loads, toggle Repo Destination, confirm Generate Preview is visible but disabled before required fields are complete, and verify Status/Clear remain visible.
-+
-+Full samples smoke test was skipped because this PR does not modify samples or shared sample loading.
+
+-Open `tools/preview-generator-v2/index.html`, confirm the tool shell loads, toggle Repo Destination, confirm Generate Preview is visible but disabled before required fields are complete, and verify Status/Clear remain visible.
++Open `tools/preview-generator-v2/index.html`, confirm the tool shell looks unchanged, toggle Repo Destination, use Hide Header and Details/Show Header and Details, and confirm Generate Preview remains visible but disabled before required fields are complete.
+
+ Full samples smoke test was skipped because this PR does not modify samples or shared sample loading.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index d7c819ed..cff6b294 100644
+index cff6b294..8a41dc71 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Split Preview Generator V2 files and add per-section control classes - PR_26126_035-preview-generator-v2-file-split-and-control-classes
-+Audit Preview Generator V2 dependencies and add launch baseline - PR_26126_036-preview-generator-v2-shared-dependency-and-style-audit
+-Audit Preview Generator V2 dependencies and add launch baseline - PR_26126_036-preview-generator-v2-shared-dependency-and-style-audit
++Consolidate Preview Generator V2 shell styles without tools/shared - PR_26126_037-preview-generator-v2-remove-shared-and-consolidate-common
+diff --git a/docs/dev/reports/preview_generator_v2_playwright_result.txt b/docs/dev/reports/preview_generator_v2_playwright_result.txt
+index 126fc303..99dea6f0 100644
+--- a/docs/dev/reports/preview_generator_v2_playwright_result.txt
++++ b/docs/dev/reports/preview_generator_v2_playwright_result.txt
+@@ -1,11 +1,6 @@
+-# Preview Generator V2 Playwright Result - PR_26126_036
++# Preview Generator V2 Playwright Result - PR_26126_037
 
-# git diff --no-index -- /dev/null docs/dev/reports/preview_generator_v2_common_style_candidates.txt
+-Coverage before this PR:
+-- No existing Playwright spec under the configured Playwright roots launched tools/preview-generator-v2/index.html.
+-- tests/playwright existed but contained no runnable spec files.
+-- tests/ui existed but contained no runnable spec files.
+-
+-Coverage added:
++Coverage:
+ - tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 
-diff --git a/docs/dev/reports/preview_generator_v2_common_style_candidates.txt b/docs/dev/reports/preview_generator_v2_common_style_candidates.txt
+ What the test validates:
+@@ -18,6 +13,8 @@ What the test validates:
+ - Paths or IDs input is visible.
+ - Status block is visible.
+ - Repo Destination accordion collapses and reopens with aria-expanded state changes.
++- tools/common/toolShellCommon.css is loaded.
++- Consolidated common style declarations are applied to header, accordion, app shell, and fullscreen layout targets.
+ - No page errors are emitted during the launch/toggle path.
+
+ Command run:
+@@ -35,4 +32,4 @@ Workspace V2 default command:
+ - Result: FAIL, package.json does not define a test:workspace-v2 script.
+
+ Full samples smoke test:
+-- Skipped. This PR is a Preview Generator V2 audit/test-hook PR and does not modify samples or shared sample loading.
++- Skipped. This PR modifies Preview Generator V2 CSS structure and targeted Playwright coverage only; it does not modify samples or shared sample loading.
+diff --git a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+index e6974f75..ba6a2aab 100644
+--- a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
++++ b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+@@ -14,6 +14,7 @@ test.describe("Preview Generator V2 baseline", () => {
+       await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: "domcontentloaded" });
+
+       await expect(page.locator(".preview-generator-v2.app-shell")).toBeVisible();
++      await expect(page.locator('link[href="../common/toolShellCommon.css"]')).toHaveCount(1);
+       await expect(page.locator("h1", { hasText: "Preview Generator V2" })).toBeVisible();
+       await expect(page.locator('nav[aria-label="menuSample"]')).toBeVisible();
+
+@@ -26,6 +27,40 @@ test.describe("Preview Generator V2 baseline", () => {
+       await expect(page.locator("#sampleList")).toBeVisible();
+       await expect(page.locator("#statusAccordion")).toBeVisible();
+
++      const commonStyleResult = await page.evaluate(() => {
++        const header = document.querySelector("[data-preview-generator-v2-header]");
++        const accordion = document.querySelector(".preview-generator-v2__left-accordion");
++        const appShell = document.querySelector(".preview-generator-v2.app-shell");
++        const layout = document.querySelector(".preview-generator-v2__layout");
++        if (!header || !accordion || !appShell || !layout) {
++          return { error: "missing common style target" };
++        }
++
++        document.body.classList.add("tools-platform-fullscreen-active");
++        const headerStyle = getComputedStyle(header);
++        const accordionStyle = getComputedStyle(accordion);
++        const appStyle = getComputedStyle(appShell);
++        const layoutStyle = getComputedStyle(layout);
++        const result = {
++          headerDisplay: headerStyle.display,
++          headerWidth: headerStyle.width,
++          accordionSurface: accordionStyle.getPropertyValue("--accordion-v2-surface").trim(),
++          appDisplay: appStyle.display,
++          appOverflow: appStyle.overflow,
++          layoutColumns: layoutStyle.gridTemplateColumns
++        };
++        document.body.classList.remove("tools-platform-fullscreen-active");
++        return result;
++      });
++
++      expect(commonStyleResult.error).toBeUndefined();
++      expect(commonStyleResult.headerDisplay).toBe("block");
++      expect(commonStyleResult.headerWidth).not.toBe("auto");
++      expect(commonStyleResult.accordionSurface).not.toBe("");
++      expect(commonStyleResult.appDisplay).toBe("flex");
++      expect(commonStyleResult.appOverflow).toBe("hidden");
++      expect(commonStyleResult.layoutColumns).toContain("340px");
++
+       const repoHeader = page.locator('.accordion-v2__header[aria-controls="repoDestinationContent"]');
+       const repoContent = page.locator("#repoDestinationContent");
+       await expect(repoHeader).toBeVisible();
+diff --git a/tools/preview-generator-v2/index.html b/tools/preview-generator-v2/index.html
+index bd35d52c..ce45edf2 100644
+--- a/tools/preview-generator-v2/index.html
++++ b/tools/preview-generator-v2/index.html
+@@ -9,6 +9,7 @@
+   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+   <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
+   <link rel="stylesheet" href="../palette-manager-v2/paletteManagerV2.css" />
++  <link rel="stylesheet" href="../common/toolShellCommon.css" />
+   <link rel="stylesheet" href="./previewGeneratorV2.css" />
+   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+ </head>
+@@ -18,7 +19,7 @@
+     <summary class="is-collapsible__summary" data-preview-generator-v2-summary>Hide Header and Details</summary>
+     <div class="is-collapsible__content">
+       <div id="shared-theme-header"></div>
+-      <div data-preview-generator-v2-header>
++      <div class="tool-shell-common__header-frame" data-preview-generator-v2-header>
+         <section class="tools-platform-frame preview-generator-v2__local-shell-frame">
+           <div class="tools-platform-frame__accordion-content">
+             <div class="tools-platform-frame__accordion-summary">
+@@ -46,10 +47,10 @@
+     </div>
+   </nav>
+
+-  <div class="palette-manager-v2 preview-generator-v2 app-shell">
+-    <div class="palette-manager-v2__layout preview-generator-v2__layout tools-platform-layout-grid">
+-      <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
+-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
++  <div class="palette-manager-v2 preview-generator-v2 app-shell tool-shell-common__fullscreen-root">
++    <div class="palette-manager-v2__layout preview-generator-v2__layout tools-platform-layout-grid tool-shell-common__fullscreen-layout">
++      <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-left" data-panel-side="left">
++        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
+           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationContent">
+             <span>Repo Destination</span>
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+@@ -70,7 +71,7 @@
+           </div>
+         </section>
+
+-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
++        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
+           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="targetSourceContent">
+             <span>Target Source</span>
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+@@ -98,7 +99,7 @@
+           </div>
+         </section>
+
+-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
++        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
+           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="assetFolderContent">
+             <span>Asset folder</span>
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+@@ -110,7 +111,7 @@
+           </div>
+         </section>
+
+-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
++        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
+           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="captureModeContent">
+             <span>Capture mode</span>
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+@@ -129,7 +130,7 @@
+           </div>
+         </section>
+
+-        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
++        <section class="accordion-v2 preview-generator-v2__left-accordion tool-shell-common__accordion is-open" data-accordion-v2-open="true">
+           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsContent">
+             <span>Render Controls</span>
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+@@ -151,8 +152,8 @@
+         </section>
+       </aside>
+
+-      <main class="palette-manager-v2__panel palette-manager-v2__panel--center preview-generator-v2__center-panel">
+-        <section class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__paths-section is-open" data-accordion-v2-open="true">
++      <main class="palette-manager-v2__panel palette-manager-v2__panel--center preview-generator-v2__center-panel tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-center-panel">
++        <section class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__paths-section tool-shell-common__accordion is-open" data-accordion-v2-open="true">
+           <button id="pathsOrIdsTitle" class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="pathsOrIdsContent">
+             <span>Paths or IDs</span>
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+@@ -174,7 +175,7 @@ tools\&lt;toolname&gt;\index.html
+ &lt;toolname&gt;"></textarea>
+           </div>
+         </section>
+-        <section id="lastGeneratedImageSection" class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__last-generated-section is-open" data-accordion-v2-open="true" aria-labelledby="lastGeneratedImageTitle">
++        <section id="lastGeneratedImageSection" class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__last-generated-section tool-shell-common__accordion is-open" data-accordion-v2-open="true" aria-labelledby="lastGeneratedImageTitle">
+           <button id="lastGeneratedImageTitle" class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="lastGeneratedImageContent">
+             <span>Last Generated Image</span>
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+@@ -191,8 +192,8 @@ tools\&lt;toolname&gt;\index.html
+         </section>
+       </main>
+
+-      <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
+-        <section id="outputSummary" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__output-summary is-open" data-accordion-v2-open="true">
++      <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" data-panel-side="right">
++        <section id="outputSummary" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__output-summary tool-shell-common__accordion is-open" data-accordion-v2-open="true">
+           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryContent">
+             <span>Output Summary</span>
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+diff --git a/tools/preview-generator-v2/previewGeneratorV2.css b/tools/preview-generator-v2/previewGeneratorV2.css
+index 4bb6bb2c..b028d411 100644
+--- a/tools/preview-generator-v2/previewGeneratorV2.css
++++ b/tools/preview-generator-v2/previewGeneratorV2.css
+@@ -14,12 +14,6 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
+   flex: 0 0 auto;
+ }
+
+-[data-preview-generator-v2-header] {
+-  display: block;
+-  width: calc(100% - 32px);
+-  margin: 10px auto;
+-}
+-
+ .preview-generator-v2__center-panel {
+   flex: 1 1 auto;
+   min-height: 0;
+@@ -38,14 +32,6 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
+   min-height: 0;
+ }
+
+-.preview-generator-v2__left-accordion,
+-.preview-generator-v2__center-accordion,
+-.preview-generator-v2__right-accordion {
+-  --accordion-v2-accent: var(--pm-accent);
+-  --accordion-v2-line: var(--pm-line);
+-  --accordion-v2-surface: var(--pm-surface);
+-}
+-
+ .preview-generator-v2__left-accordion .accordion-v2__content {
+   overflow: visible;
+ }
+@@ -219,10 +205,6 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
+   padding: 8px;
+ }
+
+-.preview-generator-v2 .accordion-v2__content[hidden] {
+-  display: none;
+-}
+-
+ .preview-generator-v2__status-header-row {
+   flex: 0 0 auto;
+   display: flex;
+@@ -270,63 +252,6 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
+   }
+ }
+
+-html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] > .palette-manager-v2,
+-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] > .palette-manager-v2 {
+-  flex: 1 1 auto;
+-  min-width: 0;
+-  max-width: none;
+-  min-height: 0;
+-  width: 100%;
+-  display: flex;
+-  flex-direction: column;
+-  margin: 0;
+-  padding: 8px 12px;
+-  overflow: hidden;
+-}
+-
+-html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout,
+-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout {
+-  flex: 1 1 auto;
+-  grid-template-columns: 340px minmax(0, 1fr) 360px;
+-  width: 100%;
+-  height: 100%;
+-  min-height: 0;
+-  align-items: stretch;
+-}
+-
+-html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel,
+-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel {
+-  min-height: 0;
+-}
+-
+-html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left,
+-html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right,
+-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left,
+-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right {
+-  position: static;
+-  align-self: stretch;
+-  height: 100%;
+-  max-height: none;
+-}
+-
+-html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left,
+-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--left {
+-  justify-self: start;
+-}
+-
+-html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right,
+-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--right {
+-  justify-self: end;
+-}
+-
+-html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--center,
+-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__panel--center {
+-  align-self: stretch;
+-  height: 100%;
+-  min-height: 0;
+-  max-height: none;
+-}
+-
+ #frame {
+   position: absolute;
+   width: 1px;
+
+# git diff --no-index -- /dev/null docs/dev/reports/preview_generator_v2_common_styles_applied.txt
+
+diff --git a/docs/dev/reports/preview_generator_v2_common_styles_applied.txt b/docs/dev/reports/preview_generator_v2_common_styles_applied.txt
 new file mode 100644
-index 00000000..dd06b337
+index 00000000..172d03f1
 --- /dev/null
-+++ b/docs/dev/reports/preview_generator_v2_common_style_candidates.txt
-@@ -0,0 +1,96 @@
-+# Preview Generator V2 Common Style Candidates - PR_26126_036
++++ b/docs/dev/reports/preview_generator_v2_common_styles_applied.txt
+@@ -0,0 +1,53 @@
++# Preview Generator V2 Common Styles Applied - PR_26126_037
 +
-+Scope:
-+- src/engine/theme/main.css
-+- src/engine/ui/hubCommon.css
-+- src/engine/theme/accordionV2/accordionV2.css
-+- tools/palette-manager-v2/paletteManagerV2.css
-+- tools/preview-generator-v2/previewGeneratorV2.css
++Common stylesheet added:
++- tools/common/toolShellCommon.css
 +
-+Method:
-+- Parsed CSS declaration blocks inside braces.
-+- Normalized declaration contents by sorting declarations and normalizing whitespace.
-+- Compared declaration bodies, not selector names.
-+- Reported exact duplicate bodies and near-duplicate bodies involving Preview Generator V2 or its immediate layout base.
++Preview Generator V2 consumption:
++- tools/preview-generator-v2/index.html now links ../common/toolShellCommon.css.
++- Preview Generator V2 markup now uses generic tool-shell-common classes for shared shell/header/accordion/fullscreen layout declarations.
 +
-+No consolidation was applied in this PR. These are candidates only because consolidation would affect shared layout/style behavior across tools.
-+
-+Exact duplicate candidates:
++Consolidated declaration blocks:
 +
 +1. Header frame host sizing
-+- Declaration body: display: block; margin: 10px auto; width: calc(100% - 32px)
-+- tools/palette-manager-v2/paletteManagerV2.css:29 selector [data-palette-manager-v2-header], [data-palette-manager-v2-status]
-+- tools/preview-generator-v2/previewGeneratorV2.css:15 selector [data-preview-generator-v2-header]
-+- Candidate: common tool-local header frame host rule.
++- Moved from tools/preview-generator-v2/previewGeneratorV2.css [data-preview-generator-v2-header].
++- Added common class: .tool-shell-common__header-frame.
++- Declaration block: display: block; width: calc(100% - 32px); margin: 10px auto.
 +
 +2. Accordion color variable binding
-+- Declaration body: --accordion-v2-accent: var(--pm-accent); --accordion-v2-line: var(--pm-line); --accordion-v2-surface: var(--pm-surface)
-+- tools/palette-manager-v2/paletteManagerV2.css:248 selector .palette-manager-v2__panel--right .accordion-v2
-+- tools/palette-manager-v2/paletteManagerV2.css:295 selector .palette-manager-v2__panel--left .accordion-v2, .palette-manager-v2__panel--center .accordion-v2
-+- tools/preview-generator-v2/previewGeneratorV2.css:39 selector .preview-generator-v2__left-accordion, .preview-generator-v2__center-accordion, .preview-generator-v2__right-accordion
-+- Candidate: theme-level accordionV2 palette binding.
++- Moved from local Preview Generator V2 accordion selectors.
++- Added common class: .tool-shell-common__accordion.
++- Declaration block: --accordion-v2-accent: var(--pm-accent); --accordion-v2-line: var(--pm-line); --accordion-v2-surface: var(--pm-surface).
 +
-+3. Fullscreen tool root sizing
-+- Declaration body: display: flex; flex-direction: column; flex: 1 1 auto; margin: 0; max-width: none; min-height: 0; min-width: 0; overflow: hidden; padding: 8px 12px; width: 100%
-+- tools/palette-manager-v2/paletteManagerV2.css:781 selector html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] > .palette-manager-v2, body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] > .palette-manager-v2
-+- tools/preview-generator-v2/previewGeneratorV2.css:271 selector html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] > .palette-manager-v2, body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] > .palette-manager-v2
-+- Candidate: common fullscreen tool root rule after Palette Manager/Preview Generator behavior is proven stable.
++3. Fullscreen root sizing
++- Moved from Preview Generator V2 local fullscreen root selector.
++- Added common class: .tool-shell-common__fullscreen-root.
++- Declaration block preserved exactly: flex root, width 100%, min/max constraints, column flex, margin 0, padding 8px 12px, overflow hidden.
 +
-+4. Fullscreen three-column layout sizing
-+- Declaration body: align-items: stretch; flex: 1 1 auto; grid-template-columns: 340px minmax(0, 1fr) 360px; height: 100%; min-height: 0; width: 100%
-+- tools/palette-manager-v2/paletteManagerV2.css:795 selector html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout, body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout
-+- tools/preview-generator-v2/previewGeneratorV2.css:285 selector html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout, body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout
-+- Candidate: common fullscreen three-column shell rule.
++4. Fullscreen layout sizing
++- Moved from Preview Generator V2 local fullscreen layout selector.
++- Added common class: .tool-shell-common__fullscreen-layout.
++- Declaration block preserved exactly: flex 1 1 auto; grid-template-columns 340px minmax(0, 1fr) 360px; width/height 100%; min-height 0; align-items stretch.
 +
-+5. Fullscreen left/right panel sizing
-+- Declaration body: align-self: stretch; height: 100%; max-height: none; position: static
-+- tools/palette-manager-v2/paletteManagerV2.css:810 selector fullscreen palette left/right panels
-+- tools/preview-generator-v2/previewGeneratorV2.css:300 selector fullscreen preview-generator left/right panels
-+- Candidate: common fullscreen side-panel rule.
++5. Fullscreen panel sizing
++- Moved from Preview Generator V2 local fullscreen panel selectors.
++- Added common classes:
++  - .tool-shell-common__fullscreen-panel
++  - .tool-shell-common__fullscreen-side-panel
++  - .tool-shell-common__fullscreen-panel-left
++  - .tool-shell-common__fullscreen-panel-right
++  - .tool-shell-common__fullscreen-center-panel
++- Declaration blocks preserved exactly from the Preview Generator V2 local CSS.
 +
-+6. Fullscreen side-panel anchoring
-+- Declaration body: justify-self: start
-+- tools/palette-manager-v2/paletteManagerV2.css:820 selector fullscreen palette left panel
-+- tools/preview-generator-v2/previewGeneratorV2.css:310 selector fullscreen preview-generator left panel
-+- Declaration body: justify-self: end
-+- tools/palette-manager-v2/paletteManagerV2.css:825 selector fullscreen palette right panel
-+- tools/preview-generator-v2/previewGeneratorV2.css:315 selector fullscreen preview-generator right panel
-+- Candidate: common fullscreen side-panel alignment rules.
++6. Hidden accordion content duplicate
++- Removed local .preview-generator-v2 .accordion-v2__content[hidden] duplicate.
++- Behavior remains covered by src/engine/theme/accordionV2/accordionV2.css.
 +
-+7. Fullscreen center panel sizing
-+- Declaration body: align-self: stretch; height: 100%; max-height: none; min-height: 0
-+- tools/palette-manager-v2/paletteManagerV2.css:830 selector fullscreen palette center panel
-+- tools/preview-generator-v2/previewGeneratorV2.css:320 selector fullscreen preview-generator center panel
-+- Candidate: common fullscreen center-panel rule.
++Visual behavior:
++- The moved declarations are identical to the local declarations they replaced.
++- The Preview Generator V2 Playwright baseline asserts that the common stylesheet loads and that the consolidated header, accordion, and fullscreen layout styles are applied.
 +
-+8. Hidden element display
-+- Declaration body: display: none
-+- src/engine/theme/accordionV2/accordionV2.css:67 selector .accordion-v2__content[hidden]
-+- tools/preview-generator-v2/previewGeneratorV2.css:161 selector .preview-generator-v2__last-generated-empty[hidden]
-+- tools/preview-generator-v2/previewGeneratorV2.css:172 selector .preview-generator-v2__last-generated-preview[hidden]
-+- tools/preview-generator-v2/previewGeneratorV2.css:220 selector .preview-generator-v2 .accordion-v2__content[hidden]
-+- Candidate: review whether the local accordion hidden override is still needed; the figure/empty-state hidden rules may remain local because they target non-accordion elements.
-+
-+9. Preview-only flex growth duplication
-+- Declaration body: flex: 1 1 auto; min-height: 0
-+- tools/preview-generator-v2/previewGeneratorV2.css:29 selector .preview-generator-v2__center-panel .preview-generator-v2__paths-section
-+- tools/preview-generator-v2/previewGeneratorV2.css:34 selector .preview-generator-v2__paths-section .accordion-v2__content
-+- Candidate: local utility or grouped selector if a later style cleanup PR is approved.
-+
-+Near-duplicate candidates:
-+
-+1. Tool body shell
-+- Similarity: 0.75 declaration overlap.
-+- tools/palette-manager-v2/paletteManagerV2.css:1 body.tools-platform-tool-page[data-tool-id="palette-manager-v2"]
-+- tools/preview-generator-v2/previewGeneratorV2.css:1 body.tools-platform-tool-page[data-tool-id="preview-generator-v2"]
-+- Shared parts: flex column viewport shell, min-height, overflow behavior.
-+- Preview-specific parts: color and background.
-+- Candidate: common tool-page shell base with tool-specific theme decoration.
-+
-+2. Preview flex column surfaces
-+- Similarity: 0.83 declaration overlap.
-+- tools/preview-generator-v2/previewGeneratorV2.css:21 .preview-generator-v2__center-panel
-+- tools/preview-generator-v2/previewGeneratorV2.css:211 .preview-generator-v2__status-content
-+- Shared parts: flex column, flex grow, min-height, overflow hidden.
-+- Difference: status content adds padding.
-+- Candidate: local layout utility only if a later cleanup PR allows class-level consolidation.
++Deferred candidates:
++- Body shell near-duplicate with Palette Manager remains local because Preview Generator V2 adds tool-specific color/background.
++- Preview-only flex column overlap remains local because it is not yet cross-tool common.
++- Last Generated Image hidden state remains local because it targets Preview Generator V2-specific elements.
 
-# git diff --no-index -- /dev/null docs/dev/reports/preview_generator_v2_playwright_result.txt
+# git diff --no-index -- /dev/null docs/dev/reports/preview_generator_v2_shared_removed.txt
 
-diff --git a/docs/dev/reports/preview_generator_v2_playwright_result.txt b/docs/dev/reports/preview_generator_v2_playwright_result.txt
+diff --git a/docs/dev/reports/preview_generator_v2_shared_removed.txt b/docs/dev/reports/preview_generator_v2_shared_removed.txt
 new file mode 100644
-index 00000000..126fc303
+index 00000000..b59b16ca
 --- /dev/null
-+++ b/docs/dev/reports/preview_generator_v2_playwright_result.txt
-@@ -0,0 +1,38 @@
-+# Preview Generator V2 Playwright Result - PR_26126_036
-+
-+Coverage before this PR:
-+- No existing Playwright spec under the configured Playwright roots launched tools/preview-generator-v2/index.html.
-+- tests/playwright existed but contained no runnable spec files.
-+- tests/ui existed but contained no runnable spec files.
-+
-+Coverage added:
-+- tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-+
-+What the test validates:
-+- Preview Generator V2 launches from /tools/preview-generator-v2/index.html through the repo HTTP server.
-+- The Preview Generator V2 app shell is visible.
-+- The Preview Generator V2 heading is visible.
-+- menuSample nav exists.
-+- Generate Preview and Stop buttons are visible and initially disabled.
-+- Games is the default target source.
-+- Paths or IDs input is visible.
-+- Status block is visible.
-+- Repo Destination accordion collapses and reopens with aria-expanded state changes.
-+- No page errors are emitted during the launch/toggle path.
-+
-+Command run:
-+- npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list
-+
-+Result:
-+- PASS: 1 test passed.
-+
-+Output:
-+- ok 1 [playwright] tests/playwright/PreviewGeneratorV2Baseline.spec.mjs Preview Generator V2 baseline launches the tool shell and toggles a working accordion
-+- 1 passed
-+
-+Workspace V2 default command:
-+- Command attempted: npm run test:workspace-v2
-+- Result: FAIL, package.json does not define a test:workspace-v2 script.
-+
-+Full samples smoke test:
-+- Skipped. This PR is a Preview Generator V2 audit/test-hook PR and does not modify samples or shared sample loading.
-
-# git diff --no-index -- /dev/null docs/dev/reports/preview_generator_v2_shared_dependency_audit.txt
-
-diff --git a/docs/dev/reports/preview_generator_v2_shared_dependency_audit.txt b/docs/dev/reports/preview_generator_v2_shared_dependency_audit.txt
-new file mode 100644
-index 00000000..22e8afec
---- /dev/null
-+++ b/docs/dev/reports/preview_generator_v2_shared_dependency_audit.txt
-@@ -0,0 +1,40 @@
-+# Preview Generator V2 Shared Dependency Audit - PR_26126_036
++++ b/docs/dev/reports/preview_generator_v2_shared_removed.txt
+@@ -0,0 +1,39 @@
++# Preview Generator V2 Shared Removal - PR_26126_037
 +
 +Scope:
 +- tools/preview-generator-v2
++- tools/common/toolShellCommon.css
 +- tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 +
-+Method:
-+- Searched for tools/shared references, shared path imports, platformShell references, CSS links, script references, and module imports.
-+- Reviewed Preview Generator V2 shell behavior after PR_26126_035 file split.
++Result:
++- PASS: Preview Generator V2 has zero dependencies on tools/shared.
++- PASS: No tools/shared imports were present or introduced.
++- PASS: No tools/shared script references were present or introduced.
++- PASS: No tools/shared CSS references were present or introduced.
++- PASS: No platformShell.css or platformShell.js references were present or introduced.
 +
-+tools/shared result:
-+- PASS: No tools/shared import was found.
-+- PASS: No tools/shared script reference was found.
-+- PASS: No tools/shared CSS reference was found.
-+- PASS: No platformShell.css or platformShell.js reference was found.
-+- PASS: No runtime dependency on tools/shared behavior was found.
++Verification command:
++- rg -n "tools/shared|../shared|../../tools/shared|platformShell|shared/" tools/preview-generator-v2 tools/common tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 +
-+Search result:
-+- Command: rg -n "tools/shared|../shared|../../tools/shared|platformShell|shared/" tools/preview-generator-v2 tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-+- Result: no matches.
++Verification output:
++- no tools/shared references found
 +
-+Non-tools/shared dependencies observed:
-+- tools/preview-generator-v2/index.html:8 links ../../src/engine/theme/main.css.
-+- tools/preview-generator-v2/index.html:9 links ../../src/engine/ui/hubCommon.css.
-+- tools/preview-generator-v2/index.html:10 links ../../src/engine/theme/accordionV2/accordionV2.css.
-+- tools/preview-generator-v2/index.html:11 links ../palette-manager-v2/paletteManagerV2.css.
-+- tools/preview-generator-v2/index.html:12 links ./previewGeneratorV2.css.
-+- tools/preview-generator-v2/index.html:13 loads html2canvas from cdn.jsdelivr.net.
-+- tools/preview-generator-v2/index.html:230 loads ./previewGeneratorV2.bootstrap.js.
-+- tools/preview-generator-v2/index.html:231 loads ../../src/engine/theme/accordionV2/accordionV2.js.
-+- tools/preview-generator-v2/index.html:232 loads ../../src/engine/theme/mount-shared-header.js.
++Behavior replacement:
++- No tools/shared behavior needed replacement because Preview Generator V2 already used local PreviewGeneratorV2ShellControl plus src/engine/theme assets for header and accordion behavior.
++- PR_26126_037 did not add any tools/shared dependency.
 +
-+Runtime note:
-+- The element id shared-theme-header is mounted by src/engine/theme/mount-shared-header.js, not by tools/shared.
-+- PreviewGeneratorV2ShellControl owns the local Hide Header and Details behavior for this tool.
-+- The tool still uses Palette Manager V2 CSS as an explicit visual base dependency; that is outside tools/shared and was not changed in this PR.
++Runtime dependencies that remain:
++- src/engine/theme/main.css
++- src/engine/ui/hubCommon.css
++- src/engine/theme/accordionV2/accordionV2.css
++- src/engine/theme/accordionV2/accordionV2.js
++- src/engine/theme/mount-shared-header.js
++- tools/palette-manager-v2/paletteManagerV2.css
++- tools/common/toolShellCommon.css
++- tools/preview-generator-v2/previewGeneratorV2.css
++- html2canvas CDN script
 +
-+Implementation changes from this audit:
-+- No tool runtime behavior was changed.
-+- A minimal Playwright launch baseline was added because no existing Playwright spec under the configured Playwright roots actually launched Preview Generator V2.
++Out of scope:
++- No samples modified.
++- No schema added.
++- No start_of_day folders modified.
 
-# git diff --no-index -- /dev/null tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+# git diff --no-index -- /dev/null tools/common/toolShellCommon.css
 
-diff --git a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+diff --git a/tools/common/toolShellCommon.css b/tools/common/toolShellCommon.css
 new file mode 100644
-index 00000000..e6974f75
+index 00000000..9e181966
 --- /dev/null
-+++ b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-@@ -0,0 +1,47 @@
-+import { expect, test } from "@playwright/test";
-+import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
++++ b/tools/common/toolShellCommon.css
+@@ -0,0 +1,66 @@
++.tool-shell-common__header-frame {
++  display: block;
++  width: calc(100% - 32px);
++  margin: 10px auto;
++}
 +
-+test.describe("Preview Generator V2 baseline", () => {
-+  test("launches the tool shell and toggles a working accordion", async ({ page }) => {
-+    const server = await startRepoServer();
-+    const pageErrors = [];
++.tool-shell-common__accordion {
++  --accordion-v2-accent: var(--pm-accent);
++  --accordion-v2-line: var(--pm-line);
++  --accordion-v2-surface: var(--pm-surface);
++}
 +
-+    page.on("pageerror", (error) => {
-+      pageErrors.push(error.message);
-+    });
++html:fullscreen body.tools-platform-surface > .tool-shell-common__fullscreen-root,
++body.tools-platform-surface.tools-platform-fullscreen-active > .tool-shell-common__fullscreen-root {
++  flex: 1 1 auto;
++  min-width: 0;
++  max-width: none;
++  min-height: 0;
++  width: 100%;
++  display: flex;
++  flex-direction: column;
++  margin: 0;
++  padding: 8px 12px;
++  overflow: hidden;
++}
 +
-+    try {
-+      await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: "domcontentloaded" });
++html:fullscreen body.tools-platform-surface .tool-shell-common__fullscreen-layout,
++body.tools-platform-surface.tools-platform-fullscreen-active .tool-shell-common__fullscreen-layout {
++  flex: 1 1 auto;
++  grid-template-columns: 340px minmax(0, 1fr) 360px;
++  width: 100%;
++  height: 100%;
++  min-height: 0;
++  align-items: stretch;
++}
 +
-+      await expect(page.locator(".preview-generator-v2.app-shell")).toBeVisible();
-+      await expect(page.locator("h1", { hasText: "Preview Generator V2" })).toBeVisible();
-+      await expect(page.locator('nav[aria-label="menuSample"]')).toBeVisible();
++html:fullscreen body.tools-platform-surface .tool-shell-common__fullscreen-panel,
++body.tools-platform-surface.tools-platform-fullscreen-active .tool-shell-common__fullscreen-panel {
++  min-height: 0;
++}
 +
-+      await expect(page.locator("#executeBtn")).toBeVisible();
-+      await expect(page.locator("#executeBtn")).toBeDisabled();
-+      await expect(page.locator("#stopBtn")).toBeVisible();
-+      await expect(page.locator("#stopBtn")).toBeDisabled();
++html:fullscreen body.tools-platform-surface .tool-shell-common__fullscreen-side-panel,
++body.tools-platform-surface.tools-platform-fullscreen-active .tool-shell-common__fullscreen-side-panel {
++  position: static;
++  align-self: stretch;
++  height: 100%;
++  max-height: none;
++}
 +
-+      await expect(page.locator("#targetTypeGames")).toBeChecked();
-+      await expect(page.locator("#sampleList")).toBeVisible();
-+      await expect(page.locator("#statusAccordion")).toBeVisible();
++html:fullscreen body.tools-platform-surface .tool-shell-common__fullscreen-panel-left,
++body.tools-platform-surface.tools-platform-fullscreen-active .tool-shell-common__fullscreen-panel-left {
++  justify-self: start;
++}
 +
-+      const repoHeader = page.locator('.accordion-v2__header[aria-controls="repoDestinationContent"]');
-+      const repoContent = page.locator("#repoDestinationContent");
-+      await expect(repoHeader).toBeVisible();
-+      await expect(repoContent).toBeVisible();
++html:fullscreen body.tools-platform-surface .tool-shell-common__fullscreen-panel-right,
++body.tools-platform-surface.tools-platform-fullscreen-active .tool-shell-common__fullscreen-panel-right {
++  justify-self: end;
++}
 +
-+      await repoHeader.click();
-+      await expect(repoContent).toBeHidden();
-+      await expect(repoHeader).toHaveAttribute("aria-expanded", "false");
-+
-+      await repoHeader.click();
-+      await expect(repoContent).toBeVisible();
-+      await expect(repoHeader).toHaveAttribute("aria-expanded", "true");
-+
-+      expect(pageErrors).toEqual([]);
-+    } finally {
-+      await server.close();
-+    }
-+  });
-+});
++html:fullscreen body.tools-platform-surface .tool-shell-common__fullscreen-center-panel,
++body.tools-platform-surface.tools-platform-fullscreen-active .tool-shell-common__fullscreen-center-panel {
++  align-self: stretch;
++  height: 100%;
++  min-height: 0;
++  max-height: none;
++}
