@@ -480,6 +480,7 @@ games\&lt;gamename&gt;\index.html
 &lt;gamename&gt;
 
 Samples examples:
+samples/phase-xx
 samples/phase-01/0102/index.html
 samples/phase-13/1303/index.html
 0107
@@ -897,8 +898,13 @@ tools\&lt;toolname&gt;\index.html
       }
 
       try {
-        const entry = await resolveEntry(lines[0]);
-        writeFolderActualValueEl.textContent = getWriteFolderDisplayPath(entry);
+        const entries = await resolveEntries(lines[0]);
+        if (entries.length > 1 && entries[0].targetType === "samples") {
+          writeFolderActualValueEl.textContent = normalizeSlashes(`samples/phase-${entries[0].phase}/*/${getAssetFolderRelativePath()}`);
+          return;
+        }
+
+        writeFolderActualValueEl.textContent = entries.length ? getWriteFolderDisplayPath(entries[0]) : "not available yet";
       } catch {
         writeFolderActualValueEl.textContent = "not available yet";
       }
@@ -915,6 +921,54 @@ tools\&lt;toolname&gt;\index.html
 
     async function getFileHandle(parentHandle, name, create = false) {
       return await parentHandle.getFileHandle(name, { create });
+    }
+
+    function getSamplePhaseFolderMatch(inputLine) {
+      return String(inputLine || "")
+        .trim()
+        .replaceAll("\\", "/")
+        .replace(/^\/+|\/+$/g, "")
+        .match(/^samples\/phase-?(\d{2})$/i);
+    }
+
+    async function hasIndexHtml(directoryHandle) {
+      try {
+        await getFileHandle(directoryHandle, "index.html", false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    async function resolveSamplePhase(phase) {
+      if (!repoDirHandle) {
+        throw new Error("Pick the repo folder before using a phase folder input.");
+      }
+
+      const samplesDir = await getDirectoryHandle(repoDirHandle, "samples");
+      const phaseDir = await getDirectoryHandle(samplesDir, `phase-${phase}`);
+      if (typeof phaseDir.entries !== "function") {
+        throw new Error(`Cannot list samples/phase-${phase}.`);
+      }
+
+      const sampleEntries = [];
+      for await (const [name, handle] of phaseDir.entries()) {
+        if (!handle || handle.kind !== "directory" || !/^\d{4}$/.test(name)) continue;
+        if (!(await hasIndexHtml(handle))) continue;
+        sampleEntries.push({
+          targetType: "samples",
+          id: name,
+          phase,
+          samplePath: `samples/phase-${phase}/${name}/index.html`
+        });
+      }
+
+      sampleEntries.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+      if (!sampleEntries.length) {
+        throw new Error(`No sample index.html entries found in samples/phase-${phase}.`);
+      }
+
+      return sampleEntries;
     }
 
     async function resolveSample(inputLine) {
@@ -1011,6 +1065,16 @@ tools\&lt;toolname&gt;\index.html
       if (targetType === "tools") return await resolveTool(raw);
 
       throw new Error(`Unsupported target type: ${targetType}`);
+    }
+
+    async function resolveEntries(inputLine) {
+      const phaseMatch = getSamplePhaseFolderMatch(inputLine);
+      if (phaseMatch) {
+        return await resolveSamplePhase(phaseMatch[1]);
+      }
+
+      const entry = await resolveEntry(inputLine);
+      return entry ? [entry] : [];
     }
 
     async function getTargetDirHandle(repoHandle, entry) {
@@ -1469,10 +1533,20 @@ tools\&lt;toolname&gt;\index.html
             }
 
             try {
-              const entry = await resolveEntry(line);
-              if (!entry) continue;
-              const result = await processOne(entry, baseUrl, waitMs);
-              results.push(result);
+              const entries = await resolveEntries(line);
+              if (entries.length > 1) {
+                log(`Resolved ${entries.length} samples from ${line}.`);
+              }
+
+              for (const entry of entries) {
+                if (stopRequested) {
+                  log("Stop requested. Ending run.");
+                  break;
+                }
+
+                const result = await processOne(entry, baseUrl, waitMs);
+                results.push(result);
+              }
             } catch (error) {
               log(`FAIL INPUT  ${line}  (${error.message})`);
               log("");
