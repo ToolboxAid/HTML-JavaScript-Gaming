@@ -5,8 +5,8 @@ M docs/dev/codex_commands.md
  M docs/pr/PR_26126_003-preview-tool-layout-spec.md
 
 # git diff --stat
-docs/dev/codex_commands.md                         |   7 +-
- docs/dev/commit_comment.txt                        |   2 +-
- .../PR_26126_002-preview-tool-detailed-design.md   |  68 ++++++++-
- docs/pr/PR_26126_003-preview-tool-layout-spec.md   | 152 +++++++++++++++------
- 4 files changed, 174 insertions(+), 55 deletions(-)
+docs/dev/codex_commands.md                         |  8 +--
+ docs/dev/commit_comment.txt                        |  2 +-
+ .../PR_26126_002-preview-tool-detailed-design.md   | 69 ++++++++++++--------
+ docs/pr/PR_26126_003-preview-tool-layout-spec.md   | 73 ++++++++++++++--------
+ 4 files changed, 95 insertions(+), 57 deletions(-)

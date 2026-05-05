@@ -50,19 +50,31 @@ Target placement:
 ### Target Selection Region
 Purpose: Select what kind of entry is being captured.
 
-Current controls:
+Current inspected controls:
 - `input#targetTypeSamples[type=radio][name=targetType][value=samples]`
 - `input#targetTypeGames[type=radio][name=targetType][value=games]`
 - `input#targetTypeTools[type=radio][name=targetType][value=tools]`
 
+Target native radio contract:
+
+```html
+<input id="previewTargetModeSample" type="radio" name="group1" value="sample">
+<input id="previewTargetModeGame" type="radio" name="group1" value="game">
+<input id="previewTargetModeTool" type="radio" name="group1" value="tool">
+```
+
 Target behavior:
-- Keep as radio-button-style controls.
-- No target type is assumed at launch.
-- Target-specific controls, validation, and export behavior remain idle until the user selects Samples, Games, or Tools.
-- Samples mode resolves `0107` and `samples/phase-01/0107/index.html`.
-- Games mode resolves `Bouncing-ball` and `games/Bouncing-ball/index.html`.
-- Tools mode resolves `Vector Map Editor` and `tools/Vector Map Editor/index.html`.
-- Games mode selects `tools/schemas/tools/asset-browser.schema.json` as the destination schema for preview asset registration.
+- Target selection must use native HTML radio inputs only.
+- Every target mode must belong to the same native radio group: `name="group1"`.
+- Do not implement target mode selection with custom segmented controls, dropdowns, toggle buttons, div/button state, or ARIA-only radio substitutes.
+- No target type is assumed at launch; none of the `group1` radios is checked by default.
+- Target-specific controls, validation, and export behavior remain idle until the user selects Sample, Game, or Tool.
+- Sample mode resolves `0107` and `samples/phase-01/0107/index.html`.
+- Game mode resolves `Bouncing-ball` and `games/Bouncing-ball/index.html`.
+- Tool mode resolves `Vector Map Editor` and `tools/Vector Map Editor/index.html`.
+- Game mode selects `tools/schemas/tools/asset-browser.schema.json` as the destination schema for preview asset registration.
+- Game mode updates the asset-browser-compatible preview field/entry for the generated game preview image.
+- If no `group1` radio is selected, validation, render, export, and destination JSON update actions are blocked with no fallback target mode.
 
 ### Capture Source Region
 Purpose: Configure where targets are loaded from and how long capture waits.
@@ -179,9 +191,9 @@ Target behavior:
 
 | Region | Control | Current ID | Target Placement | Primary Action |
 | --- | --- | --- | --- | --- |
-| Target Selection | Samples radio | `targetTypeSamples` | Top-left controls | Resolve entries as sample IDs/paths. |
-| Target Selection | Games radio | `targetTypeGames` | Top-left controls | Resolve entries as game names/paths. |
-| Target Selection | Tools radio | `targetTypeTools` | Top-left controls | Resolve entries as tool names/paths. |
+| Target Selection | Sample radio | `previewTargetModeSample` | Top-left controls | Native `input[type=radio][name=group1][value=sample]`; resolves entries as sample IDs/paths. |
+| Target Selection | Game radio | `previewTargetModeGame` | Top-left controls | Native `input[type=radio][name=group1][value=game]`; resolves entries as game names/paths and selects asset-browser destination schema behavior. |
+| Target Selection | Tool radio | `previewTargetModeTool` | Top-left controls | Native `input[type=radio][name=group1][value=tool]`; resolves entries as tool names/paths. |
 | Capture Source | Base URL input | `baseUrl` | Main configuration panel | Builds iframe URL prefix. |
 | Capture Source | Wait input | `waitMs` | Main configuration panel | Sets settle delay before capture. |
 | Repo And Output | Pick Repo button | `pickRepoBtn` | Output configuration panel | Opens File System Access repo picker. |
@@ -206,7 +218,7 @@ Required inputs:
 - repo root selected through File System Access API;
 - base URL;
 - at least one target entry;
-- target type, when an entry is not a fully qualified `samples/`, `games/`, or `tools/` path.
+- one selected native target radio from `name="group1"`.
 
 Optional inputs:
 - wait milliseconds;
@@ -219,7 +231,7 @@ Each entry resolves to:
 
 ```json
 {
-  "targetType": "samples | games | tools",
+  "targetType": "sample | game | tool",
   "samplePath": "relative/path/to/index.html"
 }
 ```
@@ -330,10 +342,10 @@ Preview Generator V2 must not publish:
 Destination JSON is selected by target radio after launch. Until the user selects a target type, there is no destination purpose and no destination JSON validation.
 
 Game radio behavior:
-- Selecting Games sets the destination contract to `tools/schemas/tools/asset-browser.schema.json`.
+- Selecting the native `input[type=radio][name=group1][value=game]` sets the destination contract to `tools/schemas/tools/asset-browser.schema.json`.
 - The user must provide or select an existing asset-browser-compatible JSON payload before JSON update/export.
 - Preview Generator V2 validates the existing destination JSON against `tools/schemas/tools/asset-browser.schema.json` before any mutation.
-- After a game preview image is generated, the tool adds or updates exactly one asset entry for that game's preview image.
+- After a game preview image is generated, the tool adds or updates exactly one asset-browser-compatible preview field/entry for that game's preview image.
 - The destination JSON must validate against `tools/schemas/tools/asset-browser.schema.json` again after the update and before save.
 - If either validation pass fails, the JSON update is rejected and the generated SVG file state is reported separately.
 
@@ -353,10 +365,10 @@ Game preview asset entry shape:
 
 The actual asset key must satisfy the asset-browser schema asset key pattern. `<normalized-game-id>` is the lower-kebab normalized game folder/name segment used only for the asset key. Existing unrelated asset entries must be preserved.
 
-Samples and Tools radio behavior:
-- Samples and Tools may generate `preview.svg` files.
+Sample and Tool radio behavior:
+- Sample and Tool modes may generate `preview.svg` files.
 - They do not have a JSON destination update contract in this design PR.
-- JSON mutation for Samples or Tools is blocked until a future PR defines an explicit destination schema.
+- JSON mutation for Sample or Tool is blocked until a future PR defines an explicit destination schema.
 
 The generated SVG may contain a data URL image because it is the preview asset file content, not a persisted runtime/workspace JSON contract.
 
@@ -373,12 +385,12 @@ Expected UI:
 
 ### Input Errors
 - Empty target list.
-- No target radio option selected.
+- No native `group1` target radio option selected.
 - Unrecognized sample ID/path.
 - Unsupported target type.
 - Invalid or missing base URL.
 - Missing expected target directory.
-- Missing Game destination asset JSON when Games export requests JSON registration.
+- Missing Game destination asset JSON when Game export requests JSON registration.
 - Destination asset JSON does not validate against `tools/schemas/tools/asset-browser.schema.json`.
 
 Expected UI:
@@ -457,7 +469,7 @@ Output effect:
 - May write `preview.svg` files.
 - Updates log and summary.
 - Does not mutate sample source files.
-- In Games mode only, may update the selected asset-browser-compatible destination JSON after a successful preview image generation and strict destination schema validation.
+- In Game mode only, may update the selected asset-browser-compatible destination JSON after a successful preview image generation and strict destination schema validation.
 
 ### Stop
 Action: Sets a stop-request flag.
@@ -480,7 +492,7 @@ Action: Adds or updates the generated game preview asset in the selected destina
 Output effect:
 - Reads the existing asset-browser-compatible JSON.
 - Validates it against `tools/schemas/tools/asset-browser.schema.json`.
-- Adds or replaces `assets["image.<normalized-game-id>.preview"]`.
+- Adds or replaces `assets["image.<normalized-game-id>.preview"]`, the schema-compatible preview field/entry for that game.
 - Uses `kind: "image"` and `source: "asset-browser"` to remain schema-compatible.
 - Validates the updated JSON against `tools/schemas/tools/asset-browser.schema.json`.
 - Saves only if the updated destination JSON is valid.
@@ -504,7 +516,8 @@ The log should receive the most vertical space. Configuration controls should re
 ## Rebuild Acceptance Criteria
 - `tools/preview/index.html` exists as the launchable entrypoint.
 - Existing behavior from `preview_svg_generator.html` is represented or deliberately retired.
-- Launch does not assume Samples, Games, or Tools until the user selects a target radio option.
+- Launch does not assume Sample, Game, or Tool until the user selects a native `group1` target radio option.
+- Target mode selection uses only native `input[type=radio][name=group1]` controls.
 - No Preview Generator V2 schema file exists or is required.
 - Controls are grouped by purpose and remain visible at common desktop widths.
 - Execute is blocked until repo root and target list are valid.
@@ -513,7 +526,7 @@ The log should receive the most vertical space. Configuration controls should re
 - Stop preserves current-target integrity.
 - Errors are visible and included in the final summary.
 - No sample JSON or workspace/toolState JSON is touched.
-- Games mode validates existing and updated destination JSON against `tools/schemas/tools/asset-browser.schema.json` before saving preview asset registration.
+- Game mode validates existing and updated destination JSON against `tools/schemas/tools/asset-browser.schema.json` before saving preview asset registration.
 - No silent fallback data is used for runtime contracts.
 
 ## Playwright Expectations
@@ -521,7 +534,8 @@ No Playwright implementation is included in this PR.
 
 Future Playwright should validate:
 - Preview Generator V2 page loads.
-- Target type controls switch modes.
+- Target type controls are native `input[type=radio][name=group1]` controls.
+- Sample, Game, and Tool radios switch modes.
 - Base URL, wait, asset folder, options, and capture mode controls are visible.
 - Execute remains disabled until repo selection is simulated or abstracted.
 - Input parsing can be unit-tested separately from File System Access writes.
@@ -531,7 +545,8 @@ Future Playwright should validate:
 ## Manual Test Expectations
 Manual implementation validation should include:
 - Open `tools/preview/index.html`.
-- Confirm no target purpose is selected before the user chooses Samples, Games, or Tools.
+- Confirm no target purpose is selected before the user chooses Sample, Game, or Tool.
+- Confirm target mode controls are native radio inputs with `name="group1"`.
 - Pick repo root.
 - Enter a known sample ID.
 - Confirm output path preview points to `samples/phase-XX/XXXX/assets/images`.
@@ -539,7 +554,7 @@ Manual implementation validation should include:
 - Confirm `preview.svg` is written.
 - Run Full Screen capture for a tool page.
 - Confirm `preview.svg` is written or a clear fallback SVG is produced.
-- Select Games, generate a known game preview, and confirm the selected destination asset JSON receives or updates one schema-valid `image.<normalized-game-id>.preview` entry.
+- Select Game, generate a known game preview, and confirm the selected destination asset JSON receives or updates one schema-valid `image.<normalized-game-id>.preview` entry.
 - Confirm invalid asset-browser destination JSON is rejected before save.
 - Confirm Stop ends the batch after the active target.
 - Confirm no sample JSON changes appear in `git status`.
