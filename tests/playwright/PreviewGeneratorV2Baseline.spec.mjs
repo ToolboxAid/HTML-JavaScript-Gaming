@@ -302,6 +302,8 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(pathsLayout.resize).toBe("none");
       expect(pathsLayout.contentHeight - pathsLayout.inputHeight).toBeLessThan(40);
       expect(pathsLayout.contentWidth - pathsLayout.inputWidth).toBeLessThan(40);
+      await expect(page.locator(".accordion-v2__header")).toHaveCount(9);
+      await expect(page.locator('.accordion-v2__header[data-accordion-v2-bound="true"]')).toHaveCount(9);
       await expectPathsOrIdsAccordionToggles(page);
 
       await page.locator("#pickRepoBtn").click();
@@ -317,6 +319,7 @@ test.describe("Preview Generator V2 baseline", () => {
         "assetFolderContent",
         "captureModeContent",
         "renderControlsContent",
+        "lastGeneratedImageContent",
         "outputSummaryContent",
         "statusAccordionContent"
       ]) {

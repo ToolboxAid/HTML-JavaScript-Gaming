@@ -1,0 +1,50 @@
+PR_26126_047 Preview Generator V2 accordion consistency
+
+Scope
+- Updated Preview Generator V2 Playwright coverage only.
+- No runtime tool behavior was changed.
+- No samples, schemas, or start_of_day files were modified.
+
+Accordion ownership audit
+- Repo Destination uses AccordionSection through RepoDestinationControl.
+- Target Source uses AccordionSection through TargetSourceControl.
+- Asset Folder uses AccordionSection through AssetFolderControl.
+- Capture Mode uses AccordionSection through CaptureModeControl.
+- Render Controls uses AccordionSection through RenderControlsControl.
+- Paths or IDs uses AccordionSection through PathsOrIdsControl.
+- Last Generated Image uses AccordionSection through LastGeneratedImageControl.
+- Output Summary uses AccordionSection through OutputSummaryControl.
+- Status uses AccordionSection through StatusLogControl.
+
+Duplicate/custom logic check
+- Accordion open/closed state mutation is centralized in tools/preview-generator-v2/controls/AccordionSection.js.
+- Search found no Preview Generator V2 use of accordionV2.js, mountAccordionV2, or setAccordionV2Open.
+- The remaining classList.toggle result outside AccordionSection is PreviewGeneratorV2ShellControl fullscreen/header behavior, not accordion behavior.
+- No inline accordion logic was added.
+
+Playwright coverage added
+- Asserts the tool has exactly 9 accordion headers.
+- Asserts all 9 accordion headers have data-accordion-v2-bound="true" after Preview Generator V2 initializes.
+- Adds Last Generated Image to the all-sections collapse/expand coverage.
+- Existing coverage continues to verify:
+  - shared icon open/closed state.
+  - content hidden/visible state.
+  - Paths or IDs flex/stretch behavior when expanded.
+  - Paths or IDs header-only behavior when collapsed.
+  - Output Summary and Status right-column accordion behavior.
+
+Validation
+- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs passed.
+- npm run test:workspace-v2 passed.
+- Result: 3 passed.
+- Confirmed no samples, schemas, or start_of_day changes.
+
+Full samples smoke test
+- Skipped intentionally.
+- Reason: this PR is a targeted Preview Generator V2 accordion consistency/test pass and does not modify sample JSON, sample launch code, or shared sample runtime behavior.
+
+Manual validation
+- Open tools/preview-generator-v2/index.html.
+- Toggle Target Source, Asset Folder, Capture Mode, Render Controls, Paths or IDs, Last Generated Image, Output Summary, and Status.
+- Confirm each section collapses/expands with the same icon/open-state behavior.
+- Confirm Paths or IDs still stretches when reopened.
