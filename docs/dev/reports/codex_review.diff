@@ -1,199 +1,109 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 8e2e16b3..03be4bda 100644
+index 03be4bda..bdade203 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
 @@ -1,7 +1,7 @@
--# Codex Commands - PR_26126_022-preview-generator-v2-no-inline-style-and-auto-rewrite
-+# Codex Commands - PR_26126_023-preview-generator-v2-label-consistency
+-# Codex Commands - PR_26126_023-preview-generator-v2-label-consistency
++# Codex Commands - PR_26126_024-preview-generator-v2-examples-order
  
  ```bash
--codex run "Create PR_26126_022-preview-generator-v2-no-inline-style-and-auto-rewrite. Fix Preview Generator V2 UI/behavior only. Preserve existing generation behavior. Remove all inline style attributes from HTML; move styling into the existing Preview Generator V2 stylesheet/classes using Palette Manager V2 style conventions. Do not show the text \"Only rewrite if preview.svg contains literal \\\"Capture timeout\\\"\" in the UI. Instead, if an existing preview.svg exists, automatically test its contents; only rewrite/regenerate when preview.svg contains the literal text \"Capture timeout\". If preview.svg exists and does not contain that text, skip rewrite and log the decision in the status textarea. Do not modify samples. Do not add schema. Produce review artifacts."
-+codex run "Create PR_26126_023-preview-generator-v2-label-consistency. Fix Preview Generator V2 UI labels only. Preserve existing generation behavior. Make the header/title consistent: replace \"Preview SVG Generator > Preview Generator V2\" with \"Preview Generator V2\" and keep \"First-Class Tools Surface\" as the subtitle/context line. Remove duplicate labels inside the Asset folder section so \"Asset folder\" appears only once with value \"assets/images\". Remove duplicate labels inside Capture mode so \"Capture mode\" appears only once. Move \"Canvas Only\" above \"Full Screen (1600x900 HTML Page)\". Do not modify samples. Do not add schema. Produce review artifacts."
+-codex run "Create PR_26126_023-preview-generator-v2-label-consistency. Fix Preview Generator V2 UI labels only. Preserve existing generation behavior. Make the header/title consistent: replace \"Preview SVG Generator > Preview Generator V2\" with \"Preview Generator V2\" and keep \"First-Class Tools Surface\" as the subtitle/context line. Remove duplicate labels inside the Asset folder section so \"Asset folder\" appears only once with value \"assets/images\". Remove duplicate labels inside Capture mode so \"Capture mode\" appears only once. Move \"Canvas Only\" above \"Full Screen (1600x900 HTML Page)\". Do not modify samples. Do not add schema. Produce review artifacts."
++codex run "Create PR_26126_024-preview-generator-v2-examples-order. Fix Preview Generator V2 UI text ordering only. Preserve existing generation behavior. Move the \"Games examples\" section (games\\<gamename>\\index.html and <gamename>) so it appears above the \"Samples examples\" section (samples/phase-01/0102/index.html). Do not modify samples. Do not add schema. Produce review artifacts."
  ```
  
  ## Validation Commands
-@@ -30,79 +30,48 @@ page.on('console', (message) => {
- await page.route('https://cdn.jsdelivr.net/**', async (route) => {
+@@ -31,47 +31,28 @@ await page.route('https://cdn.jsdelivr.net/**', async (route) => {
    await route.fulfill({ status: 200, contentType: 'text/javascript', body: 'window.html2canvas = window.html2canvas || undefined;' });
  });
--await page.addInitScript(() => {
--  const writes = [];
--  class FakeFile { constructor(text) { this._text = text; } async text() { return this._text; } }
--  class FakeFileHandle {
--    constructor(path, existing = null) { this.kind = 'file'; this.name = path.split('/').pop(); this.path = path; this._existing = existing; }
--    async getFile() { return new FakeFile(this._existing || ''); }
--    async createWritable() { const handle = this; const path = this.path; return { async write(content) { writes.push({ path, content: String(content) }); handle._existing = String(content); }, async close() {} }; }
--  }
--  class FakeDirectoryHandle {
--    constructor(name = 'HTML-JavaScript-Gaming', path = '') { this.kind = 'directory'; this.name = name; this.path = path; this.children = new Map(); }
--    async getDirectoryHandle(name) { const key = `dir:${name}`; if (!this.children.has(key)) { const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeDirectoryHandle(name, nextPath)); } return this.children.get(key); }
--    async getFileHandle(name, options = {}) { const key = `file:${name}`; if (!this.children.has(key)) { if (!options.create) throw new DOMException('Not found', 'NotFoundError'); const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeFileHandle(nextPath)); } return this.children.get(key); }
--  }
--  async function addFile(root, path, text) {
--    const parts = path.split('/').filter(Boolean);
--    let current = root;
--    for (const part of parts.slice(0, -1)) current = await current.getDirectoryHandle(part);
--    const fileHandle = await current.getFileHandle(parts.at(-1), { create: true });
--    fileHandle._existing = text;
--  }
--  window.__previewGeneratorV2Writes = writes;
--  window.__previewGeneratorV2Root = new FakeDirectoryHandle();
--  window.__previewGeneratorV2Ready = (async () => {
--    await addFile(window.__previewGeneratorV2Root, 'samples/phase-01/0107/assets/images/preview.svg', '<svg><text>Healthy preview</text></svg>');
--    await addFile(window.__previewGeneratorV2Root, 'samples/phase-01/0102/assets/images/preview.svg', '<svg><text>Capture timeout</text></svg>');
--  })();
--  window.showDirectoryPicker = async () => {
--    await window.__previewGeneratorV2Ready;
--    return window.__previewGeneratorV2Root;
--  };
--});
--
  await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: 'domcontentloaded' });
- await page.waitForSelector('#shared-theme-header');
- await page.waitForFunction(() => Array.from(document.querySelectorAll('.preview-generator-v2 .accordion-v2__header')).every((header) => header.dataset.accordionV2Bound === 'true'));
-+
-+const title = await page.title();
-+if (title !== 'Preview Generator V2') throw new Error(`Unexpected title: ${title}`);
-+const h1 = await page.locator('.tools-platform-frame__title[data-tool-id="preview-generator-v2"]').innerText();
-+if (h1.trim() !== 'Preview Generator V2') throw new Error(`Unexpected h1: ${h1}`);
-+const eyebrow = await page.locator('.tools-platform-frame__eyebrow').innerText();
-+if (eyebrow.trim() !== 'First-Class Tools Surface') throw new Error(`Unexpected context line: ${eyebrow}`);
- const bodyText = await page.locator('body').innerText();
--if (bodyText.includes('Only rewrite if preview.svg contains literal')) throw new Error('Manual capture-timeout rewrite text should not be visible.');
--const previewInlineStyleCount = await page.locator('.preview-generator-v2 [style]').count();
--if (previewInlineStyleCount !== 0) throw new Error(`Expected no inline style attributes inside Preview Generator V2 UI, got ${previewInlineStyleCount}`);
-+if (bodyText.includes('Preview SVG Generator')) throw new Error('Old Preview SVG Generator label is still visible.');
- 
--await page.fill('#baseUrl', server.baseUrl);
--await page.fill('#waitMs', '3000');
--await page.fill('#sampleList', '0107');
--await page.check('#targetTypeSamples');
--await page.click('#pickRepoBtn');
--await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
--await page.click('#executeBtn');
--await page.waitForFunction(() => document.getElementById('log').textContent.includes('existing-preview-without-capture-timeout'), null, { timeout: 35000 });
--let writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
--if (writes.length !== 0) throw new Error(`Existing healthy preview should skip rewrite, got ${writes.length} writes.`);
-+const assetLabelCount = await page.evaluate(() => (document.body.innerText.match(/Asset folder/g) || []).length);
-+if (assetLabelCount !== 1) throw new Error(`Expected one visible Asset folder label, got ${assetLabelCount}`);
-+const assetFolderValue = await page.locator('#assetFolder').inputValue();
-+if (assetFolderValue !== 'assets/images') throw new Error(`Unexpected asset folder value: ${assetFolderValue}`);
-+const assetAria = await page.locator('#assetFolder').getAttribute('aria-label');
-+if (assetAria !== 'Asset folder') throw new Error(`Expected Asset folder aria label, got ${assetAria}`);
- 
--await page.click('#clearLogBtn');
--await page.fill('#sampleList', '0102');
--await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
--await page.click('#executeBtn');
--await page.waitForFunction(() => document.getElementById('log').textContent.includes('contains Capture timeout; rewriting'), null, { timeout: 35000 });
--await page.waitForFunction(() => document.getElementById('lastGeneratedImagePreview') && !document.getElementById('lastGeneratedImagePreview').hidden, null, { timeout: 35000 });
--writes = await page.evaluate(() => window.__previewGeneratorV2Writes || []);
--if (writes.length !== 1) throw new Error(`Existing Capture timeout preview should rewrite once, got ${writes.length} writes.`);
--if (!writes[0].path.endsWith('samples/phase-01/0102/assets/images/preview.svg')) throw new Error(`Unexpected rewrite path: ${writes[0].path}`);
-+const captureLabelCount = await page.evaluate(() => (document.body.innerText.match(/Capture mode/g) || []).length);
-+if (captureLabelCount !== 1) throw new Error(`Expected one visible Capture mode label, got ${captureLabelCount}`);
-+const captureTexts = await page.locator('#captureModeContent .preview-generator-v2__radio-option span').evaluateAll((nodes) => nodes.map((node) => node.textContent.trim()));
-+const expectedCaptureTexts = ['Canvas Only', 'Full Screen (1600x900 HTML Page)'];
-+if (JSON.stringify(captureTexts) !== JSON.stringify(expectedCaptureTexts)) throw new Error(`Unexpected capture order: ${captureTexts.join(' | ')}`);
-+if (!(await page.locator('#captureModeCanvasOnly').isChecked())) throw new Error('Canvas Only should remain selected by default.');
-+if (await page.locator('legend', { hasText: 'Capture mode' }).count()) throw new Error('Capture mode legend should not render as duplicate label.');
-+
-+const generateButton = page.locator('#executeBtn');
-+if (!(await generateButton.isVisible())) throw new Error('Generate Preview button should remain visible.');
-+if (!(await generateButton.isDisabled())) throw new Error('Generate Preview should remain disabled until required fields are provided.');
+-await page.waitForSelector('#shared-theme-header');
+-await page.waitForFunction(() => Array.from(document.querySelectorAll('.preview-generator-v2 .accordion-v2__header')).every((header) => header.dataset.accordionV2Bound === 'true'));
+-
+-const title = await page.title();
+-if (title !== 'Preview Generator V2') throw new Error(`Unexpected title: ${title}`);
+-const h1 = await page.locator('.tools-platform-frame__title[data-tool-id="preview-generator-v2"]').innerText();
+-if (h1.trim() !== 'Preview Generator V2') throw new Error(`Unexpected h1: ${h1}`);
+-const eyebrow = await page.locator('.tools-platform-frame__eyebrow').innerText();
+-if (eyebrow.trim() !== 'First-Class Tools Surface') throw new Error(`Unexpected context line: ${eyebrow}`);
+-const bodyText = await page.locator('body').innerText();
+-if (bodyText.includes('Preview SVG Generator')) throw new Error('Old Preview SVG Generator label is still visible.');
+-
+-const assetLabelCount = await page.evaluate(() => (document.body.innerText.match(/Asset folder/g) || []).length);
+-if (assetLabelCount !== 1) throw new Error(`Expected one visible Asset folder label, got ${assetLabelCount}`);
+-const assetFolderValue = await page.locator('#assetFolder').inputValue();
+-if (assetFolderValue !== 'assets/images') throw new Error(`Unexpected asset folder value: ${assetFolderValue}`);
+-const assetAria = await page.locator('#assetFolder').getAttribute('aria-label');
+-if (assetAria !== 'Asset folder') throw new Error(`Expected Asset folder aria label, got ${assetAria}`);
+-
+-const captureLabelCount = await page.evaluate(() => (document.body.innerText.match(/Capture mode/g) || []).length);
+-if (captureLabelCount !== 1) throw new Error(`Expected one visible Capture mode label, got ${captureLabelCount}`);
+-const captureTexts = await page.locator('#captureModeContent .preview-generator-v2__radio-option span').evaluateAll((nodes) => nodes.map((node) => node.textContent.trim()));
+-const expectedCaptureTexts = ['Canvas Only', 'Full Screen (1600x900 HTML Page)'];
+-if (JSON.stringify(captureTexts) !== JSON.stringify(expectedCaptureTexts)) throw new Error(`Unexpected capture order: ${captureTexts.join(' | ')}`);
+-if (!(await page.locator('#captureModeCanvasOnly').isChecked())) throw new Error('Canvas Only should remain selected by default.');
+-if (await page.locator('legend', { hasText: 'Capture mode' }).count()) throw new Error('Capture mode legend should not render as duplicate label.');
+-
+-const generateButton = page.locator('#executeBtn');
+-if (!(await generateButton.isVisible())) throw new Error('Generate Preview button should remain visible.');
+-if (!(await generateButton.isDisabled())) throw new Error('Generate Preview should remain disabled until required fields are provided.');
++await page.waitForSelector('#sampleList');
++const placeholder = await page.locator('#sampleList').getAttribute('placeholder');
++if (!placeholder) throw new Error('Paths or IDs placeholder is missing.');
++const gamesIndex = placeholder.indexOf('Games examples:');
++const samplesIndex = placeholder.indexOf('Samples examples:');
++const toolsIndex = placeholder.indexOf('Tools examples:');
++if (gamesIndex !== 0) throw new Error(`Games examples should be first, got index ${gamesIndex}.`);
++if (samplesIndex <= gamesIndex) throw new Error('Samples examples should appear after Games examples.');
++if (toolsIndex <= samplesIndex) throw new Error('Tools examples should remain after Samples examples.');
++if (!placeholder.includes('games\\<gamename>\\index.html')) throw new Error('Games path example is missing.');
++if (!placeholder.includes('samples/phase-01/0102/index.html')) throw new Error('Samples path example is missing.');
  if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
  await browser.close();
  await server.close();
--console.log('preview-generator-v2 automatic capture-timeout rewrite gate smoke valid');
-+console.log('preview-generator-v2 label consistency smoke valid');
+-console.log('preview-generator-v2 label consistency smoke valid');
++console.log('preview-generator-v2 examples order smoke valid');
  '@ | node --input-type=module -
  ```
  
  ## Notes
  
--The targeted Playwright smoke validates the visible manual capture-timeout checkbox text is absent, Preview Generator V2-owned UI has no inline style attributes, existing healthy previews skip rewrite with a status log, and existing timeout previews rewrite and update Last Generated Image.
-+The targeted Playwright smoke validates the updated title/header labels, confirms the old `Preview SVG Generator` label is not visible, verifies Asset folder and Capture mode each render one visible label, confirms `Canvas Only` is listed before `Full Screen (1600x900 HTML Page)`, and checks the Generate Preview gate remains visible/disabled before required fields are provided.
+-The targeted Playwright smoke validates the updated title/header labels, confirms the old `Preview SVG Generator` label is not visible, verifies Asset folder and Capture mode each render one visible label, confirms `Canvas Only` is listed before `Full Screen (1600x900 HTML Page)`, and checks the Generate Preview gate remains visible/disabled before required fields are provided.
++The targeted Playwright smoke validates that the `Paths or IDs` placeholder now renders `Games examples` first, then `Samples examples`, then `Tools examples`, while preserving the expected games and samples example text.
  
  `npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
  
--Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 UI/behavior only.
--
--Unstaged sample preview SVG changes were present before this PR and were left untouched.
-+Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 labels only.
+-Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 labels only.
++Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 UI text ordering only.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index c7f37fab..7755cd7f 100644
+index 7755cd7f..77ddda95 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Automate Preview Generator V2 capture-timeout rewrite gate - PR_26126_022-preview-generator-v2-no-inline-style-and-auto-rewrite
-+Normalize Preview Generator V2 labels - PR_26126_023-preview-generator-v2-label-consistency
+-Normalize Preview Generator V2 labels - PR_26126_023-preview-generator-v2-label-consistency
++Reorder Preview Generator V2 examples - PR_26126_024-preview-generator-v2-examples-order
 diff --git a/tools/preview-generator-v2/index.html b/tools/preview-generator-v2/index.html
-index b11b4f9a..367ee579 100644
+index 367ee579..e237fea0 100644
 --- a/tools/preview-generator-v2/index.html
 +++ b/tools/preview-generator-v2/index.html
-@@ -4,7 +4,7 @@
- <head>
-   <meta charset="UTF-8" />
-   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
--  <title>Preview SVG Generator</title>
-+  <title>Preview Generator V2</title>
-   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
-   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
-   <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
-@@ -345,8 +345,8 @@
-           <div class="tools-platform-frame__accordion-content">
-             <div class="tools-platform-frame__accordion-summary">
-               <div class="tools-platform-frame__summary-copy">
--                <h1 class="tools-platform-frame__title" data-tool-id="preview-generator-v2">Preview SVG Generator</h1>
--                <h2 class="tools-platform-frame__eyebrow">Preview Generator V2</h2>
-+                <h1 class="tools-platform-frame__title" data-tool-id="preview-generator-v2">Preview Generator V2</h1>
-+                <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface</h2>
-               </div>
-               <div class="tools-platform-frame__summary-meta">
-                 <div class="tools-platform-frame__meta">Generate preview.svg files for samples, games, and tools.</div>
-@@ -427,8 +427,7 @@
-           </button>
-           <div id="assetFolderContent" class="accordion-v2__content preview-generator-v2__stack">
-             <label class="palette-manager-v2__field" for="assetFolder">
--              <span>Asset folder</span>
--              <input id="assetFolder" type="text" value="assets/images" />
-+              <input id="assetFolder" type="text" value="assets/images" aria-label="Asset folder" />
-             </label>
-           </div>
-         </section>
-@@ -439,16 +438,15 @@
-             <span class="accordion-v2__icon" aria-hidden="true">+</span>
-           </button>
-           <div id="captureModeContent" class="accordion-v2__content preview-generator-v2__stack">
--            <fieldset class="preview-generator-v2__radio-group">
--              <legend>Capture mode</legend>
--              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
--                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
--                <span>Full Screen (1600x900 HTML Page)</span>
--              </label>
-+            <fieldset class="preview-generator-v2__radio-group" aria-label="Capture mode">
-               <label class="preview-generator-v2__radio-option" for="captureModeCanvasOnly">
-                 <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
-                 <span>Canvas Only</span>
-               </label>
-+              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
-+                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
-+                <span>Full Screen (1600x900 HTML Page)</span>
-+              </label>
-             </fieldset>
-           </div>
-         </section>
-@@ -1541,10 +1539,10 @@ tools\&lt;toolname&gt;\index.html
-   </script>
-   <script type="module">
-     const PREVIEW_GENERATOR_TOOL_ID = "preview-generator-v2";
--    const PREVIEW_GENERATOR_TOOL_NAME = "Preview SVG Generator";
--    const PREVIEW_GENERATOR_TOOL_DESCRIPTION = "Generate preview.svg files for samples, games, and tools.";
-+    const PREVIEW_GENERATOR_TOOL_NAME = "Preview Generator V2";
-+    const PREVIEW_GENERATOR_TOOL_DESCRIPTION = "First-Class Tools Surface";
-     const PREVIEW_GENERATOR_HEADER_TEXT = `${PREVIEW_GENERATOR_TOOL_NAME} - ${PREVIEW_GENERATOR_TOOL_DESCRIPTION}`;
--    const PREVIEW_GENERATOR_INTRO_TEXT = `Preview Generator V2: ${PREVIEW_GENERATOR_TOOL_DESCRIPTION}`;
-+    const PREVIEW_GENERATOR_INTRO_TEXT = PREVIEW_GENERATOR_TOOL_DESCRIPTION;
-     const previewGeneratorRuntimeParams = new URLSearchParams(window.location.search);
+@@ -475,16 +475,16 @@
  
-     let suppressPreviewGeneratorFullscreenSync = false;
+       <main class="palette-manager-v2__panel palette-manager-v2__panel--center preview-generator-v2__center-panel">
+         <h2 id="pathsOrIdsTitle" class="preview-generator-v2__section-heading">Paths or IDs</h2>
+-        <textarea id="sampleList" class="preview-generator-v2__paths-input" aria-labelledby="pathsOrIdsTitle" placeholder="Samples examples:
++        <textarea id="sampleList" class="preview-generator-v2__paths-input" aria-labelledby="pathsOrIdsTitle" placeholder="Games examples:
++games\&lt;gamename&gt;\index.html
++&lt;gamename&gt;
++
++Samples examples:
+ samples/phase-01/0102/index.html
+ samples/phase-13/1303/index.html
+ 0107
+ 1305
+ 
+-Games examples:
+-games\&lt;gamename&gt;\index.html
+-&lt;gamename&gt;
+-
+ Tools examples:
+ tools\&lt;toolname&gt;\index.html
+ &lt;toolname&gt;"></textarea>
