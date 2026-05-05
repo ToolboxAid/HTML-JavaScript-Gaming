@@ -6,7 +6,7 @@ M  docs/dev/reports/codex_review.diff
 M  tools/preview-generator-v2/index.html
 
 # git diff --stat
-docs/dev/codex_commands.md            |  75 +++++++++++-----------
+docs/dev/codex_commands.md            |  56 +++++++--------
  docs/dev/commit_comment.txt           |   2 +-
- tools/preview-generator-v2/index.html | 116 ++++++++++++++++++++--------------
- 3 files changed, 109 insertions(+), 84 deletions(-)
+ tools/preview-generator-v2/index.html | 131 ++++++++++++++++++++++++++--------
+ 3 files changed, 128 insertions(+), 61 deletions(-)
