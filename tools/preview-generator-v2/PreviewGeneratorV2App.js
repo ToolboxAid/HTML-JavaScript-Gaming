@@ -33,15 +33,6 @@ function normalizeSlashes(value) {
     .replace(/\\{2,}/g, "\\");
 }
 
-function escapeXml(text) {
-  return String(text)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
-}
-
 function getAssetFolderRelativePath() {
   const raw = ui.assetFolder.getRawValue();
   if (!raw) return "assets";
@@ -360,315 +351,6 @@ async function writePreview(targetDirHandle, svgContent) {
   await writable.close();
 }
 
-function buildFallbackSvg(message) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="80">
-  <text x="10" y="24">${escapeXml(message)}</text>
-</svg>`;
-}
-
-function buildCanvasWrappedSvg(canvas) {
-  const width = canvas.width || canvas.scrollWidth || 800;
-  const height = canvas.height || canvas.scrollHeight || 600;
-  const dataUrl = canvas.toDataURL("image/png");
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
-  <image href="${dataUrl}" width="100%" height="100%" />
-</svg>`;
-}
-
-function buildElementWrappedSvg(element) {
-  const rect = element.getBoundingClientRect();
-  const width = Math.max(1, Math.ceil(rect.width || 1280));
-  const height = Math.max(1, Math.ceil(rect.height || 800));
-  const serialized = new XMLSerializer().serializeToString(element);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
-  <foreignObject width="100%" height="100%">
-<div xmlns="http://www.w3.org/1999/xhtml">${serialized}</div>
-  </foreignObject>
-</svg>`;
-}
-
-async function waitForFrameLoad(iframe, timeoutMs = 20000) {
-  return await new Promise((resolve, reject) => {
-    let done = false;
-
-    const timer = setTimeout(() => {
-      if (!done) {
-        done = true;
-        reject(new Error(`iframe load timed out after ${timeoutMs}ms`));
-      }
-    }, timeoutMs);
-
-    function onLoad() {
-      if (!done) {
-        done = true;
-        clearTimeout(timer);
-        iframe.removeEventListener("load", onLoad);
-        resolve();
-      }
-    }
-
-    iframe.addEventListener("load", onLoad, { once: true });
-  });
-}
-
-const UNSUPPORTED_COLOR_FUNCTION_PROPERTIES = [
-  "background",
-  "background-color",
-  "border-block-color",
-  "border-block-end-color",
-  "border-block-start-color",
-  "border-bottom-color",
-  "border-color",
-  "border-inline-color",
-  "border-inline-end-color",
-  "border-inline-start-color",
-  "border-left-color",
-  "border-right-color",
-  "border-top-color",
-  "box-shadow",
-  "caret-color",
-  "color",
-  "column-rule-color",
-  "fill",
-  "outline-color",
-  "scrollbar-color",
-  "stop-color",
-  "stroke",
-  "text-decoration-color",
-  "text-emphasis-color",
-  "text-shadow"
-];
-
-function replaceUnsupportedColorFunctions(value, fallback = "#000000") {
-  const source = String(value || "");
-  const lower = source.toLowerCase();
-  let result = "";
-  let index = 0;
-  let changed = false;
-
-  while (index < source.length) {
-    const matchIndex = lower.indexOf("color(", index);
-    if (matchIndex < 0) {
-      result += source.slice(index);
-      break;
-    }
-
-    result += source.slice(index, matchIndex);
-    let cursor = matchIndex + "color(".length;
-    let depth = 1;
-    while (cursor < source.length && depth > 0) {
-      const char = source[cursor];
-      if (char === "(") depth += 1;
-      if (char === ")") depth -= 1;
-      cursor += 1;
-    }
-
-    if (depth === 0) {
-      result += fallback;
-      changed = true;
-      index = cursor;
-    } else {
-      result += source.slice(matchIndex);
-      index = source.length;
-    }
-  }
-
-  return changed ? result : source;
-}
-
-function sanitizeStyleDeclaration(style) {
-  if (!style) return;
-
-  const properties = Array.from(style);
-  for (const property of properties) {
-    const value = style.getPropertyValue(property);
-    if (!value || !/color\(/i.test(value)) continue;
-    style.setProperty(
-      property,
-      replaceUnsupportedColorFunctions(value),
-      style.getPropertyPriority(property)
-    );
-  }
-
-  const bg = style.backgroundImage || "";
-  if (/gradient/i.test(bg)) {
-    style.backgroundImage = "none";
-  }
-}
-
-function sanitizeCssRules(rules) {
-  if (!rules) return;
-
-  for (const rule of Array.from(rules)) {
-    sanitizeStyleDeclaration(rule.style);
-    sanitizeCssRules(rule.cssRules);
-  }
-}
-
-function sanitizeComputedColorStyles(clonedDoc) {
-  const clonedWindow = clonedDoc.defaultView;
-  if (!clonedWindow || typeof clonedWindow.getComputedStyle !== "function") {
-    return;
-  }
-
-  const all = clonedDoc.querySelectorAll("*");
-  for (const el of all) {
-    const computed = clonedWindow.getComputedStyle(el);
-    for (const property of UNSUPPORTED_COLOR_FUNCTION_PROPERTIES) {
-      const value = computed.getPropertyValue(property);
-      if (!value || !/color\(/i.test(value)) continue;
-      el.style.setProperty(property, replaceUnsupportedColorFunctions(value), "important");
-    }
-
-    const backgroundImage = computed.getPropertyValue("background-image") || "";
-    if (/gradient/i.test(backgroundImage)) {
-      el.style.setProperty("background-image", "none", "important");
-    }
-  }
-}
-
-function sanitizeClonedToolDocument(clonedDoc) {
-  for (const styleNode of clonedDoc.querySelectorAll("style")) {
-    if (!/color\(/i.test(styleNode.textContent || "")) continue;
-    styleNode.textContent = replaceUnsupportedColorFunctions(styleNode.textContent);
-  }
-
-  for (const sheet of Array.from(clonedDoc.styleSheets || [])) {
-    try {
-      sanitizeCssRules(sheet.cssRules);
-    } catch {
-    }
-  }
-
-  const all = clonedDoc.querySelectorAll("*");
-  for (const el of all) {
-    sanitizeStyleDeclaration(el.style);
-  }
-
-  sanitizeComputedColorStyles(clonedDoc);
-
-  const canvases = clonedDoc.querySelectorAll("canvas");
-  for (const canvas of canvases) {
-    try {
-      const img = clonedDoc.createElement("img");
-      img.src = canvas.toDataURL("image/png");
-      img.style.width = canvas.style.width || `${canvas.width}px`;
-      img.style.height = canvas.style.height || `${canvas.height}px`;
-      img.style.display = "block";
-      canvas.replaceWith(img);
-    } catch {
-    }
-  }
-}
-
-function extractBestToolFallbackSvg(doc) {
-  const preferredSelectors = [
-    "main canvas",
-    ".editor canvas",
-    ".workspace canvas",
-    "#editor canvas",
-    "canvas",
-    "main",
-    ".editor",
-    ".workspace",
-    "#editor",
-    "body"
-  ];
-
-  for (const selector of preferredSelectors) {
-    const el = doc.querySelector(selector);
-    if (!el) continue;
-
-    if ((el.tagName || "").toLowerCase() === "canvas") {
-      return buildCanvasWrappedSvg(el);
-    }
-
-    try {
-      return buildElementWrappedSvg(el);
-    } catch {
-    }
-  }
-
-  return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
-}
-
-async function extractFullPageSvg(doc) {
-  const win = frame.contentWindow;
-  if (!win) {
-    throw new Error("Full Screen capture failed because the target frame window is unavailable.");
-  }
-
-  const html2canvasFn = window.html2canvas || win.html2canvas;
-  if (typeof html2canvasFn !== "function") {
-    throw new Error("Full Screen capture failed: html2canvas is unavailable. Use Canvas Only or ensure html2canvas loads before using Full Screen.");
-  }
-
-  const body = doc.body;
-  if (!body) {
-    throw new Error("Full Screen capture failed because the target document has no body.");
-  }
-  const captureSize = PreviewGeneratorV2Capture.getAvailableFullScreenCaptureSize(document, window, body.scrollWidth, body.scrollHeight);
-
-  try {
-    const canvas = await html2canvasFn(body, {
-      backgroundColor: "#ffffff",
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      width: captureSize.width,
-      height: captureSize.height,
-      windowWidth: captureSize.width,
-      windowHeight: captureSize.height,
-      scrollX: 0,
-      scrollY: 0,
-      onclone: (clonedDoc) => {
-        sanitizeClonedToolDocument(clonedDoc);
-      }
-    });
-
-    return buildCanvasWrappedSvg(canvas);
-  } catch (error) {
-    throw new Error(`Full Screen capture failed: ${error.message}`);
-  }
-}
-
-function extractCanvasOnlySvg(doc) {
-  const canvas = doc.querySelector("canvas");
-  if (canvas) {
-    return buildCanvasWrappedSvg(canvas);
-  }
-  return buildFallbackSvg("Canvas not found");
-}
-
-async function extractSvgFromFrame(entry) {
-  const doc = frame.contentDocument;
-  if (!doc) {
-    if (ui.getSelectedCaptureMode() === "fullscreen") {
-      throw new Error("Full Screen capture failed because the target frame document is unavailable.");
-    }
-    return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
-  }
-
-  if (ui.getSelectedCaptureMode() === "canvasOnly") {
-    return extractCanvasOnlySvg(doc);
-  }
-
-  return await extractFullPageSvg(doc);
-}
-
-async function triggerGameStart() {
-  try {
-    const win = frame.contentWindow;
-    if (!win) return;
-
-    const evtDown = new KeyboardEvent("keydown", { key: "Enter", code: "Enter", keyCode: 13, which: 13, bubbles: true });
-    const evtUp = new KeyboardEvent("keyup", { key: "Enter", code: "Enter", keyCode: 13, which: 13, bubbles: true });
-
-    win.document.dispatchEvent(evtDown);
-    win.document.dispatchEvent(evtUp);
-  } catch {}
-}
-
 async function processOne(entry, baseUrl, waitMs) {
   const targetDirHandle = await getTargetDirHandle(repoDirHandle, entry);
   const decision = await shouldRewrite(targetDirHandle);
@@ -694,16 +376,15 @@ async function processOne(entry, baseUrl, waitMs) {
   logger.log(`URL  ${url}`);
 
   try {
-    frame.src = url;
-    await waitForFrameLoad(frame, 20000);
+    await capture.loadFrame(url, 20000);
     if (entry.targetType === "games") {
-      await triggerGameStart();
+      await capture.triggerGameStart();
       await sleep(3000);
     } else {
       await sleep(waitMs);
     }
 
-    const svgContent = await extractSvgFromFrame(entry);
+    const svgContent = await capture.extractSvgFromFrame();
     await writePreview(targetDirHandle, svgContent);
     ui.setLastGeneratedImage(svgContent, label);
 
@@ -718,7 +399,7 @@ async function processOne(entry, baseUrl, waitMs) {
     logger.log("");
     return { id: label, status: "written", reason: decision.reason };
   } catch (error) {
-    const fallback = buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
+    const fallback = capture.buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
     await writePreview(targetDirHandle, fallback);
     ui.setLastGeneratedImage(fallback, label);
     logger.log(`FAIL ${label}  (${error.message})`);
@@ -952,7 +633,7 @@ class PreviewGeneratorV2App {
 
   init() {
     if (isRuntimeMode) {
-      initializeRuntimeCaptureMode();
+      capture.initializeRuntimeCaptureMode(runtimeParams);
       return;
     }
 

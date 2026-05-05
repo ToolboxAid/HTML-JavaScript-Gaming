@@ -1,499 +1,432 @@
-# PR_26126_041 review diff excluding generated review artifact files
+# PR_26126_042 review diff excluding generated review artifact files
 
 diff --git a/tools/preview-generator-v2/PreviewGeneratorV2App.js b/tools/preview-generator-v2/PreviewGeneratorV2App.js
-index ac2ee27c..49f32d2c 100644
+index a46fd5a5..274508ea 100644
 --- a/tools/preview-generator-v2/PreviewGeneratorV2App.js
 +++ b/tools/preview-generator-v2/PreviewGeneratorV2App.js
-@@ -6,29 +6,6 @@ import { PreviewGeneratorV2Capture } from './PreviewGeneratorV2Capture.js';
- const OUTPUT_NAME = "preview.svg";
- const CAPTURE_TIMEOUT_MARKER = "Capture timeout";
+@@ -33,15 +33,6 @@ function normalizeSlashes(value) {
+     .replace(/\\{2,}/g, "\\");
+ }
 
--const pickRepoBtn = document.getElementById("pickRepoBtn");
--const executeBtn = document.getElementById("executeBtn");
--const stopBtn = document.getElementById("stopBtn");
--const baseUrlInput = document.getElementById("baseUrl");
--const waitMsInput = document.getElementById("waitMs");
--const assetFolderInput = document.getElementById("assetFolder");
--const sampleListInput = document.getElementById("sampleList");
--const forceRewriteInput = document.getElementById("forceRewrite");
--const statusEl = document.getElementById("status");
--const logEl = document.getElementById("log");
--const clearLogBtn = document.getElementById("clearLogBtn");
--const frame = document.getElementById("frame");
--const lastGeneratedImageEmptyEl = document.getElementById("lastGeneratedImageEmpty");
--const lastGeneratedImagePreviewEl = document.getElementById("lastGeneratedImagePreview");
--const lastGeneratedImageEl = document.getElementById("lastGeneratedImage");
--const lastGeneratedImageMetaEl = document.getElementById("lastGeneratedImageMeta");
+-function escapeXml(text) {
+-  return String(text)
+-    .replaceAll("&", "&amp;")
+-    .replaceAll("<", "&lt;")
+-    .replaceAll(">", "&gt;")
+-    .replaceAll('"', "&quot;")
+-    .replaceAll("'", "&apos;");
+-}
 -
--const repoSelectedValueEl = document.getElementById("repoSelectedValue");
--const writeFolderSampleValueEl = document.getElementById("writeFolderSampleValue");
--const writeFolderActualValueEl = document.getElementById("writeFolderActualValue");
+ function getAssetFolderRelativePath() {
+   const raw = ui.assetFolder.getRawValue();
+   if (!raw) return "assets";
+@@ -360,315 +351,6 @@ async function writePreview(targetDirHandle, svgContent) {
+   await writable.close();
+ }
+
+-function buildFallbackSvg(message) {
+-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="80">
+-  <text x="10" y="24">${escapeXml(message)}</text>
+-</svg>`;
+-}
 -
--const targetTypeInputs = Array.from(document.querySelectorAll('input[name="targetType"]'));
--const captureModeInputs = Array.from(document.querySelectorAll('input[name="captureMode"]'));
- const runtimeParams = new URLSearchParams(window.location.search);
- const isRuntimeMode = runtimeParams.get("mode") === "runtime";
-
-@@ -36,35 +13,12 @@ let repoDirHandle = null;
- let stopRequested = false;
- let repoDisplayName = "";
- let isGenerating = false;
+-function buildCanvasWrappedSvg(canvas) {
+-  const width = canvas.width || canvas.scrollWidth || 800;
+-  const height = canvas.height || canvas.scrollHeight || 600;
+-  const dataUrl = canvas.toDataURL("image/png");
+-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+-  <image href="${dataUrl}" width="100%" height="100%" />
+-</svg>`;
+-}
 -
+-function buildElementWrappedSvg(element) {
+-  const rect = element.getBoundingClientRect();
+-  const width = Math.max(1, Math.ceil(rect.width || 1280));
+-  const height = Math.max(1, Math.ceil(rect.height || 800));
+-  const serialized = new XMLSerializer().serializeToString(element);
+-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+-  <foreignObject width="100%" height="100%">
+-<div xmlns="http://www.w3.org/1999/xhtml">${serialized}</div>
+-  </foreignObject>
+-</svg>`;
+-}
 -
+-async function waitForFrameLoad(iframe, timeoutMs = 20000) {
+-  return await new Promise((resolve, reject) => {
+-    let done = false;
 -
+-    const timer = setTimeout(() => {
+-      if (!done) {
+-        done = true;
+-        reject(new Error(`iframe load timed out after ${timeoutMs}ms`));
+-      }
+-    }, timeoutMs);
 -
--const logger = new PreviewGeneratorV2Logger({ statusEl, logEl });
--const ui = new PreviewGeneratorV2Ui({
--  pickRepoBtn,
--  executeBtn,
--  stopBtn,
--  baseUrlInput,
--  waitMsInput,
--  assetFolderInput,
--  sampleListInput,
--  forceRewriteInput,
--  statusEl,
--  logEl,
--  clearLogBtn,
--  frame,
--  repoSelectedValueEl,
--  writeFolderSampleValueEl,
--  writeFolderActualValueEl,
--  lastGeneratedImageEmptyEl,
--  lastGeneratedImagePreviewEl,
--  lastGeneratedImageEl,
--  lastGeneratedImageMetaEl,
--  targetTypeInputs,
--  captureModeInputs
-+const ui = new PreviewGeneratorV2Ui();
-+const logger = new PreviewGeneratorV2Logger({
-+  statusEl: ui.statusLog.getStatusElement(),
-+  logEl: ui.statusLog.getLogElement()
- });
+-    function onLoad() {
+-      if (!done) {
+-        done = true;
+-        clearTimeout(timer);
+-        iframe.removeEventListener("load", onLoad);
+-        resolve();
+-      }
+-    }
 -
-+const frame = ui.previewFrame.getFrame();
-
- function sleep(ms) {
-   return new Promise(resolve => setTimeout(resolve, ms));
-@@ -1144,15 +1098,15 @@ class PreviewGeneratorV2App {
-       void this.handlePickRepo();
-     });
-
--    ui.menuSample.onExecute(() => {
-+    ui.generatePreview.onGeneratePreview(() => {
-       void this.handleExecute();
-     });
-
--    ui.status.onClear(() => {
-+    ui.statusLog.onClear(() => {
-       this.handleClearLog();
-     });
-
--    ui.menuSample.onStop(() => {
-+    ui.generatePreview.onStop(() => {
-       this.handleStop();
-     });
-
-diff --git a/tools/preview-generator-v2/PreviewGeneratorV2Ui.js b/tools/preview-generator-v2/PreviewGeneratorV2Ui.js
-index fbeacb09..c9493376 100644
---- a/tools/preview-generator-v2/PreviewGeneratorV2Ui.js
-+++ b/tools/preview-generator-v2/PreviewGeneratorV2Ui.js
-@@ -1,55 +1,28 @@
- import { AssetFolderControl } from "./controls/AssetFolderControl.js";
- import { CaptureModeControl } from "./controls/CaptureModeControl.js";
-+import { GeneratePreviewControl } from "./controls/GeneratePreviewControl.js";
- import { LastGeneratedImageControl } from "./controls/LastGeneratedImageControl.js";
--import { MenuSampleControl } from "./controls/MenuSampleControl.js";
- import { OutputSummaryControl } from "./controls/OutputSummaryControl.js";
- import { PathsOrIdsControl } from "./controls/PathsOrIdsControl.js";
- import { PreviewFrameControl } from "./controls/PreviewFrameControl.js";
- import { RenderControlsControl } from "./controls/RenderControlsControl.js";
- import { RepoDestinationControl } from "./controls/RepoDestinationControl.js";
--import { StatusControl } from "./controls/StatusControl.js";
-+import { StatusLogControl } from "./controls/StatusLogControl.js";
- import { TargetSourceControl } from "./controls/TargetSourceControl.js";
-
- class PreviewGeneratorV2Ui {
--  constructor({
--    pickRepoBtn,
--    executeBtn,
--    stopBtn,
--    baseUrlInput,
--    waitMsInput,
--    assetFolderInput,
--    sampleListInput,
--    forceRewriteInput,
--    statusEl,
--    logEl,
--    clearLogBtn,
--    frame,
--    lastGeneratedImageEmptyEl,
--    lastGeneratedImagePreviewEl,
--    lastGeneratedImageEl,
--    lastGeneratedImageMetaEl,
--    repoSelectedValueEl,
--    writeFolderSampleValueEl,
--    writeFolderActualValueEl,
--    targetTypeInputs,
--    captureModeInputs
--  }) {
--    this.menuSample = new MenuSampleControl({ executeBtn, stopBtn });
--    this.repoDestination = new RepoDestinationControl({ pickRepoBtn, repoSelectedValueEl });
--    this.targetSource = new TargetSourceControl({ targetTypeInputs, baseUrlInput });
--    this.assetFolder = new AssetFolderControl({ assetFolderInput });
--    this.captureMode = new CaptureModeControl({ captureModeInputs });
--    this.renderControls = new RenderControlsControl({ waitMsInput, forceRewriteInput });
--    this.pathsOrIds = new PathsOrIdsControl({ sampleListInput });
--    this.lastGeneratedImage = new LastGeneratedImageControl({
--      lastGeneratedImageEmptyEl,
--      lastGeneratedImagePreviewEl,
--      lastGeneratedImageEl,
--      lastGeneratedImageMetaEl
+-    iframe.addEventListener("load", onLoad, { once: true });
+-  });
+-}
+-
+-const UNSUPPORTED_COLOR_FUNCTION_PROPERTIES = [
+-  "background",
+-  "background-color",
+-  "border-block-color",
+-  "border-block-end-color",
+-  "border-block-start-color",
+-  "border-bottom-color",
+-  "border-color",
+-  "border-inline-color",
+-  "border-inline-end-color",
+-  "border-inline-start-color",
+-  "border-left-color",
+-  "border-right-color",
+-  "border-top-color",
+-  "box-shadow",
+-  "caret-color",
+-  "color",
+-  "column-rule-color",
+-  "fill",
+-  "outline-color",
+-  "scrollbar-color",
+-  "stop-color",
+-  "stroke",
+-  "text-decoration-color",
+-  "text-emphasis-color",
+-  "text-shadow"
+-];
+-
+-function replaceUnsupportedColorFunctions(value, fallback = "#000000") {
+-  const source = String(value || "");
+-  const lower = source.toLowerCase();
+-  let result = "";
+-  let index = 0;
+-  let changed = false;
+-
+-  while (index < source.length) {
+-    const matchIndex = lower.indexOf("color(", index);
+-    if (matchIndex < 0) {
+-      result += source.slice(index);
+-      break;
+-    }
+-
+-    result += source.slice(index, matchIndex);
+-    let cursor = matchIndex + "color(".length;
+-    let depth = 1;
+-    while (cursor < source.length && depth > 0) {
+-      const char = source[cursor];
+-      if (char === "(") depth += 1;
+-      if (char === ")") depth -= 1;
+-      cursor += 1;
+-    }
+-
+-    if (depth === 0) {
+-      result += fallback;
+-      changed = true;
+-      index = cursor;
+-    } else {
+-      result += source.slice(matchIndex);
+-      index = source.length;
+-    }
+-  }
+-
+-  return changed ? result : source;
+-}
+-
+-function sanitizeStyleDeclaration(style) {
+-  if (!style) return;
+-
+-  const properties = Array.from(style);
+-  for (const property of properties) {
+-    const value = style.getPropertyValue(property);
+-    if (!value || !/color\(/i.test(value)) continue;
+-    style.setProperty(
+-      property,
+-      replaceUnsupportedColorFunctions(value),
+-      style.getPropertyPriority(property)
+-    );
+-  }
+-
+-  const bg = style.backgroundImage || "";
+-  if (/gradient/i.test(bg)) {
+-    style.backgroundImage = "none";
+-  }
+-}
+-
+-function sanitizeCssRules(rules) {
+-  if (!rules) return;
+-
+-  for (const rule of Array.from(rules)) {
+-    sanitizeStyleDeclaration(rule.style);
+-    sanitizeCssRules(rule.cssRules);
+-  }
+-}
+-
+-function sanitizeComputedColorStyles(clonedDoc) {
+-  const clonedWindow = clonedDoc.defaultView;
+-  if (!clonedWindow || typeof clonedWindow.getComputedStyle !== "function") {
+-    return;
+-  }
+-
+-  const all = clonedDoc.querySelectorAll("*");
+-  for (const el of all) {
+-    const computed = clonedWindow.getComputedStyle(el);
+-    for (const property of UNSUPPORTED_COLOR_FUNCTION_PROPERTIES) {
+-      const value = computed.getPropertyValue(property);
+-      if (!value || !/color\(/i.test(value)) continue;
+-      el.style.setProperty(property, replaceUnsupportedColorFunctions(value), "important");
+-    }
+-
+-    const backgroundImage = computed.getPropertyValue("background-image") || "";
+-    if (/gradient/i.test(backgroundImage)) {
+-      el.style.setProperty("background-image", "none", "important");
+-    }
+-  }
+-}
+-
+-function sanitizeClonedToolDocument(clonedDoc) {
+-  for (const styleNode of clonedDoc.querySelectorAll("style")) {
+-    if (!/color\(/i.test(styleNode.textContent || "")) continue;
+-    styleNode.textContent = replaceUnsupportedColorFunctions(styleNode.textContent);
+-  }
+-
+-  for (const sheet of Array.from(clonedDoc.styleSheets || [])) {
+-    try {
+-      sanitizeCssRules(sheet.cssRules);
+-    } catch {
+-    }
+-  }
+-
+-  const all = clonedDoc.querySelectorAll("*");
+-  for (const el of all) {
+-    sanitizeStyleDeclaration(el.style);
+-  }
+-
+-  sanitizeComputedColorStyles(clonedDoc);
+-
+-  const canvases = clonedDoc.querySelectorAll("canvas");
+-  for (const canvas of canvases) {
+-    try {
+-      const img = clonedDoc.createElement("img");
+-      img.src = canvas.toDataURL("image/png");
+-      img.style.width = canvas.style.width || `${canvas.width}px`;
+-      img.style.height = canvas.style.height || `${canvas.height}px`;
+-      img.style.display = "block";
+-      canvas.replaceWith(img);
+-    } catch {
+-    }
+-  }
+-}
+-
+-function extractBestToolFallbackSvg(doc) {
+-  const preferredSelectors = [
+-    "main canvas",
+-    ".editor canvas",
+-    ".workspace canvas",
+-    "#editor canvas",
+-    "canvas",
+-    "main",
+-    ".editor",
+-    ".workspace",
+-    "#editor",
+-    "body"
+-  ];
+-
+-  for (const selector of preferredSelectors) {
+-    const el = doc.querySelector(selector);
+-    if (!el) continue;
+-
+-    if ((el.tagName || "").toLowerCase() === "canvas") {
+-      return buildCanvasWrappedSvg(el);
+-    }
+-
+-    try {
+-      return buildElementWrappedSvg(el);
+-    } catch {
+-    }
+-  }
+-
+-  return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
+-}
+-
+-async function extractFullPageSvg(doc) {
+-  const win = frame.contentWindow;
+-  if (!win) {
+-    throw new Error("Full Screen capture failed because the target frame window is unavailable.");
+-  }
+-
+-  const html2canvasFn = window.html2canvas || win.html2canvas;
+-  if (typeof html2canvasFn !== "function") {
+-    throw new Error("Full Screen capture failed: html2canvas is unavailable. Use Canvas Only or ensure html2canvas loads before using Full Screen.");
+-  }
+-
+-  const body = doc.body;
+-  if (!body) {
+-    throw new Error("Full Screen capture failed because the target document has no body.");
+-  }
+-  const captureSize = PreviewGeneratorV2Capture.getAvailableFullScreenCaptureSize(document, window, body.scrollWidth, body.scrollHeight);
+-
+-  try {
+-    const canvas = await html2canvasFn(body, {
+-      backgroundColor: "#ffffff",
+-      useCORS: true,
+-      allowTaint: true,
+-      logging: false,
+-      width: captureSize.width,
+-      height: captureSize.height,
+-      windowWidth: captureSize.width,
+-      windowHeight: captureSize.height,
+-      scrollX: 0,
+-      scrollY: 0,
+-      onclone: (clonedDoc) => {
+-        sanitizeClonedToolDocument(clonedDoc);
+-      }
 -    });
--    this.outputSummary = new OutputSummaryControl({ writeFolderSampleValueEl, writeFolderActualValueEl });
--    this.status = new StatusControl({ statusEl, logEl, clearLogBtn });
--    this.previewFrame = new PreviewFrameControl({ frame });
-+  constructor({ documentRef = document } = {}) {
-+    this.generatePreview = new GeneratePreviewControl({ documentRef });
-+    this.repoDestination = new RepoDestinationControl({ documentRef });
-+    this.targetSource = new TargetSourceControl({ documentRef });
-+    this.assetFolder = new AssetFolderControl({ documentRef });
-+    this.captureMode = new CaptureModeControl({ documentRef });
-+    this.renderControls = new RenderControlsControl({ documentRef });
-+    this.pathsOrIds = new PathsOrIdsControl({ documentRef });
-+    this.lastGeneratedImage = new LastGeneratedImageControl({ documentRef });
-+    this.outputSummary = new OutputSummaryControl({ documentRef });
-+    this.statusLog = new StatusLogControl({ documentRef });
-+    this.previewFrame = new PreviewFrameControl({ documentRef });
-   }
-
-   setRepoDestinationDisplayName(displayName) {
-@@ -57,11 +30,11 @@ class PreviewGeneratorV2Ui {
-   }
-
-   syncGeneratePreviewButton(isGenerating, canGenerate) {
--    this.menuSample.syncGeneratePreviewButton(isGenerating, canGenerate);
-+    this.generatePreview.syncGeneratePreviewButton(isGenerating, canGenerate);
-   }
-
-   setStopDisabled(isDisabled) {
--    this.menuSample.setStopDisabled(isDisabled);
-+    this.generatePreview.setStopDisabled(isDisabled);
-   }
-
-   setLastGeneratedImage(svgContent, label) {
-diff --git a/tools/preview-generator-v2/controls/AssetFolderControl.js b/tools/preview-generator-v2/controls/AssetFolderControl.js
-index a17caaad..5526110e 100644
---- a/tools/preview-generator-v2/controls/AssetFolderControl.js
-+++ b/tools/preview-generator-v2/controls/AssetFolderControl.js
-@@ -1,6 +1,6 @@
- class AssetFolderControl {
--  constructor({ assetFolderInput }) {
--    this.assetFolderInput = assetFolderInput;
-+  constructor({ documentRef = document } = {}) {
-+    this.assetFolderInput = documentRef.getElementById("assetFolder");
-   }
-
-   getRawValue() {
-diff --git a/tools/preview-generator-v2/controls/CaptureModeControl.js b/tools/preview-generator-v2/controls/CaptureModeControl.js
-index d5291e71..6332a270 100644
---- a/tools/preview-generator-v2/controls/CaptureModeControl.js
-+++ b/tools/preview-generator-v2/controls/CaptureModeControl.js
-@@ -1,6 +1,6 @@
- class CaptureModeControl {
--  constructor({ captureModeInputs }) {
--    this.captureModeInputs = captureModeInputs;
-+  constructor({ documentRef = document } = {}) {
-+    this.captureModeInputs = Array.from(documentRef.querySelectorAll('input[name="captureMode"]'));
-   }
-
-   getSelectedCaptureMode() {
-diff --git a/tools/preview-generator-v2/controls/LastGeneratedImageControl.js b/tools/preview-generator-v2/controls/LastGeneratedImageControl.js
-index b9a1a2b2..e7f04191 100644
---- a/tools/preview-generator-v2/controls/LastGeneratedImageControl.js
-+++ b/tools/preview-generator-v2/controls/LastGeneratedImageControl.js
-@@ -1,14 +1,9 @@
- class LastGeneratedImageControl {
--  constructor({
--    lastGeneratedImageEmptyEl,
--    lastGeneratedImagePreviewEl,
--    lastGeneratedImageEl,
--    lastGeneratedImageMetaEl
--  }) {
--    this.lastGeneratedImageEmptyEl = lastGeneratedImageEmptyEl;
--    this.lastGeneratedImagePreviewEl = lastGeneratedImagePreviewEl;
--    this.lastGeneratedImageEl = lastGeneratedImageEl;
--    this.lastGeneratedImageMetaEl = lastGeneratedImageMetaEl;
-+  constructor({ documentRef = document } = {}) {
-+    this.lastGeneratedImageEmptyEl = documentRef.getElementById("lastGeneratedImageEmpty");
-+    this.lastGeneratedImagePreviewEl = documentRef.getElementById("lastGeneratedImagePreview");
-+    this.lastGeneratedImageEl = documentRef.getElementById("lastGeneratedImage");
-+    this.lastGeneratedImageMetaEl = documentRef.getElementById("lastGeneratedImageMeta");
-     this.lastGeneratedImageObjectUrl = "";
-   }
-
-diff --git a/tools/preview-generator-v2/controls/MenuSampleControl.js b/tools/preview-generator-v2/controls/MenuSampleControl.js
-deleted file mode 100644
-index 0652544f..00000000
---- a/tools/preview-generator-v2/controls/MenuSampleControl.js
-+++ /dev/null
-@@ -1,25 +0,0 @@
--class MenuSampleControl {
--  constructor({ executeBtn, stopBtn }) {
--    this.executeBtn = executeBtn;
--    this.stopBtn = stopBtn;
--  }
 -
--  syncGeneratePreviewButton(isGenerating, canGenerate) {
--    this.executeBtn.hidden = false;
--    this.executeBtn.disabled = isGenerating || !canGenerate;
--  }
--
--  setStopDisabled(isDisabled) {
--    this.stopBtn.disabled = isDisabled;
--  }
--
--  onExecute(handler) {
--    this.executeBtn.addEventListener("click", handler);
--  }
--
--  onStop(handler) {
--    this.stopBtn.addEventListener("click", handler);
+-    return buildCanvasWrappedSvg(canvas);
+-  } catch (error) {
+-    throw new Error(`Full Screen capture failed: ${error.message}`);
 -  }
 -}
 -
--export { MenuSampleControl };
-diff --git a/tools/preview-generator-v2/controls/OutputSummaryControl.js b/tools/preview-generator-v2/controls/OutputSummaryControl.js
-index c880f0ce..a1a8039f 100644
---- a/tools/preview-generator-v2/controls/OutputSummaryControl.js
-+++ b/tools/preview-generator-v2/controls/OutputSummaryControl.js
-@@ -1,7 +1,7 @@
- class OutputSummaryControl {
--  constructor({ writeFolderSampleValueEl, writeFolderActualValueEl }) {
--    this.writeFolderSampleValueEl = writeFolderSampleValueEl;
--    this.writeFolderActualValueEl = writeFolderActualValueEl;
-+  constructor({ documentRef = document } = {}) {
-+    this.writeFolderSampleValueEl = documentRef.getElementById("writeFolderSampleValue");
-+    this.writeFolderActualValueEl = documentRef.getElementById("writeFolderActualValue");
-   }
-
-   setWriteFolderSample(value) {
-diff --git a/tools/preview-generator-v2/controls/PathsOrIdsControl.js b/tools/preview-generator-v2/controls/PathsOrIdsControl.js
-index 0979f182..026b293f 100644
---- a/tools/preview-generator-v2/controls/PathsOrIdsControl.js
-+++ b/tools/preview-generator-v2/controls/PathsOrIdsControl.js
-@@ -1,6 +1,6 @@
- class PathsOrIdsControl {
--  constructor({ sampleListInput }) {
--    this.sampleListInput = sampleListInput;
-+  constructor({ documentRef = document } = {}) {
-+    this.sampleListInput = documentRef.getElementById("sampleList");
-   }
-
-   getValue() {
-diff --git a/tools/preview-generator-v2/controls/PreviewFrameControl.js b/tools/preview-generator-v2/controls/PreviewFrameControl.js
-index 5da009e4..3d2f06df 100644
---- a/tools/preview-generator-v2/controls/PreviewFrameControl.js
-+++ b/tools/preview-generator-v2/controls/PreviewFrameControl.js
-@@ -1,6 +1,6 @@
- class PreviewFrameControl {
--  constructor({ frame }) {
--    this.frame = frame;
-+  constructor({ documentRef = document } = {}) {
-+    this.frame = documentRef.getElementById("frame");
-   }
-
-   getFrame() {
-diff --git a/tools/preview-generator-v2/controls/RenderControlsControl.js b/tools/preview-generator-v2/controls/RenderControlsControl.js
-index 65adc600..968c868a 100644
---- a/tools/preview-generator-v2/controls/RenderControlsControl.js
-+++ b/tools/preview-generator-v2/controls/RenderControlsControl.js
-@@ -1,7 +1,7 @@
- class RenderControlsControl {
--  constructor({ waitMsInput, forceRewriteInput }) {
--    this.waitMsInput = waitMsInput;
--    this.forceRewriteInput = forceRewriteInput;
-+  constructor({ documentRef = document } = {}) {
-+    this.waitMsInput = documentRef.getElementById("waitMs");
-+    this.forceRewriteInput = documentRef.getElementById("forceRewrite");
-   }
-
-   getWaitMs() {
-diff --git a/tools/preview-generator-v2/controls/RepoDestinationControl.js b/tools/preview-generator-v2/controls/RepoDestinationControl.js
-index 4d9e7f91..3a6e1ffb 100644
---- a/tools/preview-generator-v2/controls/RepoDestinationControl.js
-+++ b/tools/preview-generator-v2/controls/RepoDestinationControl.js
-@@ -1,7 +1,7 @@
- class RepoDestinationControl {
--  constructor({ pickRepoBtn, repoSelectedValueEl }) {
--    this.pickRepoBtn = pickRepoBtn;
--    this.repoSelectedValueEl = repoSelectedValueEl;
-+  constructor({ documentRef = document } = {}) {
-+    this.pickRepoBtn = documentRef.getElementById("pickRepoBtn");
-+    this.repoSelectedValueEl = documentRef.getElementById("repoSelectedValue");
-   }
-
-   setRepoDestinationDisplayName(displayName) {
-diff --git a/tools/preview-generator-v2/controls/StatusControl.js b/tools/preview-generator-v2/controls/StatusControl.js
-deleted file mode 100644
-index 5264dfd2..00000000
---- a/tools/preview-generator-v2/controls/StatusControl.js
-+++ /dev/null
-@@ -1,13 +0,0 @@
--class StatusControl {
--  constructor({ statusEl, logEl, clearLogBtn }) {
--    this.statusEl = statusEl;
--    this.logEl = logEl;
--    this.clearLogBtn = clearLogBtn;
+-function extractCanvasOnlySvg(doc) {
+-  const canvas = doc.querySelector("canvas");
+-  if (canvas) {
+-    return buildCanvasWrappedSvg(canvas);
 -  }
--
--  onClear(handler) {
--    this.clearLogBtn.addEventListener("click", handler);
--  }
+-  return buildFallbackSvg("Canvas not found");
 -}
 -
--export { StatusControl };
-diff --git a/tools/preview-generator-v2/controls/TargetSourceControl.js b/tools/preview-generator-v2/controls/TargetSourceControl.js
-index 0d0c1894..0c01fd7a 100644
---- a/tools/preview-generator-v2/controls/TargetSourceControl.js
-+++ b/tools/preview-generator-v2/controls/TargetSourceControl.js
-@@ -1,7 +1,7 @@
- class TargetSourceControl {
--  constructor({ targetTypeInputs, baseUrlInput }) {
--    this.targetTypeInputs = targetTypeInputs;
--    this.baseUrlInput = baseUrlInput;
-+  constructor({ documentRef = document } = {}) {
-+    this.targetTypeInputs = Array.from(documentRef.querySelectorAll('input[name="targetType"]'));
-+    this.baseUrlInput = documentRef.getElementById("baseUrl");
-   }
+-async function extractSvgFromFrame(entry) {
+-  const doc = frame.contentDocument;
+-  if (!doc) {
+-    if (ui.getSelectedCaptureMode() === "fullscreen") {
+-      throw new Error("Full Screen capture failed because the target frame document is unavailable.");
+-    }
+-    return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
+-  }
+-
+-  if (ui.getSelectedCaptureMode() === "canvasOnly") {
+-    return extractCanvasOnlySvg(doc);
+-  }
+-
+-  return await extractFullPageSvg(doc);
+-}
+-
+-async function triggerGameStart() {
+-  try {
+-    const win = frame.contentWindow;
+-    if (!win) return;
+-
+-    const evtDown = new KeyboardEvent("keydown", { key: "Enter", code: "Enter", keyCode: 13, which: 13, bubbles: true });
+-    const evtUp = new KeyboardEvent("keyup", { key: "Enter", code: "Enter", keyCode: 13, which: 13, bubbles: true });
+-
+-    win.document.dispatchEvent(evtDown);
+-    win.document.dispatchEvent(evtUp);
+-  } catch {}
+-}
+-
+ async function processOne(entry, baseUrl, waitMs) {
+   const targetDirHandle = await getTargetDirHandle(repoDirHandle, entry);
+   const decision = await shouldRewrite(targetDirHandle);
+@@ -694,16 +376,15 @@ async function processOne(entry, baseUrl, waitMs) {
+   logger.log(`URL  ${url}`);
 
-   getSelectedTargetType() {
+   try {
+-    frame.src = url;
+-    await waitForFrameLoad(frame, 20000);
++    await capture.loadFrame(url, 20000);
+     if (entry.targetType === "games") {
+-      await triggerGameStart();
++      await capture.triggerGameStart();
+       await sleep(3000);
+     } else {
+       await sleep(waitMs);
+     }
 
-# git diff --no-index -- /dev/null docs/dev/reports/preview_generator_v2_control_class_boundaries.txt
+-    const svgContent = await extractSvgFromFrame(entry);
++    const svgContent = await capture.extractSvgFromFrame();
+     await writePreview(targetDirHandle, svgContent);
+     ui.setLastGeneratedImage(svgContent, label);
 
-diff --git a/docs/dev/reports/preview_generator_v2_control_class_boundaries.txt b/docs/dev/reports/preview_generator_v2_control_class_boundaries.txt
+@@ -718,7 +399,7 @@ async function processOne(entry, baseUrl, waitMs) {
+     logger.log("");
+     return { id: label, status: "written", reason: decision.reason };
+   } catch (error) {
+-    const fallback = buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
++    const fallback = capture.buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
+     await writePreview(targetDirHandle, fallback);
+     ui.setLastGeneratedImage(fallback, label);
+     logger.log(`FAIL ${label}  (${error.message})`);
+@@ -952,7 +633,7 @@ class PreviewGeneratorV2App {
+
+   init() {
+     if (isRuntimeMode) {
+-      initializeRuntimeCaptureMode();
++      capture.initializeRuntimeCaptureMode(runtimeParams);
+       return;
+     }
+
+# git diff --no-index -- /dev/null docs/dev/reports/preview_generator_v2_app_logger_separation.txt
+
+diff --git a/docs/dev/reports/preview_generator_v2_app_logger_separation.txt b/docs/dev/reports/preview_generator_v2_app_logger_separation.txt
 new file mode 100644
-index 00000000..e072e453
+index 00000000..52409e3a
 --- /dev/null
-+++ b/docs/dev/reports/preview_generator_v2_control_class_boundaries.txt
-@@ -0,0 +1,56 @@
-+# Preview Generator V2 Control Class Boundaries - PR_26126_041
++++ b/docs/dev/reports/preview_generator_v2_app_logger_separation.txt
+@@ -0,0 +1,48 @@
++PR_26126_042 Preview Generator V2 app/logger separation
 +
-+Goal:
-+- Enforce one control/section per class while preserving Preview Generator V2 behavior.
++Scope
++- Updated tools/preview-generator-v2/PreviewGeneratorV2App.js only.
++- No samples, schemas, tools/shared, or start_of_day files were modified.
++- Re-validated for the repeated PR_26126_042 request without adding behavior changes.
 +
-+Runtime behavior:
-+- Preserved. No generation logic was rewritten.
-+- PreviewGeneratorV2App remains the coordinator for the generation flow and delegates UI state/event ownership to controls.
++Structure changes
++- PreviewGeneratorV2App no longer contains the duplicated capture helper body.
++- Frame loading is delegated to PreviewGeneratorV2Capture.loadFrame.
++- Game start triggering is delegated to PreviewGeneratorV2Capture.triggerGameStart.
++- SVG extraction is delegated to PreviewGeneratorV2Capture.extractSvgFromFrame.
++- Fallback SVG creation is delegated to PreviewGeneratorV2Capture.buildFallbackSvg.
++- Runtime capture mode is delegated to PreviewGeneratorV2Capture.initializeRuntimeCaptureMode.
 +
-+Boundary changes:
-+- Renamed MenuSampleControl to GeneratePreviewControl.
-+- Renamed StatusControl to StatusLogControl.
-+- Moved direct UI DOM lookups out of PreviewGeneratorV2App and into PreviewGeneratorV2Ui/control classes.
-+- PreviewGeneratorV2Ui now constructs the section controls with documentRef and exposes the same coordinator-facing control surface.
++Logger boundary
++- All direct status/log textarea writes remain in tools/preview-generator-v2/PreviewGeneratorV2Logger.js.
++- Search confirmed direct statusEl.textContent and logEl.textContent writes are not present outside PreviewGeneratorV2Logger.js.
++- PreviewGeneratorV2App continues to request status output through logger.log, logger.clear, and logger.clearStatus only.
 +
-+Required control classes:
-+- tools/preview-generator-v2/controls/TargetSourceControl.js - TargetSourceControl
-+- tools/preview-generator-v2/controls/PathsOrIdsControl.js - PathsOrIdsControl
-+- tools/preview-generator-v2/controls/LastGeneratedImageControl.js - LastGeneratedImageControl
-+- tools/preview-generator-v2/controls/RepoDestinationControl.js - RepoDestinationControl
-+- tools/preview-generator-v2/controls/AssetFolderControl.js - AssetFolderControl
-+- tools/preview-generator-v2/controls/CaptureModeControl.js - CaptureModeControl
-+- tools/preview-generator-v2/controls/RenderControlsControl.js - RenderControlsControl
-+- tools/preview-generator-v2/controls/OutputSummaryControl.js - OutputSummaryControl
-+- tools/preview-generator-v2/controls/StatusLogControl.js - StatusLogControl
-+- tools/preview-generator-v2/controls/GeneratePreviewControl.js - GeneratePreviewControl
++Control boundary review
++- UI section classes continue to own their DOM lookup and events.
++- PreviewGeneratorV2App wires callbacks between controls and generation flow through the PreviewGeneratorV2Ui facade.
++- No cross-control DOM reach was added.
 +
-+Files removed because the class boundary names were corrected:
-+- tools/preview-generator-v2/controls/MenuSampleControl.js
-+- tools/preview-generator-v2/controls/StatusControl.js
++Validation
++- JavaScript syntax check passed for tools/preview-generator-v2/*.js.
++- JavaScript syntax check passed for tools/preview-generator-v2/controls/*.js.
++- JavaScript syntax check passed for tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
++- Direct status/log write search passed: only PreviewGeneratorV2Logger.js writes status/log text.
++- App DOM query/manipulation search passed: PreviewGeneratorV2App.js has no direct querySelector/getElementById/addEventListener/textContent DOM manipulation.
++- No tools/shared or platformShell references were found under tools/preview-generator-v2.
++- No samples, schemas, or start_of_day changes were found.
++- npm run test:workspace-v2 passed.
 +
-+One class per file:
-+- PASS. Every Preview Generator V2 JavaScript file has zero or one class.
-+- previewGeneratorV2.bootstrap.js remains the only bootstrap/no-class file.
++Playwright
++- npm run test:workspace-v2 ran tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
++- Result: 1 passed.
 +
-+Inline HTML:
-+- PASS. tools/preview-generator-v2/index.html has no inline style or inline script blocks.
++Full samples smoke test
++- Skipped intentionally.
++- Reason: this PR is a Preview Generator V2 structure-only change and does not modify sample loading, sample JSON, or shared sample framework behavior.
 +
-+tools/shared:
-+- PASS. No tools/shared references were found.
-+
-+Scope guard:
-+- PASS. No samples modified.
-+- PASS. No schemas added or modified.
-+- PASS. No start_of_day folders modified.
-+
-+Validation run:
-+- node --check for all tools/preview-generator-v2 JavaScript files.
-+- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
-+- Control class boundary check for required class/file names.
-+- Inline style/script check for tools/preview-generator-v2/index.html.
-+- tools/shared dependency search.
-+- npm run test:workspace-v2.
-+
-+Validation result:
-+- PASS. npm run test:workspace-v2 passed with 1 Playwright test.
-
-# git diff --no-index -- /dev/null tools/preview-generator-v2/controls/GeneratePreviewControl.js
-
-diff --git a/tools/preview-generator-v2/controls/GeneratePreviewControl.js b/tools/preview-generator-v2/controls/GeneratePreviewControl.js
-new file mode 100644
-index 00000000..c371d5bf
---- /dev/null
-+++ b/tools/preview-generator-v2/controls/GeneratePreviewControl.js
-@@ -0,0 +1,25 @@
-+class GeneratePreviewControl {
-+  constructor({ documentRef = document } = {}) {
-+    this.executeBtn = documentRef.getElementById("executeBtn");
-+    this.stopBtn = documentRef.getElementById("stopBtn");
-+  }
-+
-+  syncGeneratePreviewButton(isGenerating, canGenerate) {
-+    this.executeBtn.hidden = false;
-+    this.executeBtn.disabled = isGenerating || !canGenerate;
-+  }
-+
-+  setStopDisabled(isDisabled) {
-+    this.stopBtn.disabled = isDisabled;
-+  }
-+
-+  onGeneratePreview(handler) {
-+    this.executeBtn.addEventListener("click", handler);
-+  }
-+
-+  onStop(handler) {
-+    this.stopBtn.addEventListener("click", handler);
-+  }
-+}
-+
-+export { GeneratePreviewControl };
-
-# git diff --no-index -- /dev/null tools/preview-generator-v2/controls/StatusLogControl.js
-
-diff --git a/tools/preview-generator-v2/controls/StatusLogControl.js b/tools/preview-generator-v2/controls/StatusLogControl.js
-new file mode 100644
-index 00000000..35f8f6bd
---- /dev/null
-+++ b/tools/preview-generator-v2/controls/StatusLogControl.js
-@@ -0,0 +1,21 @@
-+class StatusLogControl {
-+  constructor({ documentRef = document } = {}) {
-+    this.statusEl = documentRef.getElementById("status");
-+    this.logEl = documentRef.getElementById("log");
-+    this.clearLogBtn = documentRef.getElementById("clearLogBtn");
-+  }
-+
-+  getStatusElement() {
-+    return this.statusEl;
-+  }
-+
-+  getLogElement() {
-+    return this.logEl;
-+  }
-+
-+  onClear(handler) {
-+    this.clearLogBtn.addEventListener("click", handler);
-+  }
-+}
-+
-+export { StatusLogControl };
++Manual validation
++- Open tools/preview-generator-v2/index.html.
++- Confirm accordions still expand/collapse.
++- Confirm Status Clear still clears the log display.
++- Pick a repo folder, enter a valid target path, and confirm Generate Preview state and logging behave as before.

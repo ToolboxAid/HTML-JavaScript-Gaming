@@ -1,42 +1,12 @@
 # git status --short
+ M docs/dev/reports/codex_changed_files.txt
+ M docs/dev/reports/codex_review.diff
  M tools/preview-generator-v2/PreviewGeneratorV2App.js
- M tools/preview-generator-v2/PreviewGeneratorV2Ui.js
- M tools/preview-generator-v2/controls/AssetFolderControl.js
- M tools/preview-generator-v2/controls/CaptureModeControl.js
- M tools/preview-generator-v2/controls/LastGeneratedImageControl.js
- D tools/preview-generator-v2/controls/MenuSampleControl.js
- M tools/preview-generator-v2/controls/OutputSummaryControl.js
- M tools/preview-generator-v2/controls/PathsOrIdsControl.js
- M tools/preview-generator-v2/controls/PreviewFrameControl.js
- M tools/preview-generator-v2/controls/RenderControlsControl.js
- M tools/preview-generator-v2/controls/RepoDestinationControl.js
- D tools/preview-generator-v2/controls/StatusControl.js
- M tools/preview-generator-v2/controls/TargetSourceControl.js
-?? docs/dev/reports/preview_generator_v2_control_class_boundaries.txt
-?? tools/preview-generator-v2/controls/GeneratePreviewControl.js
-?? tools/preview-generator-v2/controls/StatusLogControl.js
+?? docs/dev/reports/preview_generator_v2_app_logger_separation.txt
 
-# PR_26126_041 diff stat excluding generated review artifact files
- .../preview-generator-v2/PreviewGeneratorV2App.js  | 62 +++-------------------
- tools/preview-generator-v2/PreviewGeneratorV2Ui.js | 59 ++++++--------------
- .../controls/AssetFolderControl.js                 |  4 +-
- .../controls/CaptureModeControl.js                 |  4 +-
- .../controls/LastGeneratedImageControl.js          | 15 ++----
- .../controls/MenuSampleControl.js                  | 25 ---------
- .../controls/OutputSummaryControl.js               |  6 +--
- .../controls/PathsOrIdsControl.js                  |  4 +-
- .../controls/PreviewFrameControl.js                |  4 +-
- .../controls/RenderControlsControl.js              |  6 +--
- .../controls/RepoDestinationControl.js             |  6 +--
- .../preview-generator-v2/controls/StatusControl.js | 13 -----
- .../controls/TargetSourceControl.js                |  6 +--
- 13 files changed, 49 insertions(+), 165 deletions(-)
-# New file diff stat: docs/dev/reports/preview_generator_v2_control_class_boundaries.txt
- ...eview_generator_v2_control_class_boundaries.txt | 56 ++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
-# New file diff stat: tools/preview-generator-v2/controls/GeneratePreviewControl.js
- .../controls/GeneratePreviewControl.js             | 25 ++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
-# New file diff stat: tools/preview-generator-v2/controls/StatusLogControl.js
- .../controls/StatusLogControl.js                    | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+# PR_26126_042 diff stat excluding generated review artifact files
+ .../preview-generator-v2/PreviewGeneratorV2App.js  | 329 +--------------------
+ 1 file changed, 5 insertions(+), 324 deletions(-)
+# New file diff stat: docs/dev/reports/preview_generator_v2_app_logger_separation.txt
+ .../preview_generator_v2_app_logger_separation.txt | 48 ++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
