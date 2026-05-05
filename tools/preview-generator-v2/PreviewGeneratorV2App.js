@@ -6,29 +6,6 @@ import { PreviewGeneratorV2Capture } from './PreviewGeneratorV2Capture.js';
 const OUTPUT_NAME = "preview.svg";
 const CAPTURE_TIMEOUT_MARKER = "Capture timeout";
 
-const pickRepoBtn = document.getElementById("pickRepoBtn");
-const executeBtn = document.getElementById("executeBtn");
-const stopBtn = document.getElementById("stopBtn");
-const baseUrlInput = document.getElementById("baseUrl");
-const waitMsInput = document.getElementById("waitMs");
-const assetFolderInput = document.getElementById("assetFolder");
-const sampleListInput = document.getElementById("sampleList");
-const forceRewriteInput = document.getElementById("forceRewrite");
-const statusEl = document.getElementById("status");
-const logEl = document.getElementById("log");
-const clearLogBtn = document.getElementById("clearLogBtn");
-const frame = document.getElementById("frame");
-const lastGeneratedImageEmptyEl = document.getElementById("lastGeneratedImageEmpty");
-const lastGeneratedImagePreviewEl = document.getElementById("lastGeneratedImagePreview");
-const lastGeneratedImageEl = document.getElementById("lastGeneratedImage");
-const lastGeneratedImageMetaEl = document.getElementById("lastGeneratedImageMeta");
-
-const repoSelectedValueEl = document.getElementById("repoSelectedValue");
-const writeFolderSampleValueEl = document.getElementById("writeFolderSampleValue");
-const writeFolderActualValueEl = document.getElementById("writeFolderActualValue");
-
-const targetTypeInputs = Array.from(document.querySelectorAll('input[name="targetType"]'));
-const captureModeInputs = Array.from(document.querySelectorAll('input[name="captureMode"]'));
 const runtimeParams = new URLSearchParams(window.location.search);
 const isRuntimeMode = runtimeParams.get("mode") === "runtime";
 
@@ -36,35 +13,12 @@ let repoDirHandle = null;
 let stopRequested = false;
 let repoDisplayName = "";
 let isGenerating = false;
-
-
-
-
-const logger = new PreviewGeneratorV2Logger({ statusEl, logEl });
-const ui = new PreviewGeneratorV2Ui({
-  pickRepoBtn,
-  executeBtn,
-  stopBtn,
-  baseUrlInput,
-  waitMsInput,
-  assetFolderInput,
-  sampleListInput,
-  forceRewriteInput,
-  statusEl,
-  logEl,
-  clearLogBtn,
-  frame,
-  repoSelectedValueEl,
-  writeFolderSampleValueEl,
-  writeFolderActualValueEl,
-  lastGeneratedImageEmptyEl,
-  lastGeneratedImagePreviewEl,
-  lastGeneratedImageEl,
-  lastGeneratedImageMetaEl,
-  targetTypeInputs,
-  captureModeInputs
+const ui = new PreviewGeneratorV2Ui();
+const logger = new PreviewGeneratorV2Logger({
+  statusEl: ui.statusLog.getStatusElement(),
+  logEl: ui.statusLog.getLogElement()
 });
-
+const frame = ui.previewFrame.getFrame();
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -1144,15 +1098,15 @@ class PreviewGeneratorV2App {
       void this.handlePickRepo();
     });
 
-    ui.menuSample.onExecute(() => {
+    ui.generatePreview.onGeneratePreview(() => {
       void this.handleExecute();
     });
 
-    ui.status.onClear(() => {
+    ui.statusLog.onClear(() => {
       this.handleClearLog();
     });
 
-    ui.menuSample.onStop(() => {
+    ui.generatePreview.onStop(() => {
       this.handleStop();
     });
 

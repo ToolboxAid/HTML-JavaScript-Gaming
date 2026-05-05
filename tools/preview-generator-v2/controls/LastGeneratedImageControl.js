@@ -1,14 +1,9 @@
 class LastGeneratedImageControl {
-  constructor({
-    lastGeneratedImageEmptyEl,
-    lastGeneratedImagePreviewEl,
-    lastGeneratedImageEl,
-    lastGeneratedImageMetaEl
-  }) {
-    this.lastGeneratedImageEmptyEl = lastGeneratedImageEmptyEl;
-    this.lastGeneratedImagePreviewEl = lastGeneratedImagePreviewEl;
-    this.lastGeneratedImageEl = lastGeneratedImageEl;
-    this.lastGeneratedImageMetaEl = lastGeneratedImageMetaEl;
+  constructor({ documentRef = document } = {}) {
+    this.lastGeneratedImageEmptyEl = documentRef.getElementById("lastGeneratedImageEmpty");
+    this.lastGeneratedImagePreviewEl = documentRef.getElementById("lastGeneratedImagePreview");
+    this.lastGeneratedImageEl = documentRef.getElementById("lastGeneratedImage");
+    this.lastGeneratedImageMetaEl = documentRef.getElementById("lastGeneratedImageMeta");
     this.lastGeneratedImageObjectUrl = "";
   }
 

@@ -1,7 +1,7 @@
 class OutputSummaryControl {
-  constructor({ writeFolderSampleValueEl, writeFolderActualValueEl }) {
-    this.writeFolderSampleValueEl = writeFolderSampleValueEl;
-    this.writeFolderActualValueEl = writeFolderActualValueEl;
+  constructor({ documentRef = document } = {}) {
+    this.writeFolderSampleValueEl = documentRef.getElementById("writeFolderSampleValue");
+    this.writeFolderActualValueEl = documentRef.getElementById("writeFolderActualValue");
   }
 
   setWriteFolderSample(value) {

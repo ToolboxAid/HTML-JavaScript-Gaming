@@ -1,7 +1,7 @@
 class TargetSourceControl {
-  constructor({ targetTypeInputs, baseUrlInput }) {
-    this.targetTypeInputs = targetTypeInputs;
-    this.baseUrlInput = baseUrlInput;
+  constructor({ documentRef = document } = {}) {
+    this.targetTypeInputs = Array.from(documentRef.querySelectorAll('input[name="targetType"]'));
+    this.baseUrlInput = documentRef.getElementById("baseUrl");
   }
 
   getSelectedTargetType() {

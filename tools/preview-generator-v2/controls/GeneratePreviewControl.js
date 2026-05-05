@@ -1,7 +1,7 @@
-class MenuSampleControl {
-  constructor({ executeBtn, stopBtn }) {
-    this.executeBtn = executeBtn;
-    this.stopBtn = stopBtn;
+class GeneratePreviewControl {
+  constructor({ documentRef = document } = {}) {
+    this.executeBtn = documentRef.getElementById("executeBtn");
+    this.stopBtn = documentRef.getElementById("stopBtn");
   }
 
   syncGeneratePreviewButton(isGenerating, canGenerate) {
@@ -13,7 +13,7 @@ class MenuSampleControl {
     this.stopBtn.disabled = isDisabled;
   }
 
-  onExecute(handler) {
+  onGeneratePreview(handler) {
     this.executeBtn.addEventListener("click", handler);
   }
 
@@ -22,4 +22,4 @@ class MenuSampleControl {
   }
 }
 
-export { MenuSampleControl };
+export { GeneratePreviewControl };

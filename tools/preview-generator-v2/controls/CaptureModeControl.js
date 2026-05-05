@@ -1,6 +1,6 @@
 class CaptureModeControl {
-  constructor({ captureModeInputs }) {
-    this.captureModeInputs = captureModeInputs;
+  constructor({ documentRef = document } = {}) {
+    this.captureModeInputs = Array.from(documentRef.querySelectorAll('input[name="captureMode"]'));
   }
 
   getSelectedCaptureMode() {

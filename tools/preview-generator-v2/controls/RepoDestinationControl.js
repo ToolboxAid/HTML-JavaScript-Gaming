@@ -1,7 +1,7 @@
 class RepoDestinationControl {
-  constructor({ pickRepoBtn, repoSelectedValueEl }) {
-    this.pickRepoBtn = pickRepoBtn;
-    this.repoSelectedValueEl = repoSelectedValueEl;
+  constructor({ documentRef = document } = {}) {
+    this.pickRepoBtn = documentRef.getElementById("pickRepoBtn");
+    this.repoSelectedValueEl = documentRef.getElementById("repoSelectedValue");
   }
 
   setRepoDestinationDisplayName(displayName) {

@@ -1,69 +1,499 @@
-# PR_26126_040 review diff excluding generated review artifact files
+# PR_26126_041 review diff excluding generated review artifact files
 
-diff --git a/package.json b/package.json
-index 87404e4f..eae9bba5 100644
---- a/package.json
-+++ b/package.json
-@@ -12,6 +12,7 @@
-     "check:style-system-guard": "node tools/dev/checkStyleSystemGuard.mjs",
-     "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs",
-     "codex:review-artifacts": "node ./scripts/write-codex-review-artifacts.mjs",
-+    "test:workspace-v2": "playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list",
-     "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs",
-     "test:launch-smoke:games": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --games",
-     "test:workspace-manager:games": "node ./tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs",
+diff --git a/tools/preview-generator-v2/PreviewGeneratorV2App.js b/tools/preview-generator-v2/PreviewGeneratorV2App.js
+index ac2ee27c..49f32d2c 100644
+--- a/tools/preview-generator-v2/PreviewGeneratorV2App.js
++++ b/tools/preview-generator-v2/PreviewGeneratorV2App.js
+@@ -6,29 +6,6 @@ import { PreviewGeneratorV2Capture } from './PreviewGeneratorV2Capture.js';
+ const OUTPUT_NAME = "preview.svg";
+ const CAPTURE_TIMEOUT_MARKER = "Capture timeout";
 
-# git diff --no-index -- /dev/null docs/dev/reports/preview_generator_v2_playwright_coverage.txt
+-const pickRepoBtn = document.getElementById("pickRepoBtn");
+-const executeBtn = document.getElementById("executeBtn");
+-const stopBtn = document.getElementById("stopBtn");
+-const baseUrlInput = document.getElementById("baseUrl");
+-const waitMsInput = document.getElementById("waitMs");
+-const assetFolderInput = document.getElementById("assetFolder");
+-const sampleListInput = document.getElementById("sampleList");
+-const forceRewriteInput = document.getElementById("forceRewrite");
+-const statusEl = document.getElementById("status");
+-const logEl = document.getElementById("log");
+-const clearLogBtn = document.getElementById("clearLogBtn");
+-const frame = document.getElementById("frame");
+-const lastGeneratedImageEmptyEl = document.getElementById("lastGeneratedImageEmpty");
+-const lastGeneratedImagePreviewEl = document.getElementById("lastGeneratedImagePreview");
+-const lastGeneratedImageEl = document.getElementById("lastGeneratedImage");
+-const lastGeneratedImageMetaEl = document.getElementById("lastGeneratedImageMeta");
+-
+-const repoSelectedValueEl = document.getElementById("repoSelectedValue");
+-const writeFolderSampleValueEl = document.getElementById("writeFolderSampleValue");
+-const writeFolderActualValueEl = document.getElementById("writeFolderActualValue");
+-
+-const targetTypeInputs = Array.from(document.querySelectorAll('input[name="targetType"]'));
+-const captureModeInputs = Array.from(document.querySelectorAll('input[name="captureMode"]'));
+ const runtimeParams = new URLSearchParams(window.location.search);
+ const isRuntimeMode = runtimeParams.get("mode") === "runtime";
 
-diff --git a/docs/dev/reports/preview_generator_v2_playwright_coverage.txt b/docs/dev/reports/preview_generator_v2_playwright_coverage.txt
+@@ -36,35 +13,12 @@ let repoDirHandle = null;
+ let stopRequested = false;
+ let repoDisplayName = "";
+ let isGenerating = false;
+-
+-
+-
+-
+-const logger = new PreviewGeneratorV2Logger({ statusEl, logEl });
+-const ui = new PreviewGeneratorV2Ui({
+-  pickRepoBtn,
+-  executeBtn,
+-  stopBtn,
+-  baseUrlInput,
+-  waitMsInput,
+-  assetFolderInput,
+-  sampleListInput,
+-  forceRewriteInput,
+-  statusEl,
+-  logEl,
+-  clearLogBtn,
+-  frame,
+-  repoSelectedValueEl,
+-  writeFolderSampleValueEl,
+-  writeFolderActualValueEl,
+-  lastGeneratedImageEmptyEl,
+-  lastGeneratedImagePreviewEl,
+-  lastGeneratedImageEl,
+-  lastGeneratedImageMetaEl,
+-  targetTypeInputs,
+-  captureModeInputs
++const ui = new PreviewGeneratorV2Ui();
++const logger = new PreviewGeneratorV2Logger({
++  statusEl: ui.statusLog.getStatusElement(),
++  logEl: ui.statusLog.getLogElement()
+ });
+-
++const frame = ui.previewFrame.getFrame();
+
+ function sleep(ms) {
+   return new Promise(resolve => setTimeout(resolve, ms));
+@@ -1144,15 +1098,15 @@ class PreviewGeneratorV2App {
+       void this.handlePickRepo();
+     });
+
+-    ui.menuSample.onExecute(() => {
++    ui.generatePreview.onGeneratePreview(() => {
+       void this.handleExecute();
+     });
+
+-    ui.status.onClear(() => {
++    ui.statusLog.onClear(() => {
+       this.handleClearLog();
+     });
+
+-    ui.menuSample.onStop(() => {
++    ui.generatePreview.onStop(() => {
+       this.handleStop();
+     });
+
+diff --git a/tools/preview-generator-v2/PreviewGeneratorV2Ui.js b/tools/preview-generator-v2/PreviewGeneratorV2Ui.js
+index fbeacb09..c9493376 100644
+--- a/tools/preview-generator-v2/PreviewGeneratorV2Ui.js
++++ b/tools/preview-generator-v2/PreviewGeneratorV2Ui.js
+@@ -1,55 +1,28 @@
+ import { AssetFolderControl } from "./controls/AssetFolderControl.js";
+ import { CaptureModeControl } from "./controls/CaptureModeControl.js";
++import { GeneratePreviewControl } from "./controls/GeneratePreviewControl.js";
+ import { LastGeneratedImageControl } from "./controls/LastGeneratedImageControl.js";
+-import { MenuSampleControl } from "./controls/MenuSampleControl.js";
+ import { OutputSummaryControl } from "./controls/OutputSummaryControl.js";
+ import { PathsOrIdsControl } from "./controls/PathsOrIdsControl.js";
+ import { PreviewFrameControl } from "./controls/PreviewFrameControl.js";
+ import { RenderControlsControl } from "./controls/RenderControlsControl.js";
+ import { RepoDestinationControl } from "./controls/RepoDestinationControl.js";
+-import { StatusControl } from "./controls/StatusControl.js";
++import { StatusLogControl } from "./controls/StatusLogControl.js";
+ import { TargetSourceControl } from "./controls/TargetSourceControl.js";
+
+ class PreviewGeneratorV2Ui {
+-  constructor({
+-    pickRepoBtn,
+-    executeBtn,
+-    stopBtn,
+-    baseUrlInput,
+-    waitMsInput,
+-    assetFolderInput,
+-    sampleListInput,
+-    forceRewriteInput,
+-    statusEl,
+-    logEl,
+-    clearLogBtn,
+-    frame,
+-    lastGeneratedImageEmptyEl,
+-    lastGeneratedImagePreviewEl,
+-    lastGeneratedImageEl,
+-    lastGeneratedImageMetaEl,
+-    repoSelectedValueEl,
+-    writeFolderSampleValueEl,
+-    writeFolderActualValueEl,
+-    targetTypeInputs,
+-    captureModeInputs
+-  }) {
+-    this.menuSample = new MenuSampleControl({ executeBtn, stopBtn });
+-    this.repoDestination = new RepoDestinationControl({ pickRepoBtn, repoSelectedValueEl });
+-    this.targetSource = new TargetSourceControl({ targetTypeInputs, baseUrlInput });
+-    this.assetFolder = new AssetFolderControl({ assetFolderInput });
+-    this.captureMode = new CaptureModeControl({ captureModeInputs });
+-    this.renderControls = new RenderControlsControl({ waitMsInput, forceRewriteInput });
+-    this.pathsOrIds = new PathsOrIdsControl({ sampleListInput });
+-    this.lastGeneratedImage = new LastGeneratedImageControl({
+-      lastGeneratedImageEmptyEl,
+-      lastGeneratedImagePreviewEl,
+-      lastGeneratedImageEl,
+-      lastGeneratedImageMetaEl
+-    });
+-    this.outputSummary = new OutputSummaryControl({ writeFolderSampleValueEl, writeFolderActualValueEl });
+-    this.status = new StatusControl({ statusEl, logEl, clearLogBtn });
+-    this.previewFrame = new PreviewFrameControl({ frame });
++  constructor({ documentRef = document } = {}) {
++    this.generatePreview = new GeneratePreviewControl({ documentRef });
++    this.repoDestination = new RepoDestinationControl({ documentRef });
++    this.targetSource = new TargetSourceControl({ documentRef });
++    this.assetFolder = new AssetFolderControl({ documentRef });
++    this.captureMode = new CaptureModeControl({ documentRef });
++    this.renderControls = new RenderControlsControl({ documentRef });
++    this.pathsOrIds = new PathsOrIdsControl({ documentRef });
++    this.lastGeneratedImage = new LastGeneratedImageControl({ documentRef });
++    this.outputSummary = new OutputSummaryControl({ documentRef });
++    this.statusLog = new StatusLogControl({ documentRef });
++    this.previewFrame = new PreviewFrameControl({ documentRef });
+   }
+
+   setRepoDestinationDisplayName(displayName) {
+@@ -57,11 +30,11 @@ class PreviewGeneratorV2Ui {
+   }
+
+   syncGeneratePreviewButton(isGenerating, canGenerate) {
+-    this.menuSample.syncGeneratePreviewButton(isGenerating, canGenerate);
++    this.generatePreview.syncGeneratePreviewButton(isGenerating, canGenerate);
+   }
+
+   setStopDisabled(isDisabled) {
+-    this.menuSample.setStopDisabled(isDisabled);
++    this.generatePreview.setStopDisabled(isDisabled);
+   }
+
+   setLastGeneratedImage(svgContent, label) {
+diff --git a/tools/preview-generator-v2/controls/AssetFolderControl.js b/tools/preview-generator-v2/controls/AssetFolderControl.js
+index a17caaad..5526110e 100644
+--- a/tools/preview-generator-v2/controls/AssetFolderControl.js
++++ b/tools/preview-generator-v2/controls/AssetFolderControl.js
+@@ -1,6 +1,6 @@
+ class AssetFolderControl {
+-  constructor({ assetFolderInput }) {
+-    this.assetFolderInput = assetFolderInput;
++  constructor({ documentRef = document } = {}) {
++    this.assetFolderInput = documentRef.getElementById("assetFolder");
+   }
+
+   getRawValue() {
+diff --git a/tools/preview-generator-v2/controls/CaptureModeControl.js b/tools/preview-generator-v2/controls/CaptureModeControl.js
+index d5291e71..6332a270 100644
+--- a/tools/preview-generator-v2/controls/CaptureModeControl.js
++++ b/tools/preview-generator-v2/controls/CaptureModeControl.js
+@@ -1,6 +1,6 @@
+ class CaptureModeControl {
+-  constructor({ captureModeInputs }) {
+-    this.captureModeInputs = captureModeInputs;
++  constructor({ documentRef = document } = {}) {
++    this.captureModeInputs = Array.from(documentRef.querySelectorAll('input[name="captureMode"]'));
+   }
+
+   getSelectedCaptureMode() {
+diff --git a/tools/preview-generator-v2/controls/LastGeneratedImageControl.js b/tools/preview-generator-v2/controls/LastGeneratedImageControl.js
+index b9a1a2b2..e7f04191 100644
+--- a/tools/preview-generator-v2/controls/LastGeneratedImageControl.js
++++ b/tools/preview-generator-v2/controls/LastGeneratedImageControl.js
+@@ -1,14 +1,9 @@
+ class LastGeneratedImageControl {
+-  constructor({
+-    lastGeneratedImageEmptyEl,
+-    lastGeneratedImagePreviewEl,
+-    lastGeneratedImageEl,
+-    lastGeneratedImageMetaEl
+-  }) {
+-    this.lastGeneratedImageEmptyEl = lastGeneratedImageEmptyEl;
+-    this.lastGeneratedImagePreviewEl = lastGeneratedImagePreviewEl;
+-    this.lastGeneratedImageEl = lastGeneratedImageEl;
+-    this.lastGeneratedImageMetaEl = lastGeneratedImageMetaEl;
++  constructor({ documentRef = document } = {}) {
++    this.lastGeneratedImageEmptyEl = documentRef.getElementById("lastGeneratedImageEmpty");
++    this.lastGeneratedImagePreviewEl = documentRef.getElementById("lastGeneratedImagePreview");
++    this.lastGeneratedImageEl = documentRef.getElementById("lastGeneratedImage");
++    this.lastGeneratedImageMetaEl = documentRef.getElementById("lastGeneratedImageMeta");
+     this.lastGeneratedImageObjectUrl = "";
+   }
+
+diff --git a/tools/preview-generator-v2/controls/MenuSampleControl.js b/tools/preview-generator-v2/controls/MenuSampleControl.js
+deleted file mode 100644
+index 0652544f..00000000
+--- a/tools/preview-generator-v2/controls/MenuSampleControl.js
++++ /dev/null
+@@ -1,25 +0,0 @@
+-class MenuSampleControl {
+-  constructor({ executeBtn, stopBtn }) {
+-    this.executeBtn = executeBtn;
+-    this.stopBtn = stopBtn;
+-  }
+-
+-  syncGeneratePreviewButton(isGenerating, canGenerate) {
+-    this.executeBtn.hidden = false;
+-    this.executeBtn.disabled = isGenerating || !canGenerate;
+-  }
+-
+-  setStopDisabled(isDisabled) {
+-    this.stopBtn.disabled = isDisabled;
+-  }
+-
+-  onExecute(handler) {
+-    this.executeBtn.addEventListener("click", handler);
+-  }
+-
+-  onStop(handler) {
+-    this.stopBtn.addEventListener("click", handler);
+-  }
+-}
+-
+-export { MenuSampleControl };
+diff --git a/tools/preview-generator-v2/controls/OutputSummaryControl.js b/tools/preview-generator-v2/controls/OutputSummaryControl.js
+index c880f0ce..a1a8039f 100644
+--- a/tools/preview-generator-v2/controls/OutputSummaryControl.js
++++ b/tools/preview-generator-v2/controls/OutputSummaryControl.js
+@@ -1,7 +1,7 @@
+ class OutputSummaryControl {
+-  constructor({ writeFolderSampleValueEl, writeFolderActualValueEl }) {
+-    this.writeFolderSampleValueEl = writeFolderSampleValueEl;
+-    this.writeFolderActualValueEl = writeFolderActualValueEl;
++  constructor({ documentRef = document } = {}) {
++    this.writeFolderSampleValueEl = documentRef.getElementById("writeFolderSampleValue");
++    this.writeFolderActualValueEl = documentRef.getElementById("writeFolderActualValue");
+   }
+
+   setWriteFolderSample(value) {
+diff --git a/tools/preview-generator-v2/controls/PathsOrIdsControl.js b/tools/preview-generator-v2/controls/PathsOrIdsControl.js
+index 0979f182..026b293f 100644
+--- a/tools/preview-generator-v2/controls/PathsOrIdsControl.js
++++ b/tools/preview-generator-v2/controls/PathsOrIdsControl.js
+@@ -1,6 +1,6 @@
+ class PathsOrIdsControl {
+-  constructor({ sampleListInput }) {
+-    this.sampleListInput = sampleListInput;
++  constructor({ documentRef = document } = {}) {
++    this.sampleListInput = documentRef.getElementById("sampleList");
+   }
+
+   getValue() {
+diff --git a/tools/preview-generator-v2/controls/PreviewFrameControl.js b/tools/preview-generator-v2/controls/PreviewFrameControl.js
+index 5da009e4..3d2f06df 100644
+--- a/tools/preview-generator-v2/controls/PreviewFrameControl.js
++++ b/tools/preview-generator-v2/controls/PreviewFrameControl.js
+@@ -1,6 +1,6 @@
+ class PreviewFrameControl {
+-  constructor({ frame }) {
+-    this.frame = frame;
++  constructor({ documentRef = document } = {}) {
++    this.frame = documentRef.getElementById("frame");
+   }
+
+   getFrame() {
+diff --git a/tools/preview-generator-v2/controls/RenderControlsControl.js b/tools/preview-generator-v2/controls/RenderControlsControl.js
+index 65adc600..968c868a 100644
+--- a/tools/preview-generator-v2/controls/RenderControlsControl.js
++++ b/tools/preview-generator-v2/controls/RenderControlsControl.js
+@@ -1,7 +1,7 @@
+ class RenderControlsControl {
+-  constructor({ waitMsInput, forceRewriteInput }) {
+-    this.waitMsInput = waitMsInput;
+-    this.forceRewriteInput = forceRewriteInput;
++  constructor({ documentRef = document } = {}) {
++    this.waitMsInput = documentRef.getElementById("waitMs");
++    this.forceRewriteInput = documentRef.getElementById("forceRewrite");
+   }
+
+   getWaitMs() {
+diff --git a/tools/preview-generator-v2/controls/RepoDestinationControl.js b/tools/preview-generator-v2/controls/RepoDestinationControl.js
+index 4d9e7f91..3a6e1ffb 100644
+--- a/tools/preview-generator-v2/controls/RepoDestinationControl.js
++++ b/tools/preview-generator-v2/controls/RepoDestinationControl.js
+@@ -1,7 +1,7 @@
+ class RepoDestinationControl {
+-  constructor({ pickRepoBtn, repoSelectedValueEl }) {
+-    this.pickRepoBtn = pickRepoBtn;
+-    this.repoSelectedValueEl = repoSelectedValueEl;
++  constructor({ documentRef = document } = {}) {
++    this.pickRepoBtn = documentRef.getElementById("pickRepoBtn");
++    this.repoSelectedValueEl = documentRef.getElementById("repoSelectedValue");
+   }
+
+   setRepoDestinationDisplayName(displayName) {
+diff --git a/tools/preview-generator-v2/controls/StatusControl.js b/tools/preview-generator-v2/controls/StatusControl.js
+deleted file mode 100644
+index 5264dfd2..00000000
+--- a/tools/preview-generator-v2/controls/StatusControl.js
++++ /dev/null
+@@ -1,13 +0,0 @@
+-class StatusControl {
+-  constructor({ statusEl, logEl, clearLogBtn }) {
+-    this.statusEl = statusEl;
+-    this.logEl = logEl;
+-    this.clearLogBtn = clearLogBtn;
+-  }
+-
+-  onClear(handler) {
+-    this.clearLogBtn.addEventListener("click", handler);
+-  }
+-}
+-
+-export { StatusControl };
+diff --git a/tools/preview-generator-v2/controls/TargetSourceControl.js b/tools/preview-generator-v2/controls/TargetSourceControl.js
+index 0d0c1894..0c01fd7a 100644
+--- a/tools/preview-generator-v2/controls/TargetSourceControl.js
++++ b/tools/preview-generator-v2/controls/TargetSourceControl.js
+@@ -1,7 +1,7 @@
+ class TargetSourceControl {
+-  constructor({ targetTypeInputs, baseUrlInput }) {
+-    this.targetTypeInputs = targetTypeInputs;
+-    this.baseUrlInput = baseUrlInput;
++  constructor({ documentRef = document } = {}) {
++    this.targetTypeInputs = Array.from(documentRef.querySelectorAll('input[name="targetType"]'));
++    this.baseUrlInput = documentRef.getElementById("baseUrl");
+   }
+
+   getSelectedTargetType() {
+
+# git diff --no-index -- /dev/null docs/dev/reports/preview_generator_v2_control_class_boundaries.txt
+
+diff --git a/docs/dev/reports/preview_generator_v2_control_class_boundaries.txt b/docs/dev/reports/preview_generator_v2_control_class_boundaries.txt
 new file mode 100644
-index 00000000..eb21a728
+index 00000000..e072e453
 --- /dev/null
-+++ b/docs/dev/reports/preview_generator_v2_playwright_coverage.txt
-@@ -0,0 +1,46 @@
-+# Preview Generator V2 Playwright Coverage - PR_26126_040
++++ b/docs/dev/reports/preview_generator_v2_control_class_boundaries.txt
+@@ -0,0 +1,56 @@
++# Preview Generator V2 Control Class Boundaries - PR_26126_041
 +
-+Reviewed:
-+- docs/dev/reports/preview_generator_v2_playwright_result.txt
-+- tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-+- package.json
++Goal:
++- Enforce one control/section per class while preserving Preview Generator V2 behavior.
 +
-+Coverage decision:
-+- Preview Generator V2 is already explicitly covered by Playwright.
-+- No duplicate Playwright test was added.
++Runtime behavior:
++- Preserved. No generation logic was rewritten.
++- PreviewGeneratorV2App remains the coordinator for the generation flow and delegates UI state/event ownership to controls.
 +
-+Existing Playwright coverage:
-+- Launches tools/preview-generator-v2/index.html through the repo HTTP server.
-+- Verifies the Preview Generator V2 app shell is visible.
-+- Verifies tools/common/toolShellCommon.css is loaded.
-+- Verifies the Preview Generator V2 heading is visible.
-+- Verifies menuSample nav exists.
-+- Verifies Generate Preview and Stop render and begin disabled.
-+- Verifies Games is the default target source.
-+- Verifies Paths or IDs input is visible.
-+- Verifies Status block is visible.
-+- Verifies common style declarations apply to header, accordion, app shell, and fullscreen layout targets.
-+- Verifies Repo Destination accordion collapses and reopens with aria-expanded state changes.
-+- Verifies no page errors during the launch/toggle path.
++Boundary changes:
++- Renamed MenuSampleControl to GeneratePreviewControl.
++- Renamed StatusControl to StatusLogControl.
++- Moved direct UI DOM lookups out of PreviewGeneratorV2App and into PreviewGeneratorV2Ui/control classes.
++- PreviewGeneratorV2Ui now constructs the section controls with documentRef and exposes the same coordinator-facing control surface.
 +
-+Broken hooks:
-+- No broken Preview Generator V2 selectors, IDs, or Playwright hooks were found.
-+- No UI behavior changes were made.
++Required control classes:
++- tools/preview-generator-v2/controls/TargetSourceControl.js - TargetSourceControl
++- tools/preview-generator-v2/controls/PathsOrIdsControl.js - PathsOrIdsControl
++- tools/preview-generator-v2/controls/LastGeneratedImageControl.js - LastGeneratedImageControl
++- tools/preview-generator-v2/controls/RepoDestinationControl.js - RepoDestinationControl
++- tools/preview-generator-v2/controls/AssetFolderControl.js - AssetFolderControl
++- tools/preview-generator-v2/controls/CaptureModeControl.js - CaptureModeControl
++- tools/preview-generator-v2/controls/RenderControlsControl.js - RenderControlsControl
++- tools/preview-generator-v2/controls/OutputSummaryControl.js - OutputSummaryControl
++- tools/preview-generator-v2/controls/StatusLogControl.js - StatusLogControl
++- tools/preview-generator-v2/controls/GeneratePreviewControl.js - GeneratePreviewControl
 +
-+Validation gap fixed:
-+- package.json did not define npm run test:workspace-v2.
-+- Added test:workspace-v2 as the repository validation command for the existing Preview Generator V2 Playwright baseline.
++Files removed because the class boundary names were corrected:
++- tools/preview-generator-v2/controls/MenuSampleControl.js
++- tools/preview-generator-v2/controls/StatusControl.js
 +
-+Validation run:
-+- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-+- npm run test:workspace-v2
++One class per file:
++- PASS. Every Preview Generator V2 JavaScript file has zero or one class.
++- previewGeneratorV2.bootstrap.js remains the only bootstrap/no-class file.
 +
-+Result:
-+- PASS: npm run test:workspace-v2 passed.
-+- PASS: 1 Playwright test passed.
++Inline HTML:
++- PASS. tools/preview-generator-v2/index.html has no inline style or inline script blocks.
++
++tools/shared:
++- PASS. No tools/shared references were found.
 +
 +Scope guard:
-+- No samples modified.
-+- No schemas added or modified.
-+- No start_of_day folders modified.
-+- No duplicate Playwright tests added.
++- PASS. No samples modified.
++- PASS. No schemas added or modified.
++- PASS. No start_of_day folders modified.
++
++Validation run:
++- node --check for all tools/preview-generator-v2 JavaScript files.
++- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs.
++- Control class boundary check for required class/file names.
++- Inline style/script check for tools/preview-generator-v2/index.html.
++- tools/shared dependency search.
++- npm run test:workspace-v2.
++
++Validation result:
++- PASS. npm run test:workspace-v2 passed with 1 Playwright test.
+
+# git diff --no-index -- /dev/null tools/preview-generator-v2/controls/GeneratePreviewControl.js
+
+diff --git a/tools/preview-generator-v2/controls/GeneratePreviewControl.js b/tools/preview-generator-v2/controls/GeneratePreviewControl.js
+new file mode 100644
+index 00000000..c371d5bf
+--- /dev/null
++++ b/tools/preview-generator-v2/controls/GeneratePreviewControl.js
+@@ -0,0 +1,25 @@
++class GeneratePreviewControl {
++  constructor({ documentRef = document } = {}) {
++    this.executeBtn = documentRef.getElementById("executeBtn");
++    this.stopBtn = documentRef.getElementById("stopBtn");
++  }
++
++  syncGeneratePreviewButton(isGenerating, canGenerate) {
++    this.executeBtn.hidden = false;
++    this.executeBtn.disabled = isGenerating || !canGenerate;
++  }
++
++  setStopDisabled(isDisabled) {
++    this.stopBtn.disabled = isDisabled;
++  }
++
++  onGeneratePreview(handler) {
++    this.executeBtn.addEventListener("click", handler);
++  }
++
++  onStop(handler) {
++    this.stopBtn.addEventListener("click", handler);
++  }
++}
++
++export { GeneratePreviewControl };
+
+# git diff --no-index -- /dev/null tools/preview-generator-v2/controls/StatusLogControl.js
+
+diff --git a/tools/preview-generator-v2/controls/StatusLogControl.js b/tools/preview-generator-v2/controls/StatusLogControl.js
+new file mode 100644
+index 00000000..35f8f6bd
+--- /dev/null
++++ b/tools/preview-generator-v2/controls/StatusLogControl.js
+@@ -0,0 +1,21 @@
++class StatusLogControl {
++  constructor({ documentRef = document } = {}) {
++    this.statusEl = documentRef.getElementById("status");
++    this.logEl = documentRef.getElementById("log");
++    this.clearLogBtn = documentRef.getElementById("clearLogBtn");
++  }
++
++  getStatusElement() {
++    return this.statusEl;
++  }
++
++  getLogElement() {
++    return this.logEl;
++  }
++
++  onClear(handler) {
++    this.clearLogBtn.addEventListener("click", handler);
++  }
++}
++
++export { StatusLogControl };

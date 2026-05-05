@@ -1,6 +1,6 @@
 class PreviewFrameControl {
-  constructor({ frame }) {
-    this.frame = frame;
+  constructor({ documentRef = document } = {}) {
+    this.frame = documentRef.getElementById("frame");
   }
 
   getFrame() {

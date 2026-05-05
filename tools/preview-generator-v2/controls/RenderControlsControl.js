@@ -1,7 +1,7 @@
 class RenderControlsControl {
-  constructor({ waitMsInput, forceRewriteInput }) {
-    this.waitMsInput = waitMsInput;
-    this.forceRewriteInput = forceRewriteInput;
+  constructor({ documentRef = document } = {}) {
+    this.waitMsInput = documentRef.getElementById("waitMs");
+    this.forceRewriteInput = documentRef.getElementById("forceRewrite");
   }
 
   getWaitMs() {

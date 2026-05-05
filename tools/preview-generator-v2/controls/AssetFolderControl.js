@@ -1,6 +1,6 @@
 class AssetFolderControl {
-  constructor({ assetFolderInput }) {
-    this.assetFolderInput = assetFolderInput;
+  constructor({ documentRef = document } = {}) {
+    this.assetFolderInput = documentRef.getElementById("assetFolder");
   }
 
   getRawValue() {

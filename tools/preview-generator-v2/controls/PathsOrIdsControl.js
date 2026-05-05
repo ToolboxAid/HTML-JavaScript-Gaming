@@ -1,6 +1,6 @@
 class PathsOrIdsControl {
-  constructor({ sampleListInput }) {
-    this.sampleListInput = sampleListInput;
+  constructor({ documentRef = document } = {}) {
+    this.sampleListInput = documentRef.getElementById("sampleList");
   }
 
   getValue() {
