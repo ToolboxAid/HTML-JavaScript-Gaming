@@ -1,39 +1,111 @@
 # Full git status --short
- M docs/design/tools/TOOLS_REENGINEERING_INDEX.md
  M docs/dev/codex_commands.md
  M docs/dev/commit_comment.txt
+ M docs/dev/reports/codex_changed_files.txt
  M docs/dev/reports/codex_review.diff
+ M docs/dev/reports/preview_generator_v2_class_responsibilities.md
  M tools/preview-generator-v2/index.html
- D tools/preview.zip
- D tools/preview/preview_svg_generator.html
-?? docs/dev/reports/preview_generator_v2_class_responsibilities.md
-?? tools/preview-generator-v2/previewGeneratorV2.js
-
-# PR scoped git diff --cached --stat
+ D tools/preview-generator-v2/previewGeneratorV2.js
+?? tools/preview-generator-v2/PreviewGeneratorV2App.js
+?? tools/preview-generator-v2/PreviewGeneratorV2Capture.js
+?? tools/preview-generator-v2/PreviewGeneratorV2Logger.js
+?? tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js
+?? tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js
+?? tools/preview-generator-v2/PreviewGeneratorV2Ui.js
+?? tools/preview-generator-v2/controls/
+?? tools/preview-generator-v2/previewGeneratorV2.bootstrap.js
+?? tools/preview-generator-v2/previewGeneratorV2.css
 
 # PR scoped git diff --stat
- docs/design/tools/TOOLS_REENGINEERING_INDEX.md |    1 -
- docs/dev/codex_commands.md                     |   47 +-
- docs/dev/commit_comment.txt                    |    2 +-
- tools/preview-generator-v2/index.html          | 1238 +-----------------------
- tools/preview.zip                              |  Bin 19111 -> 0 bytes
- tools/preview/preview_svg_generator.html       | 1042 --------------------
- 6 files changed, 24 insertions(+), 2306 deletions(-)
+ docs/dev/codex_commands.md                         |   76 +-
+ docs/dev/commit_comment.txt                        |    2 +-
+ .../preview_generator_v2_class_responsibilities.md |   35 +-
+ tools/preview-generator-v2/index.html              |  476 +------
+ tools/preview-generator-v2/previewGeneratorV2.js   | 1317 --------------------
+ 5 files changed, 85 insertions(+), 1821 deletions(-)
 
-# New file diff stat: tools/preview-generator-v2/previewGeneratorV2.js
- .../preview-generator-v2/previewGeneratorV2.js     | 1317 ++++++++++++++++++++
- 1 file changed, 1317 insertions(+)
+# New file diff stat: tools/preview-generator-v2/previewGeneratorV2.css
+ .../preview-generator-v2/previewGeneratorV2.css    | 338 +++++++++++++++++++++
+ 1 file changed, 338 insertions(+)
 
-# New file diff stat: docs/dev/reports/preview_generator_v2_class_responsibilities.md
- .../reports/preview_generator_v2_class_responsibilities.md    | 11 +++++++++++
+# New file diff stat: tools/preview-generator-v2/previewGeneratorV2.bootstrap.js
+ .../preview-generator-v2/previewGeneratorV2.bootstrap.js             | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/PreviewGeneratorV2App.js
+ .../preview-generator-v2/PreviewGeneratorV2App.js  | 1200 ++++++++++++++++++++
+ 1 file changed, 1200 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/PreviewGeneratorV2Capture.js
+ .../PreviewGeneratorV2Capture.js                   | 27 ++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/PreviewGeneratorV2Logger.js
+ .../PreviewGeneratorV2Logger.js                    | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js
+ .../PreviewGeneratorV2RepoAccess.js                | 25 ++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js
+ .../PreviewGeneratorV2ShellControl.js              | 136 +++++++++++++++++++++
+ 1 file changed, 136 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/PreviewGeneratorV2Ui.js
+ .../preview-generator-v2/PreviewGeneratorV2Ui.js   | 84 ++++++++++++++++++++++
+ 1 file changed, 84 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/AssetFolderControl.js
+ .../controls/AssetFolderControl.js                    | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/CaptureModeControl.js
+ .../controls/CaptureModeControl.js                 | 28 ++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/LastGeneratedImageControl.js
+ .../controls/LastGeneratedImageControl.js          | 29 ++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/MenuSampleControl.js
+ .../controls/MenuSampleControl.js                  | 25 ++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/OutputSummaryControl.js
+ .../controls/OutputSummaryControl.js                     | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/PathsOrIdsControl.js
+ .../preview-generator-v2/controls/PathsOrIdsControl.js    | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/PreviewFrameControl.js
+ .../preview-generator-v2/controls/PreviewFrameControl.js      | 11 +++++++++++
  1 file changed, 11 insertions(+)
 
+# New file diff stat: tools/preview-generator-v2/controls/RenderControlsControl.js
+ .../controls/RenderControlsControl.js                | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/RepoDestinationControl.js
+ .../controls/RepoDestinationControl.js                  | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/StatusControl.js
+ .../preview-generator-v2/controls/StatusControl.js          | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+# New file diff stat: tools/preview-generator-v2/controls/TargetSourceControl.js
+ .../controls/TargetSourceControl.js                | 35 ++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
 # Full git diff --stat
- docs/design/tools/TOOLS_REENGINEERING_INDEX.md |    1 -
- docs/dev/codex_commands.md                     |   47 +-
- docs/dev/commit_comment.txt                    |    2 +-
- docs/dev/reports/codex_review.diff             | 3958 ++++++++++++++++++++++--
- tools/preview-generator-v2/index.html          | 1238 +-------
- tools/preview.zip                              |  Bin 19111 -> 0 bytes
- tools/preview/preview_svg_generator.html       | 1042 -------
- 7 files changed, 3728 insertions(+), 2560 deletions(-)
+ docs/dev/codex_commands.md                         |   76 +-
+ docs/dev/commit_comment.txt                        |    2 +-
+ docs/dev/reports/codex_changed_files.txt           |  128 +-
+ docs/dev/reports/codex_review.diff                 | 5734 +++++++++++---------
+ .../preview_generator_v2_class_responsibilities.md |   35 +-
+ tools/preview-generator-v2/index.html              |  476 +-
+ tools/preview-generator-v2/previewGeneratorV2.js   | 1317 -----
+ 7 files changed, 3276 insertions(+), 4492 deletions(-)

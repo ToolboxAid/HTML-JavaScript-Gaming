@@ -1,3 +1,8 @@
+import { PreviewGeneratorV2Logger } from './PreviewGeneratorV2Logger.js';
+import { PreviewGeneratorV2Ui } from './PreviewGeneratorV2Ui.js';
+import { PreviewGeneratorV2RepoAccess } from './PreviewGeneratorV2RepoAccess.js';
+import { PreviewGeneratorV2Capture } from './PreviewGeneratorV2Capture.js';
+
 const OUTPUT_NAME = "preview.svg";
 const CAPTURE_TIMEOUT_MARKER = "Capture timeout";
 
@@ -32,119 +37,26 @@ let stopRequested = false;
 let repoDisplayName = "";
 let isGenerating = false;
 
-class PreviewGeneratorV2Logger {
-  constructor({ statusEl, logEl }) {
-    this.statusEl = statusEl;
-    this.logEl = logEl;
-  }
 
-  log(message = "") {
-    const now = new Date().toLocaleTimeString();
-    this.logEl.textContent += `[${now}] ${message}\n`;
-    this.logEl.scrollTop = this.logEl.scrollHeight;
-    console.log(message);
-  }
 
-  clear() {
-    this.statusEl.textContent = "";
-    this.logEl.textContent = "";
-  }
-
-  clearStatus() {
-    this.statusEl.textContent = "";
-  }
-}
-
-class PreviewGeneratorV2Ui {
-  constructor({
-    executeBtn,
-    repoSelectedValueEl,
-    lastGeneratedImageEmptyEl,
-    lastGeneratedImagePreviewEl,
-    lastGeneratedImageEl,
-    lastGeneratedImageMetaEl,
-    targetTypeInputs,
-    captureModeInputs
-  }) {
-    this.executeBtn = executeBtn;
-    this.repoSelectedValueEl = repoSelectedValueEl;
-    this.lastGeneratedImageEmptyEl = lastGeneratedImageEmptyEl;
-    this.lastGeneratedImagePreviewEl = lastGeneratedImagePreviewEl;
-    this.lastGeneratedImageEl = lastGeneratedImageEl;
-    this.lastGeneratedImageMetaEl = lastGeneratedImageMetaEl;
-    this.targetTypeInputs = targetTypeInputs;
-    this.captureModeInputs = captureModeInputs;
-    this.lastGeneratedImageObjectUrl = "";
-  }
-
-  setRepoDestinationDisplayName(displayName) {
-    this.repoSelectedValueEl.textContent = displayName;
-    this.repoSelectedValueEl.setAttribute("title", displayName);
-  }
-
-  syncGeneratePreviewButton(isGeneratingValue, canGenerate) {
-    this.executeBtn.hidden = false;
-    this.executeBtn.disabled = isGeneratingValue || !canGenerate;
-  }
-
-  setLastGeneratedImage(svgContent, label) {
-    if (this.lastGeneratedImageObjectUrl) {
-      URL.revokeObjectURL(this.lastGeneratedImageObjectUrl);
-    }
-
-    const blob = new Blob([svgContent], { type: "image/svg+xml" });
-    this.lastGeneratedImageObjectUrl = URL.createObjectURL(blob);
-    this.lastGeneratedImageEl.src = this.lastGeneratedImageObjectUrl;
-    this.lastGeneratedImageMetaEl.textContent = `Last generated: ${label}`;
-    this.lastGeneratedImageEmptyEl.hidden = true;
-    this.lastGeneratedImagePreviewEl.hidden = false;
-  }
-
-  getSelectedCaptureMode() {
-    const selected = this.captureModeInputs.find(x => x.checked);
-    return selected ? selected.value : "canvasOnly";
-  }
-
-  getCaptureModeLabel(modeValue = this.getSelectedCaptureMode()) {
-    return modeValue === "canvasOnly"
-      ? "Canvas Only"
-      : "Full Screen";
-  }
-
-  getSelectedTargetType() {
-    const selected = this.targetTypeInputs.find(x => x.checked);
-    return selected ? selected.value : "samples";
-  }
-}
-
-class PreviewGeneratorV2RepoAccess {
-  static getRepoDestinationDisplayName(handle) {
-    const handleName = String(handle?.name || "").trim();
-    return handleName || "selected repo folder";
-  }
-
-  static async getDirectoryHandle(parentHandle, name) {
-    return await parentHandle.getDirectoryHandle(name);
-  }
-
-  static async getFileHandle(parentHandle, name, create = false) {
-    return await parentHandle.getFileHandle(name, { create });
-  }
-
-  static async hasIndexHtml(directoryHandle) {
-    try {
-      await PreviewGeneratorV2RepoAccess.getFileHandle(directoryHandle, "index.html", false);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-}
 
 const logger = new PreviewGeneratorV2Logger({ statusEl, logEl });
 const ui = new PreviewGeneratorV2Ui({
+  pickRepoBtn,
   executeBtn,
+  stopBtn,
+  baseUrlInput,
+  waitMsInput,
+  assetFolderInput,
+  sampleListInput,
+  forceRewriteInput,
+  statusEl,
+  logEl,
+  clearLogBtn,
+  frame,
   repoSelectedValueEl,
+  writeFolderSampleValueEl,
+  writeFolderActualValueEl,
   lastGeneratedImageEmptyEl,
   lastGeneratedImagePreviewEl,
   lastGeneratedImageEl,
@@ -153,31 +65,6 @@ const ui = new PreviewGeneratorV2Ui({
   captureModeInputs
 });
 
-class PreviewGeneratorV2Capture {
-  static getAvailableFullScreenCaptureSize(doc = document, win = window, fallbackWidth = 1, fallbackHeight = 1) {
-    const root = doc?.documentElement;
-    const body = doc?.body;
-    const width = Math.max(1, Math.ceil(
-      win?.innerWidth
-        || root?.clientWidth
-        || body?.clientWidth
-        || root?.scrollWidth
-        || body?.scrollWidth
-        || fallbackWidth
-        || 1
-    ));
-    const height = Math.max(1, Math.ceil(
-      win?.innerHeight
-        || root?.clientHeight
-        || body?.clientHeight
-        || root?.scrollHeight
-        || body?.scrollHeight
-        || fallbackHeight
-        || 1
-    ));
-    return { width, height };
-  }
-}
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -391,7 +278,7 @@ function escapeXml(text) {
 }
 
 function getAssetFolderRelativePath() {
-  const raw = String(assetFolderInput.value || "").trim();
+  const raw = ui.assetFolder.getRawValue();
   if (!raw) return "assets";
 
   return raw
@@ -433,35 +320,35 @@ function updateWriteFolderSampleLabel() {
   const targetType = ui.getSelectedTargetType();
 
   if (targetType === "samples") {
-    writeFolderSampleValueEl.textContent = `samples\\phaseXX\\XXXX\\${assetFolder}`;
+    ui.outputSummary.setWriteFolderSample(`samples\\phaseXX\\XXXX\\${assetFolder}`);
     return;
   }
   if (targetType === "games") {
-    writeFolderSampleValueEl.textContent = `games\\<gamename>\\${assetFolder}`;
+    ui.outputSummary.setWriteFolderSample(`games\\<gamename>\\${assetFolder}`);
     return;
   }
   if (targetType === "tools") {
-    writeFolderSampleValueEl.textContent = `tools\\<toolname>\\${assetFolder}`;
+    ui.outputSummary.setWriteFolderSample(`tools\\<toolname>\\${assetFolder}`);
   }
 }
 
 async function updateWriteFolderActualLabelFromInput() {
-  const lines = parseInputList(sampleListInput.value);
+  const lines = parseInputList(ui.pathsOrIds.getValue());
   if (!lines.length) {
-    writeFolderActualValueEl.textContent = "not available yet";
+    ui.outputSummary.setWriteFolderActual("not available yet");
     return;
   }
 
   try {
     const entries = await resolveEntries(lines[0]);
     if (entries.length > 1 && entries[0].targetType === "samples") {
-      writeFolderActualValueEl.textContent = normalizeSlashes(`samples/phase-${entries[0].phase}/*/${getAssetFolderRelativePath()}`);
+      ui.outputSummary.setWriteFolderActual(normalizeSlashes(`samples/phase-${entries[0].phase}/*/${getAssetFolderRelativePath()}`));
       return;
     }
 
-    writeFolderActualValueEl.textContent = entries.length ? getWriteFolderDisplayPath(entries[0]) : "not available yet";
+    ui.outputSummary.setWriteFolderActual(entries.length ? getWriteFolderDisplayPath(entries[0]) : "not available yet");
   } catch {
-    writeFolderActualValueEl.textContent = "not available yet";
+    ui.outputSummary.setWriteFolderActual("not available yet");
   }
 }
 
@@ -679,7 +566,7 @@ async function readExistingPreview(targetDirHandle) {
 }
 
 async function shouldRewrite(targetDirHandle) {
-  if (forceRewriteInput.checked) {
+  if (ui.renderControls.isForceRewrite()) {
     return { rewrite: true, reason: "force-rewrite" };
   }
 
@@ -1021,7 +908,7 @@ async function processOne(entry, baseUrl, waitMs) {
   const targetDirHandle = await getTargetDirHandle(repoDirHandle, entry);
   const decision = await shouldRewrite(targetDirHandle);
 
-  writeFolderActualValueEl.textContent = getWriteFolderDisplayPath(entry);
+  ui.outputSummary.setWriteFolderActual(getWriteFolderDisplayPath(entry));
   const label = entry.targetType === "samples" ? entry.id : entry.name;
 
   if (!decision.rewrite) {
@@ -1136,11 +1023,11 @@ function printSummary(results) {
 class PreviewGeneratorV2App {
   hasRequiredGenerateFields() {
     return Boolean(repoDirHandle)
-      && parseInputList(sampleListInput.value).length > 0
-      && baseUrlInput.value.trim().length > 0
-      && assetFolderInput.value.trim().length > 0
-      && targetTypeInputs.some(input => input.checked)
-      && captureModeInputs.some(input => input.checked);
+      && parseInputList(ui.pathsOrIds.getValue()).length > 0
+      && ui.targetSource.hasBaseUrl()
+      && ui.assetFolder.hasValue()
+      && ui.targetSource.hasSelection()
+      && ui.captureMode.hasSelection();
   }
 
   syncGeneratePreviewButton() {
@@ -1176,20 +1063,20 @@ class PreviewGeneratorV2App {
       return;
     }
 
-    const lines = parseInputList(sampleListInput.value);
+    const lines = parseInputList(ui.pathsOrIds.getValue());
     if (!lines.length) {
       logger.log("Paste at least one path or ID.");
       return;
     }
 
-    const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, "");
-    const waitMs = Math.max(3000, Number(waitMsInput.value) || 3500);
+    const baseUrl = ui.targetSource.getBaseUrl();
+    const waitMs = ui.renderControls.getWaitMs();
     const targetType = ui.getSelectedTargetType();
 
     stopRequested = false;
     isGenerating = true;
     this.syncGeneratePreviewButton();
-    stopBtn.disabled = false;
+    ui.setStopDisabled(false);
     logger.log("");
     logger.log("Starting execution...");
     logger.log(`Target type: ${targetType}`);
@@ -1198,7 +1085,7 @@ class PreviewGeneratorV2App {
     logger.log(`Repo selected: ${repoDisplayName || "not selected"}`);
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
     logger.log(`Capture mode: ${ui.getCaptureModeLabel()}`);
-    logger.log(`Force rewrite: ${forceRewriteInput.checked}`);
+    logger.log(`Force rewrite: ${ui.renderControls.isForceRewrite()}`);
     logger.log("");
 
     const results = [];
@@ -1238,7 +1125,7 @@ class PreviewGeneratorV2App {
     } finally {
       isGenerating = false;
       this.syncGeneratePreviewButton();
-      stopBtn.disabled = true;
+      ui.setStopDisabled(true);
       logger.log("Done.");
     }
   }
@@ -1253,52 +1140,48 @@ class PreviewGeneratorV2App {
   }
 
   bindEvents() {
-    pickRepoBtn.addEventListener("click", () => {
+    ui.repoDestination.onPickRepo(() => {
       void this.handlePickRepo();
     });
 
-    executeBtn.addEventListener("click", () => {
+    ui.menuSample.onExecute(() => {
       void this.handleExecute();
     });
 
-    clearLogBtn.addEventListener("click", () => {
+    ui.status.onClear(() => {
       this.handleClearLog();
     });
 
-    stopBtn.addEventListener("click", () => {
+    ui.menuSample.onStop(() => {
       this.handleStop();
     });
 
-    captureModeInputs.forEach(input => {
-      input.addEventListener("change", () => {
-        logger.log(`Capture mode: ${ui.getCaptureModeLabel()}`);
-        this.syncGeneratePreviewButton();
-      });
-    });
-
-    baseUrlInput.addEventListener("input", () => {
+    ui.captureMode.onChange(() => {
+      logger.log(`Capture mode: ${ui.getCaptureModeLabel()}`);
       this.syncGeneratePreviewButton();
     });
 
-    waitMsInput.addEventListener("input", () => {
+    ui.targetSource.onBaseUrlInput(() => {
       this.syncGeneratePreviewButton();
     });
 
-    assetFolderInput.addEventListener("input", () => {
+    ui.renderControls.onWaitInput(() => {
+      this.syncGeneratePreviewButton();
+    });
+
+    ui.assetFolder.onInput(() => {
       updatePathPreviewLabels();
       this.syncGeneratePreviewButton();
     });
 
-    sampleListInput.addEventListener("input", () => {
+    ui.pathsOrIds.onInput(() => {
       updatePathPreviewLabels();
       this.syncGeneratePreviewButton();
     });
 
-    targetTypeInputs.forEach(input => {
-      input.addEventListener("change", () => {
-        updatePathPreviewLabels();
-        this.syncGeneratePreviewButton();
-      });
+    ui.targetSource.onTargetChange(() => {
+      updatePathPreviewLabels();
+      this.syncGeneratePreviewButton();
     });
   }
 
@@ -1314,4 +1197,4 @@ class PreviewGeneratorV2App {
   }
 }
 
-new PreviewGeneratorV2App().init();
+export { PreviewGeneratorV2App };
