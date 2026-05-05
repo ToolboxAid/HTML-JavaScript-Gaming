@@ -1,22 +1,70 @@
-# PR_26126_030-preview-generator-v2-status-header-and-fullscreen-css-fix
+# Full git status --short
+MM docs/dev/codex_commands.md
+MM docs/dev/commit_comment.txt
+M  docs/dev/reports/codex_changed_files.txt
+MM docs/dev/reports/codex_review.diff
+M  samples/phase-02/0201/assets/images/preview.svg
+M  samples/phase-02/0202/assets/images/preview.svg
+M  samples/phase-02/0203/assets/images/preview.svg
+M  samples/phase-02/0204/assets/images/preview.svg
+M  samples/phase-02/0205/assets/images/preview.svg
+M  samples/phase-02/0207/assets/images/preview.svg
+M  samples/phase-02/0208/assets/images/preview.svg
+M  samples/phase-02/0209/assets/images/preview.svg
+ M samples/phase-02/0210/assets/images/preview.svg
+M  samples/phase-02/0211/assets/images/preview.svg
+M  samples/phase-02/0212/assets/images/preview.svg
+M  samples/phase-02/0213/assets/images/preview.svg
+M  samples/phase-02/0214/assets/images/preview.svg
+M  samples/phase-02/0215/assets/images/preview.svg
+M  samples/phase-02/0216/assets/images/preview.svg
+M  samples/phase-02/0217/assets/images/preview.svg
+M  samples/phase-02/0219/assets/images/preview.svg
+M  samples/phase-02/0222/assets/images/preview.svg
+M  samples/phase-02/0224/assets/images/preview.svg
+ M samples/phase-02/0225/assets/images/preview.svg
+ M samples/phase-02/0226/assets/images/preview.svg
+ M samples/phase-02/0227/assets/images/preview.svg
+ M samples/phase-12/1212/assets/images/preview.svg
+ M samples/phase-12/1213/assets/images/preview.svg
+ M samples/phase-12/1214/assets/images/preview.svg
+ M samples/phase-12/1215/assets/images/preview.svg
+ M samples/phase-12/1216/assets/images/preview.svg
+ M samples/phase-12/1217/assets/images/preview.svg
+ M samples/phase-12/1218/assets/images/preview.svg
+ M samples/phase-12/1219/assets/images/preview.svg
+ M samples/phase-12/1220/assets/images/preview.svg
+MM tools/preview-generator-v2/index.html
 
-PR_030 files:
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
-- docs/dev/reports/codex_changed_files.txt
-- docs/dev/reports/codex_review.diff
-- tools/preview-generator-v2/index.html
+# PR scoped git diff --cached --stat
+ docs/dev/codex_commands.md            | 44 +++++++++++++++++++++---------
+ docs/dev/commit_comment.txt           |  2 +-
+ tools/preview-generator-v2/index.html | 51 ++++++++++++++++++++---------------
+ 3 files changed, 62 insertions(+), 35 deletions(-)
 
-Validation notes:
-- Status section no longer contains `accordion-v2__header` or `accordion-v2__icon` markup.
-- Clear remains in the Status header row as a normal button.
-- Full Screen capture calls `sanitizeClonedToolDocument` from both fullscreen `html2canvas` paths.
-- The cloned capture DOM normalizes unsupported CSS `color(...)` values in style elements, CSS rules, inline styles, and computed color-related properties.
-- Inline scripts in `tools/preview-generator-v2/index.html` parse successfully with `new Function`.
-- `git diff --check` passed for the PR_030 target files.
-- `npm run test:workspace-v2` is unavailable because the script is not defined in the current `package.json`.
-- `npm test` still fails in the existing shared extraction guard baseline outside this PR scope.
+# PR scoped git diff --stat
+ docs/dev/codex_commands.md            |  34 +++---
+ docs/dev/commit_comment.txt           |   2 +-
+ docs/dev/reports/codex_review.diff    | 215 +++++++++++++++++++++++++---------
+ tools/preview-generator-v2/index.html |  17 ++-
+ 4 files changed, 191 insertions(+), 77 deletions(-)
 
-Existing workspace changes excluded from this PR_030 ZIP:
-- Staged PR_028 sample-local README changes.
-- Unstaged `samples/phase-12/*/assets/images/preview.svg` changes.
+# Full git diff --stat
+ docs/dev/codex_commands.md                      |  34 ++--
+ docs/dev/commit_comment.txt                     |   2 +-
+ docs/dev/reports/codex_review.diff              | 215 +++++++++++++++++-------
+ samples/phase-02/0210/assets/images/preview.svg |   6 +-
+ samples/phase-02/0225/assets/images/preview.svg |  24 +--
+ samples/phase-02/0226/assets/images/preview.svg |  21 +--
+ samples/phase-02/0227/assets/images/preview.svg |  21 +--
+ samples/phase-12/1212/assets/images/preview.svg |  17 +-
+ samples/phase-12/1213/assets/images/preview.svg |  17 +-
+ samples/phase-12/1214/assets/images/preview.svg |  17 +-
+ samples/phase-12/1215/assets/images/preview.svg |  40 +++--
+ samples/phase-12/1216/assets/images/preview.svg |  40 +++--
+ samples/phase-12/1217/assets/images/preview.svg |  40 +++--
+ samples/phase-12/1218/assets/images/preview.svg |  17 +-
+ samples/phase-12/1219/assets/images/preview.svg |  17 +-
+ samples/phase-12/1220/assets/images/preview.svg |  17 +-
+ tools/preview-generator-v2/index.html           |  17 +-
+ 17 files changed, 299 insertions(+), 263 deletions(-)

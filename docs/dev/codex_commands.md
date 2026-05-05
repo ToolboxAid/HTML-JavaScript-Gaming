@@ -1,29 +1,51 @@
-# Codex Commands - PR_26126_030-preview-generator-v2-status-header-and-fullscreen-css-fix
+# Codex Commands - PR_26126_033-preview-generator-v2-paths-stretch-layout
 
 ```bash
-codex run "Create PR_26126_030-preview-generator-v2-status-header-and-fullscreen-css-fix. Fix Preview Generator V2 UI/capture only. Preserve existing generation behavior. Status must not render accordion affordances; remove the \"+\" from the Status header. Keep Clear on the same line as Status, but render it as a normal button, not accordion UI. Fix Full Screen capture failure caused by unsupported CSS color(...) values by sanitizing/normalizing unsupported CSS color functions only for the cloned capture DOM before html2canvas runs. Do not change live page styling. Do not fall back silently. Full Screen should succeed when the only blocker is unsupported CSS color(...). Preserve Canvas Only behavior. Do not modify samples. Do not add schema. Produce review artifacts."
+codex run "Create PR_26126_033-preview-generator-v2-paths-stretch-layout. Fix Preview Generator V2 layout only. Preserve existing generation behavior. In the left column, make the \"Paths or IDs\" accordion section stretch to fill all remaining vertical space down to the bottom of the panel above \"Last Generated Image\". Implement using flex layout: left panel column must be a flex container with column direction; set the Paths or IDs section to flex-grow:1 and its textarea to height:100% (or flex:1) so it expands fully. Do not use inline styles. Keep Last Generated Image fixed height below it. Do not modify samples. Do not add schema. Produce review artifacts."
 ```
 
 ## Validation Commands
 
-```bash
-rg -n "statusAccordion|Status|accordion-v2__icon|preview-generator-v2__status-header-row|preview-generator-v2__status-content|replaceUnsupportedColorFunctions|sanitizeComputedColorStyles|sanitizeClonedToolDocument|onclone" tools/preview-generator-v2/index.html
-node -e "const fs=require('fs');const html=fs.readFileSync('tools/preview-generator-v2/index.html','utf8');const status=html.match(/<section id=\"statusAccordion\"[\\s\\S]*?<\\/section>/)?.[0]||'';if(!status)throw new Error('Missing status section');if(status.includes('accordion-v2__icon')||status.includes('accordion-v2__header'))throw new Error('Status still has accordion affordance markup');console.log('status section has no accordion affordance');"
-node -e "const fs=require('fs');const html=fs.readFileSync('tools/preview-generator-v2/index.html','utf8');const scripts=[...html.matchAll(/<script(?![^>]*\\bsrc=)[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(m=>m[1]);scripts.forEach((script,i)=>{new Function(script);console.log('inline script '+(i+1)+' syntax ok');});"
-git diff --check
-git diff --name-only -- '*.json' tools/shared tools/schemas start_of_day
+```powershell
+@'
+const fs = require('fs');
+const html = fs.readFileSync('tools/preview-generator-v2/index.html', 'utf8');
+const required = [
+  '.preview-generator-v2__center-panel .preview-generator-v2__paths-section',
+  'flex: 1 1 auto;',
+  '.preview-generator-v2__paths-section .accordion-v2__content',
+  'height: 100%;',
+  '.preview-generator-v2__center-panel .preview-generator-v2__last-generated-section',
+  'flex: 0 0 auto;',
+  'preview-generator-v2__paths-section is-open'
+];
+for (const token of required) {
+  if (!html.includes(token)) throw new Error(`Missing layout token: ${token}`);
+}
+if (/<[^>]+style=/.test(html)) throw new Error('Inline style attribute found');
+console.log('paths stretch layout tokens ok');
+'@ | node -
+@'
+const fs = require('fs');
+const html = fs.readFileSync('tools/preview-generator-v2/index.html', 'utf8');
+const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]);
+scripts.forEach((script, index) => {
+  new Function(script);
+  console.log(`inline script ${index + 1} syntax ok`);
+});
+'@ | node -
+git diff --check -- tools/preview-generator-v2/index.html docs/dev/codex_commands.md docs/dev/commit_comment.txt docs/dev/reports/codex_review.diff docs/dev/reports/codex_changed_files.txt
 npm run test:workspace-v2
-npm test
 ```
 
 ## Playwright
 
-No Playwright test was added. This PR changes Preview Generator V2 status header markup and cloned-DOM fullscreen capture sanitization only. `npm run test:workspace-v2` is attempted as the standard command if available.
+No new Playwright test was added. This PR changes Preview Generator V2 layout CSS/section classing only, with existing `accordionV2` behavior unchanged. `npm run test:workspace-v2` is attempted as the standard command if available.
 
 ## Test Notes
 
-`npm run test:workspace-v2` is not defined in the current `package.json`. `npm test` was attempted and still fails in the existing shared extraction guard baseline, outside this PR scope.
+`npm run test:workspace-v2` is not defined in the current `package.json`.
 
 ## Manual Test
 
-Open Preview Generator V2 and confirm Status has no accordion plus/minus affordance, with Clear on the same line. Run Full Screen capture against a page whose only blocker is CSS `color(...)` and confirm it no longer fails for that parser error. Recheck Canvas Only capture still works.
+Open Preview Generator V2 and confirm the `Paths or IDs` accordion stretches through the available column height above `Last Generated Image`. Confirm the `Paths or IDs` textarea grows with the section, `Last Generated Image` stays fixed below it, and generation behavior is unchanged.

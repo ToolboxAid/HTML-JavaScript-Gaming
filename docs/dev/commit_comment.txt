@@ -1,1 +1,1 @@
-Remove status accordion affordance and sanitize fullscreen capture CSS colors - PR_26126_030-preview-generator-v2-status-header-and-fullscreen-css-fix
+Stretch Preview Generator V2 Paths accordion above fixed Last Generated Image - PR_26126_033-preview-generator-v2-paths-stretch-layout

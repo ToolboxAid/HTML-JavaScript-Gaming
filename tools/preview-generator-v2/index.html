@@ -40,7 +40,18 @@
       overflow: hidden;
     }
 
+    .preview-generator-v2__center-panel .preview-generator-v2__paths-section {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .preview-generator-v2__paths-section .accordion-v2__content {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
     .preview-generator-v2__left-accordion,
+    .preview-generator-v2__center-accordion,
     .preview-generator-v2__right-accordion {
       --accordion-v2-accent: var(--pm-accent);
       --accordion-v2-line: var(--pm-line);
@@ -137,6 +148,7 @@
     .preview-generator-v2__paths-input {
       flex: 1 1 auto;
       min-height: 0;
+      height: 100%;
       width: 100%;
       resize: none;
       overflow: auto;
@@ -144,19 +156,13 @@
       font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
     }
 
-    .preview-generator-v2__last-generated-section {
+    .preview-generator-v2__center-panel .preview-generator-v2__last-generated-section {
       flex: 0 0 auto;
       min-width: 0;
-      display: grid;
-      gap: 8px;
-      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
-      border-radius: 8px;
-      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
-      padding: 10px;
     }
 
     .preview-generator-v2__last-generated-empty {
-      min-height: 120px;
+      min-height: 300px;
       display: grid;
       place-items: center;
       border: 1px dashed var(--pm-line, rgba(221, 214, 254, 0.26));
@@ -182,8 +188,8 @@
     }
 
     .preview-generator-v2__last-generated-frame {
-      min-height: 120px;
-      max-height: 220px;
+      min-height: 300px;
+      max-height: 550px;
       display: grid;
       place-items: center;
       overflow: hidden;
@@ -194,7 +200,7 @@
 
     .preview-generator-v2__last-generated-frame img {
       max-width: 100%;
-      max-height: 220px;
+      max-height: 550px;
       object-fit: contain;
       display: block;
     }
@@ -485,8 +491,13 @@
       </aside>
 
       <main class="palette-manager-v2__panel palette-manager-v2__panel--center preview-generator-v2__center-panel">
-        <h2 id="pathsOrIdsTitle" class="preview-generator-v2__section-heading">Paths or IDs</h2>
-        <textarea id="sampleList" class="preview-generator-v2__paths-input" aria-labelledby="pathsOrIdsTitle" placeholder="Games examples:
+        <section class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__paths-section is-open" data-accordion-v2-open="true">
+          <button id="pathsOrIdsTitle" class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="pathsOrIdsContent">
+            <span>Paths or IDs</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="pathsOrIdsContent" class="accordion-v2__content">
+            <textarea id="sampleList" class="preview-generator-v2__paths-input" aria-labelledby="pathsOrIdsTitle" placeholder="Games examples:
 games\&lt;gamename&gt;\index.html
 &lt;gamename&gt;
 
@@ -500,15 +511,22 @@ samples/phase-13/1303/index.html
 Tools examples:
 tools\&lt;toolname&gt;\index.html
 &lt;toolname&gt;"></textarea>
-        <section id="lastGeneratedImageSection" class="preview-generator-v2__last-generated-section" aria-labelledby="lastGeneratedImageTitle">
-          <h2 id="lastGeneratedImageTitle" class="preview-generator-v2__section-heading">Last Generated Image</h2>
-          <div id="lastGeneratedImageEmpty" class="preview-generator-v2__last-generated-empty">No preview generated yet.</div>
-          <figure id="lastGeneratedImagePreview" class="preview-generator-v2__last-generated-preview" hidden>
-            <div class="preview-generator-v2__last-generated-frame">
-              <img id="lastGeneratedImage" alt="Most recently generated preview" />
-            </div>
-            <figcaption id="lastGeneratedImageMeta">No preview generated yet.</figcaption>
-          </figure>
+          </div>
+        </section>
+        <section id="lastGeneratedImageSection" class="accordion-v2 preview-generator-v2__center-accordion preview-generator-v2__last-generated-section is-open" data-accordion-v2-open="true" aria-labelledby="lastGeneratedImageTitle">
+          <button id="lastGeneratedImageTitle" class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="lastGeneratedImageContent">
+            <span>Last Generated Image</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="lastGeneratedImageContent" class="accordion-v2__content">
+            <div id="lastGeneratedImageEmpty" class="preview-generator-v2__last-generated-empty">No preview generated yet.</div>
+            <figure id="lastGeneratedImagePreview" class="preview-generator-v2__last-generated-preview" hidden>
+              <div class="preview-generator-v2__last-generated-frame">
+                <img id="lastGeneratedImage" alt="Most recently generated preview" />
+              </div>
+              <figcaption id="lastGeneratedImageMeta">No preview generated yet.</figcaption>
+            </figure>
+          </div>
         </section>
       </main>
 
