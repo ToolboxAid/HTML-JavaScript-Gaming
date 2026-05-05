@@ -1,0 +1,38 @@
+# Preview Generator V2 Playwright Result - PR_26126_036
+
+Coverage before this PR:
+- No existing Playwright spec under the configured Playwright roots launched tools/preview-generator-v2/index.html.
+- tests/playwright existed but contained no runnable spec files.
+- tests/ui existed but contained no runnable spec files.
+
+Coverage added:
+- tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+
+What the test validates:
+- Preview Generator V2 launches from /tools/preview-generator-v2/index.html through the repo HTTP server.
+- The Preview Generator V2 app shell is visible.
+- The Preview Generator V2 heading is visible.
+- menuSample nav exists.
+- Generate Preview and Stop buttons are visible and initially disabled.
+- Games is the default target source.
+- Paths or IDs input is visible.
+- Status block is visible.
+- Repo Destination accordion collapses and reopens with aria-expanded state changes.
+- No page errors are emitted during the launch/toggle path.
+
+Command run:
+- npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list
+
+Result:
+- PASS: 1 test passed.
+
+Output:
+- ok 1 [playwright] tests/playwright/PreviewGeneratorV2Baseline.spec.mjs Preview Generator V2 baseline launches the tool shell and toggles a working accordion
+- 1 passed
+
+Workspace V2 default command:
+- Command attempted: npm run test:workspace-v2
+- Result: FAIL, package.json does not define a test:workspace-v2 script.
+
+Full samples smoke test:
+- Skipped. This PR is a Preview Generator V2 audit/test-hook PR and does not modify samples or shared sample loading.

@@ -1,0 +1,96 @@
+# Preview Generator V2 Common Style Candidates - PR_26126_036
+
+Scope:
+- src/engine/theme/main.css
+- src/engine/ui/hubCommon.css
+- src/engine/theme/accordionV2/accordionV2.css
+- tools/palette-manager-v2/paletteManagerV2.css
+- tools/preview-generator-v2/previewGeneratorV2.css
+
+Method:
+- Parsed CSS declaration blocks inside braces.
+- Normalized declaration contents by sorting declarations and normalizing whitespace.
+- Compared declaration bodies, not selector names.
+- Reported exact duplicate bodies and near-duplicate bodies involving Preview Generator V2 or its immediate layout base.
+
+No consolidation was applied in this PR. These are candidates only because consolidation would affect shared layout/style behavior across tools.
+
+Exact duplicate candidates:
+
+1. Header frame host sizing
+- Declaration body: display: block; margin: 10px auto; width: calc(100% - 32px)
+- tools/palette-manager-v2/paletteManagerV2.css:29 selector [data-palette-manager-v2-header], [data-palette-manager-v2-status]
+- tools/preview-generator-v2/previewGeneratorV2.css:15 selector [data-preview-generator-v2-header]
+- Candidate: common tool-local header frame host rule.
+
+2. Accordion color variable binding
+- Declaration body: --accordion-v2-accent: var(--pm-accent); --accordion-v2-line: var(--pm-line); --accordion-v2-surface: var(--pm-surface)
+- tools/palette-manager-v2/paletteManagerV2.css:248 selector .palette-manager-v2__panel--right .accordion-v2
+- tools/palette-manager-v2/paletteManagerV2.css:295 selector .palette-manager-v2__panel--left .accordion-v2, .palette-manager-v2__panel--center .accordion-v2
+- tools/preview-generator-v2/previewGeneratorV2.css:39 selector .preview-generator-v2__left-accordion, .preview-generator-v2__center-accordion, .preview-generator-v2__right-accordion
+- Candidate: theme-level accordionV2 palette binding.
+
+3. Fullscreen tool root sizing
+- Declaration body: display: flex; flex-direction: column; flex: 1 1 auto; margin: 0; max-width: none; min-height: 0; min-width: 0; overflow: hidden; padding: 8px 12px; width: 100%
+- tools/palette-manager-v2/paletteManagerV2.css:781 selector html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] > .palette-manager-v2, body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] > .palette-manager-v2
+- tools/preview-generator-v2/previewGeneratorV2.css:271 selector html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] > .palette-manager-v2, body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] > .palette-manager-v2
+- Candidate: common fullscreen tool root rule after Palette Manager/Preview Generator behavior is proven stable.
+
+4. Fullscreen three-column layout sizing
+- Declaration body: align-items: stretch; flex: 1 1 auto; grid-template-columns: 340px minmax(0, 1fr) 360px; height: 100%; min-height: 0; width: 100%
+- tools/palette-manager-v2/paletteManagerV2.css:795 selector html:fullscreen body.tools-platform-surface[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout, body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="palette-manager-v2"] .palette-manager-v2__layout
+- tools/preview-generator-v2/previewGeneratorV2.css:285 selector html:fullscreen body.tools-platform-surface[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout, body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="preview-generator-v2"] .palette-manager-v2__layout
+- Candidate: common fullscreen three-column shell rule.
+
+5. Fullscreen left/right panel sizing
+- Declaration body: align-self: stretch; height: 100%; max-height: none; position: static
+- tools/palette-manager-v2/paletteManagerV2.css:810 selector fullscreen palette left/right panels
+- tools/preview-generator-v2/previewGeneratorV2.css:300 selector fullscreen preview-generator left/right panels
+- Candidate: common fullscreen side-panel rule.
+
+6. Fullscreen side-panel anchoring
+- Declaration body: justify-self: start
+- tools/palette-manager-v2/paletteManagerV2.css:820 selector fullscreen palette left panel
+- tools/preview-generator-v2/previewGeneratorV2.css:310 selector fullscreen preview-generator left panel
+- Declaration body: justify-self: end
+- tools/palette-manager-v2/paletteManagerV2.css:825 selector fullscreen palette right panel
+- tools/preview-generator-v2/previewGeneratorV2.css:315 selector fullscreen preview-generator right panel
+- Candidate: common fullscreen side-panel alignment rules.
+
+7. Fullscreen center panel sizing
+- Declaration body: align-self: stretch; height: 100%; max-height: none; min-height: 0
+- tools/palette-manager-v2/paletteManagerV2.css:830 selector fullscreen palette center panel
+- tools/preview-generator-v2/previewGeneratorV2.css:320 selector fullscreen preview-generator center panel
+- Candidate: common fullscreen center-panel rule.
+
+8. Hidden element display
+- Declaration body: display: none
+- src/engine/theme/accordionV2/accordionV2.css:67 selector .accordion-v2__content[hidden]
+- tools/preview-generator-v2/previewGeneratorV2.css:161 selector .preview-generator-v2__last-generated-empty[hidden]
+- tools/preview-generator-v2/previewGeneratorV2.css:172 selector .preview-generator-v2__last-generated-preview[hidden]
+- tools/preview-generator-v2/previewGeneratorV2.css:220 selector .preview-generator-v2 .accordion-v2__content[hidden]
+- Candidate: review whether the local accordion hidden override is still needed; the figure/empty-state hidden rules may remain local because they target non-accordion elements.
+
+9. Preview-only flex growth duplication
+- Declaration body: flex: 1 1 auto; min-height: 0
+- tools/preview-generator-v2/previewGeneratorV2.css:29 selector .preview-generator-v2__center-panel .preview-generator-v2__paths-section
+- tools/preview-generator-v2/previewGeneratorV2.css:34 selector .preview-generator-v2__paths-section .accordion-v2__content
+- Candidate: local utility or grouped selector if a later style cleanup PR is approved.
+
+Near-duplicate candidates:
+
+1. Tool body shell
+- Similarity: 0.75 declaration overlap.
+- tools/palette-manager-v2/paletteManagerV2.css:1 body.tools-platform-tool-page[data-tool-id="palette-manager-v2"]
+- tools/preview-generator-v2/previewGeneratorV2.css:1 body.tools-platform-tool-page[data-tool-id="preview-generator-v2"]
+- Shared parts: flex column viewport shell, min-height, overflow behavior.
+- Preview-specific parts: color and background.
+- Candidate: common tool-page shell base with tool-specific theme decoration.
+
+2. Preview flex column surfaces
+- Similarity: 0.83 declaration overlap.
+- tools/preview-generator-v2/previewGeneratorV2.css:21 .preview-generator-v2__center-panel
+- tools/preview-generator-v2/previewGeneratorV2.css:211 .preview-generator-v2__status-content
+- Shared parts: flex column, flex grow, min-height, overflow hidden.
+- Difference: status content adds padding.
+- Candidate: local layout utility only if a later cleanup PR allows class-level consolidation.
