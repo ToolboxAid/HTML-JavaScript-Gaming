@@ -1,1 +1,1 @@
-Polish Preview Generator V2 output targets and summary controls - PR_26126_015-preview-generator-v2-output-target-polish
+Fix Preview Generator V2 right accordion collapse behavior - PR_26126_018-preview-generator-v2-working-accordion-and-status-fix

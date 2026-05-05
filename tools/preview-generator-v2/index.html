@@ -40,20 +40,30 @@
       overflow: hidden;
     }
 
-    .preview-generator-v2__output-summary {
+    .preview-generator-v2__right-accordion {
+      --accordion-v2-accent: var(--pm-accent);
+      --accordion-v2-line: var(--pm-line);
+      --accordion-v2-surface: var(--pm-surface);
+    }
+
+    .preview-generator-v2__output-summary,
+    .preview-generator-v2__output-summary.is-open {
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+
+    .preview-generator-v2__output-summary .accordion-v2__content {
       flex: 0 0 auto;
       display: grid;
       gap: 6px;
-      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
-      border-radius: 8px;
-      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
-      padding: 8px;
       overflow: visible;
+      padding: 8px;
     }
 
-    .preview-generator-v2__output-summary .preview-generator-v2__value {
-      min-height: 28px;
-      padding: 4px 8px;
+    .preview-generator-v2__output-summary .accordion-v2__header {
+      flex-basis: 38px;
+      min-height: 38px;
+      padding: 8px 10px;
     }
 
     .preview-generator-v2__section-heading {
@@ -61,6 +71,17 @@
       color: #ffffff;
       font-size: 1rem;
       line-height: 1.2;
+    }
+
+    .preview-generator-v2__static-section {
+      min-width: 0;
+      display: grid;
+      gap: 10px;
+      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
+      border-radius: 8px;
+      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
+      padding: 12px;
+      overflow: visible;
     }
 
     .preview-generator-v2__stack {
@@ -114,6 +135,11 @@
       gap: 4px;
     }
 
+    .preview-generator-v2__repo-selected-field {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
+    }
+
     .preview-generator-v2__paths-input {
       flex: 1 1 auto;
       min-height: 0;
@@ -127,22 +153,20 @@
     .preview-generator-v2__status-block {
       flex: 1 1 auto;
       min-height: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
-      border-radius: 8px;
-      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
-      padding: 12px;
       overflow: hidden;
     }
 
-    .preview-generator-v2__status-heading {
-      flex: 0 0 auto;
-      margin: 0;
-      color: #ffffff;
-      font-size: 1rem;
-      line-height: 1.2;
+    .preview-generator-v2__status-block .accordion-v2__content {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .preview-generator-v2__output-summary .accordion-v2__content[hidden],
+    .preview-generator-v2__status-block .accordion-v2__content[hidden] {
+      display: none;
     }
 
     .preview-generator-v2__status-text {
@@ -274,17 +298,14 @@
   <div class="palette-manager-v2 preview-generator-v2 app-shell">
     <div class="palette-manager-v2__layout preview-generator-v2__layout tools-platform-layout-grid">
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
-        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationAccordionContent">
-            <span>Repo Destination</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="repoDestinationAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
+        <section class="preview-generator-v2__static-section" aria-labelledby="repoDestinationTitle">
+          <h2 id="repoDestinationTitle" class="preview-generator-v2__section-heading">Repo Destination</h2>
+          <div id="repoDestinationContent" class="preview-generator-v2__stack">
             <div class="palette-manager-v2__controls">
               <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
             </div>
 
-            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
+            <div class="palette-manager-v2__field preview-generator-v2__repo-selected-field">
               <span>Repo selected</span>
               <div id="repoSelectedValue" class="preview-generator-v2__value">not selected</div>
             </div>
@@ -295,12 +316,9 @@
           </div>
         </section>
 
-        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="targetSourceAccordionContent">
-            <span>Target Source</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="targetSourceAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
+        <section class="preview-generator-v2__static-section" aria-labelledby="targetSourceTitle">
+          <h2 id="targetSourceTitle" class="preview-generator-v2__section-heading">Target Source</h2>
+          <div id="targetSourceContent" class="preview-generator-v2__stack">
             <fieldset class="preview-generator-v2__radio-group" aria-label="Target source">
               <label class="preview-generator-v2__radio-option" for="targetTypeGames">
                 <input id="targetTypeGames" type="radio" name="targetType" value="games" />
@@ -323,12 +341,9 @@
           </div>
         </section>
 
-        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsAccordionContent">
-            <span>Render Controls</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="renderControlsAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
+        <section class="preview-generator-v2__static-section" aria-labelledby="renderControlsTitle">
+          <h2 id="renderControlsTitle" class="preview-generator-v2__section-heading">Render Controls</h2>
+          <div id="renderControlsContent" class="preview-generator-v2__stack">
             <label class="palette-manager-v2__field" for="waitMs">
               <span>Wait before capture</span>
               <input id="waitMs" type="number" value="3500" min="3000" step="500" />
@@ -383,9 +398,12 @@ tools\&lt;toolname&gt;\index.html
       </main>
 
       <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
-        <section id="outputSummary" class="preview-generator-v2__output-summary" aria-labelledby="outputSummaryTitle">
-          <h2 id="outputSummaryTitle" class="preview-generator-v2__section-heading">Output Summary</h2>
-          <div id="outputSummaryContent" class="preview-generator-v2__stack">
+        <section id="outputSummary" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__output-summary is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryContent">
+            <span>Output Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="outputSummaryContent" class="accordion-v2__content preview-generator-v2__stack">
             <div class="preview-generator-v2__summary-field">
               <span>Write folder sample</span>
               <div id="writeFolderSampleValue" class="preview-generator-v2__value">samples\phaseXX\XXXX\assets\images</div>
@@ -398,10 +416,16 @@ tools\&lt;toolname&gt;\index.html
           </div>
         </section>
 
-        <section class="preview-generator-v2__status-block" aria-labelledby="statusBlockTitle">
-          <h2 id="statusBlockTitle" class="preview-generator-v2__status-heading">Status</h2>
-          <div id="status" class="preview-generator-v2__status-text">Repo folder: not selected</div>
-          <div id="log"></div>
+        <section id="statusAccordion" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__status-block is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
+            <span>Status</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="statusAccordionContent" class="accordion-v2__content">
+            <div id="status" class="preview-generator-v2__status-text" hidden></div>
+            <div id="log">Ready.
+</div>
+          </div>
         </section>
       </aside>
     </div>
@@ -1242,7 +1266,7 @@ tools\&lt;toolname&gt;\index.html
           repoDisplayName = getRepoDestinationDisplayName(repoDirHandle);
 
           setRepoDestinationDisplayName(repoDisplayName);
-          statusEl.textContent = `Repo folder: ${repoDisplayName}`;
+          statusEl.textContent = "";
           executeBtn.disabled = false;
 
           await updatePathPreviewLabels();

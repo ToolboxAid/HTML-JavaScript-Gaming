@@ -1,243 +1,334 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index c9ad44b1..2d1eb85d 100644
+index 2d1eb85d..e2be624b 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
 @@ -1,7 +1,7 @@
--# Codex Commands - PR_26126_014-preview-generator-v2-layout-polish
-+# Codex Commands - PR_26126_015-preview-generator-v2-output-target-polish
+-# Codex Commands - PR_26126_015-preview-generator-v2-output-target-polish
++# Codex Commands - PR_26126_018-preview-generator-v2-working-accordion-and-status-fix
  
  ```bash
--codex run "Create PR_26126_014-preview-generator-v2-layout-polish. Fix Preview Generator V2 UI polish only. Preserve existing generation behavior. Fix Hide Header & Details so it enters the same fullscreen/collapsed-header behavior used by Palette Manager V2. Move Pick Repo Folder above Repo Selected. Status must not use an accordion; render Status as a normal compact status block. Reduce Output Summary height so it fits content instead of stretching tall; keep Write folder sample and Write folder compact and readable. Do not modify samples. Do not add schema. Produce review artifacts."
-+codex run "Create PR_26126_015-preview-generator-v2-output-target-polish. Fix Preview Generator V2 UI polish only. Preserve existing generation behavior. Output Summary must not show dead accordion controls such as X or underscore unless they work; remove those controls. Status must remain a normal block with no accordion and no X. Update write folder sample labels/values: \"games\\Game Name\" becomes \"games\\<gamename>\", \"tools\\Tool Name\" becomes \"tools\\<toolname>\", and any repeated game example must use \"games\\<gamename>\". In Target type, move Games above Samples and remove the \"Target type\" text label. Render \"Write folder sample\" label/value on two lines with value \"samples\\phaseXX\\XXXX\\assets\\images\". Render \"Write folder\" label/value on two lines with value \"not available yet\". Do not modify samples. Do not add schema. Produce review artifacts."
+-codex run "Create PR_26126_015-preview-generator-v2-output-target-polish. Fix Preview Generator V2 UI polish only. Preserve existing generation behavior. Output Summary must not show dead accordion controls such as X or underscore unless they work; remove those controls. Status must remain a normal block with no accordion and no X. Update write folder sample labels/values: \"games\\Game Name\" becomes \"games\\<gamename>\", \"tools\\Tool Name\" becomes \"tools\\<toolname>\", and any repeated game example must use \"games\\<gamename>\". In Target type, move Games above Samples and remove the \"Target type\" text label. Render \"Write folder sample\" label/value on two lines with value \"samples\\phaseXX\\XXXX\\assets\\images\". Render \"Write folder\" label/value on two lines with value \"not available yet\". Do not modify samples. Do not add schema. Produce review artifacts."
++codex run "Create PR_26126_018-preview-generator-v2-working-accordion-and-status-fix. Fix Preview Generator V2 UI only. Preserve existing generation behavior. Right column controls must use a working accordion: headers toggle open/closed panels, icons reflect state, and controls remain usable when expanded. Do not leave dead X/underscore controls. Move status text such as \"Ready.\" out of the header/status line and into the textarea/status output area below. Specifically, do not set header/status display to \"Ready.\"; keep repo destination display separate from status output. Ensure setRepoDestinationDisplayName(repoDisplayName) still works, execute button enables correctly, and \"Ready.\" appears only in the lower text/status output area. Do not modify samples. Do not add schema. Produce review artifacts."
  ```
  
  ## Validation Commands
-@@ -25,9 +25,7 @@ const errors = [];
- const consoleErrors = [];
- page.on('pageerror', (error) => errors.push(error.message));
- page.on('console', (message) => {
--  if (message.type() === 'error') {
--    consoleErrors.push(message.text());
--  }
-+  if (message.type() === 'error') consoleErrors.push(message.text());
- });
- await page.route('https://cdn.jsdelivr.net/**', async (route) => {
-   await route.fulfill({ status: 200, contentType: 'text/javascript', body: 'window.html2canvas = window.html2canvas || undefined;' });
-@@ -43,7 +41,7 @@ await page.addInitScript(() => {
-   class FakeDirectoryHandle {
-     constructor(name = 'SelectedRepoFolder', path = '') { this.kind = 'directory'; this.name = name; this.path = path; this.children = new Map(); }
-     async getDirectoryHandle(name) { const key = `dir:${name}`; if (!this.children.has(key)) { const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeDirectoryHandle(name, nextPath)); } return this.children.get(key); }
--    async getFileHandle(name, options = {}) { const key = `file:${name}`; if (!this.children.has(key)) { if (!options.create) { throw new DOMException('Not found', 'NotFoundError'); } const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeFileHandle(nextPath)); } return this.children.get(key); }
-+    async getFileHandle(name, options = {}) { const key = `file:${name}`; if (!this.children.has(key)) { if (!options.create) throw new DOMException('Not found', 'NotFoundError'); const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeFileHandle(nextPath)); } return this.children.get(key); }
+@@ -39,7 +39,7 @@ await page.addInitScript(() => {
+     async createWritable() { const path = this.path; return { async write(content) { writes.push({ path, content: String(content) }); }, async close() {} }; }
    }
-   window.__previewGeneratorV2Writes = writes;
-   window.showDirectoryPicker = async () => new FakeDirectoryHandle();
-@@ -51,25 +49,39 @@ await page.addInitScript(() => {
+   class FakeDirectoryHandle {
+-    constructor(name = 'SelectedRepoFolder', path = '') { this.kind = 'directory'; this.name = name; this.path = path; this.children = new Map(); }
++    constructor(name = 'HTML-JavaScript-Gaming', path = '') { this.kind = 'directory'; this.name = name; this.path = path; this.children = new Map(); }
+     async getDirectoryHandle(name) { const key = `dir:${name}`; if (!this.children.has(key)) { const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeDirectoryHandle(name, nextPath)); } return this.children.get(key); }
+     async getFileHandle(name, options = {}) { const key = `file:${name}`; if (!this.children.has(key)) { if (!options.create) throw new DOMException('Not found', 'NotFoundError'); const nextPath = this.path ? `${this.path}/${name}` : name; this.children.set(key, new FakeFileHandle(nextPath)); } return this.children.get(key); }
+   }
+@@ -49,39 +49,37 @@ await page.addInitScript(() => {
  
  await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: 'domcontentloaded' });
  await page.waitForSelector('#shared-theme-header');
--await page.waitForFunction(() => document.querySelector('[data-preview-generator-v2-summary]')?.dataset.toolsPlatformSummaryActive === '1');
- 
--const repoOrder = await page.locator('#repoDestinationAccordionContent > *').evaluateAll((nodes) => nodes.map((node) => node.textContent.trim().replace(/\s+/g, ' ')));
--if (!repoOrder[0].includes('Pick Repo Folder') || !repoOrder[1].includes('Repo selected')) throw new Error(`Repo destination order is wrong: ${JSON.stringify(repoOrder)}`);
-+if (await page.locator('#outputSummary .accordion-v2__icon').count() !== 0) throw new Error('Output Summary still has accordion icon controls.');
-+if (await page.locator('#outputSummary .accordion-v2__header').count() !== 0) throw new Error('Output Summary still has accordion header controls.');
- if (await page.locator('#statusAccordionContent').count() !== 0) throw new Error('Status accordion content still exists.');
--if (await page.locator('.accordion-v2__header span:text-is("Status")').count() !== 0) throw new Error('Status is still rendered as an accordion header.');
--if (await page.locator('.preview-generator-v2__status-block #status').count() !== 1) throw new Error('Status block does not contain status text.');
-+if (await page.locator('.preview-generator-v2__status-block .accordion-v2__icon').count() !== 0) throw new Error('Status block still has accordion icon controls.');
+-
+-if (await page.locator('#outputSummary .accordion-v2__icon').count() !== 0) throw new Error('Output Summary still has accordion icon controls.');
+-if (await page.locator('#outputSummary .accordion-v2__header').count() !== 0) throw new Error('Output Summary still has accordion header controls.');
+-if (await page.locator('#statusAccordionContent').count() !== 0) throw new Error('Status accordion content still exists.');
+-if (await page.locator('.preview-generator-v2__status-block .accordion-v2__icon').count() !== 0) throw new Error('Status block still has accordion icon controls.');
+-
+-const targetLabels = await page.locator('#targetSourceAccordionContent .preview-generator-v2__radio-option span').evaluateAll((items) => items.map((item) => item.textContent.trim()));
+-if (JSON.stringify(targetLabels) !== JSON.stringify(['Games', 'Samples', 'Tools'])) throw new Error(`Unexpected target order: ${JSON.stringify(targetLabels)}`);
+-if ((await page.locator('#targetSourceAccordionContent').innerText()).includes('Target type')) throw new Error('Target type text label still visible.');
+-
+-const initialSampleText = await page.locator('#writeFolderSampleValue').innerText();
+-if (initialSampleText !== 'samples\\phaseXX\\XXXX\\assets\\images') throw new Error(`Unexpected initial sample text: ${initialSampleText}`);
+-const initialWriteText = await page.locator('#writeFolderActualValue').innerText();
+-if (initialWriteText !== 'not available yet') throw new Error(`Unexpected initial write folder text: ${initialWriteText}`);
+-
+-const summaryFields = await page.locator('#outputSummaryContent .preview-generator-v2__summary-field').evaluateAll((fields) => fields.map((field) => {
+-  const children = Array.from(field.children);
+-  return children.map((child) => ({ text: child.textContent.trim(), top: Math.round(child.getBoundingClientRect().top) }));
+-}));
+-for (const field of summaryFields) {
+-  if (field.length !== 2 || field[0].top >= field[1].top) throw new Error(`Summary field is not two-line label/value: ${JSON.stringify(field)}`);
++await page.waitForFunction(() => document.querySelector('#outputSummary .accordion-v2__header')?.dataset.accordionV2Bound === 'true');
++await page.waitForFunction(() => document.querySelector('#statusAccordion .accordion-v2__header')?.dataset.accordionV2Bound === 'true');
 +
-+const targetLabels = await page.locator('#targetSourceAccordionContent .preview-generator-v2__radio-option span').evaluateAll((items) => items.map((item) => item.textContent.trim()));
-+if (JSON.stringify(targetLabels) !== JSON.stringify(['Games', 'Samples', 'Tools'])) throw new Error(`Unexpected target order: ${JSON.stringify(targetLabels)}`);
-+if ((await page.locator('#targetSourceAccordionContent').innerText()).includes('Target type')) throw new Error('Target type text label still visible.');
++for (const selector of ['#outputSummary', '#statusAccordion']) {
++  const header = page.locator(`${selector} .accordion-v2__header`);
++  const content = page.locator(`${selector} .accordion-v2__content`);
++  const icon = page.locator(`${selector} .accordion-v2__icon`);
++  if (await header.count() !== 1) throw new Error(`${selector} missing accordion header`);
++  if (await content.count() !== 1) throw new Error(`${selector} missing accordion content`);
++  if (await icon.count() !== 1) throw new Error(`${selector} missing accordion icon`);
++  if (await header.getAttribute('aria-expanded') !== 'true') throw new Error(`${selector} should start expanded`);
++  await header.click();
++  await page.waitForFunction((target) => document.querySelector(`${target} .accordion-v2__header`)?.getAttribute('aria-expanded') === 'false', selector);
++  const collapsed = await content.evaluate((node) => ({
++    hidden: node.hidden,
++    display: getComputedStyle(node).display,
++    height: node.getBoundingClientRect().height
++  }));
++  if (!collapsed.hidden) throw new Error(`${selector} content should be hidden after collapse`);
++  if (collapsed.display !== 'none') throw new Error(`${selector} collapsed content display should be none, got ${collapsed.display}`);
++  if (collapsed.height !== 0) throw new Error(`${selector} collapsed content height should be 0, got ${collapsed.height}`);
++  await header.click();
++  await page.waitForFunction((target) => document.querySelector(`${target} .accordion-v2__header`)?.getAttribute('aria-expanded') === 'true', selector);
++  if (await content.evaluate((node) => node.hidden) !== false) throw new Error(`${selector} content should be visible after expand`);
+ }
  
--const outputFlex = await page.locator('.preview-generator-v2__output-summary').evaluate((node) => getComputedStyle(node).flexGrow);
--if (outputFlex !== '0') throw new Error(`Output Summary should not flex-grow; got ${outputFlex}`);
- const initialSampleText = await page.locator('#writeFolderSampleValue').innerText();
--if (initialSampleText !== 'samples\\phaseXX\\XXXX\\assets\\images') throw new Error(`Unexpected write-folder sample text: ${initialSampleText}`);
-+if (initialSampleText !== 'samples\\phaseXX\\XXXX\\assets\\images') throw new Error(`Unexpected initial sample text: ${initialSampleText}`);
-+const initialWriteText = await page.locator('#writeFolderActualValue').innerText();
-+if (initialWriteText !== 'not available yet') throw new Error(`Unexpected initial write folder text: ${initialWriteText}`);
-+
-+const summaryFields = await page.locator('#outputSummaryContent .preview-generator-v2__summary-field').evaluateAll((fields) => fields.map((field) => {
-+  const children = Array.from(field.children);
-+  return children.map((child) => ({ text: child.textContent.trim(), top: Math.round(child.getBoundingClientRect().top) }));
-+}));
-+for (const field of summaryFields) {
-+  if (field.length !== 2 || field[0].top >= field[1].top) throw new Error(`Summary field is not two-line label/value: ${JSON.stringify(field)}`);
-+}
-+
-+const placeholder = await page.locator('#sampleList').getAttribute('placeholder');
-+if (!placeholder.includes('games\\<gamename>\\index.html')) throw new Error(`Game placeholder not normalized: ${placeholder}`);
-+if (!placeholder.includes('tools\\<toolname>\\index.html')) throw new Error(`Tool placeholder not normalized: ${placeholder}`);
- 
--const summary = page.locator('[data-preview-generator-v2-summary]');
--await summary.click();
--await page.waitForFunction(() => document.querySelector('.is-collapsible')?.open === false);
--await page.waitForFunction(() => document.querySelector('[data-preview-generator-v2-summary]')?.dataset.toolsPlatformSummaryState === 'collapsed');
--await summary.click();
--await page.waitForFunction(() => document.querySelector('.is-collapsible')?.open === true);
-+await page.check('#targetTypeGames');
-+await page.waitForFunction(() => document.getElementById('writeFolderSampleValue').textContent === 'games\\<gamename>\\assets\\images');
-+await page.check('#targetTypeTools');
-+await page.waitForFunction(() => document.getElementById('writeFolderSampleValue').textContent === 'tools\\<toolname>\\assets\\images');
-+await page.check('#targetTypeSamples');
-+await page.waitForFunction(() => document.getElementById('writeFolderSampleValue').textContent === 'samples\\phaseXX\\XXXX\\assets\\images');
+-const placeholder = await page.locator('#sampleList').getAttribute('placeholder');
+-if (!placeholder.includes('games\\<gamename>\\index.html')) throw new Error(`Game placeholder not normalized: ${placeholder}`);
+-if (!placeholder.includes('tools\\<toolname>\\index.html')) throw new Error(`Tool placeholder not normalized: ${placeholder}`);
+-
+-await page.check('#targetTypeGames');
+-await page.waitForFunction(() => document.getElementById('writeFolderSampleValue').textContent === 'games\\<gamename>\\assets\\images');
+-await page.check('#targetTypeTools');
+-await page.waitForFunction(() => document.getElementById('writeFolderSampleValue').textContent === 'tools\\<toolname>\\assets\\images');
+-await page.check('#targetTypeSamples');
+-await page.waitForFunction(() => document.getElementById('writeFolderSampleValue').textContent === 'samples\\phaseXX\\XXXX\\assets\\images');
++if (await page.locator('#status').isVisible()) throw new Error('Hidden status display should not be visible.');
++const initialLog = await page.locator('#log').innerText();
++if (!initialLog.trim().startsWith('Ready.')) throw new Error(`Ready should be in lower log output: ${initialLog}`);
++if ((await page.locator('#status').textContent()).includes('Ready.')) throw new Error('Ready should not be set on hidden status display.');
++if ((await page.locator('#statusAccordion .accordion-v2__header').innerText()).includes('Ready.')) throw new Error('Ready should not be in Status header.');
  
  await page.fill('#baseUrl', server.baseUrl);
  await page.fill('#waitMs', '3000');
-@@ -87,13 +99,13 @@ if (!writes[0].content.includes('<svg')) throw new Error('Generated content is n
+@@ -89,6 +87,9 @@ await page.fill('#sampleList', '0107');
+ await page.check('#forceRewrite');
+ await page.click('#pickRepoBtn');
+ await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
++const repoSelected = await page.locator('#repoSelectedValue').innerText();
++if (repoSelected !== 'HTML-JavaScript-Gaming') throw new Error(`Repo selected did not populate from folder handle: ${repoSelected}`);
++if ((await page.locator('#status').textContent()).includes('Ready.')) throw new Error('Repo selection should not set Ready on status display.');
+ await page.waitForFunction(() => document.getElementById('writeFolderActualValue').textContent === 'samples\\phase-01\\0107\\assets\\images');
+ await page.click('#executeBtn');
+ await page.waitForFunction(() => document.getElementById('log').textContent.includes('===== SUMMARY ====='), null, { timeout: 35000 });
+@@ -99,14 +100,14 @@ if (!writes[0].content.includes('<svg')) throw new Error('Generated content is n
  if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
  await browser.close();
  await server.close();
--console.log('preview-generator-v2 layout polish browser smoke valid');
-+console.log('preview-generator-v2 output target polish browser smoke valid');
+-console.log('preview-generator-v2 output target polish browser smoke valid');
++console.log('preview-generator-v2 working accordion and status browser smoke valid');
  '@ | node --input-type=module -
  ```
  
  ## Notes
  
--The targeted Playwright smoke validates the Preview Generator V2 layout polish, including Palette Manager-style collapsed header behavior, Pick Repo order, normal Status block, compact Output Summary sizing, and the existing preview generation write path.
-+The targeted Playwright smoke validates that Output Summary and Status have no dead accordion controls, target radios display Games/Samples/Tools, placeholder and write-folder sample text uses `<gamename>`/`<toolname>`, summary fields render as label/value rows, and the existing preview generation path still writes `preview.svg`.
+-The targeted Playwright smoke validates that Output Summary and Status have no dead accordion controls, target radios display Games/Samples/Tools, placeholder and write-folder sample text uses `<gamename>`/`<toolname>`, summary fields render as label/value rows, and the existing preview generation path still writes `preview.svg`.
++The targeted Playwright smoke validates that Output Summary and Status are working accordionV2 panels, their headers toggle `aria-expanded`, collapsed panels compute to `display: none` with zero content height, `Ready.` appears only in the lower log output, repo destination display still updates, Generate Preview enables, and the existing preview generation path still writes `preview.svg`.
  
  `npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
  
+-Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 UI polish only.
++Full samples smoke test was skipped because this PR is scoped to Preview Generator V2 UI only.
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 19f44b24..6b797227 100644
+index 6b797227..643be688 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Polish Preview Generator V2 layout and collapsed header behavior - PR_26126_014-preview-generator-v2-layout-polish
-+Polish Preview Generator V2 output targets and summary controls - PR_26126_015-preview-generator-v2-output-target-polish
+-Polish Preview Generator V2 output targets and summary controls - PR_26126_015-preview-generator-v2-output-target-polish
++Fix Preview Generator V2 right accordion collapse behavior - PR_26126_018-preview-generator-v2-working-accordion-and-status-fix
 diff --git a/tools/preview-generator-v2/index.html b/tools/preview-generator-v2/index.html
-index 551632cb..ad814ec0 100644
+index ad814ec0..0df8a305 100644
 --- a/tools/preview-generator-v2/index.html
 +++ b/tools/preview-generator-v2/index.html
-@@ -40,24 +40,15 @@
+@@ -40,20 +40,30 @@
        overflow: hidden;
      }
  
--    .preview-generator-v2__output-summary,
--    .preview-generator-v2__output-summary.is-open {
--      flex: 0 0 auto;
--      overflow: visible;
--    }
--
--    .preview-generator-v2__output-summary .accordion-v2__content {
-+    .preview-generator-v2__output-summary {
+-    .preview-generator-v2__output-summary {
++    .preview-generator-v2__right-accordion {
++      --accordion-v2-accent: var(--pm-accent);
++      --accordion-v2-line: var(--pm-line);
++      --accordion-v2-surface: var(--pm-surface);
++    }
++
++    .preview-generator-v2__output-summary,
++    .preview-generator-v2__output-summary.is-open {
++      flex: 0 0 auto;
++      overflow: hidden;
++    }
++
++    .preview-generator-v2__output-summary .accordion-v2__content {
        flex: 0 0 auto;
        display: grid;
        gap: 6px;
--      overflow: visible;
+-      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
+-      border-radius: 8px;
+-      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
+-      padding: 8px;
+       overflow: visible;
++      padding: 8px;
+     }
+ 
+-    .preview-generator-v2__output-summary .preview-generator-v2__value {
+-      min-height: 28px;
+-      padding: 4px 8px;
++    .preview-generator-v2__output-summary .accordion-v2__header {
++      flex-basis: 38px;
++      min-height: 38px;
++      padding: 8px 10px;
+     }
+ 
+     .preview-generator-v2__section-heading {
+@@ -63,6 +73,17 @@
+       line-height: 1.2;
+     }
+ 
++    .preview-generator-v2__static-section {
++      min-width: 0;
++      display: grid;
++      gap: 10px;
 +      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
 +      border-radius: 8px;
 +      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
-       padding: 8px;
--    }
--
--    .preview-generator-v2__output-summary .accordion-v2__header {
--      flex-basis: 34px;
--      min-height: 34px;
--      padding: 7px 10px;
++      padding: 12px;
 +      overflow: visible;
-     }
- 
-     .preview-generator-v2__output-summary .preview-generator-v2__value {
-@@ -65,6 +56,13 @@
-       padding: 4px 8px;
-     }
- 
-+    .preview-generator-v2__section-heading {
-+      margin: 0;
-+      color: #ffffff;
-+      font-size: 1rem;
-+      line-height: 1.2;
 +    }
 +
      .preview-generator-v2__stack {
        display: grid;
        gap: 12px;
-@@ -111,7 +109,9 @@
+@@ -114,6 +135,11 @@
+       gap: 4px;
      }
  
-     .preview-generator-v2__summary-field {
--      grid-template-columns: 132px minmax(0, 1fr);
-+      display: grid;
++    .preview-generator-v2__repo-selected-field {
 +      grid-template-columns: minmax(0, 1fr);
 +      gap: 4px;
++    }
++
+     .preview-generator-v2__paths-input {
+       flex: 1 1 auto;
+       min-height: 0;
+@@ -125,24 +151,22 @@
      }
  
-     .preview-generator-v2__paths-input {
-@@ -301,16 +301,15 @@
-             <span class="accordion-v2__icon" aria-hidden="true">+</span>
-           </button>
-           <div id="targetSourceAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
--            <fieldset class="preview-generator-v2__radio-group">
--              <legend>Target type</legend>
--              <label class="preview-generator-v2__radio-option" for="targetTypeSamples">
--                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
--                <span>Samples</span>
--              </label>
-+            <fieldset class="preview-generator-v2__radio-group" aria-label="Target source">
+     .preview-generator-v2__status-block {
++      flex: 1 1 auto;
++      min-height: 0;
++      overflow: hidden;
++    }
++
++    .preview-generator-v2__status-block .accordion-v2__content {
+       flex: 1 1 auto;
+       min-height: 0;
+       display: flex;
+       flex-direction: column;
+-      gap: 8px;
+-      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
+-      border-radius: 8px;
+-      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
+-      padding: 12px;
+       overflow: hidden;
+     }
+ 
+-    .preview-generator-v2__status-heading {
+-      flex: 0 0 auto;
+-      margin: 0;
+-      color: #ffffff;
+-      font-size: 1rem;
+-      line-height: 1.2;
++    .preview-generator-v2__output-summary .accordion-v2__content[hidden],
++    .preview-generator-v2__status-block .accordion-v2__content[hidden] {
++      display: none;
+     }
+ 
+     .preview-generator-v2__status-text {
+@@ -274,17 +298,14 @@
+   <div class="palette-manager-v2 preview-generator-v2 app-shell">
+     <div class="palette-manager-v2__layout preview-generator-v2__layout tools-platform-layout-grid">
+       <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
+-        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
+-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationAccordionContent">
+-            <span>Repo Destination</span>
+-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+-          </button>
+-          <div id="repoDestinationAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
++        <section class="preview-generator-v2__static-section" aria-labelledby="repoDestinationTitle">
++          <h2 id="repoDestinationTitle" class="preview-generator-v2__section-heading">Repo Destination</h2>
++          <div id="repoDestinationContent" class="preview-generator-v2__stack">
+             <div class="palette-manager-v2__controls">
+               <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
+             </div>
+ 
+-            <div class="palette-manager-v2__field palette-manager-v2__field--compact">
++            <div class="palette-manager-v2__field preview-generator-v2__repo-selected-field">
+               <span>Repo selected</span>
+               <div id="repoSelectedValue" class="preview-generator-v2__value">not selected</div>
+             </div>
+@@ -295,12 +316,9 @@
+           </div>
+         </section>
+ 
+-        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
+-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="targetSourceAccordionContent">
+-            <span>Target Source</span>
+-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+-          </button>
+-          <div id="targetSourceAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
++        <section class="preview-generator-v2__static-section" aria-labelledby="targetSourceTitle">
++          <h2 id="targetSourceTitle" class="preview-generator-v2__section-heading">Target Source</h2>
++          <div id="targetSourceContent" class="preview-generator-v2__stack">
+             <fieldset class="preview-generator-v2__radio-group" aria-label="Target source">
                <label class="preview-generator-v2__radio-option" for="targetTypeGames">
                  <input id="targetTypeGames" type="radio" name="targetType" value="games" />
-                 <span>Games</span>
-               </label>
-+              <label class="preview-generator-v2__radio-option" for="targetTypeSamples">
-+                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
-+                <span>Samples</span>
-+              </label>
-               <label class="preview-generator-v2__radio-option" for="targetTypeTools">
-                 <input id="targetTypeTools" type="radio" name="targetType" value="tools" />
-                 <span>Tools</span>
-@@ -375,27 +374,24 @@ samples/phase-13/1303/index.html
- 1305
+@@ -323,12 +341,9 @@
+           </div>
+         </section>
  
- Games examples:
--games/Bouncing-ball/index.html
--Bouncing-ball
-+games\&lt;gamename&gt;\index.html
-+&lt;gamename&gt;
- 
- Tools examples:
--tools/Vector Map Editor/index.html
--Vector Map Editor"></textarea>
-+tools\&lt;toolname&gt;\index.html
-+&lt;toolname&gt;"></textarea>
+-        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
+-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsAccordionContent">
+-            <span>Render Controls</span>
+-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+-          </button>
+-          <div id="renderControlsAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
++        <section class="preview-generator-v2__static-section" aria-labelledby="renderControlsTitle">
++          <h2 id="renderControlsTitle" class="preview-generator-v2__section-heading">Render Controls</h2>
++          <div id="renderControlsContent" class="preview-generator-v2__stack">
+             <label class="palette-manager-v2__field" for="waitMs">
+               <span>Wait before capture</span>
+               <input id="waitMs" type="number" value="3500" min="3000" step="500" />
+@@ -383,9 +398,12 @@ tools\&lt;toolname&gt;\index.html
        </main>
  
        <aside class="palette-manager-v2__panel palette-manager-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
--        <section class="accordion-v2 palette-manager-v2__right-accordion preview-generator-v2__output-summary is-open" data-accordion-v2-open="true">
--          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryAccordionContent">
--            <span>Output Summary</span>
--            <span class="accordion-v2__icon" aria-hidden="true">+</span>
--          </button>
--          <div id="outputSummaryAccordionContent" class="accordion-v2__content preview-generator-v2__stack">
--            <div class="palette-manager-v2__field palette-manager-v2__field--compact preview-generator-v2__summary-field">
-+        <section id="outputSummary" class="preview-generator-v2__output-summary" aria-labelledby="outputSummaryTitle">
-+          <h2 id="outputSummaryTitle" class="preview-generator-v2__section-heading">Output Summary</h2>
-+          <div id="outputSummaryContent" class="preview-generator-v2__stack">
-+            <div class="preview-generator-v2__summary-field">
+-        <section id="outputSummary" class="preview-generator-v2__output-summary" aria-labelledby="outputSummaryTitle">
+-          <h2 id="outputSummaryTitle" class="preview-generator-v2__section-heading">Output Summary</h2>
+-          <div id="outputSummaryContent" class="preview-generator-v2__stack">
++        <section id="outputSummary" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__output-summary is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryContent">
++            <span>Output Summary</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="outputSummaryContent" class="accordion-v2__content preview-generator-v2__stack">
+             <div class="preview-generator-v2__summary-field">
                <span>Write folder sample</span>
                <div id="writeFolderSampleValue" class="preview-generator-v2__value">samples\phaseXX\XXXX\assets\images</div>
-             </div>
+@@ -398,10 +416,16 @@ tools\&lt;toolname&gt;\index.html
+           </div>
+         </section>
  
--            <div class="palette-manager-v2__field palette-manager-v2__field--compact preview-generator-v2__summary-field">
-+            <div class="preview-generator-v2__summary-field">
-               <span>Write folder</span>
-               <div id="writeFolderActualValue" class="preview-generator-v2__value">not available yet</div>
-             </div>
-@@ -721,11 +717,11 @@ Vector Map Editor"></textarea>
-         return;
-       }
-       if (targetType === "games") {
--        writeFolderSampleValueEl.textContent = `games\\Game Name\\${assetFolder}`;
-+        writeFolderSampleValueEl.textContent = `games\\<gamename>\\${assetFolder}`;
-         return;
-       }
-       if (targetType === "tools") {
--        writeFolderSampleValueEl.textContent = `tools\\Tool Name\\${assetFolder}`;
-+        writeFolderSampleValueEl.textContent = `tools\\<toolname>\\${assetFolder}`;
-       }
-     }
+-        <section class="preview-generator-v2__status-block" aria-labelledby="statusBlockTitle">
+-          <h2 id="statusBlockTitle" class="preview-generator-v2__status-heading">Status</h2>
+-          <div id="status" class="preview-generator-v2__status-text">Repo folder: not selected</div>
+-          <div id="log"></div>
++        <section id="statusAccordion" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__status-block is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
++            <span>Status</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="statusAccordionContent" class="accordion-v2__content">
++            <div id="status" class="preview-generator-v2__status-text" hidden></div>
++            <div id="log">Ready.
++</div>
++          </div>
+         </section>
+       </aside>
+     </div>
+@@ -1242,7 +1266,7 @@ tools\&lt;toolname&gt;\index.html
+           repoDisplayName = getRepoDestinationDisplayName(repoDirHandle);
  
+           setRepoDestinationDisplayName(repoDisplayName);
+-          statusEl.textContent = `Repo folder: ${repoDisplayName}`;
++          statusEl.textContent = "";
+           executeBtn.disabled = false;
+ 
+           await updatePathPreviewLabels();
