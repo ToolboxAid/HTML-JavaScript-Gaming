@@ -1,18 +1,24 @@
 # git status --short
 M docs/dev/codex_commands.md
  M docs/dev/commit_comment.txt
- A tests/tools/PreviewGeneratorV2FirstPass.test.mjs
- A tools/preview/index.html
- A tools/preview/main.js
- A tools/preview/previewGeneratorShell.js
- A tools/preview/previewGeneratorV2.css
+ M docs/dev/reports/codex_changed_files.txt
+ M docs/dev/reports/codex_review.diff
+ M tests/tools/PreviewGeneratorV2FirstPass.test.mjs
+ A tools/preview-generator-v2/index.html
+ A tools/preview-generator-v2/main.js
+ A tools/preview-generator-v2/previewGeneratorShell.js
+ A tools/preview-generator-v2/previewGeneratorV2.css
+ M tools/toolRegistry.js
 
 # git diff --stat
-docs/dev/codex_commands.md                       |  15 +-
- docs/dev/commit_comment.txt                      |   2 +-
- tests/tools/PreviewGeneratorV2FirstPass.test.mjs | 127 ++++++
- tools/preview/index.html                         | 171 ++++++++
- tools/preview/main.js                            | 493 +++++++++++++++++++++
- tools/preview/previewGeneratorShell.js           | 186 ++++++++
- tools/preview/previewGeneratorV2.css             | 534 +++++++++++++++++++++++
- 7 files changed, 1521 insertions(+), 7 deletions(-)
+docs/dev/codex_commands.md                         |   19 +-
+ docs/dev/commit_comment.txt                        |    2 +-
+ docs/dev/reports/codex_changed_files.txt           |   32 +-
+ docs/dev/reports/codex_review.diff                 | 6646 ++++++++++++++++++--
+ tests/tools/PreviewGeneratorV2FirstPass.test.mjs   |  144 +-
+ tools/preview-generator-v2/index.html              |  188 +
+ tools/preview-generator-v2/main.js                 |  932 +++
+ .../preview-generator-v2/previewGeneratorShell.js  |  186 +
+ tools/preview-generator-v2/previewGeneratorV2.css  |  490 ++
+ tools/toolRegistry.js                              |   18 +
+ 10 files changed, 8041 insertions(+), 616 deletions(-)

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preview Generator V2</title>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css" />
+  <link rel="stylesheet" href="./previewGeneratorV2.css" />
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body class="tools-platform-tool-page hub-page-tools" data-tool-id="preview-generator-v2">
+  <details class="is-collapsible" open>
+    <summary class="is-collapsible__summary" data-preview-generator-v2-summary></summary>
+    <div class="is-collapsible__content">
+      <div id="shared-theme-header"></div>
+      <div data-preview-generator-v2-header></div>
+    </div>
+  </details>
+
+  <nav class="preview-generator-v2__menu-sample" aria-label="menuSample">
+    <div class="preview-generator-v2__menu-actions">
+      <button id="executeBtn" type="button" disabled>Generate Preview</button>
+    </div>
+  </nav>
+
+  <div class="preview-generator-v2 app-shell">
+    <div class="preview-generator-v2__layout tools-platform-layout-grid">
+      <aside class="preview-generator-v2__panel preview-generator-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationAccordionContent">
+            <span>Repo Destination</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="repoDestinationAccordionContent" class="accordion-v2__content">
+            <div class="preview-generator-v2__field preview-generator-v2__field--compact">
+              <span>Repo selected</span>
+              <div id="repoSelectedValue" class="preview-generator-v2__value-box">not selected</div>
+            </div>
+            <div class="preview-generator-v2__controls">
+              <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
+              <button id="stopBtn" type="button" disabled>Stop</button>
+            </div>
+            <p class="preview-generator-v2__note">Pick the repo root folder, for example <code>HTML-JavaScript-Gaming</code>.</p>
+          </div>
+        </section>
+
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="targetSourceAccordionContent">
+            <span>Target Source</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="targetSourceAccordionContent" class="accordion-v2__content">
+            <fieldset id="targetTypeGroup" class="preview-generator-v2__radio-group">
+              <legend>Target type</legend>
+              <span class="preview-generator-v2__inline-control">
+                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
+                <label for="targetTypeSamples" class="inline-label">Samples</label>
+              </span>
+              <span class="preview-generator-v2__inline-control">
+                <input id="targetTypeGames" type="radio" name="targetType" value="games" />
+                <label for="targetTypeGames" class="inline-label">Games</label>
+              </span>
+              <span class="preview-generator-v2__inline-control">
+                <input id="targetTypeTools" type="radio" name="targetType" value="tools" />
+                <label for="targetTypeTools" class="inline-label">Tools</label>
+              </span>
+            </fieldset>
+
+            <label class="preview-generator-v2__field" for="baseUrl">
+              Base URL
+              <input id="baseUrl" type="text" value="http://127.0.0.1:5500" />
+            </label>
+          </div>
+        </section>
+
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsAccordionContent">
+            <span>Render Controls</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="renderControlsAccordionContent" class="accordion-v2__content">
+            <label class="preview-generator-v2__field" for="waitMs">
+              Wait before capture
+              <input id="waitMs" type="number" value="3500" min="3000" step="500" />
+            </label>
+
+            <label class="preview-generator-v2__field" for="assetFolder">
+              Asset folder
+              <input id="assetFolder" type="text" value="assets/images" />
+            </label>
+
+            <fieldset class="preview-generator-v2__radio-group">
+              <legend>Options</legend>
+              <span class="preview-generator-v2__inline-control">
+                <input id="forceRewrite" type="checkbox" />
+                <label for="forceRewrite" class="inline-label">Force rewrite</label>
+              </span>
+              <span class="preview-generator-v2__inline-control">
+                <input id="onlyCaptureTimeout" type="checkbox" checked />
+                <label for="onlyCaptureTimeout" class="inline-label">Only rewrite if preview.svg contains literal "Capture timeout"</label>
+              </span>
+            </fieldset>
+
+            <fieldset class="preview-generator-v2__radio-group">
+              <legend>Capture mode</legend>
+              <span class="preview-generator-v2__inline-control">
+                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
+                <label for="captureModeFullScreen" class="inline-label">Full Screen (1600x900 HTML Page)</label>
+              </span>
+              <span class="preview-generator-v2__inline-control">
+                <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
+                <label for="captureModeCanvasOnly" class="inline-label">Canvas Only</label>
+              </span>
+            </fieldset>
+          </div>
+        </section>
+      </aside>
+
+      <main class="preview-generator-v2__panel preview-generator-v2__panel--center">
+        <section class="accordion-v2 preview-generator-v2__paths-panel is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="pathsAccordionContent">
+            <span>Paths or IDs</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="pathsAccordionContent" class="accordion-v2__content">
+            <label class="preview-generator-v2__field preview-generator-v2__paths-field" for="sampleList">
+              Paths or IDs
+              <textarea id="sampleList" class="preview-generator-v2__textarea" placeholder="Samples examples:
+samples/phase-01/0102/index.html
+samples/phase-13/1303/index.html
+0107
+1305
+
+Games examples:
+games/Bouncing-ball/index.html
+Bouncing-ball
+
+Tools examples:
+tools/Vector Map Editor/index.html
+Vector Map Editor"></textarea>
+            </label>
+          </div>
+        </section>
+      </main>
+
+      <aside class="preview-generator-v2__panel preview-generator-v2__panel--right tools-platform-resize-panel" data-panel-side="right">
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="outputSummaryAccordionContent">
+            <span>Output Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="outputSummaryAccordionContent" class="accordion-v2__content">
+            <div class="preview-generator-v2__field preview-generator-v2__field--compact">
+              <span>Write folder as sample</span>
+              <div id="writeFolderSampleValue" class="preview-generator-v2__value-box">samples\phase-XX\XXXX\assets</div>
+            </div>
+            <div class="preview-generator-v2__field preview-generator-v2__field--compact">
+              <span>Write folder</span>
+              <div id="writeFolderActualValue" class="preview-generator-v2__value-box">not available yet</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
+            <span>Status</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="statusAccordionContent" class="accordion-v2__content">
+            <div id="status" class="preview-generator-v2__status row">Repo folder: not selected</div>
+            <div id="log" class="preview-generator-v2__log"></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <iframe id="frame" title="sample-loader"></iframe>
+
+  <div data-preview-generator-v2-status></div>
+  <script type="module" src="./previewGeneratorShell.js"></script>
+  <script type="module" src="../../src/engine/theme/accordionV2/accordionV2.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>

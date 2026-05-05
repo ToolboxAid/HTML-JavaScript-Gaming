@@ -215,6 +215,24 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "preview-generator-v2",
+    name: "Preview Generator V2",
+    displayName: "Preview Generator V2",
+    shortDescription: "Generate preview.svg assets for samples, games, and tools.",
+    shortLabel: "Preview",
+    path: "preview-generator-v2",
+    folderName: "preview-generator-v2",
+    entryPoint: "preview-generator-v2/index.html",
+    description: "Palette Manager-style preview generation surface for capture, preview.svg export, and game asset-browser destination registration.",
+    showcaseTag: "Preview",
+    showcaseStatus: "First Pass",
+    active: true,
+    legacy: false,
+    order: 7.5,
+    sampleEntryPoints: [],
+    visibleInToolsList: true
+  },
+  {
     id: "state-inspector",
     name: "State Inspector",
     displayName: "State Inspector",
