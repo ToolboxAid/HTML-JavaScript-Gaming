@@ -1,396 +1,200 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index e2be624b..14567680 100644
+index 14567680..9fb4df77 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
 @@ -1,7 +1,7 @@
--# Codex Commands - PR_26126_018-preview-generator-v2-working-accordion-and-status-fix
-+# Codex Commands - PR_26126_019-preview-generator-v2-accordion-status-and-generate-gate
+-# Codex Commands - PR_26126_019-preview-generator-v2-accordion-status-and-generate-gate
++# Codex Commands - PR_26126_020-preview-generator-v2-target-source-and-control-placement
  
  ```bash
--codex run "Create PR_26126_018-preview-generator-v2-working-accordion-and-status-fix. Fix Preview Generator V2 UI only. Preserve existing generation behavior. Right column controls must use a working accordion: headers toggle open/closed panels, icons reflect state, and controls remain usable when expanded. Do not leave dead X/underscore controls. Move status text such as \"Ready.\" out of the header/status line and into the textarea/status output area below. Specifically, do not set header/status display to \"Ready.\"; keep repo destination display separate from status output. Ensure setRepoDestinationDisplayName(repoDisplayName) still works, execute button enables correctly, and \"Ready.\" appears only in the lower text/status output area. Do not modify samples. Do not add schema. Produce review artifacts."
-+codex run "Create PR_26126_019-preview-generator-v2-accordion-status-and-generate-gate. Fix Preview Generator V2 UI only. Preserve existing generation behavior. New rule: left and right columns must always use working accordion sections. Restore working accordion behavior on the left column and keep working accordion behavior on the right column. Add a Clear button on the same line as Status to empty the logging/status textarea. Hide Generate Preview until all required fields are provided; do not merely disable it. Add the missing \"Paths or IDs\" header above the input information in the left panel aside. Do not modify samples. Do not add schema. Produce review artifacts."
+-codex run "Create PR_26126_019-preview-generator-v2-accordion-status-and-generate-gate. Fix Preview Generator V2 UI only. Preserve existing generation behavior. New rule: left and right columns must always use working accordion sections. Restore working accordion behavior on the left column and keep working accordion behavior on the right column. Add a Clear button on the same line as Status to empty the logging/status textarea. Hide Generate Preview until all required fields are provided; do not merely disable it. Add the missing \"Paths or IDs\" header above the input information in the left panel aside. Do not modify samples. Do not add schema. Produce review artifacts."
++codex run "Create PR_26126_020-preview-generator-v2-target-source-and-control-placement. Fix Preview Generator V2 UI only. Preserve existing generation behavior. Default Target Source to Games. Generate Preview must be visible but disabled/greyed out until required fields are provided; do not hide it. Move Capture mode into its own accordion/control section above Render Controls with options \"Full Screen (1600x900 HTML Page)\" and \"Canvas Only\". Move Asset folder into its own accordion/control section below Target Source with value \"assets/images\". Left and right columns must continue to use working accordion sections. Do not modify samples. Do not add schema. Produce review artifacts."
  ```
  
  ## Validation Commands
-@@ -49,47 +49,45 @@ await page.addInitScript(() => {
- 
- await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: 'domcontentloaded' });
- await page.waitForSelector('#shared-theme-header');
--await page.waitForFunction(() => document.querySelector('#outputSummary .accordion-v2__header')?.dataset.accordionV2Bound === 'true');
--await page.waitForFunction(() => document.querySelector('#statusAccordion .accordion-v2__header')?.dataset.accordionV2Bound === 'true');
-+await page.waitForFunction(() => Array.from(document.querySelectorAll('.preview-generator-v2 .accordion-v2__header')).every((header) => header.dataset.accordionV2Bound === 'true'));
- 
--for (const selector of ['#outputSummary', '#statusAccordion']) {
--  const header = page.locator(`${selector} .accordion-v2__header`);
--  const content = page.locator(`${selector} .accordion-v2__content`);
--  const icon = page.locator(`${selector} .accordion-v2__icon`);
-+async function assertAccordion(selector) {
-+  const header = page.locator(`${selector} .accordion-v2__header`).first();
-+  const content = page.locator(`${selector} .accordion-v2__content`).first();
+@@ -56,38 +56,43 @@ async function assertAccordion(selector) {
+   const content = page.locator(`${selector} .accordion-v2__content`).first();
    if (await header.count() !== 1) throw new Error(`${selector} missing accordion header`);
    if (await content.count() !== 1) throw new Error(`${selector} missing accordion content`);
--  if (await icon.count() !== 1) throw new Error(`${selector} missing accordion icon`);
-   if (await header.getAttribute('aria-expanded') !== 'true') throw new Error(`${selector} should start expanded`);
+-  if (await header.getAttribute('aria-expanded') !== 'true') throw new Error(`${selector} should start expanded`);
    await header.click();
    await page.waitForFunction((target) => document.querySelector(`${target} .accordion-v2__header`)?.getAttribute('aria-expanded') === 'false', selector);
--  const collapsed = await content.evaluate((node) => ({
--    hidden: node.hidden,
--    display: getComputedStyle(node).display,
--    height: node.getBoundingClientRect().height
--  }));
--  if (!collapsed.hidden) throw new Error(`${selector} content should be hidden after collapse`);
--  if (collapsed.display !== 'none') throw new Error(`${selector} collapsed content display should be none, got ${collapsed.display}`);
--  if (collapsed.height !== 0) throw new Error(`${selector} collapsed content height should be 0, got ${collapsed.height}`);
-+  const collapsed = await content.evaluate((node) => ({ hidden: node.hidden, display: getComputedStyle(node).display, height: node.getBoundingClientRect().height }));
-+  if (!collapsed.hidden) throw new Error(`${selector} should set hidden=true when collapsed`);
-+  if (collapsed.display !== 'none') throw new Error(`${selector} collapsed display should be none, got ${collapsed.display}`);
-+  if (collapsed.height !== 0) throw new Error(`${selector} collapsed height should be 0, got ${collapsed.height}`);
+   const collapsed = await content.evaluate((node) => ({ hidden: node.hidden, display: getComputedStyle(node).display, height: node.getBoundingClientRect().height }));
+-  if (!collapsed.hidden) throw new Error(`${selector} should set hidden=true when collapsed`);
+-  if (collapsed.display !== 'none') throw new Error(`${selector} collapsed display should be none, got ${collapsed.display}`);
+-  if (collapsed.height !== 0) throw new Error(`${selector} collapsed height should be 0, got ${collapsed.height}`);
++  if (!collapsed.hidden || collapsed.display !== 'none' || collapsed.height !== 0) throw new Error(`${selector} did not collapse cleanly`);
    await header.click();
    await page.waitForFunction((target) => document.querySelector(`${target} .accordion-v2__header`)?.getAttribute('aria-expanded') === 'true', selector);
--  if (await content.evaluate((node) => node.hidden) !== false) throw new Error(`${selector} content should be visible after expand`);
  }
  
--if (await page.locator('#status').isVisible()) throw new Error('Hidden status display should not be visible.');
--const initialLog = await page.locator('#log').innerText();
--if (!initialLog.trim().startsWith('Ready.')) throw new Error(`Ready should be in lower log output: ${initialLog}`);
--if ((await page.locator('#status').textContent()).includes('Ready.')) throw new Error('Ready should not be set on hidden status display.');
--if ((await page.locator('#statusAccordion .accordion-v2__header').innerText()).includes('Ready.')) throw new Error('Ready should not be in Status header.');
-+for (const selector of [
-+  '.preview-generator-v2__left-accordion:nth-of-type(1)',
-+  '.preview-generator-v2__left-accordion:nth-of-type(2)',
-+  '.preview-generator-v2__left-accordion:nth-of-type(3)',
-+  '#outputSummary',
-+  '#statusAccordion'
-+]) {
-+  await assertAccordion(selector);
-+}
++const leftHeaders = await page.locator('.preview-generator-v2__left-accordion .accordion-v2__header').evaluateAll((headers) => headers.map((header) => header.textContent.trim().replace(/\s+/g, ' ')));
++const expectedLeftHeaders = ['Repo Destination +', 'Target Source +', 'Asset folder +', 'Capture mode +', 'Render Controls +'];
++if (JSON.stringify(leftHeaders) !== JSON.stringify(expectedLeftHeaders)) throw new Error(`Unexpected left accordion order: ${JSON.stringify(leftHeaders)}`);
++
+ for (const selector of [
+   '.preview-generator-v2__left-accordion:nth-of-type(1)',
+   '.preview-generator-v2__left-accordion:nth-of-type(2)',
+   '.preview-generator-v2__left-accordion:nth-of-type(3)',
++  '.preview-generator-v2__left-accordion:nth-of-type(4)',
++  '.preview-generator-v2__left-accordion:nth-of-type(5)',
+   '#outputSummary',
+   '#statusAccordion'
+ ]) {
+   await assertAccordion(selector);
+ }
  
-+if ((await page.locator('#pathsOrIdsTitle').innerText()) !== 'Paths or IDs') throw new Error('Missing Paths or IDs heading.');
-+if (await page.locator('#executeBtn').isVisible()) throw new Error('Generate Preview should be hidden before required fields are provided.');
+-if ((await page.locator('#pathsOrIdsTitle').innerText()) !== 'Paths or IDs') throw new Error('Missing Paths or IDs heading.');
+-if (await page.locator('#executeBtn').isVisible()) throw new Error('Generate Preview should be hidden before required fields are provided.');
++if (!(await page.locator('#targetTypeGames').isChecked())) throw new Error('Games should be the default Target Source.');
++if (await page.locator('#targetTypeSamples').isChecked()) throw new Error('Samples should not be default Target Source.');
++if ((await page.locator('#assetFolder').inputValue()) !== 'assets/images') throw new Error('Asset folder should remain assets/images.');
++if (!(await page.locator('#executeBtn').isVisible())) throw new Error('Generate Preview should be visible before required fields are provided.');
++if (!(await page.locator('#executeBtn').isDisabled())) throw new Error('Generate Preview should be disabled before required fields are provided.');
  await page.fill('#baseUrl', server.baseUrl);
  await page.fill('#waitMs', '3000');
  await page.fill('#sampleList', '0107');
  await page.check('#forceRewrite');
-+if (await page.locator('#executeBtn').isVisible()) throw new Error('Generate Preview should remain hidden until repo folder is selected.');
-+await page.click('#clearLogBtn');
-+if ((await page.locator('#log').innerText()).trim() !== '') throw new Error('Clear should empty the status log output.');
+-if (await page.locator('#executeBtn').isVisible()) throw new Error('Generate Preview should remain hidden until repo folder is selected.');
+-await page.click('#clearLogBtn');
+-if ((await page.locator('#log').innerText()).trim() !== '') throw new Error('Clear should empty the status log output.');
++if (!(await page.locator('#executeBtn').isVisible()) || !(await page.locator('#executeBtn').isDisabled())) throw new Error('Generate Preview should remain visible and disabled until repo folder is selected.');
++await page.check('#targetTypeSamples');
  await page.click('#pickRepoBtn');
--await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
--const repoSelected = await page.locator('#repoSelectedValue').innerText();
--if (repoSelected !== 'HTML-JavaScript-Gaming') throw new Error(`Repo selected did not populate from folder handle: ${repoSelected}`);
--if ((await page.locator('#status').textContent()).includes('Ready.')) throw new Error('Repo selection should not set Ready on status display.');
-+await page.waitForFunction(() => !document.getElementById('executeBtn').hidden && !document.getElementById('executeBtn').disabled);
+-await page.waitForFunction(() => !document.getElementById('executeBtn').hidden && !document.getElementById('executeBtn').disabled);
++await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
  await page.waitForFunction(() => document.getElementById('writeFolderActualValue').textContent === 'samples\\phase-01\\0107\\assets\\images');
  await page.click('#executeBtn');
  await page.waitForFunction(() => document.getElementById('log').textContent.includes('===== SUMMARY ====='), null, { timeout: 35000 });
-@@ -100,13 +98,13 @@ if (!writes[0].content.includes('<svg')) throw new Error('Generated content is n
+@@ -98,13 +103,13 @@ if (!writes[0].content.includes('<svg')) throw new Error('Generated content is n
  if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
  await browser.close();
  await server.close();
--console.log('preview-generator-v2 working accordion and status browser smoke valid');
-+console.log('preview-generator-v2 accordion status generate gate smoke valid');
+-console.log('preview-generator-v2 accordion status generate gate smoke valid');
++console.log('preview-generator-v2 target source and control placement smoke valid');
  '@ | node --input-type=module -
  ```
  
  ## Notes
  
--The targeted Playwright smoke validates that Output Summary and Status are working accordionV2 panels, their headers toggle `aria-expanded`, collapsed panels compute to `display: none` with zero content height, `Ready.` appears only in the lower log output, repo destination display still updates, Generate Preview enables, and the existing preview generation path still writes `preview.svg`.
-+The targeted Playwright smoke validates left and right accordion collapse/expand behavior, hidden Generate Preview gating, Status Clear log clearing, the Paths or IDs heading, repo destination display, and preserved preview generation output.
+-The targeted Playwright smoke validates left and right accordion collapse/expand behavior, hidden Generate Preview gating, Status Clear log clearing, the Paths or IDs heading, repo destination display, and preserved preview generation output.
++The targeted Playwright smoke validates default Games target, visible disabled Generate Preview gating, Asset folder and Capture mode section placement, working left/right accordions, and preserved preview generation after switching to Samples.
  
  `npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
  
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index 643be688..092de8b5 100644
+index 092de8b5..6f55d5af 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Fix Preview Generator V2 right accordion collapse behavior - PR_26126_018-preview-generator-v2-working-accordion-and-status-fix
-+Restore Preview Generator V2 accordions and generate readiness gate - PR_26126_019-preview-generator-v2-accordion-status-and-generate-gate
+-Restore Preview Generator V2 accordions and generate readiness gate - PR_26126_019-preview-generator-v2-accordion-status-and-generate-gate
++Place Preview Generator V2 target controls and keep Generate visibly gated - PR_26126_020-preview-generator-v2-target-source-and-control-placement
 diff --git a/tools/preview-generator-v2/index.html b/tools/preview-generator-v2/index.html
-index 0df8a305..b9676c46 100644
+index b9676c46..b377db52 100644
 --- a/tools/preview-generator-v2/index.html
 +++ b/tools/preview-generator-v2/index.html
-@@ -40,12 +40,17 @@
-       overflow: hidden;
-     }
- 
-+    .preview-generator-v2__left-accordion,
-     .preview-generator-v2__right-accordion {
-       --accordion-v2-accent: var(--pm-accent);
-       --accordion-v2-line: var(--pm-line);
-       --accordion-v2-surface: var(--pm-surface);
-     }
- 
-+    .preview-generator-v2__left-accordion .accordion-v2__content {
-+      overflow: visible;
-+    }
-+
-     .preview-generator-v2__output-summary,
-     .preview-generator-v2__output-summary.is-open {
-       flex: 0 0 auto;
-@@ -73,17 +78,6 @@
-       line-height: 1.2;
-     }
- 
--    .preview-generator-v2__static-section {
--      min-width: 0;
--      display: grid;
--      gap: 10px;
--      border: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
--      border-radius: 8px;
--      background: var(--pm-surface, rgba(18, 16, 28, 0.78));
--      padding: 12px;
--      overflow: visible;
--    }
--
-     .preview-generator-v2__stack {
-       display: grid;
-       gap: 12px;
-@@ -164,11 +158,29 @@
-       overflow: hidden;
-     }
- 
--    .preview-generator-v2__output-summary .accordion-v2__content[hidden],
--    .preview-generator-v2__status-block .accordion-v2__content[hidden] {
-+    .preview-generator-v2 .accordion-v2__content[hidden] {
-       display: none;
-     }
- 
-+    .preview-generator-v2__accordion-header-row {
-+      flex: 0 0 auto;
-+      display: flex;
-+      align-items: stretch;
-+      gap: 8px;
-+      min-width: 0;
-+    }
-+
-+    .preview-generator-v2__accordion-header-row .accordion-v2__header {
-+      flex: 1 1 auto;
-+      width: auto;
-+    }
-+
-+    .preview-generator-v2__status-clear-button {
-+      flex: 0 0 auto;
-+      align-self: center;
-+      margin-right: 8px;
-+    }
-+
-     .preview-generator-v2__status-text {
-       flex: 0 0 auto;
-       margin: 0;
-@@ -290,7 +302,7 @@
+@@ -302,7 +302,7 @@
  
    <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
      <div class="palette-manager-v2__menu-actions">
--      <button id="executeBtn" type="button" disabled>Generate Preview</button>
-+      <button id="executeBtn" type="button" hidden>Generate Preview</button>
+-      <button id="executeBtn" type="button" hidden>Generate Preview</button>
++      <button id="executeBtn" type="button" disabled>Generate Preview</button>
        <button id="stopBtn" type="button" disabled>Stop</button>
      </div>
    </nav>
-@@ -298,9 +310,12 @@
-   <div class="palette-manager-v2 preview-generator-v2 app-shell">
-     <div class="palette-manager-v2__layout preview-generator-v2__layout tools-platform-layout-grid">
-       <aside class="palette-manager-v2__panel palette-manager-v2__panel--left tools-platform-resize-panel" data-panel-side="left">
--        <section class="preview-generator-v2__static-section" aria-labelledby="repoDestinationTitle">
--          <h2 id="repoDestinationTitle" class="preview-generator-v2__section-heading">Repo Destination</h2>
--          <div id="repoDestinationContent" class="preview-generator-v2__stack">
-+        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationContent">
-+            <span>Repo Destination</span>
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="repoDestinationContent" class="accordion-v2__content preview-generator-v2__stack">
-             <div class="palette-manager-v2__controls">
-               <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
-             </div>
-@@ -316,9 +331,12 @@
-           </div>
-         </section>
- 
--        <section class="preview-generator-v2__static-section" aria-labelledby="targetSourceTitle">
--          <h2 id="targetSourceTitle" class="preview-generator-v2__section-heading">Target Source</h2>
--          <div id="targetSourceContent" class="preview-generator-v2__stack">
-+        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="targetSourceContent">
-+            <span>Target Source</span>
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="targetSourceContent" class="accordion-v2__content preview-generator-v2__stack">
+@@ -339,11 +339,11 @@
+           <div id="targetSourceContent" class="accordion-v2__content preview-generator-v2__stack">
              <fieldset class="preview-generator-v2__radio-group" aria-label="Target source">
                <label class="preview-generator-v2__radio-option" for="targetTypeGames">
-                 <input id="targetTypeGames" type="radio" name="targetType" value="games" />
-@@ -341,9 +359,12 @@
+-                <input id="targetTypeGames" type="radio" name="targetType" value="games" />
++                <input id="targetTypeGames" type="radio" name="targetType" value="games" checked />
+                 <span>Games</span>
+               </label>
+               <label class="preview-generator-v2__radio-option" for="targetTypeSamples">
+-                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
++                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" />
+                 <span>Samples</span>
+               </label>
+               <label class="preview-generator-v2__radio-option" for="targetTypeTools">
+@@ -359,6 +359,39 @@
            </div>
          </section>
  
--        <section class="preview-generator-v2__static-section" aria-labelledby="renderControlsTitle">
--          <h2 id="renderControlsTitle" class="preview-generator-v2__section-heading">Render Controls</h2>
--          <div id="renderControlsContent" class="preview-generator-v2__stack">
 +        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsContent">
-+            <span>Render Controls</span>
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="assetFolderContent">
++            <span>Asset folder</span>
 +            <span class="accordion-v2__icon" aria-hidden="true">+</span>
 +          </button>
-+          <div id="renderControlsContent" class="accordion-v2__content preview-generator-v2__stack">
-             <label class="palette-manager-v2__field" for="waitMs">
-               <span>Wait before capture</span>
-               <input id="waitMs" type="number" value="3500" min="3000" step="500" />
-@@ -382,7 +403,8 @@
-       </aside>
- 
-       <main class="palette-manager-v2__panel palette-manager-v2__panel--center preview-generator-v2__center-panel">
--        <textarea id="sampleList" class="preview-generator-v2__paths-input" aria-label="Paths or IDs" placeholder="Samples examples:
-+        <h2 id="pathsOrIdsTitle" class="preview-generator-v2__section-heading">Paths or IDs</h2>
-+        <textarea id="sampleList" class="preview-generator-v2__paths-input" aria-labelledby="pathsOrIdsTitle" placeholder="Samples examples:
- samples/phase-01/0102/index.html
- samples/phase-13/1303/index.html
- 0107
-@@ -417,10 +439,13 @@ tools\&lt;toolname&gt;\index.html
-         </section>
- 
-         <section id="statusAccordion" class="accordion-v2 preview-generator-v2__right-accordion preview-generator-v2__status-block is-open" data-accordion-v2-open="true">
--          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
--            <span>Status</span>
--            <span class="accordion-v2__icon" aria-hidden="true">+</span>
--          </button>
-+          <div class="preview-generator-v2__accordion-header-row">
-+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusAccordionContent">
-+              <span>Status</span>
-+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+            </button>
-+            <button id="clearLogBtn" class="preview-generator-v2__status-clear-button" type="button">Clear</button>
++          <div id="assetFolderContent" class="accordion-v2__content preview-generator-v2__stack">
++            <label class="palette-manager-v2__field" for="assetFolder">
++              <span>Asset folder</span>
++              <input id="assetFolder" type="text" value="assets/images" />
++            </label>
 +          </div>
-           <div id="statusAccordionContent" class="accordion-v2__content">
-             <div id="status" class="preview-generator-v2__status-text" hidden></div>
-             <div id="log">Ready.
-@@ -448,6 +473,7 @@ tools\&lt;toolname&gt;\index.html
-     const onlyCaptureTimeoutInput = document.getElementById("onlyCaptureTimeout");
-     const statusEl = document.getElementById("status");
-     const logEl = document.getElementById("log");
-+    const clearLogBtn = document.getElementById("clearLogBtn");
-     const frame = document.getElementById("frame");
++        </section>
++
++        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
++          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="captureModeContent">
++            <span>Capture mode</span>
++            <span class="accordion-v2__icon" aria-hidden="true">+</span>
++          </button>
++          <div id="captureModeContent" class="accordion-v2__content preview-generator-v2__stack">
++            <fieldset class="preview-generator-v2__radio-group">
++              <legend>Capture mode</legend>
++              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
++                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
++                <span>Full Screen (1600x900 HTML Page)</span>
++              </label>
++              <label class="preview-generator-v2__radio-option" for="captureModeCanvasOnly">
++                <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
++                <span>Canvas Only</span>
++              </label>
++            </fieldset>
++          </div>
++        </section>
++
+         <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
+           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsContent">
+             <span>Render Controls</span>
+@@ -370,11 +403,6 @@
+               <input id="waitMs" type="number" value="3500" min="3000" step="500" />
+             </label>
  
-     const repoSelectedValueEl = document.getElementById("repoSelectedValue");
-@@ -462,6 +488,7 @@ tools\&lt;toolname&gt;\index.html
-     let repoDirHandle = null;
-     let stopRequested = false;
-     let repoDisplayName = "";
-+    let isGenerating = false;
+-            <label class="palette-manager-v2__field" for="assetFolder">
+-              <span>Asset folder</span>
+-              <input id="assetFolder" type="text" value="assets/images" />
+-            </label>
+-
+             <fieldset class="preview-generator-v2__radio-group">
+               <legend>Options</legend>
+               <label class="preview-generator-v2__radio-option" for="forceRewrite">
+@@ -386,18 +414,6 @@
+                 <span>Only rewrite if preview.svg contains literal "Capture timeout"</span>
+               </label>
+             </fieldset>
+-
+-            <fieldset class="preview-generator-v2__radio-group">
+-              <legend>Capture mode</legend>
+-              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
+-                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
+-                <span>Full Screen (1600x900 HTML Page)</span>
+-              </label>
+-              <label class="preview-generator-v2__radio-option" for="captureModeCanvasOnly">
+-                <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
+-                <span>Canvas Only</span>
+-              </label>
+-            </fieldset>
+           </div>
+         </section>
+       </aside>
+@@ -518,8 +534,8 @@ tools\&lt;toolname&gt;\index.html
  
-     function getRepoDestinationDisplayName(handle) {
-       const handleName = String(handle?.name || "").trim();
-@@ -480,6 +507,21 @@ tools\&lt;toolname&gt;\index.html
-       console.log(message);
+     function syncGeneratePreviewButton() {
+       const canGenerate = hasRequiredGenerateFields();
+-      executeBtn.hidden = !canGenerate && !isGenerating;
+-      executeBtn.disabled = isGenerating;
++      executeBtn.hidden = false;
++      executeBtn.disabled = isGenerating || !canGenerate;
      }
  
-+    function hasRequiredGenerateFields() {
-+      return Boolean(repoDirHandle)
-+        && parseInputList(sampleListInput.value).length > 0
-+        && baseUrlInput.value.trim().length > 0
-+        && assetFolderInput.value.trim().length > 0
-+        && targetTypeInputs.some(input => input.checked)
-+        && captureModeInputs.some(input => input.checked);
-+    }
-+
-+    function syncGeneratePreviewButton() {
-+      const canGenerate = hasRequiredGenerateFields();
-+      executeBtn.hidden = !canGenerate && !isGenerating;
-+      executeBtn.disabled = isGenerating;
-+    }
-+
      function sleep(ms) {
-       return new Promise(resolve => setTimeout(resolve, ms));
-     }
-@@ -1267,16 +1309,23 @@ tools\&lt;toolname&gt;\index.html
- 
-           setRepoDestinationDisplayName(repoDisplayName);
-           statusEl.textContent = "";
--          executeBtn.disabled = false;
- 
-           await updatePathPreviewLabels();
-+          syncGeneratePreviewButton();
-           log(`Repo selected: ${repoDisplayName}`);
-         } catch (error) {
-+          syncGeneratePreviewButton();
-           log(`Repo folder selection canceled or failed: ${error.message}`);
-         }
-       });
- 
-       executeBtn.addEventListener("click", async () => {
-+        if (!hasRequiredGenerateFields()) {
-+          syncGeneratePreviewButton();
-+          log("Provide repo destination, base URL, asset folder, and at least one path or ID before generating.");
-+          return;
-+        }
-+
-         if (!repoDirHandle) {
-           log("Pick the repo folder first.");
-           return;
-@@ -1293,7 +1342,8 @@ tools\&lt;toolname&gt;\index.html
-         const targetType = getSelectedTargetType();
- 
-         stopRequested = false;
--        executeBtn.disabled = true;
-+        isGenerating = true;
-+        syncGeneratePreviewButton();
-         stopBtn.disabled = false;
-         log("");
-         log("Starting execution...");
-@@ -1332,12 +1382,18 @@ tools\&lt;toolname&gt;\index.html
-         } catch (error) {
-           log(`Unexpected error: ${error.message}`);
-         } finally {
--          executeBtn.disabled = false;
-+          isGenerating = false;
-+          syncGeneratePreviewButton();
-           stopBtn.disabled = true;
-           log("Done.");
-         }
-       });
- 
-+      clearLogBtn.addEventListener("click", () => {
-+        statusEl.textContent = "";
-+        logEl.textContent = "";
-+      });
-+
-       stopBtn.addEventListener("click", () => {
-         stopRequested = true;
-         log("Stop requested. Will stop after current item.");
-@@ -1346,24 +1402,37 @@ tools\&lt;toolname&gt;\index.html
-       captureModeInputs.forEach(input => {
-         input.addEventListener("change", () => {
-           log(`Capture mode: ${getCaptureModeLabel()}`);
-+          syncGeneratePreviewButton();
-         });
-       });
- 
-+      baseUrlInput.addEventListener("input", () => {
-+        syncGeneratePreviewButton();
-+      });
-+
-+      waitMsInput.addEventListener("input", () => {
-+        syncGeneratePreviewButton();
-+      });
-+
-       assetFolderInput.addEventListener("input", () => {
-         updatePathPreviewLabels();
-+        syncGeneratePreviewButton();
-       });
- 
-       sampleListInput.addEventListener("input", () => {
-         updatePathPreviewLabels();
-+        syncGeneratePreviewButton();
-       });
- 
-       targetTypeInputs.forEach(input => {
-         input.addEventListener("change", () => {
-           updatePathPreviewLabels();
-+          syncGeneratePreviewButton();
-         });
-       });
- 
-       updatePathPreviewLabels();
-+      syncGeneratePreviewButton();
-     }
-   </script>
-   <script type="module">

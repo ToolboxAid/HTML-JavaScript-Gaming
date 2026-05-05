@@ -1,7 +1,7 @@
-# Codex Commands - PR_26126_019-preview-generator-v2-accordion-status-and-generate-gate
+# Codex Commands - PR_26126_020-preview-generator-v2-target-source-and-control-placement
 
 ```bash
-codex run "Create PR_26126_019-preview-generator-v2-accordion-status-and-generate-gate. Fix Preview Generator V2 UI only. Preserve existing generation behavior. New rule: left and right columns must always use working accordion sections. Restore working accordion behavior on the left column and keep working accordion behavior on the right column. Add a Clear button on the same line as Status to empty the logging/status textarea. Hide Generate Preview until all required fields are provided; do not merely disable it. Add the missing \"Paths or IDs\" header above the input information in the left panel aside. Do not modify samples. Do not add schema. Produce review artifacts."
+codex run "Create PR_26126_020-preview-generator-v2-target-source-and-control-placement. Fix Preview Generator V2 UI only. Preserve existing generation behavior. Default Target Source to Games. Generate Preview must be visible but disabled/greyed out until required fields are provided; do not hide it. Move Capture mode into its own accordion/control section above Render Controls with options \"Full Screen (1600x900 HTML Page)\" and \"Canvas Only\". Move Asset folder into its own accordion/control section below Target Source with value \"assets/images\". Left and right columns must continue to use working accordion sections. Do not modify samples. Do not add schema. Produce review artifacts."
 ```
 
 ## Validation Commands
@@ -56,38 +56,43 @@ async function assertAccordion(selector) {
   const content = page.locator(`${selector} .accordion-v2__content`).first();
   if (await header.count() !== 1) throw new Error(`${selector} missing accordion header`);
   if (await content.count() !== 1) throw new Error(`${selector} missing accordion content`);
-  if (await header.getAttribute('aria-expanded') !== 'true') throw new Error(`${selector} should start expanded`);
   await header.click();
   await page.waitForFunction((target) => document.querySelector(`${target} .accordion-v2__header`)?.getAttribute('aria-expanded') === 'false', selector);
   const collapsed = await content.evaluate((node) => ({ hidden: node.hidden, display: getComputedStyle(node).display, height: node.getBoundingClientRect().height }));
-  if (!collapsed.hidden) throw new Error(`${selector} should set hidden=true when collapsed`);
-  if (collapsed.display !== 'none') throw new Error(`${selector} collapsed display should be none, got ${collapsed.display}`);
-  if (collapsed.height !== 0) throw new Error(`${selector} collapsed height should be 0, got ${collapsed.height}`);
+  if (!collapsed.hidden || collapsed.display !== 'none' || collapsed.height !== 0) throw new Error(`${selector} did not collapse cleanly`);
   await header.click();
   await page.waitForFunction((target) => document.querySelector(`${target} .accordion-v2__header`)?.getAttribute('aria-expanded') === 'true', selector);
 }
+
+const leftHeaders = await page.locator('.preview-generator-v2__left-accordion .accordion-v2__header').evaluateAll((headers) => headers.map((header) => header.textContent.trim().replace(/\s+/g, ' ')));
+const expectedLeftHeaders = ['Repo Destination +', 'Target Source +', 'Asset folder +', 'Capture mode +', 'Render Controls +'];
+if (JSON.stringify(leftHeaders) !== JSON.stringify(expectedLeftHeaders)) throw new Error(`Unexpected left accordion order: ${JSON.stringify(leftHeaders)}`);
 
 for (const selector of [
   '.preview-generator-v2__left-accordion:nth-of-type(1)',
   '.preview-generator-v2__left-accordion:nth-of-type(2)',
   '.preview-generator-v2__left-accordion:nth-of-type(3)',
+  '.preview-generator-v2__left-accordion:nth-of-type(4)',
+  '.preview-generator-v2__left-accordion:nth-of-type(5)',
   '#outputSummary',
   '#statusAccordion'
 ]) {
   await assertAccordion(selector);
 }
 
-if ((await page.locator('#pathsOrIdsTitle').innerText()) !== 'Paths or IDs') throw new Error('Missing Paths or IDs heading.');
-if (await page.locator('#executeBtn').isVisible()) throw new Error('Generate Preview should be hidden before required fields are provided.');
+if (!(await page.locator('#targetTypeGames').isChecked())) throw new Error('Games should be the default Target Source.');
+if (await page.locator('#targetTypeSamples').isChecked()) throw new Error('Samples should not be default Target Source.');
+if ((await page.locator('#assetFolder').inputValue()) !== 'assets/images') throw new Error('Asset folder should remain assets/images.');
+if (!(await page.locator('#executeBtn').isVisible())) throw new Error('Generate Preview should be visible before required fields are provided.');
+if (!(await page.locator('#executeBtn').isDisabled())) throw new Error('Generate Preview should be disabled before required fields are provided.');
 await page.fill('#baseUrl', server.baseUrl);
 await page.fill('#waitMs', '3000');
 await page.fill('#sampleList', '0107');
 await page.check('#forceRewrite');
-if (await page.locator('#executeBtn').isVisible()) throw new Error('Generate Preview should remain hidden until repo folder is selected.');
-await page.click('#clearLogBtn');
-if ((await page.locator('#log').innerText()).trim() !== '') throw new Error('Clear should empty the status log output.');
+if (!(await page.locator('#executeBtn').isVisible()) || !(await page.locator('#executeBtn').isDisabled())) throw new Error('Generate Preview should remain visible and disabled until repo folder is selected.');
+await page.check('#targetTypeSamples');
 await page.click('#pickRepoBtn');
-await page.waitForFunction(() => !document.getElementById('executeBtn').hidden && !document.getElementById('executeBtn').disabled);
+await page.waitForFunction(() => !document.getElementById('executeBtn').disabled);
 await page.waitForFunction(() => document.getElementById('writeFolderActualValue').textContent === 'samples\\phase-01\\0107\\assets\\images');
 await page.click('#executeBtn');
 await page.waitForFunction(() => document.getElementById('log').textContent.includes('===== SUMMARY ====='), null, { timeout: 35000 });
@@ -98,13 +103,13 @@ if (!writes[0].content.includes('<svg')) throw new Error('Generated content is n
 if (errors.length || consoleErrors.length) throw new Error([...errors, ...consoleErrors].join(' | '));
 await browser.close();
 await server.close();
-console.log('preview-generator-v2 accordion status generate gate smoke valid');
+console.log('preview-generator-v2 target source and control placement smoke valid');
 '@ | node --input-type=module -
 ```
 
 ## Notes
 
-The targeted Playwright smoke validates left and right accordion collapse/expand behavior, hidden Generate Preview gating, Status Clear log clearing, the Paths or IDs heading, repo destination display, and preserved preview generation output.
+The targeted Playwright smoke validates default Games target, visible disabled Generate Preview gating, Asset folder and Capture mode section placement, working left/right accordions, and preserved preview generation after switching to Samples.
 
 `npm run test:workspace-v2` was attempted, but the script is not defined in this checkout.
 

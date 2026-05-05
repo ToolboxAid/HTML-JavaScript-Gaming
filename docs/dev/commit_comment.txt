@@ -1,1 +1,1 @@
-Restore Preview Generator V2 accordions and generate readiness gate - PR_26126_019-preview-generator-v2-accordion-status-and-generate-gate
+Place Preview Generator V2 target controls and keep Generate visibly gated - PR_26126_020-preview-generator-v2-target-source-and-control-placement

@@ -302,7 +302,7 @@
 
   <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
     <div class="palette-manager-v2__menu-actions">
-      <button id="executeBtn" type="button" hidden>Generate Preview</button>
+      <button id="executeBtn" type="button" disabled>Generate Preview</button>
       <button id="stopBtn" type="button" disabled>Stop</button>
     </div>
   </nav>
@@ -339,11 +339,11 @@
           <div id="targetSourceContent" class="accordion-v2__content preview-generator-v2__stack">
             <fieldset class="preview-generator-v2__radio-group" aria-label="Target source">
               <label class="preview-generator-v2__radio-option" for="targetTypeGames">
-                <input id="targetTypeGames" type="radio" name="targetType" value="games" />
+                <input id="targetTypeGames" type="radio" name="targetType" value="games" checked />
                 <span>Games</span>
               </label>
               <label class="preview-generator-v2__radio-option" for="targetTypeSamples">
-                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
+                <input id="targetTypeSamples" type="radio" name="targetType" value="samples" />
                 <span>Samples</span>
               </label>
               <label class="preview-generator-v2__radio-option" for="targetTypeTools">
@@ -360,6 +360,39 @@
         </section>
 
         <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="assetFolderContent">
+            <span>Asset folder</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="assetFolderContent" class="accordion-v2__content preview-generator-v2__stack">
+            <label class="palette-manager-v2__field" for="assetFolder">
+              <span>Asset folder</span>
+              <input id="assetFolder" type="text" value="assets/images" />
+            </label>
+          </div>
+        </section>
+
+        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="captureModeContent">
+            <span>Capture mode</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="captureModeContent" class="accordion-v2__content preview-generator-v2__stack">
+            <fieldset class="preview-generator-v2__radio-group">
+              <legend>Capture mode</legend>
+              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
+                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
+                <span>Full Screen (1600x900 HTML Page)</span>
+              </label>
+              <label class="preview-generator-v2__radio-option" for="captureModeCanvasOnly">
+                <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
+                <span>Canvas Only</span>
+              </label>
+            </fieldset>
+          </div>
+        </section>
+
+        <section class="accordion-v2 preview-generator-v2__left-accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="renderControlsContent">
             <span>Render Controls</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -368,11 +401,6 @@
             <label class="palette-manager-v2__field" for="waitMs">
               <span>Wait before capture</span>
               <input id="waitMs" type="number" value="3500" min="3000" step="500" />
-            </label>
-
-            <label class="palette-manager-v2__field" for="assetFolder">
-              <span>Asset folder</span>
-              <input id="assetFolder" type="text" value="assets/images" />
             </label>
 
             <fieldset class="preview-generator-v2__radio-group">
@@ -384,18 +412,6 @@
               <label class="preview-generator-v2__radio-option" for="onlyCaptureTimeout">
                 <input id="onlyCaptureTimeout" type="checkbox" checked />
                 <span>Only rewrite if preview.svg contains literal "Capture timeout"</span>
-              </label>
-            </fieldset>
-
-            <fieldset class="preview-generator-v2__radio-group">
-              <legend>Capture mode</legend>
-              <label class="preview-generator-v2__radio-option" for="captureModeFullScreen">
-                <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
-                <span>Full Screen (1600x900 HTML Page)</span>
-              </label>
-              <label class="preview-generator-v2__radio-option" for="captureModeCanvasOnly">
-                <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
-                <span>Canvas Only</span>
               </label>
             </fieldset>
           </div>
@@ -518,8 +534,8 @@ tools\&lt;toolname&gt;\index.html
 
     function syncGeneratePreviewButton() {
       const canGenerate = hasRequiredGenerateFields();
-      executeBtn.hidden = !canGenerate && !isGenerating;
-      executeBtn.disabled = isGenerating;
+      executeBtn.hidden = false;
+      executeBtn.disabled = isGenerating || !canGenerate;
     }
 
     function sleep(ms) {
