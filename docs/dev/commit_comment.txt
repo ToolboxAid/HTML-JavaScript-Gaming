@@ -1,1 +1,1 @@
-Document sample-local contracts and harden fullscreen preview capture - PR_26126_028-sample-local-readme-and-fullscreen-capture-fix
+Use native viewport sizing for Preview Generator V2 fullscreen capture - PR_26126_029-preview-generator-v2-fullscreen-native-size
