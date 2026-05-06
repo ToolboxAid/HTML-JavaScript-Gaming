@@ -8,7 +8,6 @@ class PreviewGeneratorV2Logger {
     const now = new Date().toLocaleTimeString();
     this.logEl.textContent += `[${now}] ${message}\n`;
     this.logEl.scrollTop = this.logEl.scrollHeight;
-    console.log(message);
   }
 
   clear() {
