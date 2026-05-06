@@ -21,6 +21,7 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (67%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 287/287; executed functions 22/33
+(83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
 (93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 209/209; executed functions 26/28
 (95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 239/239; executed functions 20/21
 (100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 60/60; executed functions 4/4
@@ -126,8 +127,8 @@ Files with executed line/function counts where available:
 (75%) tools/palette-manager-v2/paletteManagerShell.js - executed lines 160/160; executed functions 12/16
 (77%) src/engine/core/Engine.js - executed lines 323/323; executed functions 10/13
 (80%) src/engine/theme/accordionV2/accordionV2.js - executed lines 26/26; executed functions 4/5
-(80%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 27/27; executed functions 4/5
 (82%) samples/shared/sampleDetailPageEnhancement.js - executed lines 471/471; executed functions 41/50
+(83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
 (86%) tools/templates-v2/js/controls/StatusLogControl.js - executed lines 24/24; executed functions 6/7
 (87%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 13/15
 (88%) tools/templates-v2/js/controls/SourceInputControl.js - executed lines 33/33; executed functions 7/8
@@ -201,6 +202,7 @@ Uncovered or low-coverage changed JS files:
 Changed JS files considered:
 (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
 (67%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
+(83%) tools/asset-manager-v2/js/controls/AccordionSection.js - changed JS file with browser V8 coverage
 (93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - changed JS file with browser V8 coverage
 (95%) tools/asset-manager-v2/js/assetManagerMetadata.js - changed JS file with browser V8 coverage
 (100%) tools/asset-manager-v2/js/bootstrap.js - changed JS file with browser V8 coverage

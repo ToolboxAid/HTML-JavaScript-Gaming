@@ -16,6 +16,13 @@ export class AccordionSection {
     this.header.addEventListener("click", () => {
       this.setOpen(!this.section.classList.contains("is-open"));
     });
+    this.header.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      event.preventDefault();
+      this.setOpen(!this.section.classList.contains("is-open"));
+    });
   }
 
   setOpen(isOpen) {

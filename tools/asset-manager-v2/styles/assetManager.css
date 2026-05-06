@@ -197,6 +197,7 @@ textarea:hover {
 }
 
 .asset-manager-v2__panel--right {
+  justify-content: space-between;
   overflow: hidden;
 }
 
@@ -274,12 +275,20 @@ textarea:hover {
 }
 
 .asset-manager-v2__accordion--fill,
-.asset-manager-v2__panel--right .accordion-v2:first-child {
+.asset-manager-v2__accordion--output.is-open {
   flex: 1 1 auto;
 }
 
-.asset-manager-v2__panel--right .accordion-v2:last-child {
+.asset-manager-v2__accordion--status {
+  flex: 0 0 auto;
+}
+
+.asset-manager-v2__accordion--status.is-open {
   flex: 0 0 260px;
+}
+
+.asset-manager-v2__panel--right .accordion-v2:not(.is-open) {
+  flex: 0 0 auto;
 }
 
 .asset-manager-v2__field {

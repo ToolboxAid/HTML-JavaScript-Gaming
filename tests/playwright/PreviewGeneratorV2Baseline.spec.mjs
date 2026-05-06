@@ -758,6 +758,59 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(outputLayout.statusBottomDelta).toBeLessThan(20);
       expect(outputLayout.statusBelowOutput).toBe(true);
 
+      const rightPanelLayout = async () => await page.evaluate(() => {
+        const panel = document.querySelector(".asset-manager-v2__panel--right");
+        const outputSection = document.querySelector(".asset-manager-v2__accordion--output");
+        const outputContent = document.getElementById("inspectorContent");
+        const output = document.getElementById("inspectorOutput");
+        const statusSection = document.querySelector(".asset-manager-v2__accordion--status");
+        const statusContent = document.getElementById("statusLogContent");
+        const panelRect = panel.getBoundingClientRect();
+        const outputSectionRect = outputSection.getBoundingClientRect();
+        const outputContentRect = outputContent.getBoundingClientRect();
+        const outputRect = output.getBoundingClientRect();
+        const statusSectionRect = statusSection.getBoundingClientRect();
+        return {
+          outputExpanded: outputSection.classList.contains("is-open"),
+          outputSectionHeight: outputSectionRect.height,
+          outputContentHidden: outputContent.hidden,
+          outputFillsContent: outputContentRect.height - outputRect.height,
+          statusExpanded: statusSection.classList.contains("is-open"),
+          statusSectionHeight: statusSectionRect.height,
+          statusContentHidden: statusContent.hidden,
+          statusBottomDelta: Math.abs(panelRect.bottom - statusSectionRect.bottom)
+        };
+      });
+
+      const expandedRightPanel = await rightPanelLayout();
+      await page.locator('.asset-manager-v2__accordion--output .accordion-v2__header').click();
+      await expect(page.locator("#inspectorContent")).toBeHidden();
+      const outputCollapsedLayout = await rightPanelLayout();
+      expect(outputCollapsedLayout.outputExpanded).toBe(false);
+      expect(outputCollapsedLayout.outputContentHidden).toBe(true);
+      expect(outputCollapsedLayout.outputSectionHeight).toBeLessThan(expandedRightPanel.outputSectionHeight);
+      expect(outputCollapsedLayout.statusBottomDelta).toBeLessThan(20);
+
+      await page.locator('.asset-manager-v2__accordion--output .accordion-v2__header').click();
+      await expect(page.locator("#inspectorContent")).toBeVisible();
+      const outputReexpandedLayout = await rightPanelLayout();
+      expect(outputReexpandedLayout.outputExpanded).toBe(true);
+      expect(outputReexpandedLayout.outputFillsContent).toBeLessThan(40);
+
+      await page.locator(".asset-manager-v2__status-accordion-header > span").first().click();
+      await expect(page.locator("#statusLogContent")).toBeHidden();
+      const statusCollapsedLayout = await rightPanelLayout();
+      expect(statusCollapsedLayout.statusExpanded).toBe(false);
+      expect(statusCollapsedLayout.statusContentHidden).toBe(true);
+      expect(statusCollapsedLayout.statusSectionHeight).toBeLessThan(outputReexpandedLayout.statusSectionHeight);
+      expect(statusCollapsedLayout.statusBottomDelta).toBeLessThan(20);
+
+      await page.locator(".asset-manager-v2__status-accordion-header > span").first().click();
+      await expect(page.locator("#statusLogContent")).toBeVisible();
+      const statusReexpandedLayout = await rightPanelLayout();
+      expect(statusReexpandedLayout.statusExpanded).toBe(true);
+      expect(statusReexpandedLayout.statusBottomDelta).toBeLessThan(20);
+
       await page.locator("#assetKindImage").check();
       await queueAssetFile(page, {
         name: "notes.exe",
@@ -855,6 +908,15 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(assetManagerLink).toBeVisible();
       await expect(assetManagerLink).toHaveAttribute("href", "/tools/asset-manager-v2/index.html");
       await expect(assetManagerCard).toContainText("Schema Validated");
+      const plannedToolNames = await page.locator("[data-planned-tools-grid] h3").allTextContents();
+      for (const plannedToolName of [
+        "Asset Manager V2",
+        "Animation / Flipbook Editor",
+        "Audio / SFX Playground",
+        "Collision / Hitbox Editor"
+      ]) {
+        expect(plannedToolNames).toContain(plannedToolName);
+      }
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

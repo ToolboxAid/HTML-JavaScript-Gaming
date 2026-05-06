@@ -1,662 +1,278 @@
 diff --git a/docs/dev/reports/coverage_changed_js_guardrail.txt b/docs/dev/reports/coverage_changed_js_guardrail.txt
-index a48796fc..1f126c88 100644
+index 1f126c88..b7dff052 100644
 --- a/docs/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,11 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
+@@ -7,6 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
 
  Changed runtime JS files considered:
--(62%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 313/313; executed functions 21/34
--(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 204/204; executed functions 25/27
--(95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 226/226; executed functions 19/20
--(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 63/63; executed functions 4/4
--(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 181/181; executed functions 21/21
-+(67%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 287/287; executed functions 22/33
-+(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 209/209; executed functions 26/28
-+(95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 239/239; executed functions 20/21
-+(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 60/60; executed functions 4/4
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 67/67; executed functions 9/9
-
- Guardrail warnings:
- (100%) none - no changed runtime JS coverage warnings
+ (67%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 287/287; executed functions 22/33
++(83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
+ (93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 209/209; executed functions 26/28
+ (95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 239/239; executed functions 20/21
+ (100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 60/60; executed functions 4/4
 diff --git a/docs/dev/reports/playwright_v8_coverage_report.txt b/docs/dev/reports/playwright_v8_coverage_report.txt
-index e7bd6ab4..c38fdd10 100644
+index c38fdd10..962aa088 100644
 --- a/docs/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs/dev/reports/playwright_v8_coverage_report.txt
-@@ -13,18 +13,18 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
-
- Exercised tool entry points detected:
- (87%) Preview Generator V2 - exercised 19 runtime JS files
--(86%) Asset Manager V2 - exercised 12 runtime JS files
-+(88%) Asset Manager V2 - exercised 12 runtime JS files
- (49%) Palette Manager - exercised 12 runtime JS files
- (84%) Tool Template V2 - exercised 10 runtime JS files
- (93%) Workspace V2 - exercised 1 runtime JS files
- (0%) Workspace Manager - not exercised by this Playwright run
+@@ -21,6 +21,7 @@ Exercised tool entry points detected:
 
  Changed runtime JS files covered:
--(62%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 313/313; executed functions 21/34
--(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 204/204; executed functions 25/27
--(95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 226/226; executed functions 19/20
--(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 63/63; executed functions 4/4
--(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 181/181; executed functions 21/21
-+(67%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 287/287; executed functions 22/33
-+(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 209/209; executed functions 26/28
-+(95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 239/239; executed functions 20/21
-+(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 60/60; executed functions 4/4
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 67/67; executed functions 9/9
-
- Files with executed line/function counts where available:
- (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
-@@ -113,9 +113,9 @@ Files with executed line/function counts where available:
- (57%) src/engine/runtime/FullscreenService.js - executed lines 118/118; executed functions 8/14
- (60%) src/engine/persistence/StorageService.js - executed lines 49/49; executed functions 3/5
- (61%) src/engine/runtime/gameImageConvention.js - executed lines 207/207; executed functions 11/18
--(62%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 313/313; executed functions 21/34
- (65%) tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js - executed lines 121/121; executed functions 15/23
- (67%) src/shared/number/numberUtils.js - executed lines 14/14; executed functions 2/3
-+(67%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 287/287; executed functions 22/33
- (67%) tools/asset-manager-v2/js/controls/AssetManagerShellControl.js - executed lines 100/100; executed functions 8/12
- (67%) tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js - executed lines 117/117; executed functions 8/12
- (70%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 7/10
-@@ -128,15 +128,14 @@ Files with executed line/function counts where available:
+ (67%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 287/287; executed functions 22/33
++(83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
+ (93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 209/209; executed functions 26/28
+ (95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 239/239; executed functions 20/21
+ (100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 60/60; executed functions 4/4
+@@ -126,8 +127,8 @@ Files with executed line/function counts where available:
+ (75%) tools/palette-manager-v2/paletteManagerShell.js - executed lines 160/160; executed functions 12/16
+ (77%) src/engine/core/Engine.js - executed lines 323/323; executed functions 10/13
  (80%) src/engine/theme/accordionV2/accordionV2.js - executed lines 26/26; executed functions 4/5
- (80%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 27/27; executed functions 4/5
+-(80%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 27/27; executed functions 4/5
  (82%) samples/shared/sampleDetailPageEnhancement.js - executed lines 471/471; executed functions 41/50
--(86%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 51/51; executed functions 6/7
++(83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
  (86%) tools/templates-v2/js/controls/StatusLogControl.js - executed lines 24/24; executed functions 6/7
  (87%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 13/15
  (88%) tools/templates-v2/js/controls/SourceInputControl.js - executed lines 33/33; executed functions 7/8
- (90%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 52/58
- (92%) tools/templates-v2/js/controls/ToolStarterShellControl.js - executed lines 111/111; executed functions 11/12
--(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 204/204; executed functions 25/27
-+(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 209/209; executed functions 26/28
- (93%) tools/workspace-v2/index.js - executed lines 104/104; executed functions 14/15
--(95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 226/226; executed functions 19/20
-+(95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 239/239; executed functions 20/21
- (100%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 6/6
- (100%) samples/phase-01/0102/main.js - executed lines 23/23; executed functions 1/1
- (100%) samples/phase-01/0103/main.js - executed lines 23/23; executed functions 1/1
-@@ -164,8 +163,9 @@ Files with executed line/function counts where available:
- (100%) src/shared/string/stringUtil.js - executed lines 1/1; executed functions 1/1
- (100%) src/shared/utils/invariantUtils.js - executed lines 11/11; executed functions 2/2
- (100%) src/shared/utils/stringUtils.js - executed lines 1/1; executed functions 1/1
--(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 63/63; executed functions 4/4
-+(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 60/60; executed functions 4/4
- (100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 52/52; executed functions 6/6
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 67/67; executed functions 9/9
- (100%) tools/asset-manager-v2/js/controls/InspectorControl.js - executed lines 8/8; executed functions 3/3
- (100%) tools/asset-manager-v2/js/controls/StatusLogControl.js - executed lines 30/30; executed functions 9/9
- (100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 181/181; executed functions 21/21
-@@ -200,9 +200,8 @@ Uncovered or low-coverage changed JS files:
-
+@@ -201,6 +202,7 @@ Uncovered or low-coverage changed JS files:
  Changed JS files considered:
  (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs - changed JS file not collected as browser runtime coverage
--(62%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
-+(67%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
+ (67%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
++(83%) tools/asset-manager-v2/js/controls/AccordionSection.js - changed JS file with browser V8 coverage
  (93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - changed JS file with browser V8 coverage
  (95%) tools/asset-manager-v2/js/assetManagerMetadata.js - changed JS file with browser V8 coverage
  (100%) tools/asset-manager-v2/js/bootstrap.js - changed JS file with browser V8 coverage
--(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - changed JS file with browser V8 coverage
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-index 33f4d327..5aa091ca 100644
+index 5aa091ca..cb482133 100644
 --- a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 +++ b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-@@ -629,10 +629,10 @@ test.describe("Preview Generator V2 baseline", () => {
-   test("launches Asset Manager V2 in tool mode with approved asset controls and schema rejection", async ({ page }) => {
-     const server = await openAssetManagerV2(page, "", {
-       assetFiles: [{
--        name: "nebula-backdrop.png",
-+        name: "nebula-background.png",
-         mimeType: "image/png",
-         contents: "fake-png",
--        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\images\\nebula-backdrop.png"
-+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\images\\nebula-background.png"
-       }]
-     });
-     const pageErrors = [];
-@@ -670,6 +670,11 @@ test.describe("Preview Generator V2 baseline", () => {
-       expect(stackedFieldColumns).toHaveLength(1);
-       await expect(page.locator("#assetRoleSelect")).toBeEnabled();
-       await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
-+      await expect(page.locator('button[aria-controls="schemaValidationContent"]')).toHaveCount(0);
-+      await expect(page.locator("#schemaValidationContent")).toHaveCount(0);
-+      await expect(page.locator("#jsonInput")).toHaveCount(0);
-+      await expect(page.locator("#validateJsonButton")).toHaveCount(0);
-+      await expect(page.locator('button[aria-controls="approvedAssetsContent"] span').first()).toHaveText("Assets");
-       await expect(page.locator("#statusLog")).toHaveValue(/INFO Loaded asset-browser\.schema\.json/);
+@@ -758,6 +758,59 @@ test.describe("Preview Generator V2 baseline", () => {
+       expect(outputLayout.statusBottomDelta).toBeLessThan(20);
+       expect(outputLayout.statusBelowOutput).toBe(true);
 
-       await page.locator("#assetKindAudio").check();
-@@ -680,22 +685,80 @@ test.describe("Preview Generator V2 baseline", () => {
-       await expect(page.locator("#assetRoleSelect")).toHaveValue("music");
-       await page.locator("#assetKindImage").check();
-       await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
--      await page.locator("#assetRoleSelect").selectOption("background");
-       await page.locator("#pickAssetFileButton").click();
--      await expect(page.locator("#assetSelectedFileText")).toContainText("Image: nebula-backdrop.png");
-+      await expect(page.locator("#assetSelectedFileText")).toContainText("Image: nebula-background.png");
-       const pickerOptions = await page.evaluate(() => window.__assetManagerV2PickerOptions.at(-1));
-       expect(pickerOptions.types[0].description).toBe("Image assets");
-       expect(Object.keys(pickerOptions.types[0].accept)).toContain("image/png");
--      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.nebula-backdrop.background");
--      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-backdrop.png");
--      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-backdrop\.png validated as image background\./);
-+      await expect(page.locator("#assetRoleSelect")).toHaveValue("background");
-+      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.nebula-background.background");
-+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-background.png");
-+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-background\.png validated as image background\./);
-       await expect(page.locator("#addAssetButton")).toBeEnabled();
-       await page.locator("#addAssetButton").click();
--      await expect(page.locator("#statusLog")).toHaveValue(/OK Added image\.assets\.nebula-backdrop\.background\./);
--      await expect(page.locator("#assetList")).toContainText("image.assets.nebula-backdrop.background");
-+      await expect(page.locator("#statusLog")).toHaveValue(/OK Added image\.assets\.nebula-background\.background\./);
-+      await expect(page.locator("#assetList")).toContainText("image.assets.nebula-background.background");
-       await expect(page.locator("#assetPreview")).toContainText("Role: background");
--      await expect(page.locator("#inspectorOutput")).toContainText("\"image.assets.nebula-backdrop.background\"");
-+      await expect(page.locator("#inspectorOutput")).toContainText("\"image.assets.nebula-background.background\"");
-
-+      await queueAssetFile(page, {
-+        name: "chrome-bezel.png",
-+        mimeType: "image/png",
-+        contents: "fake-png",
-+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\images\\chrome-bezel.png"
-+      });
-+      await page.locator("#pickAssetFileButton").click();
-+      await expect(page.locator("#assetRoleSelect")).toHaveValue("bezel");
-+      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.chrome-bezel.bezel");
-+      await page.locator("#addAssetButton").click();
-+
-+      await page.locator("#assetKindAudio").check();
-+      await queueAssetFile(page, {
-+        name: "fire.wav",
-+        mimeType: "audio/wav",
-+        contents: "RIFF",
-+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\audio\\fire.wav"
-+      });
-+      await page.locator("#pickAssetFileButton").click();
-+      await expect(page.locator("#assetIdInput")).toHaveValue("audio.assets.fire.sound");
-+      await page.locator("#addAssetButton").click();
-+
-+      const tileSummaries = await page.locator(".asset-manager-v2__asset-tile").evaluateAll((tiles) => tiles.map((tile) => ({
-+        typeRole: tile.querySelector(".asset-manager-v2__asset-type-role")?.textContent?.trim(),
-+        id: tile.querySelector("strong")?.textContent?.trim(),
-+        hasDelete: Boolean(tile.querySelector("button[data-delete-asset-id]"))
-+      })));
-+      expect(tileSummaries).toEqual([
-+        { typeRole: "audio:sound", id: "audio.assets.fire.sound", hasDelete: true },
-+        { typeRole: "image:background", id: "image.assets.nebula-background.background", hasDelete: true },
-+        { typeRole: "image:bezel", id: "image.assets.chrome-bezel.bezel", hasDelete: true }
-+      ]);
-+
-+      await page.locator('button[data-delete-asset-id="image.assets.nebula-background.background"]').click();
-+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted image\.assets\.nebula-background\.background\./);
-+      await expect(page.locator("#assetList")).not.toContainText("image.assets.nebula-background.background");
-+      await expect(page.locator(".asset-manager-v2__asset-tile")).toHaveCount(2);
-+
-+      const outputLayout = await page.evaluate(() => {
++      const rightPanelLayout = async () => await page.evaluate(() => {
 +        const panel = document.querySelector(".asset-manager-v2__panel--right");
-+        const inspectorContent = document.getElementById("inspectorContent");
-+        const inspectorOutput = document.getElementById("inspectorOutput");
-+        const statusSection = document.getElementById("statusLogContent").closest(".accordion-v2");
++        const outputSection = document.querySelector(".asset-manager-v2__accordion--output");
++        const outputContent = document.getElementById("inspectorContent");
++        const output = document.getElementById("inspectorOutput");
++        const statusSection = document.querySelector(".asset-manager-v2__accordion--status");
++        const statusContent = document.getElementById("statusLogContent");
 +        const panelRect = panel.getBoundingClientRect();
-+        const contentRect = inspectorContent.getBoundingClientRect();
-+        const outputRect = inspectorOutput.getBoundingClientRect();
-+        const statusRect = statusSection.getBoundingClientRect();
++        const outputSectionRect = outputSection.getBoundingClientRect();
++        const outputContentRect = outputContent.getBoundingClientRect();
++        const outputRect = output.getBoundingClientRect();
++        const statusSectionRect = statusSection.getBoundingClientRect();
 +        return {
-+          outputFillsContent: contentRect.height - outputRect.height,
-+          statusBottomDelta: Math.abs(panelRect.bottom - statusRect.bottom),
-+          statusBelowOutput: statusRect.top > outputRect.bottom
++          outputExpanded: outputSection.classList.contains("is-open"),
++          outputSectionHeight: outputSectionRect.height,
++          outputContentHidden: outputContent.hidden,
++          outputFillsContent: outputContentRect.height - outputRect.height,
++          statusExpanded: statusSection.classList.contains("is-open"),
++          statusSectionHeight: statusSectionRect.height,
++          statusContentHidden: statusContent.hidden,
++          statusBottomDelta: Math.abs(panelRect.bottom - statusSectionRect.bottom)
 +        };
 +      });
-+      expect(outputLayout.outputFillsContent).toBeLessThan(40);
-+      expect(outputLayout.statusBottomDelta).toBeLessThan(20);
-+      expect(outputLayout.statusBelowOutput).toBe(true);
 +
-+      await page.locator("#assetKindImage").check();
++      const expandedRightPanel = await rightPanelLayout();
++      await page.locator('.asset-manager-v2__accordion--output .accordion-v2__header').click();
++      await expect(page.locator("#inspectorContent")).toBeHidden();
++      const outputCollapsedLayout = await rightPanelLayout();
++      expect(outputCollapsedLayout.outputExpanded).toBe(false);
++      expect(outputCollapsedLayout.outputContentHidden).toBe(true);
++      expect(outputCollapsedLayout.outputSectionHeight).toBeLessThan(expandedRightPanel.outputSectionHeight);
++      expect(outputCollapsedLayout.statusBottomDelta).toBeLessThan(20);
++
++      await page.locator('.asset-manager-v2__accordion--output .accordion-v2__header').click();
++      await expect(page.locator("#inspectorContent")).toBeVisible();
++      const outputReexpandedLayout = await rightPanelLayout();
++      expect(outputReexpandedLayout.outputExpanded).toBe(true);
++      expect(outputReexpandedLayout.outputFillsContent).toBeLessThan(40);
++
++      await page.locator(".asset-manager-v2__status-accordion-header > span").first().click();
++      await expect(page.locator("#statusLogContent")).toBeHidden();
++      const statusCollapsedLayout = await rightPanelLayout();
++      expect(statusCollapsedLayout.statusExpanded).toBe(false);
++      expect(statusCollapsedLayout.statusContentHidden).toBe(true);
++      expect(statusCollapsedLayout.statusSectionHeight).toBeLessThan(outputReexpandedLayout.statusSectionHeight);
++      expect(statusCollapsedLayout.statusBottomDelta).toBeLessThan(20);
++
++      await page.locator(".asset-manager-v2__status-accordion-header > span").first().click();
++      await expect(page.locator("#statusLogContent")).toBeVisible();
++      const statusReexpandedLayout = await rightPanelLayout();
++      expect(statusReexpandedLayout.statusExpanded).toBe(true);
++      expect(statusReexpandedLayout.statusBottomDelta).toBeLessThan(20);
++
+       await page.locator("#assetKindImage").check();
        await queueAssetFile(page, {
          name: "notes.exe",
-         mimeType: "application/octet-stream",
-@@ -706,20 +769,6 @@ test.describe("Preview Generator V2 baseline", () => {
-       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected file validation failed: File notes\.exe is not accepted for Image assets\./);
-       await expect(page.locator("#addAssetButton")).toBeDisabled();
-
--      await page.locator("#jsonInput").fill(JSON.stringify({
--        assets: {
--          "audio.arcade.theme": {
--            path: "assets/audio/theme.wav",
--            kind: "audio",
--            role: "background",
--            source: "asset-manager-v2"
--          }
--        }
--      }, null, 2));
--      await page.locator("#validateJsonButton").click();
--      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Schema validation failed:/);
--      await expect(page.locator("#inspectorOutput")).toContainText('role \\"background\\" is not allowed for audio assets');
--
-       await page.locator("#clearStatusButton").click();
-       await expect(page.locator("#statusLog")).toHaveValue("");
-
+@@ -855,6 +908,15 @@ test.describe("Preview Generator V2 baseline", () => {
+       await expect(assetManagerLink).toBeVisible();
+       await expect(assetManagerLink).toHaveAttribute("href", "/tools/asset-manager-v2/index.html");
+       await expect(assetManagerCard).toContainText("Schema Validated");
++      const plannedToolNames = await page.locator("[data-planned-tools-grid] h3").allTextContents();
++      for (const plannedToolName of [
++        "Asset Manager V2",
++        "Animation / Flipbook Editor",
++        "Audio / SFX Playground",
++        "Collision / Hitbox Editor"
++      ]) {
++        expect(plannedToolNames).toContain(plannedToolName);
++      }
+       expect(pageErrors).toEqual([]);
+     } finally {
+       await coverageReporter.stop(page);
 diff --git a/tools/asset-manager-v2/index.html b/tools/asset-manager-v2/index.html
-index acabd556..48a3e7ee 100644
+index 48a3e7ee..7fecdc62 100644
 --- a/tools/asset-manager-v2/index.html
 +++ b/tools/asset-manager-v2/index.html
-@@ -110,26 +110,12 @@
-             <p id="assetValidationMessage" class="asset-manager-v2__hint">Loading asset-browser.schema.json before asset edits are enabled.</p>
+@@ -129,7 +129,7 @@
+       </section>
+
+       <aside class="asset-manager-v2__panel asset-manager-v2__panel--right" aria-label="Asset output">
+-        <section class="accordion-v2 asset-manager-v2__accordion is-open" data-accordion-v2-open="true">
++        <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__accordion--output is-open" data-accordion-v2-open="true">
+           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
+             <span>Output Summary</span>
+             <span class="accordion-v2__icon" aria-hidden="true">+</span>
+@@ -139,8 +139,8 @@
            </div>
          </section>
--
+
 -        <section class="accordion-v2 asset-manager-v2__accordion is-open" data-accordion-v2-open="true">
--          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="schemaValidationContent">
--            <span>Schema Validation</span>
--            <span class="accordion-v2__icon" aria-hidden="true">+</span>
--          </button>
--          <div id="schemaValidationContent" class="accordion-v2__content">
--            <textarea id="jsonInput" rows="9" spellcheck="false" aria-label="Asset payload JSON" placeholder='{"assets":{}}'></textarea>
--            <div class="asset-manager-v2__button-row">
--              <button id="validateJsonButton" type="button" disabled>Validate JSON</button>
--              <button id="loadJsonButton" type="button" disabled>Load Valid JSON</button>
--            </div>
--          </div>
--        </section>
-       </aside>
-
-       <section class="asset-manager-v2__panel asset-manager-v2__panel--center" aria-label="Approved assets">
-         <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__accordion--fill is-open" data-accordion-v2-open="true">
-           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="approvedAssetsContent">
--            <span>Approved Assets</span>
-+            <span>Assets</span>
-             <span class="accordion-v2__icon" aria-hidden="true">+</span>
-           </button>
-           <div id="approvedAssetsContent" class="accordion-v2__content">
-diff --git a/tools/asset-manager-v2/js/AssetManagerV2App.js b/tools/asset-manager-v2/js/AssetManagerV2App.js
-index 378f7992..b18ef283 100644
---- a/tools/asset-manager-v2/js/AssetManagerV2App.js
-+++ b/tools/asset-manager-v2/js/AssetManagerV2App.js
-@@ -15,12 +15,9 @@ export class AssetManagerV2App {
-     assetCatalog,
-     assetForm,
-     inspector,
--    jsonInput,
--    loadJsonButton,
-     schemaValidator,
-     shell,
-     statusLog,
--    validateJsonButton,
-     windowRef = window,
-     workspaceBridge
-   }) {
-@@ -29,12 +26,9 @@ export class AssetManagerV2App {
-     this.assetCatalog = assetCatalog;
-     this.assetForm = assetForm;
-     this.inspector = inspector;
--    this.jsonInput = jsonInput;
--    this.loadJsonButton = loadJsonButton;
-     this.schemaValidator = schemaValidator;
-     this.shell = shell;
-     this.statusLog = statusLog;
--    this.validateJsonButton = validateJsonButton;
-     this.window = windowRef;
-     this.workspaceBridge = workspaceBridge;
-     this.assets = {};
-@@ -64,13 +58,12 @@ export class AssetManagerV2App {
-       onFileSelected: (value, fileInfo) => this.validateSelectedFile(value, fileInfo)
+-          <div class="accordion-v2__header asset-manager-v2__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
++        <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__accordion--status is-open" data-accordion-v2-open="true">
++          <div class="accordion-v2__header asset-manager-v2__status-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="statusLogContent">
+             <span>Status</span>
+             <div class="asset-manager-v2__status-header-actions">
+               <button id="clearStatusButton" class="asset-manager-v2__status-clear-button" type="button">Clear</button>
+diff --git a/tools/asset-manager-v2/js/controls/AccordionSection.js b/tools/asset-manager-v2/js/controls/AccordionSection.js
+index 1e03257e..2e0f7c36 100644
+--- a/tools/asset-manager-v2/js/controls/AccordionSection.js
++++ b/tools/asset-manager-v2/js/controls/AccordionSection.js
+@@ -16,6 +16,13 @@ export class AccordionSection {
+     this.header.addEventListener("click", () => {
+       this.setOpen(!this.section.classList.contains("is-open"));
      });
-     this.assetCatalog.mount({
-+      onDelete: (assetId) => this.deleteAsset(assetId),
-       onSelect: (assetId) => {
-         this.selectedAssetId = assetId;
-         this.render();
-       }
-     });
--    this.validateJsonButton.addEventListener("click", () => this.validateJsonInput(false));
--    this.loadJsonButton.addEventListener("click", () => this.validateJsonInput(true));
-
-     this.render();
-     await this.loadSchema();
-@@ -164,6 +157,24 @@ export class AssetManagerV2App {
-     this.refreshActions();
-   }
-
-+  deleteAsset(assetId) {
-+    if (!Object.prototype.hasOwnProperty.call(this.assets, assetId)) {
-+      return;
-+    }
-+    const nextAssets = { ...this.assets };
-+    delete nextAssets[assetId];
-+    const validation = this.schemaValidator.validatePayload({ assets: nextAssets });
-+    if (!validation.ok) {
-+      this.statusLog.fail(`Delete blocked by schema validation: ${validation.errors.join(" | ")}`);
-+      return;
-+    }
-+    this.assets = sortedAssets(validation.payload.assets);
-+    this.selectedAssetId = Object.keys(this.assets)[0] || "";
-+    this.statusLog.ok(`Deleted ${assetId}.`);
-+    this.render();
-+    this.refreshActions();
-+  }
-+
-   validateSelectedFile(formValue, fileInfo) {
-     if (!fileInfo) {
-       return;
-@@ -204,43 +215,6 @@ export class AssetManagerV2App {
-     this.statusLog.ok(`Selected file ${fileInfo.name} validated as ${formValue.kind} ${formValue.role}.`);
-   }
-
--  validateJsonInput(loadPayload) {
--    if (!this.schemaReady) {
--      this.statusLog.fail("Schema is not loaded; JSON validation is blocked.");
--      return;
--    }
--    const rawValue = this.jsonInput.value.trim();
--    if (!rawValue) {
--      this.statusLog.fail("JSON validation requires an asset payload.");
--      return;
--    }
--
--    let parsed;
--    try {
--      parsed = JSON.parse(rawValue);
--    } catch (error) {
--      this.statusLog.fail(`Schema validation failed: JSON parse error: ${error.message}`);
--      return;
--    }
--
--    const validation = this.schemaValidator.validatePayload(parsed);
--    if (!validation.ok) {
--      this.statusLog.fail(`Schema validation failed: ${validation.errors.join(" | ")}`);
--      this.inspector.showObject({ ok: false, errors: validation.errors });
--      return;
--    }
--
--    this.inspector.showObject(validation.payload);
--    this.statusLog.ok(`Schema validation passed for ${Object.keys(validation.payload.assets).length} assets.`);
--    if (loadPayload) {
--      this.assets = sortedAssets(validation.payload.assets);
--      this.selectedAssetId = Object.keys(this.assets)[0] || "";
--      this.statusLog.ok("Loaded validated asset payload.");
--      this.render();
--      this.refreshActions();
--    }
--  }
--
-   exportAssets() {
-     const validation = this.validateCurrentPayload();
-     if (!validation.ok) {
-@@ -326,7 +300,6 @@ export class AssetManagerV2App {
-     const payload = this.currentPayload();
-     this.assetCatalog.render(payload.assets, this.selectedAssetId);
-     this.inspector.showObject(this.currentToolState());
--    this.jsonInput.value = JSON.stringify(payload, null, 2);
-   }
-
-   refreshActions() {
-@@ -334,8 +307,6 @@ export class AssetManagerV2App {
-       ? this.schemaValidator.validatePayload(this.currentPayload())
-       : { ok: false };
-     this.assetForm.setAddEnabled(this.schemaReady && this.assetForm.isComplete());
--    this.validateJsonButton.disabled = !this.schemaReady;
--    this.loadJsonButton.disabled = !this.schemaReady;
-     this.actionNav.setToolActionsEnabled(this.schemaReady && payloadValidation.ok);
-     this.actionNav.setWorkspaceActionsEnabled(this.schemaReady && payloadValidation.ok, Boolean(this.lastWorkspaceManifest));
-   }
-diff --git a/tools/asset-manager-v2/js/assetManagerMetadata.js b/tools/asset-manager-v2/js/assetManagerMetadata.js
-index eadfbe6f..c5a71550 100644
---- a/tools/asset-manager-v2/js/assetManagerMetadata.js
-+++ b/tools/asset-manager-v2/js/assetManagerMetadata.js
-@@ -158,6 +158,20 @@ export function assetIdForFile(kind, fileName, role) {
-   return kind ? `${kind}.assets.${slug}` : "";
- }
-
-+export function suggestedRoleForFile(kind, fileName) {
-+  if (kind !== "image") {
-+    return "";
-+  }
-+  const slug = slugifyAssetSegment(fileName);
-+  if (slug.includes("bezel")) {
-+    return "bezel";
-+  }
-+  if (slug.includes("background")) {
-+    return "background";
-+  }
-+  return "";
-+}
-+
- export function pathForFile(kind, fileName, sourcePath = "") {
-   return projectRelativeAssetPath(sourcePath, kind, fileName);
- }
-diff --git a/tools/asset-manager-v2/js/bootstrap.js b/tools/asset-manager-v2/js/bootstrap.js
-index bf57bd23..77c14860 100644
---- a/tools/asset-manager-v2/js/bootstrap.js
-+++ b/tools/asset-manager-v2/js/bootstrap.js
-@@ -47,8 +47,6 @@ window.addEventListener("DOMContentLoaded", () => {
-       windowRef: window
-     }),
-     inspector: new InspectorControl(requireElement("#inspectorOutput")),
--    jsonInput: requireElement("#jsonInput"),
--    loadJsonButton: requireElement("#loadJsonButton"),
-     schemaValidator: new AssetSchemaValidator({
-       schemaUrl: "../schemas/tools/asset-browser.schema.json"
-     }),
-@@ -57,7 +55,6 @@ window.addEventListener("DOMContentLoaded", () => {
-       clearButton: requireElement("#clearStatusButton"),
-       log: requireElement("#statusLog")
-     }),
--    validateJsonButton: requireElement("#validateJsonButton"),
-     windowRef: window,
-     workspaceBridge: new WorkspaceBridge({ windowRef: window })
-   });
-diff --git a/tools/asset-manager-v2/js/controls/AssetCatalogControl.js b/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
-index 1617009e..59f25fe0 100644
---- a/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
-+++ b/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
-@@ -13,11 +13,18 @@ export class AssetCatalogControl {
-     this.list = list;
-     this.preview = preview;
-     this.onSelect = null;
-+    this.onDelete = null;
-   }
-
--  mount({ onSelect }) {
-+  mount({ onDelete, onSelect }) {
-+    this.onDelete = onDelete;
-     this.onSelect = onSelect;
-     this.list.addEventListener("click", (event) => {
-+      const deleteButton = event.target.closest("button[data-delete-asset-id]");
-+      if (deleteButton) {
-+        this.onDelete?.(deleteButton.dataset.deleteAssetId);
++    this.header.addEventListener("keydown", (event) => {
++      if (event.key !== "Enter" && event.key !== " ") {
 +        return;
 +      }
-       const button = event.target.closest("button[data-asset-id]");
-       if (!button) {
-         return;
-@@ -27,8 +34,8 @@ export class AssetCatalogControl {
++      event.preventDefault();
++      this.setOpen(!this.section.classList.contains("is-open"));
++    });
    }
 
-   render(assets, selectedAssetId) {
--    const entries = Object.entries(assets);
--    this.countText.textContent = `${entries.length} approved assets`;
-+    const entries = this.sortedEntries(assets);
-+    this.countText.textContent = `${entries.length} assets`;
-     if (!entries.length) {
-       this.list.innerHTML = "";
-       this.preview.innerHTML = "<p>No asset selected.</p>";
-@@ -36,11 +43,13 @@ export class AssetCatalogControl {
-     }
-
-     this.list.innerHTML = entries.map(([assetId, entry]) => `
--      <button type="button" data-asset-id="${escapeHtml(assetId)}" class="${assetId === selectedAssetId ? "is-selected" : ""}">
--        <strong>${escapeHtml(assetId)}</strong>
--        <span class="asset-manager-v2__asset-kind">${escapeHtml(entry.role ? `${entry.kind}:${entry.role}` : entry.kind)}</span>
--        <span>${escapeHtml(entry.path)}</span>
--      </button>
-+      <article class="asset-manager-v2__asset-tile ${assetId === selectedAssetId ? "is-selected" : ""}">
-+        <button type="button" data-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-select">
-+          <span class="asset-manager-v2__asset-type-role">${escapeHtml(entry.kind)}:${escapeHtml(entry.role || "")}</span>
-+          <strong>${escapeHtml(assetId)}</strong>
-+        </button>
-+        <button type="button" data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete">Delete</button>
-+      </article>
-     `).join("");
-
-     const selectedEntry = assets[selectedAssetId] || assets[entries[0][0]];
-@@ -53,4 +62,12 @@ export class AssetCatalogControl {
-       <p>Source: ${escapeHtml(selectedEntry.source)}</p>
-     `;
-   }
-+
-+  sortedEntries(assets) {
-+    return Object.entries(assets).sort(([leftId, leftEntry], [rightId, rightEntry]) => (
-+      String(leftEntry.kind || "").localeCompare(String(rightEntry.kind || ""))
-+      || String(leftEntry.role || "").localeCompare(String(rightEntry.role || ""))
-+      || leftId.localeCompare(rightId)
-+    ));
-+  }
- }
-diff --git a/tools/asset-manager-v2/js/controls/AssetFormControl.js b/tools/asset-manager-v2/js/controls/AssetFormControl.js
-index 5accfd87..d1a3606e 100644
---- a/tools/asset-manager-v2/js/controls/AssetFormControl.js
-+++ b/tools/asset-manager-v2/js/controls/AssetFormControl.js
-@@ -6,7 +6,8 @@ import {
-   labelForKind,
-   pathForFile,
-   pickerTypesForKind,
--  roleOptionsForKind
-+  roleOptionsForKind,
-+  suggestedRoleForFile
- } from "../assetManagerMetadata.js";
-
- export class AssetFormControl {
-@@ -191,6 +192,10 @@ export class AssetFormControl {
-         : `File ${file.name} is not accepted for ${labelForKind(kind)} assets.`;
-     }
-     this.updateRoleOptions();
-+    const suggestedRole = suggestedRoleForFile(kind, file.name);
-+    if (suggestedRole && [...this.roleSelect.options].some((option) => option.value === suggestedRole)) {
-+      this.roleSelect.value = suggestedRole;
-+    }
-     this.applyDerivedFileValues();
-     this.selectedFileText.textContent = kind ? `${labelForKind(kind)}: ${file.name}` : `Unapproved: ${file.name}`;
-   }
+   setOpen(isOpen) {
 diff --git a/tools/asset-manager-v2/styles/assetManager.css b/tools/asset-manager-v2/styles/assetManager.css
-index f2f5dcb5..e2c31d9f 100644
+index e2c31d9f..a0ba214e 100644
 --- a/tools/asset-manager-v2/styles/assetManager.css
 +++ b/tools/asset-manager-v2/styles/assetManager.css
-@@ -196,6 +196,10 @@ textarea:hover {
-   padding: 14px;
+@@ -197,6 +197,7 @@ textarea:hover {
  }
 
-+.asset-manager-v2__panel--right {
-+  overflow: hidden;
-+}
-+
- .asset-manager-v2__panel--center {
-   min-height: 0;
- }
-@@ -269,10 +273,15 @@ textarea:hover {
-   display: none;
+ .asset-manager-v2__panel--right {
++  justify-content: space-between;
+   overflow: hidden;
  }
 
--.asset-manager-v2__accordion--fill {
-+.asset-manager-v2__accordion--fill,
-+.asset-manager-v2__panel--right .accordion-v2:first-child {
+@@ -274,14 +275,22 @@ textarea:hover {
+ }
+
+ .asset-manager-v2__accordion--fill,
+-.asset-manager-v2__panel--right .accordion-v2:first-child {
++.asset-manager-v2__accordion--output.is-open {
    flex: 1 1 auto;
  }
 
-+.asset-manager-v2__panel--right .accordion-v2:last-child {
-+  flex: 0 0 260px;
+-.asset-manager-v2__panel--right .accordion-v2:last-child {
++.asset-manager-v2__accordion--status {
++  flex: 0 0 auto;
++}
++
++.asset-manager-v2__accordion--status.is-open {
+   flex: 0 0 260px;
+ }
+
++.asset-manager-v2__panel--right .accordion-v2:not(.is-open) {
++  flex: 0 0 auto;
 +}
 +
  .asset-manager-v2__field {
    min-width: 0;
    display: grid;
-@@ -380,7 +389,6 @@ textarea:hover {
-   gap: 8px;
- }
+diff --git a/tools/index.html b/tools/index.html
+index cfea4085..8c7252e3 100644
+--- a/tools/index.html
++++ b/tools/index.html
+@@ -47,6 +47,14 @@ index.html
+         shared tools registry.</p>
+       <div class="grid" data-planned-tools-grid>
 
--#jsonInput,
- #statusLog {
-   width: 100%;
-   resize: none;
-@@ -391,25 +399,38 @@ textarea:hover {
-   gap: 8px;
- }
-
--.asset-manager-v2__asset-list button {
--  width: 100%;
-+.asset-manager-v2__asset-tile {
-+  min-width: 0;
-   display: grid;
--  grid-template-columns: minmax(0, 1fr) auto;
-   gap: 8px;
-+  border: 1px solid var(--asset-manager-line);
-+  border-radius: 8px;
-+  background: var(--asset-manager-panel-strong);
-+  padding: 10px;
-+}
++        <div class="card">
++          <h3>Asset Manager V2</h3>
++          <p>Continue asset workflow polish for Workspace V2 insertion, validation, and approved media management.</p>
++          <div class="meta">
++            <span class="pill planned">Planned</span>
++          </div>
++        </div>
 +
-+.asset-manager-v2__asset-tile.is-selected {
-+  border-color: var(--asset-manager-accent);
-+}
-+
-+.asset-manager-v2__asset-select {
-+  width: 100%;
-+  display: grid;
-+  gap: 6px;
-   text-align: left;
- }
-
--.asset-manager-v2__asset-list button.is-selected {
--  border-color: var(--asset-manager-accent) !important;
-+.asset-manager-v2__asset-delete {
-+  width: max-content;
- }
-
--.asset-manager-v2__asset-list strong,
--.asset-manager-v2__asset-list span {
-+.asset-manager-v2__asset-select strong,
-+.asset-manager-v2__asset-select span {
-   min-width: 0;
-   overflow-wrap: anywhere;
- }
-
--.asset-manager-v2__asset-kind {
-+.asset-manager-v2__asset-type-role {
-   color: #042f2e;
-   font-weight: 700;
- }
-@@ -436,7 +457,6 @@ textarea:hover {
- .asset-manager-v2__output,
- #statusLog {
-   width: 100%;
--  min-height: 160px;
-   margin: 0;
-   border: 1px solid var(--asset-manager-line);
-   border-radius: 8px !important;
-@@ -447,8 +467,14 @@ textarea:hover {
-   white-space: pre-wrap;
- }
-
-+.asset-manager-v2__output {
-+  flex: 1 1 auto;
-+  min-height: 0;
-+}
-+
- #statusLog {
-   flex: 1 1 auto;
-+  min-height: 160px;
- }
-
- .asset-manager-v2__status-accordion-header {
-diff --git a/docs/dev/reports/PR_26126_086_asset_manager_v2_manual_validation_notes.md b/docs/dev/reports/PR_26126_086_asset_manager_v2_manual_validation_notes.md
+         <div class="card">
+           <h3>Animation / Flipbook Editor</h3>
+           <p>Preview timing, duplicate frames, reorder frames, and export animation data cleanly.</p>
+diff --git a/docs/dev/reports/PR_26126_087_asset_manager_v2_accordion_behavior_notes.md b/docs/dev/reports/PR_26126_087_asset_manager_v2_accordion_behavior_notes.md
 new file mode 100644
-index 00000000..49576049
+index 00000000..bdc92944
 --- /dev/null
-+++ b/docs/dev/reports/PR_26126_086_asset_manager_v2_manual_validation_notes.md
-@@ -0,0 +1,35 @@
-+# PR_26126_086 Asset Manager V2 Manual Validation Notes
++++ b/docs/dev/reports/PR_26126_087_asset_manager_v2_accordion_behavior_notes.md
+@@ -0,0 +1,42 @@
++# PR_26126_087 Asset Manager V2 Accordion Behavior Notes
++
++Date: 2026-05-06
++
++## Scope
++
++- Output Summary and Status remain in the right Asset Manager V2 panel.
++- Output Summary now has an explicit `asset-manager-v2__accordion--output` layout hook.
++- Status keeps its explicit `asset-manager-v2__accordion--status` layout hook.
++- The Status header remains a non-nested button pattern: the header is keyboard-focusable with `role="button"`, while the Clear button stays inside the same visual header row.
++
++## Behavior
++
++- Output Summary collapse:
++  - toggles `aria-expanded` from `true` to `false`
++  - sets `#inspectorContent.hidden`
++  - shrinks the Output Summary section to header height
++  - releases vertical space in the right panel
++- Output Summary expand:
++  - restores `#inspectorContent`
++  - lets `#inspectorOutput` fill the available content height above Status
++- Status collapse:
++  - toggles `aria-expanded` from `true` to `false`
++  - sets `#statusLogContent.hidden`
++  - shrinks the Status section to header height
++  - keeps the collapsed Status header at the bottom-right of the right panel
++- Status expand:
++  - restores the status log content
++  - keeps the expanded Status section at the bottom-right
++
++## Layout Notes
++
++- The right panel uses `justify-content: space-between` so Output Summary stays at the top and Status stays at the bottom when either section collapses.
++- Expanded Output Summary uses flexible height; expanded Status uses a fixed 260px basis.
++- Collapsed right-panel accordions use `flex: 0 0 auto` and hidden content, so they release vertical space.
++
++## Validation
++
++- `npm run test:workspace-v2`: passed, 10 tests.
++- Playwright asserts Output Summary collapse/expand, Status collapse/expand, hidden content state, section height shrinkage, Output Summary fill behavior, and Status bottom placement.
++- A direct browser layout probe during implementation measured Status at 15px from the right-panel bottom after Output Summary collapsed, after Output Summary re-expanded, and after Status collapsed.
++
+diff --git a/docs/dev/reports/PR_26126_087_asset_manager_v2_manual_validation_notes.md b/docs/dev/reports/PR_26126_087_asset_manager_v2_manual_validation_notes.md
+new file mode 100644
+index 00000000..a0c48708
+--- /dev/null
++++ b/docs/dev/reports/PR_26126_087_asset_manager_v2_manual_validation_notes.md
+@@ -0,0 +1,37 @@
++# PR_26126_087 Asset Manager V2 Manual Validation Notes
 +
 +Date: 2026-05-06
 +
@@ -664,63 +280,32 @@ index 00000000..49576049
 +
 +- Ran `npm run test:workspace-v2`.
 +- Confirmed Asset Manager V2 tool mode launch.
-+- Confirmed Asset Manager V2 Workspace V2 launch mode.
-+- Confirmed image background filename role auto-selection.
-+- Confirmed image bezel filename role auto-selection.
-+- Confirmed Assets heading, sorted asset tile rendering, and per-tile Delete.
-+- Confirmed Schema Validation controls are removed from the UI.
-+- Confirmed Output Summary fills available right-panel height and Status remains below it at the bottom-right.
-+- Confirmed Workspace V2 insertion still writes only to `tools.asset-browser.assets`.
++- Confirmed Asset Manager V2 Workspace V2 launch mode still works.
++- Confirmed Output Summary accordion collapses and expands.
++- Confirmed Status accordion collapses and expands.
++- Confirmed collapsed right-panel sections release vertical space.
++- Confirmed Status remains bottom-right when expanded.
++- Confirmed the planned tools list includes:
++  - Asset Manager V2
++  - Animation / Flipbook Editor
++  - Audio / SFX Playground
++  - Collision / Hitbox Editor
++- Confirmed no new planned tools beyond the requested/existing planned-tool set were added.
 +- Confirmed no sample JSON files were modified.
 +
 +## Results
 +
 +- `npm run test:workspace-v2`: passed, 10 tests.
-+- Role auto-selection: passed. `nebula-background.png` selected Role `background`; `chrome-bezel.png` selected Role `bezel`.
-+- Assets sorting: passed. Tiles rendered in type/role/ID order: `audio:sound`, `image:background`, `image:bezel`.
-+- Asset tiles: passed. Each tile showed `type:role`, ID, and Delete.
-+- Per-asset delete: passed. Deleting `image.assets.nebula-background.background` removed its tile and logged the delete.
-+- Removed Schema Validation UI: passed. The schema validation accordion, JSON textarea, and validation buttons were absent.
-+- Output Summary layout: passed. Output Summary content filled the available right-panel area above Status; Status stayed at the bottom-right.
-+- Workspace insertion: passed. Audio selection inserted `audio.assets.fire.sound` into `tools.asset-browser.assets` and did not create `asset-manager-v2` or `workspace-v2` manifest entries.
-+- Asset Browser reuse check: passed by targeted search of Asset Manager V2 files; no legacy Asset Browser implementation imports were added.
++- Output Summary accordion: passed. Collapse hides `#inspectorContent`, shrinks the section, and expand restores the filled output content area.
++- Status accordion: passed. Collapse hides `#statusLogContent`, shrinks the section, and expand restores the status log.
++- Status bottom-right placement: passed. Status stays at the bottom of the right panel when expanded and after Output Summary collapse/expand.
++- Planned tools list: passed. Asset Manager V2 is now listed as planned, and the existing Animation / Flipbook Editor, Audio / SFX Playground, and Collision / Hitbox Editor entries remain present.
++- Tool/browser launch validation: passed through the workspace-v2 Playwright suite.
 +
 +## Reports
 +
 +- `docs/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs/dev/reports/coverage_changed_js_guardrail.txt`
-+- `docs/dev/reports/PR_26126_086_asset_manager_v2_ui_control_notes.md`
-+- `docs/dev/reports/PR_26126_086_asset_manager_v2_manual_validation_notes.md`
-diff --git a/docs/dev/reports/PR_26126_086_asset_manager_v2_ui_control_notes.md b/docs/dev/reports/PR_26126_086_asset_manager_v2_ui_control_notes.md
-new file mode 100644
-index 00000000..76c56c59
---- /dev/null
-+++ b/docs/dev/reports/PR_26126_086_asset_manager_v2_ui_control_notes.md
-@@ -0,0 +1,27 @@
-+# PR_26126_086 Asset Manager V2 UI Control Notes
++- `docs/dev/reports/PR_26126_087_asset_manager_v2_accordion_behavior_notes.md`
++- `docs/dev/reports/PR_26126_087_asset_manager_v2_manual_validation_notes.md`
 +
-+Date: 2026-05-06
-+
-+## Controls
-+
-+- Image filenames containing `background` now auto-select Role `background`.
-+- Image filenames containing `bezel` now auto-select Role `bezel`.
-+- Renamed the center panel heading from `Approved Assets` to `Assets`.
-+- Removed the visible Schema Validation accordion and its JSON textarea/buttons.
-+- Kept Status in the bottom-right panel under Output Summary.
-+- Adjusted Output Summary so its content area flexes to fill the available right-panel height above Status.
-+
-+## Assets Display
-+
-+- Assets render as tiles instead of full-width row buttons.
-+- Each tile shows:
-+  - type and role as `type:role`
-+  - asset ID
-+  - a per-asset `Delete` button under the type:role area
-+- Tile display order is type, then role, then ID.
-+- Delete removes the selected asset through the same schema-validated payload path used by Add.
-+
-+## Boundaries
-+
-+- No legacy Asset Browser implementation imports were added.
-+- No sample JSON files were modified.
