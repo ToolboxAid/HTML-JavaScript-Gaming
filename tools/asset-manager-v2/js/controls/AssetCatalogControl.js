@@ -17,11 +17,14 @@ export class AssetCatalogControl {
     this.preview = preview;
     this.onSelect = null;
     this.onDelete = null;
+    this.onPreviewStatus = null;
     this.previewOptions = {};
+    this.lastPreviewError = "";
   }
 
-  mount({ onDelete, onSelect }) {
+  mount({ onDelete, onPreviewStatus, onSelect }) {
     this.onDelete = onDelete;
+    this.onPreviewStatus = onPreviewStatus;
     this.onSelect = onSelect;
     this.list.addEventListener("click", (event) => {
       const deleteControl = event.target.closest("[data-delete-asset-id]");
@@ -46,11 +49,13 @@ export class AssetCatalogControl {
       this.list.innerHTML = "";
       this.renderSelectedDetail("", null);
       renderAssetPreview(this.preview, "", null);
+      this.reportPreviewStatus(null);
       return;
     }
     const selectedEntry = selectedAssetId && assets[selectedAssetId] ? assets[selectedAssetId] : null;
     this.renderSelectedDetail(selectedEntry ? selectedAssetId : "", selectedEntry);
-    renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry, this.previewOptions);
+    const previewModel = renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry, this.previewOptions);
+    this.reportPreviewStatus(previewModel);
 
     this.list.innerHTML = entries.map(([assetId, entry]) => {
       const detailTooltip = [
@@ -76,6 +81,19 @@ export class AssetCatalogControl {
 
   setPreviewOptions(options = {}) {
     this.previewOptions = { ...options };
+  }
+
+  reportPreviewStatus(previewModel) {
+    const message = previewModel?.previewError || "";
+    if (!message) {
+      this.lastPreviewError = "";
+      return;
+    }
+    if (message === this.lastPreviewError) {
+      return;
+    }
+    this.lastPreviewError = message;
+    this.onPreviewStatus?.("fail", message);
   }
 
   renderSelectedDetail(assetId, entry) {

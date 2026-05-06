@@ -202,7 +202,11 @@ async function openWorkspaceV2(page, { assetFiles = [], gameId = "", paletteSwat
     await installFakeAssetFilePicker(page, assetFiles);
   }
   await coverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`, { waitUntil: "networkidle" });
+  const workspaceUrl = new URL(`${server.baseUrl}/tools/workspace-v2/index.html`);
+  if (gameId) {
+    workspaceUrl.searchParams.set("gameId", gameId);
+  }
+  await page.goto(workspaceUrl.href, { waitUntil: "networkidle" });
   if (paletteSwatches.length || gameId) {
     await page.evaluate(({ gameId: nextGameId, swatches }) => {
       const hostContextId = sessionStorage.getItem("workspace-v2-active-host-context-id");
@@ -825,6 +829,28 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetPreview dl")).toHaveCount(0);
       await expect(page.locator('button[aria-controls="selectedAssetDetailsContent"] span').first()).toHaveText("Selected Asset Detail");
       await expect(page.locator("#selectedAssetDetailsContent #assetPreview")).toBeVisible();
+      const selectedDetailPlacement = await page.evaluate(() => {
+        const app = document.querySelector(".asset-manager-v2.app-shell");
+        const assetsContent = document.getElementById("assetsContent");
+        const centerPanel = document.querySelector(".asset-manager-v2__panel--center");
+        const selectedDetailPanel = document.querySelector(".asset-manager-v2__selected-detail");
+        const detailContent = document.getElementById("selectedAssetDetailsContent");
+        const preview = document.getElementById("assetPreview");
+        const centerRect = centerPanel.getBoundingClientRect();
+        const detailRect = selectedDetailPanel.getBoundingClientRect();
+        return {
+          detailInsideAssets: assetsContent.contains(detailContent),
+          detailParentIsApp: selectedDetailPanel.parentElement === app,
+          previewInsideDetail: detailContent.contains(preview),
+          detailBelowAssetsPanel: detailRect.top > centerRect.bottom
+        };
+      });
+      expect(selectedDetailPlacement).toEqual({
+        detailInsideAssets: false,
+        detailParentIsApp: true,
+        previewInsideDetail: true,
+        detailBelowAssetsPanel: true
+      });
       const selectedDetailLayout = await page.locator("#selectedAssetDetails").evaluate((detail) => {
         const line = detail.querySelector(".asset-manager-v2__selected-detail-line");
         return {
@@ -1284,6 +1310,41 @@ test.describe("Preview Generator V2 baseline", () => {
     }
   });
 
+  test("logs Asset Manager V2 preview failure when Workspace game context is missing", async ({ page }) => {
+    const server = await openWorkspaceV2(page, {
+      assetFiles: [{
+        name: "fire.wav",
+        mimeType: "audio/wav",
+        contents: "RIFF",
+        path: "HTML-JavaScript-Gaming/assets/audio/fire.wav"
+      }]
+    });
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await page.locator("#workspaceV2OpenAssetManagerButton").click();
+      await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
+      await expect(page).not.toHaveURL(/gameId=/);
+
+      await page.locator("#assetKindAudio").check();
+      await page.locator("#pickAssetFileButton").click();
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.sound.fire");
+      await page.locator("#addAssetButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Preview path assets\/audio\/fire\.wav cannot be resolved because Workspace V2 game context is missing\./);
+      await expect(page.locator("#assetPreview audio")).toHaveCount(0);
+      await expect(page.locator("#assetPreview")).toContainText("Select an asset with a valid path to inspect it.");
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("launches Asset Manager V2 from Workspace V2 and inserts only Workspace asset entries", async ({ page }) => {
     const server = await openWorkspaceV2(page, {
       assetFiles: [
@@ -1331,6 +1392,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       await page.locator("#workspaceV2OpenAssetManagerButton").click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
+      await expect(page).toHaveURL(/gameId=Asteroids/);
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace mode loaded 0 validated assets from tools\.asset-browser\.assets/);

@@ -76,6 +76,7 @@ export class AssetManagerV2App {
     });
     this.assetCatalog.mount({
       onDelete: (assetId) => this.deleteAsset(assetId),
+      onPreviewStatus: (level, message) => this.writeStatus(level, message),
       onSelect: (assetId) => {
         this.selectedAssetId = assetId;
         const entry = this.assets[assetId];

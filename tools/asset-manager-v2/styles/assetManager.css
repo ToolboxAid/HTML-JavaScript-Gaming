@@ -185,6 +185,7 @@ textarea:hover {
   margin: 0 auto 16px;
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr) 360px;
+  grid-template-rows: minmax(0, 1fr) minmax(120px, 18vh);
   gap: 14px;
   border: 1px solid var(--asset-manager-line);
   border-radius: 20px;
@@ -608,7 +609,9 @@ textarea:hover {
 }
 
 .asset-manager-v2__selected-detail {
-  margin-top: 8px;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-height: 0;
 }
 
 .asset-manager-v2__selected-detail .accordion-v2__header {
@@ -617,6 +620,10 @@ textarea:hover {
 
 .asset-manager-v2__selected-detail-body {
   min-width: 0;
+}
+
+.asset-manager-v2__selected-detail .accordion-v2__content {
+  overflow: auto;
 }
 
 .asset-manager-v2__selected-detail-line {
@@ -644,7 +651,7 @@ textarea:hover {
 
 .asset-manager-v2__preview {
   margin-top: 10px;
-  min-height: 220px;
+  min-height: 104px;
   flex: 1 1 auto;
   display: grid;
   align-content: start;

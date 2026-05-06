@@ -16,13 +16,16 @@ function hasUrlProtocol(value) {
 function workspaceGameAssetPath(path, options = {}) {
   const normalizedPath = sanitizeText(path).replace(/\\/g, "/").replace(/^\/+/, "");
   const gameId = sanitizeText(options.workspaceGameId || options.gameId).replace(/[\\/]+/g, "-");
-  if (!options.workspaceMode || !gameId || !/^assets\//i.test(normalizedPath)) {
-    return path;
+  if (!options.workspaceMode || hasUrlProtocol(normalizedPath) || /^games\//i.test(normalizedPath) || !/^assets\//i.test(normalizedPath)) {
+    return { path, error: "" };
   }
-  if (hasUrlProtocol(normalizedPath) || /^games\//i.test(normalizedPath)) {
-    return path;
+  if (!gameId) {
+    return {
+      path: "",
+      error: `Preview path ${normalizedPath} cannot be resolved because Workspace V2 game context is missing.`
+    };
   }
-  return `games/${gameId}/${normalizedPath}`;
+  return { path: `games/${gameId}/${normalizedPath}`, error: "" };
 }
 
 function previewTitle(type, kind) {
@@ -37,7 +40,8 @@ export function createAssetPreviewModel(assetId, entry = {}, options = {}) {
   const role = normalizeText(entry.role);
   const path = sanitizeText(entry.path);
   const color = entry.color && typeof entry.color === "object" ? entry.color : null;
-  const previewPath = workspaceGameAssetPath(path, options);
+  const previewResolution = workspaceGameAssetPath(path, options);
+  const previewPath = previewResolution.path;
   const url = resolveRuntimeAssetUrl(previewPath, options.documentRef || globalThis.document || null);
   return {
     assetId: sanitizeText(assetId),
@@ -46,6 +50,7 @@ export function createAssetPreviewModel(assetId, entry = {}, options = {}) {
     kind,
     role,
     path,
+    previewError: previewResolution.error,
     previewPath,
     url,
     title: previewTitle(type, kind)

@@ -32,11 +32,17 @@ class WorkspaceV2AssetHost {
     const existingHostContextId = this.window.sessionStorage.getItem(HOST_CONTEXT_STORAGE_KEY);
     if (existingHostContextId && this.window.sessionStorage.getItem(existingHostContextId)) {
       this.hostContextId = existingHostContextId;
+      this.syncActiveGameContext();
       return;
     }
     this.hostContextId = makeHostContextId();
     this.window.sessionStorage.setItem(HOST_CONTEXT_STORAGE_KEY, this.hostContextId);
     this.persistContext(this.buildWorkspaceManifest());
+  }
+
+  activeGameId() {
+    const params = new URLSearchParams(this.window.location.search);
+    return String(params.get("gameId") || params.get("game") || "").trim();
   }
 
   buildWorkspaceManifest() {
@@ -65,9 +71,23 @@ class WorkspaceV2AssetHost {
     const payload = {
       version: "v2",
       toolId: ASSET_MANAGER_TOOL_ID,
+      ...(this.activeGameId() ? { gameId: this.activeGameId() } : {}),
       workspaceManifest: clone(workspaceManifest)
     };
     sessionStorage.setItem(hostContextId, JSON.stringify(payload));
+  }
+
+  syncActiveGameContext() {
+    const gameId = this.activeGameId();
+    if (!gameId) {
+      return;
+    }
+    const context = this.readContext();
+    if (!context || context.gameId === gameId) {
+      return;
+    }
+    context.gameId = gameId;
+    sessionStorage.setItem(this.hostContextId, JSON.stringify(context));
   }
 
   readContext() {
@@ -100,6 +120,9 @@ class WorkspaceV2AssetHost {
     toolUrl.searchParams.set("launch", "workspace");
     toolUrl.searchParams.set("hostContextId", hostContextId);
     toolUrl.searchParams.set("fromTool", "workspace-v2");
+    if (this.activeGameId()) {
+      toolUrl.searchParams.set("gameId", this.activeGameId());
+    }
     this.window.location.href = toolUrl.href;
   }
 
