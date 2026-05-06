@@ -216,8 +216,10 @@ export function filenamePartForAssetId(fileName) {
 export function sanitizeFileName(fileName) {
   const rawName = String(fileName || "asset");
   const extensionMatch = rawName.match(/(\.[a-z0-9]+)$/i);
-  const extension = extensionMatch ? extensionMatch[1].toLowerCase() : "";
-  return `${slugifyAssetSegment(rawName)}${extension}`;
+  const extension = extensionMatch ? extensionMatch[1] : "";
+  const basename = extension ? rawName.slice(0, -extension.length) : rawName;
+  const safeBasename = basename.replace(/[\\/]+/g, "").trim() || "asset";
+  return `${safeBasename}${extension}`;
 }
 
 export function colorAssetPath(swatchName) {

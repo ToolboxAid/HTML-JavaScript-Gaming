@@ -2,23 +2,31 @@
 M docs/dev/reports/coverage_changed_js_guardrail.txt
  M docs/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
- M tools/asset-manager-v2/js/assetPreviewHelpers.js
- M tools/asset-manager-v2/js/controls/AssetCatalogControl.js
+ M tools/asset-manager-v2/README.md
+ M tools/asset-manager-v2/index.html
+ M tools/asset-manager-v2/js/AssetManagerV2App.js
+ M tools/asset-manager-v2/js/assetManagerMetadata.js
+ M tools/asset-manager-v2/js/bootstrap.js
+ M tools/asset-manager-v2/js/controls/ActionNavControl.js
  M tools/asset-manager-v2/styles/assetManager.css
-?? docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md
-?? docs/dev/reports/PR_26126_097_asset_manager_v2_manual_validation_notes.md
-?? docs/dev/reports/PR_26126_097_asset_manager_v2_selected_detail_height_notes.md
+?? docs/dev/reports/PR_26126_098_asset_manager_v2_manual_validation_notes.md
+?? docs/dev/reports/PR_26126_098_asset_manager_v2_nav_import_export_notes.md
+?? docs/dev/reports/PR_26126_098_asset_manager_v2_path_preservation_notes.md
 
 # git ls-files --others --exclude-standard
-docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md
-docs/dev/reports/PR_26126_097_asset_manager_v2_manual_validation_notes.md
-docs/dev/reports/PR_26126_097_asset_manager_v2_selected_detail_height_notes.md
+docs/dev/reports/PR_26126_098_asset_manager_v2_manual_validation_notes.md
+docs/dev/reports/PR_26126_098_asset_manager_v2_nav_import_export_notes.md
+docs/dev/reports/PR_26126_098_asset_manager_v2_path_preservation_notes.md
 
 # git diff --stat
-docs/dev/reports/coverage_changed_js_guardrail.txt |  5 +-
- docs/dev/reports/playwright_v8_coverage_report.txt | 10 +--
- .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 95 ++++++++++++++++++----
- tools/asset-manager-v2/js/assetPreviewHelpers.js   | 49 ++++++++++-
- .../js/controls/AssetCatalogControl.js             | 14 +++-
- tools/asset-manager-v2/styles/assetManager.css     |  4 +-
- 6 files changed, 147 insertions(+), 30 deletions(-)
+docs/dev/reports/coverage_changed_js_guardrail.txt |   7 +-
+ docs/dev/reports/playwright_v8_coverage_report.txt |  22 ++--
+ .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 119 +++++++++++++++++++--
+ tools/asset-manager-v2/README.md                   |   2 +-
+ tools/asset-manager-v2/index.html                  |  16 +--
+ tools/asset-manager-v2/js/AssetManagerV2App.js     |  71 ++++++++++--
+ tools/asset-manager-v2/js/assetManagerMetadata.js  |   6 +-
+ tools/asset-manager-v2/js/bootstrap.js             |   6 +-
+ .../js/controls/ActionNavControl.js                |  32 +++---
+ tools/asset-manager-v2/styles/assetManager.css     |   5 +-
+ 10 files changed, 230 insertions(+), 56 deletions(-)

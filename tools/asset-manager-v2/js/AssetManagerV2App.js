@@ -55,11 +55,10 @@ export class AssetManagerV2App {
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
     this.actionNav.mount({
-      onToolCopyJson: () => {
-        void this.copyAssetsJson();
+      onNavExportJson: () => this.exportJson(),
+      onNavImportJson: (file) => {
+        void this.importJson(file);
       },
-      onToolExport: () => this.exportAssets(),
-      onToolExportToolState: () => this.exportToolState(),
       onWorkspaceCopyManifest: () => {
         void this.copyWorkspaceManifest();
       },
@@ -447,6 +446,64 @@ export class AssetManagerV2App {
     this.statusLog.ok("toolState preview written to Output Summary.");
   }
 
+  async importJson(file) {
+    if (!this.schemaReady) {
+      this.statusLog.fail("Schema is not loaded; JSON import is blocked.");
+      return;
+    }
+    if (!file) {
+      this.statusLog.fail("Import JSON failed: no JSON file was selected.");
+      return;
+    }
+    try {
+      const payload = JSON.parse(await file.text());
+      const validation = this.schemaValidator.validatePayload(payload);
+      if (!validation.ok) {
+        this.statusLog.fail(`Import JSON failed schema validation: ${validation.errors.join(" | ")}`);
+        return;
+      }
+      this.recordHistory();
+      this.assets = sortedAssets(validation.payload.assets);
+      this.selectedAssetId = Object.keys(this.assets)[0] || "";
+      if (this.selectedAssetId) {
+        this.assetForm.loadAssetForEdit(this.selectedAssetId, this.assets[this.selectedAssetId]);
+      } else {
+        this.assetForm.clearEditableFields();
+      }
+      this.redoStack = [];
+      this.statusLog.ok(`Imported JSON with ${Object.keys(this.assets).length} validated assets.`);
+      this.render();
+      this.refreshActions();
+    } catch (error) {
+      this.statusLog.fail(`Import JSON failed: ${error.message}`);
+    }
+  }
+
+  exportJson() {
+    const validation = this.validateCurrentPayload({ showInspector: false });
+    if (!validation.ok) {
+      return;
+    }
+    const json = JSON.stringify(validation.payload, null, 2);
+    const BlobCtor = this.window.Blob;
+    const urlApi = this.window.URL || this.window.webkitURL;
+    if (typeof BlobCtor !== "function" || !urlApi?.createObjectURL) {
+      this.statusLog.fail("Export JSON failed: browser download APIs are unavailable.");
+      return;
+    }
+    const blob = new BlobCtor([json], { type: "application/json" });
+    const url = urlApi.createObjectURL(blob);
+    const link = this.window.document.createElement("a");
+    link.href = url;
+    link.download = "asset-manager-v2-assets.json";
+    link.rel = "noopener";
+    this.window.document.body.append(link);
+    link.click();
+    link.remove();
+    urlApi.revokeObjectURL(url);
+    this.statusLog.ok(`Exported JSON with ${Object.keys(validation.payload.assets).length} validated assets.`);
+  }
+
   async copyAssetsJson() {
     const validation = this.validateCurrentPayload();
     if (!validation.ok) {
@@ -494,7 +551,7 @@ export class AssetManagerV2App {
     this.refreshActions();
   }
 
-  validateCurrentPayload() {
+  validateCurrentPayload({ showInspector = true } = {}) {
     if (!this.schemaReady) {
       const message = "Schema is not loaded; export is blocked.";
       this.statusLog.fail(message);
@@ -503,7 +560,9 @@ export class AssetManagerV2App {
     const validation = this.schemaValidator.validatePayload(this.currentPayload());
     if (!validation.ok) {
       this.statusLog.fail(`Schema validation failed: ${validation.errors.join(" | ")}`);
-      this.inspector.showObject({ ok: false, errors: validation.errors });
+      if (showInspector) {
+        this.inspector.showObject({ ok: false, errors: validation.errors });
+      }
       return validation;
     }
     return validation;

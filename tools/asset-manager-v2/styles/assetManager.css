@@ -564,13 +564,14 @@ textarea:hover {
   position: absolute;
   top: 6px;
   right: 6px;
-  width: 22px;
-  height: 22px;
+  width: 16.5px;
+  height: 16.5px;
   display: inline-grid;
   place-items: center;
   border: 1px solid currentColor;
   border-radius: 999px;
   color: var(--asset-manager-text);
+  font-size: 10px;
   font-weight: 900;
   line-height: 1;
 }

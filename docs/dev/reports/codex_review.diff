@@ -1,382 +1,604 @@
 diff --git a/docs/dev/reports/coverage_changed_js_guardrail.txt b/docs/dev/reports/coverage_changed_js_guardrail.txt
-index 0e9ab798..30344d1d 100644
+index 30344d1d..a389172a 100644
 --- a/docs/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,9 +7,8 @@ Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
+@@ -6,11 +6,12 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
 
  Changed runtime JS files considered:
- (81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
--(88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
--(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 107/107; executed functions 10/10
--(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 119/119; executed functions 12/12
-+(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
- (100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
- (100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
+-(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
++(87%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 553/553; executed functions 48/55
++(91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 318/318; executed functions 29/32
+ (100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
++(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 68/68; executed functions 4/4
++(100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 54/54; executed functions 8/8
+ (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
+-(100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
+-(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
 
+ Guardrail warnings:
+ (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs/dev/reports/playwright_v8_coverage_report.txt b/docs/dev/reports/playwright_v8_coverage_report.txt
-index 5ad25915..6d071b1d 100644
+index 6d071b1d..0c503bb6 100644
 --- a/docs/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs/dev/reports/playwright_v8_coverage_report.txt
-@@ -21,9 +21,8 @@ Exercised tool entry points detected:
+@@ -13,18 +13,19 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+
+ Exercised tool entry points detected:
+ (87%) Preview Generator V2 - exercised 19 runtime JS files
+-(91%) Asset Manager V2 - exercised 14 runtime JS files
++(93%) Asset Manager V2 - exercised 14 runtime JS files
+ (49%) Palette Manager V2 - exercised 12 runtime JS files
+ (84%) Tool Template V2 - exercised 10 runtime JS files
+ (88%) Workspace V2 - exercised 1 runtime JS files
+ (0%) Workspace Manager - not exercised by this Playwright run
 
  Changed runtime JS files covered:
- (81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
--(88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
--(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 107/107; executed functions 10/10
--(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 119/119; executed functions 12/12
-+(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
- (100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
- (100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
+-(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
++(87%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 553/553; executed functions 48/55
++(91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 318/318; executed functions 29/32
+ (100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
++(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 68/68; executed functions 4/4
++(100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 54/54; executed functions 8/8
+ (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
+-(100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
+-(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
 
-@@ -164,10 +163,10 @@ Files with executed line/function counts where available:
- (100%) src/shared/string/stringUtil.js - executed lines 1/1; executed functions 1/1
- (100%) src/shared/utils/invariantUtils.js - executed lines 11/11; executed functions 2/2
+ Files with executed line/function counts where available:
+ (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
+@@ -125,15 +126,15 @@ Files with executed line/function counts where available:
+ (75%) tools/palette-manager-v2/paletteManagerShell.js - executed lines 160/160; executed functions 12/16
+ (77%) src/engine/core/Engine.js - executed lines 323/323; executed functions 10/13
+ (80%) src/engine/theme/accordionV2/accordionV2.js - executed lines 26/26; executed functions 4/5
+-(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
+ (82%) samples/shared/sampleDetailPageEnhancement.js - executed lines 471/471; executed functions 41/50
+ (83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
+ (86%) tools/templates-v2/js/controls/StatusLogControl.js - executed lines 24/24; executed functions 6/7
++(87%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 553/553; executed functions 48/55
+ (87%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 13/15
+ (88%) tools/templates-v2/js/controls/SourceInputControl.js - executed lines 33/33; executed functions 7/8
+ (88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
+ (90%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 52/58
+-(91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 316/316; executed functions 29/32
++(91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 318/318; executed functions 29/32
+ (92%) tools/templates-v2/js/controls/ToolStarterShellControl.js - executed lines 111/111; executed functions 11/12
+ (93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 492/492; executed functions 53/57
+ (100%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 6/6
+@@ -165,7 +166,7 @@ Files with executed line/function counts where available:
  (100%) src/shared/utils/stringUtils.js - executed lines 1/1; executed functions 1/1
--(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 107/107; executed functions 10/10
-+(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
+ (100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
  (100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 68/68; executed functions 4/4
- (100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 52/52; executed functions 6/6
--(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 119/119; executed functions 12/12
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
+-(100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 52/52; executed functions 6/6
++(100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 54/54; executed functions 8/8
+ (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
  (100%) tools/asset-manager-v2/js/controls/InspectorControl.js - executed lines 8/8; executed functions 3/3
  (100%) tools/asset-manager-v2/js/controls/StatusLogControl.js - executed lines 30/30; executed functions 9/9
- (100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 267/267; executed functions 25/25
-@@ -204,7 +203,6 @@ Uncovered or low-coverage changed JS files:
+@@ -202,8 +203,9 @@ Uncovered or low-coverage changed JS files:
+
  Changed JS files considered:
  (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
- (81%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
--(88%) tools/workspace-v2/index.js - changed JS file with browser V8 coverage
+-(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
++(87%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
++(91%) tools/asset-manager-v2/js/assetManagerMetadata.js - changed JS file with browser V8 coverage
  (100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - changed JS file with browser V8 coverage
++(100%) tools/asset-manager-v2/js/bootstrap.js - changed JS file with browser V8 coverage
++(100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - changed JS file with browser V8 coverage
  (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file with browser V8 coverage
- (100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - changed JS file with browser V8 coverage
+-(100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - changed JS file with browser V8 coverage
+-(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-index ca7024c7..6a586c64 100644
+index 6a586c64..973e84f9 100644
 --- a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 +++ b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-@@ -841,12 +841,15 @@ test.describe("Preview Generator V2 baseline", () => {
-         const centerRect = centerPanel.getBoundingClientRect();
-         const assetsRect = assetsAccordion.getBoundingClientRect();
-         const detailRect = selectedDetailPanel.getBoundingClientRect();
-+        const detailStyle = getComputedStyle(selectedDetailPanel);
-         return {
-           detailInsideAssets: assetsContent.contains(detailContent),
-           detailParentIsCenterPanel: selectedDetailPanel.parentElement === centerPanel,
-           previewInsideDetail: detailContent.contains(preview),
-           detailBelowAssetsList: detailRect.top > assetsRect.top,
-+          detailFlexBasis: detailStyle.flexBasis,
-           detailHeight: Math.round(detailRect.height),
-+          detailMinHeight: detailStyle.minHeight,
-           detailWithinCenterPanel: detailRect.left >= centerRect.left
-             && detailRect.right <= centerRect.right
-             && detailRect.bottom <= centerRect.bottom,
-@@ -858,7 +861,10 @@ test.describe("Preview Generator V2 baseline", () => {
-       expect(selectedDetailPlacement.detailParentIsCenterPanel).toBe(true);
-       expect(selectedDetailPlacement.previewInsideDetail).toBe(true);
-       expect(selectedDetailPlacement.detailBelowAssetsList).toBe(true);
--      expect(selectedDetailPlacement.detailHeight).toBeGreaterThanOrEqual(220);
-+      expect(selectedDetailPlacement.detailFlexBasis).toBe("auto");
-+      expect(selectedDetailPlacement.detailHeight).toBeGreaterThan(120);
-+      expect(selectedDetailPlacement.detailHeight).not.toBe(300);
-+      expect(selectedDetailPlacement.detailMinHeight).toBe("0px");
-       expect(selectedDetailPlacement.detailWithinCenterPanel).toBe(true);
-       expect(selectedDetailPlacement.detailDoesNotSpanFullWidth).toBe(true);
-       const selectedDetailLayout = await page.locator("#selectedAssetDetails").evaluate((detail) => {
-@@ -1105,6 +1111,8 @@ test.describe("Preview Generator V2 baseline", () => {
-             hasAudio: html.includes("<audio"),
-             hasVideo: html.includes("<video"),
-             hasFontFace: html.includes("@font-face"),
-+            hasFontFamilyFromId: html.includes("asset-preview-assets-font-display-sample"),
-+            hasScopedFontFamilyData: html.includes('data-preview-font-family="asset-preview-assets-font-display-sample"'),
-             hasInspection: html.includes("inspection")
-           }];
-         }));
-@@ -1117,14 +1125,14 @@ test.describe("Preview Generator V2 baseline", () => {
-       expect(helperPreviewCoverage.localHelperLoaded).toBe(true);
-       expect(helperPreviewCoverage.sharedHelperStatus).toBe(404);
-       expect(helperPreviewCoverage.coverage).toEqual({
--        image: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: true, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: false },
--        audio: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: true, hasVideo: false, hasFontFace: false, hasInspection: false },
--        color: { hasAutoplay: false, hasDataType: true, hasColor: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: false },
--        video: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: true, hasFontFace: false, hasInspection: false },
--        font: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: true, hasInspection: false },
--        shader: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true },
--        data: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true },
--        localization: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true }
-+        image: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: true, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
-+        audio: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: true, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
-+        color: { hasAutoplay: false, hasDataType: true, hasColor: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
-+        video: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: true, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
-+        font: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: true, hasFontFamilyFromId: true, hasScopedFontFamilyData: true, hasInspection: false },
-+        shader: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: true },
-+        data: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: true },
-+        localization: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: true }
-       });
+@@ -1,4 +1,5 @@
+ import { expect, test } from "@playwright/test";
++import { readFile } from "node:fs/promises";
+ import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
+ import { PlaywrightV8CoverageReporter } from "../helpers/playwrightV8CoverageReporter.mjs";
 
-       await page.locator('button[data-asset-id="assets.image.background.nebula-background"]').click();
-@@ -1264,13 +1272,44 @@ test.describe("Preview Generator V2 baseline", () => {
-   });
-
-   test("loads Asset Manager V2 temporary UAT sample palette from query", async ({ page }) => {
-+    await page.addInitScript(() => {
-+      const NativeFontFace = window.FontFace;
-+      window.__assetManagerV2FontFaceLoads = [];
-+      window.FontFace = class AssetManagerV2UatFontFace {
-+        constructor(family, source, descriptors) {
-+          this.family = family;
-+          this.source = source;
-+          this.descriptors = descriptors;
-+          window.__assetManagerV2FontFaceLoads.push({ family, source });
-+        }
-+
-+        async load() {
-+          if (String(this.source).includes("vector-battle.ttf")) {
-+            throw new Error("UAT font load rejected.");
-+          }
-+          if (typeof NativeFontFace === "function") {
-+            const nativeFontFace = new NativeFontFace(this.family, this.source, this.descriptors);
-+            return nativeFontFace.load();
-+          }
-+          return this;
-+        }
-+      };
-+    });
-     const server = await openAssetManagerV2(page, "?palette=sample", {
--      assetFiles: [{
--        name: "uat-preview.png",
--        mimeType: "image/png",
--        contents: "png",
--        path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
--      }]
-+      assetFiles: [
-+        {
-+          name: "uat-preview.png",
-+          mimeType: "image/png",
-+          contents: "png",
-+          path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
-+        },
-+        {
-+          name: "vector-battle.ttf",
-+          mimeType: "font/ttf",
-+          contents: "font",
-+          path: "HTML-JavaScript-Gaming/assets/fonts/vector-battle.ttf"
-+        }
-+      ]
-     });
-     const pageErrors = [];
-
-@@ -1293,6 +1332,31 @@ test.describe("Preview Generator V2 baseline", () => {
-       expect(uatPreviewRoot).not.toContain("/samples/");
-       expect(uatPreviewRoot).not.toContain("/tools/");
-
-+      await page.locator("#assetKindFont").check();
-+      await page.locator("#pickAssetFileButton").click();
-+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.font.ui.vector-battle");
-+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector-battle.ttf");
-+      await page.locator("#addAssetButton").click();
-+      await expect(page.locator('#assetPreview [data-preview-type="font"][data-preview-kind="ttf"]')).toBeVisible();
-+      const fontPreviewState = await page.locator("#assetPreview").evaluate((preview) => {
-+        const style = preview.querySelector("style")?.textContent || "";
-+        const sample = preview.querySelector(".asset-manager-v2__preview-font");
+@@ -790,10 +791,34 @@ test.describe("Preview Generator V2 baseline", () => {
+       await expect(page.locator("#assetRoleSelect")).toBeEnabled();
+       await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");
+       await expect(page.locator("#assetRoleSelect")).toHaveAttribute("title", "Allowed roles for audio: sound, music");
++      await expect(page.locator("#toolExportButton")).toHaveCount(0);
++      await expect(page.locator("#toolCopyJsonButton")).toHaveCount(0);
++      await expect(page.locator("#toolExportToolStateButton")).toHaveCount(0);
++      await expect(page.locator("#navImportJsonButton")).toHaveText("Import JSON");
++      await expect(page.locator("#navExportJsonButton")).toHaveText("Export JSON");
++      await expect(page.locator("#navImportJsonButton")).toBeEnabled();
++      await expect(page.locator("#navExportJsonButton")).toBeEnabled();
+       const historyControls = page.locator('fieldset[aria-label="Asset history"]');
+       await expect(historyControls).toBeVisible();
+       await expect(historyControls.locator("#undoAssetButton")).toBeDisabled();
+       await expect(historyControls.locator("#redoAssetButton")).toBeDisabled();
++      const historyPlacement = await historyControls.evaluate((history) => {
++        const assetControls = document.getElementById("assetControlsContent");
++        const leftPanel = document.querySelector(".asset-manager-v2__panel--left");
++        const controlsSection = document.querySelector('[aria-controls="assetControlsContent"]').closest(".accordion-v2");
++        const historyRect = history.getBoundingClientRect();
++        const controlsRect = controlsSection.getBoundingClientRect();
 +        return {
-+          fontFamily: sample ? getComputedStyle(sample).fontFamily : "",
-+          scopedFamily: sample?.dataset.previewFontFamily || "",
-+          style
++          insideAssetControls: assetControls.contains(history),
++          parentIsLeftPanel: history.parentElement === leftPanel,
++          belowAssetControls: historyRect.top >= controlsRect.bottom
 +        };
 +      });
-+      expect(fontPreviewState.style).toContain('@font-face{font-family:"asset-preview-assets-font-ui-vector-battle"');
-+      expect(fontPreviewState.style).toContain('/games/Asteroids/assets/fonts/vector-battle.ttf');
-+      expect(fontPreviewState.fontFamily).toContain("asset-preview-assets-font-ui-vector-battle");
-+      expect(fontPreviewState.scopedFamily).toBe("asset-preview-assets-font-ui-vector-battle");
-+      await expect.poll(async () => await page.evaluate(() => window.__assetManagerV2FontFaceLoads)).toEqual([{
-+        family: "asset-preview-assets-font-ui-vector-battle",
-+        source: 'url("/games/Asteroids/assets/fonts/vector-battle.ttf")'
-+      }]);
-+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Font preview failed for assets\.font\.ui\.vector-battle: UAT font load rejected\./);
++      expect(historyPlacement).toEqual({
++        insideAssetControls: false,
++        parentIsLeftPanel: true,
++        belowAssetControls: true
++      });
+       await expect(page.locator('button[aria-controls="schemaValidationContent"]')).toHaveCount(0);
+       await expect(page.locator("#schemaValidationContent")).toHaveCount(0);
+       await expect(page.locator("#jsonInput")).toHaveCount(0);
+@@ -973,6 +998,8 @@ test.describe("Preview Generator V2 baseline", () => {
+         })(),
+         hasSeparateDeleteButton: Boolean(tile.querySelector(":scope > button[data-delete-asset-id]")),
+         hasInlineDelete: Boolean(tile.querySelector(".asset-manager-v2__asset-select [data-delete-asset-id]")),
++        deleteHeight: Math.round(tile.querySelector("[data-delete-asset-id]").getBoundingClientRect().height),
++        deleteWidth: Math.round(tile.querySelector("[data-delete-asset-id]").getBoundingClientRect().width),
+         tileHeight: Math.round(tile.getBoundingClientRect().height),
+         tileWidth: Math.round(tile.getBoundingClientRect().width),
+         typeRoleColor: getComputedStyle(tile.querySelector(".asset-manager-v2__asset-type-role")).color,
+@@ -993,6 +1020,8 @@ test.describe("Preview Generator V2 baseline", () => {
+           textLeftAligned: true,
+           hasSeparateDeleteButton: false,
+           hasInlineDelete: true,
++          deleteHeight: 17,
++          deleteWidth: 17,
+           tileHeight: 88,
+           tileWidth: 154,
+           typeRoleColor: "rgb(247, 244, 255)",
+@@ -1012,6 +1041,8 @@ test.describe("Preview Generator V2 baseline", () => {
+           textLeftAligned: true,
+           hasSeparateDeleteButton: false,
+           hasInlineDelete: true,
++          deleteHeight: 17,
++          deleteWidth: 17,
+           tileHeight: 88,
+           tileWidth: 154,
+           typeRoleColor: "rgb(247, 244, 255)",
+@@ -1031,6 +1062,8 @@ test.describe("Preview Generator V2 baseline", () => {
+           textLeftAligned: true,
+           hasSeparateDeleteButton: false,
+           hasInlineDelete: true,
++          deleteHeight: 17,
++          deleteWidth: 17,
+           tileHeight: 88,
+           tileWidth: 154,
+           typeRoleColor: "rgb(247, 244, 255)",
+@@ -1050,6 +1083,8 @@ test.describe("Preview Generator V2 baseline", () => {
+           textLeftAligned: true,
+           hasSeparateDeleteButton: false,
+           hasInlineDelete: true,
++          deleteHeight: 17,
++          deleteWidth: 17,
+           tileHeight: 88,
+           tileWidth: 154,
+           typeRoleColor: "rgb(247, 244, 255)",
+@@ -1250,6 +1285,63 @@ test.describe("Preview Generator V2 baseline", () => {
+       expect(statusReexpandedLayout.statusExpanded).toBe(true);
+       expect(statusReexpandedLayout.statusBottomDelta).toBeLessThan(20);
+
++      const invalidImportChooserPromise = page.waitForEvent("filechooser");
++      await page.locator("#navImportJsonButton").click();
++      const invalidImportChooser = await invalidImportChooserPromise;
++      await invalidImportChooser.setFiles({
++        name: "invalid-asset-manager-v2.json",
++        mimeType: "application/json",
++        buffer: Buffer.from(JSON.stringify({ invalid: true }))
++      });
++      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Import JSON failed schema validation:/);
++      await expect(page.locator("#inspectorOutput")).not.toContainText("Import JSON failed");
++
++      const importedPayload = {
++        assets: {
++          "assets.font.ui.vector-battle": {
++            path: "assets/fonts/vector_battle.ttf",
++            type: "font",
++            kind: "ttf",
++            role: "ui",
++            source: "asset-manager-v2"
++          },
++          "assets.video.cutscene.8-mile": {
++            path: "assets/video/8 mile.mp4",
++            type: "video",
++            kind: "mp4",
++            role: "cutscene",
++            source: "asset-manager-v2"
++          }
++        }
++      };
++      const validImportChooserPromise = page.waitForEvent("filechooser");
++      await page.locator("#navImportJsonButton").click();
++      const validImportChooser = await validImportChooserPromise;
++      await validImportChooser.setFiles({
++        name: "asset-manager-v2-assets.json",
++        mimeType: "application/json",
++        buffer: Buffer.from(JSON.stringify(importedPayload))
++      });
++      await expect(page.locator("#statusLog")).toHaveValue(/OK Imported JSON with 2 validated assets\./);
++      await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
++      await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
++      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.font.ui.vector-battle");
++      await expect(page.locator("#selectedAssetDetails")).toContainText("assets/fonts/vector_battle.ttf");
++      await expect(page.locator("#inspectorOutput")).not.toContainText("Imported JSON");
++      const importedOutput = JSON.parse(await page.locator("#inspectorOutput").textContent());
++      expect(importedOutput.assets.find((asset) => asset.id === "assets.font.ui.vector-battle").path).toBe("assets/fonts/vector_battle.ttf");
++      expect(importedOutput.assets.find((asset) => asset.id === "assets.video.cutscene.8-mile").path).toBe("assets/video/8 mile.mp4");
++
++      const downloadPromise = page.waitForEvent("download");
++      await page.locator("#navExportJsonButton").click();
++      const download = await downloadPromise;
++      expect(download.suggestedFilename()).toBe("asset-manager-v2-assets.json");
++      const exportedPath = await download.path();
++      const exportedPayload = JSON.parse(await readFile(exportedPath, "utf8"));
++      expect(exportedPayload).toEqual(importedPayload);
++      await expect(page.locator("#statusLog")).toHaveValue(/OK Exported JSON with 2 validated assets\./);
++      await expect(page.locator("#inspectorOutput")).not.toContainText("Exported JSON");
++
+       await page.locator("#assetKindImage").check();
+       await queueAssetFile(page, {
+         name: "notes.exe",
+@@ -1284,7 +1376,7 @@ test.describe("Preview Generator V2 baseline", () => {
+         }
+
+         async load() {
+-          if (String(this.source).includes("vector-battle.ttf")) {
++          if (String(this.source).includes("vector_battle.ttf")) {
+             throw new Error("UAT font load rejected.");
+           }
+           if (typeof NativeFontFace === "function") {
+@@ -1304,10 +1396,16 @@ test.describe("Preview Generator V2 baseline", () => {
+           path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
+         },
+         {
+-          name: "vector-battle.ttf",
++          name: "vector_battle.ttf",
+           mimeType: "font/ttf",
+           contents: "font",
+-          path: "HTML-JavaScript-Gaming/assets/fonts/vector-battle.ttf"
++          path: "HTML-JavaScript-Gaming/assets/fonts/vector_battle.ttf"
++        },
++        {
++          name: "8 mile.mp4",
++          mimeType: "video/mp4",
++          contents: "video",
++          path: "HTML-JavaScript-Gaming/assets/video/8 mile.mp4"
+         }
+       ]
+     });
+@@ -1335,7 +1433,7 @@ test.describe("Preview Generator V2 baseline", () => {
+       await page.locator("#assetKindFont").check();
+       await page.locator("#pickAssetFileButton").click();
+       await expect(page.locator("#assetIdInput")).toHaveValue("assets.font.ui.vector-battle");
+-      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector-battle.ttf");
++      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector_battle.ttf");
+       await page.locator("#addAssetButton").click();
+       await expect(page.locator('#assetPreview [data-preview-type="font"][data-preview-kind="ttf"]')).toBeVisible();
+       const fontPreviewState = await page.locator("#assetPreview").evaluate((preview) => {
+@@ -1348,15 +1446,23 @@ test.describe("Preview Generator V2 baseline", () => {
+         };
+       });
+       expect(fontPreviewState.style).toContain('@font-face{font-family:"asset-preview-assets-font-ui-vector-battle"');
+-      expect(fontPreviewState.style).toContain('/games/Asteroids/assets/fonts/vector-battle.ttf');
++      expect(fontPreviewState.style).toContain('/games/Asteroids/assets/fonts/vector_battle.ttf');
+       expect(fontPreviewState.fontFamily).toContain("asset-preview-assets-font-ui-vector-battle");
+       expect(fontPreviewState.scopedFamily).toBe("asset-preview-assets-font-ui-vector-battle");
+       await expect.poll(async () => await page.evaluate(() => window.__assetManagerV2FontFaceLoads)).toEqual([{
+         family: "asset-preview-assets-font-ui-vector-battle",
+-        source: 'url("/games/Asteroids/assets/fonts/vector-battle.ttf")'
++        source: 'url("/games/Asteroids/assets/fonts/vector_battle.ttf")'
+       }]);
+       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Font preview failed for assets\.font\.ui\.vector-battle: UAT font load rejected\./);
+
++      await page.locator("#assetKindVideo").check();
++      await page.locator("#pickAssetFileButton").click();
++      await expect(page.locator("#assetIdInput")).toHaveValue("assets.video.cutscene.8-mile");
++      await expect(page.locator("#assetPathInput")).toHaveValue("assets/video/8 mile.mp4");
++      await page.locator("#addAssetButton").click();
++      await expect(page.locator('#assetPreview [data-preview-type="video"][data-preview-kind="mp4"] video')).toHaveAttribute("src", "/games/Asteroids/assets/video/8 mile.mp4");
++      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file 8 mile\.mp4 validated as type video, kind mp4, role cutscene\./);
 +
        await page.locator("#assetKindColor").check();
        await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
        await expect(page.locator("#pickAssetFileButton")).toBeHidden();
-@@ -1315,6 +1379,7 @@ test.describe("Preview Generator V2 baseline", () => {
-       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Signal Violet! validated as type color, kind hex, role hud\./);
-       await page.locator("#addAssetButton").click();
+@@ -1381,6 +1487,7 @@ test.describe("Preview Generator V2 baseline", () => {
        await expect(page.locator("#assetList")).toContainText("assets.color.hud.signal-violet");
-+      await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
+       await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
        await expect(page.locator("#assetList")).toContainText("assets.image.sprite.uat-preview");
++      await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
        await expect(page.locator("#selectedAssetDetails")).not.toContainText("Final ID");
        await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.signal-violet");
-diff --git a/tools/asset-manager-v2/js/assetPreviewHelpers.js b/tools/asset-manager-v2/js/assetPreviewHelpers.js
-index 1456af48..be098bf6 100644
---- a/tools/asset-manager-v2/js/assetPreviewHelpers.js
-+++ b/tools/asset-manager-v2/js/assetPreviewHelpers.js
-@@ -43,6 +43,48 @@ function previewTitle(type, kind) {
-   return normalizedKind ? `${normalizedType} / ${normalizedKind}` : normalizedType;
+       const output = JSON.parse(await page.locator("#inspectorOutput").textContent());
+diff --git a/tools/asset-manager-v2/README.md b/tools/asset-manager-v2/README.md
+index 7650d6e3..70a68e8e 100644
+--- a/tools/asset-manager-v2/README.md
++++ b/tools/asset-manager-v2/README.md
+@@ -2,7 +2,7 @@
+
+ Asset Manager V2 is an asset-only First-Class Tool V2 surface. It creates and validates audio, color, data, font, image, localization, shader, and video entries against `tools/schemas/tools/asset-browser.schema.json`.
+
+-The Type radios choose the asset type before picking an asset. File-backed types use the selected type's accept filter, normalize the selected path from the project root, default the role from the selected type, and persist only schema-valid `path`, `type`, `kind`, `role`, and `source` metadata. Color assets use only active Workspace V2 palette swatches and persist schema-valid palette color metadata. The visible Assets list and Output Summary use compact `id`, `type`, `kind`, `role`, and `path` display fields. The tool has no dependency on the legacy `tools/Asset Browser` implementation and does not discover or enumerate all tools. In Workspace V2 launch mode, validated entries are written only to `tools.asset-browser.assets` in the Workspace V2 manifest context.
++The Type radios choose the asset type before picking an asset. File-backed types use the selected type's accept filter, preserve the selected path filename exactly from the project root, default the role from the selected type, and persist only schema-valid `path`, `type`, `kind`, `role`, and `source` metadata. Color assets use only active Workspace V2 palette swatches and persist schema-valid palette color metadata. The visible Assets list and Output Summary use compact `id`, `type`, `kind`, `role`, and `path` display fields. The tool has no dependency on the legacy `tools/Asset Browser` implementation and does not discover or enumerate all tools. In Workspace V2 launch mode, validated entries are written only to `tools.asset-browser.assets` in the Workspace V2 manifest context.
+
+ Validation for this BUILD is covered by:
+
+diff --git a/tools/asset-manager-v2/index.html b/tools/asset-manager-v2/index.html
+index 4bfae8ed..9ee7fbf1 100644
+--- a/tools/asset-manager-v2/index.html
++++ b/tools/asset-manager-v2/index.html
+@@ -37,9 +37,9 @@
+     </details>
+
+     <nav class="asset-manager-v2__menu asset-manager-v2__tool__menu" aria-label="Asset Manager tool actions" data-launch-mode-nav="tool">
+-      <button id="toolExportButton" type="button" disabled>Export Assets</button>
+-      <button id="toolCopyJsonButton" type="button" disabled>Copy JSON</button>
+-      <button id="toolExportToolStateButton" type="button" disabled>Export toolState</button>
++      <button id="navImportJsonButton" type="button" disabled>Import JSON</button>
++      <button id="navExportJsonButton" type="button" disabled>Export JSON</button>
++      <input id="navImportJsonInput" class="asset-manager-v2__file-input" type="file" accept=".json,application/json" aria-label="Import Asset Manager V2 JSON">
+     </nav>
+
+     <nav class="asset-manager-v2__menu asset-manager-v2__workspace__menu" aria-label="Workspace asset actions" data-launch-mode-nav="workspace" hidden>
+@@ -125,13 +125,13 @@
+               <button id="addAssetButton" type="button" disabled>Add Asset</button>
+               <button id="updateAssetButton" type="button" disabled>Update Asset</button>
+             </div>
+-            <fieldset class="asset-manager-v2__history-controls" aria-label="Asset history">
+-              <legend>History</legend>
+-              <button id="undoAssetButton" type="button" disabled>Undo</button>
+-              <button id="redoAssetButton" type="button" disabled>Redo</button>
+-            </fieldset>
+           </div>
+         </section>
++        <fieldset class="asset-manager-v2__history-controls" aria-label="Asset history">
++          <legend>History</legend>
++          <button id="undoAssetButton" type="button" disabled>Undo</button>
++          <button id="redoAssetButton" type="button" disabled>Redo</button>
++        </fieldset>
+       </aside>
+
+       <section class="asset-manager-v2__panel asset-manager-v2__panel--center" aria-label="Assets">
+diff --git a/tools/asset-manager-v2/js/AssetManagerV2App.js b/tools/asset-manager-v2/js/AssetManagerV2App.js
+index 40ccc353..6a516f31 100644
+--- a/tools/asset-manager-v2/js/AssetManagerV2App.js
++++ b/tools/asset-manager-v2/js/AssetManagerV2App.js
+@@ -55,11 +55,10 @@ export class AssetManagerV2App {
+     this.accordions.forEach((accordion) => accordion.mount());
+     this.statusLog.mount();
+     this.actionNav.mount({
+-      onToolCopyJson: () => {
+-        void this.copyAssetsJson();
++      onNavExportJson: () => this.exportJson(),
++      onNavImportJson: (file) => {
++        void this.importJson(file);
+       },
+-      onToolExport: () => this.exportAssets(),
+-      onToolExportToolState: () => this.exportToolState(),
+       onWorkspaceCopyManifest: () => {
+         void this.copyWorkspaceManifest();
+       },
+@@ -447,6 +446,64 @@ export class AssetManagerV2App {
+     this.statusLog.ok("toolState preview written to Output Summary.");
+   }
+
++  async importJson(file) {
++    if (!this.schemaReady) {
++      this.statusLog.fail("Schema is not loaded; JSON import is blocked.");
++      return;
++    }
++    if (!file) {
++      this.statusLog.fail("Import JSON failed: no JSON file was selected.");
++      return;
++    }
++    try {
++      const payload = JSON.parse(await file.text());
++      const validation = this.schemaValidator.validatePayload(payload);
++      if (!validation.ok) {
++        this.statusLog.fail(`Import JSON failed schema validation: ${validation.errors.join(" | ")}`);
++        return;
++      }
++      this.recordHistory();
++      this.assets = sortedAssets(validation.payload.assets);
++      this.selectedAssetId = Object.keys(this.assets)[0] || "";
++      if (this.selectedAssetId) {
++        this.assetForm.loadAssetForEdit(this.selectedAssetId, this.assets[this.selectedAssetId]);
++      } else {
++        this.assetForm.clearEditableFields();
++      }
++      this.redoStack = [];
++      this.statusLog.ok(`Imported JSON with ${Object.keys(this.assets).length} validated assets.`);
++      this.render();
++      this.refreshActions();
++    } catch (error) {
++      this.statusLog.fail(`Import JSON failed: ${error.message}`);
++    }
++  }
++
++  exportJson() {
++    const validation = this.validateCurrentPayload({ showInspector: false });
++    if (!validation.ok) {
++      return;
++    }
++    const json = JSON.stringify(validation.payload, null, 2);
++    const BlobCtor = this.window.Blob;
++    const urlApi = this.window.URL || this.window.webkitURL;
++    if (typeof BlobCtor !== "function" || !urlApi?.createObjectURL) {
++      this.statusLog.fail("Export JSON failed: browser download APIs are unavailable.");
++      return;
++    }
++    const blob = new BlobCtor([json], { type: "application/json" });
++    const url = urlApi.createObjectURL(blob);
++    const link = this.window.document.createElement("a");
++    link.href = url;
++    link.download = "asset-manager-v2-assets.json";
++    link.rel = "noopener";
++    this.window.document.body.append(link);
++    link.click();
++    link.remove();
++    urlApi.revokeObjectURL(url);
++    this.statusLog.ok(`Exported JSON with ${Object.keys(validation.payload.assets).length} validated assets.`);
++  }
++
+   async copyAssetsJson() {
+     const validation = this.validateCurrentPayload();
+     if (!validation.ok) {
+@@ -494,7 +551,7 @@ export class AssetManagerV2App {
+     this.refreshActions();
+   }
+
+-  validateCurrentPayload() {
++  validateCurrentPayload({ showInspector = true } = {}) {
+     if (!this.schemaReady) {
+       const message = "Schema is not loaded; export is blocked.";
+       this.statusLog.fail(message);
+@@ -503,7 +560,9 @@ export class AssetManagerV2App {
+     const validation = this.schemaValidator.validatePayload(this.currentPayload());
+     if (!validation.ok) {
+       this.statusLog.fail(`Schema validation failed: ${validation.errors.join(" | ")}`);
+-      this.inspector.showObject({ ok: false, errors: validation.errors });
++      if (showInspector) {
++        this.inspector.showObject({ ok: false, errors: validation.errors });
++      }
+       return validation;
+     }
+     return validation;
+diff --git a/tools/asset-manager-v2/js/assetManagerMetadata.js b/tools/asset-manager-v2/js/assetManagerMetadata.js
+index 55cb3f65..1d7f10db 100644
+--- a/tools/asset-manager-v2/js/assetManagerMetadata.js
++++ b/tools/asset-manager-v2/js/assetManagerMetadata.js
+@@ -216,8 +216,10 @@ export function filenamePartForAssetId(fileName) {
+ export function sanitizeFileName(fileName) {
+   const rawName = String(fileName || "asset");
+   const extensionMatch = rawName.match(/(\.[a-z0-9]+)$/i);
+-  const extension = extensionMatch ? extensionMatch[1].toLowerCase() : "";
+-  return `${slugifyAssetSegment(rawName)}${extension}`;
++  const extension = extensionMatch ? extensionMatch[1] : "";
++  const basename = extension ? rawName.slice(0, -extension.length) : rawName;
++  const safeBasename = basename.replace(/[\\/]+/g, "").trim() || "asset";
++  return `${safeBasename}${extension}`;
  }
 
-+function previewFontFamily(assetId) {
-+  const normalizedId = normalizeText(assetId).replace(/[^a-z0-9_-]+/gi, "-").replace(/^-+|-+$/g, "");
-+  return `asset-preview-${normalizedId || "asset"}`;
-+}
-+
-+function fontLoadErrorMessage(model, error) {
-+  const detail = sanitizeText(error?.message || String(error || "Unknown font load error."));
-+  return `Font preview failed for ${model.assetId}: ${detail}`;
-+}
-+
-+async function applyScopedFontPreview(target, model, options = {}) {
-+  if (!target || model.type !== "font" || !model.url) {
-+    return;
-+  }
-+  const documentRef = options.documentRef || target.ownerDocument || globalThis.document || null;
-+  const FontFaceCtor = options.FontFace || documentRef?.defaultView?.FontFace || globalThis.FontFace;
-+  const fontSet = documentRef?.fonts;
-+  const family = previewFontFamily(model.assetId);
-+  const previewText = target.querySelector(".asset-manager-v2__preview-font");
-+  if (previewText) {
-+    previewText.style.fontFamily = `"${family}", sans-serif`;
-+  }
-+  if (typeof FontFaceCtor !== "function" || !fontSet || typeof fontSet.add !== "function") {
-+    return;
-+  }
-+
-+  try {
-+    const fontFace = new FontFaceCtor(family, `url("${cssString(model.url)}")`);
-+    const loadedFontFace = typeof fontFace.load === "function" ? await fontFace.load() : fontFace;
-+    if (target.dataset.previewAssetId !== model.assetId) {
-+      return;
-+    }
-+    fontSet.add(loadedFontFace);
-+    previewText?.setAttribute("data-preview-font-loaded", "true");
-+  } catch (error) {
-+    if (target.dataset.previewAssetId !== model.assetId) {
-+      return;
-+    }
-+    options.onPreviewStatus?.("fail", fontLoadErrorMessage(model, error));
-+  }
-+}
-+
- export function createAssetPreviewModel(assetId, entry = {}, options = {}) {
-   const type = normalizeText(entry.type);
-   const kind = normalizeText(entry.kind);
-@@ -84,8 +126,8 @@ export function renderAssetPreviewHtml(model) {
-   } else if (preview.url && preview.type === "video") {
-     body = `<video class="asset-manager-v2__preview-media" controls preload="metadata" src="${escapedUrl}"></video>`;
-   } else if (preview.url && preview.type === "font") {
--    const family = `asset-preview-${cssString(preview.assetId).replace(/[^a-z0-9_-]+/gi, "-")}`;
--    body = `<style>@font-face{font-family:"${family}";src:url("${cssString(preview.url)}");font-display:swap;}</style><div class="asset-manager-v2__preview-font" style="font-family:&quot;${escapeHtml(family)}&quot;, sans-serif;">Aa Bb Cc 0123</div>`;
-+    const family = previewFontFamily(preview.assetId);
-+    body = `<style data-preview-font-style="${escapedId}">@font-face{font-family:"${cssString(family)}";src:url("${cssString(preview.url)}");font-display:swap;}</style><div class="asset-manager-v2__preview-font" data-preview-font-family="${escapeHtml(family)}" style="font-family:&quot;${escapeHtml(family)}&quot;, sans-serif;">Aa Bb Cc 0123</div>`;
-   } else if (preview.type === "shader") {
-     body = `<pre class="asset-manager-v2__preview-code">Shader inspection\nkind: ${escapedKind}\npath: ${escapedPath}</pre>`;
-   } else if (preview.type === "data" || preview.type === "localization") {
-@@ -105,13 +147,16 @@ export function renderAssetPreviewHtml(model) {
- export function renderAssetPreview(target, assetId, entry, options = {}) {
-   if (!target || !assetId || !entry) {
-     if (target) {
-+      delete target.dataset.previewAssetId;
-       target.hidden = true;
-       target.textContent = "";
-     }
-     return null;
+ export function colorAssetPath(swatchName) {
+diff --git a/tools/asset-manager-v2/js/bootstrap.js b/tools/asset-manager-v2/js/bootstrap.js
+index 8e4cb913..8719e2b5 100644
+--- a/tools/asset-manager-v2/js/bootstrap.js
++++ b/tools/asset-manager-v2/js/bootstrap.js
+@@ -21,9 +21,9 @@ window.addEventListener("DOMContentLoaded", () => {
+   const app = new AssetManagerV2App({
+     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
+     actionNav: new ActionNavControl({
+-      toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
+-      toolExportButton: requireElement("#toolExportButton"),
+-      toolExportToolStateButton: requireElement("#toolExportToolStateButton"),
++      navExportJsonButton: requireElement("#navExportJsonButton"),
++      navImportJsonButton: requireElement("#navImportJsonButton"),
++      navImportJsonInput: requireElement("#navImportJsonInput"),
+       toolNav: requireElement(".asset-manager-v2__tool__menu"),
+       workspaceCopyManifestButton: requireElement("#workspaceCopyManifestButton"),
+       workspaceInsertAssetsButton: requireElement("#workspaceInsertAssetsButton"),
+diff --git a/tools/asset-manager-v2/js/controls/ActionNavControl.js b/tools/asset-manager-v2/js/controls/ActionNavControl.js
+index 662972e9..f6450614 100644
+--- a/tools/asset-manager-v2/js/controls/ActionNavControl.js
++++ b/tools/asset-manager-v2/js/controls/ActionNavControl.js
+@@ -1,18 +1,18 @@
+ export class ActionNavControl {
+   constructor({
+     locationRef = window.location,
+-    toolCopyJsonButton,
+-    toolExportButton,
+-    toolExportToolStateButton,
++    navExportJsonButton,
++    navImportJsonButton,
++    navImportJsonInput,
+     toolNav,
+     workspaceCopyManifestButton,
+     workspaceInsertAssetsButton,
+     workspaceNav
+   }) {
+     this.location = locationRef;
+-    this.toolCopyJsonButton = toolCopyJsonButton;
+-    this.toolExportButton = toolExportButton;
+-    this.toolExportToolStateButton = toolExportToolStateButton;
++    this.navExportJsonButton = navExportJsonButton;
++    this.navImportJsonButton = navImportJsonButton;
++    this.navImportJsonInput = navImportJsonInput;
+     this.toolNav = toolNav;
+     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
+     this.workspaceInsertAssetsButton = workspaceInsertAssetsButton;
+@@ -20,16 +20,19 @@ export class ActionNavControl {
    }
-   const model = createAssetPreviewModel(assetId, entry, options);
-+  target.dataset.previewAssetId = model.assetId;
-   target.innerHTML = renderAssetPreviewHtml(model);
-   target.hidden = false;
-+  void applyScopedFontPreview(target, model, options);
-   return model;
- }
-diff --git a/tools/asset-manager-v2/js/controls/AssetCatalogControl.js b/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
-index 888a3704..533c330d 100644
---- a/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
-+++ b/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
-@@ -54,7 +54,10 @@ export class AssetCatalogControl {
-     }
-     const selectedEntry = selectedAssetId && assets[selectedAssetId] ? assets[selectedAssetId] : null;
-     this.renderSelectedDetail(selectedEntry ? selectedAssetId : "", selectedEntry);
--    const previewModel = renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry, this.previewOptions);
-+    const previewModel = renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry, {
-+      ...this.previewOptions,
-+      onPreviewStatus: (level, message) => this.reportAsyncPreviewStatus(level, message)
+
+   mount({
+-    onToolCopyJson,
+-    onToolExport,
+-    onToolExportToolState,
++    onNavExportJson,
++    onNavImportJson,
+     onWorkspaceCopyManifest,
+     onWorkspaceInsertAssets
+   }) {
+     this.applyLaunchMode();
+-    this.toolExportButton.addEventListener("click", onToolExport);
+-    this.toolCopyJsonButton.addEventListener("click", onToolCopyJson);
+-    this.toolExportToolStateButton.addEventListener("click", onToolExportToolState);
++    this.navImportJsonButton.addEventListener("click", () => this.navImportJsonInput.click());
++    this.navImportJsonInput.addEventListener("change", () => {
++      const file = this.navImportJsonInput.files?.[0] || null;
++      this.navImportJsonInput.value = "";
++      onNavImportJson(file);
 +    });
-     this.reportPreviewStatus(previewModel);
-
-     this.list.innerHTML = entries.map(([assetId, entry]) => {
-@@ -89,11 +92,18 @@ export class AssetCatalogControl {
-       this.lastPreviewError = "";
-       return;
-     }
-+    this.reportAsyncPreviewStatus("fail", message);
-+  }
-+
-+  reportAsyncPreviewStatus(level, message) {
-+    if (!message) {
-+      return;
-+    }
-     if (message === this.lastPreviewError) {
-       return;
-     }
-     this.lastPreviewError = message;
--    this.onPreviewStatus?.("fail", message);
-+    this.onPreviewStatus?.(level, message);
++    this.navExportJsonButton.addEventListener("click", onNavExportJson);
+     this.workspaceInsertAssetsButton.addEventListener("click", onWorkspaceInsertAssets);
+     this.workspaceCopyManifestButton.addEventListener("click", onWorkspaceCopyManifest);
+   }
+@@ -44,9 +47,8 @@ export class ActionNavControl {
    }
 
-   renderSelectedDetail(assetId, entry) {
+   setToolActionsEnabled(isEnabled) {
+-    this.toolExportButton.disabled = !isEnabled;
+-    this.toolCopyJsonButton.disabled = !isEnabled;
+-    this.toolExportToolStateButton.disabled = !isEnabled;
++    this.navImportJsonButton.disabled = !isEnabled;
++    this.navExportJsonButton.disabled = !isEnabled;
+   }
+
+   setWorkspaceActionsEnabled(canInsert, canCopyManifest) {
 diff --git a/tools/asset-manager-v2/styles/assetManager.css b/tools/asset-manager-v2/styles/assetManager.css
-index 2a64ad4a..57a11ef6 100644
+index 57a11ef6..fd7443c9 100644
 --- a/tools/asset-manager-v2/styles/assetManager.css
 +++ b/tools/asset-manager-v2/styles/assetManager.css
-@@ -609,8 +609,8 @@ textarea:hover {
+@@ -564,13 +564,14 @@ textarea:hover {
+   position: absolute;
+   top: 6px;
+   right: 6px;
+-  width: 22px;
+-  height: 22px;
++  width: 16.5px;
++  height: 16.5px;
+   display: inline-grid;
+   place-items: center;
+   border: 1px solid currentColor;
+   border-radius: 999px;
+   color: var(--asset-manager-text);
++  font-size: 10px;
+   font-weight: 900;
+   line-height: 1;
  }
-
- .asset-manager-v2__selected-detail {
--  flex: 0 0 220px;
--  min-height: 220px;
-+  flex: 0 1 auto;
-+  min-height: 0;
- }
-
- .asset-manager-v2__selected-detail .accordion-v2__header {
-diff --git a/docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md b/docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md
+diff --git a/docs/dev/reports/PR_26126_098_asset_manager_v2_manual_validation_notes.md b/docs/dev/reports/PR_26126_098_asset_manager_v2_manual_validation_notes.md
 new file mode 100644
-index 00000000..b5be2d6c
+index 00000000..419f6b29
 --- /dev/null
-+++ b/docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md
-@@ -0,0 +1,22 @@
-+# PR_26126_097 Asset Manager V2 Font Preview Notes
-+
-+## Font Preview Rendering
-+- Font assets now use a scoped preview family derived from the selected asset ID.
-+- For `assets.font.ui.vector-battle`, the preview family is `asset-preview-assets-font-ui-vector-battle`.
-+- Font preview HTML includes a scoped `@font-face` rule and applies the same family to the preview sample text.
-+- The selected asset ID remains the source of truth for the preview font family.
-+
-+## Path Resolution
-+- Font preview URLs continue to resolve through the active Workspace game root.
-+- During temporary `?palette=sample` UAT testing, `assets/fonts/vector-battle.ttf` resolves to `/games/Asteroids/assets/fonts/vector-battle.ttf`.
-+- Existing Workspace V2 font previews continue to resolve under `/games/Asteroids/assets/...` when `gameId=Asteroids` is active.
-+
-+## Failure Reporting
-+- Asset Manager V2 attempts to load the preview font with the browser `FontFace` API when available.
-+- If the font load rejects, Asset Manager V2 writes a visible `FAIL Font preview failed for <asset-id>: <reason>` entry to Status.
-+- Stale async font load results are ignored when the selected preview changes before the load resolves.
-+
-+## Validation
-+- Playwright validates the UAT `vector-battle.ttf` font preview URL under `/games/Asteroids/assets/fonts/vector-battle.ttf`.
-+- Playwright validates the scoped `@font-face` family is derived from `assets.font.ui.vector-battle`.
-+- Playwright validates a rejected font load writes a visible Status failure.
-diff --git a/docs/dev/reports/PR_26126_097_asset_manager_v2_manual_validation_notes.md b/docs/dev/reports/PR_26126_097_asset_manager_v2_manual_validation_notes.md
-new file mode 100644
-index 00000000..7f86647b
---- /dev/null
-+++ b/docs/dev/reports/PR_26126_097_asset_manager_v2_manual_validation_notes.md
-@@ -0,0 +1,22 @@
-+# PR_26126_097 Asset Manager V2 Manual Validation Notes
++++ b/docs/dev/reports/PR_26126_098_asset_manager_v2_manual_validation_notes.md
+@@ -0,0 +1,27 @@
++# PR_26126_098 Asset Manager V2 Manual Validation Notes
 +
 +## Commands
-+- `node --check tools/asset-manager-v2/js/assetPreviewHelpers.js`
-+- `node --check tools/asset-manager-v2/js/controls/AssetCatalogControl.js`
++- `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
++- `node --check tools/asset-manager-v2/js/controls/ActionNavControl.js`
++- `node --check tools/asset-manager-v2/js/bootstrap.js`
++- `node --check tools/asset-manager-v2/js/assetManagerMetadata.js`
 +- `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
 +- `npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list -g "Asset Manager V2"`
 +- `npm run test:workspace-v2`
@@ -388,34 +610,68 @@ index 00000000..7f86647b
 +- `docs/dev/reports/playwright_v8_coverage_report.txt` was regenerated by the required workspace-v2 validation run.
 +
 +## Manual Checks Covered By Tests
-+- Font preview URL resolution through active game root.
-+- Scoped preview `@font-face` generation.
-+- Preview font family derived from the selected asset ID.
-+- Visible Status failure when font loading rejects.
-+- Selected Asset Detail without a fixed 300px height.
++- History is outside Asset Controls and directly under the Asset Controls accordion.
++- Asset tile X delete control is reduced by 25%.
++- File paths preserve selected filenames exactly.
++- Generated IDs normalize filename segments independently from paths.
++- Old body export controls are removed.
++- NAV Import JSON validates and loads Asset Manager V2 JSON.
++- NAV Export JSON downloads the current validated Asset Manager V2 JSON.
++- Import/export success and failure messages go to Status only.
 +- Sample JSON files were not modified.
-diff --git a/docs/dev/reports/PR_26126_097_asset_manager_v2_selected_detail_height_notes.md b/docs/dev/reports/PR_26126_097_asset_manager_v2_selected_detail_height_notes.md
+diff --git a/docs/dev/reports/PR_26126_098_asset_manager_v2_nav_import_export_notes.md b/docs/dev/reports/PR_26126_098_asset_manager_v2_nav_import_export_notes.md
 new file mode 100644
-index 00000000..e440408e
+index 00000000..a9681b11
 --- /dev/null
-+++ b/docs/dev/reports/PR_26126_097_asset_manager_v2_selected_detail_height_notes.md
-@@ -0,0 +1,19 @@
-+# PR_26126_097 Asset Manager V2 Selected Detail Height Notes
++++ b/docs/dev/reports/PR_26126_098_asset_manager_v2_nav_import_export_notes.md
+@@ -0,0 +1,25 @@
++# PR_26126_098 Asset Manager V2 NAV Import-Export Notes
 +
-+## Height Behavior
-+- Selected Asset Detail no longer uses a fixed flex basis.
-+- Selected Asset Detail no longer declares a fixed minimum height.
-+- The control now uses `flex: 0 1 auto` and `min-height: 0`.
-+- Rendered height is controlled by the selected detail content and center-panel layout rather than a hard-coded 300px or 220px value.
++## NAV Controls
++- Removed the old page-body controls: `Export Assets`, `Copy JSON`, and `Export toolState`.
++- Added Asset Manager V2 NAV controls: `Import JSON` and `Export JSON`.
++- Import and export are enabled only when schema-backed asset payload actions are available.
 +
-+## Layout Preservation
-+- Selected Asset Detail remains in the center panel.
-+- Selected Asset Detail remains separate from the Assets list.
-+- `assetPreview` remains inside Selected Asset Detail.
-+- The control still does not span the full app width.
++## Import JSON
++- `Import JSON` opens a JSON file picker.
++- The selected JSON is parsed as an Asset Manager V2 asset payload.
++- Imported JSON must pass `asset-browser.schema.json` validation before replacing current assets.
++- Successful import loads the validated assets and selects the first asset.
++- Import success and failure messages are written to Status only.
++
++## Export JSON
++- `Export JSON` validates the current Asset Manager V2 payload.
++- Successful export downloads `asset-manager-v2-assets.json`.
++- Export success and failure messages are written to Status only.
++- Export does not write success/failure prose into Output Summary.
 +
 +## Validation
-+- Playwright validates the computed flex basis is `auto`.
-+- Playwright validates the computed minimum height is `0px`.
-+- Playwright validates the rendered height is not the fixed 300px value.
-+- Playwright validates the detail control stays within the center panel.
++- Playwright validates the old body controls are absent.
++- Playwright validates NAV Import JSON and Export JSON labels and enabled state.
++- Playwright validates invalid import failure, valid import success, and exported JSON contents.
++- Playwright validates import/export messages are Status-only.
+diff --git a/docs/dev/reports/PR_26126_098_asset_manager_v2_path_preservation_notes.md b/docs/dev/reports/PR_26126_098_asset_manager_v2_path_preservation_notes.md
+new file mode 100644
+index 00000000..54308973
+--- /dev/null
++++ b/docs/dev/reports/PR_26126_098_asset_manager_v2_path_preservation_notes.md
+@@ -0,0 +1,19 @@
++# PR_26126_098 Asset Manager V2 Path Preservation Notes
++
++## Behavior
++- Asset Manager V2 now preserves the selected file path filename exactly.
++- File paths no longer slugify, hyphenate, or lowercase filenames.
++- Generated asset IDs still normalize filename segments for dot-path safety.
++- Project-root path trimming still converts absolute repo paths to repo-relative asset paths.
++
++## Examples
++- `HTML-JavaScript-Gaming/assets/fonts/vector_battle.ttf` becomes `assets/fonts/vector_battle.ttf`.
++- The generated ID for that font remains `assets.font.ui.vector-battle`.
++- `HTML-JavaScript-Gaming/assets/video/8 mile.mp4` becomes `assets/video/8 mile.mp4`.
++- The generated ID for that video remains `assets.video.cutscene.8-mile`.
++
++## Validation
++- Playwright validates `vector_battle.ttf` path preservation.
++- Playwright validates `assets/video/8 mile.mp4` path preservation.
++- Playwright validates ID-only normalization for the same selected files.
++- Playwright validates preview path usage keeps the literal selected path.

@@ -21,9 +21,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const app = new AssetManagerV2App({
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     actionNav: new ActionNavControl({
-      toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
-      toolExportButton: requireElement("#toolExportButton"),
-      toolExportToolStateButton: requireElement("#toolExportToolStateButton"),
+      navExportJsonButton: requireElement("#navExportJsonButton"),
+      navImportJsonButton: requireElement("#navImportJsonButton"),
+      navImportJsonInput: requireElement("#navImportJsonInput"),
       toolNav: requireElement(".asset-manager-v2__tool__menu"),
       workspaceCopyManifestButton: requireElement("#workspaceCopyManifestButton"),
       workspaceInsertAssetsButton: requireElement("#workspaceInsertAssetsButton"),

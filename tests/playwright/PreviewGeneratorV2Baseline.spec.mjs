@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
 import { PlaywrightV8CoverageReporter } from "../helpers/playwrightV8CoverageReporter.mjs";
 
@@ -790,10 +791,34 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetRoleSelect")).toBeEnabled();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");
       await expect(page.locator("#assetRoleSelect")).toHaveAttribute("title", "Allowed roles for audio: sound, music");
+      await expect(page.locator("#toolExportButton")).toHaveCount(0);
+      await expect(page.locator("#toolCopyJsonButton")).toHaveCount(0);
+      await expect(page.locator("#toolExportToolStateButton")).toHaveCount(0);
+      await expect(page.locator("#navImportJsonButton")).toHaveText("Import JSON");
+      await expect(page.locator("#navExportJsonButton")).toHaveText("Export JSON");
+      await expect(page.locator("#navImportJsonButton")).toBeEnabled();
+      await expect(page.locator("#navExportJsonButton")).toBeEnabled();
       const historyControls = page.locator('fieldset[aria-label="Asset history"]');
       await expect(historyControls).toBeVisible();
       await expect(historyControls.locator("#undoAssetButton")).toBeDisabled();
       await expect(historyControls.locator("#redoAssetButton")).toBeDisabled();
+      const historyPlacement = await historyControls.evaluate((history) => {
+        const assetControls = document.getElementById("assetControlsContent");
+        const leftPanel = document.querySelector(".asset-manager-v2__panel--left");
+        const controlsSection = document.querySelector('[aria-controls="assetControlsContent"]').closest(".accordion-v2");
+        const historyRect = history.getBoundingClientRect();
+        const controlsRect = controlsSection.getBoundingClientRect();
+        return {
+          insideAssetControls: assetControls.contains(history),
+          parentIsLeftPanel: history.parentElement === leftPanel,
+          belowAssetControls: historyRect.top >= controlsRect.bottom
+        };
+      });
+      expect(historyPlacement).toEqual({
+        insideAssetControls: false,
+        parentIsLeftPanel: true,
+        belowAssetControls: true
+      });
       await expect(page.locator('button[aria-controls="schemaValidationContent"]')).toHaveCount(0);
       await expect(page.locator("#schemaValidationContent")).toHaveCount(0);
       await expect(page.locator("#jsonInput")).toHaveCount(0);
@@ -973,6 +998,8 @@ test.describe("Preview Generator V2 baseline", () => {
         })(),
         hasSeparateDeleteButton: Boolean(tile.querySelector(":scope > button[data-delete-asset-id]")),
         hasInlineDelete: Boolean(tile.querySelector(".asset-manager-v2__asset-select [data-delete-asset-id]")),
+        deleteHeight: Math.round(tile.querySelector("[data-delete-asset-id]").getBoundingClientRect().height),
+        deleteWidth: Math.round(tile.querySelector("[data-delete-asset-id]").getBoundingClientRect().width),
         tileHeight: Math.round(tile.getBoundingClientRect().height),
         tileWidth: Math.round(tile.getBoundingClientRect().width),
         typeRoleColor: getComputedStyle(tile.querySelector(".asset-manager-v2__asset-type-role")).color,
@@ -993,6 +1020,8 @@ test.describe("Preview Generator V2 baseline", () => {
           textLeftAligned: true,
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
+          deleteHeight: 17,
+          deleteWidth: 17,
           tileHeight: 88,
           tileWidth: 154,
           typeRoleColor: "rgb(247, 244, 255)",
@@ -1012,6 +1041,8 @@ test.describe("Preview Generator V2 baseline", () => {
           textLeftAligned: true,
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
+          deleteHeight: 17,
+          deleteWidth: 17,
           tileHeight: 88,
           tileWidth: 154,
           typeRoleColor: "rgb(247, 244, 255)",
@@ -1031,6 +1062,8 @@ test.describe("Preview Generator V2 baseline", () => {
           textLeftAligned: true,
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
+          deleteHeight: 17,
+          deleteWidth: 17,
           tileHeight: 88,
           tileWidth: 154,
           typeRoleColor: "rgb(247, 244, 255)",
@@ -1050,6 +1083,8 @@ test.describe("Preview Generator V2 baseline", () => {
           textLeftAligned: true,
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
+          deleteHeight: 17,
+          deleteWidth: 17,
           tileHeight: 88,
           tileWidth: 154,
           typeRoleColor: "rgb(247, 244, 255)",
@@ -1250,6 +1285,63 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(statusReexpandedLayout.statusExpanded).toBe(true);
       expect(statusReexpandedLayout.statusBottomDelta).toBeLessThan(20);
 
+      const invalidImportChooserPromise = page.waitForEvent("filechooser");
+      await page.locator("#navImportJsonButton").click();
+      const invalidImportChooser = await invalidImportChooserPromise;
+      await invalidImportChooser.setFiles({
+        name: "invalid-asset-manager-v2.json",
+        mimeType: "application/json",
+        buffer: Buffer.from(JSON.stringify({ invalid: true }))
+      });
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Import JSON failed schema validation:/);
+      await expect(page.locator("#inspectorOutput")).not.toContainText("Import JSON failed");
+
+      const importedPayload = {
+        assets: {
+          "assets.font.ui.vector-battle": {
+            path: "assets/fonts/vector_battle.ttf",
+            type: "font",
+            kind: "ttf",
+            role: "ui",
+            source: "asset-manager-v2"
+          },
+          "assets.video.cutscene.8-mile": {
+            path: "assets/video/8 mile.mp4",
+            type: "video",
+            kind: "mp4",
+            role: "cutscene",
+            source: "asset-manager-v2"
+          }
+        }
+      };
+      const validImportChooserPromise = page.waitForEvent("filechooser");
+      await page.locator("#navImportJsonButton").click();
+      const validImportChooser = await validImportChooserPromise;
+      await validImportChooser.setFiles({
+        name: "asset-manager-v2-assets.json",
+        mimeType: "application/json",
+        buffer: Buffer.from(JSON.stringify(importedPayload))
+      });
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Imported JSON with 2 validated assets\./);
+      await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
+      await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.font.ui.vector-battle");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets/fonts/vector_battle.ttf");
+      await expect(page.locator("#inspectorOutput")).not.toContainText("Imported JSON");
+      const importedOutput = JSON.parse(await page.locator("#inspectorOutput").textContent());
+      expect(importedOutput.assets.find((asset) => asset.id === "assets.font.ui.vector-battle").path).toBe("assets/fonts/vector_battle.ttf");
+      expect(importedOutput.assets.find((asset) => asset.id === "assets.video.cutscene.8-mile").path).toBe("assets/video/8 mile.mp4");
+
+      const downloadPromise = page.waitForEvent("download");
+      await page.locator("#navExportJsonButton").click();
+      const download = await downloadPromise;
+      expect(download.suggestedFilename()).toBe("asset-manager-v2-assets.json");
+      const exportedPath = await download.path();
+      const exportedPayload = JSON.parse(await readFile(exportedPath, "utf8"));
+      expect(exportedPayload).toEqual(importedPayload);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Exported JSON with 2 validated assets\./);
+      await expect(page.locator("#inspectorOutput")).not.toContainText("Exported JSON");
+
       await page.locator("#assetKindImage").check();
       await queueAssetFile(page, {
         name: "notes.exe",
@@ -1284,7 +1376,7 @@ test.describe("Preview Generator V2 baseline", () => {
         }
 
         async load() {
-          if (String(this.source).includes("vector-battle.ttf")) {
+          if (String(this.source).includes("vector_battle.ttf")) {
             throw new Error("UAT font load rejected.");
           }
           if (typeof NativeFontFace === "function") {
@@ -1304,10 +1396,16 @@ test.describe("Preview Generator V2 baseline", () => {
           path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
         },
         {
-          name: "vector-battle.ttf",
+          name: "vector_battle.ttf",
           mimeType: "font/ttf",
           contents: "font",
-          path: "HTML-JavaScript-Gaming/assets/fonts/vector-battle.ttf"
+          path: "HTML-JavaScript-Gaming/assets/fonts/vector_battle.ttf"
+        },
+        {
+          name: "8 mile.mp4",
+          mimeType: "video/mp4",
+          contents: "video",
+          path: "HTML-JavaScript-Gaming/assets/video/8 mile.mp4"
         }
       ]
     });
@@ -1335,7 +1433,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await page.locator("#assetKindFont").check();
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.font.ui.vector-battle");
-      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector-battle.ttf");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector_battle.ttf");
       await page.locator("#addAssetButton").click();
       await expect(page.locator('#assetPreview [data-preview-type="font"][data-preview-kind="ttf"]')).toBeVisible();
       const fontPreviewState = await page.locator("#assetPreview").evaluate((preview) => {
@@ -1348,14 +1446,22 @@ test.describe("Preview Generator V2 baseline", () => {
         };
       });
       expect(fontPreviewState.style).toContain('@font-face{font-family:"asset-preview-assets-font-ui-vector-battle"');
-      expect(fontPreviewState.style).toContain('/games/Asteroids/assets/fonts/vector-battle.ttf');
+      expect(fontPreviewState.style).toContain('/games/Asteroids/assets/fonts/vector_battle.ttf');
       expect(fontPreviewState.fontFamily).toContain("asset-preview-assets-font-ui-vector-battle");
       expect(fontPreviewState.scopedFamily).toBe("asset-preview-assets-font-ui-vector-battle");
       await expect.poll(async () => await page.evaluate(() => window.__assetManagerV2FontFaceLoads)).toEqual([{
         family: "asset-preview-assets-font-ui-vector-battle",
-        source: 'url("/games/Asteroids/assets/fonts/vector-battle.ttf")'
+        source: 'url("/games/Asteroids/assets/fonts/vector_battle.ttf")'
       }]);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Font preview failed for assets\.font\.ui\.vector-battle: UAT font load rejected\./);
+
+      await page.locator("#assetKindVideo").check();
+      await page.locator("#pickAssetFileButton").click();
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.video.cutscene.8-mile");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/video/8 mile.mp4");
+      await page.locator("#addAssetButton").click();
+      await expect(page.locator('#assetPreview [data-preview-type="video"][data-preview-kind="mp4"] video')).toHaveAttribute("src", "/games/Asteroids/assets/video/8 mile.mp4");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file 8 mile\.mp4 validated as type video, kind mp4, role cutscene\./);
 
       await page.locator("#assetKindColor").check();
       await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
@@ -1381,6 +1487,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetList")).toContainText("assets.color.hud.signal-violet");
       await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
       await expect(page.locator("#assetList")).toContainText("assets.image.sprite.uat-preview");
+      await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
       await expect(page.locator("#selectedAssetDetails")).not.toContainText("Final ID");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.signal-violet");
       const output = JSON.parse(await page.locator("#inspectorOutput").textContent());

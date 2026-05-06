@@ -37,9 +37,9 @@
     </details>
 
     <nav class="asset-manager-v2__menu asset-manager-v2__tool__menu" aria-label="Asset Manager tool actions" data-launch-mode-nav="tool">
-      <button id="toolExportButton" type="button" disabled>Export Assets</button>
-      <button id="toolCopyJsonButton" type="button" disabled>Copy JSON</button>
-      <button id="toolExportToolStateButton" type="button" disabled>Export toolState</button>
+      <button id="navImportJsonButton" type="button" disabled>Import JSON</button>
+      <button id="navExportJsonButton" type="button" disabled>Export JSON</button>
+      <input id="navImportJsonInput" class="asset-manager-v2__file-input" type="file" accept=".json,application/json" aria-label="Import Asset Manager V2 JSON">
     </nav>
 
     <nav class="asset-manager-v2__menu asset-manager-v2__workspace__menu" aria-label="Workspace asset actions" data-launch-mode-nav="workspace" hidden>
@@ -125,13 +125,13 @@
               <button id="addAssetButton" type="button" disabled>Add Asset</button>
               <button id="updateAssetButton" type="button" disabled>Update Asset</button>
             </div>
-            <fieldset class="asset-manager-v2__history-controls" aria-label="Asset history">
-              <legend>History</legend>
-              <button id="undoAssetButton" type="button" disabled>Undo</button>
-              <button id="redoAssetButton" type="button" disabled>Redo</button>
-            </fieldset>
           </div>
         </section>
+        <fieldset class="asset-manager-v2__history-controls" aria-label="Asset history">
+          <legend>History</legend>
+          <button id="undoAssetButton" type="button" disabled>Undo</button>
+          <button id="redoAssetButton" type="button" disabled>Redo</button>
+        </fieldset>
       </aside>
 
       <section class="asset-manager-v2__panel asset-manager-v2__panel--center" aria-label="Assets">

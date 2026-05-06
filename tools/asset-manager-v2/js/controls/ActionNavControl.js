@@ -1,18 +1,18 @@
 export class ActionNavControl {
   constructor({
     locationRef = window.location,
-    toolCopyJsonButton,
-    toolExportButton,
-    toolExportToolStateButton,
+    navExportJsonButton,
+    navImportJsonButton,
+    navImportJsonInput,
     toolNav,
     workspaceCopyManifestButton,
     workspaceInsertAssetsButton,
     workspaceNav
   }) {
     this.location = locationRef;
-    this.toolCopyJsonButton = toolCopyJsonButton;
-    this.toolExportButton = toolExportButton;
-    this.toolExportToolStateButton = toolExportToolStateButton;
+    this.navExportJsonButton = navExportJsonButton;
+    this.navImportJsonButton = navImportJsonButton;
+    this.navImportJsonInput = navImportJsonInput;
     this.toolNav = toolNav;
     this.workspaceCopyManifestButton = workspaceCopyManifestButton;
     this.workspaceInsertAssetsButton = workspaceInsertAssetsButton;
@@ -20,16 +20,19 @@ export class ActionNavControl {
   }
 
   mount({
-    onToolCopyJson,
-    onToolExport,
-    onToolExportToolState,
+    onNavExportJson,
+    onNavImportJson,
     onWorkspaceCopyManifest,
     onWorkspaceInsertAssets
   }) {
     this.applyLaunchMode();
-    this.toolExportButton.addEventListener("click", onToolExport);
-    this.toolCopyJsonButton.addEventListener("click", onToolCopyJson);
-    this.toolExportToolStateButton.addEventListener("click", onToolExportToolState);
+    this.navImportJsonButton.addEventListener("click", () => this.navImportJsonInput.click());
+    this.navImportJsonInput.addEventListener("change", () => {
+      const file = this.navImportJsonInput.files?.[0] || null;
+      this.navImportJsonInput.value = "";
+      onNavImportJson(file);
+    });
+    this.navExportJsonButton.addEventListener("click", onNavExportJson);
     this.workspaceInsertAssetsButton.addEventListener("click", onWorkspaceInsertAssets);
     this.workspaceCopyManifestButton.addEventListener("click", onWorkspaceCopyManifest);
   }
@@ -44,9 +47,8 @@ export class ActionNavControl {
   }
 
   setToolActionsEnabled(isEnabled) {
-    this.toolExportButton.disabled = !isEnabled;
-    this.toolCopyJsonButton.disabled = !isEnabled;
-    this.toolExportToolStateButton.disabled = !isEnabled;
+    this.navImportJsonButton.disabled = !isEnabled;
+    this.navExportJsonButton.disabled = !isEnabled;
   }
 
   setWorkspaceActionsEnabled(canInsert, canCopyManifest) {
