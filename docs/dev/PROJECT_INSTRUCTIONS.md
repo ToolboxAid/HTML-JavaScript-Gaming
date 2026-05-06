@@ -618,3 +618,43 @@ Do NOT require:
 - full feature coverage
 - 100% code coverage
 - performance requirements
+
+## CODE COVERAGE CONTRACT
+
+When runtime JavaScript changes, Codex must produce a Playwright V8 coverage report.
+
+The coverage report must list changed runtime JavaScript files.
+
+Coverage report lines must start with coverage percentage in this format:
+
+`(xx%) <file-path> - <details>`
+
+Coverage is advisory unless a PR explicitly defines thresholds.
+
+Do not require 100% coverage.
+
+## CODEX ZIP RETURN CONTRACT
+
+Codex must include the repo-structured ZIP in returned artifacts for user and ChatGPT review.
+
+The ZIP must still follow the CODEX ZIP STANDARD.
+
+## CODE REVIEW EVIDENCE RULE
+
+ChatGPT must not claim code review was completed unless it inspected uploaded source, ZIP contents, or `codex_review.diff`.
+
+Pattern-based or process-based review must be labeled as such.
+
+## HTML INLINE HANDLER RESTRICTION
+
+HTML must not contain inline event handlers such as `onclick`, `onchange`, `oninput`, `onsubmit`, or similar.
+
+Event wiring must live in external JavaScript classes or modules.
+
+## FIRST-CLASS TOOL REGISTRATION RULE
+
+New first-class tools must include registry, index, and NAV wiring where applicable.
+
+New first-class tools must include Playwright launch coverage.
+
+Tool registration must not rely on hidden defaults or silent fallback.
