@@ -11,15 +11,14 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(84%) Preview Generator V2 - exercised 19 runtime JS files
+(86%) Preview Generator V2 - exercised 19 runtime JS files
 (49%) Palette Manager - exercised 12 runtime JS files
 (84%) Tool Template V2 - exercised 10 runtime JS files
 (0%) Workspace V2 - not exercised by this Playwright run
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(0%) tools/shared/vectorNativeTemplate.js - not covered
-(0%) tools/shared/vectorTemplateSampleGame.js - not covered
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -30,12 +29,11 @@ Files with executed line/function counts where available:
 (10%) src/engine/scene/AttractModeController.js - executed lines 143/143; executed functions 1/10
 (10%) src/shared/math/numberNormalization.js - executed lines 35/35; executed functions 1/10
 (11%) src/engine/audio/PlaylistManager.js - executed lines 70/70; executed functions 1/9
-(11%) src/engine/input/InputService.js - executed lines 185/185; executed functions 3/28
-(12%) src/engine/audio/AudioService.js - executed lines 258/258; executed functions 3/25
 (13%) src/engine/persistence/SaveSlotManager.js - executed lines 45/45; executed functions 1/8
 (14%) src/engine/release/AccessibilityOptions.js - executed lines 68/68; executed functions 1/7
 (14%) src/engine/runtime/BrowserDownloadService.js - executed lines 38/38; executed functions 1/7
 (14%) src/engine/scene/TransitionScene.js - executed lines 58/58; executed functions 1/7
+(16%) src/engine/audio/AudioService.js - executed lines 258/258; executed functions 4/25
 (17%) src/engine/camera/Camera2D.js - executed lines 44/44; executed functions 1/6
 (17%) src/engine/input/ActionInputMap.js - executed lines 24/24; executed functions 1/6
 (17%) src/engine/input/InputContextService.js - executed lines 48/48; executed functions 1/6
@@ -43,21 +41,17 @@ Files with executed line/function counts where available:
 (17%) src/engine/release/CrashRecoveryManager.js - executed lines 66/66; executed functions 1/6
 (17%) src/engine/release/DeploymentProfiles.js - executed lines 48/48; executed functions 1/6
 (17%) src/engine/scene/SceneTransition.js - executed lines 27/27; executed functions 1/6
-(18%) src/engine/rendering/CanvasRenderer.js - executed lines 100/100; executed functions 2/11
 (20%) src/engine/audio/MidiPlayer.js - executed lines 31/31; executed functions 1/5
-(20%) src/engine/input/GamepadState.js - executed lines 92/92; executed functions 2/10
 (20%) src/engine/persistence/CompressionService.js - executed lines 18/18; executed functions 1/5
 (20%) src/engine/scene/SceneManager.js - executed lines 33/33; executed functions 1/5
 (20%) src/shared/utils/mathUtils.js - executed lines 29/29; executed functions 1/5
 (25%) src/engine/audio/HtmlAudioMediaBackend.js - executed lines 22/22; executed functions 1/4
+(25%) src/engine/input/GamepadState.js - executed lines 92/92; executed functions 3/12
 (25%) src/engine/release/ReleaseValidationChecklist.js - executed lines 43/43; executed functions 1/4
 (25%) src/engine/release/SettingsSystem.js - executed lines 94/94; executed functions 3/12
 (25%) src/engine/rendering/ResolutionScaler.js - executed lines 22/22; executed functions 1/4
-(25%) src/engine/runtime/backgroundImage.js - executed lines 205/205; executed functions 3/12
 (26%) src/engine/runtime/fullscreenBezel.js - executed lines 993/993; executed functions 16/62
 (29%) src/engine/audio/WebAudioToneBackend.js - executed lines 65/65; executed functions 2/7
-(29%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 2/7
-(30%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 3/10
 (33%) src/engine/audio/FrequencyPlayer.js - executed lines 25/25; executed functions 1/3
 (33%) src/engine/audio/Synthesizer.js - executed lines 24/24; executed functions 1/3
 (33%) src/engine/camera/CameraSystem.js - executed lines 21/21; executed functions 1/3
@@ -69,13 +63,14 @@ Files with executed line/function counts where available:
 (33%) src/engine/runtime/MobileRuntimeTweaks.js - executed lines 21/21; executed functions 1/3
 (33%) src/engine/scene/SceneTransitionController.js - executed lines 22/22; executed functions 1/3
 (36%) tools/palette-manager-v2/controls/PaletteImportExportControl.js - executed lines 67/67; executed functions 4/11
+(37%) src/engine/input/InputService.js - executed lines 185/185; executed functions 11/30
 (38%) src/engine/camera/Camera3D.js - executed lines 48/48; executed functions 3/8
 (38%) tools/palette-manager-v2/modules/PaletteValidationService.js - executed lines 88/88; executed functions 3/8
 (39%) tools/palette-manager-v2/modules/PaletteManagerApp.js - executed lines 934/934; executed functions 43/110
-(40%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 2/5
 (40%) src/engine/scene/Scene.js - executed lines 12/12; executed functions 2/5
 (42%) tools/preview-generator-v2/PreviewGeneratorV2Capture.js - executed lines 477/477; executed functions 10/24
 (44%) tools/palette-manager-v2/controls/PaletteEditorControl.js - executed lines 225/225; executed functions 14/32
+(47%) src/engine/runtime/backgroundImage.js - executed lines 205/205; executed functions 8/17
 (47%) src/engine/runtime/RuntimeMonitoringHooks.js - executed lines 191/191; executed functions 8/17
 (50%) src/engine/camera/ZoneCameraSystem.js - executed lines 26/26; executed functions 1/2
 (50%) src/engine/config/ConfigStore.js - executed lines 46/46; executed functions 3/6
@@ -91,33 +86,38 @@ Files with executed line/function counts where available:
 (55%) tools/palette-manager-v2/modules/SwatchRow.js - executed lines 115/115; executed functions 6/11
 (56%) src/engine/logging/Logger.js - executed lines 56/56; executed functions 5/9
 (56%) tools/palette-manager-v2/modules/paletteUtils.js - executed lines 41/41; executed functions 5/9
+(57%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 4/7
 (57%) src/engine/runtime/FullscreenService.js - executed lines 118/118; executed functions 8/14
-(58%) src/engine/core/Engine.js - executed lines 323/323; executed functions 7/12
-(60%) src/engine/core/RuntimeMetrics.js - executed lines 48/48; executed functions 3/5
 (60%) src/engine/persistence/StorageService.js - executed lines 49/49; executed functions 3/5
 (61%) src/engine/runtime/gameImageConvention.js - executed lines 207/207; executed functions 11/18
 (65%) tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js - executed lines 121/121; executed functions 15/23
 (67%) src/shared/number/numberUtils.js - executed lines 14/14; executed functions 2/3
 (67%) tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js - executed lines 117/117; executed functions 8/12
+(70%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 7/10
 (71%) tools/palette-manager-v2/controls/PaletteValidationErrorControl.js - executed lines 30/30; executed functions 5/7
+(73%) src/engine/rendering/CanvasRenderer.js - executed lines 100/100; executed functions 8/11
 (73%) src/engine/theme/mount-shared-header.js - executed lines 143/143; executed functions 8/11
-(75%) src/engine/core/FixedTicker.js - executed lines 36/36; executed functions 3/4
-(75%) src/engine/theme/Theme.js - executed lines 26/26; executed functions 3/4
 (75%) tools/palette-manager-v2/controls/UserPaletteControl.js - executed lines 95/95; executed functions 12/16
 (75%) tools/palette-manager-v2/paletteManagerShell.js - executed lines 160/160; executed functions 12/16
-(80%) src/engine/core/FrameClock.js - executed lines 32/32; executed functions 4/5
+(77%) src/engine/core/Engine.js - executed lines 323/323; executed functions 10/13
 (80%) src/engine/theme/accordionV2/accordionV2.js - executed lines 26/26; executed functions 4/5
-(81%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 47/58
 (82%) samples/shared/sampleDetailPageEnhancement.js - executed lines 471/471; executed functions 41/50
 (86%) tools/templates-v2/js/controls/StatusLogControl.js - executed lines 21/21; executed functions 6/7
 (87%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 13/15
+(88%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 51/58
 (88%) tools/templates-v2/js/controls/SourceInputControl.js - executed lines 33/33; executed functions 7/8
 (92%) tools/templates-v2/js/controls/ToolStarterShellControl.js - executed lines 111/111; executed functions 11/12
+(100%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 6/6
 (100%) samples/phase-01/0102/main.js - executed lines 23/23; executed functions 1/1
+(100%) samples/phase-01/0103/main.js - executed lines 23/23; executed functions 1/1
+(100%) samples/phase-01/0103/MouseInputScene.js - executed lines 70/70; executed functions 6/6
 (100%) samples/shared/numberUtils.js - executed lines 7/7; executed functions 1/1
 (100%) src/engine/audio/index.js - executed lines 15/15; executed functions 1/1
 (100%) src/engine/camera/index.js - executed lines 10/10; executed functions 1/1
 (100%) src/engine/config/index.js - executed lines 7/7; executed functions 1/1
+(100%) src/engine/core/FixedTicker.js - executed lines 36/36; executed functions 4/4
+(100%) src/engine/core/FrameClock.js - executed lines 32/32; executed functions 5/5
+(100%) src/engine/core/RuntimeMetrics.js - executed lines 48/48; executed functions 5/5
 (100%) src/engine/input/index.js - executed lines 13/13; executed functions 1/1
 (100%) src/engine/logging/index.js - executed lines 8/8; executed functions 1/1
 (100%) src/engine/paletteList.js - executed lines 1205/1205; executed functions 15/15
@@ -127,6 +127,7 @@ Files with executed line/function counts where available:
 (100%) src/engine/runtime/index.js - executed lines 13/13; executed functions 1/1
 (100%) src/engine/scene/index.js - executed lines 13/13; executed functions 1/1
 (100%) src/engine/theme/index.js - executed lines 3/3; executed functions 1/1
+(100%) src/engine/theme/Theme.js - executed lines 26/26; executed functions 4/4
 (100%) src/engine/theme/ThemeTokens.js - executed lines 20/20; executed functions 1/1
 (100%) src/engine/theme/toolboxaid-header.js - executed lines 76/76; executed functions 7/7
 (100%) src/shared/number/index.js - executed lines 7/7; executed functions 1/1
@@ -155,13 +156,7 @@ Files with executed line/function counts where available:
 (100%) tools/templates-v2/js/services/ToolStateSerializer.js - executed lines 13/13; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(0%) tools/shared/vectorNativeTemplate.js - uncovered
-(0%) tools/shared/vectorTemplateSampleGame.js - uncovered
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) tests/helpers/playwrightV8CoverageReporter.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/tools/RuntimeAssetLookupConsolidation.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/tools/VectorNativeTemplate.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tools/shared/vectorNativeTemplate.js - changed JS file not collected as browser runtime coverage
-(0%) tools/shared/vectorTemplateSampleGame.js - changed JS file not collected as browser runtime coverage

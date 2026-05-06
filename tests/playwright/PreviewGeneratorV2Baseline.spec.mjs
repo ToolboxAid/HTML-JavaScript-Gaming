@@ -4,8 +4,16 @@ import { PlaywrightV8CoverageReporter } from "../helpers/playwrightV8CoverageRep
 
 const coverageReporter = new PlaywrightV8CoverageReporter();
 
-async function installFakeRepoPicker(page, { validSampleIds = ["0102"], invalidSampleIds = [] } = {}) {
-  await page.addInitScript(({ validSampleIds: validIds, invalidSampleIds: invalidIds }) => {
+async function installFakeRepoPicker(page, {
+  validSampleIds = ["0102"],
+  invalidSampleIds = [],
+  existingPreviewBySampleId = {}
+} = {}) {
+  await page.addInitScript(({
+    validSampleIds: validIds,
+    invalidSampleIds: invalidIds,
+    existingPreviewBySampleId: existingPreviews
+  }) => {
     class FakeFileHandle {
       constructor(name, path, contents = "") {
         this.kind = "file";
@@ -91,7 +99,13 @@ async function installFakeRepoPicker(page, { validSampleIds = ["0102"], invalidS
     repo.addDirectory("tools");
 
     for (const sampleId of validIds) {
-      phase01.addDirectory(sampleId).addFile("index.html", "<!doctype html><canvas></canvas>");
+      const sampleDir = phase01.addDirectory(sampleId);
+      sampleDir.addFile("index.html", "<!doctype html><canvas></canvas>");
+      if (Object.prototype.hasOwnProperty.call(existingPreviews, sampleId)) {
+        const assetsDir = sampleDir.addDirectory("assets");
+        const imagesDir = assetsDir.addDirectory("images");
+        imagesDir.addFile("preview.svg", existingPreviews[sampleId]);
+      }
     }
     for (const sampleId of invalidIds) {
       phase01.addDirectory(sampleId);
@@ -100,13 +114,22 @@ async function installFakeRepoPicker(page, { validSampleIds = ["0102"], invalidS
 
     window.__previewGeneratorV2Writes = [];
     window.showDirectoryPicker = async () => repo;
-  }, { validSampleIds, invalidSampleIds });
+  }, { validSampleIds, invalidSampleIds, existingPreviewBySampleId });
 }
 
-async function openPreviewGenerator(page, { withFakeRepo = false, validSampleIds, invalidSampleIds } = {}) {
+async function openPreviewGenerator(page, {
+  withFakeRepo = false,
+  validSampleIds,
+  invalidSampleIds,
+  existingPreviewBySampleId
+} = {}) {
   const server = await startRepoServer();
   if (withFakeRepo) {
-    await installFakeRepoPicker(page, { validSampleIds, invalidSampleIds });
+    await installFakeRepoPicker(page, {
+      validSampleIds,
+      invalidSampleIds,
+      existingPreviewBySampleId
+    });
   }
   await coverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: "domcontentloaded" });
@@ -376,6 +399,7 @@ test.describe("Preview Generator V2 baseline", () => {
         await expectAccordionToggles(page, contentId);
       }
       await expect(page.locator("#clearLogBtn")).toBeVisible();
+      await expect(page.locator("#statusAccordion .preview-generator-v2__status-header-actions #clearLogBtn")).toBeVisible();
 
       expect(pageErrors).toEqual([]);
     } finally {
@@ -399,6 +423,7 @@ test.describe("Preview Generator V2 baseline", () => {
     try {
       await page.locator("#pickRepoBtn").click();
       await page.locator("#targetTypeSamples").check();
+      await page.locator("#baseUrl").fill(server.baseUrl);
       await page.locator("#sampleList").fill("samples/phase-01");
 
       await expect(page.locator("#writeFolderActualValue")).toHaveText("samples\\phase-01\\0102\\assets\\images");
@@ -416,6 +441,77 @@ test.describe("Preview Generator V2 baseline", () => {
       const writes = await page.evaluate(() => window.__previewGeneratorV2Writes);
       expect(writes).toHaveLength(1);
       expect(writes[0].path).toBe("HTML-JavaScript-Gaming/samples/phase-01/0102/assets/images/preview.svg");
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("generates real batch output with skip, failure, status, and summary assertions", async ({ page }) => {
+    const server = await openPreviewGenerator(page, {
+      withFakeRepo: true,
+      validSampleIds: ["0102", "0103"],
+      existingPreviewBySampleId: {
+        "0102": "<svg xmlns=\"http://www.w3.org/2000/svg\"><text>existing preview</text></svg>"
+      }
+    });
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await page.locator("#pickRepoBtn").click();
+      await page.locator("#targetTypeSamples").check();
+      await page.locator("#baseUrl").fill(server.baseUrl);
+      await page.locator("#waitMs").fill("3000");
+      await page.locator("#sampleList").fill([
+        "samples/phase-01/0102/index.html",
+        "samples/phase-01/0103/index.html",
+        "samples/phase-99"
+      ].join("\n"));
+
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+      await page.locator("#executeBtn").click();
+
+      const log = page.locator("#log");
+      await expect(log).toContainText("Starting execution...", { timeout: 15000 });
+      await expect(log).toContainText("Target type: samples", { timeout: 15000 });
+      await expect(log).toContainText("SKIP 0102", { timeout: 15000 });
+      await expect(log).toContainText("Existing preview.svg does not contain Capture timeout; skipping rewrite.", { timeout: 15000 });
+      await expect(log).toContainText("RUN  0103", { timeout: 15000 });
+      await expect(log).toContainText("OUT  samples\\phase-01\\0103\\assets\\images\\preview.svg", { timeout: 15000 });
+      await expect(log).toContainText(`URL  ${server.baseUrl}/samples/phase-01/0103/index.html`, { timeout: 15000 });
+      await expect(log).toContainText("OK   0103", { timeout: 15000 });
+      await expect(log).toContainText("FAIL INPUT  samples/phase-99", { timeout: 15000 });
+      await expect(log).toContainText("===== SUMMARY =====", { timeout: 15000 });
+      await expect(log).toContainText("Written: 1", { timeout: 15000 });
+      await expect(log).toContainText("Warnings: 0", { timeout: 15000 });
+      await expect(log).toContainText("Failed: 1", { timeout: 15000 });
+      await expect(log).toContainText("Skipped: 1", { timeout: 15000 });
+      await expect(log).toContainText("Skipped (existing-preview-without-capture-timeout):", { timeout: 15000 });
+      await expect(log).toContainText("Done.", { timeout: 15000 });
+
+      const logText = await log.textContent();
+      expect(logText).toContain("0103");
+      expect(logText).toContain("samples/phase-99(");
+      expect(logText).not.toContain("WARN ");
+      expect(logText).not.toContain("RUN  0102");
+
+      await expect(page.locator("#lastGeneratedImagePreview")).toBeVisible();
+      await expect(page.locator("#lastGeneratedImageMeta")).toContainText("0103");
+
+      const writes = await page.evaluate(() => window.__previewGeneratorV2Writes);
+      expect(writes).toHaveLength(1);
+      expect(writes[0].path).toBe("HTML-JavaScript-Gaming/samples/phase-01/0103/assets/images/preview.svg");
+      expect(writes[0].contents).toContain("<svg");
+      expect(writes[0].contents).not.toContain("Capture timeout");
+
+      await page.locator("#clearLogBtn").click();
+      await expect(log).toHaveText("");
 
       expect(pageErrors).toEqual([]);
     } finally {

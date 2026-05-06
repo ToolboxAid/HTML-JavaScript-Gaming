@@ -1,0 +1,35 @@
+PR_26126_071-playwright-e2e-flow-and-status-header-polish
+
+Scope:
+- Preview Generator V2 status header layout polish.
+- Preview Generator V2 Playwright E2E depth for generate, batch, status, and summary behavior.
+
+Changes:
+- Moved the Status Clear button into a dedicated Status header actions container so it visually belongs to the Status accordion header while preserving the existing accordion button behavior.
+- Extended the Preview Generator V2 Playwright fake repo picker to support pre-existing preview.svg contents for skip-path validation.
+- Added an E2E batch test that:
+  - selects a fake repo destination through the browser File System Access hook
+  - uses the actual Playwright repo server as Base URL
+  - runs a batch containing one skipped existing preview, one real generated sample preview, and one failing phase input
+  - validates RUN, SKIP, FAIL INPUT, OK, status log, summary counts, output write path, last generated image, and Clear behavior
+- Updated an existing phase-folder test to use the active Playwright server URL instead of relying on an external localhost server.
+
+Playwright impacted: Yes
+- Validated Generate Preview button gating and execution.
+- Validated batch item logging and real summary output:
+  - Written: 1
+  - Warnings: 0
+  - Failed: 1
+  - Skipped: 1
+- Validated SKIP behavior for an existing preview.svg without the literal Capture timeout marker.
+- Validated FAIL INPUT behavior for a missing phase folder.
+- Validated Status Clear from inside the Status header area.
+
+Validation:
+- `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs` passed.
+- `npm run test:workspace-v2` passed: 7 tests passed.
+- `git diff --check` passed with line-ending warnings only.
+
+Manual test notes:
+- Manual browser testing was not run separately.
+- The requested UI and flow behavior is covered by targeted Playwright assertions, including status header placement, accordion behavior, Clear behavior, real generate flow, batch logging, and summary output.

@@ -237,9 +237,17 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
   min-width: 0;
 }
 
+.preview-generator-v2__status-header-actions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 10px;
+}
+
 .preview-generator-v2__status-clear-button {
   flex: 0 0 auto;
-  margin-right: 10px;
+  margin-right: 0;
 }
 
 .preview-generator-v2__status-text {
