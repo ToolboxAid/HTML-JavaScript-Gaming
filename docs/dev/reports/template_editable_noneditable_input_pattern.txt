@@ -1,0 +1,25 @@
+PR_26126_078 Template Editable Vs Non-Editable Input Pattern
+
+Scope:
+- Updated Tool Template V2 only.
+- Added explicit Not Editable and Editable field examples to the Input Source section.
+- Matched Palette Manager V2 field styling patterns:
+  - readonly display fields use muted readonly input styling
+  - editable text fields use normal input styling with editable focus/entry behavior
+- Documented the patterns in tools/templates-v2/README.md.
+- Added Playwright assertions for readonly and editable behavior.
+
+Runtime behavior:
+- Existing source input, NAV, launch-mode behavior, status clear, and template actions are unchanged.
+- No live tools, samples, schemas, roadmap, or tools/shared files were modified.
+
+Validation:
+- node --check tools/templates-v2/tests/playwright/FirstClassToolStarter.spec.mjs passed.
+- No inline script/style/event-handler matches were found in tools/templates-v2/index.html.
+- git diff --check passed.
+- npx playwright test --config tools/templates-v2/playwright.config.mjs passed, 10 tests.
+- npm run test:workspace-v2 passed, 7 tests.
+
+Manual test notes:
+- Open tools/templates-v2/index.html and confirm the Input Source section shows a readonly Not Editable field and editable Editable field.
+- Open tools/templates-v2/index.html?launch=workspace and confirm workspace NAV still appears without changing field pattern styling.

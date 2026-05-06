@@ -304,10 +304,33 @@ textarea:hover {
   font-weight: 700;
 }
 
+.tool-starter__field--compact {
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+
+.tool-starter__field-patterns {
+  display: grid;
+  gap: 8px;
+}
+
 .tool-starter__field input {
   width: 100%;
   min-width: 0;
   padding: 7px 9px;
+}
+
+.tool-starter__field input[readonly] {
+  color: var(--tool-starter-muted);
+  cursor: default;
+}
+
+.tool-starter__field--editable input {
+  background: var(--tool-starter-input-surface);
+  color: var(--tool-starter-text);
+}
+
+.tool-starter__field--not-editable input {
+  background: var(--tool-starter-input-surface);
 }
 
 .tool-starter__hint {

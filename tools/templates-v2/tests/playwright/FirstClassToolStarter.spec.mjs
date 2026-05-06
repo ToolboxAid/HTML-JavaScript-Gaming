@@ -111,6 +111,19 @@ test.describe("Tool Template V2", () => {
     await expect(rightPanel.locator(".accordion-v2").last()).toContainText("Status");
   });
 
+  test("shows editable and non-editable field patterns", async ({ page }) => {
+    const notEditableField = page.locator("#notEditableField");
+    const editableField = page.locator("#editableField");
+
+    await expect(page.locator("label[for='notEditableField']")).toContainText("Not Editable");
+    await expect(notEditableField).toHaveAttribute("readonly", "");
+    await expect(notEditableField).toHaveValue("Read-only display value");
+    await expect(page.locator("label[for='editableField']")).toContainText("Editable");
+    await expect(editableField).toBeEditable();
+    await editableField.fill("tag-example");
+    await expect(editableField).toHaveValue("tag-example");
+  });
+
   test("Hide Header and Details toggles header state", async ({ page }) => {
     const summary = page.locator("[data-tool-starter-summary]");
     const details = page.locator(".is-collapsible");

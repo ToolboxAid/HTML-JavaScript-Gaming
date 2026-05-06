@@ -104,6 +104,15 @@ First-Class Tool V2 surfaces use a consistent three-column layout:
 
 The Tool Template V2 demonstrates this standard with Input Source on the left, Preview in the center, and Output Summary above Status on the right.
 
+## Editable And Non-Editable Field Patterns
+
+Tool Template V2 demonstrates both field patterns used by Palette Manager V2:
+
+- Non-editable display fields use the `tool-starter__field--not-editable` pattern with `readonly` inputs. The visible demo label is `Not Editable`.
+- Editable text fields use the `tool-starter__field--editable` pattern with normal text inputs. The visible demo label is `Editable`.
+
+Use non-editable fields for display/read-only values. Use editable fields for user text entry.
+
 ## Creating A New Tool
 
 1. Copy `tools/templates-v2/` to `tools/<tool-id>/`.

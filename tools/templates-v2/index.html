@@ -60,6 +60,16 @@
               <span>Source value</span>
               <input id="sourceInput" type="text" autocomplete="off" placeholder="Enter a value to process">
             </label>
+            <div class="tool-starter__field-patterns" aria-label="Editable and non-editable field patterns">
+              <label class="tool-starter__field tool-starter__field--compact tool-starter__field--not-editable" for="notEditableField">
+                <span>Not Editable</span>
+                <input id="notEditableField" type="text" autocomplete="off" value="Read-only display value" readonly>
+              </label>
+              <label class="tool-starter__field tool-starter__field--compact tool-starter__field--editable" for="editableField">
+                <span>Editable</span>
+                <input id="editableField" type="text" autocomplete="off" placeholder="No tags">
+              </label>
+            </div>
             <p id="sourceValidationMessage" class="tool-starter__hint">Input is required before Export can process.</p>
           </div>
         </section>
