@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>First-Class Tool Starter</title>
+    <link rel="stylesheet" href="./styles/toolStarter.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body>
+    <header id="shared-theme-header" class="tool-starter__header">
+      <div>
+        <h1>First-Class Tool Starter</h1>
+        <p>Replace this shell with the new tool name and purpose.</p>
+      </div>
+      <p class="tool-starter__header-meta">Self-contained starter</p>
+    </header>
+
+    <nav class="tool-starter__menu" aria-label="Tool actions">
+      <button id="runToolButton" type="button">Run</button>
+      <button id="resetToolButton" type="button">Reset</button>
+      <button id="exportToolStateButton" type="button">Export toolState</button>
+    </nav>
+
+    <main class="tool-starter app-shell" data-tool-id="first-class-tool-starter">
+      <aside class="tool-starter__panel tool-starter__panel--left" aria-label="Tool inputs">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourceInputContent">
+            <span>Input Source</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="sourceInputContent" class="accordion-v2__content">
+            <label class="tool-starter__field" for="sourceInput">
+              <span>Source value</span>
+              <input id="sourceInput" type="text" autocomplete="off" placeholder="Enter a value to process">
+            </label>
+            <p id="sourceValidationMessage" class="tool-starter__hint">Input is required before Run can process.</p>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusLogContent">
+            <span>Status</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="statusLogContent" class="accordion-v2__content">
+            <button id="clearStatusButton" type="button">Clear</button>
+            <textarea id="statusLog" readonly rows="10" aria-label="Status log"></textarea>
+          </div>
+        </section>
+      </aside>
+
+      <section class="tool-starter__panel tool-starter__panel--center" aria-label="Tool preview">
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="previewPanelContent">
+            <span>Preview</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="previewPanelContent" class="accordion-v2__content">
+            <div id="previewOutput" class="tool-starter__preview" role="img" aria-label="Tool preview output">
+              <p>No preview rendered yet.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="tool-starter__panel tool-starter__panel--right" aria-label="Tool output">
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
+            <span>Output Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="inspectorContent" class="accordion-v2__content">
+            <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </body>
+</html>
