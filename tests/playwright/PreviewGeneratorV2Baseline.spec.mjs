@@ -629,10 +629,10 @@ test.describe("Preview Generator V2 baseline", () => {
   test("launches Asset Manager V2 in tool mode with approved asset controls and schema rejection", async ({ page }) => {
     const server = await openAssetManagerV2(page, "", {
       assetFiles: [{
-        name: "nebula-backdrop.png",
+        name: "nebula-background.png",
         mimeType: "image/png",
         contents: "fake-png",
-        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\images\\nebula-backdrop.png"
+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\images\\nebula-background.png"
       }]
     });
     const pageErrors = [];
@@ -670,6 +670,11 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(stackedFieldColumns).toHaveLength(1);
       await expect(page.locator("#assetRoleSelect")).toBeEnabled();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
+      await expect(page.locator('button[aria-controls="schemaValidationContent"]')).toHaveCount(0);
+      await expect(page.locator("#schemaValidationContent")).toHaveCount(0);
+      await expect(page.locator("#jsonInput")).toHaveCount(0);
+      await expect(page.locator("#validateJsonButton")).toHaveCount(0);
+      await expect(page.locator('button[aria-controls="approvedAssetsContent"] span').first()).toHaveText("Assets");
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Loaded asset-browser\.schema\.json/);
 
       await page.locator("#assetKindAudio").check();
@@ -680,22 +685,80 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetRoleSelect")).toHaveValue("music");
       await page.locator("#assetKindImage").check();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
-      await page.locator("#assetRoleSelect").selectOption("background");
       await page.locator("#pickAssetFileButton").click();
-      await expect(page.locator("#assetSelectedFileText")).toContainText("Image: nebula-backdrop.png");
+      await expect(page.locator("#assetSelectedFileText")).toContainText("Image: nebula-background.png");
       const pickerOptions = await page.evaluate(() => window.__assetManagerV2PickerOptions.at(-1));
       expect(pickerOptions.types[0].description).toBe("Image assets");
       expect(Object.keys(pickerOptions.types[0].accept)).toContain("image/png");
-      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.nebula-backdrop.background");
-      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-backdrop.png");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-backdrop\.png validated as image background\./);
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("background");
+      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.nebula-background.background");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-background.png");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-background\.png validated as image background\./);
       await expect(page.locator("#addAssetButton")).toBeEnabled();
       await page.locator("#addAssetButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Added image\.assets\.nebula-backdrop\.background\./);
-      await expect(page.locator("#assetList")).toContainText("image.assets.nebula-backdrop.background");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Added image\.assets\.nebula-background\.background\./);
+      await expect(page.locator("#assetList")).toContainText("image.assets.nebula-background.background");
       await expect(page.locator("#assetPreview")).toContainText("Role: background");
-      await expect(page.locator("#inspectorOutput")).toContainText("\"image.assets.nebula-backdrop.background\"");
+      await expect(page.locator("#inspectorOutput")).toContainText("\"image.assets.nebula-background.background\"");
 
+      await queueAssetFile(page, {
+        name: "chrome-bezel.png",
+        mimeType: "image/png",
+        contents: "fake-png",
+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\images\\chrome-bezel.png"
+      });
+      await page.locator("#pickAssetFileButton").click();
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("bezel");
+      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.chrome-bezel.bezel");
+      await page.locator("#addAssetButton").click();
+
+      await page.locator("#assetKindAudio").check();
+      await queueAssetFile(page, {
+        name: "fire.wav",
+        mimeType: "audio/wav",
+        contents: "RIFF",
+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\audio\\fire.wav"
+      });
+      await page.locator("#pickAssetFileButton").click();
+      await expect(page.locator("#assetIdInput")).toHaveValue("audio.assets.fire.sound");
+      await page.locator("#addAssetButton").click();
+
+      const tileSummaries = await page.locator(".asset-manager-v2__asset-tile").evaluateAll((tiles) => tiles.map((tile) => ({
+        typeRole: tile.querySelector(".asset-manager-v2__asset-type-role")?.textContent?.trim(),
+        id: tile.querySelector("strong")?.textContent?.trim(),
+        hasDelete: Boolean(tile.querySelector("button[data-delete-asset-id]"))
+      })));
+      expect(tileSummaries).toEqual([
+        { typeRole: "audio:sound", id: "audio.assets.fire.sound", hasDelete: true },
+        { typeRole: "image:background", id: "image.assets.nebula-background.background", hasDelete: true },
+        { typeRole: "image:bezel", id: "image.assets.chrome-bezel.bezel", hasDelete: true }
+      ]);
+
+      await page.locator('button[data-delete-asset-id="image.assets.nebula-background.background"]').click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted image\.assets\.nebula-background\.background\./);
+      await expect(page.locator("#assetList")).not.toContainText("image.assets.nebula-background.background");
+      await expect(page.locator(".asset-manager-v2__asset-tile")).toHaveCount(2);
+
+      const outputLayout = await page.evaluate(() => {
+        const panel = document.querySelector(".asset-manager-v2__panel--right");
+        const inspectorContent = document.getElementById("inspectorContent");
+        const inspectorOutput = document.getElementById("inspectorOutput");
+        const statusSection = document.getElementById("statusLogContent").closest(".accordion-v2");
+        const panelRect = panel.getBoundingClientRect();
+        const contentRect = inspectorContent.getBoundingClientRect();
+        const outputRect = inspectorOutput.getBoundingClientRect();
+        const statusRect = statusSection.getBoundingClientRect();
+        return {
+          outputFillsContent: contentRect.height - outputRect.height,
+          statusBottomDelta: Math.abs(panelRect.bottom - statusRect.bottom),
+          statusBelowOutput: statusRect.top > outputRect.bottom
+        };
+      });
+      expect(outputLayout.outputFillsContent).toBeLessThan(40);
+      expect(outputLayout.statusBottomDelta).toBeLessThan(20);
+      expect(outputLayout.statusBelowOutput).toBe(true);
+
+      await page.locator("#assetKindImage").check();
       await queueAssetFile(page, {
         name: "notes.exe",
         mimeType: "application/octet-stream",
@@ -705,20 +768,6 @@ test.describe("Preview Generator V2 baseline", () => {
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected file validation failed: File notes\.exe is not accepted for Image assets\./);
       await expect(page.locator("#addAssetButton")).toBeDisabled();
-
-      await page.locator("#jsonInput").fill(JSON.stringify({
-        assets: {
-          "audio.arcade.theme": {
-            path: "assets/audio/theme.wav",
-            kind: "audio",
-            role: "background",
-            source: "asset-manager-v2"
-          }
-        }
-      }, null, 2));
-      await page.locator("#validateJsonButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Schema validation failed:/);
-      await expect(page.locator("#inspectorOutput")).toContainText('role \\"background\\" is not allowed for audio assets');
 
       await page.locator("#clearStatusButton").click();
       await expect(page.locator("#statusLog")).toHaveValue("");

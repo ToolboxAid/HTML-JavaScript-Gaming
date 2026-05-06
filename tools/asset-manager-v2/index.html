@@ -110,26 +110,12 @@
             <p id="assetValidationMessage" class="asset-manager-v2__hint">Loading asset-browser.schema.json before asset edits are enabled.</p>
           </div>
         </section>
-
-        <section class="accordion-v2 asset-manager-v2__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="schemaValidationContent">
-            <span>Schema Validation</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="schemaValidationContent" class="accordion-v2__content">
-            <textarea id="jsonInput" rows="9" spellcheck="false" aria-label="Asset payload JSON" placeholder='{"assets":{}}'></textarea>
-            <div class="asset-manager-v2__button-row">
-              <button id="validateJsonButton" type="button" disabled>Validate JSON</button>
-              <button id="loadJsonButton" type="button" disabled>Load Valid JSON</button>
-            </div>
-          </div>
-        </section>
       </aside>
 
       <section class="asset-manager-v2__panel asset-manager-v2__panel--center" aria-label="Approved assets">
         <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__accordion--fill is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="approvedAssetsContent">
-            <span>Approved Assets</span>
+            <span>Assets</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="approvedAssetsContent" class="accordion-v2__content">

@@ -196,6 +196,10 @@ textarea:hover {
   padding: 14px;
 }
 
+.asset-manager-v2__panel--right {
+  overflow: hidden;
+}
+
 .asset-manager-v2__panel--center {
   min-height: 0;
 }
@@ -269,8 +273,13 @@ textarea:hover {
   display: none;
 }
 
-.asset-manager-v2__accordion--fill {
+.asset-manager-v2__accordion--fill,
+.asset-manager-v2__panel--right .accordion-v2:first-child {
   flex: 1 1 auto;
+}
+
+.asset-manager-v2__panel--right .accordion-v2:last-child {
+  flex: 0 0 260px;
 }
 
 .asset-manager-v2__field {
@@ -380,7 +389,6 @@ textarea:hover {
   gap: 8px;
 }
 
-#jsonInput,
 #statusLog {
   width: 100%;
   resize: none;
@@ -391,25 +399,38 @@ textarea:hover {
   gap: 8px;
 }
 
-.asset-manager-v2__asset-list button {
+.asset-manager-v2__asset-tile {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--asset-manager-line);
+  border-radius: 8px;
+  background: var(--asset-manager-panel-strong);
+  padding: 10px;
+}
+
+.asset-manager-v2__asset-tile.is-selected {
+  border-color: var(--asset-manager-accent);
+}
+
+.asset-manager-v2__asset-select {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
+  gap: 6px;
   text-align: left;
 }
 
-.asset-manager-v2__asset-list button.is-selected {
-  border-color: var(--asset-manager-accent) !important;
+.asset-manager-v2__asset-delete {
+  width: max-content;
 }
 
-.asset-manager-v2__asset-list strong,
-.asset-manager-v2__asset-list span {
+.asset-manager-v2__asset-select strong,
+.asset-manager-v2__asset-select span {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
-.asset-manager-v2__asset-kind {
+.asset-manager-v2__asset-type-role {
   color: #042f2e;
   font-weight: 700;
 }
@@ -436,7 +457,6 @@ textarea:hover {
 .asset-manager-v2__output,
 #statusLog {
   width: 100%;
-  min-height: 160px;
   margin: 0;
   border: 1px solid var(--asset-manager-line);
   border-radius: 8px !important;
@@ -447,8 +467,14 @@ textarea:hover {
   white-space: pre-wrap;
 }
 
+.asset-manager-v2__output {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 #statusLog {
   flex: 1 1 auto;
+  min-height: 160px;
 }
 
 .asset-manager-v2__status-accordion-header {

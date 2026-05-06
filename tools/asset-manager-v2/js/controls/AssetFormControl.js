@@ -6,7 +6,8 @@ import {
   labelForKind,
   pathForFile,
   pickerTypesForKind,
-  roleOptionsForKind
+  roleOptionsForKind,
+  suggestedRoleForFile
 } from "../assetManagerMetadata.js";
 
 export class AssetFormControl {
@@ -191,6 +192,10 @@ export class AssetFormControl {
         : `File ${file.name} is not accepted for ${labelForKind(kind)} assets.`;
     }
     this.updateRoleOptions();
+    const suggestedRole = suggestedRoleForFile(kind, file.name);
+    if (suggestedRole && [...this.roleSelect.options].some((option) => option.value === suggestedRole)) {
+      this.roleSelect.value = suggestedRole;
+    }
     this.applyDerivedFileValues();
     this.selectedFileText.textContent = kind ? `${labelForKind(kind)}: ${file.name}` : `Unapproved: ${file.name}`;
   }

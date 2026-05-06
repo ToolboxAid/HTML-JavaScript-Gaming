@@ -158,6 +158,20 @@ export function assetIdForFile(kind, fileName, role) {
   return kind ? `${kind}.assets.${slug}` : "";
 }
 
+export function suggestedRoleForFile(kind, fileName) {
+  if (kind !== "image") {
+    return "";
+  }
+  const slug = slugifyAssetSegment(fileName);
+  if (slug.includes("bezel")) {
+    return "bezel";
+  }
+  if (slug.includes("background")) {
+    return "background";
+  }
+  return "";
+}
+
 export function pathForFile(kind, fileName, sourcePath = "") {
   return projectRelativeAssetPath(sourcePath, kind, fileName);
 }

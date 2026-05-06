@@ -15,12 +15,9 @@ export class AssetManagerV2App {
     assetCatalog,
     assetForm,
     inspector,
-    jsonInput,
-    loadJsonButton,
     schemaValidator,
     shell,
     statusLog,
-    validateJsonButton,
     windowRef = window,
     workspaceBridge
   }) {
@@ -29,12 +26,9 @@ export class AssetManagerV2App {
     this.assetCatalog = assetCatalog;
     this.assetForm = assetForm;
     this.inspector = inspector;
-    this.jsonInput = jsonInput;
-    this.loadJsonButton = loadJsonButton;
     this.schemaValidator = schemaValidator;
     this.shell = shell;
     this.statusLog = statusLog;
-    this.validateJsonButton = validateJsonButton;
     this.window = windowRef;
     this.workspaceBridge = workspaceBridge;
     this.assets = {};
@@ -64,13 +58,12 @@ export class AssetManagerV2App {
       onFileSelected: (value, fileInfo) => this.validateSelectedFile(value, fileInfo)
     });
     this.assetCatalog.mount({
+      onDelete: (assetId) => this.deleteAsset(assetId),
       onSelect: (assetId) => {
         this.selectedAssetId = assetId;
         this.render();
       }
     });
-    this.validateJsonButton.addEventListener("click", () => this.validateJsonInput(false));
-    this.loadJsonButton.addEventListener("click", () => this.validateJsonInput(true));
 
     this.render();
     await this.loadSchema();
@@ -164,6 +157,24 @@ export class AssetManagerV2App {
     this.refreshActions();
   }
 
+  deleteAsset(assetId) {
+    if (!Object.prototype.hasOwnProperty.call(this.assets, assetId)) {
+      return;
+    }
+    const nextAssets = { ...this.assets };
+    delete nextAssets[assetId];
+    const validation = this.schemaValidator.validatePayload({ assets: nextAssets });
+    if (!validation.ok) {
+      this.statusLog.fail(`Delete blocked by schema validation: ${validation.errors.join(" | ")}`);
+      return;
+    }
+    this.assets = sortedAssets(validation.payload.assets);
+    this.selectedAssetId = Object.keys(this.assets)[0] || "";
+    this.statusLog.ok(`Deleted ${assetId}.`);
+    this.render();
+    this.refreshActions();
+  }
+
   validateSelectedFile(formValue, fileInfo) {
     if (!fileInfo) {
       return;
@@ -202,43 +213,6 @@ export class AssetManagerV2App {
     }
     this.assetForm.showMessage(`Selected file validated as ${formValue.kind} ${formValue.role}.`, "ok");
     this.statusLog.ok(`Selected file ${fileInfo.name} validated as ${formValue.kind} ${formValue.role}.`);
-  }
-
-  validateJsonInput(loadPayload) {
-    if (!this.schemaReady) {
-      this.statusLog.fail("Schema is not loaded; JSON validation is blocked.");
-      return;
-    }
-    const rawValue = this.jsonInput.value.trim();
-    if (!rawValue) {
-      this.statusLog.fail("JSON validation requires an asset payload.");
-      return;
-    }
-
-    let parsed;
-    try {
-      parsed = JSON.parse(rawValue);
-    } catch (error) {
-      this.statusLog.fail(`Schema validation failed: JSON parse error: ${error.message}`);
-      return;
-    }
-
-    const validation = this.schemaValidator.validatePayload(parsed);
-    if (!validation.ok) {
-      this.statusLog.fail(`Schema validation failed: ${validation.errors.join(" | ")}`);
-      this.inspector.showObject({ ok: false, errors: validation.errors });
-      return;
-    }
-
-    this.inspector.showObject(validation.payload);
-    this.statusLog.ok(`Schema validation passed for ${Object.keys(validation.payload.assets).length} assets.`);
-    if (loadPayload) {
-      this.assets = sortedAssets(validation.payload.assets);
-      this.selectedAssetId = Object.keys(this.assets)[0] || "";
-      this.statusLog.ok("Loaded validated asset payload.");
-      this.render();
-      this.refreshActions();
-    }
   }
 
   exportAssets() {
@@ -326,7 +300,6 @@ export class AssetManagerV2App {
     const payload = this.currentPayload();
     this.assetCatalog.render(payload.assets, this.selectedAssetId);
     this.inspector.showObject(this.currentToolState());
-    this.jsonInput.value = JSON.stringify(payload, null, 2);
   }
 
   refreshActions() {
@@ -334,8 +307,6 @@ export class AssetManagerV2App {
       ? this.schemaValidator.validatePayload(this.currentPayload())
       : { ok: false };
     this.assetForm.setAddEnabled(this.schemaReady && this.assetForm.isComplete());
-    this.validateJsonButton.disabled = !this.schemaReady;
-    this.loadJsonButton.disabled = !this.schemaReady;
     this.actionNav.setToolActionsEnabled(this.schemaReady && payloadValidation.ok);
     this.actionNav.setWorkspaceActionsEnabled(this.schemaReady && payloadValidation.ok, Boolean(this.lastWorkspaceManifest));
   }

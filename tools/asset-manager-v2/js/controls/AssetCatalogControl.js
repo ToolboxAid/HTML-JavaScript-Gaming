@@ -13,11 +13,18 @@ export class AssetCatalogControl {
     this.list = list;
     this.preview = preview;
     this.onSelect = null;
+    this.onDelete = null;
   }
 
-  mount({ onSelect }) {
+  mount({ onDelete, onSelect }) {
+    this.onDelete = onDelete;
     this.onSelect = onSelect;
     this.list.addEventListener("click", (event) => {
+      const deleteButton = event.target.closest("button[data-delete-asset-id]");
+      if (deleteButton) {
+        this.onDelete?.(deleteButton.dataset.deleteAssetId);
+        return;
+      }
       const button = event.target.closest("button[data-asset-id]");
       if (!button) {
         return;
@@ -27,8 +34,8 @@ export class AssetCatalogControl {
   }
 
   render(assets, selectedAssetId) {
-    const entries = Object.entries(assets);
-    this.countText.textContent = `${entries.length} approved assets`;
+    const entries = this.sortedEntries(assets);
+    this.countText.textContent = `${entries.length} assets`;
     if (!entries.length) {
       this.list.innerHTML = "";
       this.preview.innerHTML = "<p>No asset selected.</p>";
@@ -36,11 +43,13 @@ export class AssetCatalogControl {
     }
 
     this.list.innerHTML = entries.map(([assetId, entry]) => `
-      <button type="button" data-asset-id="${escapeHtml(assetId)}" class="${assetId === selectedAssetId ? "is-selected" : ""}">
-        <strong>${escapeHtml(assetId)}</strong>
-        <span class="asset-manager-v2__asset-kind">${escapeHtml(entry.role ? `${entry.kind}:${entry.role}` : entry.kind)}</span>
-        <span>${escapeHtml(entry.path)}</span>
-      </button>
+      <article class="asset-manager-v2__asset-tile ${assetId === selectedAssetId ? "is-selected" : ""}">
+        <button type="button" data-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-select">
+          <span class="asset-manager-v2__asset-type-role">${escapeHtml(entry.kind)}:${escapeHtml(entry.role || "")}</span>
+          <strong>${escapeHtml(assetId)}</strong>
+        </button>
+        <button type="button" data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete">Delete</button>
+      </article>
     `).join("");
 
     const selectedEntry = assets[selectedAssetId] || assets[entries[0][0]];
@@ -52,5 +61,13 @@ export class AssetCatalogControl {
       <p>Path: ${escapeHtml(selectedEntry.path)}</p>
       <p>Source: ${escapeHtml(selectedEntry.source)}</p>
     `;
+  }
+
+  sortedEntries(assets) {
+    return Object.entries(assets).sort(([leftId, leftEntry], [rightId, rightEntry]) => (
+      String(leftEntry.kind || "").localeCompare(String(rightEntry.kind || ""))
+      || String(leftEntry.role || "").localeCompare(String(rightEntry.role || ""))
+      || leftId.localeCompare(rightId)
+    ));
   }
 }

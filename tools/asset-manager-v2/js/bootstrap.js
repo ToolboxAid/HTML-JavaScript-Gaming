@@ -47,8 +47,6 @@ window.addEventListener("DOMContentLoaded", () => {
       windowRef: window
     }),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
-    jsonInput: requireElement("#jsonInput"),
-    loadJsonButton: requireElement("#loadJsonButton"),
     schemaValidator: new AssetSchemaValidator({
       schemaUrl: "../schemas/tools/asset-browser.schema.json"
     }),
@@ -57,7 +55,6 @@ window.addEventListener("DOMContentLoaded", () => {
       clearButton: requireElement("#clearStatusButton"),
       log: requireElement("#statusLog")
     }),
-    validateJsonButton: requireElement("#validateJsonButton"),
     windowRef: window,
     workspaceBridge: new WorkspaceBridge({ windowRef: window })
   });
