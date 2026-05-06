@@ -1,0 +1,56 @@
+PR_26126_068-tool-template-launch-mode-nav
+
+Scope:
+- Updated the official first-class tool starter at tools/templates/first-class-tool-starter/.
+- Updated existing Playwright coverage for the starter launch-mode NAV behavior.
+- No live tools, samples, schemas, roadmap, start_of_day folders, or tools/shared files were modified.
+
+Changes:
+- Added separate tool-mode and workspace-mode NAV sections.
+- Default launch mode is tool mode.
+- ?launch=workspace switches visibility to the workspace NAV.
+- Tool NAV uses class tool-starter__tool__menu, aria-label Tool actions, and buttons:
+  - Export
+  - Copy JSON
+  - Export toolState
+- Workspace NAV uses class tool-starter__workspace__menu, aria-label Workspace actions, and buttons:
+  - Import manifest
+  - Copy manifest
+  - Export manifest
+- Added hidden-state CSS so only one NAV displays at a time.
+- Kept Preview Generator V2 color-match styling and src/engine/theme usage.
+- Preserved no tools/shared runtime dependency.
+- Preserved external CSS/JS only; no inline style block, inline script block, or inline event handlers were added.
+
+Validation:
+- node --check tools/templates/first-class-tool-starter/js/controls/ActionNavControl.js
+- node --check tools/templates/first-class-tool-starter/js/ToolStarterApp.js
+- node --check tools/templates/first-class-tool-starter/js/bootstrap.js
+- node --check tools/templates/first-class-tool-starter/js/controls/SourceInputControl.js
+- node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+- node --check tools/templates/first-class-tool-starter/tests/playwright/FirstClassToolStarter.spec.mjs
+- rg check confirmed tools/templates/first-class-tool-starter/index.html has no inline style block, inline script block, or inline event handlers.
+- git diff --check
+- npm run test:workspace-v2
+- npx playwright test --config tools/templates/first-class-tool-starter/playwright.config.mjs --reporter=list
+
+Playwright impacted: Yes
+- This PR changes template UI controls/interactions and launch-mode state.
+- npm run test:workspace-v2 passed.
+- Template-local Playwright passed.
+
+Playwright behavior validated:
+- Official starter entry point defaults to tool NAV.
+- Official starter entry point with ?launch=workspace shows workspace NAV.
+- Only one launch-mode NAV is visible for each launch mode.
+- Tool and workspace NAV labels and button text match the required casing.
+- Duplicate button IDs are not present.
+- Existing starter accordion, required-field gating, primary action, and status clear behaviors still work.
+
+Manual test notes:
+- Open tools/templates/first-class-tool-starter/index.html and confirm only Tool actions is visible with Export, Copy JSON, and Export toolState.
+- Open tools/templates/first-class-tool-starter/index.html?launch=workspace and confirm only Workspace actions is visible with Import manifest, Copy manifest, and Export manifest.
+- The official starter path is tools/templates/first-class-tool-starter/index.html; tools/templates/README.md designates that folder as the starter entry point.
+
+Full samples smoke test:
+- Skipped. This PR only changes the first-class tool starter template and its targeted tests.

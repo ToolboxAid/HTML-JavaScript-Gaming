@@ -120,10 +120,10 @@ async function openPaletteManager(page) {
   return server;
 }
 
-async function openToolTemplate(page) {
+async function openToolTemplate(page, query = "") {
   const server = await startRepoServer();
   await coverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/templates/first-class-tool-starter/index.html`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/tools/templates/first-class-tool-starter/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -466,6 +466,18 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#shared-theme-header")).toBeAttached();
       await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tool Starter");
       await expect(page.locator("[data-tool-starter-summary]")).toHaveAttribute("data-tools-platform-summary-active", "1");
+      await expect(page.locator(".tool-starter__tool__menu")).toBeVisible();
+      await expect(page.locator(".tool-starter__tool__menu")).toHaveAttribute("aria-label", "Tool actions");
+      await expect(page.locator(".tool-starter__workspace__menu")).toBeHidden();
+      await expect(page.locator("#toolExportButton")).toHaveText("Export");
+      await expect(page.locator("#toolCopyJsonButton")).toHaveText("Copy JSON");
+      await expect(page.locator("#toolExportToolStateButton")).toHaveText("Export toolState");
+
+      const duplicateIds = await page.evaluate(() => {
+        const ids = [...document.querySelectorAll("[id]")].map((element) => element.id);
+        return ids.filter((id, index) => ids.indexOf(id) !== index);
+      });
+      expect(duplicateIds).toEqual([]);
 
       const sharedReferences = await page.evaluate(() => [
         ...document.querySelectorAll("script[src],link[href]")
@@ -482,19 +494,47 @@ test.describe("Preview Generator V2 baseline", () => {
 
       await expectAccordionToggles(page, "sourceInputContent");
 
-      const runButton = page.locator("#runToolButton");
-      await expect(runButton).toBeDisabled();
+      const exportButton = page.locator("#toolExportButton");
+      const copyJsonButton = page.locator("#toolCopyJsonButton");
+      const exportToolStateButton = page.locator("#toolExportToolStateButton");
+      await expect(exportButton).toBeDisabled();
+      await expect(copyJsonButton).toBeDisabled();
+      await expect(exportToolStateButton).toBeDisabled();
       await page.locator("#sourceInput").fill("starter value");
-      await expect(runButton).toBeEnabled();
-      await runButton.click();
+      await expect(exportButton).toBeEnabled();
+      await expect(copyJsonButton).toBeEnabled();
+      await expect(exportToolStateButton).toBeEnabled();
+      await exportButton.click();
       await expect(page.locator("#statusLog")).toHaveValue(/Processed source value/);
       await page.locator("#clearStatusButton").click();
       await expect(page.locator("#statusLog")).toHaveValue("");
 
       await page.locator("#sourceInput").fill("");
-      await expect(runButton).toBeDisabled();
+      await expect(exportButton).toBeDisabled();
       await expect(page.locator("#sourceValidationMessage")).toContainText("Input is required");
 
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("launches first-class tool starter template in workspace nav mode", async ({ page }) => {
+    const server = await openToolTemplate(page, "?launch=workspace");
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator(".tool-starter__tool__menu")).toBeHidden();
+      await expect(page.locator(".tool-starter__workspace__menu")).toBeVisible();
+      await expect(page.locator(".tool-starter__workspace__menu")).toHaveAttribute("aria-label", "Workspace actions");
+      await expect(page.locator("#workspaceImportManifestButton")).toHaveText("Import manifest");
+      await expect(page.locator("#workspaceCopyManifestButton")).toHaveText("Copy manifest");
+      await expect(page.locator("#workspaceExportManifestButton")).toHaveText("Export manifest");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

@@ -29,16 +29,22 @@ window.addEventListener("DOMContentLoaded", () => {
   const app = new ToolStarterApp({
     accordions,
     actionNav: new ActionNavControl({
-      runButton: requireElement("#runToolButton"),
-      resetButton: requireElement("#resetToolButton"),
-      exportButton: requireElement("#exportToolStateButton")
+      toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
+      toolExportButton: requireElement("#toolExportButton"),
+      toolExportToolStateButton: requireElement("#toolExportToolStateButton"),
+      toolNav: requireElement(".tool-starter__tool__menu"),
+      workspaceCopyManifestButton: requireElement("#workspaceCopyManifestButton"),
+      workspaceExportManifestButton: requireElement("#workspaceExportManifestButton"),
+      workspaceImportManifestButton: requireElement("#workspaceImportManifestButton"),
+      workspaceNav: requireElement(".tool-starter__workspace__menu")
     }),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
     preview: new PreviewPanelControl(requireElement("#previewOutput")),
     serializer: new ToolStateSerializer("first-class-tool-starter"),
     shell: new ToolStarterShellControl(),
     sourceInput,
-    statusLog
+    statusLog,
+    windowRef: window
   });
 
   app.start();

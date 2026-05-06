@@ -129,6 +129,10 @@ textarea:focus-visible {
   padding: 10px;
 }
 
+.tool-starter__menu[hidden] {
+  display: none;
+}
+
 .tool-starter.app-shell {
   height: calc(100vh - 137px);
   min-height: 0;

@@ -10,7 +10,7 @@ export class SourceInputControl {
 
   clear() {
     this.input.value = "";
-    this.showMessage("Input is required before Run can process.", false);
+    this.showMessage("Input is required before Export can process.", false);
   }
 
   getValue() {
@@ -38,4 +38,3 @@ export class SourceInputControl {
     this.validationMessage.classList.toggle("is-error", isError);
   }
 }
-

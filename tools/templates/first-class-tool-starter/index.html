@@ -36,10 +36,16 @@
       </div>
     </details>
 
-    <nav class="tool-starter__menu" aria-label="Tool actions">
-      <button id="runToolButton" type="button">Run</button>
-      <button id="resetToolButton" type="button">Reset</button>
-      <button id="exportToolStateButton" type="button">Export toolState</button>
+    <nav class="tool-starter__menu tool-starter__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+      <button id="toolExportButton" type="button">Export</button>
+      <button id="toolCopyJsonButton" type="button">Copy JSON</button>
+      <button id="toolExportToolStateButton" type="button">Export toolState</button>
+    </nav>
+
+    <nav class="tool-starter__menu tool-starter__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <button id="workspaceImportManifestButton" type="button">Import manifest</button>
+      <button id="workspaceCopyManifestButton" type="button">Copy manifest</button>
+      <button id="workspaceExportManifestButton" type="button">Export manifest</button>
     </nav>
 
     <main class="tool-starter app-shell" data-tool-id="first-class-tool-starter">
@@ -54,7 +60,7 @@
               <span>Source value</span>
               <input id="sourceInput" type="text" autocomplete="off" placeholder="Enter a value to process">
             </label>
-            <p id="sourceValidationMessage" class="tool-starter__hint">Input is required before Run can process.</p>
+            <p id="sourceValidationMessage" class="tool-starter__hint">Input is required before Export can process.</p>
           </div>
         </section>
 

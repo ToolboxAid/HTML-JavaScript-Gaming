@@ -13,12 +13,15 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (84%) Preview Generator V2 - exercised 19 runtime JS files
 (49%) Palette Manager - exercised 12 runtime JS files
-(89%) First-Class Tool Starter Template - exercised 10 runtime JS files
+(84%) First-Class Tool Starter Template - exercised 10 runtime JS files
 (0%) Workspace V2 - not exercised by this Playwright run
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(100%) none changed - no changed runtime JS files
+(50%) tools/templates/first-class-tool-starter/js/ToolStarterApp.js - executed lines 98/98; executed functions 8/16
+(88%) tools/templates/first-class-tool-starter/js/controls/SourceInputControl.js - executed lines 33/33; executed functions 7/8
+(100%) tools/templates/first-class-tool-starter/js/bootstrap.js - executed lines 48/48; executed functions 4/4
+(100%) tools/templates/first-class-tool-starter/js/controls/ActionNavControl.js - executed lines 51/51; executed functions 5/5
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -85,6 +88,7 @@ Files with executed line/function counts where available:
 (50%) tools/common/PaletteUsageService.js - executed lines 5/5; executed functions 1/2
 (50%) tools/palette-manager-v2/main.js - executed lines 88/88; executed functions 3/6
 (50%) tools/palette-manager-v2/modules/PaletteHistoryStack.js - executed lines 54/54; executed functions 5/10
+(50%) tools/templates/first-class-tool-starter/js/ToolStarterApp.js - executed lines 98/98; executed functions 8/16
 (50%) tools/toolRegistry.js - executed lines 425/425; executed functions 4/8
 (55%) tools/palette-manager-v2/modules/SwatchRow.js - executed lines 115/115; executed functions 6/11
 (56%) src/engine/logging/Logger.js - executed lines 56/56; executed functions 5/9
@@ -97,7 +101,6 @@ Files with executed line/function counts where available:
 (65%) tools/palette-manager-v2/controls/SourcePaletteBrowserControl.js - executed lines 121/121; executed functions 15/23
 (67%) src/shared/number/numberUtils.js - executed lines 14/14; executed functions 2/3
 (67%) tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js - executed lines 117/117; executed functions 8/12
-(67%) tools/templates/first-class-tool-starter/js/ToolStarterApp.js - executed lines 69/69; executed functions 8/12
 (71%) tools/palette-manager-v2/controls/PaletteValidationErrorControl.js - executed lines 30/30; executed functions 5/7
 (73%) src/engine/theme/mount-shared-header.js - executed lines 143/143; executed functions 8/11
 (75%) src/engine/core/FixedTicker.js - executed lines 36/36; executed functions 3/4
@@ -146,15 +149,20 @@ Files with executed line/function counts where available:
 (100%) tools/preview-generator-v2/PreviewGeneratorV2Logger.js - executed lines 19/19; executed functions 5/5
 (100%) tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js - executed lines 21/21; executed functions 5/5
 (100%) tools/preview-generator-v2/PreviewGeneratorV2Ui.js - executed lines 48/48; executed functions 9/9
-(100%) tools/templates/first-class-tool-starter/js/bootstrap.js - executed lines 42/42; executed functions 4/4
+(100%) tools/templates/first-class-tool-starter/js/bootstrap.js - executed lines 48/48; executed functions 4/4
 (100%) tools/templates/first-class-tool-starter/js/controls/AccordionSection.js - executed lines 27/27; executed functions 5/5
-(100%) tools/templates/first-class-tool-starter/js/controls/ActionNavControl.js - executed lines 16/16; executed functions 4/4
+(100%) tools/templates/first-class-tool-starter/js/controls/ActionNavControl.js - executed lines 51/51; executed functions 5/5
 (100%) tools/templates/first-class-tool-starter/js/controls/InspectorControl.js - executed lines 8/8; executed functions 3/3
 (100%) tools/templates/first-class-tool-starter/js/controls/PreviewPanelControl.js - executed lines 23/23; executed functions 5/5
 (100%) tools/templates/first-class-tool-starter/js/services/ToolStateSerializer.js - executed lines 13/13; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(100%) none changed - no changed runtime JS files
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(100%) none - no changed JS files
+(0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tools/templates/first-class-tool-starter/tests/playwright/FirstClassToolStarter.spec.mjs - changed JS file not collected as browser runtime coverage
+(50%) tools/templates/first-class-tool-starter/js/ToolStarterApp.js - changed JS file with browser V8 coverage
+(88%) tools/templates/first-class-tool-starter/js/controls/SourceInputControl.js - changed JS file with browser V8 coverage
+(100%) tools/templates/first-class-tool-starter/js/bootstrap.js - changed JS file with browser V8 coverage
+(100%) tools/templates/first-class-tool-starter/js/controls/ActionNavControl.js - changed JS file with browser V8 coverage

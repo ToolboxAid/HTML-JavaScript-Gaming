@@ -71,6 +71,32 @@ test.describe("First-Class Tool Starter", () => {
     await expect(page.locator("[data-tool-starter-summary]")).toHaveAttribute("data-tools-platform-summary-active", "1");
   });
 
+  test("defaults to tool mode NAV", async ({ page }) => {
+    const toolNav = page.locator(".tool-starter__tool__menu");
+    const workspaceNav = page.locator(".tool-starter__workspace__menu");
+
+    await expect(toolNav).toBeVisible();
+    await expect(toolNav).toHaveAttribute("aria-label", "Tool actions");
+    await expect(workspaceNav).toBeHidden();
+    await expect(toolNav.getByRole("button", { name: "Export", exact: true })).toBeVisible();
+    await expect(toolNav.getByRole("button", { name: "Copy JSON" })).toBeVisible();
+    await expect(toolNav.getByRole("button", { name: "Export toolState" })).toBeVisible();
+  });
+
+  test("launch workspace mode shows workspace NAV only", async ({ page }) => {
+    await page.goto(`${starterUrl}?launch=workspace`);
+
+    const toolNav = page.locator(".tool-starter__tool__menu");
+    const workspaceNav = page.locator(".tool-starter__workspace__menu");
+
+    await expect(toolNav).toBeHidden();
+    await expect(workspaceNav).toBeVisible();
+    await expect(workspaceNav).toHaveAttribute("aria-label", "Workspace actions");
+    await expect(workspaceNav.getByRole("button", { name: "Import manifest" })).toBeVisible();
+    await expect(workspaceNav.getByRole("button", { name: "Copy manifest" })).toBeVisible();
+    await expect(workspaceNav.getByRole("button", { name: "Export manifest" })).toBeVisible();
+  });
+
   test("Hide Header and Details toggles header state", async ({ page }) => {
     const summary = page.locator("[data-tool-starter-summary]");
     const details = page.locator(".is-collapsible");
@@ -96,30 +122,33 @@ test.describe("First-Class Tool Starter", () => {
   });
 
   test("primary action state changes when required input is valid", async ({ page }) => {
-    const runButton = page.locator("#runToolButton");
-    const exportButton = page.locator("#exportToolStateButton");
+    const exportButton = page.locator("#toolExportButton");
+    const copyJsonButton = page.locator("#toolCopyJsonButton");
+    const exportToolStateButton = page.locator("#toolExportToolStateButton");
     const sourceInput = page.locator("#sourceInput");
 
-    await expect(runButton).toBeDisabled();
     await expect(exportButton).toBeDisabled();
+    await expect(copyJsonButton).toBeDisabled();
+    await expect(exportToolStateButton).toBeDisabled();
     await sourceInput.fill("starter value");
-    await expect(runButton).toBeEnabled();
     await expect(exportButton).toBeEnabled();
+    await expect(copyJsonButton).toBeEnabled();
+    await expect(exportToolStateButton).toBeEnabled();
   });
 
   test("missing input failure state is visible", async ({ page }) => {
     const sourceInput = page.locator("#sourceInput");
-    const runButton = page.locator("#runToolButton");
+    const exportButton = page.locator("#toolExportButton");
 
     await sourceInput.fill("starter value");
     await sourceInput.fill("");
-    await expect(runButton).toBeDisabled();
+    await expect(exportButton).toBeDisabled();
     await expect(page.locator("#sourceValidationMessage")).toContainText("Input is required");
   });
 
   test("status log clear behavior works after primary action", async ({ page }) => {
     await page.locator("#sourceInput").fill("starter value");
-    await page.locator("#runToolButton").click();
+    await page.locator("#toolExportButton").click();
     await expect(page.locator("#statusLog")).toHaveValue(/Processed source value/);
 
     await page.locator("#clearStatusButton").click();
