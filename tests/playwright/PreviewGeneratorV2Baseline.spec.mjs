@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
+import { PlaywrightV8CoverageReporter } from "../helpers/playwrightV8CoverageReporter.mjs";
+
+const coverageReporter = new PlaywrightV8CoverageReporter();
 
 async function installFakeRepoPicker(page, { validSampleIds = ["0102"], invalidSampleIds = [] } = {}) {
   await page.addInitScript(({ validSampleIds: validIds, invalidSampleIds: invalidIds }) => {
@@ -105,6 +108,7 @@ async function openPreviewGenerator(page, { withFakeRepo = false, validSampleIds
   if (withFakeRepo) {
     await installFakeRepoPicker(page, { validSampleIds, invalidSampleIds });
   }
+  await coverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: "domcontentloaded" });
   return server;
 }
@@ -211,6 +215,10 @@ async function expectPathsOrIdsAccordionToggles(page) {
 }
 
 test.describe("Preview Generator V2 baseline", () => {
+  test.afterAll(async () => {
+    await coverageReporter.writeReport();
+  });
+
   test("launches the tool shell and toggles a working accordion", async ({ page }) => {
     const server = await openPreviewGenerator(page);
     const pageErrors = [];
@@ -283,6 +291,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
+      await coverageReporter.stop(page);
       await server.close();
     }
   });
@@ -356,6 +365,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
+      await coverageReporter.stop(page);
       await server.close();
     }
   });
@@ -395,6 +405,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
+      await coverageReporter.stop(page);
       await server.close();
     }
   });

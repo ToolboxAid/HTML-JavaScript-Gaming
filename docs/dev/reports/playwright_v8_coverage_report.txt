@@ -1,0 +1,121 @@
+Playwright V8 Coverage Report
+
+PR: PR_26126_056-playwright-v8-coverage-baseline
+Coverage source: Playwright/Chromium built-in V8 coverage.
+Dependencies: no new npm packages.
+Thresholds: none enforced.
+Note: coverage is an advisory baseline only for this PR.
+Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.
+
+Changed runtime JS files covered:
+- none changed
+
+Files with executed line/function counts where available:
+- src/engine/audio/AudioService.js: executed lines 258/258 (100%); executed functions 3/25
+- src/engine/audio/FrequencyPlayer.js: executed lines 25/25 (100%); executed functions 1/3
+- src/engine/audio/GaplessLoopPlayer.js: executed lines 165/165 (100%); executed functions 1/11
+- src/engine/audio/HtmlAudioMediaBackend.js: executed lines 22/22 (100%); executed functions 1/4
+- src/engine/audio/index.js: executed lines 15/15 (100%); executed functions 1/1
+- src/engine/audio/MediaTrackService.js: executed lines 139/139 (100%); executed functions 1/13
+- src/engine/audio/MidiPlayer.js: executed lines 31/31 (100%); executed functions 1/5
+- src/engine/audio/PlaylistManager.js: executed lines 70/70 (100%); executed functions 1/9
+- src/engine/audio/Synthesizer.js: executed lines 24/24 (100%); executed functions 1/3
+- src/engine/audio/WebAudioToneBackend.js: executed lines 65/65 (100%); executed functions 2/7
+- src/engine/camera/Camera2D.js: executed lines 44/44 (100%); executed functions 1/6
+- src/engine/camera/Camera3D.js: executed lines 48/48 (100%); executed functions 3/8
+- src/engine/camera/CameraSystem.js: executed lines 21/21 (100%); executed functions 1/3
+- src/engine/camera/index.js: executed lines 10/10 (100%); executed functions 1/1
+- src/engine/camera/ZoneCameraSystem.js: executed lines 26/26 (100%); executed functions 1/2
+- src/engine/config/ConfigStore.js: executed lines 46/46 (100%); executed functions 3/6
+- src/engine/config/index.js: executed lines 7/7 (100%); executed functions 1/1
+- src/engine/core/Engine.js: executed lines 323/323 (100%); executed functions 7/12
+- src/engine/core/FixedTicker.js: executed lines 36/36 (100%); executed functions 3/4
+- src/engine/core/FrameClock.js: executed lines 32/32 (100%); executed functions 4/5
+- src/engine/core/RuntimeMetrics.js: executed lines 48/48 (100%); executed functions 3/5
+- src/engine/events/EventBus.js: executed lines 76/76 (100%); executed functions 3/9
+- src/engine/input/ActionInputDebugOverlay.js: executed lines 51/51 (100%); executed functions 1/2
+- src/engine/input/ActionInputMap.js: executed lines 24/24 (100%); executed functions 1/6
+- src/engine/input/ActionInputService.js: executed lines 397/397 (100%); executed functions 1/51
+- src/engine/input/GamepadInputAdapter.js: executed lines 139/139 (100%); executed functions 1/10
+- src/engine/input/GamepadState.js: executed lines 92/92 (100%); executed functions 2/10
+- src/engine/input/index.js: executed lines 13/13 (100%); executed functions 1/1
+- src/engine/input/InputContextService.js: executed lines 48/48 (100%); executed functions 1/6
+- src/engine/input/InputMap.js: executed lines 62/62 (100%); executed functions 3/9
+- src/engine/input/InputService.js: executed lines 185/185 (100%); executed functions 3/28
+- src/engine/input/KeyboardState.js: executed lines 34/34 (100%); executed functions 2/7
+- src/engine/input/MouseState.js: executed lines 57/57 (100%); executed functions 3/10
+- src/engine/logging/ErrorBoundary.js: executed lines 22/22 (100%); executed functions 1/3
+- src/engine/logging/index.js: executed lines 8/8 (100%); executed functions 1/1
+- src/engine/logging/Logger.js: executed lines 56/56 (100%); executed functions 5/9
+- src/engine/persistence/CompressionService.js: executed lines 18/18 (100%); executed functions 1/5
+- src/engine/persistence/CookieStorageService.js: executed lines 42/42 (100%); executed functions 1/6
+- src/engine/persistence/index.js: executed lines 11/11 (100%); executed functions 1/1
+- src/engine/persistence/SaveSlotManager.js: executed lines 45/45 (100%); executed functions 1/8
+- src/engine/persistence/StorageService.js: executed lines 49/49 (100%); executed functions 3/5
+- src/engine/persistence/WorldSerializer.js: executed lines 12/12 (100%); executed functions 1/3
+- src/engine/release/AccessibilityOptions.js: executed lines 68/68 (100%); executed functions 1/7
+- src/engine/release/CrashRecoveryManager.js: executed lines 66/66 (100%); executed functions 1/6
+- src/engine/release/DeploymentProfiles.js: executed lines 48/48 (100%); executed functions 1/6
+- src/engine/release/DistributionPackager.js: executed lines 32/32 (100%); executed functions 1/2
+- src/engine/release/index.js: executed lines 12/12 (100%); executed functions 1/1
+- src/engine/release/ReleaseValidationChecklist.js: executed lines 43/43 (100%); executed functions 1/4
+- src/engine/release/SettingsSystem.js: executed lines 94/94 (100%); executed functions 3/12
+- src/engine/rendering/CanvasRenderer.js: executed lines 100/100 (100%); executed functions 2/11
+- src/engine/rendering/index.js: executed lines 11/11 (100%); executed functions 1/1
+- src/engine/rendering/LayeredRenderSystem.js: executed lines 14/14 (100%); executed functions 1/2
+- src/engine/rendering/Renderer.js: executed lines 35/35 (100%); executed functions 1/10
+- src/engine/rendering/ResolutionScaler.js: executed lines 22/22 (100%); executed functions 1/4
+- src/engine/rendering/SpriteRenderSystem.js: executed lines 48/48 (100%); executed functions 1/2
+- src/engine/rendering/VectorDrawing.js: executed lines 22/22 (100%); executed functions 1/3
+- src/engine/runtime/backgroundImage.js: executed lines 205/205 (100%); executed functions 3/12
+- src/engine/runtime/BrowserDownloadService.js: executed lines 38/38 (100%); executed functions 1/7
+- src/engine/runtime/fullscreenBezel.js: executed lines 993/993 (100%); executed functions 16/62
+- src/engine/runtime/FullscreenService.js: executed lines 118/118 (100%); executed functions 8/14
+- src/engine/runtime/gameImageConvention.js: executed lines 207/207 (100%); executed functions 11/18
+- src/engine/runtime/index.js: executed lines 13/13 (100%); executed functions 1/1
+- src/engine/runtime/MobileRuntimeTweaks.js: executed lines 21/21 (100%); executed functions 1/3
+- src/engine/runtime/RuntimeMonitoringHooks.js: executed lines 191/191 (100%); executed functions 8/17
+- src/engine/scene/AttractModeController.js: executed lines 143/143 (100%); executed functions 1/10
+- src/engine/scene/index.js: executed lines 13/13 (100%); executed functions 1/1
+- src/engine/scene/Scene.js: executed lines 12/12 (100%); executed functions 2/5
+- src/engine/scene/SceneManager.js: executed lines 33/33 (100%); executed functions 1/5
+- src/engine/scene/SceneTransition.js: executed lines 27/27 (100%); executed functions 1/6
+- src/engine/scene/SceneTransitionController.js: executed lines 22/22 (100%); executed functions 1/3
+- src/engine/scene/TransitionScene.js: executed lines 58/58 (100%); executed functions 1/7
+- src/engine/theme/index.js: executed lines 3/3 (100%); executed functions 1/1
+- src/engine/theme/mount-shared-header.js: executed lines 143/143 (100%); executed functions 8/11
+- src/engine/theme/Theme.js: executed lines 26/26 (100%); executed functions 3/4
+- src/engine/theme/ThemeTokens.js: executed lines 20/20 (100%); executed functions 1/1
+- src/engine/theme/toolboxaid-header.js: executed lines 76/76 (100%); executed functions 7/7
+- src/shared/math/numberNormalization.js: executed lines 35/35 (100%); executed functions 1/10
+- src/shared/number/index.js: executed lines 7/7 (100%); executed functions 1/1
+- src/shared/number/numberUtils.js: executed lines 14/14 (100%); executed functions 2/3
+- src/shared/utils/invariantUtils.js: executed lines 11/11 (100%); executed functions 2/2
+- src/shared/utils/mathUtils.js: executed lines 29/29 (100%); executed functions 1/5
+- tools/preview-generator-v2/controls/AccordionSection.js: executed lines 31/31 (100%); executed functions 5/5
+- tools/preview-generator-v2/controls/AssetFolderControl.js: executed lines 17/17 (100%); executed functions 5/5
+- tools/preview-generator-v2/controls/CaptureModeControl.js: executed lines 25/25 (100%); executed functions 9/9
+- tools/preview-generator-v2/controls/GeneratePreviewControl.js: executed lines 20/20 (100%); executed functions 6/6
+- tools/preview-generator-v2/controls/LastGeneratedImageControl.js: executed lines 23/23 (100%); executed functions 3/3
+- tools/preview-generator-v2/controls/OutputSummaryControl.js: executed lines 15/15 (100%); executed functions 4/4
+- tools/preview-generator-v2/controls/PathsOrIdsControl.js: executed lines 14/14 (100%); executed functions 4/4
+- tools/preview-generator-v2/controls/PreviewFrameControl.js: executed lines 9/9 (100%); executed functions 3/3
+- tools/preview-generator-v2/controls/RenderControlsControl.js: executed lines 18/18 (100%); executed functions 5/5
+- tools/preview-generator-v2/controls/RepoDestinationControl.js: executed lines 16/16 (100%); executed functions 4/4
+- tools/preview-generator-v2/controls/StatusLogControl.js: executed lines 19/19 (100%); executed functions 5/5
+- tools/preview-generator-v2/controls/TargetSourceControl.js: executed lines 30/30 (100%); executed functions 11/11
+- tools/preview-generator-v2/previewGeneratorV2.bootstrap.js: executed lines 4/4 (100%); executed functions 1/1
+- tools/preview-generator-v2/PreviewGeneratorV2App.js: executed lines 539/539 (100%); executed functions 47/58
+- tools/preview-generator-v2/PreviewGeneratorV2Capture.js: executed lines 477/477 (100%); executed functions 10/24
+- tools/preview-generator-v2/PreviewGeneratorV2Logger.js: executed lines 19/19 (100%); executed functions 5/5
+- tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js: executed lines 21/21 (100%); executed functions 5/5
+- tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js: executed lines 117/117 (100%); executed functions 8/12
+- tools/preview-generator-v2/PreviewGeneratorV2Ui.js: executed lines 48/48 (100%); executed functions 9/9
+- tools/toolRegistry.js: executed lines 425/425 (100%); executed functions 4/8
+
+Uncovered or low-coverage changed JS files:
+- none changed
+
+Changed JS files considered:
+- tests/helpers/playwrightV8CoverageReporter.mjs
+- tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
