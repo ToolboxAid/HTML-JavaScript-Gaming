@@ -623,6 +623,43 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(clearStyle.paddingLeft).toBe("6px");
       expect(clearStyle.paddingRight).toBe("6px");
       expect(clearStyle.cursor).toBe("pointer");
+      const formStyle = await page.locator(".tool-starter__field").first().evaluate((field) => {
+        const sourceInput = document.getElementById("sourceInput");
+        const statusLog = document.getElementById("statusLog");
+        const toolButton = document.getElementById("toolExportButton");
+        const panel = document.querySelector(".tool-starter__panel--left");
+        const fieldStyle = getComputedStyle(field);
+        const sourceInputStyle = getComputedStyle(sourceInput);
+        const statusLogStyle = getComputedStyle(statusLog);
+        const toolButtonStyle = getComputedStyle(toolButton);
+        const panelStyle = getComputedStyle(panel);
+        return {
+          fieldGap: fieldStyle.gap,
+          fieldColumns: fieldStyle.gridTemplateColumns,
+          inputBorderRadius: sourceInputStyle.borderRadius,
+          inputBackground: sourceInputStyle.backgroundColor,
+          inputColor: sourceInputStyle.color,
+          buttonBorderRadius: toolButtonStyle.borderRadius,
+          buttonPaddingLeft: toolButtonStyle.paddingLeft,
+          buttonPaddingRight: toolButtonStyle.paddingRight,
+          textareaBorderRadius: statusLogStyle.borderRadius,
+          textareaBackground: statusLogStyle.backgroundColor,
+          panelBorderRadius: panelStyle.borderRadius,
+          panelPadding: panelStyle.paddingTop
+        };
+      });
+      expect(formStyle.fieldGap).toBe("8px");
+      expect(formStyle.fieldColumns).toContain("74px");
+      expect(formStyle.inputBorderRadius).toBe("10px");
+      expect(formStyle.inputBackground).toBe("rgba(43, 16, 91, 0.9)");
+      expect(formStyle.inputColor).toBe("rgb(247, 244, 255)");
+      expect(formStyle.buttonBorderRadius).toBe("10px");
+      expect(formStyle.buttonPaddingLeft).toBe("6px");
+      expect(formStyle.buttonPaddingRight).toBe("6px");
+      expect(formStyle.textareaBorderRadius).toBe("8px");
+      expect(formStyle.textareaBackground).toBe("rgba(0, 0, 0, 0.24)");
+      expect(formStyle.panelBorderRadius).toBe("8px");
+      expect(formStyle.panelPadding).toBe("14px");
 
       const duplicateIds = await page.evaluate(() => {
         const ids = [...document.querySelectorAll("[id]")].map((element) => element.id);

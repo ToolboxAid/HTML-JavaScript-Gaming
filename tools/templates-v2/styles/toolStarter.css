@@ -1,14 +1,18 @@
 :root {
   --tool-starter-bg: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
-  --tool-starter-panel: var(--pm-surface, rgba(40, 25, 84, 0.72));
-  --tool-starter-panel-strong: var(--pm-surface-strong, rgba(0, 0, 0, 0.24));
-  --tool-starter-line: var(--pm-line, rgba(221, 214, 254, 0.26));
+  --tool-starter-panel: var(--panel, rgba(30, 24, 48, 0.92));
+  --tool-starter-surface: var(--surface-inline, rgba(18, 16, 28, 0.78));
+  --tool-starter-panel-strong: rgba(0, 0, 0, 0.24);
+  --tool-starter-input-surface: var(--surface-inline, rgba(43, 16, 91, 0.9));
+  --tool-starter-line: var(--line, rgba(221, 214, 254, 0.26));
+  --tool-starter-surface-border: var(--surface-border, rgba(221, 214, 254, 0.22));
   --tool-starter-text: var(--text, #f7f4ff);
-  --tool-starter-muted: var(--pm-text-muted, #c4b5fd);
+  --tool-starter-muted: var(--muted, #c4b5fd);
   --tool-starter-header-muted: var(--muted, #e9ddff);
   --tool-starter-accent: var(--accent, #ddd6fe);
   --tool-starter-danger: #ffb4b4;
   --tool-starter-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+  --tool-starter-shadow-strong: 0 20px 44px rgba(0, 0, 0, 0.26);
   color-scheme: dark;
   font-family: Inter, Segoe UI, system-ui, sans-serif;
 }
@@ -28,29 +32,48 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
 
 button {
-  border: 1px solid var(--tool-starter-line);
-  border-radius: 6px;
-  background: var(--tool-starter-panel-strong);
-  color: var(--tool-starter-text);
+  border: 1px solid var(--tool-starter-line) !important;
+  border-radius: 10px !important;
+  background: ButtonFace;
+  color: ButtonText;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 2px 6px;
 }
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: 0.62;
+  filter: saturate(0.72);
+  box-shadow: none;
 }
 
 button:focus-visible,
 input:focus-visible,
+select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--tool-starter-accent);
   outline-offset: 2px;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid var(--tool-starter-surface-border);
+  border-radius: 10px !important;
+  background: var(--tool-starter-input-surface);
+  color: var(--tool-starter-text);
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--card-hover-border, #c4b5fd);
 }
 
 .is-collapsible {
@@ -121,12 +144,18 @@ textarea:focus-visible {
 }
 
 .tool-starter__menu {
+  box-sizing: border-box;
+  width: calc(100% - 32px);
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 10px;
-  border-bottom: 1px solid var(--tool-starter-line);
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 16px 0;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
   background: var(--tool-starter-panel);
-  padding: 10px;
+  padding: 10px 14px;
 }
 
 .tool-starter__menu[hidden] {
@@ -136,11 +165,16 @@ textarea:focus-visible {
 .tool-starter.app-shell {
   height: calc(100vh - 137px);
   min-height: 0;
+  width: min(1600px, calc(100% - 32px));
+  margin: 0 auto 16px;
   display: grid;
-  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) minmax(240px, 300px);
-  gap: 12px;
+  grid-template-columns: 340px minmax(0, 1fr) 360px;
+  gap: 14px;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 20px;
+  box-shadow: var(--tool-starter-shadow-strong);
   overflow: hidden;
-  padding: 12px;
+  padding: 16px;
 }
 
 .tool-starter__panel {
@@ -148,8 +182,12 @@ textarea:focus-visible {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  overflow: hidden;
+  gap: 14px;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-panel);
+  overflow: auto;
+  padding: 14px;
 }
 
 .tool-starter__panel--center {
@@ -157,13 +195,16 @@ textarea:focus-visible {
 }
 
 .accordion-v2 {
+  --accordion-v2-accent: var(--tool-starter-accent);
+  --accordion-v2-line: var(--tool-starter-line);
+  --accordion-v2-surface: var(--tool-starter-surface);
   min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
-  background: var(--tool-starter-panel);
+  background: var(--tool-starter-surface);
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }
@@ -255,20 +296,18 @@ textarea:focus-visible {
 }
 
 .tool-starter__field {
+  min-width: 0;
   display: grid;
-  grid-template-columns: 110px minmax(0, 1fr);
+  grid-template-columns: 74px minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  font-weight: 700;
 }
 
 .tool-starter__field input {
   width: 100%;
   min-width: 0;
-  border: 1px solid var(--tool-starter-line);
-  border-radius: 6px;
-  background: var(--tool-starter-panel-strong);
-  color: var(--tool-starter-text);
-  padding: 8px 10px;
+  padding: 7px 9px;
 }
 
 .tool-starter__hint {
@@ -320,11 +359,11 @@ textarea:focus-visible {
   min-height: 160px;
   margin: 0;
   border: 1px solid var(--tool-starter-line);
-  border-radius: 6px;
+  border-radius: 8px !important;
   background: var(--tool-starter-panel-strong);
   color: var(--tool-starter-text);
   overflow: auto;
-  padding: 10px;
+  padding: 12px;
   white-space: pre-wrap;
 }
 
