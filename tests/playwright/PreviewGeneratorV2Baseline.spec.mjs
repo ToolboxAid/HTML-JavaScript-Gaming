@@ -472,6 +472,12 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#toolExportButton")).toHaveText("Export");
       await expect(page.locator("#toolCopyJsonButton")).toHaveText("Copy JSON");
       await expect(page.locator("#toolExportToolStateButton")).toHaveText("Export toolState");
+      await expect(page.locator(".tool-starter__panel--left #sourceInputContent")).toBeVisible();
+      await expect(page.locator(".tool-starter__panel--left #statusLogContent")).toHaveCount(0);
+      await expect(page.locator(".tool-starter__panel--center #previewPanelContent")).toBeVisible();
+      await expect(page.locator(".tool-starter__panel--right #inspectorContent")).toBeVisible();
+      await expect(page.locator(".tool-starter__panel--right #statusLogContent")).toBeVisible();
+      await expect(page.locator(".tool-starter__panel--right .accordion-v2").last()).toContainText("Status");
 
       const duplicateIds = await page.evaluate(() => {
         const ids = [...document.querySelectorAll("[id]")].map((element) => element.id);

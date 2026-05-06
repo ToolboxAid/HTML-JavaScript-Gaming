@@ -567,6 +567,10 @@ No PR is complete with:
 - Tools must use consistent header, NAV, panel, accordion, status, and action patterns.
 - Left and right tool panels must use working accordion sections unless explicitly exempted.
 - Dead accordion controls are prohibited.
+- Left panel = user input/setup.
+- Center = primary work surface.
+- Right panel = output/status/logging/diagnostics.
+- Status/log sections belong at the bottom of the right panel unless explicitly justified otherwise.
 
 ## INPUT RESOLUTION RULES
 

@@ -18,10 +18,7 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(50%) tools/templates/first-class-tool-starter/js/ToolStarterApp.js - executed lines 98/98; executed functions 8/16
-(88%) tools/templates/first-class-tool-starter/js/controls/SourceInputControl.js - executed lines 33/33; executed functions 7/8
-(100%) tools/templates/first-class-tool-starter/js/bootstrap.js - executed lines 48/48; executed functions 4/4
-(100%) tools/templates/first-class-tool-starter/js/controls/ActionNavControl.js - executed lines 51/51; executed functions 5/5
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -157,12 +154,8 @@ Files with executed line/function counts where available:
 (100%) tools/templates/first-class-tool-starter/js/services/ToolStateSerializer.js - executed lines 13/13; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(100%) none - no low-coverage changed runtime JS files
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
 (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tools/templates/first-class-tool-starter/tests/playwright/FirstClassToolStarter.spec.mjs - changed JS file not collected as browser runtime coverage
-(50%) tools/templates/first-class-tool-starter/js/ToolStarterApp.js - changed JS file with browser V8 coverage
-(88%) tools/templates/first-class-tool-starter/js/controls/SourceInputControl.js - changed JS file with browser V8 coverage
-(100%) tools/templates/first-class-tool-starter/js/bootstrap.js - changed JS file with browser V8 coverage
-(100%) tools/templates/first-class-tool-starter/js/controls/ActionNavControl.js - changed JS file with browser V8 coverage

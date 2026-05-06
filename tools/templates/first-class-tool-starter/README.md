@@ -79,6 +79,17 @@ The contracts define:
 - Do not use inline event handlers such as `onclick`, `onchange`, or `oninput`.
 - Do not add hidden defaults or silent fallback data.
 
+## Panel Layout Standard
+
+First-class tools use a consistent three-column layout:
+
+- Left panel: user input, setup, and intent controls only.
+- Center panel: primary work surface, editor, canvas, or preview.
+- Right panel: generated output, summaries, diagnostics, logs, and status.
+- Status/log sections belong at the bottom of the right panel unless a PR explicitly justifies a different placement.
+
+The starter demonstrates this standard with Input Source on the left, Preview in the center, and Output Summary above Status on the right.
+
 ## Creating A New Tool
 
 1. Copy `tools/templates/first-class-tool-starter/` to `tools/<tool-id>/`.

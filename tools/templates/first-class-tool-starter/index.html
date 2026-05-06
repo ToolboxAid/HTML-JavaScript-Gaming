@@ -64,16 +64,6 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusLogContent">
-            <span>Status</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="statusLogContent" class="accordion-v2__content">
-            <button id="clearStatusButton" type="button">Clear</button>
-            <textarea id="statusLog" readonly rows="10" aria-label="Status log"></textarea>
-          </div>
-        </section>
       </aside>
 
       <section class="tool-starter__panel tool-starter__panel--center" aria-label="Tool preview">
@@ -98,6 +88,17 @@
           </button>
           <div id="inspectorContent" class="accordion-v2__content">
             <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="statusLogContent">
+            <span>Status</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="statusLogContent" class="accordion-v2__content">
+            <button id="clearStatusButton" type="button">Clear</button>
+            <textarea id="statusLog" readonly rows="10" aria-label="Status log"></textarea>
           </div>
         </section>
       </aside>

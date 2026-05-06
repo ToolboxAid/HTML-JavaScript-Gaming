@@ -97,6 +97,19 @@ test.describe("First-Class Tool Starter", () => {
     await expect(workspaceNav.getByRole("button", { name: "Export manifest" })).toBeVisible();
   });
 
+  test("uses standardized panel roles", async ({ page }) => {
+    const leftPanel = page.locator(".tool-starter__panel--left");
+    const centerPanel = page.locator(".tool-starter__panel--center");
+    const rightPanel = page.locator(".tool-starter__panel--right");
+
+    await expect(leftPanel.locator("#sourceInputContent")).toBeVisible();
+    await expect(leftPanel.locator("#statusLogContent")).toHaveCount(0);
+    await expect(centerPanel.locator("#previewPanelContent")).toBeVisible();
+    await expect(rightPanel.locator("#inspectorContent")).toBeVisible();
+    await expect(rightPanel.locator("#statusLogContent")).toBeVisible();
+    await expect(rightPanel.locator(".accordion-v2").last()).toContainText("Status");
+  });
+
   test("Hide Header and Details toggles header state", async ({ page }) => {
     const summary = page.locator("[data-tool-starter-summary]");
     const details = page.locator(".is-collapsible");

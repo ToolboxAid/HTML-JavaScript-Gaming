@@ -39,6 +39,17 @@ Common methods:
 
 Controls communicate through injected callbacks, injected services, or the app/root coordinator. A control must not directly edit another control's DOM or internal state.
 
+## Panel Role Contract
+
+First-class tools use a consistent three-column layout contract:
+
+- Left panel owns user input, setup, and intent controls only.
+- Center panel owns the primary work surface, editor, canvas, or preview.
+- Right panel owns generated output, summaries, diagnostics, logs, and status.
+- Status and log controls belong at the bottom of the right panel unless a PR explicitly justifies a different placement.
+
+Controls should be placed according to these panel roles before adding new sections. A control that mixes input and output responsibilities should be split into separate controls.
+
 ## Service Contract
 
 Services contain non-DOM logic.
