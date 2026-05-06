@@ -3,18 +3,28 @@ M docs/dev/reports/coverage_changed_js_guardrail.txt
  M docs/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
  M tools/asset-manager-v2/index.html
+ M tools/asset-manager-v2/js/assetManagerMetadata.js
+ M tools/asset-manager-v2/js/bootstrap.js
+ M tools/asset-manager-v2/js/controls/AssetFormControl.js
+ M tools/asset-manager-v2/js/services/AssetSchemaValidator.js
  M tools/asset-manager-v2/styles/assetManager.css
-?? docs/dev/reports/PR_26126_099_asset_manager_v2_accordion_spacing_notes.md
-?? docs/dev/reports/PR_26126_099_asset_manager_v2_manual_validation_notes.md
+?? docs/dev/reports/PR_26126_100_asset_manager_v2_color_usage_id_notes.md
+?? docs/dev/reports/PR_26126_100_asset_manager_v2_manual_validation_notes.md
+?? docs/dev/reports/PR_26126_100_asset_manager_v2_selected_detail_height_notes.md
 
 # git ls-files --others --exclude-standard
-docs/dev/reports/PR_26126_099_asset_manager_v2_accordion_spacing_notes.md
-docs/dev/reports/PR_26126_099_asset_manager_v2_manual_validation_notes.md
+docs/dev/reports/PR_26126_100_asset_manager_v2_color_usage_id_notes.md
+docs/dev/reports/PR_26126_100_asset_manager_v2_manual_validation_notes.md
+docs/dev/reports/PR_26126_100_asset_manager_v2_selected_detail_height_notes.md
 
 # git diff --stat
-docs/dev/reports/coverage_changed_js_guardrail.txt |  2 --
- docs/dev/reports/playwright_v8_coverage_report.txt |  4 ---
- .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 38 +++++++++++++++++++---
- tools/asset-manager-v2/index.html                  | 17 +++++++---
- tools/asset-manager-v2/styles/assetManager.css     | 18 ++++++----
- 5 files changed, 57 insertions(+), 22 deletions(-)
+docs/dev/reports/coverage_changed_js_guardrail.txt |  8 ++--
+ docs/dev/reports/playwright_v8_coverage_report.txt | 22 ++++-----
+ .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 53 ++++++++++++++++++----
+ tools/asset-manager-v2/index.html                  |  4 ++
+ tools/asset-manager-v2/js/assetManagerMetadata.js  | 11 +++++
+ tools/asset-manager-v2/js/bootstrap.js             |  2 +
+ .../js/controls/AssetFormControl.js                | 44 ++++++++++++++++--
+ .../js/services/AssetSchemaValidator.js            | 11 ++++-
+ tools/asset-manager-v2/styles/assetManager.css     |  4 +-
+ 9 files changed, 128 insertions(+), 31 deletions(-)

@@ -235,6 +235,17 @@ export function assetIdForFile(type, fileName, role) {
   return `assets.${normalizedType}.${normalizedRole}.${filenamePartForAssetId(fileName)}`;
 }
 
+export function assetIdForColor(type, role, usage, colorName) {
+  const normalizedType = dotPathIdSegment(type);
+  const normalizedRole = dotPathIdSegment(role);
+  const normalizedUsage = dotPathIdSegment(usage);
+  const normalizedColorName = dotPathIdSegment(colorName);
+  if (!normalizedType || !normalizedRole || !normalizedUsage || !normalizedColorName) {
+    return "";
+  }
+  return `assets.${normalizedType}.${normalizedRole}.${normalizedUsage}.${normalizedColorName}`;
+}
+
 export function suggestedRoleForFile(type, fileName) {
   if (type !== "image") {
     return "";

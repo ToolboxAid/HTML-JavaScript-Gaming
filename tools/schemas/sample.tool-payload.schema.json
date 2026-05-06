@@ -1,7 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "tools/schemas/sample.tool-payload.schema.json",
-  "title": "Legacy Sample Data Wrapper Schema Pointer",
-  "description": "Compatibility pointer for unmodified sample JSON documents. The canonical schema lives at tools/schemas/samples/sample.tool-payload.schema.json.",
-  "$ref": "samples/sample.tool-payload.schema.json"
-}

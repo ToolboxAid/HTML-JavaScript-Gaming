@@ -3,7 +3,7 @@
   "version": "1",
   "payload": {
     "tileMapDocument": {
-      "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
+      "$schema": "../../../tools/schemas/samples/sample.tool-payload.schema.json",
       "schema": "toolbox.tilemap/1",
       "version": 1,
       "map": {

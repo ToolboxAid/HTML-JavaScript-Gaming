@@ -51,6 +51,8 @@ window.addEventListener("DOMContentLoaded", () => {
       stretchField: requireElement("#assetStretchOverrideField"),
       stretchInput: requireElement("#assetStretchOverrideInput"),
       undoButton: requireElement("#undoAssetButton"),
+      usageField: requireElement("#assetUsageField"),
+      usageInput: requireElement("#assetUsageInput"),
       updateButton: requireElement("#updateAssetButton"),
       windowRef: window
     }),

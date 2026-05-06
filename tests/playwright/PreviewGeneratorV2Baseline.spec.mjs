@@ -714,6 +714,21 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
       await expect(page.locator("#pickAssetFileButton")).toBeHidden();
       await expect(page.locator("#assetColorPickerPanel")).toBeVisible();
+      await expect(page.locator("#assetUsageField")).toBeVisible();
+      await expect(page.locator("#assetUsageInput")).toBeEnabled();
+      await expect(page.locator("#assetUsageInput")).toHaveValue("");
+      const usagePlacement = await page.locator("#assetUsageField").evaluate((usageField) => {
+        const roleField = document.querySelector('label[for="assetRoleSelect"]');
+        return {
+          directlyAfterRole: usageField.previousElementSibling === roleField,
+          columns: getComputedStyle(usageField).gridTemplateColumns.trim().split(/\s+/).length,
+          usageTop: Math.round(usageField.getBoundingClientRect().top),
+          roleBottom: Math.round(roleField.getBoundingClientRect().bottom)
+        };
+      });
+      expect(usagePlacement.directlyAfterRole).toBe(true);
+      expect(usagePlacement.columns).toBe(2);
+      expect(usagePlacement.usageTop).toBeGreaterThanOrEqual(usagePlacement.roleBottom);
       await expect(page.locator("#assetRoleSelect")).toHaveValue("hud");
       await expect(page.locator("#assetRoleSelect")).toHaveAttribute("title", "Allowed roles for color: hud, text, background, border, accent, warning, success, danger, shadow, highlight");
       const colorPickerFileInputState = await page.locator("#assetFileInput").evaluate((input) => ({
@@ -742,6 +757,8 @@ test.describe("Preview Generator V2 baseline", () => {
       await page.locator("#assetKindAudio").check();
       await expect(page.locator("#assetColorPickerPanel")).toBeHidden();
       await expect(page.locator("#assetFilePickerPanel")).toBeVisible();
+      await expect(page.locator("#assetUsageField")).toBeHidden();
+      await expect(page.locator("#assetUsageInput")).toBeDisabled();
       await expect(page.locator("input[data-asset-file-kind]")).toHaveCount(0);
       await expect(page.locator("#assetStretchOverrideField")).toBeHidden();
       await expect(page.locator("#assetStretchOverrideInput")).toBeDisabled();
@@ -877,6 +894,7 @@ test.describe("Preview Generator V2 baseline", () => {
           detailFlexBasis: detailStyle.flexBasis,
           detailHeight: Math.round(detailRect.height),
           detailMinHeight: detailStyle.minHeight,
+          previewMinHeight: getComputedStyle(preview).minHeight,
           detailWithinCenterPanel: detailRect.left >= centerRect.left
             && detailRect.right <= centerRect.right
             && detailRect.bottom <= centerRect.bottom,
@@ -889,9 +907,10 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(selectedDetailPlacement.previewInsideDetail).toBe(true);
       expect(selectedDetailPlacement.detailBelowAssetsList).toBe(true);
       expect(selectedDetailPlacement.detailFlexBasis).toBe("auto");
-      expect(selectedDetailPlacement.detailHeight).toBeGreaterThan(120);
+      expect(selectedDetailPlacement.detailHeight).toBeGreaterThan(140);
       expect(selectedDetailPlacement.detailHeight).not.toBe(300);
       expect(selectedDetailPlacement.detailMinHeight).toBe("0px");
+      expect(selectedDetailPlacement.previewMinHeight).toBe("124px");
       expect(selectedDetailPlacement.detailWithinCenterPanel).toBe(true);
       expect(selectedDetailPlacement.detailDoesNotSpanFullWidth).toBe(true);
       const selectedDetailLayout = await page.locator("#selectedAssetDetails").evaluate((detail) => {
@@ -1495,6 +1514,8 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
       await expect(page.locator("#pickAssetFileButton")).toBeHidden();
       await expect(page.locator("#assetColorPickerPanel")).toBeVisible();
+      await expect(page.locator("#assetUsageField")).toBeVisible();
+      await expect(page.locator("#assetUsageInput")).toHaveValue("");
       await expect(page.locator("#assetColorSortControls button")).toHaveText(["Hue", "Sat", "Bri", "Nam", "Tag"]);
       await expect(page.locator("#assetColorPickerPanel input")).toHaveCount(0);
       const sampleSwatches = await page.locator("#assetColorSwatchList button[data-color-swatch-index]").evaluateAll((buttons) => buttons.map((button) => ({
@@ -1508,19 +1529,24 @@ test.describe("Preview Generator V2 baseline", () => {
         { text: "", title: "name: Success Green\nhex: #22C55E\nsymbol: G\nsource: UAT Sample\ntags: success, hud", swatchSize: 35 }
       ]);
       await page.locator('#assetColorSwatchList button[title*="Signal Violet"]').click();
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.signal-violet");
+      await expect(page.locator("#assetIdInput")).toHaveValue("");
+      await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/signal-violet");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected color validation failed: Color usage is required for color assets\./);
+      await expect(page.locator("#addAssetButton")).toBeDisabled();
+      await page.locator("#assetUsageInput").fill("Menu Highlight");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.menu-highlight.signal-violet");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/signal-violet");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Signal Violet! validated as type color, kind hex, role hud\./);
       await page.locator("#addAssetButton").click();
-      await expect(page.locator("#assetList")).toContainText("assets.color.hud.signal-violet");
+      await expect(page.locator("#assetList")).toContainText("assets.color.hud.menu-highlight.signal-violet");
       await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
       await expect(page.locator("#assetList")).toContainText("assets.image.sprite.uat-preview");
       await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
       await expect(page.locator("#selectedAssetDetails")).not.toContainText("Final ID");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.signal-violet");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.menu-highlight.signal-violet");
       const output = JSON.parse(await page.locator("#inspectorOutput").textContent());
       expect(output.assets[0]).toEqual({
-        id: "assets.color.hud.signal-violet",
+        id: "assets.color.hud.menu-highlight.signal-violet",
         type: "color",
         kind: "hex",
         role: "hud",
@@ -1651,6 +1677,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await page.locator("#assetKindFont").check();
       await expect(page.locator("#assetFilePickerPanel")).toBeVisible();
       await expect(page.locator("#assetColorPickerPanel")).toBeHidden();
+      await expect(page.locator("#assetUsageField")).toBeHidden();
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.font.ui.vector-battle");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector_battle.ttf");
@@ -1669,6 +1696,9 @@ test.describe("Preview Generator V2 baseline", () => {
       await page.locator("#assetKindColor").check();
       await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
       await expect(page.locator("#assetColorPickerPanel")).toBeVisible();
+      await expect(page.locator("#assetUsageField")).toBeVisible();
+      await expect(page.locator("#assetUsageInput")).toBeEnabled();
+      await expect(page.locator("#assetUsageInput")).toHaveValue("");
       await expect(page.locator("#assetRoleSelect")).toHaveValue("hud");
       await expect(page.locator("#assetRoleSelect option")).toHaveText([
         "hud",
@@ -1715,17 +1745,22 @@ test.describe("Preview Generator V2 baseline", () => {
       const tagSortedNames = await page.locator("#assetColorSwatchList button[data-color-swatch-index]").evaluateAll((buttons) => buttons.map((button) => button.getAttribute("title").match(/^name: ([^\n]+)/)?.[1] || ""));
       expect(tagSortedNames).toEqual(["Sky Blue", "Mint", "Amber"]);
       await page.locator('#assetColorSwatchList button[title*="Sky Blue"]').click();
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.sky-blue");
+      await expect(page.locator("#assetIdInput")).toHaveValue("");
+      await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/sky-blue");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected color validation failed: Color usage is required for color assets\./);
+      await expect(page.locator("#addAssetButton")).toBeDisabled();
+      await page.locator("#assetUsageInput").fill("Primary HUD");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud.sky-blue");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/sky-blue");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Sky Blue validated as type color, kind hex, role hud\./);
       await page.locator("#assetRoleSelect").selectOption("accent");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.accent.sky-blue");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.accent.primary-hud.sky-blue");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Sky Blue validated as type color, kind hex, role accent\./);
       await page.locator("#assetRoleSelect").selectOption("hud");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.sky-blue");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud.sky-blue");
       await expect(page.locator("#addAssetButton")).toBeEnabled();
       await page.locator("#addAssetButton").click();
-      await expect(page.locator("#assetList")).toContainText("assets.color.hud.sky-blue");
+      await expect(page.locator("#assetList")).toContainText("assets.color.hud.primary-hud.sky-blue");
       await expect(page.locator('#assetPreview [data-preview-type="color"][data-preview-kind="hex"]')).toBeVisible();
       await expect(page.locator(".asset-manager-v2__preview-color span")).toHaveCSS("background-color", "rgb(51, 102, 255)");
       await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"color\"");
@@ -1758,7 +1793,7 @@ test.describe("Preview Generator V2 baseline", () => {
         role: "sprite",
         source: "asset-manager-v2"
       });
-      expect(storedContext.workspaceManifest.tools["asset-browser"].assets["assets.color.hud.sky-blue"]).toEqual({
+      expect(storedContext.workspaceManifest.tools["asset-browser"].assets["assets.color.hud.primary-hud.sky-blue"]).toEqual({
         path: "palette://workspace/sky-blue",
         type: "color",
         kind: "hex",

@@ -657,7 +657,7 @@ textarea:hover {
 
 .asset-manager-v2__preview {
   margin-top: 10px;
-  min-height: 104px;
+  min-height: 124px;
   flex: 1 1 auto;
   display: grid;
   align-content: start;
@@ -710,7 +710,7 @@ textarea:hover {
 }
 
 .asset-manager-v2__preview-stage {
-  min-height: 104px;
+  min-height: 124px;
   display: grid;
   align-items: center;
   border: 1px solid var(--asset-manager-line);

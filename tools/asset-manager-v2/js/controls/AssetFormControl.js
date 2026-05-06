@@ -1,5 +1,6 @@
 import {
   acceptForKind,
+  assetIdForColor,
   assetIdForFile,
   colorAssetPath,
   fileMatchesAccept,
@@ -110,6 +111,8 @@ export class AssetFormControl {
     stretchField,
     stretchInput,
     undoButton,
+    usageField,
+    usageInput,
     updateButton,
     windowRef = window
   }) {
@@ -129,6 +132,8 @@ export class AssetFormControl {
     this.updateButton = updateButton;
     this.stretchField = stretchField;
     this.stretchInput = stretchInput;
+    this.usageField = usageField;
+    this.usageInput = usageInput;
     this.window = windowRef;
     this.allowedKinds = [];
     this.colorSortKey = "name";
@@ -168,6 +173,20 @@ export class AssetFormControl {
     this.redoButton.addEventListener("click", onRedo);
     this.stretchInput.addEventListener("change", onChange);
     this.stretchInput.addEventListener("input", onChange);
+    this.usageInput.addEventListener("input", () => {
+      this.applyDerivedAssetId(this.selectedColorInfo?.name || "");
+      if (this.selectedColorInfo) {
+        this.onColorSelected?.(this.readValue(), this.selectedColorInfo);
+      }
+      onChange();
+    });
+    this.usageInput.addEventListener("change", () => {
+      this.applyDerivedAssetId(this.selectedColorInfo?.name || "");
+      if (this.selectedColorInfo) {
+        this.onColorSelected?.(this.readValue(), this.selectedColorInfo);
+      }
+      onChange();
+    });
     this.kindInputs.forEach((input) => {
       input.addEventListener("change", () => {
         this.updateFileAccept();
@@ -223,7 +242,8 @@ export class AssetFormControl {
       type: this.selectedKind(),
       kind: this.kindValue,
       path: this.pathInput.value.trim(),
-      role: this.selectedRole()
+      role: this.selectedRole(),
+      usage: this.selectedKind() === "color" ? this.usageInput.value.trim() : ""
     };
     if (value.type === "color" && this.selectedColorInfo) {
       value.color = {
@@ -244,7 +264,12 @@ export class AssetFormControl {
 
   isComplete() {
     const value = this.readValue();
-    return Boolean(value.assetId && value.kind && value.path && value.role && !this.selectedFileError);
+    return Boolean(value.assetId
+      && value.kind
+      && value.path
+      && value.role
+      && (value.type !== "color" || value.usage)
+      && !this.selectedFileError);
   }
 
   setAddEnabled(isEnabled) {
@@ -293,6 +318,7 @@ export class AssetFormControl {
   clearSelectionFields() {
     this.assetIdInput.value = "";
     this.pathInput.value = "";
+    this.usageInput.value = "";
     this.kindValue = "";
     this.selectedColorInfo = null;
     this.selectedFileInfo = null;
@@ -312,6 +338,7 @@ export class AssetFormControl {
     }
     this.assetIdInput.value = assetId;
     this.pathInput.value = entry.path || "";
+    this.usageInput.value = entry.type === "color" ? this.usageFromAssetId(assetId) : "";
     this.kindValue = entry.kind || "";
     this.stretchInput.value = String(entry.stretchOverride?.uniformEdgeStretchPx ?? DEFAULT_BEZEL_STRETCH_PX);
     this.selectedColorInfo = entry.color ? normalizeSwatch(entry.color) : null;
@@ -417,7 +444,9 @@ export class AssetFormControl {
     const fallbackFromPath = basenameFromPath(this.pathInput.value);
     const fallbackFromId = this.assetIdInput.value.split(".").slice(3).join(".");
     const name = fileName || fallbackFromPath || fallbackFromId;
-    this.assetIdInput.value = assetIdForFile(this.selectedKind(), name, this.selectedRole());
+    this.assetIdInput.value = this.selectedKind() === "color"
+      ? assetIdForColor(this.selectedKind(), this.selectedRole(), this.usageInput.value, name)
+      : assetIdForFile(this.selectedKind(), name, this.selectedRole());
   }
 
   updateStretchControl() {
@@ -437,6 +466,8 @@ export class AssetFormControl {
     const isColor = this.selectedKind() === "color";
     this.filePickerPanel.hidden = isColor;
     this.colorPickerPanel.hidden = !isColor;
+    this.usageField.hidden = !isColor;
+    this.usageInput.disabled = !isColor;
     this.fileInput.disabled = isColor;
     this.fileInput.accept = isColor ? "" : acceptForKind(this.selectedKind());
     if (!isColor) {
@@ -523,5 +554,12 @@ export class AssetFormControl {
       ? `Allowed roles for ${kind}: ${roles.join(", ")}`
       : "No roles available for the selected type.";
     this.updateStretchControl();
+  }
+
+  usageFromAssetId(assetId) {
+    const parts = String(assetId || "").split(".");
+    return parts[0] === "assets" && parts[1] === "color" && parts.length >= 5
+      ? parts[3]
+      : "";
   }
 }

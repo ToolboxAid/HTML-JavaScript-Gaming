@@ -100,7 +100,10 @@ export class AssetSchemaValidator {
       .reduce((node, key) => (node && typeof node === "object" ? node[key] : undefined), this.schema);
   }
 
-  createEntry({ assetId, color, kind, path, role, stretchOverride, type }) {
+  createEntry({ assetId, color, kind, path, role, stretchOverride, type, usage }) {
+    if (type === "color" && !String(usage || "").trim()) {
+      return { ok: false, errors: ["Color usage is required for color assets."] };
+    }
     const entry = {
       path,
       type,
@@ -151,6 +154,9 @@ export class AssetSchemaValidator {
     }
     if (formValue.kind !== "hex") {
       return { ok: false, errors: [`Selected color kind must be "hex", received "${formValue.kind}".`] };
+    }
+    if (!String(formValue.usage || "").trim()) {
+      return { ok: false, errors: ["Color usage is required for color assets."] };
     }
     if (formValue.color?.hex !== colorInfo.hex || formValue.color?.name !== colorInfo.name) {
       return { ok: false, errors: ["Selected color must come from the active Workspace V2 palette."] };
@@ -250,6 +256,9 @@ export class AssetSchemaValidator {
       }
     }
     if (entry.type === "color") {
+      if (assetIdParts && assetIdParts.filenamePart.split(".").filter(Boolean).length < 2) {
+        errors.push(`${pointer}: color ids must use assets.<type>.<role>.<usage>.<colorName>.`);
+      }
       errors.push(...this.validateColorEntry(entry.color, `${pointer}.color`).errors);
     } else if (Object.prototype.hasOwnProperty.call(entry, "color")) {
       errors.push(`${pointer}.color: color metadata is only allowed on color assets.`);
