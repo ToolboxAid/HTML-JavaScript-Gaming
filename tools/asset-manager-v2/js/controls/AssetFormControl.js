@@ -10,6 +10,10 @@ import {
   suggestedRoleForFile
 } from "../assetManagerMetadata.js";
 
+function basenameFromPath(value) {
+  return String(value || "").split(/[\\/]/).filter(Boolean).at(-1) || "";
+}
+
 export class AssetFormControl {
   constructor({
     addButton,
@@ -66,6 +70,8 @@ export class AssetFormControl {
           this.selectedFileInfo.kind = this.selectedKind();
           this.applyDerivedFileValues();
           onFileSelected(this.readValue(), this.selectedFileInfo);
+        } else {
+          this.applyDerivedAssetId();
         }
         onChange();
       });
@@ -74,6 +80,8 @@ export class AssetFormControl {
       if (this.selectedFileInfo) {
         this.applyDerivedFileValues();
         onFileSelected(this.readValue(), this.selectedFileInfo);
+      } else {
+        this.applyDerivedAssetId();
       }
       onChange();
     });
@@ -231,7 +239,14 @@ export class AssetFormControl {
     }
     const { kind, name, sourcePath } = this.selectedFileInfo;
     this.pathInput.value = kind ? pathForFile(kind, name, sourcePath) : "";
-    this.assetIdInput.value = assetIdForFile(kind, name, this.selectedRole());
+    this.applyDerivedAssetId(name);
+  }
+
+  applyDerivedAssetId(fileName = "") {
+    const fallbackFromPath = basenameFromPath(this.pathInput.value);
+    const fallbackFromId = this.assetIdInput.value.split(".").slice(3).join(".");
+    const name = fileName || fallbackFromPath || fallbackFromId;
+    this.assetIdInput.value = assetIdForFile(this.selectedKind(), name, this.selectedRole());
   }
 
   updateFileAccept() {

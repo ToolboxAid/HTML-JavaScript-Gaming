@@ -748,18 +748,18 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(pickerOptions.types[0].description).toBe("Image assets");
       expect(Object.keys(pickerOptions.types[0].accept)).toContain("image/png");
       await expect(page.locator("#assetRoleSelect")).toHaveValue("background");
-      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.nebula-background.background");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.background.nebula-background");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-background.png");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-background\.png validated as kind image, type image, role background\./);
       await expect(page.locator("#addAssetButton")).toBeEnabled();
       await page.locator("#addAssetButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Added image\.assets\.nebula-background\.background\./);
-      await expect(page.locator("#assetList")).toContainText("image.assets.nebula-background.background");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Added assets\.image\.background\.nebula-background\./);
+      await expect(page.locator("#assetList")).toContainText("assets.image.background.nebula-background");
       await expect(page.locator("#assetPreview")).toBeHidden();
-      await expect(page.locator("#inspectorOutput")).toContainText("\"image.assets.nebula-background.background\"");
+      await expect(page.locator("#inspectorOutput")).toContainText("\"assets.image.background.nebula-background\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"image\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"kind\": \"image\"");
-      await expect(page.locator("#inspectorOutput")).not.toContainText("Added image.assets.nebula-background.background");
+      await expect(page.locator("#inspectorOutput")).not.toContainText("Added assets.image.background.nebula-background");
 
       await page.locator("#assetRoleSelect").selectOption("ui");
       await queueAssetFile(page, {
@@ -770,7 +770,7 @@ test.describe("Preview Generator V2 baseline", () => {
       });
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
-      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.preview.sprite");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.sprite.preview");
       await page.locator("#addAssetButton").click();
 
       await queueAssetFile(page, {
@@ -781,65 +781,108 @@ test.describe("Preview Generator V2 baseline", () => {
       });
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("bezel");
-      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.chrome-bezel.bezel");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.bezel.chrome-bezel");
       await page.locator("#addAssetButton").click();
 
       await page.locator("#assetKindAudio").check();
       await queueAssetFile(page, {
-        name: "fire.wav",
+        name: "Fire Boom!.WAV",
         mimeType: "audio/wav",
         contents: "RIFF",
-        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\audio\\fire.wav"
+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\audio\\Fire Boom!.WAV"
       });
       await page.locator("#pickAssetFileButton").click();
-      await expect(page.locator("#assetIdInput")).toHaveValue("audio.assets.fire.sound");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.sound.fire-boom");
       await page.locator("#addAssetButton").click();
 
       const tileSummaries = await page.locator(".asset-manager-v2__asset-tile").evaluateAll((tiles) => tiles.map((tile) => ({
+        deleteTopRight: (() => {
+          const tileRect = tile.getBoundingClientRect();
+          const deleteRect = tile.querySelector("[data-delete-asset-id]").getBoundingClientRect();
+          return Math.abs(tileRect.right - deleteRect.right) < 10 && Math.abs(tileRect.top - deleteRect.top) < 10;
+        })(),
         typeRole: tile.querySelector(".asset-manager-v2__asset-type-role")?.textContent?.trim(),
         id: tile.querySelector("strong")?.textContent?.trim(),
-        deleteLeftOfTypeRole: tile.querySelector("[data-delete-asset-id]").getBoundingClientRect().left < tile.querySelector(".asset-manager-v2__asset-type-role").getBoundingClientRect().left,
+        textLeftAligned: (() => {
+          const typeRoleRect = tile.querySelector(".asset-manager-v2__asset-type-role").getBoundingClientRect();
+          const idRect = tile.querySelector("strong").getBoundingClientRect();
+          return Math.abs(typeRoleRect.left - idRect.left) < 1;
+        })(),
         hasSeparateDeleteButton: Boolean(tile.querySelector(":scope > button[data-delete-asset-id]")),
         hasInlineDelete: Boolean(tile.querySelector(".asset-manager-v2__asset-select [data-delete-asset-id]")),
+        tileHeight: Math.round(tile.getBoundingClientRect().height),
+        idFontSize: Number.parseFloat(getComputedStyle(tile.querySelector("strong")).fontSize),
+        typeRoleFontSize: Number.parseFloat(getComputedStyle(tile.querySelector(".asset-manager-v2__asset-type-role")).fontSize),
+        idFontWeight: Number.parseFloat(getComputedStyle(tile.querySelector("strong")).fontWeight),
+        typeRoleFontWeight: Number.parseFloat(getComputedStyle(tile.querySelector(".asset-manager-v2__asset-type-role")).fontWeight),
+        rowGap: Number.parseFloat(getComputedStyle(tile.querySelector(".asset-manager-v2__asset-copy")).rowGap),
         text: tile.innerText,
         tooltip: tile.getAttribute("title")
       })));
       expect(tileSummaries).toEqual([
         {
+          deleteTopRight: true,
           typeRole: "audio:sound",
-          id: "audio.assets.fire.sound",
-          deleteLeftOfTypeRole: true,
+          id: "assets.audio.sound.fire-boom",
+          textLeftAligned: true,
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
-          text: "X\naudio:sound\naudio.assets.fire.sound",
-          tooltip: "id: audio.assets.fire.sound\ntype: audio\nkind: audio\nrole: sound\npath: assets/audio/fire.wav"
+          tileHeight: 88,
+          idFontSize: 12,
+          typeRoleFontSize: 13,
+          idFontWeight: 500,
+          typeRoleFontWeight: 800,
+          rowGap: 2,
+          text: "X\naudio:sound\nassets.audio.sound.fire-boom",
+          tooltip: "id: assets.audio.sound.fire-boom\ntype: audio\nkind: audio\nrole: sound\npath: assets/audio/Fire Boom!.WAV"
         },
         {
+          deleteTopRight: true,
           typeRole: "image:background",
-          id: "image.assets.nebula-background.background",
-          deleteLeftOfTypeRole: true,
+          id: "assets.image.background.nebula-background",
+          textLeftAligned: true,
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
-          text: "X\nimage:background\nimage.assets.nebula-background.background",
-          tooltip: "id: image.assets.nebula-background.background\ntype: image\nkind: image\nrole: background\npath: assets/images/nebula-background.png"
+          tileHeight: 88,
+          idFontSize: 12,
+          typeRoleFontSize: 13,
+          idFontWeight: 500,
+          typeRoleFontWeight: 800,
+          rowGap: 2,
+          text: "X\nimage:background\nassets.image.background.nebula-background",
+          tooltip: "id: assets.image.background.nebula-background\ntype: image\nkind: image\nrole: background\npath: assets/images/nebula-background.png"
         },
         {
+          deleteTopRight: true,
           typeRole: "image:bezel",
-          id: "image.assets.chrome-bezel.bezel",
-          deleteLeftOfTypeRole: true,
+          id: "assets.image.bezel.chrome-bezel",
+          textLeftAligned: true,
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
-          text: "X\nimage:bezel\nimage.assets.chrome-bezel.bezel",
-          tooltip: "id: image.assets.chrome-bezel.bezel\ntype: image\nkind: image\nrole: bezel\npath: assets/images/chrome-bezel.png"
+          tileHeight: 88,
+          idFontSize: 12,
+          typeRoleFontSize: 13,
+          idFontWeight: 500,
+          typeRoleFontWeight: 800,
+          rowGap: 2,
+          text: "X\nimage:bezel\nassets.image.bezel.chrome-bezel",
+          tooltip: "id: assets.image.bezel.chrome-bezel\ntype: image\nkind: image\nrole: bezel\npath: assets/images/chrome-bezel.png"
         },
         {
+          deleteTopRight: true,
           typeRole: "image:sprite",
-          id: "image.assets.preview.sprite",
-          deleteLeftOfTypeRole: true,
+          id: "assets.image.sprite.preview",
+          textLeftAligned: true,
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
-          text: "X\nimage:sprite\nimage.assets.preview.sprite",
-          tooltip: "id: image.assets.preview.sprite\ntype: image\nkind: image\nrole: sprite\npath: assets/images/preview.png"
+          tileHeight: 88,
+          idFontSize: 12,
+          typeRoleFontSize: 13,
+          idFontWeight: 500,
+          typeRoleFontWeight: 800,
+          rowGap: 2,
+          text: "X\nimage:sprite\nassets.image.sprite.preview",
+          tooltip: "id: assets.image.sprite.preview\ntype: image\nkind: image\nrole: sprite\npath: assets/images/preview.png"
         }
       ]);
       const tileLayout = await page.locator("#assetList").evaluate((list) => {
@@ -860,33 +903,40 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetList")).not.toContainText("Path:");
       await expect(page.locator("#assetList")).not.toContainText("Source:");
 
-      await page.locator('button[data-asset-id="audio.assets.fire.sound"]').click();
+      await page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]').click();
       await expect(page.locator("#updateAssetButton")).toBeEnabled();
       await page.locator("#assetRoleSelect").selectOption("music");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.music.fire-boom");
       await page.locator("#updateAssetButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated audio\.assets\.fire\.sound\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated assets\.audio\.music\.fire-boom\./);
+      await expect(page.locator("#assetList")).not.toContainText("assets.audio.sound.fire-boom");
+      await expect(page.locator("#assetList")).toContainText("assets.audio.music.fire-boom");
       await expect(page.locator("#inspectorOutput")).toContainText("\"role\": \"music\"");
-      await expect(page.locator("#inspectorOutput")).not.toContainText("Updated audio.assets.fire.sound");
+      await expect(page.locator("#inspectorOutput")).not.toContainText("Updated assets.audio.music.fire-boom");
       await expect(page.locator("#undoAssetButton")).toBeEnabled();
       await page.locator("#undoAssetButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Undo restored asset state\./);
+      await expect(page.locator("#assetList")).toContainText("assets.audio.sound.fire-boom");
+      await expect(page.locator("#assetList")).not.toContainText("assets.audio.music.fire-boom");
       await expect(page.locator("#inspectorOutput")).toContainText("\"role\": \"sound\"");
       await expect(page.locator("#redoAssetButton")).toBeEnabled();
       await page.locator("#redoAssetButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Redo restored asset state\./);
+      await expect(page.locator("#assetList")).toContainText("assets.audio.music.fire-boom");
+      await expect(page.locator("#assetList")).not.toContainText("assets.audio.sound.fire-boom");
       await expect(page.locator("#inspectorOutput")).toContainText("\"role\": \"music\"");
 
-      await page.locator('[data-delete-asset-id="image.assets.nebula-background.background"]').click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted image\.assets\.nebula-background\.background\./);
-      await expect(page.locator("#inspectorOutput")).not.toContainText("Deleted image.assets.nebula-background.background");
-      await expect(page.locator("#assetList")).not.toContainText("image.assets.nebula-background.background");
+      await page.locator('[data-delete-asset-id="assets.image.background.nebula-background"]').click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted assets\.image\.background\.nebula-background\./);
+      await expect(page.locator("#inspectorOutput")).not.toContainText("Deleted assets.image.background.nebula-background");
+      await expect(page.locator("#assetList")).not.toContainText("assets.image.background.nebula-background");
       await expect(page.locator(".asset-manager-v2__asset-tile")).toHaveCount(3);
       await page.locator("#undoAssetButton").click();
-      await expect(page.locator("#assetList")).toContainText("image.assets.nebula-background.background");
+      await expect(page.locator("#assetList")).toContainText("assets.image.background.nebula-background");
       await expect(page.locator(".asset-manager-v2__asset-tile")).toHaveCount(4);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Undo restored asset state\./);
       await page.locator("#redoAssetButton").click();
-      await expect(page.locator("#assetList")).not.toContainText("image.assets.nebula-background.background");
+      await expect(page.locator("#assetList")).not.toContainText("assets.image.background.nebula-background");
       await expect(page.locator(".asset-manager-v2__asset-tile")).toHaveCount(3);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Redo restored asset state\./);
 
@@ -1018,7 +1068,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");
       await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /audio\/wav/);
       await page.locator("#pickAssetFileButton").click();
-      await expect(page.locator("#assetIdInput")).toHaveValue("audio.assets.fire.sound");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.sound.fire");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/audio/fire.wav");
       await page.locator("#addAssetButton").click();
       await expect(page.locator("#workspaceInsertAssetsButton")).toBeEnabled();
@@ -1026,7 +1076,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Inserted 1 validated assets into Workspace V2 tools\.asset-browser\.assets/);
 
       const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
-      expect(storedContext.workspaceManifest.tools["asset-browser"].assets["audio.assets.fire.sound"]).toEqual({
+      expect(storedContext.workspaceManifest.tools["asset-browser"].assets["assets.audio.sound.fire"]).toEqual({
         path: "assets/audio/fire.wav",
         kind: "audio",
         role: "sound",

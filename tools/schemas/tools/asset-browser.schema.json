@@ -12,10 +12,10 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$": {
+        "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "$ref": "#/$defs/assetEntry"
         },
-        "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+        "^(?!assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "allOf": [
             {
               "$ref": "#/$defs/assetEntry"
@@ -33,10 +33,10 @@
       "propertyNames": {
         "anyOf": [
           {
-            "pattern": "^image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$"
+            "pattern": "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           },
           {
-            "pattern": "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+            "pattern": "^(?!assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           }
         ]
       }

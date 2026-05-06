@@ -21,10 +21,11 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (76%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 428/428; executed functions 37/49
-(94%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 235/235; executed functions 31/33
+(94%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 248/248; executed functions 33/35
+(96%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 250/250; executed functions 22/23
 (100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 61/61; executed functions 4/4
 (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 72/72; executed functions 9/9
-(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 181/181; executed functions 21/21
+(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 193/193; executed functions 22/22
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -134,8 +135,8 @@ Files with executed line/function counts where available:
 (90%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 52/58
 (92%) tools/templates-v2/js/controls/ToolStarterShellControl.js - executed lines 111/111; executed functions 11/12
 (93%) tools/workspace-v2/index.js - executed lines 104/104; executed functions 14/15
-(94%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 235/235; executed functions 31/33
-(95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 239/239; executed functions 20/21
+(94%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 248/248; executed functions 33/35
+(96%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 250/250; executed functions 22/23
 (100%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 6/6
 (100%) samples/phase-01/0102/main.js - executed lines 23/23; executed functions 1/1
 (100%) samples/phase-01/0103/main.js - executed lines 23/23; executed functions 1/1
@@ -168,7 +169,7 @@ Files with executed line/function counts where available:
 (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 72/72; executed functions 9/9
 (100%) tools/asset-manager-v2/js/controls/InspectorControl.js - executed lines 8/8; executed functions 3/3
 (100%) tools/asset-manager-v2/js/controls/StatusLogControl.js - executed lines 30/30; executed functions 9/9
-(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 181/181; executed functions 21/21
+(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 193/193; executed functions 22/22
 (100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 85/85; executed functions 10/10
 (100%) tools/preview-generator-v2/controls/AccordionSection.js - executed lines 31/31; executed functions 5/5
 (100%) tools/preview-generator-v2/controls/AssetFolderControl.js - executed lines 17/17; executed functions 5/5
@@ -203,6 +204,7 @@ Changed JS files considered:
 (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
 (76%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
 (94%) tools/asset-manager-v2/js/controls/AssetFormControl.js - changed JS file with browser V8 coverage
+(96%) tools/asset-manager-v2/js/assetManagerMetadata.js - changed JS file with browser V8 coverage
 (100%) tools/asset-manager-v2/js/bootstrap.js - changed JS file with browser V8 coverage
 (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file with browser V8 coverage
 (100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - changed JS file with browser V8 coverage

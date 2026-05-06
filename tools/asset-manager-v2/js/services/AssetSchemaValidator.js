@@ -1,11 +1,21 @@
 import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 
+const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;
+const BEZEL_ASSET_ID_PATTERN = /^assets\.image\.bezel\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
+
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function parseAssetId(assetId) {
+  const match = ASSET_ID_PATTERN.exec(String(assetId || ""));
+  return match
+    ? { type: match[1], role: match[2], filenamePart: match[3] }
+    : null;
 }
 
 export class AssetSchemaValidator {
@@ -141,10 +151,11 @@ export class AssetSchemaValidator {
 
   validateAssetEntry(assetId, entry, pointer) {
     const errors = [];
+    const assetIdParts = parseAssetId(assetId);
     if (typeof assetId !== "string" || !assetId.trim()) {
       errors.push(`${pointer}: id is required.`);
     } else if (!this.assetIdPatterns.some((pattern) => pattern.test(assetId))) {
-      errors.push(`${pointer}: Unsupported id or kind. Allowed kinds: ${this.allowedKinds.join(", ")}.`);
+      errors.push(`${pointer}: Unsupported id. Expected assets.<type>.<role>.<filenamePart>. Allowed types: ${this.allowedKinds.join(", ")}.`);
     }
     if (!isPlainObject(entry)) {
       return { ok: false, errors: [...errors, `${pointer}: asset entry must be an object.`] };
@@ -172,19 +183,22 @@ export class AssetSchemaValidator {
       if (rolesForKind.length && !rolesForKind.includes(entry.role)) {
         errors.push(`${pointer}.role: role "${entry.role}" is not allowed for ${entry.kind} assets.`);
       }
-      if (entry.role === "bezel" && !/^image\.[a-z0-9-]+\.[a-z0-9-]+(?:\.[a-z0-9-]+)*\.bezel$/.test(assetId)) {
-        errors.push(`${pointer}.role: bezel role requires an image id ending in .bezel.`);
+      if (entry.role === "bezel" && !BEZEL_ASSET_ID_PATTERN.test(assetId)) {
+        errors.push(`${pointer}.role: bezel role requires an assets.image.bezel.* id.`);
       }
     }
-    if (typeof assetId === "string" && entry.kind && !assetId.startsWith(`${entry.kind}.`)) {
-      errors.push(`${pointer}.kind: kind must match the id prefix.`);
+    if (assetIdParts && entry.kind && assetIdParts.type !== entry.kind) {
+      errors.push(`${pointer}.kind: kind must match the id type segment.`);
+    }
+    if (assetIdParts && entry.role && assetIdParts.role !== entry.role) {
+      errors.push(`${pointer}.role: role must match the id role segment.`);
     }
     if (!this.allowedSources.includes(entry.source)) {
       errors.push(`${pointer}.source: Unsupported asset source "${entry.source}".`);
     }
     if (Object.prototype.hasOwnProperty.call(entry, "stretchOverride")) {
-      if (!/^image\.[a-z0-9-]+\.[a-z0-9-]+(?:\.[a-z0-9-]+)*\.bezel$/.test(assetId)) {
-        errors.push(`${pointer}.stretchOverride: stretchOverride is only allowed on image.*.bezel assets.`);
+      if (!BEZEL_ASSET_ID_PATTERN.test(assetId)) {
+        errors.push(`${pointer}.stretchOverride: stretchOverride is only allowed on assets.image.bezel.* assets.`);
       }
       if (!isPlainObject(entry.stretchOverride) || !Number.isFinite(entry.stretchOverride.uniformEdgeStretchPx) || entry.stretchOverride.uniformEdgeStretchPx < 0) {
         errors.push(`${pointer}.stretchOverride.uniformEdgeStretchPx: value must be a number greater than or equal to 0.`);

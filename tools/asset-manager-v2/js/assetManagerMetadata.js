@@ -143,6 +143,18 @@ export function slugifyAssetSegment(value) {
   return slug || "asset";
 }
 
+function dotPathIdSegment(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/\.[^.]+$/, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export function filenamePartForAssetId(fileName) {
+  return dotPathIdSegment(fileName) || "asset";
+}
+
 export function sanitizeFileName(fileName) {
   const rawName = String(fileName || "asset");
   const extensionMatch = rawName.match(/(\.[a-z0-9]+)$/i);
@@ -151,11 +163,12 @@ export function sanitizeFileName(fileName) {
 }
 
 export function assetIdForFile(kind, fileName, role) {
-  const slug = slugifyAssetSegment(fileName);
-  if (role) {
-    return `${kind}.assets.${slug}.${slugifyAssetSegment(role)}`;
+  const normalizedType = dotPathIdSegment(kind);
+  const normalizedRole = dotPathIdSegment(role);
+  if (!normalizedType || !normalizedRole) {
+    return "";
   }
-  return kind ? `${kind}.assets.${slug}` : "";
+  return `assets.${normalizedType}.${normalizedRole}.${filenamePartForAssetId(fileName)}`;
 }
 
 export function suggestedRoleForFile(kind, fileName) {
