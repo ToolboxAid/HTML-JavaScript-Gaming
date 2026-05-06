@@ -113,6 +113,13 @@ async function openPreviewGenerator(page, { withFakeRepo = false, validSampleIds
   return server;
 }
 
+async function openPaletteManager(page) {
+  const server = await startRepoServer();
+  await coverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/palette-manager-v2/index.html`, { waitUntil: "networkidle" });
+  return server;
+}
+
 async function expectAccordionToggles(page, contentId) {
   const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
   const content = page.locator(`#${contentId}`);
@@ -402,6 +409,33 @@ test.describe("Preview Generator V2 baseline", () => {
       const writes = await page.evaluate(() => window.__previewGeneratorV2Writes);
       expect(writes).toHaveLength(1);
       expect(writes[0].path).toBe("HTML-JavaScript-Gaming/samples/phase-01/0102/assets/images/preview.svg");
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("loads Palette Manager V2 so coverage includes Palette Manager runtime files", async ({ page }) => {
+    const server = await openPaletteManager(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator(".palette-manager-v2.app-shell")).toBeVisible();
+      await expect(page.locator("h1", { hasText: "Palette Manager V2" })).toBeVisible();
+      await expect(page.locator('nav[aria-label="menuSample"]')).toBeVisible();
+      await expect(page.locator("#sourcePaletteSelect")).toBeVisible();
+      await expect(page.locator("#sourceSwatchList .palette-manager-v2__source-tile").first()).toBeVisible();
+      await expect(page.locator("#importPaletteButton")).toBeVisible();
+      await expect(page.locator("#copyPaletteButton")).toBeVisible();
+      await expect(page.locator("#exportPaletteButton")).toBeVisible();
+      await expect(page.locator("#paletteStatus")).toContainText("Ready.");
+      await page.waitForFunction(() => Boolean(globalThis.paletteManagerV2App?.getPaletteValue));
 
       expect(pageErrors).toEqual([]);
     } finally {

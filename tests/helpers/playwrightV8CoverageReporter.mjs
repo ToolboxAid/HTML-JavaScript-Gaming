@@ -46,8 +46,9 @@ export class PlaywrightV8CoverageReporter {
     const reportLines = [
       "Playwright V8 Coverage Report",
       "",
-      "PR: PR_26126_057-playwright-coverage-formatting",
+      "PR: PR_26126_058-playwright-coverage-include-palette-manager",
       "Coverage source: Playwright/Chromium built-in V8 coverage.",
+      "Coverage scope: all collected runtime JavaScript under src/, tools/, and common/.",
       "Dependencies: no new npm packages.",
       "Thresholds: none enforced.",
       "Note: coverage is an advisory baseline only for this PR.",
