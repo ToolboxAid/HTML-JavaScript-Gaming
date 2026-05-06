@@ -591,6 +591,38 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator(".tool-starter__panel--right #inspectorContent")).toBeVisible();
       await expect(page.locator(".tool-starter__panel--right #statusLogContent")).toBeVisible();
       await expect(page.locator(".tool-starter__panel--right .accordion-v2").last()).toContainText("Status");
+      const templateStatusHeader = page.locator('.tool-starter__panel--right .accordion-v2__header[aria-controls="statusLogContent"]');
+      const templateStatusContent = page.locator("#statusLogContent");
+      const templateStatusTitle = templateStatusHeader.locator("span").first();
+      await expect(templateStatusHeader.locator("#clearStatusButton")).toBeVisible();
+      await expect(templateStatusContent.locator("#clearStatusButton")).toHaveCount(0);
+      const clearAlignment = await page.evaluate(() => {
+        const header = document.querySelector('.tool-starter__panel--right .accordion-v2__header[aria-controls="statusLogContent"]');
+        const clear = document.getElementById("clearStatusButton");
+        const headerRect = header.getBoundingClientRect();
+        const clearRect = clear.getBoundingClientRect();
+        return {
+          clearInsideHeader: header.contains(clear),
+          headerCenterY: headerRect.top + headerRect.height / 2,
+          clearCenterY: clearRect.top + clearRect.height / 2,
+          headerHeight: headerRect.height
+        };
+      });
+      expect(clearAlignment.clearInsideHeader).toBe(true);
+      expect(Math.abs(clearAlignment.clearCenterY - clearAlignment.headerCenterY)).toBeLessThan(clearAlignment.headerHeight / 2);
+      const clearStyle = await page.locator("#clearStatusButton").evaluate((button) => {
+        const style = getComputedStyle(button);
+        return {
+          borderRadius: style.borderRadius,
+          paddingLeft: style.paddingLeft,
+          paddingRight: style.paddingRight,
+          cursor: style.cursor
+        };
+      });
+      expect(clearStyle.borderRadius).toBe("10px");
+      expect(clearStyle.paddingLeft).toBe("6px");
+      expect(clearStyle.paddingRight).toBe("6px");
+      expect(clearStyle.cursor).toBe("pointer");
 
       const duplicateIds = await page.evaluate(() => {
         const ids = [...document.querySelectorAll("[id]")].map((element) => element.id);
@@ -625,8 +657,25 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(exportToolStateButton).toBeEnabled();
       await exportButton.click();
       await expect(page.locator("#statusLog")).toHaveValue(/Processed source value/);
+      await expect(templateStatusHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(templateStatusContent).toBeVisible();
       await page.locator("#clearStatusButton").click();
       await expect(page.locator("#statusLog")).toHaveValue("");
+      await expect(templateStatusHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(templateStatusContent).toBeVisible();
+
+      await exportButton.click();
+      await expect(page.locator("#statusLog")).toHaveValue(/Processed source value/);
+      await templateStatusTitle.click();
+      await expect(templateStatusContent).toBeHidden();
+      await expect(templateStatusHeader).toHaveAttribute("aria-expanded", "false");
+      await page.locator("#clearStatusButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue("");
+      await expect(templateStatusHeader).toHaveAttribute("aria-expanded", "false");
+      await expect(templateStatusContent).toBeHidden();
+      await templateStatusTitle.click();
+      await expect(templateStatusContent).toBeVisible();
+      await expect(templateStatusHeader).toHaveAttribute("aria-expanded", "true");
 
       await page.locator("#sourceInput").fill("");
       await expect(exportButton).toBeDisabled();

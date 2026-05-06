@@ -190,6 +190,7 @@ textarea:focus-visible {
   font-weight: 700;
   padding: 10px 12px;
   text-align: left;
+  cursor: pointer;
 }
 
 .accordion-v2__icon {
@@ -219,6 +220,34 @@ textarea:focus-visible {
 
 .accordion-v2__content[hidden] {
   display: none;
+}
+
+.tool-starter__status-accordion-header {
+  flex: 0 0 42px;
+  min-width: 0;
+}
+
+.tool-starter__status-header-actions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-starter__status-clear-button {
+  flex: 0 0 auto;
+  margin-right: 0;
+  border-color: var(--tool-starter-line) !important;
+  border-radius: 10px !important;
+  background: ButtonFace;
+  color: ButtonText;
+  padding: 2px 6px;
+}
+
+.tool-starter__status-clear-button:hover {
+  border-color: var(--tool-starter-line) !important;
+  background: ButtonFace;
+  color: ButtonText;
 }
 
 .tool-starter__accordion--fill {

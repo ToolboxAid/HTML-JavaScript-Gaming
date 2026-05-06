@@ -5,7 +5,10 @@ export class StatusLogControl {
   }
 
   mount() {
-    this.clearButton.addEventListener("click", () => this.clear());
+    this.clearButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      this.clear();
+    });
   }
 
   clear() {
@@ -23,4 +26,3 @@ export class StatusLogControl {
     this.log.scrollTop = this.log.scrollHeight;
   }
 }
-

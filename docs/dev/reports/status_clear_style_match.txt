@@ -1,0 +1,44 @@
+PR_26126_074-status-clear-style-match
+
+Scope:
+- Tool Template V2 Status Clear button styling only.
+- Existing Status header placement and Clear behavior were preserved.
+
+Preview Generator V2 styling reviewed:
+- `tools/preview-generator-v2/index.html`
+- `tools/preview-generator-v2/previewGeneratorV2.css`
+- Preview Generator V2 keeps Clear in the Status header action row with:
+  - `preview-generator-v2__status-header-actions`
+  - `preview-generator-v2__status-clear-button`
+  - compact browser-style button padding
+  - 10px rounded border inherited from the Palette Manager surface button pattern
+
+Changes:
+- Updated `tools/templates-v2/styles/toolStarter.css` so `#clearStatusButton` visually follows the Preview Generator V2 header action button pattern:
+  - compact `2px 6px` padding
+  - 10px border radius
+  - same status header action spacing
+  - browser-style ButtonFace/ButtonText colors instead of the dark template action-button treatment
+  - unchanged hover styling pattern
+- Added Playwright style assertions for Tool Template V2 Status Clear:
+  - Clear remains inside the Status header
+  - Clear remains on the Status header row
+  - Clear uses the compact Preview-style border radius and padding
+  - Clear still clears the textarea
+  - Clear still does not toggle the accordion
+
+Playwright impacted: Yes
+- This PR changes a visible UI control style and validates the existing Status Clear behavior.
+- `npm run test:workspace-v2` passed.
+
+Validation:
+- `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs` passed.
+- `node --check tools/templates-v2/js/controls/StatusLogControl.js` passed.
+- `npm run test:workspace-v2` passed: 7 tests passed.
+- `git diff --check` passed.
+
+Manual test notes:
+- Open Tool Template V2.
+- Confirm the Status Clear button remains in the Status header row.
+- Confirm Clear visually matches the Preview Generator V2 compact header action button style.
+- Click Clear and confirm the status textarea empties without collapsing or expanding Status.

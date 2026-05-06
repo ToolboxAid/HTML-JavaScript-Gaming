@@ -1,0 +1,43 @@
+PR_26126_073-status-clear-placement-match-preview-generator
+
+Scope:
+- Tool Template V2 Status Clear placement and behavior.
+- Preview Generator V2 was used as the reference pattern.
+
+Preview Generator V2 pattern reviewed:
+- `tools/preview-generator-v2/index.html`
+- Working Status pattern:
+  - `section.accordion-v2`
+  - `.accordion-v2__header` contains the `Status` title
+  - header action container contains `Clear`
+  - accordion icon remains in the same header action row
+  - content contains only the status/log output
+
+Changes:
+- Applied the same Status header/action pattern to `tools/templates-v2/index.html`.
+- Moved `#clearStatusButton` out of `#statusLogContent` and into the Status `.accordion-v2__header`.
+- Added `tool-starter__status-header-actions` and `tool-starter__status-clear-button` styling to keep Clear on the same visual row as the Status title and accordion icon.
+- Updated `tools/templates-v2/js/controls/StatusLogControl.js` so Clear stops event propagation before clearing the log.
+- Extended workspace Playwright assertions for Tool Template V2 to verify:
+  - Clear is physically inside the Status header DOM
+  - Clear is not inside the Status content panel
+  - Clear aligns on the same header row as the Status title
+  - Clear clears the textarea while the accordion is open
+  - Clear clears the textarea without toggling while the accordion is collapsed
+  - Status still expands and collapses from the normal Status title/header click
+
+Playwright impacted: Yes
+- This PR changes Tool Template V2 UI control placement and click behavior.
+- `npm run test:workspace-v2` passed.
+
+Validation:
+- `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs` passed.
+- `node --check tools/templates-v2/js/controls/StatusLogControl.js` passed.
+- `npm run test:workspace-v2` passed: 7 tests passed.
+- `git diff --check` passed with line-ending warnings only.
+
+Manual test notes:
+- Open Tool Template V2.
+- Confirm the Status header row shows `Status`, `Clear`, and the accordion icon on the same row.
+- Click Clear and confirm the status textarea empties without changing accordion state.
+- Click the Status title/header and confirm the Status section still collapses and expands.
