@@ -65,6 +65,7 @@ export class AssetManagerV2App {
     this.assetForm.mount({
       onAdd: (value) => this.addAsset(value),
       onChange: () => this.refreshActions(),
+      onColorSelected: (value, colorInfo) => this.validateSelectedColor(value, colorInfo),
       onFileSelected: (value, fileInfo) => this.validateSelectedFile(value, fileInfo),
       onRedo: () => this.redoAssetChange(),
       onStatus: (level, message) => this.writeStatus(level, message),
@@ -99,6 +100,7 @@ export class AssetManagerV2App {
     this.schemaReady = true;
     this.assetForm.setKinds(this.schemaValidator.allowedTypes);
     this.statusLog.info(`Loaded asset-browser.schema.json. Types: ${this.schemaValidator.allowedTypes.join(", ")}. Kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
+    this.loadWorkspacePaletteIfPresent();
     this.loadWorkspaceAssetsIfPresent();
     this.render();
     this.refreshActions();
@@ -125,6 +127,21 @@ export class AssetManagerV2App {
     this.statusLog.ok(`Workspace mode loaded ${Object.keys(this.assets).length} validated assets from tools.asset-browser.assets.`);
   }
 
+  loadWorkspacePaletteIfPresent() {
+    if (!this.workspaceBridge.isWorkspaceMode()) {
+      this.assetForm.setPaletteSwatches([]);
+      return;
+    }
+    const result = this.workspaceBridge.readWorkspacePaletteSwatches();
+    if (!result.ok) {
+      this.assetForm.setPaletteSwatches([]);
+      this.statusLog.fail(result.message);
+      return;
+    }
+    this.assetForm.setPaletteSwatches(result.swatches);
+    this.statusLog.ok(`Workspace mode loaded ${result.swatches.length} palette colors from tools.palette-browser.swatches.`);
+  }
+
   currentPayload() {
     return {
       assets: sortedAssets(this.assets)
@@ -147,6 +164,7 @@ export class AssetManagerV2App {
       kind: entry.kind,
       role: entry.role,
       path: entry.path,
+      ...(entry.color ? { color: entry.color } : {}),
       ...(entry.stretchOverride ? { stretchOverride: entry.stretchOverride } : {})
     }));
   }
@@ -344,6 +362,30 @@ export class AssetManagerV2App {
       return;
     }
     this.statusLog.ok(`Selected file ${fileInfo.name} validated as type ${formValue.type}, kind ${formValue.kind}, role ${formValue.role}.`);
+  }
+
+  validateSelectedColor(formValue, colorInfo) {
+    if (!this.schemaReady) {
+      this.statusLog.fail("Schema is not loaded; selected color validation is blocked.");
+      return;
+    }
+    const colorValidation = this.schemaValidator.validateColorSelection(formValue, colorInfo);
+    if (!colorValidation.ok) {
+      this.statusLog.fail(`Selected color validation failed: ${colorValidation.errors.join(" | ")}`);
+      this.refreshActions();
+      return;
+    }
+    const payloadValidation = this.schemaValidator.validatePayload({
+      assets: {
+        [formValue.assetId]: colorValidation.entry
+      }
+    });
+    if (!payloadValidation.ok) {
+      this.statusLog.fail(`Selected color validation failed: ${payloadValidation.errors.join(" | ")}`);
+      this.refreshActions();
+      return;
+    }
+    this.statusLog.ok(`Selected color ${colorInfo.name} validated as type color, kind hex, role ${formValue.role}.`);
   }
 
   writeStatus(level, message) {

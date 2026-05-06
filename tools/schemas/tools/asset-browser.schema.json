@@ -12,8 +12,38 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
+        "^assets\\.color\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/assetEntry"
+            },
+            {
+              "required": [
+                "color"
+              ]
+            },
+            {
+              "not": {
+                "required": [
+                  "stretchOverride"
+                ]
+              }
+            }
+          ]
+        },
         "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
-          "$ref": "#/$defs/assetEntry"
+          "allOf": [
+            {
+              "$ref": "#/$defs/assetEntry"
+            },
+            {
+              "not": {
+                "required": [
+                  "color"
+                ]
+              }
+            }
+          ]
         },
         "^(?!assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "allOf": [
@@ -26,12 +56,22 @@
                   "stretchOverride"
                 ]
               }
+            },
+            {
+              "not": {
+                "required": [
+                  "color"
+                ]
+              }
             }
           ]
         }
       },
       "propertyNames": {
         "anyOf": [
+          {
+            "pattern": "^assets\\.color\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+          },
           {
             "pattern": "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           },
@@ -70,13 +110,14 @@
         "type": {
           "type": "string",
           "enum": [
-            "image",
             "audio",
-            "font",
-            "video",
-            "shader",
+            "color",
             "data",
-            "localization"
+            "font",
+            "image",
+            "localization",
+            "shader",
+            "video"
           ]
         },
         "kind": {
@@ -92,6 +133,7 @@
             "wav",
             "ogg",
             "m4a",
+            "hex",
             "woff",
             "woff2",
             "ttf",
@@ -130,7 +172,16 @@
             "config",
             "table",
             "strings",
-            "dialogue"
+            "dialogue",
+            "hud",
+            "text",
+            "border",
+            "accent",
+            "warning",
+            "success",
+            "danger",
+            "shadow",
+            "highlight"
           ]
         },
         "source": {
@@ -141,6 +192,9 @@
             "asset-manager-v2",
             "manifest"
           ]
+        },
+        "color": {
+          "$ref": "#/$defs/colorEntry"
         },
         "stretchOverride": {
           "type": "object",
@@ -167,6 +221,18 @@
       "audio": [
         "sound",
         "music"
+      ],
+      "color": [
+        "hud",
+        "text",
+        "background",
+        "border",
+        "accent",
+        "warning",
+        "success",
+        "danger",
+        "shadow",
+        "highlight"
       ],
       "font": [
         "ui",
@@ -205,6 +271,9 @@
         "ogg",
         "m4a"
       ],
+      "color": [
+        "hex"
+      ],
       "font": [
         "woff",
         "woff2",
@@ -234,6 +303,40 @@
         "xliff",
         "xlf"
       ]
+    },
+    "colorEntry": {
+      "type": "object",
+      "required": [
+        "hex",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "hex": {
+          "type": "string",
+          "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "symbol": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
     },
     "jsonValue": {
       "oneOf": [

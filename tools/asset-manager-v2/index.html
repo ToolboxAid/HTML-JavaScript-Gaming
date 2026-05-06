@@ -24,7 +24,7 @@
                   <h2 class="tools-platform-frame__eyebrow">Asset-only First-Class Tool V2</h2>
                 </div>
                 <div class="tools-platform-frame__summary-meta">
-                  <div class="tools-platform-frame__meta">Validated image, audio, font, video, shader, data, and localization entries for Workspace V2 assets.</div>
+                  <div class="tools-platform-frame__meta">Validated audio, color, data, font, image, localization, shader, and video entries for Workspace V2 assets.</div>
                 </div>
               </div>
               <div class="tools-platform-frame__topline">
@@ -57,40 +57,49 @@
           <div id="assetControlsContent" class="accordion-v2__content">
             <fieldset class="asset-manager-v2__kind-controls" aria-label="Asset type">
               <legend>Type</legend>
-              <label for="assetKindImage">
-                <input id="assetKindImage" name="assetKind" type="radio" value="image" checked>
-                <span>Image</span>
-              </label>
               <label for="assetKindAudio">
-                <input id="assetKindAudio" name="assetKind" type="radio" value="audio">
+                <input id="assetKindAudio" name="assetKind" type="radio" value="audio" checked>
                 <span>Audio</span>
               </label>
-              <label for="assetKindFont">
-                <input id="assetKindFont" name="assetKind" type="radio" value="font">
-                <span>Font</span>
-              </label>
-              <label for="assetKindVideo">
-                <input id="assetKindVideo" name="assetKind" type="radio" value="video">
-                <span>Video</span>
-              </label>
-              <label for="assetKindShader">
-                <input id="assetKindShader" name="assetKind" type="radio" value="shader">
-                <span>Shader</span>
+              <label for="assetKindColor">
+                <input id="assetKindColor" name="assetKind" type="radio" value="color">
+                <span>Color</span>
               </label>
               <label for="assetKindData">
                 <input id="assetKindData" name="assetKind" type="radio" value="data">
                 <span>Data</span>
               </label>
+              <label for="assetKindFont">
+                <input id="assetKindFont" name="assetKind" type="radio" value="font">
+                <span>Font</span>
+              </label>
+              <label for="assetKindImage">
+                <input id="assetKindImage" name="assetKind" type="radio" value="image">
+                <span>Image</span>
+              </label>
               <label for="assetKindLocalization">
                 <input id="assetKindLocalization" name="assetKind" type="radio" value="localization">
                 <span>Localization</span>
               </label>
+              <label for="assetKindShader">
+                <input id="assetKindShader" name="assetKind" type="radio" value="shader">
+                <span>Shader</span>
+              </label>
+              <label for="assetKindVideo">
+                <input id="assetKindVideo" name="assetKind" type="radio" value="video">
+                <span>Video</span>
+              </label>
             </fieldset>
 
             <fieldset class="asset-manager-v2__file-picker-controls" aria-label="Asset file pickers">
-              <legend>Pick asset file</legend>
-              <button id="pickAssetFileButton" type="button">Pick Asset File</button>
+              <legend>Pick Asset</legend>
+              <button id="pickAssetFileButton" type="button">Pick Asset</button>
               <input id="assetFileInput" class="asset-manager-v2__file-input" type="file" aria-label="Asset file">
+            </fieldset>
+            <fieldset id="assetColorPickerPanel" class="asset-manager-v2__color-picker" aria-label="Palette color picker" hidden>
+              <legend>Palette Colors</legend>
+              <div id="assetColorSortControls" class="asset-manager-v2__color-sort-controls" role="radiogroup" aria-label="Sort palette colors"></div>
+              <div id="assetColorSwatchList" class="asset-manager-v2__color-swatch-list" aria-label="Active Workspace V2 palette colors"></div>
             </fieldset>
 
             <label class="asset-manager-v2__field" for="assetRoleSelect">

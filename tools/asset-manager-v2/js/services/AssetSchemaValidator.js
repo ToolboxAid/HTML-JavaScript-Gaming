@@ -3,6 +3,7 @@ import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;
 const BEZEL_ASSET_ID_PATTERN = /^assets\.image\.bezel\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
 const DEFAULT_BEZEL_STRETCH_PX = 10;
+const COLOR_HEX_PATTERN = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -99,7 +100,7 @@ export class AssetSchemaValidator {
       .reduce((node, key) => (node && typeof node === "object" ? node[key] : undefined), this.schema);
   }
 
-  createEntry({ assetId, kind, path, role, stretchOverride, type }) {
+  createEntry({ assetId, color, kind, path, role, stretchOverride, type }) {
     const entry = {
       path,
       type,
@@ -111,6 +112,15 @@ export class AssetSchemaValidator {
       const uniformEdgeStretchPx = Number(stretchOverride?.uniformEdgeStretchPx);
       entry.stretchOverride = {
         uniformEdgeStretchPx: Number.isFinite(uniformEdgeStretchPx) ? uniformEdgeStretchPx : DEFAULT_BEZEL_STRETCH_PX
+      };
+    }
+    if (type === "color") {
+      entry.color = {
+        hex: String(color?.hex || "").trim(),
+        name: String(color?.name || "").trim(),
+        ...(color?.symbol ? { symbol: String(color.symbol).trim() } : {}),
+        ...(color?.source ? { source: String(color.source).trim() } : {}),
+        ...(Array.isArray(color?.tags) && color.tags.length ? { tags: color.tags.map(String) } : {})
       };
     }
     const validation = this.validateAssetEntry(assetId, entry, `assets.${assetId || "(empty)"}`);
@@ -128,6 +138,22 @@ export class AssetSchemaValidator {
     }
     if (!fileMatchesAccept(formValue.type, { name: fileInfo.name, type: fileInfo.mimeType || "" })) {
       return { ok: false, errors: [`File ${fileInfo.name} is not accepted for ${labelForKind(formValue.type)} assets.`] };
+    }
+    return this.createEntry(formValue);
+  }
+
+  validateColorSelection(formValue, colorInfo) {
+    if (!colorInfo) {
+      return { ok: false, errors: ["Select a Workspace V2 palette color."] };
+    }
+    if (formValue.type !== "color") {
+      return { ok: false, errors: [`Selected color type "color" does not match active type "${formValue.type}".`] };
+    }
+    if (formValue.kind !== "hex") {
+      return { ok: false, errors: [`Selected color kind must be "hex", received "${formValue.kind}".`] };
+    }
+    if (formValue.color?.hex !== colorInfo.hex || formValue.color?.name !== colorInfo.name) {
+      return { ok: false, errors: ["Selected color must come from the active Workspace V2 palette."] };
     }
     return this.createEntry(formValue);
   }
@@ -173,7 +199,7 @@ export class AssetSchemaValidator {
       return { ok: false, errors: [...errors, `${pointer}: asset entry must be an object.`] };
     }
 
-    const allowedEntryKeys = new Set(["path", "type", "kind", "role", "source", "stretchOverride"]);
+    const allowedEntryKeys = new Set(["path", "type", "kind", "role", "source", "color", "stretchOverride"]);
     for (const key of Object.keys(entry)) {
       if (!allowedEntryKeys.has(key)) {
         errors.push(`${pointer}.${key}: field is not allowed by asset-browser.schema.json.`);
@@ -222,6 +248,37 @@ export class AssetSchemaValidator {
       if (!isPlainObject(entry.stretchOverride) || !Number.isFinite(entry.stretchOverride.uniformEdgeStretchPx) || entry.stretchOverride.uniformEdgeStretchPx < 0) {
         errors.push(`${pointer}.stretchOverride.uniformEdgeStretchPx: value must be a number greater than or equal to 0.`);
       }
+    }
+    if (entry.type === "color") {
+      errors.push(...this.validateColorEntry(entry.color, `${pointer}.color`).errors);
+    } else if (Object.prototype.hasOwnProperty.call(entry, "color")) {
+      errors.push(`${pointer}.color: color metadata is only allowed on color assets.`);
+    }
+    return { ok: errors.length === 0, errors };
+  }
+
+  validateColorEntry(color, pointer) {
+    const errors = [];
+    if (!isPlainObject(color)) {
+      return { ok: false, errors: [`${pointer}: color metadata is required for color assets.`] };
+    }
+    const allowedColorKeys = new Set(["hex", "name", "symbol", "source", "tags"]);
+    for (const key of Object.keys(color)) {
+      if (!allowedColorKeys.has(key)) {
+        errors.push(`${pointer}.${key}: field is not allowed by asset-browser.schema.json.`);
+      }
+    }
+    if (!COLOR_HEX_PATTERN.test(String(color.hex || ""))) {
+      errors.push(`${pointer}.hex: hex must be #RRGGBB or #RRGGBBAA.`);
+    }
+    if (typeof color.name !== "string" || !color.name.trim()) {
+      errors.push(`${pointer}.name: name is required.`);
+    }
+    if (Object.prototype.hasOwnProperty.call(color, "symbol") && (typeof color.symbol !== "string" || color.symbol.length !== 1)) {
+      errors.push(`${pointer}.symbol: symbol must be one character.`);
+    }
+    if (Object.prototype.hasOwnProperty.call(color, "tags") && (!Array.isArray(color.tags) || color.tags.some((tag) => typeof tag !== "string" || !tag.trim()))) {
+      errors.push(`${pointer}.tags: tags must be non-empty strings.`);
     }
     return { ok: errors.length === 0, errors };
   }

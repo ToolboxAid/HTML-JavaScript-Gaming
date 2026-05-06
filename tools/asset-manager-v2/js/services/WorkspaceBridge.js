@@ -66,6 +66,22 @@ export class WorkspaceBridge {
     return { ok: true, payload: { assets: clone(assetPayload.assets) } };
   }
 
+  readWorkspacePaletteSwatches() {
+    const contextResult = this.readContext();
+    if (!contextResult.ok) {
+      return contextResult;
+    }
+    const workspaceManifest = this.workspaceManifestFromContext(contextResult.context);
+    if (!isPlainObject(workspaceManifest)) {
+      return { ok: false, message: "Workspace V2 context is missing workspaceManifest." };
+    }
+    const palettePayload = workspaceManifest.tools?.["palette-browser"];
+    if (!isPlainObject(palettePayload) || !Array.isArray(palettePayload.swatches)) {
+      return { ok: false, message: "Workspace V2 manifest is missing tools.palette-browser.swatches." };
+    }
+    return { ok: true, swatches: clone(palettePayload.swatches) };
+  }
+
   writeAssetsPayload(payload) {
     if (!this.isWorkspaceMode()) {
       return { ok: false, message: "Asset insertion is only available when launched from Workspace V2." };

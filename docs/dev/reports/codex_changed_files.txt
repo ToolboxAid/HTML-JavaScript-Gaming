@@ -1,40 +1,42 @@
 # git status --short
 M docs/dev/reports/coverage_changed_js_guardrail.txt
  M docs/dev/reports/playwright_v8_coverage_report.txt
+ M src/shared/assets/assetPreviewHelpers.js
  M tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+ M tools/asset-manager-v2/README.md
  M tools/asset-manager-v2/index.html
  M tools/asset-manager-v2/js/AssetManagerV2App.js
  M tools/asset-manager-v2/js/assetManagerMetadata.js
  M tools/asset-manager-v2/js/bootstrap.js
- M tools/asset-manager-v2/js/controls/AssetCatalogControl.js
  M tools/asset-manager-v2/js/controls/AssetFormControl.js
+ M tools/asset-manager-v2/js/controls/AssetManagerShellControl.js
  M tools/asset-manager-v2/js/services/AssetSchemaValidator.js
+ M tools/asset-manager-v2/js/services/WorkspaceBridge.js
  M tools/asset-manager-v2/styles/assetManager.css
  M tools/schemas/tools/asset-browser.schema.json
-?? docs/dev/reports/PR_26126_091_asset_manager_v2_bezel_stretch_override_notes.md
-?? docs/dev/reports/PR_26126_091_asset_manager_v2_inspector_behavior_notes.md
-?? docs/dev/reports/PR_26126_091_asset_manager_v2_manual_validation_notes.md
-?? docs/dev/reports/PR_26126_091_asset_manager_v2_type_kind_schema_notes.md
-?? src/shared/assets/
+?? docs/dev/reports/PR_26126_092_asset_manager_v2_color_asset_schema_notes.md
+?? docs/dev/reports/PR_26126_092_asset_manager_v2_manual_validation_notes.md
+?? docs/dev/reports/PR_26126_092_asset_manager_v2_palette_picker_notes.md
 
 # git ls-files --others --exclude-standard
-docs/dev/reports/PR_26126_091_asset_manager_v2_bezel_stretch_override_notes.md
-docs/dev/reports/PR_26126_091_asset_manager_v2_inspector_behavior_notes.md
-docs/dev/reports/PR_26126_091_asset_manager_v2_manual_validation_notes.md
-docs/dev/reports/PR_26126_091_asset_manager_v2_type_kind_schema_notes.md
-src/shared/assets/assetPreviewHelpers.js
+docs/dev/reports/PR_26126_092_asset_manager_v2_color_asset_schema_notes.md
+docs/dev/reports/PR_26126_092_asset_manager_v2_manual_validation_notes.md
+docs/dev/reports/PR_26126_092_asset_manager_v2_palette_picker_notes.md
 
 # git diff --stat
-docs/dev/reports/coverage_changed_js_guardrail.txt |  13 +--
- docs/dev/reports/playwright_v8_coverage_report.txt |  34 +++---
- .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 113 +++++++++++++++++--
- tools/asset-manager-v2/index.html                  |   8 +-
- tools/asset-manager-v2/js/AssetManagerV2App.js     |  19 ++--
- tools/asset-manager-v2/js/assetManagerMetadata.js  | 120 ++++++++++++++++-----
- tools/asset-manager-v2/js/bootstrap.js             |   2 +
- .../js/controls/AssetCatalogControl.js             |  13 ++-
- .../js/controls/AssetFormControl.js                |  76 +++++++++----
- .../js/services/AssetSchemaValidator.js            |  57 ++++++----
- tools/asset-manager-v2/styles/assetManager.css     |  77 ++++++++++++-
- tools/schemas/tools/asset-browser.schema.json      |  83 +++++++++++++-
- 12 files changed, 496 insertions(+), 119 deletions(-)
+docs/dev/reports/coverage_changed_js_guardrail.txt |  14 +-
+ docs/dev/reports/playwright_v8_coverage_report.txt |  38 ++--
+ src/shared/assets/assetPreviewHelpers.js           |   6 +
+ .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 166 +++++++++++++--
+ tools/asset-manager-v2/README.md                   |   4 +-
+ tools/asset-manager-v2/index.html                  |  45 ++--
+ tools/asset-manager-v2/js/AssetManagerV2App.js     |  42 ++++
+ tools/asset-manager-v2/js/assetManagerMetadata.js  |  54 +++--
+ tools/asset-manager-v2/js/bootstrap.js             |   3 +
+ .../js/controls/AssetFormControl.js                | 227 ++++++++++++++++++++-
+ .../js/controls/AssetManagerShellControl.js        |   2 +-
+ .../js/services/AssetSchemaValidator.js            |  61 +++++-
+ .../js/services/WorkspaceBridge.js                 |  16 ++
+ tools/asset-manager-v2/styles/assetManager.css     |  74 +++++++
+ tools/schemas/tools/asset-browser.schema.json      | 115 ++++++++++-
+ 15 files changed, 762 insertions(+), 105 deletions(-)

@@ -20,9 +20,11 @@ export function createAssetPreviewModel(assetId, entry = {}, options = {}) {
   const kind = normalizeText(entry.kind);
   const role = normalizeText(entry.role);
   const path = sanitizeText(entry.path);
+  const color = entry.color && typeof entry.color === "object" ? entry.color : null;
   const url = resolveRuntimeAssetUrl(path, options.documentRef || globalThis.document || null);
   return {
     assetId: sanitizeText(assetId),
+    color,
     type,
     kind,
     role,
@@ -41,6 +43,8 @@ export function renderAssetPreviewHtml(model) {
   const escapedPath = escapeHtml(preview.path);
   const escapedUrl = escapeHtml(preview.url);
   const escapedTitle = escapeHtml(preview.title);
+  const escapedColorHex = escapeHtml(preview.color?.hex || "");
+  const escapedColorName = escapeHtml(preview.color?.name || "");
   const rows = [
     `<dt>ID</dt><dd>${escapedId}</dd>`,
     `<dt>Type</dt><dd>${escapedType}</dd>`,
@@ -63,6 +67,8 @@ export function renderAssetPreviewHtml(model) {
     body = `<pre class="asset-manager-v2__preview-code">Shader inspection\nkind: ${escapedKind}\npath: ${escapedPath}</pre>`;
   } else if (preview.type === "data" || preview.type === "localization") {
     body = `<pre class="asset-manager-v2__preview-code">${escapedTitle} inspection\npath: ${escapedPath}</pre>`;
+  } else if (preview.type === "color" && preview.color?.hex) {
+    body = `<div class="asset-manager-v2__preview-color"><span style="background:${escapedColorHex}"></span><strong>${escapedColorName}</strong><code>${escapedColorHex}</code></div>`;
   }
 
   return `

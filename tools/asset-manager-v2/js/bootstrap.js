@@ -37,6 +37,9 @@ window.addEventListener("DOMContentLoaded", () => {
     assetForm: new AssetFormControl({
       addButton: requireElement("#addAssetButton"),
       assetIdInput: requireElement("#assetIdInput"),
+      colorPickerPanel: requireElement("#assetColorPickerPanel"),
+      colorSortControls: requireElement("#assetColorSortControls"),
+      colorSwatchList: requireElement("#assetColorSwatchList"),
       fileInput: requireElement("#assetFileInput"),
       kindInputs: Array.from(document.querySelectorAll('input[name="assetKind"]')),
       pathInput: requireElement("#assetPathInput"),

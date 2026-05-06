@@ -1,6 +1,7 @@
 import {
   acceptForKind,
   assetIdForFile,
+  colorAssetPath,
   fileMatchesAccept,
   kindForFile,
   labelForKind,
@@ -12,15 +13,93 @@ import {
 } from "../assetManagerMetadata.js";
 
 const DEFAULT_BEZEL_STRETCH_PX = 10;
+const COLOR_SORT_OPTIONS = Object.freeze([
+  ["hue", "Hue"],
+  ["saturation", "Saturation"],
+  ["brightness", "Brightness"],
+  ["name", "Name"],
+  ["tag", "Tag"]
+]);
 
 function basenameFromPath(value) {
   return String(value || "").split(/[\\/]/).filter(Boolean).at(-1) || "";
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function normalizeHex(value) {
+  const hex = String(value || "").trim();
+  return /^#([a-f0-9]{6}|[a-f0-9]{8})$/i.test(hex) ? hex.toUpperCase() : "";
+}
+
+function normalizeTags(tags) {
+  return Array.isArray(tags)
+    ? tags.map((tag) => String(tag || "").trim()).filter(Boolean)
+    : [];
+}
+
+function normalizeSwatch(rawSwatch) {
+  const hex = normalizeHex(rawSwatch?.hex);
+  const name = String(rawSwatch?.name || "").trim();
+  if (!hex || !name) {
+    return null;
+  }
+  return {
+    hex,
+    name,
+    source: String(rawSwatch?.source || "").trim(),
+    symbol: String(rawSwatch?.symbol || "").trim(),
+    tags: normalizeTags(rawSwatch?.tags)
+  };
+}
+
+function hexToHsb(hexValue) {
+  const hex = normalizeHex(hexValue).slice(1, 7);
+  const r = Number.parseInt(hex.slice(0, 2), 16) / 255;
+  const g = Number.parseInt(hex.slice(2, 4), 16) / 255;
+  const b = Number.parseInt(hex.slice(4, 6), 16) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+  let hue = 0;
+  if (delta && max === r) {
+    hue = 60 * (((g - b) / delta) % 6);
+  } else if (delta && max === g) {
+    hue = 60 * (((b - r) / delta) + 2);
+  } else if (delta && max === b) {
+    hue = 60 * (((r - g) / delta) + 4);
+  }
+  return {
+    brightness: max,
+    hue: (hue + 360) % 360,
+    saturation: max === 0 ? 0 : delta / max
+  };
+}
+
+function swatchSortValue(swatch, sortKey) {
+  if (sortKey === "name") {
+    return swatch.name.toLowerCase();
+  }
+  if (sortKey === "tag") {
+    return (swatch.tags[0] || "").toLowerCase();
+  }
+  return hexToHsb(swatch.hex)[sortKey] ?? 0;
 }
 
 export class AssetFormControl {
   constructor({
     addButton,
     assetIdInput,
+    colorPickerPanel,
+    colorSortControls,
+    colorSwatchList,
     fileInput,
     kindInputs,
     pathInput,
@@ -35,6 +114,9 @@ export class AssetFormControl {
   }) {
     this.addButton = addButton;
     this.assetIdInput = assetIdInput;
+    this.colorPickerPanel = colorPickerPanel;
+    this.colorSortControls = colorSortControls;
+    this.colorSwatchList = colorSwatchList;
     this.fileInput = fileInput;
     this.kindInputs = kindInputs;
     this.pathInput = pathInput;
@@ -47,15 +129,26 @@ export class AssetFormControl {
     this.stretchInput = stretchInput;
     this.window = windowRef;
     this.allowedKinds = [];
+    this.colorSortKey = "name";
+    this.paletteSwatches = [];
+    this.selectedColorInfo = null;
     this.kindValue = "";
     this.selectedFileInfo = null;
     this.selectedFileError = "";
   }
 
-  mount({ onAdd, onChange, onFileSelected, onRedo, onStatus, onUndo, onUpdate }) {
+  mount({ onAdd, onChange, onColorSelected, onFileSelected, onRedo, onStatus, onUndo, onUpdate }) {
     this.onStatus = onStatus;
+    this.onColorSelected = onColorSelected;
+    this.renderColorSortControls();
     this.updateFileAccept();
+    this.updatePickerMode();
     this.pickFileButton.addEventListener("click", () => {
+      if (this.selectedKind() === "color") {
+        this.openColorPicker();
+        onChange();
+        return;
+      }
       void this.pickAssetFile({ onChange, onFileSelected });
     });
     this.fileInput.addEventListener("change", () => {
@@ -76,13 +169,8 @@ export class AssetFormControl {
       input.addEventListener("change", () => {
         this.updateFileAccept();
         this.updateRoleOptions({ preserveCurrentRole: false });
-        if (this.selectedFileInfo) {
-          this.selectedFileInfo.type = this.selectedKind();
-          this.applyDerivedFileValues();
-          onFileSelected(this.readValue(), this.selectedFileInfo);
-        } else {
-          this.applyDerivedAssetId();
-        }
+        this.clearSelectionFields();
+        this.updatePickerMode();
         onChange();
       });
     });
@@ -91,9 +179,25 @@ export class AssetFormControl {
       if (this.selectedFileInfo) {
         this.applyDerivedFileValues();
         onFileSelected(this.readValue(), this.selectedFileInfo);
+      } else if (this.selectedColorInfo) {
+        this.applyDerivedAssetId(this.selectedColorInfo.name);
+        this.onColorSelected?.(this.readValue(), this.selectedColorInfo);
       } else {
         this.applyDerivedAssetId();
       }
+      onChange();
+    });
+    this.colorSwatchList.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-color-swatch-index]");
+      if (!button) {
+        return;
+      }
+      const swatch = this.sortedPaletteSwatches()[Number(button.dataset.colorSwatchIndex)];
+      if (!swatch) {
+        return;
+      }
+      this.applyColorSelection(swatch);
+      this.onColorSelected(this.readValue(), this.selectedColorInfo);
       onChange();
     });
     [this.assetIdInput, this.pathInput].forEach((element) => {
@@ -118,6 +222,15 @@ export class AssetFormControl {
       path: this.pathInput.value.trim(),
       role: this.selectedRole()
     };
+    if (value.type === "color" && this.selectedColorInfo) {
+      value.color = {
+        hex: this.selectedColorInfo.hex,
+        name: this.selectedColorInfo.name,
+        ...(this.selectedColorInfo.symbol ? { symbol: this.selectedColorInfo.symbol } : {}),
+        ...(this.selectedColorInfo.source ? { source: this.selectedColorInfo.source } : {}),
+        ...(this.selectedColorInfo.tags.length ? { tags: [...this.selectedColorInfo.tags] } : {})
+      };
+    }
     if (value.role === "bezel") {
       value.stretchOverride = {
         uniformEdgeStretchPx: Number(this.stretchInput.value) || DEFAULT_BEZEL_STRETCH_PX
@@ -160,15 +273,27 @@ export class AssetFormControl {
     this.updateRoleOptions({ preserveCurrentRole: false });
   }
 
+  setPaletteSwatches(swatches) {
+    this.paletteSwatches = Array.isArray(swatches)
+      ? swatches.map(normalizeSwatch).filter(Boolean)
+      : [];
+    this.renderColorSwatches();
+  }
+
   clearEditableFields() {
+    this.clearSelectionFields();
+    this.updateRoleOptions({ preserveCurrentRole: true });
+    this.updateStretchControl();
+  }
+
+  clearSelectionFields() {
     this.assetIdInput.value = "";
     this.pathInput.value = "";
     this.kindValue = "";
+    this.selectedColorInfo = null;
     this.selectedFileInfo = null;
     this.selectedFileError = "";
     this.fileInput.value = "";
-    this.updateRoleOptions({ preserveCurrentRole: true });
-    this.updateStretchControl();
   }
 
   loadAssetForEdit(assetId, entry) {
@@ -185,9 +310,11 @@ export class AssetFormControl {
     this.pathInput.value = entry.path || "";
     this.kindValue = entry.kind || "";
     this.stretchInput.value = String(entry.stretchOverride?.uniformEdgeStretchPx ?? DEFAULT_BEZEL_STRETCH_PX);
+    this.selectedColorInfo = entry.color ? normalizeSwatch(entry.color) : null;
     this.selectedFileInfo = null;
     this.selectedFileError = "";
     this.fileInput.value = "";
+    this.updatePickerMode();
     this.updateStretchControl();
   }
 
@@ -226,6 +353,7 @@ export class AssetFormControl {
   applyFileSelection({ file, sourcePath }) {
     if (!file) {
       this.selectedFileInfo = null;
+      this.selectedColorInfo = null;
       this.selectedFileError = "";
       this.updateRoleOptions();
       return;
@@ -263,6 +391,15 @@ export class AssetFormControl {
     this.applyDerivedFileValues();
   }
 
+  applyColorSelection(swatch) {
+    this.selectedColorInfo = normalizeSwatch(swatch);
+    this.selectedFileInfo = null;
+    this.selectedFileError = "";
+    this.kindValue = "hex";
+    this.pathInput.value = colorAssetPath(this.selectedColorInfo.name);
+    this.applyDerivedAssetId(this.selectedColorInfo.name);
+  }
+
   applyDerivedFileValues() {
     if (!this.selectedFileInfo) {
       return;
@@ -290,6 +427,76 @@ export class AssetFormControl {
 
   updateFileAccept() {
     this.fileInput.accept = acceptForKind(this.selectedKind());
+  }
+
+  updatePickerMode() {
+    const isColor = this.selectedKind() === "color";
+    this.fileInput.disabled = isColor;
+    this.fileInput.accept = isColor ? "" : acceptForKind(this.selectedKind());
+    this.colorPickerPanel.hidden = true;
+    if (!isColor) {
+      return;
+    }
+    this.renderColorSwatches();
+  }
+
+  openColorPicker() {
+    if (this.selectedKind() !== "color") {
+      return;
+    }
+    this.colorPickerPanel.hidden = false;
+    this.renderColorSwatches();
+    if (!this.paletteSwatches.length) {
+      this.onStatus?.("fail", "Workspace V2 active palette has no colors to pick.");
+    }
+  }
+
+  sortedPaletteSwatches() {
+    const sortKey = this.colorSortKey;
+    return [...this.paletteSwatches].sort((left, right) => {
+      const leftValue = swatchSortValue(left, sortKey);
+      const rightValue = swatchSortValue(right, sortKey);
+      if (typeof leftValue === "number" && typeof rightValue === "number") {
+        return leftValue - rightValue || left.name.localeCompare(right.name);
+      }
+      return String(leftValue).localeCompare(String(rightValue)) || left.name.localeCompare(right.name);
+    });
+  }
+
+  renderColorSortControls() {
+    this.colorSortControls.innerHTML = COLOR_SORT_OPTIONS.map(([value, label]) => `
+      <button type="button" data-color-sort-key="${value}" role="radio" aria-checked="${value === this.colorSortKey}">${label}</button>
+    `).join("");
+    this.colorSortControls.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-color-sort-key]");
+      if (!button) {
+        return;
+      }
+      this.colorSortKey = button.dataset.colorSortKey;
+      this.renderColorSortControls();
+      this.renderColorSwatches();
+    }, { once: true });
+  }
+
+  renderColorSwatches() {
+    this.colorSortControls.querySelectorAll("button[data-color-sort-key]").forEach((button) => {
+      button.setAttribute("aria-checked", String(button.dataset.colorSortKey === this.colorSortKey));
+    });
+    const swatches = this.sortedPaletteSwatches();
+    if (!swatches.length) {
+      this.colorSwatchList.innerHTML = '<p class="asset-manager-v2__hint">No active Workspace V2 palette colors.</p>';
+      return;
+    }
+    this.colorSwatchList.innerHTML = swatches.map((swatch, index) => {
+      const tags = swatch.tags.join(", ");
+      const label = `${swatch.name} ${swatch.hex}${tags ? ` ${tags}` : ""}`;
+      return `
+        <button type="button" data-color-swatch-index="${index}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
+          <span class="asset-manager-v2__color-swatch" style="background:${escapeHtml(swatch.hex)}"></span>
+          <span>${escapeHtml(swatch.name)}</span>
+        </button>
+      `;
+    }).join("");
   }
 
   updateRoleOptions({ preserveCurrentRole = true } = {}) {

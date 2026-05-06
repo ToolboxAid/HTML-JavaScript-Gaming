@@ -1,33 +1,15 @@
 export const ASSET_TYPE_CONFIG = Object.freeze({
-  image: {
-    label: "Image",
-    folder: "assets/images",
-    accept: ".png,.jpg,.jpeg,.webp,.gif,.svg,image/png,image/jpeg,image/webp,image/gif,image/svg+xml",
-    roles: ["sprite", "background", "bezel", "ui"]
-  },
   audio: {
     label: "Audio",
     folder: "assets/audio",
     accept: ".mp3,.wav,.ogg,.m4a,audio/mpeg,audio/wav,audio/ogg,audio/mp4",
     roles: ["sound", "music"]
   },
-  font: {
-    label: "Font",
-    folder: "assets/fonts",
-    accept: ".woff,.woff2,.ttf,.otf,font/woff,font/woff2,font/ttf,font/otf",
-    roles: ["ui", "display"]
-  },
-  video: {
-    label: "Video",
-    folder: "assets/video",
-    accept: ".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime",
-    roles: ["cutscene", "loop"]
-  },
-  shader: {
-    label: "Shader",
-    folder: "assets/shaders",
-    accept: ".glsl,.vert,.frag,.wgsl,text/plain",
-    roles: ["fragment", "vertex", "compute"]
+  color: {
+    label: "Color",
+    folder: "palette",
+    accept: "",
+    roles: ["hud", "text", "background", "border", "accent", "warning", "success", "danger", "shadow", "highlight"]
   },
   data: {
     label: "Data",
@@ -35,11 +17,35 @@ export const ASSET_TYPE_CONFIG = Object.freeze({
     accept: ".json,.csv,.txt,application/json,text/csv,text/plain",
     roles: ["config", "table"]
   },
+  font: {
+    label: "Font",
+    folder: "assets/fonts",
+    accept: ".woff,.woff2,.ttf,.otf,font/woff,font/woff2,font/ttf,font/otf",
+    roles: ["ui", "display"]
+  },
+  image: {
+    label: "Image",
+    folder: "assets/images",
+    accept: ".png,.jpg,.jpeg,.webp,.gif,.svg,image/png,image/jpeg,image/webp,image/gif,image/svg+xml",
+    roles: ["sprite", "background", "bezel", "ui"]
+  },
   localization: {
     label: "Localization",
     folder: "assets/localization",
     accept: ".json,.po,.pot,.xliff,.xlf,application/json,text/plain,application/x-xliff+xml",
     roles: ["strings", "dialogue"]
+  },
+  shader: {
+    label: "Shader",
+    folder: "assets/shaders",
+    accept: ".glsl,.vert,.frag,.wgsl,text/plain",
+    roles: ["fragment", "vertex", "compute"]
+  },
+  video: {
+    label: "Video",
+    folder: "assets/video",
+    accept: ".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime",
+    roles: ["cutscene", "loop"]
   }
 });
 
@@ -212,6 +218,10 @@ export function sanitizeFileName(fileName) {
   const extensionMatch = rawName.match(/(\.[a-z0-9]+)$/i);
   const extension = extensionMatch ? extensionMatch[1].toLowerCase() : "";
   return `${slugifyAssetSegment(rawName)}${extension}`;
+}
+
+export function colorAssetPath(swatchName) {
+  return `palette://workspace/${filenamePartForAssetId(swatchName)}`;
 }
 
 export function assetIdForFile(type, fileName, role) {
