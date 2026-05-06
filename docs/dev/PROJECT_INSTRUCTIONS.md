@@ -511,3 +511,110 @@ All CSS must be external.
 - No `tools/shared` dependency is allowed.
 - Shared UI behavior must use reusable classes.
 - Do not duplicate shared UI behavior logic across controls or tools.
+
+## DEFINITION OF DONE
+
+A PR is complete only when:
+- scope is clean
+- requested validation passes
+- required reports exist
+- manual test notes are present
+
+No PR is complete with:
+- unresolved console errors
+- broken UI controls
+- missing review artifacts
+- unintended file changes
+
+## ERROR HANDLING CONTRACT
+
+- No silent fallback.
+- No hidden defaults.
+- Failures must be visible, actionable, and logged.
+- Invalid input must not partially render.
+- Batch failures must identify the exact item that failed.
+
+## UI CONSISTENCY CONTRACT
+
+- Tools must use consistent header, NAV, panel, accordion, status, and action patterns.
+- Left and right tool panels must use working accordion sections unless explicitly exempted.
+- Dead accordion controls are prohibited.
+
+## INPUT RESOLUTION RULES
+
+- Discover real files and directories.
+- Never assume numeric sequences.
+- Missing inputs are SKIP when batch processing, not FAIL, unless the selected single input is missing.
+- Logs must identify resolved paths.
+
+## RENDERING AND CAPTURE RULES
+
+- Capture modes must be explicit.
+- Do not silently fall back between capture modes.
+- Capture failures must log the mode, target, and underlying error.
+- Rendering tools must not claim OK when fallback or partial capture occurred.
+
+## SEPARATION OF CONCERNS CONTRACT
+
+- One class per file.
+- One control or section per class.
+- App/root class coordinates only.
+- Controls do not reach into other controls directly.
+- Shared behavior must use reusable classes.
+
+## TESTING DEPTH REQUIREMENT
+
+- Playwright must validate meaningful behavior, not just page load.
+- Tests should cover state transitions, failure states, and edge cases when impacted.
+
+## BATCH OPERATION RULES
+
+- Batch operations must log per item.
+- One failed item must not stop the batch unless the failure is global.
+- Summary must include written, failed, skipped, and warnings.
+
+## DEFINITION OF DONE PLAYWRIGHT CONTRACT
+
+Playwright MUST pass when the PR changes:
+- tool runtime behavior
+- UI controls or interactions
+- workspace or toolState flows
+- capture or rendering paths
+
+Playwright is NOT required when the PR is:
+- docs-only
+- naming/formatting-only
+- a pure refactor with no behavior change, when that no-behavior-change claim is justified
+
+Each PR must state:
+
+`Playwright impacted: Yes/No`
+
+If Playwright impacted is Yes:
+- `npm run test:workspace-v2` must pass.
+
+If Playwright impacted is No:
+- include `No Playwright impact. This PR is docs/workflow only.`
+
+Keep the full samples smoke test rule unchanged:
+- full samples smoke test runs only when broadly impacted.
+
+## PLAYWRIGHT COVERAGE DEPTH REQUIREMENT
+
+Playwright must validate behavior, not just page load.
+
+When a PR impacts a tool, Playwright tests must cover:
+- the primary user action, such as Generate Preview
+- control state transitions, such as enabled and disabled states
+- at least one failure case when applicable
+
+Playwright tests must verify actual outcomes, not just element existence.
+
+Playwright tests must not be limited to page loads without error.
+
+Each PR must state what behavior is being validated.
+
+Do NOT require:
+- full feature coverage
+- 100% code coverage
+- performance requirements
