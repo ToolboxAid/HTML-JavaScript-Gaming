@@ -108,8 +108,8 @@ The Tool Template V2 demonstrates this standard with Input Source on the left, P
 
 Tool Template V2 demonstrates both field patterns used by Palette Manager V2:
 
-- Non-editable display fields use the `tool-starter__field--not-editable` pattern with `readonly` inputs. The visible demo label is `Not Editable`.
-- Editable text fields use the `tool-starter__field--editable` pattern with normal text inputs. The visible demo label is `Editable`.
+- Non-editable display fields use the `tool-starter__field--not-editable` pattern with `readonly` inputs, matching the Selected Swatch `Symbol` row. The visible demo label is `Not Editable`.
+- Editable text fields use the `tool-starter__field--editable` pattern with `tool-starter__editable-tags-box`, matching the Tags `No tags.` box. The visible demo label is `Editable`.
 
 Use non-editable fields for display/read-only values. Use editable fields for user text entry.
 

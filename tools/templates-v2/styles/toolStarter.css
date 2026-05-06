@@ -324,13 +324,20 @@ textarea:hover {
   cursor: default;
 }
 
+.tool-starter__field--not-editable input {
+  padding-block: 0;
+}
+
 .tool-starter__field--editable input {
   background: var(--tool-starter-input-surface);
   color: var(--tool-starter-text);
 }
 
-.tool-starter__field--not-editable input {
-  background: var(--tool-starter-input-surface);
+.tool-starter__editable-tags-box {
+  min-height: 36px;
+  border-radius: 8px !important;
+  background: var(--tool-starter-panel-strong);
+  padding: 6px;
 }
 
 .tool-starter__hint {

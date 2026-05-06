@@ -120,6 +120,13 @@ test.describe("Tool Template V2", () => {
     await expect(notEditableField).toHaveValue("Read-only display value");
     await expect(page.locator("label[for='editableField']")).toContainText("Editable");
     await expect(editableField).toBeEditable();
+    await expect(editableField).toHaveValue("No tags.");
+    await expect(editableField).toHaveClass(/tool-starter__editable-tags-box/);
+    await expect(async () => {
+      const readonlyHeight = await notEditableField.evaluate((element) => element.getBoundingClientRect().height);
+      const editableHeight = await editableField.evaluate((element) => element.getBoundingClientRect().height);
+      expect(editableHeight).toBeGreaterThan(readonlyHeight);
+    }).toPass();
     await editableField.fill("tag-example");
     await expect(editableField).toHaveValue("tag-example");
   });
