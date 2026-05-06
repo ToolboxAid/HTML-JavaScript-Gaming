@@ -10,7 +10,8 @@ Root-level schema files should not be added.
 tools/schemas/
   workspace.manifest.schema.json
   palette.schema.json
-  sample.tool-payload.schema.json
+  samples/
+    sample.tool-payload.schema.json
   tools/
     <tool>.schema.json
 ```

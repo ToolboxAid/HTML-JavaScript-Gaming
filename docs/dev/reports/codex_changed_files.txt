@@ -1,0 +1,52 @@
+# git status --short
+M docs/dev/PLAN_PR.md
+ M docs/dev/reports/PR_26126_084_asset_manager_v2_manual_validation_notes.md
+ M docs/dev/reports/PR_26126_084_asset_manager_v2_schema_validation_notes.md
+ M docs/dev/reports/coverage_changed_js_guardrail.txt
+ M docs/dev/reports/playwright_v8_coverage_report.txt
+ M tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+ M tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
+ M tests/validation/samples.curriculum.validation.json
+ M tests/validation/samples.runtime.validation.report.json
+ M tests/validation/samples.shared.boundaries.report.json
+ M tools/asset-manager-v2/README.md
+ M tools/asset-manager-v2/index.html
+ M tools/asset-manager-v2/js/AssetManagerV2App.js
+ M tools/asset-manager-v2/js/assetManagerMetadata.js
+ M tools/asset-manager-v2/js/bootstrap.js
+ M tools/asset-manager-v2/js/controls/AssetFormControl.js
+ M tools/asset-manager-v2/js/services/AssetSchemaValidator.js
+ M tools/asset-manager-v2/styles/assetManager.css
+ M tools/schemas/README.md
+ M tools/schemas/sample.tool-payload.schema.json
+ M tools/schemas/tools/asset-browser.schema.json
+?? docs/dev/reports/PR_26126_084_asset_manager_v2_path_normalization_notes.md
+?? tools/schemas/samples/
+
+# git ls-files --others --exclude-standard
+docs/dev/reports/PR_26126_084_asset_manager_v2_path_normalization_notes.md
+tools/schemas/samples/sample.tool-payload.schema.json
+
+# git diff --stat
+docs/dev/PLAN_PR.md                                |   3 +-
+ ...084_asset_manager_v2_manual_validation_notes.md |  21 +--
+ ...084_asset_manager_v2_schema_validation_notes.md |  26 ++--
+ docs/dev/reports/coverage_changed_js_guardrail.txt |  19 +--
+ docs/dev/reports/playwright_v8_coverage_report.txt |  47 ++-----
+ .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 134 +++++++++++++------
+ .../ToolWorkspaceSchemaManifestBoundaries.test.mjs |   2 +-
+ .../validation/samples.curriculum.validation.json  |   2 +-
+ .../samples.runtime.validation.report.json         |   2 +-
+ .../samples.shared.boundaries.report.json          |   2 +-
+ tools/asset-manager-v2/README.md                   |   2 +-
+ tools/asset-manager-v2/index.html                  |  70 +---------
+ tools/asset-manager-v2/js/AssetManagerV2App.js     |  12 ++
+ tools/asset-manager-v2/js/assetManagerMetadata.js  | 130 ++++++++++++++++++-
+ tools/asset-manager-v2/js/bootstrap.js             |   9 +-
+ .../js/controls/AssetFormControl.js                | 144 +++++++++++++--------
+ .../js/services/AssetSchemaValidator.js            |  15 +--
+ tools/asset-manager-v2/styles/assetManager.css     |  47 ++-----
+ tools/schemas/README.md                            |   3 +-
+ tools/schemas/sample.tool-payload.schema.json      |  83 +-----------
+ tools/schemas/tools/asset-browser.schema.json      |   1 +
+ 21 files changed, 393 insertions(+), 381 deletions(-)

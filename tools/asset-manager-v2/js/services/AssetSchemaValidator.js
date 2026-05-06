@@ -84,20 +84,13 @@ export class AssetSchemaValidator {
       .reduce((node, key) => (node && typeof node === "object" ? node[key] : undefined), this.schema);
   }
 
-  createEntry({ assetId, kind, path, role, stretchOverridePx }) {
+  createEntry({ assetId, kind, path, role }) {
     const entry = {
       path,
       kind,
+      role,
       source: "asset-manager-v2"
     };
-    if (role) {
-      entry.role = role;
-    }
-    if (stretchOverridePx !== null) {
-      entry.stretchOverride = {
-        uniformEdgeStretchPx: stretchOverridePx
-      };
-    }
     const validation = this.validateAssetEntry(assetId, entry, `assets.${assetId || "(empty)"}`);
     return validation.ok
       ? { ok: true, entry }
@@ -169,7 +162,9 @@ export class AssetSchemaValidator {
     if (!this.allowedKinds.includes(entry.kind)) {
       errors.push(`${pointer}.kind: Unsupported asset kind "${entry.kind}".`);
     }
-    if (Object.prototype.hasOwnProperty.call(entry, "role")) {
+    if (!Object.prototype.hasOwnProperty.call(entry, "role") || typeof entry.role !== "string" || !entry.role.trim()) {
+      errors.push(`${pointer}.role: role is required.`);
+    } else {
       if (!this.allowedRoles.includes(entry.role)) {
         errors.push(`${pointer}.role: Unsupported asset role "${entry.role}".`);
       }

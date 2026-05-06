@@ -10,7 +10,7 @@ export async function run() {
     "tools/schemas/workspace.manifest.schema.json",
     "tests/schemas/tool.manifest.schema.json",
     "tools/schemas/tools/palette-browser.schema.json",
-    "tools/schemas/sample.tool-payload.schema.json",
+    "tools/schemas/samples/sample.tool-payload.schema.json",
     "tools/schemas/tools/vector-map-editor.schema.json",
     "tools/schemas/tools/svg-asset-studio.schema.json",
     "tools/schemas/tools/sprite-editor.schema.json"

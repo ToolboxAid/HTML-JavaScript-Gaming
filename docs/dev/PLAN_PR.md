@@ -18,7 +18,8 @@ tools/
     workspace.manifest.schema.json
     tool.manifest.schema.json
     palette.schema.json
-    sample.tool-payload.schema.json
+    samples/
+      sample.tool-payload.schema.json
     tools/
       vector-map-editor.schema.json
       vector-asset-studio.schema.json

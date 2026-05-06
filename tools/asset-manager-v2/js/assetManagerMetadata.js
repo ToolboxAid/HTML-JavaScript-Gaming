@@ -43,6 +43,59 @@ export const ASSET_KIND_CONFIG = Object.freeze({
   }
 });
 
+const KIND_BY_EXTENSION = Object.freeze({
+  ".png": "image",
+  ".jpg": "image",
+  ".jpeg": "image",
+  ".webp": "image",
+  ".gif": "image",
+  ".svg": "image",
+  ".mp3": "audio",
+  ".wav": "audio",
+  ".ogg": "audio",
+  ".m4a": "audio",
+  ".woff": "font",
+  ".woff2": "font",
+  ".ttf": "font",
+  ".otf": "font",
+  ".mp4": "video",
+  ".webm": "video",
+  ".mov": "video",
+  ".glsl": "shader",
+  ".vert": "shader",
+  ".frag": "shader",
+  ".wgsl": "shader",
+  ".json": "data",
+  ".csv": "data",
+  ".txt": "data",
+  ".po": "localization",
+  ".pot": "localization",
+  ".xliff": "localization",
+  ".xlf": "localization"
+});
+
+const KIND_BY_MIME_TYPE = Object.freeze({
+  "image/png": "image",
+  "image/jpeg": "image",
+  "image/webp": "image",
+  "image/gif": "image",
+  "image/svg+xml": "image",
+  "audio/mpeg": "audio",
+  "audio/wav": "audio",
+  "audio/ogg": "audio",
+  "audio/mp4": "audio",
+  "font/woff": "font",
+  "font/woff2": "font",
+  "font/ttf": "font",
+  "font/otf": "font",
+  "video/mp4": "video",
+  "video/webm": "video",
+  "video/quicktime": "video",
+  "application/json": "data",
+  "text/csv": "data",
+  "application/x-xliff+xml": "localization"
+});
+
 export function assetKindEntries() {
   return Object.entries(ASSET_KIND_CONFIG);
 }
@@ -53,6 +106,12 @@ export function roleOptionsForKind(kind) {
 
 export function acceptForKind(kind) {
   return ASSET_KIND_CONFIG[kind]?.accept || "";
+}
+
+export function acceptForAllKinds() {
+  return [...new Set(Object.values(ASSET_KIND_CONFIG)
+    .flatMap((config) => config.accept.split(",").map((part) => part.trim()).filter(Boolean)))]
+    .join(",");
 }
 
 export function folderForKind(kind) {
@@ -81,17 +140,74 @@ export function sanitizeFileName(fileName) {
 
 export function assetIdForFile(kind, fileName, role) {
   const slug = slugifyAssetSegment(fileName);
-  if (kind === "image" && role === "bezel") {
-    return `image.assets.${slug}.bezel`;
+  if (role) {
+    return `${kind}.assets.${slug}.${slugifyAssetSegment(role)}`;
   }
-  if (kind === "image" && role === "background") {
-    return `image.assets.${slug}.background`;
-  }
-  return `${kind}.assets.${slug}`;
+  return kind ? `${kind}.assets.${slug}` : "";
 }
 
-export function pathForFile(kind, fileName) {
-  return `${folderForKind(kind)}/${sanitizeFileName(fileName)}`;
+export function pathForFile(kind, fileName, sourcePath = "") {
+  return projectRelativeAssetPath(sourcePath, kind, fileName);
+}
+
+export function kindForFile(fileInfo) {
+  if (!fileInfo?.name) {
+    return "";
+  }
+  const fileName = String(fileInfo.name).toLowerCase();
+  const extensionMatch = fileName.match(/(\.[a-z0-9]+)$/i);
+  const extensionKind = extensionMatch ? KIND_BY_EXTENSION[extensionMatch[1]] : "";
+  if (extensionKind) {
+    return extensionKind;
+  }
+  const mimeType = String(fileInfo.type || "").toLowerCase();
+  const mimeKind = KIND_BY_MIME_TYPE[mimeType];
+  if (mimeKind) {
+    return mimeKind;
+  }
+  if (mimeType.startsWith("image/")) {
+    return "image";
+  }
+  if (mimeType.startsWith("audio/")) {
+    return "audio";
+  }
+  if (mimeType.startsWith("font/")) {
+    return "font";
+  }
+  if (mimeType.startsWith("video/")) {
+    return "video";
+  }
+  return "";
+}
+
+export function projectRelativeAssetPath(sourcePath, kind, fileName) {
+  const fallback = `${folderForKind(kind)}/${sanitizeFileName(fileName)}`;
+  let normalized = String(sourcePath || "").trim();
+  if (!normalized) {
+    return fallback;
+  }
+
+  normalized = normalized
+    .replace(/^file:\/\/\/?/i, "")
+    .replace(/\\/g, "/")
+    .replace(/\/+/g, "/");
+
+  const repoRootMarker = "/HTML-JavaScript-Gaming/";
+  const lowerNormalized = normalized.toLowerCase();
+  const rootIndex = lowerNormalized.lastIndexOf(repoRootMarker.toLowerCase());
+  if (rootIndex >= 0) {
+    normalized = normalized.slice(rootIndex + repoRootMarker.length);
+  } else if (lowerNormalized.startsWith("html-javascript-gaming/")) {
+    normalized = normalized.slice("HTML-JavaScript-Gaming/".length);
+  } else if (/^[a-z]:\//i.test(normalized) || normalized.startsWith("/")) {
+    return fallback;
+  }
+
+  normalized = normalized.replace(/^\.\//, "").replace(/^\/+/, "");
+  if (!normalized || normalized === fileName || !normalized.includes("/")) {
+    return fallback;
+  }
+  return normalized.split("/").filter(Boolean).join("/");
 }
 
 export function fileMatchesAccept(kind, fileInfo) {

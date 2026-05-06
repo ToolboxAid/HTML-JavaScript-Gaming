@@ -172,6 +172,18 @@ export class AssetManagerV2App {
       this.statusLog.fail("Schema is not loaded; selected file validation is blocked.");
       return;
     }
+    if (!fileInfo.kind) {
+      const message = `File ${fileInfo.name} is not an approved asset type.`;
+      this.statusLog.fail(`Selected file validation failed: ${message}`);
+      this.assetForm.showMessage(message, "error");
+      this.refreshActions();
+      return;
+    }
+    if (fileInfo.kind && !formValue.role) {
+      this.assetForm.showMessage(`Select a role for ${formValue.kind} assets.`, "info");
+      this.refreshActions();
+      return;
+    }
     const fileValidation = this.schemaValidator.validateFileSelection(formValue, fileInfo);
     if (!fileValidation.ok) {
       this.statusLog.fail(`Selected file validation failed: ${fileValidation.errors.join(" | ")}`);

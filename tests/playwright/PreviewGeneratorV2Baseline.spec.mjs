@@ -150,15 +150,57 @@ async function openToolTemplate(page, query = "") {
   return server;
 }
 
-async function openAssetManagerV2(page, query = "") {
+async function installFakeAssetFilePicker(page, files = []) {
+  await page.addInitScript((initialFiles) => {
+    window.__assetManagerV2FilePickerQueue = [...initialFiles];
+    window.__assetManagerV2PickerOptions = [];
+    window.showOpenFilePicker = async (options = {}) => {
+      window.__assetManagerV2PickerOptions.push(options);
+      const descriptor = window.__assetManagerV2FilePickerQueue.shift();
+      if (!descriptor) {
+        throw new Error("No fake asset file queued.");
+      }
+      const file = new File(
+        [descriptor.contents || ""],
+        descriptor.name,
+        { type: descriptor.mimeType || "" }
+      );
+      if (descriptor.path) {
+        Object.defineProperty(file, "path", { value: descriptor.path });
+      }
+      return [{
+        kind: "file",
+        name: descriptor.name,
+        path: descriptor.path,
+        async getFile() {
+          return file;
+        }
+      }];
+    };
+  }, files);
+}
+
+async function queueAssetFile(page, descriptor) {
+  await page.evaluate((queuedFile) => {
+    window.__assetManagerV2FilePickerQueue.push(queuedFile);
+  }, descriptor);
+}
+
+async function openAssetManagerV2(page, query = "", { assetFiles = [] } = {}) {
   const server = await startRepoServer();
+  if (assetFiles.length) {
+    await installFakeAssetFilePicker(page, assetFiles);
+  }
   await coverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/asset-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
-async function openWorkspaceV2(page) {
+async function openWorkspaceV2(page, { assetFiles = [] } = {}) {
   const server = await startRepoServer();
+  if (assetFiles.length) {
+    await installFakeAssetFilePicker(page, assetFiles);
+  }
   await coverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`, { waitUntil: "networkidle" });
   return server;
@@ -585,7 +627,14 @@ test.describe("Preview Generator V2 baseline", () => {
   });
 
   test("launches Asset Manager V2 in tool mode with approved asset controls and schema rejection", async ({ page }) => {
-    const server = await openAssetManagerV2(page);
+    const server = await openAssetManagerV2(page, "", {
+      assetFiles: [{
+        name: "nebula-backdrop.png",
+        mimeType: "image/png",
+        contents: "fake-png",
+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\images\\nebula-backdrop.png"
+      }]
+    });
     const pageErrors = [];
 
     page.on("pageerror", (error) => {
@@ -597,32 +646,28 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator(".asset-manager-v2.app-shell")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeHidden();
-      await expect(page.locator("#assetKindImage")).toBeVisible();
-      await expect(page.locator("#assetKindAudio")).toBeVisible();
-      await expect(page.locator("#assetKindFont")).toBeVisible();
-      await expect(page.locator("#assetKindVideo")).toBeVisible();
-      await expect(page.locator("#assetKindShader")).toBeVisible();
-      await expect(page.locator("#assetKindData")).toBeVisible();
-      await expect(page.locator("#assetKindLocalization")).toBeVisible();
-      await expect(page.locator('input[name="assetKind"][value="svg"]')).toHaveCount(0);
-      await expect(page.locator('input[name="assetKind"][value="other"]')).toHaveCount(0);
-      await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
-      await expect(page.locator("#assetFileImageInput")).toHaveAttribute("accept", /image\/png/);
-      await expect(page.locator("#assetFileAudioInput")).toHaveAttribute("accept", /audio\/wav/);
-      await expect(page.locator("#assetFileFontInput")).toHaveAttribute("accept", /\.woff2/);
-      await expect(page.locator("#assetFileVideoInput")).toHaveAttribute("accept", /video\/mp4/);
-      await expect(page.locator("#assetFileShaderInput")).toHaveAttribute("accept", /\.wgsl/);
-      await expect(page.locator("#assetFileDataInput")).toHaveAttribute("accept", /application\/json/);
-      await expect(page.locator("#assetFileLocalizationInput")).toHaveAttribute("accept", /\.xliff/);
+      await expect(page.locator("#pickAssetFileButton")).toBeVisible();
+      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /image\/png/);
+      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /audio\/wav/);
+      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /\.woff2/);
+      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /video\/mp4/);
+      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /\.wgsl/);
+      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /application\/json/);
+      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /\.xliff/);
+      await expect(page.locator("input[data-asset-file-kind]")).toHaveCount(0);
+      await expect(page.locator('input[name="assetKind"]')).toHaveCount(0);
+      await expect(page.locator("#stretchOverrideInput")).toHaveCount(0);
+      await expect(page.locator("#assetKindValue")).toHaveValue("No file selected");
+      await expect(page.locator("#assetRoleSelect")).toBeDisabled();
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Loaded asset-browser\.schema\.json/);
 
-      await page.locator("#assetRoleSelect").selectOption("background");
-      await page.locator("#assetFileImageInput").setInputFiles({
-        name: "nebula-backdrop.png",
-        mimeType: "image/png",
-        buffer: Buffer.from("fake-png")
-      });
+      await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetSelectedFileText")).toContainText("Image: nebula-backdrop.png");
+      await expect(page.locator("#assetKindValue")).toHaveValue("Image");
+      await expect(page.locator("#assetRoleSelect")).toBeEnabled();
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("");
+      await expect(page.locator("#addAssetButton")).toBeDisabled();
+      await page.locator("#assetRoleSelect").selectOption("background");
       await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.nebula-backdrop.background");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-backdrop.png");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-backdrop\.png validated as image background\./);
@@ -633,12 +678,15 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetPreview")).toContainText("Role: background");
       await expect(page.locator("#inspectorOutput")).toContainText("\"image.assets.nebula-backdrop.background\"");
 
-      await page.locator("#assetFileImageInput").setInputFiles({
-        name: "notes.txt",
-        mimeType: "text/plain",
-        buffer: Buffer.from("not an image")
+      await queueAssetFile(page, {
+        name: "notes.exe",
+        mimeType: "application/octet-stream",
+        contents: "not an asset",
+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\data\\notes.exe"
       });
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected file validation failed: File notes\.txt is not accepted for Image assets\./);
+      await page.locator("#pickAssetFileButton").click();
+      await expect(page.locator("#assetKindValue")).toHaveValue("Unapproved");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected file validation failed: File notes\.exe is not an approved asset type\./);
       await expect(page.locator("#addAssetButton")).toBeDisabled();
 
       await page.locator("#jsonInput").fill(JSON.stringify({
@@ -666,7 +714,14 @@ test.describe("Preview Generator V2 baseline", () => {
   });
 
   test("launches Asset Manager V2 from Workspace V2 and inserts only Workspace asset entries", async ({ page }) => {
-    const server = await openWorkspaceV2(page);
+    const server = await openWorkspaceV2(page, {
+      assetFiles: [{
+        name: "fire.wav",
+        mimeType: "audio/wav",
+        contents: "RIFF",
+        path: "HTML-JavaScript-Gaming/assets/audio/fire.wav"
+      }]
+    });
     const pageErrors = [];
 
     page.on("pageerror", (error) => {
@@ -689,14 +744,11 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace mode loaded 0 validated assets from tools\.asset-browser\.assets/);
 
-      await page.locator("#assetFileAudioInput").setInputFiles({
-        name: "fire.wav",
-        mimeType: "audio/wav",
-        buffer: Buffer.from("RIFF")
-      });
-      await expect(page.locator("#assetKindAudio")).toBeChecked();
-      await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");
-      await expect(page.locator("#assetIdInput")).toHaveValue("audio.assets.fire");
+      await page.locator("#pickAssetFileButton").click();
+      await expect(page.locator("#assetKindValue")).toHaveValue("Audio");
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("");
+      await page.locator("#assetRoleSelect").selectOption("sound");
+      await expect(page.locator("#assetIdInput")).toHaveValue("audio.assets.fire.sound");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/audio/fire.wav");
       await page.locator("#addAssetButton").click();
       await expect(page.locator("#workspaceInsertAssetsButton")).toBeEnabled();
@@ -704,7 +756,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Inserted 1 validated assets into Workspace V2 tools\.asset-browser\.assets/);
 
       const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
-      expect(storedContext.workspaceManifest.tools["asset-browser"].assets["audio.assets.fire"]).toEqual({
+      expect(storedContext.workspaceManifest.tools["asset-browser"].assets["audio.assets.fire.sound"]).toEqual({
         path: "assets/audio/fire.wav",
         kind: "audio",
         role: "sound",
