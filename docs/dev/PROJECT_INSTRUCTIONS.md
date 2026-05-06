@@ -5,6 +5,8 @@ You are working in a docs-first repo workflow.
 Workflow:
 PLAN_PR → BUILD_PR → APPLY_PR
 
+# WORKFLOW & EXECUTION
+
 ## PR NAMING STANDARD
 
 PR names MUST follow:
@@ -103,6 +105,8 @@ Format:
 Example:
 
 `Normalize palette contract to manifest SSoT and remove tool-level schema drift - PR_26124_001-palette-baseline`
+
+# TESTING & VALIDATION
 
 ## PLAYWRIGHT VALIDATION REQUIREMENT
 
@@ -305,6 +309,8 @@ Every PR must document:
 - whether full samples test was skipped or run
 - reason for decision
 
+# RUNTIME & BEHAVIOR CONTRACTS
+
 ## WORKSPACE V2 CURRENT CONTRACT
 
 Workspace manifest is the runtime contract.
@@ -361,6 +367,8 @@ Rules:
 - Do not require sample launch validation during tool completion.
 - Do not claim sample launch works until sample JSON has been updated to schema.
 - Sample validation will happen after tool completion.
+
+# TOOL & ARCHITECTURE RULES
 
 ## TOOL COMPLETION RULES
 
