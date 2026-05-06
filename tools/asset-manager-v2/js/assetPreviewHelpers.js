@@ -13,19 +13,28 @@ function hasUrlProtocol(value) {
   return /^[a-z][a-z0-9+.-]*:/i.test(value);
 }
 
+function workspaceGameRoot(options = {}) {
+  const explicitRoot = sanitizeText(options.workspaceGameRoot || options.gameRoot).replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
+  if (/^games\/[^/]+$/i.test(explicitRoot)) {
+    return `${explicitRoot}/`;
+  }
+  const gameId = sanitizeText(options.workspaceGameId || options.gameId).replace(/[\\/]+/g, "-");
+  return gameId ? `games/${gameId}/` : "";
+}
+
 function workspaceGameAssetPath(path, options = {}) {
   const normalizedPath = sanitizeText(path).replace(/\\/g, "/").replace(/^\/+/, "");
-  const gameId = sanitizeText(options.workspaceGameId || options.gameId).replace(/[\\/]+/g, "-");
   if (!options.workspaceMode || hasUrlProtocol(normalizedPath) || /^games\//i.test(normalizedPath) || !/^assets\//i.test(normalizedPath)) {
     return { path, error: "" };
   }
-  if (!gameId) {
+  const gameRoot = workspaceGameRoot(options);
+  if (!gameRoot) {
     return {
       path: "",
       error: `Preview path ${normalizedPath} cannot be resolved because Workspace V2 game context is missing.`
     };
   }
-  return { path: `games/${gameId}/${normalizedPath}`, error: "" };
+  return { path: `${gameRoot}${normalizedPath}`, error: "" };
 }
 
 function previewTitle(type, kind) {

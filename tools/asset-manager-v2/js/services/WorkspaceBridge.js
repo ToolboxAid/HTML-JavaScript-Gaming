@@ -12,7 +12,6 @@ function readGameIdFrom(value) {
   }
   return String(
     value.gameId
-    || value.projectId
     || value.game
     || value.metadata?.gameId
     || value.workspaceMetadata?.gameId
@@ -36,6 +35,11 @@ export class WorkspaceBridge {
 
   queryGameId() {
     return new URLSearchParams(this.window.location.search).get("gameId") || "";
+  }
+
+  gameRootFromGameId(gameId) {
+    const normalizedGameId = String(gameId || "").trim().replace(/[\\/]+/g, "-");
+    return normalizedGameId ? `games/${normalizedGameId}/` : "";
   }
 
   readContext() {
@@ -104,7 +108,8 @@ export class WorkspaceBridge {
     if (!this.isWorkspaceMode()) {
       return {
         workspaceMode: false,
-        workspaceGameId: ""
+        workspaceGameId: "",
+        workspaceGameRoot: ""
       };
     }
     const queryGameId = this.queryGameId().trim();
@@ -112,15 +117,18 @@ export class WorkspaceBridge {
     if (!contextResult.ok) {
       return {
         workspaceMode: true,
-        workspaceGameId: queryGameId
+        workspaceGameId: queryGameId,
+        workspaceGameRoot: this.gameRootFromGameId(queryGameId)
       };
     }
     const workspaceManifest = this.workspaceManifestFromContext(contextResult.context);
+    const workspaceGameId = queryGameId
+      || readGameIdFrom(contextResult.context)
+      || readGameIdFrom(workspaceManifest);
     return {
       workspaceMode: true,
-      workspaceGameId: queryGameId
-        || readGameIdFrom(contextResult.context)
-        || readGameIdFrom(workspaceManifest)
+      workspaceGameId,
+      workspaceGameRoot: this.gameRootFromGameId(workspaceGameId)
     };
   }
 

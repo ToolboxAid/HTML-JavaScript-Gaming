@@ -46,6 +46,7 @@ export class AssetManagerV2App {
     this.schemaReady = false;
     this.selectedAssetId = "";
     this.redoStack = [];
+    this.temporaryUatGameRoot = "";
     this.undoStack = [];
   }
 
@@ -135,9 +136,12 @@ export class AssetManagerV2App {
     const samplePalette = readTemporaryUatSamplePalette(this.window.location);
     if (samplePalette.ok) {
       this.assetForm.setPaletteSwatches(samplePalette.palette.swatches);
+      this.temporaryUatGameRoot = samplePalette.gameRoot || "";
       this.statusLog.ok(`Loaded temporary UAT-only sample palette from ?palette=sample (${samplePalette.palette.swatches.length} colors).`);
+      this.statusLog.ok(`Temporary UAT-only Asset Manager V2 game root set to ${this.temporaryUatGameRoot} for preview/path testing.`);
       return;
     }
+    this.temporaryUatGameRoot = "";
     if (!this.workspaceBridge.isWorkspaceMode()) {
       this.assetForm.setPaletteSwatches([]);
       return;
@@ -153,9 +157,16 @@ export class AssetManagerV2App {
   }
 
   previewOptions() {
+    const workspacePreviewContext = this.workspaceBridge.readWorkspacePreviewContext();
     return {
       documentRef: this.window.document,
-      ...this.workspaceBridge.readWorkspacePreviewContext()
+      ...workspacePreviewContext,
+      ...(this.temporaryUatGameRoot
+        ? {
+          workspaceMode: true,
+          workspaceGameRoot: this.temporaryUatGameRoot
+        }
+        : {})
     };
   }
 
@@ -499,6 +510,7 @@ export class AssetManagerV2App {
   }
 
   render() {
+    this.assetCatalog.setPreviewOptions(this.previewOptions());
     this.assetCatalog.render(this.currentPayload().assets, this.selectedAssetId);
     this.inspector.showObject(this.currentOutputSummary());
   }

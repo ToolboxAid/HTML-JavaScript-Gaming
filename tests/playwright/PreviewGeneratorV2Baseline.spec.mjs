@@ -833,24 +833,34 @@ test.describe("Preview Generator V2 baseline", () => {
         const app = document.querySelector(".asset-manager-v2.app-shell");
         const assetsContent = document.getElementById("assetsContent");
         const centerPanel = document.querySelector(".asset-manager-v2__panel--center");
+        const assetsAccordion = centerPanel.querySelector('[aria-controls="assetsContent"]').closest(".accordion-v2");
         const selectedDetailPanel = document.querySelector(".asset-manager-v2__selected-detail");
         const detailContent = document.getElementById("selectedAssetDetailsContent");
         const preview = document.getElementById("assetPreview");
+        const appRect = app.getBoundingClientRect();
         const centerRect = centerPanel.getBoundingClientRect();
+        const assetsRect = assetsAccordion.getBoundingClientRect();
         const detailRect = selectedDetailPanel.getBoundingClientRect();
         return {
           detailInsideAssets: assetsContent.contains(detailContent),
-          detailParentIsApp: selectedDetailPanel.parentElement === app,
+          detailParentIsCenterPanel: selectedDetailPanel.parentElement === centerPanel,
           previewInsideDetail: detailContent.contains(preview),
-          detailBelowAssetsPanel: detailRect.top > centerRect.bottom
+          detailBelowAssetsList: detailRect.top > assetsRect.top,
+          detailHeight: Math.round(detailRect.height),
+          detailWithinCenterPanel: detailRect.left >= centerRect.left
+            && detailRect.right <= centerRect.right
+            && detailRect.bottom <= centerRect.bottom,
+          detailDoesNotSpanFullWidth: detailRect.left > appRect.left
+            && detailRect.right < appRect.right
         };
       });
-      expect(selectedDetailPlacement).toEqual({
-        detailInsideAssets: false,
-        detailParentIsApp: true,
-        previewInsideDetail: true,
-        detailBelowAssetsPanel: true
-      });
+      expect(selectedDetailPlacement.detailInsideAssets).toBe(false);
+      expect(selectedDetailPlacement.detailParentIsCenterPanel).toBe(true);
+      expect(selectedDetailPlacement.previewInsideDetail).toBe(true);
+      expect(selectedDetailPlacement.detailBelowAssetsList).toBe(true);
+      expect(selectedDetailPlacement.detailHeight).toBeGreaterThanOrEqual(220);
+      expect(selectedDetailPlacement.detailWithinCenterPanel).toBe(true);
+      expect(selectedDetailPlacement.detailDoesNotSpanFullWidth).toBe(true);
       const selectedDetailLayout = await page.locator("#selectedAssetDetails").evaluate((detail) => {
         const line = detail.querySelector(".asset-manager-v2__selected-detail-line");
         return {
@@ -1254,7 +1264,14 @@ test.describe("Preview Generator V2 baseline", () => {
   });
 
   test("loads Asset Manager V2 temporary UAT sample palette from query", async ({ page }) => {
-    const server = await openAssetManagerV2(page, "?palette=sample");
+    const server = await openAssetManagerV2(page, "?palette=sample", {
+      assetFiles: [{
+        name: "uat-preview.png",
+        mimeType: "image/png",
+        contents: "png",
+        path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
+      }]
+    });
     const pageErrors = [];
 
     page.on("pageerror", (error) => {
@@ -1263,6 +1280,19 @@ test.describe("Preview Generator V2 baseline", () => {
 
     try {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded temporary UAT-only sample palette from \?palette=sample \(3 colors\)\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Temporary UAT-only Asset Manager V2 game root set to games\/Asteroids\/ for preview\/path testing\./);
+
+      await page.locator("#assetKindImage").check();
+      await page.locator("#pickAssetFileButton").click();
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.sprite.uat-preview");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/uat-preview.png");
+      await page.locator("#addAssetButton").click();
+      await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"] img')).toHaveAttribute("src", "/games/Asteroids/assets/images/uat-preview.png");
+      const uatPreviewRoot = await page.locator("#assetPreview img.asset-manager-v2__preview-media").evaluate((image) => image.getAttribute("src"));
+      expect(uatPreviewRoot).toContain("/games/Asteroids/assets/");
+      expect(uatPreviewRoot).not.toContain("/samples/");
+      expect(uatPreviewRoot).not.toContain("/tools/");
+
       await page.locator("#assetKindColor").check();
       await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
       await expect(page.locator("#pickAssetFileButton")).toBeHidden();
@@ -1285,6 +1315,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Signal Violet! validated as type color, kind hex, role hud\./);
       await page.locator("#addAssetButton").click();
       await expect(page.locator("#assetList")).toContainText("assets.color.hud.signal-violet");
+      await expect(page.locator("#assetList")).toContainText("assets.image.sprite.uat-preview");
       await expect(page.locator("#selectedAssetDetails")).not.toContainText("Final ID");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.signal-violet");
       const output = JSON.parse(await page.locator("#inspectorOutput").textContent());
@@ -1396,6 +1427,16 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace mode loaded 0 validated assets from tools\.asset-browser\.assets/);
+      const workspacePreviewContext = await page.evaluate(async () => {
+        const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
+        return new WorkspaceBridge({ windowRef: window }).readWorkspacePreviewContext();
+      });
+      expect(workspacePreviewContext).toEqual({
+        workspaceMode: true,
+        workspaceGameId: "Asteroids",
+        workspaceGameRoot: "games/Asteroids/"
+      });
+      expect(JSON.stringify(workspacePreviewContext)).not.toMatch(/samples|tools/i);
 
       await page.locator("#assetKindAudio").check();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");

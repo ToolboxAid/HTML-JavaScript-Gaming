@@ -185,7 +185,6 @@ textarea:hover {
   margin: 0 auto 16px;
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr) 360px;
-  grid-template-rows: minmax(0, 1fr) minmax(120px, 18vh);
   gap: 14px;
   border: 1px solid var(--asset-manager-line);
   border-radius: 20px;
@@ -214,6 +213,7 @@ textarea:hover {
 
 .asset-manager-v2__panel--center {
   min-height: 0;
+  overflow: hidden;
 }
 
 .accordion-v2 {
@@ -609,9 +609,8 @@ textarea:hover {
 }
 
 .asset-manager-v2__selected-detail {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  min-height: 0;
+  flex: 0 0 220px;
+  min-height: 220px;
 }
 
 .asset-manager-v2__selected-detail .accordion-v2__header {

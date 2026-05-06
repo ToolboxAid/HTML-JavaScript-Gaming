@@ -1,5 +1,7 @@
 // Temporary UAT-only sample palette loader. Keep this isolated so ?palette=sample
 // can be removed without touching normal Workspace V2 palette loading.
+const TEMPORARY_UAT_SAMPLE_GAME_ROOT = "games/Asteroids/";
+
 const TEMPORARY_UAT_SAMPLE_PALETTE = Object.freeze({
   "$schema": "tools/schemas/tools/palette-browser.schema.json",
   schema: "html-js-gaming.palette",
@@ -27,6 +29,8 @@ export function readTemporaryUatSamplePalette(locationRef = window.location) {
   }
   return {
     ok: true,
+    // Temporary UAT-only game root for Asset Manager V2 preview/path testing.
+    gameRoot: TEMPORARY_UAT_SAMPLE_GAME_ROOT,
     palette: clone(TEMPORARY_UAT_SAMPLE_PALETTE)
   };
 }
