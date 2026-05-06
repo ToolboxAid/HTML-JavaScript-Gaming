@@ -1,12 +1,12 @@
-# Tool Control And Service Contracts
+# Tool Template V2 Control And Service Contracts
 
-These contracts define the required structure for first-class tool code created from this starter.
+These contracts define the required structure for First-Class Tool V2 code created from Tool Template V2.
 
 ## Deprecated Shared Tool Surface
 
-`tools/shared/` is deprecated for first-class tools.
+`tools/shared/` is deprecated for First-Class Tool V2 surfaces.
 
-First-class tools must have:
+First-Class Tool V2 surfaces must have:
 
 - no imports from `tools/shared/`
 - no script references to `tools/shared/`
@@ -41,7 +41,7 @@ Controls communicate through injected callbacks, injected services, or the app/r
 
 ## Panel Role Contract
 
-First-class tools use a consistent three-column layout contract:
+First-Class Tool V2 surfaces use a consistent three-column layout contract:
 
 - Left panel owns user input, setup, and intent controls only.
 - Center panel owns the primary work surface, editor, canvas, or preview.
@@ -159,7 +159,7 @@ Recommended summary shape:
 
 ## Review Checklist
 
-Before a first-class tool PR is ready:
+Before a First-Class Tool V2 PR is ready:
 
 - Every control or section has its own class.
 - Every service is DOM-free.

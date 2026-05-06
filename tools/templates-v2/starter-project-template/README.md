@@ -10,14 +10,14 @@ This template is a single reusable project manifest for the shared tools project
 ## Open flow
 1. Open any active first-class tool.
 2. Use the shared shell `Open Project` action.
-3. Select `tools/templates/starter-project-template/config/starter.project.json`.
+3. Select `tools/templates-v2/starter-project-template/config/starter.project.json`.
 
 ## Shared references used
-- vector: `templates/vector-native-arcade/assets/vectors/template-player.vector.json`
-- tilemap: `templates/vector-native-arcade/assets/tilemaps/template-arena.tilemap.json`
-- parallax: `templates/vector-native-arcade/assets/parallax/template-backdrop.parallax.json`
+- vector: `tools/templates-v2/vector-native-arcade/assets/vectors/template-player.vector.json`
+- tilemap: `tools/templates-v2/vector-native-arcade/assets/tilemaps/template-arena.tilemap.json`
+- parallax: `tools/templates-v2/vector-native-arcade/assets/parallax/template-backdrop.parallax.json`
 - sprite: `games/Asteroids/game.manifest.json#tools.sprite-editor.sprites.sprite.asteroids.demo.runtime`
-- palette: `templates/vector-native-arcade/assets/palettes/vector-native-primary.palette.json`
+- palette: `tools/templates-v2/vector-native-arcade/assets/palettes/vector-native-primary.palette.json`
 
 ## Notes
 - `Sprite Editor` remains first-class.

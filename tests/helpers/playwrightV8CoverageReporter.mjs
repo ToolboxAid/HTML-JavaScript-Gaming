@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -221,6 +222,7 @@ export class PlaywrightV8CoverageReporter {
       .filter(Boolean)
       .map((line) => this.pathFromStatusLine(line))
       .filter(Boolean)
+      .filter((filePath) => existsSync(path.resolve(this.repoRoot, filePath)))
       .filter((filePath) => filePath.endsWith(".js") || filePath.endsWith(".mjs"))
       .sort((left, right) => left.localeCompare(right));
   }
@@ -280,7 +282,7 @@ export class PlaywrightV8CoverageReporter {
     const toolEntryPoints = [
       { name: "Preview Generator V2", prefix: "tools/preview-generator-v2/" },
       { name: "Palette Manager", prefix: "tools/palette-manager-v2/" },
-      { name: "First-Class Tool Starter Template", prefix: "tools/templates/first-class-tool-starter/" },
+      { name: "Tool Template V2", prefix: "tools/templates-v2/" },
       { name: "Workspace V2", prefix: "tools/workspace-v2/" },
       { name: "Workspace Manager", prefix: "tools/workspace-manager/" }
     ];

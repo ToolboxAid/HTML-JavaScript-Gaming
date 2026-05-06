@@ -123,7 +123,7 @@ async function openPaletteManager(page) {
 async function openToolTemplate(page, query = "") {
   const server = await startRepoServer();
   await coverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/templates/first-class-tool-starter/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/tools/templates-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -451,7 +451,7 @@ test.describe("Preview Generator V2 baseline", () => {
     }
   });
 
-  test("launches first-class tool starter template with runtime-valid controls", async ({ page }) => {
+  test("launches Tool Template V2 with runtime-valid controls", async ({ page }) => {
     const server = await openToolTemplate(page);
     const pageErrors = [];
 
@@ -460,11 +460,12 @@ test.describe("Preview Generator V2 baseline", () => {
     });
 
     try {
-      await expect(page.locator("body.tools-platform-tool-page[data-tool-id='first-class-tool-starter']")).toBeVisible();
-      await expect(page.locator('link[href="../../../src/engine/theme/main.css"]')).toHaveCount(1);
-      await expect(page.locator('link[href="../../../src/engine/theme/accordionV2/accordionV2.css"]')).toHaveCount(1);
+      await expect(page.locator("body.tools-platform-tool-page[data-tool-id='tool-template-v2']")).toBeVisible();
+      await expect(page.locator('link[href="../../src/engine/theme/main.css"]')).toHaveCount(1);
+      await expect(page.locator('link[href="../../src/engine/theme/accordionV2/accordionV2.css"]')).toHaveCount(1);
       await expect(page.locator("#shared-theme-header")).toBeAttached();
-      await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tool Starter");
+      await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tool Starter V2");
+      await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tools Surface V2");
       await expect(page.locator("[data-tool-starter-summary]")).toHaveAttribute("data-tools-platform-summary-active", "1");
       await expect(page.locator(".tool-starter__tool__menu")).toBeVisible();
       await expect(page.locator(".tool-starter__tool__menu")).toHaveAttribute("aria-label", "Tool actions");
@@ -526,7 +527,7 @@ test.describe("Preview Generator V2 baseline", () => {
     }
   });
 
-  test("launches first-class tool starter template in workspace nav mode", async ({ page }) => {
+  test("launches Tool Template V2 in workspace nav mode", async ({ page }) => {
     const server = await openToolTemplate(page, "?launch=workspace");
     const pageErrors = [];
 

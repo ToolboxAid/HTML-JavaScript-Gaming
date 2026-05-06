@@ -52,8 +52,8 @@ export async function run() {
     gameId: "TemplateGame",
     runtimeAssetSources: {
       "vector.template.player": {
-        file: "tools/templates/vector-native-arcade/assets/data/vectors/template-player.vector.json",
-        path: "tools/templates/vector-native-arcade/assets/data/vectors/template-player.vector.json",
+        file: "tools/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
+        path: "tools/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
         kind: "vector"
       }
     },
@@ -61,7 +61,7 @@ export async function run() {
   });
 
   const fallbackResolved = fallbackLookup.resolvePackagedAsset({ id: "vector.template.player", type: "vector" });
-  assert.equal(fallbackResolved.file, "tools/templates/vector-native-arcade/assets/data/vectors/template-player.vector.json");
+  assert.equal(fallbackResolved.file, "tools/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json");
   assert.equal(fallbackLookup.binding.domains.vectors.length, 0);
   assert.equal(fallbackLookup.getErrors().some((entry) => entry.code === "RUNTIME_BINDING_REJECTED"), true);
   const fallbackDebug = fallbackLookup.getDebugState();

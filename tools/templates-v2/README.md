@@ -1,13 +1,13 @@
-# First-Class Tool Starter
+# Tool Template V2
 
-This folder is the official starter pattern for new first-class tools.
+This folder is the official starter pattern for new First-Class Tool V2 surfaces.
 
-Copy this folder to `tools/<tool-id>/`, then rename the class prefixes, visible title, and tool id references for the new tool.
+Copy `tools/templates-v2/` to `tools/<tool-id>/`, then rename the class prefixes, visible title, and tool id references for the new First-Class Tool V2.
 
 ## Folder Structure
 
 ```text
-tools/<tool-id>/
+tools/templates-v2/
   index.html
   playwright.config.mjs
   README.md
@@ -31,24 +31,33 @@ tools/<tool-id>/
   tests/
     playwright/
       FirstClassToolStarter.spec.mjs
+  starter-project-template/
+  vector-native-arcade/
 ```
 
 ## Required Files
 
-- `index.html`: semantic tool shell with no inline `<script>`, no inline `<style>`, and no inline event handlers.
-- `playwright.config.mjs`: template-local Playwright config for validating the copied starter before registry integration.
+- `index.html`: semantic Tool Template V2 shell with no inline `<script>`, no inline `<style>`, and no inline event handlers.
+- `playwright.config.mjs`: template-local Playwright config for validating the copied First-Class Tool V2 before registry integration.
 - `styles/*.css`: all tool styles.
 - `js/bootstrap.js`: small startup file that creates class instances and wires dependencies.
 - `js/ToolStarterApp.js`: app/root coordinator only.
 - `js/controls/*.js`: one class per UI control or section.
 - `js/services/*.js`: focused non-UI helper classes when needed.
 - `docs/CONTROL_SERVICE_CONTRACTS.md`: required control, service, app/root, logger, and batch processor contracts.
-- `tests/playwright/*.spec.mjs`: starter behavior coverage to copy and rename with the new tool.
+- `tests/playwright/*.spec.mjs`: starter behavior coverage to copy and rename with the new First-Class Tool V2.
 - `README.md`: tool-specific usage, contracts, and validation notes.
+
+## Additional Template Folders
+
+- `starter-project-template/`: existing shared project manifest starter.
+- `vector-native-arcade/`: existing vector-native arcade project/game starter.
+
+These folders remain under `tools/templates-v2/` as support/reference template assets. They are not the active First-Class Tool V2 starter shell.
 
 ## Required Contracts
 
-Read `docs/CONTROL_SERVICE_CONTRACTS.md` before creating or modifying a first-class tool from this starter.
+Read `docs/CONTROL_SERVICE_CONTRACTS.md` before creating or modifying a First-Class Tool V2 from this starter.
 
 The contracts define:
 
@@ -71,7 +80,7 @@ The contracts define:
 - Services contain non-DOM logic and return results/errors for the app, controls, or logger to display.
 - Logger is the single writer for status/log output.
 - Reusable UI behavior must live in reusable classes such as `AccordionSection`.
-- `tools/shared/` is deprecated for first-class tools:
+- `tools/shared/` is deprecated for First-Class Tool V2 surfaces:
   - no imports
   - no script references
   - no CSS references
@@ -81,29 +90,29 @@ The contracts define:
 
 ## Panel Layout Standard
 
-First-class tools use a consistent three-column layout:
+First-Class Tool V2 surfaces use a consistent three-column layout:
 
 - Left panel: user input, setup, and intent controls only.
 - Center panel: primary work surface, editor, canvas, or preview.
 - Right panel: generated output, summaries, diagnostics, logs, and status.
 - Status/log sections belong at the bottom of the right panel unless a PR explicitly justifies a different placement.
 
-The starter demonstrates this standard with Input Source on the left, Preview in the center, and Output Summary above Status on the right.
+The Tool Template V2 demonstrates this standard with Input Source on the left, Preview in the center, and Output Summary above Status on the right.
 
 ## Creating A New Tool
 
-1. Copy `tools/templates/first-class-tool-starter/` to `tools/<tool-id>/`.
+1. Copy `tools/templates-v2/` to `tools/<tool-id>/`.
 2. Rename `ToolStarterApp` and control class names to match the new tool.
 3. Update the visible title, subtitle, and `data-tool-id`.
 4. Replace starter control labels with the real tool controls.
 5. Keep JavaScript external and modular.
 6. Keep CSS external.
 7. Add first-class tool registry, index, and NAV wiring where applicable.
-8. Add targeted Playwright launch coverage for the new tool.
+8. Add targeted Playwright launch coverage for the new First-Class Tool V2.
 
 ## Playwright Launch Coverage
 
-Every new first-class tool must include Playwright coverage that launches the tool and validates meaningful behavior.
+Every new First-Class Tool V2 must include Playwright coverage that launches the tool and validates meaningful behavior.
 
 The starter includes `tests/playwright/FirstClassToolStarter.spec.mjs` as a copyable baseline. Rename it with the new tool and keep the behavior depth.
 
@@ -125,11 +134,11 @@ When validating only the copied starter before registry integration, run the cop
 
 Template-local command:
 
-`npx playwright test --config tools/<tool-id>/playwright.config.mjs`
+`npx playwright test --config tools/templates-v2/playwright.config.mjs`
 
 ## Review Artifacts
 
-Every PR that creates or changes a first-class tool must produce:
+Every PR that creates or changes a First-Class Tool V2 must produce:
 
 - `docs/dev/reports/codex_review.diff`
 - `docs/dev/reports/codex_changed_files.txt`

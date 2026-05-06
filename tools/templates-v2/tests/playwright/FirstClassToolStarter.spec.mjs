@@ -49,7 +49,7 @@ async function startStaticServer() {
   starterUrl = `http://127.0.0.1:${address.port}/index.html`;
 }
 
-test.describe("First-Class Tool Starter", () => {
+test.describe("Tool Template V2", () => {
   test.beforeAll(async () => {
     await startStaticServer();
   });
@@ -63,10 +63,11 @@ test.describe("First-Class Tool Starter", () => {
   });
 
   test("launches with Palette Manager-style header shell", async ({ page }) => {
-    await expect(page.locator("body.tools-platform-tool-page[data-tool-id='first-class-tool-starter']")).toBeVisible();
+    await expect(page.locator("body.tools-platform-tool-page[data-tool-id='tool-template-v2']")).toBeVisible();
     await expect(page.locator(".is-collapsible")).toBeVisible();
     await expect(page.locator("#shared-theme-header")).toBeAttached();
-    await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tool Starter");
+    await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tool Starter V2");
+    await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tools Surface V2");
     await expect(page.locator("[data-tool-starter-summary]")).toContainText("Hide Header and Details");
     await expect(page.locator("[data-tool-starter-summary]")).toHaveAttribute("data-tools-platform-summary-active", "1");
   });
@@ -118,7 +119,7 @@ test.describe("First-Class Tool Starter", () => {
     await summary.click();
     await expect(details).not.toHaveAttribute("open", "");
     await expect(summary).toHaveAttribute("data-tools-platform-summary-state", "collapsed");
-    await expect(summary).toContainText(/First-Class Tool Starter|Show Header and Details/);
+    await expect(summary).toContainText(/First-Class Tool Starter V2|Show Header and Details/);
   });
 
   test("accordion sections collapse and expand", async ({ page }) => {

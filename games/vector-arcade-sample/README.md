@@ -1,6 +1,6 @@
 # Vector Arcade Sample
 
-This sample game is built from `tools/templates/vector-native-arcade/`.
+This sample game is built from `tools/templates-v2/vector-native-arcade/`.
 
 ## Baseline
 

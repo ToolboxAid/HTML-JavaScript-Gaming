@@ -40,7 +40,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
     preview: new PreviewPanelControl(requireElement("#previewOutput")),
-    serializer: new ToolStateSerializer("first-class-tool-starter"),
+    serializer: new ToolStateSerializer("tool-template-v2"),
     shell: new ToolStarterShellControl(),
     sourceInput,
     statusLog,

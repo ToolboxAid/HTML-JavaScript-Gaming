@@ -3,7 +3,7 @@
   "type": "vector",
   "source": {
     "kind": "svg",
-    "path": "templates/vector-native-arcade/assets/vectors/template-obstacle-small.vector.json"
+    "path": "tools/templates-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json"
   },
   "geometry": {
     "viewBox": "-18 -18 36 36",

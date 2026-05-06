@@ -27,7 +27,7 @@ This index lists the remaining rebuild anchors, schema baseline, and support fol
 | `codex` | `tools/codex` | support folder | reference-only | none | reference only; no normal rebuild doc |
 | `dev` | `tools/dev` | support folder | reference-only | none | reference only; no normal rebuild doc |
 | `shared` | `tools/shared` | support folder | reference-only | none | reference only; no normal rebuild doc |
-| `templates` | `tools/templates` | support folder | reference-only | none | reference only; no normal rebuild doc |
+| `templates-v2` | `tools/templates-v2` | support folder | reference-only | none | reference only; no normal rebuild doc |
 
 ## Classification Definitions
 - `global tool`: a launchable global surface. Palette Manager V2 is the only core rebuild anchor in this group.

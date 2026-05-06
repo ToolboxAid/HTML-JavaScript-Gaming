@@ -3,7 +3,7 @@
   "type": "vector",
   "source": {
     "kind": "svg",
-    "path": "templates/vector-native-arcade/assets/vectors/template-title.vector.json"
+    "path": "tools/templates-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json"
   },
   "geometry": {
     "viewBox": "0 0 220 48",

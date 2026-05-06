@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
-const TEMPLATE_MANIFEST_PATH = "tools/templates/starter-project-template/config/starter.project.json";
+const TEMPLATE_MANIFEST_PATH = "tools/templates-v2/starter-project-template/config/starter.project.json";
 const REPORT_PATH = "docs/dev/reports/starter_project_template_validation.txt";
 
 function assert(condition, message, issues) {
@@ -23,8 +23,9 @@ function assert(condition, message, issues) {
 }
 
 async function pathExists(repoRelativePath) {
+  const physicalPath = repoRelativePath.split("#")[0];
   try {
-    await fs.access(path.join(repoRoot, repoRelativePath));
+    await fs.access(path.join(repoRoot, physicalPath));
     return true;
   } catch {
     return false;

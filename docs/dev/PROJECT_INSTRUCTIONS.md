@@ -656,3 +656,15 @@ New first-class tools must include registry, index, and NAV wiring where applica
 New first-class tools must include Playwright launch coverage.
 
 Tool registration must not rely on hidden defaults or silent fallback.
+
+## TOOL TEMPLATE V2 LOCATION
+
+The official First-Class Tool V2 starter is:
+
+`tools/templates-v2/`
+
+Use the V2 naming consistently:
+- Tool Template V2
+- First-Class Tool Starter V2
+- First-Class Tools Surface V2
+- First-Class Tool V2

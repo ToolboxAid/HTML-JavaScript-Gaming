@@ -1,9 +1,9 @@
 export class ToolStarterShellControl {
   constructor({ documentRef = document } = {}) {
     this.document = documentRef;
-    this.toolId = "first-class-tool-starter";
-    this.toolName = "First-Class Tool Starter";
-    this.toolDescription = "First-Class Tools Surface";
+    this.toolId = "tool-template-v2";
+    this.toolName = "First-Class Tool Starter V2";
+    this.toolDescription = "First-Class Tools Surface V2";
     this.headerText = `${this.toolName} - ${this.toolDescription}`;
     this.introText = this.toolDescription;
     this.suppressFullscreenSync = false;
@@ -127,4 +127,3 @@ export class ToolStarterShellControl {
     });
   }
 }
-
