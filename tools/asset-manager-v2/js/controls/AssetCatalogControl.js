@@ -20,9 +20,11 @@ export class AssetCatalogControl {
     this.onDelete = onDelete;
     this.onSelect = onSelect;
     this.list.addEventListener("click", (event) => {
-      const deleteButton = event.target.closest("button[data-delete-asset-id]");
-      if (deleteButton) {
-        this.onDelete?.(deleteButton.dataset.deleteAssetId);
+      const deleteControl = event.target.closest("[data-delete-asset-id]");
+      if (deleteControl) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onDelete?.(deleteControl.dataset.deleteAssetId);
         return;
       }
       const button = event.target.closest("button[data-asset-id]");
@@ -53,10 +55,12 @@ export class AssetCatalogControl {
       ].join("\n");
       return `
       <article class="asset-manager-v2__asset-tile ${assetId === selectedAssetId ? "is-selected" : ""}" title="${escapeHtml(detailTooltip)}">
-        <button type="button" data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete" aria-label="Delete ${escapeHtml(assetId)}">Delete</button>
         <button type="button" data-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-select">
-          <span class="asset-manager-v2__asset-type-role">${escapeHtml(entry.kind)}:${escapeHtml(entry.role || "")}</span>
-          <strong>${escapeHtml(assetId)}</strong>
+          <span data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete" aria-label="Delete ${escapeHtml(assetId)}" title="Delete ${escapeHtml(assetId)}">X</span>
+          <span class="asset-manager-v2__asset-copy">
+            <span class="asset-manager-v2__asset-type-role">${escapeHtml(entry.kind)}:${escapeHtml(entry.role || "")}</span>
+            <strong>${escapeHtml(assetId)}</strong>
+          </span>
         </button>
       </article>
     `;

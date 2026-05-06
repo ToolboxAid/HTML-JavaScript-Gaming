@@ -320,6 +320,10 @@ textarea:hover {
   cursor: default;
 }
 
+.asset-manager-v2__field--not-editable input:read-only {
+  user-select: none;
+}
+
 .asset-manager-v2__kind-controls {
   min-width: 0;
   display: grid;
@@ -406,6 +410,23 @@ textarea:hover {
   flex: 1 1 96px;
 }
 
+.asset-manager-v2__history-controls {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  border: 1px solid var(--asset-manager-line);
+  border-radius: 8px;
+  margin: 0;
+  padding: 12px;
+}
+
+.asset-manager-v2__history-controls legend {
+  padding: 0 6px;
+  color: var(--asset-manager-muted);
+  font-weight: 700;
+}
+
 #statusLog {
   width: 100%;
   resize: none;
@@ -420,8 +441,7 @@ textarea:hover {
 
 .asset-manager-v2__asset-tile {
   min-width: 0;
-  display: flex;
-  align-items: start;
+  display: grid;
   gap: 8px;
   border: 1px solid var(--asset-manager-line);
   border-radius: 8px;
@@ -434,20 +454,35 @@ textarea:hover {
 }
 
 .asset-manager-v2__asset-select {
-  flex: 1 1 auto;
+  width: 100%;
   min-width: 0;
-  display: grid;
-  gap: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   text-align: left;
 }
 
 .asset-manager-v2__asset-delete {
   flex: 0 0 auto;
-  align-self: start;
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: #042f2e;
+  font-weight: 900;
+  line-height: 1;
 }
 
-.asset-manager-v2__asset-select strong,
-.asset-manager-v2__asset-select span {
+.asset-manager-v2__asset-copy {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.asset-manager-v2__asset-copy strong,
+.asset-manager-v2__asset-copy span {
   min-width: 0;
   overflow-wrap: anywhere;
 }

@@ -67,6 +67,7 @@ export class AssetManagerV2App {
       onChange: () => this.refreshActions(),
       onFileSelected: (value, fileInfo) => this.validateSelectedFile(value, fileInfo),
       onRedo: () => this.redoAssetChange(),
+      onStatus: (level, message) => this.writeStatus(level, message),
       onUndo: () => this.undoAssetChange(),
       onUpdate: (value) => this.updateAsset(value)
     });
@@ -91,7 +92,6 @@ export class AssetManagerV2App {
     const result = await this.schemaValidator.load();
     if (!result.ok) {
       this.statusLog.fail(result.message);
-      this.assetForm.showMessage(result.message, "error");
       this.refreshActions();
       return;
     }
@@ -165,14 +165,12 @@ export class AssetManagerV2App {
     if (Object.prototype.hasOwnProperty.call(this.assets, formValue.assetId)) {
       const message = `Duplicate id: ${formValue.assetId}`;
       this.statusLog.fail(message);
-      this.assetForm.showMessage(message, "error");
       return;
     }
 
     const entryResult = this.schemaValidator.createEntry(formValue);
     if (!entryResult.ok) {
       this.statusLog.fail(`Schema validation failed: ${entryResult.errors.join(" | ")}`);
-      this.assetForm.showMessage(entryResult.errors[0], "error");
       return;
     }
 
@@ -183,7 +181,6 @@ export class AssetManagerV2App {
     const payloadValidation = this.schemaValidator.validatePayload({ assets: nextAssets });
     if (!payloadValidation.ok) {
       this.statusLog.fail(`Schema validation failed: ${payloadValidation.errors.join(" | ")}`);
-      this.assetForm.showMessage(payloadValidation.errors[0], "error");
       return;
     }
 
@@ -191,7 +188,6 @@ export class AssetManagerV2App {
     this.assets = payloadValidation.payload.assets;
     this.selectedAssetId = formValue.assetId;
     this.assetForm.clearEditableFields();
-    this.assetForm.showMessage("Pick another asset file.", "info");
     this.statusLog.ok(`Added ${formValue.assetId}.`);
     this.render();
     this.refreshActions();
@@ -209,14 +205,12 @@ export class AssetManagerV2App {
     if (formValue.assetId !== this.selectedAssetId && Object.prototype.hasOwnProperty.call(this.assets, formValue.assetId)) {
       const message = `Duplicate id: ${formValue.assetId}`;
       this.statusLog.fail(message);
-      this.assetForm.showMessage(message, "error");
       return;
     }
 
     const entryResult = this.schemaValidator.createEntry(formValue);
     if (!entryResult.ok) {
       this.statusLog.fail(`Schema validation failed: ${entryResult.errors.join(" | ")}`);
-      this.assetForm.showMessage(entryResult.errors[0], "error");
       return;
     }
 
@@ -226,7 +220,6 @@ export class AssetManagerV2App {
     const payloadValidation = this.schemaValidator.validatePayload({ assets: sortedAssets(nextAssets) });
     if (!payloadValidation.ok) {
       this.statusLog.fail(`Schema validation failed: ${payloadValidation.errors.join(" | ")}`);
-      this.assetForm.showMessage(payloadValidation.errors[0], "error");
       return;
     }
 
@@ -257,7 +250,6 @@ export class AssetManagerV2App {
       this.assetForm.loadAssetForEdit(this.selectedAssetId, this.assets[this.selectedAssetId]);
     } else {
       this.assetForm.clearEditableFields();
-      this.assetForm.showMessage("Pick an asset file.", "info");
     }
     this.statusLog.ok(`Deleted ${assetId}.`);
     this.render();
@@ -288,7 +280,6 @@ export class AssetManagerV2App {
       this.assetForm.loadAssetForEdit(this.selectedAssetId, this.assets[this.selectedAssetId]);
     } else {
       this.assetForm.clearEditableFields();
-      this.assetForm.showMessage("Pick an asset file.", "info");
     }
     this.render();
     this.refreshActions();
@@ -329,19 +320,17 @@ export class AssetManagerV2App {
     if (!fileInfo.kind) {
       const message = `File ${fileInfo.name} is not a recognized asset type.`;
       this.statusLog.fail(`Selected file validation failed: ${message}`);
-      this.assetForm.showMessage(message, "error");
       this.refreshActions();
       return;
     }
     if (fileInfo.kind && !formValue.role) {
-      this.assetForm.showMessage(`Select a role for kind ${formValue.kind}, type ${formValue.kind}.`, "info");
+      this.statusLog.info(`Select a role for kind ${formValue.kind}, type ${formValue.kind}.`);
       this.refreshActions();
       return;
     }
     const fileValidation = this.schemaValidator.validateFileSelection(formValue, fileInfo);
     if (!fileValidation.ok) {
       this.statusLog.fail(`Selected file validation failed: ${fileValidation.errors.join(" | ")}`);
-      this.assetForm.showMessage(fileValidation.errors[0], "error");
       return;
     }
     const payloadValidation = this.schemaValidator.validatePayload({
@@ -351,11 +340,21 @@ export class AssetManagerV2App {
     });
     if (!payloadValidation.ok) {
       this.statusLog.fail(`Selected file validation failed: ${payloadValidation.errors.join(" | ")}`);
-      this.assetForm.showMessage(payloadValidation.errors[0], "error");
       return;
     }
-    this.assetForm.showMessage(`Selected file validated as kind ${formValue.kind}, type ${formValue.kind}, role ${formValue.role}.`, "ok");
     this.statusLog.ok(`Selected file ${fileInfo.name} validated as kind ${formValue.kind}, type ${formValue.kind}, role ${formValue.role}.`);
+  }
+
+  writeStatus(level, message) {
+    if (level === "fail") {
+      this.statusLog.fail(message);
+      return;
+    }
+    if (level === "ok") {
+      this.statusLog.ok(message);
+      return;
+    }
+    this.statusLog.info(message);
   }
 
   exportAssets() {

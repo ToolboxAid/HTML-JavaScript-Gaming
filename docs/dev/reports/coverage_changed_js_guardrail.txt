@@ -6,11 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
 
 Changed runtime JS files considered:
-(79%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 430/430; executed functions 37/47
-(83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
-(94%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 246/246; executed functions 32/34
-(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 63/63; executed functions 4/4
-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 68/68; executed functions 9/9
+(76%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 428/428; executed functions 37/49
+(94%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 235/235; executed functions 31/33
+(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 61/61; executed functions 4/4
+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 72/72; executed functions 9/9
 (100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 181/181; executed functions 21/21
 
 Guardrail warnings:

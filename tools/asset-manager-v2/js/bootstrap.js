@@ -43,10 +43,8 @@ window.addEventListener("DOMContentLoaded", () => {
       pickFileButton: requireElement("#pickAssetFileButton"),
       roleSelect: requireElement("#assetRoleSelect"),
       redoButton: requireElement("#redoAssetButton"),
-      selectedFileText: requireElement("#assetSelectedFileText"),
       undoButton: requireElement("#undoAssetButton"),
       updateButton: requireElement("#updateAssetButton"),
-      validationMessage: requireElement("#assetValidationMessage"),
       windowRef: window
     }),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),

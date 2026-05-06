@@ -20,10 +20,8 @@ export class AssetFormControl {
     pickFileButton,
     roleSelect,
     redoButton,
-    selectedFileText,
     undoButton,
     updateButton,
-    validationMessage,
     windowRef = window
   }) {
     this.addButton = addButton;
@@ -34,17 +32,16 @@ export class AssetFormControl {
     this.pickFileButton = pickFileButton;
     this.redoButton = redoButton;
     this.roleSelect = roleSelect;
-    this.selectedFileText = selectedFileText;
     this.undoButton = undoButton;
     this.updateButton = updateButton;
-    this.validationMessage = validationMessage;
     this.window = windowRef;
     this.allowedKinds = [];
     this.selectedFileInfo = null;
     this.selectedFileError = "";
   }
 
-  mount({ onAdd, onChange, onFileSelected, onRedo, onUndo, onUpdate }) {
+  mount({ onAdd, onChange, onFileSelected, onRedo, onStatus, onUndo, onUpdate }) {
+    this.onStatus = onStatus;
     this.updateFileAccept();
     this.pickFileButton.addEventListener("click", () => {
       void this.pickAssetFile({ onChange, onFileSelected });
@@ -135,7 +132,6 @@ export class AssetFormControl {
     }
     this.updateFileAccept();
     this.updateRoleOptions({ preserveCurrentRole: false });
-    this.showMessage(`Kinds: ${allowedKinds.join(", ")}.`, "ok");
   }
 
   clearEditableFields() {
@@ -144,7 +140,6 @@ export class AssetFormControl {
     this.selectedFileInfo = null;
     this.selectedFileError = "";
     this.fileInput.value = "";
-    this.selectedFileText.textContent = "No file selected.";
     this.updateRoleOptions({ preserveCurrentRole: true });
   }
 
@@ -163,14 +158,6 @@ export class AssetFormControl {
     this.selectedFileInfo = null;
     this.selectedFileError = "";
     this.fileInput.value = "";
-    this.selectedFileText.textContent = "No file selected.";
-    this.showMessage("Editing selected asset.", "info");
-  }
-
-  showMessage(message, tone = "info") {
-    this.validationMessage.textContent = message;
-    this.validationMessage.classList.toggle("is-error", tone === "error");
-    this.validationMessage.classList.toggle("is-ok", tone === "ok");
   }
 
   async pickAssetFile({ onChange, onFileSelected }) {
@@ -200,7 +187,7 @@ export class AssetFormControl {
         return;
       }
       this.selectedFileError = `Asset file picker failed: ${error.message}`;
-      this.showMessage(this.selectedFileError, "error");
+      this.onStatus?.("fail", this.selectedFileError);
       onChange();
     }
   }
@@ -209,7 +196,6 @@ export class AssetFormControl {
     if (!file) {
       this.selectedFileInfo = null;
       this.selectedFileError = "";
-      this.selectedFileText.textContent = "No file selected.";
       this.updateRoleOptions();
       return;
     }
@@ -237,7 +223,6 @@ export class AssetFormControl {
       this.roleSelect.value = suggestedRole;
     }
     this.applyDerivedFileValues();
-    this.selectedFileText.textContent = kind ? `${labelForKind(kind)}: ${file.name}` : `Unrecognized: ${file.name}`;
   }
 
   applyDerivedFileValues() {
@@ -260,5 +245,8 @@ export class AssetFormControl {
     this.roleSelect.innerHTML = roles.map((role) => `<option value="${role}">${role}</option>`).join("");
     this.roleSelect.value = preserveCurrentRole && roles.includes(currentValue) ? currentValue : roles[0] || "";
     this.roleSelect.disabled = roles.length === 0;
+    this.roleSelect.title = roles.length
+      ? `Allowed roles for ${kind}: ${roles.join(", ")}`
+      : "No roles available for the selected kind.";
   }
 }
