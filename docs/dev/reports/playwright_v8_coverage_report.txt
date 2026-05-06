@@ -22,10 +22,8 @@ Exercised tool entry points detected:
 Changed runtime JS files covered:
 (87%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 553/553; executed functions 48/55
 (91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 318/318; executed functions 29/32
-(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
 (100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 68/68; executed functions 4/4
 (100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 54/54; executed functions 8/8
-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -205,7 +203,5 @@ Changed JS files considered:
 (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
 (87%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
 (91%) tools/asset-manager-v2/js/assetManagerMetadata.js - changed JS file with browser V8 coverage
-(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - changed JS file with browser V8 coverage
 (100%) tools/asset-manager-v2/js/bootstrap.js - changed JS file with browser V8 coverage
 (100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - changed JS file with browser V8 coverage
-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file with browser V8 coverage

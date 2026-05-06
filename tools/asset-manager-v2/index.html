@@ -127,11 +127,18 @@
             </div>
           </div>
         </section>
-        <fieldset class="asset-manager-v2__history-controls" aria-label="Asset history">
-          <legend>History</legend>
-          <button id="undoAssetButton" type="button" disabled>Undo</button>
-          <button id="redoAssetButton" type="button" disabled>Redo</button>
-        </fieldset>
+        <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__history-accordion is-open" data-accordion-v2-open="true" aria-label="Asset history">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="assetHistoryContent">
+            <span>History</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="assetHistoryContent" class="accordion-v2__content">
+            <div class="asset-manager-v2__history-controls" role="group" aria-label="Asset history controls">
+              <button id="undoAssetButton" type="button" disabled>Undo</button>
+              <button id="redoAssetButton" type="button" disabled>Redo</button>
+            </div>
+          </div>
+        </section>
       </aside>
 
       <section class="asset-manager-v2__panel asset-manager-v2__panel--center" aria-label="Assets">

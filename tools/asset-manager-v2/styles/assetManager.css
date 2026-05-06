@@ -232,7 +232,7 @@ textarea:hover {
 }
 
 .accordion-v2.is-open {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
 }
 
 .accordion-v2:not(.is-open) {
@@ -273,7 +273,7 @@ textarea:hover {
 .accordion-v2__content {
   min-height: 0;
   display: flex;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   flex-direction: column;
   gap: 12px;
   border-top: 1px solid var(--asset-manager-line);
@@ -287,6 +287,11 @@ textarea:hover {
 
 .asset-manager-v2__accordion--fill,
 .asset-manager-v2__accordion--output.is-open {
+  flex: 1 1 auto;
+}
+
+.asset-manager-v2__accordion--output.is-open > .accordion-v2__content,
+.asset-manager-v2__accordion--status.is-open > .accordion-v2__content {
   flex: 1 1 auto;
 }
 
@@ -488,8 +493,7 @@ textarea:hover {
   flex: 1 1 96px;
 }
 
-.asset-manager-v2__stretch-controls,
-.asset-manager-v2__history-controls {
+.asset-manager-v2__stretch-controls {
   min-width: 0;
   display: grid;
   gap: 8px;
@@ -508,11 +512,13 @@ textarea:hover {
 }
 
 .asset-manager-v2__history-controls {
+  min-width: 0;
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
-.asset-manager-v2__stretch-controls legend,
-.asset-manager-v2__history-controls legend {
+.asset-manager-v2__stretch-controls legend {
   padding: 0 6px;
   color: var(--asset-manager-muted);
   font-weight: 700;

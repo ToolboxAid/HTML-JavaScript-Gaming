@@ -798,11 +798,13 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#navExportJsonButton")).toHaveText("Export JSON");
       await expect(page.locator("#navImportJsonButton")).toBeEnabled();
       await expect(page.locator("#navExportJsonButton")).toBeEnabled();
-      const historyControls = page.locator('fieldset[aria-label="Asset history"]');
-      await expect(historyControls).toBeVisible();
-      await expect(historyControls.locator("#undoAssetButton")).toBeDisabled();
-      await expect(historyControls.locator("#redoAssetButton")).toBeDisabled();
-      const historyPlacement = await historyControls.evaluate((history) => {
+      const historyAccordion = page.locator(".asset-manager-v2__history-accordion");
+      await expect(historyAccordion).toBeVisible();
+      await expect(page.locator('button[aria-controls="assetHistoryContent"] span').first()).toHaveText("History");
+      await expect(historyAccordion.locator("#undoAssetButton")).toBeDisabled();
+      await expect(historyAccordion.locator("#redoAssetButton")).toBeDisabled();
+      await expectAccordionToggles(page, "assetHistoryContent");
+      const historyPlacement = await historyAccordion.evaluate((history) => {
         const assetControls = document.getElementById("assetControlsContent");
         const leftPanel = document.querySelector(".asset-manager-v2__panel--left");
         const controlsSection = document.querySelector('[aria-controls="assetControlsContent"]').closest(".accordion-v2");
@@ -917,6 +919,32 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#inspectorOutput")).not.toContainText("Added assets.image.background.nebula-background");
       const backgroundOutput = JSON.parse(await page.locator("#inspectorOutput").textContent());
       expect(backgroundOutput.assets.find((asset) => asset.id === "assets.image.background.nebula-background").stretchOverride).toBeUndefined();
+      const accordionBottomSpacing = await page.evaluate(() => {
+        const measureTrailingGap = (contentId) => {
+          const content = document.getElementById(contentId);
+          const style = getComputedStyle(content);
+          const visibleChildren = Array.from(content.children).filter((child) => {
+            const childStyle = getComputedStyle(child);
+            return !child.hidden && childStyle.display !== "none";
+          });
+          const lastChild = visibleChildren.at(-1);
+          if (!lastChild) {
+            return 0;
+          }
+          const contentRect = content.getBoundingClientRect();
+          const childRect = lastChild.getBoundingClientRect();
+          const paddingBottom = Number.parseFloat(style.paddingBottom) || 0;
+          return Math.round(Math.max(0, contentRect.bottom - childRect.bottom - paddingBottom));
+        };
+        return {
+          assetControls: measureTrailingGap("assetControlsContent"),
+          assets: measureTrailingGap("assetsContent"),
+          selectedDetail: measureTrailingGap("selectedAssetDetailsContent")
+        };
+      });
+      expect(accordionBottomSpacing.assetControls).toBeLessThanOrEqual(4);
+      expect(accordionBottomSpacing.assets).toBeLessThanOrEqual(4);
+      expect(accordionBottomSpacing.selectedDetail).toBeLessThanOrEqual(4);
 
       await page.locator("#assetRoleSelect").selectOption("ui");
       await queueAssetFile(page, {
