@@ -841,12 +841,15 @@ test.describe("Preview Generator V2 baseline", () => {
         const centerRect = centerPanel.getBoundingClientRect();
         const assetsRect = assetsAccordion.getBoundingClientRect();
         const detailRect = selectedDetailPanel.getBoundingClientRect();
+        const detailStyle = getComputedStyle(selectedDetailPanel);
         return {
           detailInsideAssets: assetsContent.contains(detailContent),
           detailParentIsCenterPanel: selectedDetailPanel.parentElement === centerPanel,
           previewInsideDetail: detailContent.contains(preview),
           detailBelowAssetsList: detailRect.top > assetsRect.top,
+          detailFlexBasis: detailStyle.flexBasis,
           detailHeight: Math.round(detailRect.height),
+          detailMinHeight: detailStyle.minHeight,
           detailWithinCenterPanel: detailRect.left >= centerRect.left
             && detailRect.right <= centerRect.right
             && detailRect.bottom <= centerRect.bottom,
@@ -858,7 +861,10 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(selectedDetailPlacement.detailParentIsCenterPanel).toBe(true);
       expect(selectedDetailPlacement.previewInsideDetail).toBe(true);
       expect(selectedDetailPlacement.detailBelowAssetsList).toBe(true);
-      expect(selectedDetailPlacement.detailHeight).toBeGreaterThanOrEqual(220);
+      expect(selectedDetailPlacement.detailFlexBasis).toBe("auto");
+      expect(selectedDetailPlacement.detailHeight).toBeGreaterThan(120);
+      expect(selectedDetailPlacement.detailHeight).not.toBe(300);
+      expect(selectedDetailPlacement.detailMinHeight).toBe("0px");
       expect(selectedDetailPlacement.detailWithinCenterPanel).toBe(true);
       expect(selectedDetailPlacement.detailDoesNotSpanFullWidth).toBe(true);
       const selectedDetailLayout = await page.locator("#selectedAssetDetails").evaluate((detail) => {
@@ -1105,6 +1111,8 @@ test.describe("Preview Generator V2 baseline", () => {
             hasAudio: html.includes("<audio"),
             hasVideo: html.includes("<video"),
             hasFontFace: html.includes("@font-face"),
+            hasFontFamilyFromId: html.includes("asset-preview-assets-font-display-sample"),
+            hasScopedFontFamilyData: html.includes('data-preview-font-family="asset-preview-assets-font-display-sample"'),
             hasInspection: html.includes("inspection")
           }];
         }));
@@ -1117,14 +1125,14 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(helperPreviewCoverage.localHelperLoaded).toBe(true);
       expect(helperPreviewCoverage.sharedHelperStatus).toBe(404);
       expect(helperPreviewCoverage.coverage).toEqual({
-        image: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: true, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: false },
-        audio: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: true, hasVideo: false, hasFontFace: false, hasInspection: false },
-        color: { hasAutoplay: false, hasDataType: true, hasColor: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: false },
-        video: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: true, hasFontFace: false, hasInspection: false },
-        font: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: true, hasInspection: false },
-        shader: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true },
-        data: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true },
-        localization: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true }
+        image: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: true, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
+        audio: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: true, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
+        color: { hasAutoplay: false, hasDataType: true, hasColor: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
+        video: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: true, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
+        font: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: true, hasFontFamilyFromId: true, hasScopedFontFamilyData: true, hasInspection: false },
+        shader: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: true },
+        data: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: true },
+        localization: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: true }
       });
 
       await page.locator('button[data-asset-id="assets.image.background.nebula-background"]').click();
@@ -1264,13 +1272,44 @@ test.describe("Preview Generator V2 baseline", () => {
   });
 
   test("loads Asset Manager V2 temporary UAT sample palette from query", async ({ page }) => {
+    await page.addInitScript(() => {
+      const NativeFontFace = window.FontFace;
+      window.__assetManagerV2FontFaceLoads = [];
+      window.FontFace = class AssetManagerV2UatFontFace {
+        constructor(family, source, descriptors) {
+          this.family = family;
+          this.source = source;
+          this.descriptors = descriptors;
+          window.__assetManagerV2FontFaceLoads.push({ family, source });
+        }
+
+        async load() {
+          if (String(this.source).includes("vector-battle.ttf")) {
+            throw new Error("UAT font load rejected.");
+          }
+          if (typeof NativeFontFace === "function") {
+            const nativeFontFace = new NativeFontFace(this.family, this.source, this.descriptors);
+            return nativeFontFace.load();
+          }
+          return this;
+        }
+      };
+    });
     const server = await openAssetManagerV2(page, "?palette=sample", {
-      assetFiles: [{
-        name: "uat-preview.png",
-        mimeType: "image/png",
-        contents: "png",
-        path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
-      }]
+      assetFiles: [
+        {
+          name: "uat-preview.png",
+          mimeType: "image/png",
+          contents: "png",
+          path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
+        },
+        {
+          name: "vector-battle.ttf",
+          mimeType: "font/ttf",
+          contents: "font",
+          path: "HTML-JavaScript-Gaming/assets/fonts/vector-battle.ttf"
+        }
+      ]
     });
     const pageErrors = [];
 
@@ -1292,6 +1331,31 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(uatPreviewRoot).toContain("/games/Asteroids/assets/");
       expect(uatPreviewRoot).not.toContain("/samples/");
       expect(uatPreviewRoot).not.toContain("/tools/");
+
+      await page.locator("#assetKindFont").check();
+      await page.locator("#pickAssetFileButton").click();
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.font.ui.vector-battle");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector-battle.ttf");
+      await page.locator("#addAssetButton").click();
+      await expect(page.locator('#assetPreview [data-preview-type="font"][data-preview-kind="ttf"]')).toBeVisible();
+      const fontPreviewState = await page.locator("#assetPreview").evaluate((preview) => {
+        const style = preview.querySelector("style")?.textContent || "";
+        const sample = preview.querySelector(".asset-manager-v2__preview-font");
+        return {
+          fontFamily: sample ? getComputedStyle(sample).fontFamily : "",
+          scopedFamily: sample?.dataset.previewFontFamily || "",
+          style
+        };
+      });
+      expect(fontPreviewState.style).toContain('@font-face{font-family:"asset-preview-assets-font-ui-vector-battle"');
+      expect(fontPreviewState.style).toContain('/games/Asteroids/assets/fonts/vector-battle.ttf');
+      expect(fontPreviewState.fontFamily).toContain("asset-preview-assets-font-ui-vector-battle");
+      expect(fontPreviewState.scopedFamily).toBe("asset-preview-assets-font-ui-vector-battle");
+      await expect.poll(async () => await page.evaluate(() => window.__assetManagerV2FontFaceLoads)).toEqual([{
+        family: "asset-preview-assets-font-ui-vector-battle",
+        source: 'url("/games/Asteroids/assets/fonts/vector-battle.ttf")'
+      }]);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Font preview failed for assets\.font\.ui\.vector-battle: UAT font load rejected\./);
 
       await page.locator("#assetKindColor").check();
       await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
@@ -1315,6 +1379,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Signal Violet! validated as type color, kind hex, role hud\./);
       await page.locator("#addAssetButton").click();
       await expect(page.locator("#assetList")).toContainText("assets.color.hud.signal-violet");
+      await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
       await expect(page.locator("#assetList")).toContainText("assets.image.sprite.uat-preview");
       await expect(page.locator("#selectedAssetDetails")).not.toContainText("Final ID");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.signal-violet");

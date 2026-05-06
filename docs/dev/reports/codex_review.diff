@@ -1,460 +1,382 @@
 diff --git a/docs/dev/reports/coverage_changed_js_guardrail.txt b/docs/dev/reports/coverage_changed_js_guardrail.txt
-index 2a7c8352..0e9ab798 100644
+index 0e9ab798..30344d1d 100644
 --- a/docs/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,11 +6,12 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
+@@ -7,9 +7,8 @@ Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
 
  Changed runtime JS files considered:
--(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 484/484; executed functions 44/54
-+(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
- (88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
--(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 492/492; executed functions 53/57
--(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 99/99; executed functions 9/9
-+(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 107/107; executed functions 10/10
- (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 119/119; executed functions 12/12
-+(100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
-+(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
+ (81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
+-(88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
+-(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 107/107; executed functions 10/10
+-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 119/119; executed functions 12/12
++(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
++(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
+ (100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
+ (100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
 
- Guardrail warnings:
- (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs/dev/reports/playwright_v8_coverage_report.txt b/docs/dev/reports/playwright_v8_coverage_report.txt
-index 4c101314..5ad25915 100644
+index 5ad25915..6d071b1d 100644
 --- a/docs/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs/dev/reports/playwright_v8_coverage_report.txt
-@@ -20,11 +20,12 @@ Exercised tool entry points detected:
- (0%) Workspace Manager - not exercised by this Playwright run
+@@ -21,9 +21,8 @@ Exercised tool entry points detected:
 
  Changed runtime JS files covered:
--(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 484/484; executed functions 44/54
-+(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
- (88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
--(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 492/492; executed functions 53/57
--(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 99/99; executed functions 9/9
-+(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 107/107; executed functions 10/10
- (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 119/119; executed functions 12/12
-+(100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
-+(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
+ (81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
+-(88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
+-(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 107/107; executed functions 10/10
+-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 119/119; executed functions 12/12
++(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
++(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
+ (100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
+ (100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
 
- Files with executed line/function counts where available:
- (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
-@@ -125,7 +126,7 @@ Files with executed line/function counts where available:
- (75%) tools/palette-manager-v2/paletteManagerShell.js - executed lines 160/160; executed functions 12/16
- (77%) src/engine/core/Engine.js - executed lines 323/323; executed functions 10/13
- (80%) src/engine/theme/accordionV2/accordionV2.js - executed lines 26/26; executed functions 4/5
--(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 484/484; executed functions 44/54
-+(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 496/496; executed functions 44/54
- (82%) samples/shared/sampleDetailPageEnhancement.js - executed lines 471/471; executed functions 41/50
- (83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
- (86%) tools/templates-v2/js/controls/StatusLogControl.js - executed lines 24/24; executed functions 6/7
-@@ -163,15 +164,15 @@ Files with executed line/function counts where available:
+@@ -164,10 +163,10 @@ Files with executed line/function counts where available:
  (100%) src/shared/string/stringUtil.js - executed lines 1/1; executed functions 1/1
  (100%) src/shared/utils/invariantUtils.js - executed lines 11/11; executed functions 2/2
  (100%) src/shared/utils/stringUtils.js - executed lines 1/1; executed functions 1/1
--(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 99/99; executed functions 9/9
-+(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 107/107; executed functions 10/10
+-(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 107/107; executed functions 10/10
++(100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
  (100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 68/68; executed functions 4/4
  (100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 52/52; executed functions 6/6
- (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 119/119; executed functions 12/12
+-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 119/119; executed functions 12/12
++(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 128/128; executed functions 14/14
  (100%) tools/asset-manager-v2/js/controls/InspectorControl.js - executed lines 8/8; executed functions 3/3
  (100%) tools/asset-manager-v2/js/controls/StatusLogControl.js - executed lines 30/30; executed functions 9/9
  (100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 267/267; executed functions 25/25
--(100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 28/28; executed functions 3/3
--(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 139/139; executed functions 14/14
-+(100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
-+(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
- (100%) tools/preview-generator-v2/controls/AccordionSection.js - executed lines 31/31; executed functions 5/5
- (100%) tools/preview-generator-v2/controls/AssetFolderControl.js - executed lines 17/17; executed functions 5/5
- (100%) tools/preview-generator-v2/controls/CaptureModeControl.js - executed lines 25/25; executed functions 9/9
-@@ -204,6 +205,7 @@ Changed JS files considered:
+@@ -204,7 +203,6 @@ Uncovered or low-coverage changed JS files:
+ Changed JS files considered:
  (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
  (81%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
- (88%) tools/workspace-v2/index.js - changed JS file with browser V8 coverage
--(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - changed JS file with browser V8 coverage
+-(88%) tools/workspace-v2/index.js - changed JS file with browser V8 coverage
  (100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - changed JS file with browser V8 coverage
  (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file with browser V8 coverage
-+(100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - changed JS file with browser V8 coverage
-+(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - changed JS file with browser V8 coverage
+ (100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-index 59b34b1a..ca7024c7 100644
+index ca7024c7..6a586c64 100644
 --- a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 +++ b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-@@ -833,24 +833,34 @@ test.describe("Preview Generator V2 baseline", () => {
-         const app = document.querySelector(".asset-manager-v2.app-shell");
-         const assetsContent = document.getElementById("assetsContent");
-         const centerPanel = document.querySelector(".asset-manager-v2__panel--center");
-+        const assetsAccordion = centerPanel.querySelector('[aria-controls="assetsContent"]').closest(".accordion-v2");
-         const selectedDetailPanel = document.querySelector(".asset-manager-v2__selected-detail");
-         const detailContent = document.getElementById("selectedAssetDetailsContent");
-         const preview = document.getElementById("assetPreview");
-+        const appRect = app.getBoundingClientRect();
+@@ -841,12 +841,15 @@ test.describe("Preview Generator V2 baseline", () => {
          const centerRect = centerPanel.getBoundingClientRect();
-+        const assetsRect = assetsAccordion.getBoundingClientRect();
+         const assetsRect = assetsAccordion.getBoundingClientRect();
          const detailRect = selectedDetailPanel.getBoundingClientRect();
++        const detailStyle = getComputedStyle(selectedDetailPanel);
          return {
            detailInsideAssets: assetsContent.contains(detailContent),
--          detailParentIsApp: selectedDetailPanel.parentElement === app,
-+          detailParentIsCenterPanel: selectedDetailPanel.parentElement === centerPanel,
+           detailParentIsCenterPanel: selectedDetailPanel.parentElement === centerPanel,
            previewInsideDetail: detailContent.contains(preview),
--          detailBelowAssetsPanel: detailRect.top > centerRect.bottom
-+          detailBelowAssetsList: detailRect.top > assetsRect.top,
-+          detailHeight: Math.round(detailRect.height),
-+          detailWithinCenterPanel: detailRect.left >= centerRect.left
-+            && detailRect.right <= centerRect.right
-+            && detailRect.bottom <= centerRect.bottom,
-+          detailDoesNotSpanFullWidth: detailRect.left > appRect.left
-+            && detailRect.right < appRect.right
-         };
-       });
--      expect(selectedDetailPlacement).toEqual({
--        detailInsideAssets: false,
--        detailParentIsApp: true,
--        previewInsideDetail: true,
--        detailBelowAssetsPanel: true
--      });
-+      expect(selectedDetailPlacement.detailInsideAssets).toBe(false);
-+      expect(selectedDetailPlacement.detailParentIsCenterPanel).toBe(true);
-+      expect(selectedDetailPlacement.previewInsideDetail).toBe(true);
-+      expect(selectedDetailPlacement.detailBelowAssetsList).toBe(true);
-+      expect(selectedDetailPlacement.detailHeight).toBeGreaterThanOrEqual(220);
-+      expect(selectedDetailPlacement.detailWithinCenterPanel).toBe(true);
-+      expect(selectedDetailPlacement.detailDoesNotSpanFullWidth).toBe(true);
+           detailBelowAssetsList: detailRect.top > assetsRect.top,
++          detailFlexBasis: detailStyle.flexBasis,
+           detailHeight: Math.round(detailRect.height),
++          detailMinHeight: detailStyle.minHeight,
+           detailWithinCenterPanel: detailRect.left >= centerRect.left
+             && detailRect.right <= centerRect.right
+             && detailRect.bottom <= centerRect.bottom,
+@@ -858,7 +861,10 @@ test.describe("Preview Generator V2 baseline", () => {
+       expect(selectedDetailPlacement.detailParentIsCenterPanel).toBe(true);
+       expect(selectedDetailPlacement.previewInsideDetail).toBe(true);
+       expect(selectedDetailPlacement.detailBelowAssetsList).toBe(true);
+-      expect(selectedDetailPlacement.detailHeight).toBeGreaterThanOrEqual(220);
++      expect(selectedDetailPlacement.detailFlexBasis).toBe("auto");
++      expect(selectedDetailPlacement.detailHeight).toBeGreaterThan(120);
++      expect(selectedDetailPlacement.detailHeight).not.toBe(300);
++      expect(selectedDetailPlacement.detailMinHeight).toBe("0px");
+       expect(selectedDetailPlacement.detailWithinCenterPanel).toBe(true);
+       expect(selectedDetailPlacement.detailDoesNotSpanFullWidth).toBe(true);
        const selectedDetailLayout = await page.locator("#selectedAssetDetails").evaluate((detail) => {
-         const line = detail.querySelector(".asset-manager-v2__selected-detail-line");
-         return {
-@@ -1254,7 +1264,14 @@ test.describe("Preview Generator V2 baseline", () => {
+@@ -1105,6 +1111,8 @@ test.describe("Preview Generator V2 baseline", () => {
+             hasAudio: html.includes("<audio"),
+             hasVideo: html.includes("<video"),
+             hasFontFace: html.includes("@font-face"),
++            hasFontFamilyFromId: html.includes("asset-preview-assets-font-display-sample"),
++            hasScopedFontFamilyData: html.includes('data-preview-font-family="asset-preview-assets-font-display-sample"'),
+             hasInspection: html.includes("inspection")
+           }];
+         }));
+@@ -1117,14 +1125,14 @@ test.describe("Preview Generator V2 baseline", () => {
+       expect(helperPreviewCoverage.localHelperLoaded).toBe(true);
+       expect(helperPreviewCoverage.sharedHelperStatus).toBe(404);
+       expect(helperPreviewCoverage.coverage).toEqual({
+-        image: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: true, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: false },
+-        audio: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: true, hasVideo: false, hasFontFace: false, hasInspection: false },
+-        color: { hasAutoplay: false, hasDataType: true, hasColor: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: false },
+-        video: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: true, hasFontFace: false, hasInspection: false },
+-        font: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: true, hasInspection: false },
+-        shader: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true },
+-        data: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true },
+-        localization: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true }
++        image: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: true, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
++        audio: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: true, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
++        color: { hasAutoplay: false, hasDataType: true, hasColor: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
++        video: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: true, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: false },
++        font: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: true, hasFontFamilyFromId: true, hasScopedFontFamilyData: true, hasInspection: false },
++        shader: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: true },
++        data: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: true },
++        localization: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasFontFamilyFromId: false, hasScopedFontFamilyData: false, hasInspection: true }
+       });
+
+       await page.locator('button[data-asset-id="assets.image.background.nebula-background"]').click();
+@@ -1264,13 +1272,44 @@ test.describe("Preview Generator V2 baseline", () => {
    });
 
    test("loads Asset Manager V2 temporary UAT sample palette from query", async ({ page }) => {
--    const server = await openAssetManagerV2(page, "?palette=sample");
-+    const server = await openAssetManagerV2(page, "?palette=sample", {
-+      assetFiles: [{
-+        name: "uat-preview.png",
-+        mimeType: "image/png",
-+        contents: "png",
-+        path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
-+      }]
++    await page.addInitScript(() => {
++      const NativeFontFace = window.FontFace;
++      window.__assetManagerV2FontFaceLoads = [];
++      window.FontFace = class AssetManagerV2UatFontFace {
++        constructor(family, source, descriptors) {
++          this.family = family;
++          this.source = source;
++          this.descriptors = descriptors;
++          window.__assetManagerV2FontFaceLoads.push({ family, source });
++        }
++
++        async load() {
++          if (String(this.source).includes("vector-battle.ttf")) {
++            throw new Error("UAT font load rejected.");
++          }
++          if (typeof NativeFontFace === "function") {
++            const nativeFontFace = new NativeFontFace(this.family, this.source, this.descriptors);
++            return nativeFontFace.load();
++          }
++          return this;
++        }
++      };
 +    });
+     const server = await openAssetManagerV2(page, "?palette=sample", {
+-      assetFiles: [{
+-        name: "uat-preview.png",
+-        mimeType: "image/png",
+-        contents: "png",
+-        path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
+-      }]
++      assetFiles: [
++        {
++          name: "uat-preview.png",
++          mimeType: "image/png",
++          contents: "png",
++          path: "HTML-JavaScript-Gaming/assets/images/uat-preview.png"
++        },
++        {
++          name: "vector-battle.ttf",
++          mimeType: "font/ttf",
++          contents: "font",
++          path: "HTML-JavaScript-Gaming/assets/fonts/vector-battle.ttf"
++        }
++      ]
+     });
      const pageErrors = [];
 
-     page.on("pageerror", (error) => {
-@@ -1263,6 +1280,19 @@ test.describe("Preview Generator V2 baseline", () => {
+@@ -1293,6 +1332,31 @@ test.describe("Preview Generator V2 baseline", () => {
+       expect(uatPreviewRoot).not.toContain("/samples/");
+       expect(uatPreviewRoot).not.toContain("/tools/");
 
-     try {
-       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded temporary UAT-only sample palette from \?palette=sample \(3 colors\)\./);
-+      await expect(page.locator("#statusLog")).toHaveValue(/OK Temporary UAT-only Asset Manager V2 game root set to games\/Asteroids\/ for preview\/path testing\./);
-+
-+      await page.locator("#assetKindImage").check();
++      await page.locator("#assetKindFont").check();
 +      await page.locator("#pickAssetFileButton").click();
-+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.sprite.uat-preview");
-+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/uat-preview.png");
++      await expect(page.locator("#assetIdInput")).toHaveValue("assets.font.ui.vector-battle");
++      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector-battle.ttf");
 +      await page.locator("#addAssetButton").click();
-+      await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"] img')).toHaveAttribute("src", "/games/Asteroids/assets/images/uat-preview.png");
-+      const uatPreviewRoot = await page.locator("#assetPreview img.asset-manager-v2__preview-media").evaluate((image) => image.getAttribute("src"));
-+      expect(uatPreviewRoot).toContain("/games/Asteroids/assets/");
-+      expect(uatPreviewRoot).not.toContain("/samples/");
-+      expect(uatPreviewRoot).not.toContain("/tools/");
++      await expect(page.locator('#assetPreview [data-preview-type="font"][data-preview-kind="ttf"]')).toBeVisible();
++      const fontPreviewState = await page.locator("#assetPreview").evaluate((preview) => {
++        const style = preview.querySelector("style")?.textContent || "";
++        const sample = preview.querySelector(".asset-manager-v2__preview-font");
++        return {
++          fontFamily: sample ? getComputedStyle(sample).fontFamily : "",
++          scopedFamily: sample?.dataset.previewFontFamily || "",
++          style
++        };
++      });
++      expect(fontPreviewState.style).toContain('@font-face{font-family:"asset-preview-assets-font-ui-vector-battle"');
++      expect(fontPreviewState.style).toContain('/games/Asteroids/assets/fonts/vector-battle.ttf');
++      expect(fontPreviewState.fontFamily).toContain("asset-preview-assets-font-ui-vector-battle");
++      expect(fontPreviewState.scopedFamily).toBe("asset-preview-assets-font-ui-vector-battle");
++      await expect.poll(async () => await page.evaluate(() => window.__assetManagerV2FontFaceLoads)).toEqual([{
++        family: "asset-preview-assets-font-ui-vector-battle",
++        source: 'url("/games/Asteroids/assets/fonts/vector-battle.ttf")'
++      }]);
++      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Font preview failed for assets\.font\.ui\.vector-battle: UAT font load rejected\./);
 +
        await page.locator("#assetKindColor").check();
        await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
        await expect(page.locator("#pickAssetFileButton")).toBeHidden();
-@@ -1285,6 +1315,7 @@ test.describe("Preview Generator V2 baseline", () => {
+@@ -1315,6 +1379,7 @@ test.describe("Preview Generator V2 baseline", () => {
        await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Signal Violet! validated as type color, kind hex, role hud\./);
        await page.locator("#addAssetButton").click();
        await expect(page.locator("#assetList")).toContainText("assets.color.hud.signal-violet");
-+      await expect(page.locator("#assetList")).toContainText("assets.image.sprite.uat-preview");
++      await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
+       await expect(page.locator("#assetList")).toContainText("assets.image.sprite.uat-preview");
        await expect(page.locator("#selectedAssetDetails")).not.toContainText("Final ID");
        await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.signal-violet");
-       const output = JSON.parse(await page.locator("#inspectorOutput").textContent());
-@@ -1396,6 +1427,16 @@ test.describe("Preview Generator V2 baseline", () => {
-       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
-       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
-       await expect(page.locator("#statusLog")).toHaveValue(/Workspace mode loaded 0 validated assets from tools\.asset-browser\.assets/);
-+      const workspacePreviewContext = await page.evaluate(async () => {
-+        const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
-+        return new WorkspaceBridge({ windowRef: window }).readWorkspacePreviewContext();
-+      });
-+      expect(workspacePreviewContext).toEqual({
-+        workspaceMode: true,
-+        workspaceGameId: "Asteroids",
-+        workspaceGameRoot: "games/Asteroids/"
-+      });
-+      expect(JSON.stringify(workspacePreviewContext)).not.toMatch(/samples|tools/i);
-
-       await page.locator("#assetKindAudio").check();
-       await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");
-diff --git a/tools/asset-manager-v2/index.html b/tools/asset-manager-v2/index.html
-index 0ea63473..4bfae8ed 100644
---- a/tools/asset-manager-v2/index.html
-+++ b/tools/asset-manager-v2/index.html
-@@ -145,6 +145,17 @@
-             <div id="assetList" class="asset-manager-v2__asset-list" aria-label="Asset entries"></div>
-           </div>
-         </section>
-+
-+        <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__selected-detail is-open" data-accordion-v2-open="true" aria-label="Selected asset detail">
-+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="selectedAssetDetailsContent">
-+            <span>Selected Asset Detail</span>
-+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-+          </button>
-+          <div id="selectedAssetDetailsContent" class="accordion-v2__content">
-+            <div id="selectedAssetDetails" class="asset-manager-v2__selected-detail-body"></div>
-+            <div id="assetPreview" class="asset-manager-v2__preview" role="region" aria-label="Selected asset preview" hidden></div>
-+          </div>
-+        </section>
-       </section>
-
-       <aside class="asset-manager-v2__panel asset-manager-v2__panel--right" aria-label="Asset output">
-@@ -172,16 +183,6 @@
-         </section>
-       </aside>
-
--      <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__selected-detail is-open" data-accordion-v2-open="true" aria-label="Selected asset detail">
--        <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="selectedAssetDetailsContent">
--          <span>Selected Asset Detail</span>
--          <span class="accordion-v2__icon" aria-hidden="true">+</span>
--        </button>
--        <div id="selectedAssetDetailsContent" class="accordion-v2__content">
--          <div id="selectedAssetDetails" class="asset-manager-v2__selected-detail-body"></div>
--          <div id="assetPreview" class="asset-manager-v2__preview" role="region" aria-label="Selected asset preview" hidden></div>
--        </div>
--      </section>
-     </main>
-     <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
-   </body>
-diff --git a/tools/asset-manager-v2/js/AssetManagerV2App.js b/tools/asset-manager-v2/js/AssetManagerV2App.js
-index bf1a3ca0..40ccc353 100644
---- a/tools/asset-manager-v2/js/AssetManagerV2App.js
-+++ b/tools/asset-manager-v2/js/AssetManagerV2App.js
-@@ -46,6 +46,7 @@ export class AssetManagerV2App {
-     this.schemaReady = false;
-     this.selectedAssetId = "";
-     this.redoStack = [];
-+    this.temporaryUatGameRoot = "";
-     this.undoStack = [];
-   }
-
-@@ -135,9 +136,12 @@ export class AssetManagerV2App {
-     const samplePalette = readTemporaryUatSamplePalette(this.window.location);
-     if (samplePalette.ok) {
-       this.assetForm.setPaletteSwatches(samplePalette.palette.swatches);
-+      this.temporaryUatGameRoot = samplePalette.gameRoot || "";
-       this.statusLog.ok(`Loaded temporary UAT-only sample palette from ?palette=sample (${samplePalette.palette.swatches.length} colors).`);
-+      this.statusLog.ok(`Temporary UAT-only Asset Manager V2 game root set to ${this.temporaryUatGameRoot} for preview/path testing.`);
-       return;
-     }
-+    this.temporaryUatGameRoot = "";
-     if (!this.workspaceBridge.isWorkspaceMode()) {
-       this.assetForm.setPaletteSwatches([]);
-       return;
-@@ -153,9 +157,16 @@ export class AssetManagerV2App {
-   }
-
-   previewOptions() {
-+    const workspacePreviewContext = this.workspaceBridge.readWorkspacePreviewContext();
-     return {
-       documentRef: this.window.document,
--      ...this.workspaceBridge.readWorkspacePreviewContext()
-+      ...workspacePreviewContext,
-+      ...(this.temporaryUatGameRoot
-+        ? {
-+          workspaceMode: true,
-+          workspaceGameRoot: this.temporaryUatGameRoot
-+        }
-+        : {})
-     };
-   }
-
-@@ -499,6 +510,7 @@ export class AssetManagerV2App {
-   }
-
-   render() {
-+    this.assetCatalog.setPreviewOptions(this.previewOptions());
-     this.assetCatalog.render(this.currentPayload().assets, this.selectedAssetId);
-     this.inspector.showObject(this.currentOutputSummary());
-   }
 diff --git a/tools/asset-manager-v2/js/assetPreviewHelpers.js b/tools/asset-manager-v2/js/assetPreviewHelpers.js
-index 4b48dd39..1456af48 100644
+index 1456af48..be098bf6 100644
 --- a/tools/asset-manager-v2/js/assetPreviewHelpers.js
 +++ b/tools/asset-manager-v2/js/assetPreviewHelpers.js
-@@ -13,19 +13,28 @@ function hasUrlProtocol(value) {
-   return /^[a-z][a-z0-9+.-]*:/i.test(value);
+@@ -43,6 +43,48 @@ function previewTitle(type, kind) {
+   return normalizedKind ? `${normalizedType} / ${normalizedKind}` : normalizedType;
  }
 
-+function workspaceGameRoot(options = {}) {
-+  const explicitRoot = sanitizeText(options.workspaceGameRoot || options.gameRoot).replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
-+  if (/^games\/[^/]+$/i.test(explicitRoot)) {
-+    return `${explicitRoot}/`;
-+  }
-+  const gameId = sanitizeText(options.workspaceGameId || options.gameId).replace(/[\\/]+/g, "-");
-+  return gameId ? `games/${gameId}/` : "";
++function previewFontFamily(assetId) {
++  const normalizedId = normalizeText(assetId).replace(/[^a-z0-9_-]+/gi, "-").replace(/^-+|-+$/g, "");
++  return `asset-preview-${normalizedId || "asset"}`;
 +}
 +
- function workspaceGameAssetPath(path, options = {}) {
-   const normalizedPath = sanitizeText(path).replace(/\\/g, "/").replace(/^\/+/, "");
--  const gameId = sanitizeText(options.workspaceGameId || options.gameId).replace(/[\\/]+/g, "-");
-   if (!options.workspaceMode || hasUrlProtocol(normalizedPath) || /^games\//i.test(normalizedPath) || !/^assets\//i.test(normalizedPath)) {
-     return { path, error: "" };
-   }
--  if (!gameId) {
-+  const gameRoot = workspaceGameRoot(options);
-+  if (!gameRoot) {
-     return {
-       path: "",
-       error: `Preview path ${normalizedPath} cannot be resolved because Workspace V2 game context is missing.`
-     };
-   }
--  return { path: `games/${gameId}/${normalizedPath}`, error: "" };
-+  return { path: `${gameRoot}${normalizedPath}`, error: "" };
- }
-
- function previewTitle(type, kind) {
-diff --git a/tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js b/tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js
-index cbf662d3..8ea77034 100644
---- a/tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js
-+++ b/tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js
-@@ -1,5 +1,7 @@
- // Temporary UAT-only sample palette loader. Keep this isolated so ?palette=sample
- // can be removed without touching normal Workspace V2 palette loading.
-+const TEMPORARY_UAT_SAMPLE_GAME_ROOT = "games/Asteroids/";
++function fontLoadErrorMessage(model, error) {
++  const detail = sanitizeText(error?.message || String(error || "Unknown font load error."));
++  return `Font preview failed for ${model.assetId}: ${detail}`;
++}
 +
- const TEMPORARY_UAT_SAMPLE_PALETTE = Object.freeze({
-   "$schema": "tools/schemas/tools/palette-browser.schema.json",
-   schema: "html-js-gaming.palette",
-@@ -27,6 +29,8 @@ export function readTemporaryUatSamplePalette(locationRef = window.location) {
-   }
-   return {
-     ok: true,
-+    // Temporary UAT-only game root for Asset Manager V2 preview/path testing.
-+    gameRoot: TEMPORARY_UAT_SAMPLE_GAME_ROOT,
-     palette: clone(TEMPORARY_UAT_SAMPLE_PALETTE)
-   };
- }
-diff --git a/tools/asset-manager-v2/js/services/WorkspaceBridge.js b/tools/asset-manager-v2/js/services/WorkspaceBridge.js
-index cf7814d1..35c5f289 100644
---- a/tools/asset-manager-v2/js/services/WorkspaceBridge.js
-+++ b/tools/asset-manager-v2/js/services/WorkspaceBridge.js
-@@ -12,7 +12,6 @@ function readGameIdFrom(value) {
-   }
-   return String(
-     value.gameId
--    || value.projectId
-     || value.game
-     || value.metadata?.gameId
-     || value.workspaceMetadata?.gameId
-@@ -38,6 +37,11 @@ export class WorkspaceBridge {
-     return new URLSearchParams(this.window.location.search).get("gameId") || "";
-   }
-
-+  gameRootFromGameId(gameId) {
-+    const normalizedGameId = String(gameId || "").trim().replace(/[\\/]+/g, "-");
-+    return normalizedGameId ? `games/${normalizedGameId}/` : "";
++async function applyScopedFontPreview(target, model, options = {}) {
++  if (!target || model.type !== "font" || !model.url) {
++    return;
++  }
++  const documentRef = options.documentRef || target.ownerDocument || globalThis.document || null;
++  const FontFaceCtor = options.FontFace || documentRef?.defaultView?.FontFace || globalThis.FontFace;
++  const fontSet = documentRef?.fonts;
++  const family = previewFontFamily(model.assetId);
++  const previewText = target.querySelector(".asset-manager-v2__preview-font");
++  if (previewText) {
++    previewText.style.fontFamily = `"${family}", sans-serif`;
++  }
++  if (typeof FontFaceCtor !== "function" || !fontSet || typeof fontSet.add !== "function") {
++    return;
 +  }
 +
-   readContext() {
-     const hostContextId = this.hostContextId();
-     if (!hostContextId) {
-@@ -104,7 +108,8 @@ export class WorkspaceBridge {
-     if (!this.isWorkspaceMode()) {
-       return {
-         workspaceMode: false,
--        workspaceGameId: ""
-+        workspaceGameId: "",
-+        workspaceGameRoot: ""
-       };
++  try {
++    const fontFace = new FontFaceCtor(family, `url("${cssString(model.url)}")`);
++    const loadedFontFace = typeof fontFace.load === "function" ? await fontFace.load() : fontFace;
++    if (target.dataset.previewAssetId !== model.assetId) {
++      return;
++    }
++    fontSet.add(loadedFontFace);
++    previewText?.setAttribute("data-preview-font-loaded", "true");
++  } catch (error) {
++    if (target.dataset.previewAssetId !== model.assetId) {
++      return;
++    }
++    options.onPreviewStatus?.("fail", fontLoadErrorMessage(model, error));
++  }
++}
++
+ export function createAssetPreviewModel(assetId, entry = {}, options = {}) {
+   const type = normalizeText(entry.type);
+   const kind = normalizeText(entry.kind);
+@@ -84,8 +126,8 @@ export function renderAssetPreviewHtml(model) {
+   } else if (preview.url && preview.type === "video") {
+     body = `<video class="asset-manager-v2__preview-media" controls preload="metadata" src="${escapedUrl}"></video>`;
+   } else if (preview.url && preview.type === "font") {
+-    const family = `asset-preview-${cssString(preview.assetId).replace(/[^a-z0-9_-]+/gi, "-")}`;
+-    body = `<style>@font-face{font-family:"${family}";src:url("${cssString(preview.url)}");font-display:swap;}</style><div class="asset-manager-v2__preview-font" style="font-family:&quot;${escapeHtml(family)}&quot;, sans-serif;">Aa Bb Cc 0123</div>`;
++    const family = previewFontFamily(preview.assetId);
++    body = `<style data-preview-font-style="${escapedId}">@font-face{font-family:"${cssString(family)}";src:url("${cssString(preview.url)}");font-display:swap;}</style><div class="asset-manager-v2__preview-font" data-preview-font-family="${escapeHtml(family)}" style="font-family:&quot;${escapeHtml(family)}&quot;, sans-serif;">Aa Bb Cc 0123</div>`;
+   } else if (preview.type === "shader") {
+     body = `<pre class="asset-manager-v2__preview-code">Shader inspection\nkind: ${escapedKind}\npath: ${escapedPath}</pre>`;
+   } else if (preview.type === "data" || preview.type === "localization") {
+@@ -105,13 +147,16 @@ export function renderAssetPreviewHtml(model) {
+ export function renderAssetPreview(target, assetId, entry, options = {}) {
+   if (!target || !assetId || !entry) {
+     if (target) {
++      delete target.dataset.previewAssetId;
+       target.hidden = true;
+       target.textContent = "";
      }
-     const queryGameId = this.queryGameId().trim();
-@@ -112,15 +117,18 @@ export class WorkspaceBridge {
-     if (!contextResult.ok) {
-       return {
-         workspaceMode: true,
--        workspaceGameId: queryGameId
-+        workspaceGameId: queryGameId,
-+        workspaceGameRoot: this.gameRootFromGameId(queryGameId)
-       };
+     return null;
+   }
+   const model = createAssetPreviewModel(assetId, entry, options);
++  target.dataset.previewAssetId = model.assetId;
+   target.innerHTML = renderAssetPreviewHtml(model);
+   target.hidden = false;
++  void applyScopedFontPreview(target, model, options);
+   return model;
+ }
+diff --git a/tools/asset-manager-v2/js/controls/AssetCatalogControl.js b/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
+index 888a3704..533c330d 100644
+--- a/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
++++ b/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
+@@ -54,7 +54,10 @@ export class AssetCatalogControl {
      }
-     const workspaceManifest = this.workspaceManifestFromContext(contextResult.context);
-+    const workspaceGameId = queryGameId
-+      || readGameIdFrom(contextResult.context)
-+      || readGameIdFrom(workspaceManifest);
-     return {
-       workspaceMode: true,
--      workspaceGameId: queryGameId
--        || readGameIdFrom(contextResult.context)
--        || readGameIdFrom(workspaceManifest)
-+      workspaceGameId,
-+      workspaceGameRoot: this.gameRootFromGameId(workspaceGameId)
-     };
+     const selectedEntry = selectedAssetId && assets[selectedAssetId] ? assets[selectedAssetId] : null;
+     this.renderSelectedDetail(selectedEntry ? selectedAssetId : "", selectedEntry);
+-    const previewModel = renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry, this.previewOptions);
++    const previewModel = renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry, {
++      ...this.previewOptions,
++      onPreviewStatus: (level, message) => this.reportAsyncPreviewStatus(level, message)
++    });
+     this.reportPreviewStatus(previewModel);
+
+     this.list.innerHTML = entries.map(([assetId, entry]) => {
+@@ -89,11 +92,18 @@ export class AssetCatalogControl {
+       this.lastPreviewError = "";
+       return;
+     }
++    this.reportAsyncPreviewStatus("fail", message);
++  }
++
++  reportAsyncPreviewStatus(level, message) {
++    if (!message) {
++      return;
++    }
+     if (message === this.lastPreviewError) {
+       return;
+     }
+     this.lastPreviewError = message;
+-    this.onPreviewStatus?.("fail", message);
++    this.onPreviewStatus?.(level, message);
    }
 
+   renderSelectedDetail(assetId, entry) {
 diff --git a/tools/asset-manager-v2/styles/assetManager.css b/tools/asset-manager-v2/styles/assetManager.css
-index 74252157..2a64ad4a 100644
+index 2a64ad4a..57a11ef6 100644
 --- a/tools/asset-manager-v2/styles/assetManager.css
 +++ b/tools/asset-manager-v2/styles/assetManager.css
-@@ -185,7 +185,6 @@ textarea:hover {
-   margin: 0 auto 16px;
-   display: grid;
-   grid-template-columns: 340px minmax(0, 1fr) 360px;
--  grid-template-rows: minmax(0, 1fr) minmax(120px, 18vh);
-   gap: 14px;
-   border: 1px solid var(--asset-manager-line);
-   border-radius: 20px;
-@@ -214,6 +213,7 @@ textarea:hover {
-
- .asset-manager-v2__panel--center {
-   min-height: 0;
-+  overflow: hidden;
- }
-
- .accordion-v2 {
-@@ -609,9 +609,8 @@ textarea:hover {
+@@ -609,8 +609,8 @@ textarea:hover {
  }
 
  .asset-manager-v2__selected-detail {
--  grid-column: 1 / -1;
--  grid-row: 2;
--  min-height: 0;
-+  flex: 0 0 220px;
-+  min-height: 220px;
+-  flex: 0 0 220px;
+-  min-height: 220px;
++  flex: 0 1 auto;
++  min-height: 0;
  }
 
  .asset-manager-v2__selected-detail .accordion-v2__header {
-diff --git a/docs/dev/reports/PR_26126_096_asset_manager_v2_games_only_workspace_context_notes.md b/docs/dev/reports/PR_26126_096_asset_manager_v2_games_only_workspace_context_notes.md
+diff --git a/docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md b/docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md
 new file mode 100644
-index 00000000..8ddb2795
+index 00000000..b5be2d6c
 --- /dev/null
-+++ b/docs/dev/reports/PR_26126_096_asset_manager_v2_games_only_workspace_context_notes.md
-@@ -0,0 +1,17 @@
-+# PR_26126_096 Asset Manager V2 Games-Only Workspace Context Notes
++++ b/docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md
+@@ -0,0 +1,22 @@
++# PR_26126_097 Asset Manager V2 Font Preview Notes
 +
-+## Context Model
-+- Workspace preview context is now expressed as a games-only root: `games/<game>/`.
-+- Asset Manager V2 does not introduce Sample or Tool workspace roots for preview resolution.
-+- `projectId` is no longer treated as a game identifier fallback by the Asset Manager V2 Workspace bridge.
-+- Workspace game id lookup is limited to explicit game fields such as `gameId`, `game`, `metadata.gameId`, and `workspaceMetadata.gameId`.
++## Font Preview Rendering
++- Font assets now use a scoped preview family derived from the selected asset ID.
++- For `assets.font.ui.vector-battle`, the preview family is `asset-preview-assets-font-ui-vector-battle`.
++- Font preview HTML includes a scoped `@font-face` rule and applies the same family to the preview sample text.
++- The selected asset ID remains the source of truth for the preview font family.
 +
-+## Preview Resolution
-+- File-backed Workspace asset paths stored as `assets/...` resolve to `games/<game>/assets/...` for preview only.
-+- Existing `games/...` paths, protocol URLs, palette URLs, and non-asset paths are left unchanged.
-+- Missing game context still produces a visible Status failure instead of falling back to `/assets/...`.
++## Path Resolution
++- Font preview URLs continue to resolve through the active Workspace game root.
++- During temporary `?palette=sample` UAT testing, `assets/fonts/vector-battle.ttf` resolves to `/games/Asteroids/assets/fonts/vector-battle.ttf`.
++- Existing Workspace V2 font previews continue to resolve under `/games/Asteroids/assets/...` when `gameId=Asteroids` is active.
++
++## Failure Reporting
++- Asset Manager V2 attempts to load the preview font with the browser `FontFace` API when available.
++- If the font load rejects, Asset Manager V2 writes a visible `FAIL Font preview failed for <asset-id>: <reason>` entry to Status.
++- Stale async font load results are ignored when the selected preview changes before the load resolves.
 +
 +## Validation
-+- Playwright validates Workspace-launched Asset Manager V2 reports preview context as `games/Asteroids/`.
-+- Playwright validates that preview context does not contain `samples` or `tools` roots.
-+- Playwright validates audio, font, and image preview paths resolve under `/games/Asteroids/assets/...`.
-diff --git a/docs/dev/reports/PR_26126_096_asset_manager_v2_manual_validation_notes.md b/docs/dev/reports/PR_26126_096_asset_manager_v2_manual_validation_notes.md
++- Playwright validates the UAT `vector-battle.ttf` font preview URL under `/games/Asteroids/assets/fonts/vector-battle.ttf`.
++- Playwright validates the scoped `@font-face` family is derived from `assets.font.ui.vector-battle`.
++- Playwright validates a rejected font load writes a visible Status failure.
+diff --git a/docs/dev/reports/PR_26126_097_asset_manager_v2_manual_validation_notes.md b/docs/dev/reports/PR_26126_097_asset_manager_v2_manual_validation_notes.md
 new file mode 100644
-index 00000000..6815c4db
+index 00000000..7f86647b
 --- /dev/null
-+++ b/docs/dev/reports/PR_26126_096_asset_manager_v2_manual_validation_notes.md
-@@ -0,0 +1,25 @@
-+# PR_26126_096 Asset Manager V2 Manual Validation Notes
++++ b/docs/dev/reports/PR_26126_097_asset_manager_v2_manual_validation_notes.md
+@@ -0,0 +1,22 @@
++# PR_26126_097 Asset Manager V2 Manual Validation Notes
 +
 +## Commands
 +- `node --check tools/asset-manager-v2/js/assetPreviewHelpers.js`
-+- `node --check tools/asset-manager-v2/js/services/WorkspaceBridge.js`
-+- `node --check tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js`
-+- `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
++- `node --check tools/asset-manager-v2/js/controls/AssetCatalogControl.js`
 +- `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
 +- `npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list -g "Asset Manager V2"`
 +- `npm run test:workspace-v2`
@@ -466,59 +388,34 @@ index 00000000..6815c4db
 +- `docs/dev/reports/playwright_v8_coverage_report.txt` was regenerated by the required workspace-v2 validation run.
 +
 +## Manual Checks Covered By Tests
-+- Selected Asset Detail is placed in the center panel, outside the Assets list, and does not span the full screen.
-+- Selected Asset Detail height is increased to at least 220px.
-+- Asset preview remains inside Selected Asset Detail.
-+- Workspace preview context is games-only.
-+- `?palette=sample` temporary UAT root uses `games/Asteroids/` for preview/path testing only.
-+- `?palette=sample` image previews resolve under `/games/Asteroids/assets/...`.
++- Font preview URL resolution through active game root.
++- Scoped preview `@font-face` generation.
++- Preview font family derived from the selected asset ID.
++- Visible Status failure when font loading rejects.
++- Selected Asset Detail without a fixed 300px height.
 +- Sample JSON files were not modified.
-diff --git a/docs/dev/reports/PR_26126_096_asset_manager_v2_selected_detail_placement_notes.md b/docs/dev/reports/PR_26126_096_asset_manager_v2_selected_detail_placement_notes.md
+diff --git a/docs/dev/reports/PR_26126_097_asset_manager_v2_selected_detail_height_notes.md b/docs/dev/reports/PR_26126_097_asset_manager_v2_selected_detail_height_notes.md
 new file mode 100644
-index 00000000..221bebb2
+index 00000000..e440408e
 --- /dev/null
-+++ b/docs/dev/reports/PR_26126_096_asset_manager_v2_selected_detail_placement_notes.md
++++ b/docs/dev/reports/PR_26126_097_asset_manager_v2_selected_detail_height_notes.md
 @@ -0,0 +1,19 @@
-+# PR_26126_096 Asset Manager V2 Selected Detail Placement Notes
++# PR_26126_097 Asset Manager V2 Selected Detail Height Notes
 +
-+## Placement
-+- Selected Asset Detail moved into the Asset Manager V2 center panel.
-+- Selected Asset Detail is no longer a full-width bottom control spanning left-to-right across the app shell.
-+- The Assets list remains separate inside the Assets accordion.
-+- `assetPreview` remains embedded inside Selected Asset Detail.
++## Height Behavior
++- Selected Asset Detail no longer uses a fixed flex basis.
++- Selected Asset Detail no longer declares a fixed minimum height.
++- The control now uses `flex: 0 1 auto` and `min-height: 0`.
++- Rendered height is controlled by the selected detail content and center-panel layout rather than a hard-coded 300px or 220px value.
 +
-+## Height
-+- Selected Asset Detail now reserves 220px in the center panel.
-+- This increases the previous 120px bottom-screen allocation by 100px.
-+- The center panel keeps Assets as the fill area and Selected Asset Detail as a fixed-height detail/preview area.
-+
-+## Validation
-+- Playwright validates Selected Asset Detail is not inside `assetsContent`.
-+- Playwright validates Selected Asset Detail is parented by the center panel.
-+- Playwright validates the detail control stays inside the center panel and does not span the full app width.
-+- Playwright validates the detail height is at least 220px.
-+- Playwright validates `assetPreview` remains inside Selected Asset Detail.
-diff --git a/docs/dev/reports/PR_26126_096_asset_manager_v2_temporary_uat_session_root_notes.md b/docs/dev/reports/PR_26126_096_asset_manager_v2_temporary_uat_session_root_notes.md
-new file mode 100644
-index 00000000..04aec410
---- /dev/null
-+++ b/docs/dev/reports/PR_26126_096_asset_manager_v2_temporary_uat_session_root_notes.md
-@@ -0,0 +1,18 @@
-+# PR_26126_096 Asset Manager V2 Temporary UAT Session Root Notes
-+
-+## Temporary Behavior
-+- `?palette=sample` remains isolated in `TemporaryUatSamplePalette.js`.
-+- For UAT preview/path testing only, `?palette=sample` now provides the temporary game root `games/Asteroids/`.
-+- The temporary root is used only by Asset Manager V2 preview options.
-+- Asset records still store normalized asset paths such as `assets/images/uat-preview.png`; the game root is not persisted into asset entries.
-+- The code and Status log both mark this behavior as temporary UAT-only.
-+
-+## Preview Result
-+- During `?palette=sample`, file-backed previews for `assets/...` paths resolve through `/games/Asteroids/assets/...`.
-+- The temporary preview path does not use Sample or Tool roots.
-+- Palette color behavior remains unchanged and still uses the temporary sample palette swatches only.
++## Layout Preservation
++- Selected Asset Detail remains in the center panel.
++- Selected Asset Detail remains separate from the Assets list.
++- `assetPreview` remains inside Selected Asset Detail.
++- The control still does not span the full app width.
 +
 +## Validation
-+- Playwright validates the temporary Status message for `games/Asteroids/`.
-+- Playwright validates a `?palette=sample` image asset preview renders with `/games/Asteroids/assets/images/uat-preview.png`.
-+- Playwright validates the UAT preview path excludes `/samples/` and `/tools/`.
++- Playwright validates the computed flex basis is `auto`.
++- Playwright validates the computed minimum height is `0px`.
++- Playwright validates the rendered height is not the fixed 300px value.
++- Playwright validates the detail control stays within the center panel.

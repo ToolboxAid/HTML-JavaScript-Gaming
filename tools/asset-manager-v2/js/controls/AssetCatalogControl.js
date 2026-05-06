@@ -54,7 +54,10 @@ export class AssetCatalogControl {
     }
     const selectedEntry = selectedAssetId && assets[selectedAssetId] ? assets[selectedAssetId] : null;
     this.renderSelectedDetail(selectedEntry ? selectedAssetId : "", selectedEntry);
-    const previewModel = renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry, this.previewOptions);
+    const previewModel = renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry, {
+      ...this.previewOptions,
+      onPreviewStatus: (level, message) => this.reportAsyncPreviewStatus(level, message)
+    });
     this.reportPreviewStatus(previewModel);
 
     this.list.innerHTML = entries.map(([assetId, entry]) => {
@@ -89,11 +92,18 @@ export class AssetCatalogControl {
       this.lastPreviewError = "";
       return;
     }
+    this.reportAsyncPreviewStatus("fail", message);
+  }
+
+  reportAsyncPreviewStatus(level, message) {
+    if (!message) {
+      return;
+    }
     if (message === this.lastPreviewError) {
       return;
     }
     this.lastPreviewError = message;
-    this.onPreviewStatus?.("fail", message);
+    this.onPreviewStatus?.(level, message);
   }
 
   renderSelectedDetail(assetId, entry) {

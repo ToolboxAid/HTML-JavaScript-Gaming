@@ -609,8 +609,8 @@ textarea:hover {
 }
 
 .asset-manager-v2__selected-detail {
-  flex: 0 0 220px;
-  min-height: 220px;
+  flex: 0 1 auto;
+  min-height: 0;
 }
 
 .asset-manager-v2__selected-detail .accordion-v2__header {

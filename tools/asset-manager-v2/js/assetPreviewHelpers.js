@@ -43,6 +43,48 @@ function previewTitle(type, kind) {
   return normalizedKind ? `${normalizedType} / ${normalizedKind}` : normalizedType;
 }
 
+function previewFontFamily(assetId) {
+  const normalizedId = normalizeText(assetId).replace(/[^a-z0-9_-]+/gi, "-").replace(/^-+|-+$/g, "");
+  return `asset-preview-${normalizedId || "asset"}`;
+}
+
+function fontLoadErrorMessage(model, error) {
+  const detail = sanitizeText(error?.message || String(error || "Unknown font load error."));
+  return `Font preview failed for ${model.assetId}: ${detail}`;
+}
+
+async function applyScopedFontPreview(target, model, options = {}) {
+  if (!target || model.type !== "font" || !model.url) {
+    return;
+  }
+  const documentRef = options.documentRef || target.ownerDocument || globalThis.document || null;
+  const FontFaceCtor = options.FontFace || documentRef?.defaultView?.FontFace || globalThis.FontFace;
+  const fontSet = documentRef?.fonts;
+  const family = previewFontFamily(model.assetId);
+  const previewText = target.querySelector(".asset-manager-v2__preview-font");
+  if (previewText) {
+    previewText.style.fontFamily = `"${family}", sans-serif`;
+  }
+  if (typeof FontFaceCtor !== "function" || !fontSet || typeof fontSet.add !== "function") {
+    return;
+  }
+
+  try {
+    const fontFace = new FontFaceCtor(family, `url("${cssString(model.url)}")`);
+    const loadedFontFace = typeof fontFace.load === "function" ? await fontFace.load() : fontFace;
+    if (target.dataset.previewAssetId !== model.assetId) {
+      return;
+    }
+    fontSet.add(loadedFontFace);
+    previewText?.setAttribute("data-preview-font-loaded", "true");
+  } catch (error) {
+    if (target.dataset.previewAssetId !== model.assetId) {
+      return;
+    }
+    options.onPreviewStatus?.("fail", fontLoadErrorMessage(model, error));
+  }
+}
+
 export function createAssetPreviewModel(assetId, entry = {}, options = {}) {
   const type = normalizeText(entry.type);
   const kind = normalizeText(entry.kind);
@@ -84,8 +126,8 @@ export function renderAssetPreviewHtml(model) {
   } else if (preview.url && preview.type === "video") {
     body = `<video class="asset-manager-v2__preview-media" controls preload="metadata" src="${escapedUrl}"></video>`;
   } else if (preview.url && preview.type === "font") {
-    const family = `asset-preview-${cssString(preview.assetId).replace(/[^a-z0-9_-]+/gi, "-")}`;
-    body = `<style>@font-face{font-family:"${family}";src:url("${cssString(preview.url)}");font-display:swap;}</style><div class="asset-manager-v2__preview-font" style="font-family:&quot;${escapeHtml(family)}&quot;, sans-serif;">Aa Bb Cc 0123</div>`;
+    const family = previewFontFamily(preview.assetId);
+    body = `<style data-preview-font-style="${escapedId}">@font-face{font-family:"${cssString(family)}";src:url("${cssString(preview.url)}");font-display:swap;}</style><div class="asset-manager-v2__preview-font" data-preview-font-family="${escapeHtml(family)}" style="font-family:&quot;${escapeHtml(family)}&quot;, sans-serif;">Aa Bb Cc 0123</div>`;
   } else if (preview.type === "shader") {
     body = `<pre class="asset-manager-v2__preview-code">Shader inspection\nkind: ${escapedKind}\npath: ${escapedPath}</pre>`;
   } else if (preview.type === "data" || preview.type === "localization") {
@@ -105,13 +147,16 @@ export function renderAssetPreviewHtml(model) {
 export function renderAssetPreview(target, assetId, entry, options = {}) {
   if (!target || !assetId || !entry) {
     if (target) {
+      delete target.dataset.previewAssetId;
       target.hidden = true;
       target.textContent = "";
     }
     return null;
   }
   const model = createAssetPreviewModel(assetId, entry, options);
+  target.dataset.previewAssetId = model.assetId;
   target.innerHTML = renderAssetPreviewHtml(model);
   target.hidden = false;
+  void applyScopedFontPreview(target, model, options);
   return model;
 }
