@@ -31,6 +31,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     assetCatalog: new AssetCatalogControl({
       countText: requireElement("#assetCountText"),
+      detail: requireElement("#selectedAssetDetails"),
       list: requireElement("#assetList"),
       preview: requireElement("#assetPreview")
     }),
@@ -40,6 +41,7 @@ window.addEventListener("DOMContentLoaded", () => {
       colorPickerPanel: requireElement("#assetColorPickerPanel"),
       colorSortControls: requireElement("#assetColorSortControls"),
       colorSwatchList: requireElement("#assetColorSwatchList"),
+      filePickerPanel: requireElement("#assetFilePickerPanel"),
       fileInput: requireElement("#assetFileInput"),
       kindInputs: Array.from(document.querySelectorAll('input[name="assetKind"]')),
       pathInput: requireElement("#assetPathInput"),

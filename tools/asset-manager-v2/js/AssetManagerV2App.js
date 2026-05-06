@@ -1,3 +1,5 @@
+import { readTemporaryUatSamplePalette } from "./services/TemporaryUatSamplePalette.js";
+
 const ASSET_MANAGER_TOOL_ID = "asset-manager-v2";
 
 function clone(value) {
@@ -84,6 +86,7 @@ export class AssetManagerV2App {
         this.refreshActions();
       }
     });
+    this.assetCatalog.setPreviewOptions(this.previewOptions());
 
     this.render();
     await this.loadSchema();
@@ -100,7 +103,7 @@ export class AssetManagerV2App {
     this.schemaReady = true;
     this.assetForm.setKinds(this.schemaValidator.allowedTypes);
     this.statusLog.info(`Loaded asset-browser.schema.json. Types: ${this.schemaValidator.allowedTypes.join(", ")}. Kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
-    this.loadWorkspacePaletteIfPresent();
+    this.loadPaletteIfPresent();
     this.loadWorkspaceAssetsIfPresent();
     this.render();
     this.refreshActions();
@@ -127,7 +130,13 @@ export class AssetManagerV2App {
     this.statusLog.ok(`Workspace mode loaded ${Object.keys(this.assets).length} validated assets from tools.asset-browser.assets.`);
   }
 
-  loadWorkspacePaletteIfPresent() {
+  loadPaletteIfPresent() {
+    const samplePalette = readTemporaryUatSamplePalette(this.window.location);
+    if (samplePalette.ok) {
+      this.assetForm.setPaletteSwatches(samplePalette.palette.swatches);
+      this.statusLog.ok(`Loaded temporary UAT-only sample palette from ?palette=sample (${samplePalette.palette.swatches.length} colors).`);
+      return;
+    }
     if (!this.workspaceBridge.isWorkspaceMode()) {
       this.assetForm.setPaletteSwatches([]);
       return;
@@ -140,6 +149,13 @@ export class AssetManagerV2App {
     }
     this.assetForm.setPaletteSwatches(result.swatches);
     this.statusLog.ok(`Workspace mode loaded ${result.swatches.length} palette colors from tools.palette-browser.swatches.`);
+  }
+
+  previewOptions() {
+    return {
+      documentRef: this.window.document,
+      ...this.workspaceBridge.readWorkspacePreviewContext()
+    };
   }
 
   currentPayload() {

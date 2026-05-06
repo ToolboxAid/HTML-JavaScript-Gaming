@@ -6,6 +6,20 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function readGameIdFrom(value) {
+  if (!isPlainObject(value)) {
+    return "";
+  }
+  return String(
+    value.gameId
+    || value.projectId
+    || value.game
+    || value.metadata?.gameId
+    || value.workspaceMetadata?.gameId
+    || ""
+  ).trim();
+}
+
 export class WorkspaceBridge {
   constructor({ windowRef = window }) {
     this.window = windowRef;
@@ -18,6 +32,10 @@ export class WorkspaceBridge {
 
   hostContextId() {
     return new URLSearchParams(this.window.location.search).get("hostContextId") || "";
+  }
+
+  queryGameId() {
+    return new URLSearchParams(this.window.location.search).get("gameId") || "";
   }
 
   readContext() {
@@ -80,6 +98,30 @@ export class WorkspaceBridge {
       return { ok: false, message: "Workspace V2 manifest is missing tools.palette-browser.swatches." };
     }
     return { ok: true, swatches: clone(palettePayload.swatches) };
+  }
+
+  readWorkspacePreviewContext() {
+    if (!this.isWorkspaceMode()) {
+      return {
+        workspaceMode: false,
+        workspaceGameId: ""
+      };
+    }
+    const queryGameId = this.queryGameId().trim();
+    const contextResult = this.readContext();
+    if (!contextResult.ok) {
+      return {
+        workspaceMode: true,
+        workspaceGameId: queryGameId
+      };
+    }
+    const workspaceManifest = this.workspaceManifestFromContext(contextResult.context);
+    return {
+      workspaceMode: true,
+      workspaceGameId: queryGameId
+        || readGameIdFrom(contextResult.context)
+        || readGameIdFrom(workspaceManifest)
+    };
   }
 
   writeAssetsPayload(payload) {

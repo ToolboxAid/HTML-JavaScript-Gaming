@@ -9,6 +9,22 @@ function normalizeText(value) {
   return sanitizeText(value).toLowerCase();
 }
 
+function hasUrlProtocol(value) {
+  return /^[a-z][a-z0-9+.-]*:/i.test(value);
+}
+
+function workspaceGameAssetPath(path, options = {}) {
+  const normalizedPath = sanitizeText(path).replace(/\\/g, "/").replace(/^\/+/, "");
+  const gameId = sanitizeText(options.workspaceGameId || options.gameId).replace(/[\\/]+/g, "-");
+  if (!options.workspaceMode || !gameId || !/^assets\//i.test(normalizedPath)) {
+    return path;
+  }
+  if (hasUrlProtocol(normalizedPath) || /^games\//i.test(normalizedPath)) {
+    return path;
+  }
+  return `games/${gameId}/${normalizedPath}`;
+}
+
 function previewTitle(type, kind) {
   const normalizedType = normalizeText(type) || "asset";
   const normalizedKind = normalizeText(kind);
@@ -21,7 +37,8 @@ export function createAssetPreviewModel(assetId, entry = {}, options = {}) {
   const role = normalizeText(entry.role);
   const path = sanitizeText(entry.path);
   const color = entry.color && typeof entry.color === "object" ? entry.color : null;
-  const url = resolveRuntimeAssetUrl(path, options.documentRef || globalThis.document || null);
+  const previewPath = workspaceGameAssetPath(path, options);
+  const url = resolveRuntimeAssetUrl(previewPath, options.documentRef || globalThis.document || null);
   return {
     assetId: sanitizeText(assetId),
     color,
@@ -29,6 +46,7 @@ export function createAssetPreviewModel(assetId, entry = {}, options = {}) {
     kind,
     role,
     path,
+    previewPath,
     url,
     title: previewTitle(type, kind)
   };
@@ -45,14 +63,6 @@ export function renderAssetPreviewHtml(model) {
   const escapedTitle = escapeHtml(preview.title);
   const escapedColorHex = escapeHtml(preview.color?.hex || "");
   const escapedColorName = escapeHtml(preview.color?.name || "");
-  const rows = [
-    `<dt>ID</dt><dd>${escapedId}</dd>`,
-    `<dt>Type</dt><dd>${escapedType}</dd>`,
-    `<dt>Kind</dt><dd>${escapedKind}</dd>`,
-    `<dt>Role</dt><dd>${escapedRole}</dd>`,
-    `<dt>Path</dt><dd>${escapedPath}</dd>`
-  ].join("");
-
   let body = `<p class="asset-manager-v2__preview-note">Select an asset with a valid path to inspect it.</p>`;
   if (preview.url && preview.type === "image") {
     body = `<img class="asset-manager-v2__preview-media" src="${escapedUrl}" alt="${escapedId}" loading="lazy" decoding="async">`;
@@ -74,7 +84,6 @@ export function renderAssetPreviewHtml(model) {
   return `
     <article class="asset-manager-v2__preview-card" data-preview-type="${escapedType}" data-preview-kind="${escapedKind}">
       <h2>${escapedTitle}</h2>
-      <dl>${rows}</dl>
       <div class="asset-manager-v2__preview-stage">${body}</div>
     </article>
   `;

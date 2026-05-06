@@ -91,7 +91,7 @@
               </label>
             </fieldset>
 
-            <fieldset class="asset-manager-v2__file-picker-controls" aria-label="Asset file pickers">
+            <fieldset id="assetFilePickerPanel" class="asset-manager-v2__file-picker-controls" aria-label="Asset file pickers">
               <legend>Pick Asset</legend>
               <button id="pickAssetFileButton" type="button">Pick Asset</button>
               <input id="assetFileInput" class="asset-manager-v2__file-input" type="file" aria-label="Asset file">
@@ -108,16 +108,19 @@
             </label>
             <label class="asset-manager-v2__field asset-manager-v2__field--stacked asset-manager-v2__field--not-editable" for="assetIdInput">
               <span>ID</span>
-              <input id="assetIdInput" type="text" autocomplete="off" placeholder="assets.image.sprite.preview" readonly>
+              <input id="assetIdInput" type="text" autocomplete="off" placeholder="assets.image.sprite.preview" disabled aria-disabled="true">
             </label>
             <label class="asset-manager-v2__field asset-manager-v2__field--stacked asset-manager-v2__field--not-editable" for="assetPathInput">
               <span>Path</span>
               <input id="assetPathInput" type="text" autocomplete="off" placeholder="assets/images/player.png" readonly>
             </label>
-            <label id="assetStretchOverrideField" class="asset-manager-v2__field asset-manager-v2__field--stacked" for="assetStretchOverrideInput" hidden>
-              <span>Stretch Override</span>
-              <input id="assetStretchOverrideInput" type="number" min="0" step="1" value="10">
-            </label>
+            <fieldset id="assetStretchOverrideField" class="asset-manager-v2__stretch-controls" hidden>
+              <legend>Stretch Override</legend>
+              <label class="asset-manager-v2__field asset-manager-v2__field--stacked" for="assetStretchOverrideInput">
+                <span>Uniform Edge</span>
+                <input id="assetStretchOverrideInput" type="number" min="0" step="1" value="10">
+              </label>
+            </fieldset>
             <div class="asset-manager-v2__button-row">
               <button id="addAssetButton" type="button" disabled>Add Asset</button>
               <button id="updateAssetButton" type="button" disabled>Update Asset</button>
@@ -140,7 +143,16 @@
           <div id="assetsContent" class="accordion-v2__content">
             <div id="assetCountText" class="asset-manager-v2__hint">0 assets</div>
             <div id="assetList" class="asset-manager-v2__asset-list" aria-label="Asset entries"></div>
-            <div id="assetPreview" class="asset-manager-v2__preview" role="region" aria-label="Selected asset details" hidden></div>
+            <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__selected-detail is-open" data-accordion-v2-open="true">
+              <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="selectedAssetDetailsContent">
+                <span>Selected Asset Detail</span>
+                <span class="accordion-v2__icon" aria-hidden="true">+</span>
+              </button>
+              <div id="selectedAssetDetailsContent" class="accordion-v2__content">
+                <div id="selectedAssetDetails" class="asset-manager-v2__selected-detail-body"></div>
+              </div>
+            </section>
+            <div id="assetPreview" class="asset-manager-v2__preview" role="region" aria-label="Selected asset preview" hidden></div>
           </div>
         </section>
       </section>

@@ -71,6 +71,16 @@ textarea {
   color: var(--asset-manager-text);
 }
 
+input:disabled,
+select:disabled,
+textarea:disabled {
+  border-color: rgba(221, 214, 254, 0.14);
+  background: rgba(20, 18, 30, 0.64);
+  color: rgba(196, 181, 253, 0.66);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
 select {
   min-width: 0;
   padding: 7px 9px;
@@ -324,6 +334,11 @@ textarea:hover {
   cursor: default;
 }
 
+.asset-manager-v2__field--not-editable input:disabled {
+  color: rgba(196, 181, 253, 0.66);
+  cursor: not-allowed;
+}
+
 .asset-manager-v2__field--not-editable input:read-only {
   user-select: none;
 }
@@ -372,6 +387,10 @@ textarea:hover {
   padding: 12px;
 }
 
+.asset-manager-v2__file-picker-controls[hidden] {
+  display: none;
+}
+
 .asset-manager-v2__color-picker {
   min-width: 0;
   display: grid;
@@ -389,7 +408,8 @@ textarea:hover {
 .asset-manager-v2__color-picker legend {
   padding: 0 6px;
   color: var(--asset-manager-muted);
-  font-weight: 700;
+  font-size: 0.86rem;
+  font-weight: 600;
 }
 
 .asset-manager-v2__color-sort-controls {
@@ -467,10 +487,10 @@ textarea:hover {
   flex: 1 1 96px;
 }
 
+.asset-manager-v2__stretch-controls,
 .asset-manager-v2__history-controls {
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   border: 1px solid var(--asset-manager-line);
   border-radius: 8px;
@@ -478,6 +498,19 @@ textarea:hover {
   padding: 12px;
 }
 
+.asset-manager-v2__stretch-controls[hidden] {
+  display: none;
+}
+
+.asset-manager-v2__stretch-controls {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.asset-manager-v2__history-controls {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.asset-manager-v2__stretch-controls legend,
 .asset-manager-v2__history-controls legend {
   padding: 0 6px;
   color: var(--asset-manager-muted);
@@ -572,6 +605,37 @@ textarea:hover {
   -webkit-line-clamp: 2;
   overflow: hidden;
   text-align: left;
+}
+
+.asset-manager-v2__selected-detail {
+  margin-top: 8px;
+}
+
+.asset-manager-v2__selected-detail .accordion-v2__header {
+  min-height: 36px;
+}
+
+.asset-manager-v2__selected-detail-body {
+  min-width: 0;
+}
+
+.asset-manager-v2__selected-detail-body dl {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 10px;
+  margin: 0;
+}
+
+.asset-manager-v2__selected-detail-body dt {
+  color: var(--asset-manager-muted);
+}
+
+.asset-manager-v2__selected-detail-body dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--asset-manager-text);
+  font-weight: 650;
+  overflow-wrap: anywhere;
 }
 
 .asset-manager-v2__preview {

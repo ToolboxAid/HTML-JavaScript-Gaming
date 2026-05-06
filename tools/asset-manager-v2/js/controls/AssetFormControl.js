@@ -15,8 +15,8 @@ import {
 const DEFAULT_BEZEL_STRETCH_PX = 10;
 const COLOR_SORT_OPTIONS = Object.freeze([
   ["hue", "Hue"],
-  ["saturation", "Saturation"],
-  ["brightness", "Brightness"],
+  ["saturation", "Sat"],
+  ["brightness", "Bright"],
   ["name", "Name"],
   ["tag", "Tag"]
 ]);
@@ -100,6 +100,7 @@ export class AssetFormControl {
     colorPickerPanel,
     colorSortControls,
     colorSwatchList,
+    filePickerPanel,
     fileInput,
     kindInputs,
     pathInput,
@@ -117,6 +118,7 @@ export class AssetFormControl {
     this.colorPickerPanel = colorPickerPanel;
     this.colorSortControls = colorSortControls;
     this.colorSwatchList = colorSwatchList;
+    this.filePickerPanel = filePickerPanel;
     this.fileInput = fileInput;
     this.kindInputs = kindInputs;
     this.pathInput = pathInput;
@@ -131,6 +133,7 @@ export class AssetFormControl {
     this.allowedKinds = [];
     this.colorSortKey = "name";
     this.paletteSwatches = [];
+    this.emptyPaletteStatusWritten = false;
     this.selectedColorInfo = null;
     this.kindValue = "";
     this.selectedFileInfo = null;
@@ -277,6 +280,7 @@ export class AssetFormControl {
     this.paletteSwatches = Array.isArray(swatches)
       ? swatches.map(normalizeSwatch).filter(Boolean)
       : [];
+    this.emptyPaletteStatusWritten = false;
     this.renderColorSwatches();
   }
 
@@ -431,13 +435,18 @@ export class AssetFormControl {
 
   updatePickerMode() {
     const isColor = this.selectedKind() === "color";
+    this.filePickerPanel.hidden = isColor;
+    this.colorPickerPanel.hidden = !isColor;
     this.fileInput.disabled = isColor;
     this.fileInput.accept = isColor ? "" : acceptForKind(this.selectedKind());
-    this.colorPickerPanel.hidden = true;
     if (!isColor) {
       return;
     }
     this.renderColorSwatches();
+    if (!this.paletteSwatches.length && !this.emptyPaletteStatusWritten) {
+      this.emptyPaletteStatusWritten = true;
+      this.onStatus?.("fail", "No active Workspace V2 palette colors.");
+    }
   }
 
   openColorPicker() {
@@ -447,7 +456,7 @@ export class AssetFormControl {
     this.colorPickerPanel.hidden = false;
     this.renderColorSwatches();
     if (!this.paletteSwatches.length) {
-      this.onStatus?.("fail", "Workspace V2 active palette has no colors to pick.");
+      this.onStatus?.("fail", "No active Workspace V2 palette colors.");
     }
   }
 
@@ -484,7 +493,7 @@ export class AssetFormControl {
     });
     const swatches = this.sortedPaletteSwatches();
     if (!swatches.length) {
-      this.colorSwatchList.innerHTML = '<p class="asset-manager-v2__hint">No active Workspace V2 palette colors.</p>';
+      this.colorSwatchList.innerHTML = "";
       return;
     }
     this.colorSwatchList.innerHTML = swatches.map((swatch, index) => {

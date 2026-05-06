@@ -7,14 +7,15 @@ Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
 
 Changed runtime JS files considered:
 (67%) tools/asset-manager-v2/js/controls/AssetManagerShellControl.js - executed lines 100/100; executed functions 8/12
-(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 469/469; executed functions 42/52
+(81%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 483/483; executed functions 43/53
 (91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 316/316; executed functions 29/32
-(95%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 479/479; executed functions 54/57
-(100%) src/shared/assets/assetPreviewHelpers.js - executed lines 87/87; executed functions 7/7
-(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 66/66; executed functions 4/4
-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 74/74; executed functions 9/9
+(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 488/488; executed functions 53/57
+(100%) src/shared/assets/assetPreviewHelpers.js - executed lines 95/95; executed functions 9/9
+(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 68/68; executed functions 4/4
+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 105/105; executed functions 12/12
 (100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 267/267; executed functions 25/25
-(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 100/100; executed functions 11/11
+(100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 28/28; executed functions 3/3
+(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 139/139; executed functions 14/14
 
 Guardrail warnings:
 (100%) none - no changed runtime JS coverage warnings

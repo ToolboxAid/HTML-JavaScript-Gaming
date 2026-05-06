@@ -10,12 +10,14 @@ function escapeHtml(value) {
 }
 
 export class AssetCatalogControl {
-  constructor({ countText, list, preview }) {
+  constructor({ countText, detail, list, preview }) {
     this.countText = countText;
+    this.detail = detail;
     this.list = list;
     this.preview = preview;
     this.onSelect = null;
     this.onDelete = null;
+    this.previewOptions = {};
   }
 
   mount({ onDelete, onSelect }) {
@@ -42,11 +44,13 @@ export class AssetCatalogControl {
     this.countText.textContent = `${entries.length} assets`;
     if (!entries.length) {
       this.list.innerHTML = "";
+      this.renderSelectedDetail("", null);
       renderAssetPreview(this.preview, "", null);
       return;
     }
     const selectedEntry = selectedAssetId && assets[selectedAssetId] ? assets[selectedAssetId] : null;
-    renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry);
+    this.renderSelectedDetail(selectedEntry ? selectedAssetId : "", selectedEntry);
+    renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry, this.previewOptions);
 
     this.list.innerHTML = entries.map(([assetId, entry]) => {
       const detailTooltip = [
@@ -68,6 +72,35 @@ export class AssetCatalogControl {
       </article>
     `;
     }).join("");
+  }
+
+  setPreviewOptions(options = {}) {
+    this.previewOptions = { ...options };
+  }
+
+  renderSelectedDetail(assetId, entry) {
+    if (!this.detail) {
+      return;
+    }
+    if (!assetId || !entry) {
+      this.detail.innerHTML = '<p class="asset-manager-v2__hint">Select an asset tile to inspect details.</p>';
+      return;
+    }
+    const type = entry.type || "";
+    const kind = entry.kind || "";
+    const rows = [
+      ["type/kind", `${type}${kind ? `/${kind}` : ""}`],
+      ["ID", assetId],
+      ["Type", type],
+      ["Kind", kind],
+      ["Role", entry.role || ""],
+      ["Path", entry.path || ""],
+      ["Final ID", assetId]
+    ];
+    this.detail.innerHTML = `<dl>${rows.map(([label, value]) => `
+      <dt>${escapeHtml(label)}</dt>
+      <dd>${escapeHtml(value)}</dd>
+    `).join("")}</dl>`;
   }
 
   sortedEntries(assets) {
