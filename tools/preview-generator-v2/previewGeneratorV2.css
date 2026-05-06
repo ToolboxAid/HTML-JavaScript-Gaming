@@ -222,18 +222,8 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
   display: none;
 }
 
-.preview-generator-v2__status-header-row {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-width: 0;
-  border-bottom: 1px solid var(--pm-line, rgba(221, 214, 254, 0.26));
-}
-
 .preview-generator-v2__status-accordion-header {
-  flex: 1 1 auto;
+  flex: 0 0 44px;
   min-width: 0;
 }
 
@@ -242,7 +232,6 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding-right: 10px;
 }
 
 .preview-generator-v2__status-clear-button {

@@ -17,7 +17,10 @@ class StatusLogControl {
   }
 
   onClear(handler) {
-    this.clearLogBtn.addEventListener("click", handler);
+    this.clearLogBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      handler(event);
+    });
   }
 }
 

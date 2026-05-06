@@ -1,0 +1,30 @@
+PR_26126_072-status-clear-header-placement-fix
+
+Scope:
+- Preview Generator V2 Status header placement and Status Clear interaction only.
+
+Changes:
+- Moved the Clear button into the actual Status `.accordion-v2__header` DOM node with the Status title and accordion icon.
+- Kept Clear on the same visual row as the Status title and accordion toggle.
+- Stopped Clear click propagation so Clear does not collapse or expand the Status accordion.
+- Added Playwright assertions that:
+  - Clear is inside the Status accordion header
+  - Clear empties the status/log output
+  - Clear does not toggle the accordion when Status is open
+  - Clear does not toggle the accordion when Status is collapsed
+
+Playwright impacted: Yes
+- This PR changes UI control placement and event behavior.
+- `npm run test:workspace-v2` must pass.
+
+Validation:
+- `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs` passed.
+- `node --check tools/preview-generator-v2/controls/StatusLogControl.js` passed.
+- `npm run test:workspace-v2` passed: 7 tests passed.
+- `git diff --check` passed with line-ending warnings only.
+
+Manual test notes:
+- Open Preview Generator V2.
+- Confirm Status shows Status, Clear, and the accordion icon on the same header row.
+- Click Clear and confirm the log is emptied without changing the Status accordion open/closed state.
+- Click the Status header outside Clear and confirm the accordion still collapses and expands.

@@ -383,8 +383,15 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
       await expect(page.locator("#executeBtn")).toBeEnabled();
 
+      const statusHeader = page.locator('#statusAccordion .accordion-v2__header[aria-controls="statusAccordionContent"]');
+      const statusContent = page.locator("#statusAccordionContent");
+      await expect(statusHeader.locator("#clearLogBtn")).toBeVisible();
+      await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(statusContent).toBeVisible();
       await page.locator("#clearLogBtn").click();
       await expect(page.locator("#log")).toHaveText("");
+      await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(statusContent).toBeVisible();
 
       for (const contentId of [
         "repoDestinationContent",
@@ -399,7 +406,16 @@ test.describe("Preview Generator V2 baseline", () => {
         await expectAccordionToggles(page, contentId);
       }
       await expect(page.locator("#clearLogBtn")).toBeVisible();
-      await expect(page.locator("#statusAccordion .preview-generator-v2__status-header-actions #clearLogBtn")).toBeVisible();
+      await expect(statusHeader.locator(".preview-generator-v2__status-header-actions #clearLogBtn")).toBeVisible();
+      await page.locator("#captureModeFullScreen").check();
+      await expect(page.locator("#log")).toContainText("Capture mode: Full Screen");
+      await statusHeader.click();
+      await expect(statusContent).toBeHidden();
+      await expect(statusHeader).toHaveAttribute("aria-expanded", "false");
+      await page.locator("#clearLogBtn").click();
+      await expect(page.locator("#log")).toHaveText("");
+      await expect(statusHeader).toHaveAttribute("aria-expanded", "false");
+      await expect(statusContent).toBeHidden();
 
       expect(pageErrors).toEqual([]);
     } finally {
