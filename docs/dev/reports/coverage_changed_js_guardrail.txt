@@ -7,9 +7,8 @@ Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
 
 Changed runtime JS files considered:
 (62%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 313/313; executed functions 21/34
-(86%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 51/51; executed functions 6/7
-(89%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 214/214; executed functions 16/18
-(95%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 181/181; executed functions 20/21
+(93%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 204/204; executed functions 25/27
+(95%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 226/226; executed functions 19/20
 (100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 63/63; executed functions 4/4
 (100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 181/181; executed functions 21/21
 

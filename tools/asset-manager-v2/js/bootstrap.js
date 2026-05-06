@@ -38,7 +38,7 @@ window.addEventListener("DOMContentLoaded", () => {
       addButton: requireElement("#addAssetButton"),
       assetIdInput: requireElement("#assetIdInput"),
       fileInput: requireElement("#assetFileInput"),
-      kindValue: requireElement("#assetKindValue"),
+      kindInputs: Array.from(document.querySelectorAll('input[name="assetKind"]')),
       pathInput: requireElement("#assetPathInput"),
       pickFileButton: requireElement("#pickAssetFileButton"),
       roleSelect: requireElement("#assetRoleSelect"),

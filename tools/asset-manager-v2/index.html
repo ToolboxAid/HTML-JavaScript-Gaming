@@ -55,6 +55,38 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="assetControlsContent" class="accordion-v2__content">
+            <fieldset class="asset-manager-v2__kind-controls" aria-label="Asset kind">
+              <legend>Kind</legend>
+              <label for="assetKindImage">
+                <input id="assetKindImage" name="assetKind" type="radio" value="image" checked>
+                <span>Image</span>
+              </label>
+              <label for="assetKindAudio">
+                <input id="assetKindAudio" name="assetKind" type="radio" value="audio">
+                <span>Audio</span>
+              </label>
+              <label for="assetKindFont">
+                <input id="assetKindFont" name="assetKind" type="radio" value="font">
+                <span>Font</span>
+              </label>
+              <label for="assetKindVideo">
+                <input id="assetKindVideo" name="assetKind" type="radio" value="video">
+                <span>Video</span>
+              </label>
+              <label for="assetKindShader">
+                <input id="assetKindShader" name="assetKind" type="radio" value="shader">
+                <span>Shader</span>
+              </label>
+              <label for="assetKindData">
+                <input id="assetKindData" name="assetKind" type="radio" value="data">
+                <span>Data</span>
+              </label>
+              <label for="assetKindLocalization">
+                <input id="assetKindLocalization" name="assetKind" type="radio" value="localization">
+                <span>Localization</span>
+              </label>
+            </fieldset>
+
             <fieldset class="asset-manager-v2__file-picker-controls" aria-label="Asset file pickers">
               <legend>Pick asset file</legend>
               <button id="pickAssetFileButton" type="button">Pick Asset File</button>
@@ -62,23 +94,15 @@
               <p id="assetSelectedFileText" class="asset-manager-v2__hint">No file selected.</p>
             </fieldset>
 
-            <label class="asset-manager-v2__field asset-manager-v2__field--not-editable" for="assetKindValue">
-              <span>Approved Kind</span>
-              <input id="assetKindValue" type="text" value="No file selected" readonly>
-            </label>
-            <label class="asset-manager-v2__field asset-manager-v2__field--not-editable" for="assetSourceValue">
-              <span>Source</span>
-              <input id="assetSourceValue" type="text" value="asset-manager-v2" readonly>
-            </label>
             <label class="asset-manager-v2__field" for="assetRoleSelect">
               <span>Role</span>
               <select id="assetRoleSelect"></select>
             </label>
-            <label class="asset-manager-v2__field" for="assetIdInput">
-              <span>Asset ID</span>
+            <label class="asset-manager-v2__field asset-manager-v2__field--stacked" for="assetIdInput">
+              <span>ID</span>
               <input id="assetIdInput" type="text" autocomplete="off" placeholder="image.project.asset">
             </label>
-            <label class="asset-manager-v2__field" for="assetPathInput">
+            <label class="asset-manager-v2__field asset-manager-v2__field--stacked" for="assetPathInput">
               <span>Path</span>
               <input id="assetPathInput" type="text" autocomplete="off" placeholder="assets/images/player.png">
             </label>

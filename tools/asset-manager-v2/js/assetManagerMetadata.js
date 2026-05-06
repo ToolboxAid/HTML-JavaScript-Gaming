@@ -108,10 +108,22 @@ export function acceptForKind(kind) {
   return ASSET_KIND_CONFIG[kind]?.accept || "";
 }
 
-export function acceptForAllKinds() {
-  return [...new Set(Object.values(ASSET_KIND_CONFIG)
-    .flatMap((config) => config.accept.split(",").map((part) => part.trim()).filter(Boolean)))]
-    .join(",");
+export function pickerTypesForKind(kind) {
+  const config = ASSET_KIND_CONFIG[kind];
+  if (!config) {
+    return [];
+  }
+  const acceptParts = config.accept.split(",").map((part) => part.trim()).filter(Boolean);
+  const extensions = acceptParts.filter((part) => part.startsWith("."));
+  const mimeTypes = acceptParts.filter((part) => !part.startsWith("."));
+  const accept = Object.fromEntries(mimeTypes.map((mimeType) => [mimeType, extensions]));
+  if (!Object.keys(accept).length && extensions.length) {
+    accept["application/octet-stream"] = extensions;
+  }
+  return [{
+    description: `${config.label} assets`,
+    accept
+  }];
 }
 
 export function folderForKind(kind) {

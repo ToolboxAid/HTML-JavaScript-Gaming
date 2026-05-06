@@ -646,28 +646,46 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator(".asset-manager-v2.app-shell")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeHidden();
+      await expect(page.locator('fieldset[aria-label="Asset kind"] legend')).toHaveText("Kind");
+      await expect(page.locator('input[name="assetKind"]')).toHaveCount(7);
+      await expect(page.locator("#assetKindImage")).toBeChecked();
+      await expect(page.locator("#assetKindAudio")).toBeVisible();
+      await expect(page.locator("#assetKindFont")).toBeVisible();
+      await expect(page.locator("#assetKindVideo")).toBeVisible();
+      await expect(page.locator("#assetKindShader")).toBeVisible();
+      await expect(page.locator("#assetKindData")).toBeVisible();
+      await expect(page.locator("#assetKindLocalization")).toBeVisible();
       await expect(page.locator("#pickAssetFileButton")).toBeVisible();
       await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /image\/png/);
-      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /audio\/wav/);
-      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /\.woff2/);
-      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /video\/mp4/);
-      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /\.wgsl/);
-      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /application\/json/);
-      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /\.xliff/);
+      await expect(page.locator("#assetFileInput")).not.toHaveAttribute("accept", /audio\/wav/);
       await expect(page.locator("input[data-asset-file-kind]")).toHaveCount(0);
-      await expect(page.locator('input[name="assetKind"]')).toHaveCount(0);
       await expect(page.locator("#stretchOverrideInput")).toHaveCount(0);
-      await expect(page.locator("#assetKindValue")).toHaveValue("No file selected");
-      await expect(page.locator("#assetRoleSelect")).toBeDisabled();
+      await expect(page.locator("#assetKindValue")).toHaveCount(0);
+      await expect(page.locator("#assetSourceValue")).toHaveCount(0);
+      await expect(page.locator("label", { hasText: "Approved Kind" })).toHaveCount(0);
+      await expect(page.locator("label", { hasText: "Source" })).toHaveCount(0);
+      await expect(page.locator("label[for='assetIdInput'] span")).toHaveText("ID");
+      await expect(page.locator("label[for='assetPathInput'] span")).toHaveText("Path");
+      const stackedFieldColumns = await page.locator("label[for='assetIdInput']").evaluate((label) => getComputedStyle(label).gridTemplateColumns.trim().split(/\s+/));
+      expect(stackedFieldColumns).toHaveLength(1);
+      await expect(page.locator("#assetRoleSelect")).toBeEnabled();
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Loaded asset-browser\.schema\.json/);
 
+      await page.locator("#assetKindAudio").check();
+      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /audio\/wav/);
+      await expect(page.locator("#assetFileInput")).not.toHaveAttribute("accept", /image\/png/);
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");
+      await page.locator("#assetRoleSelect").selectOption("music");
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("music");
+      await page.locator("#assetKindImage").check();
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
+      await page.locator("#assetRoleSelect").selectOption("background");
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetSelectedFileText")).toContainText("Image: nebula-backdrop.png");
-      await expect(page.locator("#assetKindValue")).toHaveValue("Image");
-      await expect(page.locator("#assetRoleSelect")).toBeEnabled();
-      await expect(page.locator("#assetRoleSelect")).toHaveValue("");
-      await expect(page.locator("#addAssetButton")).toBeDisabled();
-      await page.locator("#assetRoleSelect").selectOption("background");
+      const pickerOptions = await page.evaluate(() => window.__assetManagerV2PickerOptions.at(-1));
+      expect(pickerOptions.types[0].description).toBe("Image assets");
+      expect(Object.keys(pickerOptions.types[0].accept)).toContain("image/png");
       await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.nebula-backdrop.background");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-backdrop.png");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-backdrop\.png validated as image background\./);
@@ -685,8 +703,7 @@ test.describe("Preview Generator V2 baseline", () => {
         path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\data\\notes.exe"
       });
       await page.locator("#pickAssetFileButton").click();
-      await expect(page.locator("#assetKindValue")).toHaveValue("Unapproved");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected file validation failed: File notes\.exe is not an approved asset type\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected file validation failed: File notes\.exe is not accepted for Image assets\./);
       await expect(page.locator("#addAssetButton")).toBeDisabled();
 
       await page.locator("#jsonInput").fill(JSON.stringify({
@@ -744,10 +761,10 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace mode loaded 0 validated assets from tools\.asset-browser\.assets/);
 
+      await page.locator("#assetKindAudio").check();
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");
+      await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /audio\/wav/);
       await page.locator("#pickAssetFileButton").click();
-      await expect(page.locator("#assetKindValue")).toHaveValue("Audio");
-      await expect(page.locator("#assetRoleSelect")).toHaveValue("");
-      await page.locator("#assetRoleSelect").selectOption("sound");
       await expect(page.locator("#assetIdInput")).toHaveValue("audio.assets.fire.sound");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/audio/fire.wav");
       await page.locator("#addAssetButton").click();

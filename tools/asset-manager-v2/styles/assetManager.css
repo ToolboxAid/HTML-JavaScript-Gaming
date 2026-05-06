@@ -282,15 +282,54 @@ textarea:hover {
   font-weight: 700;
 }
 
-.asset-manager-v2__field input {
+.asset-manager-v2__field input,
+.asset-manager-v2__field select {
   width: 100%;
   min-width: 0;
+}
+
+.asset-manager-v2__field input {
   padding: 7px 9px;
+}
+
+.asset-manager-v2__field--stacked {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
 }
 
 .asset-manager-v2__field--not-editable input {
   color: var(--asset-manager-muted);
   cursor: default;
+}
+
+.asset-manager-v2__kind-controls {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  gap: 8px;
+  border: 1px solid var(--asset-manager-line);
+  border-radius: 8px;
+  margin: 0;
+  padding: 12px;
+}
+
+.asset-manager-v2__kind-controls legend {
+  padding: 0 6px;
+  color: var(--asset-manager-muted);
+  font-weight: 700;
+}
+
+.asset-manager-v2__kind-controls label {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--asset-manager-line);
+  border-radius: 8px;
+  background: var(--asset-manager-panel-strong);
+  padding: 7px 8px;
+  font-weight: 700;
 }
 
 .asset-manager-v2__file-picker-controls {

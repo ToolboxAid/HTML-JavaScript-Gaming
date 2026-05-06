@@ -1,10 +1,11 @@
 import {
-  acceptForAllKinds,
+  acceptForKind,
   assetIdForFile,
   fileMatchesAccept,
   kindForFile,
   labelForKind,
   pathForFile,
+  pickerTypesForKind,
   roleOptionsForKind
 } from "../assetManagerMetadata.js";
 
@@ -13,7 +14,7 @@ export class AssetFormControl {
     addButton,
     assetIdInput,
     fileInput,
-    kindValue,
+    kindInputs,
     pathInput,
     pickFileButton,
     roleSelect,
@@ -24,7 +25,7 @@ export class AssetFormControl {
     this.addButton = addButton;
     this.assetIdInput = assetIdInput;
     this.fileInput = fileInput;
-    this.kindValue = kindValue;
+    this.kindInputs = kindInputs;
     this.pathInput = pathInput;
     this.pickFileButton = pickFileButton;
     this.roleSelect = roleSelect;
@@ -37,7 +38,7 @@ export class AssetFormControl {
   }
 
   mount({ onAdd, onChange, onFileSelected }) {
-    this.fileInput.accept = acceptForAllKinds();
+    this.updateFileAccept();
     this.pickFileButton.addEventListener("click", () => {
       void this.pickAssetFile({ onChange, onFileSelected });
     });
@@ -50,6 +51,18 @@ export class AssetFormControl {
     });
     this.updateRoleOptions();
     this.addButton.addEventListener("click", () => onAdd(this.readValue()));
+    this.kindInputs.forEach((input) => {
+      input.addEventListener("change", () => {
+        this.updateFileAccept();
+        this.updateRoleOptions({ preserveCurrentRole: false });
+        if (this.selectedFileInfo) {
+          this.selectedFileInfo.kind = this.selectedKind();
+          this.applyDerivedFileValues();
+          onFileSelected(this.readValue(), this.selectedFileInfo);
+        }
+        onChange();
+      });
+    });
     this.roleSelect.addEventListener("change", () => {
       if (this.selectedFileInfo) {
         this.applyDerivedFileValues();
@@ -64,7 +77,7 @@ export class AssetFormControl {
   }
 
   selectedKind() {
-    return this.selectedFileInfo?.kind || "";
+    return this.kindInputs.find((input) => input.checked)?.value || "";
   }
 
   selectedRole() {
@@ -91,19 +104,29 @@ export class AssetFormControl {
 
   setApprovedKinds(allowedKinds) {
     this.allowedKinds = [...allowedKinds];
-    this.updateRoleOptions();
+    const allowed = new Set(this.allowedKinds);
+    this.kindInputs.forEach((input) => {
+      input.disabled = !allowed.has(input.value);
+    });
+    if (!allowed.has(this.selectedKind())) {
+      const firstAllowedInput = this.kindInputs.find((input) => allowed.has(input.value));
+      if (firstAllowedInput) {
+        firstAllowedInput.checked = true;
+      }
+    }
+    this.updateFileAccept();
+    this.updateRoleOptions({ preserveCurrentRole: false });
     this.showMessage(`Approved kinds: ${allowedKinds.join(", ")}.`, "ok");
   }
 
   clearEditableFields() {
     this.assetIdInput.value = "";
     this.pathInput.value = "";
-    this.kindValue.value = "No file selected";
     this.selectedFileInfo = null;
     this.selectedFileError = "";
     this.fileInput.value = "";
     this.selectedFileText.textContent = "No file selected.";
-    this.updateRoleOptions();
+    this.updateRoleOptions({ preserveCurrentRole: true });
   }
 
   showMessage(message, tone = "info") {
@@ -120,7 +143,8 @@ export class AssetFormControl {
     try {
       const [fileHandle] = await this.window.showOpenFilePicker({
         multiple: false,
-        excludeAcceptAllOption: false
+        excludeAcceptAllOption: false,
+        types: pickerTypesForKind(this.selectedKind())
       });
       if (!fileHandle) {
         return;
@@ -144,13 +168,14 @@ export class AssetFormControl {
     if (!file) {
       this.selectedFileInfo = null;
       this.selectedFileError = "";
-      this.kindValue.value = "No file selected";
       this.selectedFileText.textContent = "No file selected.";
       this.updateRoleOptions();
       return;
     }
-    const kind = kindForFile(file);
+    const kind = this.selectedKind();
+    const derivedKind = kindForFile(file);
     this.selectedFileInfo = {
+      derivedKind,
       kind,
       name: file.name,
       sourcePath,
@@ -165,7 +190,6 @@ export class AssetFormControl {
         ? ""
         : `File ${file.name} is not accepted for ${labelForKind(kind)} assets.`;
     }
-    this.kindValue.value = kind ? labelForKind(kind) : "Unapproved";
     this.updateRoleOptions();
     this.applyDerivedFileValues();
     this.selectedFileText.textContent = kind ? `${labelForKind(kind)}: ${file.name}` : `Unapproved: ${file.name}`;
@@ -180,16 +204,16 @@ export class AssetFormControl {
     this.assetIdInput.value = assetIdForFile(kind, name, this.selectedRole());
   }
 
-  updateRoleOptions() {
+  updateFileAccept() {
+    this.fileInput.accept = acceptForKind(this.selectedKind());
+  }
+
+  updateRoleOptions({ preserveCurrentRole = true } = {}) {
     const kind = this.selectedKind();
     const roles = roleOptionsForKind(kind);
     const currentValue = this.roleSelect.value;
-    const options = [
-      `<option value="">Select role</option>`,
-      ...roles.map((role) => `<option value="${role}">${role}</option>`)
-    ];
-    this.roleSelect.innerHTML = options.join("");
-    this.roleSelect.value = roles.includes(currentValue) ? currentValue : "";
+    this.roleSelect.innerHTML = roles.map((role) => `<option value="${role}">${role}</option>`).join("");
+    this.roleSelect.value = preserveCurrentRole && roles.includes(currentValue) ? currentValue : roles[0] || "";
     this.roleSelect.disabled = roles.length === 0;
   }
 }
