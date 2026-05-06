@@ -7,14 +7,20 @@
     <link rel="stylesheet" href="./styles/toolStarter.css">
     <script type="module" src="./js/bootstrap.js"></script>
   </head>
-  <body>
-    <header id="shared-theme-header" class="tool-starter__header">
-      <div>
-        <h1>First-Class Tool Starter</h1>
-        <p>Replace this shell with the new tool name and purpose.</p>
+  <body class="tools-platform-tool-page hub-page-tools" data-tool-id="first-class-tool-starter">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-tool-starter-summary>Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <div class="tool-starter__header" data-tool-starter-header>
+          <div>
+            <h1>First-Class Tool Starter</h1>
+            <p>Replace this shell with the new tool name and purpose.</p>
+          </div>
+          <p class="tool-starter__header-meta">Self-contained starter</p>
+        </div>
       </div>
-      <p class="tool-starter__header-meta">Self-contained starter</p>
-    </header>
+    </details>
 
     <nav class="tool-starter__menu" aria-label="Tool actions">
       <button id="runToolButton" type="button">Run</button>

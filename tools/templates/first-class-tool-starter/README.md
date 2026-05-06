@@ -9,6 +9,7 @@ Copy this folder to `tools/<tool-id>/`, then rename the class prefixes, visible 
 ```text
 tools/<tool-id>/
   index.html
+  playwright.config.mjs
   README.md
   docs/
     CONTROL_SERVICE_CONTRACTS.md
@@ -26,17 +27,22 @@ tools/<tool-id>/
       StatusLogControl.js
     services/
       ToolStateSerializer.js
+  tests/
+    playwright/
+      FirstClassToolStarter.spec.mjs
 ```
 
 ## Required Files
 
 - `index.html`: semantic tool shell with no inline `<script>`, no inline `<style>`, and no inline event handlers.
+- `playwright.config.mjs`: template-local Playwright config for validating the copied starter before registry integration.
 - `styles/*.css`: all tool styles.
 - `js/bootstrap.js`: small startup file that creates class instances and wires dependencies.
 - `js/ToolStarterApp.js`: app/root coordinator only.
 - `js/controls/*.js`: one class per UI control or section.
 - `js/services/*.js`: focused non-UI helper classes when needed.
 - `docs/CONTROL_SERVICE_CONTRACTS.md`: required control, service, app/root, logger, and batch processor contracts.
+- `tests/playwright/*.spec.mjs`: starter behavior coverage to copy and rename with the new tool.
 - `README.md`: tool-specific usage, contracts, and validation notes.
 
 ## Required Contracts
@@ -55,13 +61,18 @@ The contracts define:
 
 - One class per file.
 - One control or section per class.
+- Header markup follows the Palette Manager V2 pattern: `body.tools-platform-tool-page`, collapsible header/details, `#shared-theme-header`, and a tool-local header host.
 - App/root class coordinates only and must not own DOM logic or business logic.
 - Controls own their DOM and their events.
 - Controls communicate through injected callbacks or the app coordinator.
 - Services contain non-DOM logic and return results/errors for the app, controls, or logger to display.
 - Logger is the single writer for status/log output.
 - Reusable UI behavior must live in reusable classes such as `AccordionSection`.
-- Do not depend on `tools/shared`.
+- `tools/shared/` is deprecated for first-class tools:
+  - no imports
+  - no script references
+  - no CSS references
+  - no runtime dependency
 - Do not use inline event handlers such as `onclick`, `onchange`, or `oninput`.
 - Do not add hidden defaults or silent fallback data.
 
@@ -80,17 +91,27 @@ The contracts define:
 
 Every new first-class tool must include Playwright coverage that launches the tool and validates meaningful behavior.
 
+The starter includes `tests/playwright/FirstClassToolStarter.spec.mjs` as a copyable baseline. Rename it with the new tool and keep the behavior depth.
+
 Minimum coverage:
 
 - tool page loads without runtime errors
+- Palette Manager-style header shell is present
 - primary user action can be triggered or correctly blocked
-- required controls render and respond
 - accordion sections expand and collapse
+- primary action button changes state when required input becomes valid
+- status/log clear behavior works
 - at least one failure state is visible when invalid input is applicable
 
 The required validation command for impacted tool runtime or UI work is:
 
 `npm run test:workspace-v2`
+
+When validating only the copied starter before registry integration, run the copied tool's Playwright spec directly and then add it to the relevant workspace/tool test lane.
+
+Template-local command:
+
+`npx playwright test --config tools/<tool-id>/playwright.config.mjs`
 
 ## Review Artifacts
 

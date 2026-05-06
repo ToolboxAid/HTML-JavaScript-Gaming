@@ -2,6 +2,17 @@
 
 These contracts define the required structure for first-class tool code created from this starter.
 
+## Deprecated Shared Tool Surface
+
+`tools/shared/` is deprecated for first-class tools.
+
+First-class tools must have:
+
+- no imports from `tools/shared/`
+- no script references to `tools/shared/`
+- no CSS references to `tools/shared/`
+- no runtime dependency on `tools/shared/`
+
 ## Control Contract
 
 Controls own one UI control or one UI section.
@@ -146,5 +157,4 @@ Before a first-class tool PR is ready:
 - Batch work logs per item and summarizes counts.
 - No inline event handlers exist in HTML.
 - No inline `<script>` or `<style>` blocks exist in HTML.
-- No `tools/shared` dependency exists.
-
+- No `tools/shared/` dependency exists.

@@ -49,13 +49,36 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
+.is-collapsible {
+  border-bottom: 1px solid var(--tool-starter-line);
+  background: #151a24;
+}
+
+.is-collapsible__summary {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--tool-starter-muted);
+  font-weight: 700;
+  padding: 8px 18px;
+}
+
+.is-collapsible__content {
+  display: grid;
+  gap: 0;
+}
+
+#shared-theme-header {
+  min-height: 0;
+}
+
 .tool-starter__header {
   min-height: 76px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border-bottom: 1px solid var(--tool-starter-line);
   background: #151a24;
   padding: 14px 18px;
 }
@@ -273,4 +296,3 @@ textarea:focus-visible {
     text-align: left;
   }
 }
-
