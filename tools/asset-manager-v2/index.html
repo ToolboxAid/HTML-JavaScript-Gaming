@@ -28,7 +28,7 @@
                 </div>
               </div>
               <div class="tools-platform-frame__topline">
-                <p class="tools-platform-frame__description">Create and validate approved asset entries against the asset-browser schema before export or Workspace V2 insertion.</p>
+                <p class="tools-platform-frame__description">Create and validate schema-valid asset entries against the asset-browser schema before export or Workspace V2 insertion.</p>
               </div>
             </div>
           </section>
@@ -106,24 +106,27 @@
               <span>Path</span>
               <input id="assetPathInput" type="text" autocomplete="off" placeholder="assets/images/player.png">
             </label>
-            <button id="addAssetButton" type="button" disabled>Add Asset</button>
+            <div class="asset-manager-v2__button-row">
+              <button id="addAssetButton" type="button" disabled>Add Asset</button>
+              <button id="updateAssetButton" type="button" disabled>Update Asset</button>
+              <button id="undoAssetButton" type="button" disabled>Undo</button>
+              <button id="redoAssetButton" type="button" disabled>Redo</button>
+            </div>
             <p id="assetValidationMessage" class="asset-manager-v2__hint">Loading asset-browser.schema.json before asset edits are enabled.</p>
           </div>
         </section>
       </aside>
 
-      <section class="asset-manager-v2__panel asset-manager-v2__panel--center" aria-label="Approved assets">
+      <section class="asset-manager-v2__panel asset-manager-v2__panel--center" aria-label="Assets">
         <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__accordion--fill is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="approvedAssetsContent">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="assetsContent">
             <span>Assets</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="approvedAssetsContent" class="accordion-v2__content">
-            <div id="assetCountText" class="asset-manager-v2__hint">0 approved assets</div>
-            <div id="assetList" class="asset-manager-v2__asset-list" aria-label="Approved asset entries"></div>
-            <div id="assetPreview" class="asset-manager-v2__preview" role="region" aria-label="Selected asset details">
-              <p>No asset selected.</p>
-            </div>
+          <div id="assetsContent" class="accordion-v2__content">
+            <div id="assetCountText" class="asset-manager-v2__hint">0 assets</div>
+            <div id="assetList" class="asset-manager-v2__asset-list" aria-label="Asset entries"></div>
+            <div id="assetPreview" class="asset-manager-v2__preview" role="region" aria-label="Selected asset details" hidden></div>
           </div>
         </section>
       </section>

@@ -36,31 +36,31 @@ export class AssetCatalogControl {
   render(assets, selectedAssetId) {
     const entries = this.sortedEntries(assets);
     this.countText.textContent = `${entries.length} assets`;
+    this.preview.hidden = true;
+    this.preview.textContent = "";
     if (!entries.length) {
       this.list.innerHTML = "";
-      this.preview.innerHTML = "<p>No asset selected.</p>";
       return;
     }
 
-    this.list.innerHTML = entries.map(([assetId, entry]) => `
-      <article class="asset-manager-v2__asset-tile ${assetId === selectedAssetId ? "is-selected" : ""}">
+    this.list.innerHTML = entries.map(([assetId, entry]) => {
+      const detailTooltip = [
+        `id: ${assetId}`,
+        `type: ${entry.kind || ""}`,
+        `kind: ${entry.kind || ""}`,
+        `role: ${entry.role || ""}`,
+        `path: ${entry.path || ""}`
+      ].join("\n");
+      return `
+      <article class="asset-manager-v2__asset-tile ${assetId === selectedAssetId ? "is-selected" : ""}" title="${escapeHtml(detailTooltip)}">
+        <button type="button" data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete" aria-label="Delete ${escapeHtml(assetId)}">Delete</button>
         <button type="button" data-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-select">
           <span class="asset-manager-v2__asset-type-role">${escapeHtml(entry.kind)}:${escapeHtml(entry.role || "")}</span>
           <strong>${escapeHtml(assetId)}</strong>
         </button>
-        <button type="button" data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete">Delete</button>
       </article>
-    `).join("");
-
-    const selectedEntry = assets[selectedAssetId] || assets[entries[0][0]];
-    const selectedId = assets[selectedAssetId] ? selectedAssetId : entries[0][0];
-    this.preview.innerHTML = `
-      <h2>${escapeHtml(selectedId)}</h2>
-      <p>Kind: ${escapeHtml(selectedEntry.kind)}</p>
-      ${selectedEntry.role ? `<p>Role: ${escapeHtml(selectedEntry.role)}</p>` : ""}
-      <p>Path: ${escapeHtml(selectedEntry.path)}</p>
-      <p>Source: ${escapeHtml(selectedEntry.source)}</p>
     `;
+    }).join("");
   }
 
   sortedEntries(assets) {

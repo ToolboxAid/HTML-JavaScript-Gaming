@@ -19,7 +19,10 @@ export class AssetFormControl {
     pathInput,
     pickFileButton,
     roleSelect,
+    redoButton,
     selectedFileText,
+    undoButton,
+    updateButton,
     validationMessage,
     windowRef = window
   }) {
@@ -29,8 +32,11 @@ export class AssetFormControl {
     this.kindInputs = kindInputs;
     this.pathInput = pathInput;
     this.pickFileButton = pickFileButton;
+    this.redoButton = redoButton;
     this.roleSelect = roleSelect;
     this.selectedFileText = selectedFileText;
+    this.undoButton = undoButton;
+    this.updateButton = updateButton;
     this.validationMessage = validationMessage;
     this.window = windowRef;
     this.allowedKinds = [];
@@ -38,7 +44,7 @@ export class AssetFormControl {
     this.selectedFileError = "";
   }
 
-  mount({ onAdd, onChange, onFileSelected }) {
+  mount({ onAdd, onChange, onFileSelected, onRedo, onUndo, onUpdate }) {
     this.updateFileAccept();
     this.pickFileButton.addEventListener("click", () => {
       void this.pickAssetFile({ onChange, onFileSelected });
@@ -52,6 +58,9 @@ export class AssetFormControl {
     });
     this.updateRoleOptions();
     this.addButton.addEventListener("click", () => onAdd(this.readValue()));
+    this.updateButton.addEventListener("click", () => onUpdate(this.readValue()));
+    this.undoButton.addEventListener("click", onUndo);
+    this.redoButton.addEventListener("click", onRedo);
     this.kindInputs.forEach((input) => {
       input.addEventListener("change", () => {
         this.updateFileAccept();
@@ -103,7 +112,16 @@ export class AssetFormControl {
     this.addButton.disabled = !isEnabled;
   }
 
-  setApprovedKinds(allowedKinds) {
+  setUpdateEnabled(isEnabled) {
+    this.updateButton.disabled = !isEnabled;
+  }
+
+  setHistoryEnabled({ canRedo, canUndo }) {
+    this.redoButton.disabled = !canRedo;
+    this.undoButton.disabled = !canUndo;
+  }
+
+  setKinds(allowedKinds) {
     this.allowedKinds = [...allowedKinds];
     const allowed = new Set(this.allowedKinds);
     this.kindInputs.forEach((input) => {
@@ -117,7 +135,7 @@ export class AssetFormControl {
     }
     this.updateFileAccept();
     this.updateRoleOptions({ preserveCurrentRole: false });
-    this.showMessage(`Approved kinds: ${allowedKinds.join(", ")}.`, "ok");
+    this.showMessage(`Kinds: ${allowedKinds.join(", ")}.`, "ok");
   }
 
   clearEditableFields() {
@@ -130,6 +148,25 @@ export class AssetFormControl {
     this.updateRoleOptions({ preserveCurrentRole: true });
   }
 
+  loadAssetForEdit(assetId, entry) {
+    const matchingKindInput = this.kindInputs.find((input) => input.value === entry.kind);
+    if (matchingKindInput) {
+      matchingKindInput.checked = true;
+    }
+    this.updateFileAccept();
+    this.updateRoleOptions({ preserveCurrentRole: false });
+    if ([...this.roleSelect.options].some((option) => option.value === entry.role)) {
+      this.roleSelect.value = entry.role;
+    }
+    this.assetIdInput.value = assetId;
+    this.pathInput.value = entry.path || "";
+    this.selectedFileInfo = null;
+    this.selectedFileError = "";
+    this.fileInput.value = "";
+    this.selectedFileText.textContent = "No file selected.";
+    this.showMessage("Editing selected asset.", "info");
+  }
+
   showMessage(message, tone = "info") {
     this.validationMessage.textContent = message;
     this.validationMessage.classList.toggle("is-error", tone === "error");
@@ -137,6 +174,9 @@ export class AssetFormControl {
   }
 
   async pickAssetFile({ onChange, onFileSelected }) {
+    this.updateRoleOptions({ preserveCurrentRole: false });
+    this.applyDerivedFileValues();
+    onChange();
     if (typeof this.window.showOpenFilePicker !== "function") {
       this.fileInput.click();
       return;
@@ -183,21 +223,21 @@ export class AssetFormControl {
       type: file.type
     };
     if (!kind) {
-      this.selectedFileError = `File ${file.name} is not an approved asset type.`;
+      this.selectedFileError = `File ${file.name} is not a recognized asset type.`;
     } else if (this.allowedKinds.length && !this.allowedKinds.includes(kind)) {
-      this.selectedFileError = `File ${file.name} resolved to unsupported asset kind "${kind}".`;
+      this.selectedFileError = `File ${file.name} resolved to unsupported asset kind/type "${kind}".`;
     } else {
       this.selectedFileError = fileMatchesAccept(kind, this.selectedFileInfo)
         ? ""
         : `File ${file.name} is not accepted for ${labelForKind(kind)} assets.`;
     }
-    this.updateRoleOptions();
+    this.updateRoleOptions({ preserveCurrentRole: false });
     const suggestedRole = suggestedRoleForFile(kind, file.name);
     if (suggestedRole && [...this.roleSelect.options].some((option) => option.value === suggestedRole)) {
       this.roleSelect.value = suggestedRole;
     }
     this.applyDerivedFileValues();
-    this.selectedFileText.textContent = kind ? `${labelForKind(kind)}: ${file.name}` : `Unapproved: ${file.name}`;
+    this.selectedFileText.textContent = kind ? `${labelForKind(kind)}: ${file.name}` : `Unrecognized: ${file.name}`;
   }
 
   applyDerivedFileValues() {

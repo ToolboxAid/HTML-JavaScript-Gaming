@@ -626,7 +626,7 @@ test.describe("Preview Generator V2 baseline", () => {
     }
   });
 
-  test("launches Asset Manager V2 in tool mode with approved asset controls and schema rejection", async ({ page }) => {
+  test("launches Asset Manager V2 in tool mode with schema-complete asset controls and schema rejection", async ({ page }) => {
     const server = await openAssetManagerV2(page, "", {
       assetFiles: [{
         name: "nebula-background.png",
@@ -655,6 +655,25 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetKindShader")).toBeVisible();
       await expect(page.locator("#assetKindData")).toBeVisible();
       await expect(page.locator("#assetKindLocalization")).toBeVisible();
+      const kindRadioLayout = await page.locator(".asset-manager-v2__kind-controls").evaluate((fieldset) => {
+        const imageLabel = fieldset.querySelector('label[for="assetKindImage"]');
+        const imageInput = imageLabel.querySelector("input");
+        const imageText = imageLabel.querySelector("span");
+        const localizationLabel = fieldset.querySelector('label[for="assetKindLocalization"]');
+        const localizationText = localizationLabel.querySelector("span");
+        return {
+          imageJustify: getComputedStyle(imageLabel).justifyContent,
+          imageInputLeft: imageInput.getBoundingClientRect().left,
+          imageTextLeft: imageText.getBoundingClientRect().left,
+          imageFontSize: Number.parseFloat(getComputedStyle(imageText).fontSize),
+          localizationFontSize: Number.parseFloat(getComputedStyle(localizationText).fontSize),
+          localizationFits: localizationText.scrollWidth <= localizationText.clientWidth
+        };
+      });
+      expect(kindRadioLayout.imageJustify).toBe("flex-start");
+      expect(kindRadioLayout.imageInputLeft).toBeLessThan(kindRadioLayout.imageTextLeft);
+      expect(kindRadioLayout.localizationFontSize).toBeLessThan(kindRadioLayout.imageFontSize);
+      expect(kindRadioLayout.localizationFits).toBe(true);
       await expect(page.locator("#pickAssetFileButton")).toBeVisible();
       await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /image\/png/);
       await expect(page.locator("#assetFileInput")).not.toHaveAttribute("accept", /audio\/wav/);
@@ -662,19 +681,43 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#stretchOverrideInput")).toHaveCount(0);
       await expect(page.locator("#assetKindValue")).toHaveCount(0);
       await expect(page.locator("#assetSourceValue")).toHaveCount(0);
-      await expect(page.locator("label", { hasText: "Approved Kind" })).toHaveCount(0);
       await expect(page.locator("label", { hasText: "Source" })).toHaveCount(0);
       await expect(page.locator("label[for='assetIdInput'] span")).toHaveText("ID");
       await expect(page.locator("label[for='assetPathInput'] span")).toHaveText("Path");
       const stackedFieldColumns = await page.locator("label[for='assetIdInput']").evaluate((label) => getComputedStyle(label).gridTemplateColumns.trim().split(/\s+/));
       expect(stackedFieldColumns).toHaveLength(1);
+      const fullscreenLayout = await page.evaluate(() => {
+        document.documentElement.classList.add("tools-platform-fullscreen-active");
+        document.body.classList.add("tools-platform-fullscreen-active");
+        const shell = document.querySelector(".asset-manager-v2.app-shell");
+        const leftPanel = document.querySelector(".asset-manager-v2__panel--left");
+        const centerPanel = document.querySelector(".asset-manager-v2__panel--center");
+        const rightPanel = document.querySelector(".asset-manager-v2__panel--right");
+        const shellRect = shell.getBoundingClientRect();
+        const leftRect = leftPanel.getBoundingClientRect();
+        const centerRect = centerPanel.getBoundingClientRect();
+        const rightRect = rightPanel.getBoundingClientRect();
+        const result = {
+          centerWidth: centerRect.width,
+          leftEdgeDelta: Math.abs(leftRect.left - shellRect.left),
+          rightEdgeDelta: Math.abs(rightRect.right - shellRect.right),
+          centerBetweenPanels: centerRect.left > leftRect.right && centerRect.right < rightRect.left
+        };
+        document.documentElement.classList.remove("tools-platform-fullscreen-active");
+        document.body.classList.remove("tools-platform-fullscreen-active");
+        return result;
+      });
+      expect(fullscreenLayout.leftEdgeDelta).toBeLessThan(2);
+      expect(fullscreenLayout.rightEdgeDelta).toBeLessThan(2);
+      expect(fullscreenLayout.centerWidth).toBeGreaterThan(360);
+      expect(fullscreenLayout.centerBetweenPanels).toBe(true);
       await expect(page.locator("#assetRoleSelect")).toBeEnabled();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
       await expect(page.locator('button[aria-controls="schemaValidationContent"]')).toHaveCount(0);
       await expect(page.locator("#schemaValidationContent")).toHaveCount(0);
       await expect(page.locator("#jsonInput")).toHaveCount(0);
       await expect(page.locator("#validateJsonButton")).toHaveCount(0);
-      await expect(page.locator('button[aria-controls="approvedAssetsContent"] span').first()).toHaveText("Assets");
+      await expect(page.locator('button[aria-controls="assetsContent"] span').first()).toHaveText("Assets");
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Loaded asset-browser\.schema\.json/);
 
       await page.locator("#assetKindAudio").check();
@@ -693,13 +736,29 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetRoleSelect")).toHaveValue("background");
       await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.nebula-background.background");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-background.png");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-background\.png validated as image background\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-background\.png validated as kind image, type image, role background\./);
       await expect(page.locator("#addAssetButton")).toBeEnabled();
       await page.locator("#addAssetButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Added image\.assets\.nebula-background\.background\./);
       await expect(page.locator("#assetList")).toContainText("image.assets.nebula-background.background");
-      await expect(page.locator("#assetPreview")).toContainText("Role: background");
+      await expect(page.locator("#assetValidationMessage")).not.toContainText("Added image.assets.nebula-background.background");
+      await expect(page.locator("#assetPreview")).toBeHidden();
       await expect(page.locator("#inspectorOutput")).toContainText("\"image.assets.nebula-background.background\"");
+      await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"image\"");
+      await expect(page.locator("#inspectorOutput")).toContainText("\"kind\": \"image\"");
+      await expect(page.locator("#inspectorOutput")).not.toContainText("Added image.assets.nebula-background.background");
+
+      await page.locator("#assetRoleSelect").selectOption("ui");
+      await queueAssetFile(page, {
+        name: "preview.png",
+        mimeType: "image/png",
+        contents: "fake-png",
+        path: "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\assets\\images\\preview.png"
+      });
+      await page.locator("#pickAssetFileButton").click();
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
+      await expect(page.locator("#assetIdInput")).toHaveValue("image.assets.preview.sprite");
+      await page.locator("#addAssetButton").click();
 
       await queueAssetFile(page, {
         name: "chrome-bezel.png",
@@ -726,18 +785,94 @@ test.describe("Preview Generator V2 baseline", () => {
       const tileSummaries = await page.locator(".asset-manager-v2__asset-tile").evaluateAll((tiles) => tiles.map((tile) => ({
         typeRole: tile.querySelector(".asset-manager-v2__asset-type-role")?.textContent?.trim(),
         id: tile.querySelector("strong")?.textContent?.trim(),
-        hasDelete: Boolean(tile.querySelector("button[data-delete-asset-id]"))
+        deleteLeftOfTypeRole: tile.querySelector("button[data-delete-asset-id]").getBoundingClientRect().left < tile.querySelector(".asset-manager-v2__asset-type-role").getBoundingClientRect().left,
+        hasDelete: Boolean(tile.querySelector("button[data-delete-asset-id]")),
+        text: tile.innerText,
+        tooltip: tile.getAttribute("title")
       })));
       expect(tileSummaries).toEqual([
-        { typeRole: "audio:sound", id: "audio.assets.fire.sound", hasDelete: true },
-        { typeRole: "image:background", id: "image.assets.nebula-background.background", hasDelete: true },
-        { typeRole: "image:bezel", id: "image.assets.chrome-bezel.bezel", hasDelete: true }
+        {
+          typeRole: "audio:sound",
+          id: "audio.assets.fire.sound",
+          deleteLeftOfTypeRole: true,
+          hasDelete: true,
+          text: "Delete\naudio:sound\naudio.assets.fire.sound",
+          tooltip: "id: audio.assets.fire.sound\ntype: audio\nkind: audio\nrole: sound\npath: assets/audio/fire.wav"
+        },
+        {
+          typeRole: "image:background",
+          id: "image.assets.nebula-background.background",
+          deleteLeftOfTypeRole: true,
+          hasDelete: true,
+          text: "Delete\nimage:background\nimage.assets.nebula-background.background",
+          tooltip: "id: image.assets.nebula-background.background\ntype: image\nkind: image\nrole: background\npath: assets/images/nebula-background.png"
+        },
+        {
+          typeRole: "image:bezel",
+          id: "image.assets.chrome-bezel.bezel",
+          deleteLeftOfTypeRole: true,
+          hasDelete: true,
+          text: "Delete\nimage:bezel\nimage.assets.chrome-bezel.bezel",
+          tooltip: "id: image.assets.chrome-bezel.bezel\ntype: image\nkind: image\nrole: bezel\npath: assets/images/chrome-bezel.png"
+        },
+        {
+          typeRole: "image:sprite",
+          id: "image.assets.preview.sprite",
+          deleteLeftOfTypeRole: true,
+          hasDelete: true,
+          text: "Delete\nimage:sprite\nimage.assets.preview.sprite",
+          tooltip: "id: image.assets.preview.sprite\ntype: image\nkind: image\nrole: sprite\npath: assets/images/preview.png"
+        }
       ]);
+      const tileLayout = await page.locator("#assetList").evaluate((list) => {
+        document.documentElement.classList.add("tools-platform-fullscreen-active");
+        document.body.classList.add("tools-platform-fullscreen-active");
+        const columns = getComputedStyle(list).gridTemplateColumns.split(" ").filter(Boolean);
+        const tileCount = list.querySelectorAll(".asset-manager-v2__asset-tile").length;
+        const result = {
+          columnCount: columns.length,
+          tileCount
+        };
+        document.documentElement.classList.remove("tools-platform-fullscreen-active");
+        document.body.classList.remove("tools-platform-fullscreen-active");
+        return result;
+      });
+      expect(tileLayout.columnCount).toBeGreaterThan(1);
+      expect(tileLayout.tileCount).toBe(4);
+      await expect(page.locator("#assetList")).not.toContainText("Path:");
+      await expect(page.locator("#assetList")).not.toContainText("Source:");
+
+      await page.locator('button[data-asset-id="audio.assets.fire.sound"]').click();
+      await expect(page.locator("#updateAssetButton")).toBeEnabled();
+      await page.locator("#assetPathInput").fill("assets/audio/fire-updated.wav");
+      await page.locator("#updateAssetButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated audio\.assets\.fire\.sound\./);
+      await expect(page.locator("#assetValidationMessage")).not.toContainText("Updated audio.assets.fire.sound");
+      await expect(page.locator("#inspectorOutput")).toContainText("\"path\": \"assets/audio/fire-updated.wav\"");
+      await expect(page.locator("#inspectorOutput")).not.toContainText("Updated audio.assets.fire.sound");
+      await expect(page.locator("#undoAssetButton")).toBeEnabled();
+      await page.locator("#undoAssetButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Undo restored asset state\./);
+      await expect(page.locator("#inspectorOutput")).toContainText("\"path\": \"assets/audio/fire.wav\"");
+      await expect(page.locator("#redoAssetButton")).toBeEnabled();
+      await page.locator("#redoAssetButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Redo restored asset state\./);
+      await expect(page.locator("#inspectorOutput")).toContainText("\"path\": \"assets/audio/fire-updated.wav\"");
 
       await page.locator('button[data-delete-asset-id="image.assets.nebula-background.background"]').click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted image\.assets\.nebula-background\.background\./);
+      await expect(page.locator("#assetValidationMessage")).not.toContainText("Deleted image.assets.nebula-background.background");
+      await expect(page.locator("#inspectorOutput")).not.toContainText("Deleted image.assets.nebula-background.background");
       await expect(page.locator("#assetList")).not.toContainText("image.assets.nebula-background.background");
-      await expect(page.locator(".asset-manager-v2__asset-tile")).toHaveCount(2);
+      await expect(page.locator(".asset-manager-v2__asset-tile")).toHaveCount(3);
+      await page.locator("#undoAssetButton").click();
+      await expect(page.locator("#assetList")).toContainText("image.assets.nebula-background.background");
+      await expect(page.locator(".asset-manager-v2__asset-tile")).toHaveCount(4);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Undo restored asset state\./);
+      await page.locator("#redoAssetButton").click();
+      await expect(page.locator("#assetList")).not.toContainText("image.assets.nebula-background.background");
+      await expect(page.locator(".asset-manager-v2__asset-tile")).toHaveCount(3);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Redo restored asset state\./);
 
       const outputLayout = await page.evaluate(() => {
         const panel = document.querySelector(".asset-manager-v2__panel--right");

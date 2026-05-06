@@ -42,7 +42,10 @@ window.addEventListener("DOMContentLoaded", () => {
       pathInput: requireElement("#assetPathInput"),
       pickFileButton: requireElement("#pickAssetFileButton"),
       roleSelect: requireElement("#assetRoleSelect"),
+      redoButton: requireElement("#redoAssetButton"),
       selectedFileText: requireElement("#assetSelectedFileText"),
+      undoButton: requireElement("#undoAssetButton"),
+      updateButton: requireElement("#updateAssetButton"),
       validationMessage: requireElement("#assetValidationMessage"),
       windowRef: window
     }),

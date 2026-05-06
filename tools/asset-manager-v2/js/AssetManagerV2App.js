@@ -8,6 +8,14 @@ function sortedAssets(assets) {
   return Object.fromEntries(Object.entries(assets).sort(([left], [right]) => left.localeCompare(right)));
 }
 
+function sortedAssetEntries(assets) {
+  return Object.entries(assets).sort(([leftId, leftEntry], [rightId, rightEntry]) => (
+    String(leftEntry.kind || "").localeCompare(String(rightEntry.kind || ""))
+    || String(leftEntry.role || "").localeCompare(String(rightEntry.role || ""))
+    || leftId.localeCompare(rightId)
+  ));
+}
+
 export class AssetManagerV2App {
   constructor({
     accordions,
@@ -35,6 +43,8 @@ export class AssetManagerV2App {
     this.lastWorkspaceManifest = null;
     this.schemaReady = false;
     this.selectedAssetId = "";
+    this.redoStack = [];
+    this.undoStack = [];
   }
 
   async start() {
@@ -55,13 +65,21 @@ export class AssetManagerV2App {
     this.assetForm.mount({
       onAdd: (value) => this.addAsset(value),
       onChange: () => this.refreshActions(),
-      onFileSelected: (value, fileInfo) => this.validateSelectedFile(value, fileInfo)
+      onFileSelected: (value, fileInfo) => this.validateSelectedFile(value, fileInfo),
+      onRedo: () => this.redoAssetChange(),
+      onUndo: () => this.undoAssetChange(),
+      onUpdate: (value) => this.updateAsset(value)
     });
     this.assetCatalog.mount({
       onDelete: (assetId) => this.deleteAsset(assetId),
       onSelect: (assetId) => {
         this.selectedAssetId = assetId;
+        const entry = this.assets[assetId];
+        if (entry) {
+          this.assetForm.loadAssetForEdit(assetId, entry);
+        }
         this.render();
+        this.refreshActions();
       }
     });
 
@@ -79,8 +97,8 @@ export class AssetManagerV2App {
     }
 
     this.schemaReady = true;
-    this.assetForm.setApprovedKinds(this.schemaValidator.allowedKinds);
-    this.statusLog.info(`Loaded asset-browser.schema.json. Approved kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Approved roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
+    this.assetForm.setKinds(this.schemaValidator.allowedKinds);
+    this.statusLog.info(`Loaded asset-browser.schema.json. Kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
     this.loadWorkspaceAssetsIfPresent();
     this.render();
     this.refreshActions();
@@ -101,6 +119,9 @@ export class AssetManagerV2App {
       return;
     }
     this.assets = sortedAssets(validation.payload.assets);
+    this.selectedAssetId = Object.keys(this.assets)[0] || "";
+    this.undoStack = [];
+    this.redoStack = [];
     this.statusLog.ok(`Workspace mode loaded ${Object.keys(this.assets).length} validated assets from tools.asset-browser.assets.`);
   }
 
@@ -114,7 +135,25 @@ export class AssetManagerV2App {
     return {
       version: "v2",
       toolId: ASSET_MANAGER_TOOL_ID,
+      assets: this.currentOutputAssets(),
       payloadJson: this.currentPayload()
+    };
+  }
+
+  currentOutputAssets() {
+    return sortedAssetEntries(this.assets).map(([id, entry]) => ({
+      id,
+      type: entry.kind,
+      kind: entry.kind,
+      role: entry.role,
+      path: entry.path
+    }));
+  }
+
+  currentOutputSummary() {
+    return {
+      assets: this.currentOutputAssets(),
+      count: Object.keys(this.assets).length
     };
   }
 
@@ -124,7 +163,7 @@ export class AssetManagerV2App {
       return;
     }
     if (Object.prototype.hasOwnProperty.call(this.assets, formValue.assetId)) {
-      const message = `Duplicate asset id: ${formValue.assetId}`;
+      const message = `Duplicate id: ${formValue.assetId}`;
       this.statusLog.fail(message);
       this.assetForm.showMessage(message, "error");
       return;
@@ -148,11 +187,54 @@ export class AssetManagerV2App {
       return;
     }
 
+    this.recordHistory();
     this.assets = payloadValidation.payload.assets;
     this.selectedAssetId = formValue.assetId;
     this.assetForm.clearEditableFields();
-    this.assetForm.showMessage(`Added ${formValue.assetId}.`, "ok");
+    this.assetForm.showMessage("Pick another asset file.", "info");
     this.statusLog.ok(`Added ${formValue.assetId}.`);
+    this.render();
+    this.refreshActions();
+  }
+
+  updateAsset(formValue) {
+    if (!this.schemaReady) {
+      this.statusLog.fail("Schema is not loaded; asset edits are blocked.");
+      return;
+    }
+    if (!this.selectedAssetId || !Object.prototype.hasOwnProperty.call(this.assets, this.selectedAssetId)) {
+      this.statusLog.fail("Select an asset before updating.");
+      return;
+    }
+    if (formValue.assetId !== this.selectedAssetId && Object.prototype.hasOwnProperty.call(this.assets, formValue.assetId)) {
+      const message = `Duplicate id: ${formValue.assetId}`;
+      this.statusLog.fail(message);
+      this.assetForm.showMessage(message, "error");
+      return;
+    }
+
+    const entryResult = this.schemaValidator.createEntry(formValue);
+    if (!entryResult.ok) {
+      this.statusLog.fail(`Schema validation failed: ${entryResult.errors.join(" | ")}`);
+      this.assetForm.showMessage(entryResult.errors[0], "error");
+      return;
+    }
+
+    const nextAssets = { ...this.assets };
+    delete nextAssets[this.selectedAssetId];
+    nextAssets[formValue.assetId] = entryResult.entry;
+    const payloadValidation = this.schemaValidator.validatePayload({ assets: sortedAssets(nextAssets) });
+    if (!payloadValidation.ok) {
+      this.statusLog.fail(`Schema validation failed: ${payloadValidation.errors.join(" | ")}`);
+      this.assetForm.showMessage(payloadValidation.errors[0], "error");
+      return;
+    }
+
+    this.recordHistory();
+    this.assets = payloadValidation.payload.assets;
+    this.selectedAssetId = formValue.assetId;
+    this.assetForm.loadAssetForEdit(formValue.assetId, entryResult.entry);
+    this.statusLog.ok(`Updated ${formValue.assetId}.`);
     this.render();
     this.refreshActions();
   }
@@ -168,11 +250,72 @@ export class AssetManagerV2App {
       this.statusLog.fail(`Delete blocked by schema validation: ${validation.errors.join(" | ")}`);
       return;
     }
+    this.recordHistory();
     this.assets = sortedAssets(validation.payload.assets);
     this.selectedAssetId = Object.keys(this.assets)[0] || "";
+    if (this.selectedAssetId) {
+      this.assetForm.loadAssetForEdit(this.selectedAssetId, this.assets[this.selectedAssetId]);
+    } else {
+      this.assetForm.clearEditableFields();
+      this.assetForm.showMessage("Pick an asset file.", "info");
+    }
     this.statusLog.ok(`Deleted ${assetId}.`);
     this.render();
     this.refreshActions();
+  }
+
+  captureState() {
+    return {
+      assets: clone(this.assets),
+      selectedAssetId: this.selectedAssetId
+    };
+  }
+
+  recordHistory() {
+    this.undoStack.push(this.captureState());
+    if (this.undoStack.length > 50) {
+      this.undoStack.shift();
+    }
+    this.redoStack = [];
+  }
+
+  restoreState(snapshot) {
+    this.assets = sortedAssets(snapshot.assets || {});
+    this.selectedAssetId = Object.prototype.hasOwnProperty.call(this.assets, snapshot.selectedAssetId)
+      ? snapshot.selectedAssetId
+      : Object.keys(this.assets)[0] || "";
+    if (this.selectedAssetId) {
+      this.assetForm.loadAssetForEdit(this.selectedAssetId, this.assets[this.selectedAssetId]);
+    } else {
+      this.assetForm.clearEditableFields();
+      this.assetForm.showMessage("Pick an asset file.", "info");
+    }
+    this.render();
+    this.refreshActions();
+  }
+
+  undoAssetChange() {
+    const previous = this.undoStack.pop();
+    if (!previous) {
+      this.statusLog.info("Undo unavailable.");
+      this.refreshActions();
+      return;
+    }
+    this.redoStack.push(this.captureState());
+    this.restoreState(previous);
+    this.statusLog.ok("Undo restored asset state.");
+  }
+
+  redoAssetChange() {
+    const next = this.redoStack.pop();
+    if (!next) {
+      this.statusLog.info("Redo unavailable.");
+      this.refreshActions();
+      return;
+    }
+    this.undoStack.push(this.captureState());
+    this.restoreState(next);
+    this.statusLog.ok("Redo restored asset state.");
   }
 
   validateSelectedFile(formValue, fileInfo) {
@@ -184,14 +327,14 @@ export class AssetManagerV2App {
       return;
     }
     if (!fileInfo.kind) {
-      const message = `File ${fileInfo.name} is not an approved asset type.`;
+      const message = `File ${fileInfo.name} is not a recognized asset type.`;
       this.statusLog.fail(`Selected file validation failed: ${message}`);
       this.assetForm.showMessage(message, "error");
       this.refreshActions();
       return;
     }
     if (fileInfo.kind && !formValue.role) {
-      this.assetForm.showMessage(`Select a role for ${formValue.kind} assets.`, "info");
+      this.assetForm.showMessage(`Select a role for kind ${formValue.kind}, type ${formValue.kind}.`, "info");
       this.refreshActions();
       return;
     }
@@ -211,8 +354,8 @@ export class AssetManagerV2App {
       this.assetForm.showMessage(payloadValidation.errors[0], "error");
       return;
     }
-    this.assetForm.showMessage(`Selected file validated as ${formValue.kind} ${formValue.role}.`, "ok");
-    this.statusLog.ok(`Selected file ${fileInfo.name} validated as ${formValue.kind} ${formValue.role}.`);
+    this.assetForm.showMessage(`Selected file validated as kind ${formValue.kind}, type ${formValue.kind}, role ${formValue.role}.`, "ok");
+    this.statusLog.ok(`Selected file ${fileInfo.name} validated as kind ${formValue.kind}, type ${formValue.kind}, role ${formValue.role}.`);
   }
 
   exportAssets() {
@@ -297,16 +440,28 @@ export class AssetManagerV2App {
   }
 
   render() {
-    const payload = this.currentPayload();
-    this.assetCatalog.render(payload.assets, this.selectedAssetId);
-    this.inspector.showObject(this.currentToolState());
+    this.assetCatalog.render(this.currentPayload().assets, this.selectedAssetId);
+    this.inspector.showObject(this.currentOutputSummary());
   }
 
   refreshActions() {
     const payloadValidation = this.schemaReady
       ? this.schemaValidator.validatePayload(this.currentPayload())
       : { ok: false };
-    this.assetForm.setAddEnabled(this.schemaReady && this.assetForm.isComplete());
+    const formValue = this.assetForm.readValue();
+    const canAdd = this.schemaReady
+      && this.assetForm.isComplete()
+      && !Object.prototype.hasOwnProperty.call(this.assets, formValue.assetId);
+    const canUpdate = this.schemaReady
+      && this.assetForm.isComplete()
+      && Boolean(this.selectedAssetId)
+      && Object.prototype.hasOwnProperty.call(this.assets, this.selectedAssetId);
+    this.assetForm.setAddEnabled(canAdd);
+    this.assetForm.setUpdateEnabled(canUpdate);
+    this.assetForm.setHistoryEnabled({
+      canRedo: this.redoStack.length > 0,
+      canUndo: this.undoStack.length > 0
+    });
     this.actionNav.setToolActionsEnabled(this.schemaReady && payloadValidation.ok);
     this.actionNav.setWorkspaceActionsEnabled(this.schemaReady && payloadValidation.ok, Boolean(this.lastWorkspaceManifest));
   }
