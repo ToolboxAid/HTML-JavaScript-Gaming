@@ -43,6 +43,8 @@ window.addEventListener("DOMContentLoaded", () => {
       pickFileButton: requireElement("#pickAssetFileButton"),
       roleSelect: requireElement("#assetRoleSelect"),
       redoButton: requireElement("#redoAssetButton"),
+      stretchField: requireElement("#assetStretchOverrideField"),
+      stretchInput: requireElement("#assetStretchOverrideInput"),
       undoButton: requireElement("#undoAssetButton"),
       updateButton: requireElement("#updateAssetButton"),
       windowRef: window

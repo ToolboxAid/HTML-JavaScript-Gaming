@@ -1,3 +1,5 @@
+import { renderAssetPreview } from "../../../../src/shared/assets/assetPreviewHelpers.js";
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -38,17 +40,18 @@ export class AssetCatalogControl {
   render(assets, selectedAssetId) {
     const entries = this.sortedEntries(assets);
     this.countText.textContent = `${entries.length} assets`;
-    this.preview.hidden = true;
-    this.preview.textContent = "";
     if (!entries.length) {
       this.list.innerHTML = "";
+      renderAssetPreview(this.preview, "", null);
       return;
     }
+    const selectedEntry = selectedAssetId && assets[selectedAssetId] ? assets[selectedAssetId] : null;
+    renderAssetPreview(this.preview, selectedEntry ? selectedAssetId : "", selectedEntry);
 
     this.list.innerHTML = entries.map(([assetId, entry]) => {
       const detailTooltip = [
         `id: ${assetId}`,
-        `type: ${entry.kind || ""}`,
+        `type: ${entry.type || ""}`,
         `kind: ${entry.kind || ""}`,
         `role: ${entry.role || ""}`,
         `path: ${entry.path || ""}`
@@ -58,7 +61,7 @@ export class AssetCatalogControl {
         <button type="button" data-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-select">
           <span data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete" aria-label="Delete ${escapeHtml(assetId)}" title="Delete ${escapeHtml(assetId)}">X</span>
           <span class="asset-manager-v2__asset-copy">
-            <span class="asset-manager-v2__asset-type-role">${escapeHtml(entry.kind)}:${escapeHtml(entry.role || "")}</span>
+            <span class="asset-manager-v2__asset-type-role">${escapeHtml(entry.type)}:${escapeHtml(entry.role || "")}</span>
             <strong>${escapeHtml(assetId)}</strong>
           </span>
         </button>
@@ -69,7 +72,7 @@ export class AssetCatalogControl {
 
   sortedEntries(assets) {
     return Object.entries(assets).sort(([leftId, leftEntry], [rightId, rightEntry]) => (
-      String(leftEntry.kind || "").localeCompare(String(rightEntry.kind || ""))
+      String(leftEntry.type || "").localeCompare(String(rightEntry.type || ""))
       || String(leftEntry.role || "").localeCompare(String(rightEntry.role || ""))
       || leftId.localeCompare(rightId)
     ));

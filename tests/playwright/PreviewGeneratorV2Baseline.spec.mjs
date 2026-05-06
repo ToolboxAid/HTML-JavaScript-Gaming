@@ -646,8 +646,17 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator(".asset-manager-v2.app-shell")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeHidden();
-      await expect(page.locator('fieldset[aria-label="Asset kind"] legend')).toHaveText("Kind");
+      await expect(page.locator('fieldset[aria-label="Asset type"] legend')).toHaveText("Type");
       await expect(page.locator('input[name="assetKind"]')).toHaveCount(7);
+      await expect(page.locator(".asset-manager-v2__kind-controls label span")).toHaveText([
+        "Image",
+        "Audio",
+        "Font",
+        "Video",
+        "Shader",
+        "Data",
+        "Localization"
+      ]);
       await expect(page.locator("#assetKindImage")).toBeChecked();
       await expect(page.locator("#assetKindAudio")).toBeVisible();
       await expect(page.locator("#assetKindFont")).toBeVisible();
@@ -678,7 +687,8 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /image\/png/);
       await expect(page.locator("#assetFileInput")).not.toHaveAttribute("accept", /audio\/wav/);
       await expect(page.locator("input[data-asset-file-kind]")).toHaveCount(0);
-      await expect(page.locator("#stretchOverrideInput")).toHaveCount(0);
+      await expect(page.locator("#assetStretchOverrideField")).toBeHidden();
+      await expect(page.locator("#assetStretchOverrideInput")).toBeDisabled();
       await expect(page.locator("#assetKindValue")).toHaveCount(0);
       await expect(page.locator("#assetSourceValue")).toHaveCount(0);
       await expect(page.locator("#assetValidationMessage")).toHaveCount(0);
@@ -750,16 +760,21 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetRoleSelect")).toHaveValue("background");
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.background.nebula-background");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-background.png");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-background\.png validated as kind image, type image, role background\./);
+      await expect(page.locator("#assetStretchOverrideField")).toBeHidden();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-background\.png validated as type image, kind png, role background\./);
       await expect(page.locator("#addAssetButton")).toBeEnabled();
       await page.locator("#addAssetButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Added assets\.image\.background\.nebula-background\./);
       await expect(page.locator("#assetList")).toContainText("assets.image.background.nebula-background");
-      await expect(page.locator("#assetPreview")).toBeHidden();
+      await expect(page.locator("#assetPreview")).toBeVisible();
+      await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
+      await expect(page.locator("#assetPreview img.asset-manager-v2__preview-media")).toHaveAttribute("src", /\/assets\/images\/nebula-background\.png$/);
       await expect(page.locator("#inspectorOutput")).toContainText("\"assets.image.background.nebula-background\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"image\"");
-      await expect(page.locator("#inspectorOutput")).toContainText("\"kind\": \"image\"");
+      await expect(page.locator("#inspectorOutput")).toContainText("\"kind\": \"png\"");
       await expect(page.locator("#inspectorOutput")).not.toContainText("Added assets.image.background.nebula-background");
+      const backgroundOutput = JSON.parse(await page.locator("#inspectorOutput").textContent());
+      expect(backgroundOutput.assets.find((asset) => asset.id === "assets.image.background.nebula-background").stretchOverride).toBeUndefined();
 
       await page.locator("#assetRoleSelect").selectOption("ui");
       await queueAssetFile(page, {
@@ -782,7 +797,14 @@ test.describe("Preview Generator V2 baseline", () => {
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("bezel");
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.bezel.chrome-bezel");
+      await expect(page.locator("#assetStretchOverrideField")).toBeVisible();
+      await expect(page.locator("#assetStretchOverrideInput")).toBeEnabled();
+      await expect(page.locator("#assetStretchOverrideInput")).toHaveValue("10");
       await page.locator("#addAssetButton").click();
+      const bezelOutput = JSON.parse(await page.locator("#inspectorOutput").textContent());
+      expect(bezelOutput.assets.find((asset) => asset.id === "assets.image.bezel.chrome-bezel").stretchOverride).toEqual({
+        uniformEdgeStretchPx: 10
+      });
 
       await page.locator("#assetKindAudio").check();
       await queueAssetFile(page, {
@@ -793,7 +815,21 @@ test.describe("Preview Generator V2 baseline", () => {
       });
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.sound.fire-boom");
+      await expect(page.locator("#assetStretchOverrideField")).toBeHidden();
       await page.locator("#addAssetButton").click();
+      await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"]')).toBeVisible();
+      const audioPreviewState = await page.locator("#assetPreview audio").evaluate((audio) => ({
+        autoplay: audio.autoplay,
+        hasAutoplayAttribute: audio.hasAttribute("autoplay"),
+        preload: audio.getAttribute("preload"),
+        controls: audio.controls
+      }));
+      expect(audioPreviewState).toEqual({
+        autoplay: false,
+        hasAutoplayAttribute: false,
+        preload: "metadata",
+        controls: true
+      });
 
       const tileSummaries = await page.locator(".asset-manager-v2__asset-tile").evaluateAll((tiles) => tiles.map((tile) => ({
         deleteTopRight: (() => {
@@ -811,6 +847,9 @@ test.describe("Preview Generator V2 baseline", () => {
         hasSeparateDeleteButton: Boolean(tile.querySelector(":scope > button[data-delete-asset-id]")),
         hasInlineDelete: Boolean(tile.querySelector(".asset-manager-v2__asset-select [data-delete-asset-id]")),
         tileHeight: Math.round(tile.getBoundingClientRect().height),
+        tileWidth: Math.round(tile.getBoundingClientRect().width),
+        typeRoleColor: getComputedStyle(tile.querySelector(".asset-manager-v2__asset-type-role")).color,
+        idColor: getComputedStyle(tile.querySelector("strong")).color,
         idFontSize: Number.parseFloat(getComputedStyle(tile.querySelector("strong")).fontSize),
         typeRoleFontSize: Number.parseFloat(getComputedStyle(tile.querySelector(".asset-manager-v2__asset-type-role")).fontSize),
         idFontWeight: Number.parseFloat(getComputedStyle(tile.querySelector("strong")).fontWeight),
@@ -828,13 +867,16 @@ test.describe("Preview Generator V2 baseline", () => {
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
           tileHeight: 88,
+          tileWidth: 154,
+          typeRoleColor: "rgb(247, 244, 255)",
+          idColor: "rgb(233, 221, 255)",
           idFontSize: 12,
           typeRoleFontSize: 13,
           idFontWeight: 500,
           typeRoleFontWeight: 800,
           rowGap: 2,
           text: "X\naudio:sound\nassets.audio.sound.fire-boom",
-          tooltip: "id: assets.audio.sound.fire-boom\ntype: audio\nkind: audio\nrole: sound\npath: assets/audio/Fire Boom!.WAV"
+          tooltip: "id: assets.audio.sound.fire-boom\ntype: audio\nkind: wav\nrole: sound\npath: assets/audio/Fire Boom!.WAV"
         },
         {
           deleteTopRight: true,
@@ -844,13 +886,16 @@ test.describe("Preview Generator V2 baseline", () => {
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
           tileHeight: 88,
+          tileWidth: 154,
+          typeRoleColor: "rgb(247, 244, 255)",
+          idColor: "rgb(233, 221, 255)",
           idFontSize: 12,
           typeRoleFontSize: 13,
           idFontWeight: 500,
           typeRoleFontWeight: 800,
           rowGap: 2,
           text: "X\nimage:background\nassets.image.background.nebula-background",
-          tooltip: "id: assets.image.background.nebula-background\ntype: image\nkind: image\nrole: background\npath: assets/images/nebula-background.png"
+          tooltip: "id: assets.image.background.nebula-background\ntype: image\nkind: png\nrole: background\npath: assets/images/nebula-background.png"
         },
         {
           deleteTopRight: true,
@@ -860,13 +905,16 @@ test.describe("Preview Generator V2 baseline", () => {
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
           tileHeight: 88,
+          tileWidth: 154,
+          typeRoleColor: "rgb(247, 244, 255)",
+          idColor: "rgb(233, 221, 255)",
           idFontSize: 12,
           typeRoleFontSize: 13,
           idFontWeight: 500,
           typeRoleFontWeight: 800,
           rowGap: 2,
           text: "X\nimage:bezel\nassets.image.bezel.chrome-bezel",
-          tooltip: "id: assets.image.bezel.chrome-bezel\ntype: image\nkind: image\nrole: bezel\npath: assets/images/chrome-bezel.png"
+          tooltip: "id: assets.image.bezel.chrome-bezel\ntype: image\nkind: png\nrole: bezel\npath: assets/images/chrome-bezel.png"
         },
         {
           deleteTopRight: true,
@@ -876,13 +924,16 @@ test.describe("Preview Generator V2 baseline", () => {
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
           tileHeight: 88,
+          tileWidth: 154,
+          typeRoleColor: "rgb(247, 244, 255)",
+          idColor: "rgb(233, 221, 255)",
           idFontSize: 12,
           typeRoleFontSize: 13,
           idFontWeight: 500,
           typeRoleFontWeight: 800,
           rowGap: 2,
           text: "X\nimage:sprite\nassets.image.sprite.preview",
-          tooltip: "id: assets.image.sprite.preview\ntype: image\nkind: image\nrole: sprite\npath: assets/images/preview.png"
+          tooltip: "id: assets.image.sprite.preview\ntype: image\nkind: png\nrole: sprite\npath: assets/images/preview.png"
         }
       ]);
       const tileLayout = await page.locator("#assetList").evaluate((list) => {
@@ -903,10 +954,51 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetList")).not.toContainText("Path:");
       await expect(page.locator("#assetList")).not.toContainText("Source:");
 
+      const helperPreviewCoverage = await page.evaluate(async () => {
+        const { createAssetPreviewModel, renderAssetPreviewHtml } = await import("/src/shared/assets/assetPreviewHelpers.js");
+        const entries = [
+          ["image", "png", "sprite", "assets/images/preview.png"],
+          ["audio", "wav", "sound", "assets/audio/fire.wav"],
+          ["video", "mp4", "cutscene", "assets/video/intro.mp4"],
+          ["font", "woff2", "display", "assets/fonts/display.woff2"],
+          ["shader", "glsl", "fragment", "assets/shaders/fx.glsl"],
+          ["data", "json", "config", "assets/data/config.json"],
+          ["localization", "po", "strings", "assets/localization/en.po"]
+        ];
+        return Object.fromEntries(entries.map(([type, kind, role, path]) => {
+          const model = createAssetPreviewModel(`assets.${type}.${role}.sample`, { path, type, kind, role }, { documentRef: document });
+          const html = renderAssetPreviewHtml(model);
+          return [type, {
+            hasAutoplay: html.includes("autoplay"),
+            hasDataType: html.includes(`data-preview-type="${type}"`),
+            hasImage: html.includes("<img"),
+            hasAudio: html.includes("<audio"),
+            hasVideo: html.includes("<video"),
+            hasFontFace: html.includes("@font-face"),
+            hasInspection: html.includes("inspection")
+          }];
+        }));
+      });
+      expect(helperPreviewCoverage).toEqual({
+        image: { hasAutoplay: false, hasDataType: true, hasImage: true, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: false },
+        audio: { hasAutoplay: false, hasDataType: true, hasImage: false, hasAudio: true, hasVideo: false, hasFontFace: false, hasInspection: false },
+        video: { hasAutoplay: false, hasDataType: true, hasImage: false, hasAudio: false, hasVideo: true, hasFontFace: false, hasInspection: false },
+        font: { hasAutoplay: false, hasDataType: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: true, hasInspection: false },
+        shader: { hasAutoplay: false, hasDataType: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true },
+        data: { hasAutoplay: false, hasDataType: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true },
+        localization: { hasAutoplay: false, hasDataType: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: true }
+      });
+
+      await page.locator('button[data-asset-id="assets.image.background.nebula-background"]').click();
+      await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
+      await expect(page.locator("#assetPreview")).toContainText("assets.image.background.nebula-background");
+
       await page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]').click();
+      await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"]')).toBeVisible();
       await expect(page.locator("#updateAssetButton")).toBeEnabled();
       await page.locator("#assetRoleSelect").selectOption("music");
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.music.fire-boom");
+      await expect(page.locator("#assetStretchOverrideField")).toBeHidden();
       await page.locator("#updateAssetButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated assets\.audio\.music\.fire-boom\./);
       await expect(page.locator("#assetList")).not.toContainText("assets.audio.sound.fire-boom");
@@ -1078,7 +1170,8 @@ test.describe("Preview Generator V2 baseline", () => {
       const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
       expect(storedContext.workspaceManifest.tools["asset-browser"].assets["assets.audio.sound.fire"]).toEqual({
         path: "assets/audio/fire.wav",
-        kind: "audio",
+        type: "audio",
+        kind: "wav",
         role: "sound",
         source: "asset-manager-v2"
       });

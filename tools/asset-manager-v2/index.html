@@ -55,8 +55,8 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="assetControlsContent" class="accordion-v2__content">
-            <fieldset class="asset-manager-v2__kind-controls" aria-label="Asset kind">
-              <legend>Kind</legend>
+            <fieldset class="asset-manager-v2__kind-controls" aria-label="Asset type">
+              <legend>Type</legend>
               <label for="assetKindImage">
                 <input id="assetKindImage" name="assetKind" type="radio" value="image" checked>
                 <span>Image</span>
@@ -104,6 +104,10 @@
             <label class="asset-manager-v2__field asset-manager-v2__field--stacked asset-manager-v2__field--not-editable" for="assetPathInput">
               <span>Path</span>
               <input id="assetPathInput" type="text" autocomplete="off" placeholder="assets/images/player.png" readonly>
+            </label>
+            <label id="assetStretchOverrideField" class="asset-manager-v2__field asset-manager-v2__field--stacked" for="assetStretchOverrideInput" hidden>
+              <span>Stretch Override</span>
+              <input id="assetStretchOverrideInput" type="number" min="0" step="1" value="10">
             </label>
             <div class="asset-manager-v2__button-row">
               <button id="addAssetButton" type="button" disabled>Add Asset</button>

@@ -7,8 +7,11 @@ import {
   pathForFile,
   pickerTypesForKind,
   roleOptionsForKind,
-  suggestedRoleForFile
+  suggestedRoleForFile,
+  typeForFile
 } from "../assetManagerMetadata.js";
+
+const DEFAULT_BEZEL_STRETCH_PX = 10;
 
 function basenameFromPath(value) {
   return String(value || "").split(/[\\/]/).filter(Boolean).at(-1) || "";
@@ -24,6 +27,8 @@ export class AssetFormControl {
     pickFileButton,
     roleSelect,
     redoButton,
+    stretchField,
+    stretchInput,
     undoButton,
     updateButton,
     windowRef = window
@@ -38,8 +43,11 @@ export class AssetFormControl {
     this.roleSelect = roleSelect;
     this.undoButton = undoButton;
     this.updateButton = updateButton;
+    this.stretchField = stretchField;
+    this.stretchInput = stretchInput;
     this.window = windowRef;
     this.allowedKinds = [];
+    this.kindValue = "";
     this.selectedFileInfo = null;
     this.selectedFileError = "";
   }
@@ -62,12 +70,14 @@ export class AssetFormControl {
     this.updateButton.addEventListener("click", () => onUpdate(this.readValue()));
     this.undoButton.addEventListener("click", onUndo);
     this.redoButton.addEventListener("click", onRedo);
+    this.stretchInput.addEventListener("change", onChange);
+    this.stretchInput.addEventListener("input", onChange);
     this.kindInputs.forEach((input) => {
       input.addEventListener("change", () => {
         this.updateFileAccept();
         this.updateRoleOptions({ preserveCurrentRole: false });
         if (this.selectedFileInfo) {
-          this.selectedFileInfo.kind = this.selectedKind();
+          this.selectedFileInfo.type = this.selectedKind();
           this.applyDerivedFileValues();
           onFileSelected(this.readValue(), this.selectedFileInfo);
         } else {
@@ -77,6 +87,7 @@ export class AssetFormControl {
       });
     });
     this.roleSelect.addEventListener("change", () => {
+      this.updateStretchControl();
       if (this.selectedFileInfo) {
         this.applyDerivedFileValues();
         onFileSelected(this.readValue(), this.selectedFileInfo);
@@ -100,12 +111,19 @@ export class AssetFormControl {
   }
 
   readValue() {
-    return {
+    const value = {
       assetId: this.assetIdInput.value.trim(),
-      kind: this.selectedKind(),
+      type: this.selectedKind(),
+      kind: this.kindValue,
       path: this.pathInput.value.trim(),
       role: this.selectedRole()
     };
+    if (value.role === "bezel") {
+      value.stretchOverride = {
+        uniformEdgeStretchPx: Number(this.stretchInput.value) || DEFAULT_BEZEL_STRETCH_PX
+      };
+    }
+    return value;
   }
 
   isComplete() {
@@ -145,14 +163,16 @@ export class AssetFormControl {
   clearEditableFields() {
     this.assetIdInput.value = "";
     this.pathInput.value = "";
+    this.kindValue = "";
     this.selectedFileInfo = null;
     this.selectedFileError = "";
     this.fileInput.value = "";
     this.updateRoleOptions({ preserveCurrentRole: true });
+    this.updateStretchControl();
   }
 
   loadAssetForEdit(assetId, entry) {
-    const matchingKindInput = this.kindInputs.find((input) => input.value === entry.kind);
+    const matchingKindInput = this.kindInputs.find((input) => input.value === entry.type);
     if (matchingKindInput) {
       matchingKindInput.checked = true;
     }
@@ -163,9 +183,12 @@ export class AssetFormControl {
     }
     this.assetIdInput.value = assetId;
     this.pathInput.value = entry.path || "";
+    this.kindValue = entry.kind || "";
+    this.stretchInput.value = String(entry.stretchOverride?.uniformEdgeStretchPx ?? DEFAULT_BEZEL_STRETCH_PX);
     this.selectedFileInfo = null;
     this.selectedFileError = "";
     this.fileInput.value = "";
+    this.updateStretchControl();
   }
 
   async pickAssetFile({ onChange, onFileSelected }) {
@@ -207,29 +230,36 @@ export class AssetFormControl {
       this.updateRoleOptions();
       return;
     }
-    const kind = this.selectedKind();
-    const derivedKind = kindForFile(file);
+    const type = this.selectedKind();
+    const derivedType = typeForFile(file);
+    const kind = kindForFile(file);
     this.selectedFileInfo = {
-      derivedKind,
+      derivedType,
       kind,
+      mimeType: file.type,
       name: file.name,
       sourcePath,
-      type: file.type
+      type
     };
-    if (!kind) {
+    if (!type) {
       this.selectedFileError = `File ${file.name} is not a recognized asset type.`;
-    } else if (this.allowedKinds.length && !this.allowedKinds.includes(kind)) {
-      this.selectedFileError = `File ${file.name} resolved to unsupported asset kind/type "${kind}".`;
+    } else if (this.allowedKinds.length && !this.allowedKinds.includes(type)) {
+      this.selectedFileError = `File ${file.name} resolved to unsupported asset type "${type}".`;
     } else {
-      this.selectedFileError = fileMatchesAccept(kind, this.selectedFileInfo)
+      this.selectedFileError = fileMatchesAccept(type, {
+        name: file.name,
+        type: file.type
+      })
         ? ""
-        : `File ${file.name} is not accepted for ${labelForKind(kind)} assets.`;
+        : `File ${file.name} is not accepted for ${labelForKind(type)} assets.`;
     }
+    this.kindValue = kind;
     this.updateRoleOptions({ preserveCurrentRole: false });
-    const suggestedRole = suggestedRoleForFile(kind, file.name);
+    const suggestedRole = suggestedRoleForFile(type, file.name);
     if (suggestedRole && [...this.roleSelect.options].some((option) => option.value === suggestedRole)) {
       this.roleSelect.value = suggestedRole;
     }
+    this.updateStretchControl();
     this.applyDerivedFileValues();
   }
 
@@ -237,8 +267,8 @@ export class AssetFormControl {
     if (!this.selectedFileInfo) {
       return;
     }
-    const { kind, name, sourcePath } = this.selectedFileInfo;
-    this.pathInput.value = kind ? pathForFile(kind, name, sourcePath) : "";
+    const { name, sourcePath, type } = this.selectedFileInfo;
+    this.pathInput.value = type ? pathForFile(type, name, sourcePath) : "";
     this.applyDerivedAssetId(name);
   }
 
@@ -247,6 +277,15 @@ export class AssetFormControl {
     const fallbackFromId = this.assetIdInput.value.split(".").slice(3).join(".");
     const name = fileName || fallbackFromPath || fallbackFromId;
     this.assetIdInput.value = assetIdForFile(this.selectedKind(), name, this.selectedRole());
+  }
+
+  updateStretchControl() {
+    const isBezel = this.selectedRole() === "bezel";
+    this.stretchField.hidden = !isBezel;
+    this.stretchInput.disabled = !isBezel;
+    if (isBezel && !this.stretchInput.value) {
+      this.stretchInput.value = String(DEFAULT_BEZEL_STRETCH_PX);
+    }
   }
 
   updateFileAccept() {
@@ -262,6 +301,7 @@ export class AssetFormControl {
     this.roleSelect.disabled = roles.length === 0;
     this.roleSelect.title = roles.length
       ? `Allowed roles for ${kind}: ${roles.join(", ")}`
-      : "No roles available for the selected kind.";
+      : "No roles available for the selected type.";
+    this.updateStretchControl();
   }
 }

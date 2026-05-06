@@ -300,6 +300,10 @@ textarea:hover {
   font-weight: 700;
 }
 
+.asset-manager-v2__field[hidden] {
+  display: none;
+}
+
 .asset-manager-v2__field input,
 .asset-manager-v2__field select {
   width: 100%;
@@ -434,13 +438,14 @@ textarea:hover {
 
 .asset-manager-v2__asset-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, 154px);
   align-items: start;
   gap: 8px;
 }
 
 .asset-manager-v2__asset-tile {
-  min-width: 0;
+  width: 154px;
+  min-width: 154px;
   height: 88px;
   display: block;
   border: 1px solid var(--asset-manager-line);
@@ -478,7 +483,7 @@ textarea:hover {
   place-items: center;
   border: 1px solid currentColor;
   border-radius: 999px;
-  color: #042f2e;
+  color: var(--asset-manager-text);
   font-weight: 900;
   line-height: 1;
 }
@@ -498,7 +503,7 @@ textarea:hover {
 }
 
 .asset-manager-v2__asset-type-role {
-  color: #042f2e;
+  color: var(--asset-manager-text);
   font-size: 13px;
   font-weight: 800;
   line-height: 1.12;
@@ -506,7 +511,7 @@ textarea:hover {
 
 .asset-manager-v2__asset-copy strong {
   display: -webkit-box;
-  color: #0f3f3d;
+  color: var(--asset-manager-header-muted);
   font-size: 12px;
   font-weight: 500;
   line-height: 1.15;
@@ -536,6 +541,68 @@ textarea:hover {
 .asset-manager-v2__preview h2,
 .asset-manager-v2__preview p {
   margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.asset-manager-v2__preview-card {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.asset-manager-v2__preview-card h2 {
+  color: var(--asset-manager-text);
+}
+
+.asset-manager-v2__preview-card dl {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 10px;
+  margin: 0;
+}
+
+.asset-manager-v2__preview-card dt,
+.asset-manager-v2__preview-card span {
+  color: var(--asset-manager-muted);
+}
+
+.asset-manager-v2__preview-card dd {
+  min-width: 0;
+  color: var(--asset-manager-text);
+  font-weight: 650;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.asset-manager-v2__preview-stage {
+  min-height: 104px;
+  display: grid;
+  align-items: center;
+  border: 1px solid var(--asset-manager-line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.16);
+  padding: 10px;
+}
+
+.asset-manager-v2__preview-media {
+  max-width: 100%;
+  max-height: 220px;
+}
+
+.asset-manager-v2__preview-stage audio,
+.asset-manager-v2__preview-stage video {
+  width: 100%;
+}
+
+.asset-manager-v2__preview-font {
+  color: var(--asset-manager-text);
+  font-size: 2rem;
+}
+
+.asset-manager-v2__preview-code {
+  margin: 0;
+  color: var(--asset-manager-text);
+  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 

@@ -2,6 +2,7 @@ import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 
 const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;
 const BEZEL_ASSET_ID_PATTERN = /^assets\.image\.bezel\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
+const DEFAULT_BEZEL_STRETCH_PX = 10;
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -23,9 +24,11 @@ export class AssetSchemaValidator {
     this.fetchRef = fetchRef;
     this.schemaUrl = schemaUrl;
     this.schema = null;
+    this.allowedTypes = [];
     this.allowedKinds = [];
     this.allowedRoles = [];
-    this.rolesByKind = {};
+    this.kindsByType = {};
+    this.rolesByType = {};
     this.allowedSources = [];
     this.assetIdPatterns = [];
   }
@@ -40,13 +43,15 @@ export class AssetSchemaValidator {
         return { ok: false, message: `Unable to load ${this.schemaUrl}: ${response.status}` };
       }
       this.schema = await response.json();
+      this.allowedTypes = this.readEnum("#/$defs/assetEntry/properties/type");
       this.allowedKinds = this.readEnum("#/$defs/assetEntry/properties/kind");
       this.allowedRoles = this.readEnum("#/$defs/assetEntry/properties/role");
-      this.rolesByKind = this.readRolesByKind();
+      this.kindsByType = this.readStringArrayMap("#/$defs/assetKindsByType");
+      this.rolesByType = this.readStringArrayMap("#/$defs/assetRolesByType");
       this.allowedSources = this.readEnum("#/$defs/assetEntry/properties/source");
       this.assetIdPatterns = this.readAssetIdPatterns();
-      if (!this.allowedKinds.length || !this.allowedRoles.length || !Object.keys(this.rolesByKind).length || !this.assetIdPatterns.length) {
-        return { ok: false, message: "asset-browser.schema.json is missing asset kind/type or role rules." };
+      if (!this.allowedTypes.length || !this.allowedKinds.length || !this.allowedRoles.length || !Object.keys(this.rolesByType).length || !this.assetIdPatterns.length) {
+        return { ok: false, message: "asset-browser.schema.json is missing asset type, kind, or role rules." };
       }
       return { ok: true };
     } catch (error) {
@@ -70,8 +75,8 @@ export class AssetSchemaValidator {
       .map((pattern) => new RegExp(pattern));
   }
 
-  readRolesByKind() {
-    const node = this.resolvePointer("#/$defs/assetRolesByKind");
+  readStringArrayMap(pointer) {
+    const node = this.resolvePointer(pointer);
     if (!isPlainObject(node)) {
       return {};
     }
@@ -94,13 +99,20 @@ export class AssetSchemaValidator {
       .reduce((node, key) => (node && typeof node === "object" ? node[key] : undefined), this.schema);
   }
 
-  createEntry({ assetId, kind, path, role }) {
+  createEntry({ assetId, kind, path, role, stretchOverride, type }) {
     const entry = {
       path,
+      type,
       kind,
       role,
       source: "asset-manager-v2"
     };
+    if (role === "bezel") {
+      const uniformEdgeStretchPx = Number(stretchOverride?.uniformEdgeStretchPx);
+      entry.stretchOverride = {
+        uniformEdgeStretchPx: Number.isFinite(uniformEdgeStretchPx) ? uniformEdgeStretchPx : DEFAULT_BEZEL_STRETCH_PX
+      };
+    }
     const validation = this.validateAssetEntry(assetId, entry, `assets.${assetId || "(empty)"}`);
     return validation.ok
       ? { ok: true, entry }
@@ -111,11 +123,11 @@ export class AssetSchemaValidator {
     if (!fileInfo) {
       return { ok: true };
     }
-    if (fileInfo.kind !== formValue.kind) {
-      return { ok: false, errors: [`Selected file kind/type "${fileInfo.kind}" does not match active kind/type "${formValue.kind}".`] };
+    if (fileInfo.type !== formValue.type) {
+      return { ok: false, errors: [`Selected file type "${fileInfo.type}" does not match active type "${formValue.type}".`] };
     }
-    if (!fileMatchesAccept(formValue.kind, fileInfo)) {
-      return { ok: false, errors: [`File ${fileInfo.name} is not accepted for ${labelForKind(formValue.kind)} assets.`] };
+    if (!fileMatchesAccept(formValue.type, { name: fileInfo.name, type: fileInfo.mimeType || "" })) {
+      return { ok: false, errors: [`File ${fileInfo.name} is not accepted for ${labelForKind(formValue.type)} assets.`] };
     }
     return this.createEntry(formValue);
   }
@@ -155,13 +167,13 @@ export class AssetSchemaValidator {
     if (typeof assetId !== "string" || !assetId.trim()) {
       errors.push(`${pointer}: id is required.`);
     } else if (!this.assetIdPatterns.some((pattern) => pattern.test(assetId))) {
-      errors.push(`${pointer}: Unsupported id. Expected assets.<type>.<role>.<filenamePart>. Allowed types: ${this.allowedKinds.join(", ")}.`);
+      errors.push(`${pointer}: Unsupported id. Expected assets.<type>.<role>.<filenamePart>. Allowed types: ${this.allowedTypes.join(", ")}.`);
     }
     if (!isPlainObject(entry)) {
       return { ok: false, errors: [...errors, `${pointer}: asset entry must be an object.`] };
     }
 
-    const allowedEntryKeys = new Set(["path", "kind", "role", "source", "stretchOverride"]);
+    const allowedEntryKeys = new Set(["path", "type", "kind", "role", "source", "stretchOverride"]);
     for (const key of Object.keys(entry)) {
       if (!allowedEntryKeys.has(key)) {
         errors.push(`${pointer}.${key}: field is not allowed by asset-browser.schema.json.`);
@@ -170,8 +182,15 @@ export class AssetSchemaValidator {
     if (typeof entry.path !== "string" || !entry.path.trim()) {
       errors.push(`${pointer}.path: path is required.`);
     }
+    if (!this.allowedTypes.includes(entry.type)) {
+      errors.push(`${pointer}.type: Unsupported asset type "${entry.type}".`);
+    }
     if (!this.allowedKinds.includes(entry.kind)) {
-      errors.push(`${pointer}.kind: Unsupported asset kind "${entry.kind}".`);
+      errors.push(`${pointer}.kind: Unsupported asset kind/format "${entry.kind}".`);
+    }
+    const kindsForType = this.kindsByType[entry.type] || [];
+    if (kindsForType.length && !kindsForType.includes(entry.kind)) {
+      errors.push(`${pointer}.kind: kind "${entry.kind}" is not allowed for ${entry.type} assets.`);
     }
     if (!Object.prototype.hasOwnProperty.call(entry, "role") || typeof entry.role !== "string" || !entry.role.trim()) {
       errors.push(`${pointer}.role: role is required.`);
@@ -179,16 +198,16 @@ export class AssetSchemaValidator {
       if (!this.allowedRoles.includes(entry.role)) {
         errors.push(`${pointer}.role: Unsupported asset role "${entry.role}".`);
       }
-      const rolesForKind = this.rolesByKind[entry.kind] || [];
-      if (rolesForKind.length && !rolesForKind.includes(entry.role)) {
-        errors.push(`${pointer}.role: role "${entry.role}" is not allowed for ${entry.kind} assets.`);
+      const rolesForType = this.rolesByType[entry.type] || [];
+      if (rolesForType.length && !rolesForType.includes(entry.role)) {
+        errors.push(`${pointer}.role: role "${entry.role}" is not allowed for ${entry.type} assets.`);
       }
       if (entry.role === "bezel" && !BEZEL_ASSET_ID_PATTERN.test(assetId)) {
         errors.push(`${pointer}.role: bezel role requires an assets.image.bezel.* id.`);
       }
     }
-    if (assetIdParts && entry.kind && assetIdParts.type !== entry.kind) {
-      errors.push(`${pointer}.kind: kind must match the id type segment.`);
+    if (assetIdParts && entry.type && assetIdParts.type !== entry.type) {
+      errors.push(`${pointer}.type: type must match the id type segment.`);
     }
     if (assetIdParts && entry.role && assetIdParts.role !== entry.role) {
       errors.push(`${pointer}.role: role must match the id role segment.`);

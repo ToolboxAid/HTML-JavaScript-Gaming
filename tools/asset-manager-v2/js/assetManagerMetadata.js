@@ -1,4 +1,4 @@
-export const ASSET_KIND_CONFIG = Object.freeze({
+export const ASSET_TYPE_CONFIG = Object.freeze({
   image: {
     label: "Image",
     folder: "assets/images",
@@ -43,7 +43,7 @@ export const ASSET_KIND_CONFIG = Object.freeze({
   }
 });
 
-const KIND_BY_EXTENSION = Object.freeze({
+const TYPE_BY_EXTENSION = Object.freeze({
   ".png": "image",
   ".jpg": "image",
   ".jpeg": "image",
@@ -74,7 +74,12 @@ const KIND_BY_EXTENSION = Object.freeze({
   ".xlf": "localization"
 });
 
-const KIND_BY_MIME_TYPE = Object.freeze({
+const KIND_BY_EXTENSION = Object.freeze(Object.fromEntries(Object.keys(TYPE_BY_EXTENSION).map((extension) => [
+  extension,
+  extension.slice(1)
+])));
+
+const TYPE_BY_MIME_TYPE = Object.freeze({
   "image/png": "image",
   "image/jpeg": "image",
   "image/webp": "image",
@@ -96,20 +101,55 @@ const KIND_BY_MIME_TYPE = Object.freeze({
   "application/x-xliff+xml": "localization"
 });
 
+const KIND_BY_MIME_TYPE = Object.freeze({
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/svg+xml": "svg",
+  "audio/mpeg": "mp3",
+  "audio/wav": "wav",
+  "audio/ogg": "ogg",
+  "audio/mp4": "m4a",
+  "font/woff": "woff",
+  "font/woff2": "woff2",
+  "font/ttf": "ttf",
+  "font/otf": "otf",
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
+  "application/json": "json",
+  "text/csv": "csv",
+  "text/plain": "txt",
+  "application/x-xliff+xml": "xliff"
+});
+
+export function assetTypeEntries() {
+  return Object.entries(ASSET_TYPE_CONFIG);
+}
+
 export function assetKindEntries() {
-  return Object.entries(ASSET_KIND_CONFIG);
+  return assetTypeEntries();
+}
+
+export function roleOptionsForType(type) {
+  return ASSET_TYPE_CONFIG[type]?.roles || [];
 }
 
 export function roleOptionsForKind(kind) {
-  return ASSET_KIND_CONFIG[kind]?.roles || [];
+  return roleOptionsForType(kind);
+}
+
+export function acceptForType(type) {
+  return ASSET_TYPE_CONFIG[type]?.accept || "";
 }
 
 export function acceptForKind(kind) {
-  return ASSET_KIND_CONFIG[kind]?.accept || "";
+  return acceptForType(kind);
 }
 
-export function pickerTypesForKind(kind) {
-  const config = ASSET_KIND_CONFIG[kind];
+export function pickerTypesForType(type) {
+  const config = ASSET_TYPE_CONFIG[type];
   if (!config) {
     return [];
   }
@@ -126,12 +166,24 @@ export function pickerTypesForKind(kind) {
   }];
 }
 
+export function pickerTypesForKind(kind) {
+  return pickerTypesForType(kind);
+}
+
+export function folderForType(type) {
+  return ASSET_TYPE_CONFIG[type]?.folder || "assets";
+}
+
 export function folderForKind(kind) {
-  return ASSET_KIND_CONFIG[kind]?.folder || "assets";
+  return folderForType(kind);
+}
+
+export function labelForType(type) {
+  return ASSET_TYPE_CONFIG[type]?.label || type;
 }
 
 export function labelForKind(kind) {
-  return ASSET_KIND_CONFIG[kind]?.label || kind;
+  return labelForType(kind);
 }
 
 export function slugifyAssetSegment(value) {
@@ -162,8 +214,8 @@ export function sanitizeFileName(fileName) {
   return `${slugifyAssetSegment(rawName)}${extension}`;
 }
 
-export function assetIdForFile(kind, fileName, role) {
-  const normalizedType = dotPathIdSegment(kind);
+export function assetIdForFile(type, fileName, role) {
+  const normalizedType = dotPathIdSegment(type);
   const normalizedRole = dotPathIdSegment(role);
   if (!normalizedType || !normalizedRole) {
     return "";
@@ -171,8 +223,8 @@ export function assetIdForFile(kind, fileName, role) {
   return `assets.${normalizedType}.${normalizedRole}.${filenamePartForAssetId(fileName)}`;
 }
 
-export function suggestedRoleForFile(kind, fileName) {
-  if (kind !== "image") {
+export function suggestedRoleForFile(type, fileName) {
+  if (type !== "image") {
     return "";
   }
   const slug = slugifyAssetSegment(fileName);
@@ -185,24 +237,24 @@ export function suggestedRoleForFile(kind, fileName) {
   return "";
 }
 
-export function pathForFile(kind, fileName, sourcePath = "") {
-  return projectRelativeAssetPath(sourcePath, kind, fileName);
+export function pathForFile(type, fileName, sourcePath = "") {
+  return projectRelativeAssetPath(sourcePath, type, fileName);
 }
 
-export function kindForFile(fileInfo) {
+export function typeForFile(fileInfo) {
   if (!fileInfo?.name) {
     return "";
   }
   const fileName = String(fileInfo.name).toLowerCase();
   const extensionMatch = fileName.match(/(\.[a-z0-9]+)$/i);
-  const extensionKind = extensionMatch ? KIND_BY_EXTENSION[extensionMatch[1]] : "";
-  if (extensionKind) {
-    return extensionKind;
+  const extensionType = extensionMatch ? TYPE_BY_EXTENSION[extensionMatch[1]] : "";
+  if (extensionType) {
+    return extensionType;
   }
   const mimeType = String(fileInfo.type || "").toLowerCase();
-  const mimeKind = KIND_BY_MIME_TYPE[mimeType];
-  if (mimeKind) {
-    return mimeKind;
+  const mimeTypeCategory = TYPE_BY_MIME_TYPE[mimeType];
+  if (mimeTypeCategory) {
+    return mimeTypeCategory;
   }
   if (mimeType.startsWith("image/")) {
     return "image";
@@ -219,8 +271,22 @@ export function kindForFile(fileInfo) {
   return "";
 }
 
-export function projectRelativeAssetPath(sourcePath, kind, fileName) {
-  const fallback = `${folderForKind(kind)}/${sanitizeFileName(fileName)}`;
+export function kindForFile(fileInfo) {
+  if (!fileInfo?.name) {
+    return "";
+  }
+  const fileName = String(fileInfo.name).toLowerCase();
+  const extensionMatch = fileName.match(/(\.[a-z0-9]+)$/i);
+  const extensionKind = extensionMatch ? KIND_BY_EXTENSION[extensionMatch[1]] : "";
+  if (extensionKind) {
+    return extensionKind;
+  }
+  const mimeType = String(fileInfo.type || "").toLowerCase();
+  return KIND_BY_MIME_TYPE[mimeType] || "";
+}
+
+export function projectRelativeAssetPath(sourcePath, type, fileName) {
+  const fallback = `${folderForType(type)}/${sanitizeFileName(fileName)}`;
   let normalized = String(sourcePath || "").trim();
   if (!normalized) {
     return fallback;
@@ -249,8 +315,8 @@ export function projectRelativeAssetPath(sourcePath, kind, fileName) {
   return normalized.split("/").filter(Boolean).join("/");
 }
 
-export function fileMatchesAccept(kind, fileInfo) {
-  const config = ASSET_KIND_CONFIG[kind];
+export function fileMatchesAccept(type, fileInfo) {
+  const config = ASSET_TYPE_CONFIG[type];
   if (!config || !fileInfo?.name) {
     return false;
   }

@@ -56,6 +56,7 @@
       "type": "object",
       "required": [
         "path",
+        "type",
         "kind",
         "role",
         "source"
@@ -66,7 +67,7 @@
           "type": "string",
           "minLength": 1
         },
-        "kind": {
+        "type": {
           "type": "string",
           "enum": [
             "image",
@@ -76,6 +77,39 @@
             "shader",
             "data",
             "localization"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "png",
+            "jpg",
+            "jpeg",
+            "webp",
+            "gif",
+            "svg",
+            "mp3",
+            "wav",
+            "ogg",
+            "m4a",
+            "woff",
+            "woff2",
+            "ttf",
+            "otf",
+            "mp4",
+            "webm",
+            "mov",
+            "glsl",
+            "vert",
+            "frag",
+            "wgsl",
+            "json",
+            "csv",
+            "txt",
+            "po",
+            "pot",
+            "xliff",
+            "xlf"
           ]
         },
         "role": {
@@ -123,7 +157,7 @@
         }
       }
     },
-    "assetRolesByKind": {
+    "assetRolesByType": {
       "image": [
         "sprite",
         "background",
@@ -154,6 +188,51 @@
       "localization": [
         "strings",
         "dialogue"
+      ]
+    },
+    "assetKindsByType": {
+      "image": [
+        "png",
+        "jpg",
+        "jpeg",
+        "webp",
+        "gif",
+        "svg"
+      ],
+      "audio": [
+        "mp3",
+        "wav",
+        "ogg",
+        "m4a"
+      ],
+      "font": [
+        "woff",
+        "woff2",
+        "ttf",
+        "otf"
+      ],
+      "video": [
+        "mp4",
+        "webm",
+        "mov"
+      ],
+      "shader": [
+        "glsl",
+        "vert",
+        "frag",
+        "wgsl"
+      ],
+      "data": [
+        "json",
+        "csv",
+        "txt"
+      ],
+      "localization": [
+        "json",
+        "po",
+        "pot",
+        "xliff",
+        "xlf"
       ]
     },
     "jsonValue": {

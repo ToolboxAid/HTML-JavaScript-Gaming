@@ -10,7 +10,7 @@ function sortedAssets(assets) {
 
 function sortedAssetEntries(assets) {
   return Object.entries(assets).sort(([leftId, leftEntry], [rightId, rightEntry]) => (
-    String(leftEntry.kind || "").localeCompare(String(rightEntry.kind || ""))
+    String(leftEntry.type || "").localeCompare(String(rightEntry.type || ""))
     || String(leftEntry.role || "").localeCompare(String(rightEntry.role || ""))
     || leftId.localeCompare(rightId)
   ));
@@ -97,8 +97,8 @@ export class AssetManagerV2App {
     }
 
     this.schemaReady = true;
-    this.assetForm.setKinds(this.schemaValidator.allowedKinds);
-    this.statusLog.info(`Loaded asset-browser.schema.json. Kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
+    this.assetForm.setKinds(this.schemaValidator.allowedTypes);
+    this.statusLog.info(`Loaded asset-browser.schema.json. Types: ${this.schemaValidator.allowedTypes.join(", ")}. Kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
     this.loadWorkspaceAssetsIfPresent();
     this.render();
     this.refreshActions();
@@ -143,10 +143,11 @@ export class AssetManagerV2App {
   currentOutputAssets() {
     return sortedAssetEntries(this.assets).map(([id, entry]) => ({
       id,
-      type: entry.kind,
+      type: entry.type,
       kind: entry.kind,
       role: entry.role,
-      path: entry.path
+      path: entry.path,
+      ...(entry.stretchOverride ? { stretchOverride: entry.stretchOverride } : {})
     }));
   }
 
@@ -317,14 +318,14 @@ export class AssetManagerV2App {
       this.statusLog.fail("Schema is not loaded; selected file validation is blocked.");
       return;
     }
-    if (!fileInfo.kind) {
+    if (!fileInfo.type) {
       const message = `File ${fileInfo.name} is not a recognized asset type.`;
       this.statusLog.fail(`Selected file validation failed: ${message}`);
       this.refreshActions();
       return;
     }
-    if (fileInfo.kind && !formValue.role) {
-      this.statusLog.info(`Select a role for kind ${formValue.kind}, type ${formValue.kind}.`);
+    if (fileInfo.type && !formValue.role) {
+      this.statusLog.info(`Select a role for type ${formValue.type}.`);
       this.refreshActions();
       return;
     }
@@ -342,7 +343,7 @@ export class AssetManagerV2App {
       this.statusLog.fail(`Selected file validation failed: ${payloadValidation.errors.join(" | ")}`);
       return;
     }
-    this.statusLog.ok(`Selected file ${fileInfo.name} validated as kind ${formValue.kind}, type ${formValue.kind}, role ${formValue.role}.`);
+    this.statusLog.ok(`Selected file ${fileInfo.name} validated as type ${formValue.type}, kind ${formValue.kind}, role ${formValue.role}.`);
   }
 
   writeStatus(level, message) {
