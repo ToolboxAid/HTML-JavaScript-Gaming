@@ -37,8 +37,11 @@ window.addEventListener("DOMContentLoaded", () => {
     assetForm: new AssetFormControl({
       addButton: requireElement("#addAssetButton"),
       assetIdInput: requireElement("#assetIdInput"),
+      fileInputs: Array.from(document.querySelectorAll("input[data-asset-file-kind]")),
       kindInputs: Array.from(document.querySelectorAll('input[name="assetKind"]')),
       pathInput: requireElement("#assetPathInput"),
+      roleSelect: requireElement("#assetRoleSelect"),
+      selectedFileText: requireElement("#assetSelectedFileText"),
       stretchOverrideInput: requireElement("#stretchOverrideInput"),
       validationMessage: requireElement("#assetValidationMessage")
     }),

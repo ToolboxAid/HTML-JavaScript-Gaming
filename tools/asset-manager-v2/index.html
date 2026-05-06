@@ -24,7 +24,7 @@
                   <h2 class="tools-platform-frame__eyebrow">Asset-only First-Class Tool V2</h2>
                 </div>
                 <div class="tools-platform-frame__summary-meta">
-                  <div class="tools-platform-frame__meta">Validated image, audio, and font entries for Workspace V2 assets.</div>
+                  <div class="tools-platform-frame__meta">Validated image, audio, font, video, shader, data, and localization entries for Workspace V2 assets.</div>
                 </div>
               </div>
               <div class="tools-platform-frame__topline">
@@ -69,11 +69,64 @@
                 <input id="assetKindFont" name="assetKind" type="radio" value="font">
                 <span>Font</span>
               </label>
+              <label for="assetKindVideo">
+                <input id="assetKindVideo" name="assetKind" type="radio" value="video">
+                <span>Video</span>
+              </label>
+              <label for="assetKindShader">
+                <input id="assetKindShader" name="assetKind" type="radio" value="shader">
+                <span>Shader</span>
+              </label>
+              <label for="assetKindData">
+                <input id="assetKindData" name="assetKind" type="radio" value="data">
+                <span>Data</span>
+              </label>
+              <label for="assetKindLocalization">
+                <input id="assetKindLocalization" name="assetKind" type="radio" value="localization">
+                <span>Localization</span>
+              </label>
+            </fieldset>
+
+            <fieldset class="asset-manager-v2__file-picker-controls" aria-label="Asset file pickers">
+              <legend>Pick asset file</legend>
+              <label for="assetFileImageInput">
+                <span>Image</span>
+                <input id="assetFileImageInput" data-asset-file-kind="image" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.svg,image/png,image/jpeg,image/webp,image/gif,image/svg+xml">
+              </label>
+              <label for="assetFileAudioInput">
+                <span>Audio</span>
+                <input id="assetFileAudioInput" data-asset-file-kind="audio" type="file" accept=".mp3,.wav,.ogg,.m4a,audio/mpeg,audio/wav,audio/ogg,audio/mp4">
+              </label>
+              <label for="assetFileFontInput">
+                <span>Font</span>
+                <input id="assetFileFontInput" data-asset-file-kind="font" type="file" accept=".woff,.woff2,.ttf,.otf,font/woff,font/woff2,font/ttf,font/otf">
+              </label>
+              <label for="assetFileVideoInput">
+                <span>Video</span>
+                <input id="assetFileVideoInput" data-asset-file-kind="video" type="file" accept=".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime">
+              </label>
+              <label for="assetFileShaderInput">
+                <span>Shader</span>
+                <input id="assetFileShaderInput" data-asset-file-kind="shader" type="file" accept=".glsl,.vert,.frag,.wgsl,text/plain">
+              </label>
+              <label for="assetFileDataInput">
+                <span>Data</span>
+                <input id="assetFileDataInput" data-asset-file-kind="data" type="file" accept=".json,.csv,.txt,application/json,text/csv,text/plain">
+              </label>
+              <label for="assetFileLocalizationInput">
+                <span>Localization</span>
+                <input id="assetFileLocalizationInput" data-asset-file-kind="localization" type="file" accept=".json,.po,.pot,.xliff,.xlf,application/json,text/plain,application/x-xliff+xml">
+              </label>
+              <p id="assetSelectedFileText" class="asset-manager-v2__hint">No file selected.</p>
             </fieldset>
 
             <label class="asset-manager-v2__field asset-manager-v2__field--not-editable" for="assetSourceValue">
               <span>Source</span>
               <input id="assetSourceValue" type="text" value="asset-manager-v2" readonly>
+            </label>
+            <label class="asset-manager-v2__field" for="assetRoleSelect">
+              <span>Role</span>
+              <select id="assetRoleSelect"></select>
             </label>
             <label class="asset-manager-v2__field" for="assetIdInput">
               <span>Asset ID</span>

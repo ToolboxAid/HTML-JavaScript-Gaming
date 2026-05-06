@@ -8,7 +8,7 @@ function readJson(relativePath) {
 export async function run() {
   const schemaFiles = [
     "tools/schemas/workspace.manifest.schema.json",
-    "tools/schemas/tool.manifest.schema.json",
+    "tests/schemas/tool.manifest.schema.json",
     "tools/schemas/tools/palette-browser.schema.json",
     "tools/schemas/sample.tool-payload.schema.json",
     "tools/schemas/tools/vector-map-editor.schema.json",

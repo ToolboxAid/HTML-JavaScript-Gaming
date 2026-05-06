@@ -60,7 +60,8 @@ export class AssetManagerV2App {
     });
     this.assetForm.mount({
       onAdd: (value) => this.addAsset(value),
-      onChange: () => this.refreshActions()
+      onChange: () => this.refreshActions(),
+      onFileSelected: (value, fileInfo) => this.validateSelectedFile(value, fileInfo)
     });
     this.assetCatalog.mount({
       onSelect: (assetId) => {
@@ -86,7 +87,7 @@ export class AssetManagerV2App {
 
     this.schemaReady = true;
     this.assetForm.setApprovedKinds(this.schemaValidator.allowedKinds);
-    this.statusLog.info(`Loaded asset-browser.schema.json. Approved kinds: ${this.schemaValidator.allowedKinds.join(", ")}.`);
+    this.statusLog.info(`Loaded asset-browser.schema.json. Approved kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Approved roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
     this.loadWorkspaceAssetsIfPresent();
     this.render();
     this.refreshActions();
@@ -161,6 +162,34 @@ export class AssetManagerV2App {
     this.statusLog.ok(`Added ${formValue.assetId}.`);
     this.render();
     this.refreshActions();
+  }
+
+  validateSelectedFile(formValue, fileInfo) {
+    if (!fileInfo) {
+      return;
+    }
+    if (!this.schemaReady) {
+      this.statusLog.fail("Schema is not loaded; selected file validation is blocked.");
+      return;
+    }
+    const fileValidation = this.schemaValidator.validateFileSelection(formValue, fileInfo);
+    if (!fileValidation.ok) {
+      this.statusLog.fail(`Selected file validation failed: ${fileValidation.errors.join(" | ")}`);
+      this.assetForm.showMessage(fileValidation.errors[0], "error");
+      return;
+    }
+    const payloadValidation = this.schemaValidator.validatePayload({
+      assets: {
+        [formValue.assetId]: fileValidation.entry
+      }
+    });
+    if (!payloadValidation.ok) {
+      this.statusLog.fail(`Selected file validation failed: ${payloadValidation.errors.join(" | ")}`);
+      this.assetForm.showMessage(payloadValidation.errors[0], "error");
+      return;
+    }
+    this.assetForm.showMessage(`Selected file validated as ${formValue.kind} ${formValue.role}.`, "ok");
+    this.statusLog.ok(`Selected file ${fileInfo.name} validated as ${formValue.kind} ${formValue.role}.`);
   }
 
   validateJsonInput(loadPayload) {

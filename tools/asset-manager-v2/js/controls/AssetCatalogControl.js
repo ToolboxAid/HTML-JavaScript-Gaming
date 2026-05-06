@@ -38,7 +38,7 @@ export class AssetCatalogControl {
     this.list.innerHTML = entries.map(([assetId, entry]) => `
       <button type="button" data-asset-id="${escapeHtml(assetId)}" class="${assetId === selectedAssetId ? "is-selected" : ""}">
         <strong>${escapeHtml(assetId)}</strong>
-        <span class="asset-manager-v2__asset-kind">${escapeHtml(entry.kind)}</span>
+        <span class="asset-manager-v2__asset-kind">${escapeHtml(entry.role ? `${entry.kind}:${entry.role}` : entry.kind)}</span>
         <span>${escapeHtml(entry.path)}</span>
       </button>
     `).join("");
@@ -48,6 +48,7 @@ export class AssetCatalogControl {
     this.preview.innerHTML = `
       <h2>${escapeHtml(selectedId)}</h2>
       <p>Kind: ${escapeHtml(selectedEntry.kind)}</p>
+      ${selectedEntry.role ? `<p>Role: ${escapeHtml(selectedEntry.role)}</p>` : ""}
       <p>Path: ${escapeHtml(selectedEntry.path)}</p>
       <p>Source: ${escapeHtml(selectedEntry.source)}</p>
     `;

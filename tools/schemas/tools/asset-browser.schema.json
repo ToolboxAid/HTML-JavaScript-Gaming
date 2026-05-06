@@ -15,7 +15,7 @@
         "^image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$": {
           "$ref": "#/$defs/assetEntry"
         },
-        "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+        "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "allOf": [
             {
               "$ref": "#/$defs/assetEntry"
@@ -36,7 +36,7 @@
             "pattern": "^image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$"
           },
           {
-            "pattern": "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+            "pattern": "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           }
         ]
       }
@@ -70,7 +70,32 @@
           "enum": [
             "image",
             "audio",
-            "font"
+            "font",
+            "video",
+            "shader",
+            "data",
+            "localization"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "sprite",
+            "background",
+            "bezel",
+            "ui",
+            "sound",
+            "music",
+            "display",
+            "cutscene",
+            "loop",
+            "fragment",
+            "vertex",
+            "compute",
+            "config",
+            "table",
+            "strings",
+            "dialogue"
           ]
         },
         "source": {
@@ -96,6 +121,39 @@
           }
         }
       }
+    },
+    "assetRolesByKind": {
+      "image": [
+        "sprite",
+        "background",
+        "bezel",
+        "ui"
+      ],
+      "audio": [
+        "sound",
+        "music"
+      ],
+      "font": [
+        "ui",
+        "display"
+      ],
+      "video": [
+        "cutscene",
+        "loop"
+      ],
+      "shader": [
+        "fragment",
+        "vertex",
+        "compute"
+      ],
+      "data": [
+        "config",
+        "table"
+      ],
+      "localization": [
+        "strings",
+        "dialogue"
+      ]
     },
     "jsonValue": {
       "oneOf": [
