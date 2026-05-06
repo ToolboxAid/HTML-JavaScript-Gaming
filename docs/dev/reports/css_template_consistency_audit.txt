@@ -1,0 +1,144 @@
+PR_26126_080 CSS-Only Template Consistency Audit
+
+PR_26126_081 extension:
+- Added launch-mode NAV variant validation for default tool mode and `?launch=workspace` mode.
+
+Scope:
+- Compared CSS only.
+- Template V2 was treated as the canonical CSS reference.
+- No CSS, HTML, JavaScript, samples, schemas, or roadmap files were modified.
+
+CSS files audited:
+- tools/templates-v2/styles/toolStarter.css
+- tools/palette-manager-v2/paletteManagerV2.css
+- tools/preview-generator-v2/previewGeneratorV2.css
+
+Method:
+- Parsed CSS declaration blocks and normalized declarations inside braces.
+- Compared declaration blocks, not selector names only.
+- Counted exact declaration matches and near matches by shared declaration properties and equal values.
+- Reviewed required style areas manually against the declaration-block findings.
+
+Declaration-block scan summary:
+- tools/templates-v2/styles/toolStarter.css: 53 declaration blocks.
+- tools/palette-manager-v2/paletteManagerV2.css: 117 declaration blocks.
+- tools/preview-generator-v2/previewGeneratorV2.css: 39 declaration blocks.
+- Palette Manager V2 exact matches to Template V2: 7 declaration blocks.
+- Preview Generator V2 exact matches to Template V2: 4 declaration blocks.
+
+Exact matches found:
+- Template `*` matches Palette Manager V2 universal box-sizing block.
+- Template `button:disabled` matches Palette Manager V2 disabled button block.
+- Template `input:hover, select:hover, textarea:hover` matches Palette Manager V2 input hover block.
+- Template `.tool-starter__field-patterns` matches Palette Manager V2 `.palette-manager-v2__tag-entry`.
+- Template `.tool-starter__menu[hidden]` and `.accordion-v2__content[hidden]` match Preview Generator V2 hidden content blocks.
+- Template `.tool-starter__status-header-actions` matches Preview Generator V2 `.preview-generator-v2__status-header-actions`.
+
+Near common candidates found:
+- Template `.tool-starter__menu` and Palette Manager V2 `.palette-manager-v2__menu-sample`: 10 of 12 compared declarations match.
+- Template header summary block and Palette Manager V2 `.tools-platform-frame__accordion-summary`: 6 of 7 compared declarations match.
+- Template panel block and Palette Manager V2 panel block: 5 of 7 compared declarations match.
+- Template output/status block and Palette Manager V2 JSON preview block: 4 of 8 compared declarations match.
+- Template status header actions and Palette Manager V2 user/source/validation action blocks: 3 of 4 compared declarations match.
+- Template status header actions and Preview Generator V2 status header actions: exact declaration match.
+
+Style area audit:
+
+HEADER
+- Status: MATCH with DRIFT notes.
+- Template V2 uses the same V2 header shell family: shared theme CSS, `#shared-theme-header`, local frame, purple summary band, white title, muted eyebrow/meta/description.
+- Palette Manager V2 has near-identical declaration blocks for the frame and summary, with smaller summary padding.
+- Preview Generator V2 relies on Palette Manager/common shell styles rather than duplicating the full header block in its local CSS.
+- CANDIDATE FOR common/: shared local-shell frame, header content, summary, title, eyebrow/meta/description blocks.
+
+NAV
+- Status: MATCH.
+- Template `.tool-starter__menu` and Palette Manager `.palette-manager-v2__menu-sample` are near-identical declaration blocks.
+- Preview Generator V2 uses the Palette Manager menu class from imported CSS.
+- CANDIDATE FOR common/: centered tool action menu block and action button group spacing.
+
+LAUNCH MODE NAV VARIANTS
+- Status: MATCH.
+- Template V2 defines two NAV bars with the same canonical `.tool-starter__menu` declaration block:
+  - tool mode NAV: `.tool-starter__tool__menu`
+  - workspace mode NAV: `.tool-starter__workspace__menu`
+- Default tool mode validation:
+  - tool NAV visible: display `flex`, centered, wrapping enabled, 12px gap, 1px border, 8px radius, dark panel background, 10px/14px padding.
+  - workspace NAV hidden through the `hidden` attribute and `.tool-starter__menu[hidden] { display: none; }`.
+- `?launch=workspace` validation:
+  - workspace NAV visible with the same computed container styles as tool NAV.
+  - tool NAV hidden through the `hidden` attribute and the same hidden declaration block.
+- Tool NAV buttons and workspace NAV buttons use the same computed button style: 10px radius, 2px/6px padding, 1px border, matching ButtonFace/ButtonText rendering.
+- Hover/focus state source is shared because both NAV variants use the same global button/input focus-visible and button rules.
+- CANDIDATE FOR common/: launch-mode NAV visibility rule, shared tool/workspace NAV container, and shared NAV button pattern.
+
+PANELS
+- Status: MATCH with DRIFT notes.
+- Template V2 and Palette Manager V2 both use three-column left/center/right panel roles, 340px/flexible/360px proportions, 14px gaps, 8px panel radius, 14px padding, and dark panel surfaces.
+- Template combines app shell and grid in `.tool-starter.app-shell`; Palette Manager separates wrapper/layout/panel concerns.
+- Preview Generator V2 uses Palette Manager panel classes plus local sizing overrides.
+- CANDIDATE FOR common/: base three-column grid, panel border/background/padding, and responsive panel layout.
+
+ACCORDIONS
+- Status: MATCH with DRIFT notes.
+- Template V2 and both tools use accordion-v2 structure and hidden-content behavior.
+- Template owns a complete local accordion skin; Palette Manager mostly sets accordion variables under panels; Preview Generator V2 has additional local status and paths sizing blocks.
+- CANDIDATE FOR common/: accordion variable binding, header action row, status accordion header/action layout, hidden content handling.
+
+BUTTONS
+- Status: MATCH with DRIFT notes.
+- Template and Palette Manager match disabled button declarations exactly.
+- Focus-visible and general radius/border behavior are aligned through equivalent variable patterns.
+- Template uses `ButtonFace`/`ButtonText`; Palette Manager/Preview Generator inherit a mix of platform and tool-specific button rules.
+- CANDIDATE FOR common/: base button, disabled button, focus-visible, header-action button, and menu button patterns.
+
+LABELS
+- Status: MATCH.
+- Template field layout matches the Palette Manager compact field model: label column plus flexible input column, bold labels, 8px gap.
+- Palette Manager base `.palette-manager-v2__field` uses gap-only base plus compact modifier; Template uses the compact grid as base and a wider compact modifier for demo labels.
+- CANDIDATE FOR common/: compact field row pattern and source/control label rows.
+
+EDITABLE INPUTS
+- Status: MATCH with DRIFT notes.
+- Template V2 editable demo uses `tool-starter__editable-tags-box`, matching the Palette Manager Tags `No tags.` visual intent: taller rounded field, dark strong surface, 36px minimum height, editable value.
+- Palette Manager Tags is a `div` tag list while Template uses an editable `input`, so declarations cannot be exact.
+- CANDIDATE FOR common/: editable tag/text box visual token set: min-height 36px, 8px radius, strong surface, 6px padding.
+
+NON-EDITABLE DISPLAY FIELDS
+- Status: MATCH.
+- Template V2 non-editable demo uses readonly input styling aligned with Palette Manager Selected Swatch rows: muted text and default cursor.
+- Template adds reduced vertical padding to better match the slim readonly Symbol/Hex/Name/Source rows.
+- CANDIDATE FOR common/: readonly display input modifier.
+
+TEXTAREAS
+- Status: DRIFT.
+- Template status textarea shares block styling with output pre blocks.
+- Preview Generator V2 uses `#log` as a div-like log block and `#sampleList` as a full-height monospace textarea.
+- Palette Manager JSON preview is a `pre` block with similar dark surface, border, radius, padding, and wrapping.
+- CANDIDATE FOR common/: log/output text block, JSON/pre output block, and full-height text input/textarea rules.
+
+STATUS/LOG BLOCKS
+- Status: MATCH with DRIFT notes.
+- Template Status Clear placement/action row matches Preview Generator V2 declaration block exactly for header actions.
+- Template status log uses a readonly textarea; Preview Generator V2 uses `#log`; Palette Manager uses status text plus error list.
+- CANDIDATE FOR common/: status header row with Clear action, status/log content block, and compact validation/status stack.
+
+OUTPUT/SUMMARY BLOCKS
+- Status: DRIFT.
+- Template Output Summary uses a pre block styled together with Status log.
+- Palette Manager Palette JSON preview uses a similar pre/output block with additional height/overflow constraints.
+- Preview Generator V2 Output Summary uses summary value rows, not a pre block.
+- CANDIDATE FOR common/: output pre block and summary value field block should be separate common patterns.
+
+Overall findings:
+- MATCH: Template V2 is visually aligned with the current V2 tool surface for header family, nav, panel roles, accordion behavior, compact labels, readonly display fields, editable tag-style field, and Status Clear placement.
+- MATCH: Template V2 launch-mode NAV variants use the same canonical CSS declaration blocks and correctly hide/show one NAV at a time.
+- DRIFT: Textarea/log/output summary implementations differ by tool purpose and should not be merged blindly.
+- CANDIDATE FOR common/: Header shell, nav menu, launch-mode NAV visibility, panel grid, compact field rows, readonly display fields, editable tag-style box, status header actions, and output/log block primitives are good candidates for future common CSS extraction.
+
+Validation:
+- Audit report exists.
+- No CSS changes were applied.
+- No runtime files were changed.
+- Playwright impacted: No.
+- No Playwright impact. This PR is docs/report only.

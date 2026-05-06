@@ -1,0 +1,56 @@
+PR_26126_081 Template Launch Mode CSS Validation
+
+Scope:
+- Extended Template V2 CSS audit coverage for launch modes and NAV variants.
+- Compared CSS patterns for Template V2 tool NAV and workspace NAV.
+- No CSS, HTML, JavaScript, samples, schemas, or roadmap files were modified.
+
+Launch modes validated:
+- Default tool mode: `tools/templates-v2/index.html`
+- Workspace mode: `tools/templates-v2/index.html?launch=workspace`
+
+NAV variants validated:
+- Tool NAV: `.tool-starter__tool__menu`
+- Workspace NAV: `.tool-starter__workspace__menu`
+
+Computed CSS validation:
+- Default tool mode:
+  - Tool NAV visible: MATCH.
+  - Workspace NAV hidden: MATCH.
+  - Tool NAV container display: `flex`.
+  - Tool NAV alignment: centered with `justify-content: center` and `align-items: center`.
+  - Tool NAV spacing: `gap: 12px`, wrapping enabled.
+  - Tool NAV border/background: 1px border, 8px radius, dark panel background.
+- Workspace mode:
+  - Workspace NAV visible: MATCH.
+  - Tool NAV hidden: MATCH.
+  - Workspace NAV container display: `flex`.
+  - Workspace NAV alignment, spacing, border, radius, background, and padding match tool NAV.
+- Hidden-state handling:
+  - Hidden NAV uses the `hidden` attribute and `.tool-starter__menu[hidden] { display: none; }`.
+  - Only one NAV is visible at a time in both modes.
+- NAV buttons:
+  - Tool and workspace buttons share the same base button declarations.
+  - Computed radius, padding, border, background, and text color match between tool and workspace NAV buttons.
+- Hover/focus states:
+  - Both NAV variants use the same global button/focus-visible rules, so hover/focus source declarations match.
+
+Audit findings:
+- MATCH: Tool mode defaults correctly and shows only tool NAV.
+- MATCH: Workspace mode shows only workspace NAV.
+- MATCH: Tool NAV and workspace NAV use the same canonical Template V2 NAV container style.
+- MATCH: Tool NAV and workspace NAV buttons use the same canonical Template V2 button style.
+- DRIFT: None found for launch-mode NAV CSS.
+- CANDIDATE FOR common/: shared launch-mode NAV container, shared NAV visibility rule, and shared NAV button/focus pattern.
+
+Validation:
+- npx playwright test --config tools/templates-v2/playwright.config.mjs passed, 10 tests.
+- Computed-style launch-mode validation passed for default tool mode and workspace mode.
+- No CSS changes were applied.
+- No runtime files were changed.
+- Playwright impacted: No.
+- No Playwright impact. This PR is audit/report only.
+
+Manual test notes:
+- Open tools/templates-v2/index.html and confirm only the tool NAV is visible.
+- Open tools/templates-v2/index.html?launch=workspace and confirm only the workspace NAV is visible.
