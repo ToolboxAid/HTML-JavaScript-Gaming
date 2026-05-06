@@ -16,8 +16,8 @@ const DEFAULT_BEZEL_STRETCH_PX = 10;
 const COLOR_SORT_OPTIONS = Object.freeze([
   ["hue", "Hue"],
   ["saturation", "Sat"],
-  ["brightness", "Bright"],
-  ["name", "Name"],
+  ["brightness", "Bri"],
+  ["name", "Nam"],
   ["tag", "Tag"]
 ]);
 
@@ -497,12 +497,16 @@ export class AssetFormControl {
       return;
     }
     this.colorSwatchList.innerHTML = swatches.map((swatch, index) => {
-      const tags = swatch.tags.join(", ");
-      const label = `${swatch.name} ${swatch.hex}${tags ? ` ${tags}` : ""}`;
+      const label = [
+        `name: ${swatch.name}`,
+        `hex: ${swatch.hex}`,
+        ...(swatch.symbol ? [`symbol: ${swatch.symbol}`] : []),
+        ...(swatch.source ? [`source: ${swatch.source}`] : []),
+        ...(swatch.tags.length ? [`tags: ${swatch.tags.join(", ")}`] : [])
+      ].join("\n");
       return `
         <button type="button" data-color-swatch-index="${index}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
           <span class="asset-manager-v2__color-swatch" style="background:${escapeHtml(swatch.hex)}"></span>
-          <span>${escapeHtml(swatch.name)}</span>
         </button>
       `;
     }).join("");

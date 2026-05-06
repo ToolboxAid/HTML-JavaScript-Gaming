@@ -1,38 +1,32 @@
 # git status --short
 M docs/dev/reports/coverage_changed_js_guardrail.txt
  M docs/dev/reports/playwright_v8_coverage_report.txt
- M src/shared/assets/assetPreviewHelpers.js
+ D src/shared/assets/assetPreviewHelpers.js
  M tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
  M tools/asset-manager-v2/index.html
- M tools/asset-manager-v2/js/AssetManagerV2App.js
- M tools/asset-manager-v2/js/bootstrap.js
  M tools/asset-manager-v2/js/controls/AssetCatalogControl.js
  M tools/asset-manager-v2/js/controls/AssetFormControl.js
- M tools/asset-manager-v2/js/services/WorkspaceBridge.js
  M tools/asset-manager-v2/styles/assetManager.css
-?? docs/dev/reports/PR_26126_093_asset_manager_v2_manual_validation_notes.md
-?? docs/dev/reports/PR_26126_093_asset_manager_v2_palette_sample_notes.md
-?? docs/dev/reports/PR_26126_093_asset_manager_v2_preview_path_resolution_notes.md
-?? docs/dev/reports/PR_26126_093_asset_manager_v2_selected_asset_detail_notes.md
-?? tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js
+?? docs/dev/reports/PR_26126_094_asset_manager_v2_manual_validation_notes.md
+?? docs/dev/reports/PR_26126_094_asset_manager_v2_palette_swatch_notes.md
+?? docs/dev/reports/PR_26126_094_asset_manager_v2_preview_helper_location_notes.md
+?? docs/dev/reports/PR_26126_094_asset_manager_v2_selected_asset_detail_notes.md
+?? tools/asset-manager-v2/js/assetPreviewHelpers.js
 
 # git ls-files --others --exclude-standard
-docs/dev/reports/PR_26126_093_asset_manager_v2_manual_validation_notes.md
-docs/dev/reports/PR_26126_093_asset_manager_v2_palette_sample_notes.md
-docs/dev/reports/PR_26126_093_asset_manager_v2_preview_path_resolution_notes.md
-docs/dev/reports/PR_26126_093_asset_manager_v2_selected_asset_detail_notes.md
-tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js
+docs/dev/reports/PR_26126_094_asset_manager_v2_manual_validation_notes.md
+docs/dev/reports/PR_26126_094_asset_manager_v2_palette_swatch_notes.md
+docs/dev/reports/PR_26126_094_asset_manager_v2_preview_helper_location_notes.md
+docs/dev/reports/PR_26126_094_asset_manager_v2_selected_asset_detail_notes.md
+tools/asset-manager-v2/js/assetPreviewHelpers.js
 
 # git diff --stat
-docs/dev/reports/coverage_changed_js_guardrail.txt |  13 +-
- docs/dev/reports/playwright_v8_coverage_report.txt |  31 ++--
- src/shared/assets/assetPreviewHelpers.js           |  29 +--
- .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 196 ++++++++++++++++++---
- tools/asset-manager-v2/index.html                  |  26 ++-
- tools/asset-manager-v2/js/AssetManagerV2App.js     |  20 ++-
- tools/asset-manager-v2/js/bootstrap.js             |   2 +
- .../js/controls/AssetCatalogControl.js             |  37 +++-
- .../js/controls/AssetFormControl.js                |  19 +-
- .../js/services/WorkspaceBridge.js                 |  42 +++++
- tools/asset-manager-v2/styles/assetManager.css     |  68 ++++++-
- 11 files changed, 412 insertions(+), 71 deletions(-)
+docs/dev/reports/coverage_changed_js_guardrail.txt |   9 +-
+ docs/dev/reports/playwright_v8_coverage_report.txt |  22 ++---
+ src/shared/assets/assetPreviewHelpers.js           | 104 ---------------------
+ .../playwright/PreviewGeneratorV2Baseline.spec.mjs |  78 ++++++++++------
+ tools/asset-manager-v2/index.html                  |   2 +-
+ .../js/controls/AssetCatalogControl.js             |  25 +++--
+ .../js/controls/AssetFormControl.js                |  14 ++-
+ tools/asset-manager-v2/styles/assetManager.css     |  49 +++++-----
+ 8 files changed, 108 insertions(+), 195 deletions(-)

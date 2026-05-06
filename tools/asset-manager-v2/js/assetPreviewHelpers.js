@@ -1,5 +1,5 @@
-import { resolveRuntimeAssetUrl } from "../../engine/runtime/gameImageConvention.js";
-import { escapeHtml, sanitizeText } from "../string/stringHelpers.js";
+import { resolveRuntimeAssetUrl } from "../../../src/engine/runtime/gameImageConvention.js";
+import { escapeHtml, sanitizeText } from "../../../src/shared/string/stringHelpers.js";
 
 function cssString(value) {
   return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
@@ -57,7 +57,6 @@ export function renderAssetPreviewHtml(model) {
   const escapedId = escapeHtml(preview.assetId);
   const escapedType = escapeHtml(preview.type);
   const escapedKind = escapeHtml(preview.kind);
-  const escapedRole = escapeHtml(preview.role);
   const escapedPath = escapeHtml(preview.path);
   const escapedUrl = escapeHtml(preview.url);
   const escapedTitle = escapeHtml(preview.title);

@@ -424,25 +424,25 @@ textarea:hover {
 }
 
 .asset-manager-v2__color-swatch-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
 .asset-manager-v2__color-swatch-list button {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  text-align: left;
+  width: 43px;
+  height: 43px;
+  display: inline-grid;
+  place-items: center;
+  padding: 3px;
 }
 
 .asset-manager-v2__color-swatch {
   flex: 0 0 auto;
-  width: 20px;
-  height: 20px;
+  width: 35px;
+  height: 35px;
   border: 1px solid var(--asset-manager-line);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .asset-manager-v2__file-picker-controls legend {
@@ -619,26 +619,31 @@ textarea:hover {
   min-width: 0;
 }
 
-.asset-manager-v2__selected-detail-body dl {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  gap: 4px 10px;
-  margin: 0;
-}
-
-.asset-manager-v2__selected-detail-body dt {
-  color: var(--asset-manager-muted);
-}
-
-.asset-manager-v2__selected-detail-body dd {
+.asset-manager-v2__selected-detail-line {
   min-width: 0;
-  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.asset-manager-v2__selected-detail-line span,
+.asset-manager-v2__selected-detail-path {
+  min-width: 0;
   color: var(--asset-manager-text);
-  font-weight: 650;
   overflow-wrap: anywhere;
 }
 
+.asset-manager-v2__selected-detail-path {
+  margin-top: 6px;
+}
+
+.asset-manager-v2__selected-detail-body b {
+  color: var(--asset-manager-muted);
+  font-weight: 700;
+}
+
 .asset-manager-v2__preview {
+  margin-top: 10px;
   min-height: 220px;
   flex: 1 1 auto;
   display: grid;

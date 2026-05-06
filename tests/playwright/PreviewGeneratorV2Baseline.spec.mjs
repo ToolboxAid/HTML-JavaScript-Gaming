@@ -707,6 +707,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetFilePickerPanel")).toBeVisible();
       await page.locator("#assetKindColor").check();
       await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
+      await expect(page.locator("#pickAssetFileButton")).toBeHidden();
       await expect(page.locator("#assetColorPickerPanel")).toBeVisible();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("hud");
       await expect(page.locator("#assetRoleSelect")).toHaveAttribute("title", "Allowed roles for color: hud, text, background, border, accent, warning, success, danger, shadow, highlight");
@@ -715,7 +716,7 @@ test.describe("Preview Generator V2 baseline", () => {
         disabled: input.disabled
       }));
       expect(colorPickerFileInputState).toEqual({ accept: "", disabled: true });
-      await expect(page.locator("#assetColorSortControls button")).toHaveText(["Hue", "Sat", "Bright", "Name", "Tag"]);
+      await expect(page.locator("#assetColorSortControls button")).toHaveText(["Hue", "Sat", "Bri", "Nam", "Tag"]);
       await expect(page.locator("#assetColorPickerPanel input")).toHaveCount(0);
       await expect(page.locator("#assetColorSwatchList")).not.toContainText("No active Workspace V2 palette colors.");
       await expect(page.locator("#assetColorSwatchList button[data-color-swatch-index]")).toHaveCount(0);
@@ -823,17 +824,25 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetPreview img.asset-manager-v2__preview-media")).toHaveAttribute("src", /\/assets\/images\/nebula-background\.png$/);
       await expect(page.locator("#assetPreview dl")).toHaveCount(0);
       await expect(page.locator('button[aria-controls="selectedAssetDetailsContent"] span').first()).toHaveText("Selected Asset Detail");
-      const selectedDetailRows = await page.locator("#selectedAssetDetails").evaluate((detail) => Object.fromEntries(
-        Array.from(detail.querySelectorAll("dt")).map((dt) => [dt.textContent.trim(), dt.nextElementSibling?.textContent.trim() || ""])
-      ));
-      expect(selectedDetailRows).toEqual({
-        "type/kind": "image/png",
-        ID: "assets.image.background.nebula-background",
-        Type: "image",
-        Kind: "png",
-        Role: "background",
-        Path: "assets/images/nebula-background.png",
-        "Final ID": "assets.image.background.nebula-background"
+      await expect(page.locator("#selectedAssetDetailsContent #assetPreview")).toBeVisible();
+      const selectedDetailLayout = await page.locator("#selectedAssetDetails").evaluate((detail) => {
+        const line = detail.querySelector(".asset-manager-v2__selected-detail-line");
+        return {
+          lineLabels: Array.from(line.querySelectorAll("b"), (node) => node.textContent.trim()),
+          lineText: line.textContent.replace(/\s+/g, " ").trim(),
+          pathText: detail.querySelector(".asset-manager-v2__selected-detail-path").textContent.replace(/\s+/g, " ").trim(),
+          hasSeparateTypeRow: detail.textContent.includes("Type image"),
+          hasSeparateKindRow: detail.textContent.includes("Kind png"),
+          hasFinalId: detail.textContent.includes("Final ID")
+        };
+      });
+      expect(selectedDetailLayout).toEqual({
+        lineLabels: ["ID", "type/kind", "Role"],
+        lineText: "ID assets.image.background.nebula-background type/kind image/png Role background",
+        pathText: "Path assets/images/nebula-background.png",
+        hasSeparateTypeRow: false,
+        hasSeparateKindRow: false,
+        hasFinalId: false
       });
       await expect(page.locator("#inspectorOutput")).toContainText("\"assets.image.background.nebula-background\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"image\"");
@@ -1031,7 +1040,8 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetList")).not.toContainText("Source:");
 
       const helperPreviewCoverage = await page.evaluate(async () => {
-        const { createAssetPreviewModel, renderAssetPreviewHtml } = await import("/src/shared/assets/assetPreviewHelpers.js");
+        const { createAssetPreviewModel, renderAssetPreviewHtml } = await import("/tools/asset-manager-v2/js/assetPreviewHelpers.js");
+        const sharedHelperResponse = await fetch("/src/shared/assets/assetPreviewHelpers.js", { cache: "no-store" });
         const entries = [
           ["image", "png", "sprite", "assets/images/preview.png"],
           ["audio", "wav", "sound", "assets/audio/fire.wav"],
@@ -1042,7 +1052,7 @@ test.describe("Preview Generator V2 baseline", () => {
           ["data", "json", "config", "assets/data/config.json"],
           ["localization", "po", "strings", "assets/localization/en.po"]
         ];
-        return Object.fromEntries(entries.map(([type, kind, role, path]) => {
+        const coverage = Object.fromEntries(entries.map(([type, kind, role, path]) => {
           const model = createAssetPreviewModel(`assets.${type}.${role}.sample`, {
             path,
             type,
@@ -1062,8 +1072,15 @@ test.describe("Preview Generator V2 baseline", () => {
             hasInspection: html.includes("inspection")
           }];
         }));
+        return {
+          localHelperLoaded: true,
+          sharedHelperStatus: sharedHelperResponse.status,
+          coverage
+        };
       });
-      expect(helperPreviewCoverage).toEqual({
+      expect(helperPreviewCoverage.localHelperLoaded).toBe(true);
+      expect(helperPreviewCoverage.sharedHelperStatus).toBe(404);
+      expect(helperPreviewCoverage.coverage).toEqual({
         image: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: true, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: false },
         audio: { hasAutoplay: false, hasDataType: true, hasColor: false, hasImage: false, hasAudio: true, hasVideo: false, hasFontFace: false, hasInspection: false },
         color: { hasAutoplay: false, hasDataType: true, hasColor: true, hasImage: false, hasAudio: false, hasVideo: false, hasFontFace: false, hasInspection: false },
@@ -1222,25 +1239,27 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded temporary UAT-only sample palette from \?palette=sample \(3 colors\)\./);
       await page.locator("#assetKindColor").check();
       await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
+      await expect(page.locator("#pickAssetFileButton")).toBeHidden();
       await expect(page.locator("#assetColorPickerPanel")).toBeVisible();
-      await expect(page.locator("#assetColorSortControls button")).toHaveText(["Hue", "Sat", "Bright", "Name", "Tag"]);
+      await expect(page.locator("#assetColorSortControls button")).toHaveText(["Hue", "Sat", "Bri", "Nam", "Tag"]);
       await expect(page.locator("#assetColorPickerPanel input")).toHaveCount(0);
       const sampleSwatches = await page.locator("#assetColorSwatchList button[data-color-swatch-index]").evaluateAll((buttons) => buttons.map((button) => ({
-        label: button.querySelector("span:last-child").textContent.trim(),
+        text: button.innerText.trim(),
+        title: button.getAttribute("title"),
         swatchSize: Math.round(button.querySelector(".asset-manager-v2__color-swatch").getBoundingClientRect().width)
       })));
       expect(sampleSwatches).toEqual([
-        { label: "Alert Amber", swatchSize: 20 },
-        { label: "Signal Violet!", swatchSize: 20 },
-        { label: "Success Green", swatchSize: 20 }
+        { text: "", title: "name: Alert Amber\nhex: #F59E0B\nsymbol: A\nsource: UAT Sample\ntags: warning, hud", swatchSize: 35 },
+        { text: "", title: "name: Signal Violet!\nhex: #7C3AED\nsymbol: V\nsource: UAT Sample\ntags: ui, accent", swatchSize: 35 },
+        { text: "", title: "name: Success Green\nhex: #22C55E\nsymbol: G\nsource: UAT Sample\ntags: success, hud", swatchSize: 35 }
       ]);
-      await page.locator('#assetColorSwatchList button[data-color-swatch-index]', { hasText: "Signal Violet!" }).click();
+      await page.locator('#assetColorSwatchList button[title*="Signal Violet"]').click();
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.signal-violet");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/signal-violet");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Signal Violet! validated as type color, kind hex, role hud\./);
       await page.locator("#addAssetButton").click();
       await expect(page.locator("#assetList")).toContainText("assets.color.hud.signal-violet");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("Final ID");
+      await expect(page.locator("#selectedAssetDetails")).not.toContainText("Final ID");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.signal-violet");
       const output = JSON.parse(await page.locator("#inspectorOutput").textContent());
       expect(output.assets[0]).toEqual({
@@ -1368,7 +1387,7 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(colorInputState).toEqual({ accept: "", disabled: true });
       const pickerCountBeforeColor = await page.evaluate(() => window.__assetManagerV2PickerOptions.length);
       await expect(page.locator("#assetColorPickerPanel")).toBeVisible();
-      await expect(page.locator("#assetColorSortControls button")).toHaveText(["Hue", "Sat", "Bright", "Name", "Tag"]);
+      await expect(page.locator("#assetColorSortControls button")).toHaveText(["Hue", "Sat", "Bri", "Nam", "Tag"]);
       await expect(page.locator('#assetColorSortControls button[data-color-sort-key="name"]')).toHaveAttribute("aria-checked", "true");
       await expect(page.locator("#assetColorPickerPanel input")).toHaveCount(0);
       const pickerCountAfterColor = await page.evaluate(() => window.__assetManagerV2PickerOptions.length);
@@ -1377,21 +1396,22 @@ test.describe("Preview Generator V2 baseline", () => {
         const swatch = button.querySelector(".asset-manager-v2__color-swatch");
         const rect = swatch.getBoundingClientRect();
         return {
-          name: button.querySelector("span:last-child").textContent.trim(),
+          text: button.innerText.trim(),
+          title: button.getAttribute("title"),
           swatchHeight: Math.round(rect.height),
           swatchWidth: Math.round(rect.width)
         };
       }));
       expect(nameSortedSwatches).toEqual([
-        { name: "Amber", swatchHeight: 20, swatchWidth: 20 },
-        { name: "Mint", swatchHeight: 20, swatchWidth: 20 },
-        { name: "Sky Blue", swatchHeight: 20, swatchWidth: 20 }
+        { text: "", title: "name: Amber\nhex: #FFAA00\nsymbol: A\nsource: Workspace\ntags: warm, warning", swatchHeight: 35, swatchWidth: 35 },
+        { text: "", title: "name: Mint\nhex: #00CC88\nsymbol: M\nsource: Workspace\ntags: success", swatchHeight: 35, swatchWidth: 35 },
+        { text: "", title: "name: Sky Blue\nhex: #3366FF\nsymbol: S\nsource: Workspace\ntags: cool, ui", swatchHeight: 35, swatchWidth: 35 }
       ]);
       await page.locator('#assetColorSortControls button[data-color-sort-key="tag"]').click();
       await expect(page.locator('#assetColorSortControls button[data-color-sort-key="tag"]')).toHaveAttribute("aria-checked", "true");
-      const tagSortedNames = await page.locator("#assetColorSwatchList button[data-color-swatch-index]").evaluateAll((buttons) => buttons.map((button) => button.querySelector("span:last-child").textContent.trim()));
+      const tagSortedNames = await page.locator("#assetColorSwatchList button[data-color-swatch-index]").evaluateAll((buttons) => buttons.map((button) => button.getAttribute("title").match(/^name: ([^\n]+)/)?.[1] || ""));
       expect(tagSortedNames).toEqual(["Sky Blue", "Mint", "Amber"]);
-      await page.locator('#assetColorSwatchList button[data-color-swatch-index]', { hasText: "Sky Blue" }).click();
+      await page.locator('#assetColorSwatchList button[title*="Sky Blue"]').click();
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.sky-blue");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/sky-blue");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Sky Blue validated as type color, kind hex, role hud\./);

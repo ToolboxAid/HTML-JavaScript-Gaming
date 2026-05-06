@@ -1,4 +1,4 @@
-import { renderAssetPreview } from "../../../../src/shared/assets/assetPreviewHelpers.js";
+import { renderAssetPreview } from "../assetPreviewHelpers.js";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -88,19 +88,16 @@ export class AssetCatalogControl {
     }
     const type = entry.type || "";
     const kind = entry.kind || "";
-    const rows = [
-      ["type/kind", `${type}${kind ? `/${kind}` : ""}`],
-      ["ID", assetId],
-      ["Type", type],
-      ["Kind", kind],
-      ["Role", entry.role || ""],
-      ["Path", entry.path || ""],
-      ["Final ID", assetId]
-    ];
-    this.detail.innerHTML = `<dl>${rows.map(([label, value]) => `
-      <dt>${escapeHtml(label)}</dt>
-      <dd>${escapeHtml(value)}</dd>
-    `).join("")}</dl>`;
+    this.detail.innerHTML = `
+      <div class="asset-manager-v2__selected-detail-line">
+        <span><b>ID</b> ${escapeHtml(assetId)}</span>
+        <span><b>type/kind</b> ${escapeHtml(`${type}${kind ? `/${kind}` : ""}`)}</span>
+        <span><b>Role</b> ${escapeHtml(entry.role || "")}</span>
+      </div>
+      <div class="asset-manager-v2__selected-detail-path">
+        <b>Path</b> ${escapeHtml(entry.path || "")}
+      </div>
+    `;
   }
 
   sortedEntries(assets) {
