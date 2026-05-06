@@ -1,0 +1,45 @@
+PR_26126_079 Tool Template V2 Final Visual And Contract Lock
+
+Scope:
+- Reviewed tools/templates-v2 against Palette Manager V2 and Preview Generator V2.
+- No template runtime behavior changes were required.
+- No live tools, samples, schemas, roadmap, or start_of_day folders were modified.
+
+Visual consistency checks:
+- Header uses the shared V2 shell pattern with src/engine/theme assets, shared-theme-header host, and Tool Template V2 local header frame.
+- Body/background/control colors remain aligned to Preview Generator V2 and Palette Manager V2 purple tool surface styling.
+- Tool NAV and workspace NAV remain mutually exclusive and preserve existing launch-mode behavior.
+- Left panel remains user input/setup only.
+- Center panel remains the primary preview/work surface.
+- Right panel remains output summary above Status/logging.
+- Accordions use accordion-v2 structure and behavior.
+- Non-editable display field matches the Selected Swatch readonly field pattern.
+- Editable field matches the taller Tags `No tags.` field pattern.
+- Buttons and Status Clear placement/style remain aligned with the V2 tool pattern.
+
+Contract checks:
+- No inline `<script>` blocks were found in tools/templates-v2/index.html.
+- No inline `<style>` blocks were found in tools/templates-v2/index.html.
+- No inline event handlers were found in tools/templates-v2/index.html.
+- No tools/shared import, script reference, CSS reference, or runtime dependency was found in template HTML/CSS/JS. Visible text and docs only mention tools/shared as a deprecated dependency.
+- src/engine/theme is used for main theme CSS, accordionV2 CSS, and shared header mounting.
+- One class per JavaScript file verified; bootstrap has no class and each app/control/service file exports one class.
+- One control/section per control class remains documented and represented in the template.
+- Playwright workspace-v2 coverage includes Tool Template V2 and reports 10 exercised template runtime JS files.
+
+Validation:
+- node --check tools/templates-v2/js/bootstrap.js passed.
+- node --check tools/templates-v2/js/ToolStarterApp.js passed.
+- node --check for all tools/templates-v2/js/controls/*.js and js/services/*.js passed.
+- node --check tools/templates-v2/tests/playwright/FirstClassToolStarter.spec.mjs passed.
+- No inline script/style/event-handler matches were found in tools/templates-v2/index.html.
+- npx playwright test --config tools/templates-v2/playwright.config.mjs passed, 10 tests.
+- npm run test:workspace-v2 passed, 7 tests.
+- docs/dev/reports/playwright_v8_coverage_report.txt was produced and includes Tool Template V2 coverage.
+
+Manual test notes:
+- Open tools/templates-v2/index.html and confirm default tool mode NAV, panel roles, accordions, editable/non-editable fields, and Status Clear remain visually correct.
+- Open tools/templates-v2/index.html?launch=workspace and confirm workspace NAV appears while tool NAV remains hidden.
+
+Ready state:
+- Tool Template V2 is ready to use as the first-class tool starter.

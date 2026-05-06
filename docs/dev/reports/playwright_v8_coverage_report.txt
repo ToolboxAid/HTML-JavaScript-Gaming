@@ -160,5 +160,4 @@ Uncovered or low-coverage changed JS files:
 (100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) tests/helpers/playwrightV8CoverageReporter.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tools/templates-v2/tests/playwright/FirstClassToolStarter.spec.mjs - changed JS file not collected as browser runtime coverage
