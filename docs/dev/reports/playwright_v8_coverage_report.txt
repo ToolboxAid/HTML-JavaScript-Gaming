@@ -1,13 +1,20 @@
 Playwright V8 Coverage Report
 
-PR: PR_26126_058-playwright-coverage-include-palette-manager
+PR: PR_26126_059-playwright-coverage-multi-tool-verification
 Coverage source: Playwright/Chromium built-in V8 coverage.
-Coverage scope: all collected runtime JavaScript under src/, tools/, and common/.
+Coverage scope: all repo-relative browser JavaScript collected by Playwright/Chromium V8 coverage.
 Dependencies: no new npm packages.
 Thresholds: none enforced.
 Note: coverage is an advisory baseline only for this PR.
 Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.
 Note: entry percentages use function coverage when available, otherwise line coverage.
+Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+Exercised tool entry points detected:
+(84%) Preview Generator V2 - exercised 19 runtime JS files
+(49%) Palette Manager - exercised 12 runtime JS files
+(0%) Workspace V2 - not exercised by this Playwright run
+(0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
 (100%) none changed - no changed runtime JS files
@@ -63,6 +70,7 @@ Files with executed line/function counts where available:
 (38%) src/engine/camera/Camera3D.js - executed lines 48/48; executed functions 3/8
 (38%) tools/palette-manager-v2/modules/PaletteValidationService.js - executed lines 88/88; executed functions 3/8
 (39%) tools/palette-manager-v2/modules/PaletteManagerApp.js - executed lines 934/934; executed functions 43/110
+(40%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 2/5
 (40%) src/engine/scene/Scene.js - executed lines 12/12; executed functions 2/5
 (42%) tools/preview-generator-v2/PreviewGeneratorV2Capture.js - executed lines 477/477; executed functions 10/24
 (44%) tools/palette-manager-v2/controls/PaletteEditorControl.js - executed lines 225/225; executed functions 14/32
@@ -97,7 +105,10 @@ Files with executed line/function counts where available:
 (80%) src/engine/core/FrameClock.js - executed lines 32/32; executed functions 4/5
 (80%) src/engine/theme/accordionV2/accordionV2.js - executed lines 26/26; executed functions 4/5
 (81%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 47/58
+(82%) samples/shared/sampleDetailPageEnhancement.js - executed lines 471/471; executed functions 41/50
 (87%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 13/15
+(100%) samples/phase-01/0102/main.js - executed lines 23/23; executed functions 1/1
+(100%) samples/shared/numberUtils.js - executed lines 7/7; executed functions 1/1
 (100%) src/engine/audio/index.js - executed lines 15/15; executed functions 1/1
 (100%) src/engine/camera/index.js - executed lines 10/10; executed functions 1/1
 (100%) src/engine/config/index.js - executed lines 7/7; executed functions 1/1
@@ -136,4 +147,3 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) tests/helpers/playwrightV8CoverageReporter.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage

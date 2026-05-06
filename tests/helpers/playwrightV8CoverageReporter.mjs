@@ -46,14 +46,18 @@ export class PlaywrightV8CoverageReporter {
     const reportLines = [
       "Playwright V8 Coverage Report",
       "",
-      "PR: PR_26126_058-playwright-coverage-include-palette-manager",
+      "PR: PR_26126_059-playwright-coverage-multi-tool-verification",
       "Coverage source: Playwright/Chromium built-in V8 coverage.",
-      "Coverage scope: all collected runtime JavaScript under src/, tools/, and common/.",
+      "Coverage scope: all repo-relative browser JavaScript collected by Playwright/Chromium V8 coverage.",
       "Dependencies: no new npm packages.",
       "Thresholds: none enforced.",
       "Note: coverage is an advisory baseline only for this PR.",
       "Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.",
       "Note: entry percentages use function coverage when available, otherwise line coverage.",
+      "Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.",
+      "",
+      "Exercised tool entry points detected:",
+      ...this.formatToolEntryPoints(coverageByPath),
       "",
       "Changed runtime JS files covered:",
       ...this.formatChangedRuntimeCoverage(changedRuntimeJsFiles, coverageByPath),
@@ -105,7 +109,11 @@ export class PlaywrightV8CoverageReporter {
     }
     let pathname;
     try {
-      pathname = new URL(url).pathname;
+      const coverageUrl = new URL(url);
+      if (coverageUrl.protocol.startsWith("http") && !["127.0.0.1", "localhost"].includes(coverageUrl.hostname)) {
+        return null;
+      }
+      pathname = coverageUrl.pathname;
     } catch {
       return null;
     }
@@ -249,11 +257,6 @@ export class PlaywrightV8CoverageReporter {
 
   formatCoverageTable(coverageByPath) {
     const records = [...coverageByPath.values()]
-      .filter((record) => (
-        record.repoPath.startsWith("tools/")
-        || record.repoPath.startsWith("src/")
-        || record.repoPath.startsWith("common/")
-      ))
       .sort((left, right) => this.compareCoverageEntries(
         { filePath: left.repoPath, record: left },
         { filePath: right.repoPath, record: right }
@@ -266,6 +269,27 @@ export class PlaywrightV8CoverageReporter {
       record,
       `${this.lineSummary(record)}; ${this.functionSummary(record)}`
     ));
+  }
+
+  formatToolEntryPoints(coverageByPath) {
+    const toolEntryPoints = [
+      { name: "Preview Generator V2", prefix: "tools/preview-generator-v2/" },
+      { name: "Palette Manager", prefix: "tools/palette-manager-v2/" },
+      { name: "Workspace V2", prefix: "tools/workspace-v2/" },
+      { name: "Workspace Manager", prefix: "tools/workspace-manager/" }
+    ];
+    return toolEntryPoints.map(({ name, prefix }) => {
+      const records = [...coverageByPath.values()].filter((record) => record.repoPath.startsWith(prefix));
+      if (!records.length) {
+        return `(0%) ${name} - not exercised by this Playwright run`;
+      }
+      const executedFunctions = records.reduce((total, record) => total + record.executedFunctions.size, 0);
+      const totalFunctions = records.reduce((total, record) => total + record.totalFunctions.size, 0);
+      const percent = totalFunctions
+        ? Math.round((executedFunctions / totalFunctions) * 100)
+        : 100;
+      return `(${percent}%) ${name} - exercised ${records.length} runtime JS files`;
+    });
   }
 
   formatLowCoverageChangedFiles(changedRuntimeJsFiles, coverageByPath) {
