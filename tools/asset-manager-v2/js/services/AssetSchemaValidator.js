@@ -1,0 +1,156 @@
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+export class AssetSchemaValidator {
+  constructor({ fetchRef = globalThis.fetch?.bind(globalThis), schemaUrl }) {
+    this.fetchRef = fetchRef;
+    this.schemaUrl = schemaUrl;
+    this.schema = null;
+    this.allowedKinds = [];
+    this.allowedSources = [];
+    this.assetIdPatterns = [];
+  }
+
+  async load() {
+    try {
+      if (typeof this.fetchRef !== "function") {
+        return { ok: false, message: "Fetch API is unavailable; schema validation cannot start." };
+      }
+      const response = await this.fetchRef(this.schemaUrl, { cache: "no-store" });
+      if (!response.ok) {
+        return { ok: false, message: `Unable to load ${this.schemaUrl}: ${response.status}` };
+      }
+      this.schema = await response.json();
+      this.allowedKinds = this.readEnum("#/$defs/assetEntry/properties/kind");
+      this.allowedSources = this.readEnum("#/$defs/assetEntry/properties/source");
+      this.assetIdPatterns = this.readAssetIdPatterns();
+      if (!this.allowedKinds.length || !this.assetIdPatterns.length) {
+        return { ok: false, message: "asset-browser.schema.json is missing approved asset kind rules." };
+      }
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, message: `Unable to load asset-browser.schema.json: ${error.message}` };
+    }
+  }
+
+  readEnum(pointer) {
+    const node = this.resolvePointer(pointer);
+    return Array.isArray(node?.enum) ? node.enum.map(String) : [];
+  }
+
+  readAssetIdPatterns() {
+    const patternNodes = this.resolvePointer("#/properties/assets/propertyNames/anyOf");
+    if (!Array.isArray(patternNodes)) {
+      return [];
+    }
+    return patternNodes
+      .map((node) => node?.pattern)
+      .filter((pattern) => typeof pattern === "string" && pattern.length > 0)
+      .map((pattern) => new RegExp(pattern));
+  }
+
+  resolvePointer(pointer) {
+    if (!this.schema || pointer === "#") {
+      return this.schema;
+    }
+    if (!pointer.startsWith("#/")) {
+      return undefined;
+    }
+    return pointer
+      .slice(2)
+      .split("/")
+      .map((segment) => segment.replace(/~1/g, "/").replace(/~0/g, "~"))
+      .reduce((node, key) => (node && typeof node === "object" ? node[key] : undefined), this.schema);
+  }
+
+  createEntry({ assetId, kind, path, stretchOverridePx }) {
+    const entry = {
+      path,
+      kind,
+      source: "asset-manager-v2"
+    };
+    if (stretchOverridePx !== null) {
+      entry.stretchOverride = {
+        uniformEdgeStretchPx: stretchOverridePx
+      };
+    }
+    const validation = this.validateAssetEntry(assetId, entry, `assets.${assetId || "(empty)"}`);
+    return validation.ok
+      ? { ok: true, entry }
+      : { ok: false, errors: validation.errors };
+  }
+
+  validatePayload(payload) {
+    const errors = [];
+    if (!isPlainObject(payload)) {
+      return { ok: false, errors: ["Asset payload must be an object."] };
+    }
+    const allowedRootKeys = new Set(Object.keys(this.schema?.properties || {}));
+    for (const key of Object.keys(payload)) {
+      if (!allowedRootKeys.has(key)) {
+        errors.push(`Root field "${key}" is not allowed by asset-browser.schema.json.`);
+      }
+    }
+    if (!Object.prototype.hasOwnProperty.call(payload, "assets")) {
+      errors.push("assets is required by asset-browser.schema.json.");
+    }
+    if (!isPlainObject(payload.assets)) {
+      errors.push("assets must be an object keyed by approved asset id.");
+    }
+    if (errors.length) {
+      return { ok: false, errors };
+    }
+
+    for (const [assetId, entry] of Object.entries(payload.assets)) {
+      errors.push(...this.validateAssetEntry(assetId, entry, `assets.${assetId}`).errors);
+    }
+    return errors.length
+      ? { ok: false, errors }
+      : { ok: true, payload: { ...clone(payload), assets: clone(payload.assets) } };
+  }
+
+  validateAssetEntry(assetId, entry, pointer) {
+    const errors = [];
+    if (typeof assetId !== "string" || !assetId.trim()) {
+      errors.push(`${pointer}: asset id is required.`);
+    } else if (!this.assetIdPatterns.some((pattern) => pattern.test(assetId))) {
+      errors.push(`${pointer}: Unsupported asset id or kind. Allowed kinds: ${this.allowedKinds.join(", ")}.`);
+    }
+    if (!isPlainObject(entry)) {
+      return { ok: false, errors: [...errors, `${pointer}: asset entry must be an object.`] };
+    }
+
+    const allowedEntryKeys = new Set(["path", "kind", "source", "stretchOverride"]);
+    for (const key of Object.keys(entry)) {
+      if (!allowedEntryKeys.has(key)) {
+        errors.push(`${pointer}.${key}: field is not allowed by asset-browser.schema.json.`);
+      }
+    }
+    if (typeof entry.path !== "string" || !entry.path.trim()) {
+      errors.push(`${pointer}.path: path is required.`);
+    }
+    if (!this.allowedKinds.includes(entry.kind)) {
+      errors.push(`${pointer}.kind: Unsupported asset kind "${entry.kind}".`);
+    }
+    if (typeof assetId === "string" && entry.kind && !assetId.startsWith(`${entry.kind}.`)) {
+      errors.push(`${pointer}.kind: kind must match the asset id prefix.`);
+    }
+    if (!this.allowedSources.includes(entry.source)) {
+      errors.push(`${pointer}.source: Unsupported asset source "${entry.source}".`);
+    }
+    if (Object.prototype.hasOwnProperty.call(entry, "stretchOverride")) {
+      if (!/^image\.[a-z0-9-]+\.[a-z0-9-]+(?:\.[a-z0-9-]+)*\.bezel$/.test(assetId)) {
+        errors.push(`${pointer}.stretchOverride: stretchOverride is only allowed on image.*.bezel assets.`);
+      }
+      if (!isPlainObject(entry.stretchOverride) || !Number.isFinite(entry.stretchOverride.uniformEdgeStretchPx) || entry.stretchOverride.uniformEdgeStretchPx < 0) {
+        errors.push(`${pointer}.stretchOverride.uniformEdgeStretchPx: value must be a number greater than or equal to 0.`);
+      }
+    }
+    return { ok: errors.length === 0, errors };
+  }
+}

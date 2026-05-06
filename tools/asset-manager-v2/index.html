@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Asset Manager V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css">
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+    <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="./styles/assetManager.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="asset-manager-v2">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-asset-manager-summary>Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <div class="asset-manager-v2__header" data-asset-manager-header>
+          <section class="tools-platform-frame asset-manager-v2__local-shell-frame">
+            <div class="tools-platform-frame__accordion-content">
+              <div class="tools-platform-frame__accordion-summary">
+                <div class="tools-platform-frame__summary-copy">
+                  <h1 class="tools-platform-frame__title" data-tool-id="asset-manager-v2">Asset Manager V2</h1>
+                  <h2 class="tools-platform-frame__eyebrow">Asset-only First-Class Tool V2</h2>
+                </div>
+                <div class="tools-platform-frame__summary-meta">
+                  <div class="tools-platform-frame__meta">Validated image, audio, and font entries for Workspace V2 assets.</div>
+                </div>
+              </div>
+              <div class="tools-platform-frame__topline">
+                <p class="tools-platform-frame__description">Create and validate approved asset entries against the asset-browser schema before export or Workspace V2 insertion.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </details>
+
+    <nav class="asset-manager-v2__menu asset-manager-v2__tool__menu" aria-label="Asset Manager tool actions" data-launch-mode-nav="tool">
+      <button id="toolExportButton" type="button" disabled>Export Assets</button>
+      <button id="toolCopyJsonButton" type="button" disabled>Copy JSON</button>
+      <button id="toolExportToolStateButton" type="button" disabled>Export toolState</button>
+    </nav>
+
+    <nav class="asset-manager-v2__menu asset-manager-v2__workspace__menu" aria-label="Workspace asset actions" data-launch-mode-nav="workspace" hidden>
+      <button id="workspaceInsertAssetsButton" type="button" disabled>Insert Assets</button>
+      <button id="workspaceCopyManifestButton" type="button" disabled>Copy Manifest</button>
+    </nav>
+
+    <main class="asset-manager-v2 app-shell" data-tool-id="asset-manager-v2">
+      <aside class="asset-manager-v2__panel asset-manager-v2__panel--left" aria-label="Asset inputs">
+        <section class="accordion-v2 asset-manager-v2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="assetControlsContent">
+            <span>Asset Controls</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="assetControlsContent" class="accordion-v2__content">
+            <fieldset class="asset-manager-v2__kind-controls" aria-label="Approved asset kind">
+              <legend>Approved kind</legend>
+              <label for="assetKindImage">
+                <input id="assetKindImage" name="assetKind" type="radio" value="image" checked>
+                <span>Image</span>
+              </label>
+              <label for="assetKindAudio">
+                <input id="assetKindAudio" name="assetKind" type="radio" value="audio">
+                <span>Audio</span>
+              </label>
+              <label for="assetKindFont">
+                <input id="assetKindFont" name="assetKind" type="radio" value="font">
+                <span>Font</span>
+              </label>
+            </fieldset>
+
+            <label class="asset-manager-v2__field asset-manager-v2__field--not-editable" for="assetSourceValue">
+              <span>Source</span>
+              <input id="assetSourceValue" type="text" value="asset-manager-v2" readonly>
+            </label>
+            <label class="asset-manager-v2__field" for="assetIdInput">
+              <span>Asset ID</span>
+              <input id="assetIdInput" type="text" autocomplete="off" placeholder="image.project.asset">
+            </label>
+            <label class="asset-manager-v2__field" for="assetPathInput">
+              <span>Path</span>
+              <input id="assetPathInput" type="text" autocomplete="off" placeholder="assets/images/player.png">
+            </label>
+            <label class="asset-manager-v2__field" for="stretchOverrideInput">
+              <span>Stretch</span>
+              <input id="stretchOverrideInput" type="number" min="0" step="1" inputmode="numeric" placeholder="image.*.bezel only">
+            </label>
+            <button id="addAssetButton" type="button" disabled>Add Asset</button>
+            <p id="assetValidationMessage" class="asset-manager-v2__hint">Loading asset-browser.schema.json before asset edits are enabled.</p>
+          </div>
+        </section>
+
+        <section class="accordion-v2 asset-manager-v2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="schemaValidationContent">
+            <span>Schema Validation</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="schemaValidationContent" class="accordion-v2__content">
+            <textarea id="jsonInput" rows="9" spellcheck="false" aria-label="Asset payload JSON" placeholder='{"assets":{}}'></textarea>
+            <div class="asset-manager-v2__button-row">
+              <button id="validateJsonButton" type="button" disabled>Validate JSON</button>
+              <button id="loadJsonButton" type="button" disabled>Load Valid JSON</button>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="asset-manager-v2__panel asset-manager-v2__panel--center" aria-label="Approved assets">
+        <section class="accordion-v2 asset-manager-v2__accordion asset-manager-v2__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="approvedAssetsContent">
+            <span>Approved Assets</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="approvedAssetsContent" class="accordion-v2__content">
+            <div id="assetCountText" class="asset-manager-v2__hint">0 approved assets</div>
+            <div id="assetList" class="asset-manager-v2__asset-list" aria-label="Approved asset entries"></div>
+            <div id="assetPreview" class="asset-manager-v2__preview" role="region" aria-label="Selected asset details">
+              <p>No asset selected.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="asset-manager-v2__panel asset-manager-v2__panel--right" aria-label="Asset output">
+        <section class="accordion-v2 asset-manager-v2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
+            <span>Output Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="inspectorContent" class="accordion-v2__content">
+            <pre id="inspectorOutput" class="asset-manager-v2__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 asset-manager-v2__accordion is-open" data-accordion-v2-open="true">
+          <div class="accordion-v2__header asset-manager-v2__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
+            <span>Status</span>
+            <div class="asset-manager-v2__status-header-actions">
+              <button id="clearStatusButton" class="asset-manager-v2__status-clear-button" type="button">Clear</button>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </div>
+          <div id="statusLogContent" class="accordion-v2__content">
+            <textarea id="statusLog" readonly rows="10" aria-label="Asset Manager status log"></textarea>
+          </div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  </body>
+</html>

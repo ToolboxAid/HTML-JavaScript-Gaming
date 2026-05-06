@@ -5,9 +5,9 @@ import path from "node:path";
 const ROOT = process.cwd();
 const REPORT_DIR = path.join(ROOT, "docs", "dev", "reports");
 const SCHEMA_ROOT = path.join(ROOT, "tools", "schemas");
-const ASSET_ID_PATTERN = /^(image|audio|font|svg|data|other)\.[a-z0-9-]+\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
-const ASSET_KIND_SET = new Set(["image", "audio", "font", "svg", "data", "other"]);
-const ASSET_SOURCE_SET = new Set(["workspace-manager", "asset-browser", "manifest"]);
+const ASSET_ID_PATTERN = /^(image|audio|font)\.[a-z0-9-]+\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
+const ASSET_KIND_SET = new Set(["image", "audio", "font"]);
+const ASSET_SOURCE_SET = new Set(["workspace-manager", "asset-browser", "asset-manager-v2", "manifest"]);
 
 function parseArgs(argv) {
   const args = {

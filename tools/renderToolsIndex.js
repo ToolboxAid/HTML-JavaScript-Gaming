@@ -80,6 +80,7 @@ function classifyToolGroup(toolId) {
   ]);
   const utilityToolIds = new Set([
     "asset-browser",
+    "asset-manager-v2",
     "asset-pipeline",
     "tile-model-converter",
     "physics-sandbox",

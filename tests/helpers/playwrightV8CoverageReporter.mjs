@@ -218,6 +218,7 @@ export class PlaywrightV8CoverageReporter {
   getChangedJsFiles() {
     return [...new Set([
       ...this.getStatusChangedJsFiles(),
+      ...this.getUntrackedJsFiles(),
       ...this.getHeadChangedJsFiles()
     ])].sort((left, right) => left.localeCompare(right));
   }
@@ -229,6 +230,17 @@ export class PlaywrightV8CoverageReporter {
       .map((line) => line.trimEnd())
       .filter(Boolean)
       .map((line) => this.pathFromStatusLine(line))
+      .filter(Boolean)
+      .filter((filePath) => existsSync(path.resolve(this.repoRoot, filePath)))
+      .filter((filePath) => filePath.endsWith(".js") || filePath.endsWith(".mjs"))
+      .sort((left, right) => left.localeCompare(right));
+  }
+
+  getUntrackedJsFiles() {
+    const output = this.gitOutput(["ls-files", "--others", "--exclude-standard"]);
+    return output
+      .split(/\r?\n/)
+      .map((line) => line.trim().replaceAll("\\", "/"))
       .filter(Boolean)
       .filter((filePath) => existsSync(path.resolve(this.repoRoot, filePath)))
       .filter((filePath) => filePath.endsWith(".js") || filePath.endsWith(".mjs"))
@@ -311,6 +323,7 @@ export class PlaywrightV8CoverageReporter {
   formatToolEntryPoints(coverageByPath) {
     const toolEntryPoints = [
       { name: "Preview Generator V2", prefix: "tools/preview-generator-v2/" },
+      { name: "Asset Manager V2", prefix: "tools/asset-manager-v2/" },
       { name: "Palette Manager", prefix: "tools/palette-manager-v2/" },
       { name: "Tool Template V2", prefix: "tools/templates-v2/" },
       { name: "Workspace V2", prefix: "tools/workspace-v2/" },

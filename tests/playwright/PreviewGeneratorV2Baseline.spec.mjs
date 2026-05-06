@@ -150,6 +150,27 @@ async function openToolTemplate(page, query = "") {
   return server;
 }
 
+async function openAssetManagerV2(page, query = "") {
+  const server = await startRepoServer();
+  await coverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/asset-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
+  return server;
+}
+
+async function openWorkspaceV2(page) {
+  const server = await startRepoServer();
+  await coverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`, { waitUntil: "networkidle" });
+  return server;
+}
+
+async function openToolsIndex(page) {
+  const server = await startRepoServer();
+  await coverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
+  return server;
+}
+
 async function expectAccordionToggles(page, contentId) {
   const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
   const content = page.locator(`#${contentId}`);
@@ -556,6 +577,130 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#paletteStatus")).toContainText("Ready.");
       await page.waitForFunction(() => Boolean(globalThis.paletteManagerV2App?.getPaletteValue));
 
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("launches Asset Manager V2 in tool mode with approved asset controls and schema rejection", async ({ page }) => {
+    const server = await openAssetManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("body.tools-platform-tool-page[data-tool-id='asset-manager-v2']")).toBeVisible();
+      await expect(page.locator(".asset-manager-v2.app-shell")).toBeVisible();
+      await expect(page.locator(".asset-manager-v2__tool__menu")).toBeVisible();
+      await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeHidden();
+      await expect(page.locator("#assetKindImage")).toBeVisible();
+      await expect(page.locator("#assetKindAudio")).toBeVisible();
+      await expect(page.locator("#assetKindFont")).toBeVisible();
+      await expect(page.locator('input[name="assetKind"][value="svg"]')).toHaveCount(0);
+      await expect(page.locator('input[name="assetKind"][value="data"]')).toHaveCount(0);
+      await expect(page.locator('input[name="assetKind"][value="other"]')).toHaveCount(0);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Loaded asset-browser\.schema\.json/);
+
+      await page.locator("#assetIdInput").fill("image.arcade.ship");
+      await page.locator("#assetPathInput").fill("assets/images/ship.png");
+      await expect(page.locator("#addAssetButton")).toBeEnabled();
+      await page.locator("#addAssetButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Added image\.arcade\.ship\./);
+      await expect(page.locator("#assetList")).toContainText("image.arcade.ship");
+      await expect(page.locator("#inspectorOutput")).toContainText("\"image.arcade.ship\"");
+
+      await page.locator("#jsonInput").fill(JSON.stringify({
+        assets: {
+          "svg.arcade.logo": {
+            path: "assets/vectors/logo.svg",
+            kind: "svg",
+            source: "asset-manager-v2"
+          }
+        }
+      }, null, 2));
+      await page.locator("#validateJsonButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Schema validation failed:/);
+      await expect(page.locator("#inspectorOutput")).toContainText("Unsupported asset id or kind");
+
+      await page.locator("#clearStatusButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue("");
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("launches Asset Manager V2 from Workspace V2 and inserts only Workspace asset entries", async ({ page }) => {
+    const server = await openWorkspaceV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("#workspaceV2OpenAssetManagerButton")).toBeVisible();
+      await expect(page.locator("#workspaceManifestText")).toHaveValue(/"asset-browser"/);
+      const hostContextId = await page.evaluate(() => sessionStorage.getItem("workspace-v2-active-host-context-id"));
+      const initialAssetCount = await page.evaluate((id) => {
+        const context = JSON.parse(sessionStorage.getItem(id));
+        return Object.keys(context.workspaceManifest.tools["asset-browser"].assets).length;
+      }, hostContextId);
+      expect(initialAssetCount).toBe(0);
+
+      await page.locator("#workspaceV2OpenAssetManagerButton").click();
+      await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
+      await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace mode loaded 0 validated assets from tools\.asset-browser\.assets/);
+
+      await page.locator("#assetKindAudio").check();
+      await page.locator("#assetIdInput").fill("audio.arcade.fire");
+      await page.locator("#assetPathInput").fill("assets/audio/fire.wav");
+      await page.locator("#addAssetButton").click();
+      await expect(page.locator("#workspaceInsertAssetsButton")).toBeEnabled();
+      await page.locator("#workspaceInsertAssetsButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Inserted 1 validated assets into Workspace V2 tools\.asset-browser\.assets/);
+
+      const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
+      expect(storedContext.workspaceManifest.tools["asset-browser"].assets["audio.arcade.fire"]).toEqual({
+        path: "assets/audio/fire.wav",
+        kind: "audio",
+        source: "asset-manager-v2"
+      });
+      expect(storedContext.workspaceManifest.tools["asset-manager-v2"]).toBeUndefined();
+      expect(storedContext.workspaceManifest.tools["workspace-v2"]).toBeUndefined();
+      expect(Object.keys(storedContext.workspaceManifest.tools).sort()).toEqual(["asset-browser", "palette-browser"]);
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("renders Asset Manager V2 as a first-class tool in the tools index", async ({ page }) => {
+    const server = await openToolsIndex(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      const assetManagerLink = page.locator(".tools-platform-card h3 a", { hasText: "Asset Manager V2" });
+      const assetManagerCard = page.locator(".tools-platform-card").filter({
+        has: page.locator("h3 a", { hasText: "Asset Manager V2" })
+      });
+      await expect(assetManagerLink).toBeVisible();
+      await expect(assetManagerLink).toHaveAttribute("href", "/tools/asset-manager-v2/index.html");
+      await expect(assetManagerCard).toContainText("Schema Validated");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

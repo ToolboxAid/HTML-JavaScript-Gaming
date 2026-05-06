@@ -38,6 +38,24 @@ const reviewDiffArguments = useCachedDiff ? ["diff", "--cached"] : ["diff"];
 const reviewDiffResult = runGit(reviewDiffArguments);
 assertGitCommand(reviewDiffResult, reviewDiffArguments);
 
+const untrackedFilesResult = runGit(["ls-files", "--others", "--exclude-standard"]);
+assertGitCommand(untrackedFilesResult, ["ls-files", "--others", "--exclude-standard"]);
+const untrackedFiles = untrackedFilesResult.stdout
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter(Boolean);
+const untrackedDiff = untrackedFiles
+  .map((filePath) => {
+    const diffResult = runGit(["diff", "--no-index", "--", "/dev/null", filePath]);
+    if (diffResult.status !== 0 && diffResult.status !== 1) {
+      const stderr = diffResult.stderr && diffResult.stderr.trim() ? diffResult.stderr.trim() : "Unknown git error";
+      throw new Error(`git diff --no-index -- /dev/null ${filePath} failed: ${stderr}`);
+    }
+    return diffResult.stdout.trimEnd();
+  })
+  .filter(Boolean)
+  .join("\n");
+
 const statusShortResult = runGit(["status", "--short"]);
 assertGitCommand(statusShortResult, ["status", "--short"]);
 
@@ -45,11 +63,18 @@ const diffStatResult = runGit(["diff", "--stat"]);
 assertGitCommand(diffStatResult, ["diff", "--stat"]);
 
 mkdirSync(reportsDirectory, { recursive: true });
-writeFileSync(reviewDiffPath, reviewDiffResult.stdout, "utf8");
+const reviewDiffText = [
+  reviewDiffResult.stdout.trimEnd(),
+  untrackedDiff
+].filter(Boolean).join("\n");
+writeFileSync(reviewDiffPath, reviewDiffText ? `${reviewDiffText}\n` : "", "utf8");
 
 const changedFilesReport = [
   `# git status --short`,
   statusShortResult.stdout.trim() ? statusShortResult.stdout.trim() : "(no output)",
+  "",
+  `# git ls-files --others --exclude-standard`,
+  untrackedFiles.length ? untrackedFiles.join("\n") : "(no output)",
   "",
   `# git diff --stat`,
   diffStatResult.stdout.trim() ? diffStatResult.stdout.trim() : "(no output)"

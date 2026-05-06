@@ -193,6 +193,29 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "asset-manager-v2",
+    name: "Asset Manager V2",
+    displayName: "Asset Manager V2",
+    shortDescription: "Asset-only manager for approved image, audio, and font entries.",
+    shortLabel: "Assets",
+    path: "asset-manager-v2",
+    folderName: "asset-manager-v2",
+    entryPoint: "asset-manager-v2/index.html",
+    description: "First-Class Tool V2 surface for validating approved image, audio, and font entries before Workspace V2 insertion.",
+    showcaseTag: "Assets",
+    showcaseStatus: "Schema Validated",
+    active: true,
+    legacy: false,
+    order: 6.5,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "asset-manager-v2/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
     id: "palette-manager-v2",
     name: "Palette Manager V2",
     displayName: "Palette Manager V2",

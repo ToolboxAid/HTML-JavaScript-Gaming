@@ -15,7 +15,7 @@
         "^image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$": {
           "$ref": "#/$defs/assetEntry"
         },
-        "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font|svg|data|other)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+        "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "allOf": [
             {
               "$ref": "#/$defs/assetEntry"
@@ -36,7 +36,7 @@
             "pattern": "^image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$"
           },
           {
-            "pattern": "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font|svg|data|other)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+            "pattern": "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           }
         ]
       }
@@ -70,10 +70,7 @@
           "enum": [
             "image",
             "audio",
-            "font",
-            "svg",
-            "data",
-            "other"
+            "font"
           ]
         },
         "source": {
@@ -81,6 +78,7 @@
           "enum": [
             "workspace-manager",
             "asset-browser",
+            "asset-manager-v2",
             "manifest"
           ]
         },
