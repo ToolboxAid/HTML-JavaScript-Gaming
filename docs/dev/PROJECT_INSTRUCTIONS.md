@@ -79,6 +79,23 @@ User:
 - Do not expand scope beyond the PR
 - Do not modify `start_of_day` folders unless requested
 
+## RULE PRECEDENCE
+
+Newer appended sections override earlier overlapping rules.
+
+When rules overlap, use the most specific current section as authoritative.
+
+## FILE SCOPE GUARD
+
+Allowed change scope is PR-specific.
+
+Unless a PR states otherwise, keep changes limited to:
+- `tools/preview-generator-v2/*`
+- `common/*`
+- `docs/dev/reports/*`
+
+Do not modify unrelated files.
+
 ## OUTPUT RULES
 
 ChatGPT MUST output ONLY:
@@ -110,13 +127,30 @@ Example:
 
 ## PLAYWRIGHT VALIDATION REQUIREMENT
 
-Every PR must include a clear Playwright section.
+Every PR must state:
 
-The Playwright section must state:
-- what Playwright validates
-- expected pass behavior
-- expected fail behavior
-- whether Playwright is impacted
+`Playwright impacted: Yes/No`
+
+Playwright impacted is Yes when the PR changes:
+- tool runtime behavior
+- UI controls or interactions
+- workspace or toolState flows
+- capture or rendering paths
+
+If Playwright impacted is Yes:
+- `npm run test:workspace-v2` must pass.
+- the Playwright section must state what behavior is validated
+- the Playwright section must state expected pass behavior
+- the Playwright section must state expected fail behavior
+
+If Playwright impacted is No:
+- include `No Playwright impact. This PR is docs/workflow only.`
+- for pure refactors, justify why behavior is unchanged
+
+Playwright is not required for:
+- docs-only PRs
+- naming/formatting-only PRs
+- pure refactors with no behavior change, when justified
 
 Default Playwright command:
 
@@ -124,9 +158,7 @@ Default Playwright command:
 
 Playwright is the required validation gate for Workspace V2 and toolState work.
 
-If Playwright is not impacted, say so explicitly:
-
-`No Playwright impact. This PR is docs/workflow only.`
+The full samples smoke test rule remains separate and runs only when broadly impacted.
 
 ## CODEX REVIEW DIFF REQUIREMENT
 
@@ -173,7 +205,7 @@ Current sample validation rule:
 
 If the user says `NEXT`:
 
-1. Look for the highest completed or referenced PR in the session.
+1. Look for the highest completed or referenced PR in the conversation.
 2. Increment to the next logical PR using the current PR naming standard.
 3. If sequence is unclear, STOP and ask for clarification.
 
@@ -387,23 +419,6 @@ Every tool completion PR must include:
 - Playwright result
 - manual validation steps
 
-## PLAYWRIGHT TOOL COVERAGE RULES
-
-Playwright should validate:
-- Workspace lifecycle
-- reset/load/export/import
-- palette baseline
-- valid toolState payload render
-- invalid toolState payload rejection
-- no payload mutation
-- active tool state integrity
-- no reliance on sample JSON during tool completion
-
-When tool-level Playwright exists:
-- tool completion audit should align to Playwright results
-- failures must identify tool name
-- reports must clearly show PASS/FAIL per tool
-
 ## CODEX ANTI-PATTERN GUARD
 
 These rules are mandatory for every Codex BUILD execution:
@@ -507,15 +522,20 @@ Never allow `<script>` blocks inside HTML files.
 
 Never allow `<style>` blocks inside HTML files.
 
+HTML must not contain inline event handlers such as `onclick`, `onchange`, `oninput`, `onsubmit`, or similar.
+
 All JavaScript must be external.
 
 All CSS must be external.
 
-## TOOL ARCHITECTURE STANDARDS
+Event wiring must live in external JavaScript classes or modules.
+
+## SEPARATION OF CONCERNS
 
 - One class per file.
 - One control or section per class.
-- App/root class is coordinator only and must not own DOM logic or business logic.
+- App/root class coordinates only and must not own DOM logic or business logic.
+- Controls do not reach into other controls directly.
 - No `tools/shared` dependency is allowed.
 - Shared UI behavior must use reusable classes.
 - Do not duplicate shared UI behavior logic across controls or tools.
@@ -562,52 +582,13 @@ No PR is complete with:
 - Capture failures must log the mode, target, and underlying error.
 - Rendering tools must not claim OK when fallback or partial capture occurred.
 
-## SEPARATION OF CONCERNS CONTRACT
-
-- One class per file.
-- One control or section per class.
-- App/root class coordinates only.
-- Controls do not reach into other controls directly.
-- Shared behavior must use reusable classes.
-
-## TESTING DEPTH REQUIREMENT
-
-- Playwright must validate meaningful behavior, not just page load.
-- Tests should cover state transitions, failure states, and edge cases when impacted.
-
 ## BATCH OPERATION RULES
 
 - Batch operations must log per item.
 - One failed item must not stop the batch unless the failure is global.
 - Summary must include written, failed, skipped, and warnings.
 
-## DEFINITION OF DONE PLAYWRIGHT CONTRACT
-
-Playwright MUST pass when the PR changes:
-- tool runtime behavior
-- UI controls or interactions
-- workspace or toolState flows
-- capture or rendering paths
-
-Playwright is NOT required when the PR is:
-- docs-only
-- naming/formatting-only
-- a pure refactor with no behavior change, when that no-behavior-change claim is justified
-
-Each PR must state:
-
-`Playwright impacted: Yes/No`
-
-If Playwright impacted is Yes:
-- `npm run test:workspace-v2` must pass.
-
-If Playwright impacted is No:
-- include `No Playwright impact. This PR is docs/workflow only.`
-
-Keep the full samples smoke test rule unchanged:
-- full samples smoke test runs only when broadly impacted.
-
-## PLAYWRIGHT COVERAGE DEPTH REQUIREMENT
+## PLAYWRIGHT DEPTH AND COVERAGE REQUIREMENT
 
 Playwright must validate behavior, not just page load.
 
@@ -622,12 +603,20 @@ Playwright tests must not be limited to page loads without error.
 
 Each PR must state what behavior is being validated.
 
-Do NOT require:
-- full feature coverage
-- 100% code coverage
-- performance requirements
+Playwright should validate these tool behaviors when applicable:
+- Workspace lifecycle
+- reset/load/export/import
+- palette baseline
+- valid toolState payload render
+- invalid toolState payload rejection
+- no payload mutation
+- active toolState integrity
+- no reliance on sample JSON during tool completion
 
-## CODE COVERAGE CONTRACT
+When tool-level Playwright exists:
+- tool completion audit should align to Playwright results
+- failures must identify tool name
+- reports must clearly show PASS/FAIL per tool
 
 When runtime JavaScript changes, Codex must produce a Playwright V8 coverage report.
 
@@ -639,7 +628,10 @@ Coverage report lines must start with coverage percentage in this format:
 
 Coverage is advisory unless a PR explicitly defines thresholds.
 
-Do not require 100% coverage.
+Do NOT require:
+- full feature coverage
+- 100% code coverage
+- performance requirements
 
 ## CODEX ZIP RETURN CONTRACT
 
@@ -652,12 +644,6 @@ The ZIP must still follow the CODEX ZIP STANDARD.
 ChatGPT must not claim code review was completed unless it inspected uploaded source, ZIP contents, or `codex_review.diff`.
 
 Pattern-based or process-based review must be labeled as such.
-
-## HTML INLINE HANDLER RESTRICTION
-
-HTML must not contain inline event handlers such as `onclick`, `onchange`, `oninput`, `onsubmit`, or similar.
-
-Event wiring must live in external JavaScript classes or modules.
 
 ## FIRST-CLASS TOOL REGISTRATION RULE
 

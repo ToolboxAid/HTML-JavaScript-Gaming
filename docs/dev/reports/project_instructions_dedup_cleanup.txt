@@ -1,0 +1,27 @@
+﻿# PR_26126_062 Project Instructions Dedup Cleanup
+
+Scope:
+- Updated docs/dev/PROJECT_INSTRUCTIONS.md only for instruction cleanup.
+- Added required review reports under docs/dev/reports.
+
+Cleanup performed:
+- Added Rule Precedence note: newer appended sections override earlier overlapping rules.
+- Added File Scope Guard note with the requested default PR scope examples.
+- Consolidated Playwright requirement wording into one authoritative Playwright Validation Requirement.
+- Consolidated Playwright behavior-depth guidance, tool coverage guidance, and V8 coverage guidance into one Playwright Depth and Coverage Requirement.
+- Consolidated duplicate architecture/separation wording into one Separation of Concerns section.
+- Merged inline event handler restrictions into the existing HTML File Restrictions block.
+- Normalized the required phrase `Playwright impacted: Yes/No`.
+- Replaced non-workspace `session` wording in NEXT guidance with `conversation`; remaining session wording is limited to the Workspace V2 terminology mapping/exception area.
+
+Validation:
+- Playwright impacted: No
+- No Playwright impact. This PR is docs/workflow only.
+- Confirmed duplicate section headings were removed.
+- Confirmed only docs/dev/PROJECT_INSTRUCTIONS.md has tracked content changes.
+- Confirmed no roadmap, code, samples, schema, or start_of_day tracked files were modified.
+- Noted unrelated pre-existing/unowned untracked file outside scope: tools/templates.zip. It was not modified or packaged for this PR.
+
+Manual test notes:
+- Read docs/dev/PROJECT_INSTRUCTIONS.md and confirm the current authoritative sections are easy to locate.
+- Confirm no roadmap, code, samples, schema, or start_of_day files were modified by this PR.
