@@ -1,0 +1,25 @@
+PR_26126_067-tool-template-preview-generator-theme-match
+
+Scope:
+- Updated tools/templates/first-class-tool-starter visual styling only.
+- No live tools, samples, schemas, roadmap, or tools/shared files were modified.
+
+Changes:
+- Matched the template body/background color system to Preview Generator V2 using the shared purple gradient and translucent panel surfaces.
+- Matched the template header frame, header summary strip, title, subtitle, meta, and description colors to the Preview Generator V2/Palette Manager shell style.
+- Updated template control surfaces, accordion panels, inputs, preview area, output block, and status log to use the same translucent dark panel and muted text color family.
+- Preserved external CSS only; no inline style, inline script block, or inline event handler was added.
+- Kept src/engine/theme imports intact and kept tools/shared unused.
+
+Validation:
+- git diff --check -- tools/templates/first-class-tool-starter/styles/toolStarter.css
+- rg check confirmed tools/templates/first-class-tool-starter/index.html has no inline style block, inline script block, or inline event handlers.
+- npm run test:workspace-v2
+
+Playwright impacted: Yes
+- The PR changes visible template styling on a Playwright-covered tool template.
+- npm run test:workspace-v2 passed.
+
+Manual test notes:
+- Template header lines now use the same purple gradient frame, dark summary strip, white title, and muted subtitle/meta/description color system as Preview Generator V2.
+- Body, menu, panels, accordions, controls, preview, output, and status surfaces now use the same translucent purple/dark color family.

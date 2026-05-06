@@ -1,12 +1,14 @@
 :root {
-  --tool-starter-bg: #10131a;
-  --tool-starter-panel: #181d28;
-  --tool-starter-panel-strong: #202738;
-  --tool-starter-line: #3a4356;
-  --tool-starter-text: #eef2ff;
-  --tool-starter-muted: #a9b4c7;
-  --tool-starter-accent: #5ad7c7;
-  --tool-starter-danger: #ff7a7a;
+  --tool-starter-bg: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
+  --tool-starter-panel: var(--pm-surface, rgba(40, 25, 84, 0.72));
+  --tool-starter-panel-strong: var(--pm-surface-strong, rgba(0, 0, 0, 0.24));
+  --tool-starter-line: var(--pm-line, rgba(221, 214, 254, 0.26));
+  --tool-starter-text: var(--text, #f7f4ff);
+  --tool-starter-muted: var(--pm-text-muted, #c4b5fd);
+  --tool-starter-header-muted: var(--muted, #e9ddff);
+  --tool-starter-accent: var(--accent, #ddd6fe);
+  --tool-starter-danger: #ffb4b4;
+  --tool-starter-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
   color-scheme: dark;
   font-family: Inter, Segoe UI, system-ui, sans-serif;
 }
@@ -17,9 +19,11 @@
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   background: var(--tool-starter-bg);
   color: var(--tool-starter-text);
+  overflow-x: hidden;
 }
 
 button,
@@ -51,7 +55,7 @@ textarea:focus-visible {
 
 .is-collapsible {
   border-bottom: 1px solid var(--tool-starter-line);
-  background: #151a24;
+  background: transparent;
 }
 
 .is-collapsible__summary {
@@ -59,7 +63,7 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   cursor: pointer;
-  color: var(--tool-starter-muted);
+  color: var(--tool-starter-header-muted);
   font-weight: 700;
   padding: 8px 18px;
 }
@@ -74,13 +78,46 @@ textarea:focus-visible {
 }
 
 .tool-starter__header {
-  background: #151a24;
+  background: transparent;
+  padding: 10px 16px;
 }
 
 .tool-starter__local-shell-frame {
-  --tools-platform-frame-surface: #151a24;
+  --tools-platform-frame-surface: var(--tool-starter-panel);
   --tools-platform-frame-line: var(--tool-starter-line);
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 18px;
+  background: var(--tool-starter-bg);
+  box-shadow: var(--tool-starter-shadow);
   color: var(--tool-starter-text);
+}
+
+.tool-starter__local-shell-frame .tools-platform-frame__accordion-content {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.tool-starter__local-shell-frame .tools-platform-frame__accordion-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 12px;
+  background: #4c1d95;
+  padding: 12px 14px;
+}
+
+.tool-starter__local-shell-frame .tools-platform-frame__title {
+  margin: 0;
+  color: #ffffff;
+}
+
+.tool-starter__local-shell-frame .tools-platform-frame__eyebrow,
+.tool-starter__local-shell-frame .tools-platform-frame__meta,
+.tool-starter__local-shell-frame .tools-platform-frame__description {
+  margin: 0;
+  color: var(--tool-starter-header-muted);
 }
 
 .tool-starter__menu {
@@ -88,7 +125,7 @@ textarea:focus-visible {
   justify-content: center;
   gap: 10px;
   border-bottom: 1px solid var(--tool-starter-line);
-  background: #111722;
+  background: var(--tool-starter-panel);
   padding: 10px;
 }
 
@@ -123,6 +160,7 @@ textarea:focus-visible {
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
   background: var(--tool-starter-panel);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }
 
@@ -195,7 +233,7 @@ textarea:focus-visible {
   min-width: 0;
   border: 1px solid var(--tool-starter-line);
   border-radius: 6px;
-  background: #0d111a;
+  background: var(--tool-starter-panel-strong);
   color: var(--tool-starter-text);
   padding: 8px 10px;
 }
@@ -217,7 +255,7 @@ textarea:focus-visible {
   place-items: center;
   border: 1px dashed var(--tool-starter-line);
   border-radius: 8px;
-  background: #0d111a;
+  background: var(--tool-starter-panel-strong);
   color: var(--tool-starter-muted);
   padding: 16px;
   text-align: center;
@@ -250,7 +288,7 @@ textarea:focus-visible {
   margin: 0;
   border: 1px solid var(--tool-starter-line);
   border-radius: 6px;
-  background: #0d111a;
+  background: var(--tool-starter-panel-strong);
   color: var(--tool-starter-text);
   overflow: auto;
   padding: 10px;
