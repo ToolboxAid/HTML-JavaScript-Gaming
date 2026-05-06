@@ -46,12 +46,13 @@ export class PlaywrightV8CoverageReporter {
     const reportLines = [
       "Playwright V8 Coverage Report",
       "",
-      "PR: PR_26126_056-playwright-v8-coverage-baseline",
+      "PR: PR_26126_057-playwright-coverage-formatting",
       "Coverage source: Playwright/Chromium built-in V8 coverage.",
       "Dependencies: no new npm packages.",
       "Thresholds: none enforced.",
       "Note: coverage is an advisory baseline only for this PR.",
       "Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.",
+      "Note: entry percentages use function coverage when available, otherwise line coverage.",
       "",
       "Changed runtime JS files covered:",
       ...this.formatChangedRuntimeCoverage(changedRuntimeJsFiles, coverageByPath),
@@ -63,7 +64,7 @@ export class PlaywrightV8CoverageReporter {
       ...this.formatLowCoverageChangedFiles(changedRuntimeJsFiles, coverageByPath),
       "",
       "Changed JS files considered:",
-      ...(changedJsFiles.length ? changedJsFiles.map((filePath) => `- ${filePath}`) : ["- none"])
+      ...this.formatChangedJsFiles(changedJsFiles, coverageByPath)
     ];
 
     await fs.mkdir(path.dirname(this.reportPath), { recursive: true });
@@ -233,15 +234,16 @@ export class PlaywrightV8CoverageReporter {
 
   formatChangedRuntimeCoverage(changedRuntimeJsFiles, coverageByPath) {
     if (!changedRuntimeJsFiles.length) {
-      return ["- none changed"];
+      return ["(100%) none changed - no changed runtime JS files"];
     }
-    return changedRuntimeJsFiles.map((filePath) => {
-      const record = coverageByPath.get(filePath);
-      if (!record) {
-        return `- ${filePath}: not covered`;
-      }
-      return `- ${filePath}: covered (${this.lineSummary(record)}, ${this.functionSummary(record)})`;
-    });
+    return changedRuntimeJsFiles
+      .map((filePath) => ({ filePath, record: coverageByPath.get(filePath) }))
+      .sort((left, right) => this.compareCoverageEntries(left, right))
+      .map(({ filePath, record }) => (
+        record
+          ? this.formatCoverageEntry(filePath, record, `${this.lineSummary(record)}; ${this.functionSummary(record)}`)
+          : "(0%) " + filePath + " - not covered"
+      ));
   }
 
   formatCoverageTable(coverageByPath) {
@@ -251,35 +253,69 @@ export class PlaywrightV8CoverageReporter {
         || record.repoPath.startsWith("src/")
         || record.repoPath.startsWith("common/")
       ))
-      .sort((left, right) => left.repoPath.localeCompare(right.repoPath));
+      .sort((left, right) => this.compareCoverageEntries(
+        { filePath: left.repoPath, record: left },
+        { filePath: right.repoPath, record: right }
+      ));
     if (!records.length) {
-      return ["- none"];
+      return ["(100%) none - no covered runtime files"];
     }
-    return records.map((record) => `- ${record.repoPath}: ${this.lineSummary(record)}; ${this.functionSummary(record)}`);
+    return records.map((record) => this.formatCoverageEntry(
+      record.repoPath,
+      record,
+      `${this.lineSummary(record)}; ${this.functionSummary(record)}`
+    ));
   }
 
   formatLowCoverageChangedFiles(changedRuntimeJsFiles, coverageByPath) {
     if (!changedRuntimeJsFiles.length) {
-      return ["- none changed"];
+      return ["(100%) none changed - no changed runtime JS files"];
     }
     const lowCoverage = changedRuntimeJsFiles
       .map((filePath) => ({ filePath, record: coverageByPath.get(filePath) }))
-      .filter(({ record }) => !record || this.linePercent(record) < this.advisoryLowCoveragePercent);
+      .filter(({ record }) => !record || this.coveragePercent(record) < this.advisoryLowCoveragePercent)
+      .sort((left, right) => this.compareCoverageEntries(left, right));
     if (!lowCoverage.length) {
-      return ["- none"];
+      return ["(100%) none - no low-coverage changed runtime JS files"];
     }
     return lowCoverage.map(({ filePath, record }) => (
       record
-        ? `- ${filePath}: advisory low coverage (${this.lineSummary(record)})`
-        : `- ${filePath}: uncovered`
+        ? this.formatCoverageEntry(filePath, record, `advisory low coverage; ${this.lineSummary(record)}`)
+        : "(0%) " + filePath + " - uncovered"
     ));
+  }
+
+  formatChangedJsFiles(changedJsFiles, coverageByPath) {
+    if (!changedJsFiles.length) {
+      return ["(100%) none - no changed JS files"];
+    }
+    return changedJsFiles
+      .map((filePath) => ({ filePath, record: coverageByPath.get(filePath) }))
+      .sort((left, right) => this.compareCoverageEntries(left, right))
+      .map(({ filePath, record }) => (
+        record
+          ? this.formatCoverageEntry(filePath, record, "changed JS file with browser V8 coverage")
+          : "(0%) " + filePath + " - changed JS file not collected as browser runtime coverage"
+      ));
+  }
+
+  formatCoverageEntry(filePath, record, details) {
+    return `(${this.coveragePercent(record)}%) ${filePath} - ${details}`;
+  }
+
+  compareCoverageEntries(left, right) {
+    const percentDelta = this.coveragePercent(left.record) - this.coveragePercent(right.record);
+    if (percentDelta !== 0) {
+      return percentDelta;
+    }
+    return left.filePath.localeCompare(right.filePath);
   }
 
   lineSummary(record) {
     if (!record.totalLines) {
       return `executed lines ${record.executedLines.size}/unknown`;
     }
-    return `executed lines ${record.executedLines.size}/${record.totalLines} (${this.linePercent(record)}%)`;
+    return `executed lines ${record.executedLines.size}/${record.totalLines}`;
   }
 
   functionSummary(record) {
@@ -294,5 +330,22 @@ export class PlaywrightV8CoverageReporter {
       return 0;
     }
     return Math.round((record.executedLines.size / record.totalLines) * 100);
+  }
+
+  functionPercent(record) {
+    if (!record.totalFunctions.size) {
+      return 0;
+    }
+    return Math.round((record.executedFunctions.size / record.totalFunctions.size) * 100);
+  }
+
+  coveragePercent(record) {
+    if (!record) {
+      return 0;
+    }
+    if (record.totalFunctions.size) {
+      return this.functionPercent(record);
+    }
+    return this.linePercent(record);
   }
 }
