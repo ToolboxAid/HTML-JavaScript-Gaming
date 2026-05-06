@@ -10,6 +10,8 @@ Copy this folder to `tools/<tool-id>/`, then rename the class prefixes, visible 
 tools/<tool-id>/
   index.html
   README.md
+  docs/
+    CONTROL_SERVICE_CONTRACTS.md
   styles/
     toolStarter.css
   js/
@@ -34,7 +36,20 @@ tools/<tool-id>/
 - `js/ToolStarterApp.js`: app/root coordinator only.
 - `js/controls/*.js`: one class per UI control or section.
 - `js/services/*.js`: focused non-UI helper classes when needed.
+- `docs/CONTROL_SERVICE_CONTRACTS.md`: required control, service, app/root, logger, and batch processor contracts.
 - `README.md`: tool-specific usage, contracts, and validation notes.
+
+## Required Contracts
+
+Read `docs/CONTROL_SERVICE_CONTRACTS.md` before creating or modifying a first-class tool from this starter.
+
+The contracts define:
+
+- Control responsibilities and method expectations.
+- Service boundaries and result/error return expectations.
+- App/root coordinator boundaries.
+- Logger level requirements: OK, WARN, FAIL, SKIP, INFO.
+- Batch processor discovery, per-item logging, and summary requirements.
 
 ## Architecture Rules
 
@@ -43,6 +58,8 @@ tools/<tool-id>/
 - App/root class coordinates only and must not own DOM logic or business logic.
 - Controls own their DOM and their events.
 - Controls communicate through injected callbacks or the app coordinator.
+- Services contain non-DOM logic and return results/errors for the app, controls, or logger to display.
+- Logger is the single writer for status/log output.
 - Reusable UI behavior must live in reusable classes such as `AccordionSection`.
 - Do not depend on `tools/shared`.
 - Do not use inline event handlers such as `onclick`, `onchange`, or `oninput`.
@@ -83,4 +100,3 @@ Every PR that creates or changes a first-class tool must produce:
 - `docs/dev/reports/codex_changed_files.txt`
 - a PR-specific report under `docs/dev/reports/`
 - a repo-structured delta ZIP under `tmp/`
-
