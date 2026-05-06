@@ -135,15 +135,18 @@ Recommended logger methods:
 
 Batch processors handle repeated work across discovered inputs.
 
+See `BATCH_GUARDRAIL_CONTRACT.md` for the full batch guardrail contract.
+
 Required rules:
 
 - Process real discovered inputs only.
 - Never assume numeric sequences.
-- Log every item through the logger.
+- Log every item through the logger with `OK`, `WARN`, `FAIL`, or `SKIP`.
 - One item failure must not stop the batch unless the failure is global.
 - Missing inputs are `SKIP` during batch processing.
 - Batch failures identify the exact item and underlying error.
 - Batch summaries include written, failed, skipped, and warnings.
+- Long-running batches support stop or cancel when applicable.
 
 Recommended summary shape:
 

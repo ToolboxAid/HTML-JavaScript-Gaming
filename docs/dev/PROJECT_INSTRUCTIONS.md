@@ -589,8 +589,11 @@ No PR is complete with:
 ## BATCH OPERATION RULES
 
 - Batch operations must log per item.
+- Each item must log `OK`, `WARN`, `FAIL`, or `SKIP`.
 - One failed item must not stop the batch unless the failure is global.
 - Summary must include written, failed, skipped, and warnings.
+- Long-running batches must support a stop or cancel pattern when applicable.
+- Batch operations must discover real files and directories and must not assume numeric folder sequences.
 
 ## PLAYWRIGHT DEPTH AND COVERAGE REQUIREMENT
 
@@ -625,6 +628,8 @@ When tool-level Playwright exists:
 When runtime JavaScript changes, Codex must produce a Playwright V8 coverage report.
 
 The coverage report must list changed runtime JavaScript files.
+
+Missing changed runtime JavaScript files in coverage must be reported as `WARN`, not `FAIL`.
 
 Coverage report lines must start with coverage percentage in this format:
 

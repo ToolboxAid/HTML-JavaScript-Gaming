@@ -6,6 +6,7 @@ Coverage scope: all repo-relative browser JavaScript collected by Playwright/Chr
 Dependencies: no new npm packages.
 Thresholds: none enforced.
 Note: coverage is an advisory baseline only for this PR.
+Note: missing changed runtime JS coverage is reported as WARN, not FAIL.
 Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.
 Note: entry percentages use function coverage when available, otherwise line coverage.
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
@@ -18,7 +19,7 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(86%) tools/templates-v2/js/controls/StatusLogControl.js - executed lines 24/24; executed functions 6/7
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -156,8 +157,8 @@ Files with executed line/function counts where available:
 (100%) tools/templates-v2/js/services/ToolStateSerializer.js - executed lines 13/13; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(100%) none - no low-coverage changed runtime JS files
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
+(0%) tests/helpers/playwrightV8CoverageReporter.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
-(86%) tools/templates-v2/js/controls/StatusLogControl.js - changed JS file with browser V8 coverage

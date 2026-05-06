@@ -1,0 +1,26 @@
+PR_26126_076 Batch Guardrail Contract
+
+Scope:
+- Added Tool Template V2 batch guardrail documentation.
+- Linked the guardrail contract from the template README and control/service contracts.
+- Updated PROJECT_INSTRUCTIONS.md with the finalized batch guardrail wording.
+
+Documented guardrails:
+- Batch operations log every item.
+- Each item logs OK, WARN, FAIL, or SKIP.
+- One item failure does not stop the batch unless the failure is global.
+- Summary includes written, failed, skipped, and warnings.
+- Long-running batches support stop/cancel when applicable.
+- Batch discovery uses real files/directories and never assumes numeric folder sequences.
+
+Runtime impact:
+- No tool runtime behavior changed.
+
+Validation:
+- node --check tests/helpers/playwrightV8CoverageReporter.mjs passed.
+- git diff --check passed.
+- npm run test:workspace-v2 passed.
+
+Manual test notes:
+- Review tools/templates-v2/docs/BATCH_GUARDRAIL_CONTRACT.md for the batch contract wording.
+- Review docs/dev/reports/coverage_changed_js_guardrail.txt to confirm missing changed runtime JS coverage is advisory WARN-only.

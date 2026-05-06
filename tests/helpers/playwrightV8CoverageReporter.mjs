@@ -7,10 +7,12 @@ export class PlaywrightV8CoverageReporter {
   constructor({
     repoRoot = process.cwd(),
     reportPath = "docs/dev/reports/playwright_v8_coverage_report.txt",
+    guardrailReportPath = "docs/dev/reports/coverage_changed_js_guardrail.txt",
     advisoryLowCoveragePercent = 50
   } = {}) {
     this.repoRoot = repoRoot;
     this.reportPath = path.resolve(repoRoot, reportPath);
+    this.guardrailReportPath = path.resolve(repoRoot, guardrailReportPath);
     this.advisoryLowCoveragePercent = advisoryLowCoveragePercent;
     this.activePages = new WeakSet();
     this.entries = [];
@@ -49,6 +51,7 @@ export class PlaywrightV8CoverageReporter {
       "Dependencies: no new npm packages.",
       "Thresholds: none enforced.",
       "Note: coverage is an advisory baseline only for this PR.",
+      "Note: missing changed runtime JS coverage is reported as WARN, not FAIL.",
       "Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.",
       "Note: entry percentages use function coverage when available, otherwise line coverage.",
       "Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.",
@@ -71,6 +74,7 @@ export class PlaywrightV8CoverageReporter {
 
     await fs.mkdir(path.dirname(this.reportPath), { recursive: true });
     await fs.writeFile(this.reportPath, `${reportLines.join("\n")}\n`, "utf8");
+    await this.writeChangedJsGuardrailReport(changedRuntimeJsFiles, coverageByPath);
   }
 
   buildCoverageByPath() {
@@ -212,10 +216,14 @@ export class PlaywrightV8CoverageReporter {
   }
 
   getChangedJsFiles() {
-    const statusOutput = execFileSync("git", ["status", "--porcelain"], {
-      cwd: this.repoRoot,
-      encoding: "utf8"
-    });
+    return [...new Set([
+      ...this.getStatusChangedJsFiles(),
+      ...this.getHeadChangedJsFiles()
+    ])].sort((left, right) => left.localeCompare(right));
+  }
+
+  getStatusChangedJsFiles() {
+    const statusOutput = this.gitOutput(["status", "--porcelain"]);
     return statusOutput
       .split(/\r?\n/)
       .map((line) => line.trimEnd())
@@ -225,6 +233,28 @@ export class PlaywrightV8CoverageReporter {
       .filter((filePath) => existsSync(path.resolve(this.repoRoot, filePath)))
       .filter((filePath) => filePath.endsWith(".js") || filePath.endsWith(".mjs"))
       .sort((left, right) => left.localeCompare(right));
+  }
+
+  getHeadChangedJsFiles() {
+    const headOutput = this.gitOutput(["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]);
+    return headOutput
+      .split(/\r?\n/)
+      .map((line) => line.trim().replaceAll("\\", "/"))
+      .filter(Boolean)
+      .filter((filePath) => existsSync(path.resolve(this.repoRoot, filePath)))
+      .filter((filePath) => filePath.endsWith(".js") || filePath.endsWith(".mjs"))
+      .sort((left, right) => left.localeCompare(right));
+  }
+
+  gitOutput(args) {
+    try {
+      return execFileSync("git", args, {
+        cwd: this.repoRoot,
+        encoding: "utf8"
+      });
+    } catch {
+      return "";
+    }
   }
 
   isRuntimeJsFile(filePath) {
@@ -258,7 +288,7 @@ export class PlaywrightV8CoverageReporter {
       .map(({ filePath, record }) => (
         record
           ? this.formatCoverageEntry(filePath, record, `${this.lineSummary(record)}; ${this.functionSummary(record)}`)
-          : "(0%) " + filePath + " - not covered"
+          : `(0%) ${filePath} - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only`
       ));
   }
 
@@ -313,8 +343,8 @@ export class PlaywrightV8CoverageReporter {
     }
     return lowCoverage.map(({ filePath, record }) => (
       record
-        ? this.formatCoverageEntry(filePath, record, `advisory low coverage; ${this.lineSummary(record)}`)
-        : "(0%) " + filePath + " - uncovered"
+        ? this.formatCoverageEntry(filePath, record, `WARNING: advisory low coverage; ${this.lineSummary(record)}`)
+        : `(0%) ${filePath} - WARNING: uncovered changed runtime JS file; advisory only`
     ));
   }
 
@@ -334,6 +364,44 @@ export class PlaywrightV8CoverageReporter {
 
   formatCoverageEntry(filePath, record, details) {
     return `(${this.coveragePercent(record)}%) ${filePath} - ${details}`;
+  }
+
+  async writeChangedJsGuardrailReport(changedRuntimeJsFiles, coverageByPath) {
+    const reportLines = [
+      "Changed Runtime JS Coverage Guardrail",
+      "",
+      "Status: advisory only.",
+      "Thresholds: none enforced.",
+      "Missing changed runtime JS files are WARN, not FAIL.",
+      "Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.",
+      "",
+      "Changed runtime JS files considered:",
+      ...this.formatChangedRuntimeCoverage(changedRuntimeJsFiles, coverageByPath),
+      "",
+      "Guardrail warnings:",
+      ...this.formatCoverageGuardrailWarnings(changedRuntimeJsFiles, coverageByPath)
+    ];
+
+    await fs.mkdir(path.dirname(this.guardrailReportPath), { recursive: true });
+    await fs.writeFile(this.guardrailReportPath, `${reportLines.join("\n")}\n`, "utf8");
+  }
+
+  formatCoverageGuardrailWarnings(changedRuntimeJsFiles, coverageByPath) {
+    if (!changedRuntimeJsFiles.length) {
+      return ["(100%) none changed - no changed runtime JS files"];
+    }
+    const warnings = changedRuntimeJsFiles
+      .map((filePath) => ({ filePath, record: coverageByPath.get(filePath) }))
+      .filter(({ record }) => !record || this.coveragePercent(record) < this.advisoryLowCoveragePercent)
+      .sort((left, right) => this.compareCoverageEntries(left, right));
+    if (!warnings.length) {
+      return ["(100%) none - no changed runtime JS coverage warnings"];
+    }
+    return warnings.map(({ filePath, record }) => (
+      record
+        ? this.formatCoverageEntry(filePath, record, `WARNING: advisory low coverage below ${this.advisoryLowCoveragePercent}%; ${this.lineSummary(record)}; ${this.functionSummary(record)}`)
+        : `(0%) ${filePath} - WARNING: changed runtime JS file missing from coverage; advisory only`
+    ));
   }
 
   compareCoverageEntries(left, right) {

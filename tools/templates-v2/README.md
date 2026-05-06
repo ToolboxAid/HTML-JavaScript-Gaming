@@ -12,6 +12,7 @@ tools/templates-v2/
   playwright.config.mjs
   README.md
   docs/
+    BATCH_GUARDRAIL_CONTRACT.md
     CONTROL_SERVICE_CONTRACTS.md
   styles/
     toolStarter.css
@@ -45,6 +46,7 @@ tools/templates-v2/
 - `js/controls/*.js`: one class per UI control or section.
 - `js/services/*.js`: focused non-UI helper classes when needed.
 - `docs/CONTROL_SERVICE_CONTRACTS.md`: required control, service, app/root, logger, and batch processor contracts.
+- `docs/BATCH_GUARDRAIL_CONTRACT.md`: required batch logging, discovery, stop/cancel, and summary guardrails.
 - `tests/playwright/*.spec.mjs`: starter behavior coverage to copy and rename with the new First-Class Tool V2.
 - `README.md`: tool-specific usage, contracts, and validation notes.
 
@@ -59,6 +61,8 @@ These folders remain under `tools/templates-v2/` as support/reference template a
 
 Read `docs/CONTROL_SERVICE_CONTRACTS.md` before creating or modifying a First-Class Tool V2 from this starter.
 
+Read `docs/BATCH_GUARDRAIL_CONTRACT.md` before adding any batch operation to a First-Class Tool V2.
+
 The contracts define:
 
 - Control responsibilities and method expectations.
@@ -66,6 +70,7 @@ The contracts define:
 - App/root coordinator boundaries.
 - Logger level requirements: OK, WARN, FAIL, SKIP, INFO.
 - Batch processor discovery, per-item logging, and summary requirements.
+- Batch guardrails for per-item outcomes, stop/cancel behavior, and real file/directory discovery.
 
 ## Architecture Rules
 
