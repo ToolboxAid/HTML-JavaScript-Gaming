@@ -68,6 +68,18 @@ test.describe("First-Class Tool Starter", () => {
     await expect(page.locator("#shared-theme-header")).toBeAttached();
     await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tool Starter");
     await expect(page.locator("[data-tool-starter-summary]")).toContainText("Hide Header and Details");
+    await expect(page.locator("[data-tool-starter-summary]")).toHaveAttribute("data-tools-platform-summary-active", "1");
+  });
+
+  test("Hide Header and Details toggles header state", async ({ page }) => {
+    const summary = page.locator("[data-tool-starter-summary]");
+    const details = page.locator(".is-collapsible");
+
+    await expect(summary).toHaveAttribute("data-tools-platform-summary-state", "expanded");
+    await summary.click();
+    await expect(details).not.toHaveAttribute("open", "");
+    await expect(summary).toHaveAttribute("data-tools-platform-summary-state", "collapsed");
+    await expect(summary).toContainText(/First-Class Tool Starter|Show Header and Details/);
   });
 
   test("accordion sections collapse and expand", async ({ page }) => {

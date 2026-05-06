@@ -5,6 +5,7 @@ import { InspectorControl } from "./controls/InspectorControl.js";
 import { PreviewPanelControl } from "./controls/PreviewPanelControl.js";
 import { SourceInputControl } from "./controls/SourceInputControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
+import { ToolStarterShellControl } from "./controls/ToolStarterShellControl.js";
 import { ToolStateSerializer } from "./services/ToolStateSerializer.js";
 
 function requireElement(selector) {
@@ -35,10 +36,10 @@ window.addEventListener("DOMContentLoaded", () => {
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
     preview: new PreviewPanelControl(requireElement("#previewOutput")),
     serializer: new ToolStateSerializer("first-class-tool-starter"),
+    shell: new ToolStarterShellControl(),
     sourceInput,
     statusLog
   });
 
   app.start();
 });
-

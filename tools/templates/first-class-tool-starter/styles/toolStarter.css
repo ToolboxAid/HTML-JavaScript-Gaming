@@ -74,30 +74,13 @@ textarea:focus-visible {
 }
 
 .tool-starter__header {
-  min-height: 76px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
   background: #151a24;
-  padding: 14px 18px;
 }
 
-.tool-starter__header h1,
-.tool-starter__header p {
-  margin: 0;
-}
-
-.tool-starter__header h1 {
-  font-size: 1.25rem;
-}
-
-.tool-starter__header p {
-  color: var(--tool-starter-muted);
-}
-
-.tool-starter__header-meta {
-  text-align: right;
+.tool-starter__local-shell-frame {
+  --tools-platform-frame-surface: #151a24;
+  --tools-platform-frame-line: var(--tool-starter-line);
+  color: var(--tool-starter-text);
 }
 
 .tool-starter__menu {
@@ -288,11 +271,6 @@ textarea:focus-visible {
   }
 
   .tool-starter__header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .tool-starter__header-meta {
-    text-align: left;
+    min-width: 0;
   }
 }

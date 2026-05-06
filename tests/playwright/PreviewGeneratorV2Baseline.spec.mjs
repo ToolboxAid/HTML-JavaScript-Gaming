@@ -120,6 +120,13 @@ async function openPaletteManager(page) {
   return server;
 }
 
+async function openToolTemplate(page) {
+  const server = await startRepoServer();
+  await coverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/templates/first-class-tool-starter/index.html`, { waitUntil: "networkidle" });
+  return server;
+}
+
 async function expectAccordionToggles(page, contentId) {
   const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
   const content = page.locator(`#${contentId}`);
@@ -436,6 +443,57 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#exportPaletteButton")).toBeVisible();
       await expect(page.locator("#paletteStatus")).toContainText("Ready.");
       await page.waitForFunction(() => Boolean(globalThis.paletteManagerV2App?.getPaletteValue));
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("launches first-class tool starter template with runtime-valid controls", async ({ page }) => {
+    const server = await openToolTemplate(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("body.tools-platform-tool-page[data-tool-id='first-class-tool-starter']")).toBeVisible();
+      await expect(page.locator('link[href="../../../src/engine/theme/main.css"]')).toHaveCount(1);
+      await expect(page.locator('link[href="../../../src/engine/theme/accordionV2/accordionV2.css"]')).toHaveCount(1);
+      await expect(page.locator("#shared-theme-header")).toBeAttached();
+      await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tool Starter");
+      await expect(page.locator("[data-tool-starter-summary]")).toHaveAttribute("data-tools-platform-summary-active", "1");
+
+      const sharedReferences = await page.evaluate(() => [
+        ...document.querySelectorAll("script[src],link[href]")
+      ].map((element) => element.getAttribute("src") || element.getAttribute("href"))
+        .filter((value) => value && value.includes("tools/shared")));
+      expect(sharedReferences).toEqual([]);
+
+      const summary = page.locator("[data-tool-starter-summary]");
+      const details = page.locator(".is-collapsible");
+      await expect(summary).toContainText("Hide Header and Details");
+      await summary.click();
+      await expect(details).not.toHaveAttribute("open", "");
+      await expect(summary).toHaveAttribute("data-tools-platform-summary-state", "collapsed");
+
+      await expectAccordionToggles(page, "sourceInputContent");
+
+      const runButton = page.locator("#runToolButton");
+      await expect(runButton).toBeDisabled();
+      await page.locator("#sourceInput").fill("starter value");
+      await expect(runButton).toBeEnabled();
+      await runButton.click();
+      await expect(page.locator("#statusLog")).toHaveValue(/Processed source value/);
+      await page.locator("#clearStatusButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue("");
+
+      await page.locator("#sourceInput").fill("");
+      await expect(runButton).toBeDisabled();
+      await expect(page.locator("#sourceValidationMessage")).toContainText("Input is required");
 
       expect(pageErrors).toEqual([]);
     } finally {

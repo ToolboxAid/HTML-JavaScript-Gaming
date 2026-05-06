@@ -25,6 +25,7 @@ tools/<tool-id>/
       PreviewPanelControl.js
       SourceInputControl.js
       StatusLogControl.js
+      ToolStarterShellControl.js
     services/
       ToolStateSerializer.js
   tests/
@@ -62,6 +63,8 @@ The contracts define:
 - One class per file.
 - One control or section per class.
 - Header markup follows the Palette Manager V2 pattern: `body.tools-platform-tool-page`, collapsible header/details, `#shared-theme-header`, and a tool-local header host.
+- Header styling consumes `src/engine/theme/main.css`, `src/engine/ui/hubCommon.css`, and `src/engine/theme/accordionV2/accordionV2.css`.
+- `ToolStarterShellControl` owns Hide Header and Details behavior, summary state, and fullscreen state classes.
 - App/root class coordinates only and must not own DOM logic or business logic.
 - Controls own their DOM and their events.
 - Controls communicate through injected callbacks or the app coordinator.

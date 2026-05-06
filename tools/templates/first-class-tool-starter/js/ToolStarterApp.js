@@ -1,15 +1,17 @@
 export class ToolStarterApp {
-  constructor({ accordions, actionNav, inspector, preview, serializer, sourceInput, statusLog }) {
+  constructor({ accordions, actionNav, inspector, preview, serializer, shell, sourceInput, statusLog }) {
     this.accordions = accordions;
     this.actionNav = actionNav;
     this.inspector = inspector;
     this.preview = preview;
     this.serializer = serializer;
+    this.shell = shell;
     this.sourceInput = sourceInput;
     this.statusLog = statusLog;
   }
 
   start() {
+    this.shell.mount();
     this.accordions.forEach((accordion) => accordion.mount());
     this.actionNav.mount({
       onExport: () => this.exportToolState(),
@@ -65,7 +67,10 @@ export class ToolStarterApp {
   }
 
   refreshActions() {
-    this.actionNav.setRunEnabled(this.sourceInput.hasValue());
+    const hasValue = this.sourceInput.hasValue();
+    if (!hasValue) {
+      this.sourceInput.showMessage("Input is required before Run can process.", false);
+    }
+    this.actionNav.setRunEnabled(hasValue);
   }
 }
-
