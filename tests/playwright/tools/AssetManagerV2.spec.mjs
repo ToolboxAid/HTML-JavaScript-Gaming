@@ -49,30 +49,28 @@ async function openAssetManagerV2(page, query = "", { assetFiles = [] } = {}) {
   return server;
 }
 
-async function openWorkspaceV2(page, { assetFiles = [], gameId = "", paletteSwatches = [] } = {}) {
+async function openWorkspaceManagerV2(page, { assetFiles = [] } = {}) {
   const server = await startRepoServer();
   if (assetFiles.length) {
     await installFakeAssetFilePicker(page, assetFiles);
   }
   await coverageReporter.start(page);
-  const workspaceUrl = new URL(`${server.baseUrl}/tools/workspace-v2/index.html`);
-  if (gameId) {
-    workspaceUrl.searchParams.set("gameId", gameId);
-  }
-  await page.goto(workspaceUrl.href, { waitUntil: "networkidle" });
-  if (paletteSwatches.length || gameId) {
-    await page.evaluate(({ gameId: nextGameId, swatches }) => {
-      const hostContextId = sessionStorage.getItem("workspace-v2-active-host-context-id");
-      const context = JSON.parse(sessionStorage.getItem(hostContextId));
-      if (nextGameId) {
-        context.gameId = nextGameId;
-      }
-      if (swatches.length) {
-        context.workspaceManifest.tools["palette-browser"].swatches = swatches;
-      }
-      sessionStorage.setItem(hostContextId, JSON.stringify(context));
-    }, { gameId, swatches: paletteSwatches });
-  }
+  await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html`, { waitUntil: "networkidle" });
+  return server;
+}
+
+async function openAssetManagerWithSessionContext(page, context, hostContextId = "workspace-manager-v2-test-context") {
+  const server = await startRepoServer();
+  await coverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
+  await page.evaluate(({ id, value }) => {
+    sessionStorage.setItem(id, JSON.stringify(value));
+  }, { id: hostContextId, value: context });
+  const toolUrl = new URL(`${server.baseUrl}/tools/asset-manager-v2/index.html`);
+  toolUrl.searchParams.set("launch", "workspace");
+  toolUrl.searchParams.set("fromTool", "workspace-manager-v2");
+  toolUrl.searchParams.set("hostContextId", hostContextId);
+  await page.goto(toolUrl.href, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -1159,9 +1157,43 @@ test.describe("Asset Manager V2", () => {
     }
   });
 
-  test("shows Asset Manager V2 launch guard when Workspace palette is missing", async ({ page }) => {
-    const server = await openWorkspaceV2(page, {
-      gameId: "Asteroids"
+  test("shows Asset Manager V2 launch guard when Workspace Manager V2 palette context is missing", async ({ page }) => {
+    const server = await openAssetManagerWithSessionContext(page, {
+      version: "workspace-manager-v2",
+      toolId: "asset-manager-v2",
+      gameId: "Asteroids",
+      gameRoot: "games/Asteroids/",
+      assetsPath: "games/Asteroids/assets",
+      workspaceManifest: {
+        documentKind: "workspace-manifest",
+        schema: "html-js-gaming.project",
+        version: 1,
+        id: "workspace-manager-v2-Asteroids",
+        name: "Asteroids Workspace Manager V2 Context",
+        gameId: "Asteroids",
+        workspaceMetadata: {
+          gameId: "Asteroids",
+          gameRoot: "games/Asteroids/",
+          assetsPath: "games/Asteroids/assets",
+          owner: "workspace-manager-v2"
+        },
+        tools: {
+          "palette-browser": {
+            schema: "html-js-gaming.palette",
+            version: 1,
+            name: "Asteroids Palette",
+            source: "workspace-manager-v2",
+            swatches: []
+          },
+          "asset-browser": {
+            schema: "html-js-gaming.tool.asset-browser",
+            version: 1,
+            name: "Asset Browser",
+            source: "workspace-manager-v2",
+            assets: {}
+          }
+        }
+      }
     });
     const pageErrors = [];
 
@@ -1170,12 +1202,11 @@ test.describe("Asset Manager V2", () => {
     });
 
     try {
-      await page.locator("#workspaceV2OpenAssetManagerButton").click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
-      await expect(page).toHaveURL(/gameId=Asteroids/);
+      await expect(page).toHaveURL(/fromTool=workspace-manager-v2/);
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
       await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
-      await expect(page.locator("#assetLaunchGuardReason")).toContainText("No active palette is present.");
+      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Workspace Manager V2 session context is missing active palette swatches.");
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
 
       expect(pageErrors).toEqual([]);
@@ -1185,8 +1216,53 @@ test.describe("Asset Manager V2", () => {
     }
   });
 
-  test("launches Asset Manager V2 from Workspace V2 and inserts only Workspace asset entries", async ({ page }) => {
-    const server = await openWorkspaceV2(page, {
+  test("rejects non-Workspace Manager V2 production session context", async ({ page }) => {
+    const server = await openAssetManagerWithSessionContext(page, {
+      version: "v2",
+      toolId: "asset-manager-v2",
+      gameId: "Asteroids",
+      workspaceManifest: {
+        documentKind: "workspace-manifest",
+        schema: "html-js-gaming.project",
+        version: 1,
+        id: "legacy-workspace-v2-Asteroids",
+        name: "Legacy Workspace V2 Context",
+        gameId: "Asteroids",
+        tools: {
+          "palette-browser": {
+            schema: "html-js-gaming.palette",
+            version: 1,
+            name: "Legacy Palette",
+            swatches: [
+              { symbol: "W", hex: "#FFFFFF", name: "White" }
+            ]
+          },
+          "asset-browser": {
+            assets: {}
+          }
+        }
+      }
+    }, "legacy-workspace-v2-test-context");
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("#assetLaunchGuard")).toBeVisible();
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Workspace Manager V2 session context is required.");
+      await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("launches Asset Manager V2 from Workspace Manager V2 and inserts only Workspace asset entries", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page, {
       assetFiles: [
         {
           name: "fire.wav",
@@ -1206,12 +1282,6 @@ test.describe("Asset Manager V2", () => {
           contents: "png",
           path: "HTML-JavaScript-Gaming/assets/images/preview.png"
         }
-      ],
-      gameId: "Asteroids",
-      paletteSwatches: [
-        { symbol: "S", hex: "#3366FF", name: "Sky Blue", source: "Workspace", tags: ["cool", "ui"] },
-        { symbol: "A", hex: "#FFAA00", name: "Amber", source: "Workspace", tags: ["warm", "warning"] },
-        { symbol: "M", hex: "#00CC88", name: "Mint", source: "Workspace", tags: ["success"] }
       ]
     });
     const pageErrors = [];
@@ -1221,27 +1291,33 @@ test.describe("Asset Manager V2", () => {
     });
 
     try {
-      await expect(page.locator("#workspaceV2OpenAssetManagerButton")).toBeVisible();
-      await expect(page.locator("#workspaceManifestText")).toHaveValue(/"asset-browser"/);
-      const hostContextId = await page.evaluate(() => sessionStorage.getItem("workspace-v2-active-host-context-id"));
+      await expect(page.locator("#launchAssetManagerV2Button")).toBeDisabled();
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"activePalette"');
+      await expect(page.locator("#launchAssetManagerV2Button")).toBeEnabled();
+      await page.locator("#launchAssetManagerV2Button").click();
+      await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
+      await expect(page).toHaveURL(/fromTool=workspace-manager-v2/);
+      await expect(page).not.toHaveURL(/gameId=Asteroids/);
+      await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
+      await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated assets from tools\.asset-browser\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
+      const hostContextId = await page.evaluate(() => new URL(window.location.href).searchParams.get("hostContextId"));
       const initialAssetCount = await page.evaluate((id) => {
         const context = JSON.parse(sessionStorage.getItem(id));
         return Object.keys(context.workspaceManifest.tools["asset-browser"].assets).length;
       }, hostContextId);
       expect(initialAssetCount).toBe(0);
-
-      await page.locator("#workspaceV2OpenAssetManagerButton").click();
-      await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
-      await expect(page).toHaveURL(/gameId=Asteroids/);
-      await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
-      await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace mode loaded 0 validated assets from tools\.asset-browser\.assets/);
       const workspacePreviewContext = await page.evaluate(async () => {
         const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
         return new WorkspaceBridge({ windowRef: window }).readWorkspacePreviewContext();
       });
       expect(workspacePreviewContext).toEqual({
         workspaceMode: true,
+        workspaceAssetsPath: "games/Asteroids/assets",
         workspaceGameId: "Asteroids",
         workspaceGameRoot: "games/Asteroids/"
       });
@@ -1308,51 +1384,35 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#assetColorPickerPanel input")).toHaveCount(0);
       const pickerCountAfterColor = await page.evaluate(() => window.__assetManagerV2PickerOptions.length);
       expect(pickerCountAfterColor).toBe(pickerCountBeforeColor);
-      const nameSortedSwatches = await page.locator("#assetColorSwatchList button[data-color-swatch-index]").evaluateAll((buttons) => buttons.map((button) => {
-        const swatch = button.querySelector(".asset-manager-v2__color-swatch");
-        const rect = swatch.getBoundingClientRect();
-        return {
-          text: button.innerText.trim(),
-          title: button.getAttribute("title"),
-          swatchHeight: Math.round(rect.height),
-          swatchWidth: Math.round(rect.width)
-        };
-      }));
-      expect(nameSortedSwatches).toEqual([
-        { text: "", title: "name: Amber\nhex: #FFAA00\nsymbol: A\nsource: Workspace\ntags: warm, warning", swatchHeight: 35, swatchWidth: 35 },
-        { text: "", title: "name: Mint\nhex: #00CC88\nsymbol: M\nsource: Workspace\ntags: success", swatchHeight: 35, swatchWidth: 35 },
-        { text: "", title: "name: Sky Blue\nhex: #3366FF\nsymbol: S\nsource: Workspace\ntags: cool, ui", swatchHeight: 35, swatchWidth: 35 }
-      ]);
-      await page.locator('#assetColorSortControls button[data-color-sort-key="tag"]').click();
-      await expect(page.locator('#assetColorSortControls button[data-color-sort-key="tag"]')).toHaveAttribute("aria-checked", "true");
-      const tagSortedNames = await page.locator("#assetColorSwatchList button[data-color-swatch-index]").evaluateAll((buttons) => buttons.map((button) => button.getAttribute("title").match(/^name: ([^\n]+)/)?.[1] || ""));
-      expect(tagSortedNames).toEqual(["Sky Blue", "Mint", "Amber"]);
-      await page.locator('#assetColorSwatchList button[title*="Sky Blue"]').click();
+      const paletteTitles = await page.locator("#assetColorSwatchList button[data-color-swatch-index]").evaluateAll((buttons) => buttons.map((button) => button.getAttribute("title") || ""));
+      expect(paletteTitles.some((title) => title.includes("name: HUD Blue"))).toBe(true);
+      expect(paletteTitles.some((title) => title.includes("name: Vector White"))).toBe(true);
+      await page.locator('#assetColorSwatchList button[title*="HUD Blue"]').click();
       await expect(page.locator("#assetIdInput")).toHaveValue("");
-      await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/sky-blue");
+      await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/hud-blue");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected color validation failed: Color usage is required for color assets\./);
       await expect(page.locator("#addAssetButton")).toBeDisabled();
       await page.locator("#assetUsageInput").fill("Primary HUD");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud.sky-blue");
-      await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/sky-blue");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Sky Blue validated as type color, kind hex, role hud\./);
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud.hud-blue");
+      await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/hud-blue");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color HUD Blue validated as type color, kind hex, role hud\./);
       await page.locator("#assetRoleSelect").selectOption("accent");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.accent.primary-hud.sky-blue");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Sky Blue validated as type color, kind hex, role accent\./);
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.accent.primary-hud.hud-blue");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color HUD Blue validated as type color, kind hex, role accent\./);
       await page.locator("#assetRoleSelect").selectOption("hud");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud.sky-blue");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud.hud-blue");
       await expect(page.locator("#addAssetButton")).toBeEnabled();
       await page.locator("#addAssetButton").click();
-      await expect(page.locator("#assetList")).toContainText("assets.color.hud.primary-hud.sky-blue");
+      await expect(page.locator("#assetList")).toContainText("assets.color.hud.primary-hud.hud-blue");
       await expect(page.locator('#assetPreview [data-preview-type="color"][data-preview-kind="hex"]')).toBeVisible();
-      await expect(page.locator(".asset-manager-v2__preview-color span")).toHaveCSS("background-color", "rgb(51, 102, 255)");
+      await expect(page.locator(".asset-manager-v2__preview-color span")).toHaveCSS("background-color", "rgb(120, 183, 255)");
       await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"color\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"kind\": \"hex\"");
-      await expect(page.locator("#inspectorOutput")).toContainText("\"name\": \"Sky Blue\"");
+      await expect(page.locator("#inspectorOutput")).toContainText("\"name\": \"HUD Blue\"");
 
       await expect(page.locator("#workspaceInsertAssetsButton")).toBeEnabled();
       await page.locator("#workspaceInsertAssetsButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Inserted 4 validated assets into Workspace V2 tools\.asset-browser\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Inserted 4 validated assets into Workspace Manager V2 tools\.asset-browser\.assets/);
 
       const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
       expect(storedContext.workspaceManifest.tools["asset-browser"].assets["assets.audio.sound.fire"]).toEqual({
@@ -1376,20 +1436,20 @@ test.describe("Asset Manager V2", () => {
         role: "sprite",
         source: "asset-manager-v2"
       });
-      expect(storedContext.workspaceManifest.tools["asset-browser"].assets["assets.color.hud.primary-hud.sky-blue"]).toEqual({
-        path: "palette://workspace/sky-blue",
+      expect(storedContext.workspaceManifest.tools["asset-browser"].assets["assets.color.hud.primary-hud.hud-blue"]).toEqual({
+        path: "palette://workspace/hud-blue",
         type: "color",
         kind: "hex",
         role: "hud",
         source: "asset-manager-v2",
         color: {
-          hex: "#3366FF",
-          name: "Sky Blue",
-          symbol: "S",
-          source: "Workspace",
-          tags: ["cool", "ui"]
+          hex: "#78B7FF",
+          name: "HUD Blue",
+          symbol: "*"
         }
       });
+      expect(storedContext.activePalette.source).toBe("workspace-manager-v2");
+      expect(storedContext.activePalette.swatches.length).toBeGreaterThan(0);
       expect(storedContext.workspaceManifest.tools["asset-manager-v2"]).toBeUndefined();
       expect(storedContext.workspaceManifest.tools["workspace-v2"]).toBeUndefined();
       expect(Object.keys(storedContext.workspaceManifest.tools).sort()).toEqual(["asset-browser", "palette-browser"]);

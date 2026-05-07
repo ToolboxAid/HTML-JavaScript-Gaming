@@ -39,7 +39,7 @@ export class ActionNavControl {
 
   applyLaunchMode() {
     const params = new URLSearchParams(this.location.search);
-    const mode = params.get("launch") === "workspace" || params.get("fromTool") === "workspace-v2"
+    const mode = params.get("launch") === "workspace" && params.get("fromTool") === "workspace-manager-v2"
       ? "workspace"
       : "tool";
     this.toolNav.hidden = mode !== "tool";

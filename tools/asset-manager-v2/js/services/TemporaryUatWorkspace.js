@@ -1,5 +1,5 @@
 // Temporary UAT-only workspace session loader. Keep this isolated so
-// ?workspace=UAT can be removed without touching normal Workspace V2 loading.
+// ?workspace=UAT can be removed without touching normal Workspace Manager V2 loading.
 const TEMPORARY_UAT_GAME_ROOT = "games/Asteroids/";
 const TEMPORARY_UAT_ASSETS_PATH = "games/Asteroids/assets";
 

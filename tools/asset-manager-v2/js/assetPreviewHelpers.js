@@ -22,16 +22,25 @@ function workspaceGameRoot(options = {}) {
   return gameId ? `games/${gameId}/` : "";
 }
 
+function workspaceAssetsPath(options = {}) {
+  const explicitAssetsPath = sanitizeText(options.workspaceAssetsPath || options.assetsPath).replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
+  return /^games\/[^/]+\/assets$/i.test(explicitAssetsPath) ? explicitAssetsPath : "";
+}
+
 function workspaceGameAssetPath(path, options = {}) {
   const normalizedPath = sanitizeText(path).replace(/\\/g, "/").replace(/^\/+/, "");
   if (!options.workspaceMode || hasUrlProtocol(normalizedPath) || /^games\//i.test(normalizedPath) || !/^assets\//i.test(normalizedPath)) {
     return { path, error: "" };
   }
+  const assetsPath = workspaceAssetsPath(options);
+  if (assetsPath) {
+    return { path: `${assetsPath}/${normalizedPath.replace(/^assets\//i, "")}`, error: "" };
+  }
   const gameRoot = workspaceGameRoot(options);
   if (!gameRoot) {
     return {
       path: "",
-      error: `Preview path ${normalizedPath} cannot be resolved because Workspace V2 game context is missing.`
+      error: `Preview path ${normalizedPath} cannot be resolved because Workspace Manager V2 game context is missing.`
     };
   }
   return { path: `${gameRoot}${normalizedPath}`, error: "" };

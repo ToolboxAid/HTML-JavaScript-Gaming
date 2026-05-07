@@ -90,6 +90,11 @@ export class WorkspaceManagerV2ContextService {
       gameId: game.id,
       gameRoot,
       assetsPath,
+      activePalette: {
+        name: palette.name,
+        source: "workspace-manager-v2",
+        swatches: clone(palette.swatches)
+      },
       workspaceManifest
     };
     return {

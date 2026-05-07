@@ -125,8 +125,8 @@ export class AssetManagerV2App {
     }
 
     const previewContext = this.workspaceBridge.readWorkspacePreviewContext();
-    if (!previewContext.workspaceGameId || !previewContext.workspaceGameRoot) {
-      return { ok: false, reason: "Workspace game context is missing." };
+    if (!previewContext.workspaceGameId || !previewContext.workspaceGameRoot || !previewContext.workspaceAssetsPath) {
+      return { ok: false, reason: "Workspace Manager V2 gameRoot or assetsPath context is missing." };
     }
 
     const paletteResult = this.workspaceBridge.readWorkspacePaletteSwatches();
@@ -193,7 +193,7 @@ export class AssetManagerV2App {
     this.selectedAssetId = Object.keys(this.assets)[0] || "";
     this.undoStack = [];
     this.redoStack = [];
-    this.statusLog.ok(`Workspace mode loaded ${Object.keys(this.assets).length} validated assets from tools.asset-browser.assets.`);
+    this.statusLog.ok(`Workspace Manager V2 loaded ${Object.keys(this.assets).length} validated assets from tools.asset-browser.assets.`);
     this.missingFileAssetIds = await this.logMissingReferencedFiles(this.assets);
   }
 
@@ -220,7 +220,7 @@ export class AssetManagerV2App {
       return;
     }
     this.assetForm.setPaletteSwatches(result.swatches);
-    this.statusLog.ok(`Workspace mode loaded ${result.swatches.length} palette colors from tools.palette-browser.swatches.`);
+    this.statusLog.ok(`Workspace Manager V2 loaded ${result.swatches.length} palette colors from active palette context.`);
   }
 
   previewOptions() {
@@ -555,10 +555,10 @@ export class AssetManagerV2App {
 
   async copyWorkspaceManifest() {
     if (!this.lastWorkspaceManifest) {
-      this.statusLog.fail("No Workspace V2 manifest has been inserted in this session.");
+      this.statusLog.fail("No Workspace Manager V2 manifest has been inserted in this session.");
       return;
     }
-    await this.copyText(JSON.stringify(this.lastWorkspaceManifest, null, 2), "Workspace V2 manifest JSON copied.");
+    await this.copyText(JSON.stringify(this.lastWorkspaceManifest, null, 2), "Workspace Manager V2 manifest JSON copied.");
   }
 
   async copyText(value, successMessage) {
@@ -588,7 +588,7 @@ export class AssetManagerV2App {
     }
     this.lastWorkspaceManifest = result.workspaceManifest;
     this.inspector.showObject(result.workspaceManifest);
-    this.statusLog.ok(`Inserted ${Object.keys(validation.payload.assets).length} validated assets into Workspace V2 tools.asset-browser.assets.`);
+    this.statusLog.ok(`Inserted ${Object.keys(validation.payload.assets).length} validated assets into Workspace Manager V2 tools.asset-browser.assets.`);
     this.refreshActions();
   }
 

@@ -150,6 +150,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#launchContextSummary")).toHaveText("Session launch context is ready for Asteroids.");
       await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"activePalette"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"source": "workspace-manager-v2"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"owner": "workspace-manager-v2"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText("samples/");
       await expect(page.locator("#workspaceContextOutput")).not.toContainText("tools/");
@@ -165,8 +167,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#assetLaunchGuard")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace mode loaded 0 validated assets from tools\.asset-browser\.assets/);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace mode loaded \d+ palette colors from tools\.palette-browser\.swatches/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated assets from tools\.asset-browser\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
 
       const workspacePreviewContext = await page.evaluate(async () => {
         const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
@@ -174,6 +176,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(workspacePreviewContext).toEqual({
         workspaceMode: true,
+        workspaceAssetsPath: "games/Asteroids/assets",
         workspaceGameId: "Asteroids",
         workspaceGameRoot: "games/Asteroids/"
       });
@@ -187,6 +190,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.version).toBe("workspace-manager-v2");
       expect(storedContext.gameRoot).toBe("games/Asteroids/");
       expect(storedContext.assetsPath).toBe("games/Asteroids/assets");
+      expect(storedContext.activePalette.source).toBe("workspace-manager-v2");
+      expect(storedContext.activePalette.swatches.length).toBeGreaterThan(0);
       expect(storedContext.workspaceManifest.tools["palette-browser"].swatches.length).toBeGreaterThan(0);
       expect(storedContext.workspaceManifest.tools["asset-browser"].assets).toEqual({});
       expect(JSON.stringify(storedContext)).not.toMatch(/samples\//i);
