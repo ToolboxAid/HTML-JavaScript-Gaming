@@ -17,15 +17,56 @@ function contentTypeForPath(filePath) {
   return "application/octet-stream";
 }
 
+function isInsideRepoRoot(absolutePath) {
+  const relativePath = path.relative(repoRoot, absolutePath);
+  return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
+}
+
 export async function startRepoServer() {
   const previewWrites = new Map();
+  const previewAbsoluteWrites = new Map();
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
       const decodedPath = decodeURIComponent(requestUrl.pathname);
+      if (request.method === "GET" && decodedPath === "/__workspace-manager-v2/repo-root") {
+        response.statusCode = 200;
+        response.setHeader("Content-Type", "application/json; charset=utf-8");
+        response.end(JSON.stringify({ repoRoot }));
+        return;
+      }
+      if (request.method === "PUT" && decodedPath === "/__workspace-manager-v2/write-preview") {
+        const absoluteWritePath = String(request.headers["x-workspace-preview-absolute-path"] || "");
+        const relativeWritePath = String(request.headers["x-workspace-preview-relative-path"] || "");
+        const resolvedWritePath = path.resolve(absoluteWritePath);
+        const repoRelativePath = relativeWritePath
+          ? relativeWritePath.replaceAll("\\", "/").replace(/^\/+/, "")
+          : path.relative(repoRoot, resolvedWritePath).replaceAll("\\", "/");
+        if (!absoluteWritePath || !isInsideRepoRoot(resolvedWritePath)) {
+          response.statusCode = 403;
+          response.end("Preview write path must be inside the repo root.");
+          return;
+        }
+        if (!repoRelativePath || repoRelativePath.startsWith("..") || path.isAbsolute(repoRelativePath)) {
+          response.statusCode = 400;
+          response.end("Preview write relative path is invalid.");
+          return;
+        }
+        const bodyChunks = [];
+        for await (const chunk of request) {
+          bodyChunks.push(chunk);
+        }
+        const body = Buffer.concat(bodyChunks).toString("utf8");
+        previewWrites.set(repoRelativePath, body);
+        previewAbsoluteWrites.set(resolvedWritePath, body);
+        response.statusCode = 200;
+        response.setHeader("Content-Type", "text/plain; charset=utf-8");
+        response.end("OK");
+        return;
+      }
       const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
       const absolutePath = path.resolve(repoRoot, `.${normalizedPath}`);
-      if (!absolutePath.startsWith(repoRoot)) {
+      if (!isInsideRepoRoot(absolutePath)) {
         response.statusCode = 403;
         response.end("Forbidden");
         return;
@@ -71,6 +112,8 @@ export async function startRepoServer() {
 
   return {
     baseUrl: `http://127.0.0.1:${address.port}`,
+    repoRoot,
+    previewAbsoluteWrites,
     previewWrites,
     close: async () => {
       await new Promise((resolve, reject) => {

@@ -150,9 +150,17 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail(`Launch blocked: ${validation.message}`);
       return;
     }
+    const launchContextResult = await this.contextService.buildLaunchContextForTool(this.activeContext, toolId);
+    if (!launchContextResult.ok) {
+      this.statusLog.fail(`Launch blocked: ${launchContextResult.message}`);
+      return;
+    }
+    if (launchContextResult.repoRoot) {
+      this.statusLog.ok(`Resolved Workspace Manager V2 launch repoRoot: ${launchContextResult.repoRoot}`);
+    }
     const hostContextId = this.activeHostContextId
-      ? this.contextService.writePersistedContext(this.activeHostContextId, this.activeContext)
-      : this.contextService.persistContext(this.activeContext);
+      ? this.contextService.writePersistedContext(this.activeHostContextId, launchContextResult.context)
+      : this.contextService.persistContext(launchContextResult.context);
     this.activeHostContextId = hostContextId;
     this.statusLog.ok(`Stored Workspace Manager V2 schema-valid manifest ${hostContextId} for ${toolId}.`);
     this.contextService.launchTool(toolId, hostContextId, { workspaceMode: this.activeWorkspaceMode });

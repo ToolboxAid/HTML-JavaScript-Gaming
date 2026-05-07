@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
@@ -513,8 +514,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#paletteStatus")).toHaveText("Loaded active workspace palette Asteroids Palette.");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await page.locator("#activeGameSelect").selectOption("Pong");
-      await expect(page.locator("#activeGameSummary")).toContainText("games/Pong/");
       await expect(previewTile).toBeEnabled();
       await expect(previewTile).toContainText("Schema-valid manifest");
       await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
@@ -524,7 +523,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Generate Image", "Return to Workspace"]);
       await expect(page.locator("#executeBtn")).toBeVisible();
       await expect(page.locator("#executeBtn")).toBeEnabled();
-      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+      await expect(page.locator("#repoSelectedValue")).toHaveText(server.repoRoot);
       await expect(page.locator("#workspaceContextValue")).toHaveCount(0);
       await expect(page.locator("#repoDestinationContent")).not.toContainText("Workspace launch");
       await expect(page.locator("#targetTypeGames")).toBeChecked();
@@ -532,20 +531,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('label[for="targetTypeSamples"]')).toBeHidden();
       await expect(page.locator('label[for="targetTypeTools"]')).toBeHidden();
       await expect(page.locator("#assetFolder")).toHaveValue("assets/images");
-      await expect(page.locator("#sampleList")).toHaveValue("Pong");
-      await expect(page.locator("#previewTargetValue")).toHaveText("games/Pong/assets/images/preview.svg");
+      await expect(page.locator("#sampleList")).toHaveValue("Asteroids");
+      await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#lastGeneratedImagePreview")).toBeVisible();
-      await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Preview target: games/Pong/assets/images/preview.svg");
-      await expect(page.locator("#log")).toContainText("OK Workspace launch context hydrated for Pong.");
-      await expect(page.locator("#log")).toContainText("Repo selected from Workspace Manager V2 manifest repoRoot: HTML-JavaScript-Gaming.");
+      await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Preview target: games/Asteroids/assets/images/preview.png");
+      const absoluteAsteroidsPreviewPath = path.join(server.repoRoot, "games", "Asteroids", "assets", "images", "preview.svg");
+      await expect(page.locator("#log")).toContainText("OK Workspace launch context hydrated for Asteroids.");
+      await expect(page.locator("#log")).toContainText(`Repo selected from Workspace Manager V2 manifest repoRoot: ${server.repoRoot}.`);
+      await expect(page.locator("#log")).toContainText(`Resolved repoRoot: ${server.repoRoot}`);
+      await expect(page.locator("#log")).toContainText(`Resolved absolute preview output path: ${absoluteAsteroidsPreviewPath}`);
       await expect(page.locator("#log")).toContainText("Asset folder: assets\\images");
-      await expect(page.locator("#log")).toContainText("Manifest preview asset: assets.image.preview.preview (image/svg)");
-      await expect(page.locator("#log")).toContainText("Manifest preview source: games/Pong/assets/images/preview.svg");
-      await expect(page.locator("#log")).toContainText("Generated preview target: games/Pong/assets/images/preview.svg");
-      await expect(page.locator("#log")).toContainText("Preview target: games/Pong/assets/images/preview.svg");
-      await expect(page.locator("#log")).toContainText("WARN Workspace background image role is missing; using manifest palette background color Background #05070A.");
+      await expect(page.locator("#log")).toContainText("Manifest preview asset: assets.image.preview.preview (image/png)");
+      await expect(page.locator("#log")).toContainText("Manifest preview source: games/Asteroids/assets/images/preview.png");
+      await expect(page.locator("#log")).toContainText("Generated preview target: games/Asteroids/assets/images/preview.svg");
+      await expect(page.locator("#log")).toContainText("Preview target: games/Asteroids/assets/images/preview.svg");
+      await expect(page.locator("#log")).toContainText("Workspace background source: assets.image.background.deluxe -> games/Asteroids/assets/images/deluxe.png");
+      await expect(page.locator("#log")).toContainText("Workspace background color: Space Black #020617 from palette-manager-v2 swatch.");
       await expect(page.locator("#log")).not.toContainText("FAIL Workspace background hydration");
-      await expect(page.locator("#log")).toContainText("OK Workspace manifest preview source is valid at games/Pong/assets/images/preview.svg.");
+      await expect(page.locator("#log")).toContainText("OK Workspace manifest preview source is valid at games/Asteroids/assets/images/preview.png.");
+      const previewStatusHeaderOrder = await page.locator(".preview-generator-v2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
+      expect(previewStatusHeaderOrder).toEqual(["Status", "+", "Clear"]);
       await page.locator("#baseUrl").fill(server.baseUrl);
       await expect(page.locator("#executeBtn")).toBeEnabled();
       let previewDownloadOpened = false;
@@ -553,11 +558,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         previewDownloadOpened = true;
       });
       await page.locator("#executeBtn").click();
-      await expect(page.locator("#log")).toContainText("Workspace launch direct preview write target: games/Pong/assets/images/preview.svg.", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText("Direct preview write target: games/Pong/assets/images/preview.svg", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText("OK   Pong", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Workspace launch direct preview write target: games/Asteroids/assets/images/preview.svg.", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Workspace launch absolute preview output path: ${absoluteAsteroidsPreviewPath}.`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Direct preview write target: games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Direct preview absolute path: ${absoluteAsteroidsPreviewPath}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`OK Direct preview write completed: ${absoluteAsteroidsPreviewPath}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("OK   Asteroids", { timeout: 20000 });
       expect(previewDownloadOpened).toBe(false);
-      expect(server.previewWrites.get("games/Pong/assets/images/preview.svg")).toContain("<svg");
+      expect(server.previewWrites.get("games/Asteroids/assets/images/preview.svg")).toContain("<svg");
+      expect(server.previewAbsoluteWrites.get(absoluteAsteroidsPreviewPath)).toContain("<svg");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       expect(pageErrors).toEqual([]);
@@ -597,6 +606,36 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const exportedManifest = JSON.parse(await readFile(await download.path(), "utf8"));
       expect(exportedManifest).toEqual(importedManifest);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Exported schema-valid Workspace Manager V2 manifest workspace-manager-v2-Asteroids-imported\./);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("blocks Preview Generator V2 workspace direct write when repoRoot is not absolute", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    const hostContextId = "workspace-manager-v2-display-root-context";
+    const displayRootManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
+    displayRootManifest.repoRoot = "HTML-JavaScript-Gaming";
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await page.addInitScript(({ contextId, manifest }) => {
+      window.sessionStorage.setItem(contextId, JSON.stringify(manifest));
+    }, { contextId: hostContextId, manifest: displayRootManifest });
+    await coverageReporter.start(page);
+    await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
+
+    try {
+      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+      await expect(page.locator("#executeBtn")).toBeDisabled();
+      await expect(page.locator("#log")).toContainText("FAIL Workspace launch context hydration: repoRoot must be an absolute filesystem path, received HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).not.toContainText("OK Workspace launch context hydrated");
+      expect(server.previewWrites.size).toBe(0);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

@@ -383,6 +383,8 @@ test.describe("Preview Generator V2 baseline", () => {
 
       const statusHeader = page.locator('#statusAccordion .accordion-v2__header[aria-controls="statusAccordionContent"]');
       const statusContent = page.locator("#statusAccordionContent");
+      const statusHeaderOrder = await statusHeader.evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
+      expect(statusHeaderOrder).toEqual(["Status", "+", "Clear"]);
       await expect(statusHeader.locator("#clearLogBtn")).toBeVisible();
       await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
       await expect(statusContent).toBeVisible();
