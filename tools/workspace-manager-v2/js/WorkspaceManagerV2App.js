@@ -31,7 +31,7 @@ export class WorkspaceManagerV2App {
     });
     this.summary.clear();
     this.launchControl.setEnabled(false);
-    this.statusLog.ok("Workspace Manager V2 ready. Select a game workspace to create session launch context.");
+    this.statusLog.ok("Workspace Manager V2 ready. Select a game workspace to create a schema-valid manifest.");
   }
 
   async selectGame(gameId) {
@@ -68,12 +68,12 @@ export class WorkspaceManagerV2App {
   }
 
   launchAssetManager() {
-    if (!this.activeContext || !this.activeGame || !this.activeContext.activePalette?.swatches?.length) {
+    if (!this.activeContext || !this.activeGame || !this.activeContext.tools?.["palette-browser"]?.swatches?.length) {
       this.statusLog.fail("Launch blocked: active game context and palette are required.");
       return;
     }
     const hostContextId = this.contextService.persistContext(this.activeContext);
-    this.statusLog.ok(`Stored Workspace Manager V2 session context ${hostContextId}.`);
+    this.statusLog.ok(`Stored Workspace Manager V2 schema-valid manifest ${hostContextId}.`);
     this.contextService.launchAssetManager(hostContextId);
   }
 }

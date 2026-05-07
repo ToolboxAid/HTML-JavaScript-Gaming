@@ -146,12 +146,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activeGameSummary")).toContainText("games/Asteroids/");
       await expect(page.locator("#activePaletteSummary")).toContainText("Asteroids Palette");
       await expect(page.locator("#activePaletteSummary")).toContainText("active colors");
-      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 registry context contains 0 managed assets.");
-      await expect(page.locator("#launchContextSummary")).toHaveText("Session launch context is ready for Asteroids.");
+      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 0 managed assets.");
+      await expect(page.locator("#launchContextSummary")).toHaveText("Schema-valid manifest is ready for Asteroids.");
       await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');
-      await expect(page.locator("#workspaceContextOutput")).toContainText('"activePalette"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"source": "workspace-manager-v2"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"asset-manager-v2"');
+      await expect(page.locator("#workspaceContextOutput")).not.toContainText('"activePalette"');
+      await expect(page.locator("#workspaceContextOutput")).not.toContainText('"toolId"');
+      await expect(page.locator("#workspaceContextOutput")).not.toContainText('"workspaceManifest"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"workspaceMetadata"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText("samples/");
       await expect(page.locator("#workspaceContextOutput")).not.toContainText("tools/");
@@ -167,7 +170,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#assetLaunchGuard")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated Asset Manager V2 assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated assets from tools\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
 
       const workspacePreviewContext = await page.evaluate(async () => {
@@ -187,16 +190,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const hostContextId = url.searchParams.get("hostContextId");
         return JSON.parse(sessionStorage.getItem(hostContextId));
       });
-      expect(storedContext.version).toBe("workspace-manager-v2");
+      expect(storedContext.documentKind).toBe("workspace-manifest");
+      expect(storedContext.toolId).toBeUndefined();
+      expect(storedContext.activePalette).toBeUndefined();
+      expect(storedContext.workspaceManifest).toBeUndefined();
+      expect(storedContext.gameId).toBe("Asteroids");
       expect(storedContext.gameRoot).toBe("games/Asteroids/");
       expect(storedContext.assetsPath).toBe("games/Asteroids/assets");
-      expect(storedContext.activePalette.source).toBe("workspace-manager-v2");
-      expect(storedContext.activePalette.swatches.length).toBeGreaterThan(0);
-      expect(storedContext.workspaceManifest.tools["palette-browser"].swatches.length).toBeGreaterThan(0);
-      expect(storedContext.workspaceManifest.tools["asset-browser"].assets).toEqual({});
-      expect(storedContext.workspaceManifest.gameId).toBeUndefined();
-      expect(storedContext.workspaceManifest.workspaceMetadata).toBeUndefined();
-      expect(storedContext.workspaceManifest.tools["asset-browser"]).toEqual({ assets: {} });
+      expect(storedContext.tools["palette-browser"].swatches.length).toBeGreaterThan(0);
+      expect(storedContext.tools["asset-manager-v2"].assets).toEqual({});
+      expect(storedContext.workspaceMetadata).toBeUndefined();
+      expect(storedContext.tools["asset-browser"]).toBeUndefined();
+      expect(storedContext.tools["asset-manager-v2"]).toEqual({ assets: {} });
       const schemaValidation = await page.evaluate(async () => {
         const [workspaceSchema, paletteSchema, assetSchema] = await Promise.all([
           fetch("/tools/schemas/workspace.manifest.schema.json", { cache: "no-store" }).then((response) => response.json()),
@@ -204,10 +209,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           fetch("/tools/schemas/tools/asset-browser.schema.json", { cache: "no-store" }).then((response) => response.json())
         ]);
         const url = new URL(window.location.href);
-        const context = JSON.parse(sessionStorage.getItem(url.searchParams.get("hostContextId")));
-        const manifest = context.workspaceManifest;
+        const manifest = JSON.parse(sessionStorage.getItem(url.searchParams.get("hostContextId")));
         const palettePayload = manifest.tools["palette-browser"];
-        const assetPayload = manifest.tools["asset-browser"];
+        const assetPayload = manifest.tools["asset-manager-v2"];
         const extraKeys = (value, schema) => Object.keys(value).filter((key) => !Object.hasOwn(schema.properties || {}, key));
         const missingKeys = (value, schema) => (schema.required || []).filter((key) => !Object.hasOwn(value, key));
         const swatchExtraKeys = palettePayload.swatches.flatMap((swatch, index) => (
@@ -238,7 +242,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         paletteMissingKeys: [],
         swatchExtraKeys: [],
         swatchMissingKeys: [],
-        toolKeys: ["asset-browser", "palette-browser"],
+        toolKeys: ["asset-manager-v2", "palette-browser"],
         unsupportedToolKeys: []
       });
       expect(JSON.stringify(storedContext)).not.toMatch(/samples\//i);

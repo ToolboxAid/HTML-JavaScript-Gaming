@@ -25,6 +25,13 @@ function hasOnlyGamesRoot(value) {
   return path.startsWith("games/") && !path.includes("/samples/") && !path.includes("/tools/");
 }
 
+function isWorkspaceManifest(value) {
+  return isPlainObject(value)
+    && value.documentKind === "workspace-manifest"
+    && typeof value.schema === "string"
+    && isPlainObject(value.tools);
+}
+
 export class WorkspaceBridge {
   constructor({ windowRef = window }) {
     this.window = windowRef;
@@ -39,46 +46,50 @@ export class WorkspaceBridge {
     return new URLSearchParams(this.window.location.search).get("hostContextId") || "";
   }
 
-  validateWorkspaceManagerContext(context) {
-    if (!isPlainObject(context)) {
-      return { ok: false, message: "Workspace Manager V2 session context is invalid." };
-    }
-    if (context.version !== "workspace-manager-v2" || context.toolId !== "asset-manager-v2") {
-      return { ok: false, message: "Workspace Manager V2 session context is required." };
-    }
-    const workspaceManifest = this.workspaceManifestFromContext(context);
+  validateWorkspaceManagerContext(workspaceManifest) {
     if (!isPlainObject(workspaceManifest)) {
-      return { ok: false, message: "Workspace Manager V2 session context is missing workspaceManifest." };
+      return { ok: false, message: "Workspace Manager V2 manifest context is invalid." };
+    }
+    if (!isWorkspaceManifest(workspaceManifest)) {
+      return { ok: false, message: "Workspace Manager V2 launch requires a schema-valid workspace manifest." };
+    }
+    if (Object.prototype.hasOwnProperty.call(workspaceManifest, "workspaceManifest")
+      || Object.prototype.hasOwnProperty.call(workspaceManifest, "toolId")
+      || Object.prototype.hasOwnProperty.call(workspaceManifest, "activePalette")) {
+      return { ok: false, message: "Workspace Manager V2 launch no longer accepts wrapper context JSON." };
     }
     const unsupportedManifestKeys = Object.keys(workspaceManifest)
-      .filter((key) => !["$schema", "documentKind", "schema", "version", "id", "name", "tools"].includes(key));
+      .filter((key) => !["$schema", "documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"].includes(key));
     if (unsupportedManifestKeys.length) {
-      return { ok: false, message: `Workspace Manager V2 workspaceManifest includes fields not allowed by the workspace manifest schema: ${unsupportedManifestKeys.join(", ")}.` };
+      return { ok: false, message: `Workspace Manager V2 manifest includes fields not allowed by the workspace manifest schema: ${unsupportedManifestKeys.join(", ")}.` };
     }
-    const gameId = String(context.gameId || "").trim();
-    const gameRoot = normalizedGameRoot(context.gameRoot);
-    const assetsPath = normalizedAssetsPath(context.assetsPath);
+    const gameId = String(workspaceManifest.gameId || "").trim();
+    const gameRoot = normalizedGameRoot(workspaceManifest.gameRoot);
+    const assetsPath = normalizedAssetsPath(workspaceManifest.assetsPath);
     if (!gameId || !gameRoot || !assetsPath) {
-      return { ok: false, message: "Workspace Manager V2 session context is missing gameRoot or assetsPath." };
+      return { ok: false, message: "Workspace Manager V2 manifest is missing gameRoot or assetsPath." };
     }
     if (!hasOnlyGamesRoot(gameRoot) || !hasOnlyGamesRoot(assetsPath)) {
-      return { ok: false, message: "Workspace Manager V2 session context must use games-only roots." };
+      return { ok: false, message: "Workspace Manager V2 manifest must use games-only roots." };
     }
     if (assetsPath !== `${gameRoot.replace(/\/$/, "")}/assets`) {
       return { ok: false, message: "Workspace Manager V2 assetsPath must match the active game root assets folder." };
     }
-    const activePalette = context.activePalette;
-    if (!isPlainObject(activePalette) || !Array.isArray(activePalette.swatches) || !activePalette.swatches.length) {
-      return { ok: false, message: "Workspace Manager V2 session context is missing active palette swatches." };
+    const palettePayload = workspaceManifest.tools["palette-browser"];
+    if (!isPlainObject(palettePayload) || !Array.isArray(palettePayload.swatches) || !palettePayload.swatches.length) {
+      return { ok: false, message: "Workspace Manager V2 manifest is missing active palette swatches." };
     }
-    if (!isPlainObject(workspaceManifest.tools?.["asset-browser"]?.assets)) {
-      return { ok: false, message: "Workspace Manager V2 session context is missing tools.asset-browser.assets." };
+    if (!isPlainObject(workspaceManifest.tools?.["asset-manager-v2"]?.assets)) {
+      return { ok: false, message: "Workspace Manager V2 manifest is missing tools.asset-manager-v2.assets." };
     }
-    const assetPayloadKeys = Object.keys(workspaceManifest.tools["asset-browser"]);
+    if (Object.prototype.hasOwnProperty.call(workspaceManifest.tools, "asset-browser")) {
+      return { ok: false, message: "Workspace Manager V2 manifest must use tools.asset-manager-v2, not tools.asset-browser." };
+    }
+    const assetPayloadKeys = Object.keys(workspaceManifest.tools["asset-manager-v2"]);
     if (assetPayloadKeys.some((key) => key !== "assets")) {
       return { ok: false, message: "Workspace Manager V2 asset payload must match the Asset Manager V2 asset schema." };
     }
-    return { ok: true, gameId, gameRoot, assetsPath, activePalette, workspaceManifest };
+    return { ok: true, gameId, gameRoot, assetsPath, activePalette: palettePayload, workspaceManifest };
   }
 
   readContext() {
@@ -88,26 +99,26 @@ export class WorkspaceBridge {
     }
     const rawValue = this.window.sessionStorage.getItem(hostContextId);
     if (!rawValue) {
-      return { ok: false, message: "Workspace Manager V2 session context was not found in sessionStorage." };
+      return { ok: false, message: "Workspace Manager V2 manifest was not found in sessionStorage." };
     }
     try {
-      const context = JSON.parse(rawValue);
-      if (!isPlainObject(context)) {
-        return { ok: false, message: "Workspace Manager V2 session context is invalid." };
+      const workspaceManifest = JSON.parse(rawValue);
+      if (!isPlainObject(workspaceManifest)) {
+        return { ok: false, message: "Workspace Manager V2 manifest context is invalid." };
       }
-      const validation = this.validateWorkspaceManagerContext(context);
+      const validation = this.validateWorkspaceManagerContext(workspaceManifest);
       if (!validation.ok) {
         return validation;
       }
-      return { ok: true, hostContextId, context, ...validation };
+      return { ok: true, hostContextId, context: workspaceManifest, ...validation };
     } catch (error) {
-      return { ok: false, message: `Workspace Manager V2 session context JSON is invalid: ${error.message}` };
+      return { ok: false, message: `Workspace Manager V2 manifest JSON is invalid: ${error.message}` };
     }
   }
 
   workspaceManifestFromContext(context) {
-    if (isPlainObject(context.workspaceManifest)) {
-      return context.workspaceManifest;
+    if (isWorkspaceManifest(context)) {
+      return context;
     }
     return null;
   }
@@ -119,11 +130,11 @@ export class WorkspaceBridge {
     }
     const workspaceManifest = this.workspaceManifestFromContext(contextResult.context);
     if (!isPlainObject(workspaceManifest)) {
-      return { ok: false, message: "Workspace Manager V2 session context is missing workspaceManifest." };
+      return { ok: false, message: "Workspace Manager V2 manifest context is invalid." };
     }
-    const assetPayload = workspaceManifest.tools?.["asset-browser"];
+    const assetPayload = workspaceManifest.tools?.["asset-manager-v2"];
     if (!isPlainObject(assetPayload) || !isPlainObject(assetPayload.assets)) {
-      return { ok: false, message: "Workspace Manager V2 session context is missing tools.asset-browser.assets." };
+      return { ok: false, message: "Workspace Manager V2 manifest is missing tools.asset-manager-v2.assets." };
     }
     return { ok: true, payload: { assets: clone(assetPayload.assets) } };
   }
@@ -174,21 +185,19 @@ export class WorkspaceBridge {
     if (!contextResult.ok) {
       return contextResult;
     }
-    const nextContext = clone(contextResult.context);
-    const workspaceManifest = this.workspaceManifestFromContext(nextContext);
+    const workspaceManifest = clone(contextResult.context);
     if (!isPlainObject(workspaceManifest)) {
-      return { ok: false, message: "Workspace Manager V2 session context is missing workspaceManifest." };
+      return { ok: false, message: "Workspace Manager V2 manifest context is invalid." };
     }
     if (!isPlainObject(workspaceManifest.tools)) {
       return { ok: false, message: "Workspace Manager V2 session context is missing tools." };
     }
-    if (!isPlainObject(workspaceManifest.tools["asset-browser"]) || !isPlainObject(workspaceManifest.tools["asset-browser"].assets)) {
-      return { ok: false, message: "Workspace Manager V2 session context is missing tools.asset-browser.assets." };
+    if (!isPlainObject(workspaceManifest.tools["asset-manager-v2"]) || !isPlainObject(workspaceManifest.tools["asset-manager-v2"].assets)) {
+      return { ok: false, message: "Workspace Manager V2 manifest is missing tools.asset-manager-v2.assets." };
     }
 
-    workspaceManifest.tools["asset-browser"].assets = clone(payload.assets);
-    nextContext.workspaceManifest = workspaceManifest;
-    this.window.sessionStorage.setItem(contextResult.hostContextId, JSON.stringify(nextContext));
+    workspaceManifest.tools["asset-manager-v2"].assets = clone(payload.assets);
+    this.window.sessionStorage.setItem(contextResult.hostContextId, JSON.stringify(workspaceManifest));
     return { ok: true, workspaceManifest: clone(workspaceManifest) };
   }
 }

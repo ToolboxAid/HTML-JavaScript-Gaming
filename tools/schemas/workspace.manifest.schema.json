@@ -3,7 +3,7 @@
   "$id": "tools/schemas/workspace.manifest.schema.json",
   "title": "Workspace Manifest",
   "type": "object",
-  "required": ["documentKind", "schema", "version", "id", "name", "tools"],
+  "required": ["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -30,9 +30,21 @@
       "type": "string",
       "minLength": 1
     },
+    "gameId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gameRoot": {
+      "type": "string",
+      "pattern": "^games/[^/]+/$"
+    },
+    "assetsPath": {
+      "type": "string",
+      "pattern": "^games/[^/]+/assets$"
+    },
     "tools": {
       "type": "object",
-      "required": ["palette-browser"],
+      "required": ["palette-browser", "asset-manager-v2"],
       "additionalProperties": false,
       "description": "Workspace-owned tool entry map keyed by canonical registry ids; payload schemas are referenced, never inlined here.",
       "properties": {
@@ -56,6 +68,9 @@
         },
         "skin-editor": {
           "$ref": "./tools/skin-editor.schema.json"
+        },
+        "asset-manager-v2": {
+          "$ref": "./tools/asset-browser.schema.json"
         },
         "asset-browser": {
           "$ref": "./tools/asset-browser.schema.json"

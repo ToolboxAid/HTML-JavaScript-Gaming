@@ -1,5 +1,5 @@
-const ASSET_MANAGER_TOOL_ID = "asset-manager-v2";
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
+const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 
 const GAME_OPTIONS = Object.freeze([
   Object.freeze({
@@ -46,6 +46,21 @@ function readPaletteFromManifest(manifest) {
   };
 }
 
+function schemaProperties(schema) {
+  return isPlainObject(schema?.properties) ? schema.properties : {};
+}
+
+function missingRequiredFields(value, schema) {
+  return (Array.isArray(schema?.required) ? schema.required : [])
+    .filter((key) => !Object.prototype.hasOwnProperty.call(value, key));
+}
+
+function unsupportedFields(value, schema) {
+  const properties = schemaProperties(schema);
+  return Object.keys(value)
+    .filter((key) => !Object.prototype.hasOwnProperty.call(properties, key));
+}
+
 export class WorkspaceManagerV2ContextService {
   constructor({
     fetchRef = window.fetch?.bind(window),
@@ -84,22 +99,13 @@ export class WorkspaceManagerV2ContextService {
       gameRoot,
       palette
     });
-    const context = {
-      version: "workspace-manager-v2",
-      toolId: ASSET_MANAGER_TOOL_ID,
-      gameId: game.id,
-      gameRoot,
-      assetsPath,
-      activePalette: {
-        name: palette.name,
-        source: "workspace-manager-v2",
-        swatches: clone(palette.swatches)
-      },
-      workspaceManifest
-    };
+    const validation = await this.validateGeneratedManifest(workspaceManifest);
+    if (!validation.ok) {
+      return validation;
+    }
     return {
       ok: true,
-      context,
+      context: workspaceManifest,
       game: {
         ...game,
         assetsPath,
@@ -108,6 +114,65 @@ export class WorkspaceManagerV2ContextService {
       },
       paletteSwatches: clone(palette.swatches)
     };
+  }
+
+  async loadWorkspaceManifestSchema() {
+    if (typeof this.fetchRef !== "function") {
+      return { ok: false, message: "Fetch API is unavailable; Workspace Manager V2 cannot validate workspace manifests." };
+    }
+    try {
+      const response = await this.fetchRef(WORKSPACE_MANIFEST_SCHEMA_PATH, { cache: "no-store" });
+      if (!response.ok) {
+        return { ok: false, message: `Unable to load ${WORKSPACE_MANIFEST_SCHEMA_PATH}: ${response.status}` };
+      }
+      const schema = await response.json();
+      if (!isPlainObject(schema)) {
+        return { ok: false, message: `${WORKSPACE_MANIFEST_SCHEMA_PATH} did not return a schema object.` };
+      }
+      return { ok: true, schema };
+    } catch (error) {
+      return { ok: false, message: `Unable to load ${WORKSPACE_MANIFEST_SCHEMA_PATH}: ${error.message}` };
+    }
+  }
+
+  async validateGeneratedManifest(manifest) {
+    const schemaResult = await this.loadWorkspaceManifestSchema();
+    if (!schemaResult.ok) {
+      return schemaResult;
+    }
+    const errors = this.validateManifestAgainstSchema(manifest, schemaResult.schema);
+    return errors.length
+      ? { ok: false, message: `Generated Workspace Manager V2 manifest failed schema validation: ${errors.join(" | ")}` }
+      : { ok: true };
+  }
+
+  validateManifestAgainstSchema(manifest, schema) {
+    const errors = [];
+    if (!isPlainObject(manifest)) {
+      return ["root must be an object"];
+    }
+    missingRequiredFields(manifest, schema).forEach((key) => {
+      errors.push(`root.${key} is required`);
+    });
+    unsupportedFields(manifest, schema).forEach((key) => {
+      errors.push(`root.${key} is not allowed`);
+    });
+
+    if (!isPlainObject(manifest.tools)) {
+      errors.push("root.tools must be an object");
+      return errors;
+    }
+    const toolsSchema = schemaProperties(schema).tools || {};
+    const toolProperties = schemaProperties(toolsSchema);
+    missingRequiredFields(manifest.tools, toolsSchema).forEach((key) => {
+      errors.push(`root.tools.${key} is required`);
+    });
+    Object.keys(manifest.tools).forEach((key) => {
+      if (!Object.prototype.hasOwnProperty.call(toolProperties, key)) {
+        errors.push(`root.tools.${key} is not allowed`);
+      }
+    });
+    return errors;
   }
 
   async fetchGameManifest(game) {
@@ -136,6 +201,9 @@ export class WorkspaceManagerV2ContextService {
       version: 1,
       id: `workspace-manager-v2-${game.id}`,
       name: `${game.name} Workspace Manager V2 Context`,
+      gameId: game.id,
+      gameRoot,
+      assetsPath,
       tools: {
         "palette-browser": {
           schema: "html-js-gaming.palette",
@@ -144,7 +212,7 @@ export class WorkspaceManagerV2ContextService {
           source: "workspace-manager-v2",
           swatches: clone(palette.swatches)
         },
-        "asset-browser": {
+        "asset-manager-v2": {
           assets: {}
         }
       }
