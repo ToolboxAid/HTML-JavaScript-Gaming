@@ -27,6 +27,7 @@ export class AssetCatalogControl {
     this.onDelete = onDelete;
     this.onPreviewStatus = onPreviewStatus;
     this.onSelect = onSelect;
+    this.list.tabIndex = 0;
     this.list.addEventListener("click", (event) => {
       const deleteControl = event.target.closest("[data-delete-asset-id]");
       if (deleteControl) {
@@ -41,32 +42,10 @@ export class AssetCatalogControl {
       }
       this.onSelect?.(button.dataset.assetId);
     });
-    this.list.addEventListener("keydown", (event) => {
-      if (!["ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp"].includes(event.key)) {
-        return;
-      }
-      const buttons = Array.from(this.list.querySelectorAll("button[data-asset-id]"));
-      if (!buttons.length) {
-        return;
-      }
-      const focusedButton = event.target.closest?.("button[data-asset-id]");
-      const selectedButton = buttons.find((button) => button.closest(".asset-manager-v2__asset-tile")?.classList.contains("is-selected"));
-      const currentButton = focusedButton || selectedButton || buttons[0];
-      const currentIndex = Math.max(0, buttons.indexOf(currentButton));
-      const delta = event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
-      const nextIndex = Math.max(0, Math.min(buttons.length - 1, currentIndex + delta));
-      const nextButton = buttons[nextIndex];
-      event.preventDefault();
-      if (!nextButton || nextButton === currentButton) {
-        currentButton.focus({ preventScroll: true });
-        return;
-      }
-      this.pendingFocusAssetId = nextButton.dataset.assetId || "";
-      this.onSelect?.(this.pendingFocusAssetId);
-    });
+    this.list.addEventListener("keydown", (event) => this.handleKeyboardSelection(event));
   }
 
-  render(assets, selectedAssetId) {
+  render(assets, selectedAssetId, missingFileAssetIds = new Set()) {
     const entries = this.sortedEntries(assets);
     this.countText.textContent = `${entries.length} assets`;
     if (!entries.length) {
@@ -85,6 +64,8 @@ export class AssetCatalogControl {
     this.reportPreviewStatus(previewModel);
 
     this.list.innerHTML = entries.map(([assetId, entry]) => {
+      const isSelected = assetId === selectedAssetId;
+      const isMissingFile = missingFileAssetIds.has(assetId);
       const detailTooltip = [
         `id: ${assetId}`,
         `type: ${entry.type || ""}`,
@@ -93,7 +74,7 @@ export class AssetCatalogControl {
         `path: ${entry.path || ""}`
       ].join("\n");
       return `
-      <article class="asset-manager-v2__asset-tile ${assetId === selectedAssetId ? "is-selected" : ""}" title="${escapeHtml(detailTooltip)}">
+      <article class="asset-manager-v2__asset-tile ${isSelected ? "is-selected" : ""} ${isMissingFile ? "is-missing-file" : ""}" data-asset-tile-id="${escapeHtml(assetId)}" tabindex="${isSelected ? "0" : "-1"}" title="${escapeHtml(detailTooltip)}">
         <button type="button" data-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-select">
           <span data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete" aria-label="Delete ${escapeHtml(assetId)}" title="Delete ${escapeHtml(assetId)}">X</span>
           <span class="asset-manager-v2__asset-copy">
@@ -105,6 +86,68 @@ export class AssetCatalogControl {
     `;
     }).join("");
     this.focusPendingSelection();
+  }
+
+  handleKeyboardSelection(event) {
+    const handledKeys = new Set(["ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "End", "Enter", "Home", "PageDown", "PageUp"]);
+    if (!handledKeys.has(event.key)) {
+      return;
+    }
+    const buttons = Array.from(this.list.querySelectorAll("button[data-asset-id]"));
+    if (!buttons.length) {
+      return;
+    }
+    const currentButton = this.currentKeyboardButton(event, buttons);
+    const currentIndex = Math.max(0, buttons.indexOf(currentButton));
+    const nextIndex = this.nextKeyboardIndex(event.key, currentIndex, buttons.length);
+    const nextButton = buttons[nextIndex];
+    event.preventDefault();
+    if (!nextButton) {
+      currentButton?.focus({ preventScroll: true });
+      return;
+    }
+    if (event.key === "Enter") {
+      this.pendingFocusAssetId = nextButton.dataset.assetId || "";
+      this.onSelect?.(this.pendingFocusAssetId);
+      return;
+    }
+    if (nextButton === currentButton) {
+      nextButton.focus({ preventScroll: true });
+      return;
+    }
+    this.pendingFocusAssetId = nextButton.dataset.assetId || "";
+    this.onSelect?.(this.pendingFocusAssetId);
+  }
+
+  currentKeyboardButton(event, buttons) {
+    const focusedButton = event.target.closest?.("button[data-asset-id]");
+    if (focusedButton && buttons.includes(focusedButton)) {
+      return focusedButton;
+    }
+    const focusedTile = event.target.closest?.("[data-asset-tile-id]");
+    if (focusedTile) {
+      const tileButton = buttons.find((button) => button.dataset.assetId === focusedTile.dataset.assetTileId);
+      if (tileButton) {
+        return tileButton;
+      }
+    }
+    return buttons.find((button) => button.closest(".asset-manager-v2__asset-tile")?.classList.contains("is-selected")) || buttons[0];
+  }
+
+  nextKeyboardIndex(key, currentIndex, count) {
+    if (key === "Home") {
+      return 0;
+    }
+    if (key === "End") {
+      return count - 1;
+    }
+    if (key === "ArrowLeft" || key === "ArrowUp" || key === "PageUp") {
+      return Math.max(0, currentIndex - 1);
+    }
+    if (key === "ArrowRight" || key === "ArrowDown" || key === "PageDown") {
+      return Math.min(count - 1, currentIndex + 1);
+    }
+    return currentIndex;
   }
 
   focusPendingSelection() {

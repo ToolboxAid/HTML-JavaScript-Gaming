@@ -44,6 +44,7 @@ export class AssetManagerV2App {
     this.workspaceBridge = workspaceBridge;
     this.assets = {};
     this.lastWorkspaceManifest = null;
+    this.missingFileAssetIds = new Set();
     this.schemaReady = false;
     this.selectedAssetId = "";
     this.redoStack = [];
@@ -130,7 +131,7 @@ export class AssetManagerV2App {
     this.undoStack = [];
     this.redoStack = [];
     this.statusLog.ok(`Workspace mode loaded ${Object.keys(this.assets).length} validated assets from tools.asset-browser.assets.`);
-    await this.logMissingReferencedFiles(this.assets);
+    this.missingFileAssetIds = await this.logMissingReferencedFiles(this.assets);
   }
 
   loadPaletteIfPresent() {
@@ -234,6 +235,7 @@ export class AssetManagerV2App {
 
     this.recordHistory();
     this.assets = payloadValidation.payload.assets;
+    this.missingFileAssetIds.delete(formValue.assetId);
     this.selectedAssetId = formValue.assetId;
     this.assetForm.clearEditableFields();
     this.statusLog.ok(`Added ${formValue.assetId}.`);
@@ -273,6 +275,8 @@ export class AssetManagerV2App {
 
     this.recordHistory();
     this.assets = payloadValidation.payload.assets;
+    this.missingFileAssetIds.delete(this.selectedAssetId);
+    this.missingFileAssetIds.delete(formValue.assetId);
     this.selectedAssetId = formValue.assetId;
     this.assetForm.loadAssetForEdit(formValue.assetId, entryResult.entry);
     this.statusLog.ok(`Updated ${formValue.assetId}.`);
@@ -293,6 +297,7 @@ export class AssetManagerV2App {
     }
     this.recordHistory();
     this.assets = sortedAssets(validation.payload.assets);
+    this.missingFileAssetIds.delete(assetId);
     this.selectedAssetId = Object.keys(this.assets)[0] || "";
     if (this.selectedAssetId) {
       this.assetForm.loadAssetForEdit(this.selectedAssetId, this.assets[this.selectedAssetId]);
@@ -307,6 +312,7 @@ export class AssetManagerV2App {
   captureState() {
     return {
       assets: clone(this.assets),
+      missingFileAssetIds: [...this.missingFileAssetIds],
       selectedAssetId: this.selectedAssetId
     };
   }
@@ -321,6 +327,7 @@ export class AssetManagerV2App {
 
   restoreState(snapshot) {
     this.assets = sortedAssets(snapshot.assets || {});
+    this.missingFileAssetIds = new Set(snapshot.missingFileAssetIds || []);
     this.selectedAssetId = Object.prototype.hasOwnProperty.call(this.assets, snapshot.selectedAssetId)
       ? snapshot.selectedAssetId
       : Object.keys(this.assets)[0] || "";
@@ -474,7 +481,7 @@ export class AssetManagerV2App {
       }
       this.redoStack = [];
       this.statusLog.ok(`Imported JSON with ${Object.keys(this.assets).length} validated assets.`);
-      await this.logMissingReferencedFiles(this.assets);
+      this.missingFileAssetIds = await this.logMissingReferencedFiles(this.assets);
       this.render();
       this.refreshActions();
     } catch (error) {
@@ -572,9 +579,10 @@ export class AssetManagerV2App {
   }
 
   async logMissingReferencedFiles(assets) {
+    const missingFileAssetIds = new Set();
     const fetchRef = this.window.fetch?.bind(this.window);
     if (typeof fetchRef !== "function") {
-      return;
+      return missingFileAssetIds;
     }
     for (const [assetId, entry] of sortedAssetEntries(assets)) {
       const path = String(entry?.path || "").trim();
@@ -583,23 +591,27 @@ export class AssetManagerV2App {
       }
       const previewModel = createAssetPreviewModel(assetId, entry, this.previewOptions());
       if (previewModel.previewError || !previewModel.url) {
+        missingFileAssetIds.add(assetId);
         this.statusLog.info(`File availability warning: Missing referenced file for ${assetId}: ${path}.`);
         continue;
       }
       try {
         const response = await fetchRef(previewModel.url, { cache: "no-store", method: "HEAD" });
         if (!response.ok) {
+          missingFileAssetIds.add(assetId);
           this.statusLog.info(`File availability warning: Missing referenced file for ${assetId}: ${path}.`);
         }
       } catch {
+        missingFileAssetIds.add(assetId);
         this.statusLog.info(`File availability warning: Missing referenced file for ${assetId}: ${path}.`);
       }
     }
+    return missingFileAssetIds;
   }
 
   render() {
     this.assetCatalog.setPreviewOptions(this.previewOptions());
-    this.assetCatalog.render(this.currentPayload().assets, this.selectedAssetId);
+    this.assetCatalog.render(this.currentPayload().assets, this.selectedAssetId, this.missingFileAssetIds);
     this.inspector.showObject(this.currentOutputSummary());
   }
 

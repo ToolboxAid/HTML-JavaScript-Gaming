@@ -1173,6 +1173,33 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
       await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"]')).toBeVisible();
       await expect(page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]')).toBeFocused();
+      await page.locator("#assetList").focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
+      await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
+      await page.keyboard.press("ArrowUp");
+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
+      await page.locator("#assetList").focus();
+      await page.keyboard.press("End");
+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.sprite.preview");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.sprite.preview");
+      await expect(page.locator('button[data-asset-id="assets.image.sprite.preview"]')).toBeFocused();
+      await page.locator(".asset-manager-v2__asset-tile.is-selected").focus();
+      await page.keyboard.press("Home");
+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
+      await page.locator("#assetList").focus();
+      const beforePageNavigationScroll = await page.evaluate(() => document.scrollingElement?.scrollTop || 0);
+      await page.keyboard.press("PageDown");
+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
+      await page.keyboard.press("PageUp");
+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
+      expect(await page.evaluate(() => document.scrollingElement?.scrollTop || 0)).toBe(beforePageNavigationScroll);
+      await page.locator("#assetList").focus();
+      await page.keyboard.press("Enter");
+      await expect(page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]')).toBeFocused();
 
       const helperPreviewCoverage = await page.evaluate(async () => {
         const { createAssetPreviewModel, renderAssetPreviewHtml } = await import("/tools/asset-manager-v2/js/assetPreviewHelpers.js");
@@ -1383,6 +1410,22 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Imported JSON with 2 validated assets\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO File availability warning: Missing referenced file for assets\.font\.ui\.vector-battle: assets\/fonts\/vector_battle\.ttf\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO File availability warning: Missing referenced file for assets\.video\.cutscene\.8-mile: assets\/video\/8 mile\.mp4\./);
+      const missingFileTileState = await page.locator(".asset-manager-v2__asset-tile").evaluateAll((tiles) => Object.fromEntries(tiles.map((tile) => {
+        const id = tile.querySelector("button[data-asset-id]")?.dataset.assetId || "";
+        const typeRole = tile.querySelector(".asset-manager-v2__asset-type-role");
+        return [id, {
+          isMissingFile: tile.classList.contains("is-missing-file"),
+          typeRoleColor: getComputedStyle(typeRole).color
+        }];
+      })));
+      expect(missingFileTileState["assets.font.ui.vector-battle"]).toEqual({
+        isMissingFile: true,
+        typeRoleColor: "rgb(255, 180, 180)"
+      });
+      expect(missingFileTileState["assets.video.cutscene.8-mile"]).toEqual({
+        isMissingFile: true,
+        typeRoleColor: "rgb(255, 180, 180)"
+      });
       await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
       await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.font.ui.vector-battle");

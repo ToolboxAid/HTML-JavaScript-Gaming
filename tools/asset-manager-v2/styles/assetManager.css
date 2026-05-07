@@ -561,6 +561,10 @@ textarea:hover {
   border-color: var(--asset-manager-accent);
 }
 
+.asset-manager-v2__asset-tile.is-missing-file .asset-manager-v2__asset-type-role {
+  color: var(--asset-manager-danger);
+}
+
 .asset-manager-v2__asset-select {
   position: relative;
   width: 100%;
