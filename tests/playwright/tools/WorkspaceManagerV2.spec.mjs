@@ -257,7 +257,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"repoRoot": "HTML-JavaScript-Gaming"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"previewImagePath"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"assets.image.bezel.bezel"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assets.image.preview.bezel"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"role": "bezel"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"role": "preview"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"source": "manifest"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"asset-manager-v2"');
@@ -282,7 +284,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(assetTile).toBeEnabled();
       await expect(assetTile).toContainText("Asset Manager V2");
       await expect(assetTile).toContainText("Ready to launch");
-      await expect(assetTile).toContainText("13 managed assets");
+      await expect(assetTile).toContainText("14 managed assets");
       await expect(paletteTile).toContainText("11 palette swatches");
       await expect(previewTile).toContainText("Schema-valid manifest");
       const tileLayout = await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.map((tile) => ({
@@ -295,7 +297,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { height: 142, width: 180 },
         { height: 142, width: 180 }
       ]);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 11 active palette colors and 13 managed assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 11 active palette colors and 14 managed assets\./);
 
       const downloadPromise = page.waitForEvent("download");
       await page.locator("#exportManifestButton").click();
@@ -308,17 +310,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(Object.keys(savedManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "vector-map-editor"]);
       expect(savedManifest.repoRoot).toBe("HTML-JavaScript-Gaming");
       expect(savedManifest.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
-      expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(13);
+      expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(14);
       expect(savedManifest.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
+      expect(savedManifest.tools["asset-manager-v2"].assets["assets.image.background.deluxe"]).toEqual({
+        path: "assets/images/deluxe.png",
+        type: "image",
+        kind: "png",
+        role: "background",
+        source: "manifest",
+        stretchOverride: {
+          uniformEdgeStretchPx: 0
+        }
+      });
+      expect(savedManifest.tools["asset-manager-v2"].assets["assets.image.bezel.bezel"]).toEqual({
+        path: "assets/images/bezel.png",
+        type: "image",
+        kind: "png",
+        role: "bezel",
+        source: "manifest",
+        stretchOverride: {
+          uniformEdgeStretchPx: 10
+        }
+      });
       expect(savedManifest.tools["asset-manager-v2"].assets["assets.image.preview.bezel"]).toEqual({
         path: "assets/images/bezel.png",
         type: "image",
         kind: "png",
         role: "preview",
-        source: "manifest",
-        stretchOverride: {
-          uniformEdgeStretchPx: 10
-        }
+        source: "manifest"
       });
       expect(savedManifest.tools["asset-manager-v2"].source).toBe("manifest");
       expect(savedManifest.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
@@ -336,7 +355,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__workspace__menu button")).toHaveText(["Return to Workspace"]);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 13 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 14 validated assets from tools\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
 
       const workspacePreviewContext = await page.evaluate(async () => {
@@ -365,17 +384,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.assetsPath).toBe("games/Asteroids/assets");
       expect(storedContext.repoRoot).toBe("HTML-JavaScript-Gaming");
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
-      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(13);
+      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(14);
       expect(storedContext.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.image.background.deluxe"]).toEqual({
+        path: "assets/images/deluxe.png",
+        type: "image",
+        kind: "png",
+        role: "background",
+        source: "manifest",
+        stretchOverride: {
+          uniformEdgeStretchPx: 0
+        }
+      });
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.image.bezel.bezel"]).toEqual({
+        path: "assets/images/bezel.png",
+        type: "image",
+        kind: "png",
+        role: "bezel",
+        source: "manifest",
+        stretchOverride: {
+          uniformEdgeStretchPx: 10
+        }
+      });
       expect(storedContext.tools["asset-manager-v2"].assets["assets.image.preview.bezel"]).toEqual({
         path: "assets/images/bezel.png",
         type: "image",
         kind: "png",
         role: "preview",
-        source: "manifest",
-        stretchOverride: {
-          uniformEdgeStretchPx: 10
-        }
+        source: "manifest"
       });
       expect(storedContext.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toContain("vector.asteroids.ship");
       expect(storedContext.tools["asset-manager-v2"].assets["assets.font.ui.vector-battle"]).toEqual({

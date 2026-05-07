@@ -13,7 +13,12 @@ import {
   typeForFile
 } from "../assetManagerMetadata.js";
 
-const DEFAULT_PREVIEW_STRETCH_PX = 10;
+const DEFAULT_BEZEL_STRETCH_PX = 10;
+const DEFAULT_BACKGROUND_STRETCH_PX = 0;
+const STRETCH_ROLE_DEFAULTS = Object.freeze({
+  background: DEFAULT_BACKGROUND_STRETCH_PX,
+  bezel: DEFAULT_BEZEL_STRETCH_PX
+});
 const COLOR_SORT_OPTIONS = Object.freeze([
   ["hue", "Hue"],
   ["saturation", "Sat"],
@@ -59,6 +64,14 @@ function normalizeSwatch(rawSwatch) {
     symbol: String(rawSwatch?.symbol || "").trim(),
     tags: normalizeTags(rawSwatch?.tags)
   };
+}
+
+function roleSupportsStretchOverride(type, role) {
+  return type === "image" && Object.prototype.hasOwnProperty.call(STRETCH_ROLE_DEFAULTS, role);
+}
+
+function stretchDefaultForRole(role) {
+  return STRETCH_ROLE_DEFAULTS[role] ?? DEFAULT_BACKGROUND_STRETCH_PX;
 }
 
 function hexToHsb(hexValue) {
@@ -132,6 +145,7 @@ export class AssetFormControl {
     this.updateButton = updateButton;
     this.stretchField = stretchField;
     this.stretchInput = stretchInput;
+    this.stretchLabel = stretchField.querySelector("label span");
     this.usageField = usageField;
     this.usageInput = usageInput;
     this.window = windowRef;
@@ -143,6 +157,7 @@ export class AssetFormControl {
     this.kindValue = "";
     this.selectedFileInfo = null;
     this.selectedFileError = "";
+    this.lastStretchRole = "";
   }
 
   mount({ onAdd, onChange, onColorSelected, onFileSelected, onRedo, onStatus, onUndo, onUpdate }) {
@@ -254,9 +269,14 @@ export class AssetFormControl {
         ...(this.selectedColorInfo.tags.length ? { tags: [...this.selectedColorInfo.tags] } : {})
       };
     }
-    if (value.role === "preview") {
+    if (roleSupportsStretchOverride(value.type, value.role)) {
+      const stretchDefault = stretchDefaultForRole(value.role);
+      const rawStretchPx = this.stretchInput.value.trim();
+      const uniformEdgeStretchPx = Number(rawStretchPx);
       value.stretchOverride = {
-        uniformEdgeStretchPx: Number(this.stretchInput.value) || DEFAULT_PREVIEW_STRETCH_PX
+        uniformEdgeStretchPx: rawStretchPx && Number.isFinite(uniformEdgeStretchPx)
+          ? uniformEdgeStretchPx
+          : stretchDefault
       };
     }
     return value;
@@ -324,6 +344,8 @@ export class AssetFormControl {
     this.selectedFileInfo = null;
     this.selectedFileError = "";
     this.fileInput.value = "";
+    this.stretchInput.value = "";
+    this.lastStretchRole = "";
   }
 
   loadAssetForEdit(assetId, entry) {
@@ -340,13 +362,13 @@ export class AssetFormControl {
     this.pathInput.value = entry.path || "";
     this.usageInput.value = entry.type === "color" ? this.usageFromAssetId(assetId) : "";
     this.kindValue = entry.kind || "";
-    this.stretchInput.value = String(entry.stretchOverride?.uniformEdgeStretchPx ?? DEFAULT_PREVIEW_STRETCH_PX);
+    this.stretchInput.value = String(entry.stretchOverride?.uniformEdgeStretchPx ?? stretchDefaultForRole(entry.role));
     this.selectedColorInfo = entry.color ? normalizeSwatch(entry.color) : null;
     this.selectedFileInfo = null;
     this.selectedFileError = "";
     this.fileInput.value = "";
     this.updatePickerMode();
-    this.updateStretchControl();
+    this.updateStretchControl({ preserveValue: true });
   }
 
   async pickAssetFile({ onChange, onFileSelected }) {
@@ -450,13 +472,25 @@ export class AssetFormControl {
       : assetIdForFile(this.selectedKind(), name, this.selectedRole());
   }
 
-  updateStretchControl() {
-    const isPreview = this.selectedRole() === "preview";
-    this.stretchField.hidden = !isPreview;
-    this.stretchInput.disabled = !isPreview;
-    if (isPreview && !this.stretchInput.value) {
-      this.stretchInput.value = String(DEFAULT_PREVIEW_STRETCH_PX);
+  updateStretchControl({ preserveValue = false } = {}) {
+    const role = this.selectedRole();
+    const supportsStretch = roleSupportsStretchOverride(this.selectedKind(), role);
+    this.stretchField.hidden = !supportsStretch;
+    this.stretchInput.disabled = !supportsStretch;
+    if (!supportsStretch) {
+      this.lastStretchRole = "";
+      return;
     }
+    if (this.stretchLabel) {
+      this.stretchLabel.textContent = role === "background" ? "Background Stretch PX" : "Bezel Stretch PX";
+    }
+    if (!preserveValue && this.lastStretchRole !== role) {
+      this.stretchInput.value = "";
+    }
+    if (!this.stretchInput.value) {
+      this.stretchInput.value = String(stretchDefaultForRole(role));
+    }
+    this.lastStretchRole = role;
   }
 
   updateFileAccept() {

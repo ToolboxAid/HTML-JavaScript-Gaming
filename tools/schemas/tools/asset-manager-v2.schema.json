@@ -59,7 +59,7 @@
             }
           ]
         },
-        "^assets\\.image\\.preview\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+        "^assets\\.image\\.background\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "allOf": [
             {
               "$ref": "#/$defs/assetEntry"
@@ -73,7 +73,21 @@
             }
           ]
         },
-        "^(?!assets\\.image\\.preview\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+        "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/assetEntry"
+            },
+            {
+              "not": {
+                "required": [
+                  "color"
+                ]
+              }
+            }
+          ]
+        },
+        "^(?!assets\\.image\\.(background|bezel)\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "allOf": [
             {
               "$ref": "#/$defs/assetEntry"
@@ -101,10 +115,13 @@
             "pattern": "^assets\\.color\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           },
           {
-            "pattern": "^assets\\.image\\.preview\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+            "pattern": "^assets\\.image\\.background\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           },
           {
-            "pattern": "^(?!assets\\.image\\.preview\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+            "pattern": "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+          },
+          {
+            "pattern": "^(?!assets\\.image\\.(background|bezel)\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           }
         ]
       }
@@ -178,6 +195,7 @@
           "enum": [
             "sprite",
             "background",
+            "bezel",
             "preview",
             "ui",
             "sound",
@@ -233,6 +251,7 @@
       "image": [
         "sprite",
         "background",
+        "bezel",
         "preview",
         "ui"
       ],

@@ -163,17 +163,27 @@
           "type": "image",
           "kind": "png",
           "role": "background",
-          "source": "manifest"
+          "source": "manifest",
+          "stretchOverride": {
+            "uniformEdgeStretchPx": 0
+          }
+        },
+        "assets.image.bezel.bezel": {
+          "path": "assets/images/bezel.png",
+          "type": "image",
+          "kind": "png",
+          "role": "bezel",
+          "source": "manifest",
+          "stretchOverride": {
+            "uniformEdgeStretchPx": 10
+          }
         },
         "assets.image.preview.bezel": {
           "path": "assets/images/bezel.png",
           "type": "image",
           "kind": "png",
           "role": "preview",
-          "source": "manifest",
-          "stretchOverride": {
-            "uniformEdgeStretchPx": 10
-          }
+          "source": "manifest"
         }
       }
     },
