@@ -64,6 +64,38 @@ class PreviewGeneratorV2ShellControl {
     summary.setAttribute("title", `${this.headerText}\n${this.introText}`);
   }
 
+  isWorkspaceLaunch() {
+    return this.runtimeParams.get("launch") === "workspace"
+      && this.runtimeParams.get("fromTool") === "workspace-manager-v2";
+  }
+
+  workspaceManagerUrl() {
+    const url = new URL("../workspace-manager-v2/index.html", this.window.location.href);
+    const hostContextId = this.runtimeParams.get("hostContextId") || "";
+    if (hostContextId) {
+      url.searchParams.set("hostContextId", hostContextId);
+    }
+    return url.href;
+  }
+
+  configureWorkspaceNav() {
+    const isWorkspaceLaunch = this.isWorkspaceLaunch();
+    const toolNav = this.document.querySelector('[data-launch-mode-nav="tool"]');
+    const workspaceNav = this.document.querySelector('[data-launch-mode-nav="workspace"]');
+    const returnButton = this.document.getElementById("returnToWorkspaceButton");
+    if (toolNav) {
+      toolNav.hidden = isWorkspaceLaunch;
+    }
+    if (workspaceNav) {
+      workspaceNav.hidden = !isWorkspaceLaunch;
+    }
+    if (returnButton) {
+      returnButton.addEventListener("click", () => {
+        this.window.location.href = this.workspaceManagerUrl();
+      });
+    }
+  }
+
   async enterFullscreenIfAvailable() {
     if (this.document.fullscreenElement || !this.document.fullscreenEnabled) {
       return;
@@ -127,6 +159,7 @@ class PreviewGeneratorV2ShellControl {
     }
 
     this.document.body.classList.add("tools-platform-surface", "preview-generator-v2-local-shell");
+    this.configureWorkspaceNav();
     this.applyFullscreenState(Boolean(this.document.fullscreenElement));
     this.bindHeaderDetails();
     this.updateSummary();

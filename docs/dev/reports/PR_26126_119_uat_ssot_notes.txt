@@ -1,0 +1,17 @@
+PR_26126_119 UAT SSoT notes
+
+Scope:
+- Temporary UAT ownership moved to Workspace Manager V2.
+- Asset Manager V2 no longer accepts direct ?workspace=UAT launch.
+- Asset Manager V2 production and UAT access now require Workspace Manager V2 session/context.
+
+Implementation notes:
+- Workspace Manager V2 exposes a UAT menu button only while launched with ?workspace=uat.
+- The UAT button seeds an in-memory/session workspace manifest with gameRoot games/Asteroids/, assetsPath games/Asteroids/assets, a sample palette, and an empty Asset Manager V2 asset registry.
+- UAT session state is persisted through WorkspaceManagerV2ContextService and launched tools receive context through hostContextId.
+- Asset Manager V2 reports a launch guard overlay for direct ?workspace=uat and ?workspace=prod URLs.
+
+Validation:
+- npm run test:workspace-v2 PASS.
+- Dedicated Workspace Manager V2 coverage validates UAT button visibility, UAT manifest seeding, Asset Manager V2 tile launch from UAT session, and direct Asset Manager V2 ?workspace=uat guard failure.
+

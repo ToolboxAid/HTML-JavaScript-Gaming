@@ -49,13 +49,13 @@ async function openAssetManagerV2(page, query = "", { assetFiles = [] } = {}) {
   return server;
 }
 
-async function openWorkspaceManagerV2(page, { assetFiles = [] } = {}) {
+async function openWorkspaceManagerV2(page, { assetFiles = [], query = "" } = {}) {
   const server = await startRepoServer();
   if (assetFiles.length) {
     await installFakeAssetFilePicker(page, assetFiles);
   }
   await coverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -162,7 +162,28 @@ test.describe("Asset Manager V2", () => {
     try {
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
       await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
-      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Temporary workspace prod is not supported.");
+      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Temporary workspace query launches are no longer supported; launch through Workspace Manager V2.");
+      await expect(page.locator(".asset-manager-v2.app-shell")).toHaveCount(1);
+      await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("blocks direct Asset Manager V2 temporary UAT launch", async ({ page }) => {
+    const server = await openAssetManagerV2(page, "?workspace=uat");
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("#assetLaunchGuard")).toBeVisible();
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Temporary workspace query launches are no longer supported; launch through Workspace Manager V2.");
       await expect(page.locator(".asset-manager-v2.app-shell")).toHaveCount(1);
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
       expect(pageErrors).toEqual([]);
@@ -173,7 +194,8 @@ test.describe("Asset Manager V2", () => {
   });
 
   test("launches Asset Manager V2 with temporary UAT context and schema-complete asset controls", async ({ page }) => {
-    const server = await openAssetManagerV2(page, "?workspace=uat", {
+    const server = await openWorkspaceManagerV2(page, {
+      query: "?workspace=uat",
       assetFiles: [{
         name: "nebula-background.png",
         mimeType: "image/png",
@@ -188,10 +210,17 @@ test.describe("Asset Manager V2", () => {
     });
 
     try {
+      await expect(page.locator("#seedUatManifestButton")).toBeVisible();
+      await page.locator("#seedUatManifestButton").click();
+      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
+      await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
+      await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
+      await expect(page).not.toHaveURL(/workspace=uat/i);
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='asset-manager-v2']")).toBeVisible();
       await expect(page.locator(".asset-manager-v2.app-shell")).toBeVisible();
-      await expect(page.locator(".asset-manager-v2__tool__menu")).toBeVisible();
-      await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeHidden();
+      await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
+      await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
+      await expect(page.locator(".asset-manager-v2__workspace__menu button")).toHaveText(["Return to Workspace"]);
       await expect(page.locator('fieldset[aria-label="Asset type"] legend')).toHaveText("Type");
       await expect(page.locator('input[name="assetKind"]')).toHaveCount(8);
       await expect(page.locator(".asset-manager-v2__kind-controls label span")).toHaveText([
@@ -876,79 +905,6 @@ test.describe("Asset Manager V2", () => {
       expect(statusReexpandedLayout.statusExpanded).toBe(true);
       expect(statusReexpandedLayout.statusBottomDelta).toBeLessThan(20);
 
-      const invalidImportChooserPromise = page.waitForEvent("filechooser");
-      await page.locator("#navImportJsonButton").click();
-      const invalidImportChooser = await invalidImportChooserPromise;
-      await invalidImportChooser.setFiles({
-        name: "invalid-asset-manager-v2.json",
-        mimeType: "application/json",
-        buffer: Buffer.from(JSON.stringify({ invalid: true }))
-      });
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Import JSON failed schema validation:/);
-      await expect(page.locator("#inspectorOutput")).not.toContainText("Import JSON failed");
-
-      const importedPayload = {
-        assets: {
-          "assets.font.ui.vector-battle": {
-            path: "assets/fonts/vector_battle.ttf",
-            type: "font",
-            kind: "ttf",
-            role: "ui",
-            source: "asset-manager-v2"
-          },
-          "assets.video.cutscene.8-mile": {
-            path: "assets/video/8 mile.mp4",
-            type: "video",
-            kind: "mp4",
-            role: "cutscene",
-            source: "asset-manager-v2"
-          }
-        }
-      };
-      const validImportChooserPromise = page.waitForEvent("filechooser");
-      await page.locator("#navImportJsonButton").click();
-      const validImportChooser = await validImportChooserPromise;
-      await validImportChooser.setFiles({
-        name: "asset-manager-v2-assets.json",
-        mimeType: "application/json",
-        buffer: Buffer.from(JSON.stringify(importedPayload))
-      });
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Imported JSON with 2 validated assets\./);
-      await expect(page.locator("#statusLog")).not.toHaveValue(/Missing referenced file for assets\.font\.ui\.vector-battle/);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO File availability warning: Missing referenced file for assets\.video\.cutscene\.8-mile: assets\/video\/8 mile\.mp4\./);
-      const missingFileTileState = await page.locator(".asset-manager-v2__asset-tile").evaluateAll((tiles) => Object.fromEntries(tiles.map((tile) => {
-        const id = tile.querySelector("button[data-asset-id]")?.dataset.assetId || "";
-        const typeRole = tile.querySelector(".asset-manager-v2__asset-type-role");
-        return [id, {
-          isMissingFile: tile.classList.contains("is-missing-file"),
-          typeRoleColor: getComputedStyle(typeRole).color
-        }];
-      })));
-      expect(missingFileTileState["assets.font.ui.vector-battle"].isMissingFile).toBe(false);
-      expect(missingFileTileState["assets.font.ui.vector-battle"].typeRoleColor).not.toBe("rgb(255, 180, 180)");
-      expect(missingFileTileState["assets.video.cutscene.8-mile"]).toEqual({
-        isMissingFile: true,
-        typeRoleColor: "rgb(255, 180, 180)"
-      });
-      await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
-      await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.font.ui.vector-battle");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets/fonts/vector_battle.ttf");
-      await expect(page.locator("#inspectorOutput")).not.toContainText("Imported JSON");
-      const importedOutput = JSON.parse(await page.locator("#inspectorOutput").textContent());
-      expect(importedOutput.assets.find((asset) => asset.id === "assets.font.ui.vector-battle").path).toBe("assets/fonts/vector_battle.ttf");
-      expect(importedOutput.assets.find((asset) => asset.id === "assets.video.cutscene.8-mile").path).toBe("assets/video/8 mile.mp4");
-
-      const downloadPromise = page.waitForEvent("download");
-      await page.locator("#navExportJsonButton").click();
-      const download = await downloadPromise;
-      expect(download.suggestedFilename()).toBe("asset-manager-v2-assets.json");
-      const exportedPath = await download.path();
-      const exportedPayload = JSON.parse(await readFile(exportedPath, "utf8"));
-      expect(exportedPayload).toEqual(importedPayload);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Exported JSON with 2 validated assets\./);
-      await expect(page.locator("#inspectorOutput")).not.toContainText("Exported JSON");
-
       await page.locator("#assetKindImage").check();
       await queueAssetFile(page, {
         name: "notes.exe",
@@ -970,7 +926,7 @@ test.describe("Asset Manager V2", () => {
     }
   });
 
-  test("loads Asset Manager V2 temporary UAT workspace context from query", async ({ page }) => {
+  test("loads Asset Manager V2 temporary UAT workspace context from Workspace Manager V2", async ({ page }) => {
     await page.addInitScript(() => {
       const NativeFontFace = window.FontFace;
       window.__assetManagerV2FontFaceLoads = [];
@@ -994,7 +950,8 @@ test.describe("Asset Manager V2", () => {
         }
       };
     });
-    const server = await openAssetManagerV2(page, "?workspace=UAT", {
+    const server = await openWorkspaceManagerV2(page, {
+      query: "?workspace=uat",
       assetFiles: [
         {
           name: "uat-preview.png",
@@ -1023,17 +980,26 @@ test.describe("Asset Manager V2", () => {
     });
 
     try {
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded temporary UAT-only sample palette from \?workspace=UAT \(3 colors\)\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Temporary UAT-only Asset Manager V2 session context set to games\/Asteroids\/ with assetsPath games\/Asteroids\/assets\./);
+      await expect(page.locator("#seedUatManifestButton")).toBeVisible();
+      await page.locator("#seedUatManifestButton").click();
+      await expect(page.locator("#activePaletteSummary")).toContainText("Workspace Manager V2 UAT Sample Palette has 3 active colors.");
+      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 0 managed assets.");
+      await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
+      await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
+      await expect(page).not.toHaveURL(/workspace=uat/i);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Workspace Manager V2 loaded 0 validated assets from tools\.asset-manager-v2\.assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Workspace Manager V2 loaded 3 palette colors from active palette context\./);
       const uatContext = await page.evaluate(async () => {
-        const { readTemporaryUatWorkspaceContext } = await import("/tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js");
-        const result = readTemporaryUatWorkspaceContext(window.location);
+        const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
+        const bridge = new WorkspaceBridge({ windowRef: window });
+        const contextResult = bridge.readContext();
+        const previewContext = bridge.readWorkspacePreviewContext();
         return {
-          assetsPath: result.assetsPath,
-          gameRoot: result.gameRoot,
-          ok: result.ok,
-          sourceId: result.palette?.sourceId,
-          swatchCount: result.palette?.swatches?.length || 0
+          assetsPath: previewContext.workspaceAssetsPath,
+          gameRoot: previewContext.workspaceGameRoot,
+          ok: contextResult.ok,
+          sourceId: contextResult.activePalette?.sourceId,
+          swatchCount: contextResult.activePalette?.swatches?.length || 0
         };
       });
       expect(uatContext).toEqual({
@@ -1277,7 +1243,7 @@ test.describe("Asset Manager V2", () => {
     });
 
     try {
-      await expect(page.locator("#launchAssetManagerV2Button")).toBeDisabled();
+      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(3);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');
@@ -1286,8 +1252,8 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#workspaceContextOutput")).toContainText('"vector.asteroids.ship"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"activePalette"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"workspaceManifest"');
-      await expect(page.locator("#launchAssetManagerV2Button")).toBeEnabled();
-      await page.locator("#launchAssetManagerV2Button").click();
+      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
+      await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
       await expect(page).toHaveURL(/fromTool=workspace-manager-v2/);
       await expect(page).not.toHaveURL(/gameId=Asteroids/);
@@ -1462,10 +1428,10 @@ test.describe("Asset Manager V2", () => {
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 17 managed assets.");
-      await expect(page.locator("#launchAssetManagerV2Button")).toBeEnabled();
-      await expect(page.locator("#saveWorkspaceManifestButton")).toBeEnabled();
+      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
+      await expect(page.locator("#exportManifestButton")).toBeEnabled();
       const downloadPromise = page.waitForEvent("download");
-      await page.locator("#saveWorkspaceManifestButton").click();
+      await page.locator("#exportManifestButton").click();
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toBe("workspace-manager-v2-Asteroids.workspace.manifest.json");
       const savedManifest = JSON.parse(await readFile(await download.path(), "utf8"));

@@ -3,18 +3,18 @@ export class WorkspaceManagerV2App {
     accordions,
     contextService,
     gameSelector,
-    launchControl,
-    saveControl,
+    menu,
     statusLog,
-    summary
+    summary,
+    toolTiles
   }) {
     this.accordions = accordions;
     this.contextService = contextService;
     this.gameSelector = gameSelector;
-    this.launchControl = launchControl;
-    this.saveControl = saveControl;
+    this.menu = menu;
     this.statusLog = statusLog;
     this.summary = summary;
+    this.toolTiles = toolTiles;
     this.activeContext = null;
     this.activeGame = null;
     this.activeHostContextId = null;
@@ -29,18 +29,31 @@ export class WorkspaceManagerV2App {
         void this.selectGame(gameId);
       }
     });
-    this.launchControl.mount({
-      onLaunch: () => this.launchAssetManager()
-    });
-    this.saveControl.mount({
-      onLaunch: () => {
-        void this.saveWorkspaceManifest();
+    this.menu.mount({
+      isUatMode: this.contextService.isUatMode(),
+      onExportManifest: () => {
+        void this.exportWorkspaceManifest();
+      },
+      onImportManifest: (file) => {
+        void this.importWorkspaceManifest(file);
+      },
+      onLoadAsteroids: () => {
+        void this.selectGame("Asteroids");
+      },
+      onSeedUat: () => {
+        void this.seedTemporaryUatManifest();
       }
     });
+    this.toolTiles.mount({
+      onLaunchTool: (toolId) => {
+        void this.launchTool(toolId);
+      },
+      tools: this.contextService.workspaceLaunchableTools()
+    });
     this.summary.clear();
-    this.launchControl.setEnabled(false);
-    this.saveControl.setEnabled(false);
-    this.statusLog.ok("Workspace Manager V2 ready. Select a game workspace to create a schema-valid manifest.");
+    this.menu.setExportEnabled(false);
+    this.toolTiles.renderEmpty();
+    this.statusLog.ok("Workspace Manager V2 ready. Select, import, or seed a game workspace to create a schema-valid manifest.");
     void this.restoreWorkspaceFromSession();
   }
 
@@ -48,9 +61,10 @@ export class WorkspaceManagerV2App {
     this.activeContext = null;
     this.activeGame = null;
     this.activeHostContextId = null;
-    this.launchControl.setEnabled(false);
-    this.saveControl.setEnabled(false);
+    this.menu.setExportEnabled(false);
+    this.toolTiles.renderEmpty();
     this.summary.clear();
+    this.gameSelector.setValue(gameId || "");
 
     if (!gameId) {
       this.gameSelector.setSummary("Select a game workspace.");
@@ -102,8 +116,13 @@ export class WorkspaceManagerV2App {
       game: result.game,
       paletteSwatches: result.paletteSwatches
     });
-    this.launchControl.setEnabled(true);
-    this.saveControl.setEnabled(true);
+    this.toolTiles.render({
+      assetCount: result.assetCount,
+      canLaunch: true,
+      manifestStatus: "Schema-valid manifest",
+      paletteSwatchCount: result.paletteSwatches.length
+    });
+    this.menu.setExportEnabled(true);
   }
 
   hasLaunchReadyContext() {
@@ -112,7 +131,7 @@ export class WorkspaceManagerV2App {
       && this.activeContext.tools?.["palette-manager-v2"]?.swatches?.length);
   }
 
-  async launchAssetManager() {
+  async launchTool(toolId) {
     if (!this.hasLaunchReadyContext()) {
       this.statusLog.fail("Launch blocked: active game context and palette are required.");
       return;
@@ -122,10 +141,12 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail(`Launch blocked: ${validation.message}`);
       return;
     }
-    const hostContextId = this.contextService.persistContext(this.activeContext);
+    const hostContextId = this.activeHostContextId
+      ? this.contextService.writePersistedContext(this.activeHostContextId, this.activeContext)
+      : this.contextService.persistContext(this.activeContext);
     this.activeHostContextId = hostContextId;
-    this.statusLog.ok(`Stored Workspace Manager V2 schema-valid manifest ${hostContextId}.`);
-    this.contextService.launchAssetManager(hostContextId);
+    this.statusLog.ok(`Stored Workspace Manager V2 schema-valid manifest ${hostContextId} for ${toolId}.`);
+    this.contextService.launchTool(toolId, hostContextId);
   }
 
   async contextForSave() {
@@ -146,27 +167,27 @@ export class WorkspaceManagerV2App {
     return { ok: true, context: result.context };
   }
 
-  async saveWorkspaceManifest() {
+  async exportWorkspaceManifest() {
     if (!this.hasLaunchReadyContext()) {
-      this.statusLog.fail("Save blocked: active game context and palette are required.");
+      this.statusLog.fail("Export blocked: active game context and palette are required.");
       return;
     }
     const saveContextResult = await this.contextForSave();
     if (!saveContextResult.ok) {
-      this.statusLog.fail(`Save blocked: ${saveContextResult.message}`);
+      this.statusLog.fail(`Export blocked: ${saveContextResult.message}`);
       return;
     }
     const context = saveContextResult.context;
     const validation = await this.contextService.validateGeneratedManifest(context);
     if (!validation.ok) {
-      this.statusLog.fail(`Save blocked: ${validation.message}`);
+      this.statusLog.fail(`Export blocked: ${validation.message}`);
       return;
     }
     const json = JSON.stringify(context, null, 2);
     const BlobCtor = window.Blob;
     const urlApi = window.URL || window.webkitURL;
     if (typeof BlobCtor !== "function" || !urlApi?.createObjectURL) {
-      this.statusLog.fail("Save blocked: browser download APIs are unavailable.");
+      this.statusLog.fail("Export blocked: browser download APIs are unavailable.");
       return;
     }
     const blob = new BlobCtor([json], { type: "application/json" });
@@ -179,6 +200,45 @@ export class WorkspaceManagerV2App {
     link.click();
     link.remove();
     urlApi.revokeObjectURL(url);
-    this.statusLog.ok(`Saved schema-valid Workspace Manager V2 manifest ${context.id}.`);
+    this.statusLog.ok(`Exported schema-valid Workspace Manager V2 manifest ${context.id}.`);
+  }
+
+  async importWorkspaceManifest(file) {
+    if (!file) {
+      this.statusLog.fail("Import Manifest failed: no manifest file was selected.");
+      return;
+    }
+    try {
+      const manifest = JSON.parse(await file.text());
+      const result = await this.contextService.buildContextFromManifest(manifest, file.name || "imported manifest");
+      if (!result.ok) {
+        this.statusLog.fail(`Import Manifest failed: ${result.message}`);
+        return;
+      }
+      const hostContextId = this.contextService.persistContext(result.context);
+      this.gameSelector.setValue(result.game.id);
+      this.applyContextResult({ ...result, hostContextId });
+      if (result.assetWarning) {
+        this.statusLog.info(`Warning: ${result.assetWarning}`);
+      }
+      this.statusLog.ok(`Imported schema-valid Workspace Manager V2 manifest ${result.context.id}.`);
+    } catch (error) {
+      this.statusLog.fail(`Import Manifest failed: ${error.message}`);
+    }
+  }
+
+  async seedTemporaryUatManifest() {
+    const result = await this.contextService.buildTemporaryUatContext();
+    if (!result.ok) {
+      this.statusLog.fail(`UAT seed failed: ${result.message}`);
+      return;
+    }
+    const hostContextId = this.contextService.persistContext(result.context);
+    this.gameSelector.setValue(result.game.id);
+    this.applyContextResult({ ...result, hostContextId });
+    if (result.assetWarning) {
+      this.statusLog.info(`Warning: ${result.assetWarning}`);
+    }
+    this.statusLog.ok(`Seeded temporary UAT Workspace Manager V2 manifest ${result.context.id}.`);
   }
 }

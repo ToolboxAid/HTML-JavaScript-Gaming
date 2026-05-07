@@ -18,12 +18,17 @@
     </div>
   </details>
 
-  <nav class="palette-manager-v2__menu-sample" aria-label="menuSample">
+  <nav class="palette-manager-v2__menu-sample" aria-label="menuSample" data-launch-mode-nav="tool">
     <div class="palette-manager-v2__menu-actions">
       <button id="importPaletteButton" type="button">Import JSON</button>
       <input id="importPaletteInput" type="file" accept=".json,application/json" hidden />
       <button id="copyPaletteButton" type="button">Copy JSON</button>
       <button id="exportPaletteButton" type="button">Export JSON</button>
+    </div>
+  </nav>
+  <nav class="palette-manager-v2__menu-sample palette-manager-v2__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+    <div class="palette-manager-v2__menu-actions">
+      <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
     </div>
   </nav>
 

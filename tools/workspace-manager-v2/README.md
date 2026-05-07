@@ -1,5 +1,5 @@
 # Workspace Manager V2
 
-Workspace Manager V2 is the first-class games-only context surface for Asset Manager V2 launch.
+Workspace Manager V2 is the first-class games-only context surface for Workspace V2 tool launch.
 
-It owns the active game, active palette, schema-ready asset registry context, and sessionStorage launch handoff used by Asset Manager V2. Direct production launch uses session/state context only; URL query access remains limited to Asset Manager V2 temporary `?workspace=UAT` testing.
+It owns the active game, active palette, schema-ready asset registry context, and sessionStorage launch handoff used by workspace-launched V2 tools. Direct production launch uses session/state context only; temporary `?workspace=UAT` access is owned here and seeds a Workspace Manager V2 UAT session before launching tools.

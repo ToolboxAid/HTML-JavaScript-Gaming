@@ -1,0 +1,20 @@
+PR_26126_119 manual validation notes
+
+Requested validation:
+- npm run test:workspace-v2
+
+Result:
+- PASS. The workspace-v2 aggregate gate completed successfully with 24 passing Playwright tests.
+- Playwright/V8 coverage report was regenerated at docs/dev/reports/playwright_v8_coverage_report.txt.
+- git diff --check PASS, with only repository line-ending warnings reported by Git.
+
+Manual review checklist:
+- Workspace Manager V2 Import Manifest and Export Manifest menu actions are present.
+- No direct tool launch buttons are present in the Workspace Manager V2 menu.
+- UAT is owned by Workspace Manager V2; Asset Manager V2 direct ?workspace=UAT launch is blocked by the launch guard overlay.
+- UAT button seeds a temporary Asteroids manifest/session from Workspace Manager V2.
+- Asset Manager V2, Palette Manager V2, and Preview Generator V2 launch through Workspace Manager V2 tool tiles.
+- Workspace-launched tools show only Return to Workspace in their workspace nav.
+- Deprecated tools/workspace-v2 was not modified.
+- sample JSON files were not modified.
+

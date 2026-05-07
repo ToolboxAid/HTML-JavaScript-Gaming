@@ -2,6 +2,39 @@ const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
+const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
+  Object.freeze({
+    id: "asset-manager-v2",
+    name: "Asset Manager V2",
+    path: "../asset-manager-v2/index.html"
+  }),
+  Object.freeze({
+    id: "palette-manager-v2",
+    name: "Palette Manager V2",
+    path: "../palette-manager-v2/index.html"
+  }),
+  Object.freeze({
+    id: "preview-generator-v2",
+    name: "Preview Generator V2",
+    path: "../preview-generator-v2/index.html"
+  })
+]);
+
+const TEMPORARY_UAT_SAMPLE_PALETTE = Object.freeze({
+  "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+  schema: "html-js-gaming.palette",
+  version: 1,
+  id: "workspace-manager-v2-uat-sample",
+  name: "Workspace Manager V2 UAT Sample Palette",
+  source: "Workspace Manager V2 temporary UAT sample",
+  sourceId: "?workspace=UAT",
+  locked: true,
+  swatches: Object.freeze([
+    Object.freeze({ symbol: "V", hex: "#7C3AED", name: "Signal Violet!", source: "UAT Sample", tags: Object.freeze(["ui", "accent"]) }),
+    Object.freeze({ symbol: "G", hex: "#22C55E", name: "Success Green", source: "UAT Sample", tags: Object.freeze(["success", "hud"]) }),
+    Object.freeze({ symbol: "A", hex: "#F59E0B", name: "Alert Amber", source: "UAT Sample", tags: Object.freeze(["warning", "hud"]) })
+  ])
+});
 
 const GAME_OPTIONS = Object.freeze([
   Object.freeze({
@@ -200,6 +233,40 @@ export class WorkspaceManagerV2ContextService {
     return GAME_OPTIONS.map((game) => ({ ...game }));
   }
 
+  workspaceLaunchableTools() {
+    return WORKSPACE_LAUNCHABLE_TOOLS.map((tool) => ({ ...tool }));
+  }
+
+  isUatMode() {
+    const params = new URLSearchParams(this.location.search || "");
+    return String(params.get("workspace") || "").trim().toUpperCase() === "UAT";
+  }
+
+  temporaryUatManifest() {
+    return {
+      "$schema": "tools/schemas/workspace.manifest.schema.json",
+      documentKind: "workspace-manifest",
+      schema: "html-js-gaming.project",
+      version: 1,
+      id: "workspace-manager-v2-UAT-Asteroids",
+      name: "Workspace Manager V2 UAT Context",
+      gameId: "Asteroids",
+      gameRoot: "games/Asteroids/",
+      assetsPath: "games/Asteroids/assets",
+      tools: {
+        [PALETTE_MANAGER_V2_TOOL_KEY]: clone(TEMPORARY_UAT_SAMPLE_PALETTE),
+        [ASSET_MANAGER_V2_TOOL_KEY]: {
+          "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+          schema: "html-js-gaming.asset-manager-v2",
+          version: 1,
+          name: "Asset Manager V2 UAT Registry",
+          source: "workspace-manager-v2",
+          assets: {}
+        }
+      }
+    };
+  }
+
   async buildContextForGame(gameId) {
     const game = this.games().find((entry) => entry.id === gameId);
     if (!game) {
@@ -210,6 +277,18 @@ export class WorkspaceManagerV2ContextService {
       return manifestResult;
     }
     return this.contextResultFromManifest(game, manifestResult.manifest, game.manifestPath);
+  }
+
+  async buildContextFromManifest(workspaceManifest, sourceLabel) {
+    const game = this.games().find((entry) => entry.id === workspaceManifest?.gameId);
+    if (!game) {
+      return { ok: false, message: `${sourceLabel} does not match a known game workspace.` };
+    }
+    return this.contextResultFromManifest(game, workspaceManifest, sourceLabel);
+  }
+
+  async buildTemporaryUatContext() {
+    return this.buildContextFromManifest(this.temporaryUatManifest(), "?workspace=UAT");
   }
 
   async restorePersistedContext() {
@@ -403,8 +482,21 @@ export class WorkspaceManagerV2ContextService {
     return hostContextId;
   }
 
-  assetManagerLaunchUrl(hostContextId) {
-    const url = new URL("../asset-manager-v2/index.html", this.location.href);
+  writePersistedContext(hostContextId, context) {
+    if (!hostContextId) {
+      return this.persistContext(context);
+    }
+    this.sessionStorage.setItem(hostContextId, JSON.stringify(context));
+    this.sessionStorage.setItem(HOST_CONTEXT_STORAGE_KEY, hostContextId);
+    return hostContextId;
+  }
+
+  toolLaunchUrl(toolId, hostContextId) {
+    const tool = WORKSPACE_LAUNCHABLE_TOOLS.find((entry) => entry.id === toolId);
+    if (!tool) {
+      return "";
+    }
+    const url = new URL(tool.path, this.location.href);
     url.searchParams.set("launch", "workspace");
     url.searchParams.set("fromTool", "workspace-manager-v2");
     url.searchParams.set("hostContextId", hostContextId);
@@ -420,7 +512,10 @@ export class WorkspaceManagerV2ContextService {
     return url.href;
   }
 
-  launchAssetManager(hostContextId) {
-    this.window.location.href = this.assetManagerLaunchUrl(hostContextId);
+  launchTool(toolId, hostContextId) {
+    const url = this.toolLaunchUrl(toolId, hostContextId);
+    if (url) {
+      this.window.location.href = url;
+    }
   }
 }

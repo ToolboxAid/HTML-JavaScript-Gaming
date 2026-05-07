@@ -169,6 +169,10 @@ body.tools-platform-surface :is(input, select, textarea):hover {
   padding: 10px 14px;
 }
 
+.palette-manager-v2__menu-sample[hidden] {
+  display: none;
+}
+
 .palette-manager-v2__menu-actions {
   flex: 0 1 auto;
   display: flex;

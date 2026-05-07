@@ -43,6 +43,34 @@ function getSamplePresetLabel(searchParams, samplePresetPath) {
   return samplePresetPath;
 }
 
+function workspaceManagerUrl(hostContextId) {
+  const url = new URL("../workspace-manager-v2/index.html", window.location.href);
+  if (hostContextId) {
+    url.searchParams.set("hostContextId", hostContextId);
+  }
+  return url.href;
+}
+
+function configureWorkspaceNav() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const isWorkspaceLaunch = searchParams.get("launch") === "workspace"
+    && searchParams.get("fromTool") === "workspace-manager-v2";
+  const toolNav = document.querySelector('[data-launch-mode-nav="tool"]');
+  const workspaceNav = document.querySelector('[data-launch-mode-nav="workspace"]');
+  const returnButton = document.getElementById("returnToWorkspaceButton");
+  if (toolNav) {
+    toolNav.hidden = isWorkspaceLaunch;
+  }
+  if (workspaceNav) {
+    workspaceNav.hidden = !isWorkspaceLaunch;
+  }
+  if (returnButton) {
+    returnButton.addEventListener("click", () => {
+      window.location.href = workspaceManagerUrl(searchParams.get("hostContextId") || "");
+    });
+  }
+}
+
 async function loadSamplePresetFromUrl(app) {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = searchParams.get("samplePresetPath");
@@ -92,6 +120,7 @@ try {
     usageService: new PaletteUsageService()
   });
   app.init();
+  configureWorkspaceNav();
   window.paletteManagerV2App = app.getPublicApi();
   void loadSamplePresetFromUrl(app);
 } catch (error) {

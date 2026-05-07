@@ -1,0 +1,21 @@
+PR_26126_119 tool tile launch notes
+
+Scope:
+- Remove direct tool launch buttons from the Workspace Manager V2 menu.
+- Render workspace-launchable V2 tools as fixed-size launch tiles.
+- Launch tools through Workspace Manager V2 session/context.
+- Workspace-launched tools show only Return to Workspace in navWorkspace.
+
+Implementation notes:
+- Workspace Manager V2 now renders fixed 180px by 118px tiles for Asset Manager V2, Palette Manager V2, and Preview Generator V2.
+- Tiles show tool name, launch state, and useful context detail:
+  - Asset Manager V2: managed asset count.
+  - Palette Manager V2: active palette swatch count.
+  - Preview Generator V2: manifest validation status.
+- Tile launch URLs include launch=workspace, fromTool=workspace-manager-v2, and hostContextId.
+- Asset Manager V2, Palette Manager V2, and Preview Generator V2 each expose workspace nav containing only Return to Workspace when launched by Workspace Manager V2.
+
+Validation:
+- npm run test:workspace-v2 PASS.
+- Playwright coverage validates tile sizing, status text, Asset Manager V2 launch, Palette Manager V2 launch, Preview Generator V2 launch, and Return to Workspace restoring the active manifest/session.
+

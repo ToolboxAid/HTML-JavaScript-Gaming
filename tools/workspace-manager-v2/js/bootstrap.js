@@ -1,8 +1,9 @@
 import { WorkspaceManagerV2App } from "./WorkspaceManagerV2App.js";
 import { AccordionSection } from "./controls/AccordionSection.js";
 import { GameSelectorControl } from "./controls/GameSelectorControl.js";
-import { LaunchControl } from "./controls/LaunchControl.js";
+import { ManifestMenuControl } from "./controls/ManifestMenuControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
+import { ToolTilesControl } from "./controls/ToolTilesControl.js";
 import { WorkspaceSummaryControl } from "./controls/WorkspaceSummaryControl.js";
 import { WorkspaceManagerV2ContextService } from "./services/WorkspaceManagerV2ContextService.js";
 
@@ -22,8 +23,13 @@ window.addEventListener("DOMContentLoaded", () => {
       select: requireElement("#activeGameSelect"),
       summary: requireElement("#activeGameSummary")
     }),
-    launchControl: new LaunchControl(requireElement("#launchAssetManagerV2Button")),
-    saveControl: new LaunchControl(requireElement("#saveWorkspaceManifestButton")),
+    menu: new ManifestMenuControl({
+      exportButton: requireElement("#exportManifestButton"),
+      importButton: requireElement("#importManifestButton"),
+      importInput: requireElement("#importManifestInput"),
+      loadAsteroidsButton: requireElement("#loadAsteroidsButton"),
+      uatButton: requireElement("#seedUatManifestButton")
+    }),
     statusLog: new StatusLogControl({
       clearButton: requireElement("#clearStatusButton"),
       log: requireElement("#statusLog")
@@ -33,6 +39,9 @@ window.addEventListener("DOMContentLoaded", () => {
       contextOutput: requireElement("#workspaceContextOutput"),
       launchContextSummary: requireElement("#launchContextSummary"),
       paletteSummary: requireElement("#activePaletteSummary")
+    }),
+    toolTiles: new ToolTilesControl({
+      container: requireElement("#workspaceToolTiles")
     })
   });
 
