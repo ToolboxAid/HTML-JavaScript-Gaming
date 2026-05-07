@@ -82,6 +82,7 @@ function classifyToolGroup(toolId) {
     "asset-browser",
     "asset-manager-v2",
     "asset-pipeline",
+    "workspace-manager-v2",
     "tile-model-converter",
     "physics-sandbox",
     "3d-json-payload"

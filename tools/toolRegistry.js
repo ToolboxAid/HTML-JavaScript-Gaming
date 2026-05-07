@@ -216,6 +216,29 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "workspace-manager-v2",
+    name: "Workspace Manager V2",
+    displayName: "Workspace Manager V2",
+    shortDescription: "Owns active game, palette, asset registry, and Asset Manager V2 launch context.",
+    shortLabel: "Workspace",
+    path: "workspace-manager-v2",
+    folderName: "workspace-manager-v2",
+    entryPoint: "workspace-manager-v2/index.html",
+    description: "First-Class Tool V2 workspace surface for games-only context selection and Asset Manager V2 session launch.",
+    showcaseTag: "Workspace",
+    showcaseStatus: "Context Bootstrap",
+    active: true,
+    legacy: false,
+    order: 6.75,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "workspace-manager-v2/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
     id: "palette-manager-v2",
     name: "Palette Manager V2",
     displayName: "Palette Manager V2",

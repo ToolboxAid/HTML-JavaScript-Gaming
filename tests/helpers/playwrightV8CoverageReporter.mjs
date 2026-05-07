@@ -327,6 +327,7 @@ export class PlaywrightV8CoverageReporter {
       { name: "Palette Manager V2", prefix: "tools/palette-manager-v2/" },
       { name: "Tool Template V2", prefix: "tools/templates-v2/" },
       { name: "Workspace V2", prefix: "tools/workspace-v2/" },
+      { name: "Workspace Manager V2", prefix: "tools/workspace-manager-v2/" },
       { name: "Workspace Manager", prefix: "tools/workspace-manager/" }
     ];
     return toolEntryPoints.map(({ name, prefix }) => {

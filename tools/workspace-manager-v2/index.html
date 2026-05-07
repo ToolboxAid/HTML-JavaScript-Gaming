@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Workspace Manager V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css">
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+    <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="./styles/workspaceManagerV2.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="workspace-manager-v2">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-workspace-manager-v2-summary>Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <header class="workspace-manager-v2__header" data-workspace-manager-v2-header>
+          <section class="tools-platform-frame workspace-manager-v2__local-shell-frame">
+            <div class="tools-platform-frame__accordion-content">
+              <div class="tools-platform-frame__accordion-summary">
+                <div class="tools-platform-frame__summary-copy">
+                  <h1 class="tools-platform-frame__title" data-tool-id="workspace-manager-v2">Workspace Manager V2</h1>
+                  <h2 class="tools-platform-frame__eyebrow">Games-only launch context</h2>
+                </div>
+                <div class="tools-platform-frame__summary-meta">
+                  <div class="tools-platform-frame__meta">Owns active game, palette, asset registry, and Asset Manager V2 session launch context.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </header>
+      </div>
+    </details>
+
+    <nav class="workspace-manager-v2__menu" aria-label="Workspace Manager V2 actions">
+      <button id="launchAssetManagerV2Button" type="button" disabled>Launch Asset Manager V2</button>
+    </nav>
+
+    <main class="workspace-manager-v2 app-shell" data-tool-id="workspace-manager-v2">
+      <aside class="workspace-manager-v2__panel workspace-manager-v2__panel--left" aria-label="Workspace setup">
+        <section class="accordion-v2 workspace-manager-v2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="activeGameContent">
+            <span>Active Game</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="activeGameContent" class="accordion-v2__content">
+            <label class="workspace-manager-v2__field" for="activeGameSelect">
+              <span>Game</span>
+              <select id="activeGameSelect"></select>
+            </label>
+            <p id="activeGameSummary" class="workspace-manager-v2__hint">Select a game workspace.</p>
+          </div>
+        </section>
+      </aside>
+
+      <section class="workspace-manager-v2__panel workspace-manager-v2__panel--center" aria-label="Workspace context">
+        <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="workspaceContextContent">
+            <span>Workspace Context</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="workspaceContextContent" class="accordion-v2__content">
+            <div class="workspace-manager-v2__summary-grid" aria-label="Active workspace context summary">
+              <section class="workspace-manager-v2__summary-card" aria-label="Active palette summary">
+                <h2>Active Palette</h2>
+                <p id="activePaletteSummary">No active palette selected.</p>
+              </section>
+              <section class="workspace-manager-v2__summary-card" aria-label="Active asset registry summary">
+                <h2>Asset Registry</h2>
+                <p id="activeAssetRegistrySummary">No asset registry context created.</p>
+              </section>
+              <section class="workspace-manager-v2__summary-card" aria-label="Launch context summary">
+                <h2>Launch Context</h2>
+                <p id="launchContextSummary">Asset Manager V2 launch is waiting for a game and palette.</p>
+              </section>
+            </div>
+            <pre id="workspaceContextOutput" class="workspace-manager-v2__output">{}</pre>
+          </div>
+        </section>
+      </section>
+
+      <aside class="workspace-manager-v2__panel workspace-manager-v2__panel--right" aria-label="Workspace status">
+        <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--status is-open" data-accordion-v2-open="true">
+          <div class="accordion-v2__header workspace-manager-v2__status-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="statusLogContent">
+            <span>Status</span>
+            <div class="workspace-manager-v2__status-header-actions">
+              <button id="clearStatusButton" class="workspace-manager-v2__status-clear-button" type="button">Clear</button>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </div>
+          <div id="statusLogContent" class="accordion-v2__content">
+            <textarea id="statusLog" readonly rows="10" aria-label="Workspace Manager V2 status log"></textarea>
+          </div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  </body>
+</html>
