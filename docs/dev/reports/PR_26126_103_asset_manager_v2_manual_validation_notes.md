@@ -8,9 +8,7 @@
 
 ## Results
 - `npm run test:workspace-v2` passed 12/12 Playwright tests.
-- Asset Manager V2 tool-mode validation covers WASD tile navigation from selected tile focus and Assets list focus.
-- Selection, Selected Asset Detail, and preview update after WASD navigation.
-- WASD handled key events are verified as default-prevented.
-- Arrow/Home/Page/Enter asset navigation handling was removed from Asset Manager V2.
+- PR_26126_104 superseded the asset navigation behavior from this historical report.
+- Asset Manager V2 asset selection is click/tap driven only after PR_26126_104.
 - Missing-file tile and Status warning behavior remains covered.
 - No sample JSON was modified.

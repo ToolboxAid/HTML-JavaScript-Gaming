@@ -18,7 +18,6 @@ export class AssetCatalogControl {
     this.onSelect = null;
     this.onDelete = null;
     this.onPreviewStatus = null;
-    this.pendingFocusAssetId = "";
     this.previewOptions = {};
     this.lastPreviewError = "";
   }
@@ -27,7 +26,6 @@ export class AssetCatalogControl {
     this.onDelete = onDelete;
     this.onPreviewStatus = onPreviewStatus;
     this.onSelect = onSelect;
-    this.list.tabIndex = 0;
     this.list.addEventListener("click", (event) => {
       const deleteControl = event.target.closest("[data-delete-asset-id]");
       if (deleteControl) {
@@ -40,9 +38,12 @@ export class AssetCatalogControl {
       if (!button) {
         return;
       }
+      if (event.detail === 0) {
+        event.preventDefault();
+        return;
+      }
       this.onSelect?.(button.dataset.assetId);
     });
-    this.list.addEventListener("keydown", (event) => this.handleKeyboardSelection(event));
   }
 
   render(assets, selectedAssetId, missingFileAssetIds = new Set()) {
@@ -74,8 +75,8 @@ export class AssetCatalogControl {
         `path: ${entry.path || ""}`
       ].join("\n");
       return `
-      <article class="asset-manager-v2__asset-tile ${isSelected ? "is-selected" : ""} ${isMissingFile ? "is-missing-file" : ""}" data-asset-tile-id="${escapeHtml(assetId)}" tabindex="${isSelected ? "0" : "-1"}" title="${escapeHtml(detailTooltip)}">
-        <button type="button" data-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-select">
+      <article class="asset-manager-v2__asset-tile ${isSelected ? "is-selected" : ""} ${isMissingFile ? "is-missing-file" : ""}" title="${escapeHtml(detailTooltip)}">
+        <button type="button" tabindex="-1" data-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-select">
           <span data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete" aria-label="Delete ${escapeHtml(assetId)}" title="Delete ${escapeHtml(assetId)}">X</span>
           <span class="asset-manager-v2__asset-copy">
             <span class="asset-manager-v2__asset-type-role">${escapeHtml(entry.type)}:${escapeHtml(entry.role || "")}</span>
@@ -85,99 +86,6 @@ export class AssetCatalogControl {
       </article>
     `;
     }).join("");
-    this.focusPendingSelection();
-  }
-
-  handleKeyboardSelection(event) {
-    if (event.altKey || event.ctrlKey || event.metaKey) {
-      return;
-    }
-    const key = this.normalizeWasdKey(event);
-    if (!key) {
-      return;
-    }
-    const buttons = Array.from(this.list.querySelectorAll("button[data-asset-id]"));
-    if (!buttons.length) {
-      return;
-    }
-    const currentButton = this.currentKeyboardButton(event, buttons);
-    const currentIndex = Math.max(0, buttons.indexOf(currentButton));
-    const nextIndex = this.nextKeyboardIndex(key, currentIndex, buttons.length);
-    const nextButton = buttons[nextIndex];
-    event.preventDefault();
-    if (!nextButton) {
-      currentButton?.focus({ preventScroll: true });
-      return;
-    }
-    if (nextButton === currentButton) {
-      nextButton.focus({ preventScroll: true });
-      return;
-    }
-    this.pendingFocusAssetId = nextButton.dataset.assetId || "";
-    this.onSelect?.(this.pendingFocusAssetId);
-  }
-
-  normalizeWasdKey(event) {
-    const codeMap = {
-      KeyA: "a",
-      KeyD: "d",
-      KeyS: "s",
-      KeyW: "w"
-    };
-    if (codeMap[event.code]) {
-      return codeMap[event.code];
-    }
-    const key = String(event.key || "").toLowerCase();
-    return ["a", "d", "s", "w"].includes(key) ? key : "";
-  }
-
-  currentKeyboardButton(event, buttons) {
-    const focusedButton = event.target.closest?.("button[data-asset-id]");
-    if (focusedButton && buttons.includes(focusedButton)) {
-      return focusedButton;
-    }
-    const focusedTile = event.target.closest?.("[data-asset-tile-id]");
-    if (focusedTile) {
-      const tileButton = buttons.find((button) => button.dataset.assetId === focusedTile.dataset.assetTileId);
-      if (tileButton) {
-        return tileButton;
-      }
-    }
-    return buttons.find((button) => button.closest(".asset-manager-v2__asset-tile")?.classList.contains("is-selected")) || buttons[0];
-  }
-
-  nextKeyboardIndex(key, currentIndex, count) {
-    if (key === "a") {
-      return Math.max(0, currentIndex - 1);
-    }
-    if (key === "d") {
-      return Math.min(count - 1, currentIndex + 1);
-    }
-    const columnCount = this.keyboardColumnCount();
-    if (key === "w") {
-      return Math.max(0, currentIndex - columnCount);
-    }
-    if (key === "s") {
-      return Math.min(count - 1, currentIndex + columnCount);
-    }
-    return currentIndex;
-  }
-
-  keyboardColumnCount() {
-    const columns = getComputedStyle(this.list).gridTemplateColumns
-      .split(" ")
-      .filter((column) => column && column !== "none").length;
-    return Math.max(1, columns);
-  }
-
-  focusPendingSelection() {
-    if (!this.pendingFocusAssetId) {
-      return;
-    }
-    const button = Array.from(this.list.querySelectorAll("button[data-asset-id]"))
-      .find((candidate) => candidate.dataset.assetId === this.pendingFocusAssetId);
-    this.pendingFocusAssetId = "";
-    button?.focus({ preventScroll: true });
   }
 
   setPreviewOptions(options = {}) {

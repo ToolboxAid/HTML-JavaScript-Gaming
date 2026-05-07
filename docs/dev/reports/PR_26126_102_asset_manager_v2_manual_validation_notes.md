@@ -17,7 +17,5 @@
 - Missing referenced files remain Status warnings with asset ID and path.
 - Missing referenced files do not fail otherwise valid imported JSON.
 - Missing file asset tiles render red `type:role` text.
-- Arrow keys work from a focused tile button and the Assets list.
-- Home, End, PageUp, PageDown, and Enter fallback navigation works where appropriate.
-- Keyboard selection updates selected tile styling, Selected Asset Detail, preview, and focus.
+- Asset tile keyboard navigation from this historical report was removed by PR_26126_104; Asset Manager V2 asset selection is click/tap driven only.
 - Sample JSON files were not modified.
