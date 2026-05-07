@@ -20,7 +20,7 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(93%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 621/621; executed functions 51/55
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -194,7 +194,8 @@ Files with executed line/function counts where available:
 (100%) tools/templates-v2/js/services/ToolStateSerializer.js - executed lines 13/13; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(100%) none - no low-coverage changed runtime JS files
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(93%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
+(0%) tests/playwright/tools/AssetManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage

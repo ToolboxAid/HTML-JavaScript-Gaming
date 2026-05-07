@@ -2,15 +2,24 @@
 M docs/dev/reports/coverage_changed_js_guardrail.txt
  M docs/dev/reports/playwright_v8_coverage_report.txt
  M package.json
-?? docs/dev/reports/PR_26126_109_manual_validation_notes.md
-?? docs/dev/reports/PR_26126_109_test_script_ssot_notes.md
+ D tests/playwright/AssetManagerV2.spec.mjs
+ D tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
+?? docs/dev/reports/PR_26126_110_manual_validation_notes.md
+?? docs/dev/reports/PR_26126_110_test_directory_ssot_notes.md
+?? docs/dev/reports/PR_26126_110_workspace_launch_guard_notes.md
+?? tests/playwright/tools/
 
 # git ls-files --others --exclude-standard
-docs/dev/reports/PR_26126_109_manual_validation_notes.md
-docs/dev/reports/PR_26126_109_test_script_ssot_notes.md
+docs/dev/reports/PR_26126_110_manual_validation_notes.md
+docs/dev/reports/PR_26126_110_test_directory_ssot_notes.md
+docs/dev/reports/PR_26126_110_workspace_launch_guard_notes.md
+tests/playwright/tools/AssetManagerV2.spec.mjs
+tests/playwright/tools/PreviewGeneratorV2Baseline.spec.mjs
 
 # git diff --stat
-docs/dev/reports/coverage_changed_js_guardrail.txt | 1 -
- docs/dev/reports/playwright_v8_coverage_report.txt | 3 ---
- package.json                                       | 4 +++-
- 3 files changed, 3 insertions(+), 5 deletions(-)
+docs/dev/reports/coverage_changed_js_guardrail.txt |    4 +-
+ docs/dev/reports/playwright_v8_coverage_report.txt |    7 +-
+ package.json                                       |    6 +-
+ tests/playwright/AssetManagerV2.spec.mjs           | 1435 --------------------
+ .../playwright/PreviewGeneratorV2Baseline.spec.mjs |  747 ----------
+ 5 files changed, 9 insertions(+), 2190 deletions(-)

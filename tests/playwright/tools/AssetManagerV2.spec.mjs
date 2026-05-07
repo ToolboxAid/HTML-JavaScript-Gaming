@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
-import { workspaceV2CoverageReporter as coverageReporter } from "../helpers/workspaceV2CoverageReporter.mjs";
+import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function installFakeAssetFilePicker(page, files = []) {
   await page.addInitScript((initialFiles) => {
@@ -154,7 +154,7 @@ test.describe("Asset Manager V2", () => {
   });
 
   test("shows Asset Manager V2 launch guard for unsupported workspace query", async ({ page }) => {
-    const server = await openAssetManagerV2(page, "?workspace=PROD");
+    const server = await openAssetManagerV2(page, "?workspace=prod");
     const pageErrors = [];
 
     page.on("pageerror", (error) => {
@@ -164,7 +164,7 @@ test.describe("Asset Manager V2", () => {
     try {
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
       await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
-      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Temporary workspace PROD is not supported.");
+      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Temporary workspace prod is not supported.");
       await expect(page.locator(".asset-manager-v2.app-shell")).toHaveCount(1);
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
       expect(pageErrors).toEqual([]);

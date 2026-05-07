@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
-import { workspaceV2CoverageReporter as coverageReporter } from "../helpers/workspaceV2CoverageReporter.mjs";
+import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function installFakeRepoPicker(page, {
   validSampleIds = ["0102"],
