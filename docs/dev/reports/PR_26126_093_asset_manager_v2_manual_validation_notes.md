@@ -4,7 +4,7 @@
 - `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
 - `node --check tools/asset-manager-v2/js/controls/AssetFormControl.js`
 - `node --check tools/asset-manager-v2/js/controls/AssetCatalogControl.js`
-- `node --check tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js`
+- `node --check tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js`
 - `node --check tools/asset-manager-v2/js/services/WorkspaceBridge.js`
 - `node --check src/shared/assets/assetPreviewHelpers.js`
 - `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
@@ -19,7 +19,7 @@
 ## Manual Checks Covered By Tests
 - Disabled and grayed ID textbox.
 - Color ID generation from normalized swatch names.
-- Temporary `?palette=sample` UAT palette loading.
+- Temporary `?workspace=UAT` UAT palette loading.
 - Color picker replacing the file picker and Status-only empty palette messages.
 - Audio, font, and image preview path resolution from Workspace V2 game assets.
 - Selected Asset Detail accordion and Stretch Override fieldset styling.

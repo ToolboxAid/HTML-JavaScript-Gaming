@@ -1,28 +1,48 @@
 # git status --short
-M docs/dev/reports/coverage_changed_js_guardrail.txt
+M docs/dev/reports/PR_26126_093_asset_manager_v2_manual_validation_notes.md
+ M docs/dev/reports/PR_26126_093_asset_manager_v2_palette_sample_notes.md
+ M docs/dev/reports/PR_26126_096_asset_manager_v2_manual_validation_notes.md
+ M docs/dev/reports/PR_26126_096_asset_manager_v2_temporary_uat_session_root_notes.md
+ M docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md
+ M docs/dev/reports/PR_26126_105_asset_manager_v2_launch_guard_notes.md
+ M docs/dev/reports/PR_26126_105_asset_manager_v2_manual_validation_notes.md
+ M docs/dev/reports/codex_changed_files.txt
+ M docs/dev/reports/codex_review.diff
+ M docs/dev/reports/coverage_changed_js_guardrail.txt
  M docs/dev/reports/playwright_v8_coverage_report.txt
+ M package.json
  M tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
- M tools/asset-manager-v2/index.html
  M tools/asset-manager-v2/js/AssetManagerV2App.js
- M tools/asset-manager-v2/js/bootstrap.js
- M tools/asset-manager-v2/js/controls/AccordionSection.js
- M tools/asset-manager-v2/styles/assetManager.css
-?? docs/dev/reports/PR_26126_105_asset_manager_v2_keyboard_cleanup_notes.md
-?? docs/dev/reports/PR_26126_105_asset_manager_v2_launch_guard_notes.md
-?? docs/dev/reports/PR_26126_105_asset_manager_v2_manual_validation_notes.md
+ D tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js
+?? docs/dev/reports/PR_26126_106_asset_manager_v2_keyboard_cleanup_review_notes.md
+?? docs/dev/reports/PR_26126_106_asset_manager_v2_test_separation_notes.md
+?? docs/dev/reports/PR_26126_106_asset_manager_v2_workspace_uat_notes.md
+?? tests/helpers/workspaceV2CoverageReporter.mjs
+?? tests/playwright/AssetManagerV2.spec.mjs
+?? tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js
 
 # git ls-files --others --exclude-standard
-docs/dev/reports/PR_26126_105_asset_manager_v2_keyboard_cleanup_notes.md
-docs/dev/reports/PR_26126_105_asset_manager_v2_launch_guard_notes.md
-docs/dev/reports/PR_26126_105_asset_manager_v2_manual_validation_notes.md
+docs/dev/reports/PR_26126_106_asset_manager_v2_keyboard_cleanup_review_notes.md
+docs/dev/reports/PR_26126_106_asset_manager_v2_test_separation_notes.md
+docs/dev/reports/PR_26126_106_asset_manager_v2_workspace_uat_notes.md
+tests/helpers/workspaceV2CoverageReporter.mjs
+tests/playwright/AssetManagerV2.spec.mjs
+tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js
 
 # git diff --stat
-docs/dev/reports/coverage_changed_js_guardrail.txt |  3 +
- docs/dev/reports/playwright_v8_coverage_report.txt | 14 +++-
- .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 90 +++++++++++-----------
- tools/asset-manager-v2/index.html                  | 10 ++-
- tools/asset-manager-v2/js/AssetManagerV2App.js     | 61 +++++++++++++++
- tools/asset-manager-v2/js/bootstrap.js             |  1 +
- .../js/controls/AccordionSection.js                |  7 --
- tools/asset-manager-v2/styles/assetManager.css     | 45 ++++++++++-
- 8 files changed, 170 insertions(+), 61 deletions(-)
+...093_asset_manager_v2_manual_validation_notes.md |    4 +-
+ ...26_093_asset_manager_v2_palette_sample_notes.md |    6 +-
+ ...096_asset_manager_v2_manual_validation_notes.md |    6 +-
+ ..._manager_v2_temporary_uat_session_root_notes.md |    8 +-
+ ...6126_097_asset_manager_v2_font_preview_notes.md |    2 +-
+ ...6126_105_asset_manager_v2_launch_guard_notes.md |    2 +-
+ ...105_asset_manager_v2_manual_validation_notes.md |    2 +-
+ docs/dev/reports/codex_changed_files.txt           |   56 +-
+ docs/dev/reports/codex_review.diff                 | 3584 +++++++++++++++++---
+ docs/dev/reports/coverage_changed_js_guardrail.txt |    4 +-
+ docs/dev/reports/playwright_v8_coverage_report.txt |   12 +-
+ package.json                                       |    2 +-
+ .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 1346 +-------
+ tools/asset-manager-v2/js/AssetManagerV2App.js     |   30 +-
+ .../js/services/TemporaryUatSamplePalette.js       |   36 -
+ 15 files changed, 3236 insertions(+), 1864 deletions(-)

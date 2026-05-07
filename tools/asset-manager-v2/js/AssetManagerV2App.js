@@ -1,4 +1,4 @@
-import { readTemporaryUatSamplePalette } from "./services/TemporaryUatSamplePalette.js";
+import { readTemporaryUatWorkspaceContext } from "./services/TemporaryUatWorkspace.js";
 import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
 
 const ASSET_MANAGER_TOOL_ID = "asset-manager-v2";
@@ -51,6 +51,7 @@ export class AssetManagerV2App {
     this.schemaReady = false;
     this.selectedAssetId = "";
     this.redoStack = [];
+    this.temporaryUatAssetsPath = "";
     this.temporaryUatGameRoot = "";
     this.undoStack = [];
   }
@@ -105,12 +106,15 @@ export class AssetManagerV2App {
   }
 
   evaluateLaunchGuard() {
-    const samplePalette = readTemporaryUatSamplePalette(this.window.location);
-    if (samplePalette.ok) {
-      if (samplePalette.palette?.swatches?.length > 0) {
+    const uatContext = readTemporaryUatWorkspaceContext(this.window.location);
+    if (uatContext.ok) {
+      if (uatContext.palette?.swatches?.length > 0) {
         return { ok: true };
       }
-      return { ok: false, reason: "Temporary UAT sample context did not provide active palette colors." };
+      return { ok: false, reason: "Temporary UAT workspace context did not provide active palette colors." };
+    }
+    if (uatContext.isWorkspaceQuery) {
+      return { ok: false, reason: uatContext.message };
     }
 
     if (!this.workspaceBridge.isWorkspaceMode()) {
@@ -196,14 +200,16 @@ export class AssetManagerV2App {
   }
 
   loadPaletteIfPresent() {
-    const samplePalette = readTemporaryUatSamplePalette(this.window.location);
-    if (samplePalette.ok) {
-      this.assetForm.setPaletteSwatches(samplePalette.palette.swatches);
-      this.temporaryUatGameRoot = samplePalette.gameRoot || "";
-      this.statusLog.ok(`Loaded temporary UAT-only sample palette from ?palette=sample (${samplePalette.palette.swatches.length} colors).`);
-      this.statusLog.ok(`Temporary UAT-only Asset Manager V2 game root set to ${this.temporaryUatGameRoot} for preview/path testing.`);
+    const uatContext = readTemporaryUatWorkspaceContext(this.window.location);
+    if (uatContext.ok) {
+      this.assetForm.setPaletteSwatches(uatContext.palette.swatches);
+      this.temporaryUatAssetsPath = uatContext.assetsPath || "";
+      this.temporaryUatGameRoot = uatContext.gameRoot || "";
+      this.statusLog.ok(`Loaded temporary UAT-only sample palette from ?workspace=UAT (${uatContext.palette.swatches.length} colors).`);
+      this.statusLog.ok(`Temporary UAT-only Asset Manager V2 session context set to ${this.temporaryUatGameRoot} with assetsPath ${this.temporaryUatAssetsPath}.`);
       return;
     }
+    this.temporaryUatAssetsPath = "";
     this.temporaryUatGameRoot = "";
     if (!this.workspaceBridge.isWorkspaceMode()) {
       this.assetForm.setPaletteSwatches([]);
@@ -227,6 +233,8 @@ export class AssetManagerV2App {
       ...(this.temporaryUatGameRoot
         ? {
           workspaceMode: true,
+          workspaceAssetsPath: this.temporaryUatAssetsPath,
+          workspaceGameId: "Asteroids",
           workspaceGameRoot: this.temporaryUatGameRoot
         }
         : {})

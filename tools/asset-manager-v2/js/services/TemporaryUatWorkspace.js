@@ -1,6 +1,7 @@
-// Temporary UAT-only sample palette loader. Keep this isolated so ?palette=sample
-// can be removed without touching normal Workspace V2 palette loading.
-const TEMPORARY_UAT_SAMPLE_GAME_ROOT = "games/Asteroids/";
+// Temporary UAT-only workspace session loader. Keep this isolated so
+// ?workspace=UAT can be removed without touching normal Workspace V2 loading.
+const TEMPORARY_UAT_GAME_ROOT = "games/Asteroids/";
+const TEMPORARY_UAT_ASSETS_PATH = "games/Asteroids/assets";
 
 const TEMPORARY_UAT_SAMPLE_PALETTE = Object.freeze({
   "$schema": "tools/schemas/tools/palette-browser.schema.json",
@@ -9,7 +10,7 @@ const TEMPORARY_UAT_SAMPLE_PALETTE = Object.freeze({
   id: "asset-manager-v2-uat-sample",
   name: "Asset Manager V2 UAT Sample Palette",
   source: "Asset Manager V2 temporary UAT sample",
-  sourceId: "?palette=sample",
+  sourceId: "?workspace=UAT",
   locked: true,
   swatches: Object.freeze([
     Object.freeze({ symbol: "V", hex: "#7C3AED", name: "Signal Violet!", source: "UAT Sample", tags: Object.freeze(["ui", "accent"]) }),
@@ -22,15 +23,21 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-export function readTemporaryUatSamplePalette(locationRef = window.location) {
+export function readTemporaryUatWorkspaceContext(locationRef = window.location) {
   const params = new URLSearchParams(locationRef.search || "");
-  if (params.get("palette") !== "sample") {
-    return { ok: false, palette: null };
+  const workspace = params.get("workspace");
+  if (workspace !== "UAT") {
+    return {
+      ok: false,
+      isWorkspaceQuery: Boolean(workspace),
+      message: workspace ? `Temporary workspace ${workspace} is not supported.` : ""
+    };
   }
   return {
     ok: true,
     // Temporary UAT-only game root for Asset Manager V2 preview/path testing.
-    gameRoot: TEMPORARY_UAT_SAMPLE_GAME_ROOT,
+    assetsPath: TEMPORARY_UAT_ASSETS_PATH,
+    gameRoot: TEMPORARY_UAT_GAME_ROOT,
     palette: clone(TEMPORARY_UAT_SAMPLE_PALETTE)
   };
 }
