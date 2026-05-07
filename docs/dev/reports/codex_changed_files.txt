@@ -1,29 +1,16 @@
 # git status --short
-M  docs/dev/reports/PR_26126_093_asset_manager_v2_manual_validation_notes.md
-M  docs/dev/reports/PR_26126_093_asset_manager_v2_palette_sample_notes.md
-M  docs/dev/reports/PR_26126_096_asset_manager_v2_manual_validation_notes.md
-M  docs/dev/reports/PR_26126_096_asset_manager_v2_temporary_uat_session_root_notes.md
-M  docs/dev/reports/PR_26126_097_asset_manager_v2_font_preview_notes.md
-M  docs/dev/reports/PR_26126_105_asset_manager_v2_launch_guard_notes.md
-M  docs/dev/reports/PR_26126_105_asset_manager_v2_manual_validation_notes.md
-AM docs/dev/reports/PR_26126_107_asset_manager_v2_code_review_cleanup_notes.md
-AM docs/dev/reports/PR_26126_107_asset_manager_v2_manual_validation_notes.md
-M  docs/dev/reports/codex_changed_files.txt
-M  docs/dev/reports/codex_review.diff
-MM docs/dev/reports/coverage_changed_js_guardrail.txt
-MM docs/dev/reports/playwright_v8_coverage_report.txt
- M tests/playwright/AssetManagerV2.spec.mjs
-M  tools/asset-manager-v2/js/AssetManagerV2App.js
- M tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js
+M docs/dev/reports/coverage_changed_js_guardrail.txt
+ M docs/dev/reports/playwright_v8_coverage_report.txt
+ M tools/asset-manager-v2/js/AssetManagerV2App.js
+?? docs/dev/reports/PR_26126_108_asset_manager_v2_final_code_review_notes.md
+?? docs/dev/reports/PR_26126_108_asset_manager_v2_manual_validation_notes.md
 
 # git ls-files --others --exclude-standard
-(no output)
+docs/dev/reports/PR_26126_108_asset_manager_v2_final_code_review_notes.md
+docs/dev/reports/PR_26126_108_asset_manager_v2_manual_validation_notes.md
 
 # git diff --stat
-.../PR_26126_107_asset_manager_v2_code_review_cleanup_notes.md        | 1 +
- .../reports/PR_26126_107_asset_manager_v2_manual_validation_notes.md  | 1 +
- docs/dev/reports/coverage_changed_js_guardrail.txt                    | 2 +-
- docs/dev/reports/playwright_v8_coverage_report.txt                    | 4 ++--
- tests/playwright/AssetManagerV2.spec.mjs                              | 2 +-
- tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js           | 3 ++-
- 6 files changed, 8 insertions(+), 5 deletions(-)
+docs/dev/reports/coverage_changed_js_guardrail.txt |  2 +-
+ docs/dev/reports/playwright_v8_coverage_report.txt |  8 +++-----
+ tools/asset-manager-v2/js/AssetManagerV2App.js     | 11 -----------
+ 3 files changed, 4 insertions(+), 17 deletions(-)

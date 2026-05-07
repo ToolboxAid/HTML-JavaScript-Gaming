@@ -20,7 +20,7 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(91%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 630/630; executed functions 51/56
+(93%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 621/621; executed functions 51/55
 (100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - executed lines 38/38; executed functions 3/3
 
 Files with executed line/function counts where available:
@@ -129,9 +129,9 @@ Files with executed line/function counts where available:
 (88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
 (90%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 52/58
 (91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 328/328; executed functions 30/33
-(91%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 630/630; executed functions 51/56
 (92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 531/531; executed functions 55/60
 (92%) tools/templates-v2/js/controls/ToolStarterShellControl.js - executed lines 111/111; executed functions 11/12
+(93%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 621/621; executed functions 51/55
 (93%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 14/15
 (100%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 6/6
 (100%) samples/phase-01/0102/main.js - executed lines 23/23; executed functions 1/1
@@ -198,8 +198,6 @@ Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) tests/helpers/workspaceV2CoverageReporter.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/AssetManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
-(91%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
+(93%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
 (100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - changed JS file with browser V8 coverage

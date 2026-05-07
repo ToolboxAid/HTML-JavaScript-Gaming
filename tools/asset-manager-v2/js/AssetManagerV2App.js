@@ -1,7 +1,5 @@
 import { readTemporaryUatWorkspaceContext } from "./services/TemporaryUatWorkspace.js";
 import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
-
-const ASSET_MANAGER_TOOL_ID = "asset-manager-v2";
 const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.";
 
 function clone(value) {
@@ -244,15 +242,6 @@ export class AssetManagerV2App {
   currentPayload() {
     return {
       assets: sortedAssets(this.assets)
-    };
-  }
-
-  currentToolState() {
-    return {
-      version: "v2",
-      toolId: ASSET_MANAGER_TOOL_ID,
-      assets: this.currentOutputAssets(),
-      payloadJson: this.currentPayload()
     };
   }
 
