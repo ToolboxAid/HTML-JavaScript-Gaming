@@ -1282,6 +1282,8 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"asset-manager-v2"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"vector-map-editor"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"vector.asteroids.ship"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"activePalette"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"workspaceManifest"');
       await expect(page.locator("#launchAssetManagerV2Button")).toBeEnabled();
@@ -1401,6 +1403,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"color\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"kind\": \"hex\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"name\": \"HUD Blue\"");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Workspace Manager V2 session manifest now has 17 validated assets\./);
 
       const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
       expect(storedContext.documentKind).toBe("workspace-manifest");
@@ -1409,7 +1412,7 @@ test.describe("Asset Manager V2", () => {
       expect(storedContext.workspaceManifest).toBeUndefined();
       expect(storedContext.tools["asset-browser"]).toBeUndefined();
       expect(storedContext.tools["palette-browser"]).toBeUndefined();
-      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(13);
+      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(17);
       expect(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.fire"]).toEqual({
         path: "assets/audio/fire.wav",
         type: "audio",
@@ -1417,16 +1420,59 @@ test.describe("Asset Manager V2", () => {
         role: "sound",
         source: "manifest"
       });
-      expect(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]).toBeUndefined();
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]).toEqual({
+        path: "assets/audio/laser.wav",
+        type: "audio",
+        kind: "wav",
+        role: "sound",
+        source: "asset-manager-v2"
+      });
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.font.ui.score"]).toEqual({
+        path: "assets/fonts/score.ttf",
+        type: "font",
+        kind: "ttf",
+        role: "ui",
+        source: "asset-manager-v2"
+      });
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.image.sprite.preview"]).toEqual({
+        path: "assets/images/preview.png",
+        type: "image",
+        kind: "png",
+        role: "sprite",
+        source: "asset-manager-v2"
+      });
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]).toEqual({
+        path: "palette://workspace/hud-blue",
+        type: "color",
+        kind: "hex",
+        role: "hud",
+        source: "asset-manager-v2",
+        color: {
+          hex: "#78B7FF",
+          name: "HUD Blue",
+          symbol: "*"
+        }
+      });
       expect(storedContext.tools["palette-manager-v2"].source).toBe("manifest");
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
+      expect(storedContext.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toContain("vector.asteroids.ship");
       expect(storedContext.tools["workspace-v2"]).toBeUndefined();
-      expect(Object.keys(storedContext.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
+      expect(Object.keys(storedContext.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "vector-map-editor"]);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
-      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 13 managed assets.");
+      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 17 managed assets.");
       await expect(page.locator("#launchAssetManagerV2Button")).toBeEnabled();
+      await expect(page.locator("#saveWorkspaceManifestButton")).toBeEnabled();
+      const downloadPromise = page.waitForEvent("download");
+      await page.locator("#saveWorkspaceManifestButton").click();
+      const download = await downloadPromise;
+      expect(download.suggestedFilename()).toBe("workspace-manager-v2-Asteroids.workspace.manifest.json");
+      const savedManifest = JSON.parse(await readFile(await download.path(), "utf8"));
+      expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(17);
+      expect(savedManifest.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]).toEqual(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]);
+      expect(savedManifest.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]).toEqual(storedContext.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]);
+      expect(savedManifest.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toContain("vector.asteroids.ship");
 
       expect(pageErrors).toEqual([]);
     } finally {

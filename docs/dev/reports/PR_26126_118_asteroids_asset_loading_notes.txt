@@ -1,0 +1,14 @@
+PR_26126_118 Asteroids Asset Loading Notes
+
+Scope:
+- Asteroids managed assets are loaded from games/Asteroids/game.manifest.json.
+- No Asteroids asset registry entries are constructed or injected by Workspace Manager V2 or Asset Manager V2 runtime code in this PR.
+
+Behavior:
+- Workspace Manager V2 reports the manifest asset count from tools.asset-manager-v2.assets.
+- If the Asteroids manifest asset map is empty, Workspace Manager V2 logs a visible Status warning and keeps the asset count at 0.
+- Empty Asteroids assets do not silently fall back to hardcoded asset entries.
+
+Validation:
+- npm run test:workspace-v2 passed.
+- Workspace Manager V2 Playwright coverage intercepts games/Asteroids/game.manifest.json with an empty assets map and validates the Status warning plus 0 managed assets.

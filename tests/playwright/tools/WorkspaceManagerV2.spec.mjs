@@ -155,6 +155,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toContainText('"source": "manifest"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"asset-manager-v2"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"palette-manager-v2"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"vector-map-editor"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"vector.asteroids.ship"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"palette-browser"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"asset-browser"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"activePalette"');
@@ -174,11 +176,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const asteroidsManifest = await page.evaluate(async () => await fetch("/games/Asteroids/game.manifest.json", { cache: "no-store" }).then((response) => response.json()));
       expect(savedManifest).toEqual(asteroidsManifest);
       expect(savedManifest.documentKind).toBe("workspace-manifest");
-      expect(Object.keys(savedManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
+      expect(Object.keys(savedManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "vector-map-editor"]);
       expect(savedManifest.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(13);
       expect(savedManifest.tools["asset-manager-v2"].source).toBe("manifest");
       expect(savedManifest.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
+      expect(savedManifest.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toContain("vector.asteroids.ship");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved schema-valid Workspace Manager V2 manifest workspace-manager-v2-Asteroids\./);
 
       await page.locator("#launchAssetManagerV2Button").click();
@@ -221,6 +224,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.assetsPath).toBe("games/Asteroids/assets");
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(13);
+      expect(storedContext.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toContain("vector.asteroids.ship");
       expect(storedContext.tools["asset-manager-v2"].assets["assets.font.ui.vector-battle"]).toEqual({
         path: "assets/fonts/vector_battle.ttf",
         type: "font",
@@ -233,15 +237,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.tools["palette-browser"]).toBeUndefined();
       expect(storedContext.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
       const schemaValidation = await page.evaluate(async () => {
-        const [workspaceSchema, paletteSchema, assetSchema] = await Promise.all([
+        const [workspaceSchema, paletteSchema, assetSchema, vectorMapSchema] = await Promise.all([
           fetch("/tools/schemas/workspace.manifest.schema.json", { cache: "no-store" }).then((response) => response.json()),
           fetch("/tools/schemas/tools/palette-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/tools/schemas/tools/asset-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json())
+          fetch("/tools/schemas/tools/asset-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
+          fetch("/tools/schemas/tools/vector-map-editor.schema.json", { cache: "no-store" }).then((response) => response.json())
         ]);
         const url = new URL(window.location.href);
         const manifest = JSON.parse(sessionStorage.getItem(url.searchParams.get("hostContextId")));
         const palettePayload = manifest.tools["palette-manager-v2"];
         const assetPayload = manifest.tools["asset-manager-v2"];
+        const vectorPayload = manifest.tools["vector-map-editor"];
         const extraKeys = (value, schema) => Object.keys(value).filter((key) => !Object.hasOwn(schema.properties || {}, key));
         const missingKeys = (value, schema) => (schema.required || []).filter((key) => !Object.hasOwn(value, key));
         const swatchExtraKeys = palettePayload.swatches.flatMap((swatch, index) => (
@@ -260,7 +266,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           swatchExtraKeys,
           swatchMissingKeys,
           toolKeys: Object.keys(manifest.tools).sort(),
-          unsupportedToolKeys: Object.keys(manifest.tools).filter((key) => !Object.hasOwn(workspaceSchema.properties.tools.properties, key))
+          unsupportedToolKeys: Object.keys(manifest.tools).filter((key) => !Object.hasOwn(workspaceSchema.properties.tools.properties, key)),
+          vectorExtraKeys: extraKeys(vectorPayload, vectorMapSchema),
+          vectorMissingKeys: missingKeys(vectorPayload, vectorMapSchema),
+          vectorIds: vectorPayload.vectorMapDocument.vectors.map((vector) => vector.id)
         };
       });
       expect(schemaValidation).toEqual({
@@ -272,8 +281,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         paletteMissingKeys: [],
         swatchExtraKeys: [],
         swatchMissingKeys: [],
-        toolKeys: ["asset-manager-v2", "palette-manager-v2"],
-        unsupportedToolKeys: []
+        toolKeys: ["asset-manager-v2", "palette-manager-v2", "vector-map-editor"],
+        unsupportedToolKeys: [],
+        vectorExtraKeys: [],
+        vectorIds: [
+          "vector.asteroids.ship",
+          "vector.asteroids.asteroid.large",
+          "vector.asteroids.asteroid.medium",
+          "vector.asteroids.asteroid.small",
+          "vector.asteroids.ui.title"
+        ],
+        vectorMissingKeys: []
       });
       expect(JSON.stringify(storedContext)).not.toMatch(/samples\//i);
       await page.locator("#returnToWorkspaceButton").click();
@@ -306,6 +324,40 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await page.locator("#saveWorkspaceManifestButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Save blocked: Generated Workspace Manager V2 manifest failed schema validation: root\.tools\.asset-manager-v2\.unexpected is not allowed/);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("warns instead of injecting hardcoded Asteroids assets when manifest assets are empty", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    const asteroidsManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
+    asteroidsManifest.tools["asset-manager-v2"].assets = {};
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await page.route("**/games/Asteroids/game.manifest.json", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify(asteroidsManifest),
+        contentType: "application/json",
+        status: 200
+      });
+    });
+    await coverageReporter.start(page);
+    await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html`, { waitUntil: "networkidle" });
+
+    try {
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 0 managed assets.");
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"assets": {}');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"vector-map-editor"');
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Warning: \/games\/Asteroids\/game\.manifest\.json has no Asteroids Asset Manager V2 assets; Workspace Manager V2 did not inject hardcoded assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 11 active palette colors and 0 managed assets\./);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

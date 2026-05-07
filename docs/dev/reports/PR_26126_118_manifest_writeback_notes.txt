@@ -1,0 +1,15 @@
+PR_26126_118 Manifest Writeback Notes
+
+Scope:
+- Workspace Manager V2 now tracks the active session hostContextId after launching or restoring a workspace session.
+- Workspace Manager V2 Save/export refreshes from that active session before validating and downloading the workspace manifest.
+- Asset Manager V2 writes validated asset add, update, delete, undo, redo, import, and return-to-workspace state back into the Workspace Manager V2 session manifest.
+
+Behavior:
+- Save/export uses the latest session manifest when Asset Manager V2 has changed tools.asset-manager-v2.assets.
+- Manual game selection without an active session still saves the loaded game manifest.
+- Session writeback preserves the existing workspace manifest wrapper and only replaces tools.asset-manager-v2.assets.
+
+Validation:
+- npm run test:workspace-v2 passed.
+- Asset Manager V2 Playwright coverage validates a tool-updated session manifest returns to Workspace Manager V2 and Save/export includes the new session assets.

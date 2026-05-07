@@ -17,6 +17,7 @@ export class WorkspaceManagerV2App {
     this.summary = summary;
     this.activeContext = null;
     this.activeGame = null;
+    this.activeHostContextId = null;
   }
 
   start() {
@@ -46,6 +47,7 @@ export class WorkspaceManagerV2App {
   async selectGame(gameId) {
     this.activeContext = null;
     this.activeGame = null;
+    this.activeHostContextId = null;
     this.launchControl.setEnabled(false);
     this.saveControl.setEnabled(false);
     this.summary.clear();
@@ -65,6 +67,9 @@ export class WorkspaceManagerV2App {
     }
 
     this.applyContextResult(result);
+    if (result.assetWarning) {
+      this.statusLog.info(`Warning: ${result.assetWarning}`);
+    }
     this.statusLog.ok(`Loaded ${result.game.name} from ${result.game.manifestPath} with ${result.paletteSwatches.length} active palette colors and ${result.assetCount} managed assets.`);
     this.statusLog.ok("Asset Manager V2 production launch context is session/state based only.");
   }
@@ -80,12 +85,16 @@ export class WorkspaceManagerV2App {
     }
     this.gameSelector.setValue(result.game.id);
     this.applyContextResult(result);
+    if (result.assetWarning) {
+      this.statusLog.info(`Warning: ${result.assetWarning}`);
+    }
     this.statusLog.ok(`Restored ${result.game.name} workspace from session context ${result.hostContextId}.`);
   }
 
   applyContextResult(result) {
     this.activeContext = result.context;
     this.activeGame = result.game;
+    this.activeHostContextId = result.hostContextId || null;
     this.gameSelector.setSummary(`${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.`);
     this.summary.render({
       assetCount: result.assetCount,
@@ -114,8 +123,27 @@ export class WorkspaceManagerV2App {
       return;
     }
     const hostContextId = this.contextService.persistContext(this.activeContext);
+    this.activeHostContextId = hostContextId;
     this.statusLog.ok(`Stored Workspace Manager V2 schema-valid manifest ${hostContextId}.`);
     this.contextService.launchAssetManager(hostContextId);
+  }
+
+  async contextForSave() {
+    if (!this.activeHostContextId) {
+      return { ok: true, context: this.activeContext };
+    }
+    const result = await this.contextService.restorePersistedContextById(this.activeHostContextId);
+    if (!result.ok) {
+      return { ok: false, message: `Unable to refresh Workspace Manager V2 session manifest ${this.activeHostContextId}: ${result.message}` };
+    }
+    if (result.game.id !== this.activeGame.id) {
+      return { ok: false, message: `Stored session context is for ${result.game.id}, not ${this.activeGame.id}.` };
+    }
+    this.applyContextResult(result);
+    if (result.assetWarning) {
+      this.statusLog.info(`Warning: ${result.assetWarning}`);
+    }
+    return { ok: true, context: result.context };
   }
 
   async saveWorkspaceManifest() {
@@ -123,12 +151,18 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail("Save blocked: active game context and palette are required.");
       return;
     }
-    const validation = await this.contextService.validateGeneratedManifest(this.activeContext);
+    const saveContextResult = await this.contextForSave();
+    if (!saveContextResult.ok) {
+      this.statusLog.fail(`Save blocked: ${saveContextResult.message}`);
+      return;
+    }
+    const context = saveContextResult.context;
+    const validation = await this.contextService.validateGeneratedManifest(context);
     if (!validation.ok) {
       this.statusLog.fail(`Save blocked: ${validation.message}`);
       return;
     }
-    const json = JSON.stringify(this.activeContext, null, 2);
+    const json = JSON.stringify(context, null, 2);
     const BlobCtor = window.Blob;
     const urlApi = window.URL || window.webkitURL;
     if (typeof BlobCtor !== "function" || !urlApi?.createObjectURL) {
@@ -139,12 +173,12 @@ export class WorkspaceManagerV2App {
     const url = urlApi.createObjectURL(blob);
     const link = window.document.createElement("a");
     link.href = url;
-    link.download = `${this.activeContext.id}.workspace.manifest.json`;
+    link.download = `${context.id}.workspace.manifest.json`;
     link.rel = "noopener";
     window.document.body.append(link);
     link.click();
     link.remove();
     urlApi.revokeObjectURL(url);
-    this.statusLog.ok(`Saved schema-valid Workspace Manager V2 manifest ${this.activeContext.id}.`);
+    this.statusLog.ok(`Saved schema-valid Workspace Manager V2 manifest ${context.id}.`);
   }
 }

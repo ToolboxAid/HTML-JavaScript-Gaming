@@ -1,0 +1,15 @@
+PR_26126_118 Manual Validation Notes
+
+Validation command:
+- npm run test:workspace-v2
+
+Result:
+- PASS: 21 Playwright tests passed in the workspace-v2 gate.
+- PASS: git diff --check completed without whitespace errors.
+
+Manual review checklist:
+- Confirmed games/Asteroids/game.manifest.json remains valid JSON after adding tools.vector-map-editor.
+- Confirmed deprecated tools/workspace-v2 was not modified.
+- Confirmed sample JSON files were not modified.
+- Confirmed no mp4 or mkv files were modified or added.
+- Confirmed Asset Manager V2 direct ?workspace=prod remains blocked by launch guard coverage.

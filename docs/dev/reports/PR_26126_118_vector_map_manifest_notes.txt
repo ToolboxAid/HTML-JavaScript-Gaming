@@ -1,0 +1,16 @@
+PR_26126_118 Vector Map Manifest Notes
+
+Scope:
+- The Asteroids vector map reference now lives in games/Asteroids/game.manifest.json under tools.vector-map-editor.
+- The payload uses the existing tools/schemas/tools/vector-map-editor.schema.json structure with a vectorMapDocument root.
+- Workspace Manager V2 loads the vector map entry as part of the game manifest context.
+
+Manifest entry:
+- tools.vector-map-editor.vectorMapDocument.schema = html-js-gaming.vector-map
+- tools.vector-map-editor.vectorMapDocument.source = manifest
+- tools.vector-map-editor.vectorMapDocument.assetsPath = games/Asteroids/assets
+- Included vector IDs: vector.asteroids.ship, vector.asteroids.asteroid.large, vector.asteroids.asteroid.medium, vector.asteroids.asteroid.small, vector.asteroids.ui.title.
+
+Validation:
+- npm run test:workspace-v2 passed.
+- Workspace Manager V2 Playwright coverage validates vector-map-editor is present in the manifest context, saved export, and session context.

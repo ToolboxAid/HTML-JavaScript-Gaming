@@ -215,6 +215,10 @@ export class WorkspaceManagerV2ContextService {
   async restorePersistedContext() {
     const params = new URLSearchParams(this.location.search || "");
     const hostContextId = params.get("hostContextId") || this.sessionStorage.getItem(HOST_CONTEXT_STORAGE_KEY) || "";
+    return this.restorePersistedContextById(hostContextId);
+  }
+
+  async restorePersistedContextById(hostContextId) {
     if (!hostContextId) {
       return { ok: false, hasContext: false };
     }
@@ -249,6 +253,10 @@ export class WorkspaceManagerV2ContextService {
     const palettePayload = workspaceManifest.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
     const assetPayload = workspaceManifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
     const paletteSwatches = Array.isArray(palettePayload?.swatches) ? clone(palettePayload.swatches) : [];
+    const assetCount = Object.keys(assetPayload.assets || {}).length;
+    const assetWarning = game.id === "Asteroids" && assetCount === 0
+      ? `${sourceLabel} has no Asteroids Asset Manager V2 assets; Workspace Manager V2 did not inject hardcoded assets.`
+      : "";
     if (!paletteSwatches.length) {
       return { ok: false, message: `${sourceLabel} does not expose active Palette Manager V2 swatches.` };
     }
@@ -262,7 +270,8 @@ export class WorkspaceManagerV2ContextService {
         manifestId: workspaceManifest.id,
         paletteName: palettePayload.name || "Workspace Palette"
       },
-      assetCount: Object.keys(assetPayload.assets || {}).length,
+      assetCount,
+      assetWarning,
       paletteSwatches
     };
   }
