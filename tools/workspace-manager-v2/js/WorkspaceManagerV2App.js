@@ -15,7 +15,6 @@ export class WorkspaceManagerV2App {
     this.summary = summary;
     this.activeContext = null;
     this.activeGame = null;
-    this.activePaletteSwatches = [];
   }
 
   start() {
@@ -38,7 +37,6 @@ export class WorkspaceManagerV2App {
   async selectGame(gameId) {
     this.activeContext = null;
     this.activeGame = null;
-    this.activePaletteSwatches = [];
     this.launchControl.setEnabled(false);
     this.summary.clear();
 
@@ -58,7 +56,6 @@ export class WorkspaceManagerV2App {
 
     this.activeContext = result.context;
     this.activeGame = result.game;
-    this.activePaletteSwatches = result.paletteSwatches;
     this.gameSelector.setSummary(`${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.`);
     this.summary.render({
       context: result.context,
@@ -71,7 +68,7 @@ export class WorkspaceManagerV2App {
   }
 
   launchAssetManager() {
-    if (!this.activeContext || !this.activeGame || !this.activePaletteSwatches.length) {
+    if (!this.activeContext || !this.activeGame || !this.activeContext.activePalette?.swatches?.length) {
       this.statusLog.fail("Launch blocked: active game context and palette are required.");
       return;
     }

@@ -52,15 +52,6 @@ export class WorkspaceBridge {
     return new URLSearchParams(this.window.location.search).get("hostContextId") || "";
   }
 
-  queryGameId() {
-    return new URLSearchParams(this.window.location.search).get("gameId") || "";
-  }
-
-  gameRootFromGameId(gameId) {
-    const normalizedGameId = String(gameId || "").trim().replace(/[\\/]+/g, "-");
-    return normalizedGameId ? `games/${normalizedGameId}/` : "";
-  }
-
   validateWorkspaceManagerContext(context) {
     if (!isPlainObject(context)) {
       return { ok: false, message: "Workspace Manager V2 session context is invalid." };
@@ -124,9 +115,6 @@ export class WorkspaceBridge {
   workspaceManifestFromContext(context) {
     if (isPlainObject(context.workspaceManifest)) {
       return context.workspaceManifest;
-    }
-    if (context.documentKind === "workspace-manifest") {
-      return context;
     }
     return null;
   }
