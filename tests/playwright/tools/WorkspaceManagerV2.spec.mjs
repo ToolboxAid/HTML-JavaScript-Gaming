@@ -170,11 +170,35 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#launchAssetManagerV2Button")).toHaveCount(0);
       await expect(page.locator("#workspaceToolsContent #workspaceToolTiles")).toBeVisible();
       await expect(page.locator("#workspaceContextContent #workspaceToolTiles")).toHaveCount(0);
+      await expect(page.locator("#workspaceContextContent #workspaceContextOutput")).toHaveCount(0);
+      await expect(page.locator("#workspaceJsonContent #workspaceContextOutput")).toBeVisible();
       const centerControlLabels = await page.locator(".workspace-manager-v2__panel--center > .accordion-v2 > .accordion-v2__header span:first-child")
         .evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-      expect(centerControlLabels.slice(0, 2)).toEqual(["Tools", "Workspace Context"]);
+      expect(centerControlLabels.slice(0, 3)).toEqual(["Tools", "Workspace Context", "Workspace JSON"]);
       await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(5);
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
+      const compactCenterLayout = await page.evaluate(() => {
+        const getRect = (selector) => {
+          const element = document.querySelector(selector);
+          return element ? element.getBoundingClientRect() : null;
+        };
+        const toolsRect = getRect(".workspace-manager-v2__accordion--tools");
+        const toolGridRect = getRect("#workspaceToolTiles");
+        const contextRect = getRect(".workspace-manager-v2__accordion--context");
+        const summaryGridRect = getRect(".workspace-manager-v2__summary-grid");
+        const jsonRect = getRect(".workspace-manager-v2__accordion--json");
+        return {
+          contextExtraHeight: Math.round(contextRect.height - summaryGridRect.height),
+          contextHeight: Math.round(contextRect.height),
+          jsonTop: Math.round(jsonRect.top),
+          toolsBottom: Math.round(toolsRect.bottom),
+          toolsExtraHeight: Math.round(toolsRect.height - toolGridRect.height),
+          toolsHeight: Math.round(toolsRect.height)
+        };
+      });
+      expect(compactCenterLayout.toolsExtraHeight).toBeLessThanOrEqual(90);
+      expect(compactCenterLayout.contextExtraHeight).toBeLessThanOrEqual(90);
+      expect(compactCenterLayout.jsonTop).toBeGreaterThan(compactCenterLayout.toolsBottom);
       await expect(page.locator("#activeGameSelect option")).toHaveText([
         "Select a game",
         "Asteroids",

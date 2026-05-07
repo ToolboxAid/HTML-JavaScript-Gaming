@@ -201,6 +201,15 @@ textarea:hover {
   flex: 0 0 auto;
 }
 
+.workspace-manager-v2__accordion--tools.is-open,
+.workspace-manager-v2__accordion--context.is-open {
+  flex: 0 0 auto;
+}
+
+.workspace-manager-v2__accordion--json.is-open {
+  flex: 1 1 auto;
+}
+
 .accordion-v2__header {
   width: 100%;
   min-height: 42px;
@@ -244,6 +253,15 @@ textarea:hover {
 
 .accordion-v2__content[hidden] {
   display: none;
+}
+
+.workspace-manager-v2__accordion--tools .accordion-v2__content,
+.workspace-manager-v2__accordion--context .accordion-v2__content {
+  flex: 0 0 auto;
+}
+
+.workspace-manager-v2__accordion--json .accordion-v2__content {
+  flex: 1 1 auto;
 }
 
 .workspace-manager-v2__field {
@@ -355,6 +373,11 @@ textarea:hover {
   min-height: 260px;
   overflow: auto;
   white-space: pre-wrap;
+}
+
+.workspace-manager-v2__accordion--json .workspace-manager-v2__output {
+  height: 100%;
+  min-height: 0;
 }
 
 .workspace-manager-v2__status-accordion-header {

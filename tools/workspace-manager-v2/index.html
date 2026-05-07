@@ -69,7 +69,7 @@
           </div>
         </section>
 
-        <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--fill is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--context is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="workspaceContextContent">
             <span>Workspace Context</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -89,6 +89,15 @@
                 <p id="launchContextSummary">Asset Manager V2 launch is waiting for a game and palette.</p>
               </section>
             </div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--json workspace-manager-v2__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="workspaceJsonContent">
+            <span>Workspace JSON</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="workspaceJsonContent" class="accordion-v2__content">
             <pre id="workspaceContextOutput" class="workspace-manager-v2__output">{}</pre>
           </div>
         </section>
