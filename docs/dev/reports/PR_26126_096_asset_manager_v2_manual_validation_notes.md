@@ -3,7 +3,7 @@
 ## Commands
 - `node --check tools/asset-manager-v2/js/assetPreviewHelpers.js`
 - `node --check tools/asset-manager-v2/js/services/WorkspaceBridge.js`
-- `node --check tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js`
+- `node --check tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js`
 - `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
 - `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
 - `npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list -g "Asset Manager V2"`
@@ -20,6 +20,6 @@
 - Selected Asset Detail height is increased to at least 220px.
 - Asset preview remains inside Selected Asset Detail.
 - Workspace preview context is games-only.
-- `?workspace=UAT` temporary UAT workspace root uses `games/Asteroids/` for preview/path testing only.
-- `?workspace=UAT` image previews resolve under `/games/Asteroids/assets/...`.
+- `?palette=sample` temporary UAT root uses `games/Asteroids/` for preview/path testing only.
+- `?palette=sample` image previews resolve under `/games/Asteroids/assets/...`.
 - Sample JSON files were not modified.

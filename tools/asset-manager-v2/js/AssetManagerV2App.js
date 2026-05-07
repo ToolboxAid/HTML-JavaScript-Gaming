@@ -505,25 +505,6 @@ export class AssetManagerV2App {
     this.statusLog.info(message);
   }
 
-  exportAssets() {
-    const validation = this.validateCurrentPayload();
-    if (!validation.ok) {
-      return;
-    }
-    this.inspector.showObject(validation.payload);
-    this.statusLog.ok("Asset payload preview written to Output Summary.");
-  }
-
-  exportToolState() {
-    const validation = this.validateCurrentPayload();
-    if (!validation.ok) {
-      return;
-    }
-    const toolState = this.currentToolState();
-    this.inspector.showObject(toolState);
-    this.statusLog.ok("toolState preview written to Output Summary.");
-  }
-
   async importJson(file) {
     if (!this.schemaReady) {
       this.statusLog.fail("Schema is not loaded; JSON import is blocked.");
@@ -581,14 +562,6 @@ export class AssetManagerV2App {
     link.remove();
     urlApi.revokeObjectURL(url);
     this.statusLog.ok(`Exported JSON with ${Object.keys(validation.payload.assets).length} validated assets.`);
-  }
-
-  async copyAssetsJson() {
-    const validation = this.validateCurrentPayload();
-    if (!validation.ok) {
-      return;
-    }
-    await this.copyText(JSON.stringify(validation.payload, null, 2), "Asset payload JSON copied.");
   }
 
   async copyWorkspaceManifest() {

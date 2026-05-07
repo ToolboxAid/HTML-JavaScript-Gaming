@@ -175,7 +175,7 @@ test.describe("Asset Manager V2", () => {
   });
 
   test("launches Asset Manager V2 with temporary UAT context and schema-complete asset controls", async ({ page }) => {
-    const server = await openAssetManagerV2(page, "?workspace=UAT", {
+    const server = await openAssetManagerV2(page, "?workspace=uat", {
       assetFiles: [{
         name: "nebula-background.png",
         mimeType: "image/png",

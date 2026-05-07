@@ -26,7 +26,8 @@ function clone(value) {
 export function readTemporaryUatWorkspaceContext(locationRef = window.location) {
   const params = new URLSearchParams(locationRef.search || "");
   const workspace = params.get("workspace");
-  if (workspace !== "UAT") {
+  const normalizedWorkspace = String(workspace || "").trim().toUpperCase();
+  if (normalizedWorkspace !== "UAT") {
     return {
       ok: false,
       isWorkspaceQuery: Boolean(workspace),

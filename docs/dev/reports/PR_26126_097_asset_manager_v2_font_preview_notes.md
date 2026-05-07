@@ -8,7 +8,7 @@
 
 ## Path Resolution
 - Font preview URLs continue to resolve through the active Workspace game root.
-- During temporary `?workspace=UAT` UAT testing, `assets/fonts/vector-battle.ttf` resolves to `/games/Asteroids/assets/fonts/vector-battle.ttf`.
+- During temporary `?palette=sample` UAT testing, `assets/fonts/vector-battle.ttf` resolves to `/games/Asteroids/assets/fonts/vector-battle.ttf`.
 - Existing Workspace V2 font previews continue to resolve under `/games/Asteroids/assets/...` when `gameId=Asteroids` is active.
 
 ## Failure Reporting

@@ -3,7 +3,7 @@
 ## Guarded Launches
 - Direct Asset Manager V2 launch without Workspace Manager context now shows the launch guard overlay before controls are mounted.
 - Workspace Manager launch without an active palette now shows the same guard overlay.
-- The temporary UAT-only `?workspace=UAT` context remains allowed and supplies the sample Asteroids game root for preview/path testing.
+- The temporary UAT-only `?palette=sample` context remains allowed and supplies the sample Asteroids game root for preview/path testing.
 
 ## Overlay Message
 - The guard message states: `Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.`
