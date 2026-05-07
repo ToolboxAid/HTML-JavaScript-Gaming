@@ -6,19 +6,6 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function readGameIdFrom(value) {
-  if (!isPlainObject(value)) {
-    return "";
-  }
-  return String(
-    value.gameId
-    || value.game
-    || value.metadata?.gameId
-    || value.workspaceMetadata?.gameId
-    || ""
-  ).trim();
-}
-
 function normalizeWorkspacePath(value) {
   return String(value || "").trim().replace(/\\/g, "/").replace(/\/+/g, "/").replace(/^\/+|\/+$/g, "");
 }
@@ -63,9 +50,14 @@ export class WorkspaceBridge {
     if (!isPlainObject(workspaceManifest)) {
       return { ok: false, message: "Workspace Manager V2 session context is missing workspaceManifest." };
     }
-    const gameId = readGameIdFrom(context) || readGameIdFrom(workspaceManifest);
-    const gameRoot = normalizedGameRoot(context.gameRoot || workspaceManifest.workspaceMetadata?.gameRoot);
-    const assetsPath = normalizedAssetsPath(context.assetsPath || workspaceManifest.workspaceMetadata?.assetsPath);
+    const unsupportedManifestKeys = Object.keys(workspaceManifest)
+      .filter((key) => !["$schema", "documentKind", "schema", "version", "id", "name", "tools"].includes(key));
+    if (unsupportedManifestKeys.length) {
+      return { ok: false, message: `Workspace Manager V2 workspaceManifest includes fields not allowed by the workspace manifest schema: ${unsupportedManifestKeys.join(", ")}.` };
+    }
+    const gameId = String(context.gameId || "").trim();
+    const gameRoot = normalizedGameRoot(context.gameRoot);
+    const assetsPath = normalizedAssetsPath(context.assetsPath);
     if (!gameId || !gameRoot || !assetsPath) {
       return { ok: false, message: "Workspace Manager V2 session context is missing gameRoot or assetsPath." };
     }
@@ -79,11 +71,12 @@ export class WorkspaceBridge {
     if (!isPlainObject(activePalette) || !Array.isArray(activePalette.swatches) || !activePalette.swatches.length) {
       return { ok: false, message: "Workspace Manager V2 session context is missing active palette swatches." };
     }
-    if (workspaceManifest.workspaceMetadata?.owner !== "workspace-manager-v2") {
-      return { ok: false, message: "Workspace Manager V2 session context is missing workspace-manager-v2 ownership metadata." };
-    }
     if (!isPlainObject(workspaceManifest.tools?.["asset-browser"]?.assets)) {
       return { ok: false, message: "Workspace Manager V2 session context is missing tools.asset-browser.assets." };
+    }
+    const assetPayloadKeys = Object.keys(workspaceManifest.tools["asset-browser"]);
+    if (assetPayloadKeys.some((key) => key !== "assets")) {
+      return { ok: false, message: "Workspace Manager V2 asset payload must match the Asset Manager V2 asset schema." };
     }
     return { ok: true, gameId, gameRoot, assetsPath, activePalette, workspaceManifest };
   }

@@ -266,7 +266,7 @@ test.describe("Asset Manager V2", () => {
       expect(colorPickerFileInputState).toEqual({ accept: "", disabled: true });
       await expect(page.locator("#assetColorSortControls button")).toHaveText(["Hue", "Sat", "Bri", "Nam", "Tag"]);
       await expect(page.locator("#assetColorPickerPanel input")).toHaveCount(0);
-      await expect(page.locator("#assetColorSwatchList")).not.toContainText("No active Workspace V2 palette colors.");
+      await expect(page.locator("#assetColorSwatchList")).not.toContainText("No active Workspace Manager V2 palette colors.");
       await expect(page.locator("#assetColorSwatchList button[data-color-swatch-index]")).toHaveCount(3);
       const colorLegendStyle = await page.locator("#assetColorPickerPanel legend").evaluate((legend) => {
         const style = getComputedStyle(legend);
@@ -1170,13 +1170,6 @@ test.describe("Asset Manager V2", () => {
         version: 1,
         id: "workspace-manager-v2-Asteroids",
         name: "Asteroids Workspace Manager V2 Context",
-        gameId: "Asteroids",
-        workspaceMetadata: {
-          gameId: "Asteroids",
-          gameRoot: "games/Asteroids/",
-          assetsPath: "games/Asteroids/assets",
-          owner: "workspace-manager-v2"
-        },
         tools: {
           "palette-browser": {
             schema: "html-js-gaming.palette",
@@ -1186,10 +1179,6 @@ test.describe("Asset Manager V2", () => {
             swatches: []
           },
           "asset-browser": {
-            schema: "html-js-gaming.tool.asset-browser",
-            version: 1,
-            name: "Asset Browser",
-            source: "workspace-manager-v2",
             assets: {}
           }
         }
@@ -1226,7 +1215,7 @@ test.describe("Asset Manager V2", () => {
         schema: "html-js-gaming.project",
         version: 1,
         id: "legacy-workspace-v2-Asteroids",
-        name: "Legacy Workspace V2 Context",
+        name: "Legacy Workspace Context",
         gameId: "Asteroids",
         tools: {
           "palette-browser": {
@@ -1303,7 +1292,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page).not.toHaveURL(/gameId=Asteroids/);
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated assets from tools\.asset-browser\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated Asset Manager V2 assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
       const hostContextId = await page.evaluate(() => new URL(window.location.href).searchParams.get("hostContextId"));
       const initialAssetCount = await page.evaluate((id) => {
@@ -1412,7 +1401,7 @@ test.describe("Asset Manager V2", () => {
 
       await expect(page.locator("#workspaceInsertAssetsButton")).toBeEnabled();
       await page.locator("#workspaceInsertAssetsButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Inserted 4 validated assets into Workspace Manager V2 tools\.asset-browser\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Inserted 4 validated Asset Manager V2 assets into Workspace Manager V2 context/);
 
       const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
       expect(storedContext.workspaceManifest.tools["asset-browser"].assets["assets.audio.sound.fire"]).toEqual({

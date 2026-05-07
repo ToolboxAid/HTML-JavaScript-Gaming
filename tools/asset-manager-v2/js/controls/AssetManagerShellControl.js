@@ -3,7 +3,7 @@ export class AssetManagerShellControl {
     this.document = documentRef;
     this.toolId = "asset-manager-v2";
     this.headerText = "Asset Manager V2 - Asset-only First-Class Tool V2";
-    this.introText = "Validated audio, color, data, font, image, localization, shader, and video entries for Workspace V2 assets.";
+    this.introText = "Validated audio, color, data, font, image, localization, shader, and video entries for Workspace Manager V2 assets.";
     this.suppressFullscreenSync = false;
   }
 

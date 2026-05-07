@@ -477,7 +477,7 @@ export class AssetFormControl {
     this.renderColorSwatches();
     if (!this.paletteSwatches.length && !this.emptyPaletteStatusWritten) {
       this.emptyPaletteStatusWritten = true;
-      this.onStatus?.("fail", "No active Workspace V2 palette colors.");
+      this.onStatus?.("fail", "No active Workspace Manager V2 palette colors.");
     }
   }
 
@@ -488,7 +488,7 @@ export class AssetFormControl {
     this.colorPickerPanel.hidden = false;
     this.renderColorSwatches();
     if (!this.paletteSwatches.length) {
-      this.onStatus?.("fail", "No active Workspace V2 palette colors.");
+      this.onStatus?.("fail", "No active Workspace Manager V2 palette colors.");
     }
   }
 

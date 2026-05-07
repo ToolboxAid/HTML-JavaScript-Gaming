@@ -147,7 +147,7 @@ export class AssetSchemaValidator {
 
   validateColorSelection(formValue, colorInfo) {
     if (!colorInfo) {
-      return { ok: false, errors: ["Select a Workspace V2 palette color."] };
+      return { ok: false, errors: ["Select a Workspace Manager V2 palette color."] };
     }
     if (formValue.type !== "color") {
       return { ok: false, errors: [`Selected color type "color" does not match active type "${formValue.type}".`] };
@@ -159,7 +159,7 @@ export class AssetSchemaValidator {
       return { ok: false, errors: ["Color usage is required for color assets."] };
     }
     if (formValue.color?.hex !== colorInfo.hex || formValue.color?.name !== colorInfo.name) {
-      return { ok: false, errors: ["Selected color must come from the active Workspace V2 palette."] };
+      return { ok: false, errors: ["Selected color must come from the active Workspace Manager V2 palette."] };
     }
     return this.createEntry(formValue);
   }

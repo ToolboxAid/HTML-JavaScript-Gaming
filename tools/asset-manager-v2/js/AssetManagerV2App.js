@@ -193,7 +193,7 @@ export class AssetManagerV2App {
     this.selectedAssetId = Object.keys(this.assets)[0] || "";
     this.undoStack = [];
     this.redoStack = [];
-    this.statusLog.ok(`Workspace Manager V2 loaded ${Object.keys(this.assets).length} validated assets from tools.asset-browser.assets.`);
+    this.statusLog.ok(`Workspace Manager V2 loaded ${Object.keys(this.assets).length} validated Asset Manager V2 assets.`);
     this.missingFileAssetIds = await this.logMissingReferencedFiles(this.assets);
   }
 
@@ -588,7 +588,7 @@ export class AssetManagerV2App {
     }
     this.lastWorkspaceManifest = result.workspaceManifest;
     this.inspector.showObject(result.workspaceManifest);
-    this.statusLog.ok(`Inserted ${Object.keys(validation.payload.assets).length} validated assets into Workspace Manager V2 tools.asset-browser.assets.`);
+    this.statusLog.ok(`Inserted ${Object.keys(validation.payload.assets).length} validated Asset Manager V2 assets into Workspace Manager V2 context.`);
     this.refreshActions();
   }
 

@@ -136,13 +136,6 @@ export class WorkspaceManagerV2ContextService {
       version: 1,
       id: `workspace-manager-v2-${game.id}`,
       name: `${game.name} Workspace Manager V2 Context`,
-      gameId: game.id,
-      workspaceMetadata: {
-        gameId: game.id,
-        gameRoot,
-        assetsPath,
-        owner: "workspace-manager-v2"
-      },
       tools: {
         "palette-browser": {
           schema: "html-js-gaming.palette",
@@ -152,10 +145,6 @@ export class WorkspaceManagerV2ContextService {
           swatches: clone(palette.swatches)
         },
         "asset-browser": {
-          schema: "html-js-gaming.tool.asset-browser",
-          version: 1,
-          name: "Asset Browser",
-          source: "workspace-manager-v2",
           assets: {}
         }
       }
