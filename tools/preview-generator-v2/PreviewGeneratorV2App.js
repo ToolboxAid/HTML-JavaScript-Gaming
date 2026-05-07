@@ -140,6 +140,57 @@ function repoRootNameMatches(selectedRepoName, expectedRepoRoot) {
   return selectedRepoName === expectedFolderName;
 }
 
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function isWorkspaceManifest(value) {
+  return isPlainObject(value) && value.documentKind === "workspace-manifest";
+}
+
+function workspaceManifestFromLaunchContext(launchContext) {
+  if (isWorkspaceManifest(launchContext)) {
+    return launchContext;
+  }
+  if (isWorkspaceManifest(launchContext?.manifest)) {
+    return launchContext.manifest;
+  }
+  return null;
+}
+
+function displayRawLaunchFieldValue(value) {
+  const text = String(value || "").trim();
+  return text || "(missing)";
+}
+
+function launchPathFields(launchContext, manifest) {
+  return [
+    { label: "launchContext.repoPath", value: launchContext?.repoPath },
+    { label: "launchContext.manifest.repoPath", value: launchContext?.manifest?.repoPath },
+    { label: "launchContext.repoRoot", value: launchContext?.repoRoot },
+    { label: "manifest.repoPath", value: manifest?.repoPath },
+    { label: "manifest.repoRoot", value: manifest?.repoRoot }
+  ].map((field) => ({
+    ...field,
+    text: String(field.value || "").trim()
+  }));
+}
+
+function resolveRepoPathDecision(pathFields) {
+  const repoPathFields = pathFields.filter((field) => field.label.endsWith(".repoPath"));
+  const firstAbsolute = repoPathFields.find((field) => field.text && isAbsoluteFilesystemPath(field.text));
+  const firstAvailable = repoPathFields.find((field) => field.text);
+  const selected = firstAbsolute || firstAvailable || null;
+  return {
+    checkedMissingFields: repoPathFields
+      .filter((field) => !field.text)
+      .map((field) => field.label),
+    isAbsolute: Boolean(selected?.text && isAbsoluteFilesystemPath(selected.text)),
+    sourceField: selected?.label || "(none)",
+    value: selected?.text || ""
+  };
+}
+
 function isWorkspaceManagerLaunch() {
   return runtimeParams.get("launch") === "workspace"
     && runtimeParams.get("fromTool") === "workspace-manager-v2";
@@ -158,17 +209,23 @@ function readWorkspaceLaunchContext() {
     return { ok: false, message: "Workspace Manager V2 manifest was not found in sessionStorage." };
   }
   try {
-    const manifest = JSON.parse(rawValue);
-    if (manifest?.documentKind !== "workspace-manifest") {
-      return { ok: false, message: "Workspace Manager V2 context is not a workspace manifest." };
+    const launchContext = JSON.parse(rawValue);
+    const manifest = workspaceManifestFromLaunchContext(launchContext);
+    if (!manifest) {
+      return { ok: false, message: "Workspace Manager V2 context is not a workspace manifest or manifest launch payload." };
     }
     if (!manifest.gameId || !manifest.gameRoot || !manifest.assetsPath) {
       return { ok: false, message: "Workspace Manager V2 manifest is missing gameId, gameRoot, or assetsPath." };
     }
-    if (!String(manifest.repoRoot || "").trim() && !String(manifest.repoPath || "").trim()) {
+    const pathFields = launchPathFields(launchContext, manifest);
+    const repoPathDecision = resolveRepoPathDecision(pathFields);
+    const repoRootText = pathFields
+      .filter((field) => field.label.endsWith(".repoRoot"))
+      .find((field) => field.text)?.text || "";
+    if (!repoRootText && !String(repoPathDecision.value || "").trim()) {
       return { ok: false, message: "Workspace Manager V2 manifest is missing repoRoot display label and repoPath." };
     }
-    return { ok: true, manifest };
+    return { ok: true, launchContext, manifest, pathFields, repoPathDecision };
   } catch (error) {
     return { ok: false, message: `Workspace Manager V2 manifest JSON is invalid: ${error.message}` };
   }
@@ -1043,6 +1100,16 @@ class PreviewGeneratorV2App {
     }
 
     const manifest = contextResult.manifest;
+    contextResult.pathFields.forEach((field) => {
+      logger.log(`Raw workspace launch path field ${field.label}: ${displayRawLaunchFieldValue(field.text)}`);
+    });
+    logger.log(`Resolved repoPath decision source field used: ${contextResult.repoPathDecision.sourceField}`);
+    logger.log(`Resolved repoPath decision value: ${displayRawLaunchFieldValue(contextResult.repoPathDecision.value)}`);
+    logger.log(`Resolved repoPath decision absolute: ${contextResult.repoPathDecision.isAbsolute ? "true" : "false"}`);
+    if (!contextResult.repoPathDecision.value) {
+      logger.log(`Missing repoPath fields checked: ${contextResult.repoPathDecision.checkedMissingFields.join(", ")}`);
+    }
+
     const previewTarget = workspacePreviewTarget(manifest);
     if (!previewTarget.ok) {
       logger.log(`FAIL Workspace launch context hydration: ${previewTarget.message}`);
@@ -1051,8 +1118,8 @@ class PreviewGeneratorV2App {
     }
 
     const manifestRepoRoot = String(manifest.repoRoot || "").trim();
-    const manifestRepoPath = String(manifest.repoPath || "").trim();
-    repoDisplayName = manifestRepoPath || manifestRepoRoot;
+    const resolvedRepoPath = contextResult.repoPathDecision.value;
+    repoDisplayName = resolvedRepoPath || manifestRepoRoot;
     repoDirHandle = null;
     workspaceLaunchHydrated = true;
     workspaceRepoRootName = manifestRepoRoot;
@@ -1060,11 +1127,11 @@ class PreviewGeneratorV2App {
     workspacePreviewGameId = manifest.gameId;
     workspaceManifestPreviewPath = previewTarget.manifestPreviewPath;
     workspaceGeneratedPreviewPath = previewTarget.generatedPreviewPath;
-    if (manifestRepoPath) {
+    if (resolvedRepoPath) {
       try {
-        workspaceAbsolutePreviewOutputPath = resolveWorkspaceAbsolutePreviewOutputPath(manifestRepoPath, previewTarget.generatedPreviewPath);
+        workspaceAbsolutePreviewOutputPath = resolveWorkspaceAbsolutePreviewOutputPath(resolvedRepoPath, previewTarget.generatedPreviewPath);
         workspaceRepoPathHydrated = true;
-        workspaceResolvedRepoPath = manifestRepoPath;
+        workspaceResolvedRepoPath = resolvedRepoPath;
       } catch (error) {
         logger.log(`WARN Workspace direct preview write unavailable: ${error.message}`);
       }
@@ -1077,7 +1144,7 @@ class PreviewGeneratorV2App {
     await updatePathPreviewLabels();
     logger.log(`OK Workspace launch context hydrated for ${manifest.gameId}.`);
     logger.log(`Workspace repoRoot display label available: ${manifestRepoRoot || "(empty)"}.`);
-    logger.log(`Workspace repoPath ${manifestRepoPath ? `available: ${manifestRepoPath}` : "missing"}.`);
+    logger.log(`Workspace repoPath ${resolvedRepoPath ? `available: ${resolvedRepoPath}` : "missing"}.`);
     if (workspaceRepoPathHydrated) {
       logger.log(`Resolved repoPath: ${workspaceResolvedRepoPath}`);
       logger.log(`Resolved absolute preview output path: ${workspaceAbsolutePreviewOutputPath}`);
