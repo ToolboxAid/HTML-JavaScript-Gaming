@@ -36,10 +36,6 @@
       "type": "string",
       "minLength": 1
     },
-    "previewImagePath": {
-      "type": "string",
-      "minLength": 1
-    },
     "assets": {
       "type": "object",
       "additionalProperties": false,
@@ -63,7 +59,7 @@
             }
           ]
         },
-        "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+        "^assets\\.image\\.preview\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "allOf": [
             {
               "$ref": "#/$defs/assetEntry"
@@ -77,7 +73,7 @@
             }
           ]
         },
-        "^(?!assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
+        "^(?!assets\\.image\\.preview\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "allOf": [
             {
               "$ref": "#/$defs/assetEntry"
@@ -105,10 +101,10 @@
             "pattern": "^assets\\.color\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           },
           {
-            "pattern": "^assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+            "pattern": "^assets\\.image\\.preview\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           },
           {
-            "pattern": "^(?!assets\\.image\\.bezel\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+            "pattern": "^(?!assets\\.image\\.preview\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$)assets\\.(image|audio|font|video|shader|data|localization)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           }
         ]
       }
@@ -182,8 +178,7 @@
           "enum": [
             "sprite",
             "background",
-            "bezel",
-            "preview-image",
+            "preview",
             "ui",
             "sound",
             "music",
@@ -238,8 +233,7 @@
       "image": [
         "sprite",
         "background",
-        "bezel",
-        "preview-image",
+        "preview",
         "ui"
       ],
       "audio": [

@@ -5,6 +5,8 @@ import { PreviewGeneratorV2Capture } from './PreviewGeneratorV2Capture.js';
 
 const OUTPUT_NAME = "preview.svg";
 const CAPTURE_TIMEOUT_MARKER = PreviewGeneratorV2Capture.CAPTURE_TIMEOUT_MARKER;
+const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
+const PREVIEW_ROLE = "preview";
 
 const runtimeParams = new URLSearchParams(window.location.search);
 const isRuntimeMode = runtimeParams.get("mode") === "runtime";
@@ -106,30 +108,48 @@ function workspaceAssetFolder(manifest) {
   return assetsPath.slice(gameRoot.length + 1);
 }
 
+function workspacePreviewAsset(manifest) {
+  const assets = manifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY]?.assets;
+  if (!assets || typeof assets !== "object" || Array.isArray(assets)) {
+    return null;
+  }
+  const previewAssets = Object.entries(assets)
+    .filter(([, entry]) => (
+      entry?.type === "image"
+      && entry?.role === PREVIEW_ROLE
+      && String(entry.path || "").trim()
+    ))
+    .sort(([leftId], [rightId]) => leftId.localeCompare(rightId));
+  const selectedAsset = previewAssets.at(-1);
+  return selectedAsset
+    ? { id: selectedAsset[0], path: normalizeWorkspacePath(selectedAsset[1].path) }
+    : null;
+}
+
 function workspacePreviewTarget(manifest) {
   const gameRoot = normalizeWorkspacePath(manifest.gameRoot);
   const assetFolder = workspaceAssetFolder(manifest);
   if (!assetFolder) {
     return { ok: false, message: "assetsPath must be inside gameRoot." };
   }
-  const previewImagePath = normalizeWorkspacePath(manifest.tools?.["asset-manager-v2"]?.previewImagePath);
-  if (!previewImagePath) {
-    return { ok: false, message: "manifest must include tools.asset-manager-v2.previewImagePath." };
+  const previewAsset = workspacePreviewAsset(manifest);
+  if (!previewAsset) {
+    return { ok: false, message: "manifest must include an Asset Manager V2 image asset with role preview." };
   }
-  const imagePathFromGameRoot = previewImagePath.startsWith(`${gameRoot}/`)
-    ? previewImagePath.slice(gameRoot.length + 1)
-    : previewImagePath;
+  const imagePathFromGameRoot = previewAsset.path.startsWith(`${gameRoot}/`)
+    ? previewAsset.path.slice(gameRoot.length + 1)
+    : previewAsset.path;
   if (!imagePathFromGameRoot.startsWith(`${assetFolder}/`)) {
-    return { ok: false, message: `${previewImagePath || "(empty)"} must resolve under ${assetFolder}.` };
+    return { ok: false, message: `${previewAsset.path || "(empty)"} must resolve under ${assetFolder}.` };
   }
   const previewAssetFolder = imagePathFromGameRoot.split("/").slice(0, -1).join("/");
   if (!previewAssetFolder) {
-    return { ok: false, message: `${previewImagePath} does not include an asset folder.` };
+    return { ok: false, message: `${previewAsset.path} does not include an asset folder.` };
   }
   return {
     ok: true,
+    previewAssetId: previewAsset.id,
     previewAssetFolder,
-    previewImagePath,
     previewTargetPath: `${gameRoot}/${imagePathFromGameRoot}`
   };
 }
@@ -760,6 +780,7 @@ class PreviewGeneratorV2App {
     ui.setRepoDestinationDisplayName(repoDisplayName);
     ui.repoDestination.setWorkspaceContextLabel(`Hydrated ${manifest.gameId} workspace (${normalizeWorkspacePath(manifest.gameRoot)})`);
     ui.targetSource.setSelectedTargetType("games");
+    ui.targetSource.showWorkspaceGamesOnly();
     ui.assetFolder.setValue(workspacePreviewAssetFolder);
     ui.pathsOrIds.setValue(manifest.gameId);
     await updatePathPreviewLabels();
@@ -768,7 +789,7 @@ class PreviewGeneratorV2App {
     logger.log("Pick the matching actual repo root folder before writing preview output.");
     logger.log("Target source: games");
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
-    logger.log(`Manifest preview image path: ${previewTarget.previewImagePath}`);
+    logger.log(`Manifest preview asset: ${previewTarget.previewAssetId}`);
     logger.log(`Preview target: ${workspacePreviewTargetPath}`);
 
     const previewResult = await validateWorkspacePreviewTarget(workspacePreviewTargetPath);

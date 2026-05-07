@@ -3,11 +3,11 @@
   "documentKind": "workspace-manifest",
   "schema": "html-js-gaming.project",
   "version": 1,
-  "id": "workspace-manager-v2-UAT-Asteroids",
-  "name": "Workspace Manager V2 UAT Context",
-  "gameId": "Asteroids",
-  "gameRoot": "games/Asteroids/",
-  "assetsPath": "games/Asteroids/assets",
+  "id": "workspace-manager-v2-UAT-template",
+  "name": "Workspace Manager V2 UAT Template Context",
+  "gameId": "_template",
+  "gameRoot": "games/_template/",
+  "assetsPath": "games/_template/assets",
   "repoRoot": "HTML-JavaScript-Gaming",
   "tools": {
     "palette-manager-v2": {

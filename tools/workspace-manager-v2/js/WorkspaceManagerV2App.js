@@ -99,7 +99,7 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail(`Workspace restore failed: ${result.message}`);
       return;
     }
-    this.gameSelector.setValue(result.game.id);
+    this.gameSelector.setValue(result.game.id, result.game.name);
     this.applyContextResult(result);
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
@@ -214,7 +214,7 @@ export class WorkspaceManagerV2App {
         return;
       }
       const hostContextId = this.contextService.persistContext(result.context);
-      this.gameSelector.setValue(result.game.id);
+      this.gameSelector.setValue(result.game.id, result.game.name);
       this.applyContextResult({ ...result, hostContextId });
       if (result.assetWarning) {
         this.statusLog.info(`Warning: ${result.assetWarning}`);
@@ -232,7 +232,7 @@ export class WorkspaceManagerV2App {
       return;
     }
     const hostContextId = this.contextService.persistContext(result.context);
-    this.gameSelector.setValue(result.game.id);
+    this.gameSelector.setValue(result.game.id, result.game.name);
     this.applyContextResult({ ...result, hostContextId });
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);

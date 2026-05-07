@@ -1,9 +1,9 @@
 import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 
 const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;
-const BEZEL_ASSET_ID_PATTERN = /^assets\.image\.bezel\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
-const PREVIEW_IMAGE_ROLE = "preview-image";
-const DEFAULT_BEZEL_STRETCH_PX = 10;
+const PREVIEW_ASSET_ID_PATTERN = /^assets\.image\.preview\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
+const PREVIEW_ROLE = "preview";
+const DEFAULT_PREVIEW_STRETCH_PX = 10;
 const COLOR_HEX_PATTERN = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
 
 function isPlainObject(value) {
@@ -112,10 +112,10 @@ export class AssetSchemaValidator {
       role,
       source: "asset-manager-v2"
     };
-    if (role === "bezel") {
+    if (role === PREVIEW_ROLE) {
       const uniformEdgeStretchPx = Number(stretchOverride?.uniformEdgeStretchPx);
       entry.stretchOverride = {
-        uniformEdgeStretchPx: Number.isFinite(uniformEdgeStretchPx) ? uniformEdgeStretchPx : DEFAULT_BEZEL_STRETCH_PX
+        uniformEdgeStretchPx: Number.isFinite(uniformEdgeStretchPx) ? uniformEdgeStretchPx : DEFAULT_PREVIEW_STRETCH_PX
       };
     }
     if (type === "color") {
@@ -182,24 +182,12 @@ export class AssetSchemaValidator {
     if (!isPlainObject(payload.assets)) {
       errors.push("assets must be an object keyed by id.");
     }
-    if (Object.prototype.hasOwnProperty.call(payload, "previewImagePath")
-      && (typeof payload.previewImagePath !== "string" || !payload.previewImagePath.trim())) {
-      errors.push("previewImagePath must be a non-empty string when present.");
-    }
     if (errors.length) {
       return { ok: false, errors };
     }
 
     for (const [assetId, entry] of Object.entries(payload.assets)) {
       errors.push(...this.validateAssetEntry(assetId, entry, `assets.${assetId}`).errors);
-    }
-    if (Object.prototype.hasOwnProperty.call(payload, "previewImagePath")) {
-      const previewImagePath = String(payload.previewImagePath || "").trim();
-      const matchingPreviewAsset = Object.values(payload.assets)
-        .some((entry) => entry?.type === "image" && entry?.role === PREVIEW_IMAGE_ROLE && entry?.path === previewImagePath);
-      if (!matchingPreviewAsset) {
-        errors.push("previewImagePath must match the path of an image asset with role preview-image.");
-      }
     }
     return errors.length
       ? { ok: false, errors }
@@ -247,8 +235,8 @@ export class AssetSchemaValidator {
       if (rolesForType.length && !rolesForType.includes(entry.role)) {
         errors.push(`${pointer}.role: role "${entry.role}" is not allowed for ${entry.type} assets.`);
       }
-      if (entry.role === "bezel" && !BEZEL_ASSET_ID_PATTERN.test(assetId)) {
-        errors.push(`${pointer}.role: bezel role requires an assets.image.bezel.* id.`);
+      if (entry.role === PREVIEW_ROLE && !PREVIEW_ASSET_ID_PATTERN.test(assetId)) {
+        errors.push(`${pointer}.role: preview role requires an assets.image.preview.* id.`);
       }
     }
     if (assetIdParts && entry.type && assetIdParts.type !== entry.type) {
@@ -261,8 +249,8 @@ export class AssetSchemaValidator {
       errors.push(`${pointer}.source: Unsupported asset source "${entry.source}".`);
     }
     if (Object.prototype.hasOwnProperty.call(entry, "stretchOverride")) {
-      if (!BEZEL_ASSET_ID_PATTERN.test(assetId)) {
-        errors.push(`${pointer}.stretchOverride: stretchOverride is only allowed on assets.image.bezel.* assets.`);
+      if (!PREVIEW_ASSET_ID_PATTERN.test(assetId)) {
+        errors.push(`${pointer}.stretchOverride: stretchOverride is only allowed on assets.image.preview.* assets.`);
       }
       if (!isPlainObject(entry.stretchOverride) || !Number.isFinite(entry.stretchOverride.uniformEdgeStretchPx) || entry.stretchOverride.uniformEdgeStretchPx < 0) {
         errors.push(`${pointer}.stretchOverride.uniformEdgeStretchPx: value must be a number greater than or equal to 0.`);

@@ -27,7 +27,7 @@ export const ASSET_TYPE_CONFIG = Object.freeze({
     label: "Image",
     folder: "assets/images",
     accept: ".png,.jpg,.jpeg,.webp,.gif,.svg,image/png,image/jpeg,image/webp,image/gif,image/svg+xml",
-    roles: ["sprite", "background", "bezel", "preview-image", "ui"]
+    roles: ["sprite", "background", "preview", "ui"]
   },
   localization: {
     label: "Localization",
@@ -251,8 +251,8 @@ export function suggestedRoleForFile(type, fileName) {
     return "";
   }
   const slug = slugifyAssetSegment(fileName);
-  if (slug.includes("bezel")) {
-    return "bezel";
+  if (slug.includes("bezel") || slug.includes("preview")) {
+    return "preview";
   }
   if (slug.includes("background")) {
     return "background";

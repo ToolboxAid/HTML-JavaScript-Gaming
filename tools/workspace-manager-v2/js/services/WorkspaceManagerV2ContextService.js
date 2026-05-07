@@ -6,9 +6,9 @@ const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.m
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
-    group: "Utilities",
+    group: "Viewers",
     id: "templates-v2",
-    name: "First-Class Tool Starter V2",
+    name: "Tool Starter V2",
     path: "../templates-v2/index.html"
   }),
   Object.freeze({
@@ -62,6 +62,19 @@ function isPlainObject(value) {
 
 function makeHostContextId() {
   return `workspace-manager-v2-${Date.now().toString(36)}`;
+}
+
+function temporaryUatGameFromManifest(workspaceManifest) {
+  if (workspaceManifest?.gameId !== "_template"
+    || workspaceManifest?.gameRoot !== "games/_template/"
+    || workspaceManifest?.assetsPath !== "games/_template/assets") {
+    return null;
+  }
+  return {
+    id: "_template",
+    name: "Template UAT",
+    manifestPath: TEMPORARY_UAT_MANIFEST_PATH
+  };
 }
 
 function schemaProperties(schema) {
@@ -253,7 +266,8 @@ export class WorkspaceManagerV2ContextService {
   }
 
   async buildContextFromManifest(workspaceManifest, sourceLabel) {
-    const game = this.games().find((entry) => entry.id === workspaceManifest?.gameId);
+    const game = this.games().find((entry) => entry.id === workspaceManifest?.gameId)
+      || (this.isUatMode() ? temporaryUatGameFromManifest(workspaceManifest) : null);
     if (!game) {
       return { ok: false, message: `${sourceLabel} does not match a known game workspace.` };
     }
@@ -265,7 +279,11 @@ export class WorkspaceManagerV2ContextService {
     if (!manifestResult.ok) {
       return manifestResult;
     }
-    return this.buildContextFromManifest(manifestResult.manifest, TEMPORARY_UAT_MANIFEST_PATH);
+    const game = temporaryUatGameFromManifest(manifestResult.manifest);
+    if (!game) {
+      return { ok: false, message: `${TEMPORARY_UAT_MANIFEST_PATH} is not a valid Workspace Manager V2 UAT template manifest.` };
+    }
+    return this.contextResultFromManifest(game, manifestResult.manifest, TEMPORARY_UAT_MANIFEST_PATH);
   }
 
   async restorePersistedContext() {
@@ -288,7 +306,8 @@ export class WorkspaceManagerV2ContextService {
     } catch (error) {
       return { ok: false, hasContext: true, message: `Stored Workspace Manager V2 session context is invalid JSON: ${error.message}` };
     }
-    const game = this.games().find((entry) => entry.id === manifest?.gameId);
+    const game = this.games().find((entry) => entry.id === manifest?.gameId)
+      || (this.isUatMode() ? temporaryUatGameFromManifest(manifest) : null);
     if (!game) {
       return { ok: false, hasContext: true, message: "Stored Workspace Manager V2 session context does not match a known game workspace." };
     }

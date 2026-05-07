@@ -80,7 +80,6 @@
       "version": 1,
       "name": "Asteroids Asset Manager V2 Registry",
       "source": "manifest",
-      "previewImagePath": "assets/images/bezel.png",
       "assets": {
         "assets.audio.music.beat-1": {
           "path": "assets/audio/beat1.wav",
@@ -166,22 +165,15 @@
           "role": "background",
           "source": "manifest"
         },
-        "assets.image.bezel.bezel": {
+        "assets.image.preview.bezel": {
           "path": "assets/images/bezel.png",
           "type": "image",
           "kind": "png",
-          "role": "bezel",
+          "role": "preview",
           "source": "manifest",
           "stretchOverride": {
             "uniformEdgeStretchPx": 10
           }
-        },
-        "assets.image.preview-image.bezel": {
-          "path": "assets/images/bezel.png",
-          "type": "image",
-          "kind": "png",
-          "role": "preview-image",
-          "source": "manifest"
         }
       }
     },

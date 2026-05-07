@@ -13,7 +13,7 @@ import {
   typeForFile
 } from "../assetManagerMetadata.js";
 
-const DEFAULT_BEZEL_STRETCH_PX = 10;
+const DEFAULT_PREVIEW_STRETCH_PX = 10;
 const COLOR_SORT_OPTIONS = Object.freeze([
   ["hue", "Hue"],
   ["saturation", "Sat"],
@@ -254,9 +254,9 @@ export class AssetFormControl {
         ...(this.selectedColorInfo.tags.length ? { tags: [...this.selectedColorInfo.tags] } : {})
       };
     }
-    if (value.role === "bezel") {
+    if (value.role === "preview") {
       value.stretchOverride = {
-        uniformEdgeStretchPx: Number(this.stretchInput.value) || DEFAULT_BEZEL_STRETCH_PX
+        uniformEdgeStretchPx: Number(this.stretchInput.value) || DEFAULT_PREVIEW_STRETCH_PX
       };
     }
     return value;
@@ -340,7 +340,7 @@ export class AssetFormControl {
     this.pathInput.value = entry.path || "";
     this.usageInput.value = entry.type === "color" ? this.usageFromAssetId(assetId) : "";
     this.kindValue = entry.kind || "";
-    this.stretchInput.value = String(entry.stretchOverride?.uniformEdgeStretchPx ?? DEFAULT_BEZEL_STRETCH_PX);
+    this.stretchInput.value = String(entry.stretchOverride?.uniformEdgeStretchPx ?? DEFAULT_PREVIEW_STRETCH_PX);
     this.selectedColorInfo = entry.color ? normalizeSwatch(entry.color) : null;
     this.selectedFileInfo = null;
     this.selectedFileError = "";
@@ -451,11 +451,11 @@ export class AssetFormControl {
   }
 
   updateStretchControl() {
-    const isBezel = this.selectedRole() === "bezel";
-    this.stretchField.hidden = !isBezel;
-    this.stretchInput.disabled = !isBezel;
-    if (isBezel && !this.stretchInput.value) {
-      this.stretchInput.value = String(DEFAULT_BEZEL_STRETCH_PX);
+    const isPreview = this.selectedRole() === "preview";
+    this.stretchField.hidden = !isPreview;
+    this.stretchInput.disabled = !isPreview;
+    if (isPreview && !this.stretchInput.value) {
+      this.stretchInput.value = String(DEFAULT_PREVIEW_STRETCH_PX);
     }
   }
 

@@ -18,6 +18,19 @@ class TargetSourceControl {
     });
   }
 
+  showWorkspaceGamesOnly() {
+    this.targetTypeInputs.forEach((input) => {
+      const isGames = input.value === "games";
+      input.disabled = !isGames;
+      const label = input.closest("label");
+      if (label) {
+        label.hidden = !isGames;
+        label.style.display = isGames ? "" : "none";
+      }
+    });
+    this.setSelectedTargetType("games");
+  }
+
   hasSelection() {
     return this.targetTypeInputs.some(input => input.checked);
   }

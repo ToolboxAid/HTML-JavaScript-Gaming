@@ -29,7 +29,16 @@ export class GameSelectorControl {
     this.summary.textContent = value;
   }
 
-  setValue(value) {
-    this.select.value = value;
+  setValue(value, label = "") {
+    const nextValue = String(value || "");
+    if (nextValue && !Array.from(this.select.options).some((option) => option.value === nextValue)) {
+      const option = this.gameOption({
+        id: nextValue,
+        name: label || nextValue
+      });
+      option.dataset.temporaryWorkspaceGame = "true";
+      this.select.append(option);
+    }
+    this.select.value = nextValue;
   }
 }
