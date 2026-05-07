@@ -1,11 +1,11 @@
 # Palette Manager V2
 
-Palette Manager V2 is the runtime tool for editing the global palette data stored at `tools.palette-browser`.
+Palette Manager V2 is the runtime tool for editing schema-valid palette swatches for V2 workspace contexts.
 
 ## Contract
 - Runtime tool id: `palette-manager-v2`
-- Global data key: `tools.palette-browser`
-- Managed data: `tools.palette-browser.swatches`
+- Workspace manifest tool key: `tools.palette-manager-v2`
+- Managed workspace data: `tools.palette-manager-v2.swatches`
 - Swatch shape: `{ "symbol": "A", "hex": "#RRGGBB or #RRGGBBAA", "name": "Color Name", "source": "source-id", "tags": ["optional-tag"] }`
 - Optional tags are stored as an array of non-empty strings.
 - Read-only source palettes: `src/engine/paletteList.js`
@@ -20,4 +20,4 @@ Palette Manager V2 is the runtime tool for editing the global palette data store
 - Browse Crayola, W3C, and JavaScript source palettes without editing the source lists.
 - Use the red tack to copy a source swatch into the user palette.
 - Use the green tack to remove a pinned/user swatch when `isSwatchUsedByTool(swatch)` allows removal.
-- Import, copy, and export the exact `tools.palette-browser` JSON wrapper, including swatch tags when present.
+- Import, copy, and export the exact Palette Manager V2 JSON wrapper, including swatch tags when present.

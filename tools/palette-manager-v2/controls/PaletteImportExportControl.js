@@ -48,10 +48,10 @@ export class PaletteImportExportControl {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "tools.palette-browser.json";
+    link.download = "tools.palette-manager-v2.json";
     link.click();
     URL.revokeObjectURL(url);
-    this.app.setActionState([], "Exported tools.palette-browser JSON.");
+    this.app.setActionState([], "Exported tools.palette-manager-v2 JSON.");
   }
 
   async copyPaletteJson() {
@@ -70,6 +70,6 @@ export class PaletteImportExportControl {
       this.app.setActionState(["Clipboard write failed."], "Copy blocked.");
       return;
     }
-    this.app.setActionState([], "Copied tools.palette-browser JSON.");
+    this.app.setActionState([], "Copied tools.palette-manager-v2 JSON.");
   }
 }

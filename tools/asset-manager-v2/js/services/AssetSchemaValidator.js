@@ -52,11 +52,11 @@ export class AssetSchemaValidator {
       this.allowedSources = this.readEnum("#/$defs/assetEntry/properties/source");
       this.assetIdPatterns = this.readAssetIdPatterns();
       if (!this.allowedTypes.length || !this.allowedKinds.length || !this.allowedRoles.length || !Object.keys(this.rolesByType).length || !this.assetIdPatterns.length) {
-        return { ok: false, message: "asset-browser.schema.json is missing asset type, kind, or role rules." };
+        return { ok: false, message: "asset-manager-v2.schema.json is missing asset type, kind, or role rules." };
       }
       return { ok: true };
     } catch (error) {
-      return { ok: false, message: `Unable to load asset-browser.schema.json: ${error.message}` };
+      return { ok: false, message: `Unable to load asset-manager-v2.schema.json: ${error.message}` };
     }
   }
 
@@ -172,11 +172,11 @@ export class AssetSchemaValidator {
     const allowedRootKeys = new Set(Object.keys(this.schema?.properties || {}));
     for (const key of Object.keys(payload)) {
       if (!allowedRootKeys.has(key)) {
-        errors.push(`Root field "${key}" is not allowed by asset-browser.schema.json.`);
+        errors.push(`Root field "${key}" is not allowed by asset-manager-v2.schema.json.`);
       }
     }
     if (!Object.prototype.hasOwnProperty.call(payload, "assets")) {
-      errors.push("assets is required by asset-browser.schema.json.");
+      errors.push("assets is required by asset-manager-v2.schema.json.");
     }
     if (!isPlainObject(payload.assets)) {
       errors.push("assets must be an object keyed by id.");
@@ -208,7 +208,7 @@ export class AssetSchemaValidator {
     const allowedEntryKeys = new Set(["path", "type", "kind", "role", "source", "color", "stretchOverride"]);
     for (const key of Object.keys(entry)) {
       if (!allowedEntryKeys.has(key)) {
-        errors.push(`${pointer}.${key}: field is not allowed by asset-browser.schema.json.`);
+        errors.push(`${pointer}.${key}: field is not allowed by asset-manager-v2.schema.json.`);
       }
     }
     if (typeof entry.path !== "string" || !entry.path.trim()) {
@@ -274,7 +274,7 @@ export class AssetSchemaValidator {
     const allowedColorKeys = new Set(["hex", "name", "symbol", "source", "tags"]);
     for (const key of Object.keys(color)) {
       if (!allowedColorKeys.has(key)) {
-        errors.push(`${pointer}.${key}: field is not allowed by asset-browser.schema.json.`);
+        errors.push(`${pointer}.${key}: field is not allowed by asset-manager-v2.schema.json.`);
       }
     }
     if (!COLOR_HEX_PATTERN.test(String(color.hex || ""))) {

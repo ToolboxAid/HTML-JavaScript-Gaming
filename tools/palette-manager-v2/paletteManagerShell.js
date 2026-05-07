@@ -1,6 +1,6 @@
 const TOOL_ID = "palette-manager-v2";
 const TOOL_NAME = "Palette Manager V2";
-const TOOL_DESCRIPTION = "Global palette manager for tools.palette-browser user swatches and browse-only source palette pinning.";
+const TOOL_DESCRIPTION = "Global Palette Manager V2 surface for user swatches and browse-only source palette pinning.";
 const HEADER_TEXT = `${TOOL_NAME} - ${TOOL_DESCRIPTION}`;
 const INTRO_TEXT = `${TOOL_NAME}: ${TOOL_DESCRIPTION}`;
 
@@ -112,7 +112,7 @@ function renderStatus() {
     <div class="tools-platform-statusbar palette-manager-v2__local-statusbar">
       <span>Palette Manager V2 local shell is active.</span>
       <span>${escapeHtml(TOOL_NAME)} | No active workspace</span>
-      <span>Palette data key: tools.palette-browser</span>
+      <span>Palette Manager V2 payload schema: palette-manager-v2.schema.json</span>
     </div>
   `;
 }

@@ -32,6 +32,8 @@ function isWorkspaceManifest(value) {
     && isPlainObject(value.tools);
 }
 
+const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
+
 export class WorkspaceBridge {
   constructor({ windowRef = window }) {
     this.window = windowRef;
@@ -44,6 +46,10 @@ export class WorkspaceBridge {
 
   hostContextId() {
     return new URLSearchParams(this.window.location.search).get("hostContextId") || "";
+  }
+
+  workspaceManagerUrl() {
+    return new URL("../workspace-manager-v2/index.html", this.window.location.href).href;
   }
 
   validateWorkspaceManagerContext(workspaceManifest) {
@@ -75,7 +81,10 @@ export class WorkspaceBridge {
     if (assetsPath !== `${gameRoot.replace(/\/$/, "")}/assets`) {
       return { ok: false, message: "Workspace Manager V2 assetsPath must match the active game root assets folder." };
     }
-    const palettePayload = workspaceManifest.tools["palette-browser"];
+    if (Object.prototype.hasOwnProperty.call(workspaceManifest.tools, "palette-browser")) {
+      return { ok: false, message: "Workspace Manager V2 manifest must use tools.palette-manager-v2, not tools.palette-browser." };
+    }
+    const palettePayload = workspaceManifest.tools[PALETTE_MANAGER_V2_TOOL_KEY];
     if (!isPlainObject(palettePayload) || !Array.isArray(palettePayload.swatches) || !palettePayload.swatches.length) {
       return { ok: false, message: "Workspace Manager V2 manifest is missing active palette swatches." };
     }

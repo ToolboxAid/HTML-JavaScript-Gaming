@@ -23,6 +23,7 @@ window.addEventListener("DOMContentLoaded", () => {
       summary: requireElement("#activeGameSummary")
     }),
     launchControl: new LaunchControl(requireElement("#launchAssetManagerV2Button")),
+    saveControl: new LaunchControl(requireElement("#saveWorkspaceManifestButton")),
     statusLog: new StatusLogControl({
       clearButton: requireElement("#clearStatusButton"),
       log: requireElement("#statusLog")
@@ -35,5 +36,6 @@ window.addEventListener("DOMContentLoaded", () => {
     })
   });
 
+  window.__workspaceManagerV2App = app;
   app.start();
 });

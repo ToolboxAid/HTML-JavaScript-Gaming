@@ -4,7 +4,7 @@ const TEMPORARY_UAT_GAME_ROOT = "games/Asteroids/";
 const TEMPORARY_UAT_ASSETS_PATH = "games/Asteroids/assets";
 
 const TEMPORARY_UAT_SAMPLE_PALETTE = Object.freeze({
-  "$schema": "tools/schemas/tools/palette-browser.schema.json",
+  "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
   schema: "html-js-gaming.palette",
   version: 1,
   id: "asset-manager-v2-uat-sample",

@@ -8,6 +8,7 @@ import { PaletteValidationService } from "./PaletteValidationService.js";
 import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "./paletteUtils.js";
 
 const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
+const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 
 const REQUIRED_REF_IDS = Object.freeze([
   "undoPaletteButton",
@@ -160,7 +161,7 @@ export class PaletteManagerApp {
     this.paletteSource = paletteSource;
     this.sortService = sortService;
     this.usageService = usageService;
-    this.globalPaletteToolKey = paletteSource.GLOBAL_PALETTE_TOOL_KEY;
+    this.globalPaletteToolKey = PALETTE_MANAGER_V2_TOOL_KEY;
     this.hexColorPattern = USER_HEX_COLOR_PATTERN;
     this.sourcePalettes = paletteSource.SOURCE_PALETTES;
     this.sourcePaletteLabels = paletteSource.SOURCE_PALETTE_LABELS || {};

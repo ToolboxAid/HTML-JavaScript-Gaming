@@ -69,10 +69,7 @@ export class AssetManagerV2App {
       onNavImportJson: (file) => {
         void this.importJson(file);
       },
-      onWorkspaceCopyManifest: () => {
-        void this.copyWorkspaceManifest();
-      },
-      onWorkspaceInsertAssets: () => this.insertAssetsIntoWorkspace()
+      onReturnToWorkspace: () => this.returnToWorkspace()
     });
     this.assetForm.mount({
       onAdd: (value) => this.addAsset(value),
@@ -168,7 +165,7 @@ export class AssetManagerV2App {
 
     this.schemaReady = true;
     this.assetForm.setKinds(this.schemaValidator.allowedTypes);
-    this.statusLog.info(`Loaded asset-browser.schema.json. Types: ${this.schemaValidator.allowedTypes.join(", ")}. Kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
+    this.statusLog.info(`Loaded asset-manager-v2.schema.json. Types: ${this.schemaValidator.allowedTypes.join(", ")}. Kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
     this.loadPaletteIfPresent();
     await this.loadWorkspaceAssetsIfPresent();
     this.render();
@@ -576,6 +573,10 @@ export class AssetManagerV2App {
     }
   }
 
+  returnToWorkspace() {
+    this.window.location.href = this.workspaceBridge.workspaceManagerUrl();
+  }
+
   insertAssetsIntoWorkspace() {
     const validation = this.validateCurrentPayload();
     if (!validation.ok) {
@@ -665,6 +666,6 @@ export class AssetManagerV2App {
       canUndo: this.undoStack.length > 0
     });
     this.actionNav.setToolActionsEnabled(this.schemaReady && payloadValidation.ok);
-    this.actionNav.setWorkspaceActionsEnabled(this.schemaReady && payloadValidation.ok, Boolean(this.lastWorkspaceManifest));
+    this.actionNav.setWorkspaceActionsEnabled(this.workspaceBridge.isWorkspaceMode());
   }
 }

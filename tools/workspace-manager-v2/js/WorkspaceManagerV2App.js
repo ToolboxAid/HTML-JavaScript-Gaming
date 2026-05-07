@@ -4,6 +4,7 @@ export class WorkspaceManagerV2App {
     contextService,
     gameSelector,
     launchControl,
+    saveControl,
     statusLog,
     summary
   }) {
@@ -11,6 +12,7 @@ export class WorkspaceManagerV2App {
     this.contextService = contextService;
     this.gameSelector = gameSelector;
     this.launchControl = launchControl;
+    this.saveControl = saveControl;
     this.statusLog = statusLog;
     this.summary = summary;
     this.activeContext = null;
@@ -29,8 +31,14 @@ export class WorkspaceManagerV2App {
     this.launchControl.mount({
       onLaunch: () => this.launchAssetManager()
     });
+    this.saveControl.mount({
+      onLaunch: () => {
+        void this.saveWorkspaceManifest();
+      }
+    });
     this.summary.clear();
     this.launchControl.setEnabled(false);
+    this.saveControl.setEnabled(false);
     this.statusLog.ok("Workspace Manager V2 ready. Select a game workspace to create a schema-valid manifest.");
   }
 
@@ -38,6 +46,7 @@ export class WorkspaceManagerV2App {
     this.activeContext = null;
     this.activeGame = null;
     this.launchControl.setEnabled(false);
+    this.saveControl.setEnabled(false);
     this.summary.clear();
 
     if (!gameId) {
@@ -63,17 +72,59 @@ export class WorkspaceManagerV2App {
       paletteSwatches: result.paletteSwatches
     });
     this.launchControl.setEnabled(true);
+    this.saveControl.setEnabled(true);
     this.statusLog.ok(`Loaded ${result.game.name} with ${result.paletteSwatches.length} active palette colors.`);
     this.statusLog.ok("Asset Manager V2 production launch context is session/state based only.");
   }
 
-  launchAssetManager() {
-    if (!this.activeContext || !this.activeGame || !this.activeContext.tools?.["palette-browser"]?.swatches?.length) {
+  hasLaunchReadyContext() {
+    return Boolean(this.activeContext
+      && this.activeGame
+      && this.activeContext.tools?.["palette-manager-v2"]?.swatches?.length);
+  }
+
+  async launchAssetManager() {
+    if (!this.hasLaunchReadyContext()) {
       this.statusLog.fail("Launch blocked: active game context and palette are required.");
+      return;
+    }
+    const validation = await this.contextService.validateGeneratedManifest(this.activeContext);
+    if (!validation.ok) {
+      this.statusLog.fail(`Launch blocked: ${validation.message}`);
       return;
     }
     const hostContextId = this.contextService.persistContext(this.activeContext);
     this.statusLog.ok(`Stored Workspace Manager V2 schema-valid manifest ${hostContextId}.`);
     this.contextService.launchAssetManager(hostContextId);
+  }
+
+  async saveWorkspaceManifest() {
+    if (!this.hasLaunchReadyContext()) {
+      this.statusLog.fail("Save blocked: active game context and palette are required.");
+      return;
+    }
+    const validation = await this.contextService.validateGeneratedManifest(this.activeContext);
+    if (!validation.ok) {
+      this.statusLog.fail(`Save blocked: ${validation.message}`);
+      return;
+    }
+    const json = JSON.stringify(this.activeContext, null, 2);
+    const BlobCtor = window.Blob;
+    const urlApi = window.URL || window.webkitURL;
+    if (typeof BlobCtor !== "function" || !urlApi?.createObjectURL) {
+      this.statusLog.fail("Save blocked: browser download APIs are unavailable.");
+      return;
+    }
+    const blob = new BlobCtor([json], { type: "application/json" });
+    const url = urlApi.createObjectURL(blob);
+    const link = window.document.createElement("a");
+    link.href = url;
+    link.download = `${this.activeContext.id}.workspace.manifest.json`;
+    link.rel = "noopener";
+    window.document.body.append(link);
+    link.click();
+    link.remove();
+    urlApi.revokeObjectURL(url);
+    this.statusLog.ok(`Saved schema-valid Workspace Manager V2 manifest ${this.activeContext.id}.`);
   }
 }

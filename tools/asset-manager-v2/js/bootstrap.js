@@ -24,9 +24,8 @@ window.addEventListener("DOMContentLoaded", () => {
       navExportJsonButton: requireElement("#navExportJsonButton"),
       navImportJsonButton: requireElement("#navImportJsonButton"),
       navImportJsonInput: requireElement("#navImportJsonInput"),
+      returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
       toolNav: requireElement(".asset-manager-v2__tool__menu"),
-      workspaceCopyManifestButton: requireElement("#workspaceCopyManifestButton"),
-      workspaceInsertAssetsButton: requireElement("#workspaceInsertAssetsButton"),
       workspaceNav: requireElement(".asset-manager-v2__workspace__menu")
     }),
     assetCatalog: new AssetCatalogControl({
@@ -59,7 +58,7 @@ window.addEventListener("DOMContentLoaded", () => {
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
     launchGuard: requireElement("#assetLaunchGuard"),
     schemaValidator: new AssetSchemaValidator({
-      schemaUrl: "../schemas/tools/asset-browser.schema.json"
+      schemaUrl: "../schemas/tools/asset-manager-v2.schema.json"
     }),
     shell: new AssetManagerShellControl(),
     statusLog: new StatusLogControl({

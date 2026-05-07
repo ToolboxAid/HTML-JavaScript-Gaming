@@ -4,26 +4,23 @@ export class ActionNavControl {
     navExportJsonButton,
     navImportJsonButton,
     navImportJsonInput,
+    returnToWorkspaceButton,
     toolNav,
-    workspaceCopyManifestButton,
-    workspaceInsertAssetsButton,
     workspaceNav
   }) {
     this.location = locationRef;
     this.navExportJsonButton = navExportJsonButton;
     this.navImportJsonButton = navImportJsonButton;
     this.navImportJsonInput = navImportJsonInput;
+    this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.toolNav = toolNav;
-    this.workspaceCopyManifestButton = workspaceCopyManifestButton;
-    this.workspaceInsertAssetsButton = workspaceInsertAssetsButton;
     this.workspaceNav = workspaceNav;
   }
 
   mount({
     onNavExportJson,
     onNavImportJson,
-    onWorkspaceCopyManifest,
-    onWorkspaceInsertAssets
+    onReturnToWorkspace
   }) {
     this.applyLaunchMode();
     this.navImportJsonButton.addEventListener("click", () => this.navImportJsonInput.click());
@@ -33,8 +30,7 @@ export class ActionNavControl {
       onNavImportJson(file);
     });
     this.navExportJsonButton.addEventListener("click", onNavExportJson);
-    this.workspaceInsertAssetsButton.addEventListener("click", onWorkspaceInsertAssets);
-    this.workspaceCopyManifestButton.addEventListener("click", onWorkspaceCopyManifest);
+    this.returnToWorkspaceButton.addEventListener("click", onReturnToWorkspace);
   }
 
   applyLaunchMode() {
@@ -51,8 +47,7 @@ export class ActionNavControl {
     this.navExportJsonButton.disabled = !isEnabled;
   }
 
-  setWorkspaceActionsEnabled(canInsert, canCopyManifest) {
-    this.workspaceInsertAssetsButton.disabled = !canInsert;
-    this.workspaceCopyManifestButton.disabled = !canCopyManifest;
+  setWorkspaceActionsEnabled(isEnabled) {
+    this.returnToWorkspaceButton.disabled = !isEnabled;
   }
 }

@@ -44,12 +44,12 @@
     },
     "tools": {
       "type": "object",
-      "required": ["palette-browser", "asset-manager-v2"],
+      "required": ["palette-manager-v2", "asset-manager-v2"],
       "additionalProperties": false,
       "description": "Workspace-owned tool entry map keyed by canonical registry ids; payload schemas are referenced, never inlined here.",
       "properties": {
-        "palette-browser": {
-          "$ref": "./tools/palette-browser.schema.json"
+        "palette-manager-v2": {
+          "$ref": "./tools/palette-manager-v2.schema.json"
         },
         "vector-map-editor": {
           "$ref": "./tools/vector-map-editor.schema.json"
@@ -70,10 +70,7 @@
           "$ref": "./tools/skin-editor.schema.json"
         },
         "asset-manager-v2": {
-          "$ref": "./tools/asset-browser.schema.json"
-        },
-        "asset-browser": {
-          "$ref": "./tools/asset-browser.schema.json"
+          "$ref": "./tools/asset-manager-v2.schema.json"
         },
         "state-inspector": {
           "$ref": "./tools/state-inspector.schema.json"
