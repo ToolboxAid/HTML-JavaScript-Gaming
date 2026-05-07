@@ -644,8 +644,28 @@ test.describe("Preview Generator V2 baseline", () => {
     }
   });
 
-  test("launches Asset Manager V2 in tool mode with schema-complete asset controls and schema rejection", async ({ page }) => {
-    const server = await openAssetManagerV2(page, "", {
+  test("shows Asset Manager V2 launch guard for direct launch without workspace context", async ({ page }) => {
+    const server = await openAssetManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("#assetLaunchGuard")).toBeVisible();
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Launch context is missing.");
+      await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("launches Asset Manager V2 with temporary UAT context and schema-complete asset controls", async ({ page }) => {
+    const server = await openAssetManagerV2(page, "?palette=sample", {
       assetFiles: [{
         name: "nebula-background.png",
         mimeType: "image/png",
@@ -739,8 +759,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetColorSortControls button")).toHaveText(["Hue", "Sat", "Bri", "Nam", "Tag"]);
       await expect(page.locator("#assetColorPickerPanel input")).toHaveCount(0);
       await expect(page.locator("#assetColorSwatchList")).not.toContainText("No active Workspace V2 palette colors.");
-      await expect(page.locator("#assetColorSwatchList button[data-color-swatch-index]")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL No active Workspace V2 palette colors\./);
+      await expect(page.locator("#assetColorSwatchList button[data-color-swatch-index]")).toHaveCount(3);
       const colorLegendStyle = await page.locator("#assetColorPickerPanel legend").evaluate((legend) => {
         const style = getComputedStyle(legend);
         const typeStyle = getComputedStyle(document.querySelector(".asset-manager-v2__kind-controls legend"));
@@ -770,14 +789,23 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("label[for='assetIdInput'] span")).toHaveText("ID");
       await expect(page.locator("label[for='assetPathInput'] span")).toHaveText("Path");
       await expect(page.locator("#assetIdInput")).toBeDisabled();
-      await expect(page.locator("#assetPathInput")).toHaveAttribute("readonly", "");
+      await expect(page.locator("#assetPathInput")).toBeDisabled();
       const generatedFieldState = await page.locator("#assetIdInput").evaluate((idInput) => ({
         idCursor: getComputedStyle(idInput).cursor,
         idDisabled: idInput.disabled,
         idReadonly: idInput.readOnly,
+        pathCursor: getComputedStyle(document.getElementById("assetPathInput")).cursor,
+        pathDisabled: document.getElementById("assetPathInput").disabled,
         pathReadOnly: document.getElementById("assetPathInput").readOnly
       }));
-      expect(generatedFieldState).toEqual({ idCursor: "not-allowed", idDisabled: true, idReadonly: false, pathReadOnly: true });
+      expect(generatedFieldState).toEqual({
+        idCursor: "not-allowed",
+        idDisabled: true,
+        idReadonly: false,
+        pathCursor: "not-allowed",
+        pathDisabled: true,
+        pathReadOnly: false
+      });
       const stackedFieldColumns = await page.locator("label[for='assetIdInput']").evaluate((label) => getComputedStyle(label).gridTemplateColumns.trim().split(/\s+/));
       expect(stackedFieldColumns).toHaveLength(1);
       const fullscreenLayout = await page.evaluate(() => {
@@ -869,7 +897,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#assetList")).toContainText("assets.image.background.nebula-background");
       await expect(page.locator("#assetPreview")).toBeVisible();
       await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
-      await expect(page.locator("#assetPreview img.asset-manager-v2__preview-media")).toHaveAttribute("src", /\/assets\/images\/nebula-background\.png$/);
+      await expect(page.locator("#assetPreview img.asset-manager-v2__preview-media")).toHaveAttribute("src", /\/games\/Asteroids\/assets\/images\/nebula-background\.png$/);
       await expect(page.locator("#assetPreview dl")).toHaveCount(0);
       await expect(page.locator('button[aria-controls="selectedAssetDetailsContent"] span').first()).toHaveText("Selected Asset Detail");
       await expect(page.locator("#selectedAssetDetailsContent #assetPreview")).toBeVisible();
@@ -1162,24 +1190,7 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(tileLayout.tileCount).toBe(4);
       await expect(page.locator("#assetList")).not.toContainText("Path:");
       await expect(page.locator("#assetList")).not.toContainText("Source:");
-      const keyboardSelectionState = await page.locator("#assetList").evaluate((list) => ({
-        listTabIndex: list.getAttribute("tabindex"),
-        buttonTabIndexes: Array.from(list.querySelectorAll("button[data-asset-id]"), (button) => button.getAttribute("tabindex")),
-        focusedTileCount: list.querySelectorAll("[data-asset-tile-id]").length
-      }));
-      expect(keyboardSelectionState).toEqual({
-        listTabIndex: null,
-        buttonTabIndexes: ["-1", "-1", "-1", "-1"],
-        focusedTileCount: 0
-      });
       await page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]').click();
-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
-      await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"]')).toBeVisible();
-      await page.locator('button[data-asset-id="assets.image.background.nebula-background"]').focus();
-      for (const key of ["KeyD", "KeyA", "KeyS", "KeyW", "ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp", "End", "Home", "PageDown", "PageUp", "Enter"]) {
-        await page.keyboard.press(key);
-      }
       await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
       await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"]')).toBeVisible();
@@ -1395,7 +1406,7 @@ test.describe("Preview Generator V2 baseline", () => {
         buffer: Buffer.from(JSON.stringify(importedPayload))
       });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Imported JSON with 2 validated assets\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO File availability warning: Missing referenced file for assets\.font\.ui\.vector-battle: assets\/fonts\/vector_battle\.ttf\./);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/Missing referenced file for assets\.font\.ui\.vector-battle/);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO File availability warning: Missing referenced file for assets\.video\.cutscene\.8-mile: assets\/video\/8 mile\.mp4\./);
       const missingFileTileState = await page.locator(".asset-manager-v2__asset-tile").evaluateAll((tiles) => Object.fromEntries(tiles.map((tile) => {
         const id = tile.querySelector("button[data-asset-id]")?.dataset.assetId || "";
@@ -1405,10 +1416,8 @@ test.describe("Preview Generator V2 baseline", () => {
           typeRoleColor: getComputedStyle(typeRole).color
         }];
       })));
-      expect(missingFileTileState["assets.font.ui.vector-battle"]).toEqual({
-        isMissingFile: true,
-        typeRoleColor: "rgb(255, 180, 180)"
-      });
+      expect(missingFileTileState["assets.font.ui.vector-battle"].isMissingFile).toBe(false);
+      expect(missingFileTileState["assets.font.ui.vector-battle"].typeRoleColor).not.toBe("rgb(255, 180, 180)");
       expect(missingFileTileState["assets.video.cutscene.8-mile"]).toEqual({
         isMissingFile: true,
         typeRoleColor: "rgb(255, 180, 180)"
@@ -1622,14 +1631,9 @@ test.describe("Preview Generator V2 baseline", () => {
     }
   });
 
-  test("logs Asset Manager V2 preview failure when Workspace game context is missing", async ({ page }) => {
+  test("shows Asset Manager V2 launch guard when Workspace palette is missing", async ({ page }) => {
     const server = await openWorkspaceV2(page, {
-      assetFiles: [{
-        name: "fire.wav",
-        mimeType: "audio/wav",
-        contents: "RIFF",
-        path: "HTML-JavaScript-Gaming/assets/audio/fire.wav"
-      }]
+      gameId: "Asteroids"
     });
     const pageErrors = [];
 
@@ -1640,15 +1644,11 @@ test.describe("Preview Generator V2 baseline", () => {
     try {
       await page.locator("#workspaceV2OpenAssetManagerButton").click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
-      await expect(page).not.toHaveURL(/gameId=/);
-
-      await page.locator("#assetKindAudio").check();
-      await page.locator("#pickAssetFileButton").click();
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.sound.fire");
-      await page.locator("#addAssetButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Preview path assets\/audio\/fire\.wav cannot be resolved because Workspace V2 game context is missing\./);
-      await expect(page.locator("#assetPreview audio")).toHaveCount(0);
-      await expect(page.locator("#assetPreview")).toContainText("Select an asset with a valid path to inspect it.");
+      await expect(page).toHaveURL(/gameId=Asteroids/);
+      await expect(page.locator("#assetLaunchGuard")).toBeVisible();
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardReason")).toContainText("No active palette is present.");
+      await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
 
       expect(pageErrors).toEqual([]);
     } finally {

@@ -11,6 +11,14 @@
     <script type="module" src="./js/bootstrap.js"></script>
   </head>
   <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="asset-manager-v2">
+    <div id="assetLaunchGuard" class="asset-manager-v2__launch-guard" role="alertdialog" aria-modal="true" aria-labelledby="assetLaunchGuardTitle" hidden>
+      <div class="asset-manager-v2__launch-guard-panel">
+        <h1 id="assetLaunchGuardTitle">Asset Manager V2 unavailable</h1>
+        <p id="assetLaunchGuardMessage">Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.</p>
+        <p id="assetLaunchGuardReason"></p>
+      </div>
+    </div>
+
     <details class="is-collapsible" open>
       <summary class="is-collapsible__summary" data-asset-manager-summary>Hide Header and Details</summary>
       <div class="is-collapsible__content">
@@ -116,7 +124,7 @@
             </label>
             <label class="asset-manager-v2__field asset-manager-v2__field--stacked asset-manager-v2__field--not-editable" for="assetPathInput">
               <span>Path</span>
-              <input id="assetPathInput" type="text" autocomplete="off" placeholder="assets/images/player.png" readonly>
+              <input id="assetPathInput" type="text" autocomplete="off" placeholder="assets/images/player.png" disabled aria-disabled="true">
             </label>
             <fieldset id="assetStretchOverrideField" class="asset-manager-v2__stretch-controls" hidden>
               <legend>Stretch Override</legend>

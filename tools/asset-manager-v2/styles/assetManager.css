@@ -81,6 +81,47 @@ textarea:disabled {
   opacity: 1;
 }
 
+.asset-manager-v2__launch-guard {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 10, 24, 0.92);
+  color: var(--asset-manager-text);
+  padding: 24px;
+}
+
+.asset-manager-v2__launch-guard[hidden] {
+  display: none;
+}
+
+.asset-manager-v2__launch-guard-panel {
+  width: min(620px, 100%);
+  border: 1px solid var(--asset-manager-line);
+  border-radius: 8px;
+  background: var(--asset-manager-panel);
+  box-shadow: var(--asset-manager-shadow-strong);
+  padding: 22px;
+}
+
+.asset-manager-v2__launch-guard-panel h1 {
+  margin: 0 0 10px;
+  color: #ffffff;
+  font-size: 1.45rem;
+  letter-spacing: 0;
+}
+
+.asset-manager-v2__launch-guard-panel p {
+  margin: 8px 0 0;
+  color: var(--asset-manager-header-muted);
+  line-height: 1.45;
+}
+
+body.asset-manager-v2--launch-blocked > :not(.asset-manager-v2__launch-guard) {
+  pointer-events: none;
+}
+
 select {
   min-width: 0;
   padding: 7px 9px;
@@ -343,10 +384,6 @@ textarea:hover {
 .asset-manager-v2__field--not-editable input:disabled {
   color: rgba(196, 181, 253, 0.66);
   cursor: not-allowed;
-}
-
-.asset-manager-v2__field--not-editable input:read-only {
-  user-select: none;
 }
 
 .asset-manager-v2__kind-controls {

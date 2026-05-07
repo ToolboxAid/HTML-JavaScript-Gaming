@@ -2,6 +2,7 @@ import { readTemporaryUatSamplePalette } from "./services/TemporaryUatSamplePale
 import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
 
 const ASSET_MANAGER_TOOL_ID = "asset-manager-v2";
+const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.";
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -26,6 +27,7 @@ export class AssetManagerV2App {
     assetCatalog,
     assetForm,
     inspector,
+    launchGuard,
     schemaValidator,
     shell,
     statusLog,
@@ -37,6 +39,7 @@ export class AssetManagerV2App {
     this.assetCatalog = assetCatalog;
     this.assetForm = assetForm;
     this.inspector = inspector;
+    this.launchGuard = launchGuard;
     this.schemaValidator = schemaValidator;
     this.shell = shell;
     this.statusLog = statusLog;
@@ -53,6 +56,12 @@ export class AssetManagerV2App {
   }
 
   async start() {
+    const launchGuardResult = this.evaluateLaunchGuard();
+    if (!launchGuardResult.ok) {
+      this.showLaunchGuard(launchGuardResult.reason);
+      return;
+    }
+    this.hideLaunchGuard();
     this.shell.mount();
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
@@ -93,6 +102,58 @@ export class AssetManagerV2App {
 
     this.render();
     await this.loadSchema();
+  }
+
+  evaluateLaunchGuard() {
+    const samplePalette = readTemporaryUatSamplePalette(this.window.location);
+    if (samplePalette.ok) {
+      if (samplePalette.palette?.swatches?.length > 0) {
+        return { ok: true };
+      }
+      return { ok: false, reason: "Temporary UAT sample context did not provide active palette colors." };
+    }
+
+    if (!this.workspaceBridge.isWorkspaceMode()) {
+      return { ok: false, reason: "Launch context is missing." };
+    }
+
+    const assetPayloadResult = this.workspaceBridge.readWorkspaceAssetPayload();
+    if (!assetPayloadResult.ok) {
+      return { ok: false, reason: assetPayloadResult.message };
+    }
+
+    const previewContext = this.workspaceBridge.readWorkspacePreviewContext();
+    if (!previewContext.workspaceGameId || !previewContext.workspaceGameRoot) {
+      return { ok: false, reason: "Workspace game context is missing." };
+    }
+
+    const paletteResult = this.workspaceBridge.readWorkspacePaletteSwatches();
+    if (!paletteResult.ok) {
+      return { ok: false, reason: paletteResult.message };
+    }
+    if (!paletteResult.swatches.length) {
+      return { ok: false, reason: "No active palette is present." };
+    }
+
+    return { ok: true };
+  }
+
+  showLaunchGuard(reason) {
+    const message = this.launchGuard.querySelector("#assetLaunchGuardMessage");
+    const reasonNode = this.launchGuard.querySelector("#assetLaunchGuardReason");
+    if (message) {
+      message.textContent = LAUNCH_GUARD_MESSAGE;
+    }
+    if (reasonNode) {
+      reasonNode.textContent = reason ? `Reason: ${reason}` : "";
+    }
+    this.launchGuard.hidden = false;
+    this.window.document.body.classList.add("asset-manager-v2--launch-blocked");
+  }
+
+  hideLaunchGuard() {
+    this.launchGuard.hidden = true;
+    this.window.document.body.classList.remove("asset-manager-v2--launch-blocked");
   }
 
   async loadSchema() {

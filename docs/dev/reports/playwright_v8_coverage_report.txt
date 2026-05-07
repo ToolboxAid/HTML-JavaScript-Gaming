@@ -20,6 +20,9 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
+(86%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 646/646; executed functions 51/59
+(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 71/71; executed functions 4/4
+(100%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 27/27; executed functions 5/5
 (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 134/134; executed functions 14/14
 
 Files with executed line/function counts where available:
@@ -122,16 +125,16 @@ Files with executed line/function counts where available:
 (77%) src/engine/core/Engine.js - executed lines 323/323; executed functions 10/13
 (80%) src/engine/theme/accordionV2/accordionV2.js - executed lines 26/26; executed functions 4/5
 (82%) samples/shared/sampleDetailPageEnhancement.js - executed lines 471/471; executed functions 41/50
-(83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
+(86%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 646/646; executed functions 51/59
 (86%) tools/templates-v2/js/controls/StatusLogControl.js - executed lines 24/24; executed functions 6/7
 (87%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 13/15
-(88%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 593/593; executed functions 49/56
 (88%) tools/templates-v2/js/controls/SourceInputControl.js - executed lines 33/33; executed functions 7/8
 (88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
 (90%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 52/58
 (91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 328/328; executed functions 30/33
 (92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 531/531; executed functions 55/60
 (92%) tools/templates-v2/js/controls/ToolStarterShellControl.js - executed lines 111/111; executed functions 11/12
+(93%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 14/15
 (100%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 6/6
 (100%) samples/phase-01/0102/main.js - executed lines 23/23; executed functions 1/1
 (100%) samples/phase-01/0103/main.js - executed lines 23/23; executed functions 1/1
@@ -160,14 +163,14 @@ Files with executed line/function counts where available:
 (100%) src/shared/utils/invariantUtils.js - executed lines 11/11; executed functions 2/2
 (100%) src/shared/utils/stringUtils.js - executed lines 1/1; executed functions 1/1
 (100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
-(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 70/70; executed functions 4/4
+(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 71/71; executed functions 4/4
+(100%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 27/27; executed functions 5/5
 (100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 54/54; executed functions 8/8
 (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 134/134; executed functions 14/14
 (100%) tools/asset-manager-v2/js/controls/InspectorControl.js - executed lines 8/8; executed functions 3/3
 (100%) tools/asset-manager-v2/js/controls/StatusLogControl.js - executed lines 30/30; executed functions 9/9
 (100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 276/276; executed functions 25/25
 (100%) tools/asset-manager-v2/js/services/TemporaryUatSamplePalette.js - executed lines 30/30; executed functions 3/3
-(100%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 15/15
 (100%) tools/preview-generator-v2/controls/AccordionSection.js - executed lines 31/31; executed functions 5/5
 (100%) tools/preview-generator-v2/controls/AssetFolderControl.js - executed lines 17/17; executed functions 5/5
 (100%) tools/preview-generator-v2/controls/CaptureModeControl.js - executed lines 25/25; executed functions 9/9
@@ -198,4 +201,7 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
+(86%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
+(100%) tools/asset-manager-v2/js/bootstrap.js - changed JS file with browser V8 coverage
+(100%) tools/asset-manager-v2/js/controls/AccordionSection.js - changed JS file with browser V8 coverage
 (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file with browser V8 coverage

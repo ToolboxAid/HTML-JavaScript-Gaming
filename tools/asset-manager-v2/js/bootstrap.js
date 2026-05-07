@@ -57,6 +57,7 @@ window.addEventListener("DOMContentLoaded", () => {
       windowRef: window
     }),
     inspector: new InspectorControl(requireElement("#inspectorOutput")),
+    launchGuard: requireElement("#assetLaunchGuard"),
     schemaValidator: new AssetSchemaValidator({
       schemaUrl: "../schemas/tools/asset-browser.schema.json"
     }),
