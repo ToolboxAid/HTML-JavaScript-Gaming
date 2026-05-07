@@ -359,6 +359,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".asset-manager-v2__workspace__menu button")).toHaveText(["Return to Workspace"]);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 14 validated assets from tools\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
+      const assetStatusHeaderOrder = await page.locator(".asset-manager-v2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
+      expect(assetStatusHeaderOrder).toEqual(["Status", "+", "Clear"]);
 
       const workspacePreviewContext = await page.evaluate(async () => {
         const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
@@ -544,6 +546,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("WARN Workspace background image role is missing; using manifest palette background color Background #05070A.");
       await expect(page.locator("#log")).not.toContainText("FAIL Workspace background hydration");
       await expect(page.locator("#log")).toContainText("OK Workspace manifest preview source is valid at games/Pong/assets/images/preview.svg.");
+      await page.locator("#baseUrl").fill(server.baseUrl);
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+      let previewDownloadOpened = false;
+      page.on("download", () => {
+        previewDownloadOpened = true;
+      });
+      await page.locator("#executeBtn").click();
+      await expect(page.locator("#log")).toContainText("Workspace launch direct preview write target: games/Pong/assets/images/preview.svg.", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Direct preview write target: games/Pong/assets/images/preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("OK   Pong", { timeout: 20000 });
+      expect(previewDownloadOpened).toBe(false);
+      expect(server.previewWrites.get("games/Pong/assets/images/preview.svg")).toContain("<svg");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       expect(pageErrors).toEqual([]);

@@ -18,6 +18,7 @@ function contentTypeForPath(filePath) {
 }
 
 export async function startRepoServer() {
+  const previewWrites = new Map();
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
@@ -27,6 +28,20 @@ export async function startRepoServer() {
       if (!absolutePath.startsWith(repoRoot)) {
         response.statusCode = 403;
         response.end("Forbidden");
+        return;
+      }
+      if (request.method === "PUT") {
+        const bodyChunks = [];
+        for await (const chunk of request) {
+          bodyChunks.push(chunk);
+        }
+        const repoRelativePath = normalizedPath
+          .replaceAll("\\", "/")
+          .replace(/^\/+/, "");
+        previewWrites.set(repoRelativePath, Buffer.concat(bodyChunks).toString("utf8"));
+        response.statusCode = 200;
+        response.setHeader("Content-Type", "text/plain; charset=utf-8");
+        response.end("OK");
         return;
       }
       let targetPath = absolutePath;
@@ -56,6 +71,7 @@ export async function startRepoServer() {
 
   return {
     baseUrl: `http://127.0.0.1:${address.port}`,
+    previewWrites,
     close: async () => {
       await new Promise((resolve, reject) => {
         const forceClose = setTimeout(() => {

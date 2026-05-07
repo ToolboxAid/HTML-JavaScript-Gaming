@@ -585,32 +585,55 @@ async function shouldRewrite(targetDirHandle) {
   return { rewrite: false, reason: "existing-preview-without-capture-timeout" };
 }
 
-function downloadWorkspacePreview(svgContent, outputPath) {
-  const BlobCtor = window.Blob;
-  const urlApi = window.URL || window.webkitURL;
-  if (typeof BlobCtor !== "function" || !urlApi?.createObjectURL) {
-    throw new Error("Browser download APIs are unavailable for workspace launch output.");
+function previewWriteError(message) {
+  const error = new Error(message);
+  error.previewWriteFailed = true;
+  return error;
+}
+
+function isPreviewWriteError(error) {
+  return Boolean(error?.previewWriteFailed);
+}
+
+function validateWorkspacePreviewWritePath(entry) {
+  if (!isWorkspaceManagerLaunch() || !workspaceRepoRootHydrated || !workspacePreviewFileValid) {
+    throw previewWriteError("Workspace preview write path is unavailable because launch hydration is incomplete.");
   }
-  const blob = new BlobCtor([svgContent], { type: "image/svg+xml" });
-  const url = urlApi.createObjectURL(blob);
-  const link = window.document.createElement("a");
-  link.href = url;
-  link.download = OUTPUT_NAME;
-  link.rel = "noopener";
-  link.dataset.workspaceOutputPath = outputPath;
-  window.document.body.append(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => {
-    urlApi.revokeObjectURL(url);
-  }, 0);
+  const targetPath = normalizeWorkspacePath(getWorkspacePreviewTargetDisplayPath());
+  if (!targetPath) {
+    throw previewWriteError("Workspace preview write path is empty.");
+  }
+  const targetParts = targetPath.split("/");
+  if (targetParts.includes("..") || targetPath.startsWith(".")) {
+    throw previewWriteError(`Workspace preview write path is invalid: ${targetPath}.`);
+  }
+  const expectedPrefix = `games/${entry.name}/`;
+  if (entry.targetType !== "games" || entry.name !== workspacePreviewGameId || !targetPath.startsWith(expectedPrefix)) {
+    throw previewWriteError(`Workspace preview write path ${targetPath} does not match the hydrated ${workspacePreviewGameId} game context.`);
+  }
+  return targetPath;
+}
+
+async function writeWorkspacePreview(svgContent, entry) {
+  const targetPath = validateWorkspacePreviewWritePath(entry);
+  const targetUrl = new URL(`/${targetPath}`, window.location.href);
+  const response = await fetch(targetUrl.href, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "image/svg+xml; charset=utf-8"
+    },
+    body: svgContent
+  });
+  if (!response.ok) {
+    const details = await response.text().catch(() => "");
+    throw previewWriteError(`${targetPath} returned ${response.status}${details ? `: ${details}` : ""}.`);
+  }
+  logger.log(`Direct preview write target: ${targetPath}`);
 }
 
 async function writePreview(targetDirHandle, svgContent, entry) {
   if (!targetDirHandle && isWorkspaceManagerLaunch() && workspaceRepoRootHydrated) {
-    const outputPath = getFullOutputPath(entry);
-    downloadWorkspacePreview(svgContent, outputPath);
-    logger.log(`DL   ${outputPath}`);
+    await writeWorkspacePreview(svgContent, entry);
     return;
   }
 
@@ -678,8 +701,26 @@ async function processOne(entry, baseUrl, waitMs) {
     logger.log("");
     return { id: label, status: "written", reason: decision.reason };
   } catch (error) {
+    if (isPreviewWriteError(error)) {
+      logger.log(`FAIL Direct preview write failed: ${error.message}`);
+      logger.log("");
+      return { id: label, status: "failed", reason: error.message };
+    }
     const fallback = capture.buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
-    await writePreview(targetDirHandle, fallback, entry);
+    try {
+      await writePreview(targetDirHandle, fallback, entry);
+    } catch (writeError) {
+      const reason = isPreviewWriteError(writeError)
+        ? writeError.message
+        : `${error.message}; fallback write failed: ${writeError.message}`;
+      if (isPreviewWriteError(writeError)) {
+        logger.log(`FAIL Direct preview write failed: ${writeError.message}`);
+      } else {
+        logger.log(`FAIL ${label}  (${reason})`);
+      }
+      logger.log("");
+      return { id: label, status: "failed", reason };
+    }
     ui.setLastGeneratedImage(fallback, label);
     logger.log(`FAIL ${label}  (${error.message})`);
     logger.log("");
@@ -840,7 +881,7 @@ class PreviewGeneratorV2App {
     logger.log(`Capture mode: ${ui.getCaptureModeLabel()}`);
     logger.log(`Force rewrite: ${ui.renderControls.isForceRewrite()}`);
     if (!repoDirHandle && isWorkspaceManagerLaunch()) {
-      logger.log("Workspace launch repo root was hydrated from context; output will download because browsers cannot write to a repo path without a directory handle.");
+      logger.log(`Workspace launch direct preview write target: ${getWorkspacePreviewTargetDisplayPath() || "unavailable"}.`);
     }
     logger.log("");
 
