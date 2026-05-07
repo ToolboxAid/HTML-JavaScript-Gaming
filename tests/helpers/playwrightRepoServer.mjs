@@ -29,12 +29,6 @@ export async function startRepoServer() {
     try {
       const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
       const decodedPath = decodeURIComponent(requestUrl.pathname);
-      if (request.method === "GET" && decodedPath === "/__workspace-manager-v2/repo-root") {
-        response.statusCode = 200;
-        response.setHeader("Content-Type", "application/json; charset=utf-8");
-        response.end(JSON.stringify({ repoRoot }));
-        return;
-      }
       if (request.method === "PUT" && decodedPath === "/__workspace-manager-v2/write-preview") {
         const absoluteWritePath = String(request.headers["x-workspace-preview-absolute-path"] || "");
         const relativeWritePath = String(request.headers["x-workspace-preview-relative-path"] || "");

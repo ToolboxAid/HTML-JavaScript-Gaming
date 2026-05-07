@@ -1,9 +1,7 @@
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
-const WORKSPACE_REPO_ROOT_ENDPOINT = "/__workspace-manager-v2/repo-root";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
-const PREVIEW_GENERATOR_V2_TOOL_KEY = "preview-generator-v2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
@@ -64,13 +62,6 @@ function isPlainObject(value) {
 
 function makeHostContextId() {
   return `workspace-manager-v2-${Date.now().toString(36)}`;
-}
-
-function isAbsoluteFilesystemPath(value) {
-  const pathValue = String(value || "").trim();
-  return /^[A-Za-z]:[\\/]/.test(pathValue)
-    || pathValue.startsWith("/")
-    || pathValue.startsWith("\\\\");
 }
 
 function temporaryUatGameFromManifest(workspaceManifest) {
@@ -359,47 +350,6 @@ export class WorkspaceManagerV2ContextService {
       assetWarning,
       paletteSwatches
     };
-  }
-
-  async resolveAbsoluteRepoRoot() {
-    if (typeof this.fetchRef !== "function") {
-      return { ok: false, message: "Fetch API is unavailable; Workspace Manager V2 cannot resolve the absolute repoRoot." };
-    }
-    try {
-      const response = await this.fetchRef(WORKSPACE_REPO_ROOT_ENDPOINT, { cache: "no-store" });
-      if (!response.ok) {
-        return { ok: false, message: `Unable to resolve absolute repoRoot from ${WORKSPACE_REPO_ROOT_ENDPOINT}: ${response.status}` };
-      }
-      const payload = await response.json();
-      const repoRoot = String(payload?.repoRoot || "").trim();
-      if (!repoRoot) {
-        return { ok: false, message: `${WORKSPACE_REPO_ROOT_ENDPOINT} did not return repoRoot.` };
-      }
-      if (!isAbsoluteFilesystemPath(repoRoot)) {
-        return { ok: false, message: `Resolved repoRoot must be an absolute filesystem path; received ${repoRoot}.` };
-      }
-      return { ok: true, repoRoot };
-    } catch (error) {
-      return { ok: false, message: `Unable to resolve absolute repoRoot from ${WORKSPACE_REPO_ROOT_ENDPOINT}: ${error.message}` };
-    }
-  }
-
-  async buildLaunchContextForTool(workspaceManifest, toolId) {
-    const launchContext = clone(workspaceManifest);
-    let resolvedRepoRoot = "";
-    if (toolId === PREVIEW_GENERATOR_V2_TOOL_KEY) {
-      const repoRootResult = await this.resolveAbsoluteRepoRoot();
-      if (!repoRootResult.ok) {
-        return repoRootResult;
-      }
-      launchContext.repoRoot = repoRootResult.repoRoot;
-      resolvedRepoRoot = repoRootResult.repoRoot;
-    }
-    const validation = await this.validateGeneratedManifest(launchContext);
-    if (!validation.ok) {
-      return validation;
-    }
-    return { ok: true, context: launchContext, repoRoot: resolvedRepoRoot };
   }
 
   async loadWorkspaceManifestSchema() {

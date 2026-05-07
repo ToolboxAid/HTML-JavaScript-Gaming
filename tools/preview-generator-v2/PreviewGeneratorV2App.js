@@ -20,6 +20,7 @@ let isGenerating = false;
 let workspacePreviewAssetFolder = "";
 let workspacePreviewFileValid = false;
 let workspacePreviewGameId = "";
+let workspaceLaunchHydrated = false;
 let workspaceRepoRootHydrated = false;
 let workspaceRepoRootName = "";
 let workspaceResolvedRepoRoot = "";
@@ -394,7 +395,7 @@ function updateWriteFolderSampleLabel() {
 }
 
 function getWorkspacePreviewTargetDisplayPath() {
-  if (isWorkspaceManagerLaunch() && (repoDirHandle || workspaceRepoRootHydrated) && workspaceGeneratedPreviewPath) {
+  if (isWorkspaceManagerLaunch() && workspaceLaunchHydrated && workspaceGeneratedPreviewPath) {
     return workspaceGeneratedPreviewPath;
   }
   return workspaceManifestPreviewPath;
@@ -667,7 +668,7 @@ function isPreviewWriteError(error) {
 
 function validateWorkspacePreviewWritePath(entry) {
   if (!isWorkspaceManagerLaunch() || !workspaceRepoRootHydrated || !workspacePreviewFileValid) {
-    throw previewWriteError("Workspace preview write path is unavailable because launch hydration is incomplete.");
+    throw previewWriteError("Workspace direct preview write is unavailable until an absolute repo root is selected.");
   }
   const targetPath = normalizeWorkspacePath(getWorkspacePreviewTargetDisplayPath());
   if (!targetPath) {
@@ -739,7 +740,7 @@ async function processOne(entry, baseUrl, waitMs) {
     : null;
   const decision = targetDirHandle
     ? await shouldRewrite(targetDirHandle)
-    : { rewrite: true, reason: "workspace-launch-hydrated-repo-root" };
+    : { rewrite: true, reason: "workspace-launch-absolute-repo-root" };
 
   ui.outputSummary.setWriteFolderActual(getWriteFolderDisplayPath(entry));
   const label = entry.targetType === "samples" ? entry.id : entry.name;
@@ -1028,6 +1029,7 @@ class PreviewGeneratorV2App {
     }
     logger.log("Workspace launch context hydration started.");
     workspacePreviewFileValid = false;
+    workspaceLaunchHydrated = false;
     workspaceRepoRootHydrated = false;
     workspaceResolvedRepoRoot = "";
     workspaceManifestPreviewPath = "";
@@ -1048,35 +1050,24 @@ class PreviewGeneratorV2App {
       return;
     }
 
-    const resolvedRepoRoot = String(manifest.repoRoot || "").trim();
-    if (!isAbsoluteFilesystemPath(resolvedRepoRoot)) {
-      repoDisplayName = resolvedRepoRoot;
-      workspaceRepoRootName = resolvedRepoRoot;
-      ui.setRepoDestinationDisplayName(resolvedRepoRoot || "not selected");
-      logger.log(`FAIL Workspace launch context hydration: repoRoot must be an absolute filesystem path, received ${resolvedRepoRoot || "(empty)"}.`);
-      this.syncGeneratePreviewButton();
-      return;
-    }
-
-    let resolvedPreviewOutputPath = "";
-    try {
-      resolvedPreviewOutputPath = resolveWorkspaceAbsolutePreviewOutputPath(resolvedRepoRoot, previewTarget.generatedPreviewPath);
-    } catch (error) {
-      logger.log(`FAIL Workspace launch context hydration: ${error.message}`);
-      this.syncGeneratePreviewButton();
-      return;
-    }
-
-    repoDisplayName = resolvedRepoRoot;
+    const manifestRepoRoot = String(manifest.repoRoot || "").trim();
+    repoDisplayName = manifestRepoRoot;
     repoDirHandle = null;
-    workspaceRepoRootHydrated = true;
-    workspaceRepoRootName = resolvedRepoRoot;
-    workspaceResolvedRepoRoot = resolvedRepoRoot;
+    workspaceLaunchHydrated = true;
+    workspaceRepoRootName = manifestRepoRoot;
     workspacePreviewAssetFolder = previewTarget.previewAssetFolder;
     workspacePreviewGameId = manifest.gameId;
     workspaceManifestPreviewPath = previewTarget.manifestPreviewPath;
     workspaceGeneratedPreviewPath = previewTarget.generatedPreviewPath;
-    workspaceAbsolutePreviewOutputPath = resolvedPreviewOutputPath;
+    if (isAbsoluteFilesystemPath(manifestRepoRoot)) {
+      try {
+        workspaceAbsolutePreviewOutputPath = resolveWorkspaceAbsolutePreviewOutputPath(manifestRepoRoot, previewTarget.generatedPreviewPath);
+        workspaceRepoRootHydrated = true;
+        workspaceResolvedRepoRoot = manifestRepoRoot;
+      } catch (error) {
+        logger.log(`WARN Workspace direct preview write unavailable: ${error.message}`);
+      }
+    }
     ui.setRepoDestinationDisplayName(repoDisplayName);
     ui.targetSource.setSelectedTargetType("games");
     ui.targetSource.showWorkspaceGamesOnly();
@@ -1084,9 +1075,14 @@ class PreviewGeneratorV2App {
     ui.pathsOrIds.setValue(manifest.gameId);
     await updatePathPreviewLabels();
     logger.log(`OK Workspace launch context hydrated for ${manifest.gameId}.`);
-    logger.log(`Repo selected from Workspace Manager V2 manifest repoRoot: ${repoDisplayName}.`);
-    logger.log(`Resolved repoRoot: ${workspaceResolvedRepoRoot}`);
-    logger.log(`Resolved absolute preview output path: ${workspaceAbsolutePreviewOutputPath}`);
+    logger.log(`Workspace repoRoot display label available: ${repoDisplayName}.`);
+    if (workspaceRepoRootHydrated) {
+      logger.log(`Resolved repoRoot: ${workspaceResolvedRepoRoot}`);
+      logger.log(`Resolved absolute preview output path: ${workspaceAbsolutePreviewOutputPath}`);
+    } else {
+      logger.log(`WARN Absolute repoRoot missing for workspace launch; manifest repoRoot is display-only: ${repoDisplayName || "(empty)"}.`);
+      logger.log("Direct preview write unavailable until a real writable repo root is selected.");
+    }
     logger.log("Target source: games");
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
     logger.log(`Manifest preview asset: ${previewTarget.previewAssetId} (${previewTarget.previewAssetType}/${previewTarget.previewAssetKind})`);

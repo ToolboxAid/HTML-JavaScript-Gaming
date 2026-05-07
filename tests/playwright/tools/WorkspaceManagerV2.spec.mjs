@@ -1,6 +1,5 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
@@ -522,8 +521,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Generate Image", "Return to Workspace"]);
       await expect(page.locator("#executeBtn")).toBeVisible();
-      await expect(page.locator("#executeBtn")).toBeEnabled();
-      await expect(page.locator("#repoSelectedValue")).toHaveText(server.repoRoot);
+      await expect(page.locator("#executeBtn")).toBeDisabled();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
       await expect(page.locator("#workspaceContextValue")).toHaveCount(0);
       await expect(page.locator("#repoDestinationContent")).not.toContainText("Workspace launch");
       await expect(page.locator("#targetTypeGames")).toBeChecked();
@@ -535,11 +534,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#lastGeneratedImagePreview")).toBeVisible();
       await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Preview target: games/Asteroids/assets/images/preview.png");
-      const absoluteAsteroidsPreviewPath = path.join(server.repoRoot, "games", "Asteroids", "assets", "images", "preview.svg");
       await expect(page.locator("#log")).toContainText("OK Workspace launch context hydrated for Asteroids.");
-      await expect(page.locator("#log")).toContainText(`Repo selected from Workspace Manager V2 manifest repoRoot: ${server.repoRoot}.`);
-      await expect(page.locator("#log")).toContainText(`Resolved repoRoot: ${server.repoRoot}`);
-      await expect(page.locator("#log")).toContainText(`Resolved absolute preview output path: ${absoluteAsteroidsPreviewPath}`);
+      await expect(page.locator("#log")).toContainText("Workspace repoRoot display label available: HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("WARN Absolute repoRoot missing for workspace launch; manifest repoRoot is display-only: HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("Direct preview write unavailable until a real writable repo root is selected.");
+      await expect(page.locator("#log")).not.toContainText("Unable to resolve absolute repoRoot");
+      await expect(page.locator("#log")).not.toContainText("/__workspace-manager-v2/repo-root");
       await expect(page.locator("#log")).toContainText("Asset folder: assets\\images");
       await expect(page.locator("#log")).toContainText("Manifest preview asset: assets.image.preview.preview (image/png)");
       await expect(page.locator("#log")).toContainText("Manifest preview source: games/Asteroids/assets/images/preview.png");
@@ -552,21 +552,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const previewStatusHeaderOrder = await page.locator(".preview-generator-v2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
       expect(previewStatusHeaderOrder).toEqual(["Status", "+", "Clear"]);
       await page.locator("#baseUrl").fill(server.baseUrl);
-      await expect(page.locator("#executeBtn")).toBeEnabled();
-      let previewDownloadOpened = false;
-      page.on("download", () => {
-        previewDownloadOpened = true;
-      });
-      await page.locator("#executeBtn").click();
-      await expect(page.locator("#log")).toContainText("Workspace launch direct preview write target: games/Asteroids/assets/images/preview.svg.", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`Workspace launch absolute preview output path: ${absoluteAsteroidsPreviewPath}.`, { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText("Direct preview write target: games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`Direct preview absolute path: ${absoluteAsteroidsPreviewPath}`, { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`OK Direct preview write completed: ${absoluteAsteroidsPreviewPath}`, { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText("OK   Asteroids", { timeout: 20000 });
-      expect(previewDownloadOpened).toBe(false);
-      expect(server.previewWrites.get("games/Asteroids/assets/images/preview.svg")).toContain("<svg");
-      expect(server.previewAbsoluteWrites.get(absoluteAsteroidsPreviewPath)).toContain("<svg");
+      await expect(page.locator("#executeBtn")).toBeDisabled();
+      expect(server.previewWrites.size).toBe(0);
+      expect(server.previewAbsoluteWrites.size).toBe(0);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       expect(pageErrors).toEqual([]);
@@ -613,7 +601,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("blocks Preview Generator V2 workspace direct write when repoRoot is not absolute", async ({ page }) => {
+  test("opens Preview Generator V2 workspace launch with display-only repoRoot and actionable status", async ({ page }) => {
     const server = await startRepoServer();
     const pageErrors = [];
     const hostContextId = "workspace-manager-v2-display-root-context";
@@ -633,8 +621,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     try {
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
       await expect(page.locator("#executeBtn")).toBeDisabled();
-      await expect(page.locator("#log")).toContainText("FAIL Workspace launch context hydration: repoRoot must be an absolute filesystem path, received HTML-JavaScript-Gaming.");
-      await expect(page.locator("#log")).not.toContainText("OK Workspace launch context hydrated");
+      await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/preview.svg");
+      await expect(page.locator("#log")).toContainText("OK Workspace launch context hydrated for Asteroids.");
+      await expect(page.locator("#log")).toContainText("Workspace repoRoot display label available: HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("WARN Absolute repoRoot missing for workspace launch; manifest repoRoot is display-only: HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("Direct preview write unavailable until a real writable repo root is selected.");
+      await expect(page.locator("#log")).not.toContainText("/__workspace-manager-v2/repo-root");
+      await expect(page.locator("#log")).not.toContainText("FAIL Workspace launch context hydration");
       expect(server.previewWrites.size).toBe(0);
       expect(pageErrors).toEqual([]);
     } finally {
