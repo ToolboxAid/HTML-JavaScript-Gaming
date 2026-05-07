@@ -1,15 +1,16 @@
 :root {
-  --workspace-manager-v2-bg: linear-gradient(180deg, #1f2937 0%, #365314 52%, #0f766e 100%);
-  --workspace-manager-v2-panel: rgba(17, 24, 39, 0.94);
-  --workspace-manager-v2-surface: rgba(8, 47, 73, 0.72);
-  --workspace-manager-v2-line: rgba(209, 250, 229, 0.24);
-  --workspace-manager-v2-input: rgba(6, 78, 59, 0.9);
-  --workspace-manager-v2-text: #f8fafc;
-  --workspace-manager-v2-muted: #d1fae5;
-  --workspace-manager-v2-accent: #86efac;
-  --workspace-manager-v2-warning: #fde68a;
-  --workspace-manager-v2-danger: #fecaca;
-  --workspace-manager-v2-shadow: 0 18px 38px rgba(0, 0, 0, 0.24);
+  --workspace-manager-v2-bg: var(--bg-gradient);
+  --workspace-manager-v2-panel: var(--panel);
+  --workspace-manager-v2-surface: var(--surface-inline);
+  --workspace-manager-v2-input: var(--surface-inline);
+  --workspace-manager-v2-line: var(--line);
+  --workspace-manager-v2-surface-border: var(--surface-border);
+  --workspace-manager-v2-text: var(--text);
+  --workspace-manager-v2-muted: var(--muted);
+  --workspace-manager-v2-accent: var(--accent);
+  --workspace-manager-v2-header-surface: var(--tools-shell-glass, var(--panel));
+  --workspace-manager-v2-shadow: var(--tools-shell-shadow, none);
+  --workspace-manager-v2-shadow-strong: var(--tools-shell-shadow-strong, none);
   color-scheme: dark;
   font-family: Inter, Segoe UI, system-ui, sans-serif;
 }
@@ -56,10 +57,15 @@ textarea:focus-visible {
 
 select,
 textarea {
-  border: 1px solid var(--workspace-manager-v2-line);
-  border-radius: 8px !important;
+  border: 1px solid var(--workspace-manager-v2-surface-border);
+  border-radius: 10px !important;
   background: var(--workspace-manager-v2-input);
   color: var(--workspace-manager-v2-text);
+}
+
+select:hover,
+textarea:hover {
+  border-color: var(--card-hover-border);
 }
 
 .is-collapsible {
@@ -95,12 +101,15 @@ textarea {
   --tools-platform-frame-surface: var(--workspace-manager-v2-panel);
   --tools-platform-frame-line: var(--workspace-manager-v2-line);
   border: 1px solid var(--workspace-manager-v2-line);
-  border-radius: 8px;
-  background: var(--workspace-manager-v2-panel);
+  border-radius: 18px;
+  background: var(--workspace-manager-v2-bg);
   box-shadow: var(--workspace-manager-v2-shadow);
+  color: var(--workspace-manager-v2-text);
 }
 
 .workspace-manager-v2__local-shell-frame .tools-platform-frame__accordion-content {
+  display: grid;
+  gap: 10px;
   padding: 12px 14px;
 }
 
@@ -109,18 +118,22 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  border-radius: 8px;
-  background: rgba(20, 83, 45, 0.86);
+  border-radius: 12px;
+  background: var(--workspace-manager-v2-header-surface);
   padding: 12px 14px;
 }
 
-.workspace-manager-v2__local-shell-frame h1,
-.workspace-manager-v2__local-shell-frame h2,
+.workspace-manager-v2__local-shell-frame .tools-platform-frame__title,
+.workspace-manager-v2__local-shell-frame .tools-platform-frame__eyebrow,
 .workspace-manager-v2__local-shell-frame .tools-platform-frame__meta {
   margin: 0;
 }
 
-.workspace-manager-v2__local-shell-frame h2,
+.workspace-manager-v2__local-shell-frame .tools-platform-frame__title {
+  color: var(--workspace-manager-v2-text);
+}
+
+.workspace-manager-v2__local-shell-frame .tools-platform-frame__eyebrow,
 .workspace-manager-v2__local-shell-frame .tools-platform-frame__meta {
   color: var(--workspace-manager-v2-muted);
 }
@@ -140,13 +153,16 @@ textarea {
 .workspace-manager-v2.app-shell {
   height: calc(100vh - 137px);
   min-height: 0;
-  width: min(1500px, calc(100% - 32px));
+  width: min(1600px, calc(100% - 32px));
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr) 360px;
+  grid-template-columns: 340px minmax(0, 1fr) 360px;
   gap: 14px;
   margin: 0 auto 16px;
+  border: 1px solid var(--workspace-manager-v2-line);
+  border-radius: 20px;
+  box-shadow: var(--workspace-manager-v2-shadow-strong);
   overflow: hidden;
-  padding: 16px 0 0;
+  padding: 16px;
 }
 
 .workspace-manager-v2__panel {
@@ -173,6 +189,7 @@ textarea {
   border: 1px solid var(--workspace-manager-v2-line);
   border-radius: 8px;
   background: var(--workspace-manager-v2-surface);
+  box-shadow: var(--workspace-manager-v2-shadow);
   overflow: hidden;
 }
 
@@ -261,7 +278,7 @@ textarea {
   min-width: 0;
   border: 1px solid var(--workspace-manager-v2-line);
   border-radius: 8px;
-  background: rgba(17, 24, 39, 0.52);
+  background: var(--workspace-manager-v2-surface);
   padding: 12px;
 }
 

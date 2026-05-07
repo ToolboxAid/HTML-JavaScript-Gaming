@@ -49,6 +49,81 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("uses First-Class Tool V2 theme contract", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("body")).toHaveClass(/tools-platform-tool-page/);
+      await expect(page.locator("body")).toHaveClass(/tools-platform-surface/);
+      await expect(page.locator("body")).toHaveClass(/hub-page-tools/);
+      const themeContract = await page.evaluate(async () => {
+        const stylesheetPaths = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+          .map((link) => new URL(link.href).pathname);
+        const css = await fetch("/tools/workspace-manager-v2/styles/workspaceManagerV2.css", { cache: "no-store" }).then((response) => response.text());
+        const probeStyle = (property, value) => {
+          const probe = document.createElement("div");
+          probe.style[property] = value;
+          document.body.append(probe);
+          const computed = getComputedStyle(probe)[property];
+          probe.remove();
+          return computed;
+        };
+        const bodyStyle = getComputedStyle(document.body);
+        const shellStyle = getComputedStyle(document.querySelector(".workspace-manager-v2.app-shell"));
+        const panelStyle = getComputedStyle(document.querySelector(".workspace-manager-v2__panel"));
+        const summaryStyle = getComputedStyle(document.querySelector(".tools-platform-frame__accordion-summary"));
+        const textareaStyle = getComputedStyle(document.querySelector("#statusLog"));
+        return {
+          bodyBackground: bodyStyle.backgroundImage,
+          bodyColor: bodyStyle.color,
+          cssHasHardcodedColors: /#[0-9a-f]{3,8}|rgba?\(|linear-gradient/i.test(css),
+          cssUsesThemeTokens: [
+            "--workspace-manager-v2-bg: var(--bg-gradient);",
+            "--workspace-manager-v2-panel: var(--panel);",
+            "--workspace-manager-v2-surface: var(--surface-inline);",
+            "--workspace-manager-v2-line: var(--line);",
+            "--workspace-manager-v2-text: var(--text);",
+            "--workspace-manager-v2-muted: var(--muted);",
+            "--workspace-manager-v2-accent: var(--accent);"
+          ].every((snippet) => css.includes(snippet)),
+          expectedBackground: probeStyle("backgroundImage", "var(--bg-gradient)"),
+          expectedInputBackground: probeStyle("backgroundColor", "var(--surface-inline)"),
+          expectedLine: probeStyle("borderColor", "var(--line)"),
+          expectedPanel: probeStyle("backgroundColor", "var(--panel)"),
+          expectedText: probeStyle("color", "var(--text)"),
+          panelBackground: panelStyle.backgroundColor,
+          shellBorder: shellStyle.borderTopColor,
+          stylesheetPaths,
+          summaryBackground: summaryStyle.backgroundColor,
+          textareaBackground: textareaStyle.backgroundColor
+        };
+      });
+      expect(themeContract.stylesheetPaths).toEqual([
+        "/src/engine/theme/main.css",
+        "/src/engine/ui/hubCommon.css",
+        "/src/engine/theme/accordionV2/accordionV2.css",
+        "/tools/workspace-manager-v2/styles/workspaceManagerV2.css"
+      ]);
+      expect(themeContract.cssHasHardcodedColors).toBe(false);
+      expect(themeContract.cssUsesThemeTokens).toBe(true);
+      expect(themeContract.bodyColor).toBe(themeContract.expectedText);
+      expect(themeContract.bodyBackground).toBe(themeContract.expectedBackground);
+      expect(themeContract.shellBorder).toBe(themeContract.expectedLine);
+      expect(themeContract.panelBackground).toBe(themeContract.expectedPanel);
+      expect(themeContract.summaryBackground).toBe(themeContract.expectedPanel);
+      expect(themeContract.textareaBackground).toBe(themeContract.expectedInputBackground);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("launches Asset Manager V2 through Workspace Manager V2 session context", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
