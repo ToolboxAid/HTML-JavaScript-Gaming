@@ -9,6 +9,7 @@
   "gameRoot": "games/Pong/",
   "assetsPath": "games/Pong/assets",
   "repoRoot": "HTML-JavaScript-Gaming",
+  "repoPath": "C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming",
   "tools": {
     "palette-manager-v2": {
       "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",

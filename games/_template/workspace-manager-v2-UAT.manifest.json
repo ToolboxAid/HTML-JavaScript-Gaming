@@ -9,6 +9,7 @@
   "gameRoot": "games/_template/",
   "assetsPath": "games/_template/assets",
   "repoRoot": "HTML-JavaScript-Gaming",
+  "repoPath": "C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming",
   "tools": {
     "palette-manager-v2": {
       "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",

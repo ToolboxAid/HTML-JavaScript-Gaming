@@ -80,7 +80,7 @@ function isAbsoluteFilesystemPath(value) {
 }
 
 function useWindowsPathSeparator(pathValue) {
-  return /^[A-Za-z]:[\\/]/.test(pathValue) || String(pathValue || "").includes("\\");
+  return String(pathValue || "").includes("\\");
 }
 
 function trimFilesystemTrailingSeparators(pathValue) {

@@ -25,6 +25,10 @@ async function openToolsIndex(page) {
   return server;
 }
 
+function manifestRepoPath(server) {
+  return server.repoRoot.replaceAll("\\", "/");
+}
+
 test.describe("Workspace Manager V2 bootstrap", () => {
   test.afterAll(async () => {
     await coverageReporter.writeReport();
@@ -235,7 +239,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/Asteroids\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/Asteroids\/assets"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"repoRoot": "HTML-JavaScript-Gaming"/);
-      expect(JSON.parse(await page.locator("#workspaceContextOutput").inputValue()).repoPath).toBe(server.repoRoot);
+      expect(JSON.parse(await page.locator("#workspaceContextOutput").inputValue()).repoPath).toBe(manifestRepoPath(server));
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"previewImagePath"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets.image.bezel.bezel"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets.image.preview.preview"/);
@@ -313,7 +317,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(savedManifest.documentKind).toBe("workspace-manifest");
       expect(Object.keys(savedManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "vector-map-editor"]);
       expect(savedManifest.repoRoot).toBe("HTML-JavaScript-Gaming");
-      expect(savedManifest.repoPath).toBe(server.repoRoot);
+      expect(savedManifest.repoPath).toBe(manifestRepoPath(server));
       expect(savedManifest.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(14);
       expect(savedManifest.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
@@ -390,7 +394,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.gameRoot).toBe("games/Asteroids/");
       expect(storedContext.assetsPath).toBe("games/Asteroids/assets");
       expect(storedContext.repoRoot).toBe("HTML-JavaScript-Gaming");
-      expect(storedContext.repoPath).toBe(server.repoRoot);
+      expect(storedContext.repoPath).toBe(manifestRepoPath(server));
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(14);
       expect(storedContext.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
@@ -526,7 +530,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Generate Image", "Return to Workspace"]);
       await expect(page.locator("#executeBtn")).toBeVisible();
       await expect(page.locator("#executeBtn")).toBeEnabled();
-      await expect(page.locator("#repoSelectedValue")).toHaveText(server.repoRoot);
+      await expect(page.locator("#repoSelectedValue")).toHaveText(manifestRepoPath(server));
       await expect(page.locator("#pickRepoBtn")).toBeHidden();
       await expect(page.locator("#workspaceContextValue")).toHaveCount(0);
       await expect(page.locator("#repoDestinationContent")).not.toContainText("Workspace launch");
@@ -540,11 +544,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#lastGeneratedImagePreview")).toBeVisible();
       await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Preview target: games/Asteroids/assets/images/preview.png");
       const absoluteAsteroidsPreviewPath = path.join(server.repoRoot, "games", "Asteroids", "assets", "images", "preview.svg");
+      const displayedAsteroidsPreviewPath = `${manifestRepoPath(server)}/games/Asteroids/assets/images/preview.svg`;
       await expect(page.locator("#log")).toContainText("OK Workspace launch context hydrated for Asteroids.");
       await expect(page.locator("#log")).toContainText("Workspace repoRoot display label available: HTML-JavaScript-Gaming.");
-      await expect(page.locator("#log")).toContainText(`Workspace repoPath available: ${server.repoRoot}.`);
-      await expect(page.locator("#log")).toContainText(`Resolved repoPath: ${server.repoRoot}`);
-      await expect(page.locator("#log")).toContainText(`Resolved absolute preview output path: ${absoluteAsteroidsPreviewPath}`);
+      await expect(page.locator("#log")).toContainText(`Workspace repoPath available: ${manifestRepoPath(server)}.`);
+      await expect(page.locator("#log")).toContainText(`Resolved repoPath: ${manifestRepoPath(server)}`);
+      await expect(page.locator("#log")).toContainText(`Resolved absolute preview output path: ${displayedAsteroidsPreviewPath}`);
       await expect(page.locator("#log")).not.toContainText("Direct preview write unavailable");
       await expect(page.locator("#log")).not.toContainText("Unable to resolve absolute repoRoot");
       await expect(page.locator("#log")).not.toContainText("/__workspace-manager-v2/repo-root");
@@ -567,10 +572,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await page.locator("#executeBtn").click();
       await expect(page.locator("#log")).toContainText("Workspace launch direct preview write target: games/Asteroids/assets/images/preview.svg.", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`Workspace launch absolute preview output path: ${absoluteAsteroidsPreviewPath}.`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Workspace launch absolute preview output path: ${displayedAsteroidsPreviewPath}.`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Direct preview write target: games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`Direct preview absolute path: ${absoluteAsteroidsPreviewPath}`, { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`OK Direct preview write completed: ${absoluteAsteroidsPreviewPath}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Direct preview absolute path: ${displayedAsteroidsPreviewPath}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`OK Direct preview write completed: ${displayedAsteroidsPreviewPath}`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK   Asteroids", { timeout: 20000 });
       expect(previewDownloadOpened).toBe(false);
       expect(server.previewWrites.get("games/Asteroids/assets/images/preview.svg")).toContain("<svg");
@@ -687,7 +692,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#activeGameSelect").selectOption("GravityWell");
       await expect(page.locator("#activeGameSummary")).toContainText("games/GravityWell/");
-      await expect(page.locator("#activeGameSummary")).toContainText("Select Repo");
+      await expect(page.locator("#activeGameSummary")).toContainText(`Repo path: ${manifestRepoPath(server)}.`);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/GravityWell\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/GravityWell\/assets"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets.image.preview.preview"/);
@@ -695,8 +700,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"asset-browser"|"palette-browser"|"vector-map-editor"/);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("1 managed assets");
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("10 palette swatches");
-      await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Select Repo");
+      await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Schema-valid manifest");
       const gravityManifest = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
+      expect(gravityManifest.repoPath).toBe(manifestRepoPath(server));
       expect(Object.keys(gravityManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
       expect(gravityManifest.tools["asset-manager-v2"].assets["assets.image.preview.preview"]).toEqual({
         path: "assets/images/preview.svg",
@@ -707,9 +713,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(gravityManifest.tools["asset-manager-v2"].assets["assets.image.background.preview"]).toBeUndefined();
 
+      await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
+      await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#repoSelectedValue")).toHaveText(manifestRepoPath(server));
+      await expect(page.locator("#pickRepoBtn")).toBeHidden();
+      await expect(page.locator("#sampleList")).toHaveValue("GravityWell");
+      await expect(page.locator("#previewTargetValue")).toHaveText("games/GravityWell/assets/images/preview.svg");
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+      await expect(page.locator("#log")).toContainText(`Workspace repoPath available: ${manifestRepoPath(server)}.`);
+      await expect(page.locator("#log")).toContainText("Generated preview target: games/GravityWell/assets/images/preview.svg");
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+
       await page.locator("#activeGameSelect").selectOption("Pong");
       await expect(page.locator("#activeGameSummary")).toContainText("games/Pong/");
-      await expect(page.locator("#activeGameSummary")).toContainText("Select Repo");
+      await expect(page.locator("#activeGameSummary")).toContainText(`Repo path: ${manifestRepoPath(server)}.`);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/Pong\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/Pong\/assets"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets.image.preview.preview"/);
@@ -717,8 +735,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"asset-browser"|"palette-browser"|"vector-map-editor"/);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("1 managed assets");
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("8 palette swatches");
-      await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Select Repo");
+      await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Schema-valid manifest");
       const pongManifest = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
+      expect(pongManifest.repoPath).toBe(manifestRepoPath(server));
       expect(Object.keys(pongManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
       expect(pongManifest.tools["asset-manager-v2"].assets["assets.image.preview.preview"]).toEqual({
         path: "assets/images/preview.svg",
@@ -728,6 +747,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         source: "manifest"
       });
       expect(pongManifest.tools["asset-manager-v2"].assets["assets.image.background.preview"]).toBeUndefined();
+
+      await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
+      await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#repoSelectedValue")).toHaveText(manifestRepoPath(server));
+      await expect(page.locator("#pickRepoBtn")).toBeHidden();
+      await expect(page.locator("#sampleList")).toHaveValue("Pong");
+      await expect(page.locator("#previewTargetValue")).toHaveText("games/Pong/assets/images/preview.svg");
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+      await expect(page.locator("#log")).toContainText(`Workspace repoPath available: ${manifestRepoPath(server)}.`);
+      await expect(page.locator("#log")).toContainText("Generated preview target: games/Pong/assets/images/preview.svg");
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
 
       expect(pageErrors).toEqual([]);
     } finally {
@@ -819,10 +850,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("0 managed assets");
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("3 palette swatches");
-      await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Select Repo");
+      await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Schema-valid manifest");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"id": "workspace-manager-v2-UAT-template"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/_template\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/_template\/assets"/);
+      expect(JSON.parse(await page.locator("#workspaceContextOutput").inputValue()).repoPath).toBe(manifestRepoPath(server));
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"sourceId": "games\/_template\/workspace-manager-v2-UAT.manifest.json"/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded UAT Workspace Manager V2 manifest workspace-manager-v2-UAT-template from \/games\/_template\/workspace-manager-v2-UAT\.manifest\.json\./);
 
