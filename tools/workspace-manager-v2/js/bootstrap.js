@@ -27,7 +27,6 @@ window.addEventListener("DOMContentLoaded", () => {
       exportButton: requireElement("#exportManifestButton"),
       importButton: requireElement("#importManifestButton"),
       importInput: requireElement("#importManifestInput"),
-      loadAsteroidsButton: requireElement("#loadAsteroidsButton"),
       uatButton: requireElement("#seedUatManifestButton")
     }),
     statusLog: new StatusLogControl({

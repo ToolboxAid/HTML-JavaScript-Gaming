@@ -5,7 +5,9 @@ export class StatusLogControl {
   }
 
   mount() {
-    this.clearButton.addEventListener("click", () => {
+    this.clearButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       this.log.value = "";
     });
   }

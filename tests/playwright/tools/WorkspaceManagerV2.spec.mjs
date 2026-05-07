@@ -166,18 +166,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#importManifestButton")).toHaveText("Import Manifest");
       await expect(page.locator("#exportManifestButton")).toBeDisabled();
       await expect(page.locator("#seedUatManifestButton")).toBeHidden();
-      await expect(page.locator("#loadAsteroidsButton")).toHaveText("Load Asteroids");
+      await expect(page.locator("#loadAsteroidsButton")).toHaveCount(0);
       await expect(page.locator("#launchAssetManagerV2Button")).toHaveCount(0);
       await expect(page.locator("#workspaceToolsContent #workspaceToolTiles")).toBeVisible();
       await expect(page.locator("#workspaceContextContent")).toHaveCount(0);
       await expect(page.locator("#workspaceJsonContent #workspaceContextOutput")).toBeVisible();
-      await expect(page.locator("#copyWorkspaceJsonButton")).toHaveText("[copy]");
+      await expect(page.locator("#copyWorkspaceJsonButton")).toHaveText("copy");
       const centerControlLabels = await page.locator(".workspace-manager-v2__panel--center > .accordion-v2 > .accordion-v2__header > span:first-child")
         .evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
       expect(centerControlLabels).toEqual(["Tools", "Workspace JSON"]);
       await expect(page.locator(".workspace-manager-v2__status-accordion-header")).toContainText("Status");
       const statusHeaderOrder = await page.locator(".workspace-manager-v2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
       expect(statusHeaderOrder).toEqual(["Status", "+", "Clear"]);
+      const statusHeader = page.locator('.workspace-manager-v2__status-accordion-header[aria-controls="statusLogContent"]');
+      const statusContent = page.locator("#statusLogContent");
+      await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(statusContent).toBeVisible();
+      await page.locator("#clearStatusButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue("");
+      await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
+      await expect(statusContent).toBeVisible();
       await expect(page.locator(".workspace-manager-v2__tool-group-title")).toHaveText(["Editors", "Utilities", "Viewers"]);
       await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(4);
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
@@ -607,10 +615,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activeGameSummary")).toContainText("games/GravityWell/");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/GravityWell\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/GravityWell\/assets"/);
-      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets.image.background.preview"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets.image.preview.preview"/);
+      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"assets.image.background.preview"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"asset-browser"|"palette-browser"|"vector-map-editor"/);
-      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("2 managed assets");
+      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("1 managed assets");
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("10 palette swatches");
       const gravityManifest = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
       expect(Object.keys(gravityManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
@@ -621,25 +629,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         role: "preview",
         source: "manifest"
       });
-      expect(gravityManifest.tools["asset-manager-v2"].assets["assets.image.background.preview"]).toEqual({
-        path: "assets/images/preview.svg",
-        type: "image",
-        kind: "svg",
-        role: "background",
-        source: "manifest",
-        stretchOverride: {
-          uniformEdgeStretchPx: 0
-        }
-      });
+      expect(gravityManifest.tools["asset-manager-v2"].assets["assets.image.background.preview"]).toBeUndefined();
 
       await page.locator("#activeGameSelect").selectOption("Pong");
       await expect(page.locator("#activeGameSummary")).toContainText("games/Pong/");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/Pong\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/Pong\/assets"/);
-      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets.image.background.preview"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets.image.preview.preview"/);
+      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"assets.image.background.preview"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"asset-browser"|"palette-browser"|"vector-map-editor"/);
-      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("2 managed assets");
+      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("1 managed assets");
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("8 palette swatches");
       const pongManifest = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
       expect(Object.keys(pongManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
@@ -650,16 +649,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         role: "preview",
         source: "manifest"
       });
-      expect(pongManifest.tools["asset-manager-v2"].assets["assets.image.background.preview"]).toEqual({
-        path: "assets/images/preview.svg",
-        type: "image",
-        kind: "svg",
-        role: "background",
-        source: "manifest",
-        stretchOverride: {
-          uniformEdgeStretchPx: 0
-        }
-      });
+      expect(pongManifest.tools["asset-manager-v2"].assets["assets.image.background.preview"]).toBeUndefined();
 
       expect(pageErrors).toEqual([]);
     } finally {

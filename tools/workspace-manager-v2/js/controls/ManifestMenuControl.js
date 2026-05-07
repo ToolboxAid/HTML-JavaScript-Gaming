@@ -3,13 +3,11 @@ export class ManifestMenuControl {
     exportButton,
     importButton,
     importInput,
-    loadAsteroidsButton,
     uatButton
   }) {
     this.exportButton = exportButton;
     this.importButton = importButton;
     this.importInput = importInput;
-    this.loadAsteroidsButton = loadAsteroidsButton;
     this.uatButton = uatButton;
   }
 
@@ -17,7 +15,6 @@ export class ManifestMenuControl {
     isUatMode,
     onExportManifest,
     onImportManifest,
-    onLoadAsteroids,
     onSeedUat
   }) {
     this.importButton.addEventListener("click", () => {
@@ -28,7 +25,6 @@ export class ManifestMenuControl {
       onImportManifest(this.importInput.files?.[0] || null);
     });
     this.exportButton.addEventListener("click", onExportManifest);
-    this.loadAsteroidsButton.addEventListener("click", onLoadAsteroids);
     this.uatButton.addEventListener("click", onSeedUat);
     this.uatButton.hidden = !isUatMode;
   }

@@ -38,9 +38,6 @@ export class WorkspaceManagerV2App {
       onImportManifest: (file) => {
         void this.importWorkspaceManifest(file);
       },
-      onLoadAsteroids: () => {
-        void this.selectGame("Asteroids");
-      },
       onSeedUat: () => {
         void this.seedTemporaryUatManifest();
       }
