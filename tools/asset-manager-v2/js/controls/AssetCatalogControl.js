@@ -18,6 +18,7 @@ export class AssetCatalogControl {
     this.onSelect = null;
     this.onDelete = null;
     this.onPreviewStatus = null;
+    this.pendingFocusAssetId = "";
     this.previewOptions = {};
     this.lastPreviewError = "";
   }
@@ -39,6 +40,29 @@ export class AssetCatalogControl {
         return;
       }
       this.onSelect?.(button.dataset.assetId);
+    });
+    this.list.addEventListener("keydown", (event) => {
+      if (!["ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp"].includes(event.key)) {
+        return;
+      }
+      const buttons = Array.from(this.list.querySelectorAll("button[data-asset-id]"));
+      if (!buttons.length) {
+        return;
+      }
+      const focusedButton = event.target.closest?.("button[data-asset-id]");
+      const selectedButton = buttons.find((button) => button.closest(".asset-manager-v2__asset-tile")?.classList.contains("is-selected"));
+      const currentButton = focusedButton || selectedButton || buttons[0];
+      const currentIndex = Math.max(0, buttons.indexOf(currentButton));
+      const delta = event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
+      const nextIndex = Math.max(0, Math.min(buttons.length - 1, currentIndex + delta));
+      const nextButton = buttons[nextIndex];
+      event.preventDefault();
+      if (!nextButton || nextButton === currentButton) {
+        currentButton.focus({ preventScroll: true });
+        return;
+      }
+      this.pendingFocusAssetId = nextButton.dataset.assetId || "";
+      this.onSelect?.(this.pendingFocusAssetId);
     });
   }
 
@@ -80,6 +104,17 @@ export class AssetCatalogControl {
       </article>
     `;
     }).join("");
+    this.focusPendingSelection();
+  }
+
+  focusPendingSelection() {
+    if (!this.pendingFocusAssetId) {
+      return;
+    }
+    const button = Array.from(this.list.querySelectorAll("button[data-asset-id]"))
+      .find((candidate) => candidate.dataset.assetId === this.pendingFocusAssetId);
+    this.pendingFocusAssetId = "";
+    button?.focus({ preventScroll: true });
   }
 
   setPreviewOptions(options = {}) {

@@ -429,6 +429,7 @@ export class AssetFormControl {
     this.kindValue = "hex";
     this.pathInput.value = colorAssetPath(this.selectedColorInfo.name);
     this.applyDerivedAssetId(this.selectedColorInfo.name);
+    this.renderColorSwatches();
   }
 
   applyDerivedFileValues() {
@@ -528,6 +529,7 @@ export class AssetFormControl {
       return;
     }
     this.colorSwatchList.innerHTML = swatches.map((swatch, index) => {
+      const isSelected = this.selectedColorInfo?.hex === swatch.hex && this.selectedColorInfo?.name === swatch.name;
       const label = [
         `name: ${swatch.name}`,
         `hex: ${swatch.hex}`,
@@ -536,7 +538,7 @@ export class AssetFormControl {
         ...(swatch.tags.length ? [`tags: ${swatch.tags.join(", ")}`] : [])
       ].join("\n");
       return `
-        <button type="button" data-color-swatch-index="${index}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
+        <button type="button" class="${isSelected ? "is-selected" : ""}" data-color-swatch-index="${index}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}" aria-pressed="${isSelected}">
           <span class="asset-manager-v2__color-swatch" style="background:${escapeHtml(swatch.hex)}"></span>
         </button>
       `;

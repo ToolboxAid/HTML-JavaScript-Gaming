@@ -1162,6 +1162,17 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(tileLayout.tileCount).toBe(4);
       await expect(page.locator("#assetList")).not.toContainText("Path:");
       await expect(page.locator("#assetList")).not.toContainText("Source:");
+      await page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]').focus();
+      await page.keyboard.press("ArrowRight");
+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
+      await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
+      await expect(page.locator('button[data-asset-id="assets.image.background.nebula-background"]')).toBeFocused();
+      await page.keyboard.press("ArrowLeft");
+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
+      await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"]')).toBeVisible();
+      await expect(page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]')).toBeFocused();
 
       const helperPreviewCoverage = await page.evaluate(async () => {
         const { createAssetPreviewModel, renderAssetPreviewHtml } = await import("/tools/asset-manager-v2/js/assetPreviewHelpers.js");
@@ -1370,6 +1381,8 @@ test.describe("Preview Generator V2 baseline", () => {
         buffer: Buffer.from(JSON.stringify(importedPayload))
       });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Imported JSON with 2 validated assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO File availability warning: Missing referenced file for assets\.font\.ui\.vector-battle: assets\/fonts\/vector_battle\.ttf\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO File availability warning: Missing referenced file for assets\.video\.cutscene\.8-mile: assets\/video\/8 mile\.mp4\./);
       await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
       await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.font.ui.vector-battle");
@@ -1529,6 +1542,18 @@ test.describe("Preview Generator V2 baseline", () => {
         { text: "", title: "name: Success Green\nhex: #22C55E\nsymbol: G\nsource: UAT Sample\ntags: success, hud", swatchSize: 35 }
       ]);
       await page.locator('#assetColorSwatchList button[title*="Signal Violet"]').click();
+      const selectedSampleSwatch = await page.locator('#assetColorSwatchList button[title*="Signal Violet"]').evaluate((button) => ({
+        ariaPressed: button.getAttribute("aria-pressed"),
+        buttonBorderColor: getComputedStyle(button).borderTopColor,
+        isSelected: button.classList.contains("is-selected"),
+        swatchBorderColor: getComputedStyle(button.querySelector(".asset-manager-v2__color-swatch")).borderTopColor
+      }));
+      expect(selectedSampleSwatch).toEqual({
+        ariaPressed: "true",
+        buttonBorderColor: "rgb(255, 255, 255)",
+        isSelected: true,
+        swatchBorderColor: "rgb(255, 255, 255)"
+      });
       await expect(page.locator("#assetIdInput")).toHaveValue("");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/signal-violet");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected color validation failed: Color usage is required for color assets\./);

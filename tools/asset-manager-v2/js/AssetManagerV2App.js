@@ -1,4 +1,5 @@
 import { readTemporaryUatSamplePalette } from "./services/TemporaryUatSamplePalette.js";
+import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
 
 const ASSET_MANAGER_TOOL_ID = "asset-manager-v2";
 
@@ -105,12 +106,12 @@ export class AssetManagerV2App {
     this.assetForm.setKinds(this.schemaValidator.allowedTypes);
     this.statusLog.info(`Loaded asset-browser.schema.json. Types: ${this.schemaValidator.allowedTypes.join(", ")}. Kinds: ${this.schemaValidator.allowedKinds.join(", ")}. Roles: ${this.schemaValidator.allowedRoles.join(", ")}.`);
     this.loadPaletteIfPresent();
-    this.loadWorkspaceAssetsIfPresent();
+    await this.loadWorkspaceAssetsIfPresent();
     this.render();
     this.refreshActions();
   }
 
-  loadWorkspaceAssetsIfPresent() {
+  async loadWorkspaceAssetsIfPresent() {
     if (!this.workspaceBridge.isWorkspaceMode()) {
       return;
     }
@@ -129,6 +130,7 @@ export class AssetManagerV2App {
     this.undoStack = [];
     this.redoStack = [];
     this.statusLog.ok(`Workspace mode loaded ${Object.keys(this.assets).length} validated assets from tools.asset-browser.assets.`);
+    await this.logMissingReferencedFiles(this.assets);
   }
 
   loadPaletteIfPresent() {
@@ -472,6 +474,7 @@ export class AssetManagerV2App {
       }
       this.redoStack = [];
       this.statusLog.ok(`Imported JSON with ${Object.keys(this.assets).length} validated assets.`);
+      await this.logMissingReferencedFiles(this.assets);
       this.render();
       this.refreshActions();
     } catch (error) {
@@ -566,6 +569,32 @@ export class AssetManagerV2App {
       return validation;
     }
     return validation;
+  }
+
+  async logMissingReferencedFiles(assets) {
+    const fetchRef = this.window.fetch?.bind(this.window);
+    if (typeof fetchRef !== "function") {
+      return;
+    }
+    for (const [assetId, entry] of sortedAssetEntries(assets)) {
+      const path = String(entry?.path || "").trim();
+      if (!path || entry?.type === "color" || /^[a-z][a-z0-9+.-]*:/i.test(path)) {
+        continue;
+      }
+      const previewModel = createAssetPreviewModel(assetId, entry, this.previewOptions());
+      if (previewModel.previewError || !previewModel.url) {
+        this.statusLog.info(`File availability warning: Missing referenced file for ${assetId}: ${path}.`);
+        continue;
+      }
+      try {
+        const response = await fetchRef(previewModel.url, { cache: "no-store", method: "HEAD" });
+        if (!response.ok) {
+          this.statusLog.info(`File availability warning: Missing referenced file for ${assetId}: ${path}.`);
+        }
+      } catch {
+        this.statusLog.info(`File availability warning: Missing referenced file for ${assetId}: ${path}.`);
+      }
+    }
   }
 
   render() {

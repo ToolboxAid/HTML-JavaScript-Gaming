@@ -443,12 +443,21 @@ textarea:hover {
   padding: 3px;
 }
 
+.asset-manager-v2__color-swatch-list button.is-selected {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #ffffff;
+}
+
 .asset-manager-v2__color-swatch {
   flex: 0 0 auto;
   width: 35px;
   height: 35px;
   border: 1px solid var(--asset-manager-line);
   border-radius: 6px;
+}
+
+.asset-manager-v2__color-swatch-list button.is-selected .asset-manager-v2__color-swatch {
+  border-color: #ffffff;
 }
 
 .asset-manager-v2__file-picker-controls legend {
