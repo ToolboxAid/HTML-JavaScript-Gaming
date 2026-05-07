@@ -2,23 +2,19 @@
 M docs/dev/reports/coverage_changed_js_guardrail.txt
  M docs/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
- M tools/asset-manager-v2/js/AssetManagerV2App.js
  M tools/asset-manager-v2/js/controls/AssetCatalogControl.js
- M tools/asset-manager-v2/styles/assetManager.css
-?? docs/dev/reports/PR_26126_102_asset_manager_v2_keyboard_navigation_notes.md
-?? docs/dev/reports/PR_26126_102_asset_manager_v2_manual_validation_notes.md
-?? docs/dev/reports/PR_26126_102_asset_manager_v2_missing_file_tile_notes.md
+?? docs/dev/reports/PR_26126_103_asset_manager_v2_manual_validation_notes.md
+?? docs/dev/reports/PR_26126_103_asset_manager_v2_scope_cleanup_notes.md
+?? docs/dev/reports/PR_26126_103_asset_manager_v2_wasd_navigation_notes.md
 
 # git ls-files --others --exclude-standard
-docs/dev/reports/PR_26126_102_asset_manager_v2_keyboard_navigation_notes.md
-docs/dev/reports/PR_26126_102_asset_manager_v2_manual_validation_notes.md
-docs/dev/reports/PR_26126_102_asset_manager_v2_missing_file_tile_notes.md
+docs/dev/reports/PR_26126_103_asset_manager_v2_manual_validation_notes.md
+docs/dev/reports/PR_26126_103_asset_manager_v2_scope_cleanup_notes.md
+docs/dev/reports/PR_26126_103_asset_manager_v2_wasd_navigation_notes.md
 
 # git diff --stat
-docs/dev/reports/coverage_changed_js_guardrail.txt |  7 +-
- docs/dev/reports/playwright_v8_coverage_report.txt | 16 ++--
- .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 43 ++++++++++
- tools/asset-manager-v2/js/AssetManagerV2App.js     | 20 ++++-
- .../js/controls/AssetCatalogControl.js             | 93 ++++++++++++++++------
- tools/asset-manager-v2/styles/assetManager.css     |  4 +
- 6 files changed, 138 insertions(+), 45 deletions(-)
+docs/dev/reports/coverage_changed_js_guardrail.txt |  3 +-
+ docs/dev/reports/playwright_v8_coverage_report.txt | 10 ++--
+ .../playwright/PreviewGeneratorV2Baseline.spec.mjs | 54 ++++++++++++----------
+ .../js/controls/AssetCatalogControl.js             | 52 ++++++++++++++-------
+ 4 files changed, 71 insertions(+), 48 deletions(-)

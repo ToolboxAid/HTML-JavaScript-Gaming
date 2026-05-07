@@ -1162,43 +1162,49 @@ test.describe("Preview Generator V2 baseline", () => {
       expect(tileLayout.tileCount).toBe(4);
       await expect(page.locator("#assetList")).not.toContainText("Path:");
       await expect(page.locator("#assetList")).not.toContainText("Source:");
+      await page.locator("#assetList").evaluate((list) => {
+        list.addEventListener("keydown", (event) => {
+          const key = String(event.key || "").toLowerCase();
+          if (["a", "d", "s", "w"].includes(key)) {
+            list.dataset.lastWasdDefaultPrevented = String(event.defaultPrevented);
+          }
+        });
+      });
       await page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]').focus();
-      await page.keyboard.press("ArrowRight");
+      await page.keyboard.press("KeyD");
       await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
       await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
       await expect(page.locator('button[data-asset-id="assets.image.background.nebula-background"]')).toBeFocused();
-      await page.keyboard.press("ArrowLeft");
+      await expect(page.locator("#assetList")).toHaveAttribute("data-last-wasd-default-prevented", "true");
+      await page.keyboard.press("KeyA");
       await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
       await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"]')).toBeVisible();
       await expect(page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]')).toBeFocused();
       await page.locator("#assetList").focus();
-      await page.keyboard.press("ArrowDown");
-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
+      const wasdGridTargets = await page.locator("#assetList").evaluate((list) => {
+        const buttons = Array.from(list.querySelectorAll("button[data-asset-id]"));
+        const selectedIndex = buttons.findIndex((button) => button.closest(".asset-manager-v2__asset-tile")?.classList.contains("is-selected"));
+        const columns = Math.max(1, getComputedStyle(list).gridTemplateColumns.split(" ").filter(Boolean).length);
+        const downIndex = Math.min(buttons.length - 1, selectedIndex + columns);
+        const upIndex = Math.max(0, downIndex - columns);
+        return {
+          columns,
+          downId: buttons[downIndex]?.dataset.assetId || "",
+          upId: buttons[upIndex]?.dataset.assetId || ""
+        };
+      });
+      expect(wasdGridTargets.columns).toBeGreaterThan(1);
+      expect(wasdGridTargets.upId).toBe("assets.audio.sound.fire-boom");
+      await page.keyboard.press("KeyS");
+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", wasdGridTargets.downId);
+      await expect(page.locator("#selectedAssetDetails")).toContainText(wasdGridTargets.downId);
       await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
-      await page.keyboard.press("ArrowUp");
-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
-      await page.locator("#assetList").focus();
-      await page.keyboard.press("End");
-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.sprite.preview");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.sprite.preview");
-      await expect(page.locator('button[data-asset-id="assets.image.sprite.preview"]')).toBeFocused();
-      await page.locator(".asset-manager-v2__asset-tile.is-selected").focus();
-      await page.keyboard.press("Home");
+      await expect(page.locator(`button[data-asset-id="${wasdGridTargets.downId}"]`)).toBeFocused();
+      await page.keyboard.press("KeyW");
       await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
-      await page.locator("#assetList").focus();
-      const beforePageNavigationScroll = await page.evaluate(() => document.scrollingElement?.scrollTop || 0);
-      await page.keyboard.press("PageDown");
-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
-      await page.keyboard.press("PageUp");
-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
-      expect(await page.evaluate(() => document.scrollingElement?.scrollTop || 0)).toBe(beforePageNavigationScroll);
-      await page.locator("#assetList").focus();
-      await page.keyboard.press("Enter");
       await expect(page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]')).toBeFocused();
 
       const helperPreviewCoverage = await page.evaluate(async () => {

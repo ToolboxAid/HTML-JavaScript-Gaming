@@ -89,8 +89,11 @@ export class AssetCatalogControl {
   }
 
   handleKeyboardSelection(event) {
-    const handledKeys = new Set(["ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "End", "Enter", "Home", "PageDown", "PageUp"]);
-    if (!handledKeys.has(event.key)) {
+    if (event.altKey || event.ctrlKey || event.metaKey) {
+      return;
+    }
+    const key = this.normalizeWasdKey(event);
+    if (!key) {
       return;
     }
     const buttons = Array.from(this.list.querySelectorAll("button[data-asset-id]"));
@@ -99,16 +102,11 @@ export class AssetCatalogControl {
     }
     const currentButton = this.currentKeyboardButton(event, buttons);
     const currentIndex = Math.max(0, buttons.indexOf(currentButton));
-    const nextIndex = this.nextKeyboardIndex(event.key, currentIndex, buttons.length);
+    const nextIndex = this.nextKeyboardIndex(key, currentIndex, buttons.length);
     const nextButton = buttons[nextIndex];
     event.preventDefault();
     if (!nextButton) {
       currentButton?.focus({ preventScroll: true });
-      return;
-    }
-    if (event.key === "Enter") {
-      this.pendingFocusAssetId = nextButton.dataset.assetId || "";
-      this.onSelect?.(this.pendingFocusAssetId);
       return;
     }
     if (nextButton === currentButton) {
@@ -117,6 +115,20 @@ export class AssetCatalogControl {
     }
     this.pendingFocusAssetId = nextButton.dataset.assetId || "";
     this.onSelect?.(this.pendingFocusAssetId);
+  }
+
+  normalizeWasdKey(event) {
+    const codeMap = {
+      KeyA: "a",
+      KeyD: "d",
+      KeyS: "s",
+      KeyW: "w"
+    };
+    if (codeMap[event.code]) {
+      return codeMap[event.code];
+    }
+    const key = String(event.key || "").toLowerCase();
+    return ["a", "d", "s", "w"].includes(key) ? key : "";
   }
 
   currentKeyboardButton(event, buttons) {
@@ -135,19 +147,27 @@ export class AssetCatalogControl {
   }
 
   nextKeyboardIndex(key, currentIndex, count) {
-    if (key === "Home") {
-      return 0;
-    }
-    if (key === "End") {
-      return count - 1;
-    }
-    if (key === "ArrowLeft" || key === "ArrowUp" || key === "PageUp") {
+    if (key === "a") {
       return Math.max(0, currentIndex - 1);
     }
-    if (key === "ArrowRight" || key === "ArrowDown" || key === "PageDown") {
+    if (key === "d") {
       return Math.min(count - 1, currentIndex + 1);
     }
+    const columnCount = this.keyboardColumnCount();
+    if (key === "w") {
+      return Math.max(0, currentIndex - columnCount);
+    }
+    if (key === "s") {
+      return Math.min(count - 1, currentIndex + columnCount);
+    }
     return currentIndex;
+  }
+
+  keyboardColumnCount() {
+    const columns = getComputedStyle(this.list).gridTemplateColumns
+      .split(" ")
+      .filter((column) => column && column !== "none").length;
+    return Math.max(1, columns);
   }
 
   focusPendingSelection() {

@@ -1,478 +1,298 @@
 diff --git a/docs/dev/reports/coverage_changed_js_guardrail.txt b/docs/dev/reports/coverage_changed_js_guardrail.txt
-index 1c10999e..d3b17837 100644
+index d3b17837..bb66206a 100644
 --- a/docs/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,12 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
+@@ -7,8 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
 
  Changed runtime JS files considered:
--(88%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 581/581; executed functions 49/56
--(91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 328/328; executed functions 30/33
-+(88%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 593/593; executed functions 49/56
- (92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 531/531; executed functions 55/60
--(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 70/70; executed functions 4/4
--(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 162/162; executed functions 18/18
--(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 276/276; executed functions 25/25
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 202/202; executed functions 22/22
+ (88%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 593/593; executed functions 49/56
+-(92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 531/531; executed functions 55/60
+-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 202/202; executed functions 22/22
++(96%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 220/220; executed functions 24/25
 
  Guardrail warnings:
  (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs/dev/reports/playwright_v8_coverage_report.txt b/docs/dev/reports/playwright_v8_coverage_report.txt
-index a5f3762e..d1699f6a 100644
+index d1699f6a..de489eb0 100644
 --- a/docs/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs/dev/reports/playwright_v8_coverage_report.txt
-@@ -13,19 +13,16 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+@@ -13,7 +13,7 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 
  Exercised tool entry points detected:
  (87%) Preview Generator V2 - exercised 19 runtime JS files
--(92%) Asset Manager V2 - exercised 14 runtime JS files
-+(93%) Asset Manager V2 - exercised 14 runtime JS files
+-(93%) Asset Manager V2 - exercised 14 runtime JS files
++(92%) Asset Manager V2 - exercised 14 runtime JS files
  (49%) Palette Manager V2 - exercised 12 runtime JS files
  (84%) Tool Template V2 - exercised 10 runtime JS files
  (88%) Workspace V2 - exercised 1 runtime JS files
- (0%) Workspace Manager - not exercised by this Playwright run
+@@ -21,8 +21,7 @@ Exercised tool entry points detected:
 
  Changed runtime JS files covered:
--(88%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 581/581; executed functions 49/56
--(91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 328/328; executed functions 30/33
-+(88%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 593/593; executed functions 49/56
- (92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 531/531; executed functions 55/60
--(100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 70/70; executed functions 4/4
--(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 162/162; executed functions 18/18
--(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 276/276; executed functions 25/25
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 202/202; executed functions 22/22
+ (88%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 593/593; executed functions 49/56
+-(92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 531/531; executed functions 55/60
+-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 202/202; executed functions 22/22
++(96%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 220/220; executed functions 24/25
 
  Files with executed line/function counts where available:
  (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
-@@ -130,7 +127,7 @@ Files with executed line/function counts where available:
- (83%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 34/34; executed functions 5/6
- (86%) tools/templates-v2/js/controls/StatusLogControl.js - executed lines 24/24; executed functions 6/7
- (87%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 13/15
--(88%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 581/581; executed functions 49/56
-+(88%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 593/593; executed functions 49/56
- (88%) tools/templates-v2/js/controls/SourceInputControl.js - executed lines 33/33; executed functions 7/8
- (88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
- (90%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 52/58
-@@ -167,7 +164,7 @@ Files with executed line/function counts where available:
+@@ -134,6 +133,7 @@ Files with executed line/function counts where available:
+ (91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 328/328; executed functions 30/33
+ (92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 531/531; executed functions 55/60
+ (92%) tools/templates-v2/js/controls/ToolStarterShellControl.js - executed lines 111/111; executed functions 11/12
++(96%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 220/220; executed functions 24/25
+ (100%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 6/6
+ (100%) samples/phase-01/0102/main.js - executed lines 23/23; executed functions 1/1
+ (100%) samples/phase-01/0103/main.js - executed lines 23/23; executed functions 1/1
+@@ -164,7 +164,6 @@ Files with executed line/function counts where available:
  (100%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 148/148; executed functions 13/13
  (100%) tools/asset-manager-v2/js/bootstrap.js - executed lines 70/70; executed functions 4/4
  (100%) tools/asset-manager-v2/js/controls/ActionNavControl.js - executed lines 54/54; executed functions 8/8
--(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 162/162; executed functions 18/18
-+(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 202/202; executed functions 22/22
+-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 202/202; executed functions 22/22
  (100%) tools/asset-manager-v2/js/controls/InspectorControl.js - executed lines 8/8; executed functions 3/3
  (100%) tools/asset-manager-v2/js/controls/StatusLogControl.js - executed lines 30/30; executed functions 9/9
  (100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 276/276; executed functions 25/25
-@@ -204,8 +201,5 @@ Uncovered or low-coverage changed JS files:
+@@ -201,5 +200,4 @@ Uncovered or low-coverage changed JS files:
  Changed JS files considered:
  (0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
  (88%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
--(91%) tools/asset-manager-v2/js/assetManagerMetadata.js - changed JS file with browser V8 coverage
- (92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - changed JS file with browser V8 coverage
--(100%) tools/asset-manager-v2/js/bootstrap.js - changed JS file with browser V8 coverage
- (100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file with browser V8 coverage
--(100%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - changed JS file with browser V8 coverage
+-(92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - changed JS file with browser V8 coverage
+-(100%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file with browser V8 coverage
++(96%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-index 0c39dd23..1b6c5f7c 100644
+index 1b6c5f7c..f576c039 100644
 --- a/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
 +++ b/tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-@@ -1173,6 +1173,33 @@ test.describe("Preview Generator V2 baseline", () => {
+@@ -1162,43 +1162,49 @@ test.describe("Preview Generator V2 baseline", () => {
+       expect(tileLayout.tileCount).toBe(4);
+       await expect(page.locator("#assetList")).not.toContainText("Path:");
+       await expect(page.locator("#assetList")).not.toContainText("Source:");
++      await page.locator("#assetList").evaluate((list) => {
++        list.addEventListener("keydown", (event) => {
++          const key = String(event.key || "").toLowerCase();
++          if (["a", "d", "s", "w"].includes(key)) {
++            list.dataset.lastWasdDefaultPrevented = String(event.defaultPrevented);
++          }
++        });
++      });
+       await page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]').focus();
+-      await page.keyboard.press("ArrowRight");
++      await page.keyboard.press("KeyD");
+       await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
+       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
+       await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
+       await expect(page.locator('button[data-asset-id="assets.image.background.nebula-background"]')).toBeFocused();
+-      await page.keyboard.press("ArrowLeft");
++      await expect(page.locator("#assetList")).toHaveAttribute("data-last-wasd-default-prevented", "true");
++      await page.keyboard.press("KeyA");
+       await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
        await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
        await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"]')).toBeVisible();
        await expect(page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]')).toBeFocused();
-+      await page.locator("#assetList").focus();
-+      await page.keyboard.press("ArrowDown");
-+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
-+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
-+      await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
-+      await page.keyboard.press("ArrowUp");
-+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
-+      await page.locator("#assetList").focus();
-+      await page.keyboard.press("End");
-+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.sprite.preview");
-+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.sprite.preview");
-+      await expect(page.locator('button[data-asset-id="assets.image.sprite.preview"]')).toBeFocused();
-+      await page.locator(".asset-manager-v2__asset-tile.is-selected").focus();
-+      await page.keyboard.press("Home");
-+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
-+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
-+      await page.locator("#assetList").focus();
-+      const beforePageNavigationScroll = await page.evaluate(() => document.scrollingElement?.scrollTop || 0);
-+      await page.keyboard.press("PageDown");
-+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
-+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
-+      await page.keyboard.press("PageUp");
-+      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
-+      expect(await page.evaluate(() => document.scrollingElement?.scrollTop || 0)).toBe(beforePageNavigationScroll);
-+      await page.locator("#assetList").focus();
-+      await page.keyboard.press("Enter");
-+      await expect(page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]')).toBeFocused();
+       await page.locator("#assetList").focus();
+-      await page.keyboard.press("ArrowDown");
+-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
+-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
++      const wasdGridTargets = await page.locator("#assetList").evaluate((list) => {
++        const buttons = Array.from(list.querySelectorAll("button[data-asset-id]"));
++        const selectedIndex = buttons.findIndex((button) => button.closest(".asset-manager-v2__asset-tile")?.classList.contains("is-selected"));
++        const columns = Math.max(1, getComputedStyle(list).gridTemplateColumns.split(" ").filter(Boolean).length);
++        const downIndex = Math.min(buttons.length - 1, selectedIndex + columns);
++        const upIndex = Math.max(0, downIndex - columns);
++        return {
++          columns,
++          downId: buttons[downIndex]?.dataset.assetId || "",
++          upId: buttons[upIndex]?.dataset.assetId || ""
++        };
++      });
++      expect(wasdGridTargets.columns).toBeGreaterThan(1);
++      expect(wasdGridTargets.upId).toBe("assets.audio.sound.fire-boom");
++      await page.keyboard.press("KeyS");
++      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", wasdGridTargets.downId);
++      await expect(page.locator("#selectedAssetDetails")).toContainText(wasdGridTargets.downId);
+       await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"]')).toBeVisible();
+-      await page.keyboard.press("ArrowUp");
+-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
+-      await page.locator("#assetList").focus();
+-      await page.keyboard.press("End");
+-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.sprite.preview");
+-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.sprite.preview");
+-      await expect(page.locator('button[data-asset-id="assets.image.sprite.preview"]')).toBeFocused();
+-      await page.locator(".asset-manager-v2__asset-tile.is-selected").focus();
+-      await page.keyboard.press("Home");
++      await expect(page.locator(`button[data-asset-id="${wasdGridTargets.downId}"]`)).toBeFocused();
++      await page.keyboard.press("KeyW");
+       await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
+       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire-boom");
+-      await page.locator("#assetList").focus();
+-      const beforePageNavigationScroll = await page.evaluate(() => document.scrollingElement?.scrollTop || 0);
+-      await page.keyboard.press("PageDown");
+-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.image.background.nebula-background");
+-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.image.background.nebula-background");
+-      await page.keyboard.press("PageUp");
+-      await expect(page.locator(".asset-manager-v2__asset-tile.is-selected button[data-asset-id]")).toHaveAttribute("data-asset-id", "assets.audio.sound.fire-boom");
+-      expect(await page.evaluate(() => document.scrollingElement?.scrollTop || 0)).toBe(beforePageNavigationScroll);
+-      await page.locator("#assetList").focus();
+-      await page.keyboard.press("Enter");
+       await expect(page.locator('button[data-asset-id="assets.audio.sound.fire-boom"]')).toBeFocused();
 
        const helperPreviewCoverage = await page.evaluate(async () => {
-         const { createAssetPreviewModel, renderAssetPreviewHtml } = await import("/tools/asset-manager-v2/js/assetPreviewHelpers.js");
-@@ -1383,6 +1410,22 @@ test.describe("Preview Generator V2 baseline", () => {
-       await expect(page.locator("#statusLog")).toHaveValue(/OK Imported JSON with 2 validated assets\./);
-       await expect(page.locator("#statusLog")).toHaveValue(/INFO File availability warning: Missing referenced file for assets\.font\.ui\.vector-battle: assets\/fonts\/vector_battle\.ttf\./);
-       await expect(page.locator("#statusLog")).toHaveValue(/INFO File availability warning: Missing referenced file for assets\.video\.cutscene\.8-mile: assets\/video\/8 mile\.mp4\./);
-+      const missingFileTileState = await page.locator(".asset-manager-v2__asset-tile").evaluateAll((tiles) => Object.fromEntries(tiles.map((tile) => {
-+        const id = tile.querySelector("button[data-asset-id]")?.dataset.assetId || "";
-+        const typeRole = tile.querySelector(".asset-manager-v2__asset-type-role");
-+        return [id, {
-+          isMissingFile: tile.classList.contains("is-missing-file"),
-+          typeRoleColor: getComputedStyle(typeRole).color
-+        }];
-+      })));
-+      expect(missingFileTileState["assets.font.ui.vector-battle"]).toEqual({
-+        isMissingFile: true,
-+        typeRoleColor: "rgb(255, 180, 180)"
-+      });
-+      expect(missingFileTileState["assets.video.cutscene.8-mile"]).toEqual({
-+        isMissingFile: true,
-+        typeRoleColor: "rgb(255, 180, 180)"
-+      });
-       await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
-       await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
-       await expect(page.locator("#selectedAssetDetails")).toContainText("assets.font.ui.vector-battle");
-diff --git a/tools/asset-manager-v2/js/AssetManagerV2App.js b/tools/asset-manager-v2/js/AssetManagerV2App.js
-index 5efbf0b5..5de6f79c 100644
---- a/tools/asset-manager-v2/js/AssetManagerV2App.js
-+++ b/tools/asset-manager-v2/js/AssetManagerV2App.js
-@@ -44,6 +44,7 @@ export class AssetManagerV2App {
-     this.workspaceBridge = workspaceBridge;
-     this.assets = {};
-     this.lastWorkspaceManifest = null;
-+    this.missingFileAssetIds = new Set();
-     this.schemaReady = false;
-     this.selectedAssetId = "";
-     this.redoStack = [];
-@@ -130,7 +131,7 @@ export class AssetManagerV2App {
-     this.undoStack = [];
-     this.redoStack = [];
-     this.statusLog.ok(`Workspace mode loaded ${Object.keys(this.assets).length} validated assets from tools.asset-browser.assets.`);
--    await this.logMissingReferencedFiles(this.assets);
-+    this.missingFileAssetIds = await this.logMissingReferencedFiles(this.assets);
-   }
-
-   loadPaletteIfPresent() {
-@@ -234,6 +235,7 @@ export class AssetManagerV2App {
-
-     this.recordHistory();
-     this.assets = payloadValidation.payload.assets;
-+    this.missingFileAssetIds.delete(formValue.assetId);
-     this.selectedAssetId = formValue.assetId;
-     this.assetForm.clearEditableFields();
-     this.statusLog.ok(`Added ${formValue.assetId}.`);
-@@ -273,6 +275,8 @@ export class AssetManagerV2App {
-
-     this.recordHistory();
-     this.assets = payloadValidation.payload.assets;
-+    this.missingFileAssetIds.delete(this.selectedAssetId);
-+    this.missingFileAssetIds.delete(formValue.assetId);
-     this.selectedAssetId = formValue.assetId;
-     this.assetForm.loadAssetForEdit(formValue.assetId, entryResult.entry);
-     this.statusLog.ok(`Updated ${formValue.assetId}.`);
-@@ -293,6 +297,7 @@ export class AssetManagerV2App {
-     }
-     this.recordHistory();
-     this.assets = sortedAssets(validation.payload.assets);
-+    this.missingFileAssetIds.delete(assetId);
-     this.selectedAssetId = Object.keys(this.assets)[0] || "";
-     if (this.selectedAssetId) {
-       this.assetForm.loadAssetForEdit(this.selectedAssetId, this.assets[this.selectedAssetId]);
-@@ -307,6 +312,7 @@ export class AssetManagerV2App {
-   captureState() {
-     return {
-       assets: clone(this.assets),
-+      missingFileAssetIds: [...this.missingFileAssetIds],
-       selectedAssetId: this.selectedAssetId
-     };
-   }
-@@ -321,6 +327,7 @@ export class AssetManagerV2App {
-
-   restoreState(snapshot) {
-     this.assets = sortedAssets(snapshot.assets || {});
-+    this.missingFileAssetIds = new Set(snapshot.missingFileAssetIds || []);
-     this.selectedAssetId = Object.prototype.hasOwnProperty.call(this.assets, snapshot.selectedAssetId)
-       ? snapshot.selectedAssetId
-       : Object.keys(this.assets)[0] || "";
-@@ -474,7 +481,7 @@ export class AssetManagerV2App {
-       }
-       this.redoStack = [];
-       this.statusLog.ok(`Imported JSON with ${Object.keys(this.assets).length} validated assets.`);
--      await this.logMissingReferencedFiles(this.assets);
-+      this.missingFileAssetIds = await this.logMissingReferencedFiles(this.assets);
-       this.render();
-       this.refreshActions();
-     } catch (error) {
-@@ -572,9 +579,10 @@ export class AssetManagerV2App {
-   }
-
-   async logMissingReferencedFiles(assets) {
-+    const missingFileAssetIds = new Set();
-     const fetchRef = this.window.fetch?.bind(this.window);
-     if (typeof fetchRef !== "function") {
--      return;
-+      return missingFileAssetIds;
-     }
-     for (const [assetId, entry] of sortedAssetEntries(assets)) {
-       const path = String(entry?.path || "").trim();
-@@ -583,23 +591,27 @@ export class AssetManagerV2App {
-       }
-       const previewModel = createAssetPreviewModel(assetId, entry, this.previewOptions());
-       if (previewModel.previewError || !previewModel.url) {
-+        missingFileAssetIds.add(assetId);
-         this.statusLog.info(`File availability warning: Missing referenced file for ${assetId}: ${path}.`);
-         continue;
-       }
-       try {
-         const response = await fetchRef(previewModel.url, { cache: "no-store", method: "HEAD" });
-         if (!response.ok) {
-+          missingFileAssetIds.add(assetId);
-           this.statusLog.info(`File availability warning: Missing referenced file for ${assetId}: ${path}.`);
-         }
-       } catch {
-+        missingFileAssetIds.add(assetId);
-         this.statusLog.info(`File availability warning: Missing referenced file for ${assetId}: ${path}.`);
-       }
-     }
-+    return missingFileAssetIds;
-   }
-
-   render() {
-     this.assetCatalog.setPreviewOptions(this.previewOptions());
--    this.assetCatalog.render(this.currentPayload().assets, this.selectedAssetId);
-+    this.assetCatalog.render(this.currentPayload().assets, this.selectedAssetId, this.missingFileAssetIds);
-     this.inspector.showObject(this.currentOutputSummary());
-   }
-
 diff --git a/tools/asset-manager-v2/js/controls/AssetCatalogControl.js b/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
-index c3aa1867..d7b9c3dd 100644
+index d7b9c3dd..36657c87 100644
 --- a/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
 +++ b/tools/asset-manager-v2/js/controls/AssetCatalogControl.js
-@@ -27,6 +27,7 @@ export class AssetCatalogControl {
-     this.onDelete = onDelete;
-     this.onPreviewStatus = onPreviewStatus;
-     this.onSelect = onSelect;
-+    this.list.tabIndex = 0;
-     this.list.addEventListener("click", (event) => {
-       const deleteControl = event.target.closest("[data-delete-asset-id]");
-       if (deleteControl) {
-@@ -41,32 +42,10 @@ export class AssetCatalogControl {
-       }
-       this.onSelect?.(button.dataset.assetId);
-     });
--    this.list.addEventListener("keydown", (event) => {
--      if (!["ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp"].includes(event.key)) {
--        return;
--      }
--      const buttons = Array.from(this.list.querySelectorAll("button[data-asset-id]"));
--      if (!buttons.length) {
--        return;
--      }
--      const focusedButton = event.target.closest?.("button[data-asset-id]");
--      const selectedButton = buttons.find((button) => button.closest(".asset-manager-v2__asset-tile")?.classList.contains("is-selected"));
--      const currentButton = focusedButton || selectedButton || buttons[0];
--      const currentIndex = Math.max(0, buttons.indexOf(currentButton));
--      const delta = event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
--      const nextIndex = Math.max(0, Math.min(buttons.length - 1, currentIndex + delta));
--      const nextButton = buttons[nextIndex];
--      event.preventDefault();
--      if (!nextButton || nextButton === currentButton) {
--        currentButton.focus({ preventScroll: true });
--        return;
--      }
+@@ -89,8 +89,11 @@ export class AssetCatalogControl {
+   }
+
+   handleKeyboardSelection(event) {
+-    const handledKeys = new Set(["ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "End", "Enter", "Home", "PageDown", "PageUp"]);
+-    if (!handledKeys.has(event.key)) {
++    if (event.altKey || event.ctrlKey || event.metaKey) {
++      return;
++    }
++    const key = this.normalizeWasdKey(event);
++    if (!key) {
+       return;
+     }
+     const buttons = Array.from(this.list.querySelectorAll("button[data-asset-id]"));
+@@ -99,18 +102,13 @@ export class AssetCatalogControl {
+     }
+     const currentButton = this.currentKeyboardButton(event, buttons);
+     const currentIndex = Math.max(0, buttons.indexOf(currentButton));
+-    const nextIndex = this.nextKeyboardIndex(event.key, currentIndex, buttons.length);
++    const nextIndex = this.nextKeyboardIndex(key, currentIndex, buttons.length);
+     const nextButton = buttons[nextIndex];
+     event.preventDefault();
+     if (!nextButton) {
+       currentButton?.focus({ preventScroll: true });
+       return;
+     }
+-    if (event.key === "Enter") {
 -      this.pendingFocusAssetId = nextButton.dataset.assetId || "";
 -      this.onSelect?.(this.pendingFocusAssetId);
--    });
-+    this.list.addEventListener("keydown", (event) => this.handleKeyboardSelection(event));
+-      return;
+-    }
+     if (nextButton === currentButton) {
+       nextButton.focus({ preventScroll: true });
+       return;
+@@ -119,6 +117,20 @@ export class AssetCatalogControl {
+     this.onSelect?.(this.pendingFocusAssetId);
    }
 
--  render(assets, selectedAssetId) {
-+  render(assets, selectedAssetId, missingFileAssetIds = new Set()) {
-     const entries = this.sortedEntries(assets);
-     this.countText.textContent = `${entries.length} assets`;
-     if (!entries.length) {
-@@ -85,6 +64,8 @@ export class AssetCatalogControl {
-     this.reportPreviewStatus(previewModel);
-
-     this.list.innerHTML = entries.map(([assetId, entry]) => {
-+      const isSelected = assetId === selectedAssetId;
-+      const isMissingFile = missingFileAssetIds.has(assetId);
-       const detailTooltip = [
-         `id: ${assetId}`,
-         `type: ${entry.type || ""}`,
-@@ -93,7 +74,7 @@ export class AssetCatalogControl {
-         `path: ${entry.path || ""}`
-       ].join("\n");
-       return `
--      <article class="asset-manager-v2__asset-tile ${assetId === selectedAssetId ? "is-selected" : ""}" title="${escapeHtml(detailTooltip)}">
-+      <article class="asset-manager-v2__asset-tile ${isSelected ? "is-selected" : ""} ${isMissingFile ? "is-missing-file" : ""}" data-asset-tile-id="${escapeHtml(assetId)}" tabindex="${isSelected ? "0" : "-1"}" title="${escapeHtml(detailTooltip)}">
-         <button type="button" data-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-select">
-           <span data-delete-asset-id="${escapeHtml(assetId)}" class="asset-manager-v2__asset-delete" aria-label="Delete ${escapeHtml(assetId)}" title="Delete ${escapeHtml(assetId)}">X</span>
-           <span class="asset-manager-v2__asset-copy">
-@@ -107,6 +88,68 @@ export class AssetCatalogControl {
-     this.focusPendingSelection();
++  normalizeWasdKey(event) {
++    const codeMap = {
++      KeyA: "a",
++      KeyD: "d",
++      KeyS: "s",
++      KeyW: "w"
++    };
++    if (codeMap[event.code]) {
++      return codeMap[event.code];
++    }
++    const key = String(event.key || "").toLowerCase();
++    return ["a", "d", "s", "w"].includes(key) ? key : "";
++  }
++
+   currentKeyboardButton(event, buttons) {
+     const focusedButton = event.target.closest?.("button[data-asset-id]");
+     if (focusedButton && buttons.includes(focusedButton)) {
+@@ -135,21 +147,29 @@ export class AssetCatalogControl {
    }
 
-+  handleKeyboardSelection(event) {
-+    const handledKeys = new Set(["ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "End", "Enter", "Home", "PageDown", "PageUp"]);
-+    if (!handledKeys.has(event.key)) {
-+      return;
+   nextKeyboardIndex(key, currentIndex, count) {
+-    if (key === "Home") {
+-      return 0;
+-    }
+-    if (key === "End") {
+-      return count - 1;
+-    }
+-    if (key === "ArrowLeft" || key === "ArrowUp" || key === "PageUp") {
++    if (key === "a") {
+       return Math.max(0, currentIndex - 1);
+     }
+-    if (key === "ArrowRight" || key === "ArrowDown" || key === "PageDown") {
++    if (key === "d") {
+       return Math.min(count - 1, currentIndex + 1);
+     }
++    const columnCount = this.keyboardColumnCount();
++    if (key === "w") {
++      return Math.max(0, currentIndex - columnCount);
 +    }
-+    const buttons = Array.from(this.list.querySelectorAll("button[data-asset-id]"));
-+    if (!buttons.length) {
-+      return;
++    if (key === "s") {
++      return Math.min(count - 1, currentIndex + columnCount);
 +    }
-+    const currentButton = this.currentKeyboardButton(event, buttons);
-+    const currentIndex = Math.max(0, buttons.indexOf(currentButton));
-+    const nextIndex = this.nextKeyboardIndex(event.key, currentIndex, buttons.length);
-+    const nextButton = buttons[nextIndex];
-+    event.preventDefault();
-+    if (!nextButton) {
-+      currentButton?.focus({ preventScroll: true });
-+      return;
-+    }
-+    if (event.key === "Enter") {
-+      this.pendingFocusAssetId = nextButton.dataset.assetId || "";
-+      this.onSelect?.(this.pendingFocusAssetId);
-+      return;
-+    }
-+    if (nextButton === currentButton) {
-+      nextButton.focus({ preventScroll: true });
-+      return;
-+    }
-+    this.pendingFocusAssetId = nextButton.dataset.assetId || "";
-+    this.onSelect?.(this.pendingFocusAssetId);
-+  }
-+
-+  currentKeyboardButton(event, buttons) {
-+    const focusedButton = event.target.closest?.("button[data-asset-id]");
-+    if (focusedButton && buttons.includes(focusedButton)) {
-+      return focusedButton;
-+    }
-+    const focusedTile = event.target.closest?.("[data-asset-tile-id]");
-+    if (focusedTile) {
-+      const tileButton = buttons.find((button) => button.dataset.assetId === focusedTile.dataset.assetTileId);
-+      if (tileButton) {
-+        return tileButton;
-+      }
-+    }
-+    return buttons.find((button) => button.closest(".asset-manager-v2__asset-tile")?.classList.contains("is-selected")) || buttons[0];
-+  }
-+
-+  nextKeyboardIndex(key, currentIndex, count) {
-+    if (key === "Home") {
-+      return 0;
-+    }
-+    if (key === "End") {
-+      return count - 1;
-+    }
-+    if (key === "ArrowLeft" || key === "ArrowUp" || key === "PageUp") {
-+      return Math.max(0, currentIndex - 1);
-+    }
-+    if (key === "ArrowRight" || key === "ArrowDown" || key === "PageDown") {
-+      return Math.min(count - 1, currentIndex + 1);
-+    }
-+    return currentIndex;
+     return currentIndex;
+   }
+
++  keyboardColumnCount() {
++    const columns = getComputedStyle(this.list).gridTemplateColumns
++      .split(" ")
++      .filter((column) => column && column !== "none").length;
++    return Math.max(1, columns);
 +  }
 +
    focusPendingSelection() {
      if (!this.pendingFocusAssetId) {
        return;
-diff --git a/tools/asset-manager-v2/styles/assetManager.css b/tools/asset-manager-v2/styles/assetManager.css
-index 911d1807..a2d22e72 100644
---- a/tools/asset-manager-v2/styles/assetManager.css
-+++ b/tools/asset-manager-v2/styles/assetManager.css
-@@ -561,6 +561,10 @@ textarea:hover {
-   border-color: var(--asset-manager-accent);
- }
-
-+.asset-manager-v2__asset-tile.is-missing-file .asset-manager-v2__asset-type-role {
-+  color: var(--asset-manager-danger);
-+}
-+
- .asset-manager-v2__asset-select {
-   position: relative;
-   width: 100%;
-diff --git a/docs/dev/reports/PR_26126_102_asset_manager_v2_keyboard_navigation_notes.md b/docs/dev/reports/PR_26126_102_asset_manager_v2_keyboard_navigation_notes.md
+diff --git a/docs/dev/reports/PR_26126_103_asset_manager_v2_manual_validation_notes.md b/docs/dev/reports/PR_26126_103_asset_manager_v2_manual_validation_notes.md
 new file mode 100644
-index 00000000..60e7edab
+index 00000000..c7acab91
 --- /dev/null
-+++ b/docs/dev/reports/PR_26126_102_asset_manager_v2_keyboard_navigation_notes.md
-@@ -0,0 +1,26 @@
-+# PR_26126_102 Asset Manager V2 Keyboard Navigation Notes
-+
-+## Navigation Model
-+- The Assets list is focusable.
-+- The selected asset tile container is focusable.
-+- Tile buttons remain focusable and clickable.
-+- All handled keyboard navigation prevents default scrolling.
-+
-+## Keys
-+- ArrowLeft and ArrowUp select the previous rendered tile.
-+- ArrowRight and ArrowDown select the next rendered tile.
-+- PageUp selects the previous rendered tile.
-+- PageDown selects the next rendered tile.
-+- Home selects the first rendered tile.
-+- End selects the last rendered tile.
-+- Enter focuses/selects the current selected tile when the Assets list is focused.
-+
-+## Selection Updates
-+- Keyboard selection uses the same render path as mouse selection.
-+- Selected tile styling, Selected Asset Detail, preview, and focus update together.
-+
-+## Validation
-+- Playwright validates arrow navigation from a tile button and from the Assets list.
-+- Playwright validates Home from the selected tile container.
-+- Playwright validates PageUp/PageDown prevent page scroll while changing selection.
-+- Playwright validates Enter from the Assets list restores focus to the selected tile.
-diff --git a/docs/dev/reports/PR_26126_102_asset_manager_v2_manual_validation_notes.md b/docs/dev/reports/PR_26126_102_asset_manager_v2_manual_validation_notes.md
-new file mode 100644
-index 00000000..569a3cff
---- /dev/null
-+++ b/docs/dev/reports/PR_26126_102_asset_manager_v2_manual_validation_notes.md
-@@ -0,0 +1,23 @@
-+# PR_26126_102 Asset Manager V2 Manual Validation Notes
++++ b/docs/dev/reports/PR_26126_103_asset_manager_v2_manual_validation_notes.md
+@@ -0,0 +1,16 @@
++# PR_26126_103 Manual Validation Notes
 +
 +## Commands
 +- `node --check tools/asset-manager-v2/js/controls/AssetCatalogControl.js`
-+- `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
 +- `node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
-+- `git diff --check`
 +- `npm run test:workspace-v2`
++- `git diff --check`
 +
 +## Results
-+- JavaScript syntax checks passed for changed runtime and Playwright files.
-+- Required workspace-v2 Playwright gate passed: 12 tests passed.
-+- `git diff --check` passed with no whitespace errors.
-+- `docs/dev/reports/playwright_v8_coverage_report.txt` was regenerated by the required workspace-v2 validation run.
-+
-+## Manual Checks Covered By Tests
-+- Missing referenced files remain Status warnings with asset ID and path.
-+- Missing referenced files do not fail otherwise valid imported JSON.
-+- Missing file asset tiles render red `type:role` text.
-+- Arrow keys work from a focused tile button and the Assets list.
-+- Home, End, PageUp, PageDown, and Enter fallback navigation works where appropriate.
-+- Keyboard selection updates selected tile styling, Selected Asset Detail, preview, and focus.
-+- Sample JSON files were not modified.
-diff --git a/docs/dev/reports/PR_26126_102_asset_manager_v2_missing_file_tile_notes.md b/docs/dev/reports/PR_26126_102_asset_manager_v2_missing_file_tile_notes.md
++- `npm run test:workspace-v2` passed 12/12 Playwright tests.
++- Asset Manager V2 tool-mode validation covers WASD tile navigation from selected tile focus and Assets list focus.
++- Selection, Selected Asset Detail, and preview update after WASD navigation.
++- WASD handled key events are verified as default-prevented.
++- Arrow/Home/Page/Enter asset navigation handling was removed from Asset Manager V2.
++- Missing-file tile and Status warning behavior remains covered.
++- No sample JSON was modified.
+diff --git a/docs/dev/reports/PR_26126_103_asset_manager_v2_scope_cleanup_notes.md b/docs/dev/reports/PR_26126_103_asset_manager_v2_scope_cleanup_notes.md
 new file mode 100644
-index 00000000..5d86e6c4
+index 00000000..3d85d80f
 --- /dev/null
-+++ b/docs/dev/reports/PR_26126_102_asset_manager_v2_missing_file_tile_notes.md
-@@ -0,0 +1,16 @@
-+# PR_26126_102 Asset Manager V2 Missing File Tile Notes
++++ b/docs/dev/reports/PR_26126_103_asset_manager_v2_scope_cleanup_notes.md
+@@ -0,0 +1,12 @@
++# PR_26126_103 Scope Cleanup Notes
 +
-+## Missing File State
-+- Asset Manager V2 keeps a session-level set of asset IDs whose referenced files are unavailable.
-+- Missing-file detection still runs after valid Workspace V2 asset load and NAV Import JSON.
-+- Missing-file detection continues to log Status warnings with asset ID and original path.
-+- Valid schema payloads are not rejected solely because a referenced file is unavailable.
++## PreviewGeneratorV2Baseline Review
++- `tests/playwright/PreviewGeneratorV2Baseline.spec.mjs` was changed in PR_26126_101 and PR_26126_102 to cover Asset Manager V2 asset tile keyboard selection and missing-file tile warnings.
++- The file is still the exact test target for `npm run test:workspace-v2`, so Asset Manager V2 validation remains in this spec for the current repository test layout.
++- No Preview Generator V2 runtime dependency requires this file to stay changed. The remaining changes are limited to the Asset Manager V2 sections of the workspace-v2 baseline validation.
 +
-+## Tile Display
-+- Missing file asset tiles receive `is-missing-file`.
-+- The tile `type:role` text uses `--asset-manager-danger`, rendering as red.
-+- Tile ID text, tooltip details, Selected Asset Detail, and Output Summary remain unchanged.
++## Cleanup Applied
++- Removed the prior ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Home, End, PageUp, PageDown, and Enter asset navigation expectations.
++- Replaced them with WASD-only Asset Manager V2 navigation coverage.
++- Kept the missing-file tile assertions because they validate Asset Manager V2 behavior from PR_26126_102 and are not Preview Generator behavior.
++- Did not modify sample JSON.
+diff --git a/docs/dev/reports/PR_26126_103_asset_manager_v2_wasd_navigation_notes.md b/docs/dev/reports/PR_26126_103_asset_manager_v2_wasd_navigation_notes.md
+new file mode 100644
+index 00000000..da7dbf7a
+--- /dev/null
++++ b/docs/dev/reports/PR_26126_103_asset_manager_v2_wasd_navigation_notes.md
+@@ -0,0 +1,17 @@
++# PR_26126_103 WASD Navigation Notes
 +
-+## Validation
-+- Playwright validates imported missing file assets log Status warnings.
-+- Playwright validates imported missing file asset tiles render red `type:role` text.
++## Behavior
++- Asset tile keyboard selection now handles only W, A, S, and D.
++- A selects the previous asset in sorted tile order.
++- D selects the next asset in sorted tile order.
++- W moves to the previous row using the current rendered grid column count.
++- S moves to the next row using the current rendered grid column count.
++
++## Focus And Sync
++- WASD works when focus is on the Assets list or on the currently selected asset tile/button.
++- Handled WASD key events call `preventDefault()`.
++- Selection updates continue to flow through the existing Asset Manager V2 select callback, keeping the selected tile, Selected Asset Detail, and preview synchronized.
++
++## Removed Navigation
++- Asset tile navigation no longer handles ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Home, End, PageUp, PageDown, or Enter.
++- Accordion Enter/Space handling remains unchanged because it is unrelated to asset tile navigation.
