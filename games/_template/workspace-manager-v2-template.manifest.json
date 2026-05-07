@@ -1,0 +1,42 @@
+{
+  "$schema": "tools/schemas/workspace.manifest.schema.json",
+  "documentKind": "workspace-manifest",
+  "schema": "html-js-gaming.project",
+  "version": 1,
+  "id": "workspace-manager-v2-template",
+  "name": "Workspace Manager V2 Template",
+  "gameId": "_template",
+  "gameRoot": "games/_template/",
+  "assetsPath": "games/_template/assets",
+  "tools": {
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
+      "version": 1,
+      "id": "palette._template.default",
+      "name": "_template Palette",
+      "source": "manifest",
+      "swatches": [
+        {
+          "symbol": "0",
+          "hex": "#F8FAFC",
+          "name": "Template Light"
+        },
+        {
+          "symbol": "1",
+          "hex": "#0F172A",
+          "name": "Template Dark"
+        }
+      ]
+    },
+    "asset-manager-v2": {
+      "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+      "schema": "html-js-gaming.asset-manager-v2",
+      "version": 1,
+      "id": "asset-manager-v2._template.registry",
+      "name": "_template Asset Manager V2 Registry",
+      "source": "manifest",
+      "assets": {}
+    }
+  }
+}

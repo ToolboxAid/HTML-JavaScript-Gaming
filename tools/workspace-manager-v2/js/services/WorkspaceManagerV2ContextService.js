@@ -2,11 +2,22 @@ const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
+const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
+  Object.freeze({
+    id: "templates-v2",
+    name: "First-Class Tool Starter V2",
+    path: "../templates-v2/index.html"
+  }),
   Object.freeze({
     id: "asset-manager-v2",
     name: "Asset Manager V2",
     path: "../asset-manager-v2/index.html"
+  }),
+  Object.freeze({
+    id: "workspace-manager-v2",
+    name: "Workspace Manager V2",
+    path: "../workspace-manager-v2/index.html"
   }),
   Object.freeze({
     id: "palette-manager-v2",
@@ -19,22 +30,6 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     path: "../preview-generator-v2/index.html"
   })
 ]);
-
-const TEMPORARY_UAT_SAMPLE_PALETTE = Object.freeze({
-  "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
-  schema: "html-js-gaming.palette",
-  version: 1,
-  id: "workspace-manager-v2-uat-sample",
-  name: "Workspace Manager V2 UAT Sample Palette",
-  source: "Workspace Manager V2 temporary UAT sample",
-  sourceId: "?workspace=UAT",
-  locked: true,
-  swatches: Object.freeze([
-    Object.freeze({ symbol: "V", hex: "#7C3AED", name: "Signal Violet!", source: "UAT Sample", tags: Object.freeze(["ui", "accent"]) }),
-    Object.freeze({ symbol: "G", hex: "#22C55E", name: "Success Green", source: "UAT Sample", tags: Object.freeze(["success", "hud"]) }),
-    Object.freeze({ symbol: "A", hex: "#F59E0B", name: "Alert Amber", source: "UAT Sample", tags: Object.freeze(["warning", "hud"]) })
-  ])
-});
 
 const GAME_OPTIONS = Object.freeze([
   Object.freeze({
@@ -242,31 +237,6 @@ export class WorkspaceManagerV2ContextService {
     return String(params.get("workspace") || "").trim().toUpperCase() === "UAT";
   }
 
-  temporaryUatManifest() {
-    return {
-      "$schema": "tools/schemas/workspace.manifest.schema.json",
-      documentKind: "workspace-manifest",
-      schema: "html-js-gaming.project",
-      version: 1,
-      id: "workspace-manager-v2-UAT-Asteroids",
-      name: "Workspace Manager V2 UAT Context",
-      gameId: "Asteroids",
-      gameRoot: "games/Asteroids/",
-      assetsPath: "games/Asteroids/assets",
-      tools: {
-        [PALETTE_MANAGER_V2_TOOL_KEY]: clone(TEMPORARY_UAT_SAMPLE_PALETTE),
-        [ASSET_MANAGER_V2_TOOL_KEY]: {
-          "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
-          schema: "html-js-gaming.asset-manager-v2",
-          version: 1,
-          name: "Asset Manager V2 UAT Registry",
-          source: "workspace-manager-v2",
-          assets: {}
-        }
-      }
-    };
-  }
-
   async buildContextForGame(gameId) {
     const game = this.games().find((entry) => entry.id === gameId);
     if (!game) {
@@ -288,7 +258,11 @@ export class WorkspaceManagerV2ContextService {
   }
 
   async buildTemporaryUatContext() {
-    return this.buildContextFromManifest(this.temporaryUatManifest(), "?workspace=UAT");
+    const manifestResult = await this.fetchWorkspaceManifest(TEMPORARY_UAT_MANIFEST_PATH);
+    if (!manifestResult.ok) {
+      return manifestResult;
+    }
+    return this.buildContextFromManifest(manifestResult.manifest, TEMPORARY_UAT_MANIFEST_PATH);
   }
 
   async restorePersistedContext() {
@@ -457,21 +431,28 @@ export class WorkspaceManagerV2ContextService {
   }
 
   async fetchGameManifest(game) {
+    const manifestResult = await this.fetchWorkspaceManifest(game.manifestPath);
+    return manifestResult.ok
+      ? { ...manifestResult, manifestPath: game.manifestPath }
+      : manifestResult;
+  }
+
+  async fetchWorkspaceManifest(manifestPath) {
     if (typeof this.fetchRef !== "function") {
-      return { ok: false, message: "Fetch API is unavailable; Workspace Manager V2 cannot load game manifests." };
+      return { ok: false, message: "Fetch API is unavailable; Workspace Manager V2 cannot load workspace manifests." };
     }
     try {
-      const response = await this.fetchRef(game.manifestPath, { cache: "no-store" });
+      const response = await this.fetchRef(manifestPath, { cache: "no-store" });
       if (!response.ok) {
-        return { ok: false, message: `Unable to load ${game.manifestPath}: ${response.status}` };
+        return { ok: false, message: `Unable to load ${manifestPath}: ${response.status}` };
       }
       const manifest = await response.json();
       if (!isPlainObject(manifest)) {
-        return { ok: false, message: `${game.manifestPath} did not return a manifest object.` };
+        return { ok: false, message: `${manifestPath} did not return a manifest object.` };
       }
       return { ok: true, manifest };
     } catch (error) {
-      return { ok: false, message: `Unable to load ${game.manifestPath}: ${error.message}` };
+      return { ok: false, message: `Unable to load ${manifestPath}: ${error.message}` };
     }
   }
 
@@ -497,6 +478,10 @@ export class WorkspaceManagerV2ContextService {
       return "";
     }
     const url = new URL(tool.path, this.location.href);
+    if (tool.id === "workspace-manager-v2") {
+      url.searchParams.set("hostContextId", hostContextId);
+      return url.href;
+    }
     url.searchParams.set("launch", "workspace");
     url.searchParams.set("fromTool", "workspace-manager-v2");
     url.searchParams.set("hostContextId", hostContextId);

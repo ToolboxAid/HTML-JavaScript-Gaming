@@ -239,6 +239,6 @@ export class WorkspaceManagerV2App {
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }
-    this.statusLog.ok(`Seeded temporary UAT Workspace Manager V2 manifest ${result.context.id}.`);
+    this.statusLog.ok(`Loaded UAT Workspace Manager V2 manifest ${result.context.id} from /games/_template/workspace-manager-v2-UAT.manifest.json.`);
   }
 }

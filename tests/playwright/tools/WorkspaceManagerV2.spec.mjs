@@ -140,7 +140,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#seedUatManifestButton")).toBeHidden();
       await expect(page.locator("#loadAsteroidsButton")).toHaveText("Load Asteroids");
       await expect(page.locator("#launchAssetManagerV2Button")).toHaveCount(0);
-      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(3);
+      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(5);
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
       await expect(page.locator("#activeGameSelect option")).toHaveText([
         "Select a game",
@@ -170,13 +170,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"workspaceMetadata"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText("samples/");
       await expect(page.locator("#exportManifestButton")).toBeEnabled();
+      const templateTile = page.locator('[data-workspace-tool-id="templates-v2"]');
       const assetTile = page.locator('[data-workspace-tool-id="asset-manager-v2"]');
+      const workspaceTile = page.locator('[data-workspace-tool-id="workspace-manager-v2"]');
       const paletteTile = page.locator('[data-workspace-tool-id="palette-manager-v2"]');
       const previewTile = page.locator('[data-workspace-tool-id="preview-generator-v2"]');
+      await expect(templateTile).toBeEnabled();
+      await expect(templateTile).toContainText("First-Class Tool Starter V2");
+      await expect(templateTile).toContainText("Canonical V2 template");
       await expect(assetTile).toBeEnabled();
       await expect(assetTile).toContainText("Asset Manager V2");
       await expect(assetTile).toContainText("Ready to launch");
       await expect(assetTile).toContainText("13 managed assets");
+      await expect(workspaceTile).toContainText("Workspace Manager V2");
+      await expect(workspaceTile).toContainText("Active workspace surface");
       await expect(paletteTile).toContainText("11 palette swatches");
       await expect(previewTile).toContainText("Schema-valid manifest");
       const tileLayout = await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.map((tile) => ({
@@ -184,6 +191,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         width: Math.round(tile.getBoundingClientRect().width)
       })));
       expect(tileLayout).toEqual([
+        { height: 118, width: 180 },
+        { height: 118, width: 180 },
         { height: 118, width: 180 },
         { height: 118, width: 180 },
         { height: 118, width: 180 }
@@ -324,6 +333,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#exportManifestButton")).toBeEnabled();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Restored Asteroids workspace from session context workspace-manager-v2-/);
 
+      await page.locator('[data-workspace-tool-id="templates-v2"]').click();
+      await expect(page).toHaveURL(/templates-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
+      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
+      await expect(page.locator('[data-launch-mode-nav="workspace"]').getByRole("button")).toHaveText(["Return to Workspace"]);
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await page.locator('[data-workspace-tool-id="workspace-manager-v2"]').click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
       await page.locator('[data-workspace-tool-id="palette-manager-v2"]').click();
       await expect(page).toHaveURL(/palette-manager-v2\/index\.html.*launch=workspace/);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
@@ -442,6 +461,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
   test("owns temporary UAT manifest seeding and launches Asset Manager V2 through session context", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page, "?workspace=uat");
     const pageErrors = [];
+    const uatManifest = JSON.parse(await readFile("games/_template/workspace-manager-v2-UAT.manifest.json", "utf8"));
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);
@@ -451,14 +471,22 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#seedUatManifestButton")).toBeVisible();
       await expect(page.locator("#exportManifestButton")).toBeDisabled();
       await page.locator("#seedUatManifestButton").click();
+      const uatManifestValidation = await page.evaluate(async (manifest) => {
+        const { WorkspaceManagerV2ContextService } = await import("/tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
+        return new WorkspaceManagerV2ContextService().validateGeneratedManifest(manifest);
+      }, uatManifest);
+      expect(uatManifestValidation).toEqual({ ok: true });
       await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
       await expect(page.locator("#activePaletteSummary")).toContainText("Workspace Manager V2 UAT Sample Palette has 3 active colors.");
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 0 managed assets.");
+      await expect(page.locator('[data-workspace-tool-id="templates-v2"]')).toContainText("Canonical V2 template");
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("0 managed assets");
+      await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toContainText("Active workspace surface");
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("3 palette swatches");
+      await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Schema-valid manifest");
       await expect(page.locator("#workspaceContextOutput")).toContainText('"id": "workspace-manager-v2-UAT-Asteroids"');
-      await expect(page.locator("#workspaceContextOutput")).toContainText('"sourceId": "?workspace=UAT"');
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Seeded temporary UAT Workspace Manager V2 manifest workspace-manager-v2-UAT-Asteroids\./);
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"sourceId": "games/_template/workspace-manager-v2-UAT.manifest.json"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded UAT Workspace Manager V2 manifest workspace-manager-v2-UAT-Asteroids from \/games\/_template\/workspace-manager-v2-UAT\.manifest\.json\./);
 
       await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);

@@ -1006,7 +1006,7 @@ test.describe("Asset Manager V2", () => {
         assetsPath: "games/Asteroids/assets",
         gameRoot: "games/Asteroids/",
         ok: true,
-        sourceId: "?workspace=UAT",
+        sourceId: "games/_template/workspace-manager-v2-UAT.manifest.json",
         swatchCount: 3
       });
 
@@ -1243,7 +1243,7 @@ test.describe("Asset Manager V2", () => {
     });
 
     try {
-      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(3);
+      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(5);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');

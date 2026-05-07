@@ -29,6 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const app = new ToolStarterApp({
     accordions,
     actionNav: new ActionNavControl({
+      returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
       toolCopyJsonButton: requireElement("#toolCopyJsonButton"),
       toolExportButton: requireElement("#toolExportButton"),
       toolExportToolStateButton: requireElement("#toolExportToolStateButton"),

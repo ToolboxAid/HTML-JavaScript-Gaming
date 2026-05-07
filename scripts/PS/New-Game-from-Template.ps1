@@ -119,6 +119,35 @@ function Write-JsonFile {
     [System.IO.File]::WriteAllText($Path, $json + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
 }
 
+function ConvertTo-WorkspaceManifestForGame {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$TemplateManifest,
+        [Parameter(Mandatory = $true)]
+        [string]$GameId,
+        [Parameter(Mandatory = $true)]
+        [string]$GameName
+    )
+
+    $manifest = $TemplateManifest | ConvertTo-Json -Depth 40 | ConvertFrom-Json
+    $manifest.id = "workspace-manager-v2-$GameId"
+    $manifest.name = "$GameName Workspace Manager V2 Context"
+    $manifest.gameId = $GameId
+    $manifest.gameRoot = "games/$GameId/"
+    $manifest.assetsPath = "games/$GameId/assets"
+
+    if ($null -ne $manifest.tools.'palette-manager-v2') {
+        $manifest.tools.'palette-manager-v2'.id = "palette.$GameId.default"
+        $manifest.tools.'palette-manager-v2'.name = "$GameName Palette"
+    }
+    if ($null -ne $manifest.tools.'asset-manager-v2') {
+        $manifest.tools.'asset-manager-v2'.id = "asset-manager-v2.$GameId.registry"
+        $manifest.tools.'asset-manager-v2'.name = "$GameName Asset Manager V2 Registry"
+    }
+
+    return $manifest
+}
+
 function New-EmptyAssetRefs {
     return [ordered]@{
         assetIds = @()
@@ -218,6 +247,25 @@ Ensure-Directory -Path $targetGamePath
 
 Get-ChildItem -LiteralPath $TemplatePath -Force | ForEach-Object {
     Copy-Item -LiteralPath $_.FullName -Destination $targetGamePath -Recurse -Force
+}
+
+$workspaceManifestTemplatePath = Join-Path $TemplatePath "workspace-manager-v2-template.manifest.json"
+if (-not (Test-Path -LiteralPath $workspaceManifestTemplatePath)) {
+    throw "Workspace Manager V2 template manifest not found: $workspaceManifestTemplatePath"
+}
+$workspaceManifestTemplate = Get-Content -LiteralPath $workspaceManifestTemplatePath -Raw | ConvertFrom-Json
+$gameManifestPath = Join-Path $targetGamePath "game.manifest.json"
+$generatedWorkspaceManifest = ConvertTo-WorkspaceManifestForGame -TemplateManifest $workspaceManifestTemplate -GameId $normalizedGameId -GameName $DisplayName
+Write-JsonFile -Value $generatedWorkspaceManifest -Path $gameManifestPath
+$templateOnlyManifestFiles = @(
+    "workspace-manager-v2-template.manifest.json",
+    "workspace-manager-v2-UAT.manifest.json"
+)
+foreach ($templateOnlyManifestFile in $templateOnlyManifestFiles) {
+    $copiedTemplateOnlyManifestPath = Join-Path $targetGamePath $templateOnlyManifestFile
+    if (Test-Path -LiteralPath $copiedTemplateOnlyManifestPath) {
+        Remove-Item -LiteralPath $copiedTemplateOnlyManifestPath
+    }
 }
 
 $assetsRoot = Join-Path $targetGamePath "assets"
@@ -329,6 +377,7 @@ $requiredPaths = @(
     (Join-Path $assetsRoot "tilemaps\data"),
     (Join-Path $assetsRoot "parallax\data"),
     (Join-Path $assetsRoot "vectors\data"),
+    $gameManifestPath,
     $manifestPath,
     $projectManifestPath
 )
@@ -341,5 +390,6 @@ if ($missing.Count -gt 0) {
 Write-Host "Created game scaffold: $normalizedGameId"
 Write-Host "Template source: $TemplatePath"
 Write-Host "Game path: $targetGamePath"
+Write-Host "Game manifest: $gameManifestPath"
 Write-Host "Asset manifest: $manifestPath"
 Write-Host "Tool project scaffold: $projectManifestPath"
