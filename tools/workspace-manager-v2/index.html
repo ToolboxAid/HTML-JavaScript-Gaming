@@ -65,30 +65,7 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="workspaceToolsContent" class="accordion-v2__content">
-            <div id="workspaceToolTiles" class="workspace-manager-v2__tool-grid" aria-label="Workspace launchable tools"></div>
-          </div>
-        </section>
-
-        <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--context is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="workspaceContextContent">
-            <span>Workspace Context</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="workspaceContextContent" class="accordion-v2__content">
-            <div class="workspace-manager-v2__summary-grid" aria-label="Active workspace context summary">
-              <section class="workspace-manager-v2__summary-card" aria-label="Active palette summary">
-                <h2>Active Palette</h2>
-                <p id="activePaletteSummary">No active palette selected.</p>
-              </section>
-              <section class="workspace-manager-v2__summary-card" aria-label="Active asset registry summary">
-                <h2>Asset Registry</h2>
-                <p id="activeAssetRegistrySummary">No asset registry context created.</p>
-              </section>
-              <section class="workspace-manager-v2__summary-card" aria-label="Launch context summary">
-                <h2>Launch Context</h2>
-                <p id="launchContextSummary">Asset Manager V2 launch is waiting for a game and palette.</p>
-              </section>
-            </div>
+            <div id="workspaceToolTiles" class="workspace-manager-v2__tool-groups" aria-label="Workspace launchable tools"></div>
           </div>
         </section>
 
@@ -108,8 +85,8 @@
           <div class="accordion-v2__header workspace-manager-v2__status-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="statusLogContent">
             <span>Status</span>
             <div class="workspace-manager-v2__status-header-actions">
-              <button id="clearStatusButton" class="workspace-manager-v2__status-clear-button" type="button">Clear</button>
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
+              <button id="clearStatusButton" class="workspace-manager-v2__status-clear-button" type="button">Clear</button>
             </div>
           </div>
           <div id="statusLogContent" class="accordion-v2__content">

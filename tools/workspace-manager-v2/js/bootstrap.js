@@ -35,10 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
       log: requireElement("#statusLog")
     }),
     summary: new WorkspaceSummaryControl({
-      assetRegistrySummary: requireElement("#activeAssetRegistrySummary"),
-      contextOutput: requireElement("#workspaceContextOutput"),
-      launchContextSummary: requireElement("#launchContextSummary"),
-      paletteSummary: requireElement("#activePaletteSummary")
+      contextOutput: requireElement("#workspaceContextOutput")
     }),
     toolTiles: new ToolTilesControl({
       container: requireElement("#workspaceToolTiles")

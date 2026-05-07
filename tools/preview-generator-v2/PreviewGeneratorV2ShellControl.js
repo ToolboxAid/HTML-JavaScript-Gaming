@@ -85,7 +85,12 @@ class PreviewGeneratorV2ShellControl {
     const isWorkspaceLaunch = this.isWorkspaceLaunch();
     const toolNav = this.document.querySelector('[data-launch-mode-nav="tool"]');
     const workspaceNav = this.document.querySelector('[data-launch-mode-nav="workspace"]');
+    const workspaceActions = workspaceNav?.querySelector(".palette-manager-v2__menu-actions");
+    const executeButton = this.document.getElementById("executeBtn");
     const returnButton = this.document.getElementById("returnToWorkspaceButton");
+    if (isWorkspaceLaunch && workspaceActions && executeButton) {
+      workspaceActions.prepend(executeButton);
+    }
     if (toolNav) {
       toolNav.hidden = isWorkspaceLaunch;
     }

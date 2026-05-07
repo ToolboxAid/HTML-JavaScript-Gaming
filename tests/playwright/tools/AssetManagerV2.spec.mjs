@@ -985,8 +985,8 @@ test.describe("Asset Manager V2", () => {
     try {
       await expect(page.locator("#seedUatManifestButton")).toBeVisible();
       await page.locator("#seedUatManifestButton").click();
-      await expect(page.locator("#activePaletteSummary")).toContainText("Workspace Manager V2 UAT Sample Palette has 3 active colors.");
-      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 0 managed assets.");
+      await expect(page.locator("#activePaletteSummary")).toHaveCount(0);
+      await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
       await expect(page).not.toHaveURL(/workspace=uat/i);
@@ -1431,7 +1431,7 @@ test.describe("Asset Manager V2", () => {
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
-      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 17 managed assets.");
+      await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
       await expect(page.locator("#exportManifestButton")).toBeEnabled();
       const downloadPromise = page.waitForEvent("download");

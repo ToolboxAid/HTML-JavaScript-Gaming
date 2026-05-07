@@ -1,28 +1,13 @@
 export class WorkspaceSummaryControl {
-  constructor({
-    assetRegistrySummary,
-    contextOutput,
-    launchContextSummary,
-    paletteSummary
-  }) {
-    this.assetRegistrySummary = assetRegistrySummary;
+  constructor({ contextOutput }) {
     this.contextOutput = contextOutput;
-    this.launchContextSummary = launchContextSummary;
-    this.paletteSummary = paletteSummary;
   }
 
   clear() {
-    this.paletteSummary.textContent = "No active palette selected.";
-    this.assetRegistrySummary.textContent = "No asset registry context created.";
-    this.launchContextSummary.textContent = "Asset Manager V2 launch is waiting for a schema-valid game manifest.";
     this.contextOutput.textContent = "{}";
   }
 
-  render({ assetCount = 0, context, game, paletteSwatches }) {
-    const swatchCount = paletteSwatches.length;
-    this.paletteSummary.textContent = `${game.paletteName} has ${swatchCount} active colors.`;
-    this.assetRegistrySummary.textContent = `Schema-ready Asset Manager V2 manifest payload contains ${assetCount} managed assets.`;
-    this.launchContextSummary.textContent = `Schema-valid manifest is ready for ${game.id}.`;
+  render({ context }) {
     this.contextOutput.textContent = JSON.stringify(context, null, 2);
   }
 }

@@ -113,12 +113,7 @@ export class WorkspaceManagerV2App {
     this.activeHostContextId = result.hostContextId || null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
     this.gameSelector.setSummary(`${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.`);
-    this.summary.render({
-      assetCount: result.assetCount,
-      context: result.context,
-      game: result.game,
-      paletteSwatches: result.paletteSwatches
-    });
+    this.summary.render({ context: result.context });
     this.toolTiles.render({
       assetCount: result.assetCount,
       canLaunch: true,

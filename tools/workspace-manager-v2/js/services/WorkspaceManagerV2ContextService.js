@@ -5,21 +5,29 @@ const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Utilities",
     id: "templates-v2",
     name: "First-Class Tool Starter V2",
     path: "../templates-v2/index.html"
   }),
   Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Editors",
     id: "asset-manager-v2",
     name: "Asset Manager V2",
     path: "../asset-manager-v2/index.html"
   }),
   Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Editors",
     id: "palette-manager-v2",
     name: "Palette Manager V2",
     path: "../palette-manager-v2/index.html"
   }),
   Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Viewers",
     id: "preview-generator-v2",
     name: "Preview Generator V2",
     path: "../preview-generator-v2/index.html"
