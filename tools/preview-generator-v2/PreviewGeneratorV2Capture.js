@@ -34,6 +34,7 @@ class PreviewGeneratorV2Capture {
     this.frame = frame;
     this.document = documentRef;
     this.window = windowRef;
+    this.captureBackgroundColor = "";
   }
 
   static getAvailableFullScreenCaptureSize(doc = document, win = window, fallbackWidth = 1, fallbackHeight = 1) {
@@ -261,8 +262,21 @@ class PreviewGeneratorV2Capture {
       .replaceAll("'", "&apos;");
   }
 
+  setCaptureBackgroundColor(color) {
+    const normalizedColor = String(color || "").trim().toUpperCase();
+    this.captureBackgroundColor = /^#[0-9A-F]{6}$/.test(normalizedColor) ? normalizedColor : "";
+  }
+
+  captureBackgroundSvg() {
+    if (!this.captureBackgroundColor) {
+      return "";
+    }
+    return `\n  <rect width="100%" height="100%" fill="${this.escapeXml(this.captureBackgroundColor)}" />`;
+  }
+
   buildFallbackSvg(message) {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="80">
+  ${this.captureBackgroundSvg().trimStart()}
   <text x="10" y="24">${this.escapeXml(message)}</text>
 </svg>`;
   }
@@ -272,7 +286,8 @@ class PreviewGeneratorV2Capture {
     const height = canvas.height || canvas.scrollHeight || 600;
     const dataUrl = canvas.toDataURL("image/png");
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
-  <image href="${dataUrl}" width="100%" height="100%" />
+  ${this.captureBackgroundSvg().trimStart()}
+  <image href="${this.escapeXml(dataUrl)}" width="100%" height="100%" />
 </svg>`;
   }
 
@@ -282,6 +297,7 @@ class PreviewGeneratorV2Capture {
     const height = Math.max(1, Math.ceil(rect.height || 800));
     const serialized = new XMLSerializer().serializeToString(element);
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+  ${this.captureBackgroundSvg().trimStart()}
   <foreignObject width="100%" height="100%">
 <div xmlns="http://www.w3.org/1999/xhtml">${serialized}</div>
   </foreignObject>
@@ -489,7 +505,7 @@ class PreviewGeneratorV2Capture {
 
     try {
       const canvas = await html2canvasFn(body, {
-        backgroundColor: "#ffffff",
+        backgroundColor: this.captureBackgroundColor || null,
         useCORS: true,
         allowTaint: true,
         logging: false,
@@ -500,6 +516,12 @@ class PreviewGeneratorV2Capture {
         scrollX: 0,
         scrollY: 0,
         onclone: (clonedDoc) => {
+          if (this.captureBackgroundColor) {
+            clonedDoc.documentElement.style.backgroundColor = this.captureBackgroundColor;
+            if (clonedDoc.body) {
+              clonedDoc.body.style.backgroundColor = this.captureBackgroundColor;
+            }
+          }
           this.sanitizeClonedToolDocument(clonedDoc);
         }
       });
@@ -515,7 +537,7 @@ class PreviewGeneratorV2Capture {
     if (canvas) {
       return this.buildCanvasWrappedSvg(canvas);
     }
-    return this.buildFallbackSvg("Canvas not found");
+    return this.extractBestToolFallbackSvg(doc);
   }
 
   async extractSvgFromFrame() {

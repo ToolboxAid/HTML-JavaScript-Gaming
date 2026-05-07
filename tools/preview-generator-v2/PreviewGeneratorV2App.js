@@ -6,6 +6,8 @@ import { PreviewGeneratorV2Capture } from './PreviewGeneratorV2Capture.js';
 const OUTPUT_NAME = "preview.svg";
 const CAPTURE_TIMEOUT_MARKER = PreviewGeneratorV2Capture.CAPTURE_TIMEOUT_MARKER;
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
+const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
+const BACKGROUND_ROLE = "background";
 const PREVIEW_ROLE = "preview";
 
 const runtimeParams = new URLSearchParams(window.location.search);
@@ -17,9 +19,11 @@ let repoDisplayName = "";
 let isGenerating = false;
 let workspacePreviewAssetFolder = "";
 let workspacePreviewFileValid = false;
+let workspaceBackgroundValid = true;
 let workspacePreviewGameId = "";
 let workspaceRepoRootName = "";
-let workspacePreviewTargetPath = "";
+let workspaceManifestPreviewPath = "";
+let workspaceGeneratedPreviewPath = "";
 const ui = new PreviewGeneratorV2Ui();
 const logger = new PreviewGeneratorV2Logger({
   statusEl: ui.statusLog.getStatusElement(),
@@ -108,22 +112,111 @@ function workspaceAssetFolder(manifest) {
   return assetsPath.slice(gameRoot.length + 1);
 }
 
-function workspacePreviewAsset(manifest) {
+function workspaceImageAssetByRole(manifest, role) {
   const assets = manifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY]?.assets;
   if (!assets || typeof assets !== "object" || Array.isArray(assets)) {
     return null;
   }
-  const previewAssets = Object.entries(assets)
+  const matchingAssets = Object.entries(assets)
     .filter(([, entry]) => (
       entry?.type === "image"
-      && entry?.role === PREVIEW_ROLE
+      && entry?.role === role
       && String(entry.path || "").trim()
     ))
     .sort(([leftId], [rightId]) => leftId.localeCompare(rightId));
-  const selectedAsset = previewAssets.at(-1);
-  return selectedAsset
-    ? { id: selectedAsset[0], path: normalizeWorkspacePath(selectedAsset[1].path) }
-    : null;
+  const selectedAsset = matchingAssets.at(-1);
+  if (!selectedAsset) {
+    return null;
+  }
+  const [id, entry] = selectedAsset;
+  return {
+    id,
+    kind: String(entry.kind || "").trim(),
+    path: normalizeWorkspacePath(entry.path),
+    role: String(entry.role || "").trim(),
+    type: String(entry.type || "").trim()
+  };
+}
+
+function workspacePreviewAsset(manifest) {
+  return workspaceImageAssetByRole(manifest, PREVIEW_ROLE);
+}
+
+function normalizeHexColor(value) {
+  const color = String(value || "").trim();
+  if (/^#[0-9a-f]{6}$/i.test(color)) {
+    return color.toUpperCase();
+  }
+  return "";
+}
+
+function workspacePaletteSwatches(manifest) {
+  const swatches = manifest.tools?.[PALETTE_MANAGER_V2_TOOL_KEY]?.swatches;
+  return Array.isArray(swatches) ? swatches : [];
+}
+
+function workspacePaletteBackgroundColor(manifest) {
+  const paletteColors = workspacePaletteSwatches(manifest)
+    .map((swatch) => {
+      const hex = normalizeHexColor(swatch?.hex);
+      const name = String(swatch?.name || "").trim();
+      const tags = Array.isArray(swatch?.tags)
+        ? swatch.tags.map(tag => String(tag || "").trim().toLowerCase()).filter(Boolean)
+        : [];
+      return hex && name ? { hex, name, tags } : null;
+    })
+    .filter(Boolean);
+
+  const taggedBackground = paletteColors.find(color => (
+    color.name.toLowerCase().includes("background")
+    || color.tags.includes("background")
+  ));
+  if (taggedBackground) {
+    return taggedBackground;
+  }
+  return paletteColors.find(color => (
+    color.name.toLowerCase().includes("black")
+    || color.tags.includes("black")
+  )) || null;
+}
+
+function workspaceGameAssetPath(manifest, assetPath) {
+  const gameRoot = normalizeWorkspacePath(manifest.gameRoot);
+  const normalizedAssetPath = normalizeWorkspacePath(assetPath);
+  const pathFromGameRoot = normalizedAssetPath.startsWith(`${gameRoot}/`)
+    ? normalizedAssetPath.slice(gameRoot.length + 1)
+    : normalizedAssetPath;
+  return {
+    gameRoot,
+    pathFromGameRoot,
+    absolutePath: `${gameRoot}/${pathFromGameRoot}`
+  };
+}
+
+function workspaceBackgroundContext(manifest) {
+  const assetFolder = workspaceAssetFolder(manifest);
+  if (!assetFolder) {
+    return { ok: false, message: "assetsPath must be inside gameRoot before hydrating the preview background." };
+  }
+  const backgroundAsset = workspaceImageAssetByRole(manifest, BACKGROUND_ROLE);
+  if (!backgroundAsset) {
+    return { ok: false, message: "manifest must include an Asset Manager V2 image asset with role background." };
+  }
+  const color = workspacePaletteBackgroundColor(manifest);
+  if (!color) {
+    return { ok: false, message: "manifest palette must include a background or black swatch for Preview Generator V2 background hydration." };
+  }
+  const backgroundPath = workspaceGameAssetPath(manifest, backgroundAsset.path);
+  if (!backgroundPath.pathFromGameRoot.startsWith(`${assetFolder}/`)) {
+    return { ok: false, message: `${backgroundAsset.path || "(empty)"} must resolve under ${assetFolder}.` };
+  }
+  return {
+    ok: true,
+    backgroundAssetId: backgroundAsset.id,
+    backgroundPath: backgroundPath.absolutePath,
+    colorHex: color.hex,
+    colorName: color.name
+  };
 }
 
 function workspacePreviewTarget(manifest) {
@@ -136,9 +229,8 @@ function workspacePreviewTarget(manifest) {
   if (!previewAsset) {
     return { ok: false, message: "manifest must include an Asset Manager V2 image asset with role preview." };
   }
-  const imagePathFromGameRoot = previewAsset.path.startsWith(`${gameRoot}/`)
-    ? previewAsset.path.slice(gameRoot.length + 1)
-    : previewAsset.path;
+  const imagePath = workspaceGameAssetPath(manifest, previewAsset.path);
+  const imagePathFromGameRoot = imagePath.pathFromGameRoot;
   if (!imagePathFromGameRoot.startsWith(`${assetFolder}/`)) {
     return { ok: false, message: `${previewAsset.path || "(empty)"} must resolve under ${assetFolder}.` };
   }
@@ -149,28 +241,31 @@ function workspacePreviewTarget(manifest) {
   return {
     ok: true,
     previewAssetId: previewAsset.id,
+    previewAssetKind: previewAsset.kind,
+    previewAssetType: previewAsset.type,
     previewAssetFolder,
-    previewTargetPath: `${gameRoot}/${imagePathFromGameRoot}`
+    manifestPreviewPath: imagePath.absolutePath,
+    generatedPreviewPath: `${gameRoot}/${previewAssetFolder}/${OUTPUT_NAME}`
   };
 }
 
-async function validateWorkspacePreviewTarget(previewTargetPath) {
-  if (!previewTargetPath) {
-    return { ok: false, message: "Workspace Manager V2 manifest preview target path is empty." };
+async function validateWorkspaceImagePath(imagePath, label = "Workspace image") {
+  if (!imagePath) {
+    return { ok: false, message: `${label} path is empty.` };
   }
   try {
-    const response = await fetch(`/${previewTargetPath}`, { cache: "no-store" });
+    const response = await fetch(`/${imagePath}`, { cache: "no-store" });
     if (!response.ok) {
-      return { ok: false, message: `${previewTargetPath} returned ${response.status}.` };
+      return { ok: false, message: `${imagePath} returned ${response.status}.` };
     }
     const contentType = String(response.headers.get("content-type") || "");
-    const hasImageExtension = /\.(png|jpe?g|gif|webp|svg)$/i.test(previewTargetPath);
+    const hasImageExtension = /\.(png|jpe?g|gif|webp|svg)$/i.test(imagePath);
     if (contentType && !contentType.startsWith("image/") && !hasImageExtension) {
-      return { ok: false, message: `${previewTargetPath} is not an image response.` };
+      return { ok: false, message: `${imagePath} is not an image response.` };
     }
     return { ok: true };
   } catch (error) {
-    return { ok: false, message: `Unable to read ${previewTargetPath}: ${error.message}` };
+    return { ok: false, message: `Unable to read ${imagePath}: ${error.message}` };
   }
 }
 
@@ -226,8 +321,15 @@ function updateWriteFolderSampleLabel() {
   }
 }
 
+function getWorkspacePreviewTargetDisplayPath() {
+  if (isWorkspaceManagerLaunch() && repoDirHandle && workspaceGeneratedPreviewPath) {
+    return workspaceGeneratedPreviewPath;
+  }
+  return workspaceManifestPreviewPath;
+}
+
 function updatePreviewTargetLabel() {
-  ui.outputSummary.setPreviewTarget(workspacePreviewTargetPath || "not available yet");
+  ui.outputSummary.setPreviewTarget(getWorkspacePreviewTargetDisplayPath() || "not available yet");
 }
 
 async function updateWriteFolderActualLabelFromInput() {
@@ -615,6 +717,7 @@ class PreviewGeneratorV2App {
       return true;
     }
     return workspacePreviewFileValid
+      && workspaceBackgroundValid
       && ui.getSelectedTargetType() === "games"
       && getAssetFolderRelativePath() === workspacePreviewAssetFolder
       && parseInputList(ui.pathsOrIds.getValue()).includes(workspacePreviewGameId);
@@ -655,6 +758,9 @@ class PreviewGeneratorV2App {
       await updatePathPreviewLabels();
       this.syncGeneratePreviewButton();
       logger.log(`Repo selected: ${repoDisplayName}`);
+      if (isWorkspaceManagerLaunch() && workspaceGeneratedPreviewPath) {
+        logger.log(`Preview target updated: ${workspaceGeneratedPreviewPath}`);
+      }
     } catch (error) {
       this.syncGeneratePreviewButton();
       logger.log(`Repo folder selection canceled or failed: ${error.message}`);
@@ -755,8 +861,12 @@ class PreviewGeneratorV2App {
       return;
     }
     logger.log("Workspace launch context hydration started.");
+    workspacePreviewFileValid = false;
+    workspaceBackgroundValid = false;
+    workspaceManifestPreviewPath = "";
+    workspaceGeneratedPreviewPath = "";
+    capture.setCaptureBackgroundColor("");
     if (!contextResult.ok) {
-      workspacePreviewFileValid = false;
       logger.log(`FAIL Workspace launch context hydration: ${contextResult.message}`);
       this.syncGeneratePreviewButton();
       return;
@@ -765,7 +875,6 @@ class PreviewGeneratorV2App {
     const manifest = contextResult.manifest;
     const previewTarget = workspacePreviewTarget(manifest);
     if (!previewTarget.ok) {
-      workspacePreviewFileValid = false;
       logger.log(`FAIL Workspace launch context hydration: ${previewTarget.message}`);
       this.syncGeneratePreviewButton();
       return;
@@ -776,7 +885,8 @@ class PreviewGeneratorV2App {
     workspaceRepoRootName = repoDisplayName;
     workspacePreviewAssetFolder = previewTarget.previewAssetFolder;
     workspacePreviewGameId = manifest.gameId;
-    workspacePreviewTargetPath = previewTarget.previewTargetPath;
+    workspaceManifestPreviewPath = previewTarget.manifestPreviewPath;
+    workspaceGeneratedPreviewPath = previewTarget.generatedPreviewPath;
     ui.setRepoDestinationDisplayName(repoDisplayName);
     ui.repoDestination.setWorkspaceContextLabel(`Hydrated ${manifest.gameId} workspace (${normalizeWorkspacePath(manifest.gameRoot)})`);
     ui.targetSource.setSelectedTargetType("games");
@@ -789,17 +899,34 @@ class PreviewGeneratorV2App {
     logger.log("Pick the matching actual repo root folder before writing preview output.");
     logger.log("Target source: games");
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
-    logger.log(`Manifest preview asset: ${previewTarget.previewAssetId}`);
-    logger.log(`Preview target: ${workspacePreviewTargetPath}`);
+    logger.log(`Manifest preview asset: ${previewTarget.previewAssetId} (${previewTarget.previewAssetType}/${previewTarget.previewAssetKind})`);
+    logger.log(`Manifest preview source: ${workspaceManifestPreviewPath}`);
+    logger.log(`Generated preview target: ${workspaceGeneratedPreviewPath}`);
+    logger.log(`Preview target: ${getWorkspacePreviewTargetDisplayPath()}`);
 
-    const previewResult = await validateWorkspacePreviewTarget(workspacePreviewTargetPath);
+    const backgroundContext = workspaceBackgroundContext(manifest);
+    if (backgroundContext.ok) {
+      const backgroundValidation = await validateWorkspaceImagePath(backgroundContext.backgroundPath, "Workspace background source");
+      if (backgroundValidation.ok) {
+        workspaceBackgroundValid = true;
+        capture.setCaptureBackgroundColor(backgroundContext.colorHex);
+        logger.log(`Workspace background source: ${backgroundContext.backgroundAssetId} -> ${backgroundContext.backgroundPath}`);
+        logger.log(`Workspace background color: ${backgroundContext.colorName} ${backgroundContext.colorHex} from palette-manager-v2 swatch.`);
+      } else {
+        logger.log(`FAIL Workspace background hydration: ${backgroundValidation.message}`);
+      }
+    } else {
+      logger.log(`FAIL Workspace background hydration: ${backgroundContext.message}`);
+    }
+
+    const previewResult = await validateWorkspaceImagePath(workspaceManifestPreviewPath, "Workspace manifest preview source");
     if (previewResult.ok) {
       workspacePreviewFileValid = true;
-      ui.setPreviewTargetImage(workspacePreviewTargetPath);
-      logger.log(`OK Workspace preview target is valid at ${workspacePreviewTargetPath}.`);
+      ui.setPreviewTargetImage(workspaceManifestPreviewPath);
+      logger.log(`OK Workspace manifest preview source is valid at ${workspaceManifestPreviewPath}.`);
     } else {
       workspacePreviewFileValid = false;
-      logger.log(`FAIL Workspace preview target validation: ${previewResult.message}`);
+      logger.log(`FAIL Workspace preview source validation: ${previewResult.message}`);
     }
     this.syncGeneratePreviewButton();
   }

@@ -178,8 +178,8 @@
             "uniformEdgeStretchPx": 10
           }
         },
-        "assets.image.preview.bezel": {
-          "path": "assets/images/bezel.png",
+        "assets.image.preview.preview": {
+          "path": "assets/images/preview.png",
           "type": "image",
           "kind": "png",
           "role": "preview",

@@ -26,31 +26,88 @@ async function openToolsIndex(page) {
 
 async function installPreviewGeneratorRepoRootPicker(page) {
   await page.addInitScript(() => {
+    class FakeFileHandle {
+      constructor(name, parentPath, contents = "") {
+        this.kind = "file";
+        this.name = name;
+        this.path = parentPath ? `${parentPath}/${name}` : name;
+        this.contents = contents;
+      }
+
+      async getFile() {
+        return new File([this.contents], this.name, { type: "text/plain" });
+      }
+
+      async createWritable() {
+        return {
+          write: async (contents) => {
+            this.contents = String(contents || "");
+          },
+          close: async () => {
+            window.__previewGeneratorV2Writes.push({
+              contents: this.contents,
+              path: this.path
+            });
+          }
+        };
+      }
+    }
+
     class FakeDirectoryHandle {
-      constructor(name) {
+      constructor(name, parentPath = "") {
         this.kind = "directory";
         this.name = name;
+        this.path = parentPath ? `${parentPath}/${name}` : name;
         this.children = new Map();
       }
 
       addDirectory(name) {
-        const directory = new FakeDirectoryHandle(name);
+        const directory = new FakeDirectoryHandle(name, this.path);
         this.children.set(name, directory);
         return directory;
       }
 
-      async getDirectoryHandle(name) {
+      addFile(name, contents = "") {
+        const file = new FakeFileHandle(name, this.path, contents);
+        this.children.set(name, file);
+        return file;
+      }
+
+      async getDirectoryHandle(name, options = {}) {
         const child = this.children.get(name);
         if (child?.kind === "directory") {
           return child;
         }
+        if (options.create) {
+          return this.addDirectory(name);
+        }
         throw new Error(`Missing directory: ${name}`);
+      }
+
+      async getFileHandle(name, options = {}) {
+        const child = this.children.get(name);
+        if (child?.kind === "file") {
+          return child;
+        }
+        if (options.create) {
+          return this.addFile(name);
+        }
+        throw new Error(`Missing file: ${name}`);
+      }
+
+      async *entries() {
+        for (const entry of this.children.entries()) {
+          yield entry;
+        }
       }
     }
 
     const repo = new FakeDirectoryHandle("HTML-JavaScript-Gaming");
-    repo.addDirectory("games");
+    const games = repo.addDirectory("games");
+    const asteroids = games.addDirectory("Asteroids");
+    asteroids.addFile("index.html", "<!doctype html><title>Asteroids</title>");
     repo.addDirectory("tools");
+    window.__previewGeneratorV2Writes = [];
     window.showDirectoryPicker = async () => repo;
   });
 }
@@ -532,12 +589,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Repo selected from manifest repoRoot: HTML-JavaScript-Gaming.");
       await expect(page.locator("#log")).toContainText("Pick the matching actual repo root folder before writing preview output.");
       await expect(page.locator("#log")).toContainText("Asset folder: assets\\images");
-      await expect(page.locator("#log")).toContainText("Manifest preview asset: assets.image.preview.bezel");
+      await expect(page.locator("#log")).toContainText("Manifest preview asset: assets.image.preview.bezel (image/png)");
+      await expect(page.locator("#log")).toContainText("Manifest preview source: games/Asteroids/assets/images/bezel.png");
+      await expect(page.locator("#log")).toContainText("Generated preview target: games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#log")).toContainText("Preview target: games/Asteroids/assets/images/bezel.png");
-      await expect(page.locator("#log")).toContainText("OK Workspace preview target is valid at games/Asteroids/assets/images/bezel.png.");
+      await expect(page.locator("#log")).toContainText("Workspace background source: assets.image.background.deluxe -> games/Asteroids/assets/images/deluxe.png");
+      await expect(page.locator("#log")).toContainText("Workspace background color: Space Black #020617 from palette-manager-v2 swatch.");
+      await expect(page.locator("#log")).toContainText("OK Workspace manifest preview source is valid at games/Asteroids/assets/images/bezel.png.");
       await page.locator("#pickRepoBtn").click();
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+      await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/preview.svg");
+      await expect(page.locator("#log")).toContainText("Preview target updated: games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#executeBtn")).toBeEnabled();
+      await page.locator("#executeBtn").click();
+      await expect(page.locator("#log")).toContainText("OUT  games\\Asteroids\\assets\\images\\preview.svg", { timeout: 30000 });
+      await expect(page.locator("#log")).toContainText("Done.", { timeout: 30000 });
+      await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Last generated: Asteroids");
+      const previewWrites = await page.evaluate(() => window.__previewGeneratorV2Writes);
+      expect(previewWrites).toHaveLength(1);
+      expect(previewWrites[0].path).toBe("HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg");
+      expect(previewWrites[0].contents).toContain('fill="#020617"');
+      expect(previewWrites[0].contents).not.toContain("#ffffff");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       expect(pageErrors).toEqual([]);
