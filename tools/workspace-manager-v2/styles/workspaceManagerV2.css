@@ -271,14 +271,19 @@ textarea:hover {
 .workspace-manager-v2__summary-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: minmax(118px, auto);
   gap: 12px;
 }
 
 .workspace-manager-v2__summary-card {
   min-width: 0;
+  height: 118px;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--workspace-manager-v2-line);
   border-radius: 8px;
   background: var(--workspace-manager-v2-surface);
+  overflow: auto;
   padding: 12px;
 }
 
@@ -295,17 +300,6 @@ textarea:hover {
 .workspace-manager-v2__summary-card p {
   margin-top: 8px;
   line-height: 1.45;
-}
-
-.workspace-manager-v2__tool-launcher {
-  display: grid;
-  gap: 10px;
-}
-
-.workspace-manager-v2__tool-launcher h2 {
-  margin: 0;
-  color: var(--workspace-manager-v2-muted);
-  font-size: 0.95rem;
 }
 
 .workspace-manager-v2__tool-grid {

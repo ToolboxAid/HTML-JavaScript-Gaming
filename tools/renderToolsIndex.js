@@ -16,7 +16,7 @@ function buildDocumentationLinks(tool) {
   }
   return [
     { label: "How To Use", path: `${folder}/how_to_use.html` },
-    { label: "README", path: `${folder}/README.md` }
+    { label: "Read Me", path: `${folder}/README.md` }
   ];
 }
 
@@ -73,6 +73,9 @@ function renderToolCard(tool, sampleCountByToolId) {
 }
 
 function classifyToolGroup(toolId) {
+  const workflowToolIds = new Set([
+    "workspace-manager-v2"
+  ]);
   const viewerToolIds = new Set([
     "3d-asset-viewer",
     "replay-visualizer",
@@ -82,11 +85,13 @@ function classifyToolGroup(toolId) {
     "asset-browser",
     "asset-manager-v2",
     "asset-pipeline",
-    "workspace-manager-v2",
     "tile-model-converter",
     "physics-sandbox",
     "3d-json-payload"
   ]);
+  if (workflowToolIds.has(toolId)) {
+    return "workflow";
+  }
   if (viewerToolIds.has(toolId)) {
     return "viewers";
   }
@@ -136,10 +141,11 @@ async function loadSampleCountByToolId() {
 }
 
 function renderActiveToolsList(sampleCountByToolId) {
+  const workflowGrid = document.querySelector("[data-active-tools-workflow-grid]");
   const editorsGrid = document.querySelector("[data-active-tools-editors-grid]");
   const utilitiesGrid = document.querySelector("[data-active-tools-utilities-grid]");
   const viewersGrid = document.querySelector("[data-active-tools-viewers-grid]");
-  if (!editorsGrid || !utilitiesGrid || !viewersGrid) {
+  if (!workflowGrid || !editorsGrid || !utilitiesGrid || !viewersGrid) {
     return;
   }
   const tools = getToolRegistry()
@@ -148,10 +154,12 @@ function renderActiveToolsList(sampleCountByToolId) {
     .filter((entry) => entry.id !== "state-inspector")
     .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")));
 
+  const workflow = tools.filter((tool) => classifyToolGroup(tool.id) === "workflow").map((tool) => renderToolCard(tool, sampleCountByToolId));
   const editors = tools.filter((tool) => classifyToolGroup(tool.id) === "editors").map((tool) => renderToolCard(tool, sampleCountByToolId));
   const utilities = tools.filter((tool) => classifyToolGroup(tool.id) === "utilities").map((tool) => renderToolCard(tool, sampleCountByToolId));
   const viewers = tools.filter((tool) => classifyToolGroup(tool.id) === "viewers").map((tool) => renderToolCard(tool, sampleCountByToolId));
 
+  workflowGrid.innerHTML = workflow.join("\n");
   editorsGrid.innerHTML = editors.join("\n");
   utilitiesGrid.innerHTML = utilities.join("\n");
   viewersGrid.innerHTML = viewers.join("\n");

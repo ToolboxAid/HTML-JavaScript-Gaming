@@ -43,6 +43,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(card.locator("a", { hasText: "Workspace Manager V2" })).toHaveAttribute("href", "/tools/workspace-manager-v2/index.html");
       await expect(card).toContainText("First-Class Tool V2 workspace surface");
       await expect(card).toContainText("Workspace");
+      const toolsIndexState = await page.evaluate(() => {
+        const firstClassToolsSection = Array.from(document.querySelectorAll("section"))
+          .find((section) => section.querySelector(":scope > h2")?.textContent?.trim() === "First-Class Tools");
+        const workflowGrid = firstClassToolsSection?.querySelector("[data-active-tools-workflow-grid]");
+        const utilitiesGrid = firstClassToolsSection?.querySelector("[data-active-tools-utilities-grid]");
+        const workspaceCard = workflowGrid?.querySelector(".tools-platform-card");
+        return {
+          actionLabels: Array.from(firstClassToolsSection?.querySelectorAll(".tools-platform-card__action") || [])
+            .map((action) => action.textContent.trim()),
+          headings: Array.from(firstClassToolsSection?.querySelectorAll(":scope > h3") || [])
+            .map((heading) => heading.textContent.trim()),
+          sampleLabels: Array.from(firstClassToolsSection?.querySelectorAll(".tools-platform-card__action") || [])
+            .map((action) => action.textContent.trim())
+            .filter((label) => label.startsWith("Samples")),
+          utilitiesCards: Array.from(utilitiesGrid?.querySelectorAll(".tools-platform-card h3") || [])
+            .map((heading) => heading.textContent.trim()),
+          workflowCards: Array.from(workflowGrid?.querySelectorAll(".tools-platform-card h3") || [])
+            .map((heading) => heading.textContent.trim()),
+          workspaceActionLabels: Array.from(workspaceCard?.querySelectorAll(".tools-platform-card__action") || [])
+            .map((action) => action.textContent.trim())
+        };
+      });
+      expect(toolsIndexState.headings.slice(0, 4)).toEqual(["Workflow", "Editors", "Utilities", "Viewers"]);
+      expect(toolsIndexState.workflowCards).toEqual(["Workspace Manager V2"]);
+      expect(toolsIndexState.utilitiesCards).not.toContain("Workspace Manager V2");
+      expect(toolsIndexState.workspaceActionLabels).toEqual(["How To Use", "Read Me"]);
+      expect(toolsIndexState.actionLabels).not.toContain("README");
+      expect(toolsIndexState.sampleLabels.every((label) => /^Samples \(\d+\)$/.test(label))).toBe(true);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -140,6 +168,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#seedUatManifestButton")).toBeHidden();
       await expect(page.locator("#loadAsteroidsButton")).toHaveText("Load Asteroids");
       await expect(page.locator("#launchAssetManagerV2Button")).toHaveCount(0);
+      await expect(page.locator("#workspaceToolsContent #workspaceToolTiles")).toBeVisible();
+      await expect(page.locator("#workspaceContextContent #workspaceToolTiles")).toHaveCount(0);
+      const centerControlLabels = await page.locator(".workspace-manager-v2__panel--center > .accordion-v2 > .accordion-v2__header span:first-child")
+        .evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+      expect(centerControlLabels.slice(0, 2)).toEqual(["Tools", "Workspace Context"]);
       await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(5);
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
       await expect(page.locator("#activeGameSelect option")).toHaveText([
@@ -155,6 +188,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activePaletteSummary")).toContainText("active colors");
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 13 managed assets.");
       await expect(page.locator("#launchContextSummary")).toHaveText("Schema-valid manifest is ready for Asteroids.");
+      const workspaceContextTileHeights = await page.locator(".workspace-manager-v2__summary-card").evaluateAll((tiles) => tiles.map((tile) => Math.round(tile.getBoundingClientRect().height)));
+      expect(new Set(workspaceContextTileHeights).size).toBe(1);
+      expect(workspaceContextTileHeights.every((height) => height >= 118)).toBe(true);
       await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"source": "manifest"');

@@ -59,6 +59,16 @@
       </aside>
 
       <section class="workspace-manager-v2__panel workspace-manager-v2__panel--center" aria-label="Workspace context">
+        <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--tools is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="workspaceToolsContent">
+            <span>Tools</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="workspaceToolsContent" class="accordion-v2__content">
+            <div id="workspaceToolTiles" class="workspace-manager-v2__tool-grid" aria-label="Workspace launchable tools"></div>
+          </div>
+        </section>
+
         <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--fill is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="workspaceContextContent">
             <span>Workspace Context</span>
@@ -79,10 +89,6 @@
                 <p id="launchContextSummary">Asset Manager V2 launch is waiting for a game and palette.</p>
               </section>
             </div>
-            <section class="workspace-manager-v2__tool-launcher" aria-label="Workspace launchable tools">
-              <h2>Tools</h2>
-              <div id="workspaceToolTiles" class="workspace-manager-v2__tool-grid"></div>
-            </section>
             <pre id="workspaceContextOutput" class="workspace-manager-v2__output">{}</pre>
           </div>
         </section>
