@@ -74,7 +74,7 @@ export class WorkspaceBridge {
       return { ok: false, message: "Workspace Manager V2 launch no longer accepts wrapper context JSON." };
     }
     const unsupportedManifestKeys = Object.keys(workspaceManifest)
-      .filter((key) => !["$schema", "documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"].includes(key));
+      .filter((key) => !["$schema", "documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "repoRoot", "tools"].includes(key));
     if (unsupportedManifestKeys.length) {
       return { ok: false, message: `Workspace Manager V2 manifest includes fields not allowed by the workspace manifest schema: ${unsupportedManifestKeys.join(", ")}.` };
     }
@@ -103,7 +103,7 @@ export class WorkspaceBridge {
     if (Object.prototype.hasOwnProperty.call(workspaceManifest.tools, "asset-browser")) {
       return { ok: false, message: "Workspace Manager V2 manifest must use tools.asset-manager-v2, not tools.asset-browser." };
     }
-    const allowedAssetPayloadKeys = new Set(["$schema", "schema", "version", "id", "name", "source", "assets"]);
+    const allowedAssetPayloadKeys = new Set(["$schema", "schema", "version", "id", "name", "source", "previewImagePath", "assets"]);
     const assetPayloadKeys = Object.keys(workspaceManifest.tools["asset-manager-v2"]);
     if (assetPayloadKeys.some((key) => !allowedAssetPayloadKeys.has(key))) {
       return { ok: false, message: "Workspace Manager V2 asset payload must match the Asset Manager V2 asset schema." };
@@ -155,7 +155,15 @@ export class WorkspaceBridge {
     if (!isPlainObject(assetPayload) || !isPlainObject(assetPayload.assets)) {
       return { ok: false, message: "Workspace Manager V2 manifest is missing tools.asset-manager-v2.assets." };
     }
-    return { ok: true, payload: { assets: clone(assetPayload.assets) } };
+    return {
+      ok: true,
+      payload: {
+        assets: clone(assetPayload.assets),
+        ...(typeof assetPayload.previewImagePath === "string" && assetPayload.previewImagePath.trim()
+          ? { previewImagePath: assetPayload.previewImagePath.trim() }
+          : {})
+      }
+    };
   }
 
   readWorkspacePaletteSwatches() {
@@ -216,6 +224,11 @@ export class WorkspaceBridge {
     }
 
     workspaceManifest.tools["asset-manager-v2"].assets = clone(payload.assets);
+    if (typeof payload.previewImagePath === "string" && payload.previewImagePath.trim()) {
+      workspaceManifest.tools["asset-manager-v2"].previewImagePath = payload.previewImagePath.trim();
+    } else {
+      delete workspaceManifest.tools["asset-manager-v2"].previewImagePath;
+    }
     this.window.sessionStorage.setItem(contextResult.hostContextId, JSON.stringify(workspaceManifest));
     return { ok: true, workspaceManifest: clone(workspaceManifest) };
   }

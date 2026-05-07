@@ -36,6 +36,10 @@
       "type": "string",
       "minLength": 1
     },
+    "previewImagePath": {
+      "type": "string",
+      "minLength": 1
+    },
     "assets": {
       "type": "object",
       "additionalProperties": false,
@@ -179,6 +183,7 @@
             "sprite",
             "background",
             "bezel",
+            "preview-image",
             "ui",
             "sound",
             "music",
@@ -234,6 +239,7 @@
         "sprite",
         "background",
         "bezel",
+        "preview-image",
         "ui"
       ],
       "audio": [

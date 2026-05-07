@@ -8,6 +8,7 @@
   "gameId": "Asteroids",
   "gameRoot": "games/Asteroids/",
   "assetsPath": "games/Asteroids/assets",
+  "repoRoot": "HTML-JavaScript-Gaming",
   "tools": {
     "palette-manager-v2": {
       "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",

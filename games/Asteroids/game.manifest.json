@@ -8,6 +8,7 @@
   "gameId": "Asteroids",
   "gameRoot": "games/Asteroids/",
   "assetsPath": "games/Asteroids/assets",
+  "repoRoot": "HTML-JavaScript-Gaming",
   "tools": {
     "palette-manager-v2": {
       "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
@@ -79,6 +80,7 @@
       "version": 1,
       "name": "Asteroids Asset Manager V2 Registry",
       "source": "manifest",
+      "previewImagePath": "assets/images/bezel.png",
       "assets": {
         "assets.audio.music.beat-1": {
           "path": "assets/audio/beat1.wav",
@@ -173,6 +175,13 @@
           "stretchOverride": {
             "uniformEdgeStretchPx": 10
           }
+        },
+        "assets.image.preview-image.bezel": {
+          "path": "assets/images/bezel.png",
+          "type": "image",
+          "kind": "png",
+          "role": "preview-image",
+          "source": "manifest"
         }
       }
     },

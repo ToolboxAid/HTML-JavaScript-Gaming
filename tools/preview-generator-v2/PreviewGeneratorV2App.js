@@ -16,6 +16,7 @@ let isGenerating = false;
 let workspacePreviewAssetFolder = "";
 let workspacePreviewFileValid = false;
 let workspacePreviewGameId = "";
+let workspaceRepoRootName = "";
 let workspacePreviewTargetPath = "";
 const ui = new PreviewGeneratorV2Ui();
 const logger = new PreviewGeneratorV2Logger({
@@ -87,6 +88,9 @@ function readWorkspaceLaunchContext() {
     if (!manifest.gameId || !manifest.gameRoot || !manifest.assetsPath) {
       return { ok: false, message: "Workspace Manager V2 manifest is missing gameId, gameRoot, or assetsPath." };
     }
+    if (!String(manifest.repoRoot || "").trim()) {
+      return { ok: false, message: "Workspace Manager V2 manifest is missing repoRoot." };
+    }
     return { ok: true, manifest };
   } catch (error) {
     return { ok: false, message: `Workspace Manager V2 manifest JSON is invalid: ${error.message}` };
@@ -108,25 +112,24 @@ function workspacePreviewTarget(manifest) {
   if (!assetFolder) {
     return { ok: false, message: "assetsPath must be inside gameRoot." };
   }
-  const imageAsset = Object.values(manifest.tools?.["asset-manager-v2"]?.assets || {})
-    .find((asset) => asset?.type === "image" && asset?.role === "bezel" && normalizeWorkspacePath(asset.path));
-  if (!imageAsset) {
-    return { ok: false, message: "manifest must include a bezel image asset path under assetsPath." };
+  const previewImagePath = normalizeWorkspacePath(manifest.tools?.["asset-manager-v2"]?.previewImagePath);
+  if (!previewImagePath) {
+    return { ok: false, message: "manifest must include tools.asset-manager-v2.previewImagePath." };
   }
-  const imagePath = normalizeWorkspacePath(imageAsset?.path);
-  const imagePathFromGameRoot = imagePath.startsWith(`${gameRoot}/`)
-    ? imagePath.slice(gameRoot.length + 1)
-    : imagePath;
+  const imagePathFromGameRoot = previewImagePath.startsWith(`${gameRoot}/`)
+    ? previewImagePath.slice(gameRoot.length + 1)
+    : previewImagePath;
   if (!imagePathFromGameRoot.startsWith(`${assetFolder}/`)) {
-    return { ok: false, message: `${imagePath || "(empty)"} must resolve under ${assetFolder}.` };
+    return { ok: false, message: `${previewImagePath || "(empty)"} must resolve under ${assetFolder}.` };
   }
   const previewAssetFolder = imagePathFromGameRoot.split("/").slice(0, -1).join("/");
   if (!previewAssetFolder) {
-    return { ok: false, message: `${imagePath} does not include an asset folder.` };
+    return { ok: false, message: `${previewImagePath} does not include an asset folder.` };
   }
   return {
     ok: true,
     previewAssetFolder,
+    previewImagePath,
     previewTargetPath: `${gameRoot}/${imagePathFromGameRoot}`
   };
 }
@@ -155,6 +158,10 @@ async function validateRepoRootHandle(handle) {
   try {
     await PreviewGeneratorV2RepoAccess.getDirectoryHandle(handle, "games");
     await PreviewGeneratorV2RepoAccess.getDirectoryHandle(handle, "tools");
+    const selectedRepoName = PreviewGeneratorV2RepoAccess.getRepoDestinationDisplayName(handle);
+    if (workspaceRepoRootName && selectedRepoName !== workspaceRepoRootName) {
+      return { ok: false, message: `Selected repo root ${selectedRepoName} does not match manifest repoRoot ${workspaceRepoRootName}.` };
+    }
     return { ok: true };
   } catch (error) {
     return { ok: false, message: `Selected folder is not the repo root: ${error.message}` };
@@ -613,8 +620,8 @@ class PreviewGeneratorV2App {
       const repoValidation = await validateRepoRootHandle(selectedRepoHandle);
       if (!repoValidation.ok) {
         repoDirHandle = null;
-        repoDisplayName = "";
-        ui.setRepoDestinationDisplayName("not selected");
+        repoDisplayName = workspaceRepoRootName || "";
+        ui.setRepoDestinationDisplayName(workspaceRepoRootName || "not selected");
         this.syncGeneratePreviewButton();
         logger.log(`FAIL ${repoValidation.message}`);
         return;
@@ -744,21 +751,24 @@ class PreviewGeneratorV2App {
       return;
     }
 
-    repoDisplayName = "";
+    repoDisplayName = String(manifest.repoRoot || "").trim();
     repoDirHandle = null;
+    workspaceRepoRootName = repoDisplayName;
     workspacePreviewAssetFolder = previewTarget.previewAssetFolder;
     workspacePreviewGameId = manifest.gameId;
     workspacePreviewTargetPath = previewTarget.previewTargetPath;
-    ui.setRepoDestinationDisplayName("not selected");
-    ui.repoDestination.setWorkspaceContextLabel(`${manifest.gameId} workspace (${normalizeWorkspacePath(manifest.gameRoot)})`);
+    ui.setRepoDestinationDisplayName(repoDisplayName);
+    ui.repoDestination.setWorkspaceContextLabel(`Hydrated ${manifest.gameId} workspace (${normalizeWorkspacePath(manifest.gameRoot)})`);
     ui.targetSource.setSelectedTargetType("games");
     ui.assetFolder.setValue(workspacePreviewAssetFolder);
     ui.pathsOrIds.setValue(manifest.gameId);
     await updatePathPreviewLabels();
     logger.log(`OK Workspace launch context hydrated for ${manifest.gameId}.`);
-    logger.log("Repo selected: not selected; pick the actual repo root folder.");
+    logger.log(`Repo selected from manifest repoRoot: ${repoDisplayName}.`);
+    logger.log("Pick the matching actual repo root folder before writing preview output.");
     logger.log("Target source: games");
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
+    logger.log(`Manifest preview image path: ${previewTarget.previewImagePath}`);
     logger.log(`Preview target: ${workspacePreviewTargetPath}`);
 
     const previewResult = await validateWorkspacePreviewTarget(workspacePreviewTargetPath);

@@ -2,6 +2,7 @@ import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 
 const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;
 const BEZEL_ASSET_ID_PATTERN = /^assets\.image\.bezel\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
+const PREVIEW_IMAGE_ROLE = "preview-image";
 const DEFAULT_BEZEL_STRETCH_PX = 10;
 const COLOR_HEX_PATTERN = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
 
@@ -181,12 +182,24 @@ export class AssetSchemaValidator {
     if (!isPlainObject(payload.assets)) {
       errors.push("assets must be an object keyed by id.");
     }
+    if (Object.prototype.hasOwnProperty.call(payload, "previewImagePath")
+      && (typeof payload.previewImagePath !== "string" || !payload.previewImagePath.trim())) {
+      errors.push("previewImagePath must be a non-empty string when present.");
+    }
     if (errors.length) {
       return { ok: false, errors };
     }
 
     for (const [assetId, entry] of Object.entries(payload.assets)) {
       errors.push(...this.validateAssetEntry(assetId, entry, `assets.${assetId}`).errors);
+    }
+    if (Object.prototype.hasOwnProperty.call(payload, "previewImagePath")) {
+      const previewImagePath = String(payload.previewImagePath || "").trim();
+      const matchingPreviewAsset = Object.values(payload.assets)
+        .some((entry) => entry?.type === "image" && entry?.role === PREVIEW_IMAGE_ROLE && entry?.path === previewImagePath);
+      if (!matchingPreviewAsset) {
+        errors.push("previewImagePath must match the path of an image asset with role preview-image.");
+      }
     }
     return errors.length
       ? { ok: false, errors }

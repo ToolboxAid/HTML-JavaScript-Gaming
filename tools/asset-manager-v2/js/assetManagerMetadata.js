@@ -27,7 +27,7 @@ export const ASSET_TYPE_CONFIG = Object.freeze({
     label: "Image",
     folder: "assets/images",
     accept: ".png,.jpg,.jpeg,.webp,.gif,.svg,image/png,image/jpeg,image/webp,image/gif,image/svg+xml",
-    roles: ["sprite", "background", "bezel", "ui"]
+    roles: ["sprite", "background", "bezel", "preview-image", "ui"]
   },
   localization: {
     label: "Localization",

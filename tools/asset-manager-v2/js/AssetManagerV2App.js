@@ -1,5 +1,6 @@
 import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
 const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.";
+const PREVIEW_IMAGE_ROLE = "preview-image";
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -15,6 +16,13 @@ function sortedAssetEntries(assets) {
     || String(leftEntry.role || "").localeCompare(String(rightEntry.role || ""))
     || leftId.localeCompare(rightId)
   ));
+}
+
+function previewImagePathFromAssets(assets) {
+  const previewAsset = sortedAssetEntries(assets)
+    .filter(([, entry]) => entry?.type === "image" && entry?.role === PREVIEW_IMAGE_ROLE && String(entry.path || "").trim())
+    .at(-1);
+  return previewAsset ? String(previewAsset[1].path).trim() : "";
 }
 
 export class AssetManagerV2App {
@@ -216,9 +224,14 @@ export class AssetManagerV2App {
   }
 
   currentPayload() {
-    return {
+    const payload = {
       assets: sortedAssets(this.assets)
     };
+    const previewImagePath = previewImagePathFromAssets(payload.assets);
+    if (previewImagePath) {
+      payload.previewImagePath = previewImagePath;
+    }
+    return payload;
   }
 
   currentOutputAssets() {
@@ -234,9 +247,11 @@ export class AssetManagerV2App {
   }
 
   currentOutputSummary() {
+    const payload = this.currentPayload();
     return {
       assets: this.currentOutputAssets(),
-      count: Object.keys(this.assets).length
+      count: Object.keys(this.assets).length,
+      ...(payload.previewImagePath ? { previewImagePath: payload.previewImagePath } : {})
     };
   }
 

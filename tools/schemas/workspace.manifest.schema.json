@@ -42,6 +42,10 @@
       "type": "string",
       "pattern": "^games/[^/]+/assets$"
     },
+    "repoRoot": {
+      "type": "string",
+      "minLength": 1
+    },
     "tools": {
       "type": "object",
       "required": ["palette-manager-v2", "asset-manager-v2"],

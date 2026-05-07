@@ -27,7 +27,7 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
-    group: "Viewers",
+    group: "Utilities",
     id: "preview-generator-v2",
     name: "Preview Generator V2",
     path: "../preview-generator-v2/index.html"
@@ -324,7 +324,8 @@ export class WorkspaceManagerV2ContextService {
         assetsPath: workspaceManifest.assetsPath,
         gameRoot: workspaceManifest.gameRoot,
         manifestId: workspaceManifest.id,
-        paletteName: palettePayload.name || "Workspace Palette"
+        paletteName: palettePayload.name || "Workspace Palette",
+        repoRoot: workspaceManifest.repoRoot || ""
       },
       assetCount,
       assetWarning,

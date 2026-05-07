@@ -422,6 +422,8 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#assetRoleSelect")).toHaveValue("music");
       await page.locator("#assetKindImage").check();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
+      await expect(page.locator("#assetRoleSelect option")).toHaveText(["sprite", "background", "bezel", "preview-image", "ui"]);
+      await expect(page.locator("#assetRoleSelect")).toHaveAttribute("title", "Allowed roles for image: sprite, background, bezel, preview-image, ui");
       await page.locator("#pickAssetFileButton").click();
       const pickerOptions = await page.evaluate(() => window.__assetManagerV2PickerOptions.at(-1));
       expect(pickerOptions.types[0].description).toBe("Image assets");
@@ -542,7 +544,8 @@ test.describe("Asset Manager V2", () => {
       });
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sprite");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.sprite.preview");
+      await page.locator("#assetRoleSelect").selectOption("preview-image");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.preview-image.preview");
       await page.locator("#addAssetButton").click();
 
       await queueAssetFile(page, {
@@ -693,8 +696,8 @@ test.describe("Asset Manager V2", () => {
         },
         {
           deleteTopRight: true,
-          typeRole: "image:sprite",
-          id: "assets.image.sprite.preview",
+          typeRole: "image:preview-image",
+          id: "assets.image.preview-image.preview",
           textLeftAligned: true,
           hasSeparateDeleteButton: false,
           hasInlineDelete: true,
@@ -709,8 +712,8 @@ test.describe("Asset Manager V2", () => {
           idFontWeight: 500,
           typeRoleFontWeight: 800,
           rowGap: 2,
-          text: "X\nimage:sprite\nassets.image.sprite.preview",
-          tooltip: "id: assets.image.sprite.preview\ntype: image\nkind: png\nrole: sprite\npath: assets/images/preview.png"
+          text: "X\nimage:preview-image\nassets.image.preview-image.preview",
+          tooltip: "id: assets.image.preview-image.preview\ntype: image\nkind: png\nrole: preview-image\npath: assets/images/preview.png"
         }
       ]);
       const tileLayout = await page.locator("#assetList").evaluate((list) => {
@@ -1267,14 +1270,14 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#returnToWorkspaceButton")).toBeEnabled();
       await expect(page.locator("#workspaceInsertAssetsButton")).toHaveCount(0);
       await expect(page.locator("#workspaceCopyManifestButton")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 13 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 14 validated assets from tools\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
       const hostContextId = await page.evaluate(() => new URL(window.location.href).searchParams.get("hostContextId"));
       const initialAssetCount = await page.evaluate((id) => {
         const context = JSON.parse(sessionStorage.getItem(id));
         return Object.keys(context.tools["asset-manager-v2"].assets).length;
       }, hostContextId);
-      expect(initialAssetCount).toBe(13);
+      expect(initialAssetCount).toBe(14);
       const workspacePreviewContext = await page.evaluate(async () => {
         const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
         return new WorkspaceBridge({ windowRef: window }).readWorkspacePreviewContext();
@@ -1313,6 +1316,8 @@ test.describe("Asset Manager V2", () => {
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.sprite.preview");
       await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/preview.png");
+      await page.locator("#assetRoleSelect").selectOption("preview-image");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.preview-image.preview");
       await page.locator("#addAssetButton").click();
       await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"] img')).toHaveAttribute("src", "/games/Asteroids/assets/images/preview.png");
 
@@ -1373,7 +1378,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"color\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"kind\": \"hex\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"name\": \"HUD Blue\"");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Workspace Manager V2 session manifest now has 17 validated assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Workspace Manager V2 session manifest now has 18 validated assets\./);
 
       const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
       expect(storedContext.documentKind).toBe("workspace-manifest");
@@ -1382,7 +1387,8 @@ test.describe("Asset Manager V2", () => {
       expect(storedContext.workspaceManifest).toBeUndefined();
       expect(storedContext.tools["asset-browser"]).toBeUndefined();
       expect(storedContext.tools["palette-browser"]).toBeUndefined();
-      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(17);
+      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(18);
+      expect(storedContext.tools["asset-manager-v2"].previewImagePath).toBe("assets/images/preview.png");
       expect(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.fire"]).toEqual({
         path: "assets/audio/fire.wav",
         type: "audio",
@@ -1404,11 +1410,11 @@ test.describe("Asset Manager V2", () => {
         role: "ui",
         source: "asset-manager-v2"
       });
-      expect(storedContext.tools["asset-manager-v2"].assets["assets.image.sprite.preview"]).toEqual({
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.image.preview-image.preview"]).toEqual({
         path: "assets/images/preview.png",
         type: "image",
         kind: "png",
-        role: "sprite",
+        role: "preview-image",
         source: "asset-manager-v2"
       });
       expect(storedContext.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]).toEqual({
@@ -1439,7 +1445,8 @@ test.describe("Asset Manager V2", () => {
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toBe("workspace-manager-v2-Asteroids.workspace.manifest.json");
       const savedManifest = JSON.parse(await readFile(await download.path(), "utf8"));
-      expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(17);
+      expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(18);
+      expect(savedManifest.tools["asset-manager-v2"].previewImagePath).toBe("assets/images/preview.png");
       expect(savedManifest.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]).toEqual(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]);
       expect(savedManifest.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]).toEqual(storedContext.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]);
       expect(savedManifest.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toContain("vector.asteroids.ship");
