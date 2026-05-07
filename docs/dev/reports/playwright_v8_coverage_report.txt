@@ -21,7 +21,6 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (93%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 621/621; executed functions 51/55
-(100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - executed lines 38/38; executed functions 3/3
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -198,6 +197,4 @@ Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) tests/playwright/AssetManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
 (93%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
-(100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - changed JS file with browser V8 coverage

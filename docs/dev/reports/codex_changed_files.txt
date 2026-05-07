@@ -1,16 +1,16 @@
 # git status --short
 M docs/dev/reports/coverage_changed_js_guardrail.txt
  M docs/dev/reports/playwright_v8_coverage_report.txt
- M tools/asset-manager-v2/js/AssetManagerV2App.js
-?? docs/dev/reports/PR_26126_108_asset_manager_v2_final_code_review_notes.md
-?? docs/dev/reports/PR_26126_108_asset_manager_v2_manual_validation_notes.md
+ M package.json
+?? docs/dev/reports/PR_26126_109_manual_validation_notes.md
+?? docs/dev/reports/PR_26126_109_test_script_ssot_notes.md
 
 # git ls-files --others --exclude-standard
-docs/dev/reports/PR_26126_108_asset_manager_v2_final_code_review_notes.md
-docs/dev/reports/PR_26126_108_asset_manager_v2_manual_validation_notes.md
+docs/dev/reports/PR_26126_109_manual_validation_notes.md
+docs/dev/reports/PR_26126_109_test_script_ssot_notes.md
 
 # git diff --stat
-docs/dev/reports/coverage_changed_js_guardrail.txt |  2 +-
- docs/dev/reports/playwright_v8_coverage_report.txt |  8 +++-----
- tools/asset-manager-v2/js/AssetManagerV2App.js     | 11 -----------
- 3 files changed, 4 insertions(+), 17 deletions(-)
+docs/dev/reports/coverage_changed_js_guardrail.txt | 1 -
+ docs/dev/reports/playwright_v8_coverage_report.txt | 3 ---
+ package.json                                       | 4 +++-
+ 3 files changed, 3 insertions(+), 5 deletions(-)

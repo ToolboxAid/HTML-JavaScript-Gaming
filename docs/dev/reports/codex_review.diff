@@ -1,130 +1,92 @@
 diff --git a/docs/dev/reports/coverage_changed_js_guardrail.txt b/docs/dev/reports/coverage_changed_js_guardrail.txt
-index 796c3f4c..9dce032d 100644
+index 9dce032d..8734cd5a 100644
 --- a/docs/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
+@@ -7,7 +7,6 @@ Source: Playwright/Chromium built-in V8 coverage from npm run test:workspace-v2.
 
  Changed runtime JS files considered:
--(91%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 630/630; executed functions 51/56
-+(93%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 621/621; executed functions 51/55
- (100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - executed lines 38/38; executed functions 3/3
+ (93%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 621/621; executed functions 51/55
+-(100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - executed lines 38/38; executed functions 3/3
 
  Guardrail warnings:
+ (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs/dev/reports/playwright_v8_coverage_report.txt b/docs/dev/reports/playwright_v8_coverage_report.txt
-index 1cce2f87..14649f97 100644
+index 14649f97..eadfdebc 100644
 --- a/docs/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs/dev/reports/playwright_v8_coverage_report.txt
-@@ -20,7 +20,7 @@ Exercised tool entry points detected:
- (0%) Workspace Manager - not exercised by this Playwright run
+@@ -21,7 +21,6 @@ Exercised tool entry points detected:
 
  Changed runtime JS files covered:
--(91%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 630/630; executed functions 51/56
-+(93%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 621/621; executed functions 51/55
- (100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - executed lines 38/38; executed functions 3/3
+ (93%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 621/621; executed functions 51/55
+-(100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - executed lines 38/38; executed functions 3/3
 
  Files with executed line/function counts where available:
-@@ -129,9 +129,9 @@ Files with executed line/function counts where available:
- (88%) tools/workspace-v2/index.js - executed lines 125/125; executed functions 15/17
- (90%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 539/539; executed functions 52/58
- (91%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 328/328; executed functions 30/33
--(91%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 630/630; executed functions 51/56
- (92%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 531/531; executed functions 55/60
- (92%) tools/templates-v2/js/controls/ToolStarterShellControl.js - executed lines 111/111; executed functions 11/12
-+(93%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 621/621; executed functions 51/55
- (93%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 146/146; executed functions 14/15
- (100%) samples/phase-01/0102/KeyboardMoveScene.js - executed lines 78/78; executed functions 6/6
- (100%) samples/phase-01/0102/main.js - executed lines 23/23; executed functions 1/1
-@@ -198,8 +198,6 @@ Uncovered or low-coverage changed JS files:
+ (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
+@@ -198,6 +197,4 @@ Uncovered or low-coverage changed JS files:
  (100%) none - no low-coverage changed runtime JS files
 
  Changed JS files considered:
--(0%) tests/helpers/workspaceV2CoverageReporter.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/AssetManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/PreviewGeneratorV2Baseline.spec.mjs - changed JS file not collected as browser runtime coverage
--(91%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
-+(93%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
- (100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - changed JS file with browser V8 coverage
-diff --git a/tools/asset-manager-v2/js/AssetManagerV2App.js b/tools/asset-manager-v2/js/AssetManagerV2App.js
-index 901263eb..062306cc 100644
---- a/tools/asset-manager-v2/js/AssetManagerV2App.js
-+++ b/tools/asset-manager-v2/js/AssetManagerV2App.js
-@@ -1,7 +1,5 @@
- import { readTemporaryUatWorkspaceContext } from "./services/TemporaryUatWorkspace.js";
- import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
--
--const ASSET_MANAGER_TOOL_ID = "asset-manager-v2";
- const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.";
-
- function clone(value) {
-@@ -247,15 +245,6 @@ export class AssetManagerV2App {
-     };
-   }
-
--  currentToolState() {
--    return {
--      version: "v2",
--      toolId: ASSET_MANAGER_TOOL_ID,
--      assets: this.currentOutputAssets(),
--      payloadJson: this.currentPayload()
--    };
--  }
--
-   currentOutputAssets() {
-     return sortedAssetEntries(this.assets).map(([id, entry]) => ({
-       id,
-diff --git a/docs/dev/reports/PR_26126_108_asset_manager_v2_final_code_review_notes.md b/docs/dev/reports/PR_26126_108_asset_manager_v2_final_code_review_notes.md
+-(0%) tests/playwright/AssetManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
+ (93%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
+-(100%) tools/asset-manager-v2/js/services/TemporaryUatWorkspace.js - changed JS file with browser V8 coverage
+diff --git a/package.json b/package.json
+index 29e1d2ef..64ea37af 100644
+--- a/package.json
++++ b/package.json
+@@ -12,7 +12,9 @@
+     "check:style-system-guard": "node tools/dev/checkStyleSystemGuard.mjs",
+     "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs",
+     "codex:review-artifacts": "node ./scripts/write-codex-review-artifacts.mjs",
+-    "test:workspace-v2": "playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs tests/playwright/AssetManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list",
++    "test:asset-manager-v2": "playwright test tests/playwright/AssetManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list",
++    "test:preview-generator-v2": "playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --workers=1 --reporter=list",
++    "test:workspace-v2": "playwright test tests/playwright/AssetManagerV2.spec.mjs tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --workers=1 --reporter=list",
+     "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs",
+     "test:launch-smoke:games": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --games",
+     "test:workspace-manager:games": "node ./tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs",
+diff --git a/docs/dev/reports/PR_26126_109_manual_validation_notes.md b/docs/dev/reports/PR_26126_109_manual_validation_notes.md
 new file mode 100644
-index 00000000..1efb9571
+index 00000000..87081469
 --- /dev/null
-+++ b/docs/dev/reports/PR_26126_108_asset_manager_v2_final_code_review_notes.md
-@@ -0,0 +1,23 @@
-+# PR_26126_108 Final Code Review Notes
-+
-+## Scope
-+- Applied final cleanup using `docs/dev/PROJECT_INSTRUCTIONS.md` as the repository source of truth.
-+- Kept changes limited to Asset Manager V2 runtime cleanup and required PR_26126_108 reports/shared review artifacts.
-+- Did not change `package.json`.
-+- Did not change `tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`.
-+- Did not modify sample JSON.
-+
-+## Dead Code Cleanup
-+- Removed the unused `currentToolState()` method from `AssetManagerV2App`.
-+- Removed the now-unused `ASSET_MANAGER_TOOL_ID` constant.
-+- Verified no remaining `exportAssets`, `exportToolState`, `copyAssetsJson`, `currentToolState`, or `ASSET_MANAGER_TOOL_ID` references remain in Asset Manager V2 source/tests.
-+
-+## Test Ownership
-+- `tests/playwright/AssetManagerV2.spec.mjs` remains the SSoT for Asset Manager V2 Playwright coverage.
-+- `tests/playwright/PreviewGeneratorV2Baseline.spec.mjs` contains no Asset Manager V2-specific behavior/tests.
-+- Keyboard-navigation cleanup remains intact in active Asset Manager V2 source/tests.
-+
-+## Validation
-+- Playwright impacted: Yes.
-+- `npm run test:workspace-v2` passed 14/14 tests.
-+- Full samples smoke test was skipped because this PR is scoped to Asset Manager V2 cleanup and does not modify shared sample loaders/frameworks or sample JSON.
-diff --git a/docs/dev/reports/PR_26126_108_asset_manager_v2_manual_validation_notes.md b/docs/dev/reports/PR_26126_108_asset_manager_v2_manual_validation_notes.md
-new file mode 100644
-index 00000000..905cd4eb
---- /dev/null
-+++ b/docs/dev/reports/PR_26126_108_asset_manager_v2_manual_validation_notes.md
-@@ -0,0 +1,20 @@
-+# PR_26126_108 Manual Validation Notes
++++ b/docs/dev/reports/PR_26126_109_manual_validation_notes.md
+@@ -0,0 +1,17 @@
++# PR_26126_109 Manual Validation Notes
 +
 +## Commands
-+- `node --check tools/asset-manager-v2/js/AssetManagerV2App.js`
-+- `rg -n "ASSET_MANAGER_TOOL_ID|currentToolState\\(|exportAssets\\(|exportToolState\\(|copyAssetsJson\\(" tools\asset-manager-v2 tests\playwright\AssetManagerV2.spec.mjs tests\playwright\PreviewGeneratorV2Baseline.spec.mjs`
-+- `rg -n "KeyA|KeyS|KeyD|KeyW|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|Home|End|PageUp|PageDown|Enter|keydown|keyup|data-asset-tile-id" tools\asset-manager-v2 tests\playwright\AssetManagerV2.spec.mjs`
-+- `rg -n "Asset Manager V2|asset-manager-v2|openAssetManagerV2|openWorkspaceV2|workspace=UAT|workspace=uat|AssetManagerV2" tests\playwright\PreviewGeneratorV2Baseline.spec.mjs`
-+- `git diff -- package.json tests\playwright\PreviewGeneratorV2Baseline.spec.mjs`
-+- `git diff --check`
++- `node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json ok')"`
++- `npm run test:asset-manager-v2`
++- `npm run test:preview-generator-v2`
 +- `npm run test:workspace-v2`
++- `git diff --check`
 +
 +## Results
++- `package.json` parses successfully after script updates.
++- `npm run test:asset-manager-v2` passed 7/7 Playwright tests.
++- `npm run test:preview-generator-v2` passed 7/7 Playwright tests.
 +- `npm run test:workspace-v2` passed 14/14 Playwright tests.
-+- Dead Asset Manager V2 export/copy/toolState helper methods are absent from active source/tests.
-+- Active Asset Manager V2 source/tests contain no listed keyboard-navigation key handling or assertions.
-+- `tests/playwright/AssetManagerV2.spec.mjs` remains the dedicated Asset Manager V2 Playwright suite.
-+- `tests/playwright/PreviewGeneratorV2Baseline.spec.mjs` has no Asset Manager V2-specific behavior/tests and has no PR_26126_108 diff.
-+- `package.json` has no PR_26126_108 diff.
-+- Full samples smoke test skipped: sample JSON and shared sample loading are out of scope for this Asset Manager V2 cleanup PR.
++- Playwright impacted: Yes, script ownership for existing Playwright gates changed.
++- Full samples smoke test skipped: this PR changes only Playwright script SSoT wiring and does not modify shared sample loaders/frameworks or sample JSON.
++- No sample JSON was modified.
+diff --git a/docs/dev/reports/PR_26126_109_test_script_ssot_notes.md b/docs/dev/reports/PR_26126_109_test_script_ssot_notes.md
+new file mode 100644
+index 00000000..6335f4fd
+--- /dev/null
++++ b/docs/dev/reports/PR_26126_109_test_script_ssot_notes.md
+@@ -0,0 +1,17 @@
++# PR_26126_109 Test Script SSoT Notes
++
++## Script Ownership
++- Added `npm run test:asset-manager-v2` as the dedicated Asset Manager V2 Playwright SSoT script.
++- Added `npm run test:preview-generator-v2` as the dedicated Preview Generator V2 Playwright SSoT script.
++- Kept `npm run test:workspace-v2` as the aggregate Workspace V2/tool completion gate.
++
++## Aggregate Gate
++- `test:workspace-v2` includes both dedicated suites in one Playwright invocation:
++  - `tests/playwright/AssetManagerV2.spec.mjs`
++  - `tests/playwright/PreviewGeneratorV2Baseline.spec.mjs`
++- The aggregate script uses `--workers=1` so the shared Playwright/V8 coverage reporter writes one combined report after the aggregate validation.
++
++## Scope
++- No Asset Manager V2 runtime behavior was changed.
++- No Preview Generator V2 runtime behavior was changed.
 +- No sample JSON was modified.
