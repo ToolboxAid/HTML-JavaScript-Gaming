@@ -15,11 +15,6 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     path: "../asset-manager-v2/index.html"
   }),
   Object.freeze({
-    id: "workspace-manager-v2",
-    name: "Workspace Manager V2",
-    path: "../workspace-manager-v2/index.html"
-  }),
-  Object.freeze({
     id: "palette-manager-v2",
     name: "Palette Manager V2",
     path: "../palette-manager-v2/index.html"
@@ -472,19 +467,18 @@ export class WorkspaceManagerV2ContextService {
     return hostContextId;
   }
 
-  toolLaunchUrl(toolId, hostContextId) {
+  toolLaunchUrl(toolId, hostContextId, { workspaceMode = "" } = {}) {
     const tool = WORKSPACE_LAUNCHABLE_TOOLS.find((entry) => entry.id === toolId);
     if (!tool) {
       return "";
     }
     const url = new URL(tool.path, this.location.href);
-    if (tool.id === "workspace-manager-v2") {
-      url.searchParams.set("hostContextId", hostContextId);
-      return url.href;
-    }
     url.searchParams.set("launch", "workspace");
     url.searchParams.set("fromTool", "workspace-manager-v2");
     url.searchParams.set("hostContextId", hostContextId);
+    if (workspaceMode === "uat") {
+      url.searchParams.set("workspaceMode", "uat");
+    }
     return url.href;
   }
 
@@ -494,11 +488,14 @@ export class WorkspaceManagerV2ContextService {
     if (hostContextId) {
       url.searchParams.set("hostContextId", hostContextId);
     }
+    if (this.isUatMode()) {
+      url.searchParams.set("workspace", "uat");
+    }
     return url.href;
   }
 
-  launchTool(toolId, hostContextId) {
-    const url = this.toolLaunchUrl(toolId, hostContextId);
+  launchTool(toolId, hostContextId, options = {}) {
+    const url = this.toolLaunchUrl(toolId, hostContextId, options);
     if (url) {
       this.window.location.href = url;
     }

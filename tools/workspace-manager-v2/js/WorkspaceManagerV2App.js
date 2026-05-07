@@ -18,6 +18,7 @@ export class WorkspaceManagerV2App {
     this.activeContext = null;
     this.activeGame = null;
     this.activeHostContextId = null;
+    this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
   }
 
   start() {
@@ -61,6 +62,7 @@ export class WorkspaceManagerV2App {
     this.activeContext = null;
     this.activeGame = null;
     this.activeHostContextId = null;
+    this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
     this.menu.setExportEnabled(false);
     this.toolTiles.renderEmpty();
     this.summary.clear();
@@ -109,6 +111,7 @@ export class WorkspaceManagerV2App {
     this.activeContext = result.context;
     this.activeGame = result.game;
     this.activeHostContextId = result.hostContextId || null;
+    this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
     this.gameSelector.setSummary(`${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.`);
     this.summary.render({
       assetCount: result.assetCount,
@@ -146,7 +149,7 @@ export class WorkspaceManagerV2App {
       : this.contextService.persistContext(this.activeContext);
     this.activeHostContextId = hostContextId;
     this.statusLog.ok(`Stored Workspace Manager V2 schema-valid manifest ${hostContextId} for ${toolId}.`);
-    this.contextService.launchTool(toolId, hostContextId);
+    this.contextService.launchTool(toolId, hostContextId, { workspaceMode: this.activeWorkspaceMode });
   }
 
   async contextForSave() {

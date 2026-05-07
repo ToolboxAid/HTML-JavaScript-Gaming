@@ -143,7 +143,10 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
       await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
       await expect(page.locator("#assetLaunchGuardReason")).toContainText("Launch context is missing.");
+      await expect(page.locator("#assetLaunchGuardReturnToToolsButton")).toHaveText("Return to Tools");
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
+      await page.locator("#assetLaunchGuardReturnToToolsButton").click();
+      await expect(page).toHaveURL(/\/tools\/index\.html$/);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -1243,7 +1246,8 @@ test.describe("Asset Manager V2", () => {
     });
 
     try {
-      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(5);
+      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(4);
+      await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');

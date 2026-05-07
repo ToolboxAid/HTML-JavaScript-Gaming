@@ -42,9 +42,6 @@ export class ToolTilesControl {
     if (tool.id === "asset-manager-v2") {
       return `${assetCount} managed assets`;
     }
-    if (tool.id === "workspace-manager-v2") {
-      return "Active workspace surface";
-    }
     if (tool.id === "palette-manager-v2") {
       return `${paletteSwatchCount} palette swatches`;
     }

@@ -12,6 +12,12 @@ class TargetSourceControl {
     return selected ? selected.value : "samples";
   }
 
+  setSelectedTargetType(targetType) {
+    this.targetTypeInputs.forEach((input) => {
+      input.checked = input.value === targetType;
+    });
+  }
+
   hasSelection() {
     return this.targetTypeInputs.some(input => input.checked);
   }

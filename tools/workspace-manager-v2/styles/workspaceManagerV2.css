@@ -289,19 +289,22 @@ textarea:hover {
 .workspace-manager-v2__summary-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: minmax(118px, auto);
+  grid-auto-rows: minmax(148px, auto);
+  align-items: start;
   gap: 12px;
 }
 
 .workspace-manager-v2__summary-card {
   min-width: 0;
-  height: 118px;
+  min-height: 148px;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   border: 1px solid var(--workspace-manager-v2-line);
   border-radius: 8px;
   background: var(--workspace-manager-v2-surface);
-  overflow: auto;
+  overflow: visible;
   padding: 12px;
 }
 

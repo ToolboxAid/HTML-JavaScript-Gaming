@@ -45,30 +45,77 @@ function getSamplePresetLabel(searchParams, samplePresetPath) {
 
 function workspaceManagerUrl(hostContextId) {
   const url = new URL("../workspace-manager-v2/index.html", window.location.href);
+  const searchParams = new URLSearchParams(window.location.search);
   if (hostContextId) {
     url.searchParams.set("hostContextId", hostContextId);
+  }
+  if (searchParams.get("workspaceMode")?.toLowerCase() === "uat") {
+    url.searchParams.set("workspace", "uat");
   }
   return url.href;
 }
 
-function configureWorkspaceNav() {
+function getWorkspaceLaunchParams() {
   const searchParams = new URLSearchParams(window.location.search);
-  const isWorkspaceLaunch = searchParams.get("launch") === "workspace"
-    && searchParams.get("fromTool") === "workspace-manager-v2";
+  return {
+    hostContextId: searchParams.get("hostContextId") || "",
+    isWorkspaceLaunch: searchParams.get("launch") === "workspace"
+      && searchParams.get("fromTool") === "workspace-manager-v2"
+  };
+}
+
+function configureWorkspaceNav() {
+  const launchParams = getWorkspaceLaunchParams();
   const toolNav = document.querySelector('[data-launch-mode-nav="tool"]');
   const workspaceNav = document.querySelector('[data-launch-mode-nav="workspace"]');
   const returnButton = document.getElementById("returnToWorkspaceButton");
   if (toolNav) {
-    toolNav.hidden = isWorkspaceLaunch;
+    toolNav.hidden = launchParams.isWorkspaceLaunch;
   }
   if (workspaceNav) {
-    workspaceNav.hidden = !isWorkspaceLaunch;
+    workspaceNav.hidden = !launchParams.isWorkspaceLaunch;
   }
   if (returnButton) {
     returnButton.addEventListener("click", () => {
-      window.location.href = workspaceManagerUrl(searchParams.get("hostContextId") || "");
+      window.location.href = workspaceManagerUrl(launchParams.hostContextId);
     });
   }
+}
+
+function loadWorkspacePalette(app) {
+  const launchParams = getWorkspaceLaunchParams();
+  if (!launchParams.isWorkspaceLaunch) {
+    return;
+  }
+  if (!launchParams.hostContextId) {
+    app.rejectImport(["Workspace Manager V2 launch did not include hostContextId."], "Workspace palette load failed.");
+    return;
+  }
+  const rawValue = window.sessionStorage.getItem(launchParams.hostContextId);
+  if (!rawValue) {
+    app.rejectImport(["Workspace Manager V2 manifest was not found in sessionStorage."], "Workspace palette load failed.");
+    return;
+  }
+  let workspaceManifest;
+  try {
+    workspaceManifest = JSON.parse(rawValue);
+  } catch (error) {
+    app.rejectImport([`Workspace Manager V2 manifest JSON is invalid: ${error.message}`], "Workspace palette load failed.");
+    return;
+  }
+  const palettePayload = workspaceManifest?.tools?.["palette-manager-v2"];
+  if (!palettePayload || !Array.isArray(palettePayload.swatches)) {
+    app.rejectImport(["Workspace Manager V2 manifest is missing tools.palette-manager-v2.swatches."], "Workspace palette load failed.");
+    return;
+  }
+  app.importPaletteDocument({
+    name: palettePayload.name || "Workspace Palette",
+    source: palettePayload.source || palettePayload.sourceId || palettePayload.name || "Workspace Manager V2",
+    swatches: palettePayload.swatches
+  }, {
+    failureStatus: "Workspace palette load failed.",
+    successStatus: `Loaded active workspace palette ${palettePayload.name || "Workspace Palette"}.`
+  });
 }
 
 async function loadSamplePresetFromUrl(app) {
@@ -122,6 +169,7 @@ try {
   app.init();
   configureWorkspaceNav();
   window.paletteManagerV2App = app.getPublicApi();
+  loadWorkspacePalette(app);
   void loadSamplePresetFromUrl(app);
 } catch (error) {
   reportBootstrapError(error);

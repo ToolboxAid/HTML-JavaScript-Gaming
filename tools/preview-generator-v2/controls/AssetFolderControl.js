@@ -10,6 +10,10 @@ class AssetFolderControl {
     return String(this.assetFolderInput.value || "").trim();
   }
 
+  setValue(value) {
+    this.assetFolderInput.value = String(value || "");
+  }
+
   hasValue() {
     return this.getRawValue().length > 0;
   }

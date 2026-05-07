@@ -50,6 +50,71 @@ function getAssetFolderDisplayPath() {
   return getAssetFolderRelativePath().replaceAll("/", "\\");
 }
 
+function normalizeWorkspacePath(value) {
+  return String(value || "")
+    .trim()
+    .replaceAll("\\", "/")
+    .replace(/\/+/g, "/")
+    .replace(/^\/+|\/+$/g, "");
+}
+
+function isWorkspaceManagerLaunch() {
+  return runtimeParams.get("launch") === "workspace"
+    && runtimeParams.get("fromTool") === "workspace-manager-v2";
+}
+
+function readWorkspaceLaunchContext() {
+  if (!isWorkspaceManagerLaunch()) {
+    return { ok: false, skipped: true };
+  }
+  const hostContextId = runtimeParams.get("hostContextId") || "";
+  if (!hostContextId) {
+    return { ok: false, message: "Workspace Manager V2 launch did not include hostContextId." };
+  }
+  const rawValue = window.sessionStorage.getItem(hostContextId);
+  if (!rawValue) {
+    return { ok: false, message: "Workspace Manager V2 manifest was not found in sessionStorage." };
+  }
+  try {
+    const manifest = JSON.parse(rawValue);
+    if (manifest?.documentKind !== "workspace-manifest") {
+      return { ok: false, message: "Workspace Manager V2 context is not a workspace manifest." };
+    }
+    if (!manifest.gameId || !manifest.gameRoot || !manifest.assetsPath) {
+      return { ok: false, message: "Workspace Manager V2 manifest is missing gameId, gameRoot, or assetsPath." };
+    }
+    return { ok: true, manifest };
+  } catch (error) {
+    return { ok: false, message: `Workspace Manager V2 manifest JSON is invalid: ${error.message}` };
+  }
+}
+
+function workspaceAssetFolder(manifest) {
+  const gameRoot = normalizeWorkspacePath(manifest.gameRoot);
+  const assetsPath = normalizeWorkspacePath(manifest.assetsPath);
+  if (!gameRoot || !assetsPath || !assetsPath.startsWith(`${gameRoot}/`)) {
+    return "";
+  }
+  return assetsPath.slice(gameRoot.length + 1);
+}
+
+async function readWorkspacePreviewSvg(manifest) {
+  const assetsPath = normalizeWorkspacePath(manifest.assetsPath);
+  if (!assetsPath) {
+    return { ok: false, message: "Workspace Manager V2 manifest assetsPath is empty." };
+  }
+  const previewPath = `/${assetsPath}/preview.svg`;
+  try {
+    const response = await fetch(previewPath, { cache: "no-store" });
+    if (!response.ok) {
+      return { ok: false, missing: true, previewPath };
+    }
+    return { ok: true, previewPath, svgContent: await response.text() };
+  } catch (error) {
+    return { ok: false, message: `Unable to read ${previewPath}: ${error.message}` };
+  }
+}
+
 function getWriteFolderRelativePath(entry) {
   if (entry.targetType === "samples") {
     return `samples/phase-${entry.phase}/${entry.id}/${getAssetFolderRelativePath()}`;
@@ -585,6 +650,49 @@ class PreviewGeneratorV2App {
     logger.log("Stop requested. Will stop after current item.");
   }
 
+  async hydrateWorkspaceLaunchContext() {
+    const contextResult = readWorkspaceLaunchContext();
+    if (contextResult.skipped) {
+      return;
+    }
+    logger.log("Workspace launch context hydration started.");
+    if (!contextResult.ok) {
+      logger.log(`FAIL Workspace launch context hydration: ${contextResult.message}`);
+      this.syncGeneratePreviewButton();
+      return;
+    }
+
+    const manifest = contextResult.manifest;
+    const assetFolder = workspaceAssetFolder(manifest);
+    if (!assetFolder) {
+      logger.log("FAIL Workspace launch context hydration: assetsPath must be inside gameRoot.");
+      this.syncGeneratePreviewButton();
+      return;
+    }
+
+    repoDisplayName = `${manifest.gameId} workspace (${normalizeWorkspacePath(manifest.gameRoot)})`;
+    ui.setRepoDestinationDisplayName(repoDisplayName);
+    ui.targetSource.setSelectedTargetType("games");
+    ui.assetFolder.setValue(assetFolder);
+    ui.pathsOrIds.setValue(manifest.gameId);
+    await updatePathPreviewLabels();
+    logger.log(`OK Workspace launch context hydrated for ${manifest.gameId}.`);
+    logger.log(`Repo selected: ${repoDisplayName}`);
+    logger.log("Target source: games");
+    logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
+
+    const previewResult = await readWorkspacePreviewSvg(manifest);
+    if (previewResult.ok) {
+      ui.setLastGeneratedImage(previewResult.svgContent, `${manifest.gameId} preview.svg`);
+      logger.log(`OK Loaded existing preview image from ${previewResult.previewPath}.`);
+    } else if (previewResult.missing) {
+      logger.log(`SKIP No existing preview image at ${previewResult.previewPath}.`);
+    } else {
+      logger.log(`WARN ${previewResult.message}`);
+    }
+    this.syncGeneratePreviewButton();
+  }
+
   bindEvents() {
     ui.repoDestination.onPickRepo(() => {
       void this.handlePickRepo();
@@ -640,6 +748,7 @@ class PreviewGeneratorV2App {
     this.bindEvents();
     updatePathPreviewLabels();
     this.syncGeneratePreviewButton();
+    void this.hydrateWorkspaceLaunchContext();
   }
 }
 

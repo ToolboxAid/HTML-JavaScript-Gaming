@@ -50,9 +50,13 @@ export class WorkspaceBridge {
 
   workspaceManagerUrl() {
     const url = new URL("../workspace-manager-v2/index.html", this.window.location.href);
+    const params = new URLSearchParams(this.window.location.search);
     const hostContextId = this.hostContextId();
     if (hostContextId) {
       url.searchParams.set("hostContextId", hostContextId);
+    }
+    if (params.get("workspaceMode")?.toLowerCase() === "uat") {
+      url.searchParams.set("workspace", "uat");
     }
     return url.href;
   }

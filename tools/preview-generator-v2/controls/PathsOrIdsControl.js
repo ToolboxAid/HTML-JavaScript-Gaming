@@ -10,6 +10,10 @@ class PathsOrIdsControl {
     return this.sampleListInput.value;
   }
 
+  setValue(value) {
+    this.sampleListInput.value = String(value || "");
+  }
+
   onInput(handler) {
     this.sampleListInput.addEventListener("input", handler);
   }

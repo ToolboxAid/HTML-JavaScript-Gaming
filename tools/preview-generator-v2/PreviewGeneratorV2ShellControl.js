@@ -75,6 +75,9 @@ class PreviewGeneratorV2ShellControl {
     if (hostContextId) {
       url.searchParams.set("hostContextId", hostContextId);
     }
+    if (this.runtimeParams.get("workspaceMode")?.toLowerCase() === "uat") {
+      url.searchParams.set("workspace", "uat");
+    }
     return url.href;
   }
 

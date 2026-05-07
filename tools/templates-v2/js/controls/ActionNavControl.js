@@ -67,9 +67,13 @@ export class ActionNavControl {
 
   workspaceManagerUrl() {
     const url = new URL("../workspace-manager-v2/index.html", this.location.href);
-    const hostContextId = new URLSearchParams(this.location.search).get("hostContextId") || "";
+    const params = new URLSearchParams(this.location.search);
+    const hostContextId = params.get("hostContextId") || "";
     if (hostContextId) {
       url.searchParams.set("hostContextId", hostContextId);
+    }
+    if (params.get("workspaceMode")?.toLowerCase() === "uat") {
+      url.searchParams.set("workspace", "uat");
     }
     return url.href;
   }

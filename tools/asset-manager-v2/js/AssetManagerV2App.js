@@ -137,6 +137,13 @@ export class AssetManagerV2App {
     if (reasonNode) {
       reasonNode.textContent = reason ? `Reason: ${reason}` : "";
     }
+    const returnToToolsButton = this.launchGuard.querySelector("#assetLaunchGuardReturnToToolsButton");
+    if (returnToToolsButton && !returnToToolsButton.dataset.assetManagerV2Bound) {
+      returnToToolsButton.dataset.assetManagerV2Bound = "true";
+      returnToToolsButton.addEventListener("click", () => {
+        this.window.location.href = new URL("../index.html", this.window.location.href).href;
+      });
+    }
     this.launchGuard.hidden = false;
     this.window.document.body.classList.add("asset-manager-v2--launch-blocked");
   }

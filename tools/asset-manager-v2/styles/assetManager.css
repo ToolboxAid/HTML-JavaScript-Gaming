@@ -118,6 +118,10 @@ textarea:disabled {
   line-height: 1.45;
 }
 
+.asset-manager-v2__launch-guard-return {
+  margin-top: 16px;
+}
+
 body.asset-manager-v2--launch-blocked > :not(.asset-manager-v2__launch-guard) {
   pointer-events: none;
 }
