@@ -35,6 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
       log: requireElement("#statusLog")
     }),
     summary: new WorkspaceSummaryControl({
+      copyButton: requireElement("#copyWorkspaceJsonButton"),
       contextOutput: requireElement("#workspaceContextOutput")
     }),
     toolTiles: new ToolTilesControl({

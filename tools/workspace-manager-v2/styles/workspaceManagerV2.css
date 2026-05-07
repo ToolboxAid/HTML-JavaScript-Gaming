@@ -206,12 +206,15 @@ textarea:hover {
 }
 
 .workspace-manager-v2__accordion--json.is-open {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
 }
 
 .accordion-v2__header {
+  position: relative;
+  z-index: 1;
   width: 100%;
   min-height: 42px;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -240,6 +243,8 @@ textarea:hover {
 }
 
 .accordion-v2__content {
+  position: relative;
+  z-index: 0;
   min-height: 0;
   display: flex;
   flex: 1 1 auto;
@@ -259,7 +264,7 @@ textarea:hover {
 }
 
 .workspace-manager-v2__accordion--json .accordion-v2__content {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
 }
 
 .workspace-manager-v2__field {
@@ -376,6 +381,19 @@ textarea:hover {
 .workspace-manager-v2__accordion--json .workspace-manager-v2__output {
   height: 100%;
   min-height: 0;
+}
+
+.workspace-manager-v2__json-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.workspace-manager-v2__json-copy-button {
+  position: relative;
+  z-index: 2;
+  min-height: 28px;
+  padding-inline: 8px;
 }
 
 .workspace-manager-v2__status-accordion-header {

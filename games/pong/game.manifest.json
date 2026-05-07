@@ -1,138 +1,78 @@
 {
-  "schema": "html-js-gaming.game-manifest",
+  "$schema": "tools/schemas/workspace.manifest.schema.json",
+  "documentKind": "workspace-manifest",
+  "schema": "html-js-gaming.project",
   "version": 1,
-  "game": {
-    "id": "Pong",
-    "name": "Pong",
-    "folder": "Pong"
-  },
-  "launch": {
-    "directPath": "/games/Pong/index.html",
-    "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=Pong&mount=game",
-    "workspaceManagerOptional": true
-  },
+  "id": "workspace-manager-v2-Pong",
+  "name": "Pong Workspace Manager V2 Context",
+  "gameId": "Pong",
+  "gameRoot": "games/Pong/",
+  "assetsPath": "games/Pong/assets",
+  "repoRoot": "HTML-JavaScript-Gaming",
   "tools": {
-    "primitive-skin-editor": {
-      "skins": [
-        {
-          "id": "skin.main",
-          "data": {
-            "documentKind": "game-skin",
-            "version": 1,
-            "schema": "games.pong.skin/1",
-            "gameId": "Pong",
-            "name": "Pong Classic Skin",
-            "objects": {
-              "background": {
-                "color": "#05070a",
-                "shape": "hud-color"
-              },
-              "paddle": {
-                "color": "#f4f7fb",
-                "width": 14,
-                "shape": "rectangle"
-              },
-              "ball": {
-                "color": "#f4f7fb",
-                "radius": 8,
-                "shape": "circle"
-              },
-              "hudInk": {
-                "color": "#f4f7fb",
-                "shape": "hud-color"
-              },
-              "hudMuted": {
-                "color": "#a6b0bf",
-                "shape": "hud-color"
-              },
-              "hudAccent": {
-                "color": "#7de2ff",
-                "shape": "hud-color"
-              },
-              "hudGood": {
-                "color": "#8bf0c8",
-                "shape": "hud-color"
-              },
-              "hudWarn": {
-                "color": "#ffd37d",
-                "shape": "hud-color"
-              },
-              "hudDanger": {
-                "color": "#ff9a9a",
-                "shape": "hud-color"
-              }
-            },
-            "entities": {}
-          }
-        }
-      ],
-      "schema": "html-js-gaming.tool.primitive-skin-editor",
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
       "version": 1,
-      "name": "Primitive Skin Editor",
-      "source": "manifest"
-    },
-    "palette-browser": {
-      "schema": "html-js-gaming.tool.palette-browser",
-      "version": 1,
-      "name": "Palette Browser",
+      "name": "Pong Classic Palette",
       "source": "manifest",
-      "palette": {
-        "schema": "html-js-gaming.palette",
-        "version": 1,
-        "name": "Pong Palette",
-        "source": "manifest-and-runtime-color-scan",
-        "swatches": [
-          {
-            "symbol": "0",
-            "hex": "#05070A",
-            "name": "Color 1"
-          },
-          {
-            "symbol": "1",
-            "hex": "#F4F7FB",
-            "name": "Color 2"
-          },
-          {
-            "symbol": "2",
-            "hex": "#A6B0BF",
-            "name": "Color 3"
-          },
-          {
-            "symbol": "3",
-            "hex": "#7DE2FF",
-            "name": "Color 4"
-          },
-          {
-            "symbol": "4",
-            "hex": "#8BF0C8",
-            "name": "Color 5"
-          },
-          {
-            "symbol": "5",
-            "hex": "#FFD37D",
-            "name": "Color 6"
-          },
-          {
-            "symbol": "6",
-            "hex": "#FF9A9A",
-            "name": "Color 7"
-          },
-          {
-            "symbol": "7",
-            "hex": "#6A7482",
-            "name": "Color 8"
-          },
-          {
-            "symbol": "8",
-            "hex": "#04070D",
-            "name": "Color 9"
-          },
-          {
-            "symbol": "9",
-            "hex": "#0E1626",
-            "name": "Color 10"
-          }
-        ]
+      "swatches": [
+        {
+          "symbol": "!",
+          "hex": "#05070A",
+          "name": "Background"
+        },
+        {
+          "symbol": "#",
+          "hex": "#F4F7FB",
+          "name": "Ink / Paddles"
+        },
+        {
+          "symbol": "$",
+          "hex": "#A6B0BF",
+          "name": "Muted HUD"
+        },
+        {
+          "symbol": "%",
+          "hex": "#7DE2FF",
+          "name": "Accent"
+        },
+        {
+          "symbol": "&",
+          "hex": "#8BF0C8",
+          "name": "Positive"
+        },
+        {
+          "symbol": "(",
+          "hex": "#FFD37D",
+          "name": "Warning"
+        },
+        {
+          "symbol": ")",
+          "hex": "#FF9A9A",
+          "name": "Danger"
+        },
+        {
+          "symbol": "*",
+          "hex": "#6A7482",
+          "name": "Center Divider"
+        }
+      ]
+    },
+    "asset-manager-v2": {
+      "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+      "schema": "html-js-gaming.asset-manager-v2",
+      "version": 1,
+      "name": "Pong Asset Manager V2 Registry",
+      "source": "manifest",
+      "assets": {
+        "assets.image.preview.preview": {
+          "path": "assets/images/preview.svg",
+          "type": "image",
+          "kind": "svg",
+          "role": "preview",
+          "source": "manifest"
+        }
       }
     }
   }

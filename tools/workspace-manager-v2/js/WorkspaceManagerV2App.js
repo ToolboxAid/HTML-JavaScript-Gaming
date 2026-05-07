@@ -51,6 +51,11 @@ export class WorkspaceManagerV2App {
       },
       tools: this.contextService.workspaceLaunchableTools()
     });
+    this.summary.mount({
+      onCopy: () => {
+        void this.copyWorkspaceJson();
+      }
+    });
     this.summary.clear();
     this.menu.setExportEnabled(false);
     this.toolTiles.renderEmpty();
@@ -88,6 +93,15 @@ export class WorkspaceManagerV2App {
     }
     this.statusLog.ok(`Loaded ${result.game.name} from ${result.game.manifestPath} with ${result.paletteSwatches.length} active palette colors and ${result.assetCount} managed assets.`);
     this.statusLog.ok("Asset Manager V2 production launch context is session/state based only.");
+  }
+
+  async copyWorkspaceJson() {
+    const result = await this.summary.copyToClipboard();
+    if (result.ok) {
+      this.statusLog.ok(`Copied Workspace JSON to clipboard (${result.copiedLength} characters).`);
+      return;
+    }
+    this.statusLog.fail(`Workspace JSON copy failed: ${result.message}`);
   }
 
   async restoreWorkspaceFromSession() {

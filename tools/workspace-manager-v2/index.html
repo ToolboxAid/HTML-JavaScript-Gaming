@@ -70,12 +70,15 @@
         </section>
 
         <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--json workspace-manager-v2__accordion--fill is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="workspaceJsonContent">
+          <div class="accordion-v2__header" role="button" tabindex="0" aria-expanded="true" aria-controls="workspaceJsonContent">
             <span>Workspace JSON</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
+            <span class="workspace-manager-v2__json-header-actions">
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+              <button id="copyWorkspaceJsonButton" class="workspace-manager-v2__json-copy-button" type="button">Copy</button>
+            </span>
+          </div>
           <div id="workspaceJsonContent" class="accordion-v2__content">
-            <pre id="workspaceContextOutput" class="workspace-manager-v2__output">{}</pre>
+            <textarea id="workspaceContextOutput" class="workspace-manager-v2__output" readonly rows="12" aria-label="Workspace JSON">{}</textarea>
           </div>
         </section>
       </section>

@@ -58,10 +58,15 @@ export async function startRepoServer() {
     baseUrl: `http://127.0.0.1:${address.port}`,
     close: async () => {
       await new Promise((resolve, reject) => {
+        const forceClose = setTimeout(() => {
+          server.closeAllConnections?.();
+        }, 250);
         server.close((error) => {
+          clearTimeout(forceClose);
           if (error) reject(error);
           else resolve();
         });
+        server.closeIdleConnections?.();
       });
     }
   };

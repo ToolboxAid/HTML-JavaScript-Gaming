@@ -21,6 +21,7 @@ let workspacePreviewAssetFolder = "";
 let workspacePreviewFileValid = false;
 let workspaceBackgroundValid = true;
 let workspacePreviewGameId = "";
+let workspaceRepoRootHydrated = false;
 let workspaceRepoRootName = "";
 let workspaceManifestPreviewPath = "";
 let workspaceGeneratedPreviewPath = "";
@@ -322,7 +323,7 @@ function updateWriteFolderSampleLabel() {
 }
 
 function getWorkspacePreviewTargetDisplayPath() {
-  if (isWorkspaceManagerLaunch() && repoDirHandle && workspaceGeneratedPreviewPath) {
+  if (isWorkspaceManagerLaunch() && (repoDirHandle || workspaceRepoRootHydrated) && workspaceGeneratedPreviewPath) {
     return workspaceGeneratedPreviewPath;
   }
   return workspaceManifestPreviewPath;
@@ -583,7 +584,35 @@ async function shouldRewrite(targetDirHandle) {
   return { rewrite: false, reason: "existing-preview-without-capture-timeout" };
 }
 
-async function writePreview(targetDirHandle, svgContent) {
+function downloadWorkspacePreview(svgContent, outputPath) {
+  const BlobCtor = window.Blob;
+  const urlApi = window.URL || window.webkitURL;
+  if (typeof BlobCtor !== "function" || !urlApi?.createObjectURL) {
+    throw new Error("Browser download APIs are unavailable for workspace launch output.");
+  }
+  const blob = new BlobCtor([svgContent], { type: "image/svg+xml" });
+  const url = urlApi.createObjectURL(blob);
+  const link = window.document.createElement("a");
+  link.href = url;
+  link.download = OUTPUT_NAME;
+  link.rel = "noopener";
+  link.dataset.workspaceOutputPath = outputPath;
+  window.document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => {
+    urlApi.revokeObjectURL(url);
+  }, 0);
+}
+
+async function writePreview(targetDirHandle, svgContent, entry) {
+  if (!targetDirHandle && isWorkspaceManagerLaunch() && workspaceRepoRootHydrated) {
+    const outputPath = getFullOutputPath(entry);
+    downloadWorkspacePreview(svgContent, outputPath);
+    logger.log(`DL   ${outputPath}`);
+    return;
+  }
+
   const relativeOutputFolder = getAssetFolderRelativePath();
 
   const targetDir = relativeOutputFolder
@@ -597,8 +626,12 @@ async function writePreview(targetDirHandle, svgContent) {
 }
 
 async function processOne(entry, baseUrl, waitMs) {
-  const targetDirHandle = await getTargetDirHandle(repoDirHandle, entry);
-  const decision = await shouldRewrite(targetDirHandle);
+  const targetDirHandle = repoDirHandle
+    ? await getTargetDirHandle(repoDirHandle, entry)
+    : null;
+  const decision = targetDirHandle
+    ? await shouldRewrite(targetDirHandle)
+    : { rewrite: true, reason: "workspace-launch-hydrated-repo-root" };
 
   ui.outputSummary.setWriteFolderActual(getWriteFolderDisplayPath(entry));
   const label = entry.targetType === "samples" ? entry.id : entry.name;
@@ -630,7 +663,7 @@ async function processOne(entry, baseUrl, waitMs) {
     }
 
     const svgContent = await capture.extractSvgFromFrame();
-    await writePreview(targetDirHandle, svgContent);
+    await writePreview(targetDirHandle, svgContent, entry);
     ui.setLastGeneratedImage(svgContent, label);
 
     const stillHasTimeout = svgContent.includes(CAPTURE_TIMEOUT_MARKER);
@@ -645,7 +678,7 @@ async function processOne(entry, baseUrl, waitMs) {
     return { id: label, status: "written", reason: decision.reason };
   } catch (error) {
     const fallback = capture.buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
-    await writePreview(targetDirHandle, fallback);
+    await writePreview(targetDirHandle, fallback, entry);
     ui.setLastGeneratedImage(fallback, label);
     logger.log(`FAIL ${label}  (${error.message})`);
     logger.log("");
@@ -711,6 +744,10 @@ function printSummary(results) {
   logger.log("===================");
 }
 
+function hasRepoDestinationContext() {
+  return Boolean(repoDirHandle || (isWorkspaceManagerLaunch() && workspaceRepoRootHydrated));
+}
+
 class PreviewGeneratorV2App {
   hasValidWorkspacePreviewTarget() {
     if (!isWorkspaceManagerLaunch()) {
@@ -724,7 +761,7 @@ class PreviewGeneratorV2App {
   }
 
   hasRequiredGenerateFields() {
-    return Boolean(repoDirHandle)
+    return hasRepoDestinationContext()
       && parseInputList(ui.pathsOrIds.getValue()).length > 0
       && ui.targetSource.hasBaseUrl()
       && ui.assetFolder.hasValue()
@@ -774,8 +811,8 @@ class PreviewGeneratorV2App {
       return;
     }
 
-    if (!repoDirHandle) {
-      logger.log("Pick the actual repo root folder before writing preview output.");
+    if (!hasRepoDestinationContext()) {
+      logger.log("Pick the actual repo root folder or launch from Workspace Manager V2 before writing preview output.");
       return;
     }
 
@@ -802,6 +839,9 @@ class PreviewGeneratorV2App {
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
     logger.log(`Capture mode: ${ui.getCaptureModeLabel()}`);
     logger.log(`Force rewrite: ${ui.renderControls.isForceRewrite()}`);
+    if (!repoDirHandle && isWorkspaceManagerLaunch()) {
+      logger.log("Workspace launch repo root was hydrated from context; output will download because browsers cannot write to a repo path without a directory handle.");
+    }
     logger.log("");
 
     const results = [];
@@ -863,6 +903,7 @@ class PreviewGeneratorV2App {
     logger.log("Workspace launch context hydration started.");
     workspacePreviewFileValid = false;
     workspaceBackgroundValid = false;
+    workspaceRepoRootHydrated = false;
     workspaceManifestPreviewPath = "";
     workspaceGeneratedPreviewPath = "";
     capture.setCaptureBackgroundColor("");
@@ -882,6 +923,7 @@ class PreviewGeneratorV2App {
 
     repoDisplayName = String(manifest.repoRoot || "").trim();
     repoDirHandle = null;
+    workspaceRepoRootHydrated = true;
     workspaceRepoRootName = repoDisplayName;
     workspacePreviewAssetFolder = previewTarget.previewAssetFolder;
     workspacePreviewGameId = manifest.gameId;
@@ -895,8 +937,7 @@ class PreviewGeneratorV2App {
     ui.pathsOrIds.setValue(manifest.gameId);
     await updatePathPreviewLabels();
     logger.log(`OK Workspace launch context hydrated for ${manifest.gameId}.`);
-    logger.log(`Repo selected from manifest repoRoot: ${repoDisplayName}.`);
-    logger.log("Pick the matching actual repo root folder before writing preview output.");
+    logger.log(`Repo selected from Workspace Manager V2 manifest repoRoot: ${repoDisplayName}.`);
     logger.log("Target source: games");
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
     logger.log(`Manifest preview asset: ${previewTarget.previewAssetId} (${previewTarget.previewAssetType}/${previewTarget.previewAssetKind})`);

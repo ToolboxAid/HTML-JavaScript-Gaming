@@ -1243,10 +1243,10 @@ test.describe("Asset Manager V2", () => {
           path: "HTML-JavaScript-Gaming/assets/fonts/score.ttf"
         },
         {
-          name: "preview.png",
+          name: "title-preview.png",
           mimeType: "image/png",
           contents: "png",
-          path: "HTML-JavaScript-Gaming/assets/images/preview.png"
+          path: "HTML-JavaScript-Gaming/assets/images/title-preview.png"
         }
       ]
     });
@@ -1260,13 +1260,13 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(4);
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
-      await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
-      await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');
-      await expect(page.locator("#workspaceContextOutput")).toContainText('"asset-manager-v2"');
-      await expect(page.locator("#workspaceContextOutput")).toContainText('"vector-map-editor"');
-      await expect(page.locator("#workspaceContextOutput")).toContainText('"vector.asteroids.ship"');
-      await expect(page.locator("#workspaceContextOutput")).not.toContainText('"activePalette"');
-      await expect(page.locator("#workspaceContextOutput")).not.toContainText('"workspaceManifest"');
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/Asteroids\/"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/Asteroids\/assets"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"asset-manager-v2"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector-map-editor"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector.asteroids.ship"/);
+      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"activePalette"/);
+      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"workspaceManifest"/);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
       await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
@@ -1323,10 +1323,10 @@ test.describe("Asset Manager V2", () => {
       await page.locator("#assetKindImage").check();
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetRoleSelect")).toHaveValue("preview");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.preview.preview");
-      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/preview.png");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.preview.title-preview");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/title-preview.png");
       await page.locator("#addAssetButton").click();
-      await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"] img')).toHaveAttribute("src", "/games/Asteroids/assets/images/preview.png");
+      await expect(page.locator('#assetPreview [data-preview-type="image"][data-preview-kind="png"] img')).toHaveAttribute("src", "/games/Asteroids/assets/images/title-preview.png");
 
       await page.locator("#assetKindColor").check();
       await expect(page.locator("#assetFilePickerPanel")).toBeHidden();
@@ -1417,8 +1417,8 @@ test.describe("Asset Manager V2", () => {
         role: "ui",
         source: "asset-manager-v2"
       });
-      expect(storedContext.tools["asset-manager-v2"].assets["assets.image.preview.preview"]).toEqual({
-        path: "assets/images/preview.png",
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.image.preview.title-preview"]).toEqual({
+        path: "assets/images/title-preview.png",
         type: "image",
         kind: "png",
         role: "preview",
