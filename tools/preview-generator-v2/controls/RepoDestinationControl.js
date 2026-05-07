@@ -12,6 +12,10 @@ class RepoDestinationControl {
     this.repoSelectedValueEl.setAttribute("title", displayName);
   }
 
+  setPickRepoVisible(isVisible) {
+    this.pickRepoBtn.hidden = !isVisible;
+  }
+
   onPickRepo(handler) {
     this.pickRepoBtn.addEventListener("click", handler);
   }

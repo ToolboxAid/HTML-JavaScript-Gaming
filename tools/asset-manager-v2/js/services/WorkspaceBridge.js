@@ -74,7 +74,7 @@ export class WorkspaceBridge {
       return { ok: false, message: "Workspace Manager V2 launch no longer accepts wrapper context JSON." };
     }
     const unsupportedManifestKeys = Object.keys(workspaceManifest)
-      .filter((key) => !["$schema", "documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "repoRoot", "tools"].includes(key));
+      .filter((key) => !["$schema", "documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "repoRoot", "repoPath", "tools"].includes(key));
     if (unsupportedManifestKeys.length) {
       return { ok: false, message: `Workspace Manager V2 manifest includes fields not allowed by the workspace manifest schema: ${unsupportedManifestKeys.join(", ")}.` };
     }

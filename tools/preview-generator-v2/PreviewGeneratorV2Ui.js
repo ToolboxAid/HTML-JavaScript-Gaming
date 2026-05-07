@@ -29,6 +29,10 @@ class PreviewGeneratorV2Ui {
     this.repoDestination.setRepoDestinationDisplayName(displayName);
   }
 
+  setPickRepoVisible(isVisible) {
+    this.repoDestination.setPickRepoVisible(isVisible);
+  }
+
   syncGeneratePreviewButton(isGenerating, canGenerate) {
     this.generatePreview.syncGeneratePreviewButton(isGenerating, canGenerate);
   }

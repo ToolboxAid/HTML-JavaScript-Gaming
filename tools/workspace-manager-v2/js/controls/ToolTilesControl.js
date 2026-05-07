@@ -18,7 +18,8 @@ export class ToolTilesControl {
       assetCount: 0,
       canLaunch: false,
       manifestStatus: "Waiting for manifest",
-      paletteSwatchCount: 0
+      paletteSwatchCount: 0,
+      repoPathReady: false
     });
   }
 
@@ -26,18 +27,20 @@ export class ToolTilesControl {
     assetCount = 0,
     canLaunch = false,
     manifestStatus = "Waiting for manifest",
-    paletteSwatchCount = 0
+    paletteSwatchCount = 0,
+    repoPathReady = false
   } = {}) {
     this.container.replaceChildren(...TOOL_GROUPS.map((group) => this.groupSection({
       assetCount,
       canLaunch,
       group,
       manifestStatus,
-      paletteSwatchCount
+      paletteSwatchCount,
+      repoPathReady
     })));
   }
 
-  detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount }) {
+  detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount, repoPathReady }) {
     if (tool.id === "templates-v2") {
       return "Canonical V2 template";
     }
@@ -47,10 +50,13 @@ export class ToolTilesControl {
     if (tool.id === "palette-manager-v2") {
       return `${paletteSwatchCount} palette swatches`;
     }
+    if (tool.id === "preview-generator-v2" && !repoPathReady) {
+      return "Select Repo";
+    }
     return manifestStatus;
   }
 
-  groupSection({ assetCount, canLaunch, group, manifestStatus, paletteSwatchCount }) {
+  groupSection({ assetCount, canLaunch, group, manifestStatus, paletteSwatchCount, repoPathReady }) {
     const section = document.createElement("section");
     section.className = "workspace-manager-v2__tool-group";
     section.setAttribute("aria-label", `${group} tools`);
@@ -69,6 +75,7 @@ export class ToolTilesControl {
           canLaunch,
           manifestStatus,
           paletteSwatchCount,
+          repoPathReady,
           tool
         }));
       });
@@ -77,7 +84,7 @@ export class ToolTilesControl {
     return section;
   }
 
-  tile({ assetCount, canLaunch, manifestStatus, paletteSwatchCount, tool }) {
+  tile({ assetCount, canLaunch, manifestStatus, paletteSwatchCount, repoPathReady, tool }) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "workspace-manager-v2__tool-tile";
@@ -97,7 +104,7 @@ export class ToolTilesControl {
 
     const detail = document.createElement("span");
     detail.className = "workspace-manager-v2__tool-tile-detail";
-    detail.textContent = this.detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount });
+    detail.textContent = this.detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount, repoPathReady });
 
     const actions = document.createElement("span");
     actions.className = "workspace-manager-v2__tool-tile-actions";

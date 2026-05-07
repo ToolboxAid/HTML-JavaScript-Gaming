@@ -46,6 +46,11 @@
       "type": "string",
       "minLength": 1
     },
+    "repoPath": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Absolute filesystem path to the repository root for workspace-owned direct writes. repoRoot remains the display label."
+    },
     "tools": {
       "type": "object",
       "required": ["palette-manager-v2", "asset-manager-v2"],

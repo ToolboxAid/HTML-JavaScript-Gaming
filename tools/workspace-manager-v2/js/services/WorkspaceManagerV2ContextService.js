@@ -344,6 +344,7 @@ export class WorkspaceManagerV2ContextService {
         gameRoot: workspaceManifest.gameRoot,
         manifestId: workspaceManifest.id,
         paletteName: palettePayload.name || "Workspace Palette",
+        repoPath: workspaceManifest.repoPath || "",
         repoRoot: workspaceManifest.repoRoot || ""
       },
       assetCount,
