@@ -28,4 +28,8 @@ export class GameSelectorControl {
   setSummary(value) {
     this.summary.textContent = value;
   }
+
+  setValue(value) {
+    this.select.value = value;
+  }
 }

@@ -4,10 +4,38 @@
   "title": "Asset Manager V2 Payload",
   "type": "object",
   "required": [
+    "schema",
+    "version",
+    "name",
+    "source",
     "assets"
   ],
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema": {
+      "type": "string",
+      "const": "html-js-gaming.asset-manager-v2"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
     "assets": {
       "type": "object",
       "additionalProperties": false,

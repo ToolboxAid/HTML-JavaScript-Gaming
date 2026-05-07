@@ -1,276 +1,179 @@
 {
-  "schema": "html-js-gaming.game-manifest",
+  "$schema": "tools/schemas/workspace.manifest.schema.json",
+  "documentKind": "workspace-manifest",
+  "schema": "html-js-gaming.project",
   "version": 1,
-  "game": {
-    "id": "asteroids",
-    "name": "Asteroids",
-    "entry": "/games/Asteroids/index.html"
-  },
-  "launch": {
-    "directPath": "/games/Asteroids/index.html",
-    "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=Asteroids&mount=game",
-    "workspaceManagerOptional": true
-  },
+  "id": "workspace-manager-v2-Asteroids",
+  "name": "Asteroids Workspace Manager V2 Context",
+  "gameId": "Asteroids",
+  "gameRoot": "games/Asteroids/",
+  "assetsPath": "games/Asteroids/assets",
   "tools": {
-    "primitive-skin-editor": {
-      "skins": [],
-      "schema": "html-js-gaming.tool.primitive-skin-editor",
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
       "version": 1,
-      "name": "Primitive Skin Editor",
-      "source": "manifest"
-    },
-    "svg-asset-studio": {
-      "vectors": {
-        "vector.asteroids.ship": {
-          "id": "vector.asteroids.ship",
-          "type": "vector",
-          "source": {
-            "kind": "svg"
-          },
-          "geometry": {
-            "viewBox": "-24 -24 48 48",
-            "paths": [
-              {
-                "d": "M 0 -18 L 14 16 L 0 8 L -14 16 Z"
-              },
-              {
-                "d": "M -6 14 L 0 6 L 6 14"
-              }
-            ]
-          },
-          "style": {
-            "stroke": true,
-            "fill": false
-          }
+      "name": "Asteroids Palette",
+      "source": "manifest",
+      "swatches": [
+        {
+          "symbol": "!",
+          "hex": "#020617",
+          "name": "Space Black"
         },
-        "vector.asteroids.asteroid.large": {
-          "id": "vector.asteroids.asteroid.large",
-          "type": "vector",
-          "source": {
-            "kind": "svg"
-          },
-          "geometry": {
-            "viewBox": "-40 -40 80 80",
-            "paths": [
-              {
-                "d": "M -28 -12 L -10 -30 L 20 -26 L 32 -8 L 26 18 L 6 32 L -22 24 L -34 2 Z"
-              }
-            ]
-          },
-          "style": {
-            "stroke": true,
-            "fill": false
-          }
+        {
+          "symbol": "#",
+          "hex": "#FFFFFF",
+          "name": "Vector White"
         },
-        "vector.asteroids.asteroid.medium": {
-          "id": "vector.asteroids.asteroid.medium",
-          "type": "vector",
-          "source": {
-            "kind": "svg"
-          },
-          "geometry": {
-            "viewBox": "-28 -28 56 56",
-            "paths": [
-              {
-                "d": "M -16 -10 L -2 -18 L 16 -14 L 20 2 L 8 18 L -10 16 L -20 4 Z"
-              }
-            ]
-          },
-          "style": {
-            "stroke": true,
-            "fill": false
-          }
+        {
+          "symbol": "$",
+          "hex": "#CBD5E1",
+          "name": "Asteroid Gray"
         },
-        "vector.asteroids.asteroid.small": {
-          "id": "vector.asteroids.asteroid.small",
-          "type": "vector",
-          "source": {
-            "kind": "svg"
-          },
-          "geometry": {
-            "viewBox": "-18 -18 36 36",
-            "paths": [
-              {
-                "d": "M -10 -6 L 0 -12 L 10 -6 L 8 8 L -6 10 L -12 0 Z"
-              }
-            ]
-          },
-          "style": {
-            "stroke": true,
-            "fill": false
-          }
+        {
+          "symbol": "%",
+          "hex": "#DBEAFE",
+          "name": "Saucer Glow"
         },
-        "vector.asteroids.ui.title": {
-          "id": "vector.asteroids.ui.title",
-          "type": "vector",
-          "source": {
-            "kind": "svg"
-          },
-          "geometry": {
-            "viewBox": "0 0 220 48",
-            "paths": [
-              {
-                "d": "M 6 40 L 24 6 L 42 40 Z"
-              },
-              {
-                "d": "M 58 40 L 58 8 L 88 8 L 88 18 L 70 18 L 70 22 L 86 22 L 86 32 L 70 32 L 70 40 Z"
-              }
-            ]
-          },
-          "style": {
-            "stroke": true,
-            "fill": false
-          }
+        {
+          "symbol": "&",
+          "hex": "#94A3B8",
+          "name": "HUD Muted"
+        },
+        {
+          "symbol": "(",
+          "hex": "#FBBF24",
+          "name": "Accent Amber"
+        },
+        {
+          "symbol": ")",
+          "hex": "#F87171",
+          "name": "Warning Red"
+        },
+        {
+          "symbol": "*",
+          "hex": "#78B7FF",
+          "name": "HUD Blue"
+        },
+        {
+          "symbol": "+",
+          "hex": "#FFBE64",
+          "name": "HUD Gold"
+        },
+        {
+          "symbol": "0",
+          "hex": "#05070D",
+          "name": "HUD Color 1"
+        },
+        {
+          "symbol": "1",
+          "hex": "#DCE8FF",
+          "name": "HUD Color 2"
         }
-      },
-      "schema": "html-js-gaming.tool.svg-asset-studio",
-      "version": 1,
-      "name": "SVG Asset Studio",
-      "source": "manifest"
+      ]
     },
-    "asset-browser": {
+    "asset-manager-v2": {
+      "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+      "schema": "html-js-gaming.asset-manager-v2",
+      "version": 1,
+      "name": "Asteroids Asset Manager V2 Registry",
+      "source": "manifest",
       "assets": {
-        "audio.asteroids.fire": {
-          "path": "/games/Asteroids/assets/audio/fire.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.music.beat-1": {
+          "path": "assets/audio/beat1.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "music",
+          "source": "manifest"
         },
-        "audio.asteroids.bang-large": {
-          "path": "/games/Asteroids/assets/audio/bangLarge.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.music.beat-2": {
+          "path": "assets/audio/beat2.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "music",
+          "source": "manifest"
         },
-        "audio.asteroids.bang-medium": {
-          "path": "/games/Asteroids/assets/audio/bangMedium.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.sound.bang-large": {
+          "path": "assets/audio/bangLarge.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
         },
-        "audio.asteroids.bang-small": {
-          "path": "/games/Asteroids/assets/audio/bangSmall.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.sound.bang-medium": {
+          "path": "assets/audio/bangMedium.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
         },
-        "audio.asteroids.beat-1": {
-          "path": "/games/Asteroids/assets/audio/beat1.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.sound.bang-small": {
+          "path": "assets/audio/bangSmall.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
         },
-        "audio.asteroids.beat-2": {
-          "path": "/games/Asteroids/assets/audio/beat2.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.sound.extra-ship": {
+          "path": "assets/audio/extraShip.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
         },
-        "audio.asteroids.extra-ship": {
-          "path": "/games/Asteroids/assets/audio/extraShip.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.sound.fire": {
+          "path": "assets/audio/fire.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
         },
-        "audio.asteroids.thrust": {
-          "path": "/games/Asteroids/assets/audio/thrust.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.sound.saucer-large": {
+          "path": "assets/audio/saucerBig.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
         },
-        "audio.asteroids.saucer-large": {
-          "path": "/games/Asteroids/assets/audio/saucerBig.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.sound.saucer-small": {
+          "path": "assets/audio/saucerSmall.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
         },
-        "audio.asteroids.saucer-small": {
-          "path": "/games/Asteroids/assets/audio/saucerSmall.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
+        "assets.audio.sound.thrust": {
+          "path": "assets/audio/thrust.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
         },
-        "font.asteroids.vector-battle": {
-          "path": "/games/Asteroids/assets/fonts/vector_battle.ttf",
-          "kind": "font",
-          "source": "workspace-manager"
+        "assets.font.ui.vector-battle": {
+          "path": "assets/fonts/vector_battle.ttf",
+          "type": "font",
+          "kind": "ttf",
+          "role": "ui",
+          "source": "manifest"
         },
-        "image.asteroids.bezel": {
-          "path": "/games/Asteroids/assets/images/bezel.png",
-          "kind": "image",
-          "source": "workspace-manager",
+        "assets.image.background.deluxe": {
+          "path": "assets/images/deluxe.png",
+          "type": "image",
+          "kind": "png",
+          "role": "background",
+          "source": "manifest"
+        },
+        "assets.image.bezel.bezel": {
+          "path": "assets/images/bezel.png",
+          "type": "image",
+          "kind": "png",
+          "role": "bezel",
+          "source": "manifest",
           "stretchOverride": {
             "uniformEdgeStretchPx": 10
           }
-        },
-        "image.asteroids.background": {
-          "path": "/games/Asteroids/assets/images/deluxe.png",
-          "kind": "image",
-          "source": "workspace-manager"
         }
-      },
-      "schema": "html-js-gaming.tool.asset-browser",
-      "version": 1,
-      "name": "Asset Browser",
-      "source": "manifest"
-    },
-    "palette-browser": {
-      "schema": "html-js-gaming.tool.palette-browser",
-      "version": 1,
-      "name": "Palette Browser",
-      "source": "manifest",
-      "palette": {
-        "schema": "html-js-gaming.palette",
-        "version": 1,
-        "name": "Asteroids Palette",
-        "source": "singleton-merged-from-tool-palettes",
-        "swatches": [
-          {
-            "symbol": "!",
-            "hex": "#020617",
-            "name": "Space Black"
-          },
-          {
-            "symbol": "#",
-            "hex": "#FFFFFF",
-            "name": "Vector White"
-          },
-          {
-            "symbol": "$",
-            "hex": "#CBD5E1",
-            "name": "Asteroid Gray"
-          },
-          {
-            "symbol": "%",
-            "hex": "#DBEAFE",
-            "name": "Saucer Glow"
-          },
-          {
-            "symbol": "&",
-            "hex": "#94A3B8",
-            "name": "HUD Muted"
-          },
-          {
-            "symbol": "(",
-            "hex": "#FBBF24",
-            "name": "Accent Amber"
-          },
-          {
-            "symbol": ")",
-            "hex": "#F87171",
-            "name": "Warning Red"
-          },
-          {
-            "symbol": "*",
-            "hex": "#78B7FF",
-            "name": "HUD Blue"
-          },
-          {
-            "symbol": "+",
-            "hex": "#FFBE64",
-            "name": "HUD Gold"
-          },
-          {
-            "symbol": "0",
-            "hex": "#05070D",
-            "name": "HUD Color 1"
-          },
-          {
-            "symbol": "1",
-            "hex": "#DCE8FF",
-            "name": "HUD Color 2"
-          }
-        ]
       }
     }
   }

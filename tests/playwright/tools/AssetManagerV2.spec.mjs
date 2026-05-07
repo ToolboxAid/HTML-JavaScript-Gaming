@@ -1251,16 +1251,16 @@ test.describe("Asset Manager V2", () => {
     const server = await openWorkspaceManagerV2(page, {
       assetFiles: [
         {
-          name: "fire.wav",
+          name: "laser.wav",
           mimeType: "audio/wav",
           contents: "RIFF",
-          path: "HTML-JavaScript-Gaming/assets/audio/fire.wav"
+          path: "HTML-JavaScript-Gaming/assets/audio/laser.wav"
         },
         {
-          name: "vector_battle.ttf",
+          name: "score.ttf",
           mimeType: "font/ttf",
           contents: "font",
-          path: "HTML-JavaScript-Gaming/assets/fonts/vector_battle.ttf"
+          path: "HTML-JavaScript-Gaming/assets/fonts/score.ttf"
         },
         {
           name: "preview.png",
@@ -1295,14 +1295,14 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#returnToWorkspaceButton")).toBeEnabled();
       await expect(page.locator("#workspaceInsertAssetsButton")).toHaveCount(0);
       await expect(page.locator("#workspaceCopyManifestButton")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 13 validated assets from tools\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
       const hostContextId = await page.evaluate(() => new URL(window.location.href).searchParams.get("hostContextId"));
       const initialAssetCount = await page.evaluate((id) => {
         const context = JSON.parse(sessionStorage.getItem(id));
         return Object.keys(context.tools["asset-manager-v2"].assets).length;
       }, hostContextId);
-      expect(initialAssetCount).toBe(0);
+      expect(initialAssetCount).toBe(13);
       const workspacePreviewContext = await page.evaluate(async () => {
         const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
         return new WorkspaceBridge({ windowRef: window }).readWorkspacePreviewContext();
@@ -1319,23 +1319,23 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");
       await expect(page.locator("#assetFileInput")).toHaveAttribute("accept", /audio\/wav/);
       await page.locator("#pickAssetFileButton").click();
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.sound.fire");
-      await expect(page.locator("#assetPathInput")).toHaveValue("assets/audio/fire.wav");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.sound.laser");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/audio/laser.wav");
       await page.locator("#addAssetButton").click();
-      await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"] audio')).toHaveAttribute("src", "/games/Asteroids/assets/audio/fire.wav");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.fire");
+      await expect(page.locator('#assetPreview [data-preview-type="audio"][data-preview-kind="wav"] audio')).toHaveAttribute("src", "/games/Asteroids/assets/audio/laser.wav");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.audio.sound.laser");
 
       await page.locator("#assetKindFont").check();
       await expect(page.locator("#assetFilePickerPanel")).toBeVisible();
       await expect(page.locator("#assetColorPickerPanel")).toBeHidden();
       await expect(page.locator("#assetUsageField")).toBeHidden();
       await page.locator("#pickAssetFileButton").click();
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.font.ui.vector-battle");
-      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector_battle.ttf");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.font.ui.score");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/score.ttf");
       await page.locator("#addAssetButton").click();
       await expect(page.locator('#assetPreview [data-preview-type="font"][data-preview-kind="ttf"]')).toBeVisible();
       const fontPreviewStyle = await page.locator("#assetPreview style").textContent();
-      expect(fontPreviewStyle).toContain('/games/Asteroids/assets/fonts/vector_battle.ttf');
+      expect(fontPreviewStyle).toContain('/games/Asteroids/assets/fonts/score.ttf');
 
       await page.locator("#assetKindImage").check();
       await page.locator("#pickAssetFileButton").click();
@@ -1409,13 +1409,24 @@ test.describe("Asset Manager V2", () => {
       expect(storedContext.workspaceManifest).toBeUndefined();
       expect(storedContext.tools["asset-browser"]).toBeUndefined();
       expect(storedContext.tools["palette-browser"]).toBeUndefined();
-      expect(storedContext.tools["asset-manager-v2"].assets).toEqual({});
-      expect(storedContext.tools["palette-manager-v2"].source).toBe("workspace-manager-v2");
+      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(13);
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.fire"]).toEqual({
+        path: "assets/audio/fire.wav",
+        type: "audio",
+        kind: "wav",
+        role: "sound",
+        source: "manifest"
+      });
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]).toBeUndefined();
+      expect(storedContext.tools["palette-manager-v2"].source).toBe("manifest");
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(storedContext.tools["workspace-v2"]).toBeUndefined();
       expect(Object.keys(storedContext.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
       await page.locator("#returnToWorkspaceButton").click();
-      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html$/);
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
+      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 13 managed assets.");
+      await expect(page.locator("#launchAssetManagerV2Button")).toBeEnabled();
 
       expect(pageErrors).toEqual([]);
     } finally {

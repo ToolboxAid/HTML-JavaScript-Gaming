@@ -40,6 +40,7 @@ export class WorkspaceManagerV2App {
     this.launchControl.setEnabled(false);
     this.saveControl.setEnabled(false);
     this.statusLog.ok("Workspace Manager V2 ready. Select a game workspace to create a schema-valid manifest.");
+    void this.restoreWorkspaceFromSession();
   }
 
   async selectGame(gameId) {
@@ -63,18 +64,37 @@ export class WorkspaceManagerV2App {
       return;
     }
 
+    this.applyContextResult(result);
+    this.statusLog.ok(`Loaded ${result.game.name} from ${result.game.manifestPath} with ${result.paletteSwatches.length} active palette colors and ${result.assetCount} managed assets.`);
+    this.statusLog.ok("Asset Manager V2 production launch context is session/state based only.");
+  }
+
+  async restoreWorkspaceFromSession() {
+    const result = await this.contextService.restorePersistedContext();
+    if (!result.hasContext) {
+      return;
+    }
+    if (!result.ok) {
+      this.statusLog.fail(`Workspace restore failed: ${result.message}`);
+      return;
+    }
+    this.gameSelector.setValue(result.game.id);
+    this.applyContextResult(result);
+    this.statusLog.ok(`Restored ${result.game.name} workspace from session context ${result.hostContextId}.`);
+  }
+
+  applyContextResult(result) {
     this.activeContext = result.context;
     this.activeGame = result.game;
     this.gameSelector.setSummary(`${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.`);
     this.summary.render({
+      assetCount: result.assetCount,
       context: result.context,
       game: result.game,
       paletteSwatches: result.paletteSwatches
     });
     this.launchControl.setEnabled(true);
     this.saveControl.setEnabled(true);
-    this.statusLog.ok(`Loaded ${result.game.name} with ${result.paletteSwatches.length} active palette colors.`);
-    this.statusLog.ok("Asset Manager V2 production launch context is session/state based only.");
   }
 
   hasLaunchReadyContext() {

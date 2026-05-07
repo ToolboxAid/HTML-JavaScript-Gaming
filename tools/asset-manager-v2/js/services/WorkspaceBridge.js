@@ -49,7 +49,12 @@ export class WorkspaceBridge {
   }
 
   workspaceManagerUrl() {
-    return new URL("../workspace-manager-v2/index.html", this.window.location.href).href;
+    const url = new URL("../workspace-manager-v2/index.html", this.window.location.href);
+    const hostContextId = this.hostContextId();
+    if (hostContextId) {
+      url.searchParams.set("hostContextId", hostContextId);
+    }
+    return url.href;
   }
 
   validateWorkspaceManagerContext(workspaceManifest) {
@@ -94,8 +99,9 @@ export class WorkspaceBridge {
     if (Object.prototype.hasOwnProperty.call(workspaceManifest.tools, "asset-browser")) {
       return { ok: false, message: "Workspace Manager V2 manifest must use tools.asset-manager-v2, not tools.asset-browser." };
     }
+    const allowedAssetPayloadKeys = new Set(["$schema", "schema", "version", "id", "name", "source", "assets"]);
     const assetPayloadKeys = Object.keys(workspaceManifest.tools["asset-manager-v2"]);
-    if (assetPayloadKeys.some((key) => key !== "assets")) {
+    if (assetPayloadKeys.some((key) => !allowedAssetPayloadKeys.has(key))) {
       return { ok: false, message: "Workspace Manager V2 asset payload must match the Asset Manager V2 asset schema." };
     }
     return { ok: true, gameId, gameRoot, assetsPath, activePalette: palettePayload, workspaceManifest };

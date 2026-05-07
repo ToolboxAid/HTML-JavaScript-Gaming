@@ -148,11 +148,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activeGameSummary")).toContainText("games/Asteroids/");
       await expect(page.locator("#activePaletteSummary")).toContainText("Asteroids Palette");
       await expect(page.locator("#activePaletteSummary")).toContainText("active colors");
-      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 0 managed assets.");
+      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 13 managed assets.");
       await expect(page.locator("#launchContextSummary")).toHaveText("Schema-valid manifest is ready for Asteroids.");
       await expect(page.locator("#workspaceContextOutput")).toContainText('"gameRoot": "games/Asteroids/"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"assetsPath": "games/Asteroids/assets"');
-      await expect(page.locator("#workspaceContextOutput")).toContainText('"source": "workspace-manager-v2"');
+      await expect(page.locator("#workspaceContextOutput")).toContainText('"source": "manifest"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"asset-manager-v2"');
       await expect(page.locator("#workspaceContextOutput")).toContainText('"palette-manager-v2"');
       await expect(page.locator("#workspaceContextOutput")).not.toContainText('"palette-browser"');
@@ -164,16 +164,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).not.toContainText("samples/");
       await expect(page.locator("#launchAssetManagerV2Button")).toBeEnabled();
       await expect(page.locator("#saveWorkspaceManifestButton")).toBeEnabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 11 active palette colors and 13 managed assets\./);
 
       const downloadPromise = page.waitForEvent("download");
       await page.locator("#saveWorkspaceManifestButton").click();
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toBe("workspace-manager-v2-Asteroids.workspace.manifest.json");
       const savedManifest = JSON.parse(await readFile(await download.path(), "utf8"));
+      const asteroidsManifest = await page.evaluate(async () => await fetch("/games/Asteroids/game.manifest.json", { cache: "no-store" }).then((response) => response.json()));
+      expect(savedManifest).toEqual(asteroidsManifest);
       expect(savedManifest.documentKind).toBe("workspace-manifest");
       expect(Object.keys(savedManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
       expect(savedManifest.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
-      expect(savedManifest.tools["asset-manager-v2"].assets).toEqual({});
+      expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(13);
+      expect(savedManifest.tools["asset-manager-v2"].source).toBe("manifest");
+      expect(savedManifest.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved schema-valid Workspace Manager V2 manifest workspace-manager-v2-Asteroids\./);
 
       await page.locator("#launchAssetManagerV2Button").click();
@@ -187,7 +192,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__workspace__menu button")).toHaveText(["Return to Workspace"]);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 0 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 13 validated assets from tools\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
 
       const workspacePreviewContext = await page.evaluate(async () => {
@@ -215,11 +220,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.gameRoot).toBe("games/Asteroids/");
       expect(storedContext.assetsPath).toBe("games/Asteroids/assets");
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
-      expect(storedContext.tools["asset-manager-v2"].assets).toEqual({});
+      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(13);
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.font.ui.vector-battle"]).toEqual({
+        path: "assets/fonts/vector_battle.ttf",
+        type: "font",
+        kind: "ttf",
+        role: "ui",
+        source: "manifest"
+      });
       expect(storedContext.workspaceMetadata).toBeUndefined();
       expect(storedContext.tools["asset-browser"]).toBeUndefined();
       expect(storedContext.tools["palette-browser"]).toBeUndefined();
-      expect(storedContext.tools["asset-manager-v2"]).toEqual({ assets: {} });
+      expect(storedContext.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
       const schemaValidation = await page.evaluate(async () => {
         const [workspaceSchema, paletteSchema, assetSchema] = await Promise.all([
           fetch("/tools/schemas/workspace.manifest.schema.json", { cache: "no-store" }).then((response) => response.json()),
@@ -264,6 +276,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         unsupportedToolKeys: []
       });
       expect(JSON.stringify(storedContext)).not.toMatch(/samples\//i);
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
+      await expect(page.locator("#activeAssetRegistrySummary")).toHaveText("Schema-ready Asset Manager V2 manifest payload contains 13 managed assets.");
+      await expect(page.locator("#launchAssetManagerV2Button")).toBeEnabled();
+      await expect(page.locator("#saveWorkspaceManifestButton")).toBeEnabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Restored Asteroids workspace from session context workspace-manager-v2-/);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

@@ -2,7 +2,6 @@ const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
-const LEGACY_PALETTE_TOOL_KEY = "palette-browser";
 
 const GAME_OPTIONS = Object.freeze([
   Object.freeze({
@@ -30,23 +29,8 @@ function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function normalizeGameRoot(gameId) {
-  const safeGameId = String(gameId || "").trim().replace(/[\\/]+/g, "-");
-  return safeGameId ? `games/${safeGameId}/` : "";
-}
-
 function makeHostContextId() {
   return `workspace-manager-v2-${Date.now().toString(36)}`;
-}
-
-function readPaletteFromManifest(manifest) {
-  const palettePayload = manifest?.tools?.[PALETTE_MANAGER_V2_TOOL_KEY] || manifest?.tools?.[LEGACY_PALETTE_TOOL_KEY];
-  const palette = isPlainObject(palettePayload?.palette) ? palettePayload.palette : palettePayload;
-  const swatches = Array.isArray(palette?.swatches) ? palette.swatches : [];
-  return {
-    name: String(palette?.name || palettePayload?.name || "Workspace Palette").trim(),
-    swatches: clone(swatches)
-  };
 }
 
 function schemaProperties(schema) {
@@ -225,32 +209,61 @@ export class WorkspaceManagerV2ContextService {
     if (!manifestResult.ok) {
       return manifestResult;
     }
-    const palette = readPaletteFromManifest(manifestResult.manifest);
-    if (!palette.swatches.length) {
-      return { ok: false, message: `${game.name} does not expose an active palette in its game manifest.` };
+    return this.contextResultFromManifest(game, manifestResult.manifest, game.manifestPath);
+  }
+
+  async restorePersistedContext() {
+    const params = new URLSearchParams(this.location.search || "");
+    const hostContextId = params.get("hostContextId") || this.sessionStorage.getItem(HOST_CONTEXT_STORAGE_KEY) || "";
+    if (!hostContextId) {
+      return { ok: false, hasContext: false };
     }
-    const gameRoot = normalizeGameRoot(game.id);
-    const assetsPath = `${gameRoot}assets`;
-    const workspaceManifest = this.buildWorkspaceManifest({
-      assetsPath,
-      game,
-      gameRoot,
-      palette
-    });
+    const rawValue = this.sessionStorage.getItem(hostContextId);
+    if (!rawValue) {
+      return { ok: false, hasContext: true, message: "Stored Workspace Manager V2 session context was not found." };
+    }
+    let manifest;
+    try {
+      manifest = JSON.parse(rawValue);
+    } catch (error) {
+      return { ok: false, hasContext: true, message: `Stored Workspace Manager V2 session context is invalid JSON: ${error.message}` };
+    }
+    const game = this.games().find((entry) => entry.id === manifest?.gameId);
+    if (!game) {
+      return { ok: false, hasContext: true, message: "Stored Workspace Manager V2 session context does not match a known game workspace." };
+    }
+    const result = await this.contextResultFromManifest(game, manifest, `sessionStorage:${hostContextId}`);
+    return result.ok
+      ? { ...result, hasContext: true, hostContextId }
+      : { ...result, hasContext: true };
+  }
+
+  async contextResultFromManifest(game, workspaceManifest, sourceLabel) {
     const validation = await this.validateGeneratedManifest(workspaceManifest);
     if (!validation.ok) {
-      return validation;
+      return { ok: false, message: `${sourceLabel} failed workspace manifest schema validation: ${validation.message}` };
+    }
+    if (workspaceManifest.gameId !== game.id) {
+      return { ok: false, message: `${sourceLabel} gameId ${workspaceManifest.gameId || "(empty)"} does not match ${game.id}.` };
+    }
+    const palettePayload = workspaceManifest.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
+    const assetPayload = workspaceManifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
+    const paletteSwatches = Array.isArray(palettePayload?.swatches) ? clone(palettePayload.swatches) : [];
+    if (!paletteSwatches.length) {
+      return { ok: false, message: `${sourceLabel} does not expose active Palette Manager V2 swatches.` };
     }
     return {
       ok: true,
-      context: workspaceManifest,
+      context: clone(workspaceManifest),
       game: {
         ...game,
-        assetsPath,
-        gameRoot,
-        paletteName: palette.name
+        assetsPath: workspaceManifest.assetsPath,
+        gameRoot: workspaceManifest.gameRoot,
+        manifestId: workspaceManifest.id,
+        paletteName: palettePayload.name || "Workspace Palette"
       },
-      paletteSwatches: clone(palette.swatches)
+      assetCount: Object.keys(assetPayload.assets || {}).length,
+      paletteSwatches
     };
   }
 
@@ -374,32 +387,6 @@ export class WorkspaceManagerV2ContextService {
     }
   }
 
-  buildWorkspaceManifest({ assetsPath, game, gameRoot, palette }) {
-    return {
-      documentKind: "workspace-manifest",
-      schema: "html-js-gaming.project",
-      version: 1,
-      id: `workspace-manager-v2-${game.id}`,
-      name: `${game.name} Workspace Manager V2 Context`,
-      gameId: game.id,
-      gameRoot,
-      assetsPath,
-      tools: {
-        [PALETTE_MANAGER_V2_TOOL_KEY]: {
-          "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
-          schema: "html-js-gaming.palette",
-          version: 1,
-          name: palette.name,
-          source: "workspace-manager-v2",
-          swatches: clone(palette.swatches)
-        },
-        [ASSET_MANAGER_V2_TOOL_KEY]: {
-          assets: {}
-        }
-      }
-    };
-  }
-
   persistContext(context) {
     const hostContextId = makeHostContextId();
     this.sessionStorage.setItem(hostContextId, JSON.stringify(context));
@@ -416,7 +403,12 @@ export class WorkspaceManagerV2ContextService {
   }
 
   workspaceManagerUrl() {
-    return new URL("../workspace-manager-v2/index.html", this.location.href).href;
+    const url = new URL("../workspace-manager-v2/index.html", this.location.href);
+    const hostContextId = this.sessionStorage.getItem(HOST_CONTEXT_STORAGE_KEY);
+    if (hostContextId) {
+      url.searchParams.set("hostContextId", hostContextId);
+    }
+    return url.href;
   }
 
   launchAssetManager(hostContextId) {

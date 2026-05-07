@@ -18,10 +18,10 @@ export class WorkspaceSummaryControl {
     this.contextOutput.textContent = "{}";
   }
 
-  render({ context, game, paletteSwatches }) {
+  render({ assetCount = 0, context, game, paletteSwatches }) {
     const swatchCount = paletteSwatches.length;
     this.paletteSummary.textContent = `${game.paletteName} has ${swatchCount} active colors.`;
-    this.assetRegistrySummary.textContent = "Schema-ready Asset Manager V2 manifest payload contains 0 managed assets.";
+    this.assetRegistrySummary.textContent = `Schema-ready Asset Manager V2 manifest payload contains ${assetCount} managed assets.`;
     this.launchContextSummary.textContent = `Schema-valid manifest is ready for ${game.id}.`;
     this.contextOutput.textContent = JSON.stringify(context, null, 2);
   }
