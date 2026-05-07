@@ -24,6 +24,37 @@ async function openToolsIndex(page) {
   return server;
 }
 
+async function installPreviewGeneratorRepoRootPicker(page) {
+  await page.addInitScript(() => {
+    class FakeDirectoryHandle {
+      constructor(name) {
+        this.kind = "directory";
+        this.name = name;
+        this.children = new Map();
+      }
+
+      addDirectory(name) {
+        const directory = new FakeDirectoryHandle(name);
+        this.children.set(name, directory);
+        return directory;
+      }
+
+      async getDirectoryHandle(name) {
+        const child = this.children.get(name);
+        if (child?.kind === "directory") {
+          return child;
+        }
+        throw new Error(`Missing directory: ${name}`);
+      }
+    }
+
+    const repo = new FakeDirectoryHandle("HTML-JavaScript-Gaming");
+    repo.addDirectory("games");
+    repo.addDirectory("tools");
+    window.showDirectoryPicker = async () => repo;
+  });
+}
+
 test.describe("Workspace Manager V2 bootstrap", () => {
   test.afterAll(async () => {
     await coverageReporter.writeReport();
@@ -405,29 +436,30 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#paletteStatus")).toHaveText("Loaded active workspace palette Asteroids Palette.");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await page.route("**/games/Asteroids/assets/images/preview.svg", async (route) => {
-        await route.fulfill({
-          body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><rect width="8" height="8"/></svg>',
-          contentType: "image/svg+xml",
-          status: 200
-        });
-      });
+      await installPreviewGeneratorRepoRootPicker(page);
       await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
       await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Generate Image", "Return to Workspace"]);
       await expect(page.locator("#executeBtn")).toBeVisible();
-      await expect(page.locator("#executeBtn")).toBeEnabled();
-      await expect(page.locator("#repoSelectedValue")).toHaveText("Asteroids workspace (games/Asteroids)");
+      await expect(page.locator("#executeBtn")).toBeDisabled();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await expect(page.locator("#workspaceContextValue")).toHaveText("Asteroids workspace (games/Asteroids)");
       await expect(page.locator("#targetTypeGames")).toBeChecked();
       await expect(page.locator("#assetFolder")).toHaveValue("assets/images");
       await expect(page.locator("#sampleList")).toHaveValue("Asteroids");
+      await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/bezel.png");
       await expect(page.locator("#lastGeneratedImagePreview")).toBeVisible();
-      await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Last generated: Asteroids preview.svg");
+      await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Preview target: games/Asteroids/assets/images/bezel.png");
       await expect(page.locator("#log")).toContainText("OK Workspace launch context hydrated for Asteroids.");
+      await expect(page.locator("#log")).toContainText("Repo selected: not selected; pick the actual repo root folder.");
       await expect(page.locator("#log")).toContainText("Asset folder: assets\\images");
-      await expect(page.locator("#log")).toContainText("OK Loaded existing preview image from /games/Asteroids/assets/images/preview.svg.");
+      await expect(page.locator("#log")).toContainText("Preview target: games/Asteroids/assets/images/bezel.png");
+      await expect(page.locator("#log")).toContainText("OK Workspace preview target is valid at games/Asteroids/assets/images/bezel.png.");
+      await page.locator("#pickRepoBtn").click();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+      await expect(page.locator("#executeBtn")).toBeEnabled();
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       expect(pageErrors).toEqual([]);

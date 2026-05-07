@@ -5,6 +5,7 @@ class OutputSummaryControl {
     this.accordion = new AccordionSection({ content: documentRef.getElementById("outputSummaryContent") });
     this.writeFolderSampleValueEl = documentRef.getElementById("writeFolderSampleValue");
     this.writeFolderActualValueEl = documentRef.getElementById("writeFolderActualValue");
+    this.previewTargetValueEl = documentRef.getElementById("previewTargetValue");
   }
 
   setWriteFolderSample(value) {
@@ -13,6 +14,11 @@ class OutputSummaryControl {
 
   setWriteFolderActual(value) {
     this.writeFolderActualValueEl.textContent = value;
+  }
+
+  setPreviewTarget(value) {
+    this.previewTargetValueEl.textContent = value;
+    this.previewTargetValueEl.setAttribute("title", value);
   }
 }
 

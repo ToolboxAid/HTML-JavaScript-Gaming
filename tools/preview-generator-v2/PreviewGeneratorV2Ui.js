@@ -41,6 +41,10 @@ class PreviewGeneratorV2Ui {
     this.lastGeneratedImage.setLastGeneratedImage(svgContent, label);
   }
 
+  setPreviewTargetImage(imagePath) {
+    this.lastGeneratedImage.setPreviewTargetImage(imagePath);
+  }
+
   getSelectedCaptureMode() {
     return this.captureMode.getSelectedCaptureMode();
   }

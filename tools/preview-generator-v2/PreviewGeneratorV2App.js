@@ -13,7 +13,10 @@ let repoDirHandle = null;
 let stopRequested = false;
 let repoDisplayName = "";
 let isGenerating = false;
-let workspaceLaunchReady = false;
+let workspacePreviewAssetFolder = "";
+let workspacePreviewFileValid = false;
+let workspacePreviewGameId = "";
+let workspacePreviewTargetPath = "";
 const ui = new PreviewGeneratorV2Ui();
 const logger = new PreviewGeneratorV2Logger({
   statusEl: ui.statusLog.getStatusElement(),
@@ -99,39 +102,62 @@ function workspaceAssetFolder(manifest) {
   return assetsPath.slice(gameRoot.length + 1);
 }
 
-function workspaceImageAssetFolder(manifest) {
+function workspacePreviewTarget(manifest) {
   const gameRoot = normalizeWorkspacePath(manifest.gameRoot);
   const assetFolder = workspaceAssetFolder(manifest);
   if (!assetFolder) {
-    return "";
+    return { ok: false, message: "assetsPath must be inside gameRoot." };
   }
   const imageAsset = Object.values(manifest.tools?.["asset-manager-v2"]?.assets || {})
-    .find((asset) => asset?.type === "image" && normalizeWorkspacePath(asset.path));
+    .find((asset) => asset?.type === "image" && asset?.role === "bezel" && normalizeWorkspacePath(asset.path));
+  if (!imageAsset) {
+    return { ok: false, message: "manifest must include a bezel image asset path under assetsPath." };
+  }
   const imagePath = normalizeWorkspacePath(imageAsset?.path);
   const imagePathFromGameRoot = imagePath.startsWith(`${gameRoot}/`)
     ? imagePath.slice(gameRoot.length + 1)
     : imagePath;
   if (!imagePathFromGameRoot.startsWith(`${assetFolder}/`)) {
-    return "";
+    return { ok: false, message: `${imagePath || "(empty)"} must resolve under ${assetFolder}.` };
   }
-  const imageFolder = imagePathFromGameRoot.split("/").slice(0, -1).join("/");
-  return imageFolder || "";
+  const previewAssetFolder = imagePathFromGameRoot.split("/").slice(0, -1).join("/");
+  if (!previewAssetFolder) {
+    return { ok: false, message: `${imagePath} does not include an asset folder.` };
+  }
+  return {
+    ok: true,
+    previewAssetFolder,
+    previewTargetPath: `${gameRoot}/${imagePathFromGameRoot}`
+  };
 }
 
-async function readWorkspacePreviewSvg(manifest, assetFolder) {
-  const gameRoot = normalizeWorkspacePath(manifest.gameRoot);
-  if (!gameRoot || !assetFolder) {
-    return { ok: false, message: "Workspace Manager V2 manifest preview path is incomplete." };
+async function validateWorkspacePreviewTarget(previewTargetPath) {
+  if (!previewTargetPath) {
+    return { ok: false, message: "Workspace Manager V2 manifest preview target path is empty." };
   }
-  const previewPath = `/${gameRoot}/${assetFolder}/preview.svg`;
   try {
-    const response = await fetch(previewPath, { cache: "no-store" });
+    const response = await fetch(`/${previewTargetPath}`, { cache: "no-store" });
     if (!response.ok) {
-      return { ok: false, missing: true, previewPath };
+      return { ok: false, message: `${previewTargetPath} returned ${response.status}.` };
     }
-    return { ok: true, previewPath, svgContent: await response.text() };
+    const contentType = String(response.headers.get("content-type") || "");
+    const hasImageExtension = /\.(png|jpe?g|gif|webp|svg)$/i.test(previewTargetPath);
+    if (contentType && !contentType.startsWith("image/") && !hasImageExtension) {
+      return { ok: false, message: `${previewTargetPath} is not an image response.` };
+    }
+    return { ok: true };
   } catch (error) {
-    return { ok: false, message: `Unable to read ${previewPath}: ${error.message}` };
+    return { ok: false, message: `Unable to read ${previewTargetPath}: ${error.message}` };
+  }
+}
+
+async function validateRepoRootHandle(handle) {
+  try {
+    await PreviewGeneratorV2RepoAccess.getDirectoryHandle(handle, "games");
+    await PreviewGeneratorV2RepoAccess.getDirectoryHandle(handle, "tools");
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, message: `Selected folder is not the repo root: ${error.message}` };
   }
 }
 
@@ -173,6 +199,10 @@ function updateWriteFolderSampleLabel() {
   }
 }
 
+function updatePreviewTargetLabel() {
+  ui.outputSummary.setPreviewTarget(workspacePreviewTargetPath || "not available yet");
+}
+
 async function updateWriteFolderActualLabelFromInput() {
   const lines = parseInputList(ui.pathsOrIds.getValue());
   if (!lines.length) {
@@ -195,6 +225,7 @@ async function updateWriteFolderActualLabelFromInput() {
 
 async function updatePathPreviewLabels() {
   updateWriteFolderSampleLabel();
+  updatePreviewTargetLabel();
   await updateWriteFolderActualLabelFromInput();
 }
 
@@ -552,13 +583,24 @@ function printSummary(results) {
 }
 
 class PreviewGeneratorV2App {
+  hasValidWorkspacePreviewTarget() {
+    if (!isWorkspaceManagerLaunch()) {
+      return true;
+    }
+    return workspacePreviewFileValid
+      && ui.getSelectedTargetType() === "games"
+      && getAssetFolderRelativePath() === workspacePreviewAssetFolder
+      && parseInputList(ui.pathsOrIds.getValue()).includes(workspacePreviewGameId);
+  }
+
   hasRequiredGenerateFields() {
-    return (Boolean(repoDirHandle) || workspaceLaunchReady)
+    return Boolean(repoDirHandle)
       && parseInputList(ui.pathsOrIds.getValue()).length > 0
       && ui.targetSource.hasBaseUrl()
       && ui.assetFolder.hasValue()
       && ui.targetSource.hasSelection()
-      && ui.captureMode.hasSelection();
+      && ui.captureMode.hasSelection()
+      && this.hasValidWorkspacePreviewTarget();
   }
 
   syncGeneratePreviewButton() {
@@ -567,9 +609,18 @@ class PreviewGeneratorV2App {
 
   async handlePickRepo() {
     try {
-      repoDirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
-      workspaceLaunchReady = false;
-      repoDisplayName = PreviewGeneratorV2RepoAccess.getRepoDestinationDisplayName(repoDirHandle);
+      const selectedRepoHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+      const repoValidation = await validateRepoRootHandle(selectedRepoHandle);
+      if (!repoValidation.ok) {
+        repoDirHandle = null;
+        repoDisplayName = "";
+        ui.setRepoDestinationDisplayName("not selected");
+        this.syncGeneratePreviewButton();
+        logger.log(`FAIL ${repoValidation.message}`);
+        return;
+      }
+      repoDirHandle = selectedRepoHandle;
+      repoDisplayName = PreviewGeneratorV2RepoAccess.getRepoDestinationDisplayName(selectedRepoHandle);
 
       ui.setRepoDestinationDisplayName(repoDisplayName);
       logger.clearStatus();
@@ -586,12 +637,12 @@ class PreviewGeneratorV2App {
   async handleExecute() {
     if (!this.hasRequiredGenerateFields()) {
       this.syncGeneratePreviewButton();
-      logger.log("Provide repo destination, base URL, asset folder, and at least one path or ID before generating.");
+      logger.log("Provide repo destination, base URL, asset folder, preview target, and at least one path or ID before generating.");
       return;
     }
 
     if (!repoDirHandle) {
-      logger.log("Workspace launch context is hydrated; Pick Repo Folder is required before writing preview output.");
+      logger.log("Pick the actual repo root folder before writing preview output.");
       return;
     }
 
@@ -678,41 +729,46 @@ class PreviewGeneratorV2App {
     }
     logger.log("Workspace launch context hydration started.");
     if (!contextResult.ok) {
-      workspaceLaunchReady = false;
+      workspacePreviewFileValid = false;
       logger.log(`FAIL Workspace launch context hydration: ${contextResult.message}`);
       this.syncGeneratePreviewButton();
       return;
     }
 
     const manifest = contextResult.manifest;
-    const assetFolder = workspaceImageAssetFolder(manifest);
-    if (!assetFolder) {
-      workspaceLaunchReady = false;
-      logger.log("FAIL Workspace launch context hydration: manifest must include an image asset path under assetsPath.");
+    const previewTarget = workspacePreviewTarget(manifest);
+    if (!previewTarget.ok) {
+      workspacePreviewFileValid = false;
+      logger.log(`FAIL Workspace launch context hydration: ${previewTarget.message}`);
       this.syncGeneratePreviewButton();
       return;
     }
 
-    repoDisplayName = `${manifest.gameId} workspace (${normalizeWorkspacePath(manifest.gameRoot)})`;
-    ui.setRepoDestinationDisplayName(repoDisplayName);
+    repoDisplayName = "";
+    repoDirHandle = null;
+    workspacePreviewAssetFolder = previewTarget.previewAssetFolder;
+    workspacePreviewGameId = manifest.gameId;
+    workspacePreviewTargetPath = previewTarget.previewTargetPath;
+    ui.setRepoDestinationDisplayName("not selected");
+    ui.repoDestination.setWorkspaceContextLabel(`${manifest.gameId} workspace (${normalizeWorkspacePath(manifest.gameRoot)})`);
     ui.targetSource.setSelectedTargetType("games");
-    ui.assetFolder.setValue(assetFolder);
+    ui.assetFolder.setValue(workspacePreviewAssetFolder);
     ui.pathsOrIds.setValue(manifest.gameId);
     await updatePathPreviewLabels();
-    workspaceLaunchReady = true;
     logger.log(`OK Workspace launch context hydrated for ${manifest.gameId}.`);
-    logger.log(`Repo selected: ${repoDisplayName}`);
+    logger.log("Repo selected: not selected; pick the actual repo root folder.");
     logger.log("Target source: games");
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
+    logger.log(`Preview target: ${workspacePreviewTargetPath}`);
 
-    const previewResult = await readWorkspacePreviewSvg(manifest, assetFolder);
+    const previewResult = await validateWorkspacePreviewTarget(workspacePreviewTargetPath);
     if (previewResult.ok) {
-      ui.setLastGeneratedImage(previewResult.svgContent, `${manifest.gameId} preview.svg`);
-      logger.log(`OK Loaded existing preview image from ${previewResult.previewPath}.`);
-    } else if (previewResult.missing) {
-      logger.log(`SKIP No existing preview image at ${previewResult.previewPath}.`);
+      workspacePreviewFileValid = true;
+      ui.setPreviewTargetImage(workspacePreviewTargetPath);
+      logger.log(`OK Workspace preview target is valid at ${workspacePreviewTargetPath}.`);
     } else {
-      logger.log(`WARN ${previewResult.message}`);
+      workspacePreviewFileValid = false;
+      logger.log(`FAIL Workspace preview target validation: ${previewResult.message}`);
     }
     this.syncGeneratePreviewButton();
   }
