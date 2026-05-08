@@ -140,6 +140,29 @@ async function expectWorkspaceToolsDisabled(page) {
   expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
 }
 
+async function readWorkspaceSessionHydration(page) {
+  return await page.evaluate(() => {
+    const parseJson = (key) => {
+      const value = window.sessionStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
+    };
+    const keys = Array.from({ length: window.sessionStorage.length }, (_, index) => window.sessionStorage.key(index))
+      .filter(Boolean)
+      .sort();
+    const toolKeys = keys.filter((key) => key.startsWith("workspace.tools."));
+    return {
+      repoReference: parseJson("workspace.repo.reference"),
+      schemaByTool: Object.fromEntries(toolKeys
+        .filter((key) => key.endsWith(".schema"))
+        .map((key) => [key.slice("workspace.tools.".length, -".schema".length), parseJson(key)])),
+      stateByTool: Object.fromEntries(toolKeys
+        .filter((key) => key.endsWith(".state"))
+        .map((key) => [key.slice("workspace.tools.".length, -".state".length), parseJson(key)])),
+      toolKeys
+    };
+  });
+}
+
 test.describe("Workspace Manager V2 bootstrap", () => {
   test.afterAll(async () => {
     await coverageReporter.writeReport();
@@ -275,6 +298,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     await page.addInitScript((manifest) => {
       window.sessionStorage.setItem("workspace-manager-v2-stale-context", JSON.stringify(manifest));
       window.sessionStorage.setItem("workspace-manager-v2-active-host-context-id", "workspace-manager-v2-stale-context");
+      window.sessionStorage.setItem("workspace.repo.reference", JSON.stringify({ displayName: "StaleRepo" }));
+      window.sessionStorage.setItem("workspace.tools.asset-manager-v2.schema", JSON.stringify({ toolId: "asset-manager-v2" }));
+      window.sessionStorage.setItem("workspace.tools.asset-manager-v2.state", JSON.stringify({ toolId: "asset-manager-v2" }));
     }, staleGameManifest.game.workspace);
     const server = await openWorkspaceManagerV2(page);
 
@@ -289,6 +315,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue("{}");
       await expectWorkspaceToolsDisabled(page);
       await expect(page.locator("#statusLog")).not.toHaveValue(/Restored Asteroids workspace/);
+      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+        repoReference: null,
+        toolKeys: []
+      });
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -309,8 +339,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activeGameSelect option")).toHaveCount(0);
       await expect(page.locator("#activeGameSummary")).toHaveText("Pick a repo folder to discover schema-valid game manifests.");
       await expectWorkspaceToolsDisabled(page);
+      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+        repoReference: null,
+        toolKeys: []
+      });
 
       await selectMockRepo(page);
+      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+        repoReference: {
+          source: "workspace-manager-v2",
+          kind: "file-system-directory-handle-reference",
+          storageKey: "workspace.repo.reference",
+          handleKind: "directory",
+          handleName: "HTML-JavaScript-Gaming",
+          displayName: "HTML-JavaScript-Gaming"
+        },
+        toolKeys: []
+      });
       await expect(page.locator("#activeGameSummary")).toHaveText("Discovered 3 schema-valid game manifests from HTML-JavaScript-Gaming.");
       await expect(page.locator("#statusLog")).toHaveValue(/INFO SKIP games\/InvalidWorkspace\/game\.manifest\.json: Game manifest failed schema validation: root\.game is required/);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO SKIP games\/MissingManifest\/game\.manifest\.json: game\.manifest\.json not found/);
@@ -359,6 +404,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectWorkspaceToolsDisabled(page);
       await expect(page.locator("#activeGameSummary")).toHaveText(/Selected repo is missing games\//);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Repo load failed: Selected repo is missing games\//);
+      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+        repoReference: null,
+        toolKeys: []
+      });
 
       await page.evaluate(() => {
         window.__workspaceManagerV2MockRepoConfig = {
@@ -374,6 +423,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activeGameSummary")).toHaveText("No schema-valid game manifests were found in NoValidGamesRepo.");
       await expect(page.locator("#statusLog")).toHaveValue(/INFO SKIP games\/InvalidWorkspace\/game\.manifest\.json: Game manifest failed schema validation: root\.game is required/);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Repo load failed: No schema-valid game\.manifest\.json files were found in NoValidGamesRepo\./);
+      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+        repoReference: {
+          source: "workspace-manager-v2",
+          kind: "file-system-directory-handle-reference",
+          storageKey: "workspace.repo.reference",
+          handleKind: "directory",
+          handleName: "NoValidGamesRepo",
+          displayName: "NoValidGamesRepo"
+        },
+        toolKeys: []
+      });
 
       await selectMockRepo(page, { repoName: "SecondRepo" });
       await expect(page.locator("#activeGameSummary")).toHaveText("Discovered 3 schema-valid game manifests from SecondRepo.");
@@ -441,6 +501,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         tiles.every((tile) => Array.from(tile.querySelectorAll(".workspace-manager-v2__tool-tile-action"), (action) => action.textContent.trim()).join("|") === "How To Use|Read Me")
       ))).toBe(true);
       await selectMockRepo(page);
+      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+        repoReference: {
+          displayName: "HTML-JavaScript-Gaming",
+          handleName: "HTML-JavaScript-Gaming",
+          kind: "file-system-directory-handle-reference"
+        },
+        toolKeys: []
+      });
       const compactCenterLayout = await page.evaluate(() => {
         const getRect = (selector) => {
           const element = document.querySelector(selector);
@@ -485,6 +553,41 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"workspaceManifest"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"workspaceMetadata"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/samples\//);
+      const selectedGameHydration = await readWorkspaceSessionHydration(page);
+      expect(selectedGameHydration.toolKeys).toEqual([
+        "workspace.tools.asset-manager-v2.schema",
+        "workspace.tools.asset-manager-v2.state",
+        "workspace.tools.palette-manager-v2.schema",
+        "workspace.tools.palette-manager-v2.state",
+        "workspace.tools.preview-generator-v2.schema",
+        "workspace.tools.preview-generator-v2.state",
+        "workspace.tools.templates-v2.schema",
+        "workspace.tools.templates-v2.state"
+      ]);
+      expect(selectedGameHydration.schemaByTool["asset-manager-v2"]).toMatchObject({
+        source: "workspace-manager-v2",
+        toolId: "asset-manager-v2",
+        schemaRole: "workspace-tool-payload",
+        schemaRef: "tools/schemas/tools/asset-manager-v2.schema.json",
+        workspaceSchemaRef: "tools/schemas/workspace.manifest.schema.json"
+      });
+      expect(selectedGameHydration.schemaByTool["preview-generator-v2"]).toMatchObject({
+        source: "workspace-manager-v2",
+        toolId: "preview-generator-v2",
+        schemaRole: "workspace-launch-context",
+        schemaRef: "tools/schemas/workspace.manifest.schema.json"
+      });
+      expect(selectedGameHydration.stateByTool["asset-manager-v2"]).toMatchObject({
+        source: "workspace-manager-v2",
+        toolId: "asset-manager-v2",
+        workspaceManifestId: "workspace-manager-v2-Asteroids",
+        gameId: "Asteroids",
+        gameRoot: "games/Asteroids/",
+        assetsPath: "games/Asteroids/assets",
+        repoReferenceKey: "workspace.repo.reference"
+      });
+      expect(Object.keys(selectedGameHydration.stateByTool["asset-manager-v2"].payload.assets)).toHaveLength(14);
+      expect(selectedGameHydration.stateByTool["templates-v2"].payload).toBeNull();
       await page.evaluate(() => {
         Object.defineProperty(navigator, "clipboard", {
           configurable: true,
@@ -534,6 +637,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { height: 142, width: 180 }
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for templates-v2, asset-manager-v2, palette-manager-v2, preview-generator-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 11 active palette colors and 14 managed assets\./);
 
       const downloadPromise = page.waitForEvent("download");
@@ -829,7 +933,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"id": "workspace-manager-v2-Asteroids-imported"/);
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
+      expect((await readWorkspaceSessionHydration(page)).toolKeys).toContain("workspace.tools.asset-manager-v2.state");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for templates-v2, asset-manager-v2, palette-manager-v2, preview-generator-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Imported schema-valid Workspace Manager V2 manifest workspace-manager-v2-Asteroids-imported\./);
 
       const downloadPromise = page.waitForEvent("download");

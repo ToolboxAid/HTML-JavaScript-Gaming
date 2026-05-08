@@ -22,9 +22,13 @@ export class WorkspaceManagerV2App {
     this.activeHostContextId = null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
     this.activeRepoHandle = null;
+    this.activeSessionHydration = null;
   }
 
   start() {
+    if (!this.contextService.hasExplicitHostContextId()) {
+      this.contextService.clearWorkspaceSessionHydration();
+    }
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
     this.gameSelector.mount({
@@ -74,6 +78,8 @@ export class WorkspaceManagerV2App {
     this.activeGame = null;
     this.activeHostContextId = null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
+    this.activeSessionHydration = null;
+    this.contextService.clearWorkspaceSessionHydration();
     this.contextService.clearDiscoveredGames();
     this.gameSelector.clear();
     this.gameSelector.setSummary(summaryText);
@@ -105,6 +111,12 @@ export class WorkspaceManagerV2App {
       });
       this.activeRepoHandle = selectedRepoHandle;
       this.repoDestination.setRepoDestinationDisplayName(displayName);
+      const repoHydration = this.contextService.hydrateRepoReference(selectedRepoHandle, displayName);
+      if (!repoHydration.ok) {
+        this.clearActiveWorkspace(repoHydration.message);
+        this.statusLog.fail(`Repo load failed: ${repoHydration.message}`);
+        return;
+      }
       this.contextService.setDiscoveredGames(discovery.games);
       this.gameSelector.setGames(discovery.games);
       if (discovery.games.length) {
@@ -127,6 +139,8 @@ export class WorkspaceManagerV2App {
     this.activeGame = null;
     this.activeHostContextId = null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
+    this.activeSessionHydration = null;
+    this.contextService.clearToolSessionHydration();
     this.menu.setExportEnabled(false);
     this.toolTiles.renderEmpty();
     this.summary.clear();
@@ -153,6 +167,7 @@ export class WorkspaceManagerV2App {
     if (result.boundaryContract) {
       this.statusLog.ok(result.boundaryContract);
     }
+    this.reportSessionHydration();
     this.statusLog.ok(`Loaded ${result.game.name} from ${result.game.manifestPath} with ${result.paletteSwatches.length} active palette colors and ${result.assetCount} managed assets.`);
     this.statusLog.ok("Asset Manager V2 production launch context is session/state based only.");
   }
@@ -180,28 +195,47 @@ export class WorkspaceManagerV2App {
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }
+    this.reportSessionHydration();
     this.statusLog.ok(`Restored ${result.game.name} workspace from session context ${result.hostContextId}.`);
   }
 
   applyContextResult(result) {
+    const hydration = this.contextService.hydrateEnabledToolSessions({
+      context: result.context,
+      game: result.game,
+      tools: this.contextService.workspaceLaunchableTools()
+    });
     this.activeContext = result.context;
     this.activeGame = result.game;
     this.activeHostContextId = result.hostContextId || null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
+    this.activeSessionHydration = hydration;
     this.gameSelector.setSummary(`${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.`);
     this.summary.render({ context: result.context });
     this.toolTiles.render({
       assetCount: result.assetCount,
-      canLaunch: true,
+      canLaunch: hydration.ok,
       manifestStatus: "Schema-valid manifest",
       paletteSwatchCount: result.paletteSwatches.length
     });
-    this.menu.setExportEnabled(true);
+    this.menu.setExportEnabled(hydration.ok);
+  }
+
+  reportSessionHydration() {
+    if (!this.activeSessionHydration) {
+      return;
+    }
+    if (!this.activeSessionHydration.ok) {
+      this.statusLog.fail(`Session hydration failed: ${this.activeSessionHydration.message}`);
+      return;
+    }
+    this.statusLog.ok(`Hydrated workspace session for ${this.activeSessionHydration.hydratedToolIds.join(", ")}.`);
   }
 
   hasLaunchReadyContext() {
     return Boolean(this.activeContext
       && this.activeGame
+      && this.activeSessionHydration?.ok
       && this.activeContext.tools?.["palette-manager-v2"]?.swatches?.length);
   }
 
@@ -298,6 +332,7 @@ export class WorkspaceManagerV2App {
       if (result.boundaryContract) {
         this.statusLog.ok(result.boundaryContract);
       }
+      this.reportSessionHydration();
       this.statusLog.ok(`Imported schema-valid Workspace Manager V2 manifest ${result.context.id}.`);
     } catch (error) {
       this.statusLog.fail(`Import Manifest failed: ${error.message}`);
@@ -305,6 +340,8 @@ export class WorkspaceManagerV2App {
   }
 
   async seedTemporaryUatManifest() {
+    this.activeRepoHandle = null;
+    this.contextService.clearWorkspaceSessionHydration();
     const result = await this.contextService.buildTemporaryUatContext();
     if (!result.ok) {
       this.statusLog.fail(`UAT seed failed: ${result.message}`);
@@ -316,6 +353,7 @@ export class WorkspaceManagerV2App {
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }
+    this.reportSessionHydration();
     this.statusLog.ok(`Loaded UAT Workspace Manager V2 manifest ${result.context.id} from /games/_template/workspace-manager-v2-UAT.manifest.json.`);
   }
 }

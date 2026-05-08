@@ -1,9 +1,16 @@
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
+const WORKSPACE_SESSION_SCHEMA_REF = "tools/schemas/workspace.manifest.schema.json";
+const WORKSPACE_REPO_REFERENCE_SESSION_KEY = "workspace.repo.reference";
+const WORKSPACE_TOOL_SESSION_KEY_PREFIX = "workspace.tools.";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
+const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
+  [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
+  [PALETTE_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/palette-manager-v2.schema.json"
+});
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
@@ -45,6 +52,14 @@ function isPlainObject(value) {
 
 function makeHostContextId() {
   return `workspace-manager-v2-${Date.now().toString(36)}`;
+}
+
+function toolSessionSchemaKey(toolId) {
+  return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}.schema`;
+}
+
+function toolSessionStateKey(toolId) {
+  return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}.state`;
 }
 
 function temporaryUatGameFromManifest(workspaceManifest) {
@@ -288,9 +303,114 @@ export class WorkspaceManagerV2ContextService {
     return WORKSPACE_LAUNCHABLE_TOOLS.map((tool) => ({ ...tool }));
   }
 
+  hasExplicitHostContextId() {
+    const params = new URLSearchParams(this.location.search || "");
+    return Boolean(params.get("hostContextId"));
+  }
+
   isUatMode() {
     const params = new URLSearchParams(this.location.search || "");
     return String(params.get("workspace") || "").trim().toUpperCase() === "UAT";
+  }
+
+  storageKeys() {
+    const keys = [];
+    for (let index = 0; index < this.sessionStorage.length; index += 1) {
+      const key = this.sessionStorage.key(index);
+      if (key) {
+        keys.push(key);
+      }
+    }
+    return keys;
+  }
+
+  clearToolSessionHydration() {
+    this.storageKeys()
+      .filter((key) => key.startsWith(WORKSPACE_TOOL_SESSION_KEY_PREFIX))
+      .forEach((key) => {
+        this.sessionStorage.removeItem(key);
+      });
+  }
+
+  clearWorkspaceSessionHydration() {
+    this.clearToolSessionHydration();
+    this.sessionStorage.removeItem(WORKSPACE_REPO_REFERENCE_SESSION_KEY);
+  }
+
+  hydrateRepoReference(repoHandle, displayName = "") {
+    const repoName = String(displayName || repoHandle?.name || "selected").trim() || "selected";
+    const reference = {
+      source: "workspace-manager-v2",
+      kind: "file-system-directory-handle-reference",
+      storageKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY,
+      handleKind: repoHandle?.kind || "directory",
+      handleName: String(repoHandle?.name || repoName),
+      displayName: repoName,
+      note: "Serializable repo reference only; live FileSystemDirectoryHandle access remains user-selected in the active page."
+    };
+    try {
+      this.sessionStorage.setItem(WORKSPACE_REPO_REFERENCE_SESSION_KEY, JSON.stringify(reference));
+      return { ok: true, key: WORKSPACE_REPO_REFERENCE_SESSION_KEY, reference };
+    } catch (error) {
+      return { ok: false, message: `Unable to store repo session reference: ${error.message}` };
+    }
+  }
+
+  schemaSessionForTool(tool, context) {
+    const toolPayload = context.tools?.[tool.id];
+    const payloadSchemaRef = typeof toolPayload?.$schema === "string" && toolPayload.$schema
+      ? toolPayload.$schema
+      : TOOL_PAYLOAD_SCHEMA_REFS[tool.id] || "";
+    return {
+      source: "workspace-manager-v2",
+      toolId: tool.id,
+      toolName: tool.name,
+      schemaRole: payloadSchemaRef ? "workspace-tool-payload" : "workspace-launch-context",
+      schemaRef: payloadSchemaRef || WORKSPACE_SESSION_SCHEMA_REF,
+      workspaceSchemaRef: WORKSPACE_SESSION_SCHEMA_REF
+    };
+  }
+
+  stateSessionForTool(tool, context, game) {
+    const toolPayload = context.tools?.[tool.id];
+    return {
+      source: "workspace-manager-v2",
+      toolId: tool.id,
+      toolName: tool.name,
+      workspaceManifestId: context.id,
+      workspaceDocumentKind: context.documentKind,
+      gameId: context.gameId,
+      gameRoot: context.gameRoot,
+      assetsPath: context.assetsPath,
+      gameManifestPath: game?.manifestPath || "",
+      repoRoot: context.repoRoot || game?.repoRoot || "",
+      repoReferenceKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY,
+      payload: isPlainObject(toolPayload) ? clone(toolPayload) : null
+    };
+  }
+
+  hydrateEnabledToolSessions({ context, game, tools = this.workspaceLaunchableTools() } = {}) {
+    if (!isPlainObject(context) || !context.gameId || !isPlainObject(context.tools)) {
+      return { ok: false, message: "Cannot hydrate tool sessions without a schema-valid workspace context." };
+    }
+    const enabledTools = tools
+      .filter((tool) => tool?.id)
+      .map((tool) => ({ ...tool }));
+    this.clearToolSessionHydration();
+    try {
+      enabledTools.forEach((tool) => {
+        this.sessionStorage.setItem(toolSessionSchemaKey(tool.id), JSON.stringify(this.schemaSessionForTool(tool, context)));
+        this.sessionStorage.setItem(toolSessionStateKey(tool.id), JSON.stringify(this.stateSessionForTool(tool, context, game)));
+      });
+      return {
+        ok: true,
+        hydratedToolIds: enabledTools.map((tool) => tool.id),
+        keys: enabledTools.flatMap((tool) => [toolSessionSchemaKey(tool.id), toolSessionStateKey(tool.id)])
+      };
+    } catch (error) {
+      this.clearToolSessionHydration();
+      return { ok: false, message: `Unable to hydrate tool sessions: ${error.message}` };
+    }
   }
 
   async buildContextForGame(gameId) {
