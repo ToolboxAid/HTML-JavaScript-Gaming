@@ -190,12 +190,24 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail(`Workspace restore failed: ${result.message}`);
       return;
     }
+    const repoReferenceResult = this.contextService.readWorkspaceRepoReference({
+      expectedRepoRoot: result.context.repoRoot || result.game.repoRoot || ""
+    });
+    if (!repoReferenceResult.ok) {
+      const message = `${repoReferenceResult.message} Pick Repo Folder to reselect repo before launching tools.`;
+      this.repoDestination.setRepoDestinationDisplayName("not selected");
+      this.clearActiveWorkspace(message);
+      this.statusLog.fail(`Workspace restore failed: ${message}`);
+      return;
+    }
+    this.repoDestination.setRepoDestinationDisplayName(repoReferenceResult.reference.displayName);
     this.gameSelector.setValue(result.game.id, result.game.name);
     this.applyContextResult(result);
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }
     this.reportSessionHydration();
+    this.statusLog.ok(`Restored repo destination from workspace.repo.reference for ${repoReferenceResult.reference.displayName}.`);
     this.statusLog.ok(`Restored ${result.game.name} workspace from session context ${result.hostContextId}.`);
   }
 

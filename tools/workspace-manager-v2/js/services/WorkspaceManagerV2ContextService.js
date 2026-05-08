@@ -65,6 +65,22 @@ function makeHostContextId() {
   return `workspace-manager-v2-${Date.now().toString(36)}`;
 }
 
+function repoRootNameMatches(selectedRepoName, expectedRepoRoot) {
+  const expected = String(expectedRepoRoot || "").trim();
+  if (!expected) {
+    return true;
+  }
+  if (selectedRepoName === expected) {
+    return true;
+  }
+  const expectedFolderName = expected
+    .replaceAll("\\", "/")
+    .split("/")
+    .filter(Boolean)
+    .at(-1);
+  return selectedRepoName === expectedFolderName;
+}
+
 function toolSessionKey(toolId) {
   return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}`;
 }
@@ -366,6 +382,49 @@ export class WorkspaceManagerV2ContextService {
   clearWorkspaceSessionHydration() {
     this.clearToolSessionHydration();
     this.sessionStorage.removeItem(WORKSPACE_REPO_REFERENCE_SESSION_KEY);
+  }
+
+  readSessionJson(key) {
+    const rawValue = this.sessionStorage.getItem(key);
+    if (!rawValue) {
+      return { ok: false, message: `${key} was not found in sessionStorage.` };
+    }
+    try {
+      const value = JSON.parse(rawValue);
+      return isPlainObject(value)
+        ? { ok: true, value }
+        : { ok: false, message: `${key} must contain a JSON object.` };
+    } catch (error) {
+      return { ok: false, message: `${key} contains invalid JSON: ${error.message}` };
+    }
+  }
+
+  readWorkspaceRepoReference({ expectedRepoRoot = "" } = {}) {
+    const result = this.readSessionJson(WORKSPACE_REPO_REFERENCE_SESSION_KEY);
+    if (!result.ok) {
+      return result;
+    }
+    const reference = result.value;
+    if (reference.source !== "workspace-manager-v2") {
+      return { ok: false, message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.source must be workspace-manager-v2.` };
+    }
+    if (reference.kind !== "file-system-directory-handle-reference") {
+      return { ok: false, message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.kind must be file-system-directory-handle-reference.` };
+    }
+    if (reference.storageKey && reference.storageKey !== WORKSPACE_REPO_REFERENCE_SESSION_KEY) {
+      return { ok: false, message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.storageKey must be ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.` };
+    }
+    const displayName = String(reference.displayName || reference.handleName || "").trim();
+    if (!displayName) {
+      return { ok: false, message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY} must include displayName or handleName.` };
+    }
+    if (!repoRootNameMatches(displayName, expectedRepoRoot)) {
+      return {
+        ok: false,
+        message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.displayName ${displayName} does not match manifest repoRoot ${expectedRepoRoot}.`
+      };
+    }
+    return { ok: true, reference: { ...reference, displayName } };
   }
 
   hydrateRepoReference(repoHandle, displayName = "") {

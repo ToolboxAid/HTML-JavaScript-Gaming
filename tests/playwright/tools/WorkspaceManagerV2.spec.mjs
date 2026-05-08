@@ -147,6 +147,16 @@ async function expectWorkspaceToolsDisabled(page) {
   expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
 }
 
+async function expectWorkspaceReturnRehydrated(page, { gameId = "Asteroids", repoName = "HTML-JavaScript-Gaming" } = {}) {
+  await expect(page.locator("#repoSelectedValue")).toHaveText(repoName);
+  await expect(page.locator("#activeGameSelect")).toHaveValue(gameId);
+  await expect(page.locator("#exportManifestButton")).toBeEnabled();
+  await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
+  await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toBeEnabled();
+  await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toBeEnabled();
+  await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).toBeEnabled();
+}
+
 async function readWorkspaceSessionHydration(page) {
   return await page.evaluate(() => {
     const parseJson = (key) => {
@@ -1662,10 +1672,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(JSON.stringify(storedContext)).not.toMatch(/samples\//i);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnRehydrated(page);
       await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
       await expect(page.locator("#exportManifestButton")).toBeEnabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Restored repo destination from workspace\.repo\.reference for HTML-JavaScript-Gaming\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Restored Asteroids workspace from session context workspace-manager-v2-/);
 
       await page.locator('[data-workspace-tool-id="palette-manager-v2"]').click();
@@ -1679,6 +1691,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#paletteStatus")).toHaveText("Loaded active workspace palette Asteroids Palette.");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnRehydrated(page);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Restored repo destination from workspace\.repo\.reference for HTML-JavaScript-Gaming\./);
       await expect(previewTile).toBeEnabled();
       await expect(previewTile).toContainText("Schema-valid manifest");
       await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
@@ -1740,6 +1754,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(previewWrites[0].contents).not.toContain("Capture timeout");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnRehydrated(page);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Restored repo destination from workspace\.repo\.reference for HTML-JavaScript-Gaming\./);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -1783,6 +1799,50 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const exportedManifest = JSON.parse(await readFile(await download.path(), "utf8"));
       expect(exportedManifest).toEqual(importedManifest.game.workspace);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Exported schema-valid Workspace Manager V2 manifest workspace-manager-v2-Asteroids-imported\./);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("blocks Workspace Manager V2 return restore when repo session reference is missing or invalid", async ({ page }) => {
+    const pageErrors = [];
+    const hostContextId = "workspace-manager-v2-missing-return-repo-reference";
+    const gameManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
+    const manifest = gameManifest.game.workspace;
+    await page.addInitScript(({ contextId, workspaceManifest }) => {
+      window.sessionStorage.setItem(contextId, JSON.stringify(workspaceManifest));
+    }, { contextId: hostContextId, workspaceManifest: manifest });
+    const server = await openWorkspaceManagerV2(page, `?hostContextId=${hostContextId}`);
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expect(page.locator("#activeGameSelect option")).toHaveCount(0);
+      await expect(page.locator("#exportManifestButton")).toBeDisabled();
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue("{}");
+      await expectWorkspaceToolsDisabled(page);
+      await expect(page.locator("#activeGameSummary")).toHaveText("workspace.repo.reference was not found in sessionStorage. Pick Repo Folder to reselect repo before launching tools.");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Workspace restore failed: workspace\.repo\.reference was not found in sessionStorage\. Pick Repo Folder to reselect repo before launching tools\./);
+      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+        repoReference: null,
+        toolKeys: []
+      });
+
+      await page.evaluate(({ contextId, workspaceManifest }) => {
+        window.sessionStorage.setItem(contextId, JSON.stringify(workspaceManifest));
+        window.sessionStorage.setItem("workspace.repo.reference", "not-json");
+      }, { contextId: hostContextId, workspaceManifest: manifest });
+      await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html?hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expectWorkspaceToolsDisabled(page);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Workspace restore failed: workspace\.repo\.reference contains invalid JSON:/);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
