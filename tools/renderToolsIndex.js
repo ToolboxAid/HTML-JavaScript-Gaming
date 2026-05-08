@@ -78,6 +78,7 @@ function classifyToolGroup(toolId) {
   ]);
   const viewerToolIds = new Set([
     "3d-asset-viewer",
+    "session-inspector",
     "replay-visualizer",
     "performance-profiler"
   ]);
