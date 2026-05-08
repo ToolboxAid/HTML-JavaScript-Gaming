@@ -48,7 +48,7 @@ export class ToolTilesControl {
       return `${paletteSwatchCount} palette swatches`;
     }
     if (tool.id === "session-inspector-v2") {
-      return "Session storage inspector";
+      return "";
     }
     return manifestStatus;
   }
@@ -98,9 +98,7 @@ export class ToolTilesControl {
     state.className = "workspace-manager-v2__tool-tile-state";
     state.textContent = canLaunch ? "Ready to launch" : "Waiting for manifest";
 
-    const detail = document.createElement("span");
-    detail.className = "workspace-manager-v2__tool-tile-detail";
-    detail.textContent = this.detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount });
+    const detailText = this.detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount });
 
     const actions = document.createElement("span");
     actions.className = "workspace-manager-v2__tool-tile-actions";
@@ -111,7 +109,14 @@ export class ToolTilesControl {
       actions.append(action);
     });
 
-    button.append(name, state, detail, actions);
+    button.append(name, state);
+    if (detailText) {
+      const detail = document.createElement("span");
+      detail.className = "workspace-manager-v2__tool-tile-detail";
+      detail.textContent = detailText;
+      button.append(detail);
+    }
+    button.append(actions);
     return button;
   }
 }

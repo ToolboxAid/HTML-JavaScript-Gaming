@@ -374,8 +374,7 @@ export class WorkspaceManagerV2ContextService {
     };
   }
 
-  stateSessionForTool(tool, context, game) {
-    const toolPayload = context.tools?.[tool.id];
+  workspaceSessionForTool(tool, context, game) {
     return {
       source: "workspace-manager-v2",
       toolId: tool.id,
@@ -387,15 +386,30 @@ export class WorkspaceManagerV2ContextService {
       assetsPath: context.assetsPath,
       gameManifestPath: game?.manifestPath || "",
       repoRoot: context.repoRoot || game?.repoRoot || "",
-      repoReferenceKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY,
-      payload: isPlainObject(toolPayload) ? clone(toolPayload) : null
+      repoReferenceKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY
+    };
+  }
+
+  dataSessionForTool(tool, context) {
+    const toolPayload = context.tools?.[tool.id];
+    return isPlainObject(toolPayload) ? clone(toolPayload) : null;
+  }
+
+  dirtySessionForTool() {
+    return {
+      isDirty: false,
+      reason: null,
+      changedAt: null,
+      changedKeys: []
     };
   }
 
   sessionForTool(tool, context, game) {
     return {
       schema: this.schemaSessionForTool(tool, context),
-      state: this.stateSessionForTool(tool, context, game)
+      workspace: this.workspaceSessionForTool(tool, context, game),
+      data: this.dataSessionForTool(tool, context),
+      dirty: this.dirtySessionForTool()
     };
   }
 

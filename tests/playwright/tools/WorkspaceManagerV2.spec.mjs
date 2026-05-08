@@ -164,8 +164,12 @@ async function readWorkspaceSessionHydration(page) {
       repoReference: parseJson("workspace.repo.reference"),
       schemaByTool: Object.fromEntries(Object.entries(toolSessions)
         .map(([toolId, session]) => [toolId, session?.schema || null])),
-      stateByTool: Object.fromEntries(Object.entries(toolSessions)
-        .map(([toolId, session]) => [toolId, session?.state || null])),
+      workspaceByTool: Object.fromEntries(Object.entries(toolSessions)
+        .map(([toolId, session]) => [toolId, session?.workspace || null])),
+      dataByTool: Object.fromEntries(Object.entries(toolSessions)
+        .map(([toolId, session]) => [toolId, Object.hasOwn(session || {}, "data") ? session.data : undefined])),
+      dirtyByTool: Object.fromEntries(Object.entries(toolSessions)
+        .map(([toolId, session]) => [toolId, session?.dirty || null])),
       toolSessions,
       toolKeys
     };
@@ -431,9 +435,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".session-inspector-v2__json-accordion-header")).toContainText("JSON");
       await expect(page.locator(".session-inspector-v2__json-accordion-header")).not.toContainText("Details");
       await expect(page.locator(".session-inspector-v2__json-accordion-header #copySessionInspectorV2JsonButton")).toHaveText("Copy");
-      await expect(page.locator(".session-inspector-v2__state-accordion-header")).toContainText("State");
+      await expect(page.locator(".session-inspector-v2__data-accordion-header")).toContainText("Data");
+      await expect(page.locator(".session-inspector-v2__dirty-accordion-header")).toContainText("Dirty");
+      await expect(page.locator(".session-inspector-v2__state-accordion-header")).toHaveCount(0);
       await expect(page.locator(".session-inspector-v2__schema-accordion-header")).toHaveCount(0);
+      await expect(page.locator("#sessionInspectorV2StateOutput")).toHaveCount(0);
       await expect(page.locator("#sessionInspectorV2SchemaOutput")).toHaveCount(0);
+      await expect(page.locator("body")).not.toContainText("State");
       await expect(page.locator("body")).not.toContainText("Schema");
       expect(await page.locator(".session-inspector-v2__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child").evaluateAll((labels) => labels.map((label) => label.textContent.trim()))).toEqual([
         "Controls",
@@ -566,7 +574,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "sessionInspectorV2FiltersContent",
         "sessionInspectorV2EntriesContent",
         "sessionInspectorV2JsonContent",
-        "sessionInspectorV2StateContent",
+        "sessionInspectorV2DataContent",
+        "sessionInspectorV2DirtyContent",
         "sessionInspectorV2StatusContent"
       ]) {
         await expectSessionInspectorV2AccordionToggles(page, contentId);
@@ -623,7 +632,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
       await expect(page.locator("#sessionInspectorV2JsonOutput")).toHaveText("true");
-      await expect(page.locator("#sessionInspectorV2StateOutput")).toContainText("No state section is present for sessionStorage:session-inspector-v2-alpha.");
+      await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:session-inspector-v2-alpha.");
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText("No dirty section is present for sessionStorage:session-inspector-v2-alpha.");
       const copiedJsonText = await page.locator("#sessionInspectorV2JsonOutput").textContent();
       await page.locator("#copySessionInspectorV2JsonButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Copied JSON content to clipboard\./);
@@ -654,7 +664,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(0);
       await expect(page.locator("#sessionInspectorV2EntryList")).toContainText("No matching storage entries.");
       await expect(page.locator("#sessionInspectorV2JsonOutput")).toHaveText("{}");
-      await expect(page.locator("#sessionInspectorV2StateOutput")).toHaveText("Select a normalized tool entry with a top-level state section.");
+      await expect(page.locator("#sessionInspectorV2DataOutput")).toHaveText("Select a normalized tool entry with a top-level data section.");
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toHaveText("Select a normalized tool entry with a top-level dirty section.");
       await expect(page.locator("#sessionInspectorV2Summary > span")).toHaveText([
         "(0) Entries shown.",
         "(0) SessionStorage.",
@@ -681,7 +692,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("shows normalized workspace tool sessions as JSON and State views", async ({ page }) => {
+  test("shows normalized workspace tool sessions as JSON, Data, and Dirty views", async ({ page }) => {
     const pageErrors = [];
     await page.addInitScript(() => {
       window.sessionStorage.setItem("workspace.tools.preview-generator-v2", JSON.stringify({
@@ -691,13 +702,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           schemaRole: "workspace-launch-context",
           schemaRef: "tools/schemas/workspace.manifest.schema.json"
         },
-        state: {
+        workspace: {
           source: "workspace-manager-v2",
           toolId: "preview-generator-v2",
+          toolName: "Preview Generator V2",
           gameId: "Asteroids",
           gameRoot: "games/Asteroids/",
           assetsPath: "games/Asteroids/assets",
           repoReferenceKey: "workspace.repo.reference"
+        },
+        data: null,
+        dirty: {
+          isDirty: false,
+          reason: null,
+          changedAt: null,
+          changedKeys: []
         }
       }));
       window.sessionStorage.setItem("workspace.tools.asset-manager-v2", JSON.stringify({
@@ -707,19 +726,54 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           schemaRole: "workspace-tool-payload",
           schemaRef: "tools/schemas/tools/asset-manager-v2.schema.json"
         },
-        state: {
+        workspace: {
           source: "workspace-manager-v2",
           toolId: "asset-manager-v2",
+          toolName: "Asset Manager V2",
           gameId: "Asteroids",
-          payload: { assets: {} }
+          gameRoot: "games/Asteroids/",
+          assetsPath: "games/Asteroids/assets",
+          repoReferenceKey: "workspace.repo.reference"
+        },
+        data: { assets: { "assets.image.preview.preview": { path: "assets/images/preview.png" } } },
+        dirty: {
+          isDirty: false,
+          reason: null,
+          changedAt: null,
+          changedKeys: []
         }
       }));
-      window.sessionStorage.setItem("workspace.tools.no-state-test", JSON.stringify({
+      window.sessionStorage.setItem("workspace.tools.no-data-test", JSON.stringify({
         schema: {
           source: "workspace-manager-v2",
-          toolId: "no-state-test",
+          toolId: "no-data-test",
           schemaRole: "workspace-launch-context",
           schemaRef: "tools/schemas/workspace.manifest.schema.json"
+        },
+        workspace: {
+          source: "workspace-manager-v2",
+          toolId: "no-data-test"
+        },
+        dirty: {
+          isDirty: false,
+          reason: null,
+          changedAt: null,
+          changedKeys: []
+        }
+      }));
+      window.sessionStorage.setItem("workspace.tools.no-dirty-test", JSON.stringify({
+        schema: {
+          source: "workspace-manager-v2",
+          toolId: "no-dirty-test",
+          schemaRole: "workspace-launch-context",
+          schemaRef: "tools/schemas/workspace.manifest.schema.json"
+        },
+        workspace: {
+          source: "workspace-manager-v2",
+          toolId: "no-dirty-test"
+        },
+        data: {
+          note: "data without dirty"
         }
       }));
     });
@@ -730,36 +784,52 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
 
     try {
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(3);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
       await expect(page.locator(".session-inspector-v2__json-accordion-header")).toContainText("JSON");
-      await expect(page.locator(".session-inspector-v2__state-accordion-header")).toContainText("State");
+      await expect(page.locator(".session-inspector-v2__data-accordion-header")).toContainText("Data");
+      await expect(page.locator(".session-inspector-v2__dirty-accordion-header")).toContainText("Dirty");
+      await expect(page.locator(".session-inspector-v2__state-accordion-header")).toHaveCount(0);
       await expect(page.locator(".session-inspector-v2__schema-accordion-header")).toHaveCount(0);
+      await expect(page.locator("#sessionInspectorV2StateOutput")).toHaveCount(0);
       await expect(page.locator("#sessionInspectorV2SchemaOutput")).toHaveCount(0);
+      await expect(page.locator("body")).not.toContainText("State");
       await expect(page.locator("body")).not.toContainText("Schema");
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2']")).toHaveCount(1);
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2.schema']")).toHaveCount(0);
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2.state']")).toHaveCount(0);
 
-      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.preview-generator-v2"]').click();
+      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.asset-manager-v2"]').click();
       await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"schema"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"state"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"workspace"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"data"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"dirty"');
       await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"repoReferenceKey": "workspace.repo.reference"');
-      await expect(page.locator("#sessionInspectorV2StateOutput")).toContainText('"repoReferenceKey": "workspace.repo.reference"');
-      await expect(page.locator("#sessionInspectorV2StateOutput")).toContainText('"gameRoot": "games/Asteroids/"');
-      await expect(page.locator("#sessionInspectorV2StateOutput")).not.toContainText('"schema"');
-      await expect(page.locator("#sessionInspectorV2StateOutput")).not.toContainText('"schemaRef"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).not.toContainText('"state"');
+      await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText('"assets.image.preview.preview"');
+      await expect(page.locator("#sessionInspectorV2DataOutput")).not.toContainText('"schema"');
+      await expect(page.locator("#sessionInspectorV2DataOutput")).not.toContainText('"workspace"');
+      await expect(page.locator("#sessionInspectorV2DataOutput")).not.toContainText('"dirty"');
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"isDirty": false');
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"reason": null');
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"changedAt": null');
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"changedKeys": []');
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"data"');
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"workspace"');
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"schema"');
 
-      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-state-test"]').click();
-      await expect(page.locator("#sessionInspectorV2StateOutput")).toContainText("No state section is present for sessionStorage:workspace.tools.no-state-test.");
+      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-data-test"]').click();
+      await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:workspace.tools.no-data-test.");
+      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-dirty-test"]').click();
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText("No dirty section is present for sessionStorage:workspace.tools.no-dirty-test.");
 
       await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:workspace.tools.preview-generator-v2"]').click();
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(2);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(3);
       expect(await page.evaluate(() => window.sessionStorage.getItem("workspace.tools.preview-generator-v2"))).toBeNull();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:workspace\.tools\.preview-generator-v2\./);
 
       await page.locator("#deleteAllSessionInspectorV2Button").click();
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 2 shown storage entries\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 3 shown storage entries\./);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -767,7 +837,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("starts with no active game even when stale session state exists", async ({ page }) => {
+  test("starts with no active game even when stale session hydration exists", async ({ page }) => {
     const staleGameManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
     const pageErrors = [];
     await page.addInitScript((manifest) => {
@@ -776,7 +846,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       window.sessionStorage.setItem("workspace.repo.reference", JSON.stringify({ displayName: "StaleRepo" }));
       window.sessionStorage.setItem("workspace.tools.asset-manager-v2", JSON.stringify({
         schema: { toolId: "asset-manager-v2" },
-        state: { toolId: "asset-manager-v2" }
+        workspace: { toolId: "asset-manager-v2" },
+        data: null,
+        dirty: {
+          isDirty: false,
+          reason: null,
+          changedAt: null,
+          changedKeys: []
+        }
       }));
     }, staleGameManifest.game.workspace);
     const server = await openWorkspaceManagerV2(page);
@@ -1047,6 +1124,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "session-inspector-v2",
         "templates-v2"
       ]);
+      expect(Object.values(selectedGameHydration.toolSessions).every((session) => (
+        JSON.stringify(Object.keys(session).sort()) === JSON.stringify(["data", "dirty", "schema", "workspace"])
+      ))).toBe(true);
       expect(selectedGameHydration.schemaByTool["asset-manager-v2"]).toMatchObject({
         source: "workspace-manager-v2",
         toolId: "asset-manager-v2",
@@ -1060,7 +1140,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         schemaRole: "workspace-launch-context",
         schemaRef: "tools/schemas/workspace.manifest.schema.json"
       });
-      expect(selectedGameHydration.stateByTool["asset-manager-v2"]).toMatchObject({
+      expect(selectedGameHydration.workspaceByTool["asset-manager-v2"]).toMatchObject({
         source: "workspace-manager-v2",
         toolId: "asset-manager-v2",
         workspaceManifestId: "workspace-manager-v2-Asteroids",
@@ -1069,8 +1149,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         assetsPath: "games/Asteroids/assets",
         repoReferenceKey: "workspace.repo.reference"
       });
-      expect(Object.keys(selectedGameHydration.stateByTool["asset-manager-v2"].payload.assets)).toHaveLength(14);
-      expect(selectedGameHydration.stateByTool["templates-v2"].payload).toBeNull();
+      expect(selectedGameHydration.toolSessions["asset-manager-v2"].state).toBeUndefined();
+      expect(Object.keys(selectedGameHydration.dataByTool["asset-manager-v2"].assets)).toHaveLength(14);
+      expect(selectedGameHydration.dataByTool["templates-v2"]).toBeNull();
+      expect(Object.values(selectedGameHydration.dirtyByTool)).toEqual([
+        { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
+        { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
+        { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
+        { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
+        { isDirty: false, reason: null, changedAt: null, changedKeys: [] }
+      ]);
       await page.evaluate(() => {
         Object.defineProperty(navigator, "clipboard", {
           configurable: true,
@@ -1112,7 +1200,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(previewTile).toContainText("Schema-valid manifest");
       await expect(sessionInspectorTile).toBeEnabled();
       await expect(sessionInspectorTile).toContainText("Session Inspector V2");
-      await expect(sessionInspectorTile).toContainText("Session storage inspector");
+      await expect(sessionInspectorTile).not.toContainText("Session storage inspector");
       const tileLayout = await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.map((tile) => ({
         height: Math.round(tile.getBoundingClientRect().height),
         width: Math.round(tile.getBoundingClientRect().width)
@@ -1373,7 +1461,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("OK Workspace launch context hydrated for Asteroids.");
       await expect(page.locator("#log")).toContainText("Workspace repoRoot display label available: HTML-JavaScript-Gaming.");
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
-      await expect(page.locator("#log")).toContainText("OK Workspace tool session state loaded from workspace.tools.preview-generator-v2.");
+      await expect(page.locator("#log")).toContainText("OK Workspace tool session workspace context loaded from workspace.tools.preview-generator-v2.");
       await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
       await expect(page.locator("#log")).not.toContainText("Direct preview write");
       await expect(page.locator("#log")).not.toContainText("Resolved repoPath");
@@ -1522,13 +1610,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           schemaRole: "workspace-launch-context",
           schemaRef: "tools/schemas/workspace.manifest.schema.json"
         },
-        state: {
+        workspace: {
           source: "workspace-manager-v2",
           toolId: "preview-generator-v2",
           gameId: workspaceManifest.gameId,
           gameRoot: workspaceManifest.gameRoot,
           assetsPath: workspaceManifest.assetsPath,
           repoReferenceKey: "workspace.repo.reference"
+        },
+        data: null,
+        dirty: {
+          isDirty: false,
+          reason: null,
+          changedAt: null,
+          changedKeys: []
         }
       }));
     }, { contextId: hostContextId, workspaceManifest: manifest });
@@ -1750,7 +1845,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("3 palette swatches");
       await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Schema-valid manifest");
       await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).toContainText("Session Inspector V2");
-      await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).toContainText("Session storage inspector");
+      await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).not.toContainText("Session storage inspector");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"id": "workspace-manager-v2-UAT-template"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/_template\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/_template\/assets"/);

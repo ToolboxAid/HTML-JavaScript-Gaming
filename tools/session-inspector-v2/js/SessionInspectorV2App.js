@@ -2,21 +2,24 @@ export class SessionInspectorV2App {
   constructor({
     accordions,
     copyJsonButton,
+    data,
     deleteAllButton,
+    dirty,
     entryList,
     filters,
     json,
     refreshButton,
     returnToWorkspaceButton,
     runtimeContract,
-    state,
     statusLog,
     storageService,
     windowRef = window
   }) {
     this.accordions = accordions;
     this.copyJsonButton = copyJsonButton;
+    this.data = data;
     this.deleteAllButton = deleteAllButton;
+    this.dirty = dirty;
     this.entries = [];
     this.entryList = entryList;
     this.filters = filters;
@@ -24,7 +27,6 @@ export class SessionInspectorV2App {
     this.refreshButton = refreshButton;
     this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.runtimeContract = runtimeContract || { storageAccess: "read-only" };
-    this.state = state;
     this.statusLog = statusLog;
     this.storageService = storageService;
     this.selectedId = "";
@@ -66,7 +68,8 @@ export class SessionInspectorV2App {
     this.entryList.render(this.entries, this.selectedId);
     const selectedEntry = this.entries.find((entry) => entry.id === this.selectedId);
     this.json.render(selectedEntry);
-    this.state.render(selectedEntry);
+    this.data.render(selectedEntry);
+    this.dirty.render(selectedEntry);
     this.filters.setSummary(this.summaryCounts());
     if (!silent) {
       this.statusLog.ok(`Loaded ${this.entries.length} matching storage entries.`);
@@ -85,7 +88,8 @@ export class SessionInspectorV2App {
     this.entryList.render(this.entries, this.selectedId);
     const entry = this.entries.find((candidate) => candidate.id === entryId);
     this.json.render(entry);
-    this.state.render(entry);
+    this.data.render(entry);
+    this.dirty.render(entry);
     if (entry) {
       this.statusLog.info(`Selected ${entry.storageType}:${entry.key}.`);
     }

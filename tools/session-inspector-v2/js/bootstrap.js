@@ -1,9 +1,10 @@
 import { SessionInspectorV2App } from "./SessionInspectorV2App.js";
 import { AccordionSection } from "./controls/AccordionSection.js";
+import { DataControl } from "./controls/DataControl.js";
+import { DirtyControl } from "./controls/DirtyControl.js";
 import { EntryListControl } from "./controls/EntryListControl.js";
 import { FilterControl } from "./controls/FilterControl.js";
 import { JsonControl } from "./controls/JsonControl.js";
-import { StateControl } from "./controls/StateControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { sessionInspectorV2RuntimeContract } from "./services/SessionInspectorV2RuntimeContract.js";
 import { SessionInspectorV2StorageService } from "./services/SessionInspectorV2StorageService.js";
@@ -20,8 +21,14 @@ window.addEventListener("DOMContentLoaded", () => {
   const app = new SessionInspectorV2App({
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     copyJsonButton: requireElement("#copySessionInspectorV2JsonButton"),
+    data: new DataControl({
+      output: requireElement("#sessionInspectorV2DataOutput")
+    }),
     json: new JsonControl({
       output: requireElement("#sessionInspectorV2JsonOutput")
+    }),
+    dirty: new DirtyControl({
+      output: requireElement("#sessionInspectorV2DirtyOutput")
     }),
     deleteAllButton: requireElement("#deleteAllSessionInspectorV2Button"),
     entryList: new EntryListControl({
@@ -35,9 +42,6 @@ window.addEventListener("DOMContentLoaded", () => {
     refreshButton: requireElement("#refreshSessionInspectorV2Button"),
     returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
     runtimeContract: sessionInspectorV2RuntimeContract(),
-    state: new StateControl({
-      output: requireElement("#sessionInspectorV2StateOutput")
-    }),
     statusLog: new StatusLogControl({
       clearButton: requireElement("#clearSessionInspectorV2StatusButton"),
       output: requireElement("#statusLog")

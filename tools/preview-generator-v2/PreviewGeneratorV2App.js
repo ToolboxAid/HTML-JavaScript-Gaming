@@ -126,31 +126,31 @@ function readWorkspaceRepoReference() {
   return { ok: true, reference: { ...reference, displayName } };
 }
 
-function readWorkspacePreviewGeneratorState(manifest) {
+function readWorkspacePreviewGeneratorWorkspace(manifest) {
   const result = readSessionJson(WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY);
   if (!result.ok) {
     return result;
   }
-  if (!isPlainObject(result.value.state)) {
-    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.state must contain a JSON object.` };
+  if (!isPlainObject(result.value.workspace)) {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace must contain a JSON object.` };
   }
-  const state = result.value.state;
-  if (state.source !== "workspace-manager-v2") {
-    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.state.source must be workspace-manager-v2.` };
+  const workspace = result.value.workspace;
+  if (workspace.source !== "workspace-manager-v2") {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace.source must be workspace-manager-v2.` };
   }
-  if (state.toolId !== PREVIEW_GENERATOR_V2_TOOL_KEY) {
-    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.state.toolId must be ${PREVIEW_GENERATOR_V2_TOOL_KEY}.` };
+  if (workspace.toolId !== PREVIEW_GENERATOR_V2_TOOL_KEY) {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace.toolId must be ${PREVIEW_GENERATOR_V2_TOOL_KEY}.` };
   }
-  if (state.repoReferenceKey !== WORKSPACE_REPO_REFERENCE_SESSION_KEY) {
-    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.state.repoReferenceKey must be ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.` };
+  if (workspace.repoReferenceKey !== WORKSPACE_REPO_REFERENCE_SESSION_KEY) {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace.repoReferenceKey must be ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.` };
   }
-  if (state.gameId !== manifest.gameId) {
-    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.state.gameId must match manifest.gameId ${manifest.gameId}.` };
+  if (workspace.gameId !== manifest.gameId) {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace.gameId must match manifest.gameId ${manifest.gameId}.` };
   }
-  if (state.gameRoot !== manifest.gameRoot || state.assetsPath !== manifest.assetsPath) {
-    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.state gameRoot/assetsPath must match the workspace manifest.` };
+  if (workspace.gameRoot !== manifest.gameRoot || workspace.assetsPath !== manifest.assetsPath) {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.workspace gameRoot/assetsPath must match the workspace manifest.` };
   }
-  return { ok: true, state };
+  return { ok: true, workspace };
 }
 
 function isWorkspaceManifest(value) {
@@ -902,9 +902,9 @@ class PreviewGeneratorV2App {
     if (!repoReferenceResult.ok) {
       return { ok: false, message: repoReferenceResult.message };
     }
-    const stateResult = readWorkspacePreviewGeneratorState(manifest);
-    if (!stateResult.ok) {
-      return { ok: false, message: stateResult.message };
+    const workspaceResult = readWorkspacePreviewGeneratorWorkspace(manifest);
+    if (!workspaceResult.ok) {
+      return { ok: false, message: workspaceResult.message };
     }
     const repoReference = repoReferenceResult.reference;
     if (!repoRootNameMatches(repoReference.displayName, manifest.repoRoot)) {
@@ -922,7 +922,7 @@ class PreviewGeneratorV2App {
     if (!repoValidation.ok) {
       return repoValidation;
     }
-    return { ok: true, handle, repoReference, state: stateResult.state };
+    return { ok: true, handle, repoReference, workspace: workspaceResult.workspace };
   }
 
   async handleExecute() {
@@ -1118,7 +1118,7 @@ class PreviewGeneratorV2App {
     ui.setRepoDestinationDisplayName(repoDisplayName);
     workspaceLaunchHydrated = true;
     logger.log(`OK Workspace repo session reference loaded from ${WORKSPACE_REPO_REFERENCE_SESSION_KEY} for ${repoDisplayName}.`);
-    logger.log(`OK Workspace tool session state loaded from ${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.`);
+    logger.log(`OK Workspace tool session workspace context loaded from ${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.`);
     logger.log("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
     this.syncGeneratePreviewButton();
   }
