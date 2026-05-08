@@ -21,12 +21,9 @@ let workspacePreviewAssetFolder = "";
 let workspacePreviewFileValid = false;
 let workspacePreviewGameId = "";
 let workspaceLaunchHydrated = false;
-let workspaceRepoPathHydrated = false;
 let workspaceRepoRootName = "";
-let workspaceResolvedRepoPath = "";
 let workspaceManifestPreviewPath = "";
 let workspaceGeneratedPreviewPath = "";
-let workspaceAbsolutePreviewOutputPath = "";
 const ui = new PreviewGeneratorV2Ui();
 const logger = new PreviewGeneratorV2Logger({
   statusEl: ui.statusLog.getStatusElement(),
@@ -72,58 +69,6 @@ function normalizeWorkspacePath(value) {
     .replace(/^\/+|\/+$/g, "");
 }
 
-function isAbsoluteFilesystemPath(value) {
-  const pathValue = String(value || "").trim();
-  return /^[A-Za-z]:[\\/]/.test(pathValue)
-    || pathValue.startsWith("/")
-    || pathValue.startsWith("\\\\");
-}
-
-function useWindowsPathSeparator(pathValue) {
-  return String(pathValue || "").includes("\\");
-}
-
-function trimFilesystemTrailingSeparators(pathValue) {
-  const value = String(pathValue || "").trim();
-  if (/^[A-Za-z]:[\\/]?$/.test(value)) {
-    return value.endsWith("\\") || value.endsWith("/")
-      ? value
-      : `${value}\\`;
-  }
-  return value.replace(/[\\/]+$/g, "");
-}
-
-function normalizeFilesystemPathForCompare(pathValue) {
-  return String(pathValue || "")
-    .trim()
-    .replaceAll("\\", "/")
-    .replace(/\/+/g, "/")
-    .replace(/\/$/g, "")
-    .toLowerCase();
-}
-
-function combineFilesystemPath(repoRoot, relativePath) {
-  const root = trimFilesystemTrailingSeparators(repoRoot);
-  const separator = useWindowsPathSeparator(root) ? "\\" : "/";
-  const normalizedRelativePath = normalizeWorkspacePath(relativePath).replaceAll("/", separator);
-  return `${root}${root.endsWith("\\") || root.endsWith("/") ? "" : separator}${normalizedRelativePath}`;
-}
-
-function resolveWorkspaceAbsolutePreviewOutputPath(repoPath, targetPath) {
-  const resolvedRepoPath = String(repoPath || "").trim();
-  if (!isAbsoluteFilesystemPath(resolvedRepoPath)) {
-    throw new Error(`repoPath must be an absolute filesystem path, received ${resolvedRepoPath || "(empty)"}.`);
-  }
-  const absolutePath = combineFilesystemPath(resolvedRepoPath, targetPath);
-  const comparableRepoRoot = normalizeFilesystemPathForCompare(resolvedRepoPath);
-  const comparableAbsolutePath = normalizeFilesystemPathForCompare(absolutePath);
-  if (comparableAbsolutePath !== comparableRepoRoot
-    && !comparableAbsolutePath.startsWith(`${comparableRepoRoot}/`)) {
-    throw new Error(`preview output path ${absolutePath} is outside repoPath ${resolvedRepoPath}.`);
-  }
-  return absolutePath;
-}
-
 function repoRootNameMatches(selectedRepoName, expectedRepoRoot) {
   const expected = String(expectedRepoRoot || "").trim();
   if (!expected) {
@@ -165,30 +110,12 @@ function displayRawLaunchFieldValue(value) {
 
 function launchPathFields(launchContext, manifest) {
   return [
-    { label: "launchContext.repoPath", value: launchContext?.repoPath },
-    { label: "launchContext.manifest.repoPath", value: launchContext?.manifest?.repoPath },
     { label: "launchContext.repoRoot", value: launchContext?.repoRoot },
-    { label: "manifest.repoPath", value: manifest?.repoPath },
     { label: "manifest.repoRoot", value: manifest?.repoRoot }
   ].map((field) => ({
     ...field,
     text: String(field.value || "").trim()
   }));
-}
-
-function resolveRepoPathDecision(pathFields) {
-  const repoPathFields = pathFields.filter((field) => field.label.endsWith(".repoPath"));
-  const firstAbsolute = repoPathFields.find((field) => field.text && isAbsoluteFilesystemPath(field.text));
-  const firstAvailable = repoPathFields.find((field) => field.text);
-  const selected = firstAbsolute || firstAvailable || null;
-  return {
-    checkedMissingFields: repoPathFields
-      .filter((field) => !field.text)
-      .map((field) => field.label),
-    isAbsolute: Boolean(selected?.text && isAbsoluteFilesystemPath(selected.text)),
-    sourceField: selected?.label || "(none)",
-    value: selected?.text || ""
-  };
 }
 
 function isWorkspaceManagerLaunch() {
@@ -218,14 +145,13 @@ function readWorkspaceLaunchContext() {
       return { ok: false, message: "Workspace Manager V2 manifest is missing gameId, gameRoot, or assetsPath." };
     }
     const pathFields = launchPathFields(launchContext, manifest);
-    const repoPathDecision = resolveRepoPathDecision(pathFields);
     const repoRootText = pathFields
       .filter((field) => field.label.endsWith(".repoRoot"))
       .find((field) => field.text)?.text || "";
-    if (!repoRootText && !String(repoPathDecision.value || "").trim()) {
-      return { ok: false, message: "Workspace Manager V2 manifest is missing repoRoot display label and repoPath." };
+    if (!repoRootText) {
+      return { ok: false, message: "Workspace Manager V2 manifest is missing repoRoot display label." };
     }
-    return { ok: true, launchContext, manifest, pathFields, repoPathDecision };
+    return { ok: true, launchContext, manifest, pathFields };
   } catch (error) {
     return { ok: false, message: `Workspace Manager V2 manifest JSON is invalid: ${error.message}` };
   }
@@ -713,72 +639,7 @@ async function shouldRewrite(targetDirHandle) {
   return { rewrite: false, reason: "existing-preview-without-capture-timeout" };
 }
 
-function previewWriteError(message) {
-  const error = new Error(message);
-  error.previewWriteFailed = true;
-  return error;
-}
-
-function isPreviewWriteError(error) {
-  return Boolean(error?.previewWriteFailed);
-}
-
-function validateWorkspacePreviewWritePath(entry) {
-  if (!isWorkspaceManagerLaunch() || !workspaceRepoPathHydrated || !workspacePreviewFileValid) {
-    throw previewWriteError("Workspace direct preview write is unavailable until manifest repoPath is an absolute filesystem path.");
-  }
-  const targetPath = normalizeWorkspacePath(getWorkspacePreviewTargetDisplayPath());
-  if (!targetPath) {
-    throw previewWriteError("Workspace preview write path is empty.");
-  }
-  const targetParts = targetPath.split("/");
-  if (targetParts.includes("..") || targetPath.startsWith(".")) {
-    throw previewWriteError(`Workspace preview write path is invalid: ${targetPath}.`);
-  }
-  const expectedPrefix = `games/${entry.name}/`;
-  if (entry.targetType !== "games" || entry.name !== workspacePreviewGameId || !targetPath.startsWith(expectedPrefix)) {
-    throw previewWriteError(`Workspace preview write path ${targetPath} does not match the hydrated ${workspacePreviewGameId} game context.`);
-  }
-  try {
-    const absolutePath = resolveWorkspaceAbsolutePreviewOutputPath(workspaceResolvedRepoPath, targetPath);
-    return { absolutePath, targetPath };
-  } catch (error) {
-    throw previewWriteError(error.message);
-  }
-}
-
-async function writeWorkspacePreview(svgContent, entry) {
-  const { absolutePath, targetPath } = validateWorkspacePreviewWritePath(entry);
-  const targetUrl = new URL("/__workspace-manager-v2/write-preview", window.location.href);
-  let response;
-  try {
-    response = await fetch(targetUrl.href, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "image/svg+xml; charset=utf-8",
-        "X-Workspace-Preview-Absolute-Path": absolutePath,
-        "X-Workspace-Preview-Relative-Path": targetPath
-      },
-      body: svgContent
-    });
-  } catch (error) {
-    throw previewWriteError(`${absolutePath} request failed: ${error.message}`);
-  }
-  if (!response.ok) {
-    const details = await response.text().catch(() => "");
-    throw previewWriteError(`${absolutePath} returned ${response.status}${details ? `: ${details}` : ""}.`);
-  }
-  logger.log(`Direct preview write target: ${targetPath}`);
-  logger.log(`Direct preview absolute path: ${absolutePath}`);
-  logger.log(`OK Direct preview write completed: ${absolutePath}`);
-}
-
-async function writePreview(targetDirHandle, svgContent, entry) {
-  if (!targetDirHandle && isWorkspaceManagerLaunch() && workspaceRepoPathHydrated) {
-    await writeWorkspacePreview(svgContent, entry);
-    return;
-  }
-
+async function writePreview(targetDirHandle, svgContent) {
   const relativeOutputFolder = getAssetFolderRelativePath();
 
   const targetDir = relativeOutputFolder
@@ -792,12 +653,8 @@ async function writePreview(targetDirHandle, svgContent, entry) {
 }
 
 async function processOne(entry, baseUrl, waitMs) {
-  const targetDirHandle = repoDirHandle
-    ? await getTargetDirHandle(repoDirHandle, entry)
-    : null;
-  const decision = targetDirHandle
-    ? await shouldRewrite(targetDirHandle)
-    : { rewrite: true, reason: "workspace-launch-absolute-repo-root" };
+  const targetDirHandle = await getTargetDirHandle(repoDirHandle, entry);
+  const decision = await shouldRewrite(targetDirHandle);
 
   ui.outputSummary.setWriteFolderActual(getWriteFolderDisplayPath(entry));
   const label = entry.targetType === "samples" ? entry.id : entry.name;
@@ -829,7 +686,7 @@ async function processOne(entry, baseUrl, waitMs) {
     }
 
     const svgContent = await capture.extractSvgFromFrame();
-    await writePreview(targetDirHandle, svgContent, entry);
+    await writePreview(targetDirHandle, svgContent);
     ui.setLastGeneratedImage(svgContent, label);
 
     const stillHasTimeout = svgContent.includes(CAPTURE_TIMEOUT_MARKER);
@@ -843,23 +700,12 @@ async function processOne(entry, baseUrl, waitMs) {
     logger.log("");
     return { id: label, status: "written", reason: decision.reason };
   } catch (error) {
-    if (isPreviewWriteError(error)) {
-      logger.log(`FAIL Direct preview write failed: ${error.message}`);
-      logger.log("");
-      return { id: label, status: "failed", reason: error.message };
-    }
     const fallback = capture.buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
     try {
-      await writePreview(targetDirHandle, fallback, entry);
+      await writePreview(targetDirHandle, fallback);
     } catch (writeError) {
-      const reason = isPreviewWriteError(writeError)
-        ? writeError.message
-        : `${error.message}; fallback write failed: ${writeError.message}`;
-      if (isPreviewWriteError(writeError)) {
-        logger.log(`FAIL Direct preview write failed: ${writeError.message}`);
-      } else {
-        logger.log(`FAIL ${label}  (${reason})`);
-      }
+      const reason = `${error.message}; fallback write failed: ${writeError.message}`;
+      logger.log(`FAIL ${label}  (${reason})`);
       logger.log("");
       return { id: label, status: "failed", reason };
     }
@@ -929,7 +775,7 @@ function printSummary(results) {
 }
 
 function hasRepoDestinationContext() {
-  return Boolean(repoDirHandle || (isWorkspaceManagerLaunch() && workspaceRepoPathHydrated));
+  return Boolean(repoDirHandle);
 }
 
 class PreviewGeneratorV2App {
@@ -995,7 +841,7 @@ class PreviewGeneratorV2App {
     }
 
     if (!hasRepoDestinationContext()) {
-      logger.log("Pick the actual repo root folder or launch from Workspace Manager V2 before writing preview output.");
+      logger.log("Pick the actual repo root folder before writing preview output.");
       return;
     }
 
@@ -1022,10 +868,6 @@ class PreviewGeneratorV2App {
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
     logger.log(`Capture mode: ${ui.getCaptureModeLabel()}`);
     logger.log(`Force rewrite: ${ui.renderControls.isForceRewrite()}`);
-    if (!repoDirHandle && isWorkspaceManagerLaunch()) {
-      logger.log(`Workspace launch direct preview write target: ${getWorkspacePreviewTargetDisplayPath() || "unavailable"}.`);
-      logger.log(`Workspace launch absolute preview output path: ${workspaceAbsolutePreviewOutputPath || "unavailable"}.`);
-    }
     logger.log("");
 
     const results = [];
@@ -1087,11 +929,8 @@ class PreviewGeneratorV2App {
     logger.log("Workspace launch context hydration started.");
     workspacePreviewFileValid = false;
     workspaceLaunchHydrated = false;
-    workspaceRepoPathHydrated = false;
-    workspaceResolvedRepoPath = "";
     workspaceManifestPreviewPath = "";
     workspaceGeneratedPreviewPath = "";
-    workspaceAbsolutePreviewOutputPath = "";
     capture.setCaptureBackgroundColor("");
     if (!contextResult.ok) {
       logger.log(`FAIL Workspace launch context hydration: ${contextResult.message}`);
@@ -1103,12 +942,6 @@ class PreviewGeneratorV2App {
     contextResult.pathFields.forEach((field) => {
       logger.log(`Raw workspace launch path field ${field.label}: ${displayRawLaunchFieldValue(field.text)}`);
     });
-    logger.log(`Resolved repoPath decision source field used: ${contextResult.repoPathDecision.sourceField}`);
-    logger.log(`Resolved repoPath decision value: ${displayRawLaunchFieldValue(contextResult.repoPathDecision.value)}`);
-    logger.log(`Resolved repoPath decision absolute: ${contextResult.repoPathDecision.isAbsolute ? "true" : "false"}`);
-    if (!contextResult.repoPathDecision.value) {
-      logger.log(`Missing repoPath fields checked: ${contextResult.repoPathDecision.checkedMissingFields.join(", ")}`);
-    }
 
     const previewTarget = workspacePreviewTarget(manifest);
     if (!previewTarget.ok) {
@@ -1118,8 +951,7 @@ class PreviewGeneratorV2App {
     }
 
     const manifestRepoRoot = String(manifest.repoRoot || "").trim();
-    const resolvedRepoPath = contextResult.repoPathDecision.value;
-    repoDisplayName = resolvedRepoPath || manifestRepoRoot;
+    repoDisplayName = manifestRepoRoot;
     repoDirHandle = null;
     workspaceLaunchHydrated = true;
     workspaceRepoRootName = manifestRepoRoot;
@@ -1127,15 +959,6 @@ class PreviewGeneratorV2App {
     workspacePreviewGameId = manifest.gameId;
     workspaceManifestPreviewPath = previewTarget.manifestPreviewPath;
     workspaceGeneratedPreviewPath = previewTarget.generatedPreviewPath;
-    if (resolvedRepoPath) {
-      try {
-        workspaceAbsolutePreviewOutputPath = resolveWorkspaceAbsolutePreviewOutputPath(resolvedRepoPath, previewTarget.generatedPreviewPath);
-        workspaceRepoPathHydrated = true;
-        workspaceResolvedRepoPath = resolvedRepoPath;
-      } catch (error) {
-        logger.log(`WARN Workspace direct preview write unavailable: ${error.message}`);
-      }
-    }
     ui.setRepoDestinationDisplayName(repoDisplayName);
     ui.targetSource.setSelectedTargetType("games");
     ui.targetSource.showWorkspaceGamesOnly();
@@ -1144,14 +967,7 @@ class PreviewGeneratorV2App {
     await updatePathPreviewLabels();
     logger.log(`OK Workspace launch context hydrated for ${manifest.gameId}.`);
     logger.log(`Workspace repoRoot display label available: ${manifestRepoRoot || "(empty)"}.`);
-    logger.log(`Workspace repoPath ${resolvedRepoPath ? `available: ${resolvedRepoPath}` : "missing"}.`);
-    if (workspaceRepoPathHydrated) {
-      logger.log(`Resolved repoPath: ${workspaceResolvedRepoPath}`);
-      logger.log(`Resolved absolute preview output path: ${workspaceAbsolutePreviewOutputPath}`);
-    } else {
-      logger.log(`WARN Manifest repoPath is missing or invalid for workspace launch; repoRoot is display-only: ${manifestRepoRoot || "(empty)"}.`);
-      logger.log("Direct preview write unavailable until manifest repoPath is an absolute filesystem path.");
-    }
+    logger.log("Workspace launch is display-only; preview writes require normal Preview Generator repo selection.");
     logger.log("Target source: games");
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
     logger.log(`Manifest preview asset: ${previewTarget.previewAssetId} (${previewTarget.previewAssetType}/${previewTarget.previewAssetKind})`);

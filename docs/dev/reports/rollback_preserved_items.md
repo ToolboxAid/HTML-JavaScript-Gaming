@@ -1,12 +1,13 @@
-# PR_26128_001 Rollback Preserved Items
+# PR_26128_003 Rollback Preserved Items
 
 ## Preserved Baseline
-- Preserved the committed Workspace Manager V2 accordion behavior in `tools/workspace-manager-v2/js/controls/AccordionSection.js`.
-- Preserved committed Workspace Manager V2 layout and non-runtime UI consistency updates in `tools/workspace-manager-v2/index.html` and `tools/workspace-manager-v2/styles/workspaceManagerV2.css`.
-- Preserved the committed Preview Generator V2 baseline where Workspace Manager launches hydrate from session context and tools-mode repo picking remains local to Preview Generator V2.
-- Preserved existing schema files exactly; no `tools/schemas/**` files were changed by this rollback.
-- Preserved sample JSON exactly; no `games/**`, `samples/**`, or sample manifest JSON files were changed by this rollback.
-- Preserved roadmap content exactly; no roadmap files were changed by this rollback.
+- Preserved Workspace Manager V2 accordion behavior; existing accordion validation remains in `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`.
+- Preserved rename/move cleanup and cosmetic/layout-only UI consistency work outside the unstable direct-write path.
+- Preserved Workspace Manager V2 sessionStorage launch context for first-class tools.
+- Preserved Preview Generator V2 tools-mode repo picking as local Preview Generator behavior.
+- Preserved existing schema files exactly; no `tools/schemas/**` files were changed.
+- Preserved sample JSON exactly; no `games/**`, `samples/**`, or sample manifest JSON files were changed.
+- Preserved roadmap content exactly; no roadmap files were changed.
 
 ## Session Inspector Note
-- `tools/session-inspector/**` is not present in this checkout after rollback, and no files under that path were available to preserve or modify.
+- `tools/session-inspector/**` is present as actual tool/runtime files and was preserved unchanged in this rollback.

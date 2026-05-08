@@ -123,15 +123,13 @@ export class WorkspaceManagerV2App {
     this.activeGame = result.game;
     this.activeHostContextId = result.hostContextId || null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
-    const repoPathStatus = result.game.repoPath ? ` Repo path: ${result.game.repoPath}.` : " Select Repo before direct preview writes.";
-    this.gameSelector.setSummary(`${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.${repoPathStatus}`);
+    this.gameSelector.setSummary(`${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.`);
     this.summary.render({ context: result.context });
     this.toolTiles.render({
       assetCount: result.assetCount,
       canLaunch: true,
       manifestStatus: "Schema-valid manifest",
-      paletteSwatchCount: result.paletteSwatches.length,
-      repoPathReady: Boolean(result.game.repoPath)
+      paletteSwatchCount: result.paletteSwatches.length
     });
     this.menu.setExportEnabled(true);
   }
