@@ -349,7 +349,7 @@ export class WorkspaceManagerV2ContextService {
 
   async restorePersistedContext() {
     const params = new URLSearchParams(this.location.search || "");
-    const hostContextId = params.get("hostContextId") || this.sessionStorage.getItem(HOST_CONTEXT_STORAGE_KEY) || "";
+    const hostContextId = params.get("hostContextId") || "";
     return this.restorePersistedContextById(hostContextId);
   }
 

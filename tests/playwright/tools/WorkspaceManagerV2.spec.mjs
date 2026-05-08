@@ -132,6 +132,12 @@ async function selectMockRepo(page, { repoName = "HTML-JavaScript-Gaming" } = {}
     "Gravity Well",
     "Pong"
   ]);
+  await expectWorkspaceToolsDisabled(page);
+}
+
+async function expectWorkspaceToolsDisabled(page) {
+  await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(4);
+  expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
 }
 
 test.describe("Workspace Manager V2 bootstrap", () => {
@@ -263,6 +269,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("starts with no active game even when stale session state exists", async ({ page }) => {
+    const staleGameManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
+    const pageErrors = [];
+    await page.addInitScript((manifest) => {
+      window.sessionStorage.setItem("workspace-manager-v2-stale-context", JSON.stringify(manifest));
+      window.sessionStorage.setItem("workspace-manager-v2-active-host-context-id", "workspace-manager-v2-stale-context");
+    }, staleGameManifest.game.workspace);
+    const server = await openWorkspaceManagerV2(page);
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expect(page.locator("#activeGameSelect option")).toHaveCount(0);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue("{}");
+      await expectWorkspaceToolsDisabled(page);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/Restored Asteroids workspace/);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("discovers Active Game options from selected repo manifests", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
@@ -275,6 +308,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activeGameSelect")).toBeDisabled();
       await expect(page.locator("#activeGameSelect option")).toHaveCount(0);
       await expect(page.locator("#activeGameSummary")).toHaveText("Pick a repo folder to discover schema-valid game manifests.");
+      await expectWorkspaceToolsDisabled(page);
 
       await selectMockRepo(page);
       await expect(page.locator("#activeGameSummary")).toHaveText("Discovered 3 schema-valid game manifests from HTML-JavaScript-Gaming.");
@@ -322,8 +356,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
       await expect(page.locator("#activeGameSelect")).toBeDisabled();
       await expect(page.locator("#activeGameSelect option")).toHaveCount(0);
+      await expectWorkspaceToolsDisabled(page);
       await expect(page.locator("#activeGameSummary")).toHaveText(/Selected repo is missing games\//);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Repo load failed: Selected repo is missing games\//);
+
+      await page.evaluate(() => {
+        window.__workspaceManagerV2MockRepoConfig = {
+          manifestPaths: [],
+          repoName: "NoValidGamesRepo"
+        };
+      });
+      await page.locator("#pickRepoBtn").click();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("NoValidGamesRepo");
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expect(page.locator("#activeGameSelect option")).toHaveCount(0);
+      await expectWorkspaceToolsDisabled(page);
+      await expect(page.locator("#activeGameSummary")).toHaveText("No schema-valid game manifests were found in NoValidGamesRepo.");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO SKIP games\/InvalidWorkspace\/game\.manifest\.json: Game manifest failed schema validation: root\.game is required/);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Repo load failed: No schema-valid game\.manifest\.json files were found in NoValidGamesRepo\./);
 
       await selectMockRepo(page, { repoName: "SecondRepo" });
       await expect(page.locator("#activeGameSummary")).toHaveText("Discovered 3 schema-valid game manifests from SecondRepo.");
