@@ -97,10 +97,12 @@
 
       <aside class="session-inspector-v2__panel session-inspector-v2__panel--right tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" aria-label="Session JSON, data, and dirty tracking">
         <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
-          <div class="accordion-v2__header session-inspector-v2__json-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="sessionInspectorV2JsonContent">
-            <span>JSON</span>
-            <div class="session-inspector-v2__json-header-actions">
+          <div class="session-inspector-v2__accordion-header-row session-inspector-v2__json-accordion-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2JsonContent">
+              <span>JSON</span>
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
+            <div class="session-inspector-v2__json-header-actions">
               <button id="copySessionInspectorV2AllButton" type="button">Copy All</button>
             </div>
           </div>
@@ -110,9 +112,11 @@
         </section>
 
         <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
-          <div class="accordion-v2__header session-inspector-v2__data-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="sessionInspectorV2DataContent">
-            <span>Data</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          <div class="session-inspector-v2__accordion-header-row session-inspector-v2__data-accordion-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2DataContent">
+              <span>Data</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
           </div>
           <div id="sessionInspectorV2DataContent" class="accordion-v2__content">
             <pre id="sessionInspectorV2DataOutput" class="session-inspector-v2__output">Select a normalized tool entry with a top-level data section.</pre>
@@ -120,9 +124,11 @@
         </section>
 
         <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
-          <div class="accordion-v2__header session-inspector-v2__dirty-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="sessionInspectorV2DirtyContent">
-            <span>Dirty</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          <div class="session-inspector-v2__accordion-header-row session-inspector-v2__dirty-accordion-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2DirtyContent">
+              <span>Dirty</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
           </div>
           <div id="sessionInspectorV2DirtyContent" class="accordion-v2__content">
             <pre id="sessionInspectorV2DirtyOutput" class="session-inspector-v2__output">Select a normalized tool entry with a top-level dirty section.</pre>
@@ -130,10 +136,12 @@
         </section>
 
         <section class="accordion-v2 session-inspector-v2__accordion is-open" data-accordion-v2-open="true">
-          <div class="accordion-v2__header session-inspector-v2__status-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="sessionInspectorV2StatusContent">
-            <span>Status</span>
-            <div class="session-inspector-v2__status-header-actions">
+          <div class="session-inspector-v2__accordion-header-row session-inspector-v2__status-accordion-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2StatusContent">
+              <span>Status</span>
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
+            <div class="session-inspector-v2__status-header-actions">
               <button id="clearSessionInspectorV2StatusButton" type="button">Clear Status</button>
             </div>
           </div>

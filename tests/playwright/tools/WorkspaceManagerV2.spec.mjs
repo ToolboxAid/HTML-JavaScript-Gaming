@@ -192,6 +192,31 @@ async function expectSessionInspectorV2AccordionToggles(page, contentId) {
   await expect(header).toHaveAttribute("aria-expanded", "true");
 }
 
+async function expectSessionInspectorV2DetailAccordionsIndependent(page) {
+  const contentIds = [
+    "sessionInspectorV2JsonContent",
+    "sessionInspectorV2DataContent",
+    "sessionInspectorV2DirtyContent",
+    "sessionInspectorV2StatusContent"
+  ];
+  for (const contentId of contentIds) {
+    const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
+    const content = page.locator(`#${contentId}`);
+    await expect(header).toBeVisible();
+    await expect(content).toBeVisible();
+    await header.click();
+    await expect(content).toBeHidden();
+    for (const otherContentId of contentIds.filter((entry) => entry !== contentId)) {
+      await expect(page.locator(`#${otherContentId}`)).toBeVisible();
+    }
+    await header.click();
+    await expect(content).toBeVisible();
+    for (const otherContentId of contentIds.filter((entry) => entry !== contentId)) {
+      await expect(page.locator(`#${otherContentId}`)).toBeVisible();
+    }
+  }
+}
+
 async function expectSessionInspectorV2FullscreenShell(page) {
   const summary = page.locator("[data-session-inspector-v2-summary]");
   await summary.click();
@@ -580,6 +605,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       ]) {
         await expectSessionInspectorV2AccordionToggles(page, contentId);
       }
+      await expectSessionInspectorV2DetailAccordionsIndependent(page);
 
       const tileState = await page.locator(".session-inspector-v2__entry-card").evaluateAll((cards) => {
         const rects = cards.map((card) => {
@@ -640,6 +666,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(copiedValidationText).toContain("=== JSON ===\ntrue");
       expect(copiedValidationText).toContain("=== Data ===\nNo data section is present for sessionStorage:session-inspector-v2-alpha.");
       expect(copiedValidationText).toContain("=== Dirty ===\nNo dirty section is present for sessionStorage:session-inspector-v2-alpha.");
+      await page.locator("#clearSessionInspectorV2StatusButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue("");
       await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
       await expect(page.locator("#sessionInspectorV2JsonOutput")).toHaveText('"plain beta value"');
