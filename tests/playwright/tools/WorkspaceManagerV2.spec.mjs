@@ -1728,6 +1728,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         isDirty: true,
         reason: "palette-updated"
       });
+      await expect(paletteTile).toContainText("12 palette swatches");
+      await expect(paletteTile).toHaveAttribute("data-workspace-tool-dirty", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Refreshed palette-manager-v2 from workspace\.tools\.palette-manager-v2\.data: 12 palette swatches; Dirty: true\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Restored repo destination from workspace\.repo\.reference for HTML-JavaScript-Gaming\./);
       await expect(previewTile).toBeEnabled();
       await expect(previewTile).toContainText("Schema-valid manifest");
@@ -1739,6 +1742,53 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expectWorkspaceReturnRehydrated(page);
+      await expect(paletteTile).toContainText("12 palette swatches");
+      await expect(paletteTile).toHaveAttribute("data-workspace-tool-dirty", "true");
+
+      await assetTile.click();
+      await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 14 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 12 palette colors from active palette context/);
+      await page.locator("#assetKindColor").check();
+      const sessionPurpleSwatch = page.locator('#assetColorSwatchList button[aria-label*="Workspace Session Purple"]');
+      await expect(sessionPurpleSwatch).toBeVisible();
+      await sessionPurpleSwatch.click();
+      await page.locator("#assetUsageInput").fill("session");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.session.workspace-session-purple");
+      await page.locator("#addAssetButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Added assets\.color\.hud\.session\.workspace-session-purple\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK workspace\.tools\.asset-manager-v2 now has 15 validated assets\./);
+      const editedAssetSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.asset-manager-v2")));
+      expect(Object.keys(editedAssetSession.data.assets)).toHaveLength(15);
+      expect(editedAssetSession.data.assets["assets.color.hud.session.workspace-session-purple"]).toMatchObject({
+        color: {
+          hex: "#123456",
+          name: "Workspace Session Purple",
+          source: "User Added",
+          symbol: "@"
+        },
+        kind: "hex",
+        path: "palette://workspace/workspace-session-purple",
+        role: "hud",
+        type: "color"
+      });
+      expect(editedAssetSession.dirty).toMatchObject({
+        isDirty: true,
+        reason: "asset-updated"
+      });
+      expect(Date.parse(editedAssetSession.dirty.changedAt)).not.toBeNaN();
+      expect(editedAssetSession.dirty.changedKeys).toEqual(expect.arrayContaining([
+        "data.assets",
+        'data.assets["assets.color.hud.session.workspace-session-purple"]'
+      ]));
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnRehydrated(page);
+      await expect(assetTile).toContainText("15 managed assets");
+      await expect(assetTile).toHaveAttribute("data-workspace-tool-dirty", "true");
+      await expect(paletteTile).toContainText("12 palette swatches");
+      await expect(paletteTile).toHaveAttribute("data-workspace-tool-dirty", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Refreshed asset-manager-v2 from workspace\.tools\.asset-manager-v2\.data: 15 managed assets; Dirty: true\./);
       await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
       await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();

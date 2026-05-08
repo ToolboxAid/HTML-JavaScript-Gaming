@@ -33,6 +33,16 @@ function isWorkspaceManifest(value) {
 }
 
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
+const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
+const WORKSPACE_TOOL_SESSION_KEY_PREFIX = "workspace.tools.";
+
+function toolSessionKey(toolId) {
+  return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}`;
+}
+
+function normalizedToolSessionError(key) {
+  return `${key} must use the normalized schema/workspace/data/dirty object shape.`;
+}
 
 export class WorkspaceBridge {
   constructor({ windowRef = window }) {
@@ -135,6 +145,53 @@ export class WorkspaceBridge {
     }
   }
 
+  readSessionJson(key) {
+    const rawValue = this.window.sessionStorage.getItem(key);
+    if (!rawValue) {
+      return { ok: false, message: `${key} was not found in sessionStorage.` };
+    }
+    try {
+      const value = JSON.parse(rawValue);
+      return isPlainObject(value)
+        ? { ok: true, value }
+        : { ok: false, message: `${key} must contain a JSON object.` };
+    } catch (error) {
+      return { ok: false, message: `${key} contains invalid JSON: ${error.message}` };
+    }
+  }
+
+  readWorkspaceToolSession(toolId, contextResult = null) {
+    const context = contextResult || this.readContext();
+    if (!context.ok) {
+      return context;
+    }
+    const key = toolSessionKey(toolId);
+    const sessionResult = this.readSessionJson(key);
+    if (!sessionResult.ok) {
+      return sessionResult;
+    }
+    const session = sessionResult.value;
+    if (!isPlainObject(session.schema)
+      || !isPlainObject(session.workspace)
+      || !Object.prototype.hasOwnProperty.call(session, "data")
+      || !isPlainObject(session.dirty)) {
+      return { ok: false, message: normalizedToolSessionError(key) };
+    }
+    if (session.workspace.source !== "workspace-manager-v2") {
+      return { ok: false, message: `${key}.workspace.source must be workspace-manager-v2.` };
+    }
+    if (session.workspace.toolId !== toolId) {
+      return { ok: false, message: `${key}.workspace.toolId must match ${toolId}.` };
+    }
+    if (session.workspace.workspaceManifestId !== context.context.id) {
+      return { ok: false, message: `${key}.workspace.workspaceManifestId must match ${context.context.id}.` };
+    }
+    if (session.workspace.gameId !== context.gameId) {
+      return { ok: false, message: `${key}.workspace.gameId must match ${context.gameId}.` };
+    }
+    return { ok: true, context, key, session };
+  }
+
   workspaceManifestFromContext(context) {
     if (isWorkspaceManifest(context)) {
       return context;
@@ -147,13 +204,13 @@ export class WorkspaceBridge {
     if (!contextResult.ok) {
       return contextResult;
     }
-    const workspaceManifest = this.workspaceManifestFromContext(contextResult.context);
-    if (!isPlainObject(workspaceManifest)) {
-      return { ok: false, message: "Workspace Manager V2 manifest context is invalid." };
+    const sessionResult = this.readWorkspaceToolSession(ASSET_MANAGER_V2_TOOL_KEY, contextResult);
+    if (!sessionResult.ok) {
+      return sessionResult;
     }
-    const assetPayload = workspaceManifest.tools?.["asset-manager-v2"];
+    const assetPayload = sessionResult.session.data;
     if (!isPlainObject(assetPayload) || !isPlainObject(assetPayload.assets)) {
-      return { ok: false, message: "Workspace Manager V2 manifest is missing tools.asset-manager-v2.assets." };
+      return { ok: false, message: `${sessionResult.key}.data.assets must contain the active workspace assets.` };
     }
     return {
       ok: true,
@@ -168,9 +225,13 @@ export class WorkspaceBridge {
     if (!contextResult.ok) {
       return contextResult;
     }
-    const activePalette = contextResult.activePalette;
+    const sessionResult = this.readWorkspaceToolSession(PALETTE_MANAGER_V2_TOOL_KEY, contextResult);
+    if (!sessionResult.ok) {
+      return sessionResult;
+    }
+    const activePalette = sessionResult.session.data;
     if (!isPlainObject(activePalette) || !Array.isArray(activePalette.swatches)) {
-      return { ok: false, message: "Workspace Manager V2 session context is missing active palette swatches." };
+      return { ok: false, message: `${sessionResult.key}.data.swatches must contain the active workspace palette.` };
     }
     return { ok: true, swatches: clone(activePalette.swatches) };
   }
@@ -201,13 +262,17 @@ export class WorkspaceBridge {
     };
   }
 
-  writeAssetsPayload(payload) {
+  writeAssetsPayload(payload, changedKeys = ["data.assets"]) {
     if (!this.isWorkspaceMode()) {
       return { ok: false, message: "Asset insertion is only available when launched from Workspace Manager V2." };
     }
     const contextResult = this.readContext();
     if (!contextResult.ok) {
       return contextResult;
+    }
+    const sessionResult = this.readWorkspaceToolSession(ASSET_MANAGER_V2_TOOL_KEY, contextResult);
+    if (!sessionResult.ok) {
+      return sessionResult;
     }
     const workspaceManifest = clone(contextResult.context);
     if (!isPlainObject(workspaceManifest)) {
@@ -216,12 +281,38 @@ export class WorkspaceBridge {
     if (!isPlainObject(workspaceManifest.tools)) {
       return { ok: false, message: "Workspace Manager V2 session context is missing tools." };
     }
-    if (!isPlainObject(workspaceManifest.tools["asset-manager-v2"]) || !isPlainObject(workspaceManifest.tools["asset-manager-v2"].assets)) {
-      return { ok: false, message: "Workspace Manager V2 manifest is missing tools.asset-manager-v2.assets." };
+    if (!isPlainObject(payload?.assets)) {
+      return { ok: false, message: "Asset Manager V2 payload must include assets." };
     }
 
-    workspaceManifest.tools["asset-manager-v2"].assets = clone(payload.assets);
-    this.window.sessionStorage.setItem(contextResult.hostContextId, JSON.stringify(workspaceManifest));
-    return { ok: true, workspaceManifest: clone(workspaceManifest) };
+    const session = sessionResult.session;
+    const currentAssets = isPlainObject(session.data?.assets) ? session.data.assets : {};
+    const nextData = {
+      ...(isPlainObject(session.data) ? session.data : {}),
+      assets: clone(payload.assets)
+    };
+    const assetsChanged = JSON.stringify(currentAssets) !== JSON.stringify(nextData.assets);
+    const nextSession = {
+      ...session,
+      data: nextData,
+      dirty: assetsChanged
+        ? {
+            isDirty: true,
+            reason: "asset-updated",
+            changedAt: new Date().toISOString(),
+            changedKeys: Array.from(new Set((Array.isArray(changedKeys) ? changedKeys : ["data.assets"])
+              .map((key) => String(key || "").trim())
+              .filter(Boolean)))
+          }
+        : session.dirty
+    };
+    this.window.sessionStorage.setItem(sessionResult.key, JSON.stringify(nextSession));
+    workspaceManifest.tools[ASSET_MANAGER_V2_TOOL_KEY] = clone(nextData);
+    return {
+      ok: true,
+      changed: assetsChanged,
+      session: clone(nextSession),
+      workspaceManifest: clone(workspaceManifest)
+    };
   }
 }

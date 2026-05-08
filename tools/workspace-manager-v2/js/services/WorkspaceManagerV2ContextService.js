@@ -85,6 +85,12 @@ function toolSessionKey(toolId) {
   return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}`;
 }
 
+function dirtyStatusFromSession(session) {
+  return typeof session?.dirty?.isDirty === "boolean"
+    ? String(session.dirty.isDirty)
+    : "unknown";
+}
+
 function toolPayloadForContext(tool, context) {
   return context?.tools?.[tool.id];
 }
@@ -546,6 +552,44 @@ export class WorkspaceManagerV2ContextService {
       data: this.dataSessionForTool(tool, context),
       dirty: this.dirtySessionForTool()
     };
+  }
+
+  summarizeToolSession(tool, session) {
+    const data = session?.data;
+    return {
+      assetCount: tool.id === ASSET_MANAGER_V2_TOOL_KEY && isPlainObject(data?.assets)
+        ? Object.keys(data.assets).length
+        : null,
+      dirty: isPlainObject(session?.dirty) ? clone(session.dirty) : null,
+      dirtyStatus: dirtyStatusFromSession(session),
+      paletteSwatchCount: tool.id === PALETTE_MANAGER_V2_TOOL_KEY && Array.isArray(data?.swatches)
+        ? data.swatches.length
+        : null,
+      toolId: tool.id,
+      toolName: tool.name
+    };
+  }
+
+  refreshContextFromToolSessions({ context, tools = this.workspaceLaunchableTools() } = {}) {
+    const refreshedContext = clone(context);
+    const toolSummaries = {};
+    if (!isPlainObject(refreshedContext.tools)) {
+      refreshedContext.tools = {};
+    }
+    tools
+      .filter((tool) => tool?.id)
+      .forEach((tool) => {
+        const sessionResult = this.reusableToolSession(tool, context);
+        if (!sessionResult.ok) {
+          return;
+        }
+        const session = sessionResult.session;
+        if (isPlainObject(session.data)) {
+          refreshedContext.tools[tool.id] = clone(session.data);
+        }
+        toolSummaries[tool.id] = this.summarizeToolSession(tool, session);
+      });
+    return { context: refreshedContext, toolSummaries };
   }
 
   hydrateEnabledToolSessions({ context, game, tools = this.workspaceLaunchableTools() } = {}) {

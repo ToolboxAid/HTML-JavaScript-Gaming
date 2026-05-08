@@ -273,7 +273,12 @@ export class AssetManagerV2App {
     this.selectedAssetId = formValue.assetId;
     this.assetForm.clearEditableFields();
     this.statusLog.ok(`Added ${formValue.assetId}.`);
-    this.syncWorkspaceSessionManifest();
+    this.syncWorkspaceSessionManifest({
+      changedKeys: [
+        "data.assets",
+        `data.assets["${formValue.assetId}"]`
+      ]
+    });
     this.render();
     this.refreshActions();
   }
@@ -315,7 +320,12 @@ export class AssetManagerV2App {
     this.selectedAssetId = formValue.assetId;
     this.assetForm.loadAssetForEdit(formValue.assetId, entryResult.entry);
     this.statusLog.ok(`Updated ${formValue.assetId}.`);
-    this.syncWorkspaceSessionManifest();
+    this.syncWorkspaceSessionManifest({
+      changedKeys: [
+        "data.assets",
+        `data.assets["${this.selectedAssetId}"]`
+      ]
+    });
     this.render();
     this.refreshActions();
   }
@@ -341,7 +351,12 @@ export class AssetManagerV2App {
       this.assetForm.clearEditableFields();
     }
     this.statusLog.ok(`Deleted ${assetId}.`);
-    this.syncWorkspaceSessionManifest();
+    this.syncWorkspaceSessionManifest({
+      changedKeys: [
+        "data.assets",
+        `data.assets["${assetId}"]`
+      ]
+    });
     this.render();
     this.refreshActions();
   }
@@ -373,7 +388,7 @@ export class AssetManagerV2App {
     } else {
       this.assetForm.clearEditableFields();
     }
-    this.syncWorkspaceSessionManifest();
+    this.syncWorkspaceSessionManifest({ changedKeys: ["data.assets"] });
     this.render();
     this.refreshActions();
   }
@@ -501,7 +516,7 @@ export class AssetManagerV2App {
       this.redoStack = [];
       this.statusLog.ok(`Imported JSON with ${Object.keys(this.assets).length} validated assets.`);
       this.missingFileAssetIds = await this.logMissingReferencedFiles(this.assets);
-      this.syncWorkspaceSessionManifest();
+      this.syncWorkspaceSessionManifest({ changedKeys: ["data.assets"] });
       this.render();
       this.refreshActions();
     } catch (error) {
@@ -565,7 +580,7 @@ export class AssetManagerV2App {
     this.window.location.href = this.workspaceBridge.workspaceManagerUrl();
   }
 
-  syncWorkspaceSessionManifest({ quiet = false } = {}) {
+  syncWorkspaceSessionManifest({ changedKeys = ["data.assets"], quiet = false } = {}) {
     if (!this.workspaceBridge.isWorkspaceMode()) {
       return { ok: true, skipped: true };
     }
@@ -573,14 +588,14 @@ export class AssetManagerV2App {
     if (!validation.ok) {
       return validation;
     }
-    const result = this.workspaceBridge.writeAssetsPayload(validation.payload);
+    const result = this.workspaceBridge.writeAssetsPayload(validation.payload, changedKeys);
     if (!result.ok) {
-      this.statusLog.fail(`Workspace session manifest update failed: ${result.message}`);
+      this.statusLog.fail(`Workspace tool session update failed: ${result.message}`);
       return result;
     }
     this.lastWorkspaceManifest = result.workspaceManifest;
     if (!quiet) {
-      this.statusLog.ok(`Workspace Manager V2 session manifest now has ${Object.keys(validation.payload.assets).length} validated assets.`);
+      this.statusLog.ok(`workspace.tools.asset-manager-v2 now has ${Object.keys(validation.payload.assets).length} validated assets.`);
     }
     return result;
   }

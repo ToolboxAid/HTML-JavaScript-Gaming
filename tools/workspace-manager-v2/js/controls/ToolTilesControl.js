@@ -25,6 +25,7 @@ export class ToolTilesControl {
   render({
     assetCount = 0,
     canLaunch = false,
+    dirtyByToolId = {},
     enabledToolIds = [],
     manifestStatus = "Waiting for manifest",
     paletteSwatchCount = 0
@@ -33,6 +34,7 @@ export class ToolTilesControl {
     this.container.replaceChildren(...TOOL_GROUPS.map((group) => this.groupSection({
       assetCount,
       canLaunch,
+      dirtyByToolId,
       enabledToolIdSet,
       group,
       manifestStatus,
@@ -56,7 +58,7 @@ export class ToolTilesControl {
     return manifestStatus;
   }
 
-  groupSection({ assetCount, canLaunch, enabledToolIdSet, group, manifestStatus, paletteSwatchCount }) {
+  groupSection({ assetCount, canLaunch, dirtyByToolId, enabledToolIdSet, group, manifestStatus, paletteSwatchCount }) {
     const section = document.createElement("section");
     section.className = "workspace-manager-v2__tool-group";
     section.setAttribute("aria-label", `${group} tools`);
@@ -73,6 +75,7 @@ export class ToolTilesControl {
         grid.append(this.tile({
           assetCount,
           canLaunch,
+          dirtyByToolId,
           enabledToolIdSet,
           manifestStatus,
           paletteSwatchCount,
@@ -84,12 +87,14 @@ export class ToolTilesControl {
     return section;
   }
 
-  tile({ assetCount, canLaunch, enabledToolIdSet, manifestStatus, paletteSwatchCount, tool }) {
+  tile({ assetCount, canLaunch, dirtyByToolId, enabledToolIdSet, manifestStatus, paletteSwatchCount, tool }) {
     const isEnabledForGame = canLaunch && enabledToolIdSet.has(tool.id);
+    const dirtyStatus = dirtyByToolId[tool.id] || "unknown";
     const button = document.createElement("button");
     button.type = "button";
     button.className = "workspace-manager-v2__tool-tile";
     button.dataset.workspaceToolId = tool.id;
+    button.dataset.workspaceToolDirty = dirtyStatus;
     button.disabled = !isEnabledForGame;
     button.addEventListener("click", () => {
       this.onLaunchTool(tool.id);

@@ -23,6 +23,7 @@ export class WorkspaceManagerV2App {
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
     this.activeRepoHandle = null;
     this.activeSessionHydration = null;
+    this.activeToolSessionRefresh = null;
   }
 
   start() {
@@ -79,6 +80,7 @@ export class WorkspaceManagerV2App {
     this.activeHostContextId = null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
     this.activeSessionHydration = null;
+    this.activeToolSessionRefresh = null;
     this.contextService.clearWorkspaceSessionHydration();
     this.contextService.clearDiscoveredGames();
     this.gameSelector.clear();
@@ -140,6 +142,7 @@ export class WorkspaceManagerV2App {
     this.activeHostContextId = null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
     this.activeSessionHydration = null;
+    this.activeToolSessionRefresh = null;
     this.contextService.clearToolSessionHydration();
     this.menu.setExportEnabled(false);
     this.toolTiles.renderEmpty();
@@ -212,24 +215,40 @@ export class WorkspaceManagerV2App {
   }
 
   applyContextResult(result) {
+    const tools = this.contextService.workspaceLaunchableTools();
     const hydration = this.contextService.hydrateEnabledToolSessions({
       context: result.context,
       game: result.game,
-      tools: this.contextService.workspaceLaunchableTools()
+      tools
     });
-    this.activeContext = result.context;
+    const sessionRefresh = hydration.ok
+      ? this.contextService.refreshContextFromToolSessions({ context: result.context, tools })
+      : { context: result.context, toolSummaries: {} };
+    const paletteSummary = sessionRefresh.toolSummaries["palette-manager-v2"] || {};
+    const assetSummary = sessionRefresh.toolSummaries["asset-manager-v2"] || {};
+    const dirtyByToolId = Object.fromEntries(Object.entries(sessionRefresh.toolSummaries)
+      .map(([toolId, summary]) => [toolId, summary.dirtyStatus || "unknown"]));
+    const paletteSwatchCount = Number.isInteger(paletteSummary.paletteSwatchCount)
+      ? paletteSummary.paletteSwatchCount
+      : result.paletteSwatches.length;
+    const assetCount = Number.isInteger(assetSummary.assetCount)
+      ? assetSummary.assetCount
+      : result.assetCount;
+    this.activeContext = sessionRefresh.context;
     this.activeGame = result.game;
     this.activeHostContextId = result.hostContextId || null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
     this.activeSessionHydration = hydration;
+    this.activeToolSessionRefresh = sessionRefresh;
     this.gameSelector.setSummary(`${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.`);
-    this.summary.render({ context: result.context });
+    this.summary.render({ context: this.activeContext });
     this.toolTiles.render({
-      assetCount: result.assetCount,
+      assetCount,
       canLaunch: hydration.ok,
+      dirtyByToolId,
       enabledToolIds: hydration.ok ? hydration.hydratedToolIds : [],
       manifestStatus: "Schema-valid manifest",
-      paletteSwatchCount: result.paletteSwatches.length
+      paletteSwatchCount
     });
     this.menu.setExportEnabled(hydration.ok);
   }
@@ -246,6 +265,14 @@ export class WorkspaceManagerV2App {
     (this.activeSessionHydration.skippedTools || []).forEach((tool) => {
       this.statusLog.info(`Skipped workspace session hydration for ${tool.toolId}: ${tool.reason}.`);
     });
+    const paletteSummary = this.activeToolSessionRefresh?.toolSummaries?.["palette-manager-v2"];
+    if (paletteSummary) {
+      this.statusLog.info(`Refreshed palette-manager-v2 from workspace.tools.palette-manager-v2.data: ${paletteSummary.paletteSwatchCount} palette swatches; Dirty: ${paletteSummary.dirtyStatus}.`);
+    }
+    const assetSummary = this.activeToolSessionRefresh?.toolSummaries?.["asset-manager-v2"];
+    if (assetSummary) {
+      this.statusLog.info(`Refreshed asset-manager-v2 from workspace.tools.asset-manager-v2.data: ${assetSummary.assetCount} managed assets; Dirty: ${assetSummary.dirtyStatus}.`);
+    }
   }
 
   hasLaunchReadyContext() {
@@ -292,7 +319,7 @@ export class WorkspaceManagerV2App {
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }
-    return { ok: true, context: result.context };
+    return { ok: true, context: this.activeContext };
   }
 
   async exportWorkspaceManifest() {
