@@ -28,6 +28,7 @@ window.addEventListener("DOMContentLoaded", () => {
       output: requireElement("#sessionInspectorV2JsonOutput")
     }),
     dirty: new DirtyControl({
+      headerValue: requireElement("#sessionInspectorV2DirtyHeaderValue"),
       output: requireElement("#sessionInspectorV2DirtyOutput")
     }),
     deleteAllButton: requireElement("#deleteAllSessionInspectorV2Button"),

@@ -96,7 +96,7 @@
       </section>
 
       <aside class="session-inspector-v2__panel session-inspector-v2__panel--right tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" aria-label="Session JSON, data, and dirty tracking">
-        <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--detail session-inspector-v2__accordion--detail-scroll is-open" data-accordion-v2-open="true">
           <div class="session-inspector-v2__accordion-header-row session-inspector-v2__json-accordion-header">
             <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2JsonContent">
               <span>JSON</span>
@@ -106,27 +106,27 @@
               <button id="copySessionInspectorV2AllButton" type="button">Copy All</button>
             </div>
           </div>
-          <div id="sessionInspectorV2JsonContent" class="accordion-v2__content">
+          <div id="sessionInspectorV2JsonContent" class="accordion-v2__content session-inspector-v2__detail-scroll-content">
             <pre id="sessionInspectorV2JsonOutput" class="session-inspector-v2__output">{}</pre>
           </div>
         </section>
 
-        <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--detail session-inspector-v2__accordion--detail-scroll is-open" data-accordion-v2-open="true">
           <div class="session-inspector-v2__accordion-header-row session-inspector-v2__data-accordion-header">
             <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2DataContent">
               <span>Data</span>
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
             </button>
           </div>
-          <div id="sessionInspectorV2DataContent" class="accordion-v2__content">
+          <div id="sessionInspectorV2DataContent" class="accordion-v2__content session-inspector-v2__detail-scroll-content">
             <pre id="sessionInspectorV2DataOutput" class="session-inspector-v2__output">Select a normalized tool entry with a top-level data section.</pre>
           </div>
         </section>
 
-        <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--detail is-open" data-accordion-v2-open="true">
           <div class="session-inspector-v2__accordion-header-row session-inspector-v2__dirty-accordion-header">
             <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2DirtyContent">
-              <span>Dirty</span>
+              <span id="sessionInspectorV2DirtyHeaderValue">Dirty: unknown</span>
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
             </button>
           </div>

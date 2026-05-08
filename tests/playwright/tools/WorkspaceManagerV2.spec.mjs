@@ -462,6 +462,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".session-inspector-v2__json-accordion-header #copySessionInspectorV2AllButton")).toHaveText("Copy All");
       await expect(page.locator(".session-inspector-v2__data-accordion-header")).toContainText("Data");
       await expect(page.locator(".session-inspector-v2__dirty-accordion-header")).toContainText("Dirty");
+      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: unknown");
       await expect(page.locator(".session-inspector-v2__state-accordion-header")).toHaveCount(0);
       await expect(page.locator(".session-inspector-v2__schema-accordion-header")).toHaveCount(0);
       await expect(page.locator("#sessionInspectorV2StateOutput")).toHaveCount(0);
@@ -660,6 +661,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2JsonOutput")).toHaveText("true");
       await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:session-inspector-v2-alpha.");
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText("No dirty section is present for sessionStorage:session-inspector-v2-alpha.");
+      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: unknown");
       await page.locator("#copySessionInspectorV2AllButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Copied JSON, Data, and Dirty sections with empty-state text for missing Data and Dirty\./);
       const copiedValidationText = await page.evaluate(() => window.__sessionInspectorV2ClipboardText);
@@ -733,6 +735,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           }
         }
       });
+      const longAssetMap = Object.fromEntries(Array.from({ length: 90 }, (_, index) => {
+        const paddedIndex = String(index).padStart(2, "0");
+        return [`assets.image.long.${paddedIndex}`, {
+          path: `assets/images/long-${paddedIndex}.png`,
+          type: "image",
+          kind: "png",
+          role: "preview",
+          source: "test-fixture"
+        }];
+      }));
       window.sessionStorage.setItem("workspace.tools.preview-generator-v2", JSON.stringify({
         schema: {
           source: "workspace-manager-v2",
@@ -773,12 +785,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           assetsPath: "games/Asteroids/assets",
           repoReferenceKey: "workspace.repo.reference"
         },
-        data: { assets: { "assets.image.preview.preview": { path: "assets/images/preview.png" } } },
+        data: { assets: { "assets.image.preview.preview": { path: "assets/images/preview.png" }, ...longAssetMap } },
         dirty: {
           isDirty: false,
           reason: null,
           changedAt: null,
           changedKeys: []
+        }
+      }));
+      window.sessionStorage.setItem("workspace.tools.dirty-test", JSON.stringify({
+        schema: {
+          source: "workspace-manager-v2",
+          toolId: "dirty-test",
+          schemaRole: "workspace-launch-context",
+          schemaRef: "tools/schemas/workspace.manifest.schema.json"
+        },
+        workspace: {
+          source: "workspace-manager-v2",
+          toolId: "dirty-test"
+        },
+        data: {
+          note: "dirty fixture"
+        },
+        dirty: {
+          isDirty: true,
+          reason: "test dirty flag",
+          changedAt: "2026-05-08T12:00:00.000Z",
+          changedKeys: ["data.note"]
         }
       }));
       window.sessionStorage.setItem("workspace.tools.no-data-test", JSON.stringify({
@@ -822,7 +855,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
 
     try {
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(5);
       await expect(page.locator(".session-inspector-v2__json-accordion-header")).toContainText("JSON");
       await expect(page.locator(".session-inspector-v2__data-accordion-header")).toContainText("Data");
       await expect(page.locator(".session-inspector-v2__dirty-accordion-header")).toContainText("Dirty");
@@ -854,6 +887,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"data"');
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"workspace"');
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"schema"');
+      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: false");
+      const detailPanelState = await page.evaluate(() => {
+        const jsonContent = document.querySelector("#sessionInspectorV2JsonContent");
+        const dataContent = document.querySelector("#sessionInspectorV2DataContent");
+        const dirtyHeader = document.querySelector(".session-inspector-v2__dirty-accordion-header");
+        const statusHeader = document.querySelector(".session-inspector-v2__status-accordion-header");
+        const rightPanel = document.querySelector(".session-inspector-v2__panel--right");
+        const rectFor = (element) => element.getBoundingClientRect();
+        const rightRect = rectFor(rightPanel);
+        const dirtyHeaderRect = rectFor(dirtyHeader);
+        const statusHeaderRect = rectFor(statusHeader);
+        return {
+          dataContentScrolls: dataContent.scrollHeight > dataContent.clientHeight + 1,
+          dataHeightBounded: rectFor(dataContent).height <= 170,
+          dirtyHeaderReachable: dirtyHeaderRect.top >= rightRect.top && dirtyHeaderRect.bottom <= rightRect.bottom,
+          jsonContentScrolls: jsonContent.scrollHeight > jsonContent.clientHeight + 1,
+          jsonHeightBounded: rectFor(jsonContent).height <= 170,
+          statusHeaderReachable: statusHeaderRect.top >= rightRect.top && statusHeaderRect.bottom <= rightRect.bottom
+        };
+      });
+      expect(detailPanelState).toEqual({
+        dataContentScrolls: true,
+        dataHeightBounded: true,
+        dirtyHeaderReachable: true,
+        jsonContentScrolls: true,
+        jsonHeightBounded: true,
+        statusHeaderReachable: true
+      });
       await page.locator("#copySessionInspectorV2AllButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Copied JSON, Data, and Dirty sections to clipboard\./);
       const copiedToolPayload = await page.evaluate(() => window.__sessionInspectorV2ClipboardText);
@@ -866,19 +927,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(copiedToolPayload).toContain('"assets.image.preview.preview"');
       expect(copiedToolPayload).toContain('"isDirty": false');
 
+      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.dirty-test"]').click();
+      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: true");
+      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"isDirty": true');
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-data-test"]').click();
       await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:workspace.tools.no-data-test.");
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-dirty-test"]').click();
+      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: unknown");
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText("No dirty section is present for sessionStorage:workspace.tools.no-dirty-test.");
 
       await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:workspace.tools.preview-generator-v2"]').click();
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(3);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
       expect(await page.evaluate(() => window.sessionStorage.getItem("workspace.tools.preview-generator-v2"))).toBeNull();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:workspace\.tools\.preview-generator-v2\./);
 
       await page.locator("#deleteAllSessionInspectorV2Button").click();
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 3 shown storage entries\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 4 shown storage entries\./);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
