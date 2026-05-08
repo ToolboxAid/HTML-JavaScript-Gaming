@@ -31,6 +31,7 @@ export class SessionInspectorV2App {
 
   start() {
     this.mountShell();
+    this.configureWorkspaceNav();
     this.accordions.forEach((accordion) => accordion.mount());
     this.statusLog.mount();
     this.filters.mount({
@@ -131,6 +132,18 @@ export class SessionInspectorV2App {
 
   returnToWorkspace() {
     this.window.location.href = this.workspaceManagerUrl();
+  }
+
+  isWorkspaceLaunch() {
+    const params = new URLSearchParams(this.window.location.search || "");
+    return params.get("launch") === "workspace" && params.get("fromTool") === "workspace-manager-v2";
+  }
+
+  configureWorkspaceNav() {
+    const workspaceNav = this.document.querySelector('[data-launch-mode-nav="workspace"]');
+    if (workspaceNav) {
+      workspaceNav.hidden = !this.isWorkspaceLaunch();
+    }
   }
 
   mountShell() {

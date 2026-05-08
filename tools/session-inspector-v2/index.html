@@ -26,7 +26,6 @@
                 </div>
                 <div class="tools-platform-frame__summary-meta">
                   <div class="tools-platform-frame__meta">Inspect and clear current-origin storage values without cross-tool handoff writes.</div>
-                  <button id="returnToWorkspaceButton" class="session-inspector-v2__header-return-button" type="button">Return to Workspace</button>
                 </div>
               </div>
             </div>
@@ -34,6 +33,12 @@
         </div>
       </div>
     </details>
+
+    <nav class="session-inspector-v2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <div class="session-inspector-v2__workspace-actions">
+        <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
+      </div>
+    </nav>
 
     <main class="session-inspector-v2 app-shell tool-shell-common__fullscreen-root" data-tool-id="session-inspector-v2">
       <div class="session-inspector-v2__layout tool-shell-common__fullscreen-layout">

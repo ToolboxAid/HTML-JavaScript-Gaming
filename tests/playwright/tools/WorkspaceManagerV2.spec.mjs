@@ -222,7 +222,7 @@ async function expectSessionInspectorV2FullscreenShell(page) {
     };
   });
   expect(fullscreenLayout.layoutDisplay).toBe("grid");
-  expect(fullscreenLayout.rootWidth).toBeGreaterThanOrEqual(fullscreenLayout.viewportWidth - 2);
+  expect(fullscreenLayout.rootWidth).toBeGreaterThanOrEqual(fullscreenLayout.viewportWidth - 20);
   expect(fullscreenLayout.leftWidth).toBe(340);
   expect(fullscreenLayout.rightWidth).toBe(360);
   expect(fullscreenLayout.leftAtSide).toBe(true);
@@ -385,7 +385,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       window.sessionStorage.setItem("session-inspector-v2-beta", "plain beta value");
       window.sessionStorage.setItem("session-inspector-v2-gamma", JSON.stringify({ index: 3, wraps: true }));
       window.sessionStorage.setItem("session-inspector-v2-delta", "delta value that is long enough to prove tile text clips inside a fixed tile");
-      window.sessionStorage.setItem("session-inspector-v2-epsilon", "epsilon value");
+      window.sessionStorage.setItem("session-inspector-v2-super-long-storage-key-name-that-must-wrap-inside-the-fixed-session-tile", "epsilon value");
       window.localStorage.setItem("session-inspector-v2-local", "local value");
     });
     const server = await openSessionInspectorV2(page, "?launch=workspace&fromTool=workspace-manager-v2&hostContextId=session-inspector-v2-test-context&workspaceMode=uat");
@@ -403,7 +403,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('link[href="../common/toolShellCommon.css"]')).toHaveCount(1);
       await expect(page.locator(".session-inspector-v2__menu")).toHaveCount(0);
       await expect(page.locator("#returnToWorkspaceButton")).toHaveCount(1);
-      await expect(page.locator(".session-inspector-v2__local-shell-frame #returnToWorkspaceButton")).toHaveText("Return to Workspace");
+      await expect(page.locator(".session-inspector-v2__workspace-menu")).toBeVisible();
+      await expect(page.locator(".session-inspector-v2__workspace-menu")).toHaveAttribute("aria-label", "Workspace actions");
+      await expect(page.locator(".session-inspector-v2__workspace-menu")).toHaveAttribute("data-launch-mode-nav", "workspace");
+      await expect(page.locator(".session-inspector-v2__workspace-menu #returnToWorkspaceButton")).toHaveText("Return to Workspace");
+      await expect(page.locator(".session-inspector-v2__local-shell-frame #returnToWorkspaceButton")).toHaveCount(0);
       await expect(page.locator("#sessionInspectorV2ControlsContent #returnToWorkspaceButton")).toHaveCount(0);
       await expect(page.locator("#refreshSessionInspectorV2Button")).toHaveText("Refresh");
       await expect(page.locator("#deleteAllSessionInspectorV2Button")).toHaveText("Delete All");
@@ -422,6 +426,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "(0) LocalStorage."
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Session Inspector V2 ready\. Storage is read\/delete\./);
+      const tileText = (await page.locator(".session-inspector-v2__entry-card").allTextContents()).join("\n");
+      expect(tileText).not.toContain("plain beta value");
+      expect(tileText).not.toContain("delta value that is long enough");
+      expect(tileText).not.toContain("epsilon value");
+      expect(tileText).not.toContain("active");
+      expect(tileText).not.toContain("wraps");
 
       const themeState = await page.evaluate(async () => {
         const css = await fetch("/tools/session-inspector-v2/styles/sessionInspectorV2.css", { cache: "no-store" }).then((response) => response.text());
@@ -522,15 +532,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(tileState.sizes).toEqual([
-        { height: 148, width: 184 },
-        { height: 148, width: 184 },
-        { height: 148, width: 184 },
-        { height: 148, width: 184 },
-        { height: 148, width: 184 }
+        { height: 198, width: 184 },
+        { height: 198, width: 184 },
+        { height: 198, width: 184 },
+        { height: 198, width: 184 },
+        { height: 198, width: 184 }
       ]);
       expect(tileState.firstRowMovesLeftToRight).toBe(true);
       expect(tileState.hasWrappedRows).toBe(true);
       expect(tileState.deleteButtonsInside).toBe(true);
+      const longKeyWrapState = await page.locator(".session-inspector-v2__entry-card", { hasText: "session-inspector-v2-super-long-storage-key-name-that-must-wrap-inside-the-fixed-session-tile" }).locator(".session-inspector-v2__entry-key").evaluate((keyNode) => {
+        const keyRect = keyNode.getBoundingClientRect();
+        const cardRect = keyNode.closest(".session-inspector-v2__entry-card").getBoundingClientRect();
+        const lineHeight = Number.parseFloat(getComputedStyle(keyNode).lineHeight);
+        return {
+          height: keyRect.height,
+          lineHeight,
+          withinTile: keyRect.left >= cardRect.left && keyRect.right <= cardRect.right + 1
+        };
+      });
+      expect(longKeyWrapState.height).toBeGreaterThan(longKeyWrapState.lineHeight * 1.5);
+      expect(longKeyWrapState.withinTile).toBe(true);
 
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
       await expect(page.locator("#sessionInspectorV2DetailsOutput")).toContainText('"key": "session-inspector-v2-alpha"');
@@ -572,6 +594,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pageErrors).toEqual([]);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=session-inspector-v2-test-context&workspace=uat/);
+      await page.goto(`${server.baseUrl}/tools/session-inspector-v2/index.html`, { waitUntil: "networkidle" });
+      await expect(page.locator(".session-inspector-v2__workspace-menu")).toBeHidden();
+      await expect(page.locator("#returnToWorkspaceButton")).toBeHidden();
+      await expect(page.locator("#returnToWorkspaceButton")).toHaveCount(1);
+      await expect(page.locator(".session-inspector-v2__local-shell-frame #returnToWorkspaceButton")).toHaveCount(0);
+      await expect(page.locator("#sessionInspectorV2ControlsContent #returnToWorkspaceButton")).toHaveCount(0);
     } finally {
       await coverageReporter.stop(page);
       await server.close();

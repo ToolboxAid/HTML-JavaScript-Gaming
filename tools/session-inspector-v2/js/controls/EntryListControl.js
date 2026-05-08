@@ -43,11 +43,7 @@ export class EntryListControl {
     meta.className = "session-inspector-v2__entry-meta";
     meta.textContent = `${entry.storageType} | ${entry.valueType} | ${entry.sizeBytes} bytes`;
 
-    const preview = document.createElement("span");
-    preview.className = "session-inspector-v2__entry-preview";
-    preview.textContent = entry.preview;
-
-    button.append(key, meta, preview);
+    button.append(key, meta);
     button.addEventListener("click", () => {
       this.selectedId = entry.id;
       this.onSelected(entry.id);
