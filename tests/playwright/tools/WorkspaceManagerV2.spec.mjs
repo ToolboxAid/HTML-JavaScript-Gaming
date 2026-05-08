@@ -1689,12 +1689,56 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('#userSwatchList [aria-label="Edit Space Black"]')).toBeVisible();
       await expect(page.locator('#userSwatchList [aria-label="Edit Space Black"]')).toHaveAttribute("title", /Name: Space Black/);
       await expect(page.locator("#paletteStatus")).toHaveText("Loaded active workspace palette Asteroids Palette.");
+      await page.locator("#swatchSymbolInput").fill("@");
+      await page.locator("#swatchHexInput").fill("#123456");
+      await page.locator("#swatchNameInput").fill("Workspace Session Purple");
+      await page.locator("#addSwatchButton").click();
+      await expect(page.locator("#userPaletteCount")).toHaveText("12 user swatches");
+      await expect(page.locator('#userSwatchList [aria-label="Edit Workspace Session Purple"]')).toBeVisible();
+      await expect(page.locator("#paletteStatus")).toHaveText("Added Workspace Session Purple.");
+      const editedPaletteSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.palette-manager-v2")));
+      expect(editedPaletteSession.data.swatches).toHaveLength(12);
+      expect(editedPaletteSession.data.swatches.at(-1)).toMatchObject({
+        hex: "#123456",
+        name: "Workspace Session Purple",
+        source: "User Added",
+        symbol: "@"
+      });
+      expect(editedPaletteSession.dirty).toMatchObject({
+        isDirty: true,
+        reason: "palette-updated"
+      });
+      expect(Date.parse(editedPaletteSession.dirty.changedAt)).not.toBeNaN();
+      expect(editedPaletteSession.dirty.changedKeys).toEqual(expect.arrayContaining([
+        "data.swatches",
+        "data.swatches[11]"
+      ]));
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expectWorkspaceReturnRehydrated(page);
+      const returnedPaletteSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.palette-manager-v2")));
+      expect(returnedPaletteSession.data.swatches).toHaveLength(12);
+      expect(returnedPaletteSession.data.swatches.at(-1)).toMatchObject({
+        hex: "#123456",
+        name: "Workspace Session Purple",
+        source: "User Added",
+        symbol: "@"
+      });
+      expect(returnedPaletteSession.dirty).toMatchObject({
+        isDirty: true,
+        reason: "palette-updated"
+      });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Restored repo destination from workspace\.repo\.reference for HTML-JavaScript-Gaming\./);
       await expect(previewTile).toBeEnabled();
       await expect(previewTile).toContainText("Schema-valid manifest");
+      await page.locator('[data-workspace-tool-id="palette-manager-v2"]').click();
+      await expect(page).toHaveURL(/palette-manager-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#userPaletteCount")).toHaveText("12 user swatches");
+      await expect(page.locator('#userSwatchList [aria-label="Edit Workspace Session Purple"]')).toBeVisible();
+      await expect(page.locator("#paletteStatus")).toHaveText("Loaded active workspace palette Asteroids Palette.");
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnRehydrated(page);
       await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
       await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();

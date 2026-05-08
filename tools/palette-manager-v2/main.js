@@ -2,6 +2,12 @@ import { PaletteUsageService } from "../common/PaletteUsageService.js";
 import { PaletteSortService } from "../common/PaletteSortService.js";
 import { PaletteManagerApp } from "./modules/PaletteManagerApp.js";
 
+const PALETTE_MANAGER_V2_TOOL_SESSION_KEY = "workspace.tools.palette-manager-v2";
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
 function resolvePaletteSource() {
   const paletteSource = globalThis.paletteList;
   if (!paletteSource || !paletteSource.SOURCE_PALETTES) {
@@ -16,6 +22,70 @@ function reportBootstrapError(error) {
     status.textContent = error instanceof Error ? error.message : String(error);
   }
   console.error(error);
+}
+
+function readSessionJson(key) {
+  const rawValue = window.sessionStorage.getItem(key);
+  if (!rawValue) {
+    return { ok: false, message: `${key} was not found in sessionStorage.` };
+  }
+  try {
+    const value = JSON.parse(rawValue);
+    return isPlainObject(value)
+      ? { ok: true, value }
+      : { ok: false, message: `${key} must contain a JSON object.` };
+  } catch (error) {
+    return { ok: false, message: `${key} contains invalid JSON: ${error.message}` };
+  }
+}
+
+function readWorkspacePaletteToolSession() {
+  const result = readSessionJson(PALETTE_MANAGER_V2_TOOL_SESSION_KEY);
+  if (!result.ok) {
+    return result;
+  }
+  const session = result.value;
+  if (!isPlainObject(session.data) || !Array.isArray(session.data.swatches)) {
+    return { ok: false, message: `${PALETTE_MANAGER_V2_TOOL_SESSION_KEY}.data.swatches must contain the active workspace palette.` };
+  }
+  if (!isPlainObject(session.dirty)) {
+    return { ok: false, message: `${PALETTE_MANAGER_V2_TOOL_SESSION_KEY}.dirty must contain dirty tracking.` };
+  }
+  return { ok: true, session };
+}
+
+function createWorkspacePaletteSessionPersistence() {
+  const launchParams = getWorkspaceLaunchParams();
+  if (!launchParams.isWorkspaceLaunch) {
+    return null;
+  }
+  return {
+    save(paletteValue, changedKeys = []) {
+      const result = readWorkspacePaletteToolSession();
+      if (!result.ok) {
+        return result;
+      }
+      const session = result.session;
+      const uniqueChangedKeys = Array.from(new Set((Array.isArray(changedKeys) ? changedKeys : [])
+        .map((key) => String(key || "").trim())
+        .filter(Boolean)));
+      const nextSession = {
+        ...session,
+        data: {
+          ...session.data,
+          swatches: Array.isArray(paletteValue?.swatches) ? paletteValue.swatches : []
+        },
+        dirty: {
+          isDirty: true,
+          reason: "palette-updated",
+          changedAt: new Date().toISOString(),
+          changedKeys: uniqueChangedKeys.length ? uniqueChangedKeys : ["data.swatches"]
+        }
+      };
+      window.sessionStorage.setItem(PALETTE_MANAGER_V2_TOOL_SESSION_KEY, JSON.stringify(nextSession));
+      return { ok: true, key: PALETTE_MANAGER_V2_TOOL_SESSION_KEY, session: nextSession };
+    }
+  };
 }
 
 function normalizeSamplePresetPath(samplePresetPath) {
@@ -91,29 +161,19 @@ function loadWorkspacePalette(app) {
     app.rejectImport(["Workspace Manager V2 launch did not include hostContextId."], "Workspace palette load failed.");
     return;
   }
-  const rawValue = window.sessionStorage.getItem(launchParams.hostContextId);
-  if (!rawValue) {
-    app.rejectImport(["Workspace Manager V2 manifest was not found in sessionStorage."], "Workspace palette load failed.");
+  const sessionResult = readWorkspacePaletteToolSession();
+  if (!sessionResult.ok) {
+    app.rejectImport([sessionResult.message], "Workspace palette load failed.");
     return;
   }
-  let workspaceManifest;
-  try {
-    workspaceManifest = JSON.parse(rawValue);
-  } catch (error) {
-    app.rejectImport([`Workspace Manager V2 manifest JSON is invalid: ${error.message}`], "Workspace palette load failed.");
-    return;
-  }
-  const palettePayload = workspaceManifest?.tools?.["palette-manager-v2"];
-  if (!palettePayload || !Array.isArray(palettePayload.swatches)) {
-    app.rejectImport(["Workspace Manager V2 manifest is missing tools.palette-manager-v2.swatches."], "Workspace palette load failed.");
-    return;
-  }
+  const palettePayload = sessionResult.session.data;
   app.importPaletteDocument({
     name: palettePayload.name || "Workspace Palette",
     source: palettePayload.source || palettePayload.sourceId || palettePayload.name || "Workspace Manager V2",
     swatches: palettePayload.swatches
   }, {
     failureStatus: "Workspace palette load failed.",
+    persistWorkspaceSession: false,
     successStatus: `Loaded active workspace palette ${palettePayload.name || "Workspace Palette"}.`
   });
 }
@@ -164,7 +224,8 @@ try {
     documentRef: document,
     paletteSource: resolvePaletteSource(),
     sortService: new PaletteSortService(),
-    usageService: new PaletteUsageService()
+    usageService: new PaletteUsageService(),
+    workspaceSessionPersistence: createWorkspacePaletteSessionPersistence()
   });
   app.init();
   configureWorkspaceNav();

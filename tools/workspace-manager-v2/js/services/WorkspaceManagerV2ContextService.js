@@ -384,6 +384,16 @@ export class WorkspaceManagerV2ContextService {
     this.sessionStorage.removeItem(WORKSPACE_REPO_REFERENCE_SESSION_KEY);
   }
 
+  removeDisabledToolSessions(enabledTools) {
+    const enabledToolIds = new Set(enabledTools.map((tool) => tool.id));
+    this.storageKeys()
+      .filter((key) => key.startsWith(WORKSPACE_TOOL_SESSION_KEY_PREFIX))
+      .filter((key) => !enabledToolIds.has(key.slice(WORKSPACE_TOOL_SESSION_KEY_PREFIX.length)))
+      .forEach((key) => {
+        this.sessionStorage.removeItem(key);
+      });
+  }
+
   readSessionJson(key) {
     const rawValue = this.sessionStorage.getItem(key);
     if (!rawValue) {
@@ -397,6 +407,44 @@ export class WorkspaceManagerV2ContextService {
     } catch (error) {
       return { ok: false, message: `${key} contains invalid JSON: ${error.message}` };
     }
+  }
+
+  readToolSession(toolId) {
+    const key = toolSessionKey(toolId);
+    const result = this.readSessionJson(key);
+    return result.ok
+      ? { ok: true, key, session: result.value }
+      : { ok: false, key, message: result.message };
+  }
+
+  reusableToolSession(tool, context) {
+    const result = this.readToolSession(tool.id);
+    if (!result.ok) {
+      return result;
+    }
+    const session = result.session;
+    if (!isPlainObject(session.schema)
+      || !isPlainObject(session.workspace)
+      || !Object.prototype.hasOwnProperty.call(session, "data")
+      || !isPlainObject(session.dirty)) {
+      return { ok: false, key: result.key, message: `${result.key} must use the normalized schema/workspace/data/dirty object shape.` };
+    }
+    if (session.workspace.source !== "workspace-manager-v2") {
+      return { ok: false, key: result.key, message: `${result.key}.workspace.source must be workspace-manager-v2.` };
+    }
+    if (session.workspace.toolId !== tool.id) {
+      return { ok: false, key: result.key, message: `${result.key}.workspace.toolId must match ${tool.id}.` };
+    }
+    if (session.workspace.workspaceManifestId !== context.id) {
+      return { ok: false, key: result.key, message: `${result.key}.workspace.workspaceManifestId must match ${context.id}.` };
+    }
+    if (session.workspace.gameId !== context.gameId) {
+      return { ok: false, key: result.key, message: `${result.key}.workspace.gameId must match ${context.gameId}.` };
+    }
+    if (session.workspace.repoReferenceKey !== WORKSPACE_REPO_REFERENCE_SESSION_KEY) {
+      return { ok: false, key: result.key, message: `${result.key}.workspace.repoReferenceKey must be ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.` };
+    }
+    return result;
   }
 
   readWorkspaceRepoReference({ expectedRepoRoot = "" } = {}) {
@@ -523,10 +571,14 @@ export class WorkspaceManagerV2ContextService {
         toolId: tool.id,
         toolName: tool.name
       }));
-    this.clearToolSessionHydration();
     try {
+      this.removeDisabledToolSessions(enabledTools);
       enabledTools.forEach((tool) => {
-        this.sessionStorage.setItem(toolSessionKey(tool.id), JSON.stringify(this.sessionForTool(tool, context, game)));
+        const existingSession = this.reusableToolSession(tool, context);
+        const session = existingSession.ok
+          ? existingSession.session
+          : this.sessionForTool(tool, context, game);
+        this.sessionStorage.setItem(toolSessionKey(tool.id), JSON.stringify(session));
       });
       return {
         ok: true,

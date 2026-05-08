@@ -156,11 +156,12 @@ function collectRefs(documentRef) {
 }
 
 export class PaletteManagerApp {
-  constructor({ documentRef, paletteSource, sortService, usageService }) {
+  constructor({ documentRef, paletteSource, sortService, usageService, workspaceSessionPersistence = null }) {
     this.document = documentRef;
     this.paletteSource = paletteSource;
     this.sortService = sortService;
     this.usageService = usageService;
+    this.workspaceSessionPersistence = workspaceSessionPersistence;
     this.globalPaletteToolKey = PALETTE_MANAGER_V2_TOOL_KEY;
     this.hexColorPattern = USER_HEX_COLOR_PATTERN;
     this.sourcePalettes = paletteSource.SOURCE_PALETTES;
@@ -268,6 +269,7 @@ export class PaletteManagerApp {
     this.renderSelectedSwatchState();
     this.setActionState([], status, false);
     this.render();
+    this.persistWorkspacePalette(["data.swatches"]);
   }
 
   renderSelectedSwatchState() {
@@ -541,6 +543,18 @@ export class PaletteManagerApp {
     }
   }
 
+  persistWorkspacePalette(changedKeys) {
+    if (!this.workspaceSessionPersistence || typeof this.workspaceSessionPersistence.save !== "function") {
+      return true;
+    }
+    const result = this.workspaceSessionPersistence.save(this.getPaletteValue(), changedKeys);
+    if (result?.ok) {
+      return true;
+    }
+    this.setActionState([result?.message || "Unable to update workspace palette session."], "Workspace palette session update failed.");
+    return false;
+  }
+
   setAvailableTags(tags) {
     this.state.availableTags = sortUniqueTags(tags);
   }
@@ -620,6 +634,10 @@ export class PaletteManagerApp {
     this.editorControl.showUserDefinedSwatch(cleanSwatch);
     this.recordHistorySnapshot();
     this.setActionState([], `Added ${cleanSwatch.name}.`);
+    this.persistWorkspacePalette([
+      "data.swatches",
+      `data.swatches[${this.state.selectedUserIndex}]`
+    ]);
   }
 
   updateSelectedSwatch(swatch) {
@@ -658,6 +676,12 @@ export class PaletteManagerApp {
     }
     this.recordHistorySnapshot();
     this.setActionState([], `Updated ${cleanSwatch.name}.`);
+    this.persistWorkspacePalette([
+      `data.swatches[${this.state.selectedUserIndex}]`,
+      `data.swatches[${this.state.selectedUserIndex}].symbol`,
+      `data.swatches[${this.state.selectedUserIndex}].hex`,
+      `data.swatches[${this.state.selectedUserIndex}].name`
+    ]);
   }
 
   addTagToSelectedSwatch(tag) {
@@ -697,6 +721,7 @@ export class PaletteManagerApp {
     }
     this.recordHistorySnapshot();
     this.setActionState([], `Added ${cleanTag} to ${cleanSwatch.name}.`);
+    this.persistWorkspacePalette([`data.swatches[${this.state.selectedUserIndex}].tags`]);
     return true;
   }
 
@@ -737,6 +762,7 @@ export class PaletteManagerApp {
     }
     this.recordHistorySnapshot();
     this.setActionState([], `Removed ${cleanTag} from ${cleanSwatch.name}.`);
+    this.persistWorkspacePalette([`data.swatches[${this.state.selectedUserIndex}].tags`]);
     return true;
   }
 
@@ -865,6 +891,7 @@ export class PaletteManagerApp {
     this.setActionState([], shouldAddTag
       ? `Added ${tag} to ${updates.length} selected swatches.`
       : `Removed ${tag} from ${updates.length} selected swatches.`);
+    this.persistWorkspacePalette(updates.map((update) => `data.swatches[${update.index}].tags`));
     return true;
   }
 
@@ -920,6 +947,10 @@ export class PaletteManagerApp {
     this.shiftCheckedUserSwatchIndexesAfterRemove(index);
     this.recordHistorySnapshot();
     this.setActionState([], `Removed ${swatch.name}.`);
+    this.persistWorkspacePalette([
+      "data.swatches",
+      `data.swatches[${index}]`
+    ]);
     return true;
   }
 
@@ -946,6 +977,10 @@ export class PaletteManagerApp {
     this.editorControl.clearUserDefinedSwatch();
     this.recordHistorySnapshot();
     this.setActionState([], `Pinned ${pinnedSwatch.name}.`);
+    this.persistWorkspacePalette([
+      "data.swatches",
+      `data.swatches[${this.state.selectedUserIndex}]`
+    ]);
   }
 
   pinVisibleSourceSwatches() {
@@ -988,6 +1023,9 @@ export class PaletteManagerApp {
 
     const status = `Pinned ${pinnedCount} source swatches. Skipped ${skippedCount} duplicate or invalid swatches.`;
     this.setActionState(Array.from(new Set(skipReasons)), status);
+    if (pinnedCount > 0) {
+      this.persistWorkspacePalette(["data.swatches"]);
+    }
   }
 
   findDuplicateUserSwatchIndex(swatch) {
@@ -1017,6 +1055,9 @@ export class PaletteManagerApp {
     this.editorControl.clearForm();
     this.resetHistorySnapshot();
     this.setActionState([], sanitizeText(options.successStatus) || `Imported ${this.state.userSwatches.length} user swatches.`);
+    if (options.persistWorkspaceSession !== false) {
+      this.persistWorkspacePalette(["data.swatches"]);
+    }
     return true;
   }
 
