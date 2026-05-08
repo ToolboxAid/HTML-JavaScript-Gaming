@@ -9,7 +9,7 @@ export class SessionInspectorV2App {
     refreshButton,
     returnToWorkspaceButton,
     runtimeContract,
-    schema,
+    state,
     statusLog,
     storageService,
     windowRef = window
@@ -24,7 +24,7 @@ export class SessionInspectorV2App {
     this.refreshButton = refreshButton;
     this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.runtimeContract = runtimeContract || { storageAccess: "read-only" };
-    this.schema = schema;
+    this.state = state;
     this.statusLog = statusLog;
     this.storageService = storageService;
     this.selectedId = "";
@@ -66,7 +66,7 @@ export class SessionInspectorV2App {
     this.entryList.render(this.entries, this.selectedId);
     const selectedEntry = this.entries.find((entry) => entry.id === this.selectedId);
     this.json.render(selectedEntry);
-    this.schema.render(selectedEntry);
+    this.state.render(selectedEntry);
     this.filters.setSummary(this.summaryCounts());
     if (!silent) {
       this.statusLog.ok(`Loaded ${this.entries.length} matching storage entries.`);
@@ -85,7 +85,7 @@ export class SessionInspectorV2App {
     this.entryList.render(this.entries, this.selectedId);
     const entry = this.entries.find((candidate) => candidate.id === entryId);
     this.json.render(entry);
-    this.schema.render(entry);
+    this.state.render(entry);
     if (entry) {
       this.statusLog.info(`Selected ${entry.storageType}:${entry.key}.`);
     }

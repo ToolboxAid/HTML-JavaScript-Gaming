@@ -3,7 +3,7 @@ import { AccordionSection } from "./controls/AccordionSection.js";
 import { EntryListControl } from "./controls/EntryListControl.js";
 import { FilterControl } from "./controls/FilterControl.js";
 import { JsonControl } from "./controls/JsonControl.js";
-import { SchemaControl } from "./controls/SchemaControl.js";
+import { StateControl } from "./controls/StateControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { sessionInspectorV2RuntimeContract } from "./services/SessionInspectorV2RuntimeContract.js";
 import { SessionInspectorV2StorageService } from "./services/SessionInspectorV2StorageService.js";
@@ -35,8 +35,8 @@ window.addEventListener("DOMContentLoaded", () => {
     refreshButton: requireElement("#refreshSessionInspectorV2Button"),
     returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
     runtimeContract: sessionInspectorV2RuntimeContract(),
-    schema: new SchemaControl({
-      output: requireElement("#sessionInspectorV2SchemaOutput")
+    state: new StateControl({
+      output: requireElement("#sessionInspectorV2StateOutput")
     }),
     statusLog: new StatusLogControl({
       clearButton: requireElement("#clearSessionInspectorV2StatusButton"),
