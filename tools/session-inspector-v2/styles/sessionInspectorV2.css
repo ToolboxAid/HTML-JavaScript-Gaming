@@ -391,14 +391,14 @@ button:hover {
   resize: vertical;
 }
 
-.session-inspector-v2__details-header-actions,
+.session-inspector-v2__json-header-actions,
 .session-inspector-v2__status-header-actions {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
-.session-inspector-v2__details-header-actions button,
+.session-inspector-v2__json-header-actions button,
 .session-inspector-v2__status-header-actions button {
   min-height: 30px;
   padding: 2px 7px;

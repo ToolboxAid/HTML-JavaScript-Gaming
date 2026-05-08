@@ -1,28 +1,30 @@
 export class SessionInspectorV2App {
   constructor({
     accordions,
-    copyDetailsButton,
+    copyJsonButton,
     deleteAllButton,
-    details,
     entryList,
     filters,
+    json,
     refreshButton,
     returnToWorkspaceButton,
     runtimeContract,
+    schema,
     statusLog,
     storageService,
     windowRef = window
   }) {
     this.accordions = accordions;
-    this.copyDetailsButton = copyDetailsButton;
+    this.copyJsonButton = copyJsonButton;
     this.deleteAllButton = deleteAllButton;
-    this.details = details;
     this.entries = [];
     this.entryList = entryList;
     this.filters = filters;
+    this.json = json;
     this.refreshButton = refreshButton;
     this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.runtimeContract = runtimeContract || { storageAccess: "read-only" };
+    this.schema = schema;
     this.statusLog = statusLog;
     this.storageService = storageService;
     this.selectedId = "";
@@ -44,8 +46,8 @@ export class SessionInspectorV2App {
       onSelected: (entryId) => this.selectEntry(entryId)
     });
     this.refreshButton.addEventListener("click", () => this.refresh());
-    this.copyDetailsButton.addEventListener("click", () => {
-      void this.copyDetails();
+    this.copyJsonButton.addEventListener("click", () => {
+      void this.copyJson();
     });
     this.deleteAllButton.addEventListener("click", () => this.deleteAllShownEntries());
     this.returnToWorkspaceButton.addEventListener("click", () => this.returnToWorkspace());
@@ -62,7 +64,9 @@ export class SessionInspectorV2App {
       this.selectedId = this.entries[0]?.id || "";
     }
     this.entryList.render(this.entries, this.selectedId);
-    this.details.render(this.entries.find((entry) => entry.id === this.selectedId));
+    const selectedEntry = this.entries.find((entry) => entry.id === this.selectedId);
+    this.json.render(selectedEntry);
+    this.schema.render(selectedEntry);
     this.filters.setSummary(this.summaryCounts());
     if (!silent) {
       this.statusLog.ok(`Loaded ${this.entries.length} matching storage entries.`);
@@ -80,7 +84,8 @@ export class SessionInspectorV2App {
     this.selectedId = entryId;
     this.entryList.render(this.entries, this.selectedId);
     const entry = this.entries.find((candidate) => candidate.id === entryId);
-    this.details.render(entry);
+    this.json.render(entry);
+    this.schema.render(entry);
     if (entry) {
       this.statusLog.info(`Selected ${entry.storageType}:${entry.key}.`);
     }
@@ -122,10 +127,10 @@ export class SessionInspectorV2App {
     this.refresh({ silent: true });
   }
 
-  async copyDetails() {
-    const detailsText = this.details.text().trim();
-    if (!detailsText || detailsText === "{}") {
-      this.statusLog.warn("Copy skipped: no Details content is shown.");
+  async copyJson() {
+    const jsonText = this.json.text().trim();
+    if (!jsonText || jsonText === "{}") {
+      this.statusLog.warn("Copy skipped: no JSON content is shown.");
       return;
     }
     if (typeof this.window.navigator?.clipboard?.writeText !== "function") {
@@ -133,8 +138,8 @@ export class SessionInspectorV2App {
       return;
     }
     try {
-      await this.window.navigator.clipboard.writeText(detailsText);
-      this.statusLog.ok("Copied Details content to clipboard.");
+      await this.window.navigator.clipboard.writeText(jsonText);
+      this.statusLog.ok("Copied JSON content to clipboard.");
     } catch (error) {
       this.statusLog.fail(`Copy failed: ${error.message}`);
     }

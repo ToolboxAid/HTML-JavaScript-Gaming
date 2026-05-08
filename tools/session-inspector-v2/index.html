@@ -95,17 +95,27 @@
         </section>
       </section>
 
-      <aside class="session-inspector-v2__panel session-inspector-v2__panel--right tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" aria-label="Session details">
+      <aside class="session-inspector-v2__panel session-inspector-v2__panel--right tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" aria-label="Session JSON and schema">
         <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
-          <div class="accordion-v2__header session-inspector-v2__details-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="sessionInspectorV2DetailsContent">
-            <span>Details</span>
-            <div class="session-inspector-v2__details-header-actions">
+          <div class="accordion-v2__header session-inspector-v2__json-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="sessionInspectorV2JsonContent">
+            <span>JSON</span>
+            <div class="session-inspector-v2__json-header-actions">
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
-              <button id="copySessionInspectorV2DetailsButton" type="button">Copy</button>
+              <button id="copySessionInspectorV2JsonButton" type="button">Copy</button>
             </div>
           </div>
-          <div id="sessionInspectorV2DetailsContent" class="accordion-v2__content">
-            <pre id="sessionInspectorV2DetailsOutput" class="session-inspector-v2__output">{}</pre>
+          <div id="sessionInspectorV2JsonContent" class="accordion-v2__content">
+            <pre id="sessionInspectorV2JsonOutput" class="session-inspector-v2__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
+          <div class="accordion-v2__header session-inspector-v2__schema-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="sessionInspectorV2SchemaContent">
+            <span>Schema</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </div>
+          <div id="sessionInspectorV2SchemaContent" class="accordion-v2__content">
+            <pre id="sessionInspectorV2SchemaOutput" class="session-inspector-v2__output">Select a storage entry with a top-level schema section.</pre>
           </div>
         </section>
 

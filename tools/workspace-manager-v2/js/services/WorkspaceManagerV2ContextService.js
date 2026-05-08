@@ -61,12 +61,8 @@ function makeHostContextId() {
   return `workspace-manager-v2-${Date.now().toString(36)}`;
 }
 
-function toolSessionSchemaKey(toolId) {
-  return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}.schema`;
-}
-
-function toolSessionStateKey(toolId) {
-  return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}.state`;
+function toolSessionKey(toolId) {
+  return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}`;
 }
 
 function temporaryUatGameFromManifest(workspaceManifest) {
@@ -396,6 +392,13 @@ export class WorkspaceManagerV2ContextService {
     };
   }
 
+  sessionForTool(tool, context, game) {
+    return {
+      schema: this.schemaSessionForTool(tool, context),
+      state: this.stateSessionForTool(tool, context, game)
+    };
+  }
+
   hydrateEnabledToolSessions({ context, game, tools = this.workspaceLaunchableTools() } = {}) {
     if (!isPlainObject(context) || !context.gameId || !isPlainObject(context.tools)) {
       return { ok: false, message: "Cannot hydrate tool sessions without a schema-valid workspace context." };
@@ -406,13 +409,12 @@ export class WorkspaceManagerV2ContextService {
     this.clearToolSessionHydration();
     try {
       enabledTools.forEach((tool) => {
-        this.sessionStorage.setItem(toolSessionSchemaKey(tool.id), JSON.stringify(this.schemaSessionForTool(tool, context)));
-        this.sessionStorage.setItem(toolSessionStateKey(tool.id), JSON.stringify(this.stateSessionForTool(tool, context, game)));
+        this.sessionStorage.setItem(toolSessionKey(tool.id), JSON.stringify(this.sessionForTool(tool, context, game)));
       });
       return {
         ok: true,
         hydratedToolIds: enabledTools.map((tool) => tool.id),
-        keys: enabledTools.flatMap((tool) => [toolSessionSchemaKey(tool.id), toolSessionStateKey(tool.id)])
+        keys: enabledTools.map((tool) => toolSessionKey(tool.id))
       };
     } catch (error) {
       this.clearToolSessionHydration();
