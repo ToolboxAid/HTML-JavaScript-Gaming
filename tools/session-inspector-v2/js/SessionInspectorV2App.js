@@ -1,6 +1,7 @@
 export class SessionInspectorV2App {
   constructor({
     accordions,
+    copyDetailsButton,
     deleteAllButton,
     details,
     entryList,
@@ -13,6 +14,7 @@ export class SessionInspectorV2App {
     windowRef = window
   }) {
     this.accordions = accordions;
+    this.copyDetailsButton = copyDetailsButton;
     this.deleteAllButton = deleteAllButton;
     this.details = details;
     this.entries = [];
@@ -42,6 +44,9 @@ export class SessionInspectorV2App {
       onSelected: (entryId) => this.selectEntry(entryId)
     });
     this.refreshButton.addEventListener("click", () => this.refresh());
+    this.copyDetailsButton.addEventListener("click", () => {
+      void this.copyDetails();
+    });
     this.deleteAllButton.addEventListener("click", () => this.deleteAllShownEntries());
     this.returnToWorkspaceButton.addEventListener("click", () => this.returnToWorkspace());
     this.refresh({ silent: true });
@@ -115,6 +120,24 @@ export class SessionInspectorV2App {
     }
     this.selectedId = "";
     this.refresh({ silent: true });
+  }
+
+  async copyDetails() {
+    const detailsText = this.details.text().trim();
+    if (!detailsText || detailsText === "{}") {
+      this.statusLog.warn("Copy skipped: no Details content is shown.");
+      return;
+    }
+    if (typeof this.window.navigator?.clipboard?.writeText !== "function") {
+      this.statusLog.fail("Copy failed: clipboard API is unavailable.");
+      return;
+    }
+    try {
+      await this.window.navigator.clipboard.writeText(detailsText);
+      this.statusLog.ok("Copied Details content to clipboard.");
+    } catch (error) {
+      this.statusLog.fail(`Copy failed: ${error.message}`);
+    }
   }
 
   workspaceManagerUrl() {

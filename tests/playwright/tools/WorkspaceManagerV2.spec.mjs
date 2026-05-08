@@ -382,6 +382,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const pageErrors = [];
     await page.setViewportSize({ height: 900, width: 1440 });
     await page.addInitScript(() => {
+      Object.defineProperty(window.navigator, "clipboard", {
+        configurable: true,
+        value: {
+          async writeText(value) {
+            window.__sessionInspectorV2ClipboardText = value;
+          }
+        }
+      });
       window.sessionStorage.setItem("session-inspector-v2-alpha", "true");
       window.sessionStorage.setItem("session-inspector-v2-beta", "plain beta value");
       window.sessionStorage.setItem("session-inspector-v2-gamma", JSON.stringify({ index: 3, wraps: true }));
@@ -415,7 +423,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#clearSessionInspectorV2StatusButton")).toHaveText("Clear Status");
       await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Refresh");
       await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Delete All");
-      await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Clear Status");
+      await expect(page.locator("#sessionInspectorV2ControlsContent")).not.toContainText("Clear Status");
+      await expect(page.locator(".session-inspector-v2__status-accordion-header")).toContainText("Status");
+      await expect(page.locator(".session-inspector-v2__status-accordion-header #clearSessionInspectorV2StatusButton")).toHaveText("Clear Status");
+      await expect(page.locator(".session-inspector-v2__details-accordion-header #copySessionInspectorV2DetailsButton")).toHaveText("Copy");
       expect(await page.locator(".session-inspector-v2__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child").evaluateAll((labels) => labels.map((label) => label.textContent.trim()))).toEqual([
         "Controls",
         "Filters"
@@ -427,6 +438,46 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "(0) LocalStorage."
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Session Inspector V2 ready\. Storage is read\/delete\./);
+      const controlsLayout = await page.evaluate(() => {
+        const rectFor = (selector) => {
+          const element = document.querySelector(selector);
+          const rect = element.getBoundingClientRect();
+          return {
+            bottom: Math.round(rect.bottom),
+            clientWidth: element.clientWidth,
+            height: Math.round(rect.height),
+            left: Math.round(rect.left),
+            right: Math.round(rect.right),
+            scrollWidth: element.scrollWidth,
+            top: Math.round(rect.top)
+          };
+        };
+        const refresh = rectFor("#refreshSessionInspectorV2Button");
+        const deleteAll = rectFor("#deleteAllSessionInspectorV2Button");
+        const clearStatus = rectFor("#clearSessionInspectorV2StatusButton");
+        const storageLabel = rectFor('label[for="storageScopeSelect"] span');
+        const storageSelect = rectFor("#storageScopeSelect");
+        const filterLabel = rectFor('label[for="sessionInspectorV2FilterInput"] span');
+        const filterInput = rectFor("#sessionInspectorV2FilterInput");
+        const detailsIcon = rectFor(".session-inspector-v2__details-accordion-header .accordion-v2__icon");
+        const copyButton = rectFor("#copySessionInspectorV2DetailsButton");
+        return {
+          buttonsFit: [refresh, deleteAll, clearStatus].every((rect) => rect.scrollWidth <= rect.clientWidth + 1),
+          clearStatusCompact: clearStatus.height <= 34,
+          copyAfterCollapseIcon: copyButton.left >= detailsIcon.right,
+          deleteAllRightOfRefresh: deleteAll.left > refresh.right,
+          filterSameLine: filterInput.top <= filterLabel.bottom && filterInput.bottom >= filterLabel.top,
+          refreshDeleteSameLine: refresh.top === deleteAll.top,
+          storageSameLine: storageSelect.top <= storageLabel.bottom && storageSelect.bottom >= storageLabel.top
+        };
+      });
+      expect(controlsLayout.buttonsFit).toBe(true);
+      expect(controlsLayout.clearStatusCompact).toBe(true);
+      expect(controlsLayout.refreshDeleteSameLine).toBe(true);
+      expect(controlsLayout.deleteAllRightOfRefresh).toBe(true);
+      expect(controlsLayout.storageSameLine).toBe(true);
+      expect(controlsLayout.filterSameLine).toBe(true);
+      expect(controlsLayout.copyAfterCollapseIcon).toBe(true);
       const tileText = (await page.locator(".session-inspector-v2__entry-card").allTextContents()).join("\n");
       expect(tileText).not.toContain("plain beta value");
       expect(tileText).not.toContain("delta value that is long enough");
@@ -563,6 +614,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
       await expect(page.locator("#sessionInspectorV2DetailsOutput")).toContainText('"key": "session-inspector-v2-alpha"');
+      const copiedDetailsText = await page.locator("#sessionInspectorV2DetailsOutput").textContent();
+      await page.locator("#copySessionInspectorV2DetailsButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Copied Details content to clipboard\./);
+      expect(await page.evaluate(() => window.__sessionInspectorV2ClipboardText)).toBe(copiedDetailsText);
       await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
       await expect(page.locator("#sessionInspectorV2DetailsOutput")).toContainText('"key": "session-inspector-v2-beta"');
@@ -595,6 +650,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "(0) LocalStorage."
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 4 shown storage entries\./);
+      await page.locator("#copySessionInspectorV2DetailsButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Copy skipped: no Details content is shown\./);
       await page.locator("#deleteAllSessionInspectorV2Button").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Delete All skipped: no matching storage entries are shown\./);
       expect(await page.evaluate(() => window.localStorage.getItem("session-inspector-v2-local"))).toBe("local value");

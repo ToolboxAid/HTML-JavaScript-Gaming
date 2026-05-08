@@ -52,7 +52,6 @@
             <div class="session-inspector-v2__actions" aria-label="Session Inspector V2 controls">
               <button id="refreshSessionInspectorV2Button" type="button">Refresh</button>
               <button id="deleteAllSessionInspectorV2Button" type="button">Delete All</button>
-              <button id="clearSessionInspectorV2StatusButton" type="button">Clear Status</button>
             </div>
           </div>
         </section>
@@ -98,10 +97,13 @@
 
       <aside class="session-inspector-v2__panel session-inspector-v2__panel--right tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" aria-label="Session details">
         <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2DetailsContent">
+          <div class="accordion-v2__header session-inspector-v2__details-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="sessionInspectorV2DetailsContent">
             <span>Details</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
+            <div class="session-inspector-v2__details-header-actions">
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+              <button id="copySessionInspectorV2DetailsButton" type="button">Copy</button>
+            </div>
+          </div>
           <div id="sessionInspectorV2DetailsContent" class="accordion-v2__content">
             <pre id="sessionInspectorV2DetailsOutput" class="session-inspector-v2__output">{}</pre>
           </div>
@@ -112,6 +114,7 @@
             <span>Status</span>
             <div class="session-inspector-v2__status-header-actions">
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
+              <button id="clearSessionInspectorV2StatusButton" type="button">Clear Status</button>
             </div>
           </div>
           <div id="sessionInspectorV2StatusContent" class="accordion-v2__content">

@@ -45,6 +45,7 @@ button {
   background: var(--session-inspector-v2-surface);
   color: var(--session-inspector-v2-text);
   cursor: pointer;
+  padding: 3px 7px;
 }
 
 button:hover {
@@ -254,6 +255,8 @@ button:hover {
 
 .session-inspector-v2__field {
   display: grid;
+  grid-template-columns: 68px minmax(0, 1fr);
+  align-items: center;
   gap: 6px;
 }
 
@@ -275,6 +278,7 @@ button:hover {
 
 .session-inspector-v2__field input,
 .session-inspector-v2__field select {
+  width: 100%;
   min-height: 38px;
   padding: 6px 8px;
 }
@@ -387,10 +391,17 @@ button:hover {
   resize: vertical;
 }
 
+.session-inspector-v2__details-header-actions,
 .session-inspector-v2__status-header-actions {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+.session-inspector-v2__details-header-actions button,
+.session-inspector-v2__status-header-actions button {
+  min-height: 30px;
+  padding: 2px 7px;
 }
 
 @media (max-width: 980px) {

@@ -7,6 +7,10 @@ export class DetailsControl {
     this.output.textContent = "{}";
   }
 
+  text() {
+    return String(this.output.textContent || "");
+  }
+
   render(entry) {
     if (!entry) {
       this.clear();
