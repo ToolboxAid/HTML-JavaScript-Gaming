@@ -186,6 +186,64 @@ async function expectSessionInspectorV2AccordionToggles(page, contentId) {
   await expect(header).toHaveAttribute("aria-expanded", "true");
 }
 
+async function expectSessionInspectorV2FullscreenShell(page) {
+  const summary = page.locator("[data-session-inspector-v2-summary]");
+  await summary.click();
+  const enteredFullscreen = await page.waitForFunction(() => document.body.classList.contains("tools-platform-fullscreen-active"), null, { timeout: 2500 })
+    .then(() => true)
+    .catch(() => false);
+  if (!enteredFullscreen) {
+    await page.evaluate(() => {
+      document.querySelector(".is-collapsible").open = false;
+      window.__sessionInspectorV2App.applyFullscreenState(true);
+      window.__sessionInspectorV2App.updateSummary();
+    });
+  }
+  await expect(page.locator("body")).toHaveClass(/tools-platform-fullscreen-active/);
+  await expect(summary).toHaveAttribute("data-tools-platform-summary-mode", "fullscreen");
+
+  const fullscreenLayout = await page.evaluate(() => {
+    const viewportWidth = window.innerWidth;
+    const root = document.querySelector(".tool-shell-common__fullscreen-root").getBoundingClientRect();
+    const layout = document.querySelector(".tool-shell-common__fullscreen-layout").getBoundingClientRect();
+    const left = document.querySelector(".tool-shell-common__fullscreen-panel-left").getBoundingClientRect();
+    const center = document.querySelector(".tool-shell-common__fullscreen-center-panel").getBoundingClientRect();
+    const right = document.querySelector(".tool-shell-common__fullscreen-panel-right").getBoundingClientRect();
+    return {
+      centerAfterLeft: center.left > left.right,
+      leftAtSide: left.left < center.left,
+      leftWidth: Math.round(left.width),
+      layoutDisplay: getComputedStyle(document.querySelector(".tool-shell-common__fullscreen-layout")).display,
+      rightAtSide: right.left > center.right,
+      rightWithinRoot: right.right <= root.right + 1,
+      rightWidth: Math.round(right.width),
+      rootWidth: Math.round(root.width),
+      viewportWidth
+    };
+  });
+  expect(fullscreenLayout.layoutDisplay).toBe("grid");
+  expect(fullscreenLayout.rootWidth).toBeGreaterThanOrEqual(fullscreenLayout.viewportWidth - 2);
+  expect(fullscreenLayout.leftWidth).toBe(340);
+  expect(fullscreenLayout.rightWidth).toBe(360);
+  expect(fullscreenLayout.leftAtSide).toBe(true);
+  expect(fullscreenLayout.centerAfterLeft).toBe(true);
+  expect(fullscreenLayout.rightAtSide).toBe(true);
+  expect(fullscreenLayout.rightWithinRoot).toBe(true);
+
+  if (await page.evaluate(() => Boolean(document.fullscreenElement))) {
+    await summary.click();
+    await expect(page.locator("body")).not.toHaveClass(/tools-platform-fullscreen-active/);
+  } else {
+    await page.evaluate(() => {
+      window.__sessionInspectorV2App.applyFullscreenState(false);
+      document.querySelector(".is-collapsible").open = true;
+      window.__sessionInspectorV2App.updateSummary();
+    });
+    await expect(page.locator("body")).not.toHaveClass(/tools-platform-fullscreen-active/);
+  }
+  await expect(summary).toHaveAttribute("data-tools-platform-summary-mode", "normal");
+}
+
 test.describe("Workspace Manager V2 bootstrap", () => {
   test.afterAll(async () => {
     await coverageReporter.writeReport();
@@ -325,6 +383,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     await page.addInitScript(() => {
       window.sessionStorage.setItem("session-inspector-v2-alpha", JSON.stringify({ active: true }));
       window.sessionStorage.setItem("session-inspector-v2-beta", "plain beta value");
+      window.sessionStorage.setItem("session-inspector-v2-gamma", JSON.stringify({ index: 3, wraps: true }));
+      window.sessionStorage.setItem("session-inspector-v2-delta", "delta value that is long enough to prove tile text clips inside a fixed tile");
+      window.sessionStorage.setItem("session-inspector-v2-epsilon", "epsilon value");
       window.localStorage.setItem("session-inspector-v2-local", "local value");
     });
     const server = await openSessionInspectorV2(page, "?launch=workspace&fromTool=workspace-manager-v2&hostContextId=session-inspector-v2-test-context&workspaceMode=uat");
@@ -339,12 +400,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("h1")).not.toHaveText("Session Inspector");
       await expect(page.locator('link[href="./styles/sessionInspectorV2.css"]')).toHaveCount(1);
       await expect(page.locator('link[href="./styles/sessionInspector.css"]')).toHaveCount(0);
+      await expect(page.locator('link[href="../common/toolShellCommon.css"]')).toHaveCount(1);
       await expect(page.locator(".session-inspector-v2__menu")).toHaveCount(0);
-      await expect(page.locator("#returnToWorkspaceButton")).toHaveText("Return to Workspace");
+      await expect(page.locator("#returnToWorkspaceButton")).toHaveCount(1);
+      await expect(page.locator(".session-inspector-v2__local-shell-frame #returnToWorkspaceButton")).toHaveText("Return to Workspace");
+      await expect(page.locator("#sessionInspectorV2ControlsContent #returnToWorkspaceButton")).toHaveCount(0);
       await expect(page.locator("#refreshSessionInspectorV2Button")).toHaveText("Refresh");
       await expect(page.locator("#deleteAllSessionInspectorV2Button")).toHaveText("Delete All");
       await expect(page.locator("#clearSessionInspectorV2StatusButton")).toHaveText("Clear Status");
-      await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Return to Workspace");
       await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Refresh");
       await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Delete All");
       await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Clear Status");
@@ -352,18 +415,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "Controls",
         "Filters"
       ]);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(2);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(5);
       await expect(page.locator("#sessionInspectorV2Summary > span")).toHaveText([
-        "(2) Entries shown.",
-        "(2) SessionStorage.",
+        "(5) Entries shown.",
+        "(5) SessionStorage.",
         "(0) LocalStorage."
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Session Inspector V2 ready\. Storage is read\/delete\./);
 
       const themeState = await page.evaluate(async () => {
         const css = await fetch("/tools/session-inspector-v2/styles/sessionInspectorV2.css", { cache: "no-store" }).then((response) => response.text());
+        const stylesheetPaths = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+          .map((link) => new URL(link.href).pathname);
         const bodyStyle = getComputedStyle(document.body);
         const shellStyle = getComputedStyle(document.querySelector(".session-inspector-v2.app-shell"));
+        const layoutStyle = getComputedStyle(document.querySelector(".session-inspector-v2__layout"));
         const headerFrameStyle = getComputedStyle(document.querySelector(".session-inspector-v2__local-shell-frame"));
         const headerSummaryStyle = getComputedStyle(document.querySelector(".session-inspector-v2__local-shell-frame .tools-platform-frame__accordion-summary"));
         const panelStyle = getComputedStyle(document.querySelector(".session-inspector-v2__panel"));
@@ -396,11 +462,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           headerRadius: headerFrameStyle.borderTopLeftRadius,
           headerSummaryBackground: headerSummaryStyle.backgroundColor,
           inputBackground: inputStyle.backgroundColor,
+          layoutDisplay: layoutStyle.display,
           shellBorder: shellStyle.borderTopColor,
+          shellDisplay: shellStyle.display,
           shellRadius: shellStyle.borderTopLeftRadius,
+          stylesheetPaths,
           panelBackground: panelStyle.backgroundColor
         };
       });
+      expect(themeState.stylesheetPaths).toEqual([
+        "/src/engine/theme/main.css",
+        "/src/engine/ui/hubCommon.css",
+        "/src/engine/theme/accordionV2/accordionV2.css",
+        "/tools/common/toolShellCommon.css",
+        "/tools/session-inspector-v2/styles/sessionInspectorV2.css"
+      ]);
       expect(themeState.cssHasHardcodedColors).toBe(false);
       expect(themeState.cssUsesThemeTokens).toBe(true);
       expect(themeState.bodyBackground).toBe(themeState.expectedBackground);
@@ -408,9 +484,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(themeState.headerRadius).toBe("18px");
       expect(themeState.headerSummaryBackground).toBe(themeState.expectedPanel);
       expect(themeState.shellBorder).toBe(themeState.expectedLine);
+      expect(themeState.shellDisplay).toBe("flex");
       expect(themeState.shellRadius).toBe("20px");
+      expect(themeState.layoutDisplay).toBe("grid");
       expect(themeState.panelBackground).toBe(themeState.expectedPanel);
       expect(themeState.inputBackground).toBe(themeState.expectedSurface);
+
+      await expectSessionInspectorV2FullscreenShell(page);
 
       for (const contentId of [
         "sessionInspectorV2ControlsContent",
@@ -422,10 +502,40 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await expectSessionInspectorV2AccordionToggles(page, contentId);
       }
 
+      const tileState = await page.locator(".session-inspector-v2__entry-card").evaluateAll((cards) => {
+        const rects = cards.map((card) => {
+          const rect = card.getBoundingClientRect();
+          const deleteButton = card.querySelector("[data-session-inspector-v2-delete-entry-id]");
+          return {
+            deleteInside: Boolean(deleteButton && card.contains(deleteButton)),
+            height: Math.round(rect.height),
+            left: Math.round(rect.left),
+            top: Math.round(rect.top),
+            width: Math.round(rect.width)
+          };
+        });
+        return {
+          deleteButtonsInside: rects.every((rect) => rect.deleteInside),
+          firstRowMovesLeftToRight: rects[1].top === rects[0].top && rects[1].left > rects[0].left,
+          hasWrappedRows: new Set(rects.map((rect) => rect.top)).size > 1,
+          sizes: rects.map(({ height, width }) => ({ height, width }))
+        };
+      });
+      expect(tileState.sizes).toEqual([
+        { height: 148, width: 184 },
+        { height: 148, width: 184 },
+        { height: 148, width: 184 },
+        { height: 148, width: 184 },
+        { height: 148, width: 184 }
+      ]);
+      expect(tileState.firstRowMovesLeftToRight).toBe(true);
+      expect(tileState.hasWrappedRows).toBe(true);
+      expect(tileState.deleteButtonsInside).toBe(true);
+
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
       await expect(page.locator("#sessionInspectorV2DetailsOutput")).toContainText('"key": "session-inspector-v2-alpha"');
       await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(1);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
       await expect(page.locator("#sessionInspectorV2DetailsOutput")).toContainText('"key": "session-inspector-v2-beta"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:session-inspector-v2-alpha\./);
       expect(await page.evaluate(() => window.sessionStorage.getItem("session-inspector-v2-alpha"))).toBeNull();
@@ -440,7 +550,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-beta"]').click();
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(1);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Delete failed for sessionStorage:session-inspector-v2-beta: blocked delete/);
 
       await page.evaluate(() => {
@@ -455,7 +565,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "(0) SessionStorage.",
         "(0) LocalStorage."
       ]);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 1 shown storage entry\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 4 shown storage entries\./);
       await page.locator("#deleteAllSessionInspectorV2Button").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Delete All skipped: no matching storage entries are shown\./);
       expect(await page.evaluate(() => window.localStorage.getItem("session-inspector-v2-local"))).toBe("local value");
