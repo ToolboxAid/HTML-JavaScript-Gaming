@@ -22,6 +22,15 @@ function safeStorageValue(storage, key) {
   }
 }
 
+function safeRemoveStorageValue(storage, key) {
+  try {
+    storage.removeItem(key);
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, message: error.message };
+  }
+}
+
 function parseValue(rawValue) {
   if (rawValue == null || rawValue === "") {
     return {
@@ -60,7 +69,7 @@ function previewText(rawValue) {
   return normalized.length > 140 ? `${normalized.slice(0, 137)}...` : normalized;
 }
 
-export class SessionInspectorStorageService {
+export class SessionInspectorV2StorageService {
   constructor({
     localStorageRef = window.localStorage,
     sessionStorageRef = window.sessionStorage
@@ -109,5 +118,37 @@ export class SessionInspectorStorageService {
       });
     }
     return entries;
+  }
+
+  storageForType(storageType) {
+    if (storageType === "sessionStorage") {
+      return this.sessionStorage;
+    }
+    if (storageType === "localStorage") {
+      return this.localStorage;
+    }
+    return null;
+  }
+
+  deleteEntry(entry) {
+    const storage = this.storageForType(entry?.storageType);
+    if (!storage || !entry?.key) {
+      return { ok: false, message: "storage entry does not include a supported storageType and key" };
+    }
+    return safeRemoveStorageValue(storage, entry.key);
+  }
+
+  deleteEntries(entries) {
+    const deleted = [];
+    const failed = [];
+    entries.forEach((entry) => {
+      const result = this.deleteEntry(entry);
+      if (result.ok) {
+        deleted.push({ ...entry });
+      } else {
+        failed.push({ entry: { ...entry }, message: result.message });
+      }
+    });
+    return { deleted, failed };
   }
 }

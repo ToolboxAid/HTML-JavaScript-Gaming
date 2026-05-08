@@ -32,4 +32,8 @@ export class StatusLogControl {
   warn(message) {
     this.write("WARN", message);
   }
+
+  fail(message) {
+    this.write("FAIL", message);
+  }
 }

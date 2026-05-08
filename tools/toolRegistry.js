@@ -279,25 +279,25 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "session-inspector",
-    name: "Session Inspector",
-    displayName: "Session Inspector",
-    shortDescription: "Read-only current-origin session and storage inspection.",
+    id: "session-inspector-v2",
+    name: "Session Inspector V2",
+    displayName: "Session Inspector V2",
+    shortDescription: "Current-origin session and storage inspection with explicit cleanup controls.",
     shortLabel: "Session",
-    path: "session-inspector",
-    folderName: "session-inspector",
-    entryPoint: "session-inspector/index.html",
-    description: "Read-only first-class tool for inspecting current-origin sessionStorage and localStorage values without cross-tool handoff writes.",
+    path: "session-inspector-v2",
+    folderName: "session-inspector-v2",
+    entryPoint: "session-inspector-v2/index.html",
+    description: "First-class V2 tool for inspecting and explicitly clearing current-origin sessionStorage and localStorage values without cross-tool handoff writes.",
     showcaseTag: "Debug",
-    showcaseStatus: "Read-only",
-    readOnly: true,
+    showcaseStatus: "Storage Cleanup",
+    readOnly: false,
     active: true,
     legacy: false,
     order: 7.75,
     sampleEntryPoints: [
       {
         label: "README",
-        path: "session-inspector/README.md"
+        path: "session-inspector-v2/README.md"
       }
     ],
     visibleInToolsList: true

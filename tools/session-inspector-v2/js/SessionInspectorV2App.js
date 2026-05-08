@@ -1,6 +1,7 @@
-export class SessionInspectorApp {
+export class SessionInspectorV2App {
   constructor({
     accordions,
+    deleteAllButton,
     details,
     entryList,
     filters,
@@ -10,6 +11,7 @@ export class SessionInspectorApp {
     storageService
   }) {
     this.accordions = accordions;
+    this.deleteAllButton = deleteAllButton;
     this.details = details;
     this.entries = [];
     this.entryList = entryList;
@@ -28,11 +30,13 @@ export class SessionInspectorApp {
       onFilterChanged: () => this.refresh({ silent: true })
     });
     this.entryList.mount({
+      onDelete: (entryId) => this.deleteEntry(entryId),
       onSelected: (entryId) => this.selectEntry(entryId)
     });
     this.refreshButton.addEventListener("click", () => this.refresh());
+    this.deleteAllButton.addEventListener("click", () => this.deleteAllShownEntries());
     this.refresh({ silent: true });
-    this.statusLog.ok(`Session Inspector ready. Storage is ${this.runtimeContract.storageAccess}.`);
+    this.statusLog.ok(`Session Inspector V2 ready. Storage is ${this.runtimeContract.storageAccess}.`);
   }
 
   refresh({ silent = false } = {}) {
@@ -66,5 +70,41 @@ export class SessionInspectorApp {
     if (entry) {
       this.statusLog.info(`Selected ${entry.storageType}:${entry.key}.`);
     }
+  }
+
+  deleteEntry(entryId) {
+    const entry = this.entries.find((candidate) => candidate.id === entryId);
+    if (!entry) {
+      this.statusLog.warn(`Delete skipped: storage entry ${entryId || "(empty)"} is no longer shown.`);
+      this.refresh({ silent: true });
+      return;
+    }
+    const result = this.storageService.deleteEntry(entry);
+    if (result.ok) {
+      this.statusLog.ok(`Deleted ${entry.storageType}:${entry.key}.`);
+    } else {
+      this.statusLog.fail(`Delete failed for ${entry.storageType}:${entry.key}: ${result.message}`);
+    }
+    this.refresh({ silent: true });
+  }
+
+  deleteAllShownEntries() {
+    if (!this.entries.length) {
+      this.statusLog.warn("Delete All skipped: no matching storage entries are shown.");
+      return;
+    }
+    const result = this.storageService.deleteEntries(this.entries);
+    if (result.failed.length) {
+      result.deleted.forEach((entry) => {
+        this.statusLog.ok(`Deleted ${entry.storageType}:${entry.key}.`);
+      });
+      result.failed.forEach(({ entry, message }) => {
+        this.statusLog.fail(`Delete failed for ${entry.storageType}:${entry.key}: ${message}`);
+      });
+    } else {
+      this.statusLog.ok(`Deleted ${result.deleted.length} shown storage entr${result.deleted.length === 1 ? "y" : "ies"}.`);
+    }
+    this.selectedId = "";
+    this.refresh({ silent: true });
   }
 }

@@ -47,6 +47,9 @@ export class ToolTilesControl {
     if (tool.id === "palette-manager-v2") {
       return `${paletteSwatchCount} palette swatches`;
     }
+    if (tool.id === "session-inspector-v2") {
+      return "Session storage inspector";
+    }
     return manifestStatus;
   }
 

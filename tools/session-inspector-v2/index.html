@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Session Inspector V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css">
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+    <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="./styles/sessionInspectorV2.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="session-inspector-v2">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-session-inspector-v2-summary>Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <header class="session-inspector-v2__header" data-session-inspector-v2-header>
+          <section class="tools-platform-frame session-inspector-v2__local-shell-frame">
+            <div class="tools-platform-frame__accordion-content">
+              <div class="tools-platform-frame__accordion-summary">
+                <div class="tools-platform-frame__summary-copy">
+                  <h1 class="tools-platform-frame__title" data-tool-id="session-inspector-v2">Session Inspector V2</h1>
+                  <h2 class="tools-platform-frame__eyebrow">Session storage visibility</h2>
+                </div>
+                <div class="tools-platform-frame__summary-meta">
+                  <div class="tools-platform-frame__meta">Inspect and clear current-origin storage values without cross-tool handoff writes.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </header>
+      </div>
+    </details>
+
+    <nav class="session-inspector-v2__menu" aria-label="Session Inspector V2 actions">
+      <button id="refreshSessionInspectorV2Button" type="button">Refresh</button>
+      <button id="deleteAllSessionInspectorV2Button" type="button">Delete All</button>
+      <button id="clearSessionInspectorV2StatusButton" type="button">Clear Status</button>
+    </nav>
+
+    <main class="session-inspector-v2 app-shell" data-tool-id="session-inspector-v2">
+      <aside class="session-inspector-v2__panel session-inspector-v2__panel--left" aria-label="Session filters">
+        <section class="accordion-v2 session-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2FiltersContent">
+            <span>Filters</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="sessionInspectorV2FiltersContent" class="accordion-v2__content">
+            <label class="session-inspector-v2__field" for="storageScopeSelect">
+              <span>Storage</span>
+              <select id="storageScopeSelect">
+                <option value="sessionStorage">sessionStorage</option>
+                <option value="localStorage">localStorage</option>
+                <option value="all">All storage</option>
+              </select>
+            </label>
+            <label class="session-inspector-v2__field" for="sessionInspectorV2FilterInput">
+              <span>Filter</span>
+              <input id="sessionInspectorV2FilterInput" type="search" autocomplete="off" placeholder="Key or value text">
+            </label>
+            <p id="sessionInspectorV2Summary" class="session-inspector-v2__hint">No storage entries loaded.</p>
+          </div>
+        </section>
+      </aside>
+
+      <section class="session-inspector-v2__panel session-inspector-v2__panel--center" aria-label="Storage entries">
+        <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2EntriesContent">
+            <span>Entries</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="sessionInspectorV2EntriesContent" class="accordion-v2__content">
+            <div id="sessionInspectorV2EntryList" class="session-inspector-v2__entry-list" aria-label="Storage entries"></div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="session-inspector-v2__panel session-inspector-v2__panel--right" aria-label="Session details">
+        <section class="accordion-v2 session-inspector-v2__accordion session-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sessionInspectorV2DetailsContent">
+            <span>Details</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="sessionInspectorV2DetailsContent" class="accordion-v2__content">
+            <pre id="sessionInspectorV2DetailsOutput" class="session-inspector-v2__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 session-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+          <div class="accordion-v2__header session-inspector-v2__status-accordion-header" role="button" tabindex="0" aria-expanded="true" aria-controls="sessionInspectorV2StatusContent">
+            <span>Status</span>
+            <div class="session-inspector-v2__status-header-actions">
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </div>
+          <div id="sessionInspectorV2StatusContent" class="accordion-v2__content">
+            <textarea id="statusLog" readonly rows="10" aria-label="Session Inspector V2 status log"></textarea>
+          </div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  </body>
+</html>

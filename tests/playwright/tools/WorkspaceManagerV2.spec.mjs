@@ -25,6 +25,13 @@ async function openToolsIndex(page) {
   return server;
 }
 
+async function openSessionInspectorV2(page) {
+  const server = await startRepoServer();
+  await coverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/session-inspector-v2/index.html`, { waitUntil: "networkidle" });
+  return server;
+}
+
 function manifestRepoPath(server) {
   return server.repoRoot.replaceAll("\\", "/");
 }
@@ -136,7 +143,7 @@ async function selectMockRepo(page, { repoName = "HTML-JavaScript-Gaming" } = {}
 }
 
 async function expectWorkspaceToolsDisabled(page) {
-  await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(4);
+  await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(5);
   expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
 }
 
@@ -163,6 +170,20 @@ async function readWorkspaceSessionHydration(page) {
   });
 }
 
+async function expectSessionInspectorV2AccordionToggles(page, contentId) {
+  const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
+  const content = page.locator(`#${contentId}`);
+  await expect(header).toBeVisible();
+  await expect(content).toBeVisible();
+  await expect(header).toHaveAttribute("aria-expanded", "true");
+  await header.click();
+  await expect(content).toBeHidden();
+  await expect(header).toHaveAttribute("aria-expanded", "false");
+  await header.click();
+  await expect(content).toBeVisible();
+  await expect(header).toHaveAttribute("aria-expanded", "true");
+}
+
 test.describe("Workspace Manager V2 bootstrap", () => {
   test.afterAll(async () => {
     await coverageReporter.writeReport();
@@ -187,6 +208,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           .find((section) => section.querySelector(":scope > h2")?.textContent?.trim() === "First-Class Tools");
         const workflowGrid = firstClassToolsSection?.querySelector("[data-active-tools-workflow-grid]");
         const utilitiesGrid = firstClassToolsSection?.querySelector("[data-active-tools-utilities-grid]");
+        const viewersGrid = firstClassToolsSection?.querySelector("[data-active-tools-viewers-grid]");
         const workspaceCard = workflowGrid?.querySelector(".tools-platform-card");
         return {
           actionLabels: Array.from(firstClassToolsSection?.querySelectorAll(".tools-platform-card__action") || [])
@@ -198,6 +220,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             .filter((label) => label.startsWith("Samples")),
           utilitiesCards: Array.from(utilitiesGrid?.querySelectorAll(".tools-platform-card h3") || [])
             .map((heading) => heading.textContent.trim()),
+          viewersCards: Array.from(viewersGrid?.querySelectorAll(".tools-platform-card h3") || [])
+            .map((heading) => heading.textContent.trim()),
           workflowCards: Array.from(workflowGrid?.querySelectorAll(".tools-platform-card h3") || [])
             .map((heading) => heading.textContent.trim()),
           workspaceActionLabels: Array.from(workspaceCard?.querySelectorAll(".tools-platform-card__action") || [])
@@ -207,6 +231,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.headings.slice(0, 4)).toEqual(["Workflow", "Editors", "Utilities", "Viewers"]);
       expect(toolsIndexState.workflowCards).toEqual(["Workspace Manager V2"]);
       expect(toolsIndexState.utilitiesCards).not.toContain("Workspace Manager V2");
+      expect(toolsIndexState.viewersCards).toContain("Session Inspector V2");
+      expect(toolsIndexState.viewersCards).not.toContain("Session Inspector");
       expect(toolsIndexState.workspaceActionLabels).toEqual(["How To Use", "Read Me"]);
       expect(toolsIndexState.actionLabels).not.toContain("README");
       expect(toolsIndexState.sampleLabels.every((label) => /^Samples \(\d+\)$/.test(label))).toBe(true);
@@ -285,6 +311,118 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(themeContract.panelBackground).toBe(themeContract.expectedPanel);
       expect(themeContract.summaryBackground).toBe(themeContract.expectedPanel);
       expect(themeContract.textareaBackground).toBe(themeContract.expectedInputBackground);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("launches Session Inspector V2 with V2 labels, accordions, theme, and delete controls", async ({ page }) => {
+    const pageErrors = [];
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem("session-inspector-v2-alpha", JSON.stringify({ active: true }));
+      window.sessionStorage.setItem("session-inspector-v2-beta", "plain beta value");
+      window.localStorage.setItem("session-inspector-v2-local", "local value");
+    });
+    const server = await openSessionInspectorV2(page);
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("body[data-tool-id='session-inspector-v2']")).toBeVisible();
+      await expect(page.locator("h1")).toHaveText("Session Inspector V2");
+      await expect(page.locator("h1")).not.toHaveText("Session Inspector");
+      await expect(page.locator('link[href="./styles/sessionInspectorV2.css"]')).toHaveCount(1);
+      await expect(page.locator('link[href="./styles/sessionInspector.css"]')).toHaveCount(0);
+      await expect(page.locator("#refreshSessionInspectorV2Button")).toHaveText("Refresh");
+      await expect(page.locator("#deleteAllSessionInspectorV2Button")).toHaveText("Delete All");
+      await expect(page.locator("#clearSessionInspectorV2StatusButton")).toHaveText("Clear Status");
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(2);
+      await expect(page.locator("#sessionInspectorV2Summary")).toHaveText("2 entries shown. sessionStorage: 2. localStorage: 0.");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Session Inspector V2 ready\. Storage is read\/delete\./);
+
+      const themeState = await page.evaluate(async () => {
+        const css = await fetch("/tools/session-inspector-v2/styles/sessionInspectorV2.css", { cache: "no-store" }).then((response) => response.text());
+        const bodyStyle = getComputedStyle(document.body);
+        const panelStyle = getComputedStyle(document.querySelector(".session-inspector-v2__panel"));
+        const inputStyle = getComputedStyle(document.querySelector("#sessionInspectorV2FilterInput"));
+        const probeStyle = (property, value) => {
+          const probe = document.createElement("div");
+          probe.style[property] = value;
+          document.body.append(probe);
+          const computed = getComputedStyle(probe)[property];
+          probe.remove();
+          return computed;
+        };
+        return {
+          bodyBackground: bodyStyle.backgroundImage,
+          cssHasHardcodedColors: /#[0-9a-f]{3,8}|rgba?\(|linear-gradient/i.test(css),
+          cssUsesThemeTokens: [
+            "--session-inspector-v2-bg: var(--bg-gradient);",
+            "--session-inspector-v2-panel: var(--panel);",
+            "--session-inspector-v2-surface: var(--surface-inline);",
+            "--session-inspector-v2-line: var(--line);",
+            "--session-inspector-v2-text: var(--text);",
+            "--session-inspector-v2-muted: var(--muted);",
+            "--session-inspector-v2-accent: var(--accent);"
+          ].every((snippet) => css.includes(snippet)),
+          expectedBackground: probeStyle("backgroundImage", "var(--bg-gradient)"),
+          expectedPanel: probeStyle("backgroundColor", "var(--panel)"),
+          expectedSurface: probeStyle("backgroundColor", "var(--surface-inline)"),
+          inputBackground: inputStyle.backgroundColor,
+          panelBackground: panelStyle.backgroundColor
+        };
+      });
+      expect(themeState.cssHasHardcodedColors).toBe(false);
+      expect(themeState.cssUsesThemeTokens).toBe(true);
+      expect(themeState.bodyBackground).toBe(themeState.expectedBackground);
+      expect(themeState.panelBackground).toBe(themeState.expectedPanel);
+      expect(themeState.inputBackground).toBe(themeState.expectedSurface);
+
+      for (const contentId of [
+        "sessionInspectorV2FiltersContent",
+        "sessionInspectorV2EntriesContent",
+        "sessionInspectorV2DetailsContent",
+        "sessionInspectorV2StatusContent"
+      ]) {
+        await expectSessionInspectorV2AccordionToggles(page, contentId);
+      }
+
+      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
+      await expect(page.locator("#sessionInspectorV2DetailsOutput")).toContainText('"key": "session-inspector-v2-alpha"');
+      await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(1);
+      await expect(page.locator("#sessionInspectorV2DetailsOutput")).toContainText('"key": "session-inspector-v2-beta"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:session-inspector-v2-alpha\./);
+      expect(await page.evaluate(() => window.sessionStorage.getItem("session-inspector-v2-alpha"))).toBeNull();
+
+      await page.evaluate(() => {
+        window.__sessionInspectorV2OriginalRemoveItem = Storage.prototype.removeItem;
+        Storage.prototype.removeItem = function removeItemWithTestFailure(key) {
+          if (key === "session-inspector-v2-beta") {
+            throw new Error("blocked delete");
+          }
+          return window.__sessionInspectorV2OriginalRemoveItem.call(this, key);
+        };
+      });
+      await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-beta"]').click();
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Delete failed for sessionStorage:session-inspector-v2-beta: blocked delete/);
+
+      await page.evaluate(() => {
+        Storage.prototype.removeItem = window.__sessionInspectorV2OriginalRemoveItem;
+      });
+      await page.locator("#deleteAllSessionInspectorV2Button").click();
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(0);
+      await expect(page.locator("#sessionInspectorV2EntryList")).toContainText("No matching storage entries.");
+      await expect(page.locator("#sessionInspectorV2DetailsOutput")).toHaveText("{}");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 1 shown storage entry\./);
+      await page.locator("#deleteAllSessionInspectorV2Button").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Delete All skipped: no matching storage entries are shown\./);
+      expect(await page.evaluate(() => window.localStorage.getItem("session-inspector-v2-local"))).toBe("local value");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -485,8 +623,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
       await expect(statusContent).toBeVisible();
       await expect(page.locator(".workspace-manager-v2__tool-group-title")).toHaveText(["Editors", "Utilities", "Viewers"]);
-      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(4);
+      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(5);
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
+      await expect(page.locator('[data-workspace-tool-id="session-inspector"]')).toHaveCount(0);
       const toolGroupMembership = await page.locator(".workspace-manager-v2__tool-group").evaluateAll((groups) => Object.fromEntries(groups.map((group) => [
         group.querySelector(".workspace-manager-v2__tool-group-title")?.textContent?.trim(),
         Array.from(group.querySelectorAll(".workspace-manager-v2__tool-tile-name"), (name) => name.textContent.trim())
@@ -494,7 +633,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolGroupMembership).toEqual({
         Editors: ["Asset Manager V2", "Palette Manager V2"],
         Utilities: ["Preview Generator V2"],
-        Viewers: ["Tool Starter V2"]
+        Viewers: ["Tool Starter V2", "Session Inspector V2"]
       });
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => (
@@ -561,6 +700,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "workspace.tools.palette-manager-v2.state",
         "workspace.tools.preview-generator-v2.schema",
         "workspace.tools.preview-generator-v2.state",
+        "workspace.tools.session-inspector-v2.schema",
+        "workspace.tools.session-inspector-v2.state",
         "workspace.tools.templates-v2.schema",
         "workspace.tools.templates-v2.state"
       ]);
@@ -617,6 +758,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const assetTile = page.locator('[data-workspace-tool-id="asset-manager-v2"]');
       const paletteTile = page.locator('[data-workspace-tool-id="palette-manager-v2"]');
       const previewTile = page.locator('[data-workspace-tool-id="preview-generator-v2"]');
+      const sessionInspectorTile = page.locator('[data-workspace-tool-id="session-inspector-v2"]');
       await expect(templateTile).toBeEnabled();
       await expect(templateTile).toContainText("Tool Starter V2");
       await expect(templateTile).toContainText("Canonical V2 template");
@@ -626,6 +768,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(assetTile).toContainText("14 managed assets");
       await expect(paletteTile).toContainText("11 palette swatches");
       await expect(previewTile).toContainText("Schema-valid manifest");
+      await expect(sessionInspectorTile).toBeEnabled();
+      await expect(sessionInspectorTile).toContainText("Session Inspector V2");
+      await expect(sessionInspectorTile).toContainText("Session storage inspector");
       const tileLayout = await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.map((tile) => ({
         height: Math.round(tile.getBoundingClientRect().height),
         width: Math.round(tile.getBoundingClientRect().width)
@@ -634,10 +779,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { height: 142, width: 180 },
         { height: 142, width: 180 },
         { height: 142, width: 180 },
+        { height: 142, width: 180 },
         { height: 142, width: 180 }
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for templates-v2, asset-manager-v2, palette-manager-v2, preview-generator-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for templates-v2, asset-manager-v2, palette-manager-v2, preview-generator-v2, session-inspector-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 11 active palette colors and 14 managed assets\./);
 
       const downloadPromise = page.waitForEvent("download");
@@ -948,7 +1094,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
       expect((await readWorkspaceSessionHydration(page)).toolKeys).toContain("workspace.tools.asset-manager-v2.state");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for templates-v2, asset-manager-v2, palette-manager-v2, preview-generator-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for templates-v2, asset-manager-v2, palette-manager-v2, preview-generator-v2, session-inspector-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Imported schema-valid Workspace Manager V2 manifest workspace-manager-v2-Asteroids-imported\./);
 
       const downloadPromise = page.waitForEvent("download");
@@ -1253,6 +1399,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("3 palette swatches");
       await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Schema-valid manifest");
+      await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).toContainText("Session Inspector V2");
+      await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).toContainText("Session storage inspector");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"id": "workspace-manager-v2-UAT-template"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/_template\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/_template\/assets"/);

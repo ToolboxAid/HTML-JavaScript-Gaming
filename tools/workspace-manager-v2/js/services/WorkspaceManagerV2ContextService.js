@@ -39,6 +39,13 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     id: "preview-generator-v2",
     name: "Preview Generator V2",
     path: "../preview-generator-v2/index.html"
+  }),
+  Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Viewers",
+    id: "session-inspector-v2",
+    name: "Session Inspector V2",
+    path: "../session-inspector-v2/index.html"
   })
 ]);
 
