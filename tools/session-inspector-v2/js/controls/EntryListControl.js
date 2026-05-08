@@ -39,11 +39,15 @@ export class EntryListControl {
     key.className = "session-inspector-v2__entry-key";
     key.textContent = entry.key;
 
-    const meta = document.createElement("span");
-    meta.className = "session-inspector-v2__entry-meta";
-    meta.textContent = `${entry.storageType} | ${entry.valueType} | ${entry.sizeBytes} bytes`;
+    const storageType = document.createElement("span");
+    storageType.className = "session-inspector-v2__entry-storage-type";
+    storageType.textContent = entry.storageType;
 
-    button.append(key, meta);
+    const valueSize = document.createElement("span");
+    valueSize.className = "session-inspector-v2__entry-value-size";
+    valueSize.textContent = `${entry.valueType} | ${entry.sizeBytes} bytes`;
+
+    button.append(key, storageType, valueSize);
     button.addEventListener("click", () => {
       this.selectedId = entry.id;
       this.onSelected(entry.id);

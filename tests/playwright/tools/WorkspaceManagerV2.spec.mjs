@@ -380,8 +380,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
   test("launches Session Inspector V2 with V2 labels, accordions, theme, and delete controls", async ({ page }) => {
     const pageErrors = [];
+    await page.setViewportSize({ height: 900, width: 1440 });
     await page.addInitScript(() => {
-      window.sessionStorage.setItem("session-inspector-v2-alpha", JSON.stringify({ active: true }));
+      window.sessionStorage.setItem("session-inspector-v2-alpha", "true");
       window.sessionStorage.setItem("session-inspector-v2-beta", "plain beta value");
       window.sessionStorage.setItem("session-inspector-v2-gamma", JSON.stringify({ index: 3, wraps: true }));
       window.sessionStorage.setItem("session-inspector-v2-delta", "delta value that is long enough to prove tile text clips inside a fixed tile");
@@ -430,7 +431,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(tileText).not.toContain("plain beta value");
       expect(tileText).not.toContain("delta value that is long enough");
       expect(tileText).not.toContain("epsilon value");
-      expect(tileText).not.toContain("active");
       expect(tileText).not.toContain("wraps");
 
       const themeState = await page.evaluate(async () => {
@@ -528,19 +528,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           deleteButtonsInside: rects.every((rect) => rect.deleteInside),
           firstRowMovesLeftToRight: rects[1].top === rects[0].top && rects[1].left > rects[0].left,
           hasWrappedRows: new Set(rects.map((rect) => rect.top)).size > 1,
-          sizes: rects.map(({ height, width }) => ({ height, width }))
+          metadataGap: Math.round(cards[0].querySelector(".session-inspector-v2__entry-value-size").getBoundingClientRect().top
+            - cards[0].querySelector(".session-inspector-v2__entry-storage-type").getBoundingClientRect().bottom),
+          sizes: rects.map(({ height, width }) => ({ height, width })),
+          storageTypeText: cards[0].querySelector(".session-inspector-v2__entry-storage-type").textContent.trim(),
+          valueSizeText: cards[0].querySelector(".session-inspector-v2__entry-value-size").textContent.trim()
         };
       });
       expect(tileState.sizes).toEqual([
-        { height: 198, width: 184 },
-        { height: 198, width: 184 },
-        { height: 198, width: 184 },
-        { height: 198, width: 184 },
-        { height: 198, width: 184 }
+        { height: 198, width: 234 },
+        { height: 198, width: 234 },
+        { height: 198, width: 234 },
+        { height: 198, width: 234 },
+        { height: 198, width: 234 }
       ]);
       expect(tileState.firstRowMovesLeftToRight).toBe(true);
       expect(tileState.hasWrappedRows).toBe(true);
       expect(tileState.deleteButtonsInside).toBe(true);
+      expect(tileState.storageTypeText).toBe("sessionStorage");
+      expect(tileState.valueSizeText).toBe("boolean | 4 bytes");
+      expect(tileState.metadataGap).toBeGreaterThanOrEqual(8);
       const longKeyWrapState = await page.locator(".session-inspector-v2__entry-card", { hasText: "session-inspector-v2-super-long-storage-key-name-that-must-wrap-inside-the-fixed-session-tile" }).locator(".session-inspector-v2__entry-key").evaluate((keyNode) => {
         const keyRect = keyNode.getBoundingClientRect();
         const cardRect = keyNode.closest(".session-inspector-v2__entry-card").getBoundingClientRect();

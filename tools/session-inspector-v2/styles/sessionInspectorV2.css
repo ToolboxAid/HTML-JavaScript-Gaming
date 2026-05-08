@@ -289,7 +289,7 @@ button:hover {
 
 .session-inspector-v2__entry-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 184px);
+  grid-template-columns: repeat(auto-fill, 234px);
   grid-auto-rows: 198px;
   align-content: start;
   justify-content: start;
@@ -302,9 +302,9 @@ button:hover {
 }
 
 .session-inspector-v2__entry-card {
-  width: 184px;
+  width: 234px;
   height: 198px;
-  min-width: 184px;
+  min-width: 234px;
   min-height: 198px;
   display: flex;
   flex-direction: column;
@@ -351,7 +351,8 @@ button:hover {
   font-weight: 800;
 }
 
-.session-inspector-v2__entry-meta {
+.session-inspector-v2__entry-storage-type,
+.session-inspector-v2__entry-value-size {
   min-width: 0;
   display: block;
   overflow: hidden;
@@ -361,6 +362,10 @@ button:hover {
   overflow-wrap: anywhere;
   white-space: normal;
   word-break: break-word;
+}
+
+.session-inspector-v2__entry-value-size {
+  margin-top: 8px;
 }
 
 .session-inspector-v2__output,
