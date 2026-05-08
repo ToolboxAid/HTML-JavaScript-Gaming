@@ -2,6 +2,7 @@ import { WorkspaceManagerV2App } from "./WorkspaceManagerV2App.js";
 import { AccordionSection } from "./controls/AccordionSection.js";
 import { GameSelectorControl } from "./controls/GameSelectorControl.js";
 import { ManifestMenuControl } from "./controls/ManifestMenuControl.js";
+import { RepoDestinationControl } from "./controls/RepoDestinationControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { ToolTilesControl } from "./controls/ToolTilesControl.js";
 import { WorkspaceSummaryControl } from "./controls/WorkspaceSummaryControl.js";
@@ -28,6 +29,10 @@ window.addEventListener("DOMContentLoaded", () => {
       importButton: requireElement("#importManifestButton"),
       importInput: requireElement("#importManifestInput"),
       uatButton: requireElement("#seedUatManifestButton")
+    }),
+    repoDestination: new RepoDestinationControl({
+      pickRepoButton: requireElement("#pickRepoBtn"),
+      repoSelectedValue: requireElement("#repoSelectedValue")
     }),
     statusLog: new StatusLogControl({
       clearButton: requireElement("#clearStatusButton"),

@@ -205,6 +205,10 @@ textarea:hover {
   flex: 0 0 auto;
 }
 
+.workspace-manager-v2__accordion--repo-destination.is-open {
+  flex: 0 0 auto;
+}
+
 .workspace-manager-v2__accordion--json.is-open {
   flex: 0 0 auto;
 }
@@ -283,9 +287,37 @@ textarea:hover {
   padding: 6px 8px;
 }
 
+.workspace-manager-v2__stack,
+.workspace-manager-v2__controls,
+.workspace-manager-v2__repo-selected-field {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.workspace-manager-v2__value {
+  min-height: 36px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--workspace-manager-v2-line);
+  border-radius: 8px;
+  background: var(--workspace-manager-v2-input);
+  color: var(--workspace-manager-v2-text);
+  padding: 7px 9px;
+}
+
 .workspace-manager-v2__hint {
   margin: 0;
   color: var(--workspace-manager-v2-muted);
+  line-height: 1.45;
+}
+
+.workspace-manager-v2__note {
+  margin: 0;
+  color: var(--workspace-manager-v2-muted);
+  font-size: 0.9rem;
   line-height: 1.45;
 }
 

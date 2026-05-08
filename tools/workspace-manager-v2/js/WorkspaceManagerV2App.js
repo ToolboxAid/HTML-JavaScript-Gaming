@@ -4,6 +4,7 @@ export class WorkspaceManagerV2App {
     contextService,
     gameSelector,
     menu,
+    repoDestination,
     statusLog,
     summary,
     toolTiles
@@ -12,6 +13,7 @@ export class WorkspaceManagerV2App {
     this.contextService = contextService;
     this.gameSelector = gameSelector;
     this.menu = menu;
+    this.repoDestination = repoDestination;
     this.statusLog = statusLog;
     this.summary = summary;
     this.toolTiles = toolTiles;
@@ -42,6 +44,11 @@ export class WorkspaceManagerV2App {
         void this.seedTemporaryUatManifest();
       }
     });
+    this.repoDestination.mount({
+      onPickRepo: () => {
+        void this.pickRepoDestination();
+      }
+    });
     this.toolTiles.mount({
       onLaunchTool: (toolId) => {
         void this.launchTool(toolId);
@@ -58,6 +65,21 @@ export class WorkspaceManagerV2App {
     this.toolTiles.renderEmpty();
     this.statusLog.ok("Workspace Manager V2 ready. Select, import, or seed a game workspace to create a schema-valid manifest.");
     void this.restoreWorkspaceFromSession();
+  }
+
+  async pickRepoDestination() {
+    if (typeof window.showDirectoryPicker !== "function") {
+      this.statusLog.info("Repo folder picker is unavailable in this browser.");
+      return;
+    }
+    try {
+      const selectedRepoHandle = await window.showDirectoryPicker();
+      const displayName = selectedRepoHandle?.name || "selected";
+      this.repoDestination.setRepoDestinationDisplayName(displayName);
+      this.statusLog.ok(`Repo destination selected: ${displayName}.`);
+    } catch (error) {
+      this.statusLog.info(`Repo folder selection canceled or failed: ${error.message}`);
+    }
   }
 
   async selectGame(gameId) {

@@ -42,6 +42,27 @@
 
     <main class="workspace-manager-v2 app-shell" data-tool-id="workspace-manager-v2">
       <aside class="workspace-manager-v2__panel workspace-manager-v2__panel--left" aria-label="Workspace setup">
+        <section class="accordion-v2 workspace-manager-v2__accordion workspace-manager-v2__accordion--repo-destination is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="repoDestinationContent">
+            <span>Repo Destination</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="repoDestinationContent" class="accordion-v2__content workspace-manager-v2__stack">
+            <div class="workspace-manager-v2__controls">
+              <button id="pickRepoBtn" type="button">Pick Repo Folder</button>
+            </div>
+
+            <div class="workspace-manager-v2__field workspace-manager-v2__repo-selected-field">
+              <span>Repo selected</span>
+              <div id="repoSelectedValue" class="workspace-manager-v2__value">not selected</div>
+            </div>
+
+            <p class="workspace-manager-v2__note">
+              Pick the repo root folder, for example <code>HTML-JavaScript-Gaming</code>.
+            </p>
+          </div>
+        </section>
+
         <section class="accordion-v2 workspace-manager-v2__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="activeGameContent">
             <span>Active Game</span>
