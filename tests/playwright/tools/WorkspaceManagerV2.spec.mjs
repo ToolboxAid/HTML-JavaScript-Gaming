@@ -217,6 +217,97 @@ async function expectSessionInspectorV2DetailAccordionsIndependent(page) {
   }
 }
 
+const SESSION_INSPECTOR_V2_DETAIL_SECTIONS = [
+  {
+    contentId: "sessionInspectorV2JsonContent",
+    outputSelector: "#sessionInspectorV2JsonOutput"
+  },
+  {
+    contentId: "sessionInspectorV2DataContent",
+    outputSelector: "#sessionInspectorV2DataOutput"
+  },
+  {
+    contentId: "sessionInspectorV2DirtyContent",
+    outputSelector: "#sessionInspectorV2DirtyOutput"
+  },
+  {
+    contentId: "sessionInspectorV2StatusContent",
+    outputSelector: "#statusLog"
+  }
+];
+
+async function setSessionInspectorV2DetailSectionsOpen(page, openContentIds) {
+  const openSet = new Set(openContentIds);
+  for (const { contentId } of SESSION_INSPECTOR_V2_DETAIL_SECTIONS) {
+    const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
+    const content = page.locator(`#${contentId}`);
+    const isOpen = await content.evaluate((element) => !element.hidden);
+    if (isOpen !== openSet.has(contentId)) {
+      await header.click();
+    }
+    if (openSet.has(contentId)) {
+      await expect(content).toBeVisible();
+      await expect(header).toHaveAttribute("aria-expanded", "true");
+    } else {
+      await expect(content).toBeHidden();
+      await expect(header).toHaveAttribute("aria-expanded", "false");
+    }
+  }
+}
+
+async function expectSessionInspectorV2SharedDetailSpace(page, openContentIds) {
+  await setSessionInspectorV2DetailSectionsOpen(page, openContentIds);
+  const state = await page.evaluate((sections) => {
+    const rightPanel = document.querySelector(".session-inspector-v2__panel--right");
+    const rightRect = rightPanel.getBoundingClientRect();
+    const details = sections.map((sectionInfo) => {
+      const content = document.querySelector(`#${sectionInfo.contentId}`);
+      const section = content.closest(".session-inspector-v2__accordion");
+      const header = section.querySelector(".session-inspector-v2__accordion-header-row") || section.querySelector(".accordion-v2__header");
+      const output = document.querySelector(sectionInfo.outputSelector);
+      const outputStyle = getComputedStyle(output);
+      const sectionRect = section.getBoundingClientRect();
+      const headerRect = header.getBoundingClientRect();
+      const outputRect = output.getBoundingClientRect();
+      const isOpen = !content.hidden;
+      return {
+        contentId: sectionInfo.contentId,
+        closedHeaderOnly: isOpen || sectionRect.height <= headerRect.height + 5,
+        headerReachable: headerRect.top >= rightRect.top - 1 && headerRect.bottom <= rightRect.bottom + 1,
+        isOpen,
+        noHorizontalScrollbar: output.scrollWidth <= output.clientWidth + 1,
+        outputHeight: isOpen ? outputRect.height : 0,
+        overflowY: outputStyle.overflowY,
+        wrapsLongLines: outputStyle.whiteSpace === "pre-wrap" && outputStyle.overflowWrap === "anywhere"
+      };
+    });
+    const openDetails = details.filter((detail) => detail.isOpen);
+    const totalOpenOutputHeight = openDetails.reduce((total, detail) => total + detail.outputHeight, 0);
+    const expectedOpenOutputHeight = totalOpenOutputHeight / Math.max(openDetails.length, 1);
+    return {
+      closedSectionsHeaderOnly: details.every((detail) => detail.closedHeaderOnly),
+      headersReachable: details.every((detail) => detail.headerReachable),
+      openContentIds: openDetails.map((detail) => detail.contentId),
+      openCount: openDetails.length,
+      openOutputHeight: expectedOpenOutputHeight,
+      openOutputsSplitEvenly: openDetails.every((detail) => Math.abs(detail.outputHeight - expectedOpenOutputHeight) <= 1),
+      openOutputsUseInternalVerticalScroll: openDetails.every((detail) => detail.overflowY === "auto"),
+      outputsHaveNoHorizontalScrollbars: openDetails.every((detail) => detail.noHorizontalScrollbar),
+      outputsWrapLongLines: openDetails.every((detail) => detail.wrapsLongLines)
+    };
+  }, SESSION_INSPECTOR_V2_DETAIL_SECTIONS);
+
+  expect(state.openContentIds).toEqual(openContentIds);
+  expect(state.openCount).toBe(openContentIds.length);
+  expect(state.openOutputsSplitEvenly).toBe(true);
+  expect(state.openOutputsUseInternalVerticalScroll).toBe(true);
+  expect(state.outputsHaveNoHorizontalScrollbars).toBe(true);
+  expect(state.outputsWrapLongLines).toBe(true);
+  expect(state.closedSectionsHeaderOnly).toBe(true);
+  expect(state.headersReachable).toBe(true);
+  return state.openOutputHeight;
+}
+
 async function expectSessionInspectorV2FullscreenShell(page) {
   const summary = page.locator("[data-session-inspector-v2-summary]");
   await summary.click();
@@ -665,9 +756,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#copySessionInspectorV2AllButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Copied JSON, Data, and Dirty sections with empty-state text for missing Data and Dirty\./);
       const copiedValidationText = await page.evaluate(() => window.__sessionInspectorV2ClipboardText);
-      expect(copiedValidationText).toContain("=== JSON ===\ntrue");
-      expect(copiedValidationText).toContain("=== Data ===\nNo data section is present for sessionStorage:session-inspector-v2-alpha.");
-      expect(copiedValidationText).toContain("=== Dirty ===\nNo dirty section is present for sessionStorage:session-inspector-v2-alpha.");
+      expect(copiedValidationText).toContain("=== JSON ===\nSession: sessionStorage:session-inspector-v2-alpha\ntrue");
+      expect(copiedValidationText).toContain("=== Data ===\nSession: sessionStorage:session-inspector-v2-alpha\nNo data section is present for sessionStorage:session-inspector-v2-alpha.");
+      expect(copiedValidationText).toContain("=== Dirty ===\nSession: sessionStorage:session-inspector-v2-alpha\nNo dirty section is present for sessionStorage:session-inspector-v2-alpha.");
       await page.locator("#clearSessionInspectorV2StatusButton").click();
       await expect(page.locator("#statusLog")).toHaveValue("");
       await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
@@ -892,62 +983,36 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"workspace"');
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"schema"');
       await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: false");
+      const allDetailContentIds = SESSION_INSPECTOR_V2_DETAIL_SECTIONS.map((section) => section.contentId);
+      const fourOpenOutputHeight = await expectSessionInspectorV2SharedDetailSpace(page, allDetailContentIds);
+      const threeOpenOutputHeight = await expectSessionInspectorV2SharedDetailSpace(page, allDetailContentIds.slice(0, 3));
+      const twoOpenOutputHeight = await expectSessionInspectorV2SharedDetailSpace(page, allDetailContentIds.slice(0, 2));
+      const oneOpenOutputHeight = await expectSessionInspectorV2SharedDetailSpace(page, allDetailContentIds.slice(0, 1));
+      expect(oneOpenOutputHeight).toBeGreaterThan(twoOpenOutputHeight);
+      expect(twoOpenOutputHeight).toBeGreaterThan(threeOpenOutputHeight);
+      expect(threeOpenOutputHeight).toBeGreaterThan(fourOpenOutputHeight);
+      await setSessionInspectorV2DetailSectionsOpen(page, allDetailContentIds);
       const detailPanelState = await page.evaluate(() => {
-        const jsonContent = document.querySelector("#sessionInspectorV2JsonContent");
-        const dataContent = document.querySelector("#sessionInspectorV2DataContent");
         const jsonOutput = document.querySelector("#sessionInspectorV2JsonOutput");
         const dataOutput = document.querySelector("#sessionInspectorV2DataOutput");
-        const dirtyHeader = document.querySelector(".session-inspector-v2__dirty-accordion-header");
-        const statusHeader = document.querySelector(".session-inspector-v2__status-accordion-header");
-        const rightPanel = document.querySelector(".session-inspector-v2__panel--right");
-        const statusOutput = document.querySelector("#statusLog");
-        const jsonOutputStyle = getComputedStyle(jsonOutput);
-        const dataOutputStyle = getComputedStyle(dataOutput);
-        const jsonContentStyle = getComputedStyle(jsonContent);
-        const dataContentStyle = getComputedStyle(dataContent);
-        const rectFor = (element) => element.getBoundingClientRect();
-        const rightRect = rectFor(rightPanel);
-        const dirtyHeaderRect = rectFor(dirtyHeader);
-        const statusHeaderRect = rectFor(statusHeader);
-        rightPanel.scrollTop = rightPanel.scrollHeight;
-        const scrolledDirtyHeaderRect = rectFor(dirtyHeader);
-        const scrolledStatusHeaderRect = rectFor(statusHeader);
-        const statusOutputHeight = Math.round(rectFor(statusOutput).height);
         return {
-          dataContentDoesNotOwnScrollbar: dataContentStyle.overflowY === "hidden" && dataContentStyle.overflowX === "hidden",
-          dataOutputHasNoHorizontalScrollbar: dataOutput.scrollWidth <= dataOutput.clientWidth + 1,
           dataOutputScrollsVertically: dataOutput.scrollHeight > dataOutput.clientHeight + 1,
-          dataOutputHeightMatchesStatus: Math.abs(Math.round(rectFor(dataOutput).height) - statusOutputHeight) <= 1,
-          dataOutputWrapsLongLines: dataOutputStyle.whiteSpace === "pre-wrap" && dataOutputStyle.overflowWrap === "anywhere",
-          dirtyHeaderReachable: dirtyHeaderRect.top >= rightRect.top || (scrolledDirtyHeaderRect.top >= rightRect.top && scrolledDirtyHeaderRect.bottom <= rightRect.bottom),
-          jsonContentDoesNotOwnScrollbar: jsonContentStyle.overflowY === "hidden" && jsonContentStyle.overflowX === "hidden",
-          jsonOutputHasNoHorizontalScrollbar: jsonOutput.scrollWidth <= jsonOutput.clientWidth + 1,
-          jsonOutputScrollsVertically: jsonOutput.scrollHeight > jsonOutput.clientHeight + 1,
-          jsonOutputHeightMatchesStatus: Math.abs(Math.round(rectFor(jsonOutput).height) - statusOutputHeight) <= 1,
-          jsonOutputWrapsLongLines: jsonOutputStyle.whiteSpace === "pre-wrap" && jsonOutputStyle.overflowWrap === "anywhere",
-          statusHeaderReachable: statusHeaderRect.top >= rightRect.top || (scrolledStatusHeaderRect.top >= rightRect.top && scrolledStatusHeaderRect.bottom <= rightRect.bottom)
+          jsonOutputScrollsVertically: jsonOutput.scrollHeight > jsonOutput.clientHeight + 1
         };
       });
       expect(detailPanelState).toEqual({
-        dataContentDoesNotOwnScrollbar: true,
-        dataOutputHasNoHorizontalScrollbar: true,
         dataOutputScrollsVertically: true,
-        dataOutputHeightMatchesStatus: true,
-        dataOutputWrapsLongLines: true,
-        dirtyHeaderReachable: true,
-        jsonContentDoesNotOwnScrollbar: true,
-        jsonOutputHasNoHorizontalScrollbar: true,
-        jsonOutputScrollsVertically: true,
-        jsonOutputHeightMatchesStatus: true,
-        jsonOutputWrapsLongLines: true,
-        statusHeaderReachable: true
+        jsonOutputScrollsVertically: true
       });
       await page.locator("#copySessionInspectorV2AllButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Copied JSON, Data, and Dirty sections to clipboard\./);
       const copiedToolPayload = await page.evaluate(() => window.__sessionInspectorV2ClipboardText);
       expect(copiedToolPayload).toContain("=== JSON ===");
+      expect(copiedToolPayload).toContain("=== JSON ===\nSession: sessionStorage:workspace.tools.asset-manager-v2\n");
       expect(copiedToolPayload).toContain("=== Data ===");
+      expect(copiedToolPayload).toContain("=== Data ===\nSession: sessionStorage:workspace.tools.asset-manager-v2\n");
       expect(copiedToolPayload).toContain("=== Dirty ===");
+      expect(copiedToolPayload).toContain("=== Dirty ===\nSession: sessionStorage:workspace.tools.asset-manager-v2\n");
       expect(copiedToolPayload).toContain('"workspace"');
       expect(copiedToolPayload).toContain('"data"');
       expect(copiedToolPayload).toContain('"dirty"');

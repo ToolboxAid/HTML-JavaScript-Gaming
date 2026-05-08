@@ -131,15 +131,23 @@ export class SessionInspectorV2App {
     this.refresh({ silent: true });
   }
 
-  copyAllPayload() {
+  selectedSessionLabel(entry) {
+    return entry ? `${entry.storageType}:${entry.key}` : "(none)";
+  }
+
+  copyAllPayload(entry) {
+    const sessionLine = `Session: ${this.selectedSessionLabel(entry)}`;
     return [
       "=== JSON ===",
+      sessionLine,
       this.json.text().trim(),
       "",
       "=== Data ===",
+      sessionLine,
       this.data.text().trim(),
       "",
       "=== Dirty ===",
+      sessionLine,
       this.dirty.text().trim()
     ].join("\n");
   }
@@ -169,7 +177,7 @@ export class SessionInspectorV2App {
       this.statusLog.fail("Copy All failed: clipboard API is unavailable.");
       return;
     }
-    const payload = this.copyAllPayload();
+    const payload = this.copyAllPayload(selectedEntry);
     const missingSections = this.missingSelectedSections(selectedEntry);
     try {
       await this.window.navigator.clipboard.writeText(payload);
