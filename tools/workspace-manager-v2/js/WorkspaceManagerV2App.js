@@ -21,6 +21,7 @@ export class WorkspaceManagerV2App {
     this.activeGame = null;
     this.activeHostContextId = null;
     this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
+    this.activeRepoHandle = null;
   }
 
   start() {
@@ -62,22 +63,61 @@ export class WorkspaceManagerV2App {
     });
     this.summary.clear();
     this.menu.setExportEnabled(false);
+    this.gameSelector.clear();
     this.toolTiles.renderEmpty();
-    this.statusLog.ok("Workspace Manager V2 ready. Select, import, or seed a game workspace to create a schema-valid manifest.");
+    this.statusLog.ok("Workspace Manager V2 ready. Pick a repo folder to discover schema-valid game manifests.");
     void this.restoreWorkspaceFromSession();
   }
 
+  clearActiveWorkspace(summaryText = "Pick a repo folder to discover schema-valid game manifests.") {
+    this.activeContext = null;
+    this.activeGame = null;
+    this.activeHostContextId = null;
+    this.activeWorkspaceMode = this.contextService.isUatMode() ? "uat" : "";
+    this.contextService.clearDiscoveredGames();
+    this.gameSelector.clear();
+    this.gameSelector.setSummary(summaryText);
+    this.menu.setExportEnabled(false);
+    this.toolTiles.renderEmpty();
+    this.summary.clear();
+  }
+
   async pickRepoDestination() {
+    this.activeRepoHandle = null;
+    this.repoDestination.setRepoDestinationDisplayName("not selected");
+    this.clearActiveWorkspace("Loading repo game manifests.");
     if (typeof window.showDirectoryPicker !== "function") {
-      this.statusLog.info("Repo folder picker is unavailable in this browser.");
+      this.gameSelector.setSummary("Repo folder picker is unavailable in this browser.");
+      this.statusLog.fail("Repo load failed: Repo folder picker is unavailable in this browser.");
       return;
     }
     try {
-      const selectedRepoHandle = await window.showDirectoryPicker();
+      const selectedRepoHandle = await window.showDirectoryPicker({ mode: "read" });
       const displayName = selectedRepoHandle?.name || "selected";
+      const discovery = await this.contextService.discoverGameManifests(selectedRepoHandle);
+      if (!discovery.ok) {
+        this.gameSelector.setSummary(discovery.message);
+        this.statusLog.fail(`Repo load failed: ${discovery.message}`);
+        return;
+      }
+      discovery.skips.forEach((skip) => {
+        this.statusLog.info(`SKIP ${skip.path}: ${skip.reason}`);
+      });
+      this.activeRepoHandle = selectedRepoHandle;
       this.repoDestination.setRepoDestinationDisplayName(displayName);
-      this.statusLog.ok(`Repo destination selected: ${displayName}.`);
+      this.contextService.setDiscoveredGames(discovery.games);
+      this.gameSelector.setGames(discovery.games);
+      if (discovery.games.length) {
+        this.gameSelector.setSummary(`Discovered ${discovery.games.length} schema-valid game manifest${discovery.games.length === 1 ? "" : "s"} from ${displayName}.`);
+        this.statusLog.ok(`Repo destination selected: ${displayName}.`);
+        this.statusLog.ok(`Discovered ${discovery.games.length} schema-valid game manifest${discovery.games.length === 1 ? "" : "s"}.`);
+      } else {
+        this.gameSelector.clear();
+        this.gameSelector.setSummary(`No schema-valid game manifests were found in ${displayName}.`);
+        this.statusLog.fail(`Repo load failed: No schema-valid game.manifest.json files were found in ${displayName}.`);
+      }
     } catch (error) {
+      this.gameSelector.setSummary("Pick a repo folder to discover schema-valid game manifests.");
       this.statusLog.info(`Repo folder selection canceled or failed: ${error.message}`);
     }
   }

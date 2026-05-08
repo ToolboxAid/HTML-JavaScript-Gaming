@@ -5,6 +5,7 @@ import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/w
 
 async function openWorkspaceManagerV2(page, query = "") {
   const server = await startRepoServer();
+  await installMockRepoPicker(page);
   await coverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
@@ -26,6 +27,111 @@ async function openToolsIndex(page) {
 
 function manifestRepoPath(server) {
   return server.repoRoot.replaceAll("\\", "/");
+}
+
+async function installMockRepoPicker(page) {
+  await page.addInitScript(() => {
+    const defaultManifestPaths = [
+      "/games/Asteroids/game.manifest.json",
+      "/games/GravityWell/game.manifest.json",
+      "/games/Pong/game.manifest.json"
+    ];
+
+    function makeFileHandle(name, text) {
+      return {
+        kind: "file",
+        name,
+        async getFile() {
+          return new File([text], name, { type: "application/json" });
+        }
+      };
+    }
+
+    function makeDirectoryHandle(name, children = {}) {
+      return {
+        kind: "directory",
+        name,
+        async getDirectoryHandle(childName) {
+          const child = children[childName];
+          if (child?.kind === "directory") {
+            return child;
+          }
+          throw new DOMException(`${childName} was not found.`, "NotFoundError");
+        },
+        async getFileHandle(childName) {
+          const child = children[childName];
+          if (child?.kind === "file") {
+            return child;
+          }
+          throw new DOMException(`${childName} was not found.`, "NotFoundError");
+        },
+        async *entries() {
+          for (const entry of Object.entries(children)) {
+            yield entry;
+          }
+        }
+      };
+    }
+
+    async function fetchManifestText(path) {
+      const response = await fetch(path, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`${path} returned ${response.status}`);
+      }
+      return await response.text();
+    }
+
+    async function makeMockRepoHandle(config = {}) {
+      const repoName = config.repoName || "HTML-JavaScript-Gaming";
+      if (config.missingGames) {
+        return makeDirectoryHandle(repoName, {});
+      }
+      const games = {
+        MissingManifest: makeDirectoryHandle("MissingManifest", {}),
+        InvalidWorkspace: makeDirectoryHandle("InvalidWorkspace", {
+          "game.manifest.json": makeFileHandle("game.manifest.json", JSON.stringify({
+            schema: "html-js-gaming.project",
+            version: 1,
+            tools: {}
+          }))
+        })
+      };
+      for (const manifestPath of (config.manifestPaths || defaultManifestPaths)) {
+        const parts = manifestPath.replace(/^\/+/, "").split("/");
+        const gameFolder = parts[1];
+        games[gameFolder] = makeDirectoryHandle(gameFolder, {
+          "game.manifest.json": makeFileHandle("game.manifest.json", await fetchManifestText(manifestPath))
+        });
+      }
+      return makeDirectoryHandle(repoName, {
+        games: makeDirectoryHandle("games", games)
+      });
+    }
+
+    window.__workspaceManagerV2MockRepoConfig = {};
+    window.showDirectoryPicker = async () => {
+      if (window.__workspaceManagerV2MockRepoConfig?.failPicker) {
+        throw new DOMException("Mock picker canceled.", "AbortError");
+      }
+      return await makeMockRepoHandle(window.__workspaceManagerV2MockRepoConfig || {});
+    };
+  });
+}
+
+async function selectMockRepo(page, { repoName = "HTML-JavaScript-Gaming" } = {}) {
+  await page.evaluate((nextRepoName) => {
+    window.__workspaceManagerV2MockRepoConfig = { repoName: nextRepoName };
+  }, repoName);
+  await page.locator("#pickRepoBtn").click();
+  await expect(page.locator("#repoSelectedValue")).toHaveText(repoName);
+  await expect(page.locator("#activeGameSelect")).toBeEnabled();
+  await expect(page.locator("#activeGameSelect")).toHaveValue("");
+  await expect(page.locator("#activeGameSelect option")).toHaveText([
+    "Select a game",
+    "Asteroids",
+    "Gravity Well",
+    "Pong"
+  ]);
 }
 
 test.describe("Workspace Manager V2 bootstrap", () => {
@@ -157,6 +263,48 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("discovers Active Game options from selected repo manifests", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expect(page.locator("#activeGameSelect option")).toHaveCount(0);
+      await expect(page.locator("#activeGameSummary")).toHaveText("Pick a repo folder to discover schema-valid game manifests.");
+
+      await selectMockRepo(page);
+      await expect(page.locator("#activeGameSummary")).toHaveText("Discovered 3 schema-valid game manifests from HTML-JavaScript-Gaming.");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO SKIP games\/InvalidWorkspace\/game\.manifest\.json: Generated Workspace Manager V2 manifest failed schema validation: root\.documentKind is required/);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO SKIP games\/MissingManifest\/game\.manifest\.json: game\.manifest\.json not found/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Discovered 3 schema-valid game manifests\./);
+
+      await page.evaluate(() => {
+        window.__workspaceManagerV2MockRepoConfig = {
+          missingGames: true,
+          repoName: "BrokenRepo"
+        };
+      });
+      await page.locator("#pickRepoBtn").click();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expect(page.locator("#activeGameSelect option")).toHaveCount(0);
+      await expect(page.locator("#activeGameSummary")).toHaveText(/Selected repo is missing games\//);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Repo load failed: Selected repo is missing games\//);
+
+      await selectMockRepo(page, { repoName: "SecondRepo" });
+      await expect(page.locator("#activeGameSummary")).toHaveText("Discovered 3 schema-valid game manifests from SecondRepo.");
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue("{}");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("exports manifests and launches tools from fixed Workspace Manager V2 tiles", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
@@ -176,6 +324,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextContent")).toHaveCount(0);
       await expect(page.locator("#workspaceJsonContent #workspaceContextOutput")).toBeVisible();
       await expect(page.locator("#copyWorkspaceJsonButton")).toHaveText("copy");
+      await expect(page.locator("#repoDestinationContent")).toBeVisible();
+      await expect(page.locator(".workspace-manager-v2__panel--left > .accordion-v2").first().locator(".accordion-v2__header > span:first-child")).toHaveText("Repo Destination");
+      await expect(page.locator("#pickRepoBtn")).toHaveText("Pick Repo Folder");
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expect(page.locator("#activeGameSelect option")).toHaveCount(0);
       const centerControlLabels = await page.locator(".workspace-manager-v2__panel--center > .accordion-v2 > .accordion-v2__header > span:first-child")
         .evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
       expect(centerControlLabels).toEqual(["Tools", "Workspace JSON"]);
@@ -206,6 +360,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => (
         tiles.every((tile) => Array.from(tile.querySelectorAll(".workspace-manager-v2__tool-tile-action"), (action) => action.textContent.trim()).join("|") === "How To Use|Read Me")
       ))).toBe(true);
+      await selectMockRepo(page);
       const compactCenterLayout = await page.evaluate(() => {
         const getRect = (selector) => {
           const element = document.querySelector(selector);
@@ -223,12 +378,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(compactCenterLayout.toolsExtraHeight).toBeLessThanOrEqual(90);
       expect(compactCenterLayout.jsonTop).toBeGreaterThan(compactCenterLayout.toolsBottom);
-      await expect(page.locator("#activeGameSelect option")).toHaveText([
-        "Select a game",
-        "Asteroids",
-        "Gravity Well",
-        "Pong"
-      ]);
 
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#activeGameSummary")).toContainText("games/Asteroids/");
@@ -678,6 +827,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         Pong: { ok: true }
       });
 
+      await selectMockRepo(page);
       await page.locator("#activeGameSelect").selectOption("GravityWell");
       await expect(page.locator("#activeGameSummary")).toContainText("games/GravityWell/");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/GravityWell\/"/);
@@ -712,6 +862,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
 
+      await selectMockRepo(page);
       await page.locator("#activeGameSelect").selectOption("Pong");
       await expect(page.locator("#activeGameSummary")).toContainText("games/Pong/");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/Pong\/"/);
@@ -762,6 +913,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
 
     try {
+      await selectMockRepo(page);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#exportManifestButton")).toBeEnabled();
       await page.evaluate(() => {
@@ -793,10 +945,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         status: 200
       });
     });
+    await installMockRepoPicker(page);
     await coverageReporter.start(page);
     await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html`, { waitUntil: "networkidle" });
 
     try {
+      await selectMockRepo(page);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets": \{\}/);

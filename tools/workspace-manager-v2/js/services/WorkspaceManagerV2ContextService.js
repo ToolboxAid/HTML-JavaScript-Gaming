@@ -34,24 +34,6 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   })
 ]);
 
-const GAME_OPTIONS = Object.freeze([
-  Object.freeze({
-    id: "Asteroids",
-    name: "Asteroids",
-    manifestPath: "/games/Asteroids/game.manifest.json"
-  }),
-  Object.freeze({
-    id: "GravityWell",
-    name: "Gravity Well",
-    manifestPath: "/games/GravityWell/game.manifest.json"
-  }),
-  Object.freeze({
-    id: "Pong",
-    name: "Pong",
-    manifestPath: "/games/Pong/game.manifest.json"
-  })
-]);
-
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
@@ -74,6 +56,26 @@ function temporaryUatGameFromManifest(workspaceManifest) {
     id: "_template",
     name: "Template UAT",
     manifestPath: TEMPORARY_UAT_MANIFEST_PATH
+  };
+}
+
+function displayNameFromGameId(gameId) {
+  return String(gameId || "")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function gameFromWorkspaceManifest(workspaceManifest, manifestPath = "") {
+  if (!workspaceManifest?.gameId || !workspaceManifest?.gameRoot) {
+    return null;
+  }
+  return {
+    id: workspaceManifest.gameId,
+    name: displayNameFromGameId(workspaceManifest.gameId) || workspaceManifest.name || workspaceManifest.gameId,
+    manifest: clone(workspaceManifest),
+    manifestPath: manifestPath || `/${String(workspaceManifest.gameRoot).replace(/^\/+/, "")}game.manifest.json`
   };
 }
 
@@ -238,10 +240,19 @@ export class WorkspaceManagerV2ContextService {
     this.location = locationRef;
     this.sessionStorage = sessionStorageRef;
     this.window = windowRef;
+    this.discoveredGames = [];
   }
 
   games() {
-    return GAME_OPTIONS.map((game) => ({ ...game }));
+    return this.discoveredGames.map((game) => ({ ...game, manifest: clone(game.manifest) }));
+  }
+
+  setDiscoveredGames(games) {
+    this.discoveredGames = games.map((game) => ({ ...game, manifest: clone(game.manifest) }));
+  }
+
+  clearDiscoveredGames() {
+    this.discoveredGames = [];
   }
 
   workspaceLaunchableTools() {
@@ -258,6 +269,9 @@ export class WorkspaceManagerV2ContextService {
     if (!game) {
       return { ok: false, message: "Select a valid game workspace." };
     }
+    if (game.manifest) {
+      return this.contextResultFromManifest(game, game.manifest, game.manifestPath);
+    }
     const manifestResult = await this.fetchGameManifest(game);
     if (!manifestResult.ok) {
       return manifestResult;
@@ -267,7 +281,8 @@ export class WorkspaceManagerV2ContextService {
 
   async buildContextFromManifest(workspaceManifest, sourceLabel) {
     const game = this.games().find((entry) => entry.id === workspaceManifest?.gameId)
-      || (this.isUatMode() ? temporaryUatGameFromManifest(workspaceManifest) : null);
+      || (this.isUatMode() ? temporaryUatGameFromManifest(workspaceManifest) : null)
+      || gameFromWorkspaceManifest(workspaceManifest, sourceLabel);
     if (!game) {
       return { ok: false, message: `${sourceLabel} does not match a known game workspace.` };
     }
@@ -307,7 +322,8 @@ export class WorkspaceManagerV2ContextService {
       return { ok: false, hasContext: true, message: `Stored Workspace Manager V2 session context is invalid JSON: ${error.message}` };
     }
     const game = this.games().find((entry) => entry.id === manifest?.gameId)
-      || (this.isUatMode() ? temporaryUatGameFromManifest(manifest) : null);
+      || (this.isUatMode() ? temporaryUatGameFromManifest(manifest) : null)
+      || gameFromWorkspaceManifest(manifest, `sessionStorage:${hostContextId}`);
     if (!game) {
       return { ok: false, hasContext: true, message: "Stored Workspace Manager V2 session context does not match a known game workspace." };
     }
@@ -477,6 +493,109 @@ export class WorkspaceManagerV2ContextService {
       return { ok: true, manifest };
     } catch (error) {
       return { ok: false, message: `Unable to load ${manifestPath}: ${error.message}` };
+    }
+  }
+
+  async discoverGameManifests(repoHandle) {
+    if (!repoHandle || repoHandle.kind !== "directory") {
+      return { ok: false, message: "Selected repo handle is not a directory." };
+    }
+    if (typeof repoHandle.getDirectoryHandle !== "function") {
+      return { ok: false, message: "Selected repo does not support directory discovery." };
+    }
+    let gamesDir;
+    try {
+      gamesDir = await repoHandle.getDirectoryHandle("games", { create: false });
+    } catch (error) {
+      return { ok: false, message: `Selected repo is missing games/: ${error.message}` };
+    }
+    if (!gamesDir || gamesDir.kind !== "directory") {
+      return { ok: false, message: "Selected repo games/ entry is not a directory." };
+    }
+
+    const discoveredGames = [];
+    const skips = [];
+    const seenGameIds = new Set();
+    await this.discoverGameManifestsInDirectory({
+      depth: 0,
+      discoveredGames,
+      dirHandle: gamesDir,
+      dirPath: "games",
+      seenGameIds,
+      skips
+    });
+    discoveredGames.sort((left, right) => left.name.localeCompare(right.name, undefined, { numeric: true }));
+    return { ok: true, games: discoveredGames, skips };
+  }
+
+  async discoverGameManifestsInDirectory({ depth, discoveredGames, dirHandle, dirPath, seenGameIds, skips }) {
+    let manifestFound = false;
+    if (typeof dirHandle.getFileHandle === "function") {
+      try {
+        const manifestFile = await dirHandle.getFileHandle("game.manifest.json", { create: false });
+        manifestFound = true;
+        const manifestPath = `${dirPath}/game.manifest.json`;
+        const manifestResult = await this.readManifestFile(manifestFile, manifestPath);
+        if (!manifestResult.ok) {
+          skips.push({ path: manifestPath, reason: manifestResult.message });
+        } else {
+          const validation = await this.validateGeneratedManifest(manifestResult.manifest);
+          if (!validation.ok) {
+            skips.push({ path: manifestPath, reason: validation.message });
+          } else if (seenGameIds.has(manifestResult.manifest.gameId)) {
+            skips.push({ path: manifestPath, reason: `duplicate gameId ${manifestResult.manifest.gameId}` });
+          } else {
+            const game = gameFromWorkspaceManifest(manifestResult.manifest, `/${manifestPath}`);
+            if (game) {
+              seenGameIds.add(game.id);
+              discoveredGames.push(game);
+            } else {
+              skips.push({ path: manifestPath, reason: "manifest is missing gameId or gameRoot" });
+            }
+          }
+        }
+      } catch {
+        manifestFound = false;
+      }
+    }
+    if (!manifestFound && depth === 1) {
+      skips.push({ path: `${dirPath}/game.manifest.json`, reason: "game.manifest.json not found" });
+    }
+    if (typeof dirHandle.entries !== "function") {
+      return;
+    }
+    const childEntries = [];
+    for await (const [name, handle] of dirHandle.entries()) {
+      if (handle?.kind === "directory" && name !== "node_modules" && name !== ".git") {
+        childEntries.push([name, handle]);
+      }
+    }
+    childEntries.sort(([leftName], [rightName]) => leftName.localeCompare(rightName, undefined, { numeric: true }));
+    for (const [name, childHandle] of childEntries) {
+      await this.discoverGameManifestsInDirectory({
+        depth: depth + 1,
+        discoveredGames,
+        dirHandle: childHandle,
+        dirPath: `${dirPath}/${name}`,
+        seenGameIds,
+        skips
+      });
+    }
+  }
+
+  async readManifestFile(fileHandle, manifestPath) {
+    if (!fileHandle || typeof fileHandle.getFile !== "function") {
+      return { ok: false, message: "manifest file handle cannot be read" };
+    }
+    try {
+      const file = await fileHandle.getFile();
+      const text = await file.text();
+      const manifest = JSON.parse(text);
+      return isPlainObject(manifest)
+        ? { ok: true, manifest }
+        : { ok: false, message: "manifest JSON root is not an object" };
+    } catch (error) {
+      return { ok: false, message: `Unable to parse ${manifestPath}: ${error.message}` };
     }
   }
 

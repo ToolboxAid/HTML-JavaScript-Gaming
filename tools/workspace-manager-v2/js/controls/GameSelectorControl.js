@@ -5,10 +5,25 @@ export class GameSelectorControl {
   }
 
   mount({ games, onGameSelected }) {
-    this.select.replaceChildren(this.placeholderOption(), ...games.map((game) => this.gameOption(game)));
+    this.setGames(games);
     this.select.addEventListener("change", () => {
       onGameSelected(this.select.value);
     });
+  }
+
+  setGames(games = []) {
+    if (!games.length) {
+      this.clear();
+      return;
+    }
+    this.select.replaceChildren(this.placeholderOption(), ...games.map((game) => this.gameOption(game)));
+    this.select.disabled = false;
+    this.select.value = "";
+  }
+
+  clear() {
+    this.select.replaceChildren();
+    this.select.disabled = true;
   }
 
   placeholderOption() {
@@ -38,6 +53,7 @@ export class GameSelectorControl {
       });
       option.dataset.temporaryWorkspaceGame = "true";
       this.select.append(option);
+      this.select.disabled = false;
     }
     this.select.value = nextValue;
   }
