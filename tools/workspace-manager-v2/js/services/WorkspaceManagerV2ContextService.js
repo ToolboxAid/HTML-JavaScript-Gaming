@@ -11,6 +11,10 @@ const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
   [PALETTE_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/palette-manager-v2.schema.json"
 });
+const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
+  "preview-generator-v2",
+  "session-inspector-v2"
+]));
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
@@ -63,6 +67,30 @@ function makeHostContextId() {
 
 function toolSessionKey(toolId) {
   return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}`;
+}
+
+function toolPayloadForContext(tool, context) {
+  return context?.tools?.[tool.id];
+}
+
+function hasToolPayload(tool, context) {
+  return isPlainObject(toolPayloadForContext(tool, context));
+}
+
+function hydrationDecisionForTool(tool, context) {
+  if (!tool?.id) {
+    return { hydrate: false, reason: "tool is missing a registry id" };
+  }
+  if (hasToolPayload(tool, context)) {
+    return { hydrate: true, reason: "tool data is present in selected game workspace config" };
+  }
+  if (SELECTED_GAME_PURPOSE_TOOL_IDS.has(tool.id)) {
+    return { hydrate: true, reason: "tool has a selected-game workspace launch purpose" };
+  }
+  if (tool.id === "templates-v2") {
+    return { hydrate: false, reason: "starter/dev-only tool is not enabled by the selected game workspace config" };
+  }
+  return { hydrate: false, reason: "tool has no game data and no selected-game purpose" };
 }
 
 function temporaryUatGameFromManifest(workspaceManifest) {
@@ -360,7 +388,7 @@ export class WorkspaceManagerV2ContextService {
   }
 
   schemaSessionForTool(tool, context) {
-    const toolPayload = context.tools?.[tool.id];
+    const toolPayload = toolPayloadForContext(tool, context);
     const payloadSchemaRef = typeof toolPayload?.$schema === "string" && toolPayload.$schema
       ? toolPayload.$schema
       : TOOL_PAYLOAD_SCHEMA_REFS[tool.id] || "";
@@ -391,7 +419,7 @@ export class WorkspaceManagerV2ContextService {
   }
 
   dataSessionForTool(tool, context) {
-    const toolPayload = context.tools?.[tool.id];
+    const toolPayload = toolPayloadForContext(tool, context);
     return isPlainObject(toolPayload) ? clone(toolPayload) : null;
   }
 
@@ -417,9 +445,25 @@ export class WorkspaceManagerV2ContextService {
     if (!isPlainObject(context) || !context.gameId || !isPlainObject(context.tools)) {
       return { ok: false, message: "Cannot hydrate tool sessions without a schema-valid workspace context." };
     }
-    const enabledTools = tools
+    const toolDecisions = tools
       .filter((tool) => tool?.id)
-      .map((tool) => ({ ...tool }));
+      .map((tool) => {
+        const normalizedTool = { ...tool };
+        return {
+          decision: hydrationDecisionForTool(normalizedTool, context),
+          tool: normalizedTool
+        };
+      });
+    const enabledTools = toolDecisions
+      .filter(({ decision }) => decision.hydrate)
+      .map(({ tool }) => tool);
+    const skippedTools = toolDecisions
+      .filter(({ decision }) => !decision.hydrate)
+      .map(({ decision, tool }) => ({
+        reason: decision.reason,
+        toolId: tool.id,
+        toolName: tool.name
+      }));
     this.clearToolSessionHydration();
     try {
       enabledTools.forEach((tool) => {
@@ -428,7 +472,16 @@ export class WorkspaceManagerV2ContextService {
       return {
         ok: true,
         hydratedToolIds: enabledTools.map((tool) => tool.id),
-        keys: enabledTools.map((tool) => toolSessionKey(tool.id))
+        keys: enabledTools.map((tool) => toolSessionKey(tool.id)),
+        report: {
+          hydratedTools: enabledTools.map((tool) => ({
+            reason: hydrationDecisionForTool(tool, context).reason,
+            toolId: tool.id,
+            toolName: tool.name
+          })),
+          skippedTools
+        },
+        skippedTools
       };
     } catch (error) {
       this.clearToolSessionHydration();

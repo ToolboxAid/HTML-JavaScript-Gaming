@@ -25,12 +25,15 @@ export class ToolTilesControl {
   render({
     assetCount = 0,
     canLaunch = false,
+    enabledToolIds = [],
     manifestStatus = "Waiting for manifest",
     paletteSwatchCount = 0
   } = {}) {
+    const enabledToolIdSet = new Set(enabledToolIds);
     this.container.replaceChildren(...TOOL_GROUPS.map((group) => this.groupSection({
       assetCount,
       canLaunch,
+      enabledToolIdSet,
       group,
       manifestStatus,
       paletteSwatchCount
@@ -53,7 +56,7 @@ export class ToolTilesControl {
     return manifestStatus;
   }
 
-  groupSection({ assetCount, canLaunch, group, manifestStatus, paletteSwatchCount }) {
+  groupSection({ assetCount, canLaunch, enabledToolIdSet, group, manifestStatus, paletteSwatchCount }) {
     const section = document.createElement("section");
     section.className = "workspace-manager-v2__tool-group";
     section.setAttribute("aria-label", `${group} tools`);
@@ -70,6 +73,7 @@ export class ToolTilesControl {
         grid.append(this.tile({
           assetCount,
           canLaunch,
+          enabledToolIdSet,
           manifestStatus,
           paletteSwatchCount,
           tool
@@ -80,12 +84,13 @@ export class ToolTilesControl {
     return section;
   }
 
-  tile({ assetCount, canLaunch, manifestStatus, paletteSwatchCount, tool }) {
+  tile({ assetCount, canLaunch, enabledToolIdSet, manifestStatus, paletteSwatchCount, tool }) {
+    const isEnabledForGame = canLaunch && enabledToolIdSet.has(tool.id);
     const button = document.createElement("button");
     button.type = "button";
     button.className = "workspace-manager-v2__tool-tile";
     button.dataset.workspaceToolId = tool.id;
-    button.disabled = !canLaunch;
+    button.disabled = !isEnabledForGame;
     button.addEventListener("click", () => {
       this.onLaunchTool(tool.id);
     });
@@ -96,7 +101,7 @@ export class ToolTilesControl {
 
     const state = document.createElement("span");
     state.className = "workspace-manager-v2__tool-tile-state";
-    state.textContent = canLaunch ? "Ready to launch" : "Waiting for manifest";
+    state.textContent = isEnabledForGame ? "Ready to launch" : (canLaunch ? "Not enabled for game" : "Waiting for manifest");
 
     const detailText = this.detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount });
 

@@ -215,6 +215,7 @@ export class WorkspaceManagerV2App {
     this.toolTiles.render({
       assetCount: result.assetCount,
       canLaunch: hydration.ok,
+      enabledToolIds: hydration.ok ? hydration.hydratedToolIds : [],
       manifestStatus: "Schema-valid manifest",
       paletteSwatchCount: result.paletteSwatches.length
     });
@@ -230,6 +231,9 @@ export class WorkspaceManagerV2App {
       return;
     }
     this.statusLog.ok(`Hydrated workspace session for ${this.activeSessionHydration.hydratedToolIds.join(", ")}.`);
+    (this.activeSessionHydration.skippedTools || []).forEach((tool) => {
+      this.statusLog.info(`Skipped workspace session hydration for ${tool.toolId}: ${tool.reason}.`);
+    });
   }
 
   hasLaunchReadyContext() {
@@ -242,6 +246,10 @@ export class WorkspaceManagerV2App {
   async launchTool(toolId) {
     if (!this.hasLaunchReadyContext()) {
       this.statusLog.fail("Launch blocked: active game context and palette are required.");
+      return;
+    }
+    if (!this.activeSessionHydration.hydratedToolIds.includes(toolId)) {
+      this.statusLog.fail(`Launch blocked: ${toolId} is not enabled for ${this.activeGame.name}.`);
       return;
     }
     const validation = await this.contextService.validateGeneratedManifest(this.activeContext);

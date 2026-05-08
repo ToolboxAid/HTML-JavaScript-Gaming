@@ -1134,16 +1134,29 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "workspace.tools.asset-manager-v2",
         "workspace.tools.palette-manager-v2",
         "workspace.tools.preview-generator-v2",
-        "workspace.tools.session-inspector-v2",
-        "workspace.tools.templates-v2"
+        "workspace.tools.session-inspector-v2"
       ]);
+      expect(selectedGameHydration.toolKeys).not.toContain("workspace.tools.templates-v2");
       expect(selectedGameHydration.toolKeys.some((key) => key.endsWith(".schema") || key.endsWith(".state"))).toBe(false);
       expect(Object.keys(selectedGameHydration.toolSessions).sort()).toEqual([
         "asset-manager-v2",
         "palette-manager-v2",
         "preview-generator-v2",
-        "session-inspector-v2",
-        "templates-v2"
+        "session-inspector-v2"
+      ]);
+      const selectedGameHydrationReport = await page.evaluate(() => window.__workspaceManagerV2App.activeSessionHydration.report);
+      expect(selectedGameHydrationReport.hydratedTools.map((tool) => tool.toolId)).toEqual([
+        "asset-manager-v2",
+        "palette-manager-v2",
+        "preview-generator-v2",
+        "session-inspector-v2"
+      ]);
+      expect(selectedGameHydrationReport.skippedTools).toEqual([
+        {
+          reason: "starter/dev-only tool is not enabled by the selected game workspace config",
+          toolId: "templates-v2",
+          toolName: "Tool Starter V2"
+        }
       ]);
       expect(Object.values(selectedGameHydration.toolSessions).every((session) => (
         JSON.stringify(Object.keys(session).sort()) === JSON.stringify(["data", "dirty", "schema", "workspace"])
@@ -1172,9 +1185,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(selectedGameHydration.toolSessions["asset-manager-v2"].state).toBeUndefined();
       expect(Object.keys(selectedGameHydration.dataByTool["asset-manager-v2"].assets)).toHaveLength(14);
-      expect(selectedGameHydration.dataByTool["templates-v2"]).toBeNull();
+      expect(selectedGameHydration.toolSessions["templates-v2"]).toBeUndefined();
       expect(Object.values(selectedGameHydration.dirtyByTool)).toEqual([
-        { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
         { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
         { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
         { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
@@ -1210,8 +1222,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const paletteTile = page.locator('[data-workspace-tool-id="palette-manager-v2"]');
       const previewTile = page.locator('[data-workspace-tool-id="preview-generator-v2"]');
       const sessionInspectorTile = page.locator('[data-workspace-tool-id="session-inspector-v2"]');
-      await expect(templateTile).toBeEnabled();
+      await expect(templateTile).toBeDisabled();
       await expect(templateTile).toContainText("Tool Starter V2");
+      await expect(templateTile).toContainText("Not enabled for game");
       await expect(templateTile).toContainText("Canonical V2 template");
       await expect(assetTile).toBeEnabled();
       await expect(assetTile).toContainText("Asset Manager V2");
@@ -1234,8 +1247,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { height: 142, width: 180 }
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for templates-v2, asset-manager-v2, palette-manager-v2, preview-generator-v2, session-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, preview-generator-v2, session-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for templates-v2: starter\/dev-only tool is not enabled by the selected game workspace config\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 11 active palette colors and 14 managed assets\./);
+
+      await page.locator('[data-workspace-tool-id="session-inspector-v2"]').click();
+      await expect(page).toHaveURL(/session-inspector-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.asset-manager-v2']")).toHaveCount(1);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.palette-manager-v2']")).toHaveCount(1);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2']")).toHaveCount(1);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.session-inspector-v2']")).toHaveCount(1);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.templates-v2']")).toHaveCount(0);
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
 
       const downloadPromise = page.waitForEvent("download");
       await page.locator("#exportManifestButton").click();
@@ -1436,13 +1460,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#exportManifestButton")).toBeEnabled();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Restored Asteroids workspace from session context workspace-manager-v2-/);
 
-      await page.locator('[data-workspace-tool-id="templates-v2"]').click();
-      await expect(page).toHaveURL(/templates-v2\/index\.html.*launch=workspace/);
-      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
-      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
-      await expect(page.locator('[data-launch-mode-nav="workspace"]').getByRole("button")).toHaveText(["Return to Workspace"]);
-      await page.locator("#returnToWorkspaceButton").click();
-      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await page.locator('[data-workspace-tool-id="palette-manager-v2"]').click();
       await expect(page).toHaveURL(/palette-manager-v2\/index\.html.*launch=workspace/);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
@@ -1543,9 +1560,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"id": "workspace-manager-v2-Asteroids-imported"/);
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
-      expect((await readWorkspaceSessionHydration(page)).toolKeys).toContain("workspace.tools.asset-manager-v2");
+      const importedHydration = await readWorkspaceSessionHydration(page);
+      expect(importedHydration.toolKeys).toContain("workspace.tools.asset-manager-v2");
+      expect(importedHydration.toolKeys).not.toContain("workspace.tools.templates-v2");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for templates-v2, asset-manager-v2, palette-manager-v2, preview-generator-v2, session-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, preview-generator-v2, session-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for templates-v2: starter\/dev-only tool is not enabled by the selected game workspace config\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Imported schema-valid Workspace Manager V2 manifest workspace-manager-v2-Asteroids-imported\./);
 
       const downloadPromise = page.waitForEvent("download");
