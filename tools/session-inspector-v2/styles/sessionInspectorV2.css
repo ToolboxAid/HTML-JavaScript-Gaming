@@ -173,8 +173,9 @@ button:hover {
 }
 
 .session-inspector-v2__accordion--detail.is-open {
-  flex: 1 1 0;
+  flex: 0 1 auto;
   min-height: 0;
+  max-height: clamp(126px, 24vh, 190px);
 }
 
 .session-inspector-v2__accordion--detail-scroll.is-open {
@@ -245,17 +246,21 @@ button:hover {
 }
 
 .session-inspector-v2__detail-scroll-content {
-  max-height: clamp(86px, 17vh, 142px);
-  overflow: auto;
+  overflow: hidden;
+}
+
+.session-inspector-v2__accordion--detail > .accordion-v2__content {
+  overflow: hidden;
 }
 
 .session-inspector-v2__accordion--detail .session-inspector-v2__output {
+  flex: 1 1 auto;
+  max-height: clamp(86px, 17vh, 142px);
   min-height: 0;
-}
-
-.session-inspector-v2__detail-scroll-content > .session-inspector-v2__output {
-  flex: 0 0 auto;
-  overflow: visible;
+  overflow: auto;
+  overflow-wrap: normal;
+  white-space: pre;
+  word-break: normal;
 }
 
 .session-inspector-v2__actions {

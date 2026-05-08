@@ -745,6 +745,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           source: "test-fixture"
         }];
       }));
+      const longHorizontalToken = "session-inspector-v2-horizontal-scroll-probe".repeat(8);
       window.sessionStorage.setItem("workspace.tools.preview-generator-v2", JSON.stringify({
         schema: {
           source: "workspace-manager-v2",
@@ -785,7 +786,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           assetsPath: "games/Asteroids/assets",
           repoReferenceKey: "workspace.repo.reference"
         },
-        data: { assets: { "assets.image.preview.preview": { path: "assets/images/preview.png" }, ...longAssetMap } },
+        data: {
+          assets: { "assets.image.preview.preview": { path: "assets/images/preview.png" }, ...longAssetMap },
+          horizontalProbe: longHorizontalToken
+        },
         dirty: {
           isDirty: false,
           reason: null,
@@ -809,9 +813,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         },
         dirty: {
           isDirty: true,
-          reason: "test dirty flag",
+          reason: longHorizontalToken,
           changedAt: "2026-05-08T12:00:00.000Z",
-          changedKeys: ["data.note"]
+          changedKeys: Array.from({ length: 70 }, (_, index) => `${longHorizontalToken}.${index}`)
         }
       }));
       window.sessionStorage.setItem("workspace.tools.no-data-test", JSON.stringify({
@@ -891,28 +895,40 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const detailPanelState = await page.evaluate(() => {
         const jsonContent = document.querySelector("#sessionInspectorV2JsonContent");
         const dataContent = document.querySelector("#sessionInspectorV2DataContent");
+        const jsonOutput = document.querySelector("#sessionInspectorV2JsonOutput");
+        const dataOutput = document.querySelector("#sessionInspectorV2DataOutput");
         const dirtyHeader = document.querySelector(".session-inspector-v2__dirty-accordion-header");
         const statusHeader = document.querySelector(".session-inspector-v2__status-accordion-header");
         const rightPanel = document.querySelector(".session-inspector-v2__panel--right");
+        const jsonContentStyle = getComputedStyle(jsonContent);
+        const dataContentStyle = getComputedStyle(dataContent);
         const rectFor = (element) => element.getBoundingClientRect();
         const rightRect = rectFor(rightPanel);
         const dirtyHeaderRect = rectFor(dirtyHeader);
         const statusHeaderRect = rectFor(statusHeader);
         return {
-          dataContentScrolls: dataContent.scrollHeight > dataContent.clientHeight + 1,
-          dataHeightBounded: rectFor(dataContent).height <= 170,
+          dataContentDoesNotOwnScrollbar: dataContentStyle.overflowY === "hidden" && dataContentStyle.overflowX === "hidden",
+          dataOutputScrollsHorizontally: dataOutput.scrollWidth > dataOutput.clientWidth + 1,
+          dataOutputScrollsVertically: dataOutput.scrollHeight > dataOutput.clientHeight + 1,
+          dataOutputHeightBounded: rectFor(dataOutput).height <= 170,
           dirtyHeaderReachable: dirtyHeaderRect.top >= rightRect.top && dirtyHeaderRect.bottom <= rightRect.bottom,
-          jsonContentScrolls: jsonContent.scrollHeight > jsonContent.clientHeight + 1,
-          jsonHeightBounded: rectFor(jsonContent).height <= 170,
+          jsonContentDoesNotOwnScrollbar: jsonContentStyle.overflowY === "hidden" && jsonContentStyle.overflowX === "hidden",
+          jsonOutputScrollsHorizontally: jsonOutput.scrollWidth > jsonOutput.clientWidth + 1,
+          jsonOutputScrollsVertically: jsonOutput.scrollHeight > jsonOutput.clientHeight + 1,
+          jsonOutputHeightBounded: rectFor(jsonOutput).height <= 170,
           statusHeaderReachable: statusHeaderRect.top >= rightRect.top && statusHeaderRect.bottom <= rightRect.bottom
         };
       });
       expect(detailPanelState).toEqual({
-        dataContentScrolls: true,
-        dataHeightBounded: true,
+        dataContentDoesNotOwnScrollbar: true,
+        dataOutputScrollsHorizontally: true,
+        dataOutputScrollsVertically: true,
+        dataOutputHeightBounded: true,
         dirtyHeaderReachable: true,
-        jsonContentScrolls: true,
-        jsonHeightBounded: true,
+        jsonContentDoesNotOwnScrollbar: true,
+        jsonOutputScrollsHorizontally: true,
+        jsonOutputScrollsVertically: true,
+        jsonOutputHeightBounded: true,
         statusHeaderReachable: true
       });
       await page.locator("#copySessionInspectorV2AllButton").click();
@@ -930,6 +946,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.dirty-test"]').click();
       await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: true");
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"isDirty": true');
+      const dirtyOutputScrollState = await page.evaluate(() => {
+        const dirtyContent = document.querySelector("#sessionInspectorV2DirtyContent");
+        const dirtyOutput = document.querySelector("#sessionInspectorV2DirtyOutput");
+        const dirtyContentStyle = getComputedStyle(dirtyContent);
+        const rect = dirtyOutput.getBoundingClientRect();
+        return {
+          dirtyContentDoesNotOwnScrollbar: dirtyContentStyle.overflowY === "hidden" && dirtyContentStyle.overflowX === "hidden",
+          dirtyOutputScrollsHorizontally: dirtyOutput.scrollWidth > dirtyOutput.clientWidth + 1,
+          dirtyOutputScrollsVertically: dirtyOutput.scrollHeight > dirtyOutput.clientHeight + 1,
+          dirtyOutputHeightBounded: rect.height <= 170
+        };
+      });
+      expect(dirtyOutputScrollState).toEqual({
+        dirtyContentDoesNotOwnScrollbar: true,
+        dirtyOutputScrollsHorizontally: true,
+        dirtyOutputScrollsVertically: true,
+        dirtyOutputHeightBounded: true
+      });
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-data-test"]').click();
       await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:workspace.tools.no-data-test.");
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-dirty-test"]').click();
