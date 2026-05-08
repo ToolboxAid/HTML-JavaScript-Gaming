@@ -5,6 +5,7 @@ export class SessionInspectorApp {
     entryList,
     filters,
     refreshButton,
+    runtimeContract,
     statusLog,
     storageService
   }) {
@@ -14,6 +15,7 @@ export class SessionInspectorApp {
     this.entryList = entryList;
     this.filters = filters;
     this.refreshButton = refreshButton;
+    this.runtimeContract = runtimeContract || { storageAccess: "read-only" };
     this.statusLog = statusLog;
     this.storageService = storageService;
     this.selectedId = "";
@@ -30,7 +32,7 @@ export class SessionInspectorApp {
     });
     this.refreshButton.addEventListener("click", () => this.refresh());
     this.refresh({ silent: true });
-    this.statusLog.ok("Session Inspector ready. Storage is read-only.");
+    this.statusLog.ok(`Session Inspector ready. Storage is ${this.runtimeContract.storageAccess}.`);
   }
 
   refresh({ silent = false } = {}) {

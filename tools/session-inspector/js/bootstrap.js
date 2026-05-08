@@ -4,6 +4,7 @@ import { DetailsControl } from "./controls/DetailsControl.js";
 import { EntryListControl } from "./controls/EntryListControl.js";
 import { FilterControl } from "./controls/FilterControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
+import { sessionInspectorRuntimeContract } from "./services/SessionInspectorRuntimeContract.js";
 import { SessionInspectorStorageService } from "./services/SessionInspectorStorageService.js";
 
 function requireElement(selector) {
@@ -29,6 +30,7 @@ window.addEventListener("DOMContentLoaded", () => {
       summary: requireElement("#sessionSummary")
     }),
     refreshButton: requireElement("#refreshSessionButton"),
+    runtimeContract: sessionInspectorRuntimeContract(),
     statusLog: new StatusLogControl({
       clearButton: requireElement("#clearStatusButton"),
       output: requireElement("#statusLog")

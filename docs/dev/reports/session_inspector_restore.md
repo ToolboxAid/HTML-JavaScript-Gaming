@@ -6,6 +6,7 @@
 - Added first-class registry wiring in `tools/toolRegistry.js`.
 - Added tools index grouping for `session-inspector` as a Viewer in `tools/renderToolsIndex.js`.
 - Added shared navigation grouping for `session-inspector` as a Viewer in `tools/shared/platformShell.js`.
+- Rerun delta adds an explicit Session Inspector runtime contract in `tools/session-inspector/js/services/SessionInspectorRuntimeContract.js` and wires it through tool boot status.
 
 ## Boundaries
 - No cross-tool communication was added.
@@ -17,9 +18,12 @@
 ## Validation
 - `npm run test:workspace-v2`: Pass, 10 passed.
 - Targeted Session Inspector launch test: Pass.
+- Targeted Session Inspector runtime contract validation: Pass.
 - Targeted tools index Session Inspector card/link validation: Pass.
 - Targeted Workspace Manager V2 launch validation: Pass.
 - Targeted Preview Generator V2 launch validation: Pass.
+- `tools/session-inspector/**` file existence check: Pass.
+- Git status includes actual runtime/tool changes: Pass, `tools/session-inspector/js/SessionInspectorApp.js`, `tools/session-inspector/js/bootstrap.js`, and `tools/session-inspector/js/services/SessionInspectorRuntimeContract.js`.
 - Full samples smoke test: Skipped by BUILD instruction. This PR is scoped to restoring Session Inspector first-class launch and registry/nav wiring only.
 
 ## Changed Files
@@ -34,6 +38,7 @@
 - `tools/session-inspector/js/controls/EntryListControl.js`
 - `tools/session-inspector/js/controls/FilterControl.js`
 - `tools/session-inspector/js/controls/StatusLogControl.js`
+- `tools/session-inspector/js/services/SessionInspectorRuntimeContract.js`
 - `tools/session-inspector/js/services/SessionInspectorStorageService.js`
 - `tools/toolRegistry.js`
 - `tools/renderToolsIndex.js`
