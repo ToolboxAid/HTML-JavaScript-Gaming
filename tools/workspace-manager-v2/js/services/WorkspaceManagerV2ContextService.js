@@ -104,6 +104,10 @@ function isGameManifest(value) {
     && isPlainObject(value.game.workspace);
 }
 
+function gameManifestBoundaryContractMessage() {
+  return "Boundary contract: game.gameData is runtime data; game.workspace is editor/tool state. Runtime ignores game.workspace; tools may read game.gameData, write game.workspace, and update game.gameData only through explicit validated apply/build/export actions.";
+}
+
 function schemaProperties(schema) {
   return isPlainObject(schema?.properties) ? schema.properties : {};
 }
@@ -407,6 +411,7 @@ export class WorkspaceManagerV2ContextService {
       },
       assetCount,
       assetWarning,
+      boundaryContract: game.manifestKind === "game-manifest" ? gameManifestBoundaryContractMessage() : "",
       paletteSwatches
     };
   }
@@ -456,7 +461,16 @@ export class WorkspaceManagerV2ContextService {
     }
     const errors = validateSchemaValue(manifest, schemaResult.schema, "root", schemaResult.schema);
     const gameInfo = manifest?.game || {};
+    const gameData = gameInfo.gameData || {};
     const workspace = gameInfo.workspace || {};
+    if (isPlainObject(gameData)) {
+      if (Object.prototype.hasOwnProperty.call(gameData, "workspace")) {
+        errors.push("root.game.gameData.workspace is not allowed; runtime data must not depend on editor/tool workspace state");
+      }
+      if (Object.prototype.hasOwnProperty.call(gameData, "tools")) {
+        errors.push("root.game.gameData.tools is not allowed; tool/editor state belongs in root.game.workspace");
+      }
+    }
     if (isPlainObject(gameInfo) && isPlainObject(workspace)) {
       const expectedGameRoot = `games/${gameInfo.folder}/`;
       const expectedAssetsPath = `games/${gameInfo.folder}/assets`;

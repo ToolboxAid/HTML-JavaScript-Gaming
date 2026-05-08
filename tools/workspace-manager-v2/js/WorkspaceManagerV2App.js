@@ -150,6 +150,9 @@ export class WorkspaceManagerV2App {
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }
+    if (result.boundaryContract) {
+      this.statusLog.ok(result.boundaryContract);
+    }
     this.statusLog.ok(`Loaded ${result.game.name} from ${result.game.manifestPath} with ${result.paletteSwatches.length} active palette colors and ${result.assetCount} managed assets.`);
     this.statusLog.ok("Asset Manager V2 production launch context is session/state based only.");
   }
@@ -291,6 +294,9 @@ export class WorkspaceManagerV2App {
       this.applyContextResult({ ...result, hostContextId });
       if (result.assetWarning) {
         this.statusLog.info(`Warning: ${result.assetWarning}`);
+      }
+      if (result.boundaryContract) {
+        this.statusLog.ok(result.boundaryContract);
       }
       this.statusLog.ok(`Imported schema-valid Workspace Manager V2 manifest ${result.context.id}.`);
     } catch (error) {

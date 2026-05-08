@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/game.manifest.schema.json",
   "title": "Game Manifest",
-  "description": "Schema for games/**/game.manifest.json as the single source of truth. Runtime game data lives in game.gameData; editor and workspace state lives in game.workspace.",
+  "description": "Schema for games/**/game.manifest.json as the single source of truth. game.gameData is the runtime contract. game.workspace is the editor/tool contract. Runtime code must ignore game.workspace. Tools may read game.gameData, may write game.workspace, and may update game.gameData only through explicit validated apply/build/export actions.",
   "type": "object",
   "required": ["schema", "version", "game"],
   "additionalProperties": false,
@@ -38,9 +38,11 @@
           "pattern": "^[^/\\\\]+$"
         },
         "gameData": {
+          "description": "Runtime contract for data the game needs to run. Editor/tool workspace state must not be required from this object.",
           "$ref": "#/$defs/gameData"
         },
         "workspace": {
+          "description": "Editor/tool contract for workspace state needed to edit and build the game. Runtime code must ignore this object.",
           "$ref": "#/$defs/gameWorkspace"
         }
       }
@@ -49,8 +51,21 @@
   "$defs": {
     "gameData": {
       "type": "object",
+      "description": "Runtime-only game data. Tools may read this object; writes are limited to explicit validated apply/build/export actions.",
       "required": ["launch"],
       "additionalProperties": true,
+      "allOf": [
+        {
+          "not": {
+            "required": ["workspace"]
+          }
+        },
+        {
+          "not": {
+            "required": ["tools"]
+          }
+        }
+      ],
       "properties": {
         "launch": {
           "type": "object",
@@ -74,6 +89,7 @@
     },
     "gameWorkspace": {
       "type": "object",
+      "description": "Editor/tool workspace state. Tools may write this object; runtime data belongs in game.gameData.",
       "required": ["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"],
       "additionalProperties": false,
       "properties": {

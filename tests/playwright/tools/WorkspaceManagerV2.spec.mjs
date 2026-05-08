@@ -285,18 +285,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const manifest = await fetch("/games/Asteroids/game.manifest.json", { cache: "no-store" }).then((response) => response.json());
         const { WorkspaceManagerV2ContextService } = await import("/tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
         const service = new WorkspaceManagerV2ContextService();
+        const invalidRuntimeWorkspaceManifest = structuredClone(manifest);
+        invalidRuntimeWorkspaceManifest.game.gameData.workspace = {};
         return {
           gameManifestValidation: await service.validateGameManifest(manifest),
           hasGameData: Boolean(manifest.game?.gameData),
           hasRootTools: Boolean(manifest.tools),
           hasWorkspace: Boolean(manifest.game?.workspace),
+          runtimeWorkspaceValidation: await service.validateGameManifest(invalidRuntimeWorkspaceManifest),
           rootDocumentKind: manifest.documentKind || "",
           schema: manifest.schema,
           workspaceDocumentKind: manifest.game?.workspace?.documentKind,
           workspaceValidation: await service.validateGeneratedManifest(manifest.game.workspace)
         };
       });
-      expect(asteroidsGameManifestShape).toEqual({
+      expect(asteroidsGameManifestShape).toMatchObject({
         gameManifestValidation: { ok: true },
         hasGameData: true,
         hasRootTools: false,
@@ -306,6 +309,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         workspaceDocumentKind: "workspace-manifest",
         workspaceValidation: { ok: true }
       });
+      expect(asteroidsGameManifestShape.runtimeWorkspaceValidation.ok).toBe(false);
+      expect(asteroidsGameManifestShape.runtimeWorkspaceValidation.message).toContain("runtime data must not depend on editor/tool workspace state");
 
       await page.evaluate(() => {
         window.__workspaceManagerV2MockRepoConfig = {
@@ -478,6 +483,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { height: 142, width: 180 },
         { height: 142, width: 180 }
       ]);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 11 active palette colors and 14 managed assets\./);
 
       const downloadPromise = page.waitForEvent("download");
@@ -773,6 +779,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"id": "workspace-manager-v2-Asteroids-imported"/);
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Imported schema-valid Workspace Manager V2 manifest workspace-manager-v2-Asteroids-imported\./);
 
       const downloadPromise = page.waitForEvent("download");
