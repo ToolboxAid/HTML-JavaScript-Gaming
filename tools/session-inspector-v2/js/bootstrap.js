@@ -20,7 +20,7 @@ function requireElement(selector) {
 window.addEventListener("DOMContentLoaded", () => {
   const app = new SessionInspectorV2App({
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
-    copyJsonButton: requireElement("#copySessionInspectorV2JsonButton"),
+    copyAllButton: requireElement("#copySessionInspectorV2AllButton"),
     data: new DataControl({
       output: requireElement("#sessionInspectorV2DataOutput")
     }),

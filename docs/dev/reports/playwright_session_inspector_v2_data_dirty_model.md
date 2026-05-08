@@ -17,6 +17,10 @@
 - JSON shows the full selected object.
 - Data shows only selected `data`.
 - Dirty shows only selected `dirty`.
+- Copy is renamed to Copy All.
+- Copy All copies one payload with labeled JSON, Data, and Dirty sections.
+- Copy All includes empty-state text for missing Data or Dirty sections.
+- Copy All logs OK for complete normalized entries, WARN for copied missing-section empty states, and FAIL when no item is selected.
 - JSON, Data, Dirty, Controls, Filters, Entries, and Status accordions all open and close.
 - Split `workspace.tools.<tool-id>.schema` and `workspace.tools.<tool-id>.state` keys are not recreated.
 

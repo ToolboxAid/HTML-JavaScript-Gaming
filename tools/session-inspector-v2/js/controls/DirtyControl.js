@@ -7,6 +7,10 @@ export class DirtyControl {
     this.output.textContent = "Select a normalized tool entry with a top-level dirty section.";
   }
 
+  text() {
+    return String(this.output.textContent || "");
+  }
+
   render(entry) {
     if (!entry) {
       this.clear();

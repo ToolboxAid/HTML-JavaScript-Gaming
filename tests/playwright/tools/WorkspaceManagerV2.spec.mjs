@@ -434,7 +434,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".session-inspector-v2__status-accordion-header #clearSessionInspectorV2StatusButton")).toHaveText("Clear Status");
       await expect(page.locator(".session-inspector-v2__json-accordion-header")).toContainText("JSON");
       await expect(page.locator(".session-inspector-v2__json-accordion-header")).not.toContainText("Details");
-      await expect(page.locator(".session-inspector-v2__json-accordion-header #copySessionInspectorV2JsonButton")).toHaveText("Copy");
+      await expect(page.locator(".session-inspector-v2__json-accordion-header #copySessionInspectorV2AllButton")).toHaveText("Copy All");
       await expect(page.locator(".session-inspector-v2__data-accordion-header")).toContainText("Data");
       await expect(page.locator(".session-inspector-v2__dirty-accordion-header")).toContainText("Dirty");
       await expect(page.locator(".session-inspector-v2__state-accordion-header")).toHaveCount(0);
@@ -476,7 +476,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const filterLabel = rectFor('label[for="sessionInspectorV2FilterInput"] span');
         const filterInput = rectFor("#sessionInspectorV2FilterInput");
         const jsonIcon = rectFor(".session-inspector-v2__json-accordion-header .accordion-v2__icon");
-        const copyButton = rectFor("#copySessionInspectorV2JsonButton");
+        const copyButton = rectFor("#copySessionInspectorV2AllButton");
         return {
           buttonsFit: [refresh, deleteAll, clearStatus].every((rect) => rect.scrollWidth <= rect.clientWidth + 1),
           clearStatusCompact: clearStatus.height <= 34,
@@ -634,10 +634,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2JsonOutput")).toHaveText("true");
       await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:session-inspector-v2-alpha.");
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText("No dirty section is present for sessionStorage:session-inspector-v2-alpha.");
-      const copiedJsonText = await page.locator("#sessionInspectorV2JsonOutput").textContent();
-      await page.locator("#copySessionInspectorV2JsonButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Copied JSON content to clipboard\./);
-      expect(await page.evaluate(() => window.__sessionInspectorV2ClipboardText)).toBe(copiedJsonText);
+      await page.locator("#copySessionInspectorV2AllButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Copied JSON, Data, and Dirty sections with empty-state text for missing Data and Dirty\./);
+      const copiedValidationText = await page.evaluate(() => window.__sessionInspectorV2ClipboardText);
+      expect(copiedValidationText).toContain("=== JSON ===\ntrue");
+      expect(copiedValidationText).toContain("=== Data ===\nNo data section is present for sessionStorage:session-inspector-v2-alpha.");
+      expect(copiedValidationText).toContain("=== Dirty ===\nNo dirty section is present for sessionStorage:session-inspector-v2-alpha.");
       await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
       await expect(page.locator("#sessionInspectorV2JsonOutput")).toHaveText('"plain beta value"');
@@ -672,8 +674,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "(0) LocalStorage."
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 4 shown storage entries\./);
-      await page.locator("#copySessionInspectorV2JsonButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Copy skipped: no JSON content is shown\./);
+      await page.locator("#copySessionInspectorV2AllButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Copy All failed: select a storage entry before copying JSON, Data, and Dirty\./);
       await page.locator("#deleteAllSessionInspectorV2Button").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Delete All skipped: no matching storage entries are shown\./);
       expect(await page.evaluate(() => window.localStorage.getItem("session-inspector-v2-local"))).toBe("local value");
@@ -695,6 +697,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
   test("shows normalized workspace tool sessions as JSON, Data, and Dirty views", async ({ page }) => {
     const pageErrors = [];
     await page.addInitScript(() => {
+      Object.defineProperty(window.navigator, "clipboard", {
+        configurable: true,
+        value: {
+          async writeText(value) {
+            window.__sessionInspectorV2ClipboardText = value;
+          }
+        }
+      });
       window.sessionStorage.setItem("workspace.tools.preview-generator-v2", JSON.stringify({
         schema: {
           source: "workspace-manager-v2",
@@ -816,6 +826,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"data"');
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"workspace"');
       await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"schema"');
+      await page.locator("#copySessionInspectorV2AllButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Copied JSON, Data, and Dirty sections to clipboard\./);
+      const copiedToolPayload = await page.evaluate(() => window.__sessionInspectorV2ClipboardText);
+      expect(copiedToolPayload).toContain("=== JSON ===");
+      expect(copiedToolPayload).toContain("=== Data ===");
+      expect(copiedToolPayload).toContain("=== Dirty ===");
+      expect(copiedToolPayload).toContain('"workspace"');
+      expect(copiedToolPayload).toContain('"data"');
+      expect(copiedToolPayload).toContain('"dirty"');
+      expect(copiedToolPayload).toContain('"assets.image.preview.preview"');
+      expect(copiedToolPayload).toContain('"isDirty": false');
 
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-data-test"]').click();
       await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:workspace.tools.no-data-test.");

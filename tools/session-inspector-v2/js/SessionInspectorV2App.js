@@ -1,7 +1,7 @@
 export class SessionInspectorV2App {
   constructor({
     accordions,
-    copyJsonButton,
+    copyAllButton,
     data,
     deleteAllButton,
     dirty,
@@ -16,7 +16,7 @@ export class SessionInspectorV2App {
     windowRef = window
   }) {
     this.accordions = accordions;
-    this.copyJsonButton = copyJsonButton;
+    this.copyAllButton = copyAllButton;
     this.data = data;
     this.deleteAllButton = deleteAllButton;
     this.dirty = dirty;
@@ -48,8 +48,8 @@ export class SessionInspectorV2App {
       onSelected: (entryId) => this.selectEntry(entryId)
     });
     this.refreshButton.addEventListener("click", () => this.refresh());
-    this.copyJsonButton.addEventListener("click", () => {
-      void this.copyJson();
+    this.copyAllButton.addEventListener("click", () => {
+      void this.copyAll();
     });
     this.deleteAllButton.addEventListener("click", () => this.deleteAllShownEntries());
     this.returnToWorkspaceButton.addEventListener("click", () => this.returnToWorkspace());
@@ -131,21 +131,55 @@ export class SessionInspectorV2App {
     this.refresh({ silent: true });
   }
 
-  async copyJson() {
+  copyAllPayload() {
+    return [
+      "=== JSON ===",
+      this.json.text().trim(),
+      "",
+      "=== Data ===",
+      this.data.text().trim(),
+      "",
+      "=== Dirty ===",
+      this.dirty.text().trim()
+    ].join("\n");
+  }
+
+  missingSelectedSections(entry) {
+    const value = entry?.parseOk ? entry.parsedValue : null;
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return ["Data", "Dirty"];
+    }
+    return ["Data", "Dirty"].filter((sectionName) => (
+      !Object.prototype.hasOwnProperty.call(value, sectionName.toLowerCase())
+    ));
+  }
+
+  async copyAll() {
+    const selectedEntry = this.entries.find((entry) => entry.id === this.selectedId);
+    if (!selectedEntry) {
+      this.statusLog.fail("Copy All failed: select a storage entry before copying JSON, Data, and Dirty.");
+      return;
+    }
     const jsonText = this.json.text().trim();
-    if (!jsonText || jsonText === "{}") {
-      this.statusLog.warn("Copy skipped: no JSON content is shown.");
+    if (!jsonText) {
+      this.statusLog.warn("Copy All skipped: no JSON content is shown for the selected storage entry.");
       return;
     }
     if (typeof this.window.navigator?.clipboard?.writeText !== "function") {
-      this.statusLog.fail("Copy failed: clipboard API is unavailable.");
+      this.statusLog.fail("Copy All failed: clipboard API is unavailable.");
       return;
     }
+    const payload = this.copyAllPayload();
+    const missingSections = this.missingSelectedSections(selectedEntry);
     try {
-      await this.window.navigator.clipboard.writeText(jsonText);
-      this.statusLog.ok("Copied JSON content to clipboard.");
+      await this.window.navigator.clipboard.writeText(payload);
+      if (missingSections.length) {
+        this.statusLog.warn(`Copied JSON, Data, and Dirty sections with empty-state text for missing ${missingSections.join(" and ")}.`);
+        return;
+      }
+      this.statusLog.ok("Copied JSON, Data, and Dirty sections to clipboard.");
     } catch (error) {
-      this.statusLog.fail(`Copy failed: ${error.message}`);
+      this.statusLog.fail(`Copy All failed: ${error.message}`);
     }
   }
 
