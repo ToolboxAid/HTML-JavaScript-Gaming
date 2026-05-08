@@ -22,7 +22,17 @@ export class FilterControl {
     return String(this.scopeSelect.value || "sessionStorage");
   }
 
-  setSummary(value) {
-    this.summary.textContent = value;
+  setSummary({ localCount = 0, sessionCount = 0, totalCount = 0 } = {}) {
+    const lines = [
+      `(${totalCount}) Entries shown.`,
+      `(${sessionCount}) SessionStorage.`,
+      `(${localCount}) LocalStorage.`
+    ];
+    const documentRef = this.summary.ownerDocument || document;
+    this.summary.replaceChildren(...lines.map((line) => {
+      const item = documentRef.createElement("span");
+      item.textContent = line;
+      return item;
+    }));
   }
 }

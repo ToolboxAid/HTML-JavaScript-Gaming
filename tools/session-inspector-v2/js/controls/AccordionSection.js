@@ -14,9 +14,10 @@ export class AccordionSection {
     this.header.dataset.accordionV2Bound = "true";
     this.setOpen(this.section.dataset.accordionV2Open !== "false");
     this.header.addEventListener("click", (event) => {
-      const clickedNestedButton = event.target instanceof Element
-        && event.target.closest("button")
-        && event.target !== this.header;
+      const clickedButton = event.target instanceof Element
+        ? event.target.closest("button")
+        : null;
+      const clickedNestedButton = clickedButton && clickedButton !== this.header;
       if (clickedNestedButton) {
         return;
       }

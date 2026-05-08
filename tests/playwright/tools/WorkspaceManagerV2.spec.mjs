@@ -25,10 +25,10 @@ async function openToolsIndex(page) {
   return server;
 }
 
-async function openSessionInspectorV2(page) {
+async function openSessionInspectorV2(page, query = "") {
   const server = await startRepoServer();
   await coverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/session-inspector-v2/index.html`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/tools/session-inspector-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -173,13 +173,15 @@ async function readWorkspaceSessionHydration(page) {
 async function expectSessionInspectorV2AccordionToggles(page, contentId) {
   const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
   const content = page.locator(`#${contentId}`);
+  const label = header.locator("span").first();
+  const icon = header.locator(".accordion-v2__icon");
   await expect(header).toBeVisible();
   await expect(content).toBeVisible();
   await expect(header).toHaveAttribute("aria-expanded", "true");
-  await header.click();
+  await label.click();
   await expect(content).toBeHidden();
   await expect(header).toHaveAttribute("aria-expanded", "false");
-  await header.click();
+  await icon.click();
   await expect(content).toBeVisible();
   await expect(header).toHaveAttribute("aria-expanded", "true");
 }
@@ -325,7 +327,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       window.sessionStorage.setItem("session-inspector-v2-beta", "plain beta value");
       window.localStorage.setItem("session-inspector-v2-local", "local value");
     });
-    const server = await openSessionInspectorV2(page);
+    const server = await openSessionInspectorV2(page, "?launch=workspace&fromTool=workspace-manager-v2&hostContextId=session-inspector-v2-test-context&workspaceMode=uat");
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);
@@ -337,16 +339,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("h1")).not.toHaveText("Session Inspector");
       await expect(page.locator('link[href="./styles/sessionInspectorV2.css"]')).toHaveCount(1);
       await expect(page.locator('link[href="./styles/sessionInspector.css"]')).toHaveCount(0);
+      await expect(page.locator(".session-inspector-v2__menu")).toHaveCount(0);
+      await expect(page.locator("#returnToWorkspaceButton")).toHaveText("Return to Workspace");
       await expect(page.locator("#refreshSessionInspectorV2Button")).toHaveText("Refresh");
       await expect(page.locator("#deleteAllSessionInspectorV2Button")).toHaveText("Delete All");
       await expect(page.locator("#clearSessionInspectorV2StatusButton")).toHaveText("Clear Status");
+      await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Return to Workspace");
+      await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Refresh");
+      await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Delete All");
+      await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Clear Status");
+      expect(await page.locator(".session-inspector-v2__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child").evaluateAll((labels) => labels.map((label) => label.textContent.trim()))).toEqual([
+        "Controls",
+        "Filters"
+      ]);
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(2);
-      await expect(page.locator("#sessionInspectorV2Summary")).toHaveText("2 entries shown. sessionStorage: 2. localStorage: 0.");
+      await expect(page.locator("#sessionInspectorV2Summary > span")).toHaveText([
+        "(2) Entries shown.",
+        "(2) SessionStorage.",
+        "(0) LocalStorage."
+      ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Session Inspector V2 ready\. Storage is read\/delete\./);
 
       const themeState = await page.evaluate(async () => {
         const css = await fetch("/tools/session-inspector-v2/styles/sessionInspectorV2.css", { cache: "no-store" }).then((response) => response.text());
         const bodyStyle = getComputedStyle(document.body);
+        const shellStyle = getComputedStyle(document.querySelector(".session-inspector-v2.app-shell"));
+        const headerFrameStyle = getComputedStyle(document.querySelector(".session-inspector-v2__local-shell-frame"));
+        const headerSummaryStyle = getComputedStyle(document.querySelector(".session-inspector-v2__local-shell-frame .tools-platform-frame__accordion-summary"));
         const panelStyle = getComputedStyle(document.querySelector(".session-inspector-v2__panel"));
         const inputStyle = getComputedStyle(document.querySelector("#sessionInspectorV2FilterInput"));
         const probeStyle = (property, value) => {
@@ -370,19 +389,31 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             "--session-inspector-v2-accent: var(--accent);"
           ].every((snippet) => css.includes(snippet)),
           expectedBackground: probeStyle("backgroundImage", "var(--bg-gradient)"),
+          expectedLine: probeStyle("borderColor", "var(--line)"),
           expectedPanel: probeStyle("backgroundColor", "var(--panel)"),
           expectedSurface: probeStyle("backgroundColor", "var(--surface-inline)"),
+          headerBorder: headerFrameStyle.borderTopColor,
+          headerRadius: headerFrameStyle.borderTopLeftRadius,
+          headerSummaryBackground: headerSummaryStyle.backgroundColor,
           inputBackground: inputStyle.backgroundColor,
+          shellBorder: shellStyle.borderTopColor,
+          shellRadius: shellStyle.borderTopLeftRadius,
           panelBackground: panelStyle.backgroundColor
         };
       });
       expect(themeState.cssHasHardcodedColors).toBe(false);
       expect(themeState.cssUsesThemeTokens).toBe(true);
       expect(themeState.bodyBackground).toBe(themeState.expectedBackground);
+      expect(themeState.headerBorder).toBe(themeState.expectedLine);
+      expect(themeState.headerRadius).toBe("18px");
+      expect(themeState.headerSummaryBackground).toBe(themeState.expectedPanel);
+      expect(themeState.shellBorder).toBe(themeState.expectedLine);
+      expect(themeState.shellRadius).toBe("20px");
       expect(themeState.panelBackground).toBe(themeState.expectedPanel);
       expect(themeState.inputBackground).toBe(themeState.expectedSurface);
 
       for (const contentId of [
+        "sessionInspectorV2ControlsContent",
         "sessionInspectorV2FiltersContent",
         "sessionInspectorV2EntriesContent",
         "sessionInspectorV2DetailsContent",
@@ -419,11 +450,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(0);
       await expect(page.locator("#sessionInspectorV2EntryList")).toContainText("No matching storage entries.");
       await expect(page.locator("#sessionInspectorV2DetailsOutput")).toHaveText("{}");
+      await expect(page.locator("#sessionInspectorV2Summary > span")).toHaveText([
+        "(0) Entries shown.",
+        "(0) SessionStorage.",
+        "(0) LocalStorage."
+      ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 1 shown storage entry\./);
       await page.locator("#deleteAllSessionInspectorV2Button").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Delete All skipped: no matching storage entries are shown\./);
       expect(await page.evaluate(() => window.localStorage.getItem("session-inspector-v2-local"))).toBe("local value");
       expect(pageErrors).toEqual([]);
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=session-inspector-v2-test-context&workspace=uat/);
     } finally {
       await coverageReporter.stop(page);
       await server.close();

@@ -6,9 +6,11 @@ export class SessionInspectorV2App {
     entryList,
     filters,
     refreshButton,
+    returnToWorkspaceButton,
     runtimeContract,
     statusLog,
-    storageService
+    storageService,
+    windowRef = window
   }) {
     this.accordions = accordions;
     this.deleteAllButton = deleteAllButton;
@@ -17,10 +19,12 @@ export class SessionInspectorV2App {
     this.entryList = entryList;
     this.filters = filters;
     this.refreshButton = refreshButton;
+    this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.runtimeContract = runtimeContract || { storageAccess: "read-only" };
     this.statusLog = statusLog;
     this.storageService = storageService;
     this.selectedId = "";
+    this.window = windowRef;
   }
 
   start() {
@@ -35,6 +39,7 @@ export class SessionInspectorV2App {
     });
     this.refreshButton.addEventListener("click", () => this.refresh());
     this.deleteAllButton.addEventListener("click", () => this.deleteAllShownEntries());
+    this.returnToWorkspaceButton.addEventListener("click", () => this.returnToWorkspace());
     this.refresh({ silent: true });
     this.statusLog.ok(`Session Inspector V2 ready. Storage is ${this.runtimeContract.storageAccess}.`);
   }
@@ -49,17 +54,17 @@ export class SessionInspectorV2App {
     }
     this.entryList.render(this.entries, this.selectedId);
     this.details.render(this.entries.find((entry) => entry.id === this.selectedId));
-    this.filters.setSummary(this.summaryText());
+    this.filters.setSummary(this.summaryCounts());
     if (!silent) {
       this.statusLog.ok(`Loaded ${this.entries.length} matching storage entries.`);
     }
   }
 
-  summaryText() {
+  summaryCounts() {
     const sessionCount = this.entries.filter((entry) => entry.storageType === "sessionStorage").length;
     const localCount = this.entries.filter((entry) => entry.storageType === "localStorage").length;
     const totalCount = this.entries.length;
-    return `${totalCount} entries shown. sessionStorage: ${sessionCount}. localStorage: ${localCount}.`;
+    return { localCount, sessionCount, totalCount };
   }
 
   selectEntry(entryId) {
@@ -106,5 +111,22 @@ export class SessionInspectorV2App {
     }
     this.selectedId = "";
     this.refresh({ silent: true });
+  }
+
+  workspaceManagerUrl() {
+    const url = new URL("../workspace-manager-v2/index.html", this.window.location.href);
+    const params = new URLSearchParams(this.window.location.search || "");
+    const hostContextId = params.get("hostContextId") || "";
+    if (hostContextId) {
+      url.searchParams.set("hostContextId", hostContextId);
+    }
+    if (params.get("workspaceMode")?.toLowerCase() === "uat") {
+      url.searchParams.set("workspace", "uat");
+    }
+    return url.href;
+  }
+
+  returnToWorkspace() {
+    this.window.location.href = this.workspaceManagerUrl();
   }
 }

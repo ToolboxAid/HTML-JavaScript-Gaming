@@ -31,6 +31,7 @@ window.addEventListener("DOMContentLoaded", () => {
       summary: requireElement("#sessionInspectorV2Summary")
     }),
     refreshButton: requireElement("#refreshSessionInspectorV2Button"),
+    returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
     runtimeContract: sessionInspectorV2RuntimeContract(),
     statusLog: new StatusLogControl({
       clearButton: requireElement("#clearSessionInspectorV2StatusButton"),
