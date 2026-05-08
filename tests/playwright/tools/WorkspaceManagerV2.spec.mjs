@@ -900,35 +900,46 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const dirtyHeader = document.querySelector(".session-inspector-v2__dirty-accordion-header");
         const statusHeader = document.querySelector(".session-inspector-v2__status-accordion-header");
         const rightPanel = document.querySelector(".session-inspector-v2__panel--right");
+        const statusOutput = document.querySelector("#statusLog");
+        const jsonOutputStyle = getComputedStyle(jsonOutput);
+        const dataOutputStyle = getComputedStyle(dataOutput);
         const jsonContentStyle = getComputedStyle(jsonContent);
         const dataContentStyle = getComputedStyle(dataContent);
         const rectFor = (element) => element.getBoundingClientRect();
         const rightRect = rectFor(rightPanel);
         const dirtyHeaderRect = rectFor(dirtyHeader);
         const statusHeaderRect = rectFor(statusHeader);
+        rightPanel.scrollTop = rightPanel.scrollHeight;
+        const scrolledDirtyHeaderRect = rectFor(dirtyHeader);
+        const scrolledStatusHeaderRect = rectFor(statusHeader);
+        const statusOutputHeight = Math.round(rectFor(statusOutput).height);
         return {
           dataContentDoesNotOwnScrollbar: dataContentStyle.overflowY === "hidden" && dataContentStyle.overflowX === "hidden",
-          dataOutputScrollsHorizontally: dataOutput.scrollWidth > dataOutput.clientWidth + 1,
+          dataOutputHasNoHorizontalScrollbar: dataOutput.scrollWidth <= dataOutput.clientWidth + 1,
           dataOutputScrollsVertically: dataOutput.scrollHeight > dataOutput.clientHeight + 1,
-          dataOutputHeightBounded: rectFor(dataOutput).height <= 170,
-          dirtyHeaderReachable: dirtyHeaderRect.top >= rightRect.top && dirtyHeaderRect.bottom <= rightRect.bottom,
+          dataOutputHeightMatchesStatus: Math.abs(Math.round(rectFor(dataOutput).height) - statusOutputHeight) <= 1,
+          dataOutputWrapsLongLines: dataOutputStyle.whiteSpace === "pre-wrap" && dataOutputStyle.overflowWrap === "anywhere",
+          dirtyHeaderReachable: dirtyHeaderRect.top >= rightRect.top || (scrolledDirtyHeaderRect.top >= rightRect.top && scrolledDirtyHeaderRect.bottom <= rightRect.bottom),
           jsonContentDoesNotOwnScrollbar: jsonContentStyle.overflowY === "hidden" && jsonContentStyle.overflowX === "hidden",
-          jsonOutputScrollsHorizontally: jsonOutput.scrollWidth > jsonOutput.clientWidth + 1,
+          jsonOutputHasNoHorizontalScrollbar: jsonOutput.scrollWidth <= jsonOutput.clientWidth + 1,
           jsonOutputScrollsVertically: jsonOutput.scrollHeight > jsonOutput.clientHeight + 1,
-          jsonOutputHeightBounded: rectFor(jsonOutput).height <= 170,
-          statusHeaderReachable: statusHeaderRect.top >= rightRect.top && statusHeaderRect.bottom <= rightRect.bottom
+          jsonOutputHeightMatchesStatus: Math.abs(Math.round(rectFor(jsonOutput).height) - statusOutputHeight) <= 1,
+          jsonOutputWrapsLongLines: jsonOutputStyle.whiteSpace === "pre-wrap" && jsonOutputStyle.overflowWrap === "anywhere",
+          statusHeaderReachable: statusHeaderRect.top >= rightRect.top || (scrolledStatusHeaderRect.top >= rightRect.top && scrolledStatusHeaderRect.bottom <= rightRect.bottom)
         };
       });
       expect(detailPanelState).toEqual({
         dataContentDoesNotOwnScrollbar: true,
-        dataOutputScrollsHorizontally: true,
+        dataOutputHasNoHorizontalScrollbar: true,
         dataOutputScrollsVertically: true,
-        dataOutputHeightBounded: true,
+        dataOutputHeightMatchesStatus: true,
+        dataOutputWrapsLongLines: true,
         dirtyHeaderReachable: true,
         jsonContentDoesNotOwnScrollbar: true,
-        jsonOutputScrollsHorizontally: true,
+        jsonOutputHasNoHorizontalScrollbar: true,
         jsonOutputScrollsVertically: true,
-        jsonOutputHeightBounded: true,
+        jsonOutputHeightMatchesStatus: true,
+        jsonOutputWrapsLongLines: true,
         statusHeaderReachable: true
       });
       await page.locator("#copySessionInspectorV2AllButton").click();
@@ -949,20 +960,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const dirtyOutputScrollState = await page.evaluate(() => {
         const dirtyContent = document.querySelector("#sessionInspectorV2DirtyContent");
         const dirtyOutput = document.querySelector("#sessionInspectorV2DirtyOutput");
+        const statusOutput = document.querySelector("#statusLog");
         const dirtyContentStyle = getComputedStyle(dirtyContent);
+        const dirtyOutputStyle = getComputedStyle(dirtyOutput);
         const rect = dirtyOutput.getBoundingClientRect();
+        const statusOutputHeight = Math.round(statusOutput.getBoundingClientRect().height);
         return {
           dirtyContentDoesNotOwnScrollbar: dirtyContentStyle.overflowY === "hidden" && dirtyContentStyle.overflowX === "hidden",
-          dirtyOutputScrollsHorizontally: dirtyOutput.scrollWidth > dirtyOutput.clientWidth + 1,
+          dirtyOutputHasNoHorizontalScrollbar: dirtyOutput.scrollWidth <= dirtyOutput.clientWidth + 1,
           dirtyOutputScrollsVertically: dirtyOutput.scrollHeight > dirtyOutput.clientHeight + 1,
-          dirtyOutputHeightBounded: rect.height <= 170
+          dirtyOutputHeightMatchesStatus: Math.abs(Math.round(rect.height) - statusOutputHeight) <= 1,
+          dirtyOutputWrapsLongLines: dirtyOutputStyle.whiteSpace === "pre-wrap" && dirtyOutputStyle.overflowWrap === "anywhere"
         };
       });
       expect(dirtyOutputScrollState).toEqual({
         dirtyContentDoesNotOwnScrollbar: true,
-        dirtyOutputScrollsHorizontally: true,
+        dirtyOutputHasNoHorizontalScrollbar: true,
         dirtyOutputScrollsVertically: true,
-        dirtyOutputHeightBounded: true
+        dirtyOutputHeightMatchesStatus: true,
+        dirtyOutputWrapsLongLines: true
       });
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-data-test"]').click();
       await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:workspace.tools.no-data-test.");

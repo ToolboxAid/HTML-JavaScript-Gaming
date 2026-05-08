@@ -10,6 +10,7 @@ body[data-tool-id="session-inspector-v2"],
   --session-inspector-v2-header-surface: var(--tools-shell-glass, var(--panel));
   --session-inspector-v2-shadow: var(--tools-shell-shadow, none);
   --session-inspector-v2-shadow-strong: var(--tools-shell-shadow-strong, none);
+  --session-inspector-v2-output-height: 180px;
 }
 
 body {
@@ -169,17 +170,17 @@ button:hover {
 }
 
 .session-inspector-v2__panel--right {
-  overflow: hidden;
+  overflow: auto;
 }
 
 .session-inspector-v2__accordion--detail.is-open {
   flex: 0 1 auto;
   min-height: 0;
-  max-height: clamp(126px, 24vh, 190px);
+  max-height: none;
 }
 
 .session-inspector-v2__accordion--detail-scroll.is-open {
-  max-height: clamp(126px, 24vh, 190px);
+  max-height: none;
 }
 
 .session-inspector-v2__accordion--controls.is-open {
@@ -254,13 +255,15 @@ button:hover {
 }
 
 .session-inspector-v2__accordion--detail .session-inspector-v2__output {
-  flex: 1 1 auto;
-  max-height: clamp(86px, 17vh, 142px);
+  flex: 0 0 var(--session-inspector-v2-output-height);
+  height: var(--session-inspector-v2-output-height);
+  max-height: var(--session-inspector-v2-output-height);
   min-height: 0;
-  overflow: auto;
-  overflow-wrap: normal;
-  white-space: pre;
-  word-break: normal;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .session-inspector-v2__actions {
@@ -418,7 +421,8 @@ button:hover {
 .session-inspector-v2__output,
 #statusLog {
   width: 100%;
-  min-height: 180px;
+  height: var(--session-inspector-v2-output-height);
+  min-height: var(--session-inspector-v2-output-height);
   box-sizing: border-box;
   margin: 0;
   padding: 10px;
