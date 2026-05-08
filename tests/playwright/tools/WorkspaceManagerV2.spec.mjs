@@ -278,9 +278,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await selectMockRepo(page);
       await expect(page.locator("#activeGameSummary")).toHaveText("Discovered 3 schema-valid game manifests from HTML-JavaScript-Gaming.");
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO SKIP games\/InvalidWorkspace\/game\.manifest\.json: Generated Workspace Manager V2 manifest failed schema validation: root\.documentKind is required/);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO SKIP games\/InvalidWorkspace\/game\.manifest\.json: Game manifest failed schema validation: root\.game is required/);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO SKIP games\/MissingManifest\/game\.manifest\.json: game\.manifest\.json not found/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Discovered 3 schema-valid game manifests\./);
+      const asteroidsGameManifestShape = await page.evaluate(async () => {
+        const manifest = await fetch("/games/Asteroids/game.manifest.json", { cache: "no-store" }).then((response) => response.json());
+        const { WorkspaceManagerV2ContextService } = await import("/tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
+        const service = new WorkspaceManagerV2ContextService();
+        return {
+          gameManifestValidation: await service.validateGameManifest(manifest),
+          hasGameData: Boolean(manifest.game?.gameData),
+          hasRootTools: Boolean(manifest.tools),
+          hasWorkspace: Boolean(manifest.game?.workspace),
+          rootDocumentKind: manifest.documentKind || "",
+          schema: manifest.schema,
+          workspaceDocumentKind: manifest.game?.workspace?.documentKind,
+          workspaceValidation: await service.validateGeneratedManifest(manifest.game.workspace)
+        };
+      });
+      expect(asteroidsGameManifestShape).toEqual({
+        gameManifestValidation: { ok: true },
+        hasGameData: true,
+        hasRootTools: false,
+        hasWorkspace: true,
+        rootDocumentKind: "",
+        schema: "html-js-gaming.game-manifest",
+        workspaceDocumentKind: "workspace-manifest",
+        workspaceValidation: { ok: true }
+      });
 
       await page.evaluate(() => {
         window.__workspaceManagerV2MockRepoConfig = {
@@ -461,7 +486,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(download.suggestedFilename()).toBe("workspace-manager-v2-Asteroids.workspace.manifest.json");
       const savedManifest = JSON.parse(await readFile(await download.path(), "utf8"));
       const asteroidsManifest = await page.evaluate(async () => await fetch("/games/Asteroids/game.manifest.json", { cache: "no-store" }).then((response) => response.json()));
-      expect(savedManifest).toEqual(asteroidsManifest);
+      expect(asteroidsManifest.documentKind).toBeUndefined();
+      expect(asteroidsManifest.tools).toBeUndefined();
+      expect(asteroidsManifest.game.gameData.launch.directPath).toBe("/games/Asteroids/index.html");
+      expect(asteroidsManifest.game.workspace).toEqual(savedManifest);
       expect(savedManifest.documentKind).toBe("workspace-manifest");
       expect(Object.keys(savedManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "vector-map-editor"]);
       expect(savedManifest.repoRoot).toBe("HTML-JavaScript-Gaming");
@@ -728,8 +756,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
     const importedManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
-    importedManifest.id = "workspace-manager-v2-Asteroids-imported";
-    importedManifest.name = "Imported Asteroids Workspace Manager V2 Context";
+    importedManifest.game.workspace.id = "workspace-manager-v2-Asteroids-imported";
+    importedManifest.game.workspace.name = "Imported Asteroids Workspace Manager V2 Context";
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);
@@ -737,7 +765,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     try {
       await page.locator("#importManifestInput").setInputFiles({
-        name: "asteroids-imported.workspace.manifest.json",
+        name: "asteroids-imported.game.manifest.json",
         mimeType: "application/json",
         buffer: Buffer.from(JSON.stringify(importedManifest))
       });
@@ -752,7 +780,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toBe("workspace-manager-v2-Asteroids-imported.workspace.manifest.json");
       const exportedManifest = JSON.parse(await readFile(await download.path(), "utf8"));
-      expect(exportedManifest).toEqual(importedManifest);
+      expect(exportedManifest).toEqual(importedManifest.game.workspace);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Exported schema-valid Workspace Manager V2 manifest workspace-manager-v2-Asteroids-imported\./);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -765,7 +793,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const server = await startRepoServer();
     const pageErrors = [];
     const hostContextId = "workspace-manager-v2-display-root-context";
-    const displayRootManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
+    const displayRootGameManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
+    const displayRootManifest = displayRootGameManifest.game.workspace;
     displayRootManifest.repoRoot = "HTML-JavaScript-Gaming";
     delete displayRootManifest.repoPath;
 
@@ -819,12 +848,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
         return Object.fromEntries(await Promise.all(Object.entries(manifests).map(async ([gameId, manifest]) => [
           gameId,
-          await service.validateGeneratedManifest(manifest)
+          {
+            gameManifest: await service.validateGameManifest(manifest),
+            workspace: await service.validateGeneratedManifest(manifest.game.workspace)
+          }
         ])));
       });
       expect(schemaValidation).toEqual({
-        GravityWell: { ok: true },
-        Pong: { ok: true }
+        GravityWell: {
+          gameManifest: { ok: true },
+          workspace: { ok: true }
+        },
+        Pong: {
+          gameManifest: { ok: true },
+          workspace: { ok: true }
+        }
       });
 
       await selectMockRepo(page);
@@ -932,7 +970,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const server = await startRepoServer();
     const pageErrors = [];
     const asteroidsManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
-    asteroidsManifest.tools["asset-manager-v2"].assets = {};
+    asteroidsManifest.game.workspace.tools["asset-manager-v2"].assets = {};
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);

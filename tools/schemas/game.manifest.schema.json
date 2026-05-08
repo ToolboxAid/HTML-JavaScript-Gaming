@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/game.manifest.schema.json",
+  "title": "Game Manifest",
+  "description": "Schema for games/**/game.manifest.json as the single source of truth. Runtime game data lives in game.gameData; editor and workspace state lives in game.workspace.",
+  "type": "object",
+  "required": ["schema", "version", "game"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema": {
+      "type": "string",
+      "const": "html-js-gaming.game-manifest"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "game": {
+      "type": "object",
+      "required": ["id", "name", "folder", "gameData", "workspace"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "folder": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^/\\\\]+$"
+        },
+        "gameData": {
+          "$ref": "#/$defs/gameData"
+        },
+        "workspace": {
+          "$ref": "#/$defs/gameWorkspace"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "gameData": {
+      "type": "object",
+      "required": ["launch"],
+      "additionalProperties": true,
+      "properties": {
+        "launch": {
+          "type": "object",
+          "required": ["directPath"],
+          "additionalProperties": false,
+          "properties": {
+            "directPath": {
+              "type": "string",
+              "minLength": 1
+            },
+            "workspaceManagerPath": {
+              "type": "string",
+              "minLength": 1
+            },
+            "workspaceManagerOptional": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "gameWorkspace": {
+      "type": "object",
+      "required": ["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"],
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "minLength": 1
+        },
+        "documentKind": {
+          "type": "string",
+          "const": "workspace-manifest"
+        },
+        "schema": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gameId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gameRoot": {
+          "type": "string",
+          "pattern": "^games/[^/]+/$"
+        },
+        "assetsPath": {
+          "type": "string",
+          "pattern": "^games/[^/]+/assets$"
+        },
+        "repoRoot": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repoPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tools": {
+          "type": "object",
+          "required": ["palette-manager-v2", "asset-manager-v2"],
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
+const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
@@ -77,6 +78,30 @@ function gameFromWorkspaceManifest(workspaceManifest, manifestPath = "") {
     manifest: clone(workspaceManifest),
     manifestPath: manifestPath || `/${String(workspaceManifest.gameRoot).replace(/^\/+/, "")}game.manifest.json`
   };
+}
+
+function gameFromGameManifest(gameManifest, manifestPath = "", repoRoot = "") {
+  const gameInfo = gameManifest?.game;
+  if (!gameInfo?.id || !gameInfo?.name || !gameInfo?.folder || !isPlainObject(gameInfo.workspace)) {
+    return null;
+  }
+  return {
+    folder: gameInfo.folder,
+    gameData: clone(gameInfo.gameData || {}),
+    id: gameInfo.id,
+    manifest: clone(gameManifest),
+    manifestKind: "game-manifest",
+    manifestPath,
+    name: gameInfo.name,
+    repoRoot
+  };
+}
+
+function isGameManifest(value) {
+  return value?.schema === "html-js-gaming.game-manifest"
+    && isPlainObject(value.game)
+    && isPlainObject(value.game.gameData)
+    && isPlainObject(value.game.workspace);
 }
 
 function schemaProperties(schema) {
@@ -269,6 +294,9 @@ export class WorkspaceManagerV2ContextService {
     if (!game) {
       return { ok: false, message: "Select a valid game workspace." };
     }
+    if (game.manifestKind === "game-manifest") {
+      return this.contextResultFromManifest(game, this.workspaceManifestFromGameManifest(game), game.manifestPath);
+    }
     if (game.manifest) {
       return this.contextResultFromManifest(game, game.manifest, game.manifestPath);
     }
@@ -279,7 +307,21 @@ export class WorkspaceManagerV2ContextService {
     return this.contextResultFromManifest(game, manifestResult.manifest, game.manifestPath);
   }
 
-  async buildContextFromManifest(workspaceManifest, sourceLabel) {
+  async buildContextFromManifest(importedManifest, sourceLabel) {
+    if (isGameManifest(importedManifest)) {
+      const validation = await this.validateGameManifest(importedManifest);
+      if (!validation.ok) {
+        return { ok: false, message: `${sourceLabel} failed game manifest schema validation: ${validation.message}` };
+      }
+      const game = gameFromGameManifest(importedManifest, sourceLabel)
+        || this.games().find((entry) => entry.id === importedManifest?.game?.id);
+      if (!game) {
+        return { ok: false, message: `${sourceLabel} does not match a known game workspace.` };
+      }
+      return this.contextResultFromManifest(game, this.workspaceManifestFromGameManifest(game), sourceLabel);
+    }
+
+    const workspaceManifest = importedManifest;
     const game = this.games().find((entry) => entry.id === workspaceManifest?.gameId)
       || (this.isUatMode() ? temporaryUatGameFromManifest(workspaceManifest) : null)
       || gameFromWorkspaceManifest(workspaceManifest, sourceLabel);
@@ -386,6 +428,51 @@ export class WorkspaceManagerV2ContextService {
     } catch (error) {
       return { ok: false, message: `Unable to load ${WORKSPACE_MANIFEST_SCHEMA_PATH}: ${error.message}` };
     }
+  }
+
+  async loadGameManifestSchema() {
+    if (typeof this.fetchRef !== "function") {
+      return { ok: false, message: "Fetch API is unavailable; Workspace Manager V2 cannot validate game manifests." };
+    }
+    try {
+      const response = await this.fetchRef(GAME_MANIFEST_SCHEMA_PATH, { cache: "no-store" });
+      if (!response.ok) {
+        return { ok: false, message: `Unable to load ${GAME_MANIFEST_SCHEMA_PATH}: ${response.status}` };
+      }
+      const schema = await response.json();
+      if (!isPlainObject(schema)) {
+        return { ok: false, message: `${GAME_MANIFEST_SCHEMA_PATH} did not return a schema object.` };
+      }
+      return { ok: true, schema };
+    } catch (error) {
+      return { ok: false, message: `Unable to load ${GAME_MANIFEST_SCHEMA_PATH}: ${error.message}` };
+    }
+  }
+
+  async validateGameManifest(manifest) {
+    const schemaResult = await this.loadGameManifestSchema();
+    if (!schemaResult.ok) {
+      return schemaResult;
+    }
+    const errors = validateSchemaValue(manifest, schemaResult.schema, "root", schemaResult.schema);
+    const gameInfo = manifest?.game || {};
+    const workspace = gameInfo.workspace || {};
+    if (isPlainObject(gameInfo) && isPlainObject(workspace)) {
+      const expectedGameRoot = `games/${gameInfo.folder}/`;
+      const expectedAssetsPath = `games/${gameInfo.folder}/assets`;
+      if (workspace.gameId !== gameInfo.id) {
+        errors.push("root.game.workspace.gameId must match root.game.id");
+      }
+      if (workspace.gameRoot !== expectedGameRoot) {
+        errors.push(`root.game.workspace.gameRoot must be ${expectedGameRoot}`);
+      }
+      if (workspace.assetsPath !== expectedAssetsPath) {
+        errors.push(`root.game.workspace.assetsPath must be ${expectedAssetsPath}`);
+      }
+    }
+    return errors.length
+      ? { ok: false, message: `Game manifest failed schema validation: ${errors.join(" | ")}` }
+      : { ok: true };
   }
 
   async validateGeneratedManifest(manifest) {
@@ -514,6 +601,7 @@ export class WorkspaceManagerV2ContextService {
     }
 
     const discoveredGames = [];
+    const repoRootName = String(repoHandle.name || "selected").trim() || "selected";
     const skips = [];
     const seenGameIds = new Set();
     await this.discoverGameManifestsInDirectory({
@@ -521,6 +609,7 @@ export class WorkspaceManagerV2ContextService {
       discoveredGames,
       dirHandle: gamesDir,
       dirPath: "games",
+      repoRootName,
       seenGameIds,
       skips
     });
@@ -528,7 +617,7 @@ export class WorkspaceManagerV2ContextService {
     return { ok: true, games: discoveredGames, skips };
   }
 
-  async discoverGameManifestsInDirectory({ depth, discoveredGames, dirHandle, dirPath, seenGameIds, skips }) {
+  async discoverGameManifestsInDirectory({ depth, discoveredGames, dirHandle, dirPath, repoRootName, seenGameIds, skips }) {
     let manifestFound = false;
     if (typeof dirHandle.getFileHandle === "function") {
       try {
@@ -539,18 +628,18 @@ export class WorkspaceManagerV2ContextService {
         if (!manifestResult.ok) {
           skips.push({ path: manifestPath, reason: manifestResult.message });
         } else {
-          const validation = await this.validateGeneratedManifest(manifestResult.manifest);
+          const validation = await this.validateGameManifest(manifestResult.manifest);
           if (!validation.ok) {
             skips.push({ path: manifestPath, reason: validation.message });
-          } else if (seenGameIds.has(manifestResult.manifest.gameId)) {
-            skips.push({ path: manifestPath, reason: `duplicate gameId ${manifestResult.manifest.gameId}` });
+          } else if (seenGameIds.has(manifestResult.manifest.game.id)) {
+            skips.push({ path: manifestPath, reason: `duplicate game id ${manifestResult.manifest.game.id}` });
           } else {
-            const game = gameFromWorkspaceManifest(manifestResult.manifest, `/${manifestPath}`);
+            const game = gameFromGameManifest(manifestResult.manifest, `/${manifestPath}`, repoRootName);
             if (game) {
               seenGameIds.add(game.id);
               discoveredGames.push(game);
             } else {
-              skips.push({ path: manifestPath, reason: "manifest is missing gameId or gameRoot" });
+              skips.push({ path: manifestPath, reason: "manifest is missing game.id, game.name, game.folder, or game.workspace" });
             }
           }
         }
@@ -577,6 +666,7 @@ export class WorkspaceManagerV2ContextService {
         discoveredGames,
         dirHandle: childHandle,
         dirPath: `${dirPath}/${name}`,
+        repoRootName,
         seenGameIds,
         skips
       });
@@ -597,6 +687,14 @@ export class WorkspaceManagerV2ContextService {
     } catch (error) {
       return { ok: false, message: `Unable to parse ${manifestPath}: ${error.message}` };
     }
+  }
+
+  workspaceManifestFromGameManifest(game) {
+    const workspaceManifest = clone(game.manifest?.game?.workspace || {});
+    if (!workspaceManifest.repoRoot && game.repoRoot) {
+      workspaceManifest.repoRoot = game.repoRoot;
+    }
+    return workspaceManifest;
   }
 
   persistContext(context) {
