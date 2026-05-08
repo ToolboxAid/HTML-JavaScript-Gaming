@@ -72,6 +72,10 @@ function normalizeWorkspacePath(value) {
     .replace(/^\/+|\/+$/g, "");
 }
 
+function normalizeOutputPath(value) {
+  return normalizeWorkspacePath(value);
+}
+
 function repoRootNameMatches(selectedRepoName, expectedRepoRoot) {
   const expected = String(expectedRepoRoot || "").trim();
   if (!expected) {
@@ -424,6 +428,59 @@ function getFullOutputPath(entry) {
   return `${getWriteFolderDisplayPath(entry)}\\${OUTPUT_NAME}`;
 }
 
+function getFullOutputRelativePath(entry) {
+  return normalizeOutputPath(`${getWriteFolderRelativePath(entry)}/${OUTPUT_NAME}`);
+}
+
+function outputSourceContext(entry) {
+  const selectedGame = entry.targetType === "games"
+    ? String(entry.name || workspacePreviewGameId || "").trim()
+    : String(workspacePreviewGameId || "").trim();
+  return [
+    isWorkspaceManagerLaunch() ? `${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.data` : "preview-generator-v2 form controls",
+    `selected game: ${selectedGame || "(not a game target)"}`,
+    `resolved assets/images target: ${getAssetFolderRelativePath() || "(empty)"}`,
+    `target type: ${entry.targetType || "(unknown)"}`
+  ].join("; ");
+}
+
+function resolveOutputPathState(entry) {
+  try {
+    const relativeOutputPath = getFullOutputRelativePath(entry);
+    const repoRootPath = normalizeOutputPath(repoDirHandle?.path);
+    return {
+      ok: true,
+      absoluteOutputPath: repoRootPath ? normalizeOutputPath(`${repoRootPath}/${relativeOutputPath}`) : "",
+      relativeOutputPath,
+      sourceContext: outputSourceContext(entry)
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      absoluteOutputPath: "",
+      message: error.message,
+      relativeOutputPath: "",
+      sourceContext: outputSourceContext(entry)
+    };
+  }
+}
+
+function absoluteOutputPathFromWrite(fileHandle, pathState) {
+  return normalizeOutputPath(fileHandle?.path) || pathState.absoluteOutputPath || "";
+}
+
+function logWritePath(label, pathState, writeResult) {
+  logger.log(`OK WRITE ${label}`);
+  logger.log(`Resolved relative output path: ${pathState.relativeOutputPath}`);
+  const absoluteOutputPath = writeResult.absoluteOutputPath || pathState.absoluteOutputPath;
+  logger.log(`Absolute output path: ${absoluteOutputPath || "unavailable (repo handle does not expose an absolute path)"}`);
+  logger.log(`Source resolution context: ${pathState.sourceContext}`);
+}
+
+function logOutputPathFailure(label, pathState, reason) {
+  logger.log(`FAIL PATH ${label}  (${reason}; relative output path: ${pathState.relativeOutputPath || "(unresolved)"}; absolute output path: ${pathState.absoluteOutputPath || "(unavailable)"}; source resolution context: ${pathState.sourceContext})`);
+}
+
 function updateWriteFolderSampleLabel() {
   const assetFolder = getAssetFolderDisplayPath() || "assets/images";
   const targetType = ui.getSelectedTargetType();
@@ -703,7 +760,7 @@ async function shouldRewrite(targetDirHandle) {
   return { rewrite: false, reason: "existing-preview-without-capture-timeout" };
 }
 
-async function writePreview(targetDirHandle, svgContent) {
+async function writePreview(targetDirHandle, svgContent, pathState) {
   const relativeOutputFolder = getAssetFolderRelativePath();
 
   const targetDir = relativeOutputFolder
@@ -714,14 +771,32 @@ async function writePreview(targetDirHandle, svgContent) {
   const writable = await fileHandle.createWritable();
   await writable.write(svgContent);
   await writable.close();
+  return {
+    absoluteOutputPath: absoluteOutputPathFromWrite(fileHandle, pathState),
+    relativeOutputPath: pathState.relativeOutputPath
+  };
 }
 
 async function processOne(entry, baseUrl, waitMs) {
-  const targetDirHandle = await getTargetDirHandle(repoDirHandle, entry);
+  const label = entry.targetType === "samples" ? entry.id : entry.name;
+  const pathState = resolveOutputPathState(entry);
+  if (!pathState.ok) {
+    logOutputPathFailure(label, pathState, pathState.message);
+    logger.log("");
+    return { id: label, status: "failed", reason: `output-path-resolution-failed: ${pathState.message}` };
+  }
+
+  let targetDirHandle;
+  try {
+    targetDirHandle = await getTargetDirHandle(repoDirHandle, entry);
+  } catch (error) {
+    logOutputPathFailure(label, pathState, `Unable to resolve target directory: ${error.message}`);
+    logger.log("");
+    return { id: label, status: "failed", reason: `output-path-resolution-failed: ${error.message}` };
+  }
   const decision = await shouldRewrite(targetDirHandle);
 
   ui.outputSummary.setWriteFolderActual(getWriteFolderDisplayPath(entry));
-  const label = entry.targetType === "samples" ? entry.id : entry.name;
 
   if (!decision.rewrite) {
     logger.log(`SKIP ${label}  (${decision.reason})`);
@@ -750,7 +825,8 @@ async function processOne(entry, baseUrl, waitMs) {
     }
 
     const svgContent = await capture.extractSvgFromFrame();
-    await writePreview(targetDirHandle, svgContent);
+    const writeResult = await writePreview(targetDirHandle, svgContent, pathState);
+    logWritePath(label, pathState, writeResult);
     ui.setLastGeneratedImage(svgContent, label);
 
     const stillHasTimeout = svgContent.includes(CAPTURE_TIMEOUT_MARKER);
@@ -766,7 +842,7 @@ async function processOne(entry, baseUrl, waitMs) {
   } catch (error) {
     const fallback = capture.buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
     try {
-      await writePreview(targetDirHandle, fallback);
+      await writePreview(targetDirHandle, fallback, pathState);
     } catch (writeError) {
       const reason = `${error.message}; fallback write failed: ${writeError.message}`;
       logger.log(`FAIL ${label}  (${reason})`);

@@ -18,6 +18,13 @@ async function openAssetManagerV2(page, query = "") {
   return server;
 }
 
+async function openPreviewGeneratorV2(page, query = "") {
+  const server = await startRepoServer();
+  await coverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html${query}`, { waitUntil: "networkidle" });
+  return server;
+}
+
 async function openToolsIndex(page) {
   const server = await startRepoServer();
   await coverageReporter.start(page);
@@ -183,6 +190,58 @@ async function readWorkspaceSessionHydration(page) {
       toolSessions,
       toolKeys
     };
+  });
+}
+
+async function installMissingGamePreviewRepoPicker(page) {
+  await page.addInitScript(() => {
+    function makeDirectoryHandle(name, children = {}, path = name) {
+      return {
+        children,
+        kind: "directory",
+        name,
+        path,
+        async getDirectoryHandle(childName, options = {}) {
+          const child = children[childName];
+          if (child?.kind === "directory") {
+            return child;
+          }
+          if (options.create) {
+            const created = makeDirectoryHandle(childName, {}, `${path}/${childName}`);
+            children[childName] = created;
+            return created;
+          }
+          throw new Error(`Missing directory: ${path}/${childName}`);
+        },
+        async getFileHandle(childName, options = {}) {
+          const child = children[childName];
+          if (child?.kind === "file") {
+            return child;
+          }
+          if (options.create) {
+            const created = {
+              kind: "file",
+              name: childName,
+              path: `${path}/${childName}`,
+              async createWritable() {
+                return {
+                  async write() {},
+                  async close() {}
+                };
+              }
+            };
+            children[childName] = created;
+            return created;
+          }
+          throw new Error(`Missing file: ${path}/${childName}`);
+        }
+      };
+    }
+
+    window.showDirectoryPicker = async () => makeDirectoryHandle("HTML-JavaScript-Gaming", {
+      games: makeDirectoryHandle("games", {}, "HTML-JavaScript-Gaming/games"),
+      tools: makeDirectoryHandle("tools", {}, "HTML-JavaScript-Gaming/tools")
+    });
   });
 }
 
@@ -1819,7 +1878,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
       await expect(page.locator("#log")).not.toContainText("Direct preview write");
       await expect(page.locator("#log")).not.toContainText("Resolved repoPath");
-      await expect(page.locator("#log")).not.toContainText("absolute preview output path");
       await expect(page.locator("#log")).not.toContainText("Unable to resolve absolute repoRoot");
       await expect(page.locator("#log")).not.toContainText("/__workspace-manager-v2/repo-root");
       await expect(page.locator("#log")).not.toContainText("/__workspace-manager-v2/write-preview");
@@ -1838,6 +1896,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Starting execution...", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("RUN  Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OUT  games\\Asteroids\\assets\\images\\preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("OK WRITE Asteroids", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Resolved relative output path: games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Absolute output path: HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Source resolution context: workspace.tools.preview-generator-v2.data; selected game: Asteroids; resolved assets/images target: assets/images; target type: games", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK   Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Done.", { timeout: 20000 });
       await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Last generated: Asteroids");
@@ -2039,6 +2101,41 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
       await expect(page.locator("#log")).toContainText("FAIL Workspace repo session hydration: workspace.repo.reference.displayName WrongRepo does not match manifest repoRoot HTML-JavaScript-Gaming.");
       await expect(page.locator("#log")).toContainText("Preview Generator V2 requires Workspace Manager V2 repo session storage before image generation.");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("logs actionable Preview Generator V2 output path resolution failures", async ({ page }) => {
+    await installMissingGamePreviewRepoPicker(page);
+    const server = await openPreviewGeneratorV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await page.locator("#pickRepoBtn").click();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+      await page.locator("#targetTypeGames").check();
+      await page.locator("#baseUrl").fill(server.baseUrl);
+      await page.locator("#sampleList").fill("MissingGame");
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+
+      await page.locator("#executeBtn").click();
+      const log = page.locator("#log");
+      await expect(log).toContainText("FAIL PATH MissingGame", { timeout: 10000 });
+      await expect(log).toContainText("Unable to resolve target directory: Missing directory: HTML-JavaScript-Gaming/games/MissingGame", { timeout: 10000 });
+      await expect(log).toContainText("relative output path: games/MissingGame/assets/images/preview.svg", { timeout: 10000 });
+      await expect(log).toContainText("absolute output path: HTML-JavaScript-Gaming/games/MissingGame/assets/images/preview.svg", { timeout: 10000 });
+      await expect(log).toContainText("source resolution context: preview-generator-v2 form controls; selected game: MissingGame; resolved assets/images target: assets/images; target type: games", { timeout: 10000 });
+      await expect(log).toContainText("Written: 0", { timeout: 10000 });
+      await expect(log).toContainText("Failed: 1", { timeout: 10000 });
+      await expect(log).toContainText("Skipped: 0", { timeout: 10000 });
+      await expect(log).toContainText("Done.", { timeout: 10000 });
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
