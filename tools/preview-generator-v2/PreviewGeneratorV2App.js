@@ -7,6 +7,9 @@ const OUTPUT_NAME = "preview.svg";
 const CAPTURE_TIMEOUT_MARKER = PreviewGeneratorV2Capture.CAPTURE_TIMEOUT_MARKER;
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
+const PREVIEW_GENERATOR_V2_TOOL_KEY = "preview-generator-v2";
+const WORKSPACE_REPO_REFERENCE_SESSION_KEY = "workspace.repo.reference";
+const WORKSPACE_PREVIEW_GENERATOR_STATE_SESSION_KEY = `workspace.tools.${PREVIEW_GENERATOR_V2_TOOL_KEY}.state`;
 const BACKGROUND_ROLE = "background";
 const PREVIEW_ROLE = "preview";
 
@@ -87,6 +90,64 @@ function repoRootNameMatches(selectedRepoName, expectedRepoRoot) {
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function readSessionJson(key) {
+  const rawValue = window.sessionStorage.getItem(key);
+  if (!rawValue) {
+    return { ok: false, message: `${key} was not found in sessionStorage.` };
+  }
+  try {
+    const value = JSON.parse(rawValue);
+    return isPlainObject(value)
+      ? { ok: true, value }
+      : { ok: false, message: `${key} must contain a JSON object.` };
+  } catch (error) {
+    return { ok: false, message: `${key} contains invalid JSON: ${error.message}` };
+  }
+}
+
+function readWorkspaceRepoReference() {
+  const result = readSessionJson(WORKSPACE_REPO_REFERENCE_SESSION_KEY);
+  if (!result.ok) {
+    return result;
+  }
+  const reference = result.value;
+  if (reference.source !== "workspace-manager-v2") {
+    return { ok: false, message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.source must be workspace-manager-v2.` };
+  }
+  if (reference.kind !== "file-system-directory-handle-reference") {
+    return { ok: false, message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.kind must be file-system-directory-handle-reference.` };
+  }
+  const displayName = String(reference.displayName || reference.handleName || "").trim();
+  if (!displayName) {
+    return { ok: false, message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY} must include displayName or handleName.` };
+  }
+  return { ok: true, reference: { ...reference, displayName } };
+}
+
+function readWorkspacePreviewGeneratorState(manifest) {
+  const result = readSessionJson(WORKSPACE_PREVIEW_GENERATOR_STATE_SESSION_KEY);
+  if (!result.ok) {
+    return result;
+  }
+  const state = result.value;
+  if (state.source !== "workspace-manager-v2") {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_STATE_SESSION_KEY}.source must be workspace-manager-v2.` };
+  }
+  if (state.toolId !== PREVIEW_GENERATOR_V2_TOOL_KEY) {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_STATE_SESSION_KEY}.toolId must be ${PREVIEW_GENERATOR_V2_TOOL_KEY}.` };
+  }
+  if (state.repoReferenceKey !== WORKSPACE_REPO_REFERENCE_SESSION_KEY) {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_STATE_SESSION_KEY}.repoReferenceKey must be ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.` };
+  }
+  if (state.gameId !== manifest.gameId) {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_STATE_SESSION_KEY}.gameId must match manifest.gameId ${manifest.gameId}.` };
+  }
+  if (state.gameRoot !== manifest.gameRoot || state.assetsPath !== manifest.assetsPath) {
+    return { ok: false, message: `${WORKSPACE_PREVIEW_GENERATOR_STATE_SESSION_KEY} gameRoot/assetsPath must match the workspace manifest.` };
+  }
+  return { ok: true, state };
 }
 
 function isWorkspaceManifest(value) {
@@ -833,6 +894,34 @@ class PreviewGeneratorV2App {
     }
   }
 
+  async hydrateWorkspaceRepoSession(manifest) {
+    const repoReferenceResult = readWorkspaceRepoReference();
+    if (!repoReferenceResult.ok) {
+      return { ok: false, message: repoReferenceResult.message };
+    }
+    const stateResult = readWorkspacePreviewGeneratorState(manifest);
+    if (!stateResult.ok) {
+      return { ok: false, message: stateResult.message };
+    }
+    const repoReference = repoReferenceResult.reference;
+    if (!repoRootNameMatches(repoReference.displayName, manifest.repoRoot)) {
+      return {
+        ok: false,
+        message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.displayName ${repoReference.displayName} does not match manifest repoRoot ${manifest.repoRoot}.`
+      };
+    }
+    const handle = PreviewGeneratorV2RepoAccess.createSessionRepoHandle({
+      manifest,
+      reference: repoReference,
+      sessionStorageRef: window.sessionStorage
+    });
+    const repoValidation = await validateRepoRootHandle(handle);
+    if (!repoValidation.ok) {
+      return repoValidation;
+    }
+    return { ok: true, handle, repoReference, state: stateResult.state };
+  }
+
   async handleExecute() {
     if (!this.hasRequiredGenerateFields()) {
       this.syncGeneratePreviewButton();
@@ -953,21 +1042,21 @@ class PreviewGeneratorV2App {
     const manifestRepoRoot = String(manifest.repoRoot || "").trim();
     repoDisplayName = manifestRepoRoot;
     repoDirHandle = null;
-    workspaceLaunchHydrated = true;
     workspaceRepoRootName = manifestRepoRoot;
     workspacePreviewAssetFolder = previewTarget.previewAssetFolder;
     workspacePreviewGameId = manifest.gameId;
     workspaceManifestPreviewPath = previewTarget.manifestPreviewPath;
     workspaceGeneratedPreviewPath = previewTarget.generatedPreviewPath;
+    workspaceLaunchHydrated = true;
     ui.setRepoDestinationDisplayName(repoDisplayName);
     ui.targetSource.setSelectedTargetType("games");
     ui.targetSource.showWorkspaceGamesOnly();
+    ui.targetSource.setBaseUrl(window.location.origin);
     ui.assetFolder.setValue(workspacePreviewAssetFolder);
     ui.pathsOrIds.setValue(manifest.gameId);
     await updatePathPreviewLabels();
     logger.log(`OK Workspace launch context hydrated for ${manifest.gameId}.`);
     logger.log(`Workspace repoRoot display label available: ${manifestRepoRoot || "(empty)"}.`);
-    logger.log("Workspace launch is display-only; preview writes require normal Preview Generator repo selection.");
     logger.log("Target source: games");
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
     logger.log(`Manifest preview asset: ${previewTarget.previewAssetId} (${previewTarget.previewAssetType}/${previewTarget.previewAssetKind})`);
@@ -1011,6 +1100,23 @@ class PreviewGeneratorV2App {
       workspacePreviewFileValid = false;
       logger.log(`FAIL Workspace preview source validation: ${previewResult.message}`);
     }
+
+    const repoSessionResult = await this.hydrateWorkspaceRepoSession(manifest);
+    if (!repoSessionResult.ok) {
+      repoDirHandle = null;
+      logger.log(`FAIL Workspace repo session hydration: ${repoSessionResult.message}`);
+      logger.log("Preview Generator V2 requires Workspace Manager V2 repo session storage before image generation.");
+      this.syncGeneratePreviewButton();
+      return;
+    }
+
+    repoDirHandle = repoSessionResult.handle;
+    repoDisplayName = PreviewGeneratorV2RepoAccess.getRepoDestinationDisplayName(repoDirHandle);
+    ui.setRepoDestinationDisplayName(repoDisplayName);
+    workspaceLaunchHydrated = true;
+    logger.log(`OK Workspace repo session reference loaded from ${WORKSPACE_REPO_REFERENCE_SESSION_KEY} for ${repoDisplayName}.`);
+    logger.log(`OK Workspace tool session state loaded from ${WORKSPACE_PREVIEW_GENERATOR_STATE_SESSION_KEY}.`);
+    logger.log("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
     this.syncGeneratePreviewButton();
   }
 

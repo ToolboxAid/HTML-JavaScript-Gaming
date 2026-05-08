@@ -865,7 +865,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Generate Image", "Return to Workspace"]);
       await expect(page.locator("#executeBtn")).toBeVisible();
-      await expect(page.locator("#executeBtn")).toBeDisabled();
+      await expect(page.locator("#executeBtn")).toBeEnabled();
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
       await expect(page.locator("#pickRepoBtn")).toBeHidden();
       await expect(page.locator("#workspaceContextValue")).toHaveCount(0);
@@ -875,6 +875,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('label[for="targetTypeSamples"]')).toBeHidden();
       await expect(page.locator('label[for="targetTypeTools"]')).toBeHidden();
       await expect(page.locator("#assetFolder")).toHaveValue("assets/images");
+      await expect(page.locator("#baseUrl")).toHaveValue(server.baseUrl);
       await expect(page.locator("#sampleList")).toHaveValue("Asteroids");
       await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#lastGeneratedImagePreview")).toBeVisible();
@@ -883,7 +884,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Raw workspace launch path field manifest.repoRoot: HTML-JavaScript-Gaming");
       await expect(page.locator("#log")).toContainText("OK Workspace launch context hydrated for Asteroids.");
       await expect(page.locator("#log")).toContainText("Workspace repoRoot display label available: HTML-JavaScript-Gaming.");
-      await expect(page.locator("#log")).toContainText("Workspace launch is display-only; preview writes require normal Preview Generator repo selection.");
+      await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("OK Workspace tool session state loaded from workspace.tools.preview-generator-v2.state.");
+      await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
       await expect(page.locator("#log")).not.toContainText("Direct preview write");
       await expect(page.locator("#log")).not.toContainText("Resolved repoPath");
       await expect(page.locator("#log")).not.toContainText("absolute preview output path");
@@ -901,8 +904,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("OK Workspace manifest preview source is valid at games/Asteroids/assets/images/preview.png.");
       const previewStatusHeaderOrder = await page.locator(".preview-generator-v2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
       expect(previewStatusHeaderOrder).toEqual(["Status", "+", "Clear"]);
-      await page.locator("#baseUrl").fill(server.baseUrl);
-      await expect(page.locator("#executeBtn")).toBeDisabled();
+      await page.locator("#executeBtn").click();
+      await expect(page.locator("#log")).toContainText("Starting execution...", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("RUN  Asteroids", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("OUT  games\\Asteroids\\assets\\images\\preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("OK   Asteroids", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Done.", { timeout: 20000 });
+      await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Last generated: Asteroids");
+      const previewWrites = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.writes") || "[]"));
+      expect(previewWrites).toHaveLength(1);
+      expect(previewWrites[0].path).toBe("HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg");
+      expect(previewWrites[0].contents).toContain("<svg");
+      expect(previewWrites[0].contents).not.toContain("Capture timeout");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       expect(pageErrors).toEqual([]);
@@ -952,7 +965,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("opens Preview Generator V2 workspace launch with display-only repoRoot and actionable status", async ({ page }) => {
+  test("opens Preview Generator V2 workspace launch with actionable missing repo session status", async ({ page }) => {
     const server = await startRepoServer();
     const pageErrors = [];
     const hostContextId = "workspace-manager-v2-display-root-context";
@@ -980,12 +993,58 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Raw workspace launch path field manifest.repoRoot: HTML-JavaScript-Gaming");
       await expect(page.locator("#log")).toContainText("OK Workspace launch context hydrated for Asteroids.");
       await expect(page.locator("#log")).toContainText("Workspace repoRoot display label available: HTML-JavaScript-Gaming.");
-      await expect(page.locator("#log")).toContainText("Workspace launch is display-only; preview writes require normal Preview Generator repo selection.");
+      await expect(page.locator("#log")).toContainText("FAIL Workspace repo session hydration: workspace.repo.reference was not found in sessionStorage.");
+      await expect(page.locator("#log")).toContainText("Preview Generator V2 requires Workspace Manager V2 repo session storage before image generation.");
       await expect(page.locator("#log")).not.toContainText("repoPath");
       await expect(page.locator("#log")).not.toContainText("Direct preview write");
       await expect(page.locator("#log")).not.toContainText("/__workspace-manager-v2/repo-root");
       await expect(page.locator("#log")).not.toContainText("/__workspace-manager-v2/write-preview");
       await expect(page.locator("#log")).not.toContainText("FAIL Workspace launch context hydration");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps Preview Generator V2 disabled for invalid workspace repo session state", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    const hostContextId = "workspace-manager-v2-invalid-repo-reference-context";
+    const gameManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
+    const manifest = gameManifest.game.workspace;
+    manifest.repoRoot = "HTML-JavaScript-Gaming";
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await page.addInitScript(({ contextId, workspaceManifest }) => {
+      window.sessionStorage.setItem(contextId, JSON.stringify(workspaceManifest));
+      window.sessionStorage.setItem("workspace.repo.reference", JSON.stringify({
+        source: "workspace-manager-v2",
+        kind: "file-system-directory-handle-reference",
+        displayName: "WrongRepo",
+        handleName: "WrongRepo"
+      }));
+      window.sessionStorage.setItem("workspace.tools.preview-generator-v2.state", JSON.stringify({
+        source: "workspace-manager-v2",
+        toolId: "preview-generator-v2",
+        gameId: workspaceManifest.gameId,
+        gameRoot: workspaceManifest.gameRoot,
+        assetsPath: workspaceManifest.assetsPath,
+        repoReferenceKey: "workspace.repo.reference"
+      }));
+    }, { contextId: hostContextId, workspaceManifest: manifest });
+    await coverageReporter.start(page);
+    await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
+
+    try {
+      await expect(page.locator("#pickRepoBtn")).toBeHidden();
+      await expect(page.locator("#executeBtn")).toBeDisabled();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+      await expect(page.locator("#log")).toContainText("FAIL Workspace repo session hydration: workspace.repo.reference.displayName WrongRepo does not match manifest repoRoot HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("Preview Generator V2 requires Workspace Manager V2 repo session storage before image generation.");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -1057,8 +1116,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#pickRepoBtn")).toBeHidden();
       await expect(page.locator("#sampleList")).toHaveValue("GravityWell");
       await expect(page.locator("#previewTargetValue")).toHaveText("games/GravityWell/assets/images/preview.svg");
-      await expect(page.locator("#executeBtn")).toBeDisabled();
-      await expect(page.locator("#log")).toContainText("Workspace launch is display-only; preview writes require normal Preview Generator repo selection.");
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+      await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
       await expect(page.locator("#log")).toContainText("Generated preview target: games/GravityWell/assets/images/preview.svg");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
@@ -1092,8 +1152,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#pickRepoBtn")).toBeHidden();
       await expect(page.locator("#sampleList")).toHaveValue("Pong");
       await expect(page.locator("#previewTargetValue")).toHaveText("games/Pong/assets/images/preview.svg");
-      await expect(page.locator("#executeBtn")).toBeDisabled();
-      await expect(page.locator("#log")).toContainText("Workspace launch is display-only; preview writes require normal Preview Generator repo selection.");
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+      await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
       await expect(page.locator("#log")).toContainText("Generated preview target: games/Pong/assets/images/preview.svg");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);

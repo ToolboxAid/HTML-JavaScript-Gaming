@@ -39,6 +39,10 @@ class TargetSourceControl {
     return this.baseUrlInput.value.trim().replace(/\/+$/, "");
   }
 
+  setBaseUrl(value) {
+    this.baseUrlInput.value = String(value || "").trim().replace(/\/+$/, "");
+  }
+
   hasBaseUrl() {
     return this.baseUrlInput.value.trim().length > 0;
   }
