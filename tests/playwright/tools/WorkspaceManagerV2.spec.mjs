@@ -43,6 +43,14 @@ function manifestRepoPath(server) {
   return server.repoRoot.replaceAll("\\", "/");
 }
 
+function displayRepoRootPath(server) {
+  return server.repoRoot.replaceAll("/", "\\").replace(/\\+$/, "");
+}
+
+function displayAbsoluteOutputPath(server, relativePath) {
+  return `${displayRepoRootPath(server)}\\${relativePath.replaceAll("/", "\\")}`;
+}
+
 async function installMockRepoPicker(page) {
   await page.addInitScript(() => {
     const defaultManifestPaths = [
@@ -1894,12 +1902,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(previewStatusHeaderOrder).toEqual(["Status", "+", "Clear"]);
       await page.locator("#executeBtn").click();
       await expect(page.locator("#log")).toContainText("Starting execution...", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Repo root: ${displayRepoRootPath(server)}`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("RUN  Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OUT  games\\Asteroids\\assets\\images\\preview.svg", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK WRITE Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Resolved relative output path: games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText("Absolute output path: HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Repo root: ${displayRepoRootPath(server)}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Full absolute output path: ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Source resolution context: workspace.tools.preview-generator-v2.data; selected game: Asteroids; resolved assets/images target: assets/images; target type: games", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Write verification passed: file exists at ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}.`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK   Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Done.", { timeout: 20000 });
       await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Last generated: Asteroids");
@@ -2127,11 +2138,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#executeBtn").click();
       const log = page.locator("#log");
+      await expect(log).toContainText("Repo root: unavailable", { timeout: 10000 });
+      await expect(log).toContainText("FAIL Repo root path resolution: Repo root path is unavailable; cannot resolve a full absolute output path.", { timeout: 10000 });
       await expect(log).toContainText("FAIL PATH MissingGame", { timeout: 10000 });
-      await expect(log).toContainText("Unable to resolve target directory: Missing directory: HTML-JavaScript-Gaming/games/MissingGame", { timeout: 10000 });
+      await expect(log).toContainText("Repo root path is unavailable; cannot resolve a full absolute output path.", { timeout: 10000 });
       await expect(log).toContainText("relative output path: games/MissingGame/assets/images/preview.svg", { timeout: 10000 });
-      await expect(log).toContainText("absolute output path: HTML-JavaScript-Gaming/games/MissingGame/assets/images/preview.svg", { timeout: 10000 });
+      await expect(log).toContainText("repo root: (unavailable)", { timeout: 10000 });
+      await expect(log).toContainText("full absolute output path: (unavailable)", { timeout: 10000 });
       await expect(log).toContainText("source resolution context: preview-generator-v2 form controls; selected game: MissingGame; resolved assets/images target: assets/images; target type: games", { timeout: 10000 });
+      await expect(log).not.toContainText("OK WRITE MissingGame");
       await expect(log).toContainText("Written: 0", { timeout: 10000 });
       await expect(log).toContainText("Failed: 1", { timeout: 10000 });
       await expect(log).toContainText("Skipped: 0", { timeout: 10000 });
@@ -2247,6 +2262,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
       await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
       await expect(page.locator("#log")).toContainText("Generated preview target: games/Pong/assets/images/preview.svg");
+      await page.locator("#forceRewrite").check();
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+      await page.locator("#executeBtn").click();
+      await expect(page.locator("#log")).toContainText("Force rewrite: true", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Repo root: ${displayRepoRootPath(server)}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("RUN  Pong", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("OK WRITE Pong", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Resolved relative output path: games/Pong/assets/images/preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Full absolute output path: ${displayAbsoluteOutputPath(server, "games/Pong/assets/images/preview.svg")}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Source resolution context: workspace.tools.preview-generator-v2.data; selected game: Pong; resolved assets/images target: assets/images; target type: games", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Write verification passed: file exists at ${displayAbsoluteOutputPath(server, "games/Pong/assets/images/preview.svg")}.`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Force rewrite verification passed for ${displayAbsoluteOutputPath(server, "games/Pong/assets/images/preview.svg")}.`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Written: 1", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Failed: 0", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Done.", { timeout: 20000 });
+      const pongPreviewWrites = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.writes") || "[]"));
+      expect(pongPreviewWrites.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Pong/assets/images/preview.svg");
+      expect(pongPreviewWrites.at(-1).contents).toContain("<svg");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
 

@@ -24,6 +24,7 @@ let workspacePreviewAssetFolder = "";
 let workspacePreviewFileValid = false;
 let workspacePreviewGameId = "";
 let workspaceLaunchHydrated = false;
+let workspaceRepoRootPath = "";
 let workspaceRepoRootName = "";
 let workspaceManifestPreviewPath = "";
 let workspaceGeneratedPreviewPath = "";
@@ -74,6 +75,29 @@ function normalizeWorkspacePath(value) {
 
 function normalizeOutputPath(value) {
   return normalizeWorkspacePath(value);
+}
+
+function normalizeAbsoluteRepoPath(value) {
+  const path = normalizeOutputPath(value);
+  if (/^[a-z]:\//i.test(path) || path.startsWith("/") || path.startsWith("//")) {
+    return path;
+  }
+  return "";
+}
+
+function displayAbsolutePath(value) {
+  const path = normalizeOutputPath(value);
+  if (/^[a-z]:\//i.test(path)) {
+    return path.replaceAll("/", "\\");
+  }
+  if (path.startsWith("//")) {
+    return `\\\\${path.slice(2).replaceAll("/", "\\")}`;
+  }
+  return path;
+}
+
+function joinOutputPath(rootPath, relativePath) {
+  return `${normalizeOutputPath(rootPath).replace(/\/+$/, "")}/${normalizeOutputPath(relativePath)}`;
 }
 
 function repoRootNameMatches(selectedRepoName, expectedRepoRoot) {
@@ -432,6 +456,30 @@ function getFullOutputRelativePath(entry) {
   return normalizeOutputPath(`${getWriteFolderRelativePath(entry)}/${OUTPUT_NAME}`);
 }
 
+function selectedRepoRootPath() {
+  return normalizeAbsoluteRepoPath(workspaceRepoRootPath)
+    || normalizeAbsoluteRepoPath(repoDirHandle?.absolutePath)
+    || normalizeAbsoluteRepoPath(repoDirHandle?.repoRootPath)
+    || normalizeAbsoluteRepoPath(repoDirHandle?.path);
+}
+
+function selectedRepoRootPathState() {
+  const repoRootPath = selectedRepoRootPath();
+  if (!repoRootPath) {
+    return {
+      ok: false,
+      message: "Repo root path is unavailable; cannot resolve a full absolute output path.",
+      repoRootDisplayPath: "",
+      repoRootPath: ""
+    };
+  }
+  return {
+    ok: true,
+    repoRootDisplayPath: displayAbsolutePath(repoRootPath),
+    repoRootPath
+  };
+}
+
 function outputSourceContext(entry) {
   const selectedGame = entry.targetType === "games"
     ? String(entry.name || workspacePreviewGameId || "").trim()
@@ -445,40 +493,122 @@ function outputSourceContext(entry) {
 }
 
 function resolveOutputPathState(entry) {
+  const repoRoot = selectedRepoRootPathState();
+  const relativeOutputPath = (() => {
+    try {
+      return getFullOutputRelativePath(entry);
+    } catch {
+      return "";
+    }
+  })();
   try {
-    const relativeOutputPath = getFullOutputRelativePath(entry);
-    const repoRootPath = normalizeOutputPath(repoDirHandle?.path);
+    if (!repoRoot.ok) {
+      return {
+        ok: false,
+        absoluteOutputPath: "",
+        fullAbsoluteOutputPath: "",
+        fullAbsoluteOutputPathDisplay: "",
+        message: repoRoot.message,
+        relativeOutputPath,
+        repoRootDisplayPath: "",
+        repoRootPath: "",
+        sourceContext: outputSourceContext(entry)
+      };
+    }
+    if (!relativeOutputPath) {
+      return {
+        ok: false,
+        absoluteOutputPath: "",
+        fullAbsoluteOutputPath: "",
+        fullAbsoluteOutputPathDisplay: "",
+        message: "Relative output path is unavailable.",
+        relativeOutputPath,
+        repoRootDisplayPath: repoRoot.repoRootDisplayPath,
+        repoRootPath: repoRoot.repoRootPath,
+        sourceContext: outputSourceContext(entry)
+      };
+    }
+    const fullAbsoluteOutputPath = joinOutputPath(repoRoot.repoRootPath, relativeOutputPath);
     return {
       ok: true,
-      absoluteOutputPath: repoRootPath ? normalizeOutputPath(`${repoRootPath}/${relativeOutputPath}`) : "",
+      absoluteOutputPath: fullAbsoluteOutputPath,
+      fullAbsoluteOutputPath,
+      fullAbsoluteOutputPathDisplay: displayAbsolutePath(fullAbsoluteOutputPath),
       relativeOutputPath,
+      repoRootDisplayPath: repoRoot.repoRootDisplayPath,
+      repoRootPath: repoRoot.repoRootPath,
       sourceContext: outputSourceContext(entry)
     };
   } catch (error) {
     return {
       ok: false,
       absoluteOutputPath: "",
+      fullAbsoluteOutputPath: "",
+      fullAbsoluteOutputPathDisplay: "",
       message: error.message,
-      relativeOutputPath: "",
+      relativeOutputPath,
+      repoRootDisplayPath: repoRoot.repoRootDisplayPath,
+      repoRootPath: repoRoot.repoRootPath,
       sourceContext: outputSourceContext(entry)
     };
   }
 }
 
 function absoluteOutputPathFromWrite(fileHandle, pathState) {
-  return normalizeOutputPath(fileHandle?.path) || pathState.absoluteOutputPath || "";
+  return normalizeAbsoluteRepoPath(fileHandle?.path)
+    || pathState.fullAbsoluteOutputPath
+    || pathState.absoluteOutputPath
+    || "";
+}
+
+async function verifyWrittenPreview(fileHandle, expectedContents, pathState) {
+  const expectedPath = pathState.fullAbsoluteOutputPathDisplay || displayAbsolutePath(pathState.fullAbsoluteOutputPath);
+  if (!fileHandle || typeof fileHandle.getFile !== "function") {
+    return {
+      checked: false,
+      message: "file read-back is unavailable from this repo handle",
+      ok: true
+    };
+  }
+  try {
+    const file = await fileHandle.getFile();
+    if (!file || typeof file.text !== "function") {
+      return { checked: false, message: "file text read-back is unavailable from this repo handle", ok: true };
+    }
+    const actualContents = await file.text();
+    if (String(actualContents) !== String(expectedContents)) {
+      return {
+        checked: true,
+        message: `Write verification failed for ${expectedPath}: read-back contents did not match generated preview.svg.`,
+        ok: false
+      };
+    }
+    return { checked: true, ok: true };
+  } catch (error) {
+    return {
+      checked: true,
+      message: `Write verification failed for ${expectedPath}: ${error.message}`,
+      ok: false
+    };
+  }
 }
 
 function logWritePath(label, pathState, writeResult) {
   logger.log(`OK WRITE ${label}`);
   logger.log(`Resolved relative output path: ${pathState.relativeOutputPath}`);
-  const absoluteOutputPath = writeResult.absoluteOutputPath || pathState.absoluteOutputPath;
-  logger.log(`Absolute output path: ${absoluteOutputPath || "unavailable (repo handle does not expose an absolute path)"}`);
+  logger.log(`Repo root: ${pathState.repoRootDisplayPath}`);
+  logger.log(`Full absolute output path: ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}`);
   logger.log(`Source resolution context: ${pathState.sourceContext}`);
+  if (writeResult.verified) {
+    logger.log(`Write verification passed: file exists at ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}.`);
+  }
+  if (ui.renderControls.isForceRewrite()) {
+    logger.log(`Force rewrite verification passed for ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}.`);
+  }
 }
 
 function logOutputPathFailure(label, pathState, reason) {
-  logger.log(`FAIL PATH ${label}  (${reason}; relative output path: ${pathState.relativeOutputPath || "(unresolved)"}; absolute output path: ${pathState.absoluteOutputPath || "(unavailable)"}; source resolution context: ${pathState.sourceContext})`);
+  logger.log(`FAIL PATH ${label}  (${reason}; relative output path: ${pathState.relativeOutputPath || "(unresolved)"}; repo root: ${pathState.repoRootDisplayPath || "(unavailable)"}; full absolute output path: ${pathState.fullAbsoluteOutputPathDisplay || "(unavailable)"}; source resolution context: ${pathState.sourceContext})`);
 }
 
 function updateWriteFolderSampleLabel() {
@@ -771,9 +901,21 @@ async function writePreview(targetDirHandle, svgContent, pathState) {
   const writable = await fileHandle.createWritable();
   await writable.write(svgContent);
   await writable.close();
+  const verification = await verifyWrittenPreview(fileHandle, svgContent, pathState);
+  if (!verification.ok) {
+    return {
+      absoluteOutputPath: pathState.fullAbsoluteOutputPath,
+      message: verification.message,
+      ok: false,
+      relativeOutputPath: pathState.relativeOutputPath,
+      verified: verification.checked
+    };
+  }
   return {
     absoluteOutputPath: absoluteOutputPathFromWrite(fileHandle, pathState),
-    relativeOutputPath: pathState.relativeOutputPath
+    ok: true,
+    relativeOutputPath: pathState.relativeOutputPath,
+    verified: verification.checked
   };
 }
 
@@ -826,6 +968,11 @@ async function processOne(entry, baseUrl, waitMs) {
 
     const svgContent = await capture.extractSvgFromFrame();
     const writeResult = await writePreview(targetDirHandle, svgContent, pathState);
+    if (!writeResult.ok) {
+      logger.log(`FAIL ${label}  (${writeResult.message}; expected full absolute path: ${pathState.fullAbsoluteOutputPathDisplay})`);
+      logger.log("");
+      return { id: label, status: "failed", reason: writeResult.message };
+    }
     logWritePath(label, pathState, writeResult);
     ui.setLastGeneratedImage(svgContent, label);
 
@@ -842,7 +989,13 @@ async function processOne(entry, baseUrl, waitMs) {
   } catch (error) {
     const fallback = capture.buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
     try {
-      await writePreview(targetDirHandle, fallback, pathState);
+      const fallbackWrite = await writePreview(targetDirHandle, fallback, pathState);
+      if (!fallbackWrite.ok) {
+        const reason = `${error.message}; fallback write failed: ${fallbackWrite.message}`;
+        logger.log(`FAIL ${label}  (${reason}; expected full absolute path: ${pathState.fullAbsoluteOutputPathDisplay})`);
+        logger.log("");
+        return { id: label, status: "failed", reason };
+      }
     } catch (writeError) {
       const reason = `${error.message}; fallback write failed: ${writeError.message}`;
       logger.log(`FAIL ${label}  (${reason})`);
@@ -1022,6 +1175,7 @@ class PreviewGeneratorV2App {
     const baseUrl = ui.targetSource.getBaseUrl();
     const waitMs = ui.renderControls.getWaitMs();
     const targetType = ui.getSelectedTargetType();
+    const repoRoot = selectedRepoRootPathState();
 
     stopRequested = false;
     isGenerating = true;
@@ -1033,6 +1187,10 @@ class PreviewGeneratorV2App {
     logger.log(`Base URL: ${baseUrl}`);
     logger.log(`Wait: ${waitMs}ms`);
     logger.log(`Repo selected: ${repoDisplayName || "not selected"}`);
+    logger.log(`Repo root: ${repoRoot.ok ? repoRoot.repoRootDisplayPath : "unavailable"}`);
+    if (!repoRoot.ok) {
+      logger.log(`FAIL Repo root path resolution: ${repoRoot.message}`);
+    }
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
     logger.log(`Capture mode: ${ui.getCaptureModeLabel()}`);
     logger.log(`Force rewrite: ${ui.renderControls.isForceRewrite()}`);
@@ -1099,6 +1257,7 @@ class PreviewGeneratorV2App {
     workspaceLaunchHydrated = false;
     workspaceManifestPreviewPath = "";
     workspaceGeneratedPreviewPath = "";
+    workspaceRepoRootPath = "";
     capture.setCaptureBackgroundColor("");
     if (!contextResult.ok) {
       logger.log(`FAIL Workspace launch context hydration: ${contextResult.message}`);
@@ -1119,6 +1278,7 @@ class PreviewGeneratorV2App {
     }
 
     const manifestRepoRoot = String(manifest.repoRoot || "").trim();
+    workspaceRepoRootPath = normalizeAbsoluteRepoPath(manifest.repoPath);
     repoDisplayName = manifestRepoRoot;
     repoDirHandle = null;
     workspaceRepoRootName = manifestRepoRoot;
