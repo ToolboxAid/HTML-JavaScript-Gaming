@@ -375,7 +375,17 @@ function workspacePreviewTarget(manifest) {
   }
   const previewAsset = workspacePreviewAsset(manifest);
   if (!previewAsset) {
-    return { ok: false, message: "manifest must include an Asset Manager V2 image asset with role preview." };
+    const fallbackPreviewAssetFolder = normalizeWorkspacePath(`${assetFolder}/images`);
+    return {
+      ok: true,
+      generatedPreviewPath: `${gameRoot}/${fallbackPreviewAssetFolder}/${OUTPUT_NAME}`,
+      manifestPreviewPath: "",
+      previewAssetFolder: fallbackPreviewAssetFolder,
+      previewAssetId: "",
+      previewAssetKind: "",
+      previewAssetMissing: true,
+      previewAssetType: ""
+    };
   }
   const imagePath = workspaceGameAssetPath(manifest, previewAsset.path);
   const imagePathFromGameRoot = imagePath.pathFromGameRoot;
@@ -860,34 +870,87 @@ async function getExistingDirectoryPath(parentHandle, relativePath) {
 
 async function readExistingPreview(targetDirHandle) {
   const relativeOutputFolder = getAssetFolderRelativePath();
+  let targetDir;
   try {
-    const targetDir = relativeOutputFolder
+    targetDir = relativeOutputFolder
       ? await getExistingDirectoryPath(targetDirHandle, relativeOutputFolder)
       : targetDirHandle;
+  } catch (error) {
+    return {
+      contents: "",
+      exists: false,
+      message: `output folder is missing: ${error.message}`,
+      verified: false
+    };
+  }
 
+  try {
     const fileHandle = await PreviewGeneratorV2RepoAccess.getFileHandle(targetDir, OUTPUT_NAME, false);
+    if (!fileHandle || typeof fileHandle.getFile !== "function") {
+      return {
+        contents: "",
+        exists: true,
+        message: `${OUTPUT_NAME} exists but cannot be read back from the repo handle.`,
+        verified: false
+      };
+    }
     const file = await fileHandle.getFile();
-    return await file.text();
-  } catch {
-    return null;
+    if (!file || typeof file.text !== "function") {
+      return {
+        contents: "",
+        exists: true,
+        message: `${OUTPUT_NAME} exists but text read-back is unavailable.`,
+        verified: false
+      };
+    }
+    return {
+      contents: await file.text(),
+      exists: true,
+      message: "",
+      verified: true
+    };
+  } catch (error) {
+    return {
+      contents: "",
+      exists: false,
+      message: `${OUTPUT_NAME} was not found: ${error.message}`,
+      verified: false
+    };
   }
 }
 
-async function shouldRewrite(targetDirHandle) {
+async function shouldRewrite(targetDirHandle, pathState) {
   if (ui.renderControls.isForceRewrite()) {
-    return { rewrite: true, reason: "force-rewrite" };
+    return { checkedPath: pathState.fullAbsoluteOutputPathDisplay, rewrite: true, reason: "force-rewrite" };
   }
 
   const existing = await readExistingPreview(targetDirHandle);
-  if (existing == null) {
-    return { rewrite: true, reason: "missing-preview" };
+  const checkedPath = pathState.fullAbsoluteOutputPathDisplay || displayAbsolutePath(pathState.fullAbsoluteOutputPath);
+  if (!existing.exists) {
+    return { checkedPath, check: existing, rewrite: true, reason: "missing-preview" };
   }
 
-  if (existing.includes(CAPTURE_TIMEOUT_MARKER)) {
-    return { rewrite: true, reason: "literal-capture-timeout-found" };
+  if (!existing.verified) {
+    return { checkedPath, check: existing, rewrite: true, reason: "unverified-preview" };
   }
 
-  return { rewrite: false, reason: "existing-preview-without-capture-timeout" };
+  if (existing.contents.includes(CAPTURE_TIMEOUT_MARKER)) {
+    return { checkedPath, check: existing, rewrite: true, reason: "literal-capture-timeout-found" };
+  }
+
+  return { checkedPath, check: existing, rewrite: false, reason: "existing-preview-without-capture-timeout" };
+}
+
+function logPreviewCheck(decision) {
+  if (!decision.checkedPath) {
+    return;
+  }
+  logger.log(`CHK  ${decision.checkedPath}`);
+  if (decision.check && !decision.check.exists) {
+    logger.log(`MISSING ${decision.checkedPath} (${decision.check.message})`);
+  } else if (decision.check && !decision.check.verified) {
+    logger.log(`WARN CHK ${decision.checkedPath} could not be verified (${decision.check.message}); generating new ${OUTPUT_NAME}.`);
+  }
 }
 
 async function writePreview(targetDirHandle, svgContent, pathState) {
@@ -936,7 +999,8 @@ async function processOne(entry, baseUrl, waitMs) {
     logger.log("");
     return { id: label, status: "failed", reason: `output-path-resolution-failed: ${error.message}` };
   }
-  const decision = await shouldRewrite(targetDirHandle);
+  const decision = await shouldRewrite(targetDirHandle, pathState);
+  logPreviewCheck(decision);
 
   ui.outputSummary.setWriteFolderActual(getWriteFolderDisplayPath(entry));
 
@@ -945,7 +1009,6 @@ async function processOne(entry, baseUrl, waitMs) {
     if (decision.reason === "existing-preview-without-capture-timeout") {
       logger.log(`Existing ${OUTPUT_NAME} does not contain ${CAPTURE_TIMEOUT_MARKER}; skipping rewrite.`);
     }
-    logger.log(`CHK  ${getFullOutputPath(entry)}`);
     return { id: label, status: "skipped", reason: decision.reason };
   }
   if (decision.reason === "literal-capture-timeout-found") {
@@ -1242,6 +1305,24 @@ class PreviewGeneratorV2App {
     logger.clear();
   }
 
+  async handleCopyLog() {
+    const logText = ui.statusLog.getLogText();
+    if (!logText.trim()) {
+      logger.log("WARN Copy status log skipped: Preview Generator V2 status log is empty.");
+      return;
+    }
+    if (typeof navigator?.clipboard?.writeText !== "function") {
+      logger.log("FAIL Copy status log failed: Clipboard API is unavailable.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(logText);
+      logger.log(`OK Copied Preview Generator V2 status log to clipboard (${logText.length} characters).`);
+    } catch (error) {
+      logger.log(`FAIL Copy status log failed: ${error.message}`);
+    }
+  }
+
   handleStop() {
     stopRequested = true;
     logger.log("Stop requested. Will stop after current item.");
@@ -1298,8 +1379,12 @@ class PreviewGeneratorV2App {
     logger.log(`Workspace repoRoot display label available: ${manifestRepoRoot || "(empty)"}.`);
     logger.log("Target source: games");
     logger.log(`Asset folder: ${getAssetFolderDisplayPath()}`);
-    logger.log(`Manifest preview asset: ${previewTarget.previewAssetId} (${previewTarget.previewAssetType}/${previewTarget.previewAssetKind})`);
-    logger.log(`Manifest preview source: ${workspaceManifestPreviewPath}`);
+    if (previewTarget.previewAssetMissing) {
+      logger.log(`WARN Workspace manifest preview asset is missing from Asset Manager V2 data; generated preview output will target ${workspaceGeneratedPreviewPath}.`);
+    } else {
+      logger.log(`Manifest preview asset: ${previewTarget.previewAssetId} (${previewTarget.previewAssetType}/${previewTarget.previewAssetKind})`);
+      logger.log(`Manifest preview source: ${workspaceManifestPreviewPath}`);
+    }
     logger.log(`Generated preview target: ${workspaceGeneratedPreviewPath}`);
     logger.log(`Preview target: ${getWorkspacePreviewTargetDisplayPath()}`);
 
@@ -1330,14 +1415,19 @@ class PreviewGeneratorV2App {
       logger.log(`WARN Workspace background hydration: ${backgroundContext.message}`);
     }
 
-    const previewResult = await validateWorkspaceImagePath(workspaceManifestPreviewPath, "Workspace manifest preview source");
-    if (previewResult.ok) {
+    if (!workspaceManifestPreviewPath) {
       workspacePreviewFileValid = true;
-      ui.setPreviewTargetImage(workspaceManifestPreviewPath);
-      logger.log(`OK Workspace manifest preview source is valid at ${workspaceManifestPreviewPath}.`);
+      logger.log(`WARN Workspace manifest preview source is not present; ${OUTPUT_NAME} generation remains enabled for ${workspaceGeneratedPreviewPath}.`);
     } else {
-      workspacePreviewFileValid = false;
-      logger.log(`FAIL Workspace preview source validation: ${previewResult.message}`);
+      const previewResult = await validateWorkspaceImagePath(workspaceManifestPreviewPath, "Workspace manifest preview source");
+      if (previewResult.ok) {
+        workspacePreviewFileValid = true;
+        ui.setPreviewTargetImage(workspaceManifestPreviewPath);
+        logger.log(`OK Workspace manifest preview source is valid at ${workspaceManifestPreviewPath}.`);
+      } else {
+        workspacePreviewFileValid = true;
+        logger.log(`WARN Workspace preview source validation: ${previewResult.message}; ${OUTPUT_NAME} generation remains enabled.`);
+      }
     }
 
     const repoSessionResult = await this.hydrateWorkspaceRepoSession(manifest);
@@ -1370,6 +1460,10 @@ class PreviewGeneratorV2App {
 
     ui.statusLog.onClear(() => {
       this.handleClearLog();
+    });
+
+    ui.statusLog.onCopy(() => {
+      void this.handleCopyLog();
     });
 
     ui.generatePreview.onStop(() => {

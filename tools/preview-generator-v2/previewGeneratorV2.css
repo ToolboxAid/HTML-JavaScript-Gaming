@@ -234,6 +234,7 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
   gap: 8px;
 }
 
+.preview-generator-v2__status-copy-button,
 .preview-generator-v2__status-clear-button {
   flex: 0 0 auto;
   margin-right: 0;

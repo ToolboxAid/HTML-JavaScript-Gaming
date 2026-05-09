@@ -384,7 +384,8 @@ test.describe("Preview Generator V2 baseline", () => {
       const statusHeader = page.locator('#statusAccordion .accordion-v2__header[aria-controls="statusAccordionContent"]');
       const statusContent = page.locator("#statusAccordionContent");
       const statusHeaderOrder = await statusHeader.evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
-      expect(statusHeaderOrder).toEqual(["Status", "+", "Clear"]);
+      expect(statusHeaderOrder).toEqual(["Status", "+", "Copy", "Clear"]);
+      await expect(statusHeader.locator("#copyLogBtn")).toBeVisible();
       await expect(statusHeader.locator("#clearLogBtn")).toBeVisible();
       await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
       await expect(statusContent).toBeVisible();
@@ -406,6 +407,7 @@ test.describe("Preview Generator V2 baseline", () => {
         await expectAccordionToggles(page, contentId);
       }
       await expect(page.locator("#clearLogBtn")).toBeVisible();
+      await expect(statusHeader.locator(".preview-generator-v2__status-header-actions #copyLogBtn")).toBeVisible();
       await expect(statusHeader.locator(".preview-generator-v2__status-header-actions #clearLogBtn")).toBeVisible();
       await page.locator("#captureModeFullScreen").check();
       await expect(page.locator("#log")).toContainText("Capture mode: Full Screen");

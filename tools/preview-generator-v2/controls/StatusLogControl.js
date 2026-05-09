@@ -5,6 +5,7 @@ class StatusLogControl {
     this.accordion = new AccordionSection({ content: documentRef.getElementById("statusAccordionContent") });
     this.statusEl = documentRef.getElementById("status");
     this.logEl = documentRef.getElementById("log");
+    this.copyLogBtn = documentRef.getElementById("copyLogBtn");
     this.clearLogBtn = documentRef.getElementById("clearLogBtn");
   }
 
@@ -14,6 +15,17 @@ class StatusLogControl {
 
   getLogElement() {
     return this.logEl;
+  }
+
+  getLogText() {
+    return this.logEl.textContent || "";
+  }
+
+  onCopy(handler) {
+    this.copyLogBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      handler(event);
+    });
   }
 
   onClear(handler) {

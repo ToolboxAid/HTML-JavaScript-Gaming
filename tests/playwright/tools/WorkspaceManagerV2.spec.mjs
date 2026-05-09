@@ -1899,10 +1899,36 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).not.toContainText("FAIL Workspace background hydration");
       await expect(page.locator("#log")).toContainText("OK Workspace manifest preview source is valid at games/Asteroids/assets/images/preview.png.");
       const previewStatusHeaderOrder = await page.locator(".preview-generator-v2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
-      expect(previewStatusHeaderOrder).toEqual(["Status", "+", "Clear"]);
+      expect(previewStatusHeaderOrder).toEqual(["Status", "+", "Copy", "Clear"]);
+      await expect(page.locator(".preview-generator-v2__status-header-actions #copyLogBtn")).toBeVisible();
+      await expect(page.locator(".preview-generator-v2__status-header-actions #clearLogBtn")).toBeVisible();
+      await page.evaluate(() => {
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: {
+            writeText: async (text) => {
+              window.__previewGeneratorV2CopiedLog = text;
+            }
+          }
+        });
+      });
+      const previewLogBeforeCopy = await page.locator("#log").textContent();
+      await page.locator("#copyLogBtn").click();
+      expect(await page.evaluate(() => window.__previewGeneratorV2CopiedLog)).toBe(previewLogBeforeCopy);
+      await expect(page.locator("#log")).toContainText("OK Copied Preview Generator V2 status log to clipboard");
+      await page.evaluate(() => {
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: undefined
+        });
+      });
+      await page.locator("#copyLogBtn").click();
+      await expect(page.locator("#log")).toContainText("FAIL Copy status log failed: Clipboard API is unavailable.");
       await page.locator("#executeBtn").click();
       await expect(page.locator("#log")).toContainText("Starting execution...", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText(`Repo root: ${displayRepoRootPath(server)}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`CHK  ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`MISSING ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("RUN  Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OUT  games\\Asteroids\\assets\\images\\preview.svg", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK WRITE Asteroids", { timeout: 20000 });
@@ -1923,6 +1949,72 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expectWorkspaceReturnRehydrated(page);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Restored repo destination from workspace\.repo\.reference for HTML-JavaScript-Gaming\./);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps Preview Generator V2 repo writer after Asset Manager V2 deletes the preview asset entry", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await selectMockRepo(page);
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expectWorkspaceReturnRehydrated(page);
+      await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
+      await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 14 validated assets from tools\.asset-manager-v2\.assets/);
+      await page.locator('[data-delete-asset-id="assets.image.preview.preview"]').click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted assets\.image\.preview\.preview\./);
+      const editedAssetSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.asset-manager-v2")));
+      expect(editedAssetSession.data.assets["assets.image.preview.preview"]).toBeUndefined();
+      expect(Object.keys(editedAssetSession.data.assets)).toHaveLength(13);
+      expect(editedAssetSession.dirty).toMatchObject({
+        isDirty: true,
+        reason: "asset-updated"
+      });
+      await page.evaluate(() => {
+        sessionStorage.setItem("workspace.repo.writes", JSON.stringify([{
+          contents: "<svg>stale cached prior preview</svg>",
+          path: "HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg"
+        }]));
+      });
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnRehydrated(page);
+      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("13 managed assets");
+      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Refreshed asset-manager-v2 from workspace\.tools\.asset-manager-v2\.data: 13 managed assets; Dirty: true\./);
+      await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
+      await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+      await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/preview.svg");
+      await expect(page.locator("#log")).toContainText("WARN Workspace manifest preview asset is missing from Asset Manager V2 data; generated preview output will target games/Asteroids/assets/images/preview.svg.");
+      await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).not.toContainText("Repo selected: not selected");
+      await page.locator("#executeBtn").click();
+      const log = page.locator("#log");
+      await expect(log).toContainText(`CHK  ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
+      await expect(log).toContainText(`MISSING ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
+      await expect(log).toContainText("RUN  Asteroids", { timeout: 20000 });
+      await expect(log).toContainText("OK WRITE Asteroids", { timeout: 20000 });
+      await expect(log).toContainText(`Write verification passed: file exists at ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}.`, { timeout: 20000 });
+      await expect(log).toContainText("Written: 1", { timeout: 20000 });
+      await expect(log).toContainText("Failed: 0", { timeout: 20000 });
+      await expect(log).not.toContainText("SKIP Asteroids");
+      const previewWrites = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.writes") || "[]"));
+      expect(previewWrites).toHaveLength(2);
+      expect(previewWrites.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg");
+      expect(previewWrites.at(-1).contents).toContain("<svg");
+      expect(previewWrites.at(-1).contents).not.toContain("stale cached prior preview");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
