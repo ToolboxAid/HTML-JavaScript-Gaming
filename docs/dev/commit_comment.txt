@@ -1,1 +1,1 @@
-Bind restored Workspace Manager V2 saves to real game manifest sources - PR_26130_002-save-source-binding-validation
+Guard restored Workspace Manager V2 saves behind live repo handles - PR_26130_003-session-restore-file-handle-guard

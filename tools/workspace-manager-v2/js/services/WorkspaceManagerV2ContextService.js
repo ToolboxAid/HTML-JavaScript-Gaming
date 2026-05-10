@@ -492,7 +492,7 @@ export class WorkspaceManagerV2ContextService {
   }
 
   sourceBindingRecoveryAction() {
-    return "Cancel active toolState, pick the repo folder again, reopen the game, and retry Save.";
+    return "Pick Repo Folder to rebind the active toolState to the real game.manifest.json source before retrying Save.";
   }
 
   saveSourceBindingFailure(reason, { context, game } = {}) {

@@ -106,7 +106,9 @@ export class ToolTilesControl {
 
     const state = document.createElement("span");
     state.className = "workspace-manager-v2__tool-tile-state";
-    state.textContent = isEnabledForGame ? "Ready to launch" : (canLaunch ? "Not enabled for game" : "Waiting for manifest");
+    state.textContent = isEnabledForGame
+      ? "Ready to launch"
+      : (canLaunch ? "Not enabled for game" : manifestStatus);
 
     const detailText = this.detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount });
 
