@@ -3,6 +3,7 @@ import { AccordionSection } from "./AccordionSection.js";
 class RepoDestinationControl {
   constructor({ documentRef = document } = {}) {
     this.accordion = new AccordionSection({ content: documentRef.getElementById("repoDestinationContent") });
+    this.section = documentRef.getElementById("repoDestinationSection");
     this.pickRepoBtn = documentRef.getElementById("pickRepoBtn");
     this.repoSelectedValueEl = documentRef.getElementById("repoSelectedValue");
   }
@@ -14,6 +15,10 @@ class RepoDestinationControl {
 
   setPickRepoVisible(isVisible) {
     this.pickRepoBtn.hidden = !isVisible;
+  }
+
+  setRepoDestinationVisible(isVisible) {
+    this.section.hidden = !isVisible;
   }
 
   setPickRepoEnabled(isEnabled) {

@@ -9,6 +9,7 @@ const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
+const TEXT2SPEACH_V2_TOOL_KEY = "text2speach-V2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
 const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
@@ -16,7 +17,8 @@ const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
 });
 const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   "preview-generator-v2",
-  "session-inspector-v2"
+  "session-inspector-v2",
+  TEXT2SPEACH_V2_TOOL_KEY
 ]));
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
@@ -46,6 +48,13 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     id: "preview-generator-v2",
     name: "Preview Generator V2",
     path: "../preview-generator-v2/index.html"
+  }),
+  Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Utilities",
+    id: TEXT2SPEACH_V2_TOOL_KEY,
+    name: "text2speach-V2",
+    path: "../text2speach-V2/index.html"
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),

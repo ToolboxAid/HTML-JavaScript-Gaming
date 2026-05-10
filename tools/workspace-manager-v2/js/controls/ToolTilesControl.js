@@ -55,6 +55,9 @@ export class ToolTilesControl {
     if (tool.id === "session-inspector-v2") {
       return "";
     }
+    if (tool.id === "text2speach-V2") {
+      return "Speech synthesis ready";
+    }
     return manifestStatus;
   }
 

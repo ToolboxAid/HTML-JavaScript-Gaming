@@ -45,6 +45,10 @@ body.tools-platform-tool-page[data-tool-id="preview-generator-v2"] > .palette-ma
   overflow: visible;
 }
 
+#repoDestinationSection[hidden] {
+  display: none;
+}
+
 .preview-generator-v2__output-summary,
 .preview-generator-v2__output-summary.is-open {
   flex: 0 0 auto;

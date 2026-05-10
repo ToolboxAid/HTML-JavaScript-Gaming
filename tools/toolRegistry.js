@@ -279,6 +279,29 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "text2speach-V2",
+    name: "text2speach-V2",
+    displayName: "text2speach-V2",
+    shortDescription: "Preview browser text-to-speech lines for narration, prompts, and menu feedback.",
+    shortLabel: "Speech",
+    path: "text2speach-V2",
+    folderName: "text2speach-V2",
+    entryPoint: "text2speach-V2/index.html",
+    description: "First-Class Tool V2 baseline for browser speech synthesis using shared engine audio text-to-speech defaults.",
+    showcaseTag: "Audio",
+    showcaseStatus: "Speech Baseline",
+    active: true,
+    legacy: false,
+    order: 7.6,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "text2speach-V2/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
     id: "session-inspector-v2",
     name: "Session Inspector V2",
     displayName: "Session Inspector V2",

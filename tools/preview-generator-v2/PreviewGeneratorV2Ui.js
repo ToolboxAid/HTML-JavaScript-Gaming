@@ -33,6 +33,10 @@ class PreviewGeneratorV2Ui {
     this.repoDestination.setPickRepoVisible(isVisible);
   }
 
+  setRepoDestinationVisible(isVisible) {
+    this.repoDestination.setRepoDestinationVisible(isVisible);
+  }
+
   setWorkspaceToolStateControlsLocked(isLocked) {
     this.repoDestination.setPickRepoEnabled(!isLocked);
     this.targetSource.setDisabled(isLocked);

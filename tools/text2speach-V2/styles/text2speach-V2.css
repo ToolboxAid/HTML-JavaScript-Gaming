@@ -1,0 +1,121 @@
+.text2speach-V2__header {
+  width: min(1180px, calc(100% - 32px));
+  margin: 16px auto 0;
+}
+
+.text2speach-V2__menu {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: min(1180px, calc(100% - 32px));
+  margin: 14px auto;
+}
+
+.text2speach-V2__menu[hidden] {
+  display: none;
+}
+
+.text2speach-V2 {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(320px, 1.2fr) minmax(260px, 0.85fr);
+  gap: 16px;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 28px;
+}
+
+.text2speach-V2__panel {
+  min-width: 0;
+}
+
+.text2speach-V2__accordion {
+  margin-bottom: 12px;
+}
+
+.text2speach-V2__accordion--fill,
+.text2speach-V2__accordion--fill .accordion-v2__content {
+  height: 100%;
+}
+
+.text2speach-V2__field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.text2speach-V2__field textarea,
+.text2speach-V2__field select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-inline);
+  color: var(--text);
+  font: inherit;
+}
+
+.text2speach-V2__field textarea {
+  min-height: 170px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.text2speach-V2__field select {
+  min-height: 38px;
+  padding: 7px 9px;
+}
+
+.text2speach-V2__preview {
+  min-height: 240px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-inline);
+  color: var(--text);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.text2speach-V2__summary,
+#text2speach-V2StatusLog {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-inline);
+  color: var(--text);
+  font: 13px/1.45 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+.text2speach-V2__summary {
+  min-height: 210px;
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+}
+
+#text2speach-V2StatusLog {
+  min-height: 180px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.text2speach-V2__status-accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.text2speach-V2__status-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 940px) {
+  .text2speach-V2 {
+    grid-template-columns: 1fr;
+  }
+}

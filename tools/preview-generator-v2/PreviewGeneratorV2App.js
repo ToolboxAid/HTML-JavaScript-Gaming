@@ -1658,6 +1658,7 @@ class PreviewGeneratorV2App {
 
     this.bindEvents();
     if (isWorkspaceManagerLaunch()) {
+      ui.setRepoDestinationVisible(false);
       ui.setPickRepoVisible(false);
     }
     updatePathPreviewLabels();

@@ -88,6 +88,7 @@ function classifyToolGroup(toolId) {
     "asset-pipeline",
     "tile-model-converter",
     "physics-sandbox",
+    "text2speach-V2",
     "3d-json-payload"
   ]);
   if (workflowToolIds.has(toolId)) {

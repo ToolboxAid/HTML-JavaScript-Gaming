@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>text2speach-V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css">
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+    <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="./styles/text2speach-V2.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="text2speach-V2">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-tool-summary="text2speach-V2">Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <div class="text2speach-V2__header" data-tool-header="text2speach-V2">
+          <section class="tools-platform-frame text2speach-V2__local-shell-frame">
+            <div class="tools-platform-frame__accordion-content">
+              <div class="tools-platform-frame__accordion-summary">
+                <div class="tools-platform-frame__summary-copy">
+                  <h1 class="tools-platform-frame__title" data-tool-id="text2speach-V2">text2speach-V2</h1>
+                  <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface V2</h2>
+                </div>
+                <div class="tools-platform-frame__summary-meta">
+                  <div class="tools-platform-frame__meta">Browser speech synthesis baseline for game prompts and narration.</div>
+                </div>
+              </div>
+              <div class="tools-platform-frame__topline">
+                <p class="tools-platform-frame__description">Preview text-to-speech settings using the shared engine audio speech wrapper.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </details>
+
+    <nav class="text2speach-V2__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+      <button id="text2speach-V2SpeakButton" type="button" disabled>Speak</button>
+      <button id="text2speach-V2StopButton" type="button" disabled>Stop</button>
+    </nav>
+
+    <nav class="text2speach-V2__menu text2speach-V2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <button id="text2speach-V2WorkspaceSpeakButton" type="button" disabled>Speak</button>
+      <button id="text2speach-V2WorkspaceStopButton" type="button" disabled>Stop</button>
+      <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
+    </nav>
+
+    <main class="text2speach-V2 app-shell" data-tool-id="text2speach-V2">
+      <aside class="text2speach-V2__panel text2speach-V2__panel--left" aria-label="Speech input">
+        <section class="accordion-v2 text2speach-V2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2SpeechTextContent">
+            <span>Speech Text</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="text2speach-V2SpeechTextContent" class="accordion-v2__content">
+            <label class="text2speach-V2__field" for="text2speach-V2SpeechText">
+              <span>Sample text</span>
+              <textarea id="text2speach-V2SpeechText" rows="8" autocomplete="off"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="accordion-v2 text2speach-V2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2SpeechOptionsContent">
+            <span>Speech Options</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="text2speach-V2SpeechOptionsContent" class="accordion-v2__content text2speach-V2__options">
+            <label class="text2speach-V2__field" for="text2speach-V2LanguageSelect">
+              <span>Language</span>
+              <select id="text2speach-V2LanguageSelect"></select>
+            </label>
+            <label class="text2speach-V2__field" for="text2speach-V2RateSelect">
+              <span>Rate</span>
+              <select id="text2speach-V2RateSelect"></select>
+            </label>
+            <label class="text2speach-V2__field" for="text2speach-V2PitchSelect">
+              <span>Pitch</span>
+              <select id="text2speach-V2PitchSelect"></select>
+            </label>
+            <label class="text2speach-V2__field" for="text2speach-V2VolumeSelect">
+              <span>Volume</span>
+              <select id="text2speach-V2VolumeSelect"></select>
+            </label>
+          </div>
+        </section>
+      </aside>
+
+      <section class="text2speach-V2__panel text2speach-V2__panel--center" aria-label="Speech preview">
+        <section class="accordion-v2 text2speach-V2__accordion text2speach-V2__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2SpeechPreviewContent">
+            <span>Preview</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="text2speach-V2SpeechPreviewContent" class="accordion-v2__content">
+            <div id="text2speach-V2SpeechPreview" class="text2speach-V2__preview">No speech request has been queued.</div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="text2speach-V2__panel text2speach-V2__panel--right" aria-label="Speech output">
+        <section class="accordion-v2 text2speach-V2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2SpeechSummaryContent">
+            <span>Output Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="text2speach-V2SpeechSummaryContent" class="accordion-v2__content">
+            <pre id="text2speach-V2SpeechSummary" class="text2speach-V2__summary">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 text2speach-V2__accordion is-open" data-accordion-v2-open="true">
+          <div class="accordion-v2__header text2speach-V2__status-accordion-header" aria-expanded="true" aria-controls="text2speach-V2StatusLogContent">
+            <span>Status</span>
+            <div class="text2speach-V2__status-header-actions">
+              <button id="text2speach-V2ClearStatusButton" type="button">Clear</button>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </div>
+          <div id="text2speach-V2StatusLogContent" class="accordion-v2__content">
+            <textarea id="text2speach-V2StatusLog" readonly rows="10" aria-label="Status log"></textarea>
+          </div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  </body>
+</html>

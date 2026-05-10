@@ -13,3 +13,5 @@ export { default as MidiPlayer } from './MidiPlayer.js';
 export { default as Synthesizer } from './Synthesizer.js';
 export { default as FrequencyPlayer } from './FrequencyPlayer.js';
 export { default as PlaylistManager } from './PlaylistManager.js';
+export { default as TextToSpeechEngine } from './TextToSpeechEngine.js';
+export * from './TextToSpeechDefaults.js';
