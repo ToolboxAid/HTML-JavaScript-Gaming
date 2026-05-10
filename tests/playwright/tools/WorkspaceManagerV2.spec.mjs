@@ -67,6 +67,7 @@ async function installMockRepoPicker(page) {
 
     function makeFileHandle(name, text, path = name) {
       let contents = text;
+      let lastModified = Date.now();
       return {
         kind: "file",
         name,
@@ -87,12 +88,13 @@ async function installMockRepoPicker(page) {
             },
             async close() {
               contents = draft;
+              lastModified += 1000;
               appendManifestWrite(path, contents);
             }
           };
         },
         async getFile() {
-          return new File([contents], name, { type: "application/json" });
+          return new File([contents], name, { lastModified, type: "application/json" });
         }
       };
     }
@@ -2144,10 +2146,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#saveWorkspaceButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved and marked clean: workspace\.tools\.palette-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save source binding: \/games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved path: games\/Asteroids\/game\.manifest\.json\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved file size: \d+ bytes\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 3 \(asset-manager-v2 assets=14; palette-manager-v2 swatches=12; vector-map-editor vectors=5\)\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; workspace toolState valid\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root game\.workspace toolState valid; saved context matched re-read file\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 toolState context workspace-manager-v2-Asteroids\./);
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "false");
       await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
@@ -2169,6 +2174,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const manifestWrites = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]"));
       expect(manifestWrites.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Asteroids/game.manifest.json");
       const writtenGameManifest = JSON.parse(manifestWrites.at(-1).contents);
+      expect(writtenGameManifest.game.workspace).toBeTruthy();
       expect(writtenGameManifest.game.workspace.tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
         hex: "#654321",
         name: "Close Guard Copper",
@@ -2194,6 +2200,108 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         repoReference: null,
         toolKeys: []
       });
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("rebinds restored session Save to the discovered game manifest source", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await selectMockRepo(page);
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expectWorkspaceReturnRehydrated(page);
+      const hostContextId = await page.evaluate(() => {
+        const app = window.__workspaceManagerV2App;
+        const contextId = app.contextService.persistContext(app.activeContext);
+        app.activeHostContextId = contextId;
+        app.activeGame = {
+          id: app.activeGame.id,
+          name: app.activeGame.name,
+          manifestPath: `sessionStorage:${contextId}`
+        };
+        return contextId;
+      });
+      await dirtyPaletteToolState(page, {
+        hex: "#987654",
+        name: "Restored Binding Bronze",
+        symbol: "%"
+      });
+      await page.locator("#saveWorkspaceButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`INFO Save source rebound to /games/Asteroids/game\\.manifest\\.json for Asteroids\\.`));
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save source binding: \/games\/Asteroids\/game\.manifest\.json\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root game\.workspace toolState valid; saved context matched re-read file\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
+      const sourceBindingState = await page.evaluate((contextId) => ({
+        activeGameManifestKind: window.__workspaceManagerV2App.activeGame.manifestKind,
+        activeGameManifestPath: window.__workspaceManagerV2App.activeGame.manifestPath,
+        savedContext: JSON.parse(sessionStorage.getItem(contextId)),
+        writes: JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]")
+      }), hostContextId);
+      expect(sourceBindingState.activeGameManifestKind).toBe("game-manifest");
+      expect(sourceBindingState.activeGameManifestPath).toBe("/games/Asteroids/game.manifest.json");
+      expect(sourceBindingState.savedContext.tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
+        hex: "#987654",
+        name: "Restored Binding Bronze",
+        source: "User Added",
+        symbol: "%"
+      });
+      expect(sourceBindingState.writes.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Asteroids/game.manifest.json");
+      expect(JSON.parse(sourceBindingState.writes.at(-1).contents).game.workspace.tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
+        hex: "#987654",
+        name: "Restored Binding Bronze",
+        source: "User Added",
+        symbol: "%"
+      });
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("logs recovery action when restored Save cannot bind to a game manifest source", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await selectMockRepo(page);
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expectWorkspaceReturnRehydrated(page);
+      const hostContextId = await page.evaluate(() => {
+        const app = window.__workspaceManagerV2App;
+        const contextId = app.contextService.persistContext(app.activeContext);
+        app.activeHostContextId = contextId;
+        app.activeRepoHandle = null;
+        app.contextService.clearDiscoveredGames();
+        app.activeGame = {
+          id: app.activeGame.id,
+          name: app.activeGame.name,
+          manifestPath: `sessionStorage:${contextId}`
+        };
+        return contextId;
+      });
+      await dirtyPaletteToolState(page, {
+        hex: "#445566",
+        name: "Missing Source Slate",
+        symbol: "?"
+      });
+      await page.locator("#saveWorkspaceButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`FAIL Save blocked: Save source binding failed: missing active repo folder handle; active game source=sessionStorage:${hostContextId}; context\\.gameId=Asteroids; context\\.gameRoot=games/Asteroids/\\. Recovery action: Cancel active toolState, pick the repo folder again, reopen the game, and retry Save\\.`));
+      expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]"))).toEqual([]);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

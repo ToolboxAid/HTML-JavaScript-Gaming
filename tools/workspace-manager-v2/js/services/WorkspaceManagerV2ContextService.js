@@ -491,6 +491,17 @@ export class WorkspaceManagerV2ContextService {
       : { ok: false, key, message: result.message };
   }
 
+  sourceBindingRecoveryAction() {
+    return "Cancel active toolState, pick the repo folder again, reopen the game, and retry Save.";
+  }
+
+  saveSourceBindingFailure(reason, { context, game } = {}) {
+    return {
+      ok: false,
+      message: `Save source binding failed: ${reason}; active game source=${game?.manifestPath || "(missing manifestPath)"}; context.gameId=${context?.gameId || "(missing gameId)"}; context.gameRoot=${context?.gameRoot || "(missing gameRoot)"}. Recovery action: ${this.sourceBindingRecoveryAction()}`
+    };
+  }
+
   reusableToolSession(tool, context) {
     const result = this.readToolSession(tool.id);
     if (!result.ok) {
@@ -1184,6 +1195,54 @@ export class WorkspaceManagerV2ContextService {
     }
   }
 
+  async bindGameManifestSourceForSave({ context, game, repoHandle } = {}) {
+    if (!isPlainObject(context)) {
+      return this.saveSourceBindingFailure("missing active toolState context", { context, game });
+    }
+    if (!context.gameId) {
+      return this.saveSourceBindingFailure("missing context.gameId", { context, game });
+    }
+    if (game?.manifestKind === "game-manifest" && isGameManifest(game.manifest) && game.manifestPath) {
+      return { ok: true, game, source: game.manifestPath };
+    }
+    const discoveredGame = this.games().find((entry) => (
+      entry.id === context.gameId
+      && entry.manifestKind === "game-manifest"
+      && isGameManifest(entry.manifest)
+      && entry.manifestPath
+    ));
+    if (discoveredGame) {
+      return { ok: true, game: discoveredGame, source: discoveredGame.manifestPath };
+    }
+    if (!context.gameRoot) {
+      return this.saveSourceBindingFailure("missing context.gameRoot", { context, game });
+    }
+    if (!repoHandle || repoHandle.kind !== "directory") {
+      return this.saveSourceBindingFailure("missing active repo folder handle", { context, game });
+    }
+    const manifestPath = `/${String(context.gameRoot).replace(/^\/+/, "")}game.manifest.json`;
+    const fileHandleResult = await this.gameManifestFileHandle(repoHandle, manifestPath);
+    if (!fileHandleResult.ok) {
+      return this.saveSourceBindingFailure(fileHandleResult.message, { context, game });
+    }
+    const manifestResult = await this.readManifestFile(fileHandleResult.fileHandle, fileHandleResult.path);
+    if (!manifestResult.ok) {
+      return this.saveSourceBindingFailure(manifestResult.message, { context, game });
+    }
+    const validation = await this.validateGameManifest(manifestResult.manifest);
+    if (!validation.ok) {
+      return this.saveSourceBindingFailure(validation.message, { context, game });
+    }
+    if (manifestResult.manifest.game.id !== context.gameId) {
+      return this.saveSourceBindingFailure(`${fileHandleResult.path} game.id ${manifestResult.manifest.game.id} does not match context.gameId ${context.gameId}`, { context, game });
+    }
+    const boundGame = gameFromGameManifest(manifestResult.manifest, `/${fileHandleResult.path}`, String(repoHandle.name || ""));
+    if (!boundGame) {
+      return this.saveSourceBindingFailure(`${fileHandleResult.path} is missing game.id, game.name, game.folder, or game.workspace`, { context, game });
+    }
+    return { ok: true, game: boundGame, source: fileHandleResult.path };
+  }
+
   toolStateItemDetails(context) {
     return Object.entries(context?.tools || {})
       .sort(([left], [right]) => left.localeCompare(right))
@@ -1207,22 +1266,33 @@ export class WorkspaceManagerV2ContextService {
     if (!isPlainObject(context)) {
       return { ok: false, message: "Active toolState context is required before saving." };
     }
-    if (game?.manifestKind !== "game-manifest" || !isGameManifest(game.manifest)) {
-      return { ok: false, message: "Save requires an active game.manifest.json source with root game.workspace toolState." };
-    }
     const workspaceValidation = await this.validateGeneratedManifest(context);
     if (!workspaceValidation.ok) {
       return workspaceValidation;
     }
-    const fileHandleResult = await this.gameManifestFileHandle(repoHandle, game.manifestPath);
+    const sourceBinding = await this.bindGameManifestSourceForSave({ context, game, repoHandle });
+    if (!sourceBinding.ok) {
+      return sourceBinding;
+    }
+    const boundGame = sourceBinding.game;
+    const fileHandleResult = await this.gameManifestFileHandle(repoHandle, boundGame.manifestPath);
     if (!fileHandleResult.ok) {
-      return fileHandleResult;
+      return this.saveSourceBindingFailure(fileHandleResult.message, { context, game: boundGame });
     }
     if (typeof fileHandleResult.fileHandle.createWritable !== "function") {
       return { ok: false, message: `${fileHandleResult.path} cannot be written by the active repo folder handle.` };
     }
 
-    const nextManifest = clone(game.manifest);
+    let beforeFile;
+    let beforeText;
+    try {
+      beforeFile = await fileHandleResult.fileHandle.getFile();
+      beforeText = await beforeFile.text();
+    } catch (error) {
+      return { ok: false, message: `Unable to read ${fileHandleResult.path} before save: ${error.message}` };
+    }
+
+    const nextManifest = clone(boundGame.manifest);
     nextManifest.game.workspace = clone(context);
     const gameValidation = await this.validateGameManifest(nextManifest);
     if (!gameValidation.ok) {
@@ -1247,8 +1317,18 @@ export class WorkspaceManagerV2ContextService {
     } catch (error) {
       return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: ${error.message}` };
     }
+    const beforeModified = Number(beforeFile?.lastModified || 0);
+    const afterModified = Number(readBackFile?.lastModified || 0);
+    const contentChanged = beforeText !== readBackText;
+    const modifiedChanged = beforeModified > 0 && afterModified > 0 && beforeModified !== afterModified;
+    if (!contentChanged && !modifiedChanged) {
+      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: modified timestamp and file content did not change.` };
+    }
     if (!isPlainObject(readBackManifest)) {
       return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: JSON root is not an object.` };
+    }
+    if (!isPlainObject(readBackManifest.game?.workspace)) {
+      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: root game.workspace toolState is missing.` };
     }
     const readBackGameValidation = await this.validateGameManifest(readBackManifest);
     if (!readBackGameValidation.ok) {
@@ -1258,16 +1338,42 @@ export class WorkspaceManagerV2ContextService {
     if (!readBackWorkspaceValidation.ok) {
       return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: ${readBackWorkspaceValidation.message}` };
     }
+    if (JSON.stringify(readBackManifest.game.workspace) !== JSON.stringify(context)) {
+      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: re-read game.workspace toolState does not match the saved context.` };
+    }
     const toolStateDetails = this.toolStateItemDetails(readBackManifest.game.workspace);
     return {
       ok: true,
+      changeValidation: contentChanged ? "file content changed" : "modified timestamp changed",
       fileSize: Number.isFinite(readBackFile?.size) ? readBackFile.size : readBackText.length,
+      game: {
+        ...boundGame,
+        manifest: readBackManifest
+      },
       manifest: readBackManifest,
       path: fileHandleResult.path,
+      source: sourceBinding.source,
       toolStateDetails,
       toolStateItemCount: toolStateDetails.length,
-      validationResult: "game manifest valid; workspace toolState valid"
+      validationResult: "game manifest valid; root game.workspace toolState valid; saved context matched re-read file"
     };
+  }
+
+  validateCleanToolStateKeys(keys = []) {
+    const failed = [];
+    keys.forEach((key) => {
+      const result = this.readSessionJson(key);
+      if (!result.ok) {
+        failed.push(`${key}: ${result.message}`);
+        return;
+      }
+      if (result.value?.dirty?.isDirty !== false) {
+        failed.push(`${key}: dirty.isDirty was not false`);
+      }
+    });
+    return failed.length
+      ? { ok: false, message: failed.join(" | ") }
+      : { ok: true };
   }
 
   workspaceManifestFromGameManifest(game) {

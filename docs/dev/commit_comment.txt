@@ -1,1 +1,1 @@
-Move Workspace Manager V2 lifecycle controls into the header and validate active toolState saves - PR_26130_001-workspace-header-save-validation
+Bind restored Workspace Manager V2 saves to real game manifest sources - PR_26130_002-save-source-binding-validation

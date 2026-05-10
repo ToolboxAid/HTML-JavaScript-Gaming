@@ -348,7 +348,16 @@ export class WorkspaceManagerV2App {
       if (result.game.id !== this.activeGame.id) {
         return { ok: false, message: `Stored session context is for ${result.game.id}, not ${this.activeGame.id}.` };
       }
-      this.applyContextResult(result);
+      const sourceBinding = await this.contextService.bindGameManifestSourceForSave({
+        context: result.context,
+        game: result.game,
+        repoHandle: this.activeRepoHandle
+      });
+      if (!sourceBinding.ok) {
+        return sourceBinding;
+      }
+      this.statusLog.info(`Save source rebound to ${sourceBinding.source} for ${result.game.id}.`);
+      this.applyContextResult({ ...result, game: sourceBinding.game });
       if (result.assetWarning) {
         this.statusLog.info(`Warning: ${result.assetWarning}`);
       }
@@ -388,6 +397,7 @@ export class WorkspaceManagerV2App {
       return;
     }
     const dirtyStatus = this.activeToolStateDirtyStatus();
+    const dirtyCheck = this.contextService.dirtyWorkspaceToolStates();
     if (dirtyStatus === "false") {
       this.syncLifecycleControls();
       this.statusLog.info("Save skipped: active toolState is already clean.");
@@ -418,15 +428,17 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail(`Save blocked: ${writeResult.message}`);
       return;
     }
-    this.activeGame = {
-      ...this.activeGame,
-      manifest: writeResult.manifest
-    };
+    this.activeGame = writeResult.game;
     this.activeHostContextId = this.contextService.writePersistedContext(this.activeHostContextId, context);
     const cleanResult = this.contextService.markEnabledToolSessionsClean({
       context,
       tools: this.contextService.workspaceLaunchableTools()
     });
+    const cleanValidation = this.contextService.validateCleanToolStateKeys(cleanResult.cleanedKeys);
+    if (!cleanValidation.ok) {
+      this.statusLog.fail(`Save clean-state validation failed: ${cleanValidation.message}`);
+      return;
+    }
     const metrics = this.contextSummaryMetrics(context);
     this.applyContextResult({
       assetCount: metrics.assetCount,
@@ -438,10 +450,13 @@ export class WorkspaceManagerV2App {
     cleanResult.cleanedKeys.forEach((key) => {
       this.statusLog.ok(`Saved and marked clean: ${key}.`);
     });
+    this.statusLog.ok(`Save source binding: ${writeResult.source}.`);
     this.statusLog.ok(`Saved path: ${writeResult.path}.`);
+    this.statusLog.ok(`Save write validation: ${writeResult.changeValidation}.`);
     this.statusLog.info(`Saved file size: ${writeResult.fileSize} bytes.`);
     this.statusLog.info(`Saved toolState items: ${writeResult.toolStateItemCount} (${writeResult.toolStateDetails.join("; ")}).`);
     this.statusLog.ok(`Save validation result: ${writeResult.validationResult}.`);
+    this.statusLog.ok(`Save dirty/clean validation: ${dirtyCheck.dirty.length} dirty toolState payload${dirtyCheck.dirty.length === 1 ? "" : "s"} persisted; ${cleanResult.cleanedKeys.length} toolState key${cleanResult.cleanedKeys.length === 1 ? "" : "s"} marked clean.`);
     this.statusLog.ok(`Saved Workspace Manager V2 toolState context ${context.id}.`);
   }
 
