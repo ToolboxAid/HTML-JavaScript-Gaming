@@ -1,4 +1,7 @@
 const WORKSPACE_REPO_WRITES_SESSION_KEY = "workspace.repo.writes";
+const WORKSPACE_REPO_HANDLE_DB_NAME = "workspace-manager-v2-repo-handles";
+const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
+const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
 
 function normalizePath(value) {
   return String(value || "")
@@ -21,6 +24,92 @@ function appendSessionWrite(sessionStorageRef, write) {
   const writes = readSessionWrites(sessionStorageRef);
   writes.push(write);
   sessionStorageRef.setItem(WORKSPACE_REPO_WRITES_SESSION_KEY, JSON.stringify(writes));
+}
+
+function expectedRepoHandleName(reference) {
+  if (!reference || typeof reference !== "object") {
+    return "";
+  }
+  return String(reference.handleName || reference.displayName || "").trim();
+}
+
+function validateRestoredRepoHandle(repoHandle, reference, source) {
+  if (!repoHandle || repoHandle.kind !== "directory" || typeof repoHandle.getDirectoryHandle !== "function") {
+    return {
+      message: `Workspace Manager V2 repo handle cache returned no live FileSystemDirectoryHandle from ${source}.`,
+      ok: false
+    };
+  }
+
+  const expectedName = expectedRepoHandleName(reference);
+  const actualName = String(repoHandle.name || "").trim();
+  if (expectedName && actualName && expectedName !== actualName) {
+    return {
+      message: `Workspace Manager V2 repo handle cache returned handle root ${actualName}, expected ${expectedName}.`,
+      ok: false
+    };
+  }
+
+  return {
+    ok: true,
+    repoHandle,
+    source
+  };
+}
+
+function openRepoHandleDatabase(windowRef) {
+  return new Promise((resolve, reject) => {
+    const indexedDb = windowRef?.indexedDB;
+    if (!indexedDb || typeof indexedDb.open !== "function") {
+      reject(new Error("IndexedDB is unavailable."));
+      return;
+    }
+
+    const request = indexedDb.open(WORKSPACE_REPO_HANDLE_DB_NAME, 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (db && !db.objectStoreNames.contains(WORKSPACE_REPO_HANDLE_STORE_NAME)) {
+        db.createObjectStore(WORKSPACE_REPO_HANDLE_STORE_NAME);
+      }
+    };
+    request.onerror = () => {
+      reject(request.error || new Error("Unable to open Workspace Manager V2 repo handle cache."));
+    };
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+  });
+}
+
+function readCachedRepoHandleFromDatabase(windowRef) {
+  return new Promise((resolve, reject) => {
+    let db = null;
+    openRepoHandleDatabase(windowRef)
+      .then((openedDb) => {
+        db = openedDb;
+        const transaction = db.transaction(WORKSPACE_REPO_HANDLE_STORE_NAME, "readonly");
+        const store = transaction.objectStore(WORKSPACE_REPO_HANDLE_STORE_NAME);
+        const request = store.get(WORKSPACE_REPO_HANDLE_STORE_KEY);
+        request.onerror = () => {
+          reject(request.error || new Error("Unable to read Workspace Manager V2 repo handle cache."));
+        };
+        request.onsuccess = () => {
+          resolve(request.result || null);
+        };
+        transaction.oncomplete = () => {
+          if (db && typeof db.close === "function") {
+            db.close();
+          }
+        };
+        transaction.onerror = () => {
+          reject(transaction.error || new Error("Unable to complete Workspace Manager V2 repo handle cache read."));
+          if (db && typeof db.close === "function") {
+            db.close();
+          }
+        };
+      })
+      .catch(reject);
+  });
 }
 
 class PreviewGeneratorV2SessionFileHandle {
@@ -146,6 +235,41 @@ class PreviewGeneratorV2RepoAccess {
       return true;
     } catch {
       return false;
+    }
+  }
+
+  static async restoreWorkspaceManagerRepoHandle(reference, { windowRef = window } = {}) {
+    const hook = windowRef?.__workspaceManagerV2RepoHandleCache;
+    if (hook && typeof hook.restore === "function") {
+      try {
+        const hookValue = await hook.restore({ reference });
+        const hookHandle = hookValue?.handle || hookValue?.repoHandle || hookValue;
+        const hookResult = validateRestoredRepoHandle(hookHandle, reference, "workspace-manager-v2 runtime repo handle cache");
+        if (!hookResult.ok) {
+          return hookResult;
+        }
+        return hookResult;
+      } catch (error) {
+        return {
+          message: `Workspace Manager V2 runtime repo handle cache restore failed: ${error?.message || error}`,
+          ok: false
+        };
+      }
+    }
+
+    try {
+      const cachedValue = await readCachedRepoHandleFromDatabase(windowRef);
+      const cachedHandle = cachedValue?.handle || cachedValue?.repoHandle || cachedValue;
+      const cachedResult = validateRestoredRepoHandle(cachedHandle, reference, "workspace-manager-v2 IndexedDB repo handle cache");
+      if (!cachedResult.ok) {
+        return cachedResult;
+      }
+      return cachedResult;
+    } catch (error) {
+      return {
+        message: `Workspace Manager V2 IndexedDB repo handle cache restore failed: ${error?.message || error}`,
+        ok: false
+      };
     }
   }
 

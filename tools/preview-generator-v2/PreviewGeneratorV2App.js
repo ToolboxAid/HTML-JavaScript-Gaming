@@ -632,19 +632,29 @@ function resolveOutputPathState(entry) {
   }
 }
 
-function absoluteOutputPathFromWrite(fileHandle, pathState) {
-  return normalizeAbsoluteRepoPath(fileHandle?.path)
-    || pathState.fullAbsoluteOutputPath
+function absoluteOutputPathFromWrite(pathState) {
+  return pathState.fullAbsoluteOutputPath
     || pathState.absoluteOutputPath
     || "";
 }
 
-function handleOutputPathFromWrite(fileHandle) {
-  return normalizeOutputPath(fileHandle?.path);
+function handleOutputPathFromWrite(fileHandle, pathState) {
+  const relativeOutputPath = normalizeOutputPath(pathState?.relativeOutputPath);
+  const handlePath = normalizeOutputPath(fileHandle?.path);
+  const handleRoot = normalizeOutputPath(repoHandleRootName());
+
+  if (handlePath && handleRoot && handlePath.startsWith(`${handleRoot}/`)) {
+    return handlePath.slice(handleRoot.length + 1);
+  }
+  if (handlePath && relativeOutputPath && handlePath.endsWith(relativeOutputPath)) {
+    return relativeOutputPath;
+  }
+  return relativeOutputPath || handlePath;
 }
 
 async function verifyWrittenPreview(fileHandle, expectedContents, pathState) {
-  const expectedPath = pathState.fullAbsoluteOutputPathDisplay || displayAbsolutePath(pathState.fullAbsoluteOutputPath);
+  const outputPath = pathState.fullAbsoluteOutputPathDisplay || displayAbsolutePath(pathState.fullAbsoluteOutputPath);
+  const handleRelativeOutputPath = handleOutputPathFromWrite(fileHandle, pathState);
   if (!fileHandle || typeof fileHandle.getFile !== "function") {
     return {
       checked: false,
@@ -658,40 +668,71 @@ async function verifyWrittenPreview(fileHandle, expectedContents, pathState) {
       return { checked: false, message: "file text read-back is unavailable from this repo handle", ok: false };
     }
     const actualContents = await file.text();
-    if (String(actualContents) !== String(expectedContents)) {
+    const fileSize = Number.isFinite(file.size) ? file.size : String(actualContents).length;
+    const modifiedTimestamp = Number.isFinite(file.lastModified) && file.lastModified > 0
+      ? file.lastModified
+      : "";
+    const contentStartsAsSvg = String(actualContents).trimStart().startsWith("<svg");
+    const details = {
+      checked: true,
+      contentStartsAsSvg,
+      fileExists: true,
+      fileSize,
+      handleRelativeOutputPath,
+      modifiedTimestamp,
+      outputPath
+    };
+    if (!contentStartsAsSvg) {
       return {
-        checked: true,
-        message: `Write verification failed for ${expectedPath}: read-back contents did not match generated preview.svg.`,
+        ...details,
+        message: `Write verification failed for ${outputPath}: read-back content did not start as SVG.`,
         ok: false
       };
     }
-    return { checked: true, ok: true };
+    if (String(actualContents) !== String(expectedContents)) {
+      return {
+        ...details,
+        message: `Write verification failed for ${outputPath}: read-back contents did not match generated preview.svg.`,
+        ok: false
+      };
+    }
+    return {
+      ...details,
+      ok: true
+    };
   } catch (error) {
     return {
       checked: true,
-      message: `Write verification failed for ${expectedPath}: ${error.message}`,
+      fileExists: false,
+      handleRelativeOutputPath,
+      message: `Write verification failed for ${outputPath}: ${error.message}`,
+      outputPath,
       ok: false
     };
   }
 }
 
 function logWritePath(label, pathState, writeResult) {
+  const absoluteDisplayPath = displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath);
+  const handleRelativeOutputPath = writeResult.handleRelativeOutputPath || writeResult.handleOutputPath || pathState.relativeOutputPath;
   if (writeResult.verified) {
-    logger.log(`Write verification passed: file exists at ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}.`);
+    logger.log(`Write verification passed: file exists at ${absoluteDisplayPath}.`);
+    logger.log(`Write verification file exists: ${writeResult.fileExists ? "true" : "false"}.`);
+    logger.log(`Write verification file size: ${Number.isFinite(writeResult.fileSize) ? writeResult.fileSize : "unavailable"} bytes.`);
+    logger.log(`Write verification modified timestamp: ${writeResult.modifiedTimestamp || "unavailable"}.`);
+    logger.log(`Write verification content starts as SVG: ${writeResult.contentStartsAsSvg ? "true" : "false"}.`);
+    logger.log(`Write verification output path: ${absoluteDisplayPath}.`);
+    logger.log(`Write verification handle-relative path: ${handleRelativeOutputPath}.`);
   }
   logger.log(`OK WRITE ${label}`);
-  logger.log(`Resolved relative output path: ${pathState.relativeOutputPath}`);
-  logger.log(`Repo root: ${pathState.repoRootDisplayPath}`);
-  logger.log(`Full absolute output path: ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}`);
-  if (writeResult.handleOutputPath) {
-    logger.log(`Handle output path: ${writeResult.handleOutputPath}`);
-    if (pathState.fullAbsoluteOutputPath && writeResult.handleOutputPath !== normalizeOutputPath(pathState.fullAbsoluteOutputPath)) {
-      logger.log(`WARN Path resolution mismatch: full absolute path string ${pathState.fullAbsoluteOutputPathDisplay}; handle path ${writeResult.handleOutputPath}; handle root name ${repoHandleRootName() || "(unavailable)"}.`);
-    }
-  }
+  logger.log(`Repo display label: ${repoDisplayName || "(unavailable)"}`);
+  logger.log(`Repo root path string: ${pathState.repoRootDisplayPath || "(unavailable)"}`);
+  logger.log(`Handle root name: ${repoHandleRootName() || "(unavailable)"}`);
+  logger.log(`Handle-relative output path: ${handleRelativeOutputPath}`);
+  logger.log(`Absolute display path: ${absoluteDisplayPath}`);
   logger.log(`Source resolution context: ${pathState.sourceContext}`);
   if (ui.renderControls.isForceRewrite()) {
-    logger.log(`Force rewrite verification passed for ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}.`);
+    logger.log(`Force rewrite verification passed for ${absoluteDisplayPath}.`);
   }
 }
 
@@ -1046,17 +1087,29 @@ async function writePreview(targetDirHandle, svgContent, pathState) {
   if (!verification.ok) {
     return {
       absoluteOutputPath: pathState.fullAbsoluteOutputPath,
-      handleOutputPath: handleOutputPathFromWrite(fileHandle),
+      contentStartsAsSvg: verification.contentStartsAsSvg,
+      fileExists: verification.fileExists,
+      fileSize: verification.fileSize,
+      handleOutputPath: handleOutputPathFromWrite(fileHandle, pathState),
+      handleRelativeOutputPath: verification.handleRelativeOutputPath || handleOutputPathFromWrite(fileHandle, pathState),
       message: verification.message,
+      modifiedTimestamp: verification.modifiedTimestamp,
       ok: false,
+      outputPath: verification.outputPath,
       relativeOutputPath: pathState.relativeOutputPath,
       verified: verification.checked
     };
   }
   return {
-    absoluteOutputPath: absoluteOutputPathFromWrite(fileHandle, pathState),
-    handleOutputPath: handleOutputPathFromWrite(fileHandle),
+    absoluteOutputPath: absoluteOutputPathFromWrite(pathState),
+    contentStartsAsSvg: verification.contentStartsAsSvg,
+    fileExists: verification.fileExists,
+    fileSize: verification.fileSize,
+    handleOutputPath: handleOutputPathFromWrite(fileHandle, pathState),
+    handleRelativeOutputPath: verification.handleRelativeOutputPath || handleOutputPathFromWrite(fileHandle, pathState),
+    modifiedTimestamp: verification.modifiedTimestamp,
     ok: true,
+    outputPath: verification.outputPath,
     relativeOutputPath: pathState.relativeOutputPath,
     verified: verification.checked
   };
@@ -1275,7 +1328,7 @@ class PreviewGeneratorV2App {
     }
   }
 
-  async hydrateWorkspaceRepoSession(manifest, previewTarget) {
+  async hydrateWorkspaceRepoSession(manifest) {
     const repoReferenceResult = readWorkspaceRepoReference();
     if (!repoReferenceResult.ok) {
       return { ok: false, message: repoReferenceResult.message };
@@ -1291,17 +1344,25 @@ class PreviewGeneratorV2App {
         message: `${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.displayName ${repoReference.displayName} does not match manifest repoRoot ${manifest.repoRoot}.`
       };
     }
-    const handle = PreviewGeneratorV2RepoAccess.createSessionRepoHandle({
-      manifest,
-      previewAssetFolder: previewTarget?.previewAssetFolder || "",
-      reference: repoReference,
-      sessionStorageRef: window.sessionStorage
-    });
-    const repoValidation = await validateRepoRootHandle(handle);
+    const handleResult = await PreviewGeneratorV2RepoAccess.restoreWorkspaceManagerRepoHandle(repoReference);
+    if (!handleResult.ok) {
+      return {
+        ok: false,
+        message: `${handleResult.message} Required action: return to Workspace Manager V2, pick the repo folder, and reopen Preview Generator V2.`
+      };
+    }
+
+    const repoValidation = await validateRepoRootHandle(handleResult.repoHandle);
     if (!repoValidation.ok) {
       return repoValidation;
     }
-    return { ok: true, handle, repoReference, workspace: workspaceResult.workspace };
+    return {
+      ok: true,
+      handle: handleResult.repoHandle,
+      handleSource: handleResult.source,
+      repoReference,
+      workspace: workspaceResult.workspace
+    };
   }
 
   async handleExecute() {
@@ -1518,7 +1579,7 @@ class PreviewGeneratorV2App {
       }
     }
 
-    const repoSessionResult = await this.hydrateWorkspaceRepoSession(manifest, previewTarget);
+    const repoSessionResult = await this.hydrateWorkspaceRepoSession(manifest);
     if (!repoSessionResult.ok) {
       repoDirHandle = null;
       logger.log(`FAIL Workspace repo session hydration: ${repoSessionResult.message}`);
@@ -1533,7 +1594,8 @@ class PreviewGeneratorV2App {
     workspaceLaunchHydrated = true;
     logger.log(`OK Workspace repo session reference loaded from ${WORKSPACE_REPO_REFERENCE_SESSION_KEY} for ${repoDisplayName}.`);
     logger.log(`OK Workspace tool session workspace context loaded from ${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.`);
-    logger.log("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
+    logger.log(`Workspace launch repo handle restored from ${repoSessionResult.handleSource} using ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}; independent repo selection is not required.`);
+    logger.log("Workspace Manager V2 live repo handle was restored from runtime handle cache; no handle object was read from toolState JSON.");
     await logWorkspaceRepoHandleState(manifest);
     this.syncGeneratePreviewButton();
   }

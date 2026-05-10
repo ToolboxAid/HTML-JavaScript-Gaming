@@ -36,57 +36,62 @@
             {
               "symbol": "!",
               "hex": "#020617",
-              "name": "Space Black"
+              "name": "Space Black",
+              "source": "manifest"
             },
             {
               "symbol": "#",
               "hex": "#FFFFFF",
-              "name": "Vector White"
+              "name": "Vector White",
+              "source": "manifest"
             },
             {
               "symbol": "$",
               "hex": "#CBD5E1",
-              "name": "Asteroid Gray"
+              "name": "Asteroid Gray",
+              "source": "manifest"
             },
             {
               "symbol": "%",
               "hex": "#DBEAFE",
-              "name": "Saucer Glow"
+              "name": "Saucer Glow",
+              "source": "manifest"
             },
             {
               "symbol": "&",
               "hex": "#94A3B8",
-              "name": "HUD Muted"
-            },
-            {
-              "symbol": "(",
-              "hex": "#FBBF24",
-              "name": "Accent Amber"
+              "name": "HUD Muted",
+              "source": "manifest"
             },
             {
               "symbol": ")",
               "hex": "#F87171",
-              "name": "Warning Red"
+              "name": "Warning Red",
+              "source": "manifest"
             },
             {
               "symbol": "*",
               "hex": "#78B7FF",
-              "name": "HUD Blue"
+              "name": "HUD Blue",
+              "source": "manifest"
             },
             {
               "symbol": "+",
               "hex": "#FFBE64",
-              "name": "HUD Gold"
+              "name": "HUD Gold",
+              "source": "manifest"
             },
             {
               "symbol": "0",
               "hex": "#05070D",
-              "name": "HUD Color 1"
+              "name": "HUD Color 1",
+              "source": "manifest"
             },
             {
               "symbol": "1",
               "hex": "#DCE8FF",
-              "name": "HUD Color 2"
+              "name": "HUD Color 2",
+              "source": "manifest"
             }
           ]
         },

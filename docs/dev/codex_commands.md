@@ -1,31 +1,41 @@
-# Codex Commands - PR_26130_004-workspace-return-tool-enable-regression
+# Codex Commands - PR_26130_006-preview-generator-handle-write-verification
 
 ```text
 codex
 
 Changes:
-Create PR_26130_004-workspace-return-tool-enable-regression.
+Create PR_26130_006-preview-generator-handle-write-verification.
 Read docs/dev/PROJECT_INSTRUCTIONS.md first.
-Fix Workspace Manager V2 regression where returning from any tool leaves all workspace tools disabled/gray.
-On return from a tool, preserve the selected repo, selected game, live repo folder handle, active game binding, and enabled tool list.
-Do not treat normal return navigation as Cancel, Close, or lost file handle.
-Only disable tools when no valid opened game/toolState is active or when repo binding is actually missing.
-Add explicit log lines for return-from-tool state restoration: repo selected, game selected, source binding status, enabled tool count.
-Keep Save disabled only when no live writable file handle exists.
-Keep scope limited to Workspace Manager V2 return state and tool enablement regression.
+Fix Preview Generator V2 write verification so SVG writes are verified through the same live repo FileSystemDirectoryHandle provided by Workspace Manager V2.
+Do not treat absolute path string comparison against handle-relative path as a mismatch.
+Normalize path reporting into:
+- repo display label
+- repo root path string
+- handle root name
+- handle-relative output path
+- absolute display path
+After SVG write, verify by re-reading the handle target and logging:
+- file exists
+- file size
+- modified timestamp when available
+- content starts as SVG
+- output path
+- handle-relative path
+If Preview Generator cannot write through the Workspace Manager live repo handle, fail visibly and do not claim OK WRITE.
+Document whether the handle is passed from Workspace Manager or resolved from workspace.repo.reference/session runtime state.
+Keep scope limited to Preview Generator V2 handle/path/write verification.
 No unrelated files.
 No start_of_day changes.
 
 Validation:
 Run npm run test:workspace-v2.
-Add/update Playwright test for opening a game, launching a tool, returning to workspace, and verifying tools remain enabled.
-Add/update Playwright test that Save state remains correct after return.
+Add/update Playwright coverage for Preview Generator V2 using Workspace Manager repo handle, SVG write verification, and no false OK WRITE when handle write/read verification fails.
 Do not run full samples smoke test; document skipped reason.
 
 Required reports:
 Create docs/dev/reports/codex_review.diff.
 Create docs/dev/reports/codex_changed_files.txt.
-Create docs/dev/reports/PR_26130_004-workspace-return-tool-enable-regression.md.
+Create docs/dev/reports/PR_26130_006-preview-generator-handle-write-verification.md.
 Update docs/dev/codex_commands.md.
 Update docs/dev/commit_comment.txt.
 Produce required repo-structured ZIP under tmp/.
@@ -37,17 +47,14 @@ Produce required repo-structured ZIP under tmp/.
 Get-Content -Path "docs/dev/PROJECT_INSTRUCTIONS.md"
 Get-Content -Path ".codex/skills/repo-build/SKILL.md"
 git status --short --untracked-files=all
-rg -n "returnToWorkspaceButton|expectWorkspaceRestoreRequiresRepoRebind|rebindRestoredWorkspace|expectWorkspaceReturnRehydrated|activeToolStateRequiresRepoHandle|workspace.repo.reference|FileSystemDirectoryHandle|handle" tests/playwright/tools/WorkspaceManagerV2.spec.mjs tools/workspace-manager-v2/js tools/preview-generator-v2 tools/asset-manager-v2/js -g "*.js" -g "*.mjs"
-node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js
-node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js
-node --check tools/asset-manager-v2/js/AssetManagerV2App.js
-node --check tools/asset-manager-v2/js/services/WorkspaceBridge.js
-node --check tools/palette-manager-v2/main.js
-node --check tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js
-node --check tools/session-inspector-v2/js/SessionInspectorV2App.js
+Select-String -Path tools/preview-generator-v2/PreviewGeneratorV2App.js -Pattern "function hydrateWorkspaceRepoSession|function verifyWrittenPreview|function logWritePath|function writePreview|function absoluteOutputPathFromWrite|function handleOutputPathFromWrite|function hydrateWorkspaceLaunchContext" -Context 4,40
+Select-String -Path tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js -Pattern "createSessionRepoHandle|appendSessionWrite|WORKSPACE_REPO_WRITES_SESSION_KEY|class PreviewGeneratorV2RepoAccess" -Context 3,6
+Select-String -Path tests/playwright/tools/WorkspaceManagerV2.spec.mjs -Pattern "function installMockRepoPicker|function makeFileHandle|function makeDirectoryHandle|makeMockRepoHandle|__workspaceManagerV2RepoHandleCache" -Context 3,20
+node --check tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js
+node --check tools/preview-generator-v2/PreviewGeneratorV2App.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "uses header lifecycle controls|keeps Preview Generator V2 repo writer|loads Gravity Well"
 npm run test:workspace-v2
+git diff -- tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js tools/preview-generator-v2/PreviewGeneratorV2App.js tests/playwright/tools/WorkspaceManagerV2.spec.mjs
 git diff --check
 git status --short --untracked-files=all
 git diff --stat
@@ -55,45 +62,33 @@ git diff --stat
 
 ## Validation
 
-`npm run test:workspace-v2` passed: 22 passed.
-
-Focused rerun for the return-regression slices passed: 3 passed.
+`npm run test:workspace-v2` passed: 23 passed.
 
 Syntax checks passed for:
 
-- `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
-- `tools/asset-manager-v2/js/AssetManagerV2App.js`
-- `tools/asset-manager-v2/js/services/WorkspaceBridge.js`
-- `tools/palette-manager-v2/main.js`
-- `tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js`
-- `tools/session-inspector-v2/js/SessionInspectorV2App.js`
+- `tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js`
+- `tools/preview-generator-v2/PreviewGeneratorV2App.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
 `git diff --check` passed.
 
-Full samples smoke test skipped because this PR is limited to Workspace Manager V2 return state/tool enablement and does not modify shared sample loading, sample manifests, or broad sample runtime behavior.
+Full samples smoke test skipped because this PR is limited to Preview Generator V2 handle/path/write verification and does not modify shared sample loading, sample manifests, or broad sample runtime behavior.
 
 ## Playwright Impact
 
 Playwright impacted: Yes.
 
-Workspace Manager V2 Playwright now validates opening a game, launching workspace tools, returning to Workspace Manager V2, keeping workspace tools enabled, preserving repo/game/source binding, and preserving clean/dirty Save and Close button state after return.
+Workspace Manager V2 Playwright now validates Preview Generator V2 restoring the live Workspace Manager repo handle, writing `preview.svg` through that handle, logging read-back verification details, and failing without `OK WRITE` when handle read-back verification fails.
 
-Expected pass behavior: normal Return to Workspace restores the active repo, game, source binding, enabled tool count, and refreshed dirty toolState data without requiring Pick Repo Folder.
+Expected pass behavior: Preview Generator V2 writes and verifies `preview.svg` through the live repo handle, reports handle-relative and absolute display paths separately, and logs file exists/size/modified/SVG-start metadata.
 
-Expected fail behavior: tests fail if return navigation drops the live repo handle, grays out tools, enables Save without a live binding, disables Save while dirty after a valid return, or omits the return-state log lines.
+Expected fail behavior: tests fail if Preview Generator V2 falls back to session-only writes, logs a false path mismatch for absolute-vs-handle-relative paths, claims `OK WRITE` after read-back verification fails, or cannot restore the Workspace Manager V2 live repo handle.
 
 ## Coverage
 
-Playwright V8 coverage report generated by `npm run test:workspace-v2`:
+Playwright V8 coverage report generated by `npm run test:workspace-v2` noted changed Preview Generator V2 runtime coverage, including:
 
-- `(63%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 643/643; executed functions 36/57`
-- `(76%) tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js - executed lines 166/166; executed functions 13/17`
-- `(83%) tools/palette-manager-v2/main.js - executed lines 227/227; executed functions 15/18`
-- `(87%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 710/710; executed functions 39/45`
-- `(90%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1458/1458; executed functions 136/151`
-- `(93%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 305/305; executed functions 25/27`
-- `(93%) tools/session-inspector-v2/js/SessionInspectorV2App.js - executed lines 309/309; executed functions 41/44`
+- `(88%) tools/preview-generator-v2/PreviewGeneratorV2App.js - changed JS file with browser V8 coverage`
+- `(28%) tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js - advisory low coverage; restore/cache helpers are exercised through browser launch flows but branch coverage remains low`
 
 `tests/playwright/tools/WorkspaceManagerV2.spec.mjs` is a changed test file and is not collected as browser runtime coverage.

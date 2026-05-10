@@ -65,7 +65,18 @@ async function installMockRepoPicker(page) {
       window.sessionStorage.setItem("workspace.repo.manifestWrites", JSON.stringify(writes));
     }
 
-    function makeFileHandle(name, text, path = name) {
+    function appendPreviewWrite(path, contents, details = {}) {
+      const writes = JSON.parse(window.sessionStorage.getItem("workspace.repo.writes") || "[]");
+      writes.push({
+        path,
+        contents,
+        lastModified: details.lastModified,
+        size: details.size
+      });
+      window.sessionStorage.setItem("workspace.repo.writes", JSON.stringify(writes));
+    }
+
+    function makeFileHandle(name, text, path = name, options = {}) {
       let contents = text;
       let lastModified = Date.now();
       return {
@@ -89,32 +100,53 @@ async function installMockRepoPicker(page) {
             async close() {
               contents = draft;
               lastModified += 1000;
-              appendManifestWrite(path, contents);
+              if (path.endsWith("/game.manifest.json")) {
+                appendManifestWrite(path, contents);
+              } else {
+                appendPreviewWrite(path, contents, {
+                  lastModified,
+                  size: contents.length
+                });
+              }
             }
           };
         },
         async getFile() {
-          return new File([contents], name, { lastModified, type: "application/json" });
+          if (options.failPreviewRead && path.endsWith("/preview.svg")) {
+            throw new Error("Mock preview read failed.");
+          }
+          const type = path.endsWith(".svg") ? "image/svg+xml" : "application/json";
+          return new File([contents], name, { lastModified, type });
         }
       };
     }
 
-    function makeDirectoryHandle(name, children = {}, path = name) {
+    function makeDirectoryHandle(name, children = {}, path = name, options = {}) {
       return {
         kind: "directory",
         name,
         path,
-        async getDirectoryHandle(childName) {
+        async getDirectoryHandle(childName, handleOptions = {}) {
           const child = children[childName];
           if (child?.kind === "directory") {
             return child;
           }
+          if (handleOptions.create) {
+            const created = makeDirectoryHandle(childName, {}, `${path}/${childName}`, options);
+            children[childName] = created;
+            return created;
+          }
           throw new DOMException(`${childName} was not found.`, "NotFoundError");
         },
-        async getFileHandle(childName) {
+        async getFileHandle(childName, handleOptions = {}) {
           const child = children[childName];
           if (child?.kind === "file") {
             return child;
+          }
+          if (handleOptions.create) {
+            const created = makeFileHandle(childName, "", `${path}/${childName}`, options);
+            children[childName] = created;
+            return created;
           }
           throw new DOMException(`${childName} was not found.`, "NotFoundError");
         },
@@ -137,35 +169,41 @@ async function installMockRepoPicker(page) {
     async function makeMockRepoHandle(config = {}) {
       const repoName = config.repoName || "HTML-JavaScript-Gaming";
       if (config.missingGames) {
-        return makeDirectoryHandle(repoName, {});
+        return makeDirectoryHandle(repoName, {}, repoName, config);
       }
       const games = {
-        MissingManifest: makeDirectoryHandle("MissingManifest", {}),
+        MissingManifest: makeDirectoryHandle("MissingManifest", {}, `${repoName}/games/MissingManifest`, config),
         InvalidWorkspace: makeDirectoryHandle("InvalidWorkspace", {
           "game.manifest.json": makeFileHandle("game.manifest.json", JSON.stringify({
             schema: "html-js-gaming.project",
             version: 1,
             tools: {}
-          }))
-        })
+          }), `${repoName}/games/InvalidWorkspace/game.manifest.json`, config)
+        }, `${repoName}/games/InvalidWorkspace`, config)
       };
       for (const manifestPath of (config.manifestPaths || defaultManifestPaths)) {
         const parts = manifestPath.replace(/^\/+/, "").split("/");
         const gameFolder = parts[1];
         const gamePath = `${repoName}/games/${gameFolder}`;
         games[gameFolder] = makeDirectoryHandle(gameFolder, {
-          "game.manifest.json": makeFileHandle("game.manifest.json", await fetchManifestText(manifestPath), `${gamePath}/game.manifest.json`)
-        }, gamePath);
+          assets: makeDirectoryHandle("assets", {
+            images: makeDirectoryHandle("images", {}, `${gamePath}/assets/images`, config)
+          }, `${gamePath}/assets`, config),
+          "game.manifest.json": makeFileHandle("game.manifest.json", await fetchManifestText(manifestPath), `${gamePath}/game.manifest.json`, config)
+        }, gamePath, config);
       }
       return makeDirectoryHandle(repoName, {
-        games: makeDirectoryHandle("games", games, `${repoName}/games`)
-      }, repoName);
+        games: makeDirectoryHandle("games", games, `${repoName}/games`, config),
+        tools: makeDirectoryHandle("tools", {}, `${repoName}/tools`, config)
+      }, repoName, config);
     }
 
     window.__workspaceManagerV2MockRepoConfig = {};
     window.__workspaceManagerV2RepoHandleCache = {
       async save({ reference, repoHandle }) {
+        const config = window.__workspaceManagerV2MockRepoConfig || {};
         window.sessionStorage.setItem("workspace-manager-v2-mock-repo-handle-cache", JSON.stringify({
+          failPreviewRead: Boolean(config.failPreviewRead),
           repoName: reference?.displayName || repoHandle?.name || "HTML-JavaScript-Gaming"
         }));
       },
@@ -173,6 +211,7 @@ async function installMockRepoPicker(page) {
         const rawValue = window.sessionStorage.getItem("workspace-manager-v2-mock-repo-handle-cache");
         const cachedConfig = rawValue ? JSON.parse(rawValue) : {};
         return await makeMockRepoHandle({
+          failPreviewRead: Boolean(cachedConfig.failPreviewRead),
           repoName: cachedConfig.repoName || reference?.displayName || "HTML-JavaScript-Gaming"
         });
       }
@@ -2062,7 +2101,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Workspace repoRoot display label available: HTML-JavaScript-Gaming.");
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
       await expect(page.locator("#log")).toContainText("OK Workspace tool session workspace context loaded from workspace.tools.preview-generator-v2.");
-      await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
+      await expect(page.locator("#log")).toContainText("Workspace launch repo handle restored from workspace-manager-v2 runtime repo handle cache using workspace.repo.reference; independent repo selection is not required.");
+      await expect(page.locator("#log")).toContainText("Workspace Manager V2 live repo handle was restored from runtime handle cache; no handle object was read from toolState JSON.");
       await expect(page.locator("#log")).toContainText("Repo display label: HTML-JavaScript-Gaming");
       await expect(page.locator("#log")).toContainText(`Repo root path string: ${displayRepoRootPath(server)}`);
       await expect(page.locator("#log")).toContainText("Repo FileSystemDirectoryHandle present: true");
@@ -2116,12 +2156,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("RUN  Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OUT  games\\Asteroids\\assets\\images\\preview.svg", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText(`Write verification passed: file exists at ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}.`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Write verification file exists: true.", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Write verification file size:", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Write verification modified timestamp:", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Write verification content starts as SVG: true.", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Write verification output path: ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}.`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Write verification handle-relative path: games/Asteroids/assets/images/preview.svg.", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK WRITE Asteroids", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText("Resolved relative output path: games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`Repo root: ${displayRepoRootPath(server)}`, { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`Full absolute output path: ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText("Handle output path: HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText("WARN Path resolution mismatch:", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Repo display label: HTML-JavaScript-Gaming", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Repo root path string: ${displayRepoRootPath(server)}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Handle root name: HTML-JavaScript-Gaming", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Handle-relative output path: games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Absolute display path: ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
+      await expect(page.locator("#log")).not.toContainText("WARN Path resolution mismatch:");
       await expect(page.locator("#log")).toContainText("Source resolution context: workspace.tools.preview-generator-v2.data; selected game: Asteroids; resolved assets/images target: assets/images; target type: games", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK   Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Done.", { timeout: 20000 });
@@ -2185,6 +2232,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#log")).toContainText("WARN Workspace manifest preview asset is missing from Asset Manager V2 data; generated preview output will target games/Asteroids/assets/images/preview.svg.");
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("Workspace launch repo handle restored from workspace-manager-v2 runtime repo handle cache using workspace.repo.reference; independent repo selection is not required.");
       await expect(page.locator("#log")).toContainText("Repo FileSystemDirectoryHandle present: true");
       await expect(page.locator("#log")).toContainText("Verified handle root name: HTML-JavaScript-Gaming");
       await expect(page.locator("#log")).toContainText("OK Repo handle resolved folder games/Asteroids/assets/images.");
@@ -2196,7 +2244,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(log).toContainText("RUN  Asteroids", { timeout: 20000 });
       await expect(log).toContainText(`Write verification passed: file exists at ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}.`, { timeout: 20000 });
       await expect(log).toContainText("OK WRITE Asteroids", { timeout: 20000 });
-      await expect(log).toContainText("Handle output path: HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
+      await expect(log).toContainText("Handle-relative output path: games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
+      await expect(log).not.toContainText("WARN Path resolution mismatch:");
       await expect(log).toContainText("Written: 1", { timeout: 20000 });
       await expect(log).toContainText("Failed: 0", { timeout: 20000 });
       await expect(log).not.toContainText("SKIP Asteroids");
@@ -2205,6 +2254,50 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(previewWrites.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg");
       expect(previewWrites.at(-1).contents).toContain("<svg");
       expect(previewWrites.at(-1).contents).not.toContain("stale cached prior preview");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("fails Preview Generator V2 without OK WRITE when live handle read-back verification fails", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await selectMockRepo(page);
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expectWorkspaceReturnRehydrated(page);
+      await page.evaluate(() => {
+        const rawValue = sessionStorage.getItem("workspace-manager-v2-mock-repo-handle-cache");
+        const cachedConfig = rawValue ? JSON.parse(rawValue) : {};
+        sessionStorage.setItem("workspace-manager-v2-mock-repo-handle-cache", JSON.stringify({
+          ...cachedConfig,
+          failPreviewRead: true,
+          repoName: cachedConfig.repoName || "HTML-JavaScript-Gaming"
+        }));
+      });
+      await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
+      await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+      await expect(page.locator("#log")).toContainText("Workspace launch repo handle restored from workspace-manager-v2 runtime repo handle cache using workspace.repo.reference; independent repo selection is not required.");
+      await page.locator("#executeBtn").click();
+      const log = page.locator("#log");
+      const expectedOutputPath = displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg");
+      await expect(log).toContainText(`FAIL Asteroids  (Write verification failed for ${expectedOutputPath}: Mock preview read failed.; expected full absolute path: ${expectedOutputPath})`, { timeout: 20000 });
+      await expect(log).toContainText("Written: 0", { timeout: 20000 });
+      await expect(log).toContainText("Failed: 1", { timeout: 20000 });
+      await expect(log).not.toContainText("OK WRITE Asteroids");
+      await expect(log).not.toContainText("Write verification passed: file exists");
+      const previewWrites = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.writes") || "[]"));
+      expect(previewWrites).toHaveLength(1);
+      expect(previewWrites[0].path).toBe("HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg");
+      expect(previewWrites[0].contents).toContain("<svg");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -2836,7 +2929,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewTargetValue")).toHaveText("games/GravityWell/assets/images/preview.svg");
       await expect(page.locator("#executeBtn")).toBeEnabled();
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
-      await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
+      await expect(page.locator("#log")).toContainText("Workspace launch repo handle restored from workspace-manager-v2 runtime repo handle cache using workspace.repo.reference; independent repo selection is not required.");
       await expect(page.locator("#log")).toContainText("Generated preview target: games/GravityWell/assets/images/preview.svg");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
@@ -2878,7 +2971,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewTargetValue")).toHaveText("games/Pong/assets/images/preview.svg");
       await expect(page.locator("#executeBtn")).toBeEnabled();
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
-      await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
+      await expect(page.locator("#log")).toContainText("Workspace launch repo handle restored from workspace-manager-v2 runtime repo handle cache using workspace.repo.reference; independent repo selection is not required.");
       await expect(page.locator("#log")).toContainText("Generated preview target: games/Pong/assets/images/preview.svg");
       await page.locator("#forceRewrite").check();
       await expect(page.locator("#executeBtn")).toBeEnabled();
@@ -2887,8 +2980,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText(`Repo root: ${displayRepoRootPath(server)}`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("RUN  Pong", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK WRITE Pong", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText("Resolved relative output path: games/Pong/assets/images/preview.svg", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`Full absolute output path: ${displayAbsoluteOutputPath(server, "games/Pong/assets/images/preview.svg")}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Write verification content starts as SVG: true.", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Write verification handle-relative path: games/Pong/assets/images/preview.svg.", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Handle-relative output path: games/Pong/assets/images/preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Absolute display path: ${displayAbsoluteOutputPath(server, "games/Pong/assets/images/preview.svg")}`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Source resolution context: workspace.tools.preview-generator-v2.data; selected game: Pong; resolved assets/images target: assets/images; target type: games", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText(`Write verification passed: file exists at ${displayAbsoluteOutputPath(server, "games/Pong/assets/images/preview.svg")}.`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText(`Force rewrite verification passed for ${displayAbsoluteOutputPath(server, "games/Pong/assets/images/preview.svg")}.`, { timeout: 20000 });
