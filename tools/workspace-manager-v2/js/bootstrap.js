@@ -21,17 +21,12 @@ window.addEventListener("DOMContentLoaded", () => {
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     contextService: new WorkspaceManagerV2ContextService(),
     gameSelector: new GameSelectorControl({
-      cancelButton: requireElement("#activeGameCancelButton"),
-      closeButton: requireElement("#activeGameCloseButton"),
-      saveButton: requireElement("#activeGameSaveButton"),
       select: requireElement("#activeGameSelect"),
       summary: requireElement("#activeGameSummary")
     }),
     menu: new ManifestMenuControl({
+      cancelButton: requireElement("#cancelWorkspaceButton"),
       closeButton: requireElement("#closeWorkspaceButton"),
-      exportButton: requireElement("#exportManifestButton"),
-      importButton: requireElement("#importManifestButton"),
-      importInput: requireElement("#importManifestInput"),
       saveButton: requireElement("#saveWorkspaceButton"),
       uatButton: requireElement("#seedUatManifestButton")
     }),

@@ -1,71 +1,65 @@
-# Codex Commands - PR_26130_034-active-game-lifecycle-controls
+# Codex Commands - PR_26130_001-workspace-header-save-validation
 
 ```text
 codex
 
 Changes:
-Create PR_26130_034-active-game-lifecycle-controls.
+Create PR_26130_001-workspace-header-save-validation.
 Read docs/dev/PROJECT_INSTRUCTIONS.md first.
-Limit scope to Workspace Manager V2 / Preview Generator V2 lifecycle controls.
-Once a game/tool state is opened, disable repo destination selection and game dropdown.
-In Active Game bottom controls, add Save, Close, and Cancel buttons.
-Save button must be disabled when dirty is false and enabled when dirty is true.
-Close button must be disabled when dirty is true and enabled when dirty is false.
-Close clears the active session/toolState variable only when allowed.
-Cancel must warn the user that information will be lost when dirty is true, then clear the active session/toolState only after confirmation.
-Use toolState terminology in code/docs where applicable.
-No silent fallback.
+Remove Workspace header nav buttons that are no longer needed.
+Move Save, Close, and Cancel into the Workspace header nav.
+Fix Save so it writes the active game/toolState file and validates the file after write.
+After Save, log saved path, file size, item/count details, and validation result.
+Investigate whether repoPath is used anywhere. If used, document exact usage in the PR report. If unused, document that finding only.
+Keep scope limited to Workspace Manager V2 / Preview Generator V2 lifecycle and save validation.
 No unrelated files.
 No start_of_day changes.
 
 Validation:
 Run npm run test:workspace-v2.
-Add/update Playwright coverage for opened-game control disabling, dirty-state Save/Close state, Close clearing clean state, and Cancel dirty warning.
+Add/update Playwright tests for header Save/Close/Cancel placement, save write verification, dirty-state button behavior, and post-save log details.
 Do not run full samples smoke test; document skipped reason.
 
 Required reports:
 Create docs/dev/reports/codex_review.diff.
 Create docs/dev/reports/codex_changed_files.txt.
-Create docs/dev/reports/PR_26130_034-active-game-lifecycle-controls.md.
+Create docs/dev/reports/PR_26130_001-workspace-header-save-validation.md.
 Update docs/dev/codex_commands.md.
 Update docs/dev/commit_comment.txt.
 Produce required repo-structured ZIP under tmp/.
 ```
 
-## Validation Commands
+## Commands Run
 
 ```powershell
 Get-Content -Path "docs/dev/PROJECT_INSTRUCTIONS.md"
-node --check "tools/workspace-manager-v2/js/WorkspaceManagerV2App.js"
-node --check "tools/workspace-manager-v2/js/controls/GameSelectorControl.js"
-node --check "tools/preview-generator-v2/PreviewGeneratorV2App.js"
-node --check "tests/playwright/tools/WorkspaceManagerV2.spec.mjs"
+Get-Content -Path ".codex/skills/repo-build/SKILL.md"
+git status --short
+rg -n "repoPath" tools/workspace-manager-v2 tools/preview-generator-v2 tools/asset-manager-v2 tools/schemas games tests/playwright/tools/WorkspaceManagerV2.spec.mjs
+rg -n "exportWorkspaceManifest|importWorkspaceManifest|onExportManifest|onImportManifest|setExportEnabled|exportManifestButton|importManifest|activeGame(Save|Close|Cancel)Button|workspace-manager-v2__active-game-controls" tools/workspace-manager-v2 tests/playwright/tools/WorkspaceManagerV2.spec.mjs
 npm run test:workspace-v2
-npm run codex:review-artifacts
+npm run test:workspace-v2
+npm run test:workspace-v2
 ```
 
-## Playwright
+## Validation
 
-Playwright impacted: Yes.
+`npm run test:workspace-v2` was attempted once with a 120 second command timeout and was cut off before Playwright returned a result.
 
-`npm run test:workspace-v2` validates that opened Workspace Manager V2 game toolState locks repo destination and game selection, Preview Generator V2 workspace launch locks repo/game target controls, dirty toolState enables Save and disables Close, clean toolState disables Save and enables Close, Close clears clean active toolState data, and Cancel warns before discarding dirty toolState data.
+`npm run test:workspace-v2` was rerun with a longer timeout and passed: 19 passed.
 
-Expected pass behavior: all Workspace Manager V2 Playwright tests pass with no page errors and the lifecycle buttons match dirty state.
+After removing the now-unreachable import/export app methods, `npm run test:workspace-v2` was run again and passed: 19 passed.
 
-Expected fail behavior: the test fails if repo/game controls remain editable after opening a toolState, Save/Close invert dirty behavior, Close clears dirty data, or Cancel clears dirty data without confirmation.
+Full samples smoke test skipped because this PR is limited to Workspace Manager V2 / Preview Generator V2 lifecycle controls and save validation, and does not modify sample manifests broadly, shared sample loading, or runtime sample smoke behavior.
 
-## Test Notes
+## Playwright Coverage
 
-`npm run test:workspace-v2` passed: 20 passed.
+Updated `tests/playwright/tools/WorkspaceManagerV2.spec.mjs` covers:
 
-Full samples smoke test skipped because this PR is limited to Workspace Manager V2 / Preview Generator V2 lifecycle controls and does not modify shared sample loading, sample JSON, or broadly impacted sample runtime behavior.
-
-## Manual Test
-
-1. Open Workspace Manager V2.
-2. Pick the repo folder and select Asteroids.
-3. Confirm Pick Repo Folder and the game selector are disabled, Save is disabled, Close is enabled, and Cancel is enabled.
-4. Launch Palette Manager V2, make a palette edit, and return to Workspace Manager V2.
-5. Confirm Save is enabled, Close is disabled, and Cancel warns before discarding dirty toolState data.
-6. Save, then confirm Save is disabled and Close is enabled.
-7. Close and confirm the active game/toolState clears and repo/game selection can start over.
+- Header Save, Close, and Cancel placement with Import/Export header actions removed.
+- Opened-game disabling for repo destination selection and the game dropdown.
+- Dirty-state lifecycle behavior: Save enabled and Close disabled while dirty; Save disabled and Close enabled after save.
+- Save write verification against the active `game.manifest.json` toolState file.
+- Post-save logs for saved path, file size, toolState item/count details, and validation result.
+- Close clearing clean toolState state.
+- Cancel warning before dirty toolState data is discarded.

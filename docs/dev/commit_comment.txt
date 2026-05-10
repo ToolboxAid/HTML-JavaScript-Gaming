@@ -1,1 +1,1 @@
-Add active game lifecycle controls for Workspace V2 toolState flows - PR_26130_034-active-game-lifecycle-controls
+Move Workspace Manager V2 lifecycle controls into the header and validate active toolState saves - PR_26130_001-workspace-header-save-validation

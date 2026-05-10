@@ -34,29 +34,17 @@ export class WorkspaceManagerV2App {
     this.statusLog.mount();
     this.gameSelector.mount({
       games: this.contextService.games(),
-      onCancelToolState: () => {
-        this.cancelActiveToolState();
-      },
-      onCloseToolState: () => {
-        this.closeWorkspace();
-      },
       onGameSelected: (gameId) => {
         void this.selectGame(gameId);
-      },
-      onSaveToolState: () => {
-        void this.saveWorkspaceSession();
       }
     });
     this.menu.mount({
       isUatMode: this.contextService.isUatMode(),
+      onCancelToolState: () => {
+        this.cancelActiveToolState();
+      },
       onCloseWorkspace: () => {
         this.closeWorkspace();
-      },
-      onExportManifest: () => {
-        void this.exportWorkspaceManifest();
-      },
-      onImportManifest: (file) => {
-        void this.importWorkspaceManifest(file);
       },
       onSaveWorkspace: () => {
         void this.saveWorkspaceSession();
@@ -83,8 +71,8 @@ export class WorkspaceManagerV2App {
     });
     this.summary.clear();
     this.menu.setSaveEnabled(false);
-    this.menu.setExportEnabled(false);
     this.menu.setCloseEnabled(false);
+    this.menu.setCancelEnabled(false);
     this.repoDestination.setPickRepoEnabled(true);
     this.gameSelector.clear();
     this.toolTiles.renderEmpty();
@@ -105,8 +93,8 @@ export class WorkspaceManagerV2App {
     this.gameSelector.clear();
     this.gameSelector.setSummary(summaryText);
     this.menu.setSaveEnabled(false);
-    this.menu.setExportEnabled(false);
     this.menu.setCloseEnabled(false);
+    this.menu.setCancelEnabled(false);
     this.toolTiles.renderEmpty();
     this.summary.clear();
   }
@@ -130,9 +118,9 @@ export class WorkspaceManagerV2App {
     const dirtyStatus = this.activeToolStateDirtyStatus();
     this.menu.setSaveEnabled(hasActiveToolState && dirtyStatus === "true");
     this.menu.setCloseEnabled(hasActiveToolState && dirtyStatus === "false");
+    this.menu.setCancelEnabled(hasActiveToolState);
     this.repoDestination.setPickRepoEnabled(!hasActiveToolState);
     this.gameSelector.setSelectionLocked(hasActiveToolState);
-    this.gameSelector.setLifecycleState({ dirtyStatus, hasActiveToolState });
   }
 
   async pickRepoDestination() {
@@ -190,7 +178,6 @@ export class WorkspaceManagerV2App {
     this.activeToolStateHydration = null;
     this.activeToolStateRefresh = null;
     this.contextService.clearToolStateHydration();
-    this.menu.setExportEnabled(false);
     this.toolTiles.renderEmpty();
     this.summary.clear();
     this.syncLifecycleControls();
@@ -297,7 +284,6 @@ export class WorkspaceManagerV2App {
       manifestStatus: "Schema-valid manifest",
       paletteSwatchCount
     });
-    this.menu.setExportEnabled(hydration.ok);
     this.syncLifecycleControls();
   }
 
@@ -353,20 +339,33 @@ export class WorkspaceManagerV2App {
   }
 
   async contextForSave() {
-    if (!this.activeHostContextId) {
-      return { ok: true, context: this.activeContext };
+    let baseContext = this.activeContext;
+    if (this.activeHostContextId) {
+      const result = await this.contextService.restorePersistedContextById(this.activeHostContextId);
+      if (!result.ok) {
+        return { ok: false, message: `Unable to refresh Workspace Manager V2 session manifest ${this.activeHostContextId}: ${result.message}` };
+      }
+      if (result.game.id !== this.activeGame.id) {
+        return { ok: false, message: `Stored session context is for ${result.game.id}, not ${this.activeGame.id}.` };
+      }
+      this.applyContextResult(result);
+      if (result.assetWarning) {
+        this.statusLog.info(`Warning: ${result.assetWarning}`);
+      }
+      baseContext = this.activeContext;
     }
-    const result = await this.contextService.restorePersistedContextById(this.activeHostContextId);
-    if (!result.ok) {
-      return { ok: false, message: `Unable to refresh Workspace Manager V2 session manifest ${this.activeHostContextId}: ${result.message}` };
-    }
-    if (result.game.id !== this.activeGame.id) {
-      return { ok: false, message: `Stored session context is for ${result.game.id}, not ${this.activeGame.id}.` };
-    }
-    this.applyContextResult(result);
-    if (result.assetWarning) {
-      this.statusLog.info(`Warning: ${result.assetWarning}`);
-    }
+    const sessionRefresh = this.contextService.refreshContextFromToolSessions({
+      context: baseContext,
+      tools: this.contextService.workspaceLaunchableTools()
+    });
+    const metrics = this.contextSummaryMetrics(sessionRefresh.context);
+    this.applyContextResult({
+      assetCount: metrics.assetCount,
+      context: sessionRefresh.context,
+      game: this.activeGame,
+      hostContextId: this.activeHostContextId,
+      paletteSwatches: metrics.paletteSwatches
+    });
     return { ok: true, context: this.activeContext };
   }
 
@@ -410,6 +409,19 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail(`Save blocked: ${validation.message}`);
       return;
     }
+    const writeResult = await this.contextService.writeActiveGameToolStateFile({
+      context,
+      game: this.activeGame,
+      repoHandle: this.activeRepoHandle
+    });
+    if (!writeResult.ok) {
+      this.statusLog.fail(`Save blocked: ${writeResult.message}`);
+      return;
+    }
+    this.activeGame = {
+      ...this.activeGame,
+      manifest: writeResult.manifest
+    };
     this.activeHostContextId = this.contextService.writePersistedContext(this.activeHostContextId, context);
     const cleanResult = this.contextService.markEnabledToolSessionsClean({
       context,
@@ -426,6 +438,10 @@ export class WorkspaceManagerV2App {
     cleanResult.cleanedKeys.forEach((key) => {
       this.statusLog.ok(`Saved and marked clean: ${key}.`);
     });
+    this.statusLog.ok(`Saved path: ${writeResult.path}.`);
+    this.statusLog.info(`Saved file size: ${writeResult.fileSize} bytes.`);
+    this.statusLog.info(`Saved toolState items: ${writeResult.toolStateItemCount} (${writeResult.toolStateDetails.join("; ")}).`);
+    this.statusLog.ok(`Save validation result: ${writeResult.validationResult}.`);
     this.statusLog.ok(`Saved Workspace Manager V2 toolState context ${context.id}.`);
   }
 
@@ -500,70 +516,6 @@ export class WorkspaceManagerV2App {
     this.repoDestination.setRepoDestinationDisplayName("not selected");
     this.clearActiveWorkspace();
     this.statusLog.ok(`Canceled Workspace Manager V2 toolState. Removed ${cancelResult.removed.length} workspace toolState key${cancelResult.removed.length === 1 ? "" : "s"}.`);
-  }
-
-  async exportWorkspaceManifest() {
-    if (!this.hasLaunchReadyContext()) {
-      this.statusLog.fail("Export blocked: active game context and palette are required.");
-      return;
-    }
-    const saveContextResult = await this.contextForSave();
-    if (!saveContextResult.ok) {
-      this.statusLog.fail(`Export blocked: ${saveContextResult.message}`);
-      return;
-    }
-    const context = saveContextResult.context;
-    const validation = await this.contextService.validateGeneratedManifest(context);
-    if (!validation.ok) {
-      this.statusLog.fail(`Export blocked: ${validation.message}`);
-      return;
-    }
-    const json = JSON.stringify(context, null, 2);
-    const BlobCtor = window.Blob;
-    const urlApi = window.URL || window.webkitURL;
-    if (typeof BlobCtor !== "function" || !urlApi?.createObjectURL) {
-      this.statusLog.fail("Export blocked: browser download APIs are unavailable.");
-      return;
-    }
-    const blob = new BlobCtor([json], { type: "application/json" });
-    const url = urlApi.createObjectURL(blob);
-    const link = window.document.createElement("a");
-    link.href = url;
-    link.download = `${context.id}.workspace.manifest.json`;
-    link.rel = "noopener";
-    window.document.body.append(link);
-    link.click();
-    link.remove();
-    urlApi.revokeObjectURL(url);
-    this.statusLog.ok(`Exported schema-valid Workspace Manager V2 manifest ${context.id}.`);
-  }
-
-  async importWorkspaceManifest(file) {
-    if (!file) {
-      this.statusLog.fail("Import Manifest failed: no manifest file was selected.");
-      return;
-    }
-    try {
-      const manifest = JSON.parse(await file.text());
-      const result = await this.contextService.buildContextFromManifest(manifest, file.name || "imported manifest");
-      if (!result.ok) {
-        this.statusLog.fail(`Import Manifest failed: ${result.message}`);
-        return;
-      }
-      const hostContextId = this.contextService.persistContext(result.context);
-      this.gameSelector.setValue(result.game.id, result.game.name);
-      this.applyContextResult({ ...result, hostContextId });
-      if (result.assetWarning) {
-        this.statusLog.info(`Warning: ${result.assetWarning}`);
-      }
-      if (result.boundaryContract) {
-        this.statusLog.ok(result.boundaryContract);
-      }
-      this.reportToolStateHydration();
-      this.statusLog.ok(`Imported schema-valid Workspace Manager V2 manifest ${result.context.id}.`);
-    } catch (error) {
-      this.statusLog.fail(`Import Manifest failed: ${error.message}`);
-    }
   }
 
   async seedTemporaryUatManifest() {

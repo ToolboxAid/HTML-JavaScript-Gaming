@@ -289,15 +289,10 @@ textarea:hover {
 
 .workspace-manager-v2__stack,
 .workspace-manager-v2__controls,
-.workspace-manager-v2__repo-selected-field,
-.workspace-manager-v2__active-game-controls {
+.workspace-manager-v2__repo-selected-field {
   min-width: 0;
   display: grid;
   gap: 12px;
-}
-
-.workspace-manager-v2__active-game-controls {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .workspace-manager-v2__value {

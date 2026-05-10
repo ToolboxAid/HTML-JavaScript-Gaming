@@ -1143,6 +1143,133 @@ export class WorkspaceManagerV2ContextService {
     }
   }
 
+  normalizeGameManifestPath(manifestPath) {
+    const normalizedPath = String(manifestPath || "").replaceAll("\\", "/").replace(/^\/+/, "");
+    const parts = normalizedPath.split("/").filter(Boolean);
+    if (!parts.length || parts.includes("..") || parts.some((part) => part.includes("\0"))) {
+      return { ok: false, message: `Invalid active game manifest path ${manifestPath || "(empty)"}.` };
+    }
+    if (parts.at(-1) !== "game.manifest.json") {
+      return { ok: false, message: `Active toolState must save to game.manifest.json, not ${normalizedPath}.` };
+    }
+    if (parts[0] !== "games") {
+      return { ok: false, message: `Active toolState save path must stay under games/, not ${normalizedPath}.` };
+    }
+    return { ok: true, parts, path: parts.join("/") };
+  }
+
+  async gameManifestFileHandle(repoHandle, manifestPath) {
+    if (!repoHandle || repoHandle.kind !== "directory") {
+      return { ok: false, message: "Active repo folder handle is required before saving toolState." };
+    }
+    const pathResult = this.normalizeGameManifestPath(manifestPath);
+    if (!pathResult.ok) {
+      return pathResult;
+    }
+    if (typeof repoHandle.getDirectoryHandle !== "function" || typeof repoHandle.getFileHandle !== "function") {
+      return { ok: false, message: "Active repo folder handle does not support manifest file access." };
+    }
+    try {
+      let dirHandle = repoHandle;
+      for (const directoryName of pathResult.parts.slice(0, -1)) {
+        dirHandle = await dirHandle.getDirectoryHandle(directoryName, { create: false });
+      }
+      const fileHandle = await dirHandle.getFileHandle(pathResult.parts.at(-1), { create: false });
+      if (!fileHandle || fileHandle.kind !== "file") {
+        return { ok: false, message: `${pathResult.path} is not a writable manifest file handle.` };
+      }
+      return { ok: true, fileHandle, path: pathResult.path };
+    } catch (error) {
+      return { ok: false, message: `Unable to open active game manifest ${pathResult.path}: ${error.message}` };
+    }
+  }
+
+  toolStateItemDetails(context) {
+    return Object.entries(context?.tools || {})
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([toolId, payload]) => {
+        if (toolId === ASSET_MANAGER_V2_TOOL_KEY && isPlainObject(payload?.assets)) {
+          return `${toolId} assets=${Object.keys(payload.assets).length}`;
+        }
+        if (toolId === PALETTE_MANAGER_V2_TOOL_KEY && Array.isArray(payload?.swatches)) {
+          return `${toolId} swatches=${payload.swatches.length}`;
+        }
+        if (Array.isArray(payload?.vectorMapDocument?.vectors)) {
+          return `${toolId} vectors=${payload.vectorMapDocument.vectors.length}`;
+        }
+        return isPlainObject(payload)
+          ? `${toolId} keys=${Object.keys(payload).length}`
+          : `${toolId} items=0`;
+      });
+  }
+
+  async writeActiveGameToolStateFile({ context, game, repoHandle } = {}) {
+    if (!isPlainObject(context)) {
+      return { ok: false, message: "Active toolState context is required before saving." };
+    }
+    if (game?.manifestKind !== "game-manifest" || !isGameManifest(game.manifest)) {
+      return { ok: false, message: "Save requires an active game.manifest.json source with root game.workspace toolState." };
+    }
+    const workspaceValidation = await this.validateGeneratedManifest(context);
+    if (!workspaceValidation.ok) {
+      return workspaceValidation;
+    }
+    const fileHandleResult = await this.gameManifestFileHandle(repoHandle, game.manifestPath);
+    if (!fileHandleResult.ok) {
+      return fileHandleResult;
+    }
+    if (typeof fileHandleResult.fileHandle.createWritable !== "function") {
+      return { ok: false, message: `${fileHandleResult.path} cannot be written by the active repo folder handle.` };
+    }
+
+    const nextManifest = clone(game.manifest);
+    nextManifest.game.workspace = clone(context);
+    const gameValidation = await this.validateGameManifest(nextManifest);
+    if (!gameValidation.ok) {
+      return gameValidation;
+    }
+    const json = `${JSON.stringify(nextManifest, null, 2)}\n`;
+    try {
+      const writable = await fileHandleResult.fileHandle.createWritable();
+      await writable.write(json);
+      await writable.close();
+    } catch (error) {
+      return { ok: false, message: `Unable to write ${fileHandleResult.path}: ${error.message}` };
+    }
+
+    let readBackFile;
+    let readBackText;
+    let readBackManifest;
+    try {
+      readBackFile = await fileHandleResult.fileHandle.getFile();
+      readBackText = await readBackFile.text();
+      readBackManifest = JSON.parse(readBackText);
+    } catch (error) {
+      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: ${error.message}` };
+    }
+    if (!isPlainObject(readBackManifest)) {
+      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: JSON root is not an object.` };
+    }
+    const readBackGameValidation = await this.validateGameManifest(readBackManifest);
+    if (!readBackGameValidation.ok) {
+      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: ${readBackGameValidation.message}` };
+    }
+    const readBackWorkspaceValidation = await this.validateGeneratedManifest(readBackManifest.game.workspace);
+    if (!readBackWorkspaceValidation.ok) {
+      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: ${readBackWorkspaceValidation.message}` };
+    }
+    const toolStateDetails = this.toolStateItemDetails(readBackManifest.game.workspace);
+    return {
+      ok: true,
+      fileSize: Number.isFinite(readBackFile?.size) ? readBackFile.size : readBackText.length,
+      manifest: readBackManifest,
+      path: fileHandleResult.path,
+      toolStateDetails,
+      toolStateItemCount: toolStateDetails.length,
+      validationResult: "game manifest valid; workspace toolState valid"
+    };
+  }
+
   workspaceManifestFromGameManifest(game) {
     const workspaceManifest = clone(game.manifest?.game?.workspace || {});
     if (!workspaceManifest.repoRoot && game.repoRoot) {
