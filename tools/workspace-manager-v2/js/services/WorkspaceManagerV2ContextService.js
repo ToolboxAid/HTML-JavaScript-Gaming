@@ -4,6 +4,9 @@ const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema
 const WORKSPACE_SESSION_SCHEMA_REF = "tools/schemas/workspace.manifest.schema.json";
 const WORKSPACE_REPO_REFERENCE_SESSION_KEY = "workspace.repo.reference";
 const WORKSPACE_TOOL_SESSION_KEY_PREFIX = "workspace.tools.";
+const WORKSPACE_REPO_HANDLE_DB_NAME = "workspace-manager-v2-repo-handles";
+const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
+const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
@@ -350,6 +353,118 @@ export class WorkspaceManagerV2ContextService {
 
   clearDiscoveredGames() {
     this.discoveredGames = [];
+  }
+
+  repoHandleCacheHook() {
+    return this.window.__workspaceManagerV2RepoHandleCache || null;
+  }
+
+  openRepoHandleDatabase() {
+    const indexedDb = this.window.indexedDB;
+    if (!indexedDb) {
+      return Promise.resolve({ ok: false, message: "IndexedDB is unavailable for repo handle caching." });
+    }
+    return new Promise((resolve) => {
+      const request = indexedDb.open(WORKSPACE_REPO_HANDLE_DB_NAME, 1);
+      request.onupgradeneeded = () => {
+        request.result.createObjectStore(WORKSPACE_REPO_HANDLE_STORE_NAME);
+      };
+      request.onerror = () => {
+        resolve({ ok: false, message: `Unable to open repo handle cache: ${request.error?.message || "unknown error"}` });
+      };
+      request.onsuccess = () => {
+        resolve({ db: request.result, ok: true });
+      };
+    });
+  }
+
+  async cacheRepoHandle(repoHandle, reference) {
+    const databaseResult = await this.openRepoHandleDatabase();
+    if (databaseResult.ok) {
+      const writeResult = await new Promise((resolve) => {
+        const transaction = databaseResult.db.transaction(WORKSPACE_REPO_HANDLE_STORE_NAME, "readwrite");
+        const store = transaction.objectStore(WORKSPACE_REPO_HANDLE_STORE_NAME);
+        let request;
+        try {
+          request = store.put({
+            handle: repoHandle,
+            reference
+          }, WORKSPACE_REPO_HANDLE_STORE_KEY);
+        } catch (error) {
+          transaction.abort();
+          resolve({ ok: false, message: `Unable to write repo handle cache: ${error.message}` });
+          return;
+        }
+        request.onerror = () => {
+          resolve({ ok: false, message: `Unable to write repo handle cache: ${request.error?.message || "unknown error"}` });
+        };
+        request.onsuccess = () => {
+          resolve({ ok: true, source: "IndexedDB repo handle cache" });
+        };
+        transaction.oncomplete = () => {
+          databaseResult.db.close();
+        };
+      });
+      if (writeResult.ok) {
+        return writeResult;
+      }
+      databaseResult.db.close();
+    }
+    const hook = this.repoHandleCacheHook();
+    if (typeof hook?.save === "function") {
+      try {
+        await hook.save({ reference, repoHandle });
+        return { ok: true, source: "workspace test repo handle cache" };
+      } catch (error) {
+        return { ok: false, message: `Unable to write workspace test repo handle cache: ${error.message}` };
+      }
+    }
+    return databaseResult.ok
+      ? { ok: false, message: "Repo handle cache write did not complete." }
+      : databaseResult;
+  }
+
+  async restoreCachedRepoHandle(reference) {
+    const hook = this.repoHandleCacheHook();
+    if (typeof hook?.restore === "function") {
+      try {
+        const repoHandle = await hook.restore({ reference });
+        if (repoHandle?.kind === "directory") {
+          return { ok: true, repoHandle, source: "workspace test repo handle cache" };
+        }
+      } catch (error) {
+        return { ok: false, message: `Unable to restore workspace test repo handle cache: ${error.message}` };
+      }
+    }
+    const databaseResult = await this.openRepoHandleDatabase();
+    if (!databaseResult.ok) {
+      return databaseResult;
+    }
+    const readResult = await new Promise((resolve) => {
+      const transaction = databaseResult.db.transaction(WORKSPACE_REPO_HANDLE_STORE_NAME, "readonly");
+      const store = transaction.objectStore(WORKSPACE_REPO_HANDLE_STORE_NAME);
+      const request = store.get(WORKSPACE_REPO_HANDLE_STORE_KEY);
+      request.onerror = () => {
+        resolve({ ok: false, message: `Unable to read repo handle cache: ${request.error?.message || "unknown error"}` });
+      };
+      request.onsuccess = () => {
+        resolve(request.result?.handle?.kind === "directory"
+          ? { ok: true, repoHandle: request.result.handle, source: "IndexedDB repo handle cache" }
+          : { ok: false, message: "Repo handle cache did not contain a live directory handle." });
+      };
+      transaction.oncomplete = () => {
+        databaseResult.db.close();
+      };
+    });
+    if (!readResult.ok) {
+      return readResult;
+    }
+    const cachedName = String(readResult.repoHandle.name || "").trim();
+    const expectedName = String(reference?.displayName || reference?.handleName || "").trim();
+    if (expectedName && cachedName && cachedName !== expectedName) {
+      return { ok: false, message: `Repo handle cache restored ${cachedName}, expected ${expectedName}.` };
+    }
+    return readResult;
   }
 
   workspaceLaunchableTools() {

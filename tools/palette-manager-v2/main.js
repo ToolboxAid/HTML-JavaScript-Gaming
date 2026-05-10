@@ -3,6 +3,7 @@ import { PaletteSortService } from "../common/PaletteSortService.js";
 import { PaletteManagerApp } from "./modules/PaletteManagerApp.js";
 
 const PALETTE_MANAGER_V2_TOOL_SESSION_KEY = "workspace.tools.palette-manager-v2";
+const WORKSPACE_RETURN_HISTORY_CONTEXT_KEY = "workspace-manager-v2-return-history-context-id";
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -125,6 +126,16 @@ function workspaceManagerUrl(hostContextId) {
   return url.href;
 }
 
+function returnToWorkspace(hostContextId) {
+  const targetUrl = workspaceManagerUrl(hostContextId);
+  if (window.sessionStorage.getItem(WORKSPACE_RETURN_HISTORY_CONTEXT_KEY) === hostContextId
+    && window.history.length > 1) {
+    window.history.back();
+    return;
+  }
+  window.location.href = targetUrl;
+}
+
 function getWorkspaceLaunchParams() {
   const searchParams = new URLSearchParams(window.location.search);
   return {
@@ -147,7 +158,7 @@ function configureWorkspaceNav() {
   }
   if (returnButton) {
     returnButton.addEventListener("click", () => {
-      window.location.href = workspaceManagerUrl(launchParams.hostContextId);
+      returnToWorkspace(launchParams.hostContextId);
     });
   }
 }

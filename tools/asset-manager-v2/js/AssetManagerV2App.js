@@ -577,7 +577,7 @@ export class AssetManagerV2App {
     if (!syncResult.ok) {
       return;
     }
-    this.window.location.href = this.workspaceBridge.workspaceManagerUrl();
+    this.workspaceBridge.returnToWorkspace();
   }
 
   syncWorkspaceSessionManifest({ changedKeys = ["data.assets"], quiet = false } = {}) {

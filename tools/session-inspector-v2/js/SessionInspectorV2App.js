@@ -1,3 +1,5 @@
+const WORKSPACE_RETURN_HISTORY_CONTEXT_KEY = "workspace-manager-v2-return-history-context-id";
+
 export class SessionInspectorV2App {
   constructor({
     accordions,
@@ -204,7 +206,15 @@ export class SessionInspectorV2App {
   }
 
   returnToWorkspace() {
-    this.window.location.href = this.workspaceManagerUrl();
+    const targetUrl = this.workspaceManagerUrl();
+    const params = new URLSearchParams(this.window.location.search || "");
+    const hostContextId = params.get("hostContextId") || "";
+    if (this.window.sessionStorage.getItem(WORKSPACE_RETURN_HISTORY_CONTEXT_KEY) === hostContextId
+      && this.window.history.length > 1) {
+      this.window.history.back();
+      return;
+    }
+    this.window.location.href = targetUrl;
   }
 
   isWorkspaceLaunch() {

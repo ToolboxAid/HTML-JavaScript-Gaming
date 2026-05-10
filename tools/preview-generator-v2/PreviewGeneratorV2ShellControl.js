@@ -1,3 +1,5 @@
+const WORKSPACE_RETURN_HISTORY_CONTEXT_KEY = "workspace-manager-v2-return-history-context-id";
+
 class PreviewGeneratorV2ShellControl {
   constructor({ documentRef = document, windowRef = window } = {}) {
     this.document = documentRef;
@@ -81,6 +83,17 @@ class PreviewGeneratorV2ShellControl {
     return url.href;
   }
 
+  returnToWorkspace() {
+    const targetUrl = this.workspaceManagerUrl();
+    const hostContextId = this.runtimeParams.get("hostContextId") || "";
+    if (this.window.sessionStorage.getItem(WORKSPACE_RETURN_HISTORY_CONTEXT_KEY) === hostContextId
+      && this.window.history.length > 1) {
+      this.window.history.back();
+      return;
+    }
+    this.window.location.href = targetUrl;
+  }
+
   configureWorkspaceNav() {
     const isWorkspaceLaunch = this.isWorkspaceLaunch();
     const toolNav = this.document.querySelector('[data-launch-mode-nav="tool"]');
@@ -99,7 +112,7 @@ class PreviewGeneratorV2ShellControl {
     }
     if (returnButton) {
       returnButton.addEventListener("click", () => {
-        this.window.location.href = this.workspaceManagerUrl();
+        this.returnToWorkspace();
       });
     }
   }

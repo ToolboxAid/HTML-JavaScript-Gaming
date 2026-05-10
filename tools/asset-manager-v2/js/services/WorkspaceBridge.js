@@ -35,6 +35,7 @@ function isWorkspaceManifest(value) {
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const WORKSPACE_TOOL_SESSION_KEY_PREFIX = "workspace.tools.";
+const WORKSPACE_RETURN_HISTORY_CONTEXT_KEY = "workspace-manager-v2-return-history-context-id";
 
 function toolSessionKey(toolId) {
   return `${WORKSPACE_TOOL_SESSION_KEY_PREFIX}${toolId}`;
@@ -69,6 +70,16 @@ export class WorkspaceBridge {
       url.searchParams.set("workspace", "uat");
     }
     return url.href;
+  }
+
+  returnToWorkspace() {
+    const targetUrl = this.workspaceManagerUrl();
+    if (this.window.sessionStorage.getItem(WORKSPACE_RETURN_HISTORY_CONTEXT_KEY) === this.hostContextId()
+      && this.window.history.length > 1) {
+      this.window.history.back();
+      return;
+    }
+    this.window.location.href = targetUrl;
   }
 
   validateWorkspaceManagerContext(workspaceManifest) {

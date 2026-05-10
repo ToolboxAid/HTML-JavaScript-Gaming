@@ -25,6 +25,11 @@ export class WorkspaceManagerV2App {
     this.activeToolStateRequiresRepoHandle = false;
     this.activeToolStateHydration = null;
     this.activeToolStateRefresh = null;
+    this.lastLaunchedToolId = "";
+  }
+
+  static returnHistoryContextKey() {
+    return "workspace-manager-v2-return-history-context-id";
   }
 
   start() {
@@ -57,6 +62,11 @@ export class WorkspaceManagerV2App {
     this.repoDestination.mount({
       onPickRepo: () => {
         void this.pickRepoDestination();
+      }
+    });
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted && this.lastLaunchedToolId) {
+        void this.restoreReturnFromToolState();
       }
     });
     this.toolTiles.mount({
@@ -165,6 +175,10 @@ export class WorkspaceManagerV2App {
         this.clearActiveWorkspace(repoHydration.message);
         this.statusLog.fail(`Repo load failed: ${repoHydration.message}`);
         return;
+      }
+      const cacheResult = await this.contextService.cacheRepoHandle(selectedRepoHandle, repoHydration.reference);
+      if (!cacheResult.ok) {
+        this.statusLog.warn(`Repo handle cache unavailable: ${cacheResult.message}`);
       }
       this.contextService.setDiscoveredGames(discovery.games);
       this.gameSelector.setGames(discovery.games);
@@ -284,19 +298,54 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail(`Workspace restore failed: ${message}`);
       return;
     }
+    let restoredResult = result;
+    let restoredSourceBinding = null;
+    const returnHistoryContextId = this.contextService.sessionStorage.getItem(WorkspaceManagerV2App.returnHistoryContextKey()) || "";
+    if (!this.activeRepoHandle && returnHistoryContextId === result.hostContextId) {
+      const handleResult = await this.contextService.restoreCachedRepoHandle(repoReferenceResult.reference);
+      if (handleResult.ok) {
+        const discovery = await this.contextService.discoverGameManifests(handleResult.repoHandle);
+        if (discovery.ok) {
+          this.activeRepoHandle = handleResult.repoHandle;
+          this.contextService.setDiscoveredGames(discovery.games);
+          this.gameSelector.setGames(discovery.games);
+          const sourceBinding = await this.contextService.bindGameManifestSourceForSave({
+            context: result.context,
+            game: result.game,
+            repoHandle: this.activeRepoHandle
+          });
+          if (sourceBinding.ok) {
+            restoredResult = { ...result, game: sourceBinding.game };
+            restoredSourceBinding = sourceBinding;
+          } else {
+            this.statusLog.warn(`Return from tool restore: source binding missing: ${sourceBinding.message}`);
+          }
+        } else {
+          this.statusLog.warn(`Return from tool restore: repo handle cache discovery failed: ${discovery.message}`);
+        }
+      } else {
+        this.statusLog.warn(`Return from tool restore: repo handle cache unavailable: ${handleResult.message}`);
+      }
+      this.contextService.sessionStorage.removeItem(WorkspaceManagerV2App.returnHistoryContextKey());
+    }
     this.repoDestination.setRepoDestinationDisplayName(repoReferenceResult.reference.displayName);
-    this.gameSelector.setValue(result.game.id, result.game.name);
+    this.gameSelector.setValue(restoredResult.game.id, restoredResult.game.name);
     const requiresRepoHandle = !this.activeRepoHandle;
-    this.applyContextResult(result, { requiresRepoHandle });
-    if (result.assetWarning) {
-      this.statusLog.info(`Warning: ${result.assetWarning}`);
+    this.applyContextResult(restoredResult, { requiresRepoHandle });
+    if (restoredResult.assetWarning) {
+      this.statusLog.info(`Warning: ${restoredResult.assetWarning}`);
     }
     this.reportToolStateHydration();
     this.statusLog.ok(`Restored repo destination from workspace.repo.reference for ${repoReferenceResult.reference.displayName}.`);
     if (requiresRepoHandle) {
-      this.statusLog.warn(`Restored ${result.game.name} workspace from session context ${result.hostContextId} as read-only toolState context: missing live repo folder handle. Required action: Pick Repo Folder to rebind ${result.context.gameRoot}game.manifest.json before Save or tool launch.`);
+      this.statusLog.warn(`Restored ${restoredResult.game.name} workspace from session context ${restoredResult.hostContextId} as read-only toolState context: missing live repo folder handle. Required action: Pick Repo Folder to rebind ${restoredResult.context.gameRoot}game.manifest.json before Save or tool launch.`);
+    } else if (restoredSourceBinding) {
+      this.statusLog.ok(`Return from tool restore: repo selected: ${repoReferenceResult.reference.displayName}.`);
+      this.statusLog.ok(`Return from tool restore: game selected: ${this.activeGame.name} (${this.activeGame.id}).`);
+      this.statusLog.ok(`Return from tool restore: source binding active: ${restoredSourceBinding.source}.`);
+      this.statusLog.ok(`Return from tool restore: enabled tool count: ${this.activeToolStateHydration?.hydratedToolIds?.length || 0}.`);
     }
-    this.statusLog.ok(`Restored ${result.game.name} workspace from session context ${result.hostContextId}.`);
+    this.statusLog.ok(`Restored ${restoredResult.game.name} workspace from session context ${restoredResult.hostContextId}.`);
   }
 
   applyContextResult(result, { requiresRepoHandle = false } = {}) {
@@ -363,6 +412,56 @@ export class WorkspaceManagerV2App {
     }
   }
 
+  async restoreReturnFromToolState() {
+    const toolId = this.lastLaunchedToolId;
+    this.lastLaunchedToolId = "";
+    window.sessionStorage.removeItem(WorkspaceManagerV2App.returnHistoryContextKey());
+    if (!this.activeContext || !this.activeGame) {
+      this.syncLifecycleControls();
+      this.statusLog.warn(`Return from tool restore: ${toolId || "workspace tool"} returned without an active game/toolState context.`);
+      return;
+    }
+    const repoReferenceResult = this.contextService.readWorkspaceRepoReference({
+      expectedRepoRoot: this.activeContext.repoRoot || this.activeGame.repoRoot || ""
+    });
+    const repoName = this.activeRepoHandle?.name || repoReferenceResult.reference?.displayName || "not selected";
+    let game = this.activeGame;
+    let requiresRepoHandle = this.activeToolStateRequiresRepoHandle || !this.activeRepoHandle;
+    let sourceBindingMessage = "missing live repo folder handle";
+    if (this.activeRepoHandle) {
+      const sourceBinding = await this.contextService.bindGameManifestSourceForSave({
+        context: this.activeContext,
+        game: this.activeGame,
+        repoHandle: this.activeRepoHandle
+      });
+      if (sourceBinding.ok) {
+        game = sourceBinding.game;
+        requiresRepoHandle = false;
+        sourceBindingMessage = sourceBinding.source;
+      } else {
+        requiresRepoHandle = true;
+        sourceBindingMessage = sourceBinding.message;
+      }
+    }
+    const metrics = this.contextSummaryMetrics(this.activeContext);
+    this.applyContextResult({
+      assetCount: metrics.assetCount,
+      context: this.activeContext,
+      game,
+      hostContextId: this.activeHostContextId,
+      paletteSwatches: metrics.paletteSwatches
+    }, { requiresRepoHandle });
+    const enabledToolCount = this.activeToolStateHydration?.hydratedToolIds?.length || 0;
+    this.statusLog.ok(`Return from tool restore: repo selected: ${repoName}.`);
+    this.statusLog.ok(`Return from tool restore: game selected: ${this.activeGame.name} (${this.activeGame.id}).`);
+    if (requiresRepoHandle) {
+      this.statusLog.warn(`Return from tool restore: source binding missing: ${sourceBindingMessage}.`);
+    } else {
+      this.statusLog.ok(`Return from tool restore: source binding active: ${sourceBindingMessage}.`);
+    }
+    this.statusLog.ok(`Return from tool restore: enabled tool count: ${enabledToolCount}.`);
+  }
+
   hasLaunchReadyContext() {
     return Boolean(this.activeContext
       && this.activeGame
@@ -392,8 +491,24 @@ export class WorkspaceManagerV2App {
       ? this.contextService.writePersistedContext(this.activeHostContextId, this.activeContext)
       : this.contextService.persistContext(this.activeContext);
     this.activeHostContextId = hostContextId;
+    this.lastLaunchedToolId = toolId;
+    this.replaceWorkspaceHistoryEntry(hostContextId);
+    window.sessionStorage.setItem(WorkspaceManagerV2App.returnHistoryContextKey(), hostContextId);
     this.statusLog.ok(`Stored Workspace Manager V2 schema-valid manifest ${hostContextId} for ${toolId}.`);
     this.contextService.launchTool(toolId, hostContextId, { workspaceMode: this.activeWorkspaceMode });
+  }
+
+  replaceWorkspaceHistoryEntry(hostContextId) {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("hostContextId", hostContextId);
+      if (this.activeWorkspaceMode === "uat") {
+        url.searchParams.set("workspace", "uat");
+      }
+      window.history.replaceState({ workspaceManagerV2HostContextId: hostContextId }, "", url.href);
+    } catch (error) {
+      this.statusLog.warn(`Return from tool restore: unable to persist workspace history entry: ${error.message}`);
+    }
   }
 
   async contextForSave() {

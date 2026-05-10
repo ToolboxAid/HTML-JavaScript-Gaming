@@ -1,33 +1,31 @@
-# Codex Commands - PR_26130_003-session-restore-file-handle-guard
+# Codex Commands - PR_26130_004-workspace-return-tool-enable-regression
 
 ```text
 codex
 
 Changes:
-Create PR_26130_003-session-restore-file-handle-guard.
+Create PR_26130_004-workspace-return-tool-enable-regression.
 Read docs/dev/PROJECT_INSTRUCTIONS.md first.
-Fix Workspace Manager V2 restore behavior when no active repo folder handle exists.
-Do not restore/open an active game from sessionStorage as save-capable unless a live repo folder handle is present.
-If sessionStorage has active game context but no live repo folder handle:
-- show restored game details as read-only context only, or clear active game state
-- keep Save disabled
-- require repo folder selection before opening a save-capable game
-- log exact reason and required action
-After repo folder is picked, rebind active game to the real game.manifest.json source.
-Ensure Save writes to the actual file and validates by re-reading after write.
-Keep scope limited to Workspace Manager V2 restore/save binding.
+Fix Workspace Manager V2 regression where returning from any tool leaves all workspace tools disabled/gray.
+On return from a tool, preserve the selected repo, selected game, live repo folder handle, active game binding, and enabled tool list.
+Do not treat normal return navigation as Cancel, Close, or lost file handle.
+Only disable tools when no valid opened game/toolState is active or when repo binding is actually missing.
+Add explicit log lines for return-from-tool state restoration: repo selected, game selected, source binding status, enabled tool count.
+Keep Save disabled only when no live writable file handle exists.
+Keep scope limited to Workspace Manager V2 return state and tool enablement regression.
 No unrelated files.
 No start_of_day changes.
 
 Validation:
 Run npm run test:workspace-v2.
-Add/update Playwright tests for sessionStorage restore without file handle, Save disabled until repo folder is selected, repo rebind after folder pick, and successful post-save validation.
+Add/update Playwright test for opening a game, launching a tool, returning to workspace, and verifying tools remain enabled.
+Add/update Playwright test that Save state remains correct after return.
 Do not run full samples smoke test; document skipped reason.
 
 Required reports:
 Create docs/dev/reports/codex_review.diff.
 Create docs/dev/reports/codex_changed_files.txt.
-Create docs/dev/reports/PR_26130_003-session-restore-file-handle-guard.md.
+Create docs/dev/reports/PR_26130_004-workspace-return-tool-enable-regression.md.
 Update docs/dev/codex_commands.md.
 Update docs/dev/commit_comment.txt.
 Produce required repo-structured ZIP under tmp/.
@@ -39,52 +37,63 @@ Produce required repo-structured ZIP under tmp/.
 Get-Content -Path "docs/dev/PROJECT_INSTRUCTIONS.md"
 Get-Content -Path ".codex/skills/repo-build/SKILL.md"
 git status --short --untracked-files=all
-rg -n "restoreWorkspaceFromSession|contextForSave|writeActiveGameToolStateFile|gameManifestPath|manifestPath|repoPath|manifestWrites|saveWorkspaceSession|dirtyPaletteToolState|Save" tools/workspace-manager-v2/js tests/playwright/tools/WorkspaceManagerV2.spec.mjs tools/preview-generator-v2/PreviewGeneratorV2App.js tools/asset-manager-v2/js/services/WorkspaceBridge.js tools/schemas games/Asteroids/game.manifest.json games/GravityWell/game.manifest.json games/Pong/game.manifest.json games/_template/workspace-manager-v2-UAT.manifest.json
-rg --files "tools/workspace-manager-v2/js" | rg "Menu|menu|Repo|Selector|ToolTiles"
-rg -n "expectWorkspaceReturnRehydrated|returnToWorkspaceButton|saveWorkspaceButton|closeWorkspaceButton|cancelWorkspaceButton|pickRepoBtn|activeGameSelect" tests/playwright/tools/WorkspaceManagerV2.spec.mjs
-rg -n "bindGameManifestSourceForSave|writeActiveGameToolStateFile|restorePersistedContextById|restorePersistedContext" tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js
-npm run test:workspace-v2
+rg -n "returnToWorkspaceButton|expectWorkspaceRestoreRequiresRepoRebind|rebindRestoredWorkspace|expectWorkspaceReturnRehydrated|activeToolStateRequiresRepoHandle|workspace.repo.reference|FileSystemDirectoryHandle|handle" tests/playwright/tools/WorkspaceManagerV2.spec.mjs tools/workspace-manager-v2/js tools/preview-generator-v2 tools/asset-manager-v2/js -g "*.js" -g "*.mjs"
 node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js
-node --check tools/workspace-manager-v2/js/controls/ToolTilesControl.js
 node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js
+node --check tools/asset-manager-v2/js/AssetManagerV2App.js
+node --check tools/asset-manager-v2/js/services/WorkspaceBridge.js
+node --check tools/palette-manager-v2/main.js
+node --check tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js
+node --check tools/session-inspector-v2/js/SessionInspectorV2App.js
 node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs
+npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "uses header lifecycle controls|keeps Preview Generator V2 repo writer|loads Gravity Well"
+npm run test:workspace-v2
 git diff --check
 git status --short --untracked-files=all
 git diff --stat
-git diff -- tools/workspace-manager-v2/js/WorkspaceManagerV2App.js tools/workspace-manager-v2/js/controls/ToolTilesControl.js tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js tests/playwright/tools/WorkspaceManagerV2.spec.mjs
 ```
 
 ## Validation
 
 `npm run test:workspace-v2` passed: 22 passed.
 
+Focused rerun for the return-regression slices passed: 3 passed.
+
 Syntax checks passed for:
 
 - `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
-- `tools/workspace-manager-v2/js/controls/ToolTilesControl.js`
 - `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `tools/asset-manager-v2/js/AssetManagerV2App.js`
+- `tools/asset-manager-v2/js/services/WorkspaceBridge.js`
+- `tools/palette-manager-v2/main.js`
+- `tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js`
+- `tools/session-inspector-v2/js/SessionInspectorV2App.js`
 - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 
 `git diff --check` passed.
 
-Full samples smoke test skipped because this PR is limited to Workspace Manager V2 restore/save binding and does not modify shared sample loading, sample manifests, or broad sample runtime behavior.
+Full samples smoke test skipped because this PR is limited to Workspace Manager V2 return state/tool enablement and does not modify shared sample loading, sample manifests, or broad sample runtime behavior.
 
 ## Playwright Impact
 
 Playwright impacted: Yes.
 
-Workspace Manager V2 Playwright now validates sessionStorage restore without a live repo folder handle, Save disabled until a repo folder is selected, active game dropdown locked while restored read-only context is shown, repo rebind after folder pick, successful post-save write/read-back validation, and missing-handle Save recovery logging.
+Workspace Manager V2 Playwright now validates opening a game, launching workspace tools, returning to Workspace Manager V2, keeping workspace tools enabled, preserving repo/game/source binding, and preserving clean/dirty Save and Close button state after return.
 
-Expected pass behavior: restored sessionStorage toolState is read-only until repo selection, Save stays disabled without a live repo handle, repo selection rebinds the active game to `/games/<game>/game.manifest.json`, and Save writes/re-reads the actual manifest file before marking dirty toolState clean.
+Expected pass behavior: normal Return to Workspace restores the active repo, game, source binding, enabled tool count, and refreshed dirty toolState data without requiring Pick Repo Folder.
 
-Expected fail behavior: tests fail if restored sessionStorage context becomes save-capable without a live handle, Save writes only browser/session context, repo rebinding is skipped, tool launch is allowed before rebind, or post-save file validation/dirty-clean logging is missing.
+Expected fail behavior: tests fail if return navigation drops the live repo handle, grays out tools, enables Save without a live binding, disables Save while dirty after a valid return, or omits the return-state log lines.
 
 ## Coverage
 
 Playwright V8 coverage report generated by `npm run test:workspace-v2`:
 
-- `(88%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 598/598; executed functions 36/41`
-- `(93%) tools/workspace-manager-v2/js/controls/ToolTilesControl.js - changed JS file with browser V8 coverage`
-- `(93%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - changed JS file with browser V8 coverage`
+- `(63%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 643/643; executed functions 36/57`
+- `(76%) tools/preview-generator-v2/PreviewGeneratorV2ShellControl.js - executed lines 166/166; executed functions 13/17`
+- `(83%) tools/palette-manager-v2/main.js - executed lines 227/227; executed functions 15/18`
+- `(87%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 710/710; executed functions 39/45`
+- `(90%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1458/1458; executed functions 136/151`
+- `(93%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 305/305; executed functions 25/27`
+- `(93%) tools/session-inspector-v2/js/SessionInspectorV2App.js - executed lines 309/309; executed functions 41/44`
 
 `tests/playwright/tools/WorkspaceManagerV2.spec.mjs` is a changed test file and is not collected as browser runtime coverage.

@@ -163,6 +163,20 @@ async function installMockRepoPicker(page) {
     }
 
     window.__workspaceManagerV2MockRepoConfig = {};
+    window.__workspaceManagerV2RepoHandleCache = {
+      async save({ reference, repoHandle }) {
+        window.sessionStorage.setItem("workspace-manager-v2-mock-repo-handle-cache", JSON.stringify({
+          repoName: reference?.displayName || repoHandle?.name || "HTML-JavaScript-Gaming"
+        }));
+      },
+      async restore({ reference }) {
+        const rawValue = window.sessionStorage.getItem("workspace-manager-v2-mock-repo-handle-cache");
+        const cachedConfig = rawValue ? JSON.parse(rawValue) : {};
+        return await makeMockRepoHandle({
+          repoName: cachedConfig.repoName || reference?.displayName || "HTML-JavaScript-Gaming"
+        });
+      }
+    };
     window.showDirectoryPicker = async () => {
       if (window.__workspaceManagerV2MockRepoConfig?.failPicker) {
         throw new DOMException("Mock picker canceled.", "AbortError");
@@ -232,6 +246,17 @@ async function rebindRestoredWorkspace(page, { dirty = false, gameId = "Asteroid
   await expect(page.locator("#closeWorkspaceButton"))[dirty ? "toBeDisabled" : "toBeEnabled"]();
   await expect(page.locator("#cancelWorkspaceButton")).toBeEnabled();
   await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Rebound restored .* toolState to /games/${gameId}/game\\.manifest\\.json after repo folder selection\\.`));
+}
+
+async function expectWorkspaceReturnedFromTool(page, { dirty = false, enabledToolCount = 4, gameId = "Asteroids", gameName = "Asteroids", repoName = "HTML-JavaScript-Gaming" } = {}) {
+  await expectWorkspaceReturnRehydrated(page, { gameId, repoName });
+  await expect(page.locator("#saveWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
+  await expect(page.locator("#closeWorkspaceButton"))[dirty ? "toBeDisabled" : "toBeEnabled"]();
+  await expect(page.locator("#cancelWorkspaceButton")).toBeEnabled();
+  await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Return from tool restore: repo selected: ${repoName}\\.`));
+  await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Return from tool restore: game selected: ${gameName} \\(${gameId}\\)\\.`));
+  await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Return from tool restore: source binding active: /games/${gameId}/game\\.manifest\\.json\\.`));
+  await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Return from tool restore: enabled tool count: ${enabledToolCount}\\.`));
 }
 
 async function readWorkspaceSessionHydration(page) {
@@ -1654,8 +1679,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.templates-v2']")).toHaveCount(0);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceRestoreRequiresRepoRebind(page);
-      await rebindRestoredWorkspace(page);
+      await expectWorkspaceReturnedFromTool(page);
       const asteroidsManifest = await page.evaluate(async () => await fetch("/games/Asteroids/game.manifest.json", { cache: "no-store" }).then((response) => response.json()));
       expect(asteroidsManifest.documentKind).toBeUndefined();
       expect(asteroidsManifest.tools).toBeUndefined();
@@ -1843,8 +1867,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(JSON.stringify(storedContext)).not.toMatch(/samples\//i);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceRestoreRequiresRepoRebind(page);
-      await rebindRestoredWorkspace(page);
+      await expectWorkspaceReturnedFromTool(page);
       await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
@@ -1886,8 +1909,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       ]));
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceRestoreRequiresRepoRebind(page, { dirty: true });
-      await rebindRestoredWorkspace(page, { dirty: true });
+      await expectWorkspaceReturnedFromTool(page, { dirty: true });
       const returnedPaletteSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.palette-manager-v2")));
       expect(returnedPaletteSession.data.swatches).toHaveLength(12);
       expect(returnedPaletteSession.data.swatches.at(-1)).toMatchObject({
@@ -1913,8 +1935,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#paletteStatus")).toHaveText("Loaded active workspace palette Asteroids Palette.");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceRestoreRequiresRepoRebind(page, { dirty: true });
-      await rebindRestoredWorkspace(page, { dirty: true });
+      await expectWorkspaceReturnedFromTool(page, { dirty: true });
       await expect(paletteTile).toContainText("12 palette swatches");
       await expect(paletteTile).toHaveAttribute("data-workspace-tool-dirty", "true");
 
@@ -1956,8 +1977,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       ]));
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceRestoreRequiresRepoRebind(page, { dirty: true });
-      await rebindRestoredWorkspace(page, { dirty: true });
+      await expectWorkspaceReturnedFromTool(page, { dirty: true });
       await expect(assetTile).toContainText("15 managed assets");
       await expect(assetTile).toHaveAttribute("data-workspace-tool-dirty", "true");
       await expect(paletteTile).toContainText("12 palette swatches");
@@ -2064,7 +2084,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(previewWrites[0].contents).not.toContain("Capture timeout");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceRestoreRequiresRepoRebind(page, { dirty: true });
+      await expectWorkspaceReturnedFromTool(page, { dirty: true });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Restored repo destination from workspace\.repo\.reference for HTML-JavaScript-Gaming\./);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -2105,8 +2125,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceRestoreRequiresRepoRebind(page, { dirty: true });
-      await rebindRestoredWorkspace(page, { dirty: true });
+      await expectWorkspaceReturnedFromTool(page, { dirty: true });
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("13 managed assets");
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Refreshed asset-manager-v2 from workspace\.tools\.asset-manager-v2\.data: 13 managed assets; Dirty: true\./);
@@ -2758,7 +2777,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Generated preview target: games/GravityWell/assets/images/preview.svg");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceRestoreRequiresRepoRebind(page, { gameId: "GravityWell" });
+      await expectWorkspaceReturnedFromTool(page, { gameId: "GravityWell", gameName: "Gravity Well" });
       await page.locator("#closeWorkspaceButton").click();
       await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
 
@@ -2818,7 +2837,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pongPreviewWrites.at(-1).contents).toContain("<svg");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceRestoreRequiresRepoRebind(page, { gameId: "Pong" });
+      await expectWorkspaceReturnedFromTool(page, { gameId: "Pong", gameName: "Pong" });
 
       expect(pageErrors).toEqual([]);
     } finally {

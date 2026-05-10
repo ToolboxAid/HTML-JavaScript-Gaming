@@ -1,1 +1,1 @@
-Guard restored Workspace Manager V2 saves behind live repo handles - PR_26130_003-session-restore-file-handle-guard
+Preserve Workspace Manager V2 tool enablement after tool return - PR_26130_004-workspace-return-tool-enable-regression
