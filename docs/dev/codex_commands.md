@@ -1,42 +1,71 @@
-# Codex Commands - PR_26126_037-preview-generator-v2-remove-shared-and-consolidate-common
+# Codex Commands - PR_26130_034-active-game-lifecycle-controls
 
-```bash
-codex run "Create PR_26126_037-preview-generator-v2-remove-shared-and-consolidate-common. Fix Preview Generator V2 based on audit findings. Preserve existing behavior exactly. Remove all tools/shared dependencies from Preview Generator V2, consolidate safe repeated CSS declarations into common styles, update Preview Generator V2 to consume those common styles, verify Playwright, do not modify samples, do not add schema, do not modify start_of_day folders, and produce required reports."
+```text
+codex
+
+Changes:
+Create PR_26130_034-active-game-lifecycle-controls.
+Read docs/dev/PROJECT_INSTRUCTIONS.md first.
+Limit scope to Workspace Manager V2 / Preview Generator V2 lifecycle controls.
+Once a game/tool state is opened, disable repo destination selection and game dropdown.
+In Active Game bottom controls, add Save, Close, and Cancel buttons.
+Save button must be disabled when dirty is false and enabled when dirty is true.
+Close button must be disabled when dirty is true and enabled when dirty is false.
+Close clears the active session/toolState variable only when allowed.
+Cancel must warn the user that information will be lost when dirty is true, then clear the active session/toolState only after confirmation.
+Use toolState terminology in code/docs where applicable.
+No silent fallback.
+No unrelated files.
+No start_of_day changes.
+
+Validation:
+Run npm run test:workspace-v2.
+Add/update Playwright coverage for opened-game control disabling, dirty-state Save/Close state, Close clearing clean state, and Cancel dirty warning.
+Do not run full samples smoke test; document skipped reason.
+
+Required reports:
+Create docs/dev/reports/codex_review.diff.
+Create docs/dev/reports/codex_changed_files.txt.
+Create docs/dev/reports/PR_26130_034-active-game-lifecycle-controls.md.
+Update docs/dev/codex_commands.md.
+Update docs/dev/commit_comment.txt.
+Produce required repo-structured ZIP under tmp/.
 ```
 
 ## Validation Commands
 
 ```powershell
-rg -n "tools/shared|../shared|../../tools/shared|platformShell|shared/" tools/preview-generator-v2 tools/common tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-if ($LASTEXITCODE -eq 1) { Write-Output "no tools/shared references found"; $global:LASTEXITCODE = 0 }
-rg -n "<link|<script|import .* from" tools/preview-generator-v2 tools/common tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-
-$files = Get-ChildItem -Path tools/preview-generator-v2 -Recurse -Filter *.js | Select-Object -ExpandProperty FullName
-foreach ($file in $files) {
-  node --check $file
-  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-}
-node --check tests/playwright/PreviewGeneratorV2Baseline.spec.mjs
-npx playwright test tests/playwright/PreviewGeneratorV2Baseline.spec.mjs --project=playwright --reporter=list
-git status --short -- samples tools/schemas start_of_day tests/results
-git diff --check -- tools/preview-generator-v2 tools/common tests/playwright docs/dev/codex_commands.md docs/dev/commit_comment.txt docs/dev/reports/preview_generator_v2_shared_removed.txt docs/dev/reports/preview_generator_v2_common_styles_applied.txt docs/dev/reports/preview_generator_v2_playwright_result.txt
+Get-Content -Path "docs/dev/PROJECT_INSTRUCTIONS.md"
+node --check "tools/workspace-manager-v2/js/WorkspaceManagerV2App.js"
+node --check "tools/workspace-manager-v2/js/controls/GameSelectorControl.js"
+node --check "tools/preview-generator-v2/PreviewGeneratorV2App.js"
+node --check "tests/playwright/tools/WorkspaceManagerV2.spec.mjs"
 npm run test:workspace-v2
+npm run codex:review-artifacts
 ```
 
 ## Playwright
 
-Playwright validates that Preview Generator V2 launches, the main shell/menu/status controls render, Generate Preview and Stop start disabled, Games is the default target source, a working accordion collapses/reopens, the common stylesheet loads, and the consolidated common style declarations are active.
+Playwright impacted: Yes.
 
-Expected pass behavior: the targeted Playwright test passes with one launched tool page and no page errors.
+`npm run test:workspace-v2` validates that opened Workspace Manager V2 game toolState locks repo destination and game selection, Preview Generator V2 workspace launch locks repo/game target controls, dirty toolState enables Save and disables Close, clean toolState disables Save and enables Close, Close clears clean active toolState data, and Cancel warns before discarding dirty toolState data.
 
-Expected fail behavior: the test fails if the tool cannot load, controls are missing, common styles are not applied, accordion behavior is broken, or page errors are emitted.
+Expected pass behavior: all Workspace Manager V2 Playwright tests pass with no page errors and the lifecycle buttons match dirty state.
+
+Expected fail behavior: the test fails if repo/game controls remain editable after opening a toolState, Save/Close invert dirty behavior, Close clears dirty data, or Cancel clears dirty data without confirmation.
 
 ## Test Notes
 
-`npm run test:workspace-v2` is not defined in the current `package.json`.
+`npm run test:workspace-v2` passed: 20 passed.
+
+Full samples smoke test skipped because this PR is limited to Workspace Manager V2 / Preview Generator V2 lifecycle controls and does not modify shared sample loading, sample JSON, or broadly impacted sample runtime behavior.
 
 ## Manual Test
 
-Open `tools/preview-generator-v2/index.html`, confirm the tool shell looks unchanged, toggle Repo Destination, use Hide Header and Details/Show Header and Details, and confirm Generate Preview remains visible but disabled before required fields are complete.
-
-Full samples smoke test was skipped because this PR does not modify samples or shared sample loading.
+1. Open Workspace Manager V2.
+2. Pick the repo folder and select Asteroids.
+3. Confirm Pick Repo Folder and the game selector are disabled, Save is disabled, Close is enabled, and Cancel is enabled.
+4. Launch Palette Manager V2, make a palette edit, and return to Workspace Manager V2.
+5. Confirm Save is enabled, Close is disabled, and Cancel warns before discarding dirty toolState data.
+6. Save, then confirm Save is disabled and Close is enabled.
+7. Close and confirm the active game/toolState clears and repo/game selection can start over.

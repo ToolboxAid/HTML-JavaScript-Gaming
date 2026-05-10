@@ -33,6 +33,12 @@ class PreviewGeneratorV2Ui {
     this.repoDestination.setPickRepoVisible(isVisible);
   }
 
+  setWorkspaceToolStateControlsLocked(isLocked) {
+    this.repoDestination.setPickRepoEnabled(!isLocked);
+    this.targetSource.setDisabled(isLocked);
+    this.pathsOrIds.setDisabled(isLocked);
+  }
+
   syncGeneratePreviewButton(isGenerating, canGenerate) {
     this.generatePreview.syncGeneratePreviewButton(isGenerating, canGenerate);
   }

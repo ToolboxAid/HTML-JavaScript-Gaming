@@ -1461,6 +1461,7 @@ class PreviewGeneratorV2App {
     ui.targetSource.setBaseUrl(window.location.origin);
     ui.assetFolder.setValue(workspacePreviewAssetFolder);
     ui.pathsOrIds.setValue(manifest.gameId);
+    ui.setWorkspaceToolStateControlsLocked(true);
     await updatePathPreviewLabels();
     logger.log(`OK Workspace launch context hydrated for ${manifest.gameId}.`);
     logger.log(`Workspace repoRoot display label available: ${manifestRepoRoot || "(empty)"}.`);

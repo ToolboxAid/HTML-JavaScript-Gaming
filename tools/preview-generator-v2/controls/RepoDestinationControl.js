@@ -16,6 +16,10 @@ class RepoDestinationControl {
     this.pickRepoBtn.hidden = !isVisible;
   }
 
+  setPickRepoEnabled(isEnabled) {
+    this.pickRepoBtn.disabled = !isEnabled;
+  }
+
   onPickRepo(handler) {
     this.pickRepoBtn.addEventListener("click", handler);
   }

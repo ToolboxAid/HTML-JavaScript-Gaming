@@ -1,14 +1,20 @@
 export class GameSelectorControl {
-  constructor({ select, summary }) {
+  constructor({ cancelButton, closeButton, saveButton, select, summary }) {
+    this.cancelButton = cancelButton;
+    this.closeButton = closeButton;
+    this.saveButton = saveButton;
     this.select = select;
     this.summary = summary;
   }
 
-  mount({ games, onGameSelected }) {
+  mount({ games, onCancelToolState, onCloseToolState, onGameSelected, onSaveToolState }) {
     this.setGames(games);
     this.select.addEventListener("change", () => {
       onGameSelected(this.select.value);
     });
+    this.saveButton.addEventListener("click", onSaveToolState);
+    this.closeButton.addEventListener("click", onCloseToolState);
+    this.cancelButton.addEventListener("click", onCancelToolState);
   }
 
   setGames(games = []) {
@@ -24,6 +30,7 @@ export class GameSelectorControl {
   clear() {
     this.select.replaceChildren();
     this.select.disabled = true;
+    this.setLifecycleState({ dirtyStatus: "none", hasActiveToolState: false });
   }
 
   placeholderOption() {
@@ -42,6 +49,16 @@ export class GameSelectorControl {
 
   setSummary(value) {
     this.summary.textContent = value;
+  }
+
+  setLifecycleState({ dirtyStatus, hasActiveToolState }) {
+    this.saveButton.disabled = !(hasActiveToolState && dirtyStatus === "true");
+    this.closeButton.disabled = !(hasActiveToolState && dirtyStatus === "false");
+    this.cancelButton.disabled = !hasActiveToolState;
+  }
+
+  setSelectionLocked(isLocked) {
+    this.select.disabled = Boolean(isLocked) || !this.select.options.length;
   }
 
   setValue(value, label = "") {

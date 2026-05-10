@@ -20,6 +20,10 @@ export class RepoDestinationControl {
     this.pickRepoButton.hidden = !isVisible;
   }
 
+  setPickRepoEnabled(isEnabled) {
+    this.pickRepoButton.disabled = !isEnabled;
+  }
+
   onPickRepo(handler) {
     this.pickRepoButton.addEventListener("click", handler);
   }

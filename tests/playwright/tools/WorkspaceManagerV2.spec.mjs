@@ -164,7 +164,9 @@ async function expectWorkspaceToolsDisabled(page) {
 
 async function expectWorkspaceReturnRehydrated(page, { gameId = "Asteroids", repoName = "HTML-JavaScript-Gaming" } = {}) {
   await expect(page.locator("#repoSelectedValue")).toHaveText(repoName);
+  await expect(page.locator("#pickRepoBtn")).toBeDisabled();
   await expect(page.locator("#activeGameSelect")).toHaveValue(gameId);
+  await expect(page.locator("#activeGameSelect")).toBeDisabled();
   await expect(page.locator("#exportManifestButton")).toBeEnabled();
   await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
   await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toBeEnabled();
@@ -1421,6 +1423,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"workspaceManifest"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"workspaceMetadata"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/samples\//);
+      await expect(page.locator("#pickRepoBtn")).toBeDisabled();
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#activeGameSaveButton")).toBeDisabled();
+      await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#activeGameCloseButton")).toBeEnabled();
+      await expect(page.locator("#activeGameCancelButton")).toBeEnabled();
       const selectedGameHydration = await readWorkspaceSessionHydration(page);
       expect(selectedGameHydration.toolKeys).toEqual([
         "workspace.tools.asset-manager-v2",
@@ -1436,7 +1445,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "preview-generator-v2",
         "session-inspector-v2"
       ]);
-      const selectedGameHydrationReport = await page.evaluate(() => window.__workspaceManagerV2App.activeSessionHydration.report);
+      const selectedGameHydrationReport = await page.evaluate(() => window.__workspaceManagerV2App.activeToolStateHydration.report);
       expect(selectedGameHydrationReport.hydratedTools.map((tool) => tool.toolId)).toEqual([
         "asset-manager-v2",
         "palette-manager-v2",
@@ -1872,15 +1881,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#executeBtn")).toBeEnabled();
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
       await expect(page.locator("#pickRepoBtn")).toBeHidden();
+      await expect(page.locator("#pickRepoBtn")).toBeDisabled();
       await expect(page.locator("#workspaceContextValue")).toHaveCount(0);
       await expect(page.locator("#repoDestinationContent")).not.toContainText("Workspace launch");
       await expect(page.locator("#targetTypeGames")).toBeChecked();
+      await expect(page.locator("#targetTypeGames")).toBeDisabled();
       await expect(page.locator('label[for="targetTypeGames"]')).toBeVisible();
       await expect(page.locator('label[for="targetTypeSamples"]')).toBeHidden();
       await expect(page.locator('label[for="targetTypeTools"]')).toBeHidden();
       await expect(page.locator("#assetFolder")).toHaveValue("assets/images");
       await expect(page.locator("#baseUrl")).toHaveValue(server.baseUrl);
       await expect(page.locator("#sampleList")).toHaveValue("Asteroids");
+      await expect(page.locator("#sampleList")).toBeDisabled();
       await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#lastGeneratedImagePreview")).toBeVisible();
       await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Preview target: games/Asteroids/assets/images/preview.png");
@@ -2040,7 +2052,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("guards Workspace Manager V2 Close Workspace with dirty sessions and saves before clearing session data", async ({ page }) => {
+  test("syncs Workspace Manager V2 dirty lifecycle buttons and closes clean toolState data", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
 
@@ -2051,13 +2063,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     try {
       await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
       await expect(page.locator("#closeWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#activeGameSaveButton")).toBeDisabled();
+      await expect(page.locator("#activeGameCloseButton")).toBeDisabled();
+      await expect(page.locator("#activeGameCancelButton")).toBeDisabled();
       await selectMockRepo(page);
-      await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#closeWorkspaceButton")).toBeDisabled();
       await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#activeGameCancelButton")).toBeDisabled();
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expectWorkspaceReturnRehydrated(page);
-      await expect(page.locator("#saveWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#activeGameSaveButton")).toBeDisabled();
       await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#activeGameCloseButton")).toBeEnabled();
+      await expect(page.locator("#activeGameCancelButton")).toBeEnabled();
 
       await page.locator('[data-workspace-tool-id="palette-manager-v2"]').click();
       await expect(page).toHaveURL(/palette-manager-v2\/index\.html.*launch=workspace/);
@@ -2070,16 +2089,22 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expectWorkspaceReturnRehydrated(page);
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "true");
+      await expect(page.locator("#saveWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#activeGameSaveButton")).toBeEnabled();
+      await expect(page.locator("#closeWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#activeGameCloseButton")).toBeDisabled();
 
-      await page.locator("#closeWorkspaceButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Close Workspace blocked: dirty sessions require Save first: workspace\.tools\.palette-manager-v2\(palette-updated\)\./);
       expect((await readWorkspaceSessionHydration(page)).toolKeys).toContain("workspace.tools.palette-manager-v2");
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
 
-      await page.locator("#saveWorkspaceButton").click();
+      await page.locator("#activeGameSaveButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved and marked clean: workspace\.tools\.palette-manager-v2\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 session context workspace-manager-v2-Asteroids\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 toolState context workspace-manager-v2-Asteroids\./);
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "false");
+      await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#activeGameSaveButton")).toBeDisabled();
+      await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#activeGameCloseButton")).toBeEnabled();
       const savedHydration = await readWorkspaceSessionHydration(page);
       expect(savedHydration.dirtyByTool["palette-manager-v2"]).toEqual({
         isDirty: false,
@@ -2094,17 +2119,80 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/Close Guard Copper/);
 
-      await page.locator("#closeWorkspaceButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.tools\.asset-manager-v2\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.tools\.palette-manager-v2\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.tools\.preview-generator-v2\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.tools\.session-inspector-v2\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.repo\.reference\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Closed Workspace Manager V2 session\. Removed \d+ workspace session keys\./);
+      await page.locator("#activeGameCloseButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.asset-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.palette-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.preview-generator-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.session-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.repo\.reference\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Closed Workspace Manager V2 toolState\. Removed \d+ workspace toolState keys\./);
       await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
       await expect(page.locator("#activeGameSelect")).toBeDisabled();
       await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
       await expect(page.locator("#closeWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#activeGameSaveButton")).toBeDisabled();
+      await expect(page.locator("#activeGameCloseButton")).toBeDisabled();
+      await expect(page.locator("#activeGameCancelButton")).toBeDisabled();
+      await expectWorkspaceToolsDisabled(page);
+      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+        repoReference: null,
+        toolKeys: []
+      });
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("warns before Cancel clears dirty Workspace Manager V2 toolState data", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await selectMockRepo(page);
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expectWorkspaceReturnRehydrated(page);
+
+      await page.locator('[data-workspace-tool-id="palette-manager-v2"]').click();
+      await expect(page).toHaveURL(/palette-manager-v2\/index\.html.*launch=workspace/);
+      await page.locator("#swatchSymbolInput").fill("@");
+      await page.locator("#swatchHexInput").fill("#123456");
+      await page.locator("#swatchNameInput").fill("Cancel Guard Blue");
+      await page.locator("#addSwatchButton").click();
+      await expect(page.locator("#paletteStatus")).toHaveText("Added Cancel Guard Blue.");
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnRehydrated(page);
+      await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "true");
+      await expect(page.locator("#activeGameSaveButton")).toBeEnabled();
+      await expect(page.locator("#activeGameCloseButton")).toBeDisabled();
+      await expect(page.locator("#activeGameCancelButton")).toBeEnabled();
+
+      page.once("dialog", async (dialog) => {
+        expect(dialog.message()).toBe("Active toolState information will be lost. Cancel active game?");
+        await dialog.dismiss();
+      });
+      await page.locator("#activeGameCancelButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Cancel Workspace warning: active toolState information will be lost: workspace\.tools\.palette-manager-v2\(palette-updated\)\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Cancel Workspace kept the active toolState\./);
+      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+      expect((await readWorkspaceSessionHydration(page)).toolKeys).toContain("workspace.tools.palette-manager-v2");
+
+      page.once("dialog", async (dialog) => {
+        expect(dialog.message()).toBe("Active toolState information will be lost. Cancel active game?");
+        await dialog.accept();
+      });
+      await page.locator("#activeGameCancelButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Cancel Workspace removed toolState key: workspace\.tools\.palette-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Canceled Workspace Manager V2 toolState\. Removed \d+ workspace toolState keys\./);
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expect(page.locator("#activeGameCancelButton")).toBeDisabled();
       await expectWorkspaceToolsDisabled(page);
       expect(await readWorkspaceSessionHydration(page)).toMatchObject({
         repoReference: null,
@@ -2410,7 +2498,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
       await expect(page.locator("#pickRepoBtn")).toBeHidden();
+      await expect(page.locator("#pickRepoBtn")).toBeDisabled();
+      await expect(page.locator("#targetTypeGames")).toBeDisabled();
       await expect(page.locator("#sampleList")).toHaveValue("GravityWell");
+      await expect(page.locator("#sampleList")).toBeDisabled();
       await expect(page.locator("#previewTargetValue")).toHaveText("games/GravityWell/assets/images/preview.svg");
       await expect(page.locator("#executeBtn")).toBeEnabled();
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
@@ -2418,6 +2509,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Generated preview target: games/GravityWell/assets/images/preview.svg");
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnRehydrated(page, { gameId: "GravityWell" });
+      await page.locator("#activeGameCloseButton").click();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
 
       await selectMockRepo(page);
       await page.locator("#activeGameSelect").selectOption("Pong");
@@ -2446,7 +2540,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
       await expect(page.locator("#pickRepoBtn")).toBeHidden();
+      await expect(page.locator("#pickRepoBtn")).toBeDisabled();
+      await expect(page.locator("#targetTypeGames")).toBeDisabled();
       await expect(page.locator("#sampleList")).toHaveValue("Pong");
+      await expect(page.locator("#sampleList")).toBeDisabled();
       await expect(page.locator("#previewTargetValue")).toHaveText("games/Pong/assets/images/preview.svg");
       await expect(page.locator("#executeBtn")).toBeEnabled();
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");

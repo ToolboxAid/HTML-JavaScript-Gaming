@@ -14,6 +14,10 @@ class PathsOrIdsControl {
     this.sampleListInput.value = String(value || "");
   }
 
+  setDisabled(isDisabled) {
+    this.sampleListInput.disabled = Boolean(isDisabled);
+  }
+
   onInput(handler) {
     this.sampleListInput.addEventListener("input", handler);
   }

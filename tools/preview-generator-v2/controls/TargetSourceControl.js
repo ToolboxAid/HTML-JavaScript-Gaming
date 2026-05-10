@@ -18,6 +18,12 @@ class TargetSourceControl {
     });
   }
 
+  setDisabled(isDisabled) {
+    this.targetTypeInputs.forEach((input) => {
+      input.disabled = Boolean(isDisabled);
+    });
+  }
+
   showWorkspaceGamesOnly() {
     this.targetTypeInputs.forEach((input) => {
       const isGames = input.value === "games";

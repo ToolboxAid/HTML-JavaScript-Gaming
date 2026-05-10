@@ -377,19 +377,19 @@ export class WorkspaceManagerV2ContextService {
     return keys;
   }
 
-  clearToolSessionHydration() {
+  clearToolStateHydration() {
     return {
       ok: true,
       skipped: true,
-      message: "Workspace tool session deletion is restricted to Session Inspector V2 or Workspace Manager V2 Close Workspace."
+      message: "Workspace toolState deletion is restricted to Session Inspector V2 or Workspace Manager V2 Close Workspace."
     };
   }
 
-  clearWorkspaceSessionHydration() {
+  clearWorkspaceToolStateHydration() {
     return {
       ok: true,
       skipped: true,
-      message: "Workspace session deletion is restricted to Session Inspector V2 or Workspace Manager V2 Close Workspace."
+      message: "Workspace toolState deletion is restricted to Session Inspector V2 or Workspace Manager V2 Close Workspace."
     };
   }
 
@@ -404,15 +404,15 @@ export class WorkspaceManagerV2ContextService {
       }));
   }
 
-  workspaceToolSessionKeys() {
+  workspaceToolStateKeys() {
     return this.storageKeys()
       .filter((key) => key.startsWith(WORKSPACE_TOOL_SESSION_KEY_PREFIX))
       .sort();
   }
 
-  workspaceSessionDataKeys({ hostContextId = "" } = {}) {
+  workspaceToolStateDataKeys({ hostContextId = "" } = {}) {
     const keys = [
-      ...this.workspaceToolSessionKeys(),
+      ...this.workspaceToolStateKeys(),
       WORKSPACE_REPO_REFERENCE_SESSION_KEY,
       HOST_CONTEXT_STORAGE_KEY,
       hostContextId || this.sessionStorage.getItem(HOST_CONTEXT_STORAGE_KEY) || ""
@@ -421,10 +421,10 @@ export class WorkspaceManagerV2ContextService {
       .filter((key) => this.sessionStorage.getItem(key) !== null);
   }
 
-  dirtyWorkspaceSessions() {
+  dirtyWorkspaceToolStates() {
     const dirty = [];
     const unknown = [];
-    this.workspaceToolSessionKeys().forEach((key) => {
+    this.workspaceToolStateKeys().forEach((key) => {
       const result = this.readSessionJson(key);
       if (!result.ok) {
         unknown.push({ key, reason: result.message });
@@ -454,10 +454,10 @@ export class WorkspaceManagerV2ContextService {
     };
   }
 
-  closeWorkspaceSessionData({ hostContextId = "" } = {}) {
+  closeWorkspaceToolStateData({ hostContextId = "" } = {}) {
     const removed = [];
     const failed = [];
-    this.workspaceSessionDataKeys({ hostContextId }).forEach((key) => {
+    this.workspaceToolStateDataKeys({ hostContextId }).forEach((key) => {
       try {
         this.sessionStorage.removeItem(key);
         removed.push(key);

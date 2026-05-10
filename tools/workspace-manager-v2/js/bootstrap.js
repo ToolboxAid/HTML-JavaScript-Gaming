@@ -21,6 +21,9 @@ window.addEventListener("DOMContentLoaded", () => {
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     contextService: new WorkspaceManagerV2ContextService(),
     gameSelector: new GameSelectorControl({
+      cancelButton: requireElement("#activeGameCancelButton"),
+      closeButton: requireElement("#activeGameCloseButton"),
+      saveButton: requireElement("#activeGameSaveButton"),
       select: requireElement("#activeGameSelect"),
       summary: requireElement("#activeGameSummary")
     }),
