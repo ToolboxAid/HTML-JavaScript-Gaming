@@ -3,6 +3,7 @@ import { TextToSpeechEngine } from "../../../src/engine/audio/TextToSpeechEngine
 import { TextToSpeechToolApp } from "./TextToSpeechToolApp.js";
 import { ActionNavControl } from "./controls/ActionNavControl.js";
 import { OutputSummaryControl } from "./controls/OutputSummaryControl.js";
+import { QueueControl } from "./controls/QueueControl.js";
 import { SpeechOptionsControl } from "./controls/SpeechOptionsControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
 import { TextInputControl } from "./controls/TextInputControl.js";
@@ -19,7 +20,15 @@ window.addEventListener("DOMContentLoaded", () => {
   mountAccordionV2(document);
   const app = new TextToSpeechToolApp({
     actionNav: new ActionNavControl({
+      pauseButtons: [
+        requireElement("#text2speach-V2PauseButton"),
+        requireElement("#text2speach-V2WorkspacePauseButton")
+      ],
       returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
+      resumeButtons: [
+        requireElement("#text2speach-V2ResumeButton"),
+        requireElement("#text2speach-V2WorkspaceResumeButton")
+      ],
       speakButtons: [
         requireElement("#text2speach-V2SpeakButton"),
         requireElement("#text2speach-V2WorkspaceSpeakButton")
@@ -36,11 +45,25 @@ window.addEventListener("DOMContentLoaded", () => {
       preview: requireElement("#text2speach-V2SpeechPreview"),
       summary: requireElement("#text2speach-V2SpeechSummary")
     }),
+    queueControl: new QueueControl({
+      queueSelect: requireElement("#text2speach-V2QueueSelect")
+    }),
     speechOptions: new SpeechOptionsControl({
+      autoSpeakCheckbox: requireElement("#text2speach-V2AutoSpeakCheckbox"),
+      characterPresetSelect: requireElement("#text2speach-V2CharacterPresetSelect"),
+      delayBetweenRepeatsMsOutput: requireElement("#text2speach-V2DelayBetweenRepeatsMsOutput"),
+      delayBetweenRepeatsMsSlider: requireElement("#text2speach-V2DelayBetweenRepeatsMsSlider"),
       languageSelect: requireElement("#text2speach-V2LanguageSelect"),
-      pitchSelect: requireElement("#text2speach-V2PitchSelect"),
-      rateSelect: requireElement("#text2speach-V2RateSelect"),
-      volumeSelect: requireElement("#text2speach-V2VolumeSelect")
+      pitchOutput: requireElement("#text2speach-V2PitchOutput"),
+      pitchSlider: requireElement("#text2speach-V2PitchSlider"),
+      queueModeSelect: requireElement("#text2speach-V2QueueModeSelect"),
+      rateOutput: requireElement("#text2speach-V2RateOutput"),
+      rateSlider: requireElement("#text2speach-V2RateSlider"),
+      repeatCountSelect: requireElement("#text2speach-V2RepeatCountSelect"),
+      ssmlLikePresetSelect: requireElement("#text2speach-V2SsmlLikePresetSelect"),
+      voiceSelect: requireElement("#text2speach-V2VoiceSelect"),
+      volumeOutput: requireElement("#text2speach-V2VolumeOutput"),
+      volumeSlider: requireElement("#text2speach-V2VolumeSlider")
     }),
     statusLog: new StatusLogControl({
       clearButton: requireElement("#text2speach-V2ClearStatusButton"),

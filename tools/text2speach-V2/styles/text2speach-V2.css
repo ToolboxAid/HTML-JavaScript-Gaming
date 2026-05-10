@@ -45,14 +45,19 @@
 }
 
 .text2speach-V2__field textarea,
-.text2speach-V2__field select {
+.text2speach-V2__field select,
+.text2speach-V2__field input[type="range"] {
   width: 100%;
   box-sizing: border-box;
+  font: inherit;
+}
+
+.text2speach-V2__field textarea,
+.text2speach-V2__field select {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--surface-inline);
   color: var(--text);
-  font: inherit;
 }
 
 .text2speach-V2__field textarea {
@@ -64,6 +69,26 @@
 .text2speach-V2__field select {
   min-height: 38px;
   padding: 7px 9px;
+}
+
+.text2speach-V2__field input[type="range"] {
+  accent-color: var(--accent, #a78bfa);
+}
+
+.text2speach-V2__field output {
+  float: right;
+  min-width: 48px;
+  color: var(--text-muted, #cbd5e1);
+  text-align: right;
+}
+
+.text2speach-V2__check-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--text);
+  font-weight: 700;
 }
 
 .text2speach-V2__preview {

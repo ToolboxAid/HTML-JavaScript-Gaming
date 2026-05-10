@@ -107,6 +107,9 @@
         },
         "3d-camera-path-editor": {
           "$ref": "./tools/3d-camera-path-editor.schema.json"
+        },
+        "text2speach-V2": {
+          "$ref": "./tools/text2speach-V2.schema.json"
         }
       }
     }

@@ -1,3 +1,5 @@
+import { TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA } from "../../../../src/engine/audio/TextToSpeechDefaults.js";
+
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
@@ -13,7 +15,8 @@ const TEXT2SPEACH_V2_TOOL_KEY = "text2speach-V2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
 const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
-  [PALETTE_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/palette-manager-v2.schema.json"
+  [PALETTE_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/palette-manager-v2.schema.json",
+  [TEXT2SPEACH_V2_TOOL_KEY]: "tools/schemas/tools/text2speach-V2.schema.json"
 });
 const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   "preview-generator-v2",
@@ -774,7 +777,12 @@ export class WorkspaceManagerV2ContextService {
 
   dataSessionForTool(tool, context) {
     const toolPayload = toolPayloadForContext(tool, context);
-    return isPlainObject(toolPayload) ? clone(toolPayload) : null;
+    if (isPlainObject(toolPayload)) {
+      return clone(toolPayload);
+    }
+    return tool.id === TEXT2SPEACH_V2_TOOL_KEY
+      ? clone(TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA)
+      : null;
   }
 
   dirtySessionForTool() {
@@ -837,6 +845,9 @@ export class WorkspaceManagerV2ContextService {
       dirtyStatus: dirtyStatusFromSession(session),
       paletteSwatchCount: tool.id === PALETTE_MANAGER_V2_TOOL_KEY && Array.isArray(data?.swatches)
         ? data.swatches.length
+        : null,
+      speechQueueCount: tool.id === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(data?.queue)
+        ? data.queue.length
         : null,
       toolId: tool.id,
       toolName: tool.name
@@ -1427,6 +1438,9 @@ export class WorkspaceManagerV2ContextService {
         }
         if (Array.isArray(payload?.vectorMapDocument?.vectors)) {
           return `${toolId} vectors=${payload.vectorMapDocument.vectors.length}`;
+        }
+        if (toolId === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(payload?.queue)) {
+          return `${toolId} queue=${payload.queue.length}`;
         }
         return isPlainObject(payload)
           ? `${toolId} keys=${Object.keys(payload).length}`
