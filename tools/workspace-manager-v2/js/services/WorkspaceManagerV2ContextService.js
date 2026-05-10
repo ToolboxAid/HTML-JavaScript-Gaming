@@ -94,6 +94,20 @@ function dirtyStatusFromSession(session) {
     : "unknown";
 }
 
+function runtimeBindingMetadata({
+  bindingSource = "",
+  boundManifestPath = "",
+  hasLiveRepoHandle = false,
+  sourceBindingState = "unbound"
+} = {}) {
+  return {
+    hasLiveRepoHandle: hasLiveRepoHandle === true,
+    sourceBindingState: String(sourceBindingState || "unbound"),
+    boundManifestPath: String(boundManifestPath || ""),
+    bindingSource: String(bindingSource || "")
+  };
+}
+
 function toolPayloadForContext(tool, context) {
   return context?.tools?.[tool.id];
 }
@@ -467,6 +481,10 @@ export class WorkspaceManagerV2ContextService {
     return readResult;
   }
 
+  runtimeBindingMetadata(options = {}) {
+    return runtimeBindingMetadata(options);
+  }
+
   workspaceLaunchableTools() {
     return WORKSPACE_LAUNCHABLE_TOOLS.map((tool) => ({ ...tool }));
   }
@@ -675,7 +693,7 @@ export class WorkspaceManagerV2ContextService {
     return { ok: true, reference: { ...reference, displayName } };
   }
 
-  hydrateRepoReference(repoHandle, displayName = "") {
+  hydrateRepoReference(repoHandle, displayName = "", runtimeBinding = {}) {
     const repoName = String(displayName || repoHandle?.name || "selected").trim() || "selected";
     const reference = {
       source: "workspace-manager-v2",
@@ -684,13 +702,32 @@ export class WorkspaceManagerV2ContextService {
       handleKind: repoHandle?.kind || "directory",
       handleName: String(repoHandle?.name || repoName),
       displayName: repoName,
-      note: "Serializable repo reference only; live FileSystemDirectoryHandle access remains user-selected in the active page."
+      note: "Serializable repo reference only; live FileSystemDirectoryHandle access remains user-selected in the active page.",
+      ...runtimeBindingMetadata(runtimeBinding)
     };
     try {
       this.sessionStorage.setItem(WORKSPACE_REPO_REFERENCE_SESSION_KEY, JSON.stringify(reference));
       return { ok: true, key: WORKSPACE_REPO_REFERENCE_SESSION_KEY, reference };
     } catch (error) {
       return { ok: false, message: `Unable to store repo session reference: ${error.message}` };
+    }
+  }
+
+  writeWorkspaceRepoRuntimeBinding(runtimeBinding = {}) {
+    const result = this.readSessionJson(WORKSPACE_REPO_REFERENCE_SESSION_KEY);
+    if (!result.ok) {
+      return result;
+    }
+    const reference = {
+      ...result.value,
+      ...runtimeBindingMetadata(runtimeBinding),
+      note: "Serializable repo reference only; live FileSystemDirectoryHandle access remains user-selected in the active page."
+    };
+    try {
+      this.sessionStorage.setItem(WORKSPACE_REPO_REFERENCE_SESSION_KEY, JSON.stringify(reference));
+      return { ok: true, key: WORKSPACE_REPO_REFERENCE_SESSION_KEY, reference };
+    } catch (error) {
+      return { ok: false, message: `Unable to update repo runtime binding metadata: ${error.message}` };
     }
   }
 
@@ -709,7 +746,7 @@ export class WorkspaceManagerV2ContextService {
     };
   }
 
-  workspaceSessionForTool(tool, context, game) {
+  workspaceSessionForTool(tool, context, game, runtimeBinding = {}) {
     return {
       source: "workspace-manager-v2",
       toolId: tool.id,
@@ -721,7 +758,8 @@ export class WorkspaceManagerV2ContextService {
       assetsPath: context.assetsPath,
       gameManifestPath: game?.manifestPath || "",
       repoRoot: context.repoRoot || game?.repoRoot || "",
-      repoReferenceKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY
+      repoReferenceKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY,
+      ...runtimeBindingMetadata(runtimeBinding)
     };
   }
 
@@ -761,12 +799,22 @@ export class WorkspaceManagerV2ContextService {
     return { cleanedKeys, ok: true };
   }
 
-  sessionForTool(tool, context, game) {
+  sessionForTool(tool, context, game, runtimeBinding = {}) {
     return {
       schema: this.schemaSessionForTool(tool, context),
-      workspace: this.workspaceSessionForTool(tool, context, game),
+      workspace: this.workspaceSessionForTool(tool, context, game, runtimeBinding),
       data: this.dataSessionForTool(tool, context),
       dirty: this.dirtySessionForTool()
+    };
+  }
+
+  sessionWithRuntimeBinding(session, runtimeBinding = {}) {
+    return {
+      ...session,
+      workspace: {
+        ...(isPlainObject(session?.workspace) ? session.workspace : {}),
+        ...runtimeBindingMetadata(runtimeBinding)
+      }
     };
   }
 
@@ -808,7 +856,7 @@ export class WorkspaceManagerV2ContextService {
     return { context: refreshedContext, toolSummaries };
   }
 
-  hydrateEnabledToolSessions({ context, game, tools = this.workspaceLaunchableTools() } = {}) {
+  hydrateEnabledToolSessions({ context, game, runtimeBinding = {}, tools = this.workspaceLaunchableTools() } = {}) {
     if (!isPlainObject(context) || !context.gameId || !isPlainObject(context.tools)) {
       return { ok: false, message: "Cannot hydrate tool sessions without a schema-valid workspace context." };
     }
@@ -837,8 +885,8 @@ export class WorkspaceManagerV2ContextService {
         const existingSession = this.reusableToolSession(tool, context);
         const session = existingSession.ok
           ? existingSession.session
-          : this.sessionForTool(tool, context, game);
-        this.sessionStorage.setItem(toolSessionKey(tool.id), JSON.stringify(session));
+          : this.sessionForTool(tool, context, game, runtimeBinding);
+        this.sessionStorage.setItem(toolSessionKey(tool.id), JSON.stringify(this.sessionWithRuntimeBinding(session, runtimeBinding)));
       });
       return {
         ok: true,

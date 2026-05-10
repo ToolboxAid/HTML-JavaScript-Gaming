@@ -288,6 +288,23 @@ async function readWorkspaceSessionHydration(page) {
   });
 }
 
+function expectRuntimeBindingMetadata(metadata, {
+  bindingSource = "game.manifest.json",
+  boundManifestPath = "/games/Asteroids/game.manifest.json",
+  hasLiveRepoHandle = true,
+  sourceBindingState = "bound"
+} = {}) {
+  expect(metadata).toMatchObject({
+    bindingSource,
+    boundManifestPath,
+    hasLiveRepoHandle,
+    sourceBindingState
+  });
+  expect(metadata.handle).toBeUndefined();
+  expect(metadata.repoHandle).toBeUndefined();
+  expect(metadata.fileSystemHandle).toBeUndefined();
+}
+
 async function dirtyPaletteToolState(page, swatch) {
   await page.evaluate((nextSwatch) => {
     const app = window.__workspaceManagerV2App;
@@ -1491,13 +1508,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         tiles.every((tile) => Array.from(tile.querySelectorAll(".workspace-manager-v2__tool-tile-action"), (action) => action.textContent.trim()).join("|") === "How To Use|Read Me")
       ))).toBe(true);
       await selectMockRepo(page);
-      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+      const selectedRepoHydration = await readWorkspaceSessionHydration(page);
+      expect(selectedRepoHydration).toMatchObject({
         repoReference: {
           displayName: "HTML-JavaScript-Gaming",
           handleName: "HTML-JavaScript-Gaming",
           kind: "file-system-directory-handle-reference"
         },
         toolKeys: []
+      });
+      expectRuntimeBindingMetadata(selectedRepoHydration.repoReference, {
+        bindingSource: "showDirectoryPicker",
+        boundManifestPath: "",
+        hasLiveRepoHandle: true,
+        sourceBindingState: "repo-handle-acquired"
       });
       const compactCenterLayout = await page.evaluate(() => {
         const getRect = (selector) => {
@@ -1542,6 +1566,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"toolId"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"workspaceManifest"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"workspaceMetadata"/);
+      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"hasLiveRepoHandle"/);
+      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"sourceBindingState"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/samples\//);
       await expect(page.locator("#pickRepoBtn")).toBeDisabled();
       await expect(page.locator("#activeGameSelect")).toBeDisabled();
@@ -1550,6 +1576,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#cancelWorkspaceButton")).toBeEnabled();
       await expect(page.locator("#activeGameContent button")).toHaveCount(0);
       const selectedGameHydration = await readWorkspaceSessionHydration(page);
+      expectRuntimeBindingMetadata(selectedGameHydration.repoReference);
       expect(selectedGameHydration.toolKeys).toEqual([
         "workspace.tools.asset-manager-v2",
         "workspace.tools.palette-manager-v2",
@@ -1603,7 +1630,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         assetsPath: "games/Asteroids/assets",
         repoReferenceKey: "workspace.repo.reference"
       });
+      expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["asset-manager-v2"]);
+      expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["palette-manager-v2"]);
+      expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["preview-generator-v2"]);
+      expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["session-inspector-v2"]);
       expect(selectedGameHydration.toolSessions["asset-manager-v2"].state).toBeUndefined();
+      expect(JSON.stringify(selectedGameHydration.toolSessions)).not.toMatch(/getDirectoryHandle|createWritable|FileSystemDirectoryHandle/);
       expect(Object.keys(selectedGameHydration.dataByTool["asset-manager-v2"].assets)).toHaveLength(14);
       expect(selectedGameHydration.toolSessions["templates-v2"]).toBeUndefined();
       expect(Object.values(selectedGameHydration.dirtyByTool)).toEqual([
@@ -1677,6 +1709,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2']")).toHaveCount(1);
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.session-inspector-v2']")).toHaveCount(1);
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.templates-v2']")).toHaveCount(0);
+      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.asset-manager-v2"]').click();
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"hasLiveRepoHandle": true');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"sourceBindingState": "bound"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"boundManifestPath": "/games/Asteroids/game.manifest.json"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"bindingSource": "game.manifest.json"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).not.toContainText('"handle":');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).not.toContainText('"repoHandle":');
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Runtime binding status for sessionStorage:workspace\.tools\.asset-manager-v2: hasLiveRepoHandle=true; sourceBindingState=bound; boundManifestPath=\/games\/Asteroids\/game\.manifest\.json; bindingSource=game\.manifest\.json\./);
+      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.repo.reference"]').click();
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"hasLiveRepoHandle": true');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"sourceBindingState": "bound"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"boundManifestPath": "/games/Asteroids/game.manifest.json"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"bindingSource": "game.manifest.json"');
+      await expect(page.locator("#sessionInspectorV2JsonOutput")).not.toContainText('"handle":');
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Runtime binding status for sessionStorage:workspace\.repo\.reference: hasLiveRepoHandle=true; sourceBindingState=bound; boundManifestPath=\/games\/Asteroids\/game\.manifest\.json; bindingSource=game\.manifest\.json\./);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expectWorkspaceReturnedFromTool(page);
@@ -1760,6 +1807,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.toolId).toBeUndefined();
       expect(storedContext.activePalette).toBeUndefined();
       expect(storedContext.workspaceManifest).toBeUndefined();
+      expect(storedContext.hasLiveRepoHandle).toBeUndefined();
+      expect(storedContext.sourceBindingState).toBeUndefined();
       expect(storedContext.gameId).toBe("Asteroids");
       expect(storedContext.gameRoot).toBe("games/Asteroids/");
       expect(storedContext.assetsPath).toBe("games/Asteroids/assets");
@@ -2291,6 +2340,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const restoredState = await page.evaluate(() => ({
         activeGameManifestPath: window.__workspaceManagerV2App.activeGame.manifestPath,
         hasRepoHandle: Boolean(window.__workspaceManagerV2App.activeRepoHandle),
+        repoReference: JSON.parse(sessionStorage.getItem("workspace.repo.reference")),
         requiresRepoHandle: window.__workspaceManagerV2App.activeToolStateRequiresRepoHandle,
         writes: JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]")
       }));
@@ -2300,6 +2350,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         writes: []
       });
       expect(restoredState.activeGameManifestPath).toBe(`sessionStorage:${hostContextId}`);
+      expectRuntimeBindingMetadata(restoredState.repoReference, {
+        bindingSource: "sessionStorage restore",
+        boundManifestPath: `sessionStorage:${hostContextId}`,
+        hasLiveRepoHandle: false,
+        sourceBindingState: "missing-live-repo-handle"
+      });
+      await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`WARN Runtime handle lost: hasLiveRepoHandle=false; sourceBindingState=missing-live-repo-handle; boundManifestPath=sessionStorage:${hostContextId}; bindingSource=sessionStorage restore\\. Required action: Pick Repo Folder to rebind game\\.manifest\\.json before Save or tool launch\\.`));
 
       await page.evaluate(() => window.__workspaceManagerV2App.saveWorkspaceSession());
       await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`FAIL Save blocked: missing live repo folder handle for active toolState; active game source=sessionStorage:${hostContextId}; context\\.gameId=Asteroids; context\\.gameRoot=games/Asteroids/\\. Required action: Pick Repo Folder to rebind game\\.manifest\\.json before Save\\.`));
@@ -2310,14 +2367,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         activeGameManifestKind: window.__workspaceManagerV2App.activeGame.manifestKind,
         activeGameManifestPath: window.__workspaceManagerV2App.activeGame.manifestPath,
         hasRepoHandle: Boolean(window.__workspaceManagerV2App.activeRepoHandle),
+        repoReference: JSON.parse(sessionStorage.getItem("workspace.repo.reference")),
         requiresRepoHandle: window.__workspaceManagerV2App.activeToolStateRequiresRepoHandle
       }));
-      expect(reboundState).toEqual({
+      expect(reboundState).toMatchObject({
         activeGameManifestKind: "game-manifest",
         activeGameManifestPath: "/games/Asteroids/game.manifest.json",
         hasRepoHandle: true,
         requiresRepoHandle: false
       });
+      expectRuntimeBindingMetadata(reboundState.repoReference);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime handle rebound: hasLiveRepoHandle=true; sourceBindingState=bound; boundManifestPath=\/games\/Asteroids\/game\.manifest\.json; bindingSource=repo-folder-rebind\./);
 
       await page.locator("#saveWorkspaceButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save source binding: \/games\/Asteroids\/game\.manifest\.json\./);
@@ -2327,9 +2387,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       const saveState = await page.evaluate((contextId) => ({
         paletteSession: JSON.parse(sessionStorage.getItem("workspace.tools.palette-manager-v2")),
+        repoReference: JSON.parse(sessionStorage.getItem("workspace.repo.reference")),
         savedContext: JSON.parse(sessionStorage.getItem(contextId)),
         writes: JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]")
       }), hostContextId);
+      expectRuntimeBindingMetadata(saveState.repoReference);
+      expectRuntimeBindingMetadata(saveState.paletteSession.workspace);
       expect(saveState.paletteSession.dirty).toEqual({
         isDirty: false,
         reason: null,

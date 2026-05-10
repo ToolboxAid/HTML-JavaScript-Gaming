@@ -19,6 +19,8 @@ tests/results/
 tmp/
 
 # Codex files
+docs/dev/codex_commands.md
+docs/dev/commit_comment.txt
 codex_changed_files.txt
 docs/dev/reports/codex_changed_files.txt
 codex_review.diff

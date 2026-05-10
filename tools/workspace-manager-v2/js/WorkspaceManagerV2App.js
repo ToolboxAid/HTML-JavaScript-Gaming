@@ -125,6 +125,42 @@ export class WorkspaceManagerV2App {
     return "false";
   }
 
+  runtimeBindingMetadata({
+    bindingSource = "",
+    boundManifestPath = "",
+    hasLiveRepoHandle,
+    sourceBindingState = ""
+  } = {}) {
+    const liveRepoHandle = typeof hasLiveRepoHandle === "boolean"
+      ? hasLiveRepoHandle
+      : Boolean(this.activeRepoHandle && !this.activeToolStateRequiresRepoHandle);
+    const manifestPath = boundManifestPath || this.activeGame?.manifestPath || "";
+    const state = sourceBindingState || (liveRepoHandle && manifestPath && !manifestPath.startsWith("sessionStorage:")
+      ? "bound"
+      : (liveRepoHandle ? "repo-handle-acquired" : "missing-live-repo-handle"));
+    const source = bindingSource || (manifestPath.startsWith("sessionStorage:")
+      ? "sessionStorage restore"
+      : (manifestPath ? "game.manifest.json" : "runtime state"));
+    return this.contextService.runtimeBindingMetadata({
+      bindingSource: source,
+      boundManifestPath: manifestPath,
+      hasLiveRepoHandle: liveRepoHandle,
+      sourceBindingState: state
+    });
+  }
+
+  runtimeBindingDetails(runtimeBinding) {
+    return `hasLiveRepoHandle=${runtimeBinding.hasLiveRepoHandle}; sourceBindingState=${runtimeBinding.sourceBindingState}; boundManifestPath=${runtimeBinding.boundManifestPath || "(none)"}; bindingSource=${runtimeBinding.bindingSource || "(none)"}`;
+  }
+
+  updateRepoRuntimeBinding(runtimeBinding) {
+    const result = this.contextService.writeWorkspaceRepoRuntimeBinding(runtimeBinding);
+    if (!result.ok && this.contextService.sessionStorage.getItem("workspace.repo.reference") !== null) {
+      this.statusLog.warn(`Runtime binding metadata update failed: ${result.message}`);
+    }
+    return result;
+  }
+
   syncLifecycleControls() {
     const hasActiveToolState = Boolean(this.activeContext && this.activeGame && this.activeToolStateHydration?.ok);
     const dirtyStatus = this.activeToolStateDirtyStatus();
@@ -170,12 +206,19 @@ export class WorkspaceManagerV2App {
       });
       this.activeRepoHandle = selectedRepoHandle;
       this.repoDestination.setRepoDestinationDisplayName(displayName);
-      const repoHydration = this.contextService.hydrateRepoReference(selectedRepoHandle, displayName);
+      const acquiredBinding = this.runtimeBindingMetadata({
+        bindingSource: "showDirectoryPicker",
+        boundManifestPath: "",
+        hasLiveRepoHandle: true,
+        sourceBindingState: "repo-handle-acquired"
+      });
+      const repoHydration = this.contextService.hydrateRepoReference(selectedRepoHandle, displayName, acquiredBinding);
       if (!repoHydration.ok) {
         this.clearActiveWorkspace(repoHydration.message);
         this.statusLog.fail(`Repo load failed: ${repoHydration.message}`);
         return;
       }
+      this.statusLog.ok(`Runtime handle acquired: ${this.runtimeBindingDetails(acquiredBinding)}.`);
       const cacheResult = await this.contextService.cacheRepoHandle(selectedRepoHandle, repoHydration.reference);
       if (!cacheResult.ok) {
         this.statusLog.warn(`Repo handle cache unavailable: ${cacheResult.message}`);
@@ -190,6 +233,13 @@ export class WorkspaceManagerV2App {
         });
         const metrics = this.contextSummaryMetrics(restoredToolState.context);
         if (!sourceBinding.ok) {
+          const invalidBinding = this.runtimeBindingMetadata({
+            bindingSource: "repo-folder-rebind",
+            boundManifestPath: restoredToolState.game.manifestPath,
+            hasLiveRepoHandle: true,
+            sourceBindingState: "invalid"
+          });
+          this.updateRepoRuntimeBinding(invalidBinding);
           this.applyContextResult({
             assetCount: metrics.assetCount,
             context: restoredToolState.context,
@@ -198,9 +248,17 @@ export class WorkspaceManagerV2App {
             paletteSwatches: metrics.paletteSwatches
           }, { requiresRepoHandle: true });
           this.gameSelector.setValue(restoredToolState.game.id, restoredToolState.game.name);
+          this.statusLog.warn(`Runtime handle invalidated: ${this.runtimeBindingDetails(invalidBinding)}; reason=${sourceBinding.message}.`);
           this.statusLog.fail(`Repo rebind failed: ${sourceBinding.message}`);
           return;
         }
+        const reboundBinding = this.runtimeBindingMetadata({
+          bindingSource: "repo-folder-rebind",
+          boundManifestPath: sourceBinding.source,
+          hasLiveRepoHandle: true,
+          sourceBindingState: "bound"
+        });
+        this.updateRepoRuntimeBinding(reboundBinding);
         this.applyContextResult({
           assetCount: metrics.assetCount,
           context: restoredToolState.context,
@@ -212,6 +270,7 @@ export class WorkspaceManagerV2App {
         this.statusLog.ok(`Repo destination selected: ${displayName}.`);
         this.statusLog.ok(`Discovered ${discovery.games.length} schema-valid game manifest${discovery.games.length === 1 ? "" : "s"}.`);
         this.statusLog.ok(`Rebound restored ${sourceBinding.game.name} toolState to ${sourceBinding.source} after repo folder selection.`);
+        this.statusLog.ok(`Runtime handle rebound: ${this.runtimeBindingDetails(reboundBinding)}.`);
         return;
       }
       this.syncLifecycleControls();
@@ -266,6 +325,7 @@ export class WorkspaceManagerV2App {
       this.statusLog.ok(result.boundaryContract);
     }
     this.reportToolStateHydration();
+    this.statusLog.ok(`Runtime handle rebound: ${this.runtimeBindingDetails(this.runtimeBindingMetadata())}.`);
     this.statusLog.ok(`Loaded ${result.game.name} from ${result.game.manifestPath} with ${result.paletteSwatches.length} active palette colors and ${result.assetCount} managed assets.`);
     this.statusLog.ok("Asset Manager V2 production launch context is session/state based only.");
   }
@@ -293,8 +353,15 @@ export class WorkspaceManagerV2App {
     });
     if (!repoReferenceResult.ok) {
       const message = `${repoReferenceResult.message} Pick Repo Folder to reselect repo before launching tools.`;
+      const invalidBinding = this.runtimeBindingMetadata({
+        bindingSource: "workspace.repo.reference",
+        boundManifestPath: result.game.manifestPath,
+        hasLiveRepoHandle: false,
+        sourceBindingState: "invalid"
+      });
       this.repoDestination.setRepoDestinationDisplayName("not selected");
       this.clearActiveWorkspace(message);
+      this.statusLog.warn(`Runtime handle invalidated: ${this.runtimeBindingDetails(invalidBinding)}; reason=${repoReferenceResult.message}.`);
       this.statusLog.fail(`Workspace restore failed: ${message}`);
       return;
     }
@@ -304,6 +371,14 @@ export class WorkspaceManagerV2App {
     if (!this.activeRepoHandle && returnHistoryContextId === result.hostContextId) {
       const handleResult = await this.contextService.restoreCachedRepoHandle(repoReferenceResult.reference);
       if (handleResult.ok) {
+        const acquiredBinding = this.runtimeBindingMetadata({
+          bindingSource: handleResult.source,
+          boundManifestPath: "",
+          hasLiveRepoHandle: true,
+          sourceBindingState: "repo-handle-acquired"
+        });
+        this.updateRepoRuntimeBinding(acquiredBinding);
+        this.statusLog.ok(`Runtime handle acquired: ${this.runtimeBindingDetails(acquiredBinding)}.`);
         const discovery = await this.contextService.discoverGameManifests(handleResult.repoHandle);
         if (discovery.ok) {
           this.activeRepoHandle = handleResult.repoHandle;
@@ -318,12 +393,36 @@ export class WorkspaceManagerV2App {
             restoredResult = { ...result, game: sourceBinding.game };
             restoredSourceBinding = sourceBinding;
           } else {
+            const invalidBinding = this.runtimeBindingMetadata({
+              bindingSource: "return-history-cache",
+              boundManifestPath: result.game.manifestPath,
+              hasLiveRepoHandle: true,
+              sourceBindingState: "invalid"
+            });
+            this.updateRepoRuntimeBinding(invalidBinding);
+            this.statusLog.warn(`Runtime handle invalidated: ${this.runtimeBindingDetails(invalidBinding)}; reason=${sourceBinding.message}.`);
             this.statusLog.warn(`Return from tool restore: source binding missing: ${sourceBinding.message}`);
           }
         } else {
+          const invalidBinding = this.runtimeBindingMetadata({
+            bindingSource: handleResult.source,
+            boundManifestPath: result.game.manifestPath,
+            hasLiveRepoHandle: true,
+            sourceBindingState: "invalid"
+          });
+          this.updateRepoRuntimeBinding(invalidBinding);
+          this.statusLog.warn(`Runtime handle invalidated: ${this.runtimeBindingDetails(invalidBinding)}; reason=${discovery.message}.`);
           this.statusLog.warn(`Return from tool restore: repo handle cache discovery failed: ${discovery.message}`);
         }
       } else {
+        const lostBinding = this.runtimeBindingMetadata({
+          bindingSource: "return-history-cache",
+          boundManifestPath: result.game.manifestPath,
+          hasLiveRepoHandle: false,
+          sourceBindingState: "missing-live-repo-handle"
+        });
+        this.updateRepoRuntimeBinding(lostBinding);
+        this.statusLog.warn(`Runtime handle lost: ${this.runtimeBindingDetails(lostBinding)}; reason=${handleResult.message}.`);
         this.statusLog.warn(`Return from tool restore: repo handle cache unavailable: ${handleResult.message}`);
       }
       this.contextService.sessionStorage.removeItem(WorkspaceManagerV2App.returnHistoryContextKey());
@@ -338,8 +437,24 @@ export class WorkspaceManagerV2App {
     this.reportToolStateHydration();
     this.statusLog.ok(`Restored repo destination from workspace.repo.reference for ${repoReferenceResult.reference.displayName}.`);
     if (requiresRepoHandle) {
+      const lostBinding = this.runtimeBindingMetadata({
+        bindingSource: "sessionStorage restore",
+        boundManifestPath: restoredResult.game.manifestPath,
+        hasLiveRepoHandle: false,
+        sourceBindingState: "missing-live-repo-handle"
+      });
+      this.updateRepoRuntimeBinding(lostBinding);
+      this.statusLog.warn(`Runtime handle lost: ${this.runtimeBindingDetails(lostBinding)}. Required action: Pick Repo Folder to rebind game.manifest.json before Save or tool launch.`);
       this.statusLog.warn(`Restored ${restoredResult.game.name} workspace from session context ${restoredResult.hostContextId} as read-only toolState context: missing live repo folder handle. Required action: Pick Repo Folder to rebind ${restoredResult.context.gameRoot}game.manifest.json before Save or tool launch.`);
     } else if (restoredSourceBinding) {
+      const reboundBinding = this.runtimeBindingMetadata({
+        bindingSource: "return-history-cache",
+        boundManifestPath: restoredSourceBinding.source,
+        hasLiveRepoHandle: true,
+        sourceBindingState: "bound"
+      });
+      this.updateRepoRuntimeBinding(reboundBinding);
+      this.statusLog.ok(`Runtime handle rebound: ${this.runtimeBindingDetails(reboundBinding)}.`);
       this.statusLog.ok(`Return from tool restore: repo selected: ${repoReferenceResult.reference.displayName}.`);
       this.statusLog.ok(`Return from tool restore: game selected: ${this.activeGame.name} (${this.activeGame.id}).`);
       this.statusLog.ok(`Return from tool restore: source binding active: ${restoredSourceBinding.source}.`);
@@ -350,9 +465,20 @@ export class WorkspaceManagerV2App {
 
   applyContextResult(result, { requiresRepoHandle = false } = {}) {
     const tools = this.contextService.workspaceLaunchableTools();
+    const runtimeBinding = this.runtimeBindingMetadata({
+      bindingSource: requiresRepoHandle
+        ? "sessionStorage restore"
+        : (this.activeRepoHandle ? "game.manifest.json" : "runtime state"),
+      boundManifestPath: result.game?.manifestPath || "",
+      hasLiveRepoHandle: Boolean(this.activeRepoHandle && !requiresRepoHandle),
+      sourceBindingState: requiresRepoHandle
+        ? "missing-live-repo-handle"
+        : (this.activeRepoHandle ? "bound" : "no-live-repo-handle")
+    });
     const hydration = this.contextService.hydrateEnabledToolSessions({
       context: result.context,
       game: result.game,
+      runtimeBinding,
       tools
     });
     const sessionRefresh = hydration.ok
@@ -375,6 +501,7 @@ export class WorkspaceManagerV2App {
     this.activeToolStateRequiresRepoHandle = Boolean(requiresRepoHandle);
     this.activeToolStateHydration = hydration;
     this.activeToolStateRefresh = sessionRefresh;
+    this.updateRepoRuntimeBinding(runtimeBinding);
     this.gameSelector.setSummary(this.activeToolStateRequiresRepoHandle
       ? `${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}. Pick Repo Folder to rebind game.manifest.json before Save or tool launch.`
       : `${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}.`);
@@ -428,6 +555,7 @@ export class WorkspaceManagerV2App {
     let game = this.activeGame;
     let requiresRepoHandle = this.activeToolStateRequiresRepoHandle || !this.activeRepoHandle;
     let sourceBindingMessage = "missing live repo folder handle";
+    let bindingSource = "return-navigation";
     if (this.activeRepoHandle) {
       const sourceBinding = await this.contextService.bindGameManifestSourceForSave({
         context: this.activeContext,
@@ -438,9 +566,11 @@ export class WorkspaceManagerV2App {
         game = sourceBinding.game;
         requiresRepoHandle = false;
         sourceBindingMessage = sourceBinding.source;
+        bindingSource = "return-navigation";
       } else {
         requiresRepoHandle = true;
         sourceBindingMessage = sourceBinding.message;
+        bindingSource = "return-navigation-invalid";
       }
     }
     const metrics = this.contextSummaryMetrics(this.activeContext);
@@ -455,8 +585,24 @@ export class WorkspaceManagerV2App {
     this.statusLog.ok(`Return from tool restore: repo selected: ${repoName}.`);
     this.statusLog.ok(`Return from tool restore: game selected: ${this.activeGame.name} (${this.activeGame.id}).`);
     if (requiresRepoHandle) {
+      const invalidBinding = this.runtimeBindingMetadata({
+        bindingSource,
+        boundManifestPath: this.activeGame.manifestPath,
+        hasLiveRepoHandle: Boolean(this.activeRepoHandle),
+        sourceBindingState: this.activeRepoHandle ? "invalid" : "missing-live-repo-handle"
+      });
+      this.updateRepoRuntimeBinding(invalidBinding);
+      this.statusLog.warn(`Runtime handle ${this.activeRepoHandle ? "invalidated" : "lost"}: ${this.runtimeBindingDetails(invalidBinding)}; reason=${sourceBindingMessage}.`);
       this.statusLog.warn(`Return from tool restore: source binding missing: ${sourceBindingMessage}.`);
     } else {
+      const reboundBinding = this.runtimeBindingMetadata({
+        bindingSource,
+        boundManifestPath: sourceBindingMessage,
+        hasLiveRepoHandle: true,
+        sourceBindingState: "bound"
+      });
+      this.updateRepoRuntimeBinding(reboundBinding);
+      this.statusLog.ok(`Runtime handle rebound: ${this.runtimeBindingDetails(reboundBinding)}.`);
       this.statusLog.ok(`Return from tool restore: source binding active: ${sourceBindingMessage}.`);
     }
     this.statusLog.ok(`Return from tool restore: enabled tool count: ${enabledToolCount}.`);
@@ -475,6 +621,14 @@ export class WorkspaceManagerV2App {
       return;
     }
     if (this.activeToolStateRequiresRepoHandle) {
+      const lostBinding = this.runtimeBindingMetadata({
+        bindingSource: "launch-blocked",
+        boundManifestPath: this.activeGame?.manifestPath || "",
+        hasLiveRepoHandle: false,
+        sourceBindingState: "missing-live-repo-handle"
+      });
+      this.updateRepoRuntimeBinding(lostBinding);
+      this.statusLog.warn(`Runtime handle lost: ${this.runtimeBindingDetails(lostBinding)}; reason=tool launch requires a live repo folder handle.`);
       this.statusLog.fail(`Launch blocked: missing live repo folder handle for active toolState; active game source=${this.activeGame?.manifestPath || "(missing manifestPath)"}. Required action: Pick Repo Folder to rebind game.manifest.json before tool launch.`);
       return;
     }
@@ -527,9 +681,25 @@ export class WorkspaceManagerV2App {
         repoHandle: this.activeRepoHandle
       });
       if (!sourceBinding.ok) {
+        const invalidBinding = this.runtimeBindingMetadata({
+          bindingSource: "save-source-rebind",
+          boundManifestPath: result.game.manifestPath,
+          hasLiveRepoHandle: Boolean(this.activeRepoHandle),
+          sourceBindingState: "invalid"
+        });
+        this.updateRepoRuntimeBinding(invalidBinding);
+        this.statusLog.warn(`Runtime handle invalidated: ${this.runtimeBindingDetails(invalidBinding)}; reason=${sourceBinding.message}.`);
         return sourceBinding;
       }
+      const reboundBinding = this.runtimeBindingMetadata({
+        bindingSource: "save-source-rebind",
+        boundManifestPath: sourceBinding.source,
+        hasLiveRepoHandle: true,
+        sourceBindingState: "bound"
+      });
+      this.updateRepoRuntimeBinding(reboundBinding);
       this.statusLog.info(`Save source rebound to ${sourceBinding.source} for ${result.game.id}.`);
+      this.statusLog.ok(`Runtime handle rebound: ${this.runtimeBindingDetails(reboundBinding)}.`);
       this.applyContextResult({ ...result, game: sourceBinding.game });
       if (result.assetWarning) {
         this.statusLog.info(`Warning: ${result.assetWarning}`);
@@ -583,6 +753,14 @@ export class WorkspaceManagerV2App {
     }
     if (this.activeToolStateRequiresRepoHandle || !this.activeRepoHandle) {
       this.syncLifecycleControls();
+      const lostBinding = this.runtimeBindingMetadata({
+        bindingSource: "save-blocked",
+        boundManifestPath: this.activeGame?.manifestPath || "",
+        hasLiveRepoHandle: false,
+        sourceBindingState: "missing-live-repo-handle"
+      });
+      this.updateRepoRuntimeBinding(lostBinding);
+      this.statusLog.warn(`Runtime handle lost: ${this.runtimeBindingDetails(lostBinding)}; reason=Save requires a live repo folder handle.`);
       this.statusLog.fail(`Save blocked: missing live repo folder handle for active toolState; active game source=${this.activeGame?.manifestPath || "(missing manifestPath)"}; context.gameId=${this.activeContext?.gameId || "(missing gameId)"}; context.gameRoot=${this.activeContext?.gameRoot || "(missing gameRoot)"}. Required action: Pick Repo Folder to rebind game.manifest.json before Save.`);
       return;
     }
@@ -603,6 +781,14 @@ export class WorkspaceManagerV2App {
       repoHandle: this.activeRepoHandle
     });
     if (!writeResult.ok) {
+      const invalidBinding = this.runtimeBindingMetadata({
+        bindingSource: "save-write",
+        boundManifestPath: this.activeGame?.manifestPath || "",
+        hasLiveRepoHandle: Boolean(this.activeRepoHandle),
+        sourceBindingState: "invalid"
+      });
+      this.updateRepoRuntimeBinding(invalidBinding);
+      this.statusLog.warn(`Runtime handle invalidated: ${this.runtimeBindingDetails(invalidBinding)}; reason=${writeResult.message}.`);
       this.statusLog.fail(`Save blocked: ${writeResult.message}`);
       return;
     }
@@ -628,6 +814,12 @@ export class WorkspaceManagerV2App {
     cleanResult.cleanedKeys.forEach((key) => {
       this.statusLog.ok(`Saved and marked clean: ${key}.`);
     });
+    this.statusLog.ok(`Runtime handle rebound: ${this.runtimeBindingDetails(this.runtimeBindingMetadata({
+      bindingSource: "save-write",
+      boundManifestPath: writeResult.source,
+      hasLiveRepoHandle: true,
+      sourceBindingState: "bound"
+    }))}.`);
     this.statusLog.ok(`Save source binding: ${writeResult.source}.`);
     this.statusLog.ok(`Saved path: ${writeResult.path}.`);
     this.statusLog.ok(`Save write validation: ${writeResult.changeValidation}.`);
@@ -655,6 +847,12 @@ export class WorkspaceManagerV2App {
       this.statusLog.warn(`Close Workspace blocked: dirty status could not be verified for ${dirtyCheck.unknown.map((entry) => entry.key).join(", ")}.`);
       return;
     }
+    const lostBinding = this.runtimeBindingMetadata({
+      bindingSource: "close-workspace",
+      boundManifestPath: this.activeGame?.manifestPath || "",
+      hasLiveRepoHandle: false,
+      sourceBindingState: "closed"
+    });
     const closeResult = this.contextService.closeWorkspaceToolStateData({
       hostContextId: this.activeHostContextId || ""
     });
@@ -671,6 +869,7 @@ export class WorkspaceManagerV2App {
     this.activeToolStateRequiresRepoHandle = false;
     this.repoDestination.setRepoDestinationDisplayName("not selected");
     this.clearActiveWorkspace();
+    this.statusLog.info(`Runtime handle lost: ${this.runtimeBindingDetails(lostBinding)}.`);
     this.statusLog.ok(`Closed Workspace Manager V2 toolState. Removed ${closeResult.removed.length} workspace toolState key${closeResult.removed.length === 1 ? "" : "s"}.`);
   }
 
@@ -706,10 +905,17 @@ export class WorkspaceManagerV2App {
     if (!cancelResult.ok) {
       return;
     }
+    const lostBinding = this.runtimeBindingMetadata({
+      bindingSource: "cancel-workspace",
+      boundManifestPath: this.activeGame?.manifestPath || "",
+      hasLiveRepoHandle: false,
+      sourceBindingState: "canceled"
+    });
     this.activeRepoHandle = null;
     this.activeToolStateRequiresRepoHandle = false;
     this.repoDestination.setRepoDestinationDisplayName("not selected");
     this.clearActiveWorkspace();
+    this.statusLog.info(`Runtime handle lost: ${this.runtimeBindingDetails(lostBinding)}.`);
     this.statusLog.ok(`Canceled Workspace Manager V2 toolState. Removed ${cancelResult.removed.length} workspace toolState key${cancelResult.removed.length === 1 ? "" : "s"}.`);
   }
 

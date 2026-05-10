@@ -94,7 +94,36 @@ export class SessionInspectorV2App {
     this.dirty.render(entry);
     if (entry) {
       this.statusLog.info(`Selected ${entry.storageType}:${entry.key}.`);
+      const runtimeBinding = this.runtimeBindingForEntry(entry);
+      if (runtimeBinding) {
+        this.statusLog.info(`Runtime binding status for ${entry.storageType}:${entry.key}: hasLiveRepoHandle=${runtimeBinding.hasLiveRepoHandle}; sourceBindingState=${runtimeBinding.sourceBindingState}; boundManifestPath=${runtimeBinding.boundManifestPath || "(none)"}; bindingSource=${runtimeBinding.bindingSource || "(none)"}.`);
+      }
     }
+  }
+
+  runtimeBindingForEntry(entry) {
+    const value = entry?.parseOk ? entry.parsedValue : null;
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return null;
+    }
+    const candidate = Object.prototype.hasOwnProperty.call(value, "hasLiveRepoHandle")
+      ? value
+      : value.workspace;
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
+      return null;
+    }
+    if (!Object.prototype.hasOwnProperty.call(candidate, "hasLiveRepoHandle")
+      || !Object.prototype.hasOwnProperty.call(candidate, "sourceBindingState")
+      || !Object.prototype.hasOwnProperty.call(candidate, "boundManifestPath")
+      || !Object.prototype.hasOwnProperty.call(candidate, "bindingSource")) {
+      return null;
+    }
+    return {
+      hasLiveRepoHandle: candidate.hasLiveRepoHandle === true,
+      sourceBindingState: String(candidate.sourceBindingState || "unknown"),
+      boundManifestPath: String(candidate.boundManifestPath || ""),
+      bindingSource: String(candidate.bindingSource || "")
+    };
   }
 
   deleteEntry(entryId) {
