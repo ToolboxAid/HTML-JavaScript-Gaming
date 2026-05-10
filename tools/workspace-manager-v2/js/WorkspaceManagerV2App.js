@@ -40,11 +40,17 @@ export class WorkspaceManagerV2App {
     });
     this.menu.mount({
       isUatMode: this.contextService.isUatMode(),
+      onCloseWorkspace: () => {
+        this.closeWorkspace();
+      },
       onExportManifest: () => {
         void this.exportWorkspaceManifest();
       },
       onImportManifest: (file) => {
         void this.importWorkspaceManifest(file);
+      },
+      onSaveWorkspace: () => {
+        void this.saveWorkspaceSession();
       },
       onSeedUat: () => {
         void this.seedTemporaryUatManifest();
@@ -67,7 +73,9 @@ export class WorkspaceManagerV2App {
       }
     });
     this.summary.clear();
+    this.menu.setSaveEnabled(false);
     this.menu.setExportEnabled(false);
+    this.menu.setCloseEnabled(false);
     this.gameSelector.clear();
     this.toolTiles.renderEmpty();
     this.statusLog.ok("Workspace Manager V2 ready. Pick a repo folder to discover schema-valid game manifests.");
@@ -85,7 +93,9 @@ export class WorkspaceManagerV2App {
     this.contextService.clearDiscoveredGames();
     this.gameSelector.clear();
     this.gameSelector.setSummary(summaryText);
+    this.menu.setSaveEnabled(false);
     this.menu.setExportEnabled(false);
+    this.menu.setCloseEnabled(false);
     this.toolTiles.renderEmpty();
     this.summary.clear();
   }
@@ -121,6 +131,7 @@ export class WorkspaceManagerV2App {
       }
       this.contextService.setDiscoveredGames(discovery.games);
       this.gameSelector.setGames(discovery.games);
+      this.menu.setCloseEnabled(true);
       if (discovery.games.length) {
         this.gameSelector.setSummary(`Discovered ${discovery.games.length} schema-valid game manifest${discovery.games.length === 1 ? "" : "s"} from ${displayName}.`);
         this.statusLog.ok(`Repo destination selected: ${displayName}.`);
@@ -250,7 +261,9 @@ export class WorkspaceManagerV2App {
       manifestStatus: "Schema-valid manifest",
       paletteSwatchCount
     });
+    this.menu.setSaveEnabled(hydration.ok);
     this.menu.setExportEnabled(hydration.ok);
+    this.menu.setCloseEnabled(true);
   }
 
   reportSessionHydration() {
@@ -320,6 +333,82 @@ export class WorkspaceManagerV2App {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }
     return { ok: true, context: this.activeContext };
+  }
+
+  contextSummaryMetrics(context) {
+    const paletteSwatches = Array.isArray(context?.tools?.["palette-manager-v2"]?.swatches)
+      ? context.tools["palette-manager-v2"].swatches
+      : [];
+    const assets = context?.tools?.["asset-manager-v2"]?.assets;
+    return {
+      assetCount: assets && typeof assets === "object" && !Array.isArray(assets)
+        ? Object.keys(assets).length
+        : 0,
+      paletteSwatches
+    };
+  }
+
+  async saveWorkspaceSession() {
+    if (!this.hasLaunchReadyContext()) {
+      this.statusLog.fail("Save blocked: active game context and palette are required.");
+      return;
+    }
+    const saveContextResult = await this.contextForSave();
+    if (!saveContextResult.ok) {
+      this.statusLog.fail(`Save blocked: ${saveContextResult.message}`);
+      return;
+    }
+    const context = saveContextResult.context;
+    const validation = await this.contextService.validateGeneratedManifest(context);
+    if (!validation.ok) {
+      this.statusLog.fail(`Save blocked: ${validation.message}`);
+      return;
+    }
+    this.activeHostContextId = this.contextService.writePersistedContext(this.activeHostContextId, context);
+    const cleanResult = this.contextService.markEnabledToolSessionsClean({
+      context,
+      tools: this.contextService.workspaceLaunchableTools()
+    });
+    const metrics = this.contextSummaryMetrics(context);
+    this.applyContextResult({
+      assetCount: metrics.assetCount,
+      context,
+      game: this.activeGame,
+      hostContextId: this.activeHostContextId,
+      paletteSwatches: metrics.paletteSwatches
+    });
+    cleanResult.cleanedKeys.forEach((key) => {
+      this.statusLog.ok(`Saved and marked clean: ${key}.`);
+    });
+    this.statusLog.ok(`Saved Workspace Manager V2 session context ${context.id}.`);
+  }
+
+  closeWorkspace() {
+    const dirtyCheck = this.contextService.dirtyWorkspaceSessions();
+    if (dirtyCheck.dirty.length) {
+      this.statusLog.warn(`Close Workspace blocked: dirty sessions require Save first: ${dirtyCheck.dirty.map((entry) => `${entry.key}(${entry.reason})`).join(", ")}.`);
+      return;
+    }
+    if (dirtyCheck.unknown.length) {
+      this.statusLog.warn(`Close Workspace blocked: dirty status could not be verified for ${dirtyCheck.unknown.map((entry) => entry.key).join(", ")}.`);
+      return;
+    }
+    const closeResult = this.contextService.closeWorkspaceSessionData({
+      hostContextId: this.activeHostContextId || ""
+    });
+    closeResult.removed.forEach((key) => {
+      this.statusLog.ok(`Close Workspace removed session key: ${key}.`);
+    });
+    closeResult.failed.forEach(({ key, message }) => {
+      this.statusLog.fail(`Close Workspace failed to remove ${key}: ${message}`);
+    });
+    if (!closeResult.ok) {
+      return;
+    }
+    this.activeRepoHandle = null;
+    this.repoDestination.setRepoDestinationDisplayName("not selected");
+    this.clearActiveWorkspace();
+    this.statusLog.ok(`Closed Workspace Manager V2 session. Removed ${closeResult.removed.length} workspace session key${closeResult.removed.length === 1 ? "" : "s"}.`);
   }
 
   async exportWorkspaceManifest() {

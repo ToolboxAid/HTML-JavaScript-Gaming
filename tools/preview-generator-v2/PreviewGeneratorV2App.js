@@ -490,6 +490,74 @@ function selectedRepoRootPathState() {
   };
 }
 
+function repoHandleRootName() {
+  return String(repoDirHandle?.name || "").trim();
+}
+
+function hasRepoFileSystemDirectoryHandle() {
+  return hasRepoDirectoryHandle();
+}
+
+function hasRepoDirectoryHandle() {
+  return Boolean(repoDirHandle
+    && repoDirHandle.kind === "directory"
+    && typeof repoDirHandle.getDirectoryHandle === "function");
+}
+
+function previewOutputFolderRelativePath(entry) {
+  return normalizeOutputPath(getWriteFolderRelativePath(entry));
+}
+
+async function verifyRepoHandleFolder(relativeFolder) {
+  const requestedRelativeFolder = normalizeOutputPath(relativeFolder);
+  const handleRootName = repoHandleRootName();
+  if (!hasRepoDirectoryHandle()) {
+    return {
+      handleRootName,
+      ok: false,
+      requestedRelativeFolder,
+      sessionKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY,
+      message: "repo FileSystemDirectoryHandle is unavailable or does not support directory resolution"
+    };
+  }
+  try {
+    await getExistingDirectoryPath(repoDirHandle, requestedRelativeFolder);
+    return {
+      handleRootName,
+      ok: true,
+      requestedRelativeFolder,
+      sessionKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY
+    };
+  } catch (error) {
+    return {
+      handleRootName,
+      ok: false,
+      requestedRelativeFolder,
+      sessionKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY,
+      message: error.message
+    };
+  }
+}
+
+function logRepoHandleFolderFailure(result) {
+  logger.log(`FAIL Repo handle folder resolution: requested relative folder: ${result.requestedRelativeFolder || "(unavailable)"}; handle root name: ${result.handleRootName || "(unavailable)"}; display repoRoot string: ${workspaceRepoRootName || repoDisplayName || "(unavailable)"}; session key used: ${result.sessionKey}; ${result.message}`);
+}
+
+async function logWorkspaceRepoHandleState(manifest) {
+  const relativeFolder = normalizeOutputPath(`${manifest.gameRoot || ""}${workspacePreviewAssetFolder || ""}`);
+  const repoRoot = selectedRepoRootPathState();
+  logger.log(`Repo display label: ${repoDisplayName || "(unavailable)"}`);
+  logger.log(`Repo root path string: ${repoRoot.ok ? repoRoot.repoRootDisplayPath : "unavailable"}`);
+  logger.log(`Repo FileSystemDirectoryHandle present: ${hasRepoFileSystemDirectoryHandle() ? "true" : "false"}`);
+  logger.log(`Verified handle root name: ${repoHandleRootName() || "(unavailable)"}`);
+  const folderCheck = await verifyRepoHandleFolder(relativeFolder);
+  if (folderCheck.ok) {
+    logger.log(`OK Repo handle resolved folder ${folderCheck.requestedRelativeFolder}.`);
+  } else {
+    logRepoHandleFolderFailure(folderCheck);
+  }
+}
+
 function outputSourceContext(entry) {
   const selectedGame = entry.targetType === "games"
     ? String(entry.name || workspacePreviewGameId || "").trim()
@@ -571,19 +639,23 @@ function absoluteOutputPathFromWrite(fileHandle, pathState) {
     || "";
 }
 
+function handleOutputPathFromWrite(fileHandle) {
+  return normalizeOutputPath(fileHandle?.path);
+}
+
 async function verifyWrittenPreview(fileHandle, expectedContents, pathState) {
   const expectedPath = pathState.fullAbsoluteOutputPathDisplay || displayAbsolutePath(pathState.fullAbsoluteOutputPath);
   if (!fileHandle || typeof fileHandle.getFile !== "function") {
     return {
       checked: false,
       message: "file read-back is unavailable from this repo handle",
-      ok: true
+      ok: false
     };
   }
   try {
     const file = await fileHandle.getFile();
     if (!file || typeof file.text !== "function") {
-      return { checked: false, message: "file text read-back is unavailable from this repo handle", ok: true };
+      return { checked: false, message: "file text read-back is unavailable from this repo handle", ok: false };
     }
     const actualContents = await file.text();
     if (String(actualContents) !== String(expectedContents)) {
@@ -604,14 +676,20 @@ async function verifyWrittenPreview(fileHandle, expectedContents, pathState) {
 }
 
 function logWritePath(label, pathState, writeResult) {
+  if (writeResult.verified) {
+    logger.log(`Write verification passed: file exists at ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}.`);
+  }
   logger.log(`OK WRITE ${label}`);
   logger.log(`Resolved relative output path: ${pathState.relativeOutputPath}`);
   logger.log(`Repo root: ${pathState.repoRootDisplayPath}`);
   logger.log(`Full absolute output path: ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}`);
-  logger.log(`Source resolution context: ${pathState.sourceContext}`);
-  if (writeResult.verified) {
-    logger.log(`Write verification passed: file exists at ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}.`);
+  if (writeResult.handleOutputPath) {
+    logger.log(`Handle output path: ${writeResult.handleOutputPath}`);
+    if (pathState.fullAbsoluteOutputPath && writeResult.handleOutputPath !== normalizeOutputPath(pathState.fullAbsoluteOutputPath)) {
+      logger.log(`WARN Path resolution mismatch: full absolute path string ${pathState.fullAbsoluteOutputPathDisplay}; handle path ${writeResult.handleOutputPath}; handle root name ${repoHandleRootName() || "(unavailable)"}.`);
+    }
   }
+  logger.log(`Source resolution context: ${pathState.sourceContext}`);
   if (ui.renderControls.isForceRewrite()) {
     logger.log(`Force rewrite verification passed for ${displayAbsolutePath(writeResult.absoluteOutputPath || pathState.fullAbsoluteOutputPath)}.`);
   }
@@ -968,6 +1046,7 @@ async function writePreview(targetDirHandle, svgContent, pathState) {
   if (!verification.ok) {
     return {
       absoluteOutputPath: pathState.fullAbsoluteOutputPath,
+      handleOutputPath: handleOutputPathFromWrite(fileHandle),
       message: verification.message,
       ok: false,
       relativeOutputPath: pathState.relativeOutputPath,
@@ -976,6 +1055,7 @@ async function writePreview(targetDirHandle, svgContent, pathState) {
   }
   return {
     absoluteOutputPath: absoluteOutputPathFromWrite(fileHandle, pathState),
+    handleOutputPath: handleOutputPathFromWrite(fileHandle),
     ok: true,
     relativeOutputPath: pathState.relativeOutputPath,
     verified: verification.checked
@@ -995,6 +1075,12 @@ async function processOne(entry, baseUrl, waitMs) {
   try {
     targetDirHandle = await getTargetDirHandle(repoDirHandle, entry);
   } catch (error) {
+    logRepoHandleFolderFailure({
+      handleRootName: repoHandleRootName(),
+      message: error.message,
+      requestedRelativeFolder: previewOutputFolderRelativePath(entry),
+      sessionKey: WORKSPACE_REPO_REFERENCE_SESSION_KEY
+    });
     logOutputPathFailure(label, pathState, `Unable to resolve target directory: ${error.message}`);
     logger.log("");
     return { id: label, status: "failed", reason: `output-path-resolution-failed: ${error.message}` };
@@ -1189,7 +1275,7 @@ class PreviewGeneratorV2App {
     }
   }
 
-  async hydrateWorkspaceRepoSession(manifest) {
+  async hydrateWorkspaceRepoSession(manifest, previewTarget) {
     const repoReferenceResult = readWorkspaceRepoReference();
     if (!repoReferenceResult.ok) {
       return { ok: false, message: repoReferenceResult.message };
@@ -1207,6 +1293,7 @@ class PreviewGeneratorV2App {
     }
     const handle = PreviewGeneratorV2RepoAccess.createSessionRepoHandle({
       manifest,
+      previewAssetFolder: previewTarget?.previewAssetFolder || "",
       reference: repoReference,
       sessionStorageRef: window.sessionStorage
     });
@@ -1430,7 +1517,7 @@ class PreviewGeneratorV2App {
       }
     }
 
-    const repoSessionResult = await this.hydrateWorkspaceRepoSession(manifest);
+    const repoSessionResult = await this.hydrateWorkspaceRepoSession(manifest, previewTarget);
     if (!repoSessionResult.ok) {
       repoDirHandle = null;
       logger.log(`FAIL Workspace repo session hydration: ${repoSessionResult.message}`);
@@ -1446,6 +1533,7 @@ class PreviewGeneratorV2App {
     logger.log(`OK Workspace repo session reference loaded from ${WORKSPACE_REPO_REFERENCE_SESSION_KEY} for ${repoDisplayName}.`);
     logger.log(`OK Workspace tool session workspace context loaded from ${WORKSPACE_PREVIEW_GENERATOR_SESSION_KEY}.`);
     logger.log("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
+    await logWorkspaceRepoHandleState(manifest);
     this.syncGeneratePreviewButton();
   }
 

@@ -24,6 +24,10 @@ export class StatusLogControl {
     this.write("INFO", message);
   }
 
+  warn(message) {
+    this.write("WARN", message);
+  }
+
   write(level, message) {
     const timestamp = new Date().toLocaleTimeString();
     const nextLine = `[${timestamp}] ${level} ${message}`;

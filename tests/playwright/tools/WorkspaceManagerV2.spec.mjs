@@ -205,6 +205,7 @@ async function installMissingGamePreviewRepoPicker(page) {
   await page.addInitScript(() => {
     function makeDirectoryHandle(name, children = {}, path = name) {
       return {
+        absolutePath: path === name && window.__missingGameRepoAbsolutePath ? window.__missingGameRepoAbsolutePath : "",
         children,
         kind: "directory",
         name,
@@ -1135,6 +1136,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#deleteAllSessionInspectorV2Button").click();
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(0);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:workspace\.tools\.asset-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:workspace\.tools\.dirty-test\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 4 shown storage entries\./);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -1176,8 +1179,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectWorkspaceToolsDisabled(page);
       await expect(page.locator("#statusLog")).not.toHaveValue(/Restored Asteroids workspace/);
       expect(await readWorkspaceSessionHydration(page)).toMatchObject({
-        repoReference: null,
-        toolKeys: []
+        repoReference: {
+          displayName: "StaleRepo"
+        },
+        toolKeys: ["workspace.tools.asset-manager-v2"]
       });
       expect(pageErrors).toEqual([]);
     } finally {
@@ -1265,7 +1270,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activeGameSummary")).toHaveText(/Selected repo is missing games\//);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Repo load failed: Selected repo is missing games\//);
       expect(await readWorkspaceSessionHydration(page)).toMatchObject({
-        repoReference: null,
+        repoReference: {
+          displayName: "HTML-JavaScript-Gaming"
+        },
         toolKeys: []
       });
 
@@ -1884,6 +1891,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
       await expect(page.locator("#log")).toContainText("OK Workspace tool session workspace context loaded from workspace.tools.preview-generator-v2.");
       await expect(page.locator("#log")).toContainText("Workspace launch repo context resolved from session storage; independent repo selection is not required.");
+      await expect(page.locator("#log")).toContainText("Repo display label: HTML-JavaScript-Gaming");
+      await expect(page.locator("#log")).toContainText(`Repo root path string: ${displayRepoRootPath(server)}`);
+      await expect(page.locator("#log")).toContainText("Repo FileSystemDirectoryHandle present: true");
+      await expect(page.locator("#log")).toContainText("Verified handle root name: HTML-JavaScript-Gaming");
+      await expect(page.locator("#log")).toContainText("OK Repo handle resolved folder games/Asteroids/assets/images.");
       await expect(page.locator("#log")).not.toContainText("Direct preview write");
       await expect(page.locator("#log")).not.toContainText("Resolved repoPath");
       await expect(page.locator("#log")).not.toContainText("Unable to resolve absolute repoRoot");
@@ -1931,12 +1943,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText(`MISSING ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("RUN  Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OUT  games\\Asteroids\\assets\\images\\preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText(`Write verification passed: file exists at ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}.`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK WRITE Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Resolved relative output path: games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText(`Repo root: ${displayRepoRootPath(server)}`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText(`Full absolute output path: ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("Handle output path: HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
+      await expect(page.locator("#log")).toContainText("WARN Path resolution mismatch:", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Source resolution context: workspace.tools.preview-generator-v2.data; selected game: Asteroids; resolved assets/images target: assets/images; target type: games", { timeout: 20000 });
-      await expect(page.locator("#log")).toContainText(`Write verification passed: file exists at ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}.`, { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("OK   Asteroids", { timeout: 20000 });
       await expect(page.locator("#log")).toContainText("Done.", { timeout: 20000 });
       await expect(page.locator("#lastGeneratedImageMeta")).toHaveText("Last generated: Asteroids");
@@ -1999,14 +2013,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#previewTargetValue")).toHaveText("games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#log")).toContainText("WARN Workspace manifest preview asset is missing from Asset Manager V2 data; generated preview output will target games/Asteroids/assets/images/preview.svg.");
       await expect(page.locator("#log")).toContainText("OK Workspace repo session reference loaded from workspace.repo.reference for HTML-JavaScript-Gaming.");
+      await expect(page.locator("#log")).toContainText("Repo FileSystemDirectoryHandle present: true");
+      await expect(page.locator("#log")).toContainText("Verified handle root name: HTML-JavaScript-Gaming");
+      await expect(page.locator("#log")).toContainText("OK Repo handle resolved folder games/Asteroids/assets/images.");
       await expect(page.locator("#log")).not.toContainText("Repo selected: not selected");
       await page.locator("#executeBtn").click();
       const log = page.locator("#log");
       await expect(log).toContainText(`CHK  ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
       await expect(log).toContainText(`MISSING ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}`, { timeout: 20000 });
       await expect(log).toContainText("RUN  Asteroids", { timeout: 20000 });
-      await expect(log).toContainText("OK WRITE Asteroids", { timeout: 20000 });
       await expect(log).toContainText(`Write verification passed: file exists at ${displayAbsoluteOutputPath(server, "games/Asteroids/assets/images/preview.svg")}.`, { timeout: 20000 });
+      await expect(log).toContainText("OK WRITE Asteroids", { timeout: 20000 });
+      await expect(log).toContainText("Handle output path: HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg", { timeout: 20000 });
       await expect(log).toContainText("Written: 1", { timeout: 20000 });
       await expect(log).toContainText("Failed: 0", { timeout: 20000 });
       await expect(log).not.toContainText("SKIP Asteroids");
@@ -2015,6 +2033,83 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(previewWrites.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg");
       expect(previewWrites.at(-1).contents).toContain("<svg");
       expect(previewWrites.at(-1).contents).not.toContain("stale cached prior preview");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("guards Workspace Manager V2 Close Workspace with dirty sessions and saves before clearing session data", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#closeWorkspaceButton")).toBeDisabled();
+      await selectMockRepo(page);
+      await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expectWorkspaceReturnRehydrated(page);
+      await expect(page.locator("#saveWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
+
+      await page.locator('[data-workspace-tool-id="palette-manager-v2"]').click();
+      await expect(page).toHaveURL(/palette-manager-v2\/index\.html.*launch=workspace/);
+      await page.locator("#swatchSymbolInput").fill("@");
+      await page.locator("#swatchHexInput").fill("#654321");
+      await page.locator("#swatchNameInput").fill("Close Guard Copper");
+      await page.locator("#addSwatchButton").click();
+      await expect(page.locator("#paletteStatus")).toHaveText("Added Close Guard Copper.");
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnRehydrated(page);
+      await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "true");
+
+      await page.locator("#closeWorkspaceButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Close Workspace blocked: dirty sessions require Save first: workspace\.tools\.palette-manager-v2\(palette-updated\)\./);
+      expect((await readWorkspaceSessionHydration(page)).toolKeys).toContain("workspace.tools.palette-manager-v2");
+      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+
+      await page.locator("#saveWorkspaceButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Saved and marked clean: workspace\.tools\.palette-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 session context workspace-manager-v2-Asteroids\./);
+      await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "false");
+      const savedHydration = await readWorkspaceSessionHydration(page);
+      expect(savedHydration.dirtyByTool["palette-manager-v2"]).toEqual({
+        isDirty: false,
+        reason: null,
+        changedAt: null,
+        changedKeys: []
+      });
+      expect(savedHydration.dataByTool["palette-manager-v2"].swatches.at(-1)).toMatchObject({
+        hex: "#654321",
+        name: "Close Guard Copper",
+        symbol: "@"
+      });
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/Close Guard Copper/);
+
+      await page.locator("#closeWorkspaceButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.tools\.asset-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.tools\.palette-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.tools\.preview-generator-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.tools\.session-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed session key: workspace\.repo\.reference\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Closed Workspace Manager V2 session\. Removed \d+ workspace session keys\./);
+      await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
+      await expect(page.locator("#activeGameSelect")).toBeDisabled();
+      await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#closeWorkspaceButton")).toBeDisabled();
+      await expectWorkspaceToolsDisabled(page);
+      expect(await readWorkspaceSessionHydration(page)).toMatchObject({
+        repoReference: null,
+        toolKeys: []
+      });
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -2221,6 +2316,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
 
     try {
+      await page.evaluate((repoRootPath) => {
+        window.__missingGameRepoAbsolutePath = repoRootPath;
+      }, manifestRepoPath(server));
       await page.locator("#pickRepoBtn").click();
       await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
       await page.locator("#targetTypeGames").check();
@@ -2230,13 +2328,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#executeBtn").click();
       const log = page.locator("#log");
-      await expect(log).toContainText("Repo root: unavailable", { timeout: 10000 });
-      await expect(log).toContainText("FAIL Repo root path resolution: Repo root path is unavailable; cannot resolve a full absolute output path.", { timeout: 10000 });
+      await expect(log).toContainText(`Repo root: ${displayRepoRootPath(server)}`, { timeout: 10000 });
+      await expect(log).toContainText("FAIL Repo handle folder resolution: requested relative folder: games/MissingGame/assets/images; handle root name: HTML-JavaScript-Gaming; display repoRoot string: HTML-JavaScript-Gaming; session key used: workspace.repo.reference", { timeout: 10000 });
       await expect(log).toContainText("FAIL PATH MissingGame", { timeout: 10000 });
-      await expect(log).toContainText("Repo root path is unavailable; cannot resolve a full absolute output path.", { timeout: 10000 });
+      await expect(log).toContainText("Unable to resolve target directory: Missing directory: HTML-JavaScript-Gaming/games/MissingGame", { timeout: 10000 });
       await expect(log).toContainText("relative output path: games/MissingGame/assets/images/preview.svg", { timeout: 10000 });
-      await expect(log).toContainText("repo root: (unavailable)", { timeout: 10000 });
-      await expect(log).toContainText("full absolute output path: (unavailable)", { timeout: 10000 });
+      await expect(log).toContainText(`repo root: ${displayRepoRootPath(server)}`, { timeout: 10000 });
+      await expect(log).toContainText(`full absolute output path: ${displayAbsoluteOutputPath(server, "games/MissingGame/assets/images/preview.svg")}`, { timeout: 10000 });
       await expect(log).toContainText("source resolution context: preview-generator-v2 form controls; selected game: MissingGame; resolved assets/images target: assets/images; target type: games", { timeout: 10000 });
       await expect(log).not.toContainText("OK WRITE MissingGame");
       await expect(log).toContainText("Written: 0", { timeout: 10000 });

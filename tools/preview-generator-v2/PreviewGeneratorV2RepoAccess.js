@@ -149,7 +149,7 @@ class PreviewGeneratorV2RepoAccess {
     }
   }
 
-  static createSessionRepoHandle({ manifest, reference, sessionStorageRef = window.sessionStorage } = {}) {
+  static createSessionRepoHandle({ manifest, previewAssetFolder = "", reference, sessionStorageRef = window.sessionStorage } = {}) {
     const repoName = String(reference?.displayName || reference?.handleName || manifest?.repoRoot || "selected").trim() || "selected";
     const root = new PreviewGeneratorV2SessionDirectoryHandle({
       name: repoName,
@@ -161,7 +161,11 @@ class PreviewGeneratorV2RepoAccess {
     const gameRoot = normalizePath(manifest?.gameRoot);
     const gameFolder = gameRoot.replace(/^games\//, "").replace(/\/+$/, "");
     if (gameFolder) {
-      gamesDir.ensureDirectoryPath(gameFolder);
+      const gameDir = gamesDir.ensureDirectoryPath(gameFolder);
+      const assetFolder = normalizePath(previewAssetFolder);
+      if (assetFolder) {
+        gameDir.ensureDirectoryPath(assetFolder);
+      }
     }
     return root;
   }

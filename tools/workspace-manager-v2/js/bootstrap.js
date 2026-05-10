@@ -25,9 +25,11 @@ window.addEventListener("DOMContentLoaded", () => {
       summary: requireElement("#activeGameSummary")
     }),
     menu: new ManifestMenuControl({
+      closeButton: requireElement("#closeWorkspaceButton"),
       exportButton: requireElement("#exportManifestButton"),
       importButton: requireElement("#importManifestButton"),
       importInput: requireElement("#importManifestInput"),
+      saveButton: requireElement("#saveWorkspaceButton"),
       uatButton: requireElement("#seedUatManifestButton")
     }),
     repoDestination: new RepoDestinationControl({

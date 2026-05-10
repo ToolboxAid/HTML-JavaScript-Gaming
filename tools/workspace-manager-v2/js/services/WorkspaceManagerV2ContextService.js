@@ -378,26 +378,94 @@ export class WorkspaceManagerV2ContextService {
   }
 
   clearToolSessionHydration() {
-    this.storageKeys()
-      .filter((key) => key.startsWith(WORKSPACE_TOOL_SESSION_KEY_PREFIX))
-      .forEach((key) => {
-        this.sessionStorage.removeItem(key);
-      });
+    return {
+      ok: true,
+      skipped: true,
+      message: "Workspace tool session deletion is restricted to Session Inspector V2 or Workspace Manager V2 Close Workspace."
+    };
   }
 
   clearWorkspaceSessionHydration() {
-    this.clearToolSessionHydration();
-    this.sessionStorage.removeItem(WORKSPACE_REPO_REFERENCE_SESSION_KEY);
+    return {
+      ok: true,
+      skipped: true,
+      message: "Workspace session deletion is restricted to Session Inspector V2 or Workspace Manager V2 Close Workspace."
+    };
   }
 
   removeDisabledToolSessions(enabledTools) {
     const enabledToolIds = new Set(enabledTools.map((tool) => tool.id));
-    this.storageKeys()
+    return this.storageKeys()
       .filter((key) => key.startsWith(WORKSPACE_TOOL_SESSION_KEY_PREFIX))
       .filter((key) => !enabledToolIds.has(key.slice(WORKSPACE_TOOL_SESSION_KEY_PREFIX.length)))
-      .forEach((key) => {
+      .map((key) => ({
+        key,
+        reason: "not enabled for the active workspace; retained by deletion guardrails"
+      }));
+  }
+
+  workspaceToolSessionKeys() {
+    return this.storageKeys()
+      .filter((key) => key.startsWith(WORKSPACE_TOOL_SESSION_KEY_PREFIX))
+      .sort();
+  }
+
+  workspaceSessionDataKeys({ hostContextId = "" } = {}) {
+    const keys = [
+      ...this.workspaceToolSessionKeys(),
+      WORKSPACE_REPO_REFERENCE_SESSION_KEY,
+      HOST_CONTEXT_STORAGE_KEY,
+      hostContextId || this.sessionStorage.getItem(HOST_CONTEXT_STORAGE_KEY) || ""
+    ].filter(Boolean);
+    return Array.from(new Set(keys))
+      .filter((key) => this.sessionStorage.getItem(key) !== null);
+  }
+
+  dirtyWorkspaceSessions() {
+    const dirty = [];
+    const unknown = [];
+    this.workspaceToolSessionKeys().forEach((key) => {
+      const result = this.readSessionJson(key);
+      if (!result.ok) {
+        unknown.push({ key, reason: result.message });
+        return;
+      }
+      const session = result.value;
+      if (!isPlainObject(session.schema)
+        || !isPlainObject(session.workspace)
+        || !Object.prototype.hasOwnProperty.call(session, "data")
+        || !isPlainObject(session.dirty)) {
+        unknown.push({ key, reason: `${key} must use the normalized schema/workspace/data/dirty object shape.` });
+        return;
+      }
+      if (session.dirty.isDirty === true) {
+        dirty.push({
+          key,
+          reason: String(session.dirty.reason || "dirty"),
+          changedAt: session.dirty.changedAt || "",
+          changedKeys: Array.isArray(session.dirty.changedKeys) ? [...session.dirty.changedKeys] : []
+        });
+      }
+    });
+    return {
+      dirty,
+      ok: dirty.length === 0 && unknown.length === 0,
+      unknown
+    };
+  }
+
+  closeWorkspaceSessionData({ hostContextId = "" } = {}) {
+    const removed = [];
+    const failed = [];
+    this.workspaceSessionDataKeys({ hostContextId }).forEach((key) => {
+      try {
         this.sessionStorage.removeItem(key);
-      });
+        removed.push(key);
+      } catch (error) {
+        failed.push({ key, message: error.message });
+      }
+    });
+    return { failed, ok: failed.length === 0, removed };
   }
 
   readSessionJson(key) {
@@ -545,6 +613,28 @@ export class WorkspaceManagerV2ContextService {
     };
   }
 
+  markEnabledToolSessionsClean({ context, tools = this.workspaceLaunchableTools() } = {}) {
+    const cleanedKeys = [];
+    tools
+      .filter((tool) => tool?.id)
+      .forEach((tool) => {
+        const sessionResult = this.reusableToolSession(tool, context);
+        if (!sessionResult.ok) {
+          return;
+        }
+        const session = sessionResult.session;
+        if (session.dirty?.isDirty !== true) {
+          return;
+        }
+        this.sessionStorage.setItem(sessionResult.key, JSON.stringify({
+          ...session,
+          dirty: this.dirtySessionForTool()
+        }));
+        cleanedKeys.push(sessionResult.key);
+      });
+    return { cleanedKeys, ok: true };
+  }
+
   sessionForTool(tool, context, game) {
     return {
       schema: this.schemaSessionForTool(tool, context),
@@ -639,7 +729,6 @@ export class WorkspaceManagerV2ContextService {
         skippedTools
       };
     } catch (error) {
-      this.clearToolSessionHydration();
       return { ok: false, message: `Unable to hydrate tool sessions: ${error.message}` };
     }
   }

@@ -117,16 +117,15 @@ export class SessionInspectorV2App {
       return;
     }
     const result = this.storageService.deleteEntries(this.entries);
+    result.deleted.forEach((entry) => {
+      this.statusLog.ok(`Deleted ${entry.storageType}:${entry.key}.`);
+    });
     if (result.failed.length) {
-      result.deleted.forEach((entry) => {
-        this.statusLog.ok(`Deleted ${entry.storageType}:${entry.key}.`);
-      });
       result.failed.forEach(({ entry, message }) => {
         this.statusLog.fail(`Delete failed for ${entry.storageType}:${entry.key}: ${message}`);
       });
-    } else {
-      this.statusLog.ok(`Deleted ${result.deleted.length} shown storage entr${result.deleted.length === 1 ? "y" : "ies"}.`);
     }
+    this.statusLog.ok(`Deleted ${result.deleted.length} shown storage entr${result.deleted.length === 1 ? "y" : "ies"}.`);
     this.selectedId = "";
     this.refresh({ silent: true });
   }
