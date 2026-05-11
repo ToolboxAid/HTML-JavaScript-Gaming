@@ -844,21 +844,40 @@ async function expectTextToSpeechV2FullscreenShell(page) {
     const left = document.querySelector(".tool-shell-common__fullscreen-panel-left").getBoundingClientRect();
     const center = document.querySelector(".tool-shell-common__fullscreen-center-panel").getBoundingClientRect();
     const right = document.querySelector(".tool-shell-common__fullscreen-panel-right").getBoundingClientRect();
+    const textContent = document.querySelector("#text2speach-V2TextContent").getBoundingClientRect();
+    const queueContent = document.querySelector("#text2speach-V2QueueContent").getBoundingClientRect();
+    const summaryAccordion = document.querySelector(".text2speach-V2__summary-accordion").getBoundingClientRect();
+    const statusAccordion = document.querySelector(".text2speach-V2__status-accordion").getBoundingClientRect();
+    const statusLog = document.querySelector("#text2speach-V2StatusLog").getBoundingClientRect();
     const rootStyle = getComputedStyle(document.querySelector(".tool-shell-common__fullscreen-root"));
     const gap = Number.parseFloat(rootStyle.columnGap || "0");
     const horizontalPadding = Number.parseFloat(rootStyle.paddingLeft || "0") + Number.parseFloat(rootStyle.paddingRight || "0");
+    const statusStyle = getComputedStyle(document.querySelector("#text2speach-V2StatusLog"));
     return {
       centerAfterLeft: center.left > left.right,
       centerFillsRemaining: Math.abs(center.width - (root.width - horizontalPadding - left.width - right.width - (gap * 2))) <= 4,
+      centerFitsViewport: center.bottom <= window.innerHeight + 1,
       centerWidth: Math.round(center.width),
       gridTemplateColumns: rootStyle.gridTemplateColumns,
       leftAtSide: left.left < center.left,
+      leftFitsViewport: left.bottom <= window.innerHeight + 1,
       leftWidth: Math.round(left.width),
       layoutDisplay: rootStyle.display,
+      queueContentBottomWithinCenter: queueContent.bottom <= center.bottom + 1,
+      queueContentHeight: Math.round(queueContent.height),
       rightAtSide: right.left > center.right,
+      rightFitsViewport: right.bottom <= window.innerHeight + 1,
       rightWithinRoot: right.right <= root.right + 1,
       rightWidth: Math.round(right.width),
       rootWidth: Math.round(root.width),
+      statusBelowSummary: statusAccordion.top >= summaryAccordion.bottom - 1,
+      statusBottomWithinRight: statusAccordion.bottom <= right.bottom + 1,
+      statusLogHeight: Math.round(statusLog.height),
+      statusLogOverflowY: statusStyle.overflowY,
+      summaryBottomWithinRight: summaryAccordion.bottom <= right.bottom + 1,
+      textContentBottomWithinCenter: textContent.bottom <= center.bottom + 1,
+      textContentHeight: Math.round(textContent.height),
+      textContentVisible: textContent.height >= 220,
       viewportWidth: window.innerWidth
     };
   });
@@ -870,10 +889,22 @@ async function expectTextToSpeechV2FullscreenShell(page) {
   expect(fullscreenLayout.rightWidth).toBe(360);
   expect(fullscreenLayout.leftAtSide).toBe(true);
   expect(fullscreenLayout.centerAfterLeft).toBe(true);
+  expect(fullscreenLayout.leftFitsViewport).toBe(true);
+  expect(fullscreenLayout.centerFitsViewport).toBe(true);
+  expect(fullscreenLayout.rightFitsViewport).toBe(true);
   expect(fullscreenLayout.rightAtSide).toBe(true);
   expect(fullscreenLayout.rightWithinRoot).toBe(true);
   expect(fullscreenLayout.centerFillsRemaining).toBe(true);
   expect(fullscreenLayout.centerWidth).toBeGreaterThan(500);
+  expect(fullscreenLayout.textContentVisible).toBe(true);
+  expect(fullscreenLayout.textContentBottomWithinCenter).toBe(true);
+  expect(fullscreenLayout.queueContentHeight).toBeGreaterThan(120);
+  expect(fullscreenLayout.queueContentBottomWithinCenter).toBe(true);
+  expect(fullscreenLayout.summaryBottomWithinRight).toBe(true);
+  expect(fullscreenLayout.statusBelowSummary).toBe(true);
+  expect(fullscreenLayout.statusBottomWithinRight).toBe(true);
+  expect(fullscreenLayout.statusLogHeight).toBeGreaterThan(120);
+  expect(fullscreenLayout.statusLogOverflowY).toBe("auto");
 
   const namedSentencesHeader = page.locator('[aria-controls="text2speach-V2QueueContent"]');
   await namedSentencesHeader.click();
@@ -1174,12 +1205,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const actions = content.querySelector("#text2speach-V2SpeechActions");
         const contentRect = content.getBoundingClientRect();
         const textareaRect = textarea.getBoundingClientRect();
+        const fieldRect = textarea.closest(".text2speach-V2__field").getBoundingClientRect();
         const actionsRect = actions.getBoundingClientRect();
         const contentStyle = getComputedStyle(content);
+        const rowGap = Number.parseFloat(contentStyle.rowGap || contentStyle.gap || "0");
+        const paddingTop = Number.parseFloat(contentStyle.paddingTop || "0");
+        const paddingBottom = Number.parseFloat(contentStyle.paddingBottom || "0");
+        const expectedContentHeight = fieldRect.height + actionsRect.height + rowGap + paddingTop + paddingBottom;
         return {
           actionsAreBottomControl: content.lastElementChild?.id === "text2speach-V2SpeechActions",
           actionsBelowText: actionsRect.top >= textareaRect.bottom,
           actionsBottomAligned: Math.abs(actionsRect.bottom - contentRect.bottom) <= 1,
+          contentExcessHeight: Math.round(contentRect.height - expectedContentHeight),
           contentDisplay: contentStyle.display,
           contentFlexDirection: contentStyle.flexDirection,
           contentJustify: contentStyle.justifyContent,
@@ -1187,7 +1224,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           textareaResize: getComputedStyle(textarea).resize
         };
       });
-      expect(textAccordionLayout).toEqual({
+      expect(textAccordionLayout).toMatchObject({
         actionsAreBottomControl: true,
         actionsBelowText: true,
         actionsBottomAligned: true,
@@ -1197,11 +1234,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         fieldMarginBottom: "0px",
         textareaResize: "none"
       });
+      expect(textAccordionLayout.contentExcessHeight).toBeLessThanOrEqual(16);
+      expect(textAccordionLayout.contentExcessHeight).toBeGreaterThanOrEqual(-2);
       const namedSentenceTopControls = await page.locator("#text2speach-V2QueueContent").evaluate((content) => {
         const firstElement = Array.from(content.children).find((child) => child.nodeType === Node.ELEMENT_NODE);
         return firstElement?.id || "";
       });
       expect(namedSentenceTopControls).toBe("text2speach-V2QueueTiles");
+      const namedSentenceLayout = await page.locator("#text2speach-V2QueueContent").evaluate((content) => {
+        const tiles = content.querySelector("#text2speach-V2QueueTiles");
+        const contentRect = content.getBoundingClientRect();
+        const tilesRect = tiles.getBoundingClientRect();
+        const contentStyle = getComputedStyle(content);
+        const paddingTop = Number.parseFloat(contentStyle.paddingTop || "0");
+        const paddingBottom = Number.parseFloat(contentStyle.paddingBottom || "0");
+        return {
+          contentExcessHeight: Math.round(contentRect.height - tilesRect.height - paddingTop - paddingBottom),
+          unusedBottomSpace: Math.round(contentRect.bottom - tilesRect.bottom - paddingBottom)
+        };
+      });
+      expect(namedSentenceLayout.contentExcessHeight).toBeLessThanOrEqual(16);
+      expect(namedSentenceLayout.unusedBottomSpace).toBeLessThanOrEqual(2);
       expect(await page.locator("#text2speach-V2SpeechOptionsContent .text2speach-V2__item-actions button").evaluateAll((buttons) => buttons.map((button) => button.textContent.trim()))).toEqual(["Add", "Duplicate", "Delete"]);
       const statusHeaderOrder = await page.locator(".text2speach-V2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
       expect(statusHeaderOrder).toEqual(["Status", "+", "Clear"]);
