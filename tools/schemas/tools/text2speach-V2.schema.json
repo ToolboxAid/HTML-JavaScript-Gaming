@@ -39,6 +39,7 @@
         "text",
         "language",
         "voice",
+        "voiceAge",
         "volume",
         "rate",
         "pitch",
@@ -65,10 +66,15 @@
         },
         "language": {
           "type": "string",
-          "enum": ["en-US", "en-GB", "es-ES", "fr-FR", "ja-JP"]
+          "minLength": 2,
+          "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
         },
         "voice": {
           "type": "string"
+        },
+        "voiceAge": {
+          "type": "string",
+          "enum": ["any", "adult", "child", "elder", "teen"]
         },
         "volume": {
           "type": "number",
@@ -87,7 +93,7 @@
         },
         "queueMode": {
           "type": "string",
-          "enum": ["replace", "append"]
+          "enum": ["append", "replace"]
         },
         "autoSpeak": {
           "type": "boolean"
@@ -102,11 +108,11 @@
         },
         "characterPreset": {
           "type": "string",
-          "enum": ["narrator", "hero", "villain", "alert"]
+          "enum": ["manual", "alert", "calm", "dramatic", "narrator", "robot"]
         },
         "ssmlLikePreset": {
           "type": "string",
-          "enum": ["normal", "whisper-ish", "announcement", "slow"]
+          "enum": ["normal", "slow", "whisper-ish"]
         }
       }
     }

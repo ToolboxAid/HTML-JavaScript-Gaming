@@ -1,13 +1,17 @@
 import {
+  TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
+  TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
   TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA,
   TEXT_TO_SPEECH_DEFAULTS,
+  TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
   TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS,
   TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
   TEXT_TO_SPEECH_REPEAT_COUNT_OPTIONS,
-  TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
+  TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
+  TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
 } from "../../../src/engine/audio/TextToSpeechDefaults.js";
 
 const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speach-V2";
@@ -55,13 +59,17 @@ export class TextToSpeechToolApp {
 
   start() {
     this.speechOptions.populate({
+      ageFilterOptions: TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
       characterPresetOptions: TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
+      characterPresetDefaults: TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
       defaults: TEXT_TO_SPEECH_DEFAULTS,
+      genderFilterOptions: TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
       languageOptions: TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
       queueModeOptions: TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
       rangeDefaults: TEXT_TO_SPEECH_RANGE_DEFAULTS,
       repeatCountOptions: TEXT_TO_SPEECH_REPEAT_COUNT_OPTIONS,
-      ssmlLikePresetOptions: TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
+      ssmlLikePresetOptions: TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
+      voiceAgePresetDefaults: TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
     });
     this.actionNav.mount({
       onPause: () => this.pause(),
@@ -80,8 +88,12 @@ export class TextToSpeechToolApp {
     });
     this.speechOptions.mount({
       onChange: ({ controlId } = {}) => {
-        if (controlId === "language") {
-          this.refreshVoices("language-changed");
+        if (controlId === "gender" || controlId === "language") {
+          this.refreshVoices(`${controlId}-changed`);
+        }
+        if (controlId === "age") {
+          const options = this.speechOptions.value();
+          this.statusLog.ok(`Voice Age shaping applied: ${this.speechOptions.selectedVoiceAgeLabel()}; rate=${options.rate}; pitch=${options.pitch}.`);
         }
         this.refreshOutputSummary("settings-updated");
         if (this.speechOptions.value().autoSpeak) {
@@ -147,18 +159,26 @@ export class TextToSpeechToolApp {
       const action = source === "voiceschanged"
         ? "Updated"
         : source === "initial" ? "Loaded" : "Filtered";
-      this.statusLog.ok(`${action} ${result.matchingVoiceCount} matching SpeechSynthesis voices for text2speach-V2 (${result.voiceCount} available; language=${result.language}).`);
+      const voiceScope = result.genderFilter === "all"
+        ? `${result.voiceCount} voices`
+        : `${result.filteredVoiceCount} ${result.filterLabel} voices from ${result.voiceCount} total`;
+      this.statusLog.ok(`${action} ${result.matchingVoiceCount} matching SpeechSynthesis voices for text2speach-V2 (${voiceScope}; ${result.languageCount} languages; gender=${result.genderFilterLabel}; age=${result.ageFilterLabel}; language=${result.language}).`);
     } else {
       const message = result.voiceCount === 0
         ? "text2speach-V2 voice dropdown has no SpeechSynthesis voices; waiting for voiceschanged. Speak is disabled."
+        : result.filteredVoiceCount === 0
+          ? `text2speach-V2 voice dropdown has no ${result.filterLabel} SpeechSynthesis voices; choose another Gender. Speak is disabled.`
         : `text2speach-V2 voice dropdown has no SpeechSynthesis voices matching ${result.language}; voice selection cleared. Speak is disabled.`;
       this.statusLog.fail(message);
     }
-    if (source === "language-changed" && result.selectionAdjusted) {
+    if (result.languageAdjusted) {
+      this.statusLog.ok(`Language selection adjusted from ${result.previousLanguage || "(none)"} to ${result.language || "(none)"} because available ${result.filterLabel} SpeechSynthesis voices changed.`);
+    }
+    if ((source === "age-changed" || source === "gender-changed" || source === "language-changed") && result.selectionAdjusted) {
       if (result.selectedVoice) {
-        this.statusLog.ok(`Voice selection adjusted for language ${result.language}: ${result.selectedVoiceLabel}.`);
+        this.statusLog.ok(`Voice selection adjusted for ${result.filterLabel} / ${result.language}: ${result.selectedVoiceLabel}.`);
       } else {
-        this.statusLog.fail(`Voice selection cleared for language ${result.language}: no matching SpeechSynthesis voices.`);
+        this.statusLog.fail(`Voice selection cleared for ${result.filterLabel} / ${result.language}: no matching SpeechSynthesis voices.`);
       }
     }
     this.refreshActionState();

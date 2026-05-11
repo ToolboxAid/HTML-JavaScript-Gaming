@@ -49,6 +49,8 @@ class TextToSpeechEngine {
   voiceOptions() {
     return this.voices()
       .map((voice) => ({
+        age: voice.age || "",
+        gender: voice.gender || "",
         label: `${voice.name || voice.voiceURI || "Unnamed voice"} (${voice.lang || "unknown"})`,
         language: voice.lang || "",
         name: voice.name || "",
@@ -166,6 +168,7 @@ class TextToSpeechEngine {
     ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
     text = TEXT_TO_SPEECH_DEFAULTS.sampleText,
     voice = TEXT_TO_SPEECH_DEFAULTS.voice,
+    voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
     volume = TEXT_TO_SPEECH_DEFAULTS.volume
   } = {}) {
     const firstUtterance = this.createUtterance({ language, pitch, rate, text, voice, volume });
@@ -221,6 +224,7 @@ class TextToSpeechEngine {
       repeatCount,
       ssmlLikePreset,
       text: firstUtterance.text,
+      voiceAge,
       voiceName: firstUtterance.voiceName,
       voiceURI: firstUtterance.voiceURI,
       volume: firstUtterance.utterance.volume

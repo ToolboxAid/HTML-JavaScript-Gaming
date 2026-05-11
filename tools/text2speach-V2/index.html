@@ -21,14 +21,11 @@
               <div class="tools-platform-frame__accordion-summary">
                 <div class="tools-platform-frame__summary-copy">
                   <h1 class="tools-platform-frame__title" data-tool-id="text2speach-V2">text2speach-V2</h1>
-                  <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface V2</h2>
+                  <h2 class="tools-platform-frame__eyebrow">Speech synthesis controls</h2>
                 </div>
                 <div class="tools-platform-frame__summary-meta">
-                  <div class="tools-platform-frame__meta">Browser speech synthesis baseline for game prompts and narration.</div>
+                  <div class="tools-platform-frame__meta">Configure browser voices, language filters, character presets, and speech controls.</div>
                 </div>
-              </div>
-              <div class="tools-platform-frame__topline">
-                <p class="tools-platform-frame__description">Preview text-to-speech settings using the shared engine audio speech wrapper.</p>
               </div>
             </div>
           </section>
@@ -85,6 +82,10 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="text2speach-V2SpeechOptionsContent" class="accordion-v2__content text2speach-V2__options">
+            <label class="text2speach-V2__field" for="text2speach-V2GenderFilterSelect">
+              <span>Gender</span>
+              <select id="text2speach-V2GenderFilterSelect"></select>
+            </label>
             <label class="text2speach-V2__field" for="text2speach-V2LanguageSelect">
               <span>Language</span>
               <select id="text2speach-V2LanguageSelect"></select>
@@ -94,6 +95,18 @@
               <select id="text2speach-V2VoiceSelect"></select>
             </label>
             <div id="text2speach-V2VoiceDetails" class="text2speach-V2__details" aria-live="polite">No voice data loaded.</div>
+            <label class="text2speach-V2__field" for="text2speach-V2AgeFilterSelect">
+              <span>Voice age</span>
+              <select id="text2speach-V2AgeFilterSelect"></select>
+            </label>
+            <label class="text2speach-V2__field" for="text2speach-V2CharacterPresetSelect">
+              <span>Character preset</span>
+              <select id="text2speach-V2CharacterPresetSelect"></select>
+            </label>
+            <label class="text2speach-V2__field" for="text2speach-V2SsmlLikePresetSelect">
+              <span>SSML-like preset</span>
+              <select id="text2speach-V2SsmlLikePresetSelect"></select>
+            </label>
             <label class="text2speach-V2__field" for="text2speach-V2VolumeSlider">
               <span>Volume <output id="text2speach-V2VolumeOutput" for="text2speach-V2VolumeSlider"></output></span>
               <input id="text2speach-V2VolumeSlider" type="range">
@@ -121,14 +134,6 @@
             <label class="text2speach-V2__field" for="text2speach-V2DelayBetweenRepeatsMsSlider">
               <span>Delay between repeats (ms) <output id="text2speach-V2DelayBetweenRepeatsMsOutput" for="text2speach-V2DelayBetweenRepeatsMsSlider"></output></span>
               <input id="text2speach-V2DelayBetweenRepeatsMsSlider" type="range">
-            </label>
-            <label class="text2speach-V2__field" for="text2speach-V2CharacterPresetSelect">
-              <span>Character preset</span>
-              <select id="text2speach-V2CharacterPresetSelect"></select>
-            </label>
-            <label class="text2speach-V2__field" for="text2speach-V2SsmlLikePresetSelect">
-              <span>SSML-like preset</span>
-              <select id="text2speach-V2SsmlLikePresetSelect"></select>
             </label>
           </div>
         </section>

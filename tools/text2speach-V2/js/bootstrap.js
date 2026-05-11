@@ -49,10 +49,12 @@ window.addEventListener("DOMContentLoaded", () => {
       queueSelect: requireElement("#text2speach-V2QueueSelect")
     }),
     speechOptions: new SpeechOptionsControl({
+      ageFilterSelect: requireElement("#text2speach-V2AgeFilterSelect"),
       autoSpeakCheckbox: requireElement("#text2speach-V2AutoSpeakCheckbox"),
       characterPresetSelect: requireElement("#text2speach-V2CharacterPresetSelect"),
       delayBetweenRepeatsMsOutput: requireElement("#text2speach-V2DelayBetweenRepeatsMsOutput"),
       delayBetweenRepeatsMsSlider: requireElement("#text2speach-V2DelayBetweenRepeatsMsSlider"),
+      genderFilterSelect: requireElement("#text2speach-V2GenderFilterSelect"),
       languageSelect: requireElement("#text2speach-V2LanguageSelect"),
       pitchOutput: requireElement("#text2speach-V2PitchOutput"),
       pitchSlider: requireElement("#text2speach-V2PitchSlider"),
