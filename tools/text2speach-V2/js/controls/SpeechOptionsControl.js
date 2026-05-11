@@ -91,23 +91,20 @@ function voicesForGender(voiceOptions, genderFilter) {
   return voiceOptions;
 }
 
-function voiceDetailsText({ filterLabel, filteredVoiceCount, language, matchingVoiceOptions, voiceCount }) {
+function voiceDetailsText({ filterLabel, filteredVoiceCount, matchingVoiceOptions, voiceCount }) {
   if (voiceCount === 0) {
     return "No SpeechSynthesis voices loaded.";
   }
   if (filteredVoiceCount === 0) {
-    return `0 voices match ${filterLabel}. ${voiceCount} total voices loaded.`;
+    return `0 voices match ${filterLabel}.\n${voiceCount} total voices loaded.`;
   }
-  const languageFilterLabel = `${filterLabel} / ${language}`;
   if (matchingVoiceOptions.length === 0) {
-    return `0 voices match ${languageFilterLabel}. ${filteredVoiceCount} ${filterLabel} voices loaded.`;
+    return `0 voices match ${filterLabel}.\n${filteredVoiceCount} ${filterLabel} voices loaded.`;
   }
-  const voiceLabel = matchingVoiceOptions.length === 1 ? "voice" : "voices";
-  const matchLabel = matchingVoiceOptions.length === 1 ? "matches" : "match";
-  const names = matchingVoiceOptions
-    .map((option) => option.name || option.label)
-    .join(", ");
-  return `${matchingVoiceOptions.length} ${voiceLabel} ${matchLabel} ${languageFilterLabel}: ${names}.`;
+  const details = matchingVoiceOptions
+    .map((option) => `- ${option.language || "unknown"}: ${option.name || option.label}`)
+    .join("\n");
+  return `${matchingVoiceOptions.length} voices match ${filterLabel}:\n${details}`;
 }
 
 function languageOptionsFromVoices(voiceOptions) {
@@ -129,7 +126,6 @@ function languageOptionsFromVoices(voiceOptions) {
 export class SpeechOptionsControl {
   constructor({
     ageFilterSelect,
-    autoSpeakCheckbox,
     characterPresetSelect,
     genderFilterSelect,
     languageSelect,
@@ -145,7 +141,6 @@ export class SpeechOptionsControl {
     volumeSlider
   }) {
     this.ageFilterSelect = ageFilterSelect;
-    this.autoSpeakCheckbox = autoSpeakCheckbox;
     this.characterPresetDefaults = {};
     this.characterPresetSelect = characterPresetSelect;
     this.defaultLanguage = "";
@@ -193,7 +188,6 @@ export class SpeechOptionsControl {
     configureRange(this.volumeSlider, this.volumeOutput, rangeDefaults.volume);
     configureRange(this.rateSlider, this.rateOutput, rangeDefaults.rate);
     configureRange(this.pitchSlider, this.pitchOutput, rangeDefaults.pitch);
-    this.autoSpeakCheckbox.checked = defaults.autoSpeak === true;
   }
 
   applyCharacterPreset() {
@@ -316,7 +310,6 @@ export class SpeechOptionsControl {
     this.voiceDetails.textContent = voiceDetailsText({
       filterLabel,
       filteredVoiceCount: filteredVoiceOptions.length,
-      language,
       matchingVoiceOptions,
       voiceCount
     });
@@ -410,7 +403,6 @@ export class SpeechOptionsControl {
       onChange({ controlId: "language" });
     });
     [
-      this.autoSpeakCheckbox,
       this.queueModeSelect,
       this.voiceSelect
     ].forEach((control) => {
@@ -446,7 +438,6 @@ export class SpeechOptionsControl {
     this.volumeSlider.value = String(value.volume);
     this.rateSlider.value = String(value.rate);
     this.pitchSlider.value = String(value.pitch);
-    this.autoSpeakCheckbox.checked = value.autoSpeak === true;
     this.voiceSelect.value = "";
     if (value.voice && Array.from(this.voiceSelect.options).some((option) => option.value === String(value.voice))) {
       this.voiceSelect.value = String(value.voice);
@@ -470,7 +461,6 @@ export class SpeechOptionsControl {
 
   value() {
     return {
-      autoSpeak: this.autoSpeakCheckbox.checked,
       characterPreset: this.characterPresetSelect.value,
       gender: this.genderFilterSelect.value,
       language: this.languageSelect.value,

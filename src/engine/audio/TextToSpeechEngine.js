@@ -18,7 +18,8 @@ class TextToSpeechEngine {
     speechSynthesisRef = globalThis.speechSynthesis,
     utteranceCtor = globalThis.SpeechSynthesisUtterance
   } = {}) {
-    this.activeSpeakers = new Map();
+    this.queueSequence = 0;
+    this.queuedSpeechItems = new Map();
     this.speechSynthesis = speechSynthesisRef;
     this.Utterance = utteranceCtor;
   }
@@ -95,8 +96,8 @@ class TextToSpeechEngine {
     };
   }
 
-  activeSpeakerList() {
-    return Array.from(this.activeSpeakers.values()).map((speaker) => ({ ...speaker }));
+  queuedSpeechItemList() {
+    return Array.from(this.queuedSpeechItems.values()).map((item) => ({ ...item }));
   }
 
   createUtterance({
@@ -146,15 +147,14 @@ class TextToSpeechEngine {
   }
 
   speak({
-    autoSpeak = TEXT_TO_SPEECH_DEFAULTS.autoSpeak,
     characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
     gender = TEXT_TO_SPEECH_DEFAULTS.gender,
     language = TEXT_TO_SPEECH_DEFAULTS.language,
     pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
     queueMode = TEXT_TO_SPEECH_DEFAULTS.queueMode,
     rate = TEXT_TO_SPEECH_DEFAULTS.rate,
-    speakerId = "",
-    speakerName = "",
+    speechItemId = "",
+    speechItemName = "",
     ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
     text = TEXT_TO_SPEECH_DEFAULTS.sampleText,
     voice = TEXT_TO_SPEECH_DEFAULTS.voice,
@@ -170,15 +170,23 @@ class TextToSpeechEngine {
       return { message: `Unsupported ${TEXT_TO_SPEECH_DISPLAY_NAME} queueMode: ${queueMode}.`, ok: false };
     }
 
-    const activeSpeakerId = String(speakerId || speakerName || `speaker-${Date.now().toString(36)}`);
-    const activeSpeakerName = String(speakerName || activeSpeakerId);
-    const activeSpeaker = {
-      id: activeSpeakerId,
+    if (queueMode === "replace") {
+      this.speechSynthesis.cancel();
+      this.queuedSpeechItems.clear();
+    }
+
+    this.queueSequence += 1;
+    const selectedSpeechItemId = String(speechItemId || speechItemName || `speech-item-${Date.now().toString(36)}`);
+    const queuedSpeechItemId = `${selectedSpeechItemId || "speech-item"}::${this.queueSequence}`;
+    const queuedSpeechItemName = String(speechItemName || selectedSpeechItemId);
+    const queuedSpeechItem = {
+      id: queuedSpeechItemId,
       language: firstUtterance.utterance.lang,
-      name: activeSpeakerName,
+      name: queuedSpeechItemName,
       pitch: firstUtterance.utterance.pitch,
       queueMode,
       rate: firstUtterance.utterance.rate,
+      speechItemId: selectedSpeechItemId,
       status: "queued",
       text: firstUtterance.text,
       voiceName: firstUtterance.voiceName,
@@ -186,31 +194,30 @@ class TextToSpeechEngine {
       volume: firstUtterance.utterance.volume
     };
     firstUtterance.utterance.onstart = () => {
-      const speaker = this.activeSpeakers.get(activeSpeakerId);
-      if (speaker) {
-        this.activeSpeakers.set(activeSpeakerId, { ...speaker, status: "speaking" });
+      const item = this.queuedSpeechItems.get(queuedSpeechItemId);
+      if (item) {
+        this.queuedSpeechItems.set(queuedSpeechItemId, { ...item, status: "speaking" });
       }
     };
-    const clearSpeaker = () => {
-      this.activeSpeakers.delete(activeSpeakerId);
+    const clearQueuedSpeechItem = () => {
+      this.queuedSpeechItems.delete(queuedSpeechItemId);
     };
-    firstUtterance.utterance.onend = clearSpeaker;
-    firstUtterance.utterance.onerror = clearSpeaker;
-    this.activeSpeakers.set(activeSpeakerId, activeSpeaker);
+    firstUtterance.utterance.onend = clearQueuedSpeechItem;
+    firstUtterance.utterance.onerror = clearQueuedSpeechItem;
+    this.queuedSpeechItems.set(queuedSpeechItemId, queuedSpeechItem);
     this.speechSynthesis.speak(firstUtterance.utterance);
 
     return {
-      activeSpeakers: this.activeSpeakerList(),
-      autoSpeak: autoSpeak === true,
       characterPreset,
       gender,
       language: firstUtterance.utterance.lang,
       ok: true,
       pitch: firstUtterance.utterance.pitch,
+      queuedSpeechItems: this.queuedSpeechItemList(),
       queueMode,
       rate: firstUtterance.utterance.rate,
-      speakerId: activeSpeakerId,
-      speakerName: activeSpeakerName,
+      speechItemId: selectedSpeechItemId,
+      speechItemName: queuedSpeechItemName,
       ssmlLikePreset,
       text: firstUtterance.text,
       voiceAge,
@@ -236,41 +243,19 @@ class TextToSpeechEngine {
     return { ok: true };
   }
 
-  stop({ speakerId = "" } = {}) {
+  stop() {
     if (!this.isSupported()) {
       return { message: "SpeechSynthesis is unavailable in this browser.", ok: false };
     }
-    const selectedSpeakerId = String(speakerId || "");
-    const speaker = selectedSpeakerId
-      ? this.activeSpeakers.get(selectedSpeakerId)
-      : this.activeSpeakerList()[0];
-    if (!speaker) {
-      return { message: `No active ${TEXT_TO_SPEECH_DISPLAY_NAME} speaker is tracked for ${selectedSpeakerId || "the current selection"}.`, ok: false };
-    }
-    if (this.activeSpeakers.size > 1) {
-      return {
-        activeSpeakers: this.activeSpeakerList(),
-        message: `Cannot stop only ${speaker.name}: browser SpeechSynthesis exposes global cancel only. No global cancel was called while other speakers are active.`,
-        ok: false
-      };
-    }
+    const stoppedCount = this.queuedSpeechItems.size;
     this.speechSynthesis.cancel();
-    this.activeSpeakers.delete(speaker.id);
-    return { activeSpeakers: this.activeSpeakerList(), ok: true, speakerName: speaker.name };
-  }
-
-  stopAll() {
-    if (!this.isSupported()) {
-      return { message: "SpeechSynthesis is unavailable in this browser.", ok: false };
-    }
-    const stoppedCount = this.activeSpeakers.size;
-    this.speechSynthesis.cancel();
-    this.activeSpeakers.clear();
+    this.queuedSpeechItems.clear();
     return { ok: true, stoppedCount };
   }
 
-  resetActiveSpeakers() {
-    this.activeSpeakers.clear();
+  resetQueuedSpeechItems() {
+    this.queueSequence = 0;
+    this.queuedSpeechItems.clear();
     return { ok: true };
   }
 }

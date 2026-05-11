@@ -88,13 +88,11 @@ const TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS = Object.freeze([
   "rate",
   "pitch",
   "queueMode",
-  "autoSpeak",
   "characterPreset",
   "ssmlLikePreset"
 ]);
 
 const TEXT_TO_SPEECH_DEFAULT_OPTIONS = Object.freeze({
-  autoSpeak: false,
   characterPreset: "manual",
   gender: "any",
   language: "en-US",
@@ -123,7 +121,6 @@ const TEXT_TO_SPEECH_DEFAULT_QUEUE = Object.freeze([
   Object.freeze({
     ...TEXT_TO_SPEECH_DEFAULT_OPTIONS,
     ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.dramatic,
-    autoSpeak: false,
     characterPreset: "dramatic",
     gender: "male-preferred",
     id: "hero-ready",
@@ -139,7 +136,6 @@ const TEXT_TO_SPEECH_DEFAULT_QUEUE = Object.freeze([
   Object.freeze({
     ...TEXT_TO_SPEECH_DEFAULT_OPTIONS,
     ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.alert,
-    autoSpeak: false,
     characterPreset: "alert",
     gender: "female-preferred",
     id: "alert-warning",

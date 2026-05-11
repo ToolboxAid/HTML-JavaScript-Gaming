@@ -91,7 +91,13 @@ const MOCK_TEXT2SPEACH_EN_US_VOICE_VALUES = [
   "mock-microsoft-zira"
 ];
 
-const MOCK_TEXT2SPEACH_EN_US_DETAILS = "4 voices match Any / en-US: Google US English, Microsoft David - English (United States), Microsoft Mark - English (United States), Microsoft Zira - English (United States).";
+const MOCK_TEXT2SPEACH_EN_US_DETAILS = [
+  "4 voices match Any:",
+  "- en-US: Google US English",
+  "- en-US: Microsoft David - English (United States)",
+  "- en-US: Microsoft Mark - English (United States)",
+  "- en-US: Microsoft Zira - English (United States)"
+].join("\n");
 
 const MOCK_TEXT2SPEACH_GENDER_FILTER_VALUES = ["any", "male-preferred", "female-preferred"];
 
@@ -943,7 +949,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       "rate",
       "pitch",
       "queueMode",
-      "autoSpeak",
       "characterPreset",
       "ssmlLikePreset"
     ];
@@ -996,7 +1001,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "text2speach-V2CharacterPresetSelect",
         "text2speach-V2SsmlLikePresetSelect",
         "text2speach-V2QueueModeSelect",
-        "text2speach-V2AutoSpeakCheckbox",
         "text2speach-V2VolumeSlider",
         "text2speach-V2RateSlider",
         "text2speach-V2PitchSlider",
@@ -1006,8 +1010,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "text2speach-V2SpeakButton",
         "text2speach-V2PauseButton",
         "text2speach-V2ResumeButton",
-        "text2speach-V2StopButton",
-        "text2speach-V2StopAllButton"
+        "text2speach-V2StopButton"
       ]);
       const namedSentenceTopControls = await page.locator("#text2speach-V2QueueContent").evaluate((content) => {
         const firstElement = Array.from(content.children).find((child) => child.nodeType === Node.ELEMENT_NODE);
@@ -1030,7 +1033,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.locator("#text2speach-V2SsmlLikePresetSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["normal", "slow", "whisper-ish"]);
       await expect(page.locator("#text2speach-V2CharacterPresetSelect")).toHaveValue("narrator");
       await expect(page.locator("#text2speach-V2SsmlLikePresetSelect")).toHaveValue("normal");
-      await expect(page.locator("#text2speach-V2AutoSpeakCheckbox")).not.toBeChecked();
+      await expect(page.locator("#text2speach-V2AutoSpeakCheckbox")).toHaveCount(0);
+      await expect(page.locator("body")).not.toContainText(/multi[- ]?thread|threaded|parallel speech|at the same time/i);
       await expect(page.locator("#text2speach-V2VolumeSlider")).toHaveAttribute("min", "0");
       await expect(page.locator("#text2speach-V2VolumeSlider")).toHaveAttribute("max", "1");
       await expect(page.locator("#text2speach-V2VolumeSlider")).toHaveAttribute("step", "0.01");
@@ -1058,6 +1062,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return {
           characterPresetEnum: schema.$defs.speechQueueItem.properties.characterPreset.enum,
           genderEnum: schema.$defs.speechQueueItem.properties.gender.enum,
+          hasAutoSpeak: Object.hasOwn(schema.$defs.speechQueueItem.properties, "autoSpeak"),
           hasDelayBetweenRepeatsMs: Object.hasOwn(schema.$defs.speechQueueItem.properties, "delayBetweenRepeatsMs"),
           hasRepeatCount: Object.hasOwn(schema.$defs.speechQueueItem.properties, "repeatCount"),
           languagePattern: schema.$defs.speechQueueItem.properties.language.pattern,
@@ -1076,6 +1081,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(schemaRequiredFields.queueModeEnum).toEqual(["append", "replace"]);
       expect(schemaRequiredFields.pitchMinimum).toBe(0.1);
       expect(schemaRequiredFields.rateMaximum).toBe(2);
+      expect(schemaRequiredFields.hasAutoSpeak).toBe(false);
       expect(schemaRequiredFields.hasRepeatCount).toBe(false);
       expect(schemaRequiredFields.hasDelayBetweenRepeatsMs).toBe(false);
       expect(schemaRequiredFields.ssmlLikePresetEnum).toEqual(["normal", "slow", "whisper-ish"]);
@@ -1103,14 +1109,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2CharacterPresetSelect")).toHaveValue("alert");
       await expect(page.locator("#text2speach-V2SsmlLikePresetSelect")).toHaveValue("normal");
       await expect(page.locator("#text2speach-V2QueueModeSelect")).toHaveValue("replace");
-      await expect(page.locator("#text2speach-V2AutoSpeakCheckbox")).not.toBeChecked();
       await expect(page.locator("#text2speach-V2VolumeSlider")).toHaveValue("0.9");
       await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1.3");
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("0.9");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("2 voices match Female Preferred / en-US: Google US English, Microsoft Zira - English (United States).");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText([
+        "2 voices match Female Preferred:",
+        "- en-US: Google US English",
+        "- en-US: Microsoft Zira - English (United States)"
+      ].join("\n"));
       const alertSummary = JSON.parse(await page.locator("#text2speach-V2SpeechSummary").textContent());
       expect(alertSummary).toMatchObject({
-        autoSpeak: false,
         characterPreset: "alert",
         gender: "female-preferred",
         language: "en-US",
@@ -1138,16 +1146,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2VolumeSlider")).toHaveValue("1");
       await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1");
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1");
-      await page.locator("#text2speach-V2AutoSpeakCheckbox").check();
+      await page.locator("#text2speach-V2SpeakButton").click();
       await expect.poll(async () => (await page.evaluate(() => window["__text2speach-V2Spoken"])).length).toBe(1);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: Narrator welcome; en-US; voice=Google US English; rate=1; pitch=1; volume=1; activeSpeakers=1\./);
-      await page.locator("#text2speach-V2AutoSpeakCheckbox").uncheck();
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queued: Narrator welcome; mode=replace; en-US; voice=Google US English; rate=1; pitch=1; volume=1; queuedItems=1\./);
       await page.evaluate(() => {
         window["__text2speach-V2Canceled"] = 0;
         window["__text2speach-V2Paused"] = 0;
         window["__text2speach-V2Resumed"] = 0;
         window["__text2speach-V2Spoken"] = [];
-        window["__text2speach-V2App"].engine.resetActiveSpeakers();
+        window["__text2speach-V2App"].engine.resetQueuedSpeechItems();
       });
       await page.locator("#text2speach-V2SpeechText").fill("");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeDisabled();
@@ -1170,7 +1177,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEACH_MALE_LANGUAGE_VALUES);
       expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["mock-google-uk-english-male"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-uk-english-male");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voice matches Male Preferred / en-GB: Google UK English Male.");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male Preferred:\n- en-GB: Google UK English Male");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Child; rate=1\.3; pitch=1\.6\./);
       await page.locator("#text2speach-V2AgeFilterSelect").selectOption("any");
@@ -1203,32 +1210,37 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEACH_MALE_LANGUAGE_VALUES);
       expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["mock-google-us-english", "mock-microsoft-david", "mock-microsoft-mark"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-us-english");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("3 voices match Male Preferred / en-US: Google US English, Microsoft David - English (United States), Microsoft Mark - English (United States).");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText([
+        "3 voices match Male Preferred:",
+        "- en-US: Google US English",
+        "- en-US: Microsoft David - English (United States)",
+        "- en-US: Microsoft Mark - English (United States)"
+      ].join("\n"));
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filtered 3 matching SpeechSynthesis voices for Text to Speech V2 \(20 Male Preferred voices from 22 total; 18 languages; gender=Male Preferred; age=Any; language=en-US\)\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filter counts: available languages=18; available voices=20; selected voice=Google US English \(en-US\); gender is a helper filter only, not a voice transformation\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Male Preferred \/ en-US: Google US English \(en-US\)\./);
       await page.locator("#text2speach-V2LanguageSelect").selectOption("es-ES");
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Google espanol (es-ES)"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-espanol");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voice matches Male Preferred / es-ES: Google espanol.");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male Preferred:\n- es-ES: Google espanol");
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filter counts: available languages=18; available voices=20; selected voice=Google espanol \(es-ES\); gender is a helper filter only, not a voice transformation\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Male Preferred \/ es-ES: Google espanol \(es-ES\)\./);
       await page.locator("#text2speach-V2LanguageSelect").selectOption("en-GB");
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Google UK English Male (en-GB)"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-uk-english-male");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voice matches Male Preferred / en-GB: Google UK English Male.");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male Preferred:\n- en-GB: Google UK English Male");
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Male Preferred \/ en-GB: Google UK English Male \(en-GB\)\./);
       await page.locator("#text2speach-V2GenderFilterSelect").selectOption("female-preferred");
       expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEACH_FEMALE_LANGUAGE_VALUES);
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Google UK English Female (en-GB)"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-uk-english-female");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voice matches Female Preferred / en-GB: Google UK English Female.");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Female Preferred:\n- en-GB: Google UK English Female");
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filter counts: available languages=17; available voices=18; selected voice=Google UK English Female \(en-GB\); gender is a helper filter only, not a voice transformation\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Female Preferred \/ en-GB: Google UK English Female \(en-GB\)\./);
       await page.locator("#text2speach-V2LanguageSelect").selectOption("es-US");
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Google espanol de Estados Unidos (es-US)"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-espanol-us");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voice matches Female Preferred / es-US: Google espanol de Estados Unidos.");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Female Preferred:\n- es-US: Google espanol de Estados Unidos");
       await page.locator("#text2speach-V2GenderFilterSelect").selectOption("any");
       await page.locator("#text2speach-V2LanguageSelect").selectOption("en-GB");
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-uk-english-female");
@@ -1275,11 +1287,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Child; rate=1\.5; pitch=1\.2\./);
       await expect(page.locator("#text2speach-V2SpeechSummary")).toContainText('"ssmlLikePreset": "slow"');
       await page.locator("#text2speach-V2SpeakButton").click();
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: Hero ready; en-GB; voice=Google UK English Female; rate=1\.5; pitch=1\.2; volume=0\.8; activeSpeakers=1\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queued: Hero ready; mode=append; en-GB; voice=Google UK English Female; rate=1\.5; pitch=1\.2; volume=0\.8; queuedItems=1\./);
       await expect(page.locator("#text2speach-V2SpeechSummary")).toContainText('"status": "speak-queued"');
       await selectTextToSpeechTile(page, "narrator-welcome");
+      await page.locator("#text2speach-V2QueueModeSelect").selectOption("append");
       await page.locator("#text2speach-V2SpeakButton").click();
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: Narrator welcome; en-US; voice=Google US English; rate=1; pitch=1; volume=1; activeSpeakers=2\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queued: Narrator welcome; mode=append; en-US; voice=Google US English; rate=1; pitch=1; volume=1; queuedItems=2\./);
       const spoken = await page.evaluate(() => window["__text2speach-V2Spoken"]);
       expect(spoken).toHaveLength(2);
       expect(spoken[0]).toMatchObject({
@@ -1299,18 +1312,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         volume: 1
       });
       expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(0);
+      const queuedSummary = JSON.parse(await page.locator("#text2speach-V2SpeechSummary").textContent());
+      expect(queuedSummary.queuedSpeechItems).toHaveLength(2);
       await page.locator("#text2speach-V2PauseButton").click();
       await page.locator("#text2speach-V2ResumeButton").click();
       await page.locator("#text2speach-V2StopButton").click();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech paused\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech resumed\./);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/FAIL Cannot stop only Narrator welcome: browser SpeechSynthesis exposes global cancel only\. No global cancel was called while other speakers are active\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queue stopped: 2 queued item\(s\) cleared\./);
       expect(await page.evaluate(() => window["__text2speach-V2Paused"])).toBe(1);
       expect(await page.evaluate(() => window["__text2speach-V2Resumed"])).toBe(1);
-      expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(0);
-      await page.locator("#text2speach-V2StopAllButton").click();
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK All speech stopped: 2 active speaker\(s\) cleared\./);
       expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(1);
+      await selectTextToSpeechTile(page, "alert-warning");
+      await page.locator("#text2speach-V2SpeakButton").click();
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queued: Alert warning; mode=replace; en-US; voice=Microsoft Zira - English \(United States\); rate=1\.3; pitch=0\.9; volume=0\.9; queuedItems=1\./);
+      expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(2);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -1365,12 +1381,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2LanguageSelect")).toHaveValue("en-AU");
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Studio Neutral English (en-AU)"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-studio-neutral-english");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voice matches Male Preferred / en-AU: Studio Neutral English.");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male Preferred:\n- en-AU: Studio Neutral English");
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filtered 1 matching SpeechSynthesis voices for Text to Speech V2 \(21 Male Preferred voices from 23 total; 19 languages; gender=Male Preferred; age=Any; language=en-AU\)\./);
       await page.locator("#text2speach-V2GenderFilterSelect").selectOption("female-preferred");
       await expect(page.locator("#text2speach-V2LanguageSelect")).toHaveValue("en-AU");
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Studio Neutral English (en-AU)"]);
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voice matches Female Preferred / en-AU: Studio Neutral English.");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Female Preferred:\n- en-AU: Studio Neutral English");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
       expect(pageErrors).toEqual([]);
     } finally {
@@ -2346,7 +2362,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(textToSpeechQueue).toHaveLength(3);
       textToSpeechQueue.forEach((item) => {
         expect(Object.keys(item).sort()).toEqual([
-          "autoSpeak",
           "characterPreset",
           "gender",
           "id",
@@ -2363,7 +2378,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ]);
       });
       expect(textToSpeechQueue[0]).toMatchObject({
-        autoSpeak: false,
         characterPreset: "narrator",
         gender: "any",
         language: "en-US",
@@ -2930,7 +2944,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/fromTool=workspace-manager-v2/);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
-      await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Speak", "Pause", "Resume", "Stop", "Stop All", "Return to Workspace"]);
+      await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Speak", "Pause", "Resume", "Stop", "Return to Workspace"]);
       await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(3);
       await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.");
       await expect(page.locator("#text2speach-V2SpeechItemName")).toHaveValue("Narrator welcome");
@@ -2938,19 +2952,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2WorkspacePauseButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2WorkspaceResumeButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2WorkspaceStopButton")).toBeEnabled();
-      await expect(page.locator("#text2speach-V2WorkspaceStopAllButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveCount(4);
       await page.locator("#text2speach-V2WorkspaceSpeakButton").click();
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: Narrator welcome; en-US; voice=Google US English; rate=1; pitch=1; volume=1; activeSpeakers=1\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queued: Narrator welcome; mode=replace; en-US; voice=Google US English; rate=1; pitch=1; volume=1; queuedItems=1\./);
       const spoken = await page.evaluate(() => window["__text2speach-V2Spoken"]);
       expect(spoken).toHaveLength(1);
       expect(spoken[0].text).toBe("Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.");
       await page.locator("#text2speach-V2WorkspacePauseButton").click();
       await page.locator("#text2speach-V2WorkspaceResumeButton").click();
       await page.locator("#text2speach-V2WorkspaceStopButton").click();
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queue stopped: 1 queued item\(s\) cleared\./);
       expect(await page.evaluate(() => window["__text2speach-V2Paused"])).toBe(1);
       expect(await page.evaluate(() => window["__text2speach-V2Resumed"])).toBe(1);
-      expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(1);
+      expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(2);
       await page.locator("#text2speach-V2SpeechItemName").fill("");
       await page.locator("#text2speach-V2AddItemButton").click();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/FAIL Text to Speech V2 Add blocked: Name is required before creating a named speech item\./);

@@ -73,10 +73,6 @@
               <span>Queue mode</span>
               <select id="text2speach-V2QueueModeSelect"></select>
             </label>
-            <label class="text2speach-V2__check-field" for="text2speach-V2AutoSpeakCheckbox">
-              <input id="text2speach-V2AutoSpeakCheckbox" type="checkbox">
-              <span>Auto speak</span>
-            </label>
             <label class="text2speach-V2__field" for="text2speach-V2VolumeSlider">
               <span>Volume <output id="text2speach-V2VolumeOutput" for="text2speach-V2VolumeSlider"></output></span>
               <input id="text2speach-V2VolumeSlider" type="range">
@@ -127,14 +123,12 @@
               <button id="text2speach-V2PauseButton" type="button" disabled>Pause</button>
               <button id="text2speach-V2ResumeButton" type="button" disabled>Resume</button>
               <button id="text2speach-V2StopButton" type="button" disabled>Stop</button>
-              <button id="text2speach-V2StopAllButton" type="button" disabled>Stop All</button>
             </nav>
             <nav class="text2speach-V2__menu text2speach-V2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
               <button id="text2speach-V2WorkspaceSpeakButton" type="button" disabled>Speak</button>
               <button id="text2speach-V2WorkspacePauseButton" type="button" disabled>Pause</button>
               <button id="text2speach-V2WorkspaceResumeButton" type="button" disabled>Resume</button>
               <button id="text2speach-V2WorkspaceStopButton" type="button" disabled>Stop</button>
-              <button id="text2speach-V2WorkspaceStopAllButton" type="button" disabled>Stop All</button>
               <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
             </nav>
             <div id="text2speach-V2QueueTiles" class="text2speach-V2__queue-tiles" role="listbox" aria-label="Named Sentences"></div>

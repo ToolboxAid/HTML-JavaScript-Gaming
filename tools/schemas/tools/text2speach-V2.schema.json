@@ -45,7 +45,6 @@
         "rate",
         "pitch",
         "queueMode",
-        "autoSpeak",
         "characterPreset",
         "ssmlLikePreset"
       ],
@@ -97,9 +96,6 @@
         "queueMode": {
           "type": "string",
           "enum": ["append", "replace"]
-        },
-        "autoSpeak": {
-          "type": "boolean"
         },
         "characterPreset": {
           "type": "string",

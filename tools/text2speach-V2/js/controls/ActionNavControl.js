@@ -5,7 +5,6 @@ export class ActionNavControl {
     returnToWorkspaceButton,
     resumeButtons = [],
     speakButtons = [],
-    stopAllButtons = [],
     stopButtons = [],
     toolNav,
     windowRef = window,
@@ -16,14 +15,13 @@ export class ActionNavControl {
     this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.resumeButtons = resumeButtons;
     this.speakButtons = speakButtons;
-    this.stopAllButtons = stopAllButtons;
     this.stopButtons = stopButtons;
     this.toolNav = toolNav;
     this.window = windowRef;
     this.workspaceNav = workspaceNav;
   }
 
-  mount({ onPause, onResume, onReturnToWorkspace, onSpeak, onStop, onStopAll }) {
+  mount({ onPause, onResume, onReturnToWorkspace, onSpeak, onStop }) {
     this.applyLaunchMode();
     this.speakButtons.forEach((button) => {
       button.addEventListener("click", onSpeak);
@@ -36,9 +34,6 @@ export class ActionNavControl {
     });
     this.stopButtons.forEach((button) => {
       button.addEventListener("click", onStop);
-    });
-    this.stopAllButtons.forEach((button) => {
-      button.addEventListener("click", onStopAll);
     });
     this.returnToWorkspaceButton.addEventListener("click", () => {
       onReturnToWorkspace(this.workspaceManagerUrl());
@@ -73,12 +68,6 @@ export class ActionNavControl {
 
   setStopEnabled(isEnabled) {
     this.stopButtons.forEach((button) => {
-      button.disabled = !isEnabled;
-    });
-  }
-
-  setStopAllEnabled(isEnabled) {
-    this.stopAllButtons.forEach((button) => {
       button.disabled = !isEnabled;
     });
   }

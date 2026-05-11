@@ -37,10 +37,6 @@ window.addEventListener("DOMContentLoaded", () => {
         requireElement("#text2speach-V2StopButton"),
         requireElement("#text2speach-V2WorkspaceStopButton")
       ],
-      stopAllButtons: [
-        requireElement("#text2speach-V2StopAllButton"),
-        requireElement("#text2speach-V2WorkspaceStopAllButton")
-      ],
       toolNav: requireElement('[data-launch-mode-nav="tool"]'),
       workspaceNav: requireElement('[data-launch-mode-nav="workspace"]')
     }),
@@ -57,7 +53,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     speechOptions: new SpeechOptionsControl({
       ageFilterSelect: requireElement("#text2speach-V2AgeFilterSelect"),
-      autoSpeakCheckbox: requireElement("#text2speach-V2AutoSpeakCheckbox"),
       characterPresetSelect: requireElement("#text2speach-V2CharacterPresetSelect"),
       genderFilterSelect: requireElement("#text2speach-V2GenderFilterSelect"),
       languageSelect: requireElement("#text2speach-V2LanguageSelect"),
