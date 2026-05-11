@@ -20,24 +20,11 @@ window.addEventListener("DOMContentLoaded", () => {
   mountAccordionV2(document);
   const app = new TextToSpeechToolApp({
     actionNav: new ActionNavControl({
-      pauseButtons: [
-        requireElement("#text2speach-V2PauseButton"),
-        requireElement("#text2speach-V2WorkspacePauseButton")
-      ],
+      pauseButtons: [requireElement("#text2speach-V2PauseButton")],
       returnToWorkspaceButton: requireElement("#returnToWorkspaceButton"),
-      resumeButtons: [
-        requireElement("#text2speach-V2ResumeButton"),
-        requireElement("#text2speach-V2WorkspaceResumeButton")
-      ],
-      speakButtons: [
-        requireElement("#text2speach-V2SpeakButton"),
-        requireElement("#text2speach-V2WorkspaceSpeakButton")
-      ],
-      stopButtons: [
-        requireElement("#text2speach-V2StopButton"),
-        requireElement("#text2speach-V2WorkspaceStopButton")
-      ],
-      toolNav: requireElement('[data-launch-mode-nav="tool"]'),
+      resumeButtons: [requireElement("#text2speach-V2ResumeButton")],
+      speakButtons: [requireElement("#text2speach-V2SpeakButton")],
+      stopButtons: [requireElement("#text2speach-V2StopButton")],
       workspaceNav: requireElement('[data-launch-mode-nav="workspace"]')
     }),
     engine: new TextToSpeechEngine(),

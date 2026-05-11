@@ -6,7 +6,6 @@ export class ActionNavControl {
     resumeButtons = [],
     speakButtons = [],
     stopButtons = [],
-    toolNav,
     windowRef = window,
     workspaceNav
   }) {
@@ -16,7 +15,6 @@ export class ActionNavControl {
     this.resumeButtons = resumeButtons;
     this.speakButtons = speakButtons;
     this.stopButtons = stopButtons;
-    this.toolNav = toolNav;
     this.window = windowRef;
     this.workspaceNav = workspaceNav;
   }
@@ -45,7 +43,6 @@ export class ActionNavControl {
     const isWorkspaceManagerLaunch = params.get("launch") === "workspace"
       && params.get("fromTool") === "workspace-manager-v2"
       && Boolean(params.get("hostContextId"));
-    this.toolNav.hidden = isWorkspaceManagerLaunch;
     this.workspaceNav.hidden = !isWorkspaceManagerLaunch;
   }
 

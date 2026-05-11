@@ -981,8 +981,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[aria-controls="text2speach-V2TextContent"] > span:first-child')).toHaveText("Text to Speak");
       await expect(page.locator("#text2speach-V2TextContent")).not.toContainText("Speech text");
       await expect(page.locator('[aria-controls="text2speach-V2QueueContent"] > span:first-child')).toHaveText("Named Sentences");
-      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
-      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeHidden();
+      await expect(page.locator("#text2speach-V2SpeechActions")).toBeVisible();
+      await expect(page.locator(".text2speach-V2__workspace-menu")).toBeHidden();
       await expect(page.locator("#text2speach-V2SpeechPreview")).toHaveCount(0);
       await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
@@ -1009,7 +1009,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "text2speach-V2PitchSlider",
         "text2speach-V2SpeechItemName"
       ]);
-      expect(await page.locator("#text2speach-V2QueueContent [data-launch-mode-nav='tool'] button").evaluateAll((buttons) => buttons.map((button) => button.id))).toEqual([
+      expect(await page.locator("#text2speach-V2SpeechActions button").evaluateAll((buttons) => buttons.map((button) => button.id))).toEqual([
         "text2speach-V2SpeakButton",
         "text2speach-V2PauseButton",
         "text2speach-V2ResumeButton",
@@ -1017,9 +1017,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       ]);
       const namedSentenceTopControls = await page.locator("#text2speach-V2QueueContent").evaluate((content) => {
         const firstElement = Array.from(content.children).find((child) => child.nodeType === Node.ELEMENT_NODE);
-        return firstElement?.getAttribute("data-launch-mode-nav") || "";
+        return firstElement?.id || "";
       });
-      expect(namedSentenceTopControls).toBe("tool");
+      expect(namedSentenceTopControls).toBe("text2speach-V2SpeechActions");
       expect(await page.locator("#text2speach-V2SpeechOptionsContent .text2speach-V2__item-actions button").evaluateAll((buttons) => buttons.map((button) => button.textContent.trim()))).toEqual(["Add", "Duplicate", "Delete"]);
       const statusHeaderOrder = await page.locator(".text2speach-V2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
       expect(statusHeaderOrder).toEqual(["Status", "+", "Clear"]);
@@ -1496,7 +1496,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#returnToWorkspaceButton")).toBeVisible();
       await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(0);
       await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("");
-      await expect(page.locator("#text2speach-V2WorkspaceSpeakButton")).toBeDisabled();
+      await expect(page.locator("#text2speach-V2SpeakButton")).toBeDisabled();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/FAIL Text to Speech V2 payload from \/games\/Asteroids\/game\.manifest\.json failed tools\/schemas\/tools\/text2speach-V2\.schema\.json validation:/);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/root\.queue\[0\]\.autoSpeak is not allowed/);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/root\.queue\[0\]\.repeatCount is not allowed/);
@@ -3135,28 +3135,38 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/text2speach-V2\/index\.html.*launch=workspace/);
       await expect(page).toHaveURL(/fromTool=workspace-manager-v2/);
       await expect(page).toHaveURL(/hostContextId=workspace-manager-v2-/);
-      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
-      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
-      await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Speak", "Pause", "Resume", "Stop", "Return to Workspace"]);
+      await expect(page.locator("#text2speach-V2SpeechActions")).toBeVisible();
+      await expect(page.locator(".text2speach-V2__workspace-menu")).toBeVisible();
+      await expect(page.locator(".text2speach-V2__workspace-menu")).toHaveAttribute("data-launch-mode-nav", "workspace");
+      await expect(page.locator(".text2speach-V2__workspace-menu button")).toHaveText(["Return to Workspace"]);
+      const textToSpeechWorkspaceNavPlacement = await page.locator("body").evaluate(() => {
+        const details = document.querySelector("body > details");
+        const workspaceNav = document.querySelector("body > .text2speach-V2__workspace-menu");
+        const main = document.querySelector("body > main.text2speach-V2");
+        return Boolean(details && workspaceNav && main
+          && workspaceNav.previousElementSibling === details
+          && workspaceNav.nextElementSibling === main);
+      });
+      expect(textToSpeechWorkspaceNavPlacement).toBe(true);
       await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(3);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Loaded Text to Speech V2 payload source: \/games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Text to Speech V2 schema validation result: tools\/schemas\/tools\/text2speach-V2\.schema\.json valid; queue=3\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Text to Speech V2 dirty state: isDirty=false; reason=clean\./);
       await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.");
       await expect(page.locator("#text2speach-V2SpeechItemName")).toHaveValue("Narrator welcome");
-      await expect(page.locator("#text2speach-V2WorkspaceSpeakButton")).toBeEnabled();
-      await expect(page.locator("#text2speach-V2WorkspacePauseButton")).toBeEnabled();
-      await expect(page.locator("#text2speach-V2WorkspaceResumeButton")).toBeEnabled();
-      await expect(page.locator("#text2speach-V2WorkspaceStopButton")).toBeEnabled();
+      await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
+      await expect(page.locator("#text2speach-V2PauseButton")).toBeEnabled();
+      await expect(page.locator("#text2speach-V2ResumeButton")).toBeEnabled();
+      await expect(page.locator("#text2speach-V2StopButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveCount(4);
-      await page.locator("#text2speach-V2WorkspaceSpeakButton").click();
+      await page.locator("#text2speach-V2SpeakButton").click();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queued: Narrator welcome; mode=replace; en-US; voice=Google US English; rate=1; pitch=1; volume=1; queuedItems=1\./);
       const spoken = await page.evaluate(() => window["__text2speach-V2Spoken"]);
       expect(spoken).toHaveLength(1);
       expect(spoken[0].text).toBe("Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.");
-      await page.locator("#text2speach-V2WorkspacePauseButton").click();
-      await page.locator("#text2speach-V2WorkspaceResumeButton").click();
-      await page.locator("#text2speach-V2WorkspaceStopButton").click();
+      await page.locator("#text2speach-V2PauseButton").click();
+      await page.locator("#text2speach-V2ResumeButton").click();
+      await page.locator("#text2speach-V2StopButton").click();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queue stopped: 1 queued item\(s\) cleared\./);
       expect(await page.evaluate(() => window["__text2speach-V2Paused"])).toBe(1);
       expect(await page.evaluate(() => window["__text2speach-V2Resumed"])).toBe(1);

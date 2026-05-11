@@ -36,6 +36,12 @@
       </div>
     </details>
 
+    <nav class="text2speach-V2__menu text2speach-V2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <div class="text2speach-V2__menu-actions">
+        <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
+      </div>
+    </nav>
+
     <main class="text2speach-V2 app-shell" data-tool-id="text2speach-V2">
       <aside class="text2speach-V2__panel text2speach-V2__panel--left" aria-label="Speech input">
         <section class="accordion-v2 text2speach-V2__accordion is-open" data-accordion-v2-open="true">
@@ -118,18 +124,11 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="text2speach-V2QueueContent" class="accordion-v2__content">
-            <nav class="text2speach-V2__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+            <nav id="text2speach-V2SpeechActions" class="text2speach-V2__menu text2speach-V2__speech-actions" aria-label="Speech actions">
               <button id="text2speach-V2SpeakButton" type="button" disabled>Speak</button>
               <button id="text2speach-V2PauseButton" type="button" disabled>Pause</button>
               <button id="text2speach-V2ResumeButton" type="button" disabled>Resume</button>
               <button id="text2speach-V2StopButton" type="button" disabled>Stop</button>
-            </nav>
-            <nav class="text2speach-V2__menu text2speach-V2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
-              <button id="text2speach-V2WorkspaceSpeakButton" type="button" disabled>Speak</button>
-              <button id="text2speach-V2WorkspacePauseButton" type="button" disabled>Pause</button>
-              <button id="text2speach-V2WorkspaceResumeButton" type="button" disabled>Resume</button>
-              <button id="text2speach-V2WorkspaceStopButton" type="button" disabled>Stop</button>
-              <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
             </nav>
             <div id="text2speach-V2QueueTiles" class="text2speach-V2__queue-tiles" role="listbox" aria-label="Named Sentences"></div>
           </div>

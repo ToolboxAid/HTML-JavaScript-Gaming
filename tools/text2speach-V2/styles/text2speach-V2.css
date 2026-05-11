@@ -80,8 +80,16 @@
   display: none;
 }
 
+.text2speach-V2__menu-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
 .text2speach-V2__item-actions,
-.text2speach-V2__options .text2speach-V2__menu {
+.text2speach-V2__options .text2speach-V2__menu,
+.text2speach-V2__speech-actions {
   flex-wrap: wrap;
   justify-content: flex-start;
   width: 100%;
