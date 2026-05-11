@@ -113,6 +113,12 @@
   min-width: 0;
 }
 
+.text2speach-V2__panel--center {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .text2speach-V2__accordion {
   margin-bottom: 12px;
 }
@@ -124,6 +130,10 @@
 .text2speach-V2__accordion--fill,
 .text2speach-V2__accordion--fill .accordion-v2__content {
   height: 100%;
+}
+
+.text2speach-V2__accordion--fill {
+  min-height: 0;
 }
 
 .text2speach-V2__field {
@@ -281,4 +291,109 @@
   .text2speach-V2 {
     grid-template-columns: 1fr;
   }
+}
+
+html.tools-platform-fullscreen-active,
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"],
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"],
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] {
+  display: flex;
+  flex-direction: column;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] > .is-collapsible,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] > .is-collapsible {
+  flex: 0 0 auto;
+  width: 100%;
+  margin: 0;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"],
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"] {
+  width: calc(100vw - 24px);
+  max-width: calc(100vw - 24px);
+  margin: 8px auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] > .text2speach-V2__menu,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] > .text2speach-V2__menu {
+  flex: 0 0 auto;
+  margin: 8px auto;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] > .text2speach-V2,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] > .text2speach-V2 {
+  flex: 1 1 auto;
+  display: grid;
+  box-sizing: border-box;
+  grid-template-columns: 340px minmax(0, 1fr) 360px;
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  padding: 8px 12px 12px;
+  overflow: hidden;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] .tool-shell-common__fullscreen-side-panel,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .tool-shell-common__fullscreen-side-panel {
+  align-self: stretch;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  overflow: auto;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] .tool-shell-common__fullscreen-panel-left,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .tool-shell-common__fullscreen-panel-left {
+  justify-self: start;
+  width: 340px;
+  max-width: 340px;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] .tool-shell-common__fullscreen-panel-right,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .tool-shell-common__fullscreen-panel-right {
+  justify-self: end;
+  width: 360px;
+  max-width: 360px;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] .tool-shell-common__fullscreen-center-panel,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .tool-shell-common__fullscreen-center-panel {
+  align-self: stretch;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] .text2speach-V2__accordion--fill,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .text2speach-V2__accordion--fill {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] .text2speach-V2__accordion--fill .accordion-v2__content,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .text2speach-V2__accordion--fill .accordion-v2__content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] .text2speach-V2__queue-tiles,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .text2speach-V2__queue-tiles {
+  max-height: none;
 }

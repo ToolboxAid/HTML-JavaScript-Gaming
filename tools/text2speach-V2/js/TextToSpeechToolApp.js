@@ -18,6 +18,24 @@ import {
 const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speach-V2";
 const TEXT_TO_SPEECH_SCHEMA_URL = `/${TEXT_TO_SPEECH_SCHEMA_ID}`;
 const TEXT_TO_SPEECH_URL_SOURCE_PARAM = "samplePresetPath";
+const STALE_OBJECT_PAYLOAD_FIELDS = Object.freeze([
+  "queue",
+  "selectedQueueItemId",
+  "selectedQueueItemName",
+  "status",
+  "queuedSpeechItems",
+  "characterPreset",
+  "gender",
+  "language",
+  "pitch",
+  "queueMode",
+  "rate",
+  "ssmlLikePreset",
+  "text",
+  "voice",
+  "voiceAge",
+  "volume"
+]);
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -50,6 +68,17 @@ function validateQueue(queue) {
     }
   }
   return { ok: true };
+}
+
+function staleObjectPayloadMessage(payload, sourcePath) {
+  if (!isPlainObject(payload)) {
+    return "";
+  }
+  const staleFields = STALE_OBJECT_PAYLOAD_FIELDS.filter((field) => Object.prototype.hasOwnProperty.call(payload, field));
+  if (!staleFields.length) {
+    return "";
+  }
+  return `${TEXT_TO_SPEECH_DISPLAY_NAME} rejected stale object payload from ${sourcePath}: ${staleFields.join(", ")}. Expected root array of named speech items from ${TEXT_TO_SPEECH_SCHEMA_ID}.`;
 }
 
 function schemaProperties(schema) {
@@ -175,6 +204,7 @@ export class TextToSpeechToolApp {
     engine,
     outputSummary,
     queueControl,
+    shell,
     speechOptions,
     statusLog,
     textInput,
@@ -184,6 +214,7 @@ export class TextToSpeechToolApp {
     this.engine = engine;
     this.outputSummary = outputSummary;
     this.queueControl = queueControl;
+    this.shell = shell;
     this.speechOptions = speechOptions;
     this.statusLog = statusLog;
     this.textInput = textInput;
@@ -193,6 +224,7 @@ export class TextToSpeechToolApp {
   }
 
   async start() {
+    this.shell.mount();
     this.speechOptions.populate({
       ageFilterOptions: TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
       characterPresetOptions: TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
@@ -335,6 +367,13 @@ export class TextToSpeechToolApp {
     const schemaRef = String(queueDataResult.schemaRef || "");
     if (schemaRef && schemaRef !== TEXT_TO_SPEECH_SCHEMA_ID) {
       this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} payload from ${queueDataResult.sourcePath} uses ${schemaRef}; expected ${TEXT_TO_SPEECH_SCHEMA_ID}.`);
+      this.clearRenderedQueue("load-failed");
+      this.actionNav.setSpeakEnabled(false);
+      return;
+    }
+    const stalePayloadMessage = staleObjectPayloadMessage(queueDataResult.payload, queueDataResult.sourcePath);
+    if (stalePayloadMessage) {
+      this.statusLog.fail(stalePayloadMessage);
       this.clearRenderedQueue("load-failed");
       this.actionNav.setSpeakEnabled(false);
       return;
@@ -583,6 +622,11 @@ export class TextToSpeechToolApp {
       return;
     }
     const sourcePath = file.name || "selected JSON file";
+    const stalePayloadMessage = staleObjectPayloadMessage(payload, sourcePath);
+    if (stalePayloadMessage) {
+      this.statusLog.fail(`Import JSON blocked: ${stalePayloadMessage}`);
+      return;
+    }
     const payloadValidation = this.validatePayload(payload, sourcePath);
     if (!payloadValidation.ok) {
       this.statusLog.fail(`Import JSON blocked: ${payloadValidation.message}`);
@@ -787,21 +831,8 @@ export class TextToSpeechToolApp {
     this.refreshOutputSummary(status);
   }
 
-  speechState(status) {
-    const options = this.speechOptions.value();
-    return {
-      ...options,
-      queue: this.queueControl.selectedQueue(),
-      queuedSpeechItems: this.engine.queuedSpeechItemList(),
-      selectedQueueItemId: this.queueControl.selectedItem()?.id || "",
-      selectedQueueItemName: this.queueControl.selectedItem()?.name || "",
-      status,
-      text: this.textInput.text()
-    };
-  }
-
   refreshOutputSummary(status) {
-    this.outputSummary.render(this.speechState(status));
+    this.outputSummary.render(this.queueControl.selectedQueue());
     this.refreshActionState();
   }
 
@@ -826,13 +857,7 @@ export class TextToSpeechToolApp {
       this.refreshOutputSummary("speak-failed");
       return;
     }
-    this.outputSummary.render({
-      ...result,
-      queue: this.queueControl.selectedQueue(),
-      selectedQueueItemId: this.queueControl.selectedItem()?.id || "",
-      selectedQueueItemName: this.queueControl.selectedItem()?.name || "",
-      status: "speak-queued"
-    });
+    this.outputSummary.render(this.queueControl.selectedQueue());
     this.statusLog.ok(`Speech queued: ${result.speechItemName}; mode=${result.queueMode}; ${result.language}; voice=${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}; queuedItems=${result.queuedSpeechItems.length}.`);
     this.refreshActionState();
   }

@@ -6,6 +6,7 @@ import { OutputSummaryControl } from "./controls/OutputSummaryControl.js";
 import { QueueControl } from "./controls/QueueControl.js";
 import { SpeechOptionsControl } from "./controls/SpeechOptionsControl.js";
 import { StatusLogControl } from "./controls/StatusLogControl.js";
+import { TextToSpeechShellControl } from "./controls/TextToSpeechShellControl.js";
 import { TextInputControl } from "./controls/TextInputControl.js";
 
 function requireElement(selector) {
@@ -63,6 +64,7 @@ window.addEventListener("DOMContentLoaded", () => {
       clearButton: requireElement("#text2speach-V2ClearStatusButton"),
       log: requireElement("#text2speach-V2StatusLog")
     }),
+    shell: new TextToSpeechShellControl(),
     textInput: new TextInputControl({
       input: requireElement("#text2speach-V2SpeechText")
     })

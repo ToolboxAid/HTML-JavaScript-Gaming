@@ -645,6 +645,10 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail(`Launch blocked: ${validation.message}`);
       return;
     }
+    if (toolId === "text2speach-V2") {
+      const textToSpeechPayload = this.activeContext.tools?.["text2speach-V2"];
+      this.statusLog.ok(`Text to Speech V2 launch source: ${this.activeGame?.manifestPath || "(missing manifest path)"} via root.tools.text2speach-V2 array (${Array.isArray(textToSpeechPayload) ? textToSpeechPayload.length : 0} named speech items).`);
+    }
     const hostContextId = this.activeHostContextId
       ? this.contextService.writePersistedContext(this.activeHostContextId, this.activeContext)
       : this.contextService.persistContext(this.activeContext);

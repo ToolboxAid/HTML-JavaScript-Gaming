@@ -683,6 +683,9 @@ export class WorkspaceManagerV2ContextService {
     if (session.workspace.repoReferenceKey !== WORKSPACE_REPO_REFERENCE_SESSION_KEY) {
       return { ok: false, key: result.key, message: `${result.key}.workspace.repoReferenceKey must be ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.` };
     }
+    if (tool.id === TEXT2SPEACH_V2_TOOL_KEY && !Array.isArray(session.data)) {
+      return { ok: false, key: result.key, message: `${result.key}.data is stale for text2speach-V2; expected root array named speech items.` };
+    }
     return result;
   }
 
