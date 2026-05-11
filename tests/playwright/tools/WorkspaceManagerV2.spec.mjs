@@ -37,6 +37,9 @@ async function selectTextToSpeechTile(page, itemId) {
   await page.locator(`[data-speech-item-id="${itemId}"]`).click();
 }
 
+const TEXT_TO_SPEECH_SAMPLE_PRESET_PATH = "/samples/phase-19/1903/sample.1903.text2speach-V2.json";
+const TEXT_TO_SPEECH_SAMPLE_QUERY = `?samplePresetPath=${encodeURIComponent(TEXT_TO_SPEECH_SAMPLE_PRESET_PATH)}`;
+
 async function openToolsIndex(page) {
   const server = await startRepoServer();
   await coverageReporter.start(page);
@@ -964,8 +967,38 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("launches Text to Speech V2 with full TTS options, schema-complete queue, and speech actions", async ({ page }) => {
+  test("shows safe empty Text to Speech V2 state when no JSON source is provided", async ({ page }) => {
     const server = await openTextToSpeechTool(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await expect(page.locator("body[data-tool-id='text2speach-V2']")).toBeVisible();
+      await expect(page.locator(".text2speach-V2__tool__menu")).toBeVisible();
+      await expect(page.locator(".text2speach-V2__workspace-menu")).toBeHidden();
+      await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(0);
+      await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("");
+      await expect(page.locator("#text2speach-V2SpeechItemName")).toHaveValue("");
+      await expect(page.locator("#text2speach-V2SpeakButton")).toBeDisabled();
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Text to Speech V2 empty launch: no samplePresetPath URL JSON source, workspace payload, or imported JSON is loaded\. Use Import JSON or open a sample JSON source to load named speech items\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).not.toHaveValue(/Text to Speech V2 default queue|Loaded 3 schema-complete/);
+      const emptySummary = JSON.parse(await page.locator("#text2speach-V2SpeechSummary").textContent());
+      expect(emptySummary.queue).toEqual([]);
+      expect(emptySummary.selectedQueueItemId).toBe("");
+      expect(emptySummary.selectedQueueItemName).toBe("");
+      expect(emptySummary.text).toBe("");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("loads Text to Speech V2 from URL JSON with full options, schema-complete queue, and speech actions", async ({ page }) => {
+    const server = await openTextToSpeechTool(page, TEXT_TO_SPEECH_SAMPLE_QUERY);
     const pageErrors = [];
 
     page.on("pageerror", (error) => {
@@ -1007,7 +1040,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2ResumeButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2StopButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Loaded 3 schema-complete Text to Speech V2 queue items\./);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Loaded Text to Speech V2 payload source: Text to Speech V2 default queue\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(new RegExp(`OK Loaded Text to Speech V2 payload source: ${TEXT_TO_SPEECH_SAMPLE_PRESET_PATH.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\.`));
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Text to Speech V2 schema validation result: tools\/schemas\/tools\/text2speach-V2\.schema\.json valid; queue=3\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Loaded 4 matching SpeechSynthesis voices for Text to Speech V2 \(22 voices; 18 languages; gender=Any; age=Any; language=en-US\)\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Text to Speech V2 ready\. SpeechSynthesis is available\./);
@@ -1129,6 +1162,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(schemaRequiredFields.hasDelayBetweenRepeatsMs).toBe(false);
       expect(schemaRequiredFields.ssmlLikePresetEnum).toEqual(["normal", "slow", "whisper-ish"]);
       expect(schemaRequiredFields.voiceAgeEnum).toEqual(MOCK_TEXT2SPEACH_AGE_FILTER_VALUES);
+      const sampleJsonValidation = await page.evaluate(async (samplePresetPath) => {
+        const payload = await fetch(samplePresetPath, { cache: "no-store" }).then((response) => response.json());
+        const validation = window["__text2speach-V2App"].validatePayload(payload, samplePresetPath);
+        return {
+          firstItemKeys: Object.keys(payload[0] || {}).sort(),
+          hasRootQueue: Object.hasOwn(payload, "queue"),
+          isArray: Array.isArray(payload),
+          length: Array.isArray(payload) ? payload.length : 0,
+          validation
+        };
+      }, TEXT_TO_SPEECH_SAMPLE_PRESET_PATH);
+      expect(sampleJsonValidation).toEqual({
+        firstItemKeys: [...REQUIRED_TEXT2SPEACH_OPTION_FIELDS].sort(),
+        hasRootQueue: false,
+        isArray: true,
+        length: 3,
+        validation: { ok: true }
+      });
       const readySummary = JSON.parse(await page.locator("#text2speach-V2SpeechSummary").textContent());
       expect(readySummary.queue).toHaveLength(3);
       readySummary.queue.forEach((item) => {
@@ -1333,6 +1384,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queued: Hero ready; mode=append; en-GB; voice=Google UK English Female; rate=1\.5; pitch=1\.2; volume=0\.8; queuedItems=1\./);
       await expect(page.locator("#text2speach-V2SpeechSummary")).toContainText('"status": "speak-queued"');
       await selectTextToSpeechTile(page, "narrator-welcome");
+      await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("");
+      await page.locator("#text2speach-V2SpeechText").fill("Narrator replay line after empty text edit.");
+      await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
       await page.locator("#text2speach-V2QueueModeSelect").selectOption("append");
       await page.locator("#text2speach-V2SpeakButton").click();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech queued: Narrator welcome; mode=append; en-US; voice=Google US English; rate=1; pitch=1; volume=1; queuedItems=2\./);
@@ -1350,7 +1404,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         lang: "en-US",
         pitch: 1,
         rate: 1,
-        text: "Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.",
+        text: "Narrator replay line after empty text edit.",
         voiceName: "Google US English",
         volume: 1
       });
@@ -1471,7 +1525,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
   });
 
   test("populates text2speach-V2 voice dropdown when SpeechSynthesis voices arrive after load", async ({ page }) => {
-    const server = await openTextToSpeechTool(page, "", { voicesInitiallyAvailable: false });
+    const server = await openTextToSpeechTool(page, TEXT_TO_SPEECH_SAMPLE_QUERY, { voicesInitiallyAvailable: false });
     const pageErrors = [];
 
     page.on("pageerror", (error) => {
@@ -1503,7 +1557,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
   });
 
   test("includes unknown and neutral voices in text2speach-V2 preferred gender helper buckets", async ({ page }) => {
-    const server = await openTextToSpeechTool(page, "", { includeNeutralVoice: true });
+    const server = await openTextToSpeechTool(page, TEXT_TO_SPEECH_SAMPLE_QUERY, { includeNeutralVoice: true });
     const pageErrors = [];
 
     page.on("pageerror", (error) => {
@@ -1532,7 +1586,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
   });
 
   test("shapes text2speach-V2 Voice Age without filtering selected voices", async ({ page }) => {
-    const server = await openTextToSpeechTool(page, "", { includeAgeVoice: true });
+    const server = await openTextToSpeechTool(page, TEXT_TO_SPEECH_SAMPLE_QUERY, { includeAgeVoice: true });
     const pageErrors = [];
 
     page.on("pageerror", (error) => {
@@ -2814,10 +2868,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(asteroidsManifest.game.gameData.launch.directPath).toBe("/games/Asteroids/index.html");
       const manifestWorkspace = asteroidsManifest.game.workspace;
       expect(manifestWorkspace.documentKind).toBe("workspace-manifest");
-      expect(Object.keys(manifestWorkspace.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "vector-map-editor"]);
+      expect(Object.keys(manifestWorkspace.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "text2speach-V2", "vector-map-editor"]);
       expect(manifestWorkspace.repoRoot).toBe("HTML-JavaScript-Gaming");
       expect(manifestWorkspace.repoPath).toBe(manifestRepoPath(server));
       expect(manifestWorkspace.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
+      expect(manifestWorkspace.tools["text2speach-V2"]).toHaveLength(3);
       expect(Object.keys(manifestWorkspace.tools["asset-manager-v2"].assets)).toHaveLength(14);
       expect(manifestWorkspace.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
       expect(manifestWorkspace.tools["asset-manager-v2"].assets["assets.image.background.deluxe"]).toEqual({

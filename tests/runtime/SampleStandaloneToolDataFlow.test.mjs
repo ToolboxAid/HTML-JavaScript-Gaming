@@ -16,6 +16,22 @@ const isolatedPackageJsonPath = path.join(tmpRoot, "package.json");
 const browserProfileDir = path.join(tmpRoot, "sample-standalone-browser");
 
 const metadataPath = path.join(repoRoot, "samples", "metadata", "samples.index.metadata.json");
+const TEXT_TO_SPEECH_ROOT_ARRAY_TOOL_ID = "text2speach-V2";
+const TEXT_TO_SPEECH_REQUIRED_FIELDS = Object.freeze([
+  "id",
+  "name",
+  "text",
+  "gender",
+  "language",
+  "voice",
+  "voiceAge",
+  "volume",
+  "rate",
+  "pitch",
+  "queueMode",
+  "characterPreset",
+  "ssmlLikePreset"
+]);
 const DEBUG_PORT = 9226;
 
 let WebSocketCtor = null;
@@ -417,6 +433,43 @@ function appendPaletteContractFailures(parsed, rel, contractFailures) {
   });
 }
 
+function appendTextToSpeechContractFailures(parsed, rel, contractFailures) {
+  if (!Array.isArray(parsed)) {
+    contractFailures.push(`${rel}: Text to Speech V2 sample payload must be a root array.`);
+    return;
+  }
+  if (parsed.length < 1) {
+    contractFailures.push(`${rel}: Text to Speech V2 sample payload must contain at least one item.`);
+    return;
+  }
+
+  parsed.forEach((item, index) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      contractFailures.push(`${rel}: item ${index} must be an object.`);
+      return;
+    }
+    const extraFields = Object.keys(item).filter((key) => !TEXT_TO_SPEECH_REQUIRED_FIELDS.includes(key));
+    if (extraFields.length > 0) {
+      contractFailures.push(`${rel}: item ${index} contains unexpected fields (${extraFields.join(", ")}).`);
+    }
+    for (const field of TEXT_TO_SPEECH_REQUIRED_FIELDS) {
+      if (!Object.prototype.hasOwnProperty.call(item, field)) {
+        contractFailures.push(`${rel}: item ${index} is missing required field ${field}.`);
+      }
+    }
+    for (const field of ["id", "name", "text", "gender", "language", "voice", "voiceAge", "queueMode", "characterPreset", "ssmlLikePreset"]) {
+      if (Object.prototype.hasOwnProperty.call(item, field) && typeof item[field] !== "string") {
+        contractFailures.push(`${rel}: item ${index}.${field} must be a string.`);
+      }
+    }
+    for (const field of ["volume", "rate", "pitch"]) {
+      if (Object.prototype.hasOwnProperty.call(item, field) && (typeof item[field] !== "number" || !Number.isFinite(item[field]))) {
+        contractFailures.push(`${rel}: item ${index}.${field} must be a finite number.`);
+      }
+    }
+  });
+}
+
 function buildSchemaAudit(roundtripRows) {
   const sampleRoot = path.join(repoRoot, "samples");
   const jsonFiles = walkJsonFiles(sampleRoot);
@@ -446,6 +499,12 @@ function buildSchemaAudit(roundtripRows) {
   for (const filePath of toolPayloadFiles) {
     const parsed = readJson(filePath);
     const rel = toPosixPath(path.relative(repoRoot, filePath));
+    const presetRow = presetRows.find((row) => row.filePath === filePath);
+    if (presetRow?.toolId === TEXT_TO_SPEECH_ROOT_ARRAY_TOOL_ID) {
+      appendTextToSpeechContractFailures(parsed, rel, contractFailures);
+      continue;
+    }
+
     const schemaRef = parsed.$schema;
     const schemaPath = resolveSchemaPath(filePath, schemaRef);
     if (!schemaRef || typeof schemaRef !== "string") {

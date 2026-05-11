@@ -104,7 +104,7 @@ class TextToSpeechEngine {
     language = TEXT_TO_SPEECH_DEFAULTS.language,
     pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
     rate = TEXT_TO_SPEECH_DEFAULTS.rate,
-    text = TEXT_TO_SPEECH_DEFAULTS.sampleText,
+    text = "",
     voice = TEXT_TO_SPEECH_DEFAULTS.voice,
     volume = TEXT_TO_SPEECH_DEFAULTS.volume
   } = {}) {
@@ -156,7 +156,7 @@ class TextToSpeechEngine {
     speechItemId = "",
     speechItemName = "",
     ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
-    text = TEXT_TO_SPEECH_DEFAULTS.sampleText,
+    text = "",
     voice = TEXT_TO_SPEECH_DEFAULTS.voice,
     voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
     volume = TEXT_TO_SPEECH_DEFAULTS.volume

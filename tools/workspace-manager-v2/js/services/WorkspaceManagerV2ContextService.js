@@ -1,5 +1,3 @@
-import { TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA } from "../../../../src/engine/audio/TextToSpeechDefaults.js";
-
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
@@ -20,8 +18,7 @@ const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
 });
 const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   "preview-generator-v2",
-  "session-inspector-v2",
-  TEXT2SPEACH_V2_TOOL_KEY
+  "session-inspector-v2"
 ]));
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
@@ -795,9 +792,7 @@ export class WorkspaceManagerV2ContextService {
     if (isPlainObject(toolPayload)) {
       return clone(toolPayload);
     }
-    return tool.id === TEXT2SPEACH_V2_TOOL_KEY
-      ? clone(TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA)
-      : null;
+    return null;
   }
 
   dirtySessionForTool() {

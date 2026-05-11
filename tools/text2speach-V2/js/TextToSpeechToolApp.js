@@ -2,7 +2,6 @@ import {
   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
-  TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA,
   TEXT_TO_SPEECH_DEFAULTS,
   TEXT_TO_SPEECH_DISPLAY_NAME,
   TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
@@ -18,6 +17,7 @@ import {
 
 const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speach-V2";
 const TEXT_TO_SPEECH_SCHEMA_URL = `/${TEXT_TO_SPEECH_SCHEMA_ID}`;
+const TEXT_TO_SPEECH_URL_SOURCE_PARAM = "samplePresetPath";
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -313,45 +313,69 @@ export class TextToSpeechToolApp {
   }
 
   async loadQueue() {
-    const queueDataResult = this.queueData();
+    const queueDataResult = await this.queueData();
     if (!queueDataResult.ok) {
       this.statusLog.fail(queueDataResult.message);
+      this.clearRenderedQueue("load-failed");
       this.actionNav.setSpeakEnabled(false);
+      return;
+    }
+    if (queueDataResult.empty) {
+      this.clearRenderedQueue("empty");
+      this.statusLog.ok(queueDataResult.message);
       return;
     }
     const schemaResult = await this.loadPayloadSchema();
     if (!schemaResult.ok) {
       this.statusLog.fail(schemaResult.message);
+      this.clearRenderedQueue("load-failed");
       this.actionNav.setSpeakEnabled(false);
       return;
     }
     const schemaRef = String(queueDataResult.schemaRef || "");
     if (schemaRef && schemaRef !== TEXT_TO_SPEECH_SCHEMA_ID) {
       this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} payload from ${queueDataResult.sourcePath} uses ${schemaRef}; expected ${TEXT_TO_SPEECH_SCHEMA_ID}.`);
+      this.clearRenderedQueue("load-failed");
       this.actionNav.setSpeakEnabled(false);
       return;
     }
     const payloadValidation = this.validatePayload(queueDataResult.payload, queueDataResult.sourcePath);
     if (!payloadValidation.ok) {
       this.statusLog.fail(payloadValidation.message);
+      this.clearRenderedQueue("load-failed");
       this.actionNav.setSpeakEnabled(false);
       return;
     }
     const validation = validateQueue(queueDataResult.payload);
     if (!validation.ok) {
       this.statusLog.fail(validation.message);
+      this.clearRenderedQueue("load-failed");
       this.actionNav.setSpeakEnabled(false);
       return;
     }
     this.queueControl.populate(queueDataResult.payload);
     this.applyQueueItem(this.queueControl.selectedItem() || queueDataResult.payload[0], "queue-loaded");
     this.statusLog.ok(`Loaded ${TEXT_TO_SPEECH_DISPLAY_NAME} payload source: ${queueDataResult.sourcePath}.`);
+    if (queueDataResult.sourceKind === "url-json") {
+      this.statusLog.ok(`Loaded preset for ${TEXT_TO_SPEECH_DISPLAY_NAME}: ${queueDataResult.sourcePath}.`);
+    }
     this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} schema validation result: ${TEXT_TO_SPEECH_SCHEMA_ID} valid; queue=${queueDataResult.payload.length}.`);
     this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} dirty state: ${queueDataResult.dirtyState}.`);
     this.statusLog.ok(`Loaded ${queueDataResult.payload.length} schema-complete ${TEXT_TO_SPEECH_DISPLAY_NAME} queue items.`);
   }
 
-  queueData() {
+  clearRenderedQueue(status) {
+    this.queueControl.populate([]);
+    this.textInput.setText("", { emit: false });
+    this.refreshOutputSummary(status);
+  }
+
+  urlPayloadSourcePath() {
+    const params = new URLSearchParams(this.window.location.search);
+    return String(params.get(TEXT_TO_SPEECH_URL_SOURCE_PARAM) || "").trim();
+  }
+
+  async queueData() {
     if (this.hasWorkspaceLaunchIntent() && !this.isWorkspaceLaunch()) {
       return {
         ok: false,
@@ -359,13 +383,15 @@ export class TextToSpeechToolApp {
       };
     }
     if (!this.isWorkspaceLaunch()) {
-      return {
-        dirtyState: "direct launch default payload",
-        ok: true,
-        payload: TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA,
-        schemaRef: TEXT_TO_SPEECH_SCHEMA_ID,
-        sourcePath: "Text to Speech V2 default queue"
-      };
+      const samplePresetPath = this.urlPayloadSourcePath();
+      if (!samplePresetPath) {
+        return {
+          empty: true,
+          ok: true,
+          message: `${TEXT_TO_SPEECH_DISPLAY_NAME} empty launch: no ${TEXT_TO_SPEECH_URL_SOURCE_PARAM} URL JSON source, workspace payload, or imported JSON is loaded. Use Import JSON or open a sample JSON source to load named speech items.`
+        };
+      }
+      return this.queueDataFromUrlSource(samplePresetPath);
     }
     const rawToolState = this.window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
     if (!rawToolState) {
@@ -388,6 +414,28 @@ export class TextToSpeechToolApp {
       };
     } catch (error) {
       return { ok: false, message: `${WORKSPACE_TOOL_STATE_KEY} is invalid JSON: ${error.message}` };
+    }
+  }
+
+  async queueDataFromUrlSource(samplePresetPath) {
+    if (typeof this.window.fetch !== "function") {
+      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} URL JSON source failed: Fetch API is unavailable.` };
+    }
+    try {
+      const response = await this.window.fetch(samplePresetPath, { cache: "no-store" });
+      if (!response.ok) {
+        return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} URL JSON source ${samplePresetPath} failed: ${response.status}.` };
+      }
+      return {
+        dirtyState: `urlSource=${samplePresetPath}; isDirty=false`,
+        ok: true,
+        payload: await response.json(),
+        schemaRef: TEXT_TO_SPEECH_SCHEMA_ID,
+        sourceKind: "url-json",
+        sourcePath: samplePresetPath
+      };
+    } catch (error) {
+      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} URL JSON source ${samplePresetPath} failed: ${error.message}` };
     }
   }
 
@@ -420,7 +468,7 @@ export class TextToSpeechToolApp {
     return `${baseId}-${Date.now().toString(36)}`;
   }
 
-  speechItemFromControls({ id, name, text = this.textInput.text() || TEXT_TO_SPEECH_DEFAULTS.sampleText } = {}) {
+  speechItemFromControls({ id, name, text = this.textInput.text() } = {}) {
     const itemName = String(name || "").trim() || this.uniqueItemName("New speech item");
     return {
       id: id || this.uniqueItemId(itemName),

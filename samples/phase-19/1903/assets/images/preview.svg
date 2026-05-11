@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Text to Speech V2 JSON Source</title>
+  <desc id="desc">Sample preview card showing named speech JSON flowing into Text to Speech V2.</desc>
+  <rect width="640" height="360" fill="#0f172a"/>
+  <rect x="42" y="42" width="556" height="276" rx="18" fill="#111827" stroke="#38bdf8" stroke-width="4"/>
+  <text x="74" y="100" fill="#e5e7eb" font-family="Arial, sans-serif" font-size="34" font-weight="700">Text to Speech V2</text>
+  <text x="74" y="145" fill="#93c5fd" font-family="Arial, sans-serif" font-size="20">Root array JSON source</text>
+  <rect x="74" y="178" width="492" height="86" rx="10" fill="#020617" stroke="#334155" stroke-width="2"/>
+  <text x="102" y="214" fill="#c4b5fd" font-family="Consolas, monospace" font-size="19">[ narrator, hero, alert ]</text>
+  <path d="M118 290 C170 260 210 260 260 290 S350 320 404 290 S494 260 540 290" fill="none" stroke="#22d3ee" stroke-width="8" stroke-linecap="round"/>
+</svg>

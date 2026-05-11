@@ -104,68 +104,15 @@ const TEXT_TO_SPEECH_DEFAULT_OPTIONS = Object.freeze({
   volume: TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual.volume
 });
 
-const TEXT_TO_SPEECH_DEFAULT_QUEUE = Object.freeze([
-  Object.freeze({
-    ...TEXT_TO_SPEECH_DEFAULT_OPTIONS,
-    ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.narrator,
-    characterPreset: "narrator",
-    gender: "any",
-    id: "narrator-welcome",
-    language: "en-US",
-    name: "Narrator welcome",
-    text: "Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.",
-    voice: "mock-google-us-english",
-    voiceAge: "any"
-  }),
-  Object.freeze({
-    ...TEXT_TO_SPEECH_DEFAULT_OPTIONS,
-    ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.dramatic,
-    characterPreset: "dramatic",
-    gender: "male-preferred",
-    id: "hero-ready",
-    language: "en-GB",
-    name: "Hero ready",
-    pitch: 1.4,
-    queueMode: "append",
-    rate: 1.2,
-    text: "Systems ready. The hero prompt is queued for an upbeat menu confirmation.",
-    voice: "mock-google-uk-english-male",
-    voiceAge: "teen"
-  }),
-  Object.freeze({
-    ...TEXT_TO_SPEECH_DEFAULT_OPTIONS,
-    ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.alert,
-    characterPreset: "alert",
-    gender: "female-preferred",
-    id: "alert-warning",
-    language: "en-US",
-    name: "Alert warning",
-    pitch: 0.9,
-    queueMode: "replace",
-    rate: 1.3,
-    text: "Warning. Incoming hazard detected. Please confirm the next action.",
-    voice: "mock-microsoft-zira",
-    voiceAge: "adult",
-    volume: 0.9
-  })
-]);
-
-const TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA = TEXT_TO_SPEECH_DEFAULT_QUEUE;
-
 const TEXT_TO_SPEECH_DEFAULTS = Object.freeze({
-  ...TEXT_TO_SPEECH_DEFAULT_OPTIONS,
-  sampleText: TEXT_TO_SPEECH_DEFAULT_QUEUE[0].text
+  ...TEXT_TO_SPEECH_DEFAULT_OPTIONS
 });
-
-const TEXT_TO_SPEECH_SAMPLE_TEXT = TEXT_TO_SPEECH_DEFAULTS.sampleText;
 
 export {
   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
   TEXT_TO_SPEECH_DEFAULT_OPTIONS,
-  TEXT_TO_SPEECH_DEFAULT_QUEUE,
-  TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA,
   TEXT_TO_SPEECH_DEFAULTS,
   TEXT_TO_SPEECH_DISPLAY_NAME,
   TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
@@ -173,7 +120,6 @@ export {
   TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS,
   TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
-  TEXT_TO_SPEECH_SAMPLE_TEXT,
   TEXT_TO_SPEECH_SCHEMA_ID,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,

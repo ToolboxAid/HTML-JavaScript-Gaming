@@ -3441,6 +3441,25 @@
           "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
         }
       ]
+    },
+    {
+      "id": "1903",
+      "phase": "19",
+      "title": "Text to Speech V2 JSON Source",
+      "description": "Text to Speech V2 sample that opens the tool with an explicit root-array JSON source for named speech items.",
+      "href": "./phase-19/1903/index.html",
+      "tags": ["text-to-speech", "audio", "json-source", "schema", "tool"],
+      "thumbnail": "/samples/phase-19/1903/assets/images/preview.svg",
+      "preview": "/samples/phase-19/1903/assets/images/preview.svg",
+      "classValues": [],
+      "engineClassesUsed": [],
+      "toolHints": ["text2speach-V2"],
+      "roundtripToolPresets": [
+        {
+          "toolId": "text2speach-V2",
+          "presetPath": "/samples/phase-19/1903/sample.1903.text2speach-V2.json"
+        }
+      ]
     }
   ]
 }
