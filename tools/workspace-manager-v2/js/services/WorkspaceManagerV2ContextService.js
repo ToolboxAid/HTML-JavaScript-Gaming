@@ -56,7 +56,7 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
     group: "Utilities",
     id: TEXT2SPEACH_V2_TOOL_KEY,
-    name: "text2speach-V2",
+    name: "Text to Speech V2",
     path: "../text2speach-V2/index.html"
   }),
   Object.freeze({

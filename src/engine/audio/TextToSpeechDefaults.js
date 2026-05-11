@@ -1,6 +1,7 @@
 const TEXT_TO_SPEECH_TOOL_ID = "text2speach-V2";
 const TEXT_TO_SPEECH_SCHEMA_ID = "tools/schemas/tools/text2speach-V2.schema.json";
 const TEXT_TO_SPEECH_PAYLOAD_SCHEMA = "html-js-gaming.text2speach-V2";
+const TEXT_TO_SPEECH_DISPLAY_NAME = "Text to Speech V2";
 
 const TEXT_TO_SPEECH_LANGUAGE_OPTIONS = Object.freeze([
   Object.freeze({ label: "English (UK)", value: "en-GB" }),
@@ -68,7 +69,7 @@ const TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS = Object.freeze({
 const TEXT_TO_SPEECH_RANGE_DEFAULTS = Object.freeze({
   delayBetweenRepeatsMs: Object.freeze({ max: 5000, min: 0, step: 100, value: 0 }),
   pitch: Object.freeze({ max: 2, min: 0, step: 0.1, value: 1 }),
-  rate: Object.freeze({ max: 10, min: 0.1, step: 0.1, value: 1 }),
+  rate: Object.freeze({ max: 2, min: 0.1, step: 0.1, value: 1 }),
   volume: Object.freeze({ max: 1, min: 0, step: 0.01, value: 1 })
 });
 
@@ -85,6 +86,7 @@ const TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS = Object.freeze([
   "id",
   "name",
   "text",
+  "gender",
   "language",
   "voice",
   "voiceAge",
@@ -103,6 +105,7 @@ const TEXT_TO_SPEECH_DEFAULT_OPTIONS = Object.freeze({
   autoSpeak: false,
   characterPreset: "manual",
   delayBetweenRepeatsMs: TEXT_TO_SPEECH_RANGE_DEFAULTS.delayBetweenRepeatsMs.value,
+  gender: "any",
   language: "en-US",
   pitch: TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual.pitch,
   queueMode: "replace",
@@ -119,25 +122,50 @@ const TEXT_TO_SPEECH_DEFAULT_QUEUE = Object.freeze([
     ...TEXT_TO_SPEECH_DEFAULT_OPTIONS,
     ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.narrator,
     characterPreset: "narrator",
+    gender: "any",
     id: "narrator-welcome",
+    language: "en-US",
     name: "Narrator welcome",
-    text: "Welcome to Toolbox Aid. This is the default text2speach-V2 sample line for previewing narration, prompts, and menu feedback."
+    text: "Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.",
+    voice: "mock-google-us-english",
+    voiceAge: "any"
   }),
   Object.freeze({
     ...TEXT_TO_SPEECH_DEFAULT_OPTIONS,
     ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.dramatic,
+    autoSpeak: false,
     characterPreset: "dramatic",
+    delayBetweenRepeatsMs: 500,
+    gender: "male-preferred",
     id: "hero-ready",
+    language: "en-GB",
     name: "Hero ready",
-    text: "Systems ready. The hero prompt is queued for an upbeat menu confirmation."
+    pitch: 1.4,
+    queueMode: "append",
+    rate: 1.2,
+    repeatCount: 2,
+    text: "Systems ready. The hero prompt is queued for an upbeat menu confirmation.",
+    voice: "mock-google-uk-english-male",
+    voiceAge: "teen"
   }),
   Object.freeze({
     ...TEXT_TO_SPEECH_DEFAULT_OPTIONS,
     ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.alert,
+    autoSpeak: false,
     characterPreset: "alert",
+    delayBetweenRepeatsMs: 1000,
+    gender: "female-preferred",
     id: "alert-warning",
+    language: "en-US",
     name: "Alert warning",
-    text: "Warning. Incoming hazard detected. Please confirm the next action."
+    pitch: 0.9,
+    queueMode: "replace",
+    rate: 1.3,
+    repeatCount: 3,
+    text: "Warning. Incoming hazard detected. Please confirm the next action.",
+    voice: "mock-microsoft-zira",
+    voiceAge: "adult",
+    volume: 0.9
   })
 ]);
 
@@ -145,7 +173,7 @@ const TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA = Object.freeze({
   $schema: TEXT_TO_SPEECH_SCHEMA_ID,
   schema: TEXT_TO_SPEECH_PAYLOAD_SCHEMA,
   version: 1,
-  name: "text2speach-V2 default queue",
+  name: "Text to Speech V2 default queue",
   queue: TEXT_TO_SPEECH_DEFAULT_QUEUE
 });
 
@@ -164,6 +192,7 @@ export {
   TEXT_TO_SPEECH_DEFAULT_QUEUE,
   TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA,
   TEXT_TO_SPEECH_DEFAULTS,
+  TEXT_TO_SPEECH_DISPLAY_NAME,
   TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
   TEXT_TO_SPEECH_PAYLOAD_SCHEMA,

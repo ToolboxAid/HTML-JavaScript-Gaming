@@ -241,7 +241,7 @@ export class SpeechOptionsControl {
     this.syncOutputs();
   }
 
-  populateVoices(voiceOptions, selectedValue = "") {
+  populateVoices(voiceOptions, selectedValue = undefined) {
     this.voiceOptions = voiceOptions.map((option) => ({ ...option }));
     const languageResult = this.populateLanguages();
     const voiceResult = this.filterVoices(selectedValue);
@@ -315,7 +315,7 @@ export class SpeechOptionsControl {
     };
   }
 
-  filterVoices(selectedValue = "") {
+  filterVoices(selectedValue = undefined) {
     const ageFilter = this.ageFilterSelect.value;
     const ageLabel = ageFilterLabel(ageFilter);
     const genderFilter = this.genderFilterSelect.value;
@@ -381,7 +381,7 @@ export class SpeechOptionsControl {
         voiceCount
       };
     }
-    const requestedValue = selectedValue || previousValue;
+    const requestedValue = selectedValue === undefined ? previousValue : selectedValue;
     const requestedVoice = matchingVoiceOptions.find((option) => option.value === requestedValue);
     const selectedVoice = requestedVoice || matchingVoiceOptions[0];
     populateSelect(this.voiceSelect, matchingVoiceOptions, selectedVoice.value);
@@ -451,6 +451,10 @@ export class SpeechOptionsControl {
 
   setValue(value) {
     this.sliderOverrides = { pitch: false, rate: false, volume: false };
+    this.genderFilterSelect.value = String(value.gender);
+    if (this.voiceOptions.length > 0) {
+      this.populateLanguages();
+    }
     this.ageFilterSelect.value = String(value.voiceAge || "any");
     this.languageSelect.value = String(value.language);
     this.queueModeSelect.value = String(value.queueMode);
@@ -462,8 +466,9 @@ export class SpeechOptionsControl {
     this.pitchSlider.value = String(value.pitch);
     this.delayBetweenRepeatsMsSlider.value = String(value.delayBetweenRepeatsMs);
     this.autoSpeakCheckbox.checked = value.autoSpeak === true;
-    if (value.voice && Array.from(this.voiceSelect.options).some((option) => option.value === value.voice)) {
-      this.voiceSelect.value = value.voice;
+    this.voiceSelect.value = "";
+    if (value.voice && Array.from(this.voiceSelect.options).some((option) => option.value === String(value.voice))) {
+      this.voiceSelect.value = String(value.voice);
     }
     this.syncOutputs();
   }
@@ -488,6 +493,7 @@ export class SpeechOptionsControl {
       autoSpeak: this.autoSpeakCheckbox.checked,
       characterPreset: this.characterPresetSelect.value,
       delayBetweenRepeatsMs: numberValue(this.delayBetweenRepeatsMsSlider),
+      gender: this.genderFilterSelect.value,
       language: this.languageSelect.value,
       pitch: numberValue(this.pitchSlider),
       queueMode: this.queueModeSelect.value,

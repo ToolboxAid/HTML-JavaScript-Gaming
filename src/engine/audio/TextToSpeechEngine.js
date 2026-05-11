@@ -1,4 +1,8 @@
-import { TEXT_TO_SPEECH_DEFAULTS } from "./TextToSpeechDefaults.js";
+import {
+  TEXT_TO_SPEECH_DEFAULTS,
+  TEXT_TO_SPEECH_DISPLAY_NAME,
+  TEXT_TO_SPEECH_RANGE_DEFAULTS
+} from "./TextToSpeechDefaults.js";
 
 function finiteNumber(value, fallback) {
   const number = Number(value);
@@ -119,18 +123,22 @@ class TextToSpeechEngine {
 
     const normalizedText = String(text || "").trim();
     if (!normalizedText) {
-      return { message: "text2speach-V2 text is required before speaking.", ok: false };
+      return { message: `${TEXT_TO_SPEECH_DISPLAY_NAME} text is required before speaking.`, ok: false };
     }
 
     const selectedVoice = this.voiceForValue(voice);
     if (!selectedVoice) {
-      return { message: `text2speach-V2 voice is required before speaking: ${voice || "(none selected)"}.`, ok: false };
+      return { message: `${TEXT_TO_SPEECH_DISPLAY_NAME} voice is required before speaking: ${voice || "(none selected)"}.`, ok: false };
     }
 
     const utterance = new this.Utterance(normalizedText);
     utterance.lang = String(language || selectedVoice.lang || TEXT_TO_SPEECH_DEFAULTS.language);
     utterance.pitch = boundedNumber(pitch, { fallback: TEXT_TO_SPEECH_DEFAULTS.pitch, max: 2, min: 0 });
-    utterance.rate = boundedNumber(rate, { fallback: TEXT_TO_SPEECH_DEFAULTS.rate, max: 10, min: 0.1 });
+    utterance.rate = boundedNumber(rate, {
+      fallback: TEXT_TO_SPEECH_DEFAULTS.rate,
+      max: TEXT_TO_SPEECH_RANGE_DEFAULTS.rate.max,
+      min: TEXT_TO_SPEECH_RANGE_DEFAULTS.rate.min
+    });
     utterance.volume = boundedNumber(volume, { fallback: TEXT_TO_SPEECH_DEFAULTS.volume, max: 1, min: 0 });
     utterance.voice = selectedVoice;
     return {
@@ -160,6 +168,7 @@ class TextToSpeechEngine {
     autoSpeak = TEXT_TO_SPEECH_DEFAULTS.autoSpeak,
     characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
     delayBetweenRepeatsMs = TEXT_TO_SPEECH_DEFAULTS.delayBetweenRepeatsMs,
+    gender = TEXT_TO_SPEECH_DEFAULTS.gender,
     language = TEXT_TO_SPEECH_DEFAULTS.language,
     pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
     queueMode = TEXT_TO_SPEECH_DEFAULTS.queueMode,
@@ -180,7 +189,7 @@ class TextToSpeechEngine {
       this.clearScheduledRepeats();
       this.speechSynthesis.cancel();
     } else if (queueMode !== "append") {
-      return { message: `Unsupported text2speach-V2 queueMode: ${queueMode}.`, ok: false };
+      return { message: `Unsupported ${TEXT_TO_SPEECH_DISPLAY_NAME} queueMode: ${queueMode}.`, ok: false };
     }
 
     this.loopCanceled = false;
@@ -215,6 +224,7 @@ class TextToSpeechEngine {
       autoSpeak: autoSpeak === true,
       characterPreset,
       delayBetweenRepeatsMs: boundedNumber(delayBetweenRepeatsMs, { fallback: 0, max: 60000, min: 0 }),
+      gender,
       language: firstUtterance.utterance.lang,
       ok: true,
       pitch: firstUtterance.utterance.pitch,

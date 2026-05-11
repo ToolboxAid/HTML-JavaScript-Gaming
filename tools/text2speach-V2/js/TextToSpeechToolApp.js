@@ -4,6 +4,7 @@ import {
   TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
   TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA,
   TEXT_TO_SPEECH_DEFAULTS,
+  TEXT_TO_SPEECH_DISPLAY_NAME,
   TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
   TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS,
@@ -23,15 +24,15 @@ function isPlainObject(value) {
 
 function validateQueue(queue) {
   if (!Array.isArray(queue) || queue.length === 0) {
-    return { message: "text2speach-V2 queue must contain at least one speech item.", ok: false };
+    return { message: `${TEXT_TO_SPEECH_DISPLAY_NAME} queue must contain at least one speech item.`, ok: false };
   }
   for (const [index, item] of queue.entries()) {
     if (!isPlainObject(item)) {
-      return { message: `text2speach-V2 queue item ${index + 1} must be an object.`, ok: false };
+      return { message: `${TEXT_TO_SPEECH_DISPLAY_NAME} queue item ${index + 1} must be an object.`, ok: false };
     }
     const missingFields = TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS.filter((field) => !Object.prototype.hasOwnProperty.call(item, field));
     if (missingFields.length > 0) {
-      return { message: `text2speach-V2 queue item ${item.name || index + 1} is missing required options: ${missingFields.join(", ")}.`, ok: false };
+      return { message: `${TEXT_TO_SPEECH_DISPLAY_NAME} queue item ${item.name || index + 1} is missing required options: ${missingFields.join(", ")}.`, ok: false };
     }
   }
   return { ok: true };
@@ -117,9 +118,9 @@ export class TextToSpeechToolApp {
     this.refreshOutputSummary("ready");
     this.refreshActionState();
     if (this.engine.isSupported()) {
-      this.statusLog.ok("text2speach-V2 ready. SpeechSynthesis is available.");
+      this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} ready. SpeechSynthesis is available.`);
     } else {
-      this.statusLog.fail("text2speach-V2 unavailable: SpeechSynthesis is not available in this browser.");
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} unavailable: SpeechSynthesis is not available in this browser.`);
     }
   }
 
@@ -138,7 +139,7 @@ export class TextToSpeechToolApp {
     }
     this.queueControl.populate(queueData.queue);
     this.applyQueueItem(this.queueControl.selectedItem() || queueData.queue[0], "queue-loaded");
-    this.statusLog.ok(`Loaded ${queueData.queue.length} schema-complete text2speach-V2 queue items.`);
+    this.statusLog.ok(`Loaded ${queueData.queue.length} schema-complete ${TEXT_TO_SPEECH_DISPLAY_NAME} queue items.`);
   }
 
   queueData() {
@@ -159,8 +160,8 @@ export class TextToSpeechToolApp {
     }
   }
 
-  refreshVoices(source = "initial") {
-    const result = this.speechOptions.populateVoices(this.engine.voiceOptions(), this.speechOptions.value().voice);
+  refreshVoices(source = "initial", selectedVoice = undefined) {
+    const result = this.speechOptions.populateVoices(this.engine.voiceOptions(), selectedVoice);
     if (result.matchingVoiceCount > 0) {
       const action = source === "voiceschanged"
         ? "Updated"
@@ -168,13 +169,13 @@ export class TextToSpeechToolApp {
       const voiceScope = result.genderFilter === "any"
         ? `${result.voiceCount} voices`
         : `${result.filteredVoiceCount} ${result.filterLabel} voices from ${result.voiceCount} total`;
-      this.statusLog.ok(`${action} ${result.matchingVoiceCount} matching SpeechSynthesis voices for text2speach-V2 (${voiceScope}; ${result.languageCount} languages; gender=${result.genderFilterLabel}; age=${result.ageFilterLabel}; language=${result.language}).`);
+      this.statusLog.ok(`${action} ${result.matchingVoiceCount} matching SpeechSynthesis voices for ${TEXT_TO_SPEECH_DISPLAY_NAME} (${voiceScope}; ${result.languageCount} languages; gender=${result.genderFilterLabel}; age=${result.ageFilterLabel}; language=${result.language}).`);
     } else {
       const message = result.voiceCount === 0
-        ? "text2speach-V2 voice dropdown has no SpeechSynthesis voices; waiting for voiceschanged. Speak is disabled."
+        ? `${TEXT_TO_SPEECH_DISPLAY_NAME} voice dropdown has no SpeechSynthesis voices; waiting for voiceschanged. Speak is disabled.`
         : result.filteredVoiceCount === 0
-          ? `text2speach-V2 voice dropdown has no ${result.filterLabel} SpeechSynthesis voices; choose another Gender. Speak is disabled.`
-        : `text2speach-V2 voice dropdown has no SpeechSynthesis voices matching ${result.language}; voice selection cleared. Speak is disabled.`;
+          ? `${TEXT_TO_SPEECH_DISPLAY_NAME} voice dropdown has no ${result.filterLabel} SpeechSynthesis voices; choose another Gender. Speak is disabled.`
+        : `${TEXT_TO_SPEECH_DISPLAY_NAME} voice dropdown has no SpeechSynthesis voices matching ${result.language}; voice selection cleared. Speak is disabled.`;
       this.statusLog.fail(message);
     }
     if (result.languageAdjusted) {
@@ -202,13 +203,13 @@ export class TextToSpeechToolApp {
 
   applyQueueItem(item, status) {
     if (!item) {
-      this.statusLog.fail("text2speach-V2 queue selection failed: no speech item is selected.");
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} queue selection failed: no speech item is selected.`);
       return;
     }
     this.textInput.setText(item.text);
     this.speechOptions.setValue(item);
     if (status !== "queue-loaded") {
-      this.refreshVoices(status);
+      this.refreshVoices(status, item.voice);
     }
     this.refreshOutputSummary(status);
   }

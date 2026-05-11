@@ -3,10 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>text2speach-V2</title>
+    <title>Text to Speech V2</title>
     <link rel="stylesheet" href="../../src/engine/theme/main.css">
     <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
     <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="../common/toolShellCommon.css">
     <link rel="stylesheet" href="./styles/text2speach-V2.css">
     <script type="module" src="./js/bootstrap.js"></script>
   </head>
@@ -15,17 +16,20 @@
       <summary class="is-collapsible__summary" data-tool-summary="text2speach-V2">Hide Header and Details</summary>
       <div class="is-collapsible__content">
         <div id="shared-theme-header"></div>
-        <div class="text2speach-V2__header" data-tool-header="text2speach-V2">
+        <div class="tool-shell-common__header-frame text2speach-V2__header" data-tool-header="text2speach-V2">
           <section class="tools-platform-frame text2speach-V2__local-shell-frame">
             <div class="tools-platform-frame__accordion-content">
               <div class="tools-platform-frame__accordion-summary">
                 <div class="tools-platform-frame__summary-copy">
-                  <h1 class="tools-platform-frame__title" data-tool-id="text2speach-V2">text2speach-V2</h1>
+                  <h1 class="tools-platform-frame__title" data-tool-id="text2speach-V2">Text to Speech V2</h1>
                   <h2 class="tools-platform-frame__eyebrow">Browser speech synthesis</h2>
                 </div>
                 <div class="tools-platform-frame__summary-meta">
-                  <div class="tools-platform-frame__meta">Configure voices, helper filters, presets, queue behavior, and runtime playback.</div>
+                  <div class="tools-platform-frame__meta">Configure voices, helper filters, presets, named sentences, queue behavior, and runtime playback.</div>
                 </div>
+              </div>
+              <div class="tools-platform-frame__topline">
+                <p class="tools-platform-frame__description">Preview speech lines for narration, prompts, and menu feedback with schema-valid named sentence options.</p>
               </div>
             </div>
           </section>
@@ -37,7 +41,7 @@
       <aside class="text2speach-V2__panel text2speach-V2__panel--left" aria-label="Speech input">
         <section class="accordion-v2 text2speach-V2__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2QueueContent">
-            <span>Speech Queue</span>
+            <span>Named Sentences</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="text2speach-V2QueueContent" class="accordion-v2__content">
