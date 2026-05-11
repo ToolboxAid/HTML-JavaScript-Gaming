@@ -537,6 +537,10 @@ export class WorkspaceManagerV2App {
     if (assetSummary) {
       this.statusLog.info(`Refreshed asset-manager-v2 from workspace.tools.asset-manager-v2.data: ${assetSummary.assetCount} managed assets; Dirty: ${assetSummary.dirtyStatus}.`);
     }
+    const textToSpeechSummary = this.activeToolStateRefresh?.toolSummaries?.["text2speach-V2"];
+    if (textToSpeechSummary) {
+      this.statusLog.info(`Loaded text2speach-V2 from ${this.activeGame?.manifestPath || "(missing manifest path)"} via workspace.tools.text2speach-V2.data: ${textToSpeechSummary.speechQueueCount} queue items; Schema validation: valid; Dirty: ${textToSpeechSummary.dirtyStatus}.`);
+    }
   }
 
   async restoreReturnFromToolState() {
@@ -710,6 +714,10 @@ export class WorkspaceManagerV2App {
       context: baseContext,
       tools: this.contextService.workspaceLaunchableTools()
     });
+    const refreshedValidation = await this.contextService.validateGeneratedManifest(sessionRefresh.context);
+    if (!refreshedValidation.ok) {
+      return { ok: false, message: refreshedValidation.message };
+    }
     const metrics = this.contextSummaryMetrics(sessionRefresh.context);
     this.applyContextResult({
       assetCount: metrics.assetCount,
@@ -822,6 +830,8 @@ export class WorkspaceManagerV2App {
     }))}.`);
     this.statusLog.ok(`Save source binding: ${writeResult.source}.`);
     this.statusLog.ok(`Saved path: ${writeResult.path}.`);
+    this.statusLog.ok(`Text to Speech V2 manifest write-back target: ${writeResult.path}.`);
+    this.statusLog.info(`Saved Text to Speech V2 payload count: ${context.tools?.["text2speach-V2"]?.queue?.length || 0}.`);
     this.statusLog.ok(`Save write validation: ${writeResult.changeValidation}.`);
     this.statusLog.info(`Saved file size: ${writeResult.fileSize} bytes.`);
     this.statusLog.info(`Saved toolState items: ${writeResult.toolStateItemCount} (${writeResult.toolStateDetails.join("; ")}).`);

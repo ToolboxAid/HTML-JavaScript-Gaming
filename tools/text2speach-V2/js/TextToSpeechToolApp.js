@@ -10,12 +10,14 @@ import {
   TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS,
   TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
+  TEXT_TO_SPEECH_SCHEMA_ID,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
   TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
 } from "../../../src/engine/audio/TextToSpeechDefaults.js";
 
 const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speach-V2";
+const TEXT_TO_SPEECH_SCHEMA_URL = `/${TEXT_TO_SPEECH_SCHEMA_ID}`;
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -50,18 +52,121 @@ function validateQueue(queue) {
   return { ok: true };
 }
 
-function withoutLegacyPlaybackFields(item) {
-  const currentItem = { ...item };
-  const removedLegacyFields = Object.prototype.hasOwnProperty.call(currentItem, "delayBetweenRepeatsMs")
-    || Object.prototype.hasOwnProperty.call(currentItem, "repeatCount")
-    || Object.prototype.hasOwnProperty.call(currentItem, "autoSpeak");
-  delete currentItem.delayBetweenRepeatsMs;
-  delete currentItem.repeatCount;
-  delete currentItem.autoSpeak;
-  return {
-    item: currentItem,
-    removedLegacyFields
-  };
+function schemaProperties(schema) {
+  return isPlainObject(schema?.properties) ? schema.properties : {};
+}
+
+function missingRequiredFields(value, schema) {
+  return (Array.isArray(schema?.required) ? schema.required : [])
+    .filter((key) => !Object.prototype.hasOwnProperty.call(value, key));
+}
+
+function resolvePointer(schema, pointer) {
+  if (!pointer || pointer === "#") {
+    return schema;
+  }
+  if (!pointer.startsWith("#/")) {
+    return null;
+  }
+  return pointer
+    .slice(2)
+    .split("/")
+    .map((segment) => segment.replace(/~1/g, "/").replace(/~0/g, "~"))
+    .reduce((node, key) => (node && typeof node === "object" ? node[key] : undefined), schema) || null;
+}
+
+function typeMatches(value, expectedType) {
+  if (expectedType === "object") {
+    return isPlainObject(value);
+  }
+  if (expectedType === "array") {
+    return Array.isArray(value);
+  }
+  if (expectedType === "integer") {
+    return Number.isInteger(value);
+  }
+  if (expectedType === "number") {
+    return typeof value === "number" && Number.isFinite(value);
+  }
+  if (expectedType === "string") {
+    return typeof value === "string";
+  }
+  if (expectedType === "boolean") {
+    return typeof value === "boolean";
+  }
+  if (expectedType === "null") {
+    return value === null;
+  }
+  return true;
+}
+
+function validateSchemaValue(value, schema, pointer, rootSchema = schema) {
+  if (!isPlainObject(schema)) {
+    return [];
+  }
+  if (typeof schema.$ref === "string") {
+    const referencedSchema = resolvePointer(rootSchema, schema.$ref);
+    return referencedSchema
+      ? validateSchemaValue(value, referencedSchema, pointer, rootSchema)
+      : [`${pointer}: unresolved schema reference ${schema.$ref}`];
+  }
+
+  const errors = [];
+  const expectedTypes = Array.isArray(schema.type) ? schema.type : (schema.type ? [schema.type] : []);
+  if (expectedTypes.length && !expectedTypes.some((type) => typeMatches(value, type))) {
+    errors.push(`${pointer}: expected ${expectedTypes.join(" or ")}`);
+    return errors;
+  }
+  if (Object.prototype.hasOwnProperty.call(schema, "const") && value !== schema.const) {
+    errors.push(`${pointer}: expected ${JSON.stringify(schema.const)}`);
+  }
+  if (Array.isArray(schema.enum) && !schema.enum.includes(value)) {
+    errors.push(`${pointer}: expected one of ${schema.enum.map((entry) => JSON.stringify(entry)).join(", ")}`);
+  }
+  if (typeof value === "string") {
+    if (Number.isFinite(schema.minLength) && value.length < schema.minLength) {
+      errors.push(`${pointer}: must be at least ${schema.minLength} characters`);
+    }
+    if (Number.isFinite(schema.maxLength) && value.length > schema.maxLength) {
+      errors.push(`${pointer}: must be no more than ${schema.maxLength} characters`);
+    }
+    if (typeof schema.pattern === "string" && !(new RegExp(schema.pattern).test(value))) {
+      errors.push(`${pointer}: must match ${schema.pattern}`);
+    }
+  }
+  if ((typeof value === "number" || Number.isInteger(value)) && Number.isFinite(schema.minimum) && value < schema.minimum) {
+    errors.push(`${pointer}: must be greater than or equal to ${schema.minimum}`);
+  }
+  if ((typeof value === "number" || Number.isInteger(value)) && Number.isFinite(schema.maximum) && value > schema.maximum) {
+    errors.push(`${pointer}: must be less than or equal to ${schema.maximum}`);
+  }
+  if (Array.isArray(value)) {
+    if (Number.isInteger(schema.minItems) && value.length < schema.minItems) {
+      errors.push(`${pointer}: must contain at least ${schema.minItems} item${schema.minItems === 1 ? "" : "s"}`);
+    }
+    if (Number.isInteger(schema.maxItems) && value.length > schema.maxItems) {
+      errors.push(`${pointer}: must contain no more than ${schema.maxItems} item${schema.maxItems === 1 ? "" : "s"}`);
+    }
+    if (isPlainObject(schema.items)) {
+      value.forEach((item, index) => {
+        errors.push(...validateSchemaValue(item, schema.items, `${pointer}[${index}]`, rootSchema));
+      });
+    }
+  }
+  if (isPlainObject(value)) {
+    const properties = schemaProperties(schema);
+    missingRequiredFields(value, schema).forEach((key) => {
+      errors.push(`${pointer}.${key} is required`);
+    });
+    Object.entries(value).forEach(([key, childValue]) => {
+      if (isPlainObject(properties[key])) {
+        errors.push(...validateSchemaValue(childValue, properties[key], `${pointer}.${key}`, rootSchema));
+      } else if (schema.additionalProperties === false) {
+        errors.push(`${pointer}.${key} is not allowed`);
+      }
+    });
+  }
+  return errors;
 }
 
 export class TextToSpeechToolApp {
@@ -84,9 +189,10 @@ export class TextToSpeechToolApp {
     this.textInput = textInput;
     this.window = windowRef;
     this.isApplyingQueueItem = false;
+    this.payloadSchema = null;
   }
 
-  start() {
+  async start() {
     this.speechOptions.populate({
       ageFilterOptions: TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
       characterPresetOptions: TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
@@ -142,7 +248,7 @@ export class TextToSpeechToolApp {
       }
     });
     this.statusLog.mount();
-    this.loadQueue();
+    await this.loadQueue();
     this.refreshVoices();
     this.engine.onVoicesChanged(() => {
       this.refreshVoices("voiceschanged");
@@ -159,42 +265,119 @@ export class TextToSpeechToolApp {
 
   isWorkspaceLaunch() {
     const params = new URLSearchParams(this.window.location.search);
+    return params.get("launch") === "workspace"
+      && params.get("fromTool") === "workspace-manager-v2"
+      && Boolean(params.get("hostContextId"));
+  }
+
+  hasWorkspaceLaunchIntent() {
+    const params = new URLSearchParams(this.window.location.search);
     return params.get("launch") === "workspace" && params.get("fromTool") === "workspace-manager-v2";
   }
 
-  loadQueue() {
-    const queueData = this.queueData();
-    const migration = this.queueWithoutLegacyPlaybackFields(queueData.queue);
-    const validation = validateQueue(migration.queue);
+  async loadPayloadSchema() {
+    if (this.payloadSchema) {
+      return { ok: true, schema: this.payloadSchema };
+    }
+    if (typeof this.window.fetch !== "function") {
+      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} schema validation failed: Fetch API is unavailable.` };
+    }
+    try {
+      const response = await this.window.fetch(TEXT_TO_SPEECH_SCHEMA_URL, { cache: "no-store" });
+      if (!response.ok) {
+        return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} schema validation failed: ${TEXT_TO_SPEECH_SCHEMA_URL} returned ${response.status}.` };
+      }
+      const schema = await response.json();
+      if (!isPlainObject(schema)) {
+        return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} schema validation failed: ${TEXT_TO_SPEECH_SCHEMA_URL} did not return a schema object.` };
+      }
+      this.payloadSchema = schema;
+      return { ok: true, schema };
+    } catch (error) {
+      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} schema validation failed: ${error.message}` };
+    }
+  }
+
+  validatePayload(payload, sourcePath) {
+    const errors = validateSchemaValue(payload, this.payloadSchema, "root", this.payloadSchema);
+    return errors.length
+      ? { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} payload from ${sourcePath} failed ${TEXT_TO_SPEECH_SCHEMA_ID} validation: ${errors.join(" | ")}` }
+      : { ok: true };
+  }
+
+  async loadQueue() {
+    const queueDataResult = this.queueData();
+    if (!queueDataResult.ok) {
+      this.statusLog.fail(queueDataResult.message);
+      this.actionNav.setSpeakEnabled(false);
+      return;
+    }
+    const schemaResult = await this.loadPayloadSchema();
+    if (!schemaResult.ok) {
+      this.statusLog.fail(schemaResult.message);
+      this.actionNav.setSpeakEnabled(false);
+      return;
+    }
+    const schemaRef = String(queueDataResult.schemaRef || "");
+    if (schemaRef && schemaRef !== TEXT_TO_SPEECH_SCHEMA_ID) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} payload from ${queueDataResult.sourcePath} uses ${schemaRef}; expected ${TEXT_TO_SPEECH_SCHEMA_ID}.`);
+      this.actionNav.setSpeakEnabled(false);
+      return;
+    }
+    const payloadValidation = this.validatePayload(queueDataResult.payload, queueDataResult.sourcePath);
+    if (!payloadValidation.ok) {
+      this.statusLog.fail(payloadValidation.message);
+      this.actionNav.setSpeakEnabled(false);
+      return;
+    }
+    const validation = validateQueue(queueDataResult.payload.queue);
     if (!validation.ok) {
       this.statusLog.fail(validation.message);
       this.actionNav.setSpeakEnabled(false);
       return;
     }
-    this.queueControl.populate(migration.queue);
-    this.applyQueueItem(this.queueControl.selectedItem() || migration.queue[0], "queue-loaded");
-    this.statusLog.ok(`Loaded ${migration.queue.length} schema-complete ${TEXT_TO_SPEECH_DISPLAY_NAME} queue items.`);
-    if (migration.removedLegacyFieldCount > 0) {
-      this.statusLog.ok(`Migrated ${migration.removedLegacyFieldCount} ${TEXT_TO_SPEECH_DISPLAY_NAME} queue item(s): ignored legacy playback fields.`);
-      this.markWorkspaceDirty("legacy-playback-fields-migrated", ["queue"]);
-    }
+    this.queueControl.populate(queueDataResult.payload.queue);
+    this.applyQueueItem(this.queueControl.selectedItem() || queueDataResult.payload.queue[0], "queue-loaded");
+    this.statusLog.ok(`Loaded ${TEXT_TO_SPEECH_DISPLAY_NAME} payload source: ${queueDataResult.sourcePath}.`);
+    this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} schema validation result: ${TEXT_TO_SPEECH_SCHEMA_ID} valid; queue=${queueDataResult.payload.queue.length}.`);
+    this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} dirty state: ${queueDataResult.dirtyState}.`);
+    this.statusLog.ok(`Loaded ${queueDataResult.payload.queue.length} schema-complete ${TEXT_TO_SPEECH_DISPLAY_NAME} queue items.`);
   }
 
   queueData() {
+    if (this.hasWorkspaceLaunchIntent() && !this.isWorkspaceLaunch()) {
+      return {
+        ok: false,
+        message: `${TEXT_TO_SPEECH_DISPLAY_NAME} workspace launch requires hostContextId before loading workspace toolState.`
+      };
+    }
     if (!this.isWorkspaceLaunch()) {
-      return TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA;
+      return {
+        dirtyState: "direct launch default payload",
+        ok: true,
+        payload: TEXT_TO_SPEECH_DEFAULT_QUEUE_DATA,
+        schemaRef: TEXT_TO_SPEECH_SCHEMA_ID,
+        sourcePath: "Text to Speech V2 default queue"
+      };
     }
     const rawToolState = this.window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
     if (!rawToolState) {
-      this.statusLog.fail(`Workspace launch missing ${WORKSPACE_TOOL_STATE_KEY}; queue cannot render.`);
-      return { queue: [] };
+      return { ok: false, message: `Workspace launch missing ${WORKSPACE_TOOL_STATE_KEY}; queue cannot render.` };
     }
     try {
       const toolState = JSON.parse(rawToolState);
-      return isPlainObject(toolState?.data) ? toolState.data : { queue: [] };
+      if (!isPlainObject(toolState?.data)) {
+        return { ok: false, message: `${WORKSPACE_TOOL_STATE_KEY}.data must contain the ${TEXT_TO_SPEECH_DISPLAY_NAME} payload before render.` };
+      }
+      return {
+        dirtyState: `isDirty=${toolState.dirty?.isDirty === true}; reason=${toolState.dirty?.reason || "clean"}`,
+        ok: true,
+        payload: toolState.data,
+        schemaRef: toolState.schema?.schemaRef || "",
+        sourcePath: toolState.workspace?.gameManifestPath || toolState.workspace?.boundManifestPath || WORKSPACE_TOOL_STATE_KEY
+      };
     } catch (error) {
-      this.statusLog.fail(`${WORKSPACE_TOOL_STATE_KEY} is invalid JSON: ${error.message}`);
-      return { queue: [] };
+      return { ok: false, message: `${WORKSPACE_TOOL_STATE_KEY} is invalid JSON: ${error.message}` };
     }
   }
 
@@ -225,26 +408,6 @@ export class TextToSpeechToolApp {
       }
     }
     return `${baseId}-${Date.now().toString(36)}`;
-  }
-
-  queueWithoutLegacyPlaybackFields(queue) {
-    if (!Array.isArray(queue)) {
-      return { queue: [], removedLegacyFieldCount: 0 };
-    }
-    let removedLegacyFieldCount = 0;
-    return {
-      queue: queue.map((item) => {
-        if (!isPlainObject(item)) {
-          return item;
-        }
-        const result = withoutLegacyPlaybackFields(item);
-        if (result.removedLegacyFields) {
-          removedLegacyFieldCount += 1;
-        }
-        return result.item;
-      }),
-      removedLegacyFieldCount
-    };
   }
 
   speechItemFromControls({ id, name, text = this.textInput.text() || TEXT_TO_SPEECH_DEFAULTS.sampleText } = {}) {
@@ -292,12 +455,20 @@ export class TextToSpeechToolApp {
         this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${WORKSPACE_TOOL_STATE_KEY} is not an object.`);
         return;
       }
+      const nextData = {
+        ...(isPlainObject(toolState.data) ? toolState.data : {}),
+        queue: this.queueControl.selectedQueue()
+      };
+      if (this.payloadSchema) {
+        const validation = this.validatePayload(nextData, toolState.workspace?.gameManifestPath || WORKSPACE_TOOL_STATE_KEY);
+        if (!validation.ok) {
+          this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${validation.message}`);
+          return;
+        }
+      }
       this.window.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify({
         ...toolState,
-        data: {
-          ...(isPlainObject(toolState.data) ? toolState.data : {}),
-          queue: this.queueControl.selectedQueue()
-        },
+        data: nextData,
         dirty: {
           isDirty: true,
           reason,
@@ -305,6 +476,8 @@ export class TextToSpeechToolApp {
           changedKeys
         }
       }));
+      this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} dirty state: true; reason=${reason}; changedKeys=${changedKeys.join(", ")}; queue=${nextData.queue.length}.`);
+      this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} manifest write-back target: ${toolState.workspace?.gameManifestPath || "(missing manifest path)"}.`);
     } catch (error) {
       this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${error.message}`);
     }

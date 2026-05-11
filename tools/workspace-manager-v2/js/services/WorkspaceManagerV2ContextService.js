@@ -304,7 +304,16 @@ function validateSchemaValue(value, schema, pointer, rootSchema = schema) {
   if ((typeof value === "number" || Number.isInteger(value)) && Number.isFinite(schema.minimum) && value < schema.minimum) {
     errors.push(`${pointer}: must be greater than or equal to ${schema.minimum}`);
   }
+  if ((typeof value === "number" || Number.isInteger(value)) && Number.isFinite(schema.maximum) && value > schema.maximum) {
+    errors.push(`${pointer}: must be less than or equal to ${schema.maximum}`);
+  }
   if (Array.isArray(value)) {
+    if (Number.isInteger(schema.minItems) && value.length < schema.minItems) {
+      errors.push(`${pointer}: must contain at least ${schema.minItems} item${schema.minItems === 1 ? "" : "s"}`);
+    }
+    if (Number.isInteger(schema.maxItems) && value.length > schema.maxItems) {
+      errors.push(`${pointer}: must contain no more than ${schema.maxItems} item${schema.maxItems === 1 ? "" : "s"}`);
+    }
     if (isPlainObject(schema.items)) {
       value.forEach((item, index) => {
         errors.push(...validateSchemaValue(item, schema.items, `${pointer}[${index}]`, rootSchema));

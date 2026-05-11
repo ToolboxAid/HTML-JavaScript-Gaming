@@ -1,0 +1,99 @@
+# PR_26130_018-text-to-speech-v2-workspace-save-contract
+
+## Summary
+
+Updated Text to Speech V2 and Workspace Manager V2 integration so workspace-launched speech payloads use `tools/schemas/tools/text2speach-V2.schema.json` as the strict load/save contract. Invalid payload drift is rejected before Text to Speech V2 queue render and before Workspace Manager V2 Save.
+
+## Scope
+
+- Tools fixed: Text to Speech V2 and Workspace Manager V2 integration.
+- Failing behavior before: Text to Speech V2 workspace payloads were shape-checked but not fully schema-validated before render, and Workspace Manager V2 did not enforce maximum numeric schema ranges in its local validator.
+- Remaining failures after this PR: none known in scope.
+- Out of scope: non-browser speech backends, sample JSON alignment, and full samples smoke validation.
+
+## Changes
+
+- `tools/text2speach-V2/js/TextToSpeechToolApp.js`
+  - Requires `hostContextId` for workspace launches.
+  - Loads `tools/schemas/tools/text2speach-V2.schema.json` before queue render.
+  - Validates workspace payloads before rendering queue tiles or hydrating speech controls.
+  - Rejects drift fields such as `autoSpeak`, `repeatCount`, and `delayBetweenRepeats`.
+  - Validates edited payload data before writing it back to `workspace.tools.text2speach-V2`.
+  - Logs loaded source path, schema validation result, dirty state, and manifest write-back target.
+- `tools/text2speach-V2/js/bootstrap.js`
+  - Handles async Text to Speech V2 startup with visible failure logging.
+- `tools/text2speach-V2/js/controls/ActionNavControl.js`
+  - Shows workspace controls only for complete Workspace Manager launches with `hostContextId`.
+- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+  - Enforces JSON schema `maximum`, `minItems`, and `maxItems` in the local validator.
+- `tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+  - Validates refreshed tool session payloads before Save applies/render-refreshes the save context.
+  - Logs Text to Speech V2 source/payload counts during hydration and Save.
+  - Logs Text to Speech V2 manifest write-back target and saved queue count.
+- `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
+  - Adds coverage for workspace launch controls, strict schema rejection, no partial invalid render, return context preservation, payload write-back, and game manifest persistence.
+
+## Playwright
+
+Playwright impacted: Yes.
+
+Validated behavior:
+- Workspace-launched Text to Speech V2 shows workspace controls and Return to Workspace only when `hostContextId` is present.
+- Return to Workspace preserves the active Workspace Manager V2 context and dirty Text to Speech V2 toolState data.
+- Text to Speech V2 rejects invalid workspace payload drift before rendering queue tiles.
+- Schema contract checks confirm root and queue item `additionalProperties: false`.
+- Required item fields, enum values, and volume/rate/pitch maximum ranges are enforced.
+- Removed fields `autoSpeak`, `repeatCount`, and `delayBetweenRepeats` are rejected.
+- Text to Speech V2 edits update `workspace.tools.text2speach-V2`.
+- Workspace Manager V2 Save persists edited Text to Speech V2 payload into `game.manifest.json`.
+
+Expected pass behavior:
+- Valid manifest payloads render and save normally.
+- Edited Text to Speech V2 queue data is saved back into `game.workspace.tools["text2speach-V2"]`.
+- Save logs source binding, write-back target, saved payload count, file size, item details, and validation result.
+
+Expected fail behavior:
+- Invalid Text to Speech V2 payloads do not render queue tiles.
+- Workspace Manager V2 Save is blocked when Text to Speech V2 toolState data contains schema drift.
+- No manifest write occurs when schema validation fails.
+
+## Validation
+
+- PASS: `node --check tools/text2speach-V2/js/TextToSpeechToolApp.js`
+- PASS: `node --check tools/text2speach-V2/js/bootstrap.js`
+- PASS: `node --check tools/text2speach-V2/js/controls/ActionNavControl.js`
+- PASS: `node --check tools/workspace-manager-v2/js/WorkspaceManagerV2App.js`
+- PASS: `node --check tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- PASS: `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
+- PASS: `tools/schemas/tools/text2speach-V2.schema.json` parsed with `JSON.parse`.
+- PASS: `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list -g "Text to Speech V2|text2speach-V2"` passed 7 tests.
+- PASS: `npm run test:workspace-v2` passed 30 tests.
+- PASS: `git diff --check HEAD -- .` passed with only Windows line-ending warnings.
+- PASS: HTML restriction scans found no inline event handlers or inline styles; only external module scripts are present.
+- PASS: Forbidden-scope scan found no `tools/shared`, `imageDataUrl`, or `start_of_day` matches in changed implementation/test scopes.
+
+## Coverage
+
+Playwright V8 coverage was generated by the required Workspace V2 run.
+
+- `(75%) tools/text2speach-V2/js/bootstrap.js - changed JS file with browser V8 coverage`
+- `(88%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - changed JS file with browser V8 coverage`
+- `(91%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - changed JS file with browser V8 coverage`
+- `(97%) tools/text2speach-V2/js/TextToSpeechToolApp.js - changed JS file with browser V8 coverage`
+- `(100%) tools/text2speach-V2/js/controls/ActionNavControl.js - changed JS file with browser V8 coverage`
+
+## Full Samples Smoke Test
+
+Skipped. This PR changes Text to Speech V2 workspace payload validation and Workspace Manager V2 save integration only. It does not modify shared sample loading, sample JSON, broad game launch behavior, or shared sample runtime paths.
+
+## Manual Validation
+
+1. Open Workspace Manager V2 and pick the repo folder.
+2. Select Asteroids and launch Text to Speech V2.
+3. Confirm the workspace action row includes Speak, Pause, Resume, Stop, and Return to Workspace.
+4. Edit a named speech item and return to Workspace Manager V2.
+5. Confirm Text to Speech V2 is marked dirty, then Save.
+6. Confirm the status log includes the manifest write-back target and saved Text to Speech V2 payload count.
+7. Confirm the saved `game.manifest.json` contains the edited `game.workspace.tools["text2speach-V2"].queue` data.
+
+Expected outcome: valid payload edits persist to the active game manifest; invalid drift fields are rejected before render or Save.

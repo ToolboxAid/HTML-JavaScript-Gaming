@@ -76,6 +76,8 @@ window.addEventListener("DOMContentLoaded", () => {
     })
   });
 
-  app.start();
   window["__text2speach-V2App"] = app;
+  void app.start().catch((error) => {
+    app.statusLog?.fail?.(`Text to Speech V2 startup failed: ${error.message}`);
+  });
 });
