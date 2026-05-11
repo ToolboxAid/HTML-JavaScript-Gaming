@@ -89,6 +89,13 @@
   text-align: right;
 }
 
+.text2speach-V2__pitch-helper {
+  color: var(--text-muted, #cbd5e1);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
 .text2speach-V2__details {
   margin-top: -4px;
   margin-bottom: 12px;

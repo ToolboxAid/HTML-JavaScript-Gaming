@@ -50,8 +50,8 @@ function ageFilterLabel(value) {
   if (value === "child") {
     return "Child";
   }
-  if (value === "elder") {
-    return "Elder";
+  if (value === "elderly") {
+    return "Elderly";
   }
   if (value === "teen") {
     return "Teen";

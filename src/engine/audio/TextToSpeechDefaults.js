@@ -20,7 +20,7 @@ const TEXT_TO_SPEECH_AGE_FILTER_OPTIONS = Object.freeze([
   Object.freeze({ label: "Any", value: "any" }),
   Object.freeze({ label: "Adult", value: "adult" }),
   Object.freeze({ label: "Child", value: "child" }),
-  Object.freeze({ label: "Elder", value: "elder" }),
+  Object.freeze({ label: "Elderly", value: "elderly" }),
   Object.freeze({ label: "Teen", value: "teen" })
 ]);
 
@@ -28,7 +28,7 @@ const TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS = Object.freeze({
   adult: Object.freeze({ pitchOffset: 0, rateMultiplier: 1 }),
   any: Object.freeze({ pitchOffset: 0, rateMultiplier: 1 }),
   child: Object.freeze({ pitchOffset: 0.4, rateMultiplier: 1.15 }),
-  elder: Object.freeze({ pitchOffset: -0.2, rateMultiplier: 0.85 }),
+  elderly: Object.freeze({ pitchOffset: -0.2, rateMultiplier: 0.85 }),
   teen: Object.freeze({ pitchOffset: 0.2, rateMultiplier: 1.08 })
 });
 

@@ -21,10 +21,10 @@
               <div class="tools-platform-frame__accordion-summary">
                 <div class="tools-platform-frame__summary-copy">
                   <h1 class="tools-platform-frame__title" data-tool-id="text2speach-V2">text2speach-V2</h1>
-                  <h2 class="tools-platform-frame__eyebrow">Speech synthesis controls</h2>
+                  <h2 class="tools-platform-frame__eyebrow">Browser speech synthesis</h2>
                 </div>
                 <div class="tools-platform-frame__summary-meta">
-                  <div class="tools-platform-frame__meta">Configure browser voices, language filters, character presets, and speech controls.</div>
+                  <div class="tools-platform-frame__meta">Configure voices, helper filters, presets, queue behavior, and runtime playback.</div>
                 </div>
               </div>
             </div>
@@ -110,6 +110,7 @@
             <label class="text2speach-V2__field" for="text2speach-V2PitchSlider">
               <span>Pitch <output id="text2speach-V2PitchOutput" for="text2speach-V2PitchSlider"></output></span>
               <input id="text2speach-V2PitchSlider" type="range">
+              <span id="text2speach-V2PitchHelperScale" class="text2speach-V2__pitch-helper">Male &lt; Neutral &gt; Female</span>
             </label>
             <nav class="text2speach-V2__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
               <button id="text2speach-V2SpeakButton" type="button" disabled>Speak</button>

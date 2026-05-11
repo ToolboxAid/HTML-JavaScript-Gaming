@@ -30,6 +30,7 @@ No `start_of_day` files were changed.
   15. Speak / Pause / Resume / Stop
 - Moved Text into the ordered Speech Options flow.
 - Moved Speak/Pause/Resume/Stop to the end of the ordered control flow.
+- Aligned the `text2speach-V2` second header line with the other V2 tool header pattern: concise context in the eyebrow, operational detail in the meta line.
 - Changed Gender to a helper filter with `Any`, `Male Preferred`, and `Female Preferred`.
 - Included unknown and explicit neutral voices in both preferred Gender buckets so language coverage is not lost.
 - Removed claims of true gender transformation from behavior/logging; Gender is logged as a helper filter only.
@@ -56,6 +57,7 @@ Playwright impacted: Yes.
 Coverage added/updated for:
 
 - exact control ordering from Gender through Speak/Pause/Resume/Stop
+- header eyebrow/meta copy matching the V2 tool header pattern
 - Gender-to-Language filtering through preferred helper buckets
 - unknown and explicit neutral voices remaining available under preferred Gender helper buckets
 - Language-to-Voice filtering within the selected Gender helper bucket
@@ -67,9 +69,9 @@ Coverage added/updated for:
 - Voice Age shaping without filtering or clearing the selected Language/Voice
 - Auto Speak and runtime queue action behavior already covered by the speech action path
 
-Expected pass behavior: controls appear in the requested order, Gender helper filters keep unknown/neutral voices available in preferred buckets, Language narrows Voice choices within the selected Gender helper, invalid selected voices are adjusted and logged, presets visibly update sliders, manual slider edits are preserved against later derived shaping, and runtime speech actions still target the current queue/options.
+Expected pass behavior: header copy follows the other V2 tools' eyebrow/meta pattern, controls appear in the requested order, Gender helper filters keep unknown/neutral voices available in preferred buckets, Language narrows Voice choices within the selected Gender helper, invalid selected voices are adjusted and logged, presets visibly update sliders, manual slider edits are preserved against later derived shaping, and runtime speech actions still target the current queue/options.
 
-Expected fail behavior: tests fail if order regresses, Gender loses unknown/neutral voices, Language/Voice filtering breaks, invalid voice reset is silent, preset slider updates stop applying, manual slider edits are overwritten by later Voice Age shaping, Auto Speak no longer queues valid playback, or Speak/Pause/Resume/Stop stop operating on the runtime queue.
+Expected fail behavior: tests fail if the header copy regresses, order regresses, Gender loses unknown/neutral voices, Language/Voice filtering breaks, invalid voice reset is silent, preset slider updates stop applying, manual slider edits are overwritten by later Voice Age shaping, Auto Speak no longer queues valid playback, or Speak/Pause/Resume/Stop stop operating on the runtime queue.
 
 ## Validation
 
@@ -111,7 +113,7 @@ Skipped. The full samples smoke test is intentionally out of scope because this 
 Repo-structured delta ZIP:
 
 ```text
-tmp/PR_26130_011-text2speach-v2-control-dependency-order_delta.zip
+tmp/PR_26130_011-text2speach-v2-control-dependency-order-header_delta.zip
 ```
 
 ## Manual Validation Steps

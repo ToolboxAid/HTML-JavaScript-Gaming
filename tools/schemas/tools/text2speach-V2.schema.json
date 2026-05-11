@@ -74,7 +74,7 @@
         },
         "voiceAge": {
           "type": "string",
-          "enum": ["any", "adult", "child", "elder", "teen"]
+          "enum": ["any", "adult", "child", "elderly", "teen"]
         },
         "volume": {
           "type": "number",

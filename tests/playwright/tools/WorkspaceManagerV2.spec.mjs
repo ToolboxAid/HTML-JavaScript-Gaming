@@ -91,7 +91,7 @@ const MOCK_TEXT2SPEACH_EN_US_DETAILS = "4 voices match Any / en-US: Google US En
 
 const MOCK_TEXT2SPEACH_GENDER_FILTER_VALUES = ["any", "male-preferred", "female-preferred"];
 
-const MOCK_TEXT2SPEACH_AGE_FILTER_VALUES = ["any", "adult", "child", "elder", "teen"];
+const MOCK_TEXT2SPEACH_AGE_FILTER_VALUES = ["any", "adult", "child", "elderly", "teen"];
 
 const MOCK_TEXT2SPEACH_FEMALE_LANGUAGE_VALUES = [
   "de-DE",
@@ -952,8 +952,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     try {
       await expect(page.locator("body[data-tool-id='text2speach-V2']")).toBeVisible();
       await expect(page.locator("h1")).toHaveText("text2speach-V2");
-      await expect(page.locator(".text2speach-V2__header .tools-platform-frame__eyebrow")).toHaveText("Speech synthesis controls");
-      await expect(page.locator(".text2speach-V2__header .tools-platform-frame__meta")).toHaveText("Configure browser voices, language filters, character presets, and speech controls.");
+      await expect(page.locator(".text2speach-V2__header .tools-platform-frame__eyebrow")).toHaveText("Browser speech synthesis");
+      await expect(page.locator(".text2speach-V2__header .tools-platform-frame__meta")).toHaveText("Configure voices, helper filters, presets, queue behavior, and runtime playback.");
       await expect(page.locator(".text2speach-V2__header .tools-platform-frame__description")).toHaveCount(0);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeHidden();
@@ -1012,6 +1012,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveAttribute("max", "2");
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveAttribute("step", "0.1");
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1");
+      const pitchHelperScale = page.locator("#text2speach-V2PitchHelperScale");
+      await expect(page.locator("#text2speach-V2PitchSlider + #text2speach-V2PitchHelperScale")).toBeVisible();
+      await expect(pitchHelperScale).toHaveText("Male < Neutral > Female");
+      expect(await pitchHelperScale.evaluate((node) => getComputedStyle(node).textAlign)).toBe("center");
+      const pitchSliderBox = await page.locator("#text2speach-V2PitchSlider").boundingBox();
+      const pitchHelperBox = await pitchHelperScale.boundingBox();
+      expect(pitchSliderBox).not.toBeNull();
+      expect(pitchHelperBox).not.toBeNull();
+      expect(pitchHelperBox.y).toBeGreaterThan(pitchSliderBox.y);
       await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveAttribute("min", "0");
       await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveAttribute("max", "5000");
       await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveAttribute("step", "100");
@@ -1070,6 +1079,22 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1.2");
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-us-english");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Any; rate=1\.1; pitch=1\.2\./);
+      await page.locator("#text2speach-V2AgeFilterSelect").selectOption("teen");
+      await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1.2");
+      await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1.4");
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Teen; rate=1\.2; pitch=1\.4\./);
+      await page.locator("#text2speach-V2AgeFilterSelect").selectOption("adult");
+      await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1.1");
+      await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1.2");
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Adult; rate=1\.1; pitch=1\.2\./);
+      await page.locator("#text2speach-V2AgeFilterSelect").selectOption("elderly");
+      await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("0.9");
+      await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1");
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Elderly; rate=0\.9; pitch=1\./);
+      await page.locator("#text2speach-V2AgeFilterSelect").selectOption("any");
+      await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1.1");
+      await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1.2");
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Any; rate=1\.1; pitch=1\.2\./);
       await page.locator("#text2speach-V2VoiceSelect").selectOption("mock-microsoft-zira");
       await page.locator("#text2speach-V2GenderFilterSelect").selectOption("male-preferred");
