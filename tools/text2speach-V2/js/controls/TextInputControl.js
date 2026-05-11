@@ -11,9 +11,11 @@ export class TextInputControl {
     });
   }
 
-  setText(text) {
+  setText(text, { emit = true } = {}) {
     this.input.value = String(text || "");
-    this.onInput(this.text());
+    if (emit) {
+      this.onInput(this.text());
+    }
   }
 
   text() {

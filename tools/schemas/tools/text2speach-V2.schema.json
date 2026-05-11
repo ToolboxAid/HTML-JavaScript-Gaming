@@ -93,7 +93,7 @@
         },
         "pitch": {
           "type": "number",
-          "minimum": 0,
+          "minimum": 0.1,
           "maximum": 2
         },
         "queueMode": {
@@ -113,7 +113,7 @@
         },
         "characterPreset": {
           "type": "string",
-          "enum": ["manual", "alert", "calm", "dramatic", "narrator", "robot"]
+          "enum": ["manual", "alert", "calm", "dnd-dungeon-master", "dramatic", "narrator", "robot"]
         },
         "ssmlLikePreset": {
           "type": "string",

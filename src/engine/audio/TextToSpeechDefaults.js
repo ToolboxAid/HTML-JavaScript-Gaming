@@ -49,6 +49,7 @@ const TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS = Object.freeze([
   Object.freeze({ label: "Manual", value: "manual" }),
   Object.freeze({ label: "Alert", value: "alert" }),
   Object.freeze({ label: "Calm", value: "calm" }),
+  Object.freeze({ label: "D&D Dungeon Master", value: "dnd-dungeon-master" }),
   Object.freeze({ label: "Dramatic", value: "dramatic" }),
   Object.freeze({ label: "Narrator", value: "narrator" }),
   Object.freeze({ label: "Robot", value: "robot" })
@@ -68,7 +69,7 @@ const TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS = Object.freeze({
 
 const TEXT_TO_SPEECH_RANGE_DEFAULTS = Object.freeze({
   delayBetweenRepeatsMs: Object.freeze({ max: 5000, min: 0, step: 100, value: 0 }),
-  pitch: Object.freeze({ max: 2, min: 0, step: 0.1, value: 1 }),
+  pitch: Object.freeze({ max: 2, min: 0.1, step: 0.1, value: 1 }),
   rate: Object.freeze({ max: 2, min: 0.1, step: 0.1, value: 1 }),
   volume: Object.freeze({ max: 1, min: 0, step: 0.01, value: 1 })
 });
@@ -76,6 +77,7 @@ const TEXT_TO_SPEECH_RANGE_DEFAULTS = Object.freeze({
 const TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS = Object.freeze({
   alert: Object.freeze({ pitch: 0.9, rate: 1.3, ssmlLikePreset: "normal", volume: 1 }),
   calm: Object.freeze({ pitch: 1, rate: 0.8, ssmlLikePreset: "normal", volume: 1 }),
+  "dnd-dungeon-master": Object.freeze({ pitch: 0.7, rate: 0.9, ssmlLikePreset: "normal", volume: 1 }),
   dramatic: Object.freeze({ pitch: 1.2, rate: 1.1, ssmlLikePreset: "normal", volume: 1 }),
   manual: Object.freeze({ pitch: 1, rate: 1, ssmlLikePreset: "normal", volume: 1 }),
   narrator: Object.freeze({ pitch: 1, rate: 1, ssmlLikePreset: "normal", volume: 1 }),

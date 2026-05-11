@@ -89,10 +89,10 @@ function voicesForGender(voiceOptions, genderFilter) {
     return voiceOptions;
   }
   if (genderFilter === "male-preferred") {
-    return voiceOptions.filter((option) => voiceGender(option) !== "female");
+    return voiceOptions.filter((option) => ["male", "neutral", "unknown"].includes(voiceGender(option)));
   }
   if (genderFilter === "female-preferred") {
-    return voiceOptions.filter((option) => voiceGender(option) !== "male");
+    return voiceOptions.filter((option) => ["female", "neutral", "unknown"].includes(voiceGender(option)));
   }
   return voiceOptions;
 }
@@ -451,7 +451,7 @@ export class SpeechOptionsControl {
 
   setValue(value) {
     this.sliderOverrides = { pitch: false, rate: false, volume: false };
-    this.genderFilterSelect.value = String(value.gender);
+    this.genderFilterSelect.value = String(value.gender || "any");
     if (this.voiceOptions.length > 0) {
       this.populateLanguages();
     }

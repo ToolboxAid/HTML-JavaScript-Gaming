@@ -42,11 +42,13 @@ window.addEventListener("DOMContentLoaded", () => {
     }),
     engine: new TextToSpeechEngine(),
     outputSummary: new OutputSummaryControl({
-      preview: requireElement("#text2speach-V2SpeechPreview"),
       summary: requireElement("#text2speach-V2SpeechSummary")
     }),
     queueControl: new QueueControl({
-      queueSelect: requireElement("#text2speach-V2QueueSelect")
+      addButton: requireElement("#text2speach-V2AddItemButton"),
+      deleteButton: requireElement("#text2speach-V2DeleteItemButton"),
+      duplicateButton: requireElement("#text2speach-V2DuplicateItemButton"),
+      queueTiles: requireElement("#text2speach-V2QueueTiles")
     }),
     speechOptions: new SpeechOptionsControl({
       ageFilterSelect: requireElement("#text2speach-V2AgeFilterSelect"),

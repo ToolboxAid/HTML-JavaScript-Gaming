@@ -22,6 +22,19 @@ function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function slugFromName(name) {
+  const slug = String(name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug || "speech-item";
+}
+
 function validateQueue(queue) {
   if (!Array.isArray(queue) || queue.length === 0) {
     return { message: `${TEXT_TO_SPEECH_DISPLAY_NAME} queue must contain at least one speech item.`, ok: false };
@@ -57,6 +70,7 @@ export class TextToSpeechToolApp {
     this.statusLog = statusLog;
     this.textInput = textInput;
     this.window = windowRef;
+    this.isApplyingQueueItem = false;
   }
 
   start() {
@@ -84,10 +98,17 @@ export class TextToSpeechToolApp {
       onStop: () => this.stop()
     });
     this.queueControl.mount({
-      onChange: (item) => this.applyQueueItem(item, "queue-item-selected")
+      onAdd: () => this.addSpeechItem(),
+      onChange: (item) => this.applyQueueItem(item, "queue-item-selected"),
+      onDelete: () => this.deleteSpeechItem(),
+      onDuplicate: () => this.duplicateSpeechItem()
     });
     this.textInput.mount({
       onInput: () => {
+        if (this.isApplyingQueueItem) {
+          return;
+        }
+        this.syncSelectedItemFromControls("text-updated", ["text"]);
         this.refreshOutputSummary("text-updated");
         this.speakIfAuto();
       }
@@ -104,6 +125,7 @@ export class TextToSpeechToolApp {
           const options = this.speechOptions.value();
           this.statusLog.ok(`SSML-like preset applied: ${options.ssmlLikePreset}; rate=${options.rate}; pitch=${options.pitch}; volume=${options.volume}.`);
         }
+        this.syncSelectedItemFromControls("settings-updated", [controlId || "speechOptions"]);
         this.refreshOutputSummary("settings-updated");
         this.speakIfAuto();
       }
@@ -160,6 +182,153 @@ export class TextToSpeechToolApp {
     }
   }
 
+  uniqueItemName(baseName) {
+    const existingNames = new Set(this.queueControl.selectedQueue().map((item) => item.name));
+    if (!existingNames.has(baseName)) {
+      return baseName;
+    }
+    for (let index = 2; index < 1000; index += 1) {
+      const candidate = `${baseName} ${index}`;
+      if (!existingNames.has(candidate)) {
+        return candidate;
+      }
+    }
+    return `${baseName} ${Date.now().toString(36)}`;
+  }
+
+  uniqueItemId(baseName) {
+    const existingIds = new Set(this.queueControl.selectedQueue().map((item) => item.id));
+    const baseId = slugFromName(baseName);
+    if (!existingIds.has(baseId)) {
+      return baseId;
+    }
+    for (let index = 2; index < 1000; index += 1) {
+      const candidate = `${baseId}-${index}`;
+      if (!existingIds.has(candidate)) {
+        return candidate;
+      }
+    }
+    return `${baseId}-${Date.now().toString(36)}`;
+  }
+
+  speechItemFromControls({ id, name, text = this.textInput.text() || TEXT_TO_SPEECH_DEFAULTS.sampleText } = {}) {
+    const itemName = name || this.uniqueItemName("New speech item");
+    return {
+      id: id || this.uniqueItemId(itemName),
+      name: itemName,
+      text,
+      ...this.speechOptions.value()
+    };
+  }
+
+  selectedItemFromControls() {
+    const selectedItem = this.queueControl.selectedItem();
+    if (!selectedItem) {
+      return null;
+    }
+    return this.speechItemFromControls({
+      id: selectedItem.id,
+      name: selectedItem.name
+    });
+  }
+
+  syncSelectedItemFromControls(reason, changedKeys) {
+    const item = this.selectedItemFromControls();
+    if (!item) {
+      return;
+    }
+    this.queueControl.replaceSelectedItem(item);
+    this.markWorkspaceDirty(reason, changedKeys);
+  }
+
+  markWorkspaceDirty(reason, changedKeys) {
+    if (!this.isWorkspaceLaunch()) {
+      return;
+    }
+    const rawToolState = this.window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
+    if (!rawToolState) {
+      this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: missing ${WORKSPACE_TOOL_STATE_KEY}.`);
+      return;
+    }
+    try {
+      const toolState = JSON.parse(rawToolState);
+      if (!isPlainObject(toolState)) {
+        this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${WORKSPACE_TOOL_STATE_KEY} is not an object.`);
+        return;
+      }
+      this.window.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify({
+        ...toolState,
+        data: {
+          ...(isPlainObject(toolState.data) ? toolState.data : {}),
+          queue: this.queueControl.selectedQueue()
+        },
+        dirty: {
+          isDirty: true,
+          reason,
+          changedAt: new Date().toISOString(),
+          changedKeys
+        }
+      }));
+    } catch (error) {
+      this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${error.message}`);
+    }
+  }
+
+  addSpeechItem() {
+    const name = this.uniqueItemName("New speech item");
+    const item = this.speechItemFromControls({
+      id: this.uniqueItemId(name),
+      name,
+      text: "New speech line."
+    });
+    this.queueControl.addItem(item);
+    this.applyQueueItem(item, "queue-item-added");
+    this.markWorkspaceDirty("speech-item-added", [`queue.${item.id}`]);
+    this.statusLog.ok(`Added speech item: ${item.name}.`);
+  }
+
+  duplicateSpeechItem() {
+    const selectedItem = this.selectedItemFromControls();
+    if (!selectedItem) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} duplicate failed: no named sentence is selected.`);
+      return;
+    }
+    this.queueControl.replaceSelectedItem(selectedItem);
+    const name = this.uniqueItemName(`${selectedItem.name} copy`);
+    const item = {
+      ...clone(selectedItem),
+      id: this.uniqueItemId(name),
+      name
+    };
+    this.queueControl.addItem(item);
+    this.applyQueueItem(item, "queue-item-duplicated");
+    this.markWorkspaceDirty("speech-item-duplicated", [`queue.${item.id}`]);
+    this.statusLog.ok(`Duplicated speech item: ${item.name}.`);
+  }
+
+  deleteSpeechItem() {
+    const selectedItem = this.queueControl.selectedItem();
+    if (!selectedItem) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} delete failed: no named sentence is selected.`);
+      return;
+    }
+    const replacementItem = this.queueControl.selectedQueue().length === 1
+      ? this.speechItemFromControls({
+        id: this.uniqueItemId("New speech item"),
+        name: this.uniqueItemName("New speech item"),
+        text: "New speech line."
+      })
+      : null;
+    const nextItem = this.queueControl.deleteSelectedItem(replacementItem);
+    if (!nextItem) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} delete failed: no replacement named sentence is available.`);
+      return;
+    }
+    this.applyQueueItem(nextItem, "queue-item-deleted");
+    this.markWorkspaceDirty("speech-item-deleted", ["queue"]);
+    this.statusLog.ok(`Deleted speech item: ${selectedItem.name}.`);
+  }
+
   refreshVoices(source = "initial", selectedVoice = undefined) {
     const result = this.speechOptions.populateVoices(this.engine.voiceOptions(), selectedVoice);
     if (result.matchingVoiceCount > 0) {
@@ -206,8 +375,13 @@ export class TextToSpeechToolApp {
       this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} queue selection failed: no speech item is selected.`);
       return;
     }
-    this.textInput.setText(item.text);
-    this.speechOptions.setValue(item);
+    this.isApplyingQueueItem = true;
+    try {
+      this.textInput.setText(item.text, { emit: false });
+      this.speechOptions.setValue(item);
+    } finally {
+      this.isApplyingQueueItem = false;
+    }
     if (status !== "queue-loaded") {
       this.refreshVoices(status, item.voice);
     }

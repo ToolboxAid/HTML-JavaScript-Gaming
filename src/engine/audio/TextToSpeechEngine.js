@@ -133,7 +133,11 @@ class TextToSpeechEngine {
 
     const utterance = new this.Utterance(normalizedText);
     utterance.lang = String(language || selectedVoice.lang || TEXT_TO_SPEECH_DEFAULTS.language);
-    utterance.pitch = boundedNumber(pitch, { fallback: TEXT_TO_SPEECH_DEFAULTS.pitch, max: 2, min: 0 });
+    utterance.pitch = boundedNumber(pitch, {
+      fallback: TEXT_TO_SPEECH_DEFAULTS.pitch,
+      max: TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch.max,
+      min: TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch.min
+    });
     utterance.rate = boundedNumber(rate, {
       fallback: TEXT_TO_SPEECH_DEFAULTS.rate,
       max: TEXT_TO_SPEECH_RANGE_DEFAULTS.rate.max,

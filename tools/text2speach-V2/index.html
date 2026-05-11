@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../../src/engine/theme/main.css">
     <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
     <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
-    <link rel="stylesheet" href="../common/toolShellCommon.css">
     <link rel="stylesheet" href="./styles/text2speach-V2.css">
     <script type="module" src="./js/bootstrap.js"></script>
   </head>
@@ -16,7 +15,7 @@
       <summary class="is-collapsible__summary" data-tool-summary="text2speach-V2">Hide Header and Details</summary>
       <div class="is-collapsible__content">
         <div id="shared-theme-header"></div>
-        <div class="tool-shell-common__header-frame text2speach-V2__header" data-tool-header="text2speach-V2">
+        <div data-text2speach-v2-header>
           <section class="tools-platform-frame text2speach-V2__local-shell-frame">
             <div class="tools-platform-frame__accordion-content">
               <div class="tools-platform-frame__accordion-summary">
@@ -39,19 +38,6 @@
 
     <main class="text2speach-V2 app-shell" data-tool-id="text2speach-V2">
       <aside class="text2speach-V2__panel text2speach-V2__panel--left" aria-label="Speech input">
-        <section class="accordion-v2 text2speach-V2__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2QueueContent">
-            <span>Named Sentences</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="text2speach-V2QueueContent" class="accordion-v2__content">
-            <label class="text2speach-V2__field" for="text2speach-V2QueueSelect">
-              <span>Named sentence</span>
-              <select id="text2speach-V2QueueSelect"></select>
-            </label>
-          </div>
-        </section>
-
         <section class="accordion-v2 text2speach-V2__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2SpeechOptionsContent">
             <span>Speech Options</span>
@@ -83,10 +69,6 @@
               <span>SSML-like preset</span>
               <select id="text2speach-V2SsmlLikePresetSelect"></select>
             </label>
-            <label class="text2speach-V2__field" for="text2speach-V2SpeechText">
-              <span>Text</span>
-              <textarea id="text2speach-V2SpeechText" rows="8" autocomplete="off"></textarea>
-            </label>
             <label class="text2speach-V2__field" for="text2speach-V2QueueModeSelect">
               <span>Queue mode</span>
               <select id="text2speach-V2QueueModeSelect"></select>
@@ -116,6 +98,35 @@
               <input id="text2speach-V2PitchSlider" type="range">
               <span id="text2speach-V2PitchHelperScale" class="text2speach-V2__pitch-helper">Male &lt; Neutral &gt; Female</span>
             </label>
+            <nav class="text2speach-V2__item-actions" aria-label="Speech item actions">
+              <button id="text2speach-V2AddItemButton" type="button">Add</button>
+              <button id="text2speach-V2DuplicateItemButton" type="button">Duplicate</button>
+              <button id="text2speach-V2DeleteItemButton" type="button">Delete</button>
+            </nav>
+          </div>
+        </section>
+      </aside>
+
+      <section class="text2speach-V2__panel text2speach-V2__panel--center" aria-label="Speech composition">
+        <section class="accordion-v2 text2speach-V2__accordion text2speach-V2__text-accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2TextContent">
+            <span>Text</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="text2speach-V2TextContent" class="accordion-v2__content">
+            <label class="text2speach-V2__field" for="text2speach-V2SpeechText">
+              <span>Speech text</span>
+              <textarea id="text2speach-V2SpeechText" rows="10" autocomplete="off"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="accordion-v2 text2speach-V2__accordion text2speach-V2__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2QueueContent">
+            <span>Named Sentences</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="text2speach-V2QueueContent" class="accordion-v2__content">
             <nav class="text2speach-V2__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
               <button id="text2speach-V2SpeakButton" type="button" disabled>Speak</button>
               <button id="text2speach-V2PauseButton" type="button" disabled>Pause</button>
@@ -129,18 +140,7 @@
               <button id="text2speach-V2WorkspaceStopButton" type="button" disabled>Stop</button>
               <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
             </nav>
-          </div>
-        </section>
-      </aside>
-
-      <section class="text2speach-V2__panel text2speach-V2__panel--center" aria-label="Speech preview">
-        <section class="accordion-v2 text2speach-V2__accordion text2speach-V2__accordion--fill is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="text2speach-V2SpeechPreviewContent">
-            <span>Preview</span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="text2speach-V2SpeechPreviewContent" class="accordion-v2__content">
-            <div id="text2speach-V2SpeechPreview" class="text2speach-V2__preview">No speech request has been queued.</div>
+            <div id="text2speach-V2QueueTiles" class="text2speach-V2__queue-tiles" role="listbox" aria-label="Named Sentences"></div>
           </div>
         </section>
       </section>
@@ -160,8 +160,8 @@
           <div class="accordion-v2__header text2speach-V2__status-accordion-header" aria-expanded="true" aria-controls="text2speach-V2StatusLogContent">
             <span>Status</span>
             <div class="text2speach-V2__status-header-actions">
-              <button id="text2speach-V2ClearStatusButton" type="button">Clear</button>
               <span class="accordion-v2__icon" aria-hidden="true">+</span>
+              <button id="text2speach-V2ClearStatusButton" type="button">Clear</button>
             </div>
           </div>
           <div id="text2speach-V2StatusLogContent" class="accordion-v2__content">
