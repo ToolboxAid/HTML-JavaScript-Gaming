@@ -1,4 +1,4 @@
-export class WorkspaceManagerV2App {
+﻿export class WorkspaceManagerV2App {
   constructor({
     accordions,
     contextService,
@@ -25,6 +25,7 @@ export class WorkspaceManagerV2App {
     this.activeToolStateRequiresRepoHandle = false;
     this.activeToolStateHydration = null;
     this.activeToolStateRefresh = null;
+    this.activeContextMigrationMessages = [];
     this.lastLaunchedToolId = "";
   }
 
@@ -99,6 +100,7 @@ export class WorkspaceManagerV2App {
     this.activeToolStateRequiresRepoHandle = false;
     this.activeToolStateHydration = null;
     this.activeToolStateRefresh = null;
+    this.activeContextMigrationMessages = [];
     this.contextService.clearWorkspaceToolStateHydration();
     this.contextService.clearDiscoveredGames();
     this.repoDestination.setPickRepoEnabled(true);
@@ -501,6 +503,9 @@ export class WorkspaceManagerV2App {
     this.activeToolStateRequiresRepoHandle = Boolean(requiresRepoHandle);
     this.activeToolStateHydration = hydration;
     this.activeToolStateRefresh = sessionRefresh;
+    this.activeContextMigrationMessages = Array.isArray(result.migrationMessages)
+      ? [...result.migrationMessages]
+      : [];
     this.updateRepoRuntimeBinding(runtimeBinding);
     this.gameSelector.setSummary(this.activeToolStateRequiresRepoHandle
       ? `${result.game.name} context uses ${result.game.gameRoot} and ${result.game.assetsPath}. Pick Repo Folder to rebind game.manifest.json before Save or tool launch.`
@@ -526,6 +531,9 @@ export class WorkspaceManagerV2App {
       return;
     }
     this.statusLog.ok(`Hydrated workspace session for ${this.activeToolStateHydration.hydratedToolIds.join(", ")}.`);
+    this.activeContextMigrationMessages.forEach((message) => {
+      this.statusLog.info(`Text to Speech V2 migration: ${message}`);
+    });
     (this.activeToolStateHydration.skippedTools || []).forEach((tool) => {
       this.statusLog.info(`Skipped workspace session hydration for ${tool.toolId}: ${tool.reason}.`);
     });
@@ -537,9 +545,9 @@ export class WorkspaceManagerV2App {
     if (assetSummary) {
       this.statusLog.info(`Refreshed asset-manager-v2 from workspace.tools.asset-manager-v2.data: ${assetSummary.assetCount} managed assets; Dirty: ${assetSummary.dirtyStatus}.`);
     }
-    const textToSpeechSummary = this.activeToolStateRefresh?.toolSummaries?.["text2speach-V2"];
+    const textToSpeechSummary = this.activeToolStateRefresh?.toolSummaries?.["text2speech-V2"];
     if (textToSpeechSummary) {
-      this.statusLog.info(`Loaded text2speach-V2 from ${this.activeGame?.manifestPath || "(missing manifest path)"} via workspace.tools.text2speach-V2.data: ${textToSpeechSummary.speechQueueCount} queue items; Schema validation: valid; Dirty: ${textToSpeechSummary.dirtyStatus}.`);
+      this.statusLog.info(`Loaded text2speech-V2 from ${this.activeGame?.manifestPath || "(missing manifest path)"} via workspace.tools.text2speech-V2.data: ${textToSpeechSummary.speechQueueCount} queue items; Schema validation: valid; Dirty: ${textToSpeechSummary.dirtyStatus}.`);
     }
   }
 
@@ -645,9 +653,9 @@ export class WorkspaceManagerV2App {
       this.statusLog.fail(`Launch blocked: ${validation.message}`);
       return;
     }
-    if (toolId === "text2speach-V2") {
-      const textToSpeechPayload = this.activeContext.tools?.["text2speach-V2"];
-      this.statusLog.ok(`Text to Speech V2 launch source: ${this.activeGame?.manifestPath || "(missing manifest path)"} via root.tools.text2speach-V2 array (${Array.isArray(textToSpeechPayload) ? textToSpeechPayload.length : 0} named speech items).`);
+    if (toolId === "text2speech-V2") {
+      const textToSpeechPayload = this.activeContext.tools?.["text2speech-V2"];
+      this.statusLog.ok(`Text to Speech V2 launch source: ${this.activeGame?.manifestPath || "(missing manifest path)"} via root.tools.text2speech-V2 array (${Array.isArray(textToSpeechPayload) ? textToSpeechPayload.length : 0} named speech items).`);
     }
     const hostContextId = this.activeHostContextId
       ? this.contextService.writePersistedContext(this.activeHostContextId, this.activeContext)
@@ -835,7 +843,7 @@ export class WorkspaceManagerV2App {
     this.statusLog.ok(`Save source binding: ${writeResult.source}.`);
     this.statusLog.ok(`Saved path: ${writeResult.path}.`);
     this.statusLog.ok(`Text to Speech V2 manifest write-back target: ${writeResult.path}.`);
-    this.statusLog.info(`Saved Text to Speech V2 payload count: ${Array.isArray(context.tools?.["text2speach-V2"]) ? context.tools["text2speach-V2"].length : 0}.`);
+    this.statusLog.info(`Saved Text to Speech V2 payload count: ${Array.isArray(context.tools?.["text2speech-V2"]) ? context.tools["text2speech-V2"].length : 0}.`);
     this.statusLog.ok(`Save write validation: ${writeResult.changeValidation}.`);
     this.statusLog.info(`Saved file size: ${writeResult.fileSize} bytes.`);
     this.statusLog.info(`Saved toolState items: ${writeResult.toolStateItemCount} (${writeResult.toolStateDetails.join("; ")}).`);

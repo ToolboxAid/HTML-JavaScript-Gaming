@@ -1,4 +1,4 @@
-import { getToolRegistry } from "./toolRegistry.js";
+﻿import { getToolRegistry } from "./toolRegistry.js";
 import { escapeHtml } from "../src/shared/string/stringUtil.js";
 
 const SAMPLES_INDEX_PATH = "/samples/index.html";
@@ -88,7 +88,7 @@ function classifyToolGroup(toolId) {
     "asset-pipeline",
     "tile-model-converter",
     "physics-sandbox",
-    "text2speach-V2",
+    "text2speech-V2",
     "3d-json-payload"
   ]);
   if (workflowToolIds.has(toolId)) {

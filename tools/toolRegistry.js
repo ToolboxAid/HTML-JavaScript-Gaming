@@ -1,4 +1,8 @@
-const TOOL_NAME_SUFFIX_PATTERN = /(?:^|[\s_-])(v2|v3|new|final|copy)(?:$|[\s_-])/i;
+﻿const TOOL_NAME_SUFFIX_PATTERN = /(?:^|[\s_-])(v2|v3|new|final|copy)(?:$|[\s_-])/i;
+
+const TOOL_ID_ALIASES = Object.freeze({
+  "text2speach-V2": "text2speech-V2"
+});
 
 export const TOOL_REGISTRY = Object.freeze([
   {
@@ -279,14 +283,14 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "text2speach-V2",
+    id: "text2speech-V2",
     name: "Text to Speech V2",
     displayName: "Text to Speech V2",
     shortDescription: "Preview browser text-to-speech lines for narration, prompts, and menu feedback.",
     shortLabel: "Speech",
-    path: "text2speach-V2",
-    folderName: "text2speach-V2",
-    entryPoint: "text2speach-V2/index.html",
+    path: "text2speech-V2",
+    folderName: "text2speech-V2",
+    entryPoint: "text2speech-V2/index.html",
     description: "First-Class Tool V2 for browser speech synthesis using shared engine audio text-to-speech defaults.",
     showcaseTag: "Audio",
     showcaseStatus: "Speech Baseline",
@@ -296,7 +300,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "README",
-        path: "text2speach-V2/README.md"
+        path: "text2speech-V2/README.md"
       }
     ],
     visibleInToolsList: true
@@ -499,7 +503,8 @@ export const TOOL_REGISTRY = Object.freeze([
 export { TOOL_NAME_SUFFIX_PATTERN };
 
 export function resolveToolIdAlias(toolId) {
-  return typeof toolId === "string" ? toolId.trim() : "";
+  const normalizedToolId = typeof toolId === "string" ? toolId.trim() : "";
+  return TOOL_ID_ALIASES[normalizedToolId] || normalizedToolId;
 }
 
 export function getToolRegistry() {

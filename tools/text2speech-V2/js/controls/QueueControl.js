@@ -1,4 +1,4 @@
-function tileMeta(item) {
+﻿function tileMeta(item) {
   return [
     item.language || "no language",
     item.characterPreset || "manual",
@@ -36,17 +36,17 @@ export class QueueControl {
     this.queueTiles.replaceChildren(...this.queue.map((item) => {
       const tile = document.createElement("button");
       tile.type = "button";
-      tile.className = "text2speach-V2__queue-tile";
+      tile.className = "text2speech-V2__queue-tile";
       tile.dataset.speechItemId = item.id;
       tile.setAttribute("role", "option");
       tile.setAttribute("aria-selected", String(item.id === this.selectedItemId));
 
       const name = document.createElement("span");
-      name.className = "text2speach-V2__queue-tile-name";
+      name.className = "text2speech-V2__queue-tile-name";
       name.textContent = item.name;
 
       const meta = document.createElement("span");
-      meta.className = "text2speach-V2__queue-tile-meta";
+      meta.className = "text2speech-V2__queue-tile-meta";
       meta.textContent = tileMeta(item);
 
       tile.append(name, meta);
@@ -104,18 +104,13 @@ export class QueueControl {
     this.syncItemNameInput();
   }
 
-  deleteSelectedItem(replacementItem = null) {
+  deleteSelectedItem() {
     const index = this.queue.findIndex((item) => item.id === this.selectedItemId);
     if (index < 0) {
       return null;
     }
     this.queue.splice(index, 1);
-    if (this.queue.length === 0 && replacementItem) {
-      this.queue.push({ ...replacementItem });
-      this.selectedItemId = replacementItem.id;
-    } else {
-      this.selectedItemId = this.queue[Math.min(index, this.queue.length - 1)]?.id || "";
-    }
+    this.selectedItemId = this.queue[Math.min(index, this.queue.length - 1)]?.id || "";
     this.render();
     this.syncItemNameInput();
     return this.selectedItem();

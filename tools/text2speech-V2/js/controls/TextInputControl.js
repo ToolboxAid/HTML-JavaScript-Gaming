@@ -1,4 +1,4 @@
-export class TextInputControl {
+﻿export class TextInputControl {
   constructor({ input }) {
     this.input = input;
     this.onInput = () => {};

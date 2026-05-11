@@ -1,4 +1,4 @@
-const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
+﻿const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 const WORKSPACE_SESSION_SCHEMA_REF = "tools/schemas/workspace.manifest.schema.json";
@@ -9,17 +9,19 @@ const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
-const TEXT2SPEACH_V2_TOOL_KEY = "text2speach-V2";
+const TEXT2SPEECH_V2_TOOL_KEY = "text2speech-V2";
+const LEGACY_TEXT2SPEECH_V2_TOOL_KEY = "text2speach-V2";
+const LEGACY_TEXT2SPEECH_V2_SCHEMA_REF = "tools/schemas/tools/text2speach-V2.schema.json";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
 const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
   [PALETTE_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/palette-manager-v2.schema.json",
-  [TEXT2SPEACH_V2_TOOL_KEY]: "tools/schemas/tools/text2speach-V2.schema.json"
+  [TEXT2SPEECH_V2_TOOL_KEY]: "tools/schemas/tools/text2speech-V2.schema.json"
 });
 const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   "preview-generator-v2",
   "session-inspector-v2",
-  TEXT2SPEACH_V2_TOOL_KEY
+  TEXT2SPEECH_V2_TOOL_KEY
 ]));
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
@@ -53,9 +55,9 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
     group: "Utilities",
-    id: TEXT2SPEACH_V2_TOOL_KEY,
+    id: TEXT2SPEECH_V2_TOOL_KEY,
     name: "Text to Speech V2",
-    path: "../text2speach-V2/index.html"
+    path: "../text2speech-V2/index.html"
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
@@ -122,9 +124,44 @@ function toolPayloadForContext(tool, context) {
   return context?.tools?.[tool.id];
 }
 
+function normalizeTextToSpeechWorkspaceToolKey(workspaceManifest) {
+  if (!isPlainObject(workspaceManifest) || !isPlainObject(workspaceManifest.tools)) {
+    return { manifest: workspaceManifest, migrationMessages: [] };
+  }
+  if (!Object.prototype.hasOwnProperty.call(workspaceManifest.tools, LEGACY_TEXT2SPEECH_V2_TOOL_KEY)) {
+    return { manifest: workspaceManifest, migrationMessages: [] };
+  }
+  const nextManifest = clone(workspaceManifest);
+  const migrationMessages = [];
+  if (!Object.prototype.hasOwnProperty.call(nextManifest.tools, TEXT2SPEECH_V2_TOOL_KEY)) {
+    nextManifest.tools[TEXT2SPEECH_V2_TOOL_KEY] = nextManifest.tools[LEGACY_TEXT2SPEECH_V2_TOOL_KEY];
+    migrationMessages.push(`Migrated root.tools.${LEGACY_TEXT2SPEECH_V2_TOOL_KEY} to root.tools.${TEXT2SPEECH_V2_TOOL_KEY}.`);
+  } else {
+    migrationMessages.push(`Ignored legacy root.tools.${LEGACY_TEXT2SPEECH_V2_TOOL_KEY} because root.tools.${TEXT2SPEECH_V2_TOOL_KEY} is already present.`);
+  }
+  delete nextManifest.tools[LEGACY_TEXT2SPEECH_V2_TOOL_KEY];
+  return { manifest: nextManifest, migrationMessages };
+}
+
+function normalizeTextToSpeechToolSession(session) {
+  const migratedSession = clone(session);
+  migratedSession.schema = {
+    ...(isPlainObject(migratedSession.schema) ? migratedSession.schema : {}),
+    toolId: TEXT2SPEECH_V2_TOOL_KEY,
+    schemaRef: migratedSession.schema?.schemaRef === LEGACY_TEXT2SPEECH_V2_SCHEMA_REF
+      ? TOOL_PAYLOAD_SCHEMA_REFS[TEXT2SPEECH_V2_TOOL_KEY]
+      : migratedSession.schema?.schemaRef
+  };
+  migratedSession.workspace = {
+    ...(isPlainObject(migratedSession.workspace) ? migratedSession.workspace : {}),
+    toolId: TEXT2SPEECH_V2_TOOL_KEY
+  };
+  return migratedSession;
+}
+
 function hasToolPayload(tool, context) {
   const payload = toolPayloadForContext(tool, context);
-  return tool?.id === TEXT2SPEACH_V2_TOOL_KEY
+  return tool?.id === TEXT2SPEECH_V2_TOOL_KEY
     ? Array.isArray(payload)
     : isPlainObject(payload);
 }
@@ -641,9 +678,20 @@ export class WorkspaceManagerV2ContextService {
   readToolSession(toolId) {
     const key = toolSessionKey(toolId);
     const result = this.readSessionJson(key);
-    return result.ok
-      ? { ok: true, key, session: result.value }
-      : { ok: false, key, message: result.message };
+    if (result.ok) {
+      return { ok: true, key, session: result.value };
+    }
+    if (toolId === TEXT2SPEECH_V2_TOOL_KEY) {
+      const legacyKey = toolSessionKey(LEGACY_TEXT2SPEECH_V2_TOOL_KEY);
+      const legacyResult = this.readSessionJson(legacyKey);
+      if (legacyResult.ok) {
+        const session = normalizeTextToSpeechToolSession(legacyResult.value);
+        this.sessionStorage.setItem(key, JSON.stringify(session));
+        this.sessionStorage.removeItem(legacyKey);
+        return { ok: true, key, migratedFrom: legacyKey, session };
+      }
+    }
+    return { ok: false, key, message: result.message };
   }
 
   sourceBindingRecoveryAction() {
@@ -684,8 +732,8 @@ export class WorkspaceManagerV2ContextService {
     if (session.workspace.repoReferenceKey !== WORKSPACE_REPO_REFERENCE_SESSION_KEY) {
       return { ok: false, key: result.key, message: `${result.key}.workspace.repoReferenceKey must be ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}.` };
     }
-    if (tool.id === TEXT2SPEACH_V2_TOOL_KEY && !Array.isArray(session.data)) {
-      return { ok: false, key: result.key, message: `${result.key}.data is stale for text2speach-V2; expected root array named speech items.` };
+    if (tool.id === TEXT2SPEECH_V2_TOOL_KEY && !Array.isArray(session.data)) {
+      return { ok: false, key: result.key, message: `${result.key}.data is stale for text2speech-V2; expected root array named speech items.` };
     }
     return result;
   }
@@ -790,7 +838,7 @@ export class WorkspaceManagerV2ContextService {
 
   dataSessionForTool(tool, context) {
     const toolPayload = toolPayloadForContext(tool, context);
-    if (tool.id === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(toolPayload)) {
+    if (tool.id === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(toolPayload)) {
       return clone(toolPayload);
     }
     if (isPlainObject(toolPayload)) {
@@ -860,7 +908,7 @@ export class WorkspaceManagerV2ContextService {
       paletteSwatchCount: tool.id === PALETTE_MANAGER_V2_TOOL_KEY && Array.isArray(data?.swatches)
         ? data.swatches.length
         : null,
-      speechQueueCount: tool.id === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(data)
+      speechQueueCount: tool.id === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(data)
         ? data.length
         : null,
       toolId: tool.id,
@@ -882,7 +930,7 @@ export class WorkspaceManagerV2ContextService {
           return;
         }
         const session = sessionResult.session;
-        if (isPlainObject(session.data) || (tool.id === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(session.data))) {
+        if (isPlainObject(session.data) || (tool.id === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(session.data))) {
           refreshedContext.tools[tool.id] = clone(session.data);
         }
         toolSummaries[tool.id] = this.summarizeToolSession(tool, session);
@@ -1028,15 +1076,17 @@ export class WorkspaceManagerV2ContextService {
   }
 
   async contextResultFromManifest(game, workspaceManifest, sourceLabel) {
-    const validation = await this.validateGeneratedManifest(workspaceManifest);
+    const normalization = normalizeTextToSpeechWorkspaceToolKey(workspaceManifest);
+    const normalizedManifest = normalization.manifest;
+    const validation = await this.validateGeneratedManifest(normalizedManifest);
     if (!validation.ok) {
       return { ok: false, message: `${sourceLabel} failed workspace manifest schema validation: ${validation.message}` };
     }
-    if (workspaceManifest.gameId !== game.id) {
-      return { ok: false, message: `${sourceLabel} gameId ${workspaceManifest.gameId || "(empty)"} does not match ${game.id}.` };
+    if (normalizedManifest.gameId !== game.id) {
+      return { ok: false, message: `${sourceLabel} gameId ${normalizedManifest.gameId || "(empty)"} does not match ${game.id}.` };
     }
-    const palettePayload = workspaceManifest.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
-    const assetPayload = workspaceManifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
+    const palettePayload = normalizedManifest.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
+    const assetPayload = normalizedManifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
     const paletteSwatches = Array.isArray(palettePayload?.swatches) ? clone(palettePayload.swatches) : [];
     const assetCount = Object.keys(assetPayload.assets || {}).length;
     const assetWarning = game.id === "Asteroids" && assetCount === 0
@@ -1047,19 +1097,20 @@ export class WorkspaceManagerV2ContextService {
     }
     return {
       ok: true,
-      context: clone(workspaceManifest),
+      context: clone(normalizedManifest),
       game: {
         ...game,
-        assetsPath: workspaceManifest.assetsPath,
-        gameRoot: workspaceManifest.gameRoot,
-        manifestId: workspaceManifest.id,
+        assetsPath: normalizedManifest.assetsPath,
+        gameRoot: normalizedManifest.gameRoot,
+        manifestId: normalizedManifest.id,
         paletteName: palettePayload.name || "Workspace Palette",
-        repoPath: workspaceManifest.repoPath || "",
-        repoRoot: workspaceManifest.repoRoot || ""
+        repoPath: normalizedManifest.repoPath || "",
+        repoRoot: normalizedManifest.repoRoot || ""
       },
       assetCount,
       assetWarning,
       boundaryContract: game.manifestKind === "game-manifest" ? gameManifestBoundaryContractMessage() : "",
+      migrationMessages: normalization.migrationMessages,
       paletteSwatches
     };
   }
@@ -1138,13 +1189,14 @@ export class WorkspaceManagerV2ContextService {
   }
 
   async validateGeneratedManifest(manifest) {
+    const normalizedManifest = normalizeTextToSpeechWorkspaceToolKey(manifest).manifest;
     const schemaResult = await this.loadWorkspaceManifestSchema();
     if (!schemaResult.ok) {
       return schemaResult;
     }
-    const errors = this.validateManifestAgainstSchema(manifest, schemaResult.schema);
+    const errors = this.validateManifestAgainstSchema(normalizedManifest, schemaResult.schema);
     if (!errors.length) {
-      const toolValidation = await this.validateToolPayloads(manifest, schemaResult.schema);
+      const toolValidation = await this.validateToolPayloads(normalizedManifest, schemaResult.schema);
       errors.push(...toolValidation.errors);
     }
     return errors.length
@@ -1453,7 +1505,7 @@ export class WorkspaceManagerV2ContextService {
         if (Array.isArray(payload?.vectorMapDocument?.vectors)) {
           return `${toolId} vectors=${payload.vectorMapDocument.vectors.length}`;
         }
-        if (toolId === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(payload)) {
+        if (toolId === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(payload)) {
           return `${toolId} queue=${payload.length}`;
         }
         return isPlainObject(payload)

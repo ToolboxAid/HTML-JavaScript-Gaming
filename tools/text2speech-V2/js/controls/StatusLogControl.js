@@ -1,4 +1,4 @@
-export class StatusLogControl {
+﻿export class StatusLogControl {
   constructor({ clearButton, log }) {
     this.clearButton = clearButton;
     this.log = log;

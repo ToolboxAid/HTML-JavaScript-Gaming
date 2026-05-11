@@ -1,11 +1,11 @@
-export class TextToSpeechShellControl {
+﻿export class TextToSpeechShellControl {
   constructor({ documentRef = document } = {}) {
     this.document = documentRef;
     this.suppressFullscreenSync = false;
   }
 
   mount() {
-    this.document.body.classList.add("tools-platform-surface", "text2speach-V2-local-shell");
+    this.document.body.classList.add("tools-platform-surface", "text2speech-V2-local-shell");
     this.applyFullscreenState(Boolean(this.document.fullscreenElement));
     this.bindHeaderDetails();
     this.updateSummary();
@@ -16,7 +16,7 @@ export class TextToSpeechShellControl {
   }
 
   getSummaryElement() {
-    return this.document.querySelector('[data-tool-summary="text2speach-V2"]');
+    return this.document.querySelector('[data-tool-summary="text2speech-V2"]');
   }
 
   applyFullscreenState(isActive) {
@@ -48,7 +48,7 @@ export class TextToSpeechShellControl {
     summary.setAttribute("data-tools-platform-summary-error", "0");
     summary.setAttribute("data-tools-platform-summary-state", isExpanded ? "expanded" : "collapsed");
     summary.setAttribute("data-tools-platform-summary-mode", isFullscreen ? "fullscreen" : "normal");
-    summary.setAttribute("data-tool-id", "text2speach-V2");
+    summary.setAttribute("data-tool-id", "text2speech-V2");
     summary.setAttribute("title", `${headerText}\nConfigure voices, helper filters, presets, named sentences, queue behavior, and runtime playback.`);
   }
 
@@ -85,10 +85,10 @@ export class TextToSpeechShellControl {
 
   bindHeaderDetails() {
     const details = this.getHeaderDetails();
-    if (!(details instanceof HTMLDetailsElement) || details.dataset.text2speachV2ShellBound === "true") {
+    if (!(details instanceof HTMLDetailsElement) || details.dataset.text2speechV2ShellBound === "true") {
       return;
     }
-    details.dataset.text2speachV2ShellBound = "true";
+    details.dataset.text2speechV2ShellBound = "true";
     details.addEventListener("toggle", () => {
       this.updateSummary();
       if (this.suppressFullscreenSync) {

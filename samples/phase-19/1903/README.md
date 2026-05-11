@@ -1,4 +1,4 @@
-<!-- SAMPLE_LOCAL_CONTRACT_README -->
+﻿<!-- SAMPLE_LOCAL_CONTRACT_README -->
 # Sample 1903 - Text to Speech V2 JSON Source
 
 Sample-local contract for `samples/phase-19/1903`.
@@ -6,9 +6,9 @@ Sample-local contract for `samples/phase-19/1903`.
 ## Implementation Location
 
 - Entrypoint: `samples/phase-19/1903/index.html`
-- Sample payload: `samples/phase-19/1903/sample.1903.text2speach-V2.json`
-- The payload is a Text to Speech V2 root array of named speech items and validates against `tools/schemas/tools/text2speach-V2.schema.json`.
-- The sample launches `/tools/text2speach-V2/index.html` with `samplePresetPath` pointing at the sample JSON.
+- Sample payload: `samples/phase-19/1903/sample.1903.text2speech-V2.json`
+- The payload is a Text to Speech V2 root array of named speech items and validates against `tools/schemas/tools/text2speech-V2.schema.json`.
+- The sample launches `/tools/text2speech-V2/index.html` with `samplePresetPath` pointing at the sample JSON.
 
 ## Discovery Contract
 

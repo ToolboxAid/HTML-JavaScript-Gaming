@@ -1,4 +1,4 @@
-export class OutputSummaryControl {
+﻿export class OutputSummaryControl {
   constructor({ summary }) {
     this.summary = summary;
   }

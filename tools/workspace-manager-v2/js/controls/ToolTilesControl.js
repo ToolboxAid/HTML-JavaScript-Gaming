@@ -1,4 +1,4 @@
-const TOOL_GROUPS = Object.freeze(["Editors", "Utilities", "Viewers"]);
+﻿const TOOL_GROUPS = Object.freeze(["Editors", "Utilities", "Viewers"]);
 
 export class ToolTilesControl {
   constructor({ container }) {
@@ -55,7 +55,7 @@ export class ToolTilesControl {
     if (tool.id === "session-inspector-v2") {
       return "";
     }
-    if (tool.id === "text2speach-V2") {
+    if (tool.id === "text2speech-V2") {
       return "Speech synthesis ready";
     }
     return manifestStatus;

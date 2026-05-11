@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "../../tools/schemas/samples/sample.tool-payload.schema.json",
   "version": 1,
   "phases": [
@@ -3453,11 +3453,11 @@
       "preview": "/samples/phase-19/1903/assets/images/preview.svg",
       "classValues": [],
       "engineClassesUsed": [],
-      "toolHints": ["text2speach-V2"],
+      "toolHints": ["text2speech-V2"],
       "roundtripToolPresets": [
         {
-          "toolId": "text2speach-V2",
-          "presetPath": "/samples/phase-19/1903/sample.1903.text2speach-V2.json"
+          "toolId": "text2speech-V2",
+          "presetPath": "/samples/phase-19/1903/sample.1903.text2speech-V2.json"
         }
       ]
     }

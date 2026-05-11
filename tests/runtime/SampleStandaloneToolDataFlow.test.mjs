@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import http from "node:http";
@@ -16,7 +16,7 @@ const isolatedPackageJsonPath = path.join(tmpRoot, "package.json");
 const browserProfileDir = path.join(tmpRoot, "sample-standalone-browser");
 
 const metadataPath = path.join(repoRoot, "samples", "metadata", "samples.index.metadata.json");
-const TEXT_TO_SPEECH_ROOT_ARRAY_TOOL_ID = "text2speach-V2";
+const TEXT_TO_SPEECH_ROOT_ARRAY_TOOL_ID = "text2speech-V2";
 const TEXT_TO_SPEECH_REQUIRED_FIELDS = Object.freeze([
   "id",
   "name",

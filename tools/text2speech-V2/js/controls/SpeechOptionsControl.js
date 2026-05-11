@@ -1,4 +1,4 @@
-function populateSelect(select, options, selectedValue) {
+﻿function populateSelect(select, options, selectedValue) {
   select.replaceChildren(...options.map((option) => {
     const node = document.createElement("option");
     node.value = String(option.value);

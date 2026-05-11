@@ -1,12 +1,12 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 05/11/2026
 main.js
 */
 
-const TEXT_TO_SPEECH_PATH = "/tools/text2speach-V2/index.html";
-const TEXT_TO_SPEECH_SAMPLE_PRESET_PATH = "/samples/phase-19/1903/sample.1903.text2speach-V2.json";
+const TEXT_TO_SPEECH_PATH = "/tools/text2speech-V2/index.html";
+const TEXT_TO_SPEECH_SAMPLE_PRESET_PATH = "/samples/phase-19/1903/sample.1903.text2speech-V2.json";
 
 function buildTextToSpeechHref() {
   const params = new URLSearchParams({

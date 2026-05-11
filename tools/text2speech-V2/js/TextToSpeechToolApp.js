@@ -1,4 +1,4 @@
-import {
+﻿import {
   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
@@ -14,7 +14,9 @@ import {
   TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
 } from "../../../src/engine/audio/TextToSpeechDefaults.js";
 
-const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speach-V2";
+const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speech-V2";
+const LEGACY_WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speach-V2";
+const LEGACY_TEXT_TO_SPEECH_SCHEMA_ID = "tools/schemas/tools/text2speach-V2.schema.json";
 const TEXT_TO_SPEECH_SCHEMA_URL = `/${TEXT_TO_SPEECH_SCHEMA_ID}`;
 const TEXT_TO_SPEECH_URL_SOURCE_PARAM = "samplePresetPath";
 
@@ -306,6 +308,9 @@ export class TextToSpeechToolApp {
       this.actionNav.setSpeakEnabled(false);
       return;
     }
+    if (queueDataResult.migrationMessage) {
+      this.statusLog.ok(queueDataResult.migrationMessage);
+    }
     if (queueDataResult.empty) {
       this.clearRenderedQueue("empty");
       this.statusLog.ok(queueDataResult.message);
@@ -319,7 +324,9 @@ export class TextToSpeechToolApp {
       return;
     }
     const schemaRef = String(queueDataResult.schemaRef || "");
-    if (schemaRef && schemaRef !== TEXT_TO_SPEECH_SCHEMA_ID) {
+    if (schemaRef === LEGACY_TEXT_TO_SPEECH_SCHEMA_ID) {
+      this.statusLog.ok(`Migrated ${TEXT_TO_SPEECH_DISPLAY_NAME} schema reference from ${LEGACY_TEXT_TO_SPEECH_SCHEMA_ID} to ${TEXT_TO_SPEECH_SCHEMA_ID}.`);
+    } else if (schemaRef && schemaRef !== TEXT_TO_SPEECH_SCHEMA_ID) {
       this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} payload from ${queueDataResult.sourcePath} uses ${schemaRef}; expected ${TEXT_TO_SPEECH_SCHEMA_ID}.`);
       this.clearRenderedQueue("load-failed");
       this.actionNav.setSpeakEnabled(false);
@@ -372,7 +379,16 @@ export class TextToSpeechToolApp {
       }
       return this.queueDataFromUrlSource(samplePresetPath);
     }
-    const rawToolState = this.window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
+    let rawToolState = this.window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
+    let sourceKey = WORKSPACE_TOOL_STATE_KEY;
+    let migrationMessage = "";
+    if (!rawToolState) {
+      rawToolState = this.window.sessionStorage.getItem(LEGACY_WORKSPACE_TOOL_STATE_KEY);
+      sourceKey = rawToolState ? LEGACY_WORKSPACE_TOOL_STATE_KEY : WORKSPACE_TOOL_STATE_KEY;
+      migrationMessage = rawToolState
+        ? `Migrated ${TEXT_TO_SPEECH_DISPLAY_NAME} workspace toolState key from ${LEGACY_WORKSPACE_TOOL_STATE_KEY} to ${WORKSPACE_TOOL_STATE_KEY}.`
+        : "";
+    }
     if (!rawToolState) {
       return { ok: false, message: `Workspace launch missing ${WORKSPACE_TOOL_STATE_KEY}; queue cannot render.` };
     }
@@ -385,18 +401,37 @@ export class TextToSpeechToolApp {
         return {
           empty: true,
           ok: true,
-          message: `${TEXT_TO_SPEECH_DISPLAY_NAME} empty workspace launch: no workspace payload is loaded from ${WORKSPACE_TOOL_STATE_KEY}. Use Import JSON in standalone mode or add Text to Speech V2 named speech items before saving.`
+          message: `${TEXT_TO_SPEECH_DISPLAY_NAME} empty workspace launch: no workspace payload is loaded from ${sourceKey}. Use Import JSON in standalone mode or add Text to Speech V2 named speech items before saving.`
         };
+      }
+      if (sourceKey === LEGACY_WORKSPACE_TOOL_STATE_KEY) {
+        const migratedToolState = {
+          ...toolState,
+          schema: {
+            ...(isPlainObject(toolState.schema) ? toolState.schema : {}),
+            toolId: "text2speech-V2",
+            schemaRef: toolState.schema?.schemaRef === LEGACY_TEXT_TO_SPEECH_SCHEMA_ID
+              ? TEXT_TO_SPEECH_SCHEMA_ID
+              : toolState.schema?.schemaRef
+          },
+          workspace: {
+            ...(isPlainObject(toolState.workspace) ? toolState.workspace : {}),
+            toolId: "text2speech-V2"
+          }
+        };
+        this.window.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify(migratedToolState));
+        this.window.sessionStorage.removeItem(LEGACY_WORKSPACE_TOOL_STATE_KEY);
       }
       return {
         dirtyState: `isDirty=${toolState.dirty?.isDirty === true}; reason=${toolState.dirty?.reason || "clean"}`,
+        migrationMessage,
         ok: true,
         payload: toolState.data,
         schemaRef: toolState.schema?.schemaRef || "",
-        sourcePath: toolState.workspace?.gameManifestPath || toolState.workspace?.boundManifestPath || WORKSPACE_TOOL_STATE_KEY
+        sourcePath: toolState.workspace?.gameManifestPath || toolState.workspace?.boundManifestPath || sourceKey
       };
     } catch (error) {
-      return { ok: false, message: `${WORKSPACE_TOOL_STATE_KEY} is invalid JSON: ${error.message}` };
+      return { ok: false, message: `${sourceKey} is invalid JSON: ${error.message}` };
     }
   }
 
@@ -499,9 +534,12 @@ export class TextToSpeechToolApp {
       const nextData = this.queueControl.selectedQueue();
       if (this.payloadSchema) {
         const validation = this.validatePayload(nextData, toolState.workspace?.gameManifestPath || WORKSPACE_TOOL_STATE_KEY);
-        if (!validation.ok) {
+        if (!validation.ok && nextData.length > 0) {
           this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${validation.message}`);
           return;
+        }
+        if (!validation.ok) {
+          this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} payload is empty; schema requires at least one named speech item before export or workspace save.`);
         }
       }
       this.window.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify({
@@ -689,19 +727,14 @@ export class TextToSpeechToolApp {
       this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} delete failed: no named sentence is selected.`);
       return;
     }
-    const replacementItem = this.queueControl.selectedQueue().length === 1
-      ? this.speechItemFromControls({
-        id: this.uniqueItemId("New speech item"),
-        name: this.uniqueItemName("New speech item"),
-        text: "New speech line."
-      })
-      : null;
-    const nextItem = this.queueControl.deleteSelectedItem(replacementItem);
-    if (!nextItem) {
-      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} delete failed: no replacement named sentence is available.`);
-      return;
+    const nextItem = this.queueControl.deleteSelectedItem();
+    if (nextItem) {
+      this.applyQueueItem(nextItem, "queue-item-deleted");
+    } else {
+      this.textInput.setText("", { emit: false });
+      this.refreshOutputSummary("queue-empty");
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} empty state: add a named speech item before playback, export, copy, or workspace save.`);
     }
-    this.applyQueueItem(nextItem, "queue-item-deleted");
     this.markWorkspaceDirty("speech-item-deleted", ["queue"]);
     this.statusLog.ok(`Deleted speech item: ${selectedItem.name}.`);
   }
@@ -766,14 +799,22 @@ export class TextToSpeechToolApp {
   }
 
   refreshActionState() {
-    const canSpeak = this.engine.isSupported() && this.textInput.hasText() && this.speechOptions.hasVoice();
-    this.actionNav.setSpeakEnabled(canSpeak);
-    this.actionNav.setPauseEnabled(this.engine.canPause());
-    this.actionNav.setResumeEnabled(this.engine.canResume());
-    this.actionNav.setStopEnabled(this.engine.isSupported());
+    const canUsePlayback = Boolean(this.queueControl.selectedItem())
+      && this.engine.isSupported()
+      && this.textInput.hasText()
+      && this.speechOptions.hasVoice();
+    this.actionNav.setSpeakEnabled(canUsePlayback);
+    this.actionNav.setPauseEnabled(canUsePlayback);
+    this.actionNav.setResumeEnabled(canUsePlayback);
+    this.actionNav.setStopEnabled(canUsePlayback);
   }
 
   speak() {
+    if (!this.queueControl.selectedItem()) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Speak blocked: select a named speech item with text first.`);
+      this.refreshActionState();
+      return;
+    }
     const selectedItem = this.queueControl.selectedItem();
     const result = this.engine.speak({
       ...this.speechOptions.value(),
@@ -792,6 +833,11 @@ export class TextToSpeechToolApp {
   }
 
   pause() {
+    if (!this.queueControl.selectedItem()) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Pause blocked: no named speech item is selected.`);
+      this.refreshActionState();
+      return;
+    }
     const result = this.engine.pause();
     if (!result.ok) {
       this.statusLog.fail(result.message);
@@ -802,6 +848,11 @@ export class TextToSpeechToolApp {
   }
 
   resume() {
+    if (!this.queueControl.selectedItem()) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Resume blocked: no named speech item is selected.`);
+      this.refreshActionState();
+      return;
+    }
     const result = this.engine.resume();
     if (!result.ok) {
       this.statusLog.fail(result.message);
@@ -812,6 +863,11 @@ export class TextToSpeechToolApp {
   }
 
   stop() {
+    if (!this.queueControl.selectedItem()) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Stop blocked: no named speech item is selected.`);
+      this.refreshActionState();
+      return;
+    }
     const result = this.engine.stop();
     if (!result.ok) {
       this.statusLog.fail(result.message);

@@ -1,4 +1,4 @@
-export class ActionNavControl {
+﻿export class ActionNavControl {
   constructor({
     locationRef = window.location,
     pauseButtons = [],

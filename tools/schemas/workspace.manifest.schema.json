@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/workspace.manifest.schema.json",
   "title": "Workspace Manifest",
@@ -108,8 +108,8 @@
         "3d-camera-path-editor": {
           "$ref": "./tools/3d-camera-path-editor.schema.json"
         },
-        "text2speach-V2": {
-          "$ref": "./tools/text2speach-V2.schema.json"
+        "text2speech-V2": {
+          "$ref": "./tools/text2speech-V2.schema.json"
         }
       }
     }
