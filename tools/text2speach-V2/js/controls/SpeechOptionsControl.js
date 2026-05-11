@@ -70,10 +70,13 @@ function voiceGender(option) {
 
 function genderFilterLabel(value) {
   if (value === "male-preferred") {
-    return "Male Preferred";
+    return "Male";
   }
   if (value === "female-preferred") {
-    return "Female Preferred";
+    return "Female";
+  }
+  if (value === "neutral") {
+    return "Neutral";
   }
   return "Any";
 }
@@ -83,12 +86,19 @@ function voicesForGender(voiceOptions, genderFilter) {
     return voiceOptions;
   }
   if (genderFilter === "male-preferred") {
-    return voiceOptions.filter((option) => ["male", "neutral", "unknown"].includes(voiceGender(option)));
+    return voiceOptions.filter((option) => voiceGender(option) === "male");
   }
   if (genderFilter === "female-preferred") {
-    return voiceOptions.filter((option) => ["female", "neutral", "unknown"].includes(voiceGender(option)));
+    return voiceOptions.filter((option) => voiceGender(option) === "female");
+  }
+  if (genderFilter === "neutral") {
+    return voiceOptions.filter((option) => ["neutral", "unknown"].includes(voiceGender(option)));
   }
   return voiceOptions;
+}
+
+function payloadGenderValue(value) {
+  return value === "neutral" ? "any" : value;
 }
 
 function voiceDetailsText({ filterLabel, filteredVoiceCount, matchingVoiceOptions, voiceCount }) {
@@ -462,7 +472,7 @@ export class SpeechOptionsControl {
   value() {
     return {
       characterPreset: this.characterPresetSelect.value,
-      gender: this.genderFilterSelect.value,
+      gender: payloadGenderValue(this.genderFilterSelect.value),
       language: this.languageSelect.value,
       pitch: numberValue(this.pitchSlider),
       queueMode: this.queueModeSelect.value,

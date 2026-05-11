@@ -18,7 +18,8 @@ const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
 });
 const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   "preview-generator-v2",
-  "session-inspector-v2"
+  "session-inspector-v2",
+  TEXT2SPEACH_V2_TOOL_KEY
 ]));
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({

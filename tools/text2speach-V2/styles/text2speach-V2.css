@@ -151,7 +151,9 @@
 }
 
 #text2speach-V2TextContent .text2speach-V2__speech-actions {
+  justify-content: center;
   margin: 0;
+  padding-bottom: 12px;
 }
 
 .text2speach-V2__accordion--fill {
@@ -245,6 +247,9 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 10px;
   min-height: 0;
+}
+
+#text2speach-V2QueueContent {
   overflow: auto;
 }
 
@@ -289,6 +294,7 @@
 }
 
 .text2speach-V2__summary {
+  max-height: 260px;
   min-height: 210px;
   margin: 0;
   padding: 10px;
@@ -466,8 +472,8 @@ html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .text
 
 body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] .text2speach-V2__summary-accordion,
 html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .text2speach-V2__summary-accordion {
-  flex: 0 1 45%;
-  max-height: 45%;
+  flex: 0 1 34%;
+  max-height: 34%;
   min-height: 0;
 }
 
@@ -490,6 +496,7 @@ body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2
 body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speach-V2"] #text2speach-V2StatusLog,
 html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] .text2speach-V2__summary,
 html:fullscreen body.tools-platform-surface[data-tool-id="text2speach-V2"] #text2speach-V2StatusLog {
+  max-height: none;
   height: 100%;
   min-height: 0;
   overflow: auto;

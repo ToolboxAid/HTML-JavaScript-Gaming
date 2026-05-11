@@ -381,8 +381,12 @@ export class TextToSpeechToolApp {
       if (!isPlainObject(toolState)) {
         return { ok: false, message: `${WORKSPACE_TOOL_STATE_KEY} must contain the normalized workspace toolState object before render.` };
       }
-      if (!Object.prototype.hasOwnProperty.call(toolState, "data")) {
-        return { ok: false, message: `${WORKSPACE_TOOL_STATE_KEY}.data must contain the ${TEXT_TO_SPEECH_DISPLAY_NAME} payload before render.` };
+      if (!Object.prototype.hasOwnProperty.call(toolState, "data") || toolState.data === null) {
+        return {
+          empty: true,
+          ok: true,
+          message: `${TEXT_TO_SPEECH_DISPLAY_NAME} empty workspace launch: no workspace payload is loaded from ${WORKSPACE_TOOL_STATE_KEY}. Use Import JSON in standalone mode or add Text to Speech V2 named speech items before saving.`
+        };
       }
       return {
         dirtyState: `isDirty=${toolState.dirty?.isDirty === true}; reason=${toolState.dirty?.reason || "clean"}`,

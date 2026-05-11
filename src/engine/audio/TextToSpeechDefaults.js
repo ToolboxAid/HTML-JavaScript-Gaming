@@ -12,8 +12,9 @@ const TEXT_TO_SPEECH_LANGUAGE_OPTIONS = Object.freeze([
 
 const TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS = Object.freeze([
   Object.freeze({ label: "Any", value: "any" }),
-  Object.freeze({ label: "Male Preferred", value: "male-preferred" }),
-  Object.freeze({ label: "Female Preferred", value: "female-preferred" })
+  Object.freeze({ label: "Male", value: "male-preferred" }),
+  Object.freeze({ label: "Female", value: "female-preferred" }),
+  Object.freeze({ label: "Neutral", value: "neutral" })
 ]);
 
 const TEXT_TO_SPEECH_AGE_FILTER_OPTIONS = Object.freeze([

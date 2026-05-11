@@ -110,31 +110,14 @@ const MOCK_TEXT2SPEACH_EN_US_DETAILS = [
   "- en-US: Microsoft Zira - English (United States)"
 ].join("\n");
 
-const MOCK_TEXT2SPEACH_GENDER_FILTER_VALUES = ["any", "male-preferred", "female-preferred"];
+const MOCK_TEXT2SPEACH_GENDER_FILTER_VALUES = ["any", "male-preferred", "female-preferred", "neutral"];
+const MOCK_TEXT2SPEACH_SCHEMA_GENDER_VALUES = ["any", "male-preferred", "female-preferred"];
 
 const MOCK_TEXT2SPEACH_AGE_FILTER_VALUES = ["any", "adult", "child", "elderly", "teen"];
 
-const MOCK_TEXT2SPEACH_FEMALE_LANGUAGE_VALUES = [
-  "de-DE",
-  "en-GB",
-  "en-US",
-  "es-US",
-  "fr-FR",
-  "hi-IN",
-  "id-ID",
-  "it-IT",
-  "ja-JP",
-  "ko-KR",
-  "nl-NL",
-  "pl-PL",
-  "pt-BR",
-  "ru-RU",
-  "zh-CN",
-  "zh-HK",
-  "zh-TW"
-];
+const MOCK_TEXT2SPEACH_FEMALE_LANGUAGE_VALUES = ["en-GB", "en-US"];
 
-const MOCK_TEXT2SPEACH_MALE_LANGUAGE_VALUES = MOCK_TEXT2SPEACH_LANGUAGE_VALUES;
+const MOCK_TEXT2SPEACH_MALE_LANGUAGE_VALUES = ["en-GB", "en-US", "es-ES"];
 
 const REQUIRED_TEXT2SPEACH_OPTION_FIELDS = [
   "id",
@@ -460,7 +443,7 @@ async function expectWorkspaceReturnRehydrated(page, { gameId = "Asteroids", rep
   await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toBeEnabled();
   await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toBeEnabled();
   await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).toBeEnabled();
-  await expect(page.locator('[data-workspace-tool-id="text2speach-V2"]')).toBeDisabled();
+  await expect(page.locator('[data-workspace-tool-id="text2speach-V2"]')).toBeEnabled();
 }
 
 async function expectWorkspaceRestoreRequiresRepoRebind(page, { dirty = false, gameId = "Asteroids", repoName = "HTML-JavaScript-Gaming" } = {}) {
@@ -493,7 +476,7 @@ async function rebindRestoredWorkspace(page, { dirty = false, gameId = "Asteroid
   await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Rebound restored .* toolState to /games/${gameId}/game\\.manifest\\.json after repo folder selection\\.`));
 }
 
-async function expectWorkspaceReturnedFromTool(page, { dirty = false, enabledToolCount = 4, gameId = "Asteroids", gameName = "Asteroids", repoName = "HTML-JavaScript-Gaming" } = {}) {
+async function expectWorkspaceReturnedFromTool(page, { dirty = false, enabledToolCount = 5, gameId = "Asteroids", gameName = "Asteroids", repoName = "HTML-JavaScript-Gaming" } = {}) {
   await expectWorkspaceReturnRehydrated(page, { gameId, repoName });
   await expect(page.locator("#saveWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator("#closeWorkspaceButton"))[dirty ? "toBeDisabled" : "toBeEnabled"]();
@@ -848,10 +831,13 @@ async function expectTextToSpeechV2FullscreenShell(page) {
     const queueContent = document.querySelector("#text2speach-V2QueueContent").getBoundingClientRect();
     const summaryAccordion = document.querySelector(".text2speach-V2__summary-accordion").getBoundingClientRect();
     const statusAccordion = document.querySelector(".text2speach-V2__status-accordion").getBoundingClientRect();
+    const speechSummary = document.querySelector("#text2speach-V2SpeechSummary").getBoundingClientRect();
     const statusLog = document.querySelector("#text2speach-V2StatusLog").getBoundingClientRect();
     const rootStyle = getComputedStyle(document.querySelector(".tool-shell-common__fullscreen-root"));
     const gap = Number.parseFloat(rootStyle.columnGap || "0");
     const horizontalPadding = Number.parseFloat(rootStyle.paddingLeft || "0") + Number.parseFloat(rootStyle.paddingRight || "0");
+    const queueContentStyle = getComputedStyle(document.querySelector("#text2speach-V2QueueContent"));
+    const summaryStyle = getComputedStyle(document.querySelector("#text2speach-V2SpeechSummary"));
     const statusStyle = getComputedStyle(document.querySelector("#text2speach-V2StatusLog"));
     return {
       centerAfterLeft: center.left > left.right,
@@ -865,11 +851,14 @@ async function expectTextToSpeechV2FullscreenShell(page) {
       layoutDisplay: rootStyle.display,
       queueContentBottomWithinCenter: queueContent.bottom <= center.bottom + 1,
       queueContentHeight: Math.round(queueContent.height),
+      queueContentOverflowY: queueContentStyle.overflowY,
       rightAtSide: right.left > center.right,
       rightFitsViewport: right.bottom <= window.innerHeight + 1,
       rightWithinRoot: right.right <= root.right + 1,
       rightWidth: Math.round(right.width),
       rootWidth: Math.round(root.width),
+      speechSummaryHeight: Math.round(speechSummary.height),
+      speechSummaryOverflowY: summaryStyle.overflowY,
       statusBelowSummary: statusAccordion.top >= summaryAccordion.bottom - 1,
       statusBottomWithinRight: statusAccordion.bottom <= right.bottom + 1,
       statusLogHeight: Math.round(statusLog.height),
@@ -900,11 +889,20 @@ async function expectTextToSpeechV2FullscreenShell(page) {
   expect(fullscreenLayout.textContentBottomWithinCenter).toBe(true);
   expect(fullscreenLayout.queueContentHeight).toBeGreaterThan(120);
   expect(fullscreenLayout.queueContentBottomWithinCenter).toBe(true);
+  expect(fullscreenLayout.queueContentOverflowY).toBe("auto");
   expect(fullscreenLayout.summaryBottomWithinRight).toBe(true);
+  expect(fullscreenLayout.speechSummaryHeight).toBeGreaterThan(80);
+  expect(fullscreenLayout.speechSummaryOverflowY).toBe("auto");
   expect(fullscreenLayout.statusBelowSummary).toBe(true);
   expect(fullscreenLayout.statusBottomWithinRight).toBe(true);
   expect(fullscreenLayout.statusLogHeight).toBeGreaterThan(120);
   expect(fullscreenLayout.statusLogOverflowY).toBe("auto");
+
+  const textToSpeakHeader = page.locator('[aria-controls="text2speach-V2TextContent"]');
+  await textToSpeakHeader.click();
+  await expect(textToSpeakHeader).toHaveAttribute("aria-expanded", "false");
+  await textToSpeakHeader.click();
+  await expect(textToSpeakHeader).toHaveAttribute("aria-expanded", "true");
 
   const namedSentencesHeader = page.locator('[aria-controls="text2speach-V2QueueContent"]');
   await namedSentencesHeader.click();
@@ -1208,6 +1206,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const fieldRect = textarea.closest(".text2speach-V2__field").getBoundingClientRect();
         const actionsRect = actions.getBoundingClientRect();
         const contentStyle = getComputedStyle(content);
+        const actionsStyle = getComputedStyle(actions);
         const rowGap = Number.parseFloat(contentStyle.rowGap || contentStyle.gap || "0");
         const paddingTop = Number.parseFloat(contentStyle.paddingTop || "0");
         const paddingBottom = Number.parseFloat(contentStyle.paddingBottom || "0");
@@ -1215,7 +1214,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return {
           actionsAreBottomControl: content.lastElementChild?.id === "text2speach-V2SpeechActions",
           actionsBelowText: actionsRect.top >= textareaRect.bottom,
-          actionsBottomAligned: Math.abs(actionsRect.bottom - contentRect.bottom) <= 1,
+          actionsBottomPadding: Math.round(contentRect.bottom - actionsRect.bottom),
+          actionsJustify: actionsStyle.justifyContent,
+          actionsPaddingBottom: actionsStyle.paddingBottom,
           contentExcessHeight: Math.round(contentRect.height - expectedContentHeight),
           contentDisplay: contentStyle.display,
           contentFlexDirection: contentStyle.flexDirection,
@@ -1227,7 +1228,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(textAccordionLayout).toMatchObject({
         actionsAreBottomControl: true,
         actionsBelowText: true,
-        actionsBottomAligned: true,
+        actionsBottomPadding: 0,
+        actionsJustify: "center",
+        actionsPaddingBottom: "12px",
         contentDisplay: "flex",
         contentFlexDirection: "column",
         contentJustify: "flex-end",
@@ -1335,7 +1338,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(schemaRequiredFields.workspaceTextToSpeechSchemaRef).toBe("./tools/text2speach-V2.schema.json");
       expect(schemaRequiredFields.itemAdditionalProperties).toBe(false);
       expect(schemaRequiredFields.characterPresetEnum).toEqual(["manual", "alert", "calm", "dnd-dungeon-master", "dramatic", "narrator", "robot"]);
-      expect(schemaRequiredFields.genderEnum).toEqual(MOCK_TEXT2SPEACH_GENDER_FILTER_VALUES);
+      expect(schemaRequiredFields.genderEnum).toEqual(MOCK_TEXT2SPEACH_SCHEMA_GENDER_VALUES);
       expect(schemaRequiredFields.languagePattern).toBe("^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$");
       expect(schemaRequiredFields.queueModeEnum).toEqual(["append", "replace"]);
       expect(schemaRequiredFields.pitchMinimum).toBe(0.1);
@@ -1408,8 +1411,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1.3");
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("0.9");
       await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText([
-        "2 voices match Female Preferred:",
-        "- en-US: Google US English",
+        "1 voices match Female:",
         "- en-US: Microsoft Zira - English (United States)"
       ].join("\n"));
       const alertSummary = JSON.parse(await page.locator("#text2speach-V2SpeechSummary").textContent());
@@ -1472,7 +1474,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEACH_MALE_LANGUAGE_VALUES);
       expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["mock-google-uk-english-male"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-uk-english-male");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male Preferred:\n- en-GB: Google UK English Male");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male:\n- en-GB: Google UK English Male");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Child; rate=1\.3; pitch=1\.6\./);
       await page.locator("#text2speach-V2AgeFilterSelect").selectOption("any");
@@ -1503,39 +1505,38 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#text2speach-V2VoiceSelect").selectOption("mock-microsoft-zira");
       await page.locator("#text2speach-V2GenderFilterSelect").selectOption("male-preferred");
       expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEACH_MALE_LANGUAGE_VALUES);
-      expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["mock-google-us-english", "mock-microsoft-david", "mock-microsoft-mark"]);
-      await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-us-english");
+      expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["mock-microsoft-david", "mock-microsoft-mark"]);
+      await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-microsoft-david");
       await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText([
-        "3 voices match Male Preferred:",
-        "- en-US: Google US English",
+        "2 voices match Male:",
         "- en-US: Microsoft David - English (United States)",
         "- en-US: Microsoft Mark - English (United States)"
       ].join("\n"));
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filtered 3 matching SpeechSynthesis voices for Text to Speech V2 \(20 Male Preferred voices from 22 total; 18 languages; gender=Male Preferred; age=Any; language=en-US\)\./);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filter counts: available languages=18; available voices=20; selected voice=Google US English \(en-US\); gender is a helper filter only, not a voice transformation\./);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Male Preferred \/ en-US: Google US English \(en-US\)\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filtered 2 matching SpeechSynthesis voices for Text to Speech V2 \(4 Male voices from 22 total; 3 languages; gender=Male; age=Any; language=en-US\)\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filter counts: available languages=3; available voices=4; selected voice=Microsoft David - English \(United States\) \(en-US\); gender is a helper filter only, not a voice transformation\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Male \/ en-US: Microsoft David - English \(United States\) \(en-US\)\./);
       await page.locator("#text2speach-V2LanguageSelect").selectOption("es-ES");
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Google espanol (es-ES)"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-espanol");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male Preferred:\n- es-ES: Google espanol");
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filter counts: available languages=18; available voices=20; selected voice=Google espanol \(es-ES\); gender is a helper filter only, not a voice transformation\./);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Male Preferred \/ es-ES: Google espanol \(es-ES\)\./);
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male:\n- es-ES: Google espanol");
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filter counts: available languages=3; available voices=4; selected voice=Google espanol \(es-ES\); gender is a helper filter only, not a voice transformation\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Male \/ es-ES: Google espanol \(es-ES\)\./);
       await page.locator("#text2speach-V2LanguageSelect").selectOption("en-GB");
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Google UK English Male (en-GB)"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-uk-english-male");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male Preferred:\n- en-GB: Google UK English Male");
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Male Preferred \/ en-GB: Google UK English Male \(en-GB\)\./);
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male:\n- en-GB: Google UK English Male");
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Male \/ en-GB: Google UK English Male \(en-GB\)\./);
       await page.locator("#text2speach-V2GenderFilterSelect").selectOption("female-preferred");
       expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEACH_FEMALE_LANGUAGE_VALUES);
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Google UK English Female (en-GB)"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-uk-english-female");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Female Preferred:\n- en-GB: Google UK English Female");
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filter counts: available languages=17; available voices=18; selected voice=Google UK English Female \(en-GB\); gender is a helper filter only, not a voice transformation\./);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Female Preferred \/ en-GB: Google UK English Female \(en-GB\)\./);
-      await page.locator("#text2speach-V2LanguageSelect").selectOption("es-US");
-      await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Google espanol de Estados Unidos (es-US)"]);
-      await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-espanol-us");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Female Preferred:\n- es-US: Google espanol de Estados Unidos");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Female:\n- en-GB: Google UK English Female");
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filter counts: available languages=2; available voices=2; selected voice=Google UK English Female \(en-GB\); gender is a helper filter only, not a voice transformation\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for Female \/ en-GB: Google UK English Female \(en-GB\)\./);
+      await page.locator("#text2speach-V2LanguageSelect").selectOption("en-US");
+      await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Microsoft Zira - English (United States) (en-US)"]);
+      await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-microsoft-zira");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Female:\n- en-US: Microsoft Zira - English (United States)");
       await page.locator("#text2speach-V2GenderFilterSelect").selectOption("any");
       await page.locator("#text2speach-V2LanguageSelect").selectOption("en-GB");
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-uk-english-female");
@@ -1762,7 +1763,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("includes unknown and neutral voices in text2speach-V2 preferred gender helper buckets", async ({ page }) => {
+  test("filters text2speach-V2 voices by Any, Male, Female, and Neutral gender helpers", async ({ page }) => {
     const server = await openTextToSpeechTool(page, TEXT_TO_SPEECH_SAMPLE_QUERY, { includeNeutralVoice: true });
     const pageErrors = [];
 
@@ -1771,18 +1772,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
 
     try {
+      expect(await page.locator("#text2speach-V2GenderFilterSelect option").evaluateAll((options) => options.map((option) => option.textContent.trim()))).toEqual(["Any", "Male", "Female", "Neutral"]);
+      await page.locator("#text2speach-V2GenderFilterSelect").selectOption("any");
+      expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toContain("en-AU");
       await page.locator("#text2speach-V2GenderFilterSelect").selectOption("male-preferred");
+      expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEACH_MALE_LANGUAGE_VALUES);
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("2 voices match Male:\n- en-US: Microsoft David - English (United States)\n- en-US: Microsoft Mark - English (United States)");
+      await page.locator("#text2speach-V2GenderFilterSelect").selectOption("female-preferred");
+      expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEACH_FEMALE_LANGUAGE_VALUES);
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Female:\n- en-US: Microsoft Zira - English (United States)");
+      await page.locator("#text2speach-V2GenderFilterSelect").selectOption("neutral");
       expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toContain("en-AU");
       await page.locator("#text2speach-V2LanguageSelect").selectOption("en-AU");
       await expect(page.locator("#text2speach-V2LanguageSelect")).toHaveValue("en-AU");
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Studio Neutral English (en-AU)"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-studio-neutral-english");
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Male Preferred:\n- en-AU: Studio Neutral English");
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filtered 1 matching SpeechSynthesis voices for Text to Speech V2 \(21 Male Preferred voices from 23 total; 19 languages; gender=Male Preferred; age=Any; language=en-AU\)\./);
-      await page.locator("#text2speach-V2GenderFilterSelect").selectOption("female-preferred");
-      await expect(page.locator("#text2speach-V2LanguageSelect")).toHaveValue("en-AU");
-      await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Studio Neutral English (en-AU)"]);
-      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Female Preferred:\n- en-AU: Studio Neutral English");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voices match Neutral:\n- en-AU: Studio Neutral English");
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Filtered 1 matching SpeechSynthesis voices for Text to Speech V2 \(17 Neutral voices from 23 total; 17 languages; gender=Neutral; age=Any; language=en-AU\)\./);
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
       expect(pageErrors).toEqual([]);
     } finally {
@@ -1911,7 +1917,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expectWorkspaceReturnRehydrated(page);
       expect(await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speach-V2"))).toBe(false);
-      expect(await page.evaluate(() => sessionStorage.getItem("workspace.tools.text2speach-V2"))).toBeNull();
+      expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speach-V2")).data)).toBeNull();
       const schemaContract = await page.evaluate(async () => {
         const schema = await fetch("/tools/schemas/tools/text2speach-V2.schema.json", { cache: "no-store" }).then((response) => response.json());
         return {
@@ -2865,7 +2871,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "workspace.tools.asset-manager-v2",
         "workspace.tools.palette-manager-v2",
         "workspace.tools.preview-generator-v2",
-        "workspace.tools.session-inspector-v2"
+        "workspace.tools.session-inspector-v2",
+        "workspace.tools.text2speach-V2"
       ]);
       expect(selectedGameHydration.toolKeys).not.toContain("workspace.tools.templates-v2");
       expect(selectedGameHydration.toolKeys.some((key) => key.endsWith(".schema") || key.endsWith(".state"))).toBe(false);
@@ -2873,13 +2880,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "asset-manager-v2",
         "palette-manager-v2",
         "preview-generator-v2",
-        "session-inspector-v2"
+        "session-inspector-v2",
+        "text2speach-V2"
       ]);
       const selectedGameHydrationReport = await page.evaluate(() => window.__workspaceManagerV2App.activeToolStateHydration.report);
       expect(selectedGameHydrationReport.hydratedTools.map((tool) => tool.toolId)).toEqual([
         "asset-manager-v2",
         "palette-manager-v2",
         "preview-generator-v2",
+        "text2speach-V2",
         "session-inspector-v2"
       ]);
       expect(selectedGameHydrationReport.skippedTools).toEqual([
@@ -2887,11 +2896,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           reason: "starter/dev-only tool is not enabled by the selected game workspace config",
           toolId: "templates-v2",
           toolName: "Tool Starter V2"
-        },
-        {
-          reason: "tool has no game data and no selected-game purpose",
-          toolId: "text2speach-V2",
-          toolName: "Text to Speech V2"
         }
       ]);
       expect(Object.values(selectedGameHydration.toolSessions).every((session) => (
@@ -2923,12 +2927,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["palette-manager-v2"]);
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["preview-generator-v2"]);
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["session-inspector-v2"]);
+      expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["text2speach-V2"]);
       expect(selectedGameHydration.toolSessions["asset-manager-v2"].state).toBeUndefined();
       expect(JSON.stringify(selectedGameHydration.toolSessions)).not.toMatch(/getDirectoryHandle|createWritable|FileSystemDirectoryHandle/);
       expect(Object.keys(selectedGameHydration.dataByTool["asset-manager-v2"].assets)).toHaveLength(14);
-      expect(selectedGameHydration.dataByTool["text2speach-V2"]).toBeUndefined();
+      expect(selectedGameHydration.dataByTool["text2speach-V2"]).toBeNull();
       expect(selectedGameHydration.toolSessions["templates-v2"]).toBeUndefined();
       expect(Object.values(selectedGameHydration.dirtyByTool)).toEqual([
+        { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
         { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
         { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
         { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
@@ -2974,9 +2980,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(assetTile).toContainText("14 managed assets");
       await expect(paletteTile).toContainText("10 palette swatches");
       await expect(previewTile).toContainText("Schema-valid manifest");
-      await expect(textToSpeechToolTile).toBeDisabled();
+      await expect(textToSpeechToolTile).toBeEnabled();
       await expect(textToSpeechToolTile).toContainText("Text to Speech V2");
-      await expect(textToSpeechToolTile).toContainText("Not enabled for game");
+      await expect(textToSpeechToolTile).toContainText("Ready to launch");
       await expect(textToSpeechToolTile).toContainText("Speech synthesis ready");
       await expect(sessionInspectorTile).toBeEnabled();
       await expect(sessionInspectorTile).toContainText("Session Inspector V2");
@@ -2994,8 +3000,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { height: 142, width: 180 }
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, preview-generator-v2, session-inspector-v2\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for text2speach-V2: tool has no game data and no selected-game purpose\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, preview-generator-v2, text2speach-V2, session-inspector-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for templates-v2: starter\/dev-only tool is not enabled by the selected game workspace config\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 10 active palette colors and 14 managed assets\./);
 
@@ -3004,7 +3009,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.asset-manager-v2']")).toHaveCount(1);
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.palette-manager-v2']")).toHaveCount(1);
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2']")).toHaveCount(1);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.text2speach-V2']")).toHaveCount(0);
+      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.text2speach-V2']")).toHaveCount(1);
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.session-inspector-v2']")).toHaveCount(1);
       await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.templates-v2']")).toHaveCount(0);
       await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.asset-manager-v2"]').click();
@@ -3449,7 +3454,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("keeps Text to Speech V2 disabled when game manifests omit Text to Speech payload", async ({ page }) => {
+  test("enables Text to Speech V2 after repo and game selection without Text to Speech-specific payload", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
 
@@ -3463,12 +3468,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expectWorkspaceReturnRehydrated(page);
       const textToSpeechToolTile = page.locator('[data-workspace-tool-id="text2speach-V2"]');
-      await expect(textToSpeechToolTile).toBeDisabled();
+      await expect(textToSpeechToolTile).toBeEnabled();
       await expect(textToSpeechToolTile).toContainText("Text to Speech V2");
-      await expect(textToSpeechToolTile).toContainText("Not enabled for game");
+      await expect(textToSpeechToolTile).toContainText("Ready to launch");
       await expect(textToSpeechToolTile).toContainText("Speech synthesis ready");
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for text2speach-V2: tool has no game data and no selected-game purpose\./);
-      expect(await page.evaluate(() => sessionStorage.getItem("workspace.tools.text2speach-V2"))).toBeNull();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, preview-generator-v2, text2speach-V2, session-inspector-v2\./);
+      expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speach-V2")).data)).toBeNull();
       expect(await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speach-V2"))).toBe(false);
       expect(pageErrors).toEqual([]);
     } finally {
