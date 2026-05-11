@@ -128,6 +128,7 @@
 
 .text2speach-V2__field textarea,
 .text2speach-V2__field select,
+.text2speach-V2__field input[type="text"],
 .text2speach-V2__field input[type="range"] {
   width: 100%;
   box-sizing: border-box;
@@ -135,7 +136,8 @@
 }
 
 .text2speach-V2__field textarea,
-.text2speach-V2__field select {
+.text2speach-V2__field select,
+.text2speach-V2__field input[type="text"] {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--surface-inline);
@@ -149,6 +151,11 @@
 }
 
 .text2speach-V2__field select {
+  min-height: 38px;
+  padding: 7px 9px;
+}
+
+.text2speach-V2__field input[type="text"] {
   min-height: 38px;
   padding: 7px 9px;
 }

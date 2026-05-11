@@ -46,8 +46,6 @@
         "pitch",
         "queueMode",
         "autoSpeak",
-        "repeatCount",
-        "delayBetweenRepeatsMs",
         "characterPreset",
         "ssmlLikePreset"
       ],
@@ -102,14 +100,6 @@
         },
         "autoSpeak": {
           "type": "boolean"
-        },
-        "repeatCount": {
-          "enum": [1, 2, 3, "loop"]
-        },
-        "delayBetweenRepeatsMs": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 5000
         },
         "characterPreset": {
           "type": "string",

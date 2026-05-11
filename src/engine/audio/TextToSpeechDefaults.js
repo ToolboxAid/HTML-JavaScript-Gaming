@@ -38,13 +38,6 @@ const TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS = Object.freeze([
   Object.freeze({ label: "Replace current speech", value: "replace" })
 ]);
 
-const TEXT_TO_SPEECH_REPEAT_COUNT_OPTIONS = Object.freeze([
-  Object.freeze({ label: "1", value: 1 }),
-  Object.freeze({ label: "2", value: 2 }),
-  Object.freeze({ label: "3", value: 3 }),
-  Object.freeze({ label: "Loop", value: "loop" })
-]);
-
 const TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS = Object.freeze([
   Object.freeze({ label: "Manual", value: "manual" }),
   Object.freeze({ label: "Alert", value: "alert" }),
@@ -68,7 +61,6 @@ const TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS = Object.freeze({
 });
 
 const TEXT_TO_SPEECH_RANGE_DEFAULTS = Object.freeze({
-  delayBetweenRepeatsMs: Object.freeze({ max: 5000, min: 0, step: 100, value: 0 }),
   pitch: Object.freeze({ max: 2, min: 0.1, step: 0.1, value: 1 }),
   rate: Object.freeze({ max: 2, min: 0.1, step: 0.1, value: 1 }),
   volume: Object.freeze({ max: 1, min: 0, step: 0.01, value: 1 })
@@ -77,7 +69,7 @@ const TEXT_TO_SPEECH_RANGE_DEFAULTS = Object.freeze({
 const TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS = Object.freeze({
   alert: Object.freeze({ pitch: 0.9, rate: 1.3, ssmlLikePreset: "normal", volume: 1 }),
   calm: Object.freeze({ pitch: 1, rate: 0.8, ssmlLikePreset: "normal", volume: 1 }),
-  "dnd-dungeon-master": Object.freeze({ pitch: 0.7, rate: 0.9, ssmlLikePreset: "normal", volume: 1 }),
+  "dnd-dungeon-master": Object.freeze({ pitch: 0.5, rate: 0.8, ssmlLikePreset: "normal", volume: 1 }),
   dramatic: Object.freeze({ pitch: 1.2, rate: 1.1, ssmlLikePreset: "normal", volume: 1 }),
   manual: Object.freeze({ pitch: 1, rate: 1, ssmlLikePreset: "normal", volume: 1 }),
   narrator: Object.freeze({ pitch: 1, rate: 1, ssmlLikePreset: "normal", volume: 1 }),
@@ -97,8 +89,6 @@ const TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS = Object.freeze([
   "pitch",
   "queueMode",
   "autoSpeak",
-  "repeatCount",
-  "delayBetweenRepeatsMs",
   "characterPreset",
   "ssmlLikePreset"
 ]);
@@ -106,13 +96,11 @@ const TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS = Object.freeze([
 const TEXT_TO_SPEECH_DEFAULT_OPTIONS = Object.freeze({
   autoSpeak: false,
   characterPreset: "manual",
-  delayBetweenRepeatsMs: TEXT_TO_SPEECH_RANGE_DEFAULTS.delayBetweenRepeatsMs.value,
   gender: "any",
   language: "en-US",
   pitch: TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual.pitch,
   queueMode: "replace",
   rate: TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual.rate,
-  repeatCount: 1,
   ssmlLikePreset: TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual.ssmlLikePreset,
   voice: "",
   voiceAge: "any",
@@ -137,7 +125,6 @@ const TEXT_TO_SPEECH_DEFAULT_QUEUE = Object.freeze([
     ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.dramatic,
     autoSpeak: false,
     characterPreset: "dramatic",
-    delayBetweenRepeatsMs: 500,
     gender: "male-preferred",
     id: "hero-ready",
     language: "en-GB",
@@ -145,7 +132,6 @@ const TEXT_TO_SPEECH_DEFAULT_QUEUE = Object.freeze([
     pitch: 1.4,
     queueMode: "append",
     rate: 1.2,
-    repeatCount: 2,
     text: "Systems ready. The hero prompt is queued for an upbeat menu confirmation.",
     voice: "mock-google-uk-english-male",
     voiceAge: "teen"
@@ -155,7 +141,6 @@ const TEXT_TO_SPEECH_DEFAULT_QUEUE = Object.freeze([
     ...TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.alert,
     autoSpeak: false,
     characterPreset: "alert",
-    delayBetweenRepeatsMs: 1000,
     gender: "female-preferred",
     id: "alert-warning",
     language: "en-US",
@@ -163,7 +148,6 @@ const TEXT_TO_SPEECH_DEFAULT_QUEUE = Object.freeze([
     pitch: 0.9,
     queueMode: "replace",
     rate: 1.3,
-    repeatCount: 3,
     text: "Warning. Incoming hazard detected. Please confirm the next action.",
     voice: "mock-microsoft-zira",
     voiceAge: "adult",
@@ -201,7 +185,6 @@ export {
   TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS,
   TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
-  TEXT_TO_SPEECH_REPEAT_COUNT_OPTIONS,
   TEXT_TO_SPEECH_SAMPLE_TEXT,
   TEXT_TO_SPEECH_SCHEMA_ID,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,

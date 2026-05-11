@@ -944,8 +944,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       "pitch",
       "queueMode",
       "autoSpeak",
-      "repeatCount",
-      "delayBetweenRepeatsMs",
       "characterPreset",
       "ssmlLikePreset"
     ];
@@ -974,7 +972,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(textToSpeechHeaderLayout.frameClass).toContain("text2speach-V2__local-shell-frame");
       expect(textToSpeechHeaderLayout.summaryDisplay).toBe("flex");
       expect(textToSpeechHeaderLayout.summaryJustify).toBe("space-between");
-      await expect(page.locator('[aria-controls="text2speach-V2TextContent"] > span:first-child')).toHaveText("Text");
+      await expect(page.locator('[aria-controls="text2speach-V2TextContent"] > span:first-child')).toHaveText("Text to Speak");
+      await expect(page.locator("#text2speach-V2TextContent")).not.toContainText("Speech text");
       await expect(page.locator('[aria-controls="text2speach-V2QueueContent"] > span:first-child')).toHaveText("Named Sentences");
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeHidden();
@@ -998,17 +997,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "text2speach-V2SsmlLikePresetSelect",
         "text2speach-V2QueueModeSelect",
         "text2speach-V2AutoSpeakCheckbox",
-        "text2speach-V2RepeatCountSelect",
-        "text2speach-V2DelayBetweenRepeatsMsSlider",
         "text2speach-V2VolumeSlider",
         "text2speach-V2RateSlider",
-        "text2speach-V2PitchSlider"
+        "text2speach-V2PitchSlider",
+        "text2speach-V2SpeechItemName"
       ]);
       expect(await page.locator("#text2speach-V2QueueContent [data-launch-mode-nav='tool'] button").evaluateAll((buttons) => buttons.map((button) => button.id))).toEqual([
         "text2speach-V2SpeakButton",
         "text2speach-V2PauseButton",
         "text2speach-V2ResumeButton",
-        "text2speach-V2StopButton"
+        "text2speach-V2StopButton",
+        "text2speach-V2StopAllButton"
       ]);
       const namedSentenceTopControls = await page.locator("#text2speach-V2QueueContent").evaluate((content) => {
         const firstElement = Array.from(content.children).find((child) => child.nodeType === Node.ELEMENT_NODE);
@@ -1024,7 +1023,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEACH_EN_US_VOICE_VALUES);
       await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText(MOCK_TEXT2SPEACH_EN_US_DETAILS);
       expect(await page.locator("#text2speach-V2QueueModeSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["append", "replace"]);
-      expect(await page.locator("#text2speach-V2RepeatCountSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["1", "2", "3", "loop"]);
+      await expect(page.locator("#text2speach-V2RepeatCountSelect")).toHaveCount(0);
+      await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveCount(0);
       expect(await page.locator("#text2speach-V2CharacterPresetSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["manual", "alert", "calm", "dnd-dungeon-master", "dramatic", "narrator", "robot"]);
       await expect(page.locator("#text2speach-V2CharacterPresetSelect option[value='dnd-dungeon-master']")).toHaveText("D&D Dungeon Master");
       expect(await page.locator("#text2speach-V2SsmlLikePresetSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["normal", "slow", "whisper-ish"]);
@@ -1052,20 +1052,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pitchSliderBox).not.toBeNull();
       expect(pitchHelperBox).not.toBeNull();
       expect(pitchHelperBox.y).toBeGreaterThan(pitchSliderBox.y);
-      await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveAttribute("min", "0");
-      await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveAttribute("max", "5000");
-      await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveAttribute("step", "100");
-      await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveValue("0");
+      await expect(page.locator("#text2speach-V2SpeechItemName")).toHaveValue("Narrator welcome");
       const schemaRequiredFields = await page.evaluate(async () => {
         const schema = await fetch("/tools/schemas/tools/text2speach-V2.schema.json", { cache: "no-store" }).then((response) => response.json());
         return {
           characterPresetEnum: schema.$defs.speechQueueItem.properties.characterPreset.enum,
           genderEnum: schema.$defs.speechQueueItem.properties.gender.enum,
+          hasDelayBetweenRepeatsMs: Object.hasOwn(schema.$defs.speechQueueItem.properties, "delayBetweenRepeatsMs"),
+          hasRepeatCount: Object.hasOwn(schema.$defs.speechQueueItem.properties, "repeatCount"),
           languagePattern: schema.$defs.speechQueueItem.properties.language.pattern,
           pitchMinimum: schema.$defs.speechQueueItem.properties.pitch.minimum,
           queueModeEnum: schema.$defs.speechQueueItem.properties.queueMode.enum,
           rateMaximum: schema.$defs.speechQueueItem.properties.rate.maximum,
-          repeatCountEnum: schema.$defs.speechQueueItem.properties.repeatCount.enum,
           required: schema.$defs.speechQueueItem.required,
           ssmlLikePresetEnum: schema.$defs.speechQueueItem.properties.ssmlLikePreset.enum,
           voiceAgeEnum: schema.$defs.speechQueueItem.properties.voiceAge.enum
@@ -1078,7 +1076,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(schemaRequiredFields.queueModeEnum).toEqual(["append", "replace"]);
       expect(schemaRequiredFields.pitchMinimum).toBe(0.1);
       expect(schemaRequiredFields.rateMaximum).toBe(2);
-      expect(schemaRequiredFields.repeatCountEnum).toEqual([1, 2, 3, "loop"]);
+      expect(schemaRequiredFields.hasRepeatCount).toBe(false);
+      expect(schemaRequiredFields.hasDelayBetweenRepeatsMs).toBe(false);
       expect(schemaRequiredFields.ssmlLikePresetEnum).toEqual(["normal", "slow", "whisper-ish"]);
       expect(schemaRequiredFields.voiceAgeEnum).toEqual(MOCK_TEXT2SPEACH_AGE_FILTER_VALUES);
       const readySummary = JSON.parse(await page.locator("#text2speach-V2SpeechSummary").textContent());
@@ -1087,6 +1086,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         expect(requiredSpeechOptionFields.every((field) => Object.hasOwn(item, field))).toBe(true);
       });
       await selectTextToSpeechTile(page, "alert-warning");
+      await expect(page.locator("#text2speach-V2SpeechItemName")).toHaveValue("Alert warning");
+      await page.locator("#text2speach-V2SpeechItemName").fill("Alert danger");
+      await expect(page.locator('[data-speech-item-id="alert-warning"] .text2speach-V2__queue-tile-name')).toHaveText("Alert danger");
+      await expect(page.locator("#text2speach-V2SpeechSummary")).toContainText('"selectedQueueItemName": "Alert danger"');
+      await page.locator("#text2speach-V2SpeechItemName").fill("");
+      await page.locator("#text2speach-V2AddItemButton").click();
+      await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(3);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/FAIL Text to Speech V2 Add blocked: Name is required before creating a named speech item\./);
+      await page.locator("#text2speach-V2SpeechItemName").fill("Alert warning");
       await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("Warning. Incoming hazard detected. Please confirm the next action.");
       await expect(page.locator("#text2speach-V2GenderFilterSelect")).toHaveValue("female-preferred");
       await expect(page.locator("#text2speach-V2LanguageSelect")).toHaveValue("en-US");
@@ -1096,8 +1104,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2SsmlLikePresetSelect")).toHaveValue("normal");
       await expect(page.locator("#text2speach-V2QueueModeSelect")).toHaveValue("replace");
       await expect(page.locator("#text2speach-V2AutoSpeakCheckbox")).not.toBeChecked();
-      await expect(page.locator("#text2speach-V2RepeatCountSelect")).toHaveValue("3");
-      await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveValue("1000");
       await expect(page.locator("#text2speach-V2VolumeSlider")).toHaveValue("0.9");
       await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1.3");
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("0.9");
@@ -1106,16 +1112,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(alertSummary).toMatchObject({
         autoSpeak: false,
         characterPreset: "alert",
-        delayBetweenRepeatsMs: 1000,
         gender: "female-preferred",
         language: "en-US",
         pitch: 0.9,
         queueMode: "replace",
         rate: 1.3,
-        repeatCount: 3,
         selectedQueueItemId: "alert-warning",
+        selectedQueueItemName: "Alert warning",
         ssmlLikePreset: "normal",
-        status: "queue-item-selected",
+        status: "speech-item-renamed",
         text: "Warning. Incoming hazard detected. Please confirm the next action.",
         voice: "mock-microsoft-zira",
         voiceAge: "adult",
@@ -1129,20 +1134,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2AgeFilterSelect")).toHaveValue("any");
       await expect(page.locator("#text2speach-V2CharacterPresetSelect")).toHaveValue("narrator");
       await expect(page.locator("#text2speach-V2QueueModeSelect")).toHaveValue("replace");
-      await expect(page.locator("#text2speach-V2RepeatCountSelect")).toHaveValue("1");
-      await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveValue("0");
+      await expect(page.locator("#text2speach-V2SpeechItemName")).toHaveValue("Narrator welcome");
       await expect(page.locator("#text2speach-V2VolumeSlider")).toHaveValue("1");
       await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1");
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1");
       await page.locator("#text2speach-V2AutoSpeakCheckbox").check();
       await expect.poll(async () => (await page.evaluate(() => window["__text2speach-V2Spoken"])).length).toBe(1);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: en-US; voice=Google US English; rate=1; pitch=1; volume=1; repeats=1\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: Narrator welcome; en-US; voice=Google US English; rate=1; pitch=1; volume=1; activeSpeakers=1\./);
       await page.locator("#text2speach-V2AutoSpeakCheckbox").uncheck();
       await page.evaluate(() => {
         window["__text2speach-V2Canceled"] = 0;
         window["__text2speach-V2Paused"] = 0;
         window["__text2speach-V2Resumed"] = 0;
         window["__text2speach-V2Spoken"] = [];
+        window["__text2speach-V2App"].engine.resetActiveSpeakers();
       });
       await page.locator("#text2speach-V2SpeechText").fill("");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeDisabled();
@@ -1154,8 +1159,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2AgeFilterSelect")).toHaveValue("teen");
       await expect(page.locator("#text2speach-V2CharacterPresetSelect")).toHaveValue("dramatic");
       await expect(page.locator("#text2speach-V2QueueModeSelect")).toHaveValue("append");
-      await expect(page.locator("#text2speach-V2RepeatCountSelect")).toHaveValue("2");
-      await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider")).toHaveValue("500");
+      await expect(page.locator("#text2speach-V2SpeechItemName")).toHaveValue("Hero ready");
       await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1.2");
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1.4");
       await page.locator("#text2speach-V2SpeechText").fill("Mission control confirms launch readiness.");
@@ -1230,14 +1234,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-google-uk-english-female");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
       await page.locator("#text2speach-V2QueueModeSelect").selectOption("append");
-      await page.locator("#text2speach-V2RepeatCountSelect").selectOption("3");
       await page.locator("#text2speach-V2CharacterPresetSelect").selectOption("calm");
       await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("0.8");
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1");
       await expect(page.locator("#text2speach-V2SsmlLikePresetSelect")).toHaveValue("normal");
       await page.locator("#text2speach-V2CharacterPresetSelect").selectOption("dnd-dungeon-master");
-      await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("0.9");
-      await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("0.7");
+      await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("0.8");
+      await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("0.5");
       await expect(page.locator("#text2speach-V2SsmlLikePresetSelect")).toHaveValue("normal");
       await page.locator("#text2speach-V2CharacterPresetSelect").selectOption("dramatic");
       await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("1.1");
@@ -1262,22 +1265,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("1.1");
       await expect(page.locator("#text2speach-V2VolumeSlider")).toHaveValue("0.95");
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK SSML-like preset applied: slow; rate=0\.8; pitch=1\.1; volume=0\.95\./);
-      await page.locator("#text2speach-V2DelayBetweenRepeatsMsSlider").fill("0");
       await page.locator("#text2speach-V2RateSlider").fill("1.5");
       await page.locator("#text2speach-V2PitchSlider").fill("1.2");
       await page.locator("#text2speach-V2VolumeSlider").fill("0.8");
       await page.locator("#text2speach-V2AgeFilterSelect").selectOption("child");
-      await expect(page.locator("#text2speach-V2DelayBetweenRepeatsMsOutput")).toHaveText("0");
       await expect(page.locator("#text2speach-V2RateOutput")).toHaveText("1.5");
       await expect(page.locator("#text2speach-V2PitchOutput")).toHaveText("1.2");
       await expect(page.locator("#text2speach-V2VolumeOutput")).toHaveText("0.8");
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Child; rate=1\.5; pitch=1\.2\./);
       await expect(page.locator("#text2speach-V2SpeechSummary")).toContainText('"ssmlLikePreset": "slow"');
       await page.locator("#text2speach-V2SpeakButton").click();
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: en-GB; voice=Google UK English Female; rate=1\.5; pitch=1\.2; volume=0\.8; repeats=3\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: Hero ready; en-GB; voice=Google UK English Female; rate=1\.5; pitch=1\.2; volume=0\.8; activeSpeakers=1\./);
       await expect(page.locator("#text2speach-V2SpeechSummary")).toContainText('"status": "speak-queued"');
+      await selectTextToSpeechTile(page, "narrator-welcome");
+      await page.locator("#text2speach-V2SpeakButton").click();
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: Narrator welcome; en-US; voice=Google US English; rate=1; pitch=1; volume=1; activeSpeakers=2\./);
       const spoken = await page.evaluate(() => window["__text2speach-V2Spoken"]);
-      expect(spoken).toHaveLength(3);
+      expect(spoken).toHaveLength(2);
       expect(spoken[0]).toMatchObject({
         lang: "en-GB",
         pitch: 1.2,
@@ -1286,15 +1290,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         voiceName: "Google UK English Female",
         volume: 0.8
       });
+      expect(spoken[1]).toMatchObject({
+        lang: "en-US",
+        pitch: 1,
+        rate: 1,
+        text: "Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.",
+        voiceName: "Google US English",
+        volume: 1
+      });
       expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(0);
       await page.locator("#text2speach-V2PauseButton").click();
       await page.locator("#text2speach-V2ResumeButton").click();
       await page.locator("#text2speach-V2StopButton").click();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech paused\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech resumed\./);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speech stopped\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/FAIL Cannot stop only Narrator welcome: browser SpeechSynthesis exposes global cancel only\. No global cancel was called while other speakers are active\./);
       expect(await page.evaluate(() => window["__text2speach-V2Paused"])).toBe(1);
       expect(await page.evaluate(() => window["__text2speach-V2Resumed"])).toBe(1);
+      expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(0);
+      await page.locator("#text2speach-V2StopAllButton").click();
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK All speech stopped: 2 active speaker\(s\) cleared\./);
       expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(1);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -2333,7 +2348,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         expect(Object.keys(item).sort()).toEqual([
           "autoSpeak",
           "characterPreset",
-          "delayBetweenRepeatsMs",
           "gender",
           "id",
           "language",
@@ -2341,7 +2355,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           "pitch",
           "queueMode",
           "rate",
-          "repeatCount",
           "ssmlLikePreset",
           "text",
           "voice",
@@ -2352,11 +2365,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(textToSpeechQueue[0]).toMatchObject({
         autoSpeak: false,
         characterPreset: "narrator",
-        delayBetweenRepeatsMs: 0,
         gender: "any",
         language: "en-US",
         queueMode: "replace",
-        repeatCount: 1,
         ssmlLikePreset: "normal",
         voiceAge: "any"
       });
@@ -2919,16 +2930,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/fromTool=workspace-manager-v2/);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
-      await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Speak", "Pause", "Resume", "Stop", "Return to Workspace"]);
+      await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Speak", "Pause", "Resume", "Stop", "Stop All", "Return to Workspace"]);
       await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(3);
       await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.");
+      await expect(page.locator("#text2speach-V2SpeechItemName")).toHaveValue("Narrator welcome");
       await expect(page.locator("#text2speach-V2WorkspaceSpeakButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2WorkspacePauseButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2WorkspaceResumeButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2WorkspaceStopButton")).toBeEnabled();
+      await expect(page.locator("#text2speach-V2WorkspaceStopAllButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveCount(4);
       await page.locator("#text2speach-V2WorkspaceSpeakButton").click();
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: en-US; voice=Google US English; rate=1; pitch=1; volume=1; repeats=1\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: Narrator welcome; en-US; voice=Google US English; rate=1; pitch=1; volume=1; activeSpeakers=1\./);
       const spoken = await page.evaluate(() => window["__text2speach-V2Spoken"]);
       expect(spoken).toHaveLength(1);
       expect(spoken[0].text).toBe("Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.");
@@ -2937,13 +2950,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#text2speach-V2WorkspaceStopButton").click();
       expect(await page.evaluate(() => window["__text2speach-V2Paused"])).toBe(1);
       expect(await page.evaluate(() => window["__text2speach-V2Resumed"])).toBe(1);
-      expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(2);
+      expect(await page.evaluate(() => window["__text2speach-V2Canceled"])).toBe(1);
+      await page.locator("#text2speach-V2SpeechItemName").fill("");
+      await page.locator("#text2speach-V2AddItemButton").click();
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/FAIL Text to Speech V2 Add blocked: Name is required before creating a named speech item\./);
+      await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(3);
+      await page.locator("#text2speach-V2SpeechItemName").fill("Workspace dungeon master");
       await page.locator("#text2speach-V2AddItemButton").click();
       await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(4);
-      await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("New speech line.");
       await page.locator("#text2speach-V2SpeechText").fill("Workspace-edited dungeon master line.");
       await page.locator("#text2speach-V2CharacterPresetSelect").selectOption("dnd-dungeon-master");
-      await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("0.7");
+      await expect(page.locator("#text2speach-V2RateSlider")).toHaveValue("0.8");
+      await expect(page.locator("#text2speach-V2PitchSlider")).toHaveValue("0.5");
       let textToSpeechSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speach-V2")));
       expect(textToSpeechSession.dirty).toMatchObject({
         isDirty: true,
@@ -2952,14 +2970,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(textToSpeechSession.data.queue).toHaveLength(4);
       expect(textToSpeechSession.data.queue.at(-1)).toMatchObject({
         characterPreset: "dnd-dungeon-master",
-        name: "New speech item",
+        name: "Workspace dungeon master 2",
+        pitch: 0.5,
+        rate: 0.8,
         text: "Workspace-edited dungeon master line."
       });
       await page.locator("#text2speach-V2DuplicateItemButton").click();
       await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(5);
       textToSpeechSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speach-V2")));
       expect(textToSpeechSession.dirty.reason).toBe("speech-item-duplicated");
-      expect(textToSpeechSession.data.queue.at(-1).name).toBe("New speech item copy");
+      expect(textToSpeechSession.data.queue.at(-1).name).toBe("Workspace dungeon master 2 copy");
       await page.locator("#text2speach-V2DeleteItemButton").click();
       await expect(page.locator("#text2speach-V2QueueTiles [data-speech-item-id]")).toHaveCount(4);
       textToSpeechSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speach-V2")));

@@ -15,17 +15,12 @@ function boundedNumber(value, { fallback, max, min }) {
 
 class TextToSpeechEngine {
   constructor({
-    clearTimeoutRef = globalThis.clearTimeout,
-    setTimeoutRef = globalThis.setTimeout,
     speechSynthesisRef = globalThis.speechSynthesis,
     utteranceCtor = globalThis.SpeechSynthesisUtterance
   } = {}) {
-    this.clearTimeout = clearTimeoutRef;
-    this.setTimeout = setTimeoutRef;
-    this.scheduledRepeats = new Set();
+    this.activeSpeakers = new Map();
     this.speechSynthesis = speechSynthesisRef;
     this.Utterance = utteranceCtor;
-    this.loopCanceled = false;
   }
 
   isSupported() {
@@ -100,13 +95,8 @@ class TextToSpeechEngine {
     };
   }
 
-  clearScheduledRepeats() {
-    this.scheduledRepeats.forEach((timerId) => {
-      if (typeof this.clearTimeout === "function") {
-        this.clearTimeout(timerId);
-      }
-    });
-    this.scheduledRepeats.clear();
+  activeSpeakerList() {
+    return Array.from(this.activeSpeakers.values()).map((speaker) => ({ ...speaker }));
   }
 
   createUtterance({
@@ -155,29 +145,16 @@ class TextToSpeechEngine {
     };
   }
 
-  queueUtterance(utterance, delayBetweenRepeatsMs) {
-    const delay = boundedNumber(delayBetweenRepeatsMs, { fallback: 0, max: 60000, min: 0 });
-    if (delay === 0) {
-      this.speechSynthesis.speak(utterance);
-      return;
-    }
-    const timerId = this.setTimeout(() => {
-      this.scheduledRepeats.delete(timerId);
-      this.speechSynthesis.speak(utterance);
-    }, delay);
-    this.scheduledRepeats.add(timerId);
-  }
-
   speak({
     autoSpeak = TEXT_TO_SPEECH_DEFAULTS.autoSpeak,
     characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
-    delayBetweenRepeatsMs = TEXT_TO_SPEECH_DEFAULTS.delayBetweenRepeatsMs,
     gender = TEXT_TO_SPEECH_DEFAULTS.gender,
     language = TEXT_TO_SPEECH_DEFAULTS.language,
     pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
     queueMode = TEXT_TO_SPEECH_DEFAULTS.queueMode,
     rate = TEXT_TO_SPEECH_DEFAULTS.rate,
-    repeatCount = TEXT_TO_SPEECH_DEFAULTS.repeatCount,
+    speakerId = "",
+    speakerName = "",
     ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
     text = TEXT_TO_SPEECH_DEFAULTS.sampleText,
     voice = TEXT_TO_SPEECH_DEFAULTS.voice,
@@ -189,53 +166,51 @@ class TextToSpeechEngine {
       return firstUtterance;
     }
 
-    if (queueMode === "replace") {
-      this.clearScheduledRepeats();
-      this.speechSynthesis.cancel();
-    } else if (queueMode !== "append") {
+    if (queueMode !== "append" && queueMode !== "replace") {
       return { message: `Unsupported ${TEXT_TO_SPEECH_DISPLAY_NAME} queueMode: ${queueMode}.`, ok: false };
     }
 
-    this.loopCanceled = false;
-    const loopMode = repeatCount === "loop";
-    const numericRepeatCount = loopMode ? 1 : boundedNumber(repeatCount, { fallback: 1, max: 3, min: 1 });
-    const utteranceDetails = [];
-    for (let index = 0; index < numericRepeatCount; index += 1) {
-      const nextUtterance = index === 0
-        ? firstUtterance
-        : this.createUtterance({ language, pitch, rate, text, voice, volume });
-      if (!nextUtterance.ok) {
-        return nextUtterance;
+    const activeSpeakerId = String(speakerId || speakerName || `speaker-${Date.now().toString(36)}`);
+    const activeSpeakerName = String(speakerName || activeSpeakerId);
+    const activeSpeaker = {
+      id: activeSpeakerId,
+      language: firstUtterance.utterance.lang,
+      name: activeSpeakerName,
+      pitch: firstUtterance.utterance.pitch,
+      queueMode,
+      rate: firstUtterance.utterance.rate,
+      status: "queued",
+      text: firstUtterance.text,
+      voiceName: firstUtterance.voiceName,
+      voiceURI: firstUtterance.voiceURI,
+      volume: firstUtterance.utterance.volume
+    };
+    firstUtterance.utterance.onstart = () => {
+      const speaker = this.activeSpeakers.get(activeSpeakerId);
+      if (speaker) {
+        this.activeSpeakers.set(activeSpeakerId, { ...speaker, status: "speaking" });
       }
-      utteranceDetails.push(nextUtterance);
-      this.queueUtterance(nextUtterance.utterance, index === 0 ? 0 : delayBetweenRepeatsMs);
-    }
-
-    if (loopMode) {
-      firstUtterance.utterance.onend = () => {
-        if (this.loopCanceled) {
-          return;
-        }
-        const loopUtterance = this.createUtterance({ language, pitch, rate, text, voice, volume });
-        if (loopUtterance.ok) {
-          loopUtterance.utterance.onend = firstUtterance.utterance.onend;
-          this.queueUtterance(loopUtterance.utterance, delayBetweenRepeatsMs);
-        }
-      };
-    }
+    };
+    const clearSpeaker = () => {
+      this.activeSpeakers.delete(activeSpeakerId);
+    };
+    firstUtterance.utterance.onend = clearSpeaker;
+    firstUtterance.utterance.onerror = clearSpeaker;
+    this.activeSpeakers.set(activeSpeakerId, activeSpeaker);
+    this.speechSynthesis.speak(firstUtterance.utterance);
 
     return {
+      activeSpeakers: this.activeSpeakerList(),
       autoSpeak: autoSpeak === true,
       characterPreset,
-      delayBetweenRepeatsMs: boundedNumber(delayBetweenRepeatsMs, { fallback: 0, max: 60000, min: 0 }),
       gender,
       language: firstUtterance.utterance.lang,
       ok: true,
       pitch: firstUtterance.utterance.pitch,
       queueMode,
-      queuedCount: loopMode ? "loop" : utteranceDetails.length,
       rate: firstUtterance.utterance.rate,
-      repeatCount,
+      speakerId: activeSpeakerId,
+      speakerName: activeSpeakerName,
       ssmlLikePreset,
       text: firstUtterance.text,
       voiceAge,
@@ -261,13 +236,41 @@ class TextToSpeechEngine {
     return { ok: true };
   }
 
-  stop() {
+  stop({ speakerId = "" } = {}) {
     if (!this.isSupported()) {
       return { message: "SpeechSynthesis is unavailable in this browser.", ok: false };
     }
-    this.loopCanceled = true;
-    this.clearScheduledRepeats();
+    const selectedSpeakerId = String(speakerId || "");
+    const speaker = selectedSpeakerId
+      ? this.activeSpeakers.get(selectedSpeakerId)
+      : this.activeSpeakerList()[0];
+    if (!speaker) {
+      return { message: `No active ${TEXT_TO_SPEECH_DISPLAY_NAME} speaker is tracked for ${selectedSpeakerId || "the current selection"}.`, ok: false };
+    }
+    if (this.activeSpeakers.size > 1) {
+      return {
+        activeSpeakers: this.activeSpeakerList(),
+        message: `Cannot stop only ${speaker.name}: browser SpeechSynthesis exposes global cancel only. No global cancel was called while other speakers are active.`,
+        ok: false
+      };
+    }
     this.speechSynthesis.cancel();
+    this.activeSpeakers.delete(speaker.id);
+    return { activeSpeakers: this.activeSpeakerList(), ok: true, speakerName: speaker.name };
+  }
+
+  stopAll() {
+    if (!this.isSupported()) {
+      return { message: "SpeechSynthesis is unavailable in this browser.", ok: false };
+    }
+    const stoppedCount = this.activeSpeakers.size;
+    this.speechSynthesis.cancel();
+    this.activeSpeakers.clear();
+    return { ok: true, stoppedCount };
+  }
+
+  resetActiveSpeakers() {
+    this.activeSpeakers.clear();
     return { ok: true };
   }
 }

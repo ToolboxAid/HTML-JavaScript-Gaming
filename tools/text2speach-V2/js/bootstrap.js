@@ -37,6 +37,10 @@ window.addEventListener("DOMContentLoaded", () => {
         requireElement("#text2speach-V2StopButton"),
         requireElement("#text2speach-V2WorkspaceStopButton")
       ],
+      stopAllButtons: [
+        requireElement("#text2speach-V2StopAllButton"),
+        requireElement("#text2speach-V2WorkspaceStopAllButton")
+      ],
       toolNav: requireElement('[data-launch-mode-nav="tool"]'),
       workspaceNav: requireElement('[data-launch-mode-nav="workspace"]')
     }),
@@ -48,14 +52,13 @@ window.addEventListener("DOMContentLoaded", () => {
       addButton: requireElement("#text2speach-V2AddItemButton"),
       deleteButton: requireElement("#text2speach-V2DeleteItemButton"),
       duplicateButton: requireElement("#text2speach-V2DuplicateItemButton"),
+      itemNameInput: requireElement("#text2speach-V2SpeechItemName"),
       queueTiles: requireElement("#text2speach-V2QueueTiles")
     }),
     speechOptions: new SpeechOptionsControl({
       ageFilterSelect: requireElement("#text2speach-V2AgeFilterSelect"),
       autoSpeakCheckbox: requireElement("#text2speach-V2AutoSpeakCheckbox"),
       characterPresetSelect: requireElement("#text2speach-V2CharacterPresetSelect"),
-      delayBetweenRepeatsMsOutput: requireElement("#text2speach-V2DelayBetweenRepeatsMsOutput"),
-      delayBetweenRepeatsMsSlider: requireElement("#text2speach-V2DelayBetweenRepeatsMsSlider"),
       genderFilterSelect: requireElement("#text2speach-V2GenderFilterSelect"),
       languageSelect: requireElement("#text2speach-V2LanguageSelect"),
       pitchOutput: requireElement("#text2speach-V2PitchOutput"),
@@ -63,7 +66,6 @@ window.addEventListener("DOMContentLoaded", () => {
       queueModeSelect: requireElement("#text2speach-V2QueueModeSelect"),
       rateOutput: requireElement("#text2speach-V2RateOutput"),
       rateSlider: requireElement("#text2speach-V2RateSlider"),
-      repeatCountSelect: requireElement("#text2speach-V2RepeatCountSelect"),
       ssmlLikePresetSelect: requireElement("#text2speach-V2SsmlLikePresetSelect"),
       voiceDetails: requireElement("#text2speach-V2VoiceDetails"),
       voiceSelect: requireElement("#text2speach-V2VoiceSelect"),

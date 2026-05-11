@@ -10,7 +10,6 @@ import {
   TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS,
   TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
-  TEXT_TO_SPEECH_REPEAT_COUNT_OPTIONS,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
   TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
@@ -51,6 +50,18 @@ function validateQueue(queue) {
   return { ok: true };
 }
 
+function withoutLegacyRepeatFields(item) {
+  const currentItem = { ...item };
+  const removedLegacyFields = Object.prototype.hasOwnProperty.call(currentItem, "delayBetweenRepeatsMs")
+    || Object.prototype.hasOwnProperty.call(currentItem, "repeatCount");
+  delete currentItem.delayBetweenRepeatsMs;
+  delete currentItem.repeatCount;
+  return {
+    item: currentItem,
+    removedLegacyFields
+  };
+}
+
 export class TextToSpeechToolApp {
   constructor({
     actionNav,
@@ -83,7 +94,6 @@ export class TextToSpeechToolApp {
       languageOptions: TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
       queueModeOptions: TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
       rangeDefaults: TEXT_TO_SPEECH_RANGE_DEFAULTS,
-      repeatCountOptions: TEXT_TO_SPEECH_REPEAT_COUNT_OPTIONS,
       ssmlLikePresetDefaults: TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
       ssmlLikePresetOptions: TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
       voiceAgePresetDefaults: TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
@@ -95,13 +105,15 @@ export class TextToSpeechToolApp {
         this.window.location.href = url;
       },
       onSpeak: () => this.speak(),
-      onStop: () => this.stop()
+      onStop: () => this.stop(),
+      onStopAll: () => this.stopAll()
     });
     this.queueControl.mount({
       onAdd: () => this.addSpeechItem(),
       onChange: (item) => this.applyQueueItem(item, "queue-item-selected"),
       onDelete: () => this.deleteSpeechItem(),
-      onDuplicate: () => this.duplicateSpeechItem()
+      onDuplicate: () => this.duplicateSpeechItem(),
+      onNameChange: (name) => this.updateSelectedItemName(name)
     });
     this.textInput.mount({
       onInput: () => {
@@ -153,15 +165,20 @@ export class TextToSpeechToolApp {
 
   loadQueue() {
     const queueData = this.queueData();
-    const validation = validateQueue(queueData.queue);
+    const migration = this.queueWithoutLegacyRepeatFields(queueData.queue);
+    const validation = validateQueue(migration.queue);
     if (!validation.ok) {
       this.statusLog.fail(validation.message);
       this.actionNav.setSpeakEnabled(false);
       return;
     }
-    this.queueControl.populate(queueData.queue);
-    this.applyQueueItem(this.queueControl.selectedItem() || queueData.queue[0], "queue-loaded");
-    this.statusLog.ok(`Loaded ${queueData.queue.length} schema-complete ${TEXT_TO_SPEECH_DISPLAY_NAME} queue items.`);
+    this.queueControl.populate(migration.queue);
+    this.applyQueueItem(this.queueControl.selectedItem() || migration.queue[0], "queue-loaded");
+    this.statusLog.ok(`Loaded ${migration.queue.length} schema-complete ${TEXT_TO_SPEECH_DISPLAY_NAME} queue items.`);
+    if (migration.removedLegacyFieldCount > 0) {
+      this.statusLog.ok(`Migrated ${migration.removedLegacyFieldCount} ${TEXT_TO_SPEECH_DISPLAY_NAME} queue item(s): ignored legacy repeatCount/delayBetweenRepeatsMs fields.`);
+      this.markWorkspaceDirty("legacy-repeat-fields-migrated", ["queue"]);
+    }
   }
 
   queueData() {
@@ -211,8 +228,28 @@ export class TextToSpeechToolApp {
     return `${baseId}-${Date.now().toString(36)}`;
   }
 
+  queueWithoutLegacyRepeatFields(queue) {
+    if (!Array.isArray(queue)) {
+      return { queue: [], removedLegacyFieldCount: 0 };
+    }
+    let removedLegacyFieldCount = 0;
+    return {
+      queue: queue.map((item) => {
+        if (!isPlainObject(item)) {
+          return item;
+        }
+        const result = withoutLegacyRepeatFields(item);
+        if (result.removedLegacyFields) {
+          removedLegacyFieldCount += 1;
+        }
+        return result.item;
+      }),
+      removedLegacyFieldCount
+    };
+  }
+
   speechItemFromControls({ id, name, text = this.textInput.text() || TEXT_TO_SPEECH_DEFAULTS.sampleText } = {}) {
-    const itemName = name || this.uniqueItemName("New speech item");
+    const itemName = String(name || "").trim() || this.uniqueItemName("New speech item");
     return {
       id: id || this.uniqueItemId(itemName),
       name: itemName,
@@ -228,7 +265,7 @@ export class TextToSpeechToolApp {
     }
     return this.speechItemFromControls({
       id: selectedItem.id,
-      name: selectedItem.name
+      name: this.queueControl.itemName() || selectedItem.name
     });
   }
 
@@ -275,16 +312,44 @@ export class TextToSpeechToolApp {
   }
 
   addSpeechItem() {
-    const name = this.uniqueItemName("New speech item");
+    const requestedName = this.queueControl.itemName();
+    if (!requestedName) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Add blocked: Name is required before creating a named speech item.`);
+      return;
+    }
+    const name = this.uniqueItemName(requestedName);
     const item = this.speechItemFromControls({
       id: this.uniqueItemId(name),
       name,
-      text: "New speech line."
+      text: this.textInput.text() || "New speech line."
     });
     this.queueControl.addItem(item);
     this.applyQueueItem(item, "queue-item-added");
     this.markWorkspaceDirty("speech-item-added", [`queue.${item.id}`]);
     this.statusLog.ok(`Added speech item: ${item.name}.`);
+  }
+
+  updateSelectedItemName(name) {
+    if (this.isApplyingQueueItem) {
+      return;
+    }
+    const selectedItem = this.queueControl.selectedItem();
+    if (!selectedItem) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} name update failed: no named speech item is selected.`);
+      return;
+    }
+    const itemName = String(name || "").trim();
+    if (!itemName) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} name update blocked: Name is required and the selected item remains ${selectedItem.name}.`);
+      return;
+    }
+    const item = {
+      ...selectedItem,
+      name: itemName
+    };
+    this.queueControl.replaceSelectedItem(item);
+    this.markWorkspaceDirty("speech-item-renamed", [`queue.${item.id}.name`]);
+    this.refreshOutputSummary("speech-item-renamed");
   }
 
   duplicateSpeechItem() {
@@ -377,6 +442,7 @@ export class TextToSpeechToolApp {
     }
     this.isApplyingQueueItem = true;
     try {
+      this.queueControl.setItemName(item.name);
       this.textInput.setText(item.text, { emit: false });
       this.speechOptions.setValue(item);
     } finally {
@@ -392,8 +458,10 @@ export class TextToSpeechToolApp {
     const options = this.speechOptions.value();
     return {
       ...options,
+      activeSpeakers: this.engine.activeSpeakerList(),
       queue: this.queueControl.selectedQueue(),
       selectedQueueItemId: this.queueControl.selectedItem()?.id || "",
+      selectedQueueItemName: this.queueControl.selectedItem()?.name || "",
       status,
       text: this.textInput.text()
     };
@@ -410,11 +478,15 @@ export class TextToSpeechToolApp {
     this.actionNav.setPauseEnabled(this.engine.canPause());
     this.actionNav.setResumeEnabled(this.engine.canResume());
     this.actionNav.setStopEnabled(this.engine.isSupported());
+    this.actionNav.setStopAllEnabled(this.engine.isSupported());
   }
 
   speak() {
+    const selectedItem = this.queueControl.selectedItem();
     const result = this.engine.speak({
       ...this.speechOptions.value(),
+      speakerId: selectedItem?.id || "",
+      speakerName: selectedItem?.name || "",
       text: this.textInput.text()
     });
     if (!result.ok) {
@@ -426,9 +498,10 @@ export class TextToSpeechToolApp {
       ...result,
       queue: this.queueControl.selectedQueue(),
       selectedQueueItemId: this.queueControl.selectedItem()?.id || "",
+      selectedQueueItemName: this.queueControl.selectedItem()?.name || "",
       status: "speak-queued"
     });
-    this.statusLog.ok(`Speak queued: ${result.language}; voice=${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}; repeats=${result.queuedCount}.`);
+    this.statusLog.ok(`Speak queued: ${result.speakerName}; ${result.language}; voice=${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}; activeSpeakers=${result.activeSpeakers.length}.`);
     this.refreshActionState();
   }
 
@@ -453,12 +526,25 @@ export class TextToSpeechToolApp {
   }
 
   stop() {
-    const result = this.engine.stop();
+    const selectedItem = this.queueControl.selectedItem();
+    const result = this.engine.stop({ speakerId: selectedItem?.id || "" });
     if (!result.ok) {
       this.statusLog.fail(result.message);
+      this.refreshOutputSummary("stop-failed");
       return;
     }
-    this.statusLog.ok("Speech stopped.");
+    this.statusLog.ok(`Speech stopped: ${result.speakerName}.`);
     this.refreshOutputSummary("stopped");
+  }
+
+  stopAll() {
+    const result = this.engine.stopAll();
+    if (!result.ok) {
+      this.statusLog.fail(result.message);
+      this.refreshOutputSummary("stop-all-failed");
+      return;
+    }
+    this.statusLog.ok(`All speech stopped: ${result.stoppedCount} active speaker(s) cleared.`);
+    this.refreshOutputSummary("stopped-all");
   }
 }

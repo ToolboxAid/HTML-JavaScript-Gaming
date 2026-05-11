@@ -11,11 +11,13 @@ export class QueueControl {
     addButton,
     deleteButton,
     duplicateButton,
+    itemNameInput,
     queueTiles
   }) {
     this.addButton = addButton;
     this.deleteButton = deleteButton;
     this.duplicateButton = duplicateButton;
+    this.itemNameInput = itemNameInput;
     this.queue = [];
     this.queueTiles = queueTiles;
     this.selectedItemId = "";
@@ -27,6 +29,7 @@ export class QueueControl {
       ? selectedItemId
       : this.queue[0]?.id || "";
     this.render();
+    this.syncItemNameInput();
   }
 
   render() {
@@ -51,7 +54,7 @@ export class QueueControl {
     }));
   }
 
-  mount({ onAdd, onChange, onDelete, onDuplicate }) {
+  mount({ onAdd, onChange, onDelete, onDuplicate, onNameChange }) {
     this.queueTiles.addEventListener("click", (event) => {
       const tile = event.target.closest("[data-speech-item-id]");
       if (!tile) {
@@ -69,6 +72,9 @@ export class QueueControl {
     this.deleteButton.addEventListener("click", () => {
       onDelete(this.selectedItem());
     });
+    this.itemNameInput.addEventListener("input", () => {
+      onNameChange(this.itemName());
+    });
   }
 
   selectItem(itemId) {
@@ -77,12 +83,14 @@ export class QueueControl {
     }
     this.selectedItemId = itemId;
     this.render();
+    this.syncItemNameInput();
   }
 
   addItem(item) {
     this.queue.push({ ...item });
     this.selectedItemId = item.id;
     this.render();
+    this.syncItemNameInput();
   }
 
   replaceSelectedItem(item) {
@@ -93,6 +101,7 @@ export class QueueControl {
     this.queue[index] = { ...item };
     this.selectedItemId = item.id;
     this.render();
+    this.syncItemNameInput();
   }
 
   deleteSelectedItem(replacementItem = null) {
@@ -108,7 +117,20 @@ export class QueueControl {
       this.selectedItemId = this.queue[Math.min(index, this.queue.length - 1)]?.id || "";
     }
     this.render();
+    this.syncItemNameInput();
     return this.selectedItem();
+  }
+
+  itemName() {
+    return this.itemNameInput.value.trim();
+  }
+
+  setItemName(name) {
+    this.itemNameInput.value = String(name || "");
+  }
+
+  syncItemNameInput() {
+    this.setItemName(this.selectedItem()?.name || "");
   }
 
   selectedItem() {

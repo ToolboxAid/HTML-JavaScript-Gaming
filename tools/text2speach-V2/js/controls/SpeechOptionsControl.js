@@ -12,12 +12,6 @@ function numberValue(input) {
   return Number(input.value);
 }
 
-function stringOrNumber(value) {
-  return Number.isFinite(Number(value)) && String(value).trim() !== ""
-    ? Number(value)
-    : String(value);
-}
-
 function configureRange(input, output, range) {
   input.min = String(range.min);
   input.max = String(range.max);
@@ -137,8 +131,6 @@ export class SpeechOptionsControl {
     ageFilterSelect,
     autoSpeakCheckbox,
     characterPresetSelect,
-    delayBetweenRepeatsMsOutput,
-    delayBetweenRepeatsMsSlider,
     genderFilterSelect,
     languageSelect,
     pitchOutput,
@@ -146,7 +138,6 @@ export class SpeechOptionsControl {
     queueModeSelect,
     rateOutput,
     rateSlider,
-    repeatCountSelect,
     ssmlLikePresetSelect,
     voiceDetails,
     voiceSelect,
@@ -158,8 +149,6 @@ export class SpeechOptionsControl {
     this.characterPresetDefaults = {};
     this.characterPresetSelect = characterPresetSelect;
     this.defaultLanguage = "";
-    this.delayBetweenRepeatsMsOutput = delayBetweenRepeatsMsOutput;
-    this.delayBetweenRepeatsMsSlider = delayBetweenRepeatsMsSlider;
     this.genderFilterSelect = genderFilterSelect;
     this.languageSelect = languageSelect;
     this.pitchOutput = pitchOutput;
@@ -167,7 +156,6 @@ export class SpeechOptionsControl {
     this.queueModeSelect = queueModeSelect;
     this.rateOutput = rateOutput;
     this.rateSlider = rateSlider;
-    this.repeatCountSelect = repeatCountSelect;
     this.ssmlLikePresetSelect = ssmlLikePresetSelect;
     this.ssmlLikePresetDefaults = {};
     this.voiceDetails = voiceDetails;
@@ -188,7 +176,6 @@ export class SpeechOptionsControl {
     languageOptions,
     queueModeOptions,
     rangeDefaults,
-    repeatCountOptions,
     ssmlLikePresetDefaults,
     ssmlLikePresetOptions,
     voiceAgePresetDefaults
@@ -201,13 +188,11 @@ export class SpeechOptionsControl {
     populateSelect(this.genderFilterSelect, genderFilterOptions, "any");
     populateSelect(this.languageSelect, languageOptions, defaults.language);
     populateSelect(this.queueModeSelect, queueModeOptions, defaults.queueMode);
-    populateSelect(this.repeatCountSelect, repeatCountOptions, defaults.repeatCount);
     populateSelect(this.characterPresetSelect, characterPresetOptions, defaults.characterPreset);
     populateSelect(this.ssmlLikePresetSelect, ssmlLikePresetOptions, defaults.ssmlLikePreset);
     configureRange(this.volumeSlider, this.volumeOutput, rangeDefaults.volume);
     configureRange(this.rateSlider, this.rateOutput, rangeDefaults.rate);
     configureRange(this.pitchSlider, this.pitchOutput, rangeDefaults.pitch);
-    configureRange(this.delayBetweenRepeatsMsSlider, this.delayBetweenRepeatsMsOutput, rangeDefaults.delayBetweenRepeatsMs);
     this.autoSpeakCheckbox.checked = defaults.autoSpeak === true;
   }
 
@@ -426,9 +411,7 @@ export class SpeechOptionsControl {
     });
     [
       this.autoSpeakCheckbox,
-      this.delayBetweenRepeatsMsSlider,
       this.queueModeSelect,
-      this.repeatCountSelect,
       this.voiceSelect
     ].forEach((control) => {
       control.addEventListener(control.tagName === "SELECT" ? "change" : "input", () => {
@@ -458,13 +441,11 @@ export class SpeechOptionsControl {
     this.ageFilterSelect.value = String(value.voiceAge || "any");
     this.languageSelect.value = String(value.language);
     this.queueModeSelect.value = String(value.queueMode);
-    this.repeatCountSelect.value = String(value.repeatCount);
     this.characterPresetSelect.value = String(value.characterPreset);
     this.ssmlLikePresetSelect.value = String(value.ssmlLikePreset);
     this.volumeSlider.value = String(value.volume);
     this.rateSlider.value = String(value.rate);
     this.pitchSlider.value = String(value.pitch);
-    this.delayBetweenRepeatsMsSlider.value = String(value.delayBetweenRepeatsMs);
     this.autoSpeakCheckbox.checked = value.autoSpeak === true;
     this.voiceSelect.value = "";
     if (value.voice && Array.from(this.voiceSelect.options).some((option) => option.value === String(value.voice))) {
@@ -477,7 +458,6 @@ export class SpeechOptionsControl {
     this.volumeOutput.textContent = this.volumeSlider.value;
     this.rateOutput.textContent = this.rateSlider.value;
     this.pitchOutput.textContent = this.pitchSlider.value;
-    this.delayBetweenRepeatsMsOutput.textContent = this.delayBetweenRepeatsMsSlider.value;
   }
 
   hasVoice() {
@@ -492,13 +472,11 @@ export class SpeechOptionsControl {
     return {
       autoSpeak: this.autoSpeakCheckbox.checked,
       characterPreset: this.characterPresetSelect.value,
-      delayBetweenRepeatsMs: numberValue(this.delayBetweenRepeatsMsSlider),
       gender: this.genderFilterSelect.value,
       language: this.languageSelect.value,
       pitch: numberValue(this.pitchSlider),
       queueMode: this.queueModeSelect.value,
       rate: numberValue(this.rateSlider),
-      repeatCount: stringOrNumber(this.repeatCountSelect.value),
       ssmlLikePreset: this.ssmlLikePresetSelect.value,
       voice: this.voiceSelect.value,
       voiceAge: this.ageFilterSelect.value,
