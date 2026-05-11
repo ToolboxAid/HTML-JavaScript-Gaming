@@ -850,8 +850,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       "id",
       "name",
       "text",
-      "voice",
       "language",
+      "voice",
       "volume",
       "rate",
       "pitch",
@@ -878,11 +878,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2ResumeButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2StopButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Loaded 3 schema-complete text2speach-V2 queue items\./);
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Loaded 3 SpeechSynthesis voices for text2speach-V2\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Loaded 2 matching SpeechSynthesis voices for text2speach-V2 \(3 available; language=en-US\)\./);
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK text2speach-V2 ready\. SpeechSynthesis is available\./);
       expect(await page.locator("#text2speach-V2QueueSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["narrator-welcome", "hero-ready", "alert-warning"]);
-      expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["mock-us", "mock-uk", "mock-alert"]);
+      expect(await page.locator("#text2speach-V2SpeechOptionsContent label").evaluateAll((labels) => labels.map((label) => label.getAttribute("for")).slice(0, 2))).toEqual(["text2speach-V2LanguageSelect", "text2speach-V2VoiceSelect"]);
       expect(await page.locator("#text2speach-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["en-US", "en-GB", "es-ES", "fr-FR", "ja-JP"]);
+      expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["mock-us", "mock-alert"]);
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("2 voices match en-US: Mock US Voice, Mock Alert Voice.");
       expect(await page.locator("#text2speach-V2QueueModeSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["replace", "append"]);
       expect(await page.locator("#text2speach-V2RepeatCountSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["1", "2", "3", "loop"]);
       expect(await page.locator("#text2speach-V2CharacterPresetSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["narrator", "hero", "villain", "alert"]);
@@ -934,8 +936,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2SpeechText")).toHaveValue("Systems ready. The hero prompt is queued for an upbeat menu confirmation.");
       await page.locator("#text2speach-V2SpeechText").fill("Mission control confirms launch readiness.");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
-      await page.locator("#text2speach-V2VoiceSelect").selectOption("mock-uk");
       await page.locator("#text2speach-V2LanguageSelect").selectOption("en-GB");
+      await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["Mock UK Voice (en-GB)"]);
+      await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-uk");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("1 voice matches en-GB: Mock UK Voice.");
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Voice selection adjusted for language en-GB: Mock UK Voice \(en-GB\)\./);
+      await page.locator("#text2speach-V2LanguageSelect").selectOption("es-ES");
+      await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveText(["No voices for es-ES"]);
+      await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("");
+      await expect(page.locator("#text2speach-V2SpeakButton")).toBeDisabled();
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("0 voices match es-ES. 3 total voices loaded.");
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/FAIL Voice selection cleared for language es-ES: no matching SpeechSynthesis voices\./);
+      await page.locator("#text2speach-V2LanguageSelect").selectOption("en-GB");
+      await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-uk");
+      await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
       await page.locator("#text2speach-V2QueueModeSelect").selectOption("append");
       await page.locator("#text2speach-V2RepeatCountSelect").selectOption("3");
       await page.locator("#text2speach-V2CharacterPresetSelect").selectOption("villain");
@@ -992,11 +1006,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeDisabled();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/FAIL text2speach-V2 voice dropdown has no SpeechSynthesis voices; waiting for voiceschanged\. Speak is disabled\./);
       await page.evaluate(() => window["__text2speach-V2LoadVoices"]());
-      await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveCount(3);
-      expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["mock-us", "mock-uk", "mock-alert"]);
+      await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveCount(2);
+      expect(await page.locator("#text2speach-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["mock-us", "mock-alert"]);
       await expect(page.locator("#text2speach-V2VoiceSelect")).toHaveValue("mock-us");
+      await expect(page.locator("#text2speach-V2VoiceDetails")).toHaveText("2 voices match en-US: Mock US Voice, Mock Alert Voice.");
       await expect(page.locator("#text2speach-V2SpeakButton")).toBeEnabled();
-      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Updated 3 SpeechSynthesis voices for text2speach-V2\./);
+      await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Updated 2 matching SpeechSynthesis voices for text2speach-V2 \(3 available; language=en-US\)\./);
       const summary = JSON.parse(await page.locator("#text2speach-V2SpeechSummary").textContent());
       expect(summary.status).toBe("voices-updated");
       expect(summary.voice).toBe("mock-us");
@@ -2538,7 +2553,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speach-V2WorkspacePauseButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2WorkspaceResumeButton")).toBeEnabled();
       await expect(page.locator("#text2speach-V2WorkspaceStopButton")).toBeEnabled();
-      await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveCount(3);
+      await expect(page.locator("#text2speach-V2VoiceSelect option")).toHaveCount(2);
       await page.locator("#text2speach-V2WorkspaceSpeakButton").click();
       await expect(page.locator("#text2speach-V2StatusLog")).toHaveValue(/OK Speak queued: en-US; voice=Mock US Voice; rate=1; pitch=1; volume=1; repeats=1\./);
       const spoken = await page.evaluate(() => window["__text2speach-V2Spoken"]);

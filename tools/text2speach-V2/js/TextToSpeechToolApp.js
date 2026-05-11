@@ -79,7 +79,10 @@ export class TextToSpeechToolApp {
       onInput: () => this.refreshOutputSummary("text-updated")
     });
     this.speechOptions.mount({
-      onChange: () => {
+      onChange: ({ controlId } = {}) => {
+        if (controlId === "language") {
+          this.refreshVoices("language-changed");
+        }
         this.refreshOutputSummary("settings-updated");
         if (this.speechOptions.value().autoSpeak) {
           this.speak();
@@ -140,11 +143,23 @@ export class TextToSpeechToolApp {
 
   refreshVoices(source = "initial") {
     const result = this.speechOptions.populateVoices(this.engine.voiceOptions(), this.speechOptions.value().voice);
-    if (result.voiceCount > 0) {
-      const action = source === "voiceschanged" ? "Updated" : "Loaded";
-      this.statusLog.ok(`${action} ${result.voiceCount} SpeechSynthesis voices for text2speach-V2.`);
+    if (result.matchingVoiceCount > 0) {
+      const action = source === "voiceschanged"
+        ? "Updated"
+        : source === "initial" ? "Loaded" : "Filtered";
+      this.statusLog.ok(`${action} ${result.matchingVoiceCount} matching SpeechSynthesis voices for text2speach-V2 (${result.voiceCount} available; language=${result.language}).`);
     } else {
-      this.statusLog.fail("text2speach-V2 voice dropdown has no SpeechSynthesis voices; waiting for voiceschanged. Speak is disabled.");
+      const message = result.voiceCount === 0
+        ? "text2speach-V2 voice dropdown has no SpeechSynthesis voices; waiting for voiceschanged. Speak is disabled."
+        : `text2speach-V2 voice dropdown has no SpeechSynthesis voices matching ${result.language}; voice selection cleared. Speak is disabled.`;
+      this.statusLog.fail(message);
+    }
+    if (source === "language-changed" && result.selectionAdjusted) {
+      if (result.selectedVoice) {
+        this.statusLog.ok(`Voice selection adjusted for language ${result.language}: ${result.selectedVoiceLabel}.`);
+      } else {
+        this.statusLog.fail(`Voice selection cleared for language ${result.language}: no matching SpeechSynthesis voices.`);
+      }
     }
     this.refreshActionState();
     return result;
@@ -157,6 +172,9 @@ export class TextToSpeechToolApp {
     }
     this.textInput.setText(item.text);
     this.speechOptions.setValue(item);
+    if (status !== "queue-loaded") {
+      this.refreshVoices(status);
+    }
     this.refreshOutputSummary(status);
   }
 

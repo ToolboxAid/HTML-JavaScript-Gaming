@@ -61,6 +61,7 @@ window.addEventListener("DOMContentLoaded", () => {
       rateSlider: requireElement("#text2speach-V2RateSlider"),
       repeatCountSelect: requireElement("#text2speach-V2RepeatCountSelect"),
       ssmlLikePresetSelect: requireElement("#text2speach-V2SsmlLikePresetSelect"),
+      voiceDetails: requireElement("#text2speach-V2VoiceDetails"),
       voiceSelect: requireElement("#text2speach-V2VoiceSelect"),
       volumeOutput: requireElement("#text2speach-V2VolumeOutput"),
       volumeSlider: requireElement("#text2speach-V2VolumeSlider")

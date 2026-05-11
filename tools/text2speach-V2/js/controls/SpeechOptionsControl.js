@@ -26,6 +26,21 @@ function configureRange(input, output, range) {
   output.textContent = input.value;
 }
 
+function voiceDetailsText({ language, matchingVoiceOptions, voiceCount }) {
+  if (voiceCount === 0) {
+    return "No SpeechSynthesis voices loaded.";
+  }
+  if (matchingVoiceOptions.length === 0) {
+    return `0 voices match ${language}. ${voiceCount} total voices loaded.`;
+  }
+  const voiceLabel = matchingVoiceOptions.length === 1 ? "voice" : "voices";
+  const matchLabel = matchingVoiceOptions.length === 1 ? "matches" : "match";
+  const names = matchingVoiceOptions
+    .map((option) => option.name || option.label)
+    .join(", ");
+  return `${matchingVoiceOptions.length} ${voiceLabel} ${matchLabel} ${language}: ${names}.`;
+}
+
 export class SpeechOptionsControl {
   constructor({
     autoSpeakCheckbox,
@@ -40,6 +55,7 @@ export class SpeechOptionsControl {
     rateSlider,
     repeatCountSelect,
     ssmlLikePresetSelect,
+    voiceDetails,
     voiceSelect,
     volumeOutput,
     volumeSlider
@@ -56,6 +72,8 @@ export class SpeechOptionsControl {
     this.rateSlider = rateSlider;
     this.repeatCountSelect = repeatCountSelect;
     this.ssmlLikePresetSelect = ssmlLikePresetSelect;
+    this.voiceDetails = voiceDetails;
+    this.voiceOptions = [];
     this.voiceSelect = voiceSelect;
     this.volumeOutput = volumeOutput;
     this.volumeSlider = volumeSlider;
@@ -83,27 +101,73 @@ export class SpeechOptionsControl {
   }
 
   populateVoices(voiceOptions, selectedValue = "") {
-    if (voiceOptions.length === 0) {
+    this.voiceOptions = voiceOptions.map((option) => ({ ...option }));
+    return this.filterVoices(selectedValue);
+  }
+
+  filterVoices(selectedValue = "") {
+    const language = this.languageSelect.value;
+    const previousValue = this.voiceSelect.value;
+    const voiceCount = this.voiceOptions.length;
+    const matchingVoiceOptions = this.voiceOptions.filter((option) => option.language === language);
+    this.voiceDetails.textContent = voiceDetailsText({ language, matchingVoiceOptions, voiceCount });
+    if (voiceCount === 0) {
       const node = document.createElement("option");
       node.value = "";
       node.textContent = "No SpeechSynthesis voices available";
       this.voiceSelect.replaceChildren(node);
       this.voiceSelect.value = "";
-      return { selectedVoice: "", voiceCount: 0 };
+      return {
+        language,
+        matchingVoiceCount: 0,
+        previousVoice: previousValue,
+        selectedVoice: "",
+        selectedVoiceLabel: "",
+        selectionAdjusted: Boolean(previousValue),
+        voiceCount
+      };
     }
-    populateSelect(this.voiceSelect, voiceOptions, selectedValue || voiceOptions[0].value);
-    if (!this.voiceSelect.value) {
-      this.voiceSelect.value = voiceOptions[0].value;
+    if (matchingVoiceOptions.length === 0) {
+      const node = document.createElement("option");
+      node.value = "";
+      node.textContent = `No voices for ${language}`;
+      this.voiceSelect.replaceChildren(node);
+      this.voiceSelect.value = "";
+      return {
+        language,
+        matchingVoiceCount: 0,
+        previousVoice: previousValue,
+        selectedVoice: "",
+        selectedVoiceLabel: "",
+        selectionAdjusted: Boolean(previousValue),
+        voiceCount
+      };
     }
-    return { selectedVoice: this.voiceSelect.value, voiceCount: voiceOptions.length };
+    const requestedValue = selectedValue || previousValue;
+    const requestedVoice = matchingVoiceOptions.find((option) => option.value === requestedValue);
+    const selectedVoice = requestedVoice || matchingVoiceOptions[0];
+    populateSelect(this.voiceSelect, matchingVoiceOptions, selectedVoice.value);
+    this.voiceSelect.value = String(selectedVoice.value);
+    return {
+      language,
+      matchingVoiceCount: matchingVoiceOptions.length,
+      previousVoice: previousValue,
+      selectedVoice: this.voiceSelect.value,
+      selectedVoiceLabel: selectedVoice.label,
+      selectionAdjusted: this.voiceSelect.value !== previousValue,
+      voiceCount
+    };
   }
 
   mount({ onChange }) {
+    this.languageSelect.addEventListener("change", () => {
+      this.syncOutputs();
+      onChange({ controlId: "language" });
+    });
     [
       this.autoSpeakCheckbox,
       this.characterPresetSelect,
       this.delayBetweenRepeatsMsSlider,
-      this.languageSelect,
       this.pitchSlider,
       this.queueModeSelect,
       this.rateSlider,
@@ -114,7 +178,7 @@ export class SpeechOptionsControl {
     ].forEach((control) => {
       control.addEventListener(control.tagName === "SELECT" ? "change" : "input", () => {
         this.syncOutputs();
-        onChange();
+        onChange({ controlId: control.id });
       });
     });
   }

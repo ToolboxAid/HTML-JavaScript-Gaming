@@ -37,8 +37,8 @@
         "id",
         "name",
         "text",
-        "voice",
         "language",
+        "voice",
         "volume",
         "rate",
         "pitch",
@@ -63,12 +63,12 @@
           "type": "string",
           "minLength": 1
         },
-        "voice": {
-          "type": "string"
-        },
         "language": {
           "type": "string",
           "enum": ["en-US", "en-GB", "es-ES", "fr-FR", "ja-JP"]
+        },
+        "voice": {
+          "type": "string"
         },
         "volume": {
           "type": "number",

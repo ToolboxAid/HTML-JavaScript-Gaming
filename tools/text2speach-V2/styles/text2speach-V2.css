@@ -82,6 +82,14 @@
   text-align: right;
 }
 
+.text2speach-V2__details {
+  margin-top: -4px;
+  margin-bottom: 12px;
+  color: var(--text-muted, #cbd5e1);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
 .text2speach-V2__check-field {
   display: inline-flex;
   align-items: center;
