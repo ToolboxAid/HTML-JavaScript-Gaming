@@ -11,10 +11,9 @@ const TEXT_TO_SPEECH_LANGUAGE_OPTIONS = Object.freeze([
 ]);
 
 const TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS = Object.freeze([
-  Object.freeze({ label: "All", value: "all" }),
-  Object.freeze({ label: "Female", value: "female" }),
-  Object.freeze({ label: "Male", value: "male" }),
-  Object.freeze({ label: "Neutral", value: "neutral" })
+  Object.freeze({ label: "Any", value: "any" }),
+  Object.freeze({ label: "Male Preferred", value: "male-preferred" }),
+  Object.freeze({ label: "Female Preferred", value: "female-preferred" })
 ]);
 
 const TEXT_TO_SPEECH_AGE_FILTER_OPTIONS = Object.freeze([
@@ -59,6 +58,12 @@ const TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS = Object.freeze([
   Object.freeze({ label: "Slow", value: "slow" }),
   Object.freeze({ label: "Whisper-ish", value: "whisper-ish" })
 ]);
+
+const TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS = Object.freeze({
+  normal: Object.freeze({ pitchOffset: 0, rateMultiplier: 1, volumeMultiplier: 1 }),
+  slow: Object.freeze({ pitchOffset: -0.1, rateMultiplier: 0.75, volumeMultiplier: 0.95 }),
+  "whisper-ish": Object.freeze({ pitchOffset: -0.3, rateMultiplier: 0.8, volumeMultiplier: 0.6 })
+});
 
 const TEXT_TO_SPEECH_RANGE_DEFAULTS = Object.freeze({
   delayBetweenRepeatsMs: Object.freeze({ max: 5000, min: 0, step: 100, value: 0 }),
@@ -168,6 +173,7 @@ export {
   TEXT_TO_SPEECH_REPEAT_COUNT_OPTIONS,
   TEXT_TO_SPEECH_SAMPLE_TEXT,
   TEXT_TO_SPEECH_SCHEMA_ID,
+  TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
   TEXT_TO_SPEECH_TOOL_ID,
   TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS

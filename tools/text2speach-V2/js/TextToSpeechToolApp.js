@@ -10,6 +10,7 @@ import {
   TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
   TEXT_TO_SPEECH_REPEAT_COUNT_OPTIONS,
+  TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
   TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
 } from "../../../src/engine/audio/TextToSpeechDefaults.js";
@@ -68,6 +69,7 @@ export class TextToSpeechToolApp {
       queueModeOptions: TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
       rangeDefaults: TEXT_TO_SPEECH_RANGE_DEFAULTS,
       repeatCountOptions: TEXT_TO_SPEECH_REPEAT_COUNT_OPTIONS,
+      ssmlLikePresetDefaults: TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
       ssmlLikePresetOptions: TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
       voiceAgePresetDefaults: TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
     });
@@ -84,7 +86,10 @@ export class TextToSpeechToolApp {
       onChange: (item) => this.applyQueueItem(item, "queue-item-selected")
     });
     this.textInput.mount({
-      onInput: () => this.refreshOutputSummary("text-updated")
+      onInput: () => {
+        this.refreshOutputSummary("text-updated");
+        this.speakIfAuto();
+      }
     });
     this.speechOptions.mount({
       onChange: ({ controlId } = {}) => {
@@ -94,11 +99,12 @@ export class TextToSpeechToolApp {
         if (controlId === "age") {
           const options = this.speechOptions.value();
           this.statusLog.ok(`Voice Age shaping applied: ${this.speechOptions.selectedVoiceAgeLabel()}; rate=${options.rate}; pitch=${options.pitch}.`);
+        } else if (controlId === "ssmlLikePreset") {
+          const options = this.speechOptions.value();
+          this.statusLog.ok(`SSML-like preset applied: ${options.ssmlLikePreset}; rate=${options.rate}; pitch=${options.pitch}; volume=${options.volume}.`);
         }
         this.refreshOutputSummary("settings-updated");
-        if (this.speechOptions.value().autoSpeak) {
-          this.speak();
-        }
+        this.speakIfAuto();
       }
     });
     this.statusLog.mount();
@@ -159,7 +165,7 @@ export class TextToSpeechToolApp {
       const action = source === "voiceschanged"
         ? "Updated"
         : source === "initial" ? "Loaded" : "Filtered";
-      const voiceScope = result.genderFilter === "all"
+      const voiceScope = result.genderFilter === "any"
         ? `${result.voiceCount} voices`
         : `${result.filteredVoiceCount} ${result.filterLabel} voices from ${result.voiceCount} total`;
       this.statusLog.ok(`${action} ${result.matchingVoiceCount} matching SpeechSynthesis voices for text2speach-V2 (${voiceScope}; ${result.languageCount} languages; gender=${result.genderFilterLabel}; age=${result.ageFilterLabel}; language=${result.language}).`);
@@ -174,6 +180,9 @@ export class TextToSpeechToolApp {
     if (result.languageAdjusted) {
       this.statusLog.ok(`Language selection adjusted from ${result.previousLanguage || "(none)"} to ${result.language || "(none)"} because available ${result.filterLabel} SpeechSynthesis voices changed.`);
     }
+    if (source === "gender-changed" || source === "language-changed") {
+      this.statusLog.ok(`Filter counts: available languages=${result.languageCount}; available voices=${result.filteredVoiceCount}; selected voice=${result.selectedVoiceLabel || "(none)"}; gender is a helper filter only, not a voice transformation.`);
+    }
     if ((source === "age-changed" || source === "gender-changed" || source === "language-changed") && result.selectionAdjusted) {
       if (result.selectedVoice) {
         this.statusLog.ok(`Voice selection adjusted for ${result.filterLabel} / ${result.language}: ${result.selectedVoiceLabel}.`);
@@ -183,6 +192,12 @@ export class TextToSpeechToolApp {
     }
     this.refreshActionState();
     return result;
+  }
+
+  speakIfAuto() {
+    if (this.speechOptions.value().autoSpeak && this.textInput.hasText() && this.speechOptions.hasVoice()) {
+      this.speak();
+    }
   }
 
   applyQueueItem(item, status) {

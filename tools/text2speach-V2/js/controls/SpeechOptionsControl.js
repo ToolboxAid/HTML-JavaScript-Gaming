@@ -30,7 +30,10 @@ function shapedSliderValue(value, input) {
   const min = Number(input.min);
   const max = Number(input.max);
   const clamped = Math.min(max, Math.max(min, value));
-  return String(Math.round(clamped * 10) / 10);
+  const step = String(input.step || "1");
+  const decimalPart = step.includes(".") ? step.split(".")[1] : "";
+  const multiplier = 10 ** decimalPart.length;
+  return String(Math.round(clamped * multiplier) / multiplier);
 }
 
 function optionLabelCompare(left, right) {
@@ -65,30 +68,33 @@ function voiceGender(option) {
   if (voiceLanguage === "es-es" || /\bmale\b|\bman\b|\bdavid\b|\bmark\b/i.test(voiceText)) {
     return "male";
   }
-  if (/\bfemale\b|\bwoman\b|\bzira\b|\bgoogle\b/i.test(voiceText)) {
+  if (/\bfemale\b|\bwoman\b|\bzira\b/i.test(voiceText)) {
     return "female";
   }
-  return "";
+  return "unknown";
 }
 
 function genderFilterLabel(value) {
-  if (value === "male") {
-    return "Male";
+  if (value === "male-preferred") {
+    return "Male Preferred";
   }
-  if (value === "female") {
-    return "Female";
+  if (value === "female-preferred") {
+    return "Female Preferred";
   }
-  if (value === "neutral") {
-    return "Neutral";
-  }
-  return "All";
+  return "Any";
 }
 
 function voicesForGender(voiceOptions, genderFilter) {
-  if (genderFilter === "all") {
+  if (genderFilter === "any") {
     return voiceOptions;
   }
-  return voiceOptions.filter((option) => voiceGender(option) === genderFilter);
+  if (genderFilter === "male-preferred") {
+    return voiceOptions.filter((option) => voiceGender(option) !== "female");
+  }
+  if (genderFilter === "female-preferred") {
+    return voiceOptions.filter((option) => voiceGender(option) !== "male");
+  }
+  return voiceOptions;
 }
 
 function voiceDetailsText({ filterLabel, filteredVoiceCount, language, matchingVoiceOptions, voiceCount }) {
@@ -163,9 +169,11 @@ export class SpeechOptionsControl {
     this.rateSlider = rateSlider;
     this.repeatCountSelect = repeatCountSelect;
     this.ssmlLikePresetSelect = ssmlLikePresetSelect;
+    this.ssmlLikePresetDefaults = {};
     this.voiceDetails = voiceDetails;
     this.voiceOptions = [];
     this.voiceAgePresetDefaults = {};
+    this.sliderOverrides = { pitch: false, rate: false, volume: false };
     this.voiceSelect = voiceSelect;
     this.volumeOutput = volumeOutput;
     this.volumeSlider = volumeSlider;
@@ -181,14 +189,16 @@ export class SpeechOptionsControl {
     queueModeOptions,
     rangeDefaults,
     repeatCountOptions,
+    ssmlLikePresetDefaults,
     ssmlLikePresetOptions,
     voiceAgePresetDefaults
   }) {
     this.characterPresetDefaults = characterPresetDefaults;
     this.defaultLanguage = defaults.language;
+    this.ssmlLikePresetDefaults = ssmlLikePresetDefaults || {};
     this.voiceAgePresetDefaults = voiceAgePresetDefaults || {};
     populateSelect(this.ageFilterSelect, ageFilterOptions, "any");
-    populateSelect(this.genderFilterSelect, genderFilterOptions, "all");
+    populateSelect(this.genderFilterSelect, genderFilterOptions, "any");
     populateSelect(this.languageSelect, languageOptions, defaults.language);
     populateSelect(this.queueModeSelect, queueModeOptions, defaults.queueMode);
     populateSelect(this.repeatCountSelect, repeatCountOptions, defaults.repeatCount);
@@ -203,22 +213,31 @@ export class SpeechOptionsControl {
 
   applyCharacterPreset() {
     const preset = this.characterPresetDefaults[this.characterPresetSelect.value];
-    if (!preset) {
-      return;
+    if (preset?.ssmlLikePreset) {
+      this.ssmlLikePresetSelect.value = String(preset.ssmlLikePreset);
     }
-    this.volumeSlider.value = String(preset.volume);
-    this.ssmlLikePresetSelect.value = String(preset.ssmlLikePreset);
-    this.applyVoiceAgePreset(preset);
-    this.syncOutputs();
+    this.applyPresetDerivedSliders({ resetOverrides: true });
   }
 
-  applyVoiceAgePreset(characterPreset = this.characterPresetDefaults[this.characterPresetSelect.value]) {
+  applyPresetDerivedSliders({ resetOverrides = false } = {}) {
+    const characterPreset = this.characterPresetDefaults[this.characterPresetSelect.value];
     const voiceAgePreset = this.voiceAgePresetDefaults[this.ageFilterSelect.value];
-    if (!characterPreset || !voiceAgePreset) {
+    const ssmlLikePreset = this.ssmlLikePresetDefaults[this.ssmlLikePresetSelect.value];
+    if (!characterPreset || !voiceAgePreset || !ssmlLikePreset) {
       return;
     }
-    this.rateSlider.value = shapedSliderValue(Number(characterPreset.rate) * Number(voiceAgePreset.rateMultiplier), this.rateSlider);
-    this.pitchSlider.value = shapedSliderValue(Number(characterPreset.pitch) + Number(voiceAgePreset.pitchOffset), this.pitchSlider);
+    if (resetOverrides) {
+      this.sliderOverrides = { pitch: false, rate: false, volume: false };
+    }
+    if (!this.sliderOverrides.volume) {
+      this.volumeSlider.value = shapedSliderValue(Number(characterPreset.volume) * Number(ssmlLikePreset.volumeMultiplier), this.volumeSlider);
+    }
+    if (!this.sliderOverrides.rate) {
+      this.rateSlider.value = shapedSliderValue(Number(characterPreset.rate) * Number(voiceAgePreset.rateMultiplier) * Number(ssmlLikePreset.rateMultiplier), this.rateSlider);
+    }
+    if (!this.sliderOverrides.pitch) {
+      this.pitchSlider.value = shapedSliderValue(Number(characterPreset.pitch) + Number(voiceAgePreset.pitchOffset) + Number(ssmlLikePreset.pitchOffset), this.pitchSlider);
+    }
     this.syncOutputs();
   }
 
@@ -390,8 +409,12 @@ export class SpeechOptionsControl {
       onChange({ controlId: "characterPreset" });
     });
     this.ageFilterSelect.addEventListener("change", () => {
-      this.applyVoiceAgePreset();
+      this.applyPresetDerivedSliders();
       onChange({ controlId: "age" });
+    });
+    this.ssmlLikePresetSelect.addEventListener("change", () => {
+      this.applyPresetDerivedSliders({ resetOverrides: true });
+      onChange({ controlId: "ssmlLikePreset" });
     });
     this.genderFilterSelect.addEventListener("change", () => {
       this.syncOutputs();
@@ -404,22 +427,30 @@ export class SpeechOptionsControl {
     [
       this.autoSpeakCheckbox,
       this.delayBetweenRepeatsMsSlider,
-      this.pitchSlider,
       this.queueModeSelect,
-      this.rateSlider,
       this.repeatCountSelect,
-      this.ssmlLikePresetSelect,
-      this.voiceSelect,
-      this.volumeSlider
+      this.voiceSelect
     ].forEach((control) => {
       control.addEventListener(control.tagName === "SELECT" ? "change" : "input", () => {
         this.syncOutputs();
         onChange({ controlId: control.id });
       });
     });
+    [
+      { input: this.pitchSlider, slider: "pitch" },
+      { input: this.rateSlider, slider: "rate" },
+      { input: this.volumeSlider, slider: "volume" }
+    ].forEach(({ input, slider }) => {
+      input.addEventListener("input", () => {
+        this.sliderOverrides[slider] = true;
+        this.syncOutputs();
+        onChange({ controlId: input.id });
+      });
+    });
   }
 
   setValue(value) {
+    this.sliderOverrides = { pitch: false, rate: false, volume: false };
     this.ageFilterSelect.value = String(value.voiceAge || "any");
     this.languageSelect.value = String(value.language);
     this.queueModeSelect.value = String(value.queueMode);

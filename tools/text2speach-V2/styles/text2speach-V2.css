@@ -15,6 +15,13 @@
   display: none;
 }
 
+.text2speach-V2__options .text2speach-V2__menu {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 100%;
+  margin: 12px 0 0;
+}
+
 .text2speach-V2 {
   display: grid;
   grid-template-columns: minmax(260px, 0.85fr) minmax(320px, 1.2fr) minmax(260px, 0.85fr);
