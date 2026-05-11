@@ -125,7 +125,10 @@ function toolPayloadForContext(tool, context) {
 }
 
 function hasToolPayload(tool, context) {
-  return isPlainObject(toolPayloadForContext(tool, context));
+  const payload = toolPayloadForContext(tool, context);
+  return tool?.id === TEXT2SPEACH_V2_TOOL_KEY
+    ? Array.isArray(payload)
+    : isPlainObject(payload);
 }
 
 function hydrationDecisionForTool(tool, context) {
@@ -786,6 +789,9 @@ export class WorkspaceManagerV2ContextService {
 
   dataSessionForTool(tool, context) {
     const toolPayload = toolPayloadForContext(tool, context);
+    if (tool.id === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(toolPayload)) {
+      return clone(toolPayload);
+    }
     if (isPlainObject(toolPayload)) {
       return clone(toolPayload);
     }
@@ -855,8 +861,8 @@ export class WorkspaceManagerV2ContextService {
       paletteSwatchCount: tool.id === PALETTE_MANAGER_V2_TOOL_KEY && Array.isArray(data?.swatches)
         ? data.swatches.length
         : null,
-      speechQueueCount: tool.id === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(data?.queue)
-        ? data.queue.length
+      speechQueueCount: tool.id === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(data)
+        ? data.length
         : null,
       toolId: tool.id,
       toolName: tool.name
@@ -877,7 +883,7 @@ export class WorkspaceManagerV2ContextService {
           return;
         }
         const session = sessionResult.session;
-        if (isPlainObject(session.data)) {
+        if (isPlainObject(session.data) || (tool.id === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(session.data))) {
           refreshedContext.tools[tool.id] = clone(session.data);
         }
         toolSummaries[tool.id] = this.summarizeToolSession(tool, session);
@@ -1448,8 +1454,8 @@ export class WorkspaceManagerV2ContextService {
         if (Array.isArray(payload?.vectorMapDocument?.vectors)) {
           return `${toolId} vectors=${payload.vectorMapDocument.vectors.length}`;
         }
-        if (toolId === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(payload?.queue)) {
-          return `${toolId} queue=${payload.queue.length}`;
+        if (toolId === TEXT2SPEACH_V2_TOOL_KEY && Array.isArray(payload)) {
+          return `${toolId} queue=${payload.length}`;
         }
         return isPlainObject(payload)
           ? `${toolId} keys=${Object.keys(payload).length}`

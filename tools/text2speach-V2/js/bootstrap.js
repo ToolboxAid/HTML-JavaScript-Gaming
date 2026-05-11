@@ -25,6 +25,11 @@ window.addEventListener("DOMContentLoaded", () => {
       resumeButtons: [requireElement("#text2speach-V2ResumeButton")],
       speakButtons: [requireElement("#text2speach-V2SpeakButton")],
       stopButtons: [requireElement("#text2speach-V2StopButton")],
+      toolCopyJsonButton: requireElement("#text2speach-V2CopyJsonButton"),
+      toolExportJsonButton: requireElement("#text2speach-V2ExportJsonButton"),
+      toolImportJsonButton: requireElement("#text2speach-V2ImportJsonButton"),
+      toolImportJsonInput: requireElement("#text2speach-V2ImportJsonInput"),
+      toolNav: requireElement('[data-launch-mode-nav="tool"]'),
       workspaceNav: requireElement('[data-launch-mode-nav="workspace"]')
     }),
     engine: new TextToSpeechEngine(),

@@ -831,7 +831,7 @@ export class WorkspaceManagerV2App {
     this.statusLog.ok(`Save source binding: ${writeResult.source}.`);
     this.statusLog.ok(`Saved path: ${writeResult.path}.`);
     this.statusLog.ok(`Text to Speech V2 manifest write-back target: ${writeResult.path}.`);
-    this.statusLog.info(`Saved Text to Speech V2 payload count: ${context.tools?.["text2speach-V2"]?.queue?.length || 0}.`);
+    this.statusLog.info(`Saved Text to Speech V2 payload count: ${Array.isArray(context.tools?.["text2speach-V2"]) ? context.tools["text2speach-V2"].length : 0}.`);
     this.statusLog.ok(`Save write validation: ${writeResult.changeValidation}.`);
     this.statusLog.info(`Saved file size: ${writeResult.fileSize} bytes.`);
     this.statusLog.info(`Saved toolState items: ${writeResult.toolStateItemCount} (${writeResult.toolStateDetails.join("; ")}).`);

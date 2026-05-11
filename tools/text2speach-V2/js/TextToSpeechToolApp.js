@@ -207,6 +207,13 @@ export class TextToSpeechToolApp {
       voiceAgePresetDefaults: TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
     });
     this.actionNav.mount({
+      onCopyJson: () => {
+        void this.copyJson();
+      },
+      onExportJson: () => this.exportJson(),
+      onImportJson: (file) => {
+        void this.importJson(file);
+      },
       onPause: () => this.pause(),
       onResume: () => this.resume(),
       onReturnToWorkspace: (url) => {
@@ -330,18 +337,18 @@ export class TextToSpeechToolApp {
       this.actionNav.setSpeakEnabled(false);
       return;
     }
-    const validation = validateQueue(queueDataResult.payload.queue);
+    const validation = validateQueue(queueDataResult.payload);
     if (!validation.ok) {
       this.statusLog.fail(validation.message);
       this.actionNav.setSpeakEnabled(false);
       return;
     }
-    this.queueControl.populate(queueDataResult.payload.queue);
-    this.applyQueueItem(this.queueControl.selectedItem() || queueDataResult.payload.queue[0], "queue-loaded");
+    this.queueControl.populate(queueDataResult.payload);
+    this.applyQueueItem(this.queueControl.selectedItem() || queueDataResult.payload[0], "queue-loaded");
     this.statusLog.ok(`Loaded ${TEXT_TO_SPEECH_DISPLAY_NAME} payload source: ${queueDataResult.sourcePath}.`);
-    this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} schema validation result: ${TEXT_TO_SPEECH_SCHEMA_ID} valid; queue=${queueDataResult.payload.queue.length}.`);
+    this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} schema validation result: ${TEXT_TO_SPEECH_SCHEMA_ID} valid; queue=${queueDataResult.payload.length}.`);
     this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} dirty state: ${queueDataResult.dirtyState}.`);
-    this.statusLog.ok(`Loaded ${queueDataResult.payload.queue.length} schema-complete ${TEXT_TO_SPEECH_DISPLAY_NAME} queue items.`);
+    this.statusLog.ok(`Loaded ${queueDataResult.payload.length} schema-complete ${TEXT_TO_SPEECH_DISPLAY_NAME} queue items.`);
   }
 
   queueData() {
@@ -366,7 +373,10 @@ export class TextToSpeechToolApp {
     }
     try {
       const toolState = JSON.parse(rawToolState);
-      if (!isPlainObject(toolState?.data)) {
+      if (!isPlainObject(toolState)) {
+        return { ok: false, message: `${WORKSPACE_TOOL_STATE_KEY} must contain the normalized workspace toolState object before render.` };
+      }
+      if (!Object.prototype.hasOwnProperty.call(toolState, "data")) {
         return { ok: false, message: `${WORKSPACE_TOOL_STATE_KEY}.data must contain the ${TEXT_TO_SPEECH_DISPLAY_NAME} payload before render.` };
       }
       return {
@@ -455,10 +465,7 @@ export class TextToSpeechToolApp {
         this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${WORKSPACE_TOOL_STATE_KEY} is not an object.`);
         return;
       }
-      const nextData = {
-        ...(isPlainObject(toolState.data) ? toolState.data : {}),
-        queue: this.queueControl.selectedQueue()
-      };
+      const nextData = this.queueControl.selectedQueue();
       if (this.payloadSchema) {
         const validation = this.validatePayload(nextData, toolState.workspace?.gameManifestPath || WORKSPACE_TOOL_STATE_KEY);
         if (!validation.ok) {
@@ -476,11 +483,123 @@ export class TextToSpeechToolApp {
           changedKeys
         }
       }));
-      this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} dirty state: true; reason=${reason}; changedKeys=${changedKeys.join(", ")}; queue=${nextData.queue.length}.`);
+      this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} dirty state: true; reason=${reason}; changedKeys=${changedKeys.join(", ")}; queue=${nextData.length}.`);
       this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} manifest write-back target: ${toolState.workspace?.gameManifestPath || "(missing manifest path)"}.`);
     } catch (error) {
       this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${error.message}`);
     }
+  }
+
+  async ensurePayloadSchemaForAction(actionLabel) {
+    const schemaResult = await this.loadPayloadSchema();
+    if (!schemaResult.ok) {
+      this.statusLog.fail(`${actionLabel} blocked: ${schemaResult.message}`);
+      return false;
+    }
+    return true;
+  }
+
+  validateCurrentPayloadForAction(actionLabel) {
+    const payload = this.queueControl.selectedQueue();
+    const payloadValidation = this.validatePayload(payload, `${TEXT_TO_SPEECH_DISPLAY_NAME} current UI payload`);
+    if (!payloadValidation.ok) {
+      this.statusLog.fail(`${actionLabel} blocked: ${payloadValidation.message}`);
+      return { ok: false };
+    }
+    const queueValidation = validateQueue(payload);
+    if (!queueValidation.ok) {
+      this.statusLog.fail(`${actionLabel} blocked: ${queueValidation.message}`);
+      return { ok: false };
+    }
+    return { ok: true, payload };
+  }
+
+  async importJson(file) {
+    if (this.isWorkspaceLaunch()) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON is only available during standalone launch.`);
+      return;
+    }
+    if (!file) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON blocked: choose a JSON file first.`);
+      return;
+    }
+    if (!(await this.ensurePayloadSchemaForAction("Import JSON"))) {
+      return;
+    }
+
+    let payload;
+    try {
+      payload = JSON.parse(await file.text());
+    } catch (error) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON failed: ${file.name || "selected file"} is invalid JSON: ${error.message}`);
+      return;
+    }
+    const sourcePath = file.name || "selected JSON file";
+    const payloadValidation = this.validatePayload(payload, sourcePath);
+    if (!payloadValidation.ok) {
+      this.statusLog.fail(`Import JSON blocked: ${payloadValidation.message}`);
+      return;
+    }
+    const queueValidation = validateQueue(payload);
+    if (!queueValidation.ok) {
+      this.statusLog.fail(`Import JSON blocked: ${queueValidation.message}`);
+      return;
+    }
+    this.queueControl.populate(payload);
+    this.applyQueueItem(this.queueControl.selectedItem() || payload[0], "json-imported");
+    this.refreshVoices("json-imported");
+    this.refreshOutputSummary("json-imported");
+    this.statusLog.ok(`Imported ${payload.length} ${TEXT_TO_SPEECH_DISPLAY_NAME} item${payload.length === 1 ? "" : "s"} from ${sourcePath}; schema validation result: ${TEXT_TO_SPEECH_SCHEMA_ID} valid.`);
+  }
+
+  async copyJson() {
+    if (this.isWorkspaceLaunch()) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Copy JSON is only available during standalone launch.`);
+      return;
+    }
+    if (!(await this.ensurePayloadSchemaForAction("Copy JSON"))) {
+      return;
+    }
+    const validation = this.validateCurrentPayloadForAction("Copy JSON");
+    if (!validation.ok) {
+      return;
+    }
+    if (!this.window.navigator?.clipboard || typeof this.window.navigator.clipboard.writeText !== "function") {
+      this.statusLog.fail("Copy JSON failed: Clipboard API is unavailable.");
+      return;
+    }
+    const json = JSON.stringify(validation.payload, null, 2);
+    try {
+      await this.window.navigator.clipboard.writeText(json);
+      this.statusLog.ok(`Copied ${TEXT_TO_SPEECH_DISPLAY_NAME} JSON root array to clipboard (${validation.payload.length} item${validation.payload.length === 1 ? "" : "s"}).`);
+    } catch (error) {
+      this.statusLog.fail(`Copy JSON failed: ${error.message}`);
+    }
+  }
+
+  async exportJson() {
+    if (this.isWorkspaceLaunch()) {
+      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Export JSON is only available during standalone launch.`);
+      return;
+    }
+    if (!(await this.ensurePayloadSchemaForAction("Export JSON"))) {
+      return;
+    }
+    const validation = this.validateCurrentPayloadForAction("Export JSON");
+    if (!validation.ok) {
+      return;
+    }
+    const json = JSON.stringify(validation.payload, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = this.window.document.createElement("a");
+    link.href = url;
+    link.download = "text-to-speech-v2.json";
+    this.window.document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    this.statusLog.ok(`Exported ${TEXT_TO_SPEECH_DISPLAY_NAME} JSON root array (${validation.payload.length} item${validation.payload.length === 1 ? "" : "s"}).`);
   }
 
   addSpeechItem() {

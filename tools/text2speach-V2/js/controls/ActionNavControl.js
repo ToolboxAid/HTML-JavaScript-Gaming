@@ -6,6 +6,11 @@ export class ActionNavControl {
     resumeButtons = [],
     speakButtons = [],
     stopButtons = [],
+    toolCopyJsonButton,
+    toolExportJsonButton,
+    toolImportJsonButton,
+    toolImportJsonInput,
+    toolNav,
     windowRef = window,
     workspaceNav
   }) {
@@ -15,12 +20,36 @@ export class ActionNavControl {
     this.resumeButtons = resumeButtons;
     this.speakButtons = speakButtons;
     this.stopButtons = stopButtons;
+    this.toolCopyJsonButton = toolCopyJsonButton;
+    this.toolExportJsonButton = toolExportJsonButton;
+    this.toolImportJsonButton = toolImportJsonButton;
+    this.toolImportJsonInput = toolImportJsonInput;
+    this.toolNav = toolNav;
     this.window = windowRef;
     this.workspaceNav = workspaceNav;
   }
 
-  mount({ onPause, onResume, onReturnToWorkspace, onSpeak, onStop }) {
+  mount({
+    onCopyJson,
+    onExportJson,
+    onImportJson,
+    onPause,
+    onResume,
+    onReturnToWorkspace,
+    onSpeak,
+    onStop
+  }) {
     this.applyLaunchMode();
+    this.toolImportJsonButton.addEventListener("click", () => {
+      this.toolImportJsonInput.click();
+    });
+    this.toolImportJsonInput.addEventListener("change", () => {
+      const file = this.toolImportJsonInput.files?.[0] || null;
+      onImportJson(file);
+      this.toolImportJsonInput.value = "";
+    });
+    this.toolCopyJsonButton.addEventListener("click", onCopyJson);
+    this.toolExportJsonButton.addEventListener("click", onExportJson);
     this.speakButtons.forEach((button) => {
       button.addEventListener("click", onSpeak);
     });
@@ -43,6 +72,7 @@ export class ActionNavControl {
     const isWorkspaceManagerLaunch = params.get("launch") === "workspace"
       && params.get("fromTool") === "workspace-manager-v2"
       && Boolean(params.get("hostContextId"));
+    this.toolNav.hidden = isWorkspaceManagerLaunch;
     this.workspaceNav.hidden = !isWorkspaceManagerLaunch;
   }
 
@@ -66,6 +96,16 @@ export class ActionNavControl {
 
   setStopEnabled(isEnabled) {
     this.stopButtons.forEach((button) => {
+      button.disabled = !isEnabled;
+    });
+  }
+
+  setToolJsonActionsEnabled(isEnabled) {
+    [
+      this.toolImportJsonButton,
+      this.toolCopyJsonButton,
+      this.toolExportJsonButton
+    ].forEach((button) => {
       button.disabled = !isEnabled;
     });
   }
