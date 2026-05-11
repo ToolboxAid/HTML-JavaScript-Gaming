@@ -6,7 +6,6 @@ import {
   TEXT_TO_SPEECH_DISPLAY_NAME,
   TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
-  TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS,
   TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
   TEXT_TO_SPEECH_SCHEMA_ID,
@@ -18,24 +17,6 @@ import {
 const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speach-V2";
 const TEXT_TO_SPEECH_SCHEMA_URL = `/${TEXT_TO_SPEECH_SCHEMA_ID}`;
 const TEXT_TO_SPEECH_URL_SOURCE_PARAM = "samplePresetPath";
-const STALE_OBJECT_PAYLOAD_FIELDS = Object.freeze([
-  "queue",
-  "selectedQueueItemId",
-  "selectedQueueItemName",
-  "status",
-  "queuedSpeechItems",
-  "characterPreset",
-  "gender",
-  "language",
-  "pitch",
-  "queueMode",
-  "rate",
-  "ssmlLikePreset",
-  "text",
-  "voice",
-  "voiceAge",
-  "volume"
-]);
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -52,33 +33,6 @@ function slugFromName(name) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
   return slug || "speech-item";
-}
-
-function validateQueue(queue) {
-  if (!Array.isArray(queue) || queue.length === 0) {
-    return { message: `${TEXT_TO_SPEECH_DISPLAY_NAME} queue must contain at least one speech item.`, ok: false };
-  }
-  for (const [index, item] of queue.entries()) {
-    if (!isPlainObject(item)) {
-      return { message: `${TEXT_TO_SPEECH_DISPLAY_NAME} queue item ${index + 1} must be an object.`, ok: false };
-    }
-    const missingFields = TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS.filter((field) => !Object.prototype.hasOwnProperty.call(item, field));
-    if (missingFields.length > 0) {
-      return { message: `${TEXT_TO_SPEECH_DISPLAY_NAME} queue item ${item.name || index + 1} is missing required options: ${missingFields.join(", ")}.`, ok: false };
-    }
-  }
-  return { ok: true };
-}
-
-function staleObjectPayloadMessage(payload, sourcePath) {
-  if (!isPlainObject(payload)) {
-    return "";
-  }
-  const staleFields = STALE_OBJECT_PAYLOAD_FIELDS.filter((field) => Object.prototype.hasOwnProperty.call(payload, field));
-  if (!staleFields.length) {
-    return "";
-  }
-  return `${TEXT_TO_SPEECH_DISPLAY_NAME} rejected stale object payload from ${sourcePath}: ${staleFields.join(", ")}. Expected root array of named speech items from ${TEXT_TO_SPEECH_SCHEMA_ID}.`;
 }
 
 function schemaProperties(schema) {
@@ -371,23 +325,9 @@ export class TextToSpeechToolApp {
       this.actionNav.setSpeakEnabled(false);
       return;
     }
-    const stalePayloadMessage = staleObjectPayloadMessage(queueDataResult.payload, queueDataResult.sourcePath);
-    if (stalePayloadMessage) {
-      this.statusLog.fail(stalePayloadMessage);
-      this.clearRenderedQueue("load-failed");
-      this.actionNav.setSpeakEnabled(false);
-      return;
-    }
     const payloadValidation = this.validatePayload(queueDataResult.payload, queueDataResult.sourcePath);
     if (!payloadValidation.ok) {
       this.statusLog.fail(payloadValidation.message);
-      this.clearRenderedQueue("load-failed");
-      this.actionNav.setSpeakEnabled(false);
-      return;
-    }
-    const validation = validateQueue(queueDataResult.payload);
-    if (!validation.ok) {
-      this.statusLog.fail(validation.message);
       this.clearRenderedQueue("load-failed");
       this.actionNav.setSpeakEnabled(false);
       return;
@@ -593,11 +533,6 @@ export class TextToSpeechToolApp {
       this.statusLog.fail(`${actionLabel} blocked: ${payloadValidation.message}`);
       return { ok: false };
     }
-    const queueValidation = validateQueue(payload);
-    if (!queueValidation.ok) {
-      this.statusLog.fail(`${actionLabel} blocked: ${queueValidation.message}`);
-      return { ok: false };
-    }
     return { ok: true, payload };
   }
 
@@ -622,19 +557,9 @@ export class TextToSpeechToolApp {
       return;
     }
     const sourcePath = file.name || "selected JSON file";
-    const stalePayloadMessage = staleObjectPayloadMessage(payload, sourcePath);
-    if (stalePayloadMessage) {
-      this.statusLog.fail(`Import JSON blocked: ${stalePayloadMessage}`);
-      return;
-    }
     const payloadValidation = this.validatePayload(payload, sourcePath);
     if (!payloadValidation.ok) {
       this.statusLog.fail(`Import JSON blocked: ${payloadValidation.message}`);
-      return;
-    }
-    const queueValidation = validateQueue(payload);
-    if (!queueValidation.ok) {
-      this.statusLog.fail(`Import JSON blocked: ${queueValidation.message}`);
       return;
     }
     this.queueControl.populate(payload);

@@ -127,6 +127,23 @@
   flex: 0 0 auto;
 }
 
+#text2speach-V2TextContent {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-bottom: 0;
+}
+
+#text2speach-V2TextContent .text2speach-V2__field {
+  margin-bottom: 0;
+}
+
+#text2speach-V2TextContent .text2speach-V2__speech-actions {
+  margin: 0;
+}
+
 .text2speach-V2__accordion--fill,
 .text2speach-V2__accordion--fill .accordion-v2__content {
   height: 100%;
@@ -165,7 +182,7 @@
 .text2speach-V2__field textarea {
   min-height: 170px;
   padding: 10px;
-  resize: vertical;
+  resize: none;
 }
 
 .text2speach-V2__field select {
