@@ -1,7 +1,7 @@
 export class GameSelectorControl {
-  constructor({ select, summary }) {
+  constructor({ onSummary = () => {}, select }) {
+    this.onSummary = onSummary;
     this.select = select;
-    this.summary = summary;
   }
 
   mount({ games, onGameSelected }) {
@@ -41,7 +41,10 @@ export class GameSelectorControl {
   }
 
   setSummary(value) {
-    this.summary.textContent = value;
+    const message = String(value || "").trim();
+    if (message) {
+      this.onSummary(message);
+    }
   }
 
   setSelectionLocked(isLocked) {

@@ -6,8 +6,7 @@ export const SHARED_ASSET_HANDOFF_EVENT = "toolboxaid.shared.assetHandoff.change
 export const SHARED_PALETTE_HANDOFF_EVENT = "toolboxaid.shared.paletteHandoff.changed";
 
 export const SHARED_ACTION_LABELS = Object.freeze({
-  browsePalettes: "Browse Palettes",
-  managePalettes: "Manage Palettes"
+  paletteManager: "Palette Manager"
 });
 
 function sanitizeText(value) {
@@ -158,21 +157,13 @@ export function getSharedToolHref(targetToolId, pageMode = "tool", options = {})
 }
 
 export function getSharedShellActions(currentToolId, pageMode = "tool") {
-  const { view } = getSharedLaunchContext();
   return [
     {
-      id: "browse-palettes",
+      id: "palette-manager",
       targetToolId: "palette-manager-v2",
-      label: SHARED_ACTION_LABELS.browsePalettes,
-      href: getSharedToolHref("palette-manager-v2", pageMode, { view: "browse", sourceToolId: currentToolId }),
-      current: currentToolId === "palette-manager-v2" && view !== "manage"
-    },
-    {
-      id: "manage-palettes",
-      targetToolId: "palette-manager-v2",
-      label: SHARED_ACTION_LABELS.managePalettes,
-      href: getSharedToolHref("palette-manager-v2", pageMode, { view: "manage", sourceToolId: currentToolId }),
-      current: currentToolId === "palette-manager-v2" && view === "manage"
+      label: SHARED_ACTION_LABELS.paletteManager,
+      href: getSharedToolHref("palette-manager-v2", pageMode, { sourceToolId: currentToolId }),
+      current: currentToolId === "palette-manager-v2"
     }
   ];
 }

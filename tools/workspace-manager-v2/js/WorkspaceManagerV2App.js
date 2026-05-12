@@ -242,7 +242,7 @@
             sourceBindingState: "invalid"
           });
           this.updateRepoRuntimeBinding(invalidBinding);
-          this.applyContextResult({
+          await this.applyContextResult({
             assetCount: metrics.assetCount,
             context: restoredToolState.context,
             game: restoredToolState.game,
@@ -261,7 +261,7 @@
           sourceBindingState: "bound"
         });
         this.updateRepoRuntimeBinding(reboundBinding);
-        this.applyContextResult({
+        await this.applyContextResult({
           assetCount: metrics.assetCount,
           context: restoredToolState.context,
           game: sourceBinding.game,
@@ -319,7 +319,7 @@
       return;
     }
 
-    this.applyContextResult(result);
+    await this.applyContextResult(result);
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }
@@ -432,7 +432,7 @@
     this.repoDestination.setRepoDestinationDisplayName(repoReferenceResult.reference.displayName);
     this.gameSelector.setValue(restoredResult.game.id, restoredResult.game.name);
     const requiresRepoHandle = !this.activeRepoHandle;
-    this.applyContextResult(restoredResult, { requiresRepoHandle });
+    await this.applyContextResult(restoredResult, { requiresRepoHandle });
     if (restoredResult.assetWarning) {
       this.statusLog.info(`Warning: ${restoredResult.assetWarning}`);
     }
@@ -465,7 +465,7 @@
     this.statusLog.ok(`Restored ${restoredResult.game.name} workspace from session context ${restoredResult.hostContextId}.`);
   }
 
-  applyContextResult(result, { requiresRepoHandle = false } = {}) {
+  async applyContextResult(result, { requiresRepoHandle = false } = {}) {
     const tools = this.contextService.workspaceLaunchableTools();
     const runtimeBinding = this.runtimeBindingMetadata({
       bindingSource: requiresRepoHandle
@@ -500,6 +500,10 @@
     const textToSpeechCount = Number.isInteger(textToSpeechSummary.speechQueueCount)
       ? textToSpeechSummary.speechQueueCount
       : 0;
+    const previewStatus = await this.contextService.previewAssetStatusForGame({
+      game: result.game,
+      repoHandle: requiresRepoHandle ? null : this.activeRepoHandle
+    });
     this.activeContext = sessionRefresh.context;
     this.activeGame = result.game;
     this.activeHostContextId = result.hostContextId || null;
@@ -522,6 +526,7 @@
       enabledToolIds: hydration.ok ? hydration.hydratedToolIds : [],
       manifestStatus: this.activeToolStateRequiresRepoHandle ? "Repo folder required" : "Schema-valid manifest",
       paletteSwatchCount,
+      previewStatus: previewStatus.status,
       textToSpeechCount
     });
     this.syncLifecycleControls();
@@ -591,7 +596,7 @@
       }
     }
     const metrics = this.contextSummaryMetrics(this.activeContext);
-    this.applyContextResult({
+    await this.applyContextResult({
       assetCount: metrics.assetCount,
       context: this.activeContext,
       game,
@@ -721,7 +726,7 @@
       this.updateRepoRuntimeBinding(reboundBinding);
       this.statusLog.info(`Save source rebound to ${sourceBinding.source} for ${result.game.id}.`);
       this.statusLog.ok(`Runtime handle rebound: ${this.runtimeBindingDetails(reboundBinding)}.`);
-      this.applyContextResult({ ...result, game: sourceBinding.game });
+      await this.applyContextResult({ ...result, game: sourceBinding.game });
       if (result.assetWarning) {
         this.statusLog.info(`Warning: ${result.assetWarning}`);
       }
@@ -736,7 +741,7 @@
       return { ok: false, message: refreshedValidation.message };
     }
     const metrics = this.contextSummaryMetrics(sessionRefresh.context);
-    this.applyContextResult({
+    await this.applyContextResult({
       assetCount: metrics.assetCount,
       context: sessionRefresh.context,
       game: this.activeGame,
@@ -829,7 +834,7 @@
       return;
     }
     const metrics = this.contextSummaryMetrics(context);
-    this.applyContextResult({
+    await this.applyContextResult({
       assetCount: metrics.assetCount,
       context,
       game: this.activeGame,
@@ -957,7 +962,7 @@
     }
     const hostContextId = this.contextService.persistContext(result.context);
     this.gameSelector.setValue(result.game.id, result.game.name);
-    this.applyContextResult({ ...result, hostContextId });
+    await this.applyContextResult({ ...result, hostContextId });
     if (result.assetWarning) {
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }

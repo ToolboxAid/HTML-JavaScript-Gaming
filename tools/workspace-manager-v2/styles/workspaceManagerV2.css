@@ -209,6 +209,10 @@ textarea:hover {
   flex: 0 0 auto;
 }
 
+.workspace-manager-v2__accordion--active-game.is-open {
+  flex: 0 0 auto;
+}
+
 .workspace-manager-v2__accordion--json.is-open {
   flex: 0 0 auto;
 }
@@ -264,6 +268,10 @@ textarea:hover {
 }
 
 .workspace-manager-v2__accordion--tools .accordion-v2__content {
+  flex: 0 0 auto;
+}
+
+.workspace-manager-v2__accordion--active-game .accordion-v2__content {
   flex: 0 0 auto;
 }
 
@@ -416,13 +424,13 @@ textarea:hover {
 }
 
 .workspace-manager-v2__output {
-  min-height: 260px;
+  min-height: 240px;
   overflow: auto;
   white-space: pre-wrap;
 }
 
 .workspace-manager-v2__accordion--json .workspace-manager-v2__output {
-  height: 100%;
+  height: 240px;
   min-height: 0;
 }
 

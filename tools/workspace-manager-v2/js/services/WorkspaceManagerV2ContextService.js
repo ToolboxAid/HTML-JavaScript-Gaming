@@ -1393,6 +1393,52 @@ export class WorkspaceManagerV2ContextService {
     }
   }
 
+  previewAssetPathForGame(game) {
+    const manifestWorkspace = game?.manifest?.game?.workspace;
+    const gameRoot = String(game?.gameRoot || manifestWorkspace?.gameRoot || "").replaceAll("\\", "/").replace(/^\/+/, "");
+    if (gameRoot) {
+      return `${gameRoot.replace(/\/?$/, "/")}assets/images/preview.svg`;
+    }
+    const manifestPath = String(game?.manifestPath || "").replaceAll("\\", "/").replace(/^\/+/, "");
+    if (manifestPath.endsWith("/game.manifest.json")) {
+      return `${manifestPath.replace(/game\.manifest\.json$/, "")}assets/images/preview.svg`;
+    }
+    return "assets/images/preview.svg";
+  }
+
+  async repoFileExists(repoHandle, repoRelativePath) {
+    if (!repoHandle || repoHandle.kind !== "directory" || typeof repoHandle.getDirectoryHandle !== "function") {
+      return false;
+    }
+    const parts = String(repoRelativePath || "").replaceAll("\\", "/").split("/").filter(Boolean);
+    if (!parts.length || parts.includes("..") || parts.some((part) => part.includes("\0"))) {
+      return false;
+    }
+    try {
+      let dirHandle = repoHandle;
+      for (const directoryName of parts.slice(0, -1)) {
+        dirHandle = await dirHandle.getDirectoryHandle(directoryName, { create: false });
+      }
+      if (typeof dirHandle.getFileHandle !== "function") {
+        return false;
+      }
+      const fileHandle = await dirHandle.getFileHandle(parts.at(-1), { create: false });
+      return fileHandle?.kind === "file";
+    } catch {
+      return false;
+    }
+  }
+
+  async previewAssetStatusForGame({ repoHandle, game } = {}) {
+    const path = this.previewAssetPathForGame(game);
+    const exists = await this.repoFileExists(repoHandle, path);
+    return {
+      exists,
+      path,
+      status: exists ? "Preview Found" : "Preview Not Found"
+    };
+  }
+
   async bindGameManifestSourceForSave({ context, game, repoHandle } = {}) {
     if (!isPlainObject(context)) {
       return this.saveSourceBindingFailure("missing active toolState context", { context, game });

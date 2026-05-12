@@ -33,21 +33,16 @@ export async function run() {
   try {
     FIRST_CLASS_TOOL_INDEXES.forEach(({ toolId }) => {
       const actions = getSharedShellActions(toolId, "tool");
-      assert.equal(actions.length, 2);
+      assert.equal(actions.length, 1);
       assert.deepEqual(
         actions.map((action) => action.label),
         [
-          SHARED_ACTION_LABELS.browsePalettes,
-          SHARED_ACTION_LABELS.managePalettes
+          SHARED_ACTION_LABELS.paletteManager
         ]
       );
       assert.equal(
         actions[0].href,
-        `../palette-manager-v2/index.html?view=browse&sourceToolId=${toolId}`
-      );
-      assert.equal(
-        actions[1].href,
-        `../palette-manager-v2/index.html?view=manage&sourceToolId=${toolId}`
+        `../palette-manager-v2/index.html?sourceToolId=${toolId}`
       );
     });
   } finally {

@@ -17,12 +17,18 @@ function requireElement(selector) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  const statusLog = new StatusLogControl({
+    clearButton: requireElement("#clearStatusButton"),
+    log: requireElement("#statusLog")
+  });
   const app = new WorkspaceManagerV2App({
     accordions: Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section)),
     contextService: new WorkspaceManagerV2ContextService(),
     gameSelector: new GameSelectorControl({
-      select: requireElement("#activeGameSelect"),
-      summary: requireElement("#activeGameSummary")
+      onSummary: (message) => {
+        statusLog.info(message);
+      },
+      select: requireElement("#activeGameSelect")
     }),
     menu: new ManifestMenuControl({
       cancelButton: requireElement("#cancelWorkspaceButton"),
@@ -34,10 +40,7 @@ window.addEventListener("DOMContentLoaded", () => {
       pickRepoButton: requireElement("#pickRepoBtn"),
       repoSelectedValue: requireElement("#repoSelectedValue")
     }),
-    statusLog: new StatusLogControl({
-      clearButton: requireElement("#clearStatusButton"),
-      log: requireElement("#statusLog")
-    }),
+    statusLog,
     summary: new WorkspaceSummaryControl({
       copyButton: requireElement("#copyWorkspaceJsonButton"),
       contextOutput: requireElement("#workspaceContextOutput")

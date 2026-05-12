@@ -39,21 +39,16 @@ export async function run() {
 
   try {
     const actions = getSharedShellActions("sprite-editor", "tool");
-    assert.equal(actions.length, 2);
+    assert.equal(actions.length, 1);
     assert.deepEqual(
       actions.map((entry) => entry.label),
       [
-        SHARED_ACTION_LABELS.browsePalettes,
-        SHARED_ACTION_LABELS.managePalettes
+        SHARED_ACTION_LABELS.paletteManager
       ]
     );
     assert.equal(
       actions[0].href,
-      "../palette-manager-v2/index.html?view=browse&sourceToolId=sprite-editor"
-    );
-    assert.equal(
-      actions[1].href,
-      "../palette-manager-v2/index.html?view=manage&sourceToolId=sprite-editor"
+      "../palette-manager-v2/index.html?sourceToolId=sprite-editor"
     );
 
     const validAsset = createAssetHandoff({

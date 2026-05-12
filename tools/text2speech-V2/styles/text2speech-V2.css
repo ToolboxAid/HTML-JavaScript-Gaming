@@ -128,8 +128,9 @@ body.tools-platform-tool-page[data-tool-id="text2speech-V2"] > .palette-manager-
   grid-template-columns: minmax(260px, 0.85fr) minmax(320px, 1.2fr) minmax(260px, 0.85fr);
   align-items: stretch;
   gap: 16px;
-  height: min(720px, calc(100vh - 190px));
-  min-height: 620px;
+  height: clamp(500px, calc(100vh - 565px), 720px);
+  height: clamp(500px, calc(100dvh - 565px), 720px);
+  min-height: 0;
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto 28px;
 }
