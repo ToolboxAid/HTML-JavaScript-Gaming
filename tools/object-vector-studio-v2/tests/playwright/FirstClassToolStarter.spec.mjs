@@ -71,7 +71,11 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeDisabled();
     await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeDisabled();
     await expect(page.locator("#objectVectorStudioV2PaletteGate")).toHaveValue("Required before render");
+    await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("0 objects");
     await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
+    await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeDisabled();
+    await expect(page.locator("#objectVectorStudioV2DeleteObjectButton")).toBeDisabled();
+    await expect(page.locator("#objectVectorStudioV2FlattenObjectButton")).toBeDisabled();
     await expect(page.getByRole("button", { name: "Object" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Shape/Tools" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Objects" })).toBeVisible();
@@ -110,6 +114,16 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.locator("#objectVectorStudioV2SelectedItemVisibility")).toContainText("Selected item visible: Asteroids Ship");
     await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeEnabled();
     await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeEnabled();
+
+    await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Local Object");
+    await page.locator("#objectVectorStudioV2AddObjectButton").click();
+    await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("3 objects");
+    await expect(page.locator('[data-object-id="local-object"]')).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Local Object"');
+
+    await page.locator("#objectVectorStudioV2DeleteObjectButton").click();
+    await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("2 objects");
+    await expect(page.locator('[data-object-id="local-object"]')).toHaveCount(0);
   });
 
   test("workspace launch shows Return to Workspace only", async ({ page }) => {

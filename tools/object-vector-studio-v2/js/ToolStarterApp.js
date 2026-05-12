@@ -1,7 +1,41 @@
 const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";
+const DEFAULT_OBJECT_TYPE = "object";
+
+const OBJECT_TYPE_DETAILS = Object.freeze({
+  actor: "Actor entity metadata framework for reusable gameplay participants.",
+  enemy: "Enemy entity metadata framework for hostile reusable objects.",
+  object: "Generic reusable gameplay object metadata framework.",
+  pickup: "Pickup entity metadata framework for collectibles and rewards.",
+  ship: "Ship entity metadata framework for player, NPC, or vehicle objects.",
+  ui: "UI vector asset metadata framework for interface objects.",
+  weapon: "Weapon entity metadata framework for projectile or attack objects."
+});
+
+function objectTypeKey(object) {
+  const rawType = object?.type || object?.metadata?.objectType || DEFAULT_OBJECT_TYPE;
+  const key = String(rawType).trim().toLowerCase();
+  return key || DEFAULT_OBJECT_TYPE;
+}
 
 function objectTypeLabel(object) {
-  return String(object?.type || object?.kind || "object").trim() || "object";
+  return objectTypeKey(object).replace(/(^|-)([a-z])/g, (match) => match.toUpperCase()).replaceAll("-", " ");
+}
+
+function objectTypeDescription(object) {
+  return OBJECT_TYPE_DETAILS[objectTypeKey(object)] || OBJECT_TYPE_DETAILS.object;
+}
+
+function objectCountLabel(count) {
+  return `${count} ${count === 1 ? "object" : "objects"}`;
+}
+
+function slugifyObjectName(name) {
+  const slug = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug || "object";
 }
 
 export class ToolStarterApp {
@@ -34,22 +68,38 @@ export class ToolStarterApp {
       }
     });
     this.statusLog.mount();
+    this.bindObjectActions();
     this.bindToolToggles();
     this.renderEmptyState("Schema-only loading is idle. Import JSON or launch with workspace toolState data that includes a palette.");
-    this.statusLog.write("Object Vector Studio V2 layout shell ready.");
+    this.statusLog.write("OK Object Vector Studio V2 layout shell ready.");
     if (this.actionNav.isWorkspaceLaunch()) {
       this.loadWorkspaceToolState();
     }
   }
 
+  bindObjectActions() {
+    this.elements.addObjectButton.addEventListener("click", () => this.addObject());
+    this.elements.renameObjectButton.addEventListener("click", () => this.renameSelectedObject());
+    this.elements.deleteObjectButton.addEventListener("click", () => this.deleteSelectedObject());
+    this.elements.flattenObjectButton.addEventListener("click", () => this.flattenSelectedObject());
+  }
+
   bindToolToggles() {
+    this.elements.toolLabelModeButton.addEventListener("click", () => {
+      const isCompact = !this.elements.toolToggleGrid.classList.contains("is-icon-only");
+      this.elements.toolToggleGrid.classList.toggle("is-icon-only", isCompact);
+      this.elements.toolLabelModeButton.setAttribute("aria-pressed", String(isCompact));
+      this.elements.toolLabelModeButton.textContent = isCompact ? "Icons" : "Icon/Text";
+      this.statusLog.write(`OK Shape/Tools display mode set to ${isCompact ? "compact icons" : "icons with text"}.`);
+    });
+
     this.elements.toolToggles.forEach((button) => {
       button.addEventListener("click", () => {
         this.elements.toolToggles.forEach((candidate) => {
           candidate.classList.toggle("is-active", candidate === button);
           candidate.setAttribute("aria-pressed", String(candidate === button));
         });
-        this.statusLog.write(`INFO Shape/Tools shell toggle selected: ${button.dataset.shapeTool || "unknown"}.`);
+        this.statusLog.write(`OK Shape/Tools shell toggle selected: ${button.dataset.shapeTool || "unknown"}.`);
       });
     });
   }
@@ -59,6 +109,8 @@ export class ToolStarterApp {
     this.selectedObjectId = "";
     this.elements.sourceSummary.value = "No schema-loaded payload";
     this.elements.paletteGate.value = "Required before render";
+    this.elements.objectCount.value = objectCountLabel(0);
+    this.elements.objectNameInput.value = "";
     this.elements.loadStatus.textContent = message;
     this.elements.paletteSummary.textContent = "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
@@ -67,6 +119,7 @@ export class ToolStarterApp {
     this.elements.objectTiles.replaceChildren(this.createEmptyObjectTile());
     this.actionNav.setJsonPayloadActionsEnabled(false);
     this.actionNav.setImportEnabled(!this.actionNav.isWorkspaceLaunch());
+    this.updateObjectActionState();
   }
 
   createEmptyObjectTile() {
@@ -143,7 +196,7 @@ export class ToolStarterApp {
     this.renderPalette();
     this.renderObjectTiles();
     this.renderSelectedObject();
-    this.elements.jsonDetails.textContent = JSON.stringify(this.currentPayload, null, 2);
+    this.updateObjectActionState();
   }
 
   renderPalette() {
@@ -163,6 +216,7 @@ export class ToolStarterApp {
   }
 
   renderObjectTiles() {
+    this.elements.objectCount.value = objectCountLabel(this.currentPayload.objects.length);
     this.elements.objectTiles.replaceChildren();
     if (!this.currentPayload.objects.length) {
       this.elements.objectTiles.append(this.createEmptyObjectTile());
@@ -187,24 +241,183 @@ export class ToolStarterApp {
 
       tile.append(name, meta);
       tile.addEventListener("click", () => {
-        this.selectedObjectId = object.id;
-        this.renderPayload();
-        this.statusLog.write(`INFO Selected object tile: ${object.name}.`);
+        this.selectObject(object.id, "tile");
       });
       this.elements.objectTiles.append(tile);
     });
   }
 
   renderSelectedObject() {
-    const selected = this.currentPayload.objects.find((object) => object.id === this.selectedObjectId) || null;
+    const selected = this.selectedObject();
     if (!selected) {
+      this.elements.objectNameInput.value = "";
       this.elements.objectDetails.textContent = "No object selected.";
       this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
+      this.elements.jsonDetails.textContent = "{}";
       return;
     }
 
-    this.elements.objectDetails.textContent = `Selected ${selected.name} (${objectTypeLabel(selected)}) with id ${selected.id}.`;
+    this.elements.objectNameInput.value = selected.name;
+    this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected));
     this.elements.selectedItemVisibility.textContent = `Selected item visible: ${selected.name}`;
+    this.elements.jsonDetails.textContent = JSON.stringify(selected, null, 2);
+  }
+
+  createObjectDetails(object) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "object-vector-studio-v2__object-detail-grid";
+    [
+      ["Name", object.name],
+      ["ID", object.id],
+      ["Type", objectTypeLabel(object)],
+      ["Type Metadata", objectTypeDescription(object)],
+      ["Flatten State", object.flattened ? "Flattened metadata foundation" : "Not flattened"]
+    ].forEach(([label, value]) => {
+      const labelElement = document.createElement("span");
+      labelElement.className = "object-vector-studio-v2__detail-label";
+      labelElement.textContent = label;
+      const valueElement = document.createElement("span");
+      valueElement.className = "object-vector-studio-v2__detail-value";
+      valueElement.textContent = value;
+      wrapper.append(labelElement, valueElement);
+    });
+    return wrapper;
+  }
+
+  selectObject(objectId, sourceLabel) {
+    if (!this.currentPayload?.objects.some((object) => object.id === objectId)) {
+      this.statusLog.write(`WARN Select object skipped: object id ${objectId || "unknown"} is not available.`);
+      return;
+    }
+
+    this.selectedObjectId = objectId;
+    this.renderPayload();
+    const selected = this.selectedObject();
+    this.statusLog.write(`OK Selected object from ${sourceLabel}: ${selected.name}.`);
+  }
+
+  addObject() {
+    const name = this.elements.objectNameInput.value.trim();
+    if (!this.currentPayload) {
+      this.statusLog.write("FAIL Add object blocked: load a schema-valid palette-backed payload before adding objects.");
+      return;
+    }
+    if (!name) {
+      this.statusLog.write("FAIL Add object blocked: enter an object name.");
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const id = this.uniqueObjectId(name, nextPayload.objects);
+    nextPayload.objects.push({
+      id,
+      metadata: {
+        objectType: DEFAULT_OBJECT_TYPE,
+        source: "Object Vector Studio V2 object management foundation"
+      },
+      name,
+      shapes: [],
+      type: DEFAULT_OBJECT_TYPE
+    });
+    this.commitPayloadUpdate(nextPayload, id, `OK Added object ${name} with id ${id}.`, "Add object failed schema validation");
+  }
+
+  renameSelectedObject() {
+    const selected = this.selectedObject();
+    if (!selected) {
+      this.statusLog.write("WARN Rename object skipped: no object is selected.");
+      return;
+    }
+
+    const name = this.elements.objectNameInput.value.trim();
+    if (!name) {
+      this.statusLog.write("FAIL Rename object blocked: enter an object name.");
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
+    nextObject.name = name;
+    this.commitPayloadUpdate(nextPayload, selected.id, `OK Renamed object ${selected.id} to ${name}.`, "Rename object failed schema validation");
+  }
+
+  deleteSelectedObject() {
+    const selected = this.selectedObject();
+    if (!selected) {
+      this.statusLog.write("WARN Delete object skipped: no object is selected.");
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    nextPayload.objects = nextPayload.objects.filter((object) => object.id !== selected.id);
+    const selectedObjectId = nextPayload.objects[0]?.id || "";
+    this.commitPayloadUpdate(nextPayload, selectedObjectId, `OK Deleted object ${selected.name}.`, "Delete object failed schema validation");
+  }
+
+  flattenSelectedObject() {
+    const selected = this.selectedObject();
+    if (!selected) {
+      this.statusLog.write("WARN Flatten object skipped: no object is selected.");
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
+    nextObject.flattened = true;
+    nextObject.metadata = {
+      ...(nextObject.metadata || {}),
+      flattenState: "flattened",
+      objectType: objectTypeKey(nextObject)
+    };
+    this.commitPayloadUpdate(nextPayload, selected.id, `OK Flattened object metadata for ${selected.name}.`, "Flatten object failed schema validation");
+  }
+
+  commitPayloadUpdate(nextPayload, selectedObjectId, okMessage, failPrefix) {
+    const validation = this.schemaService.validatePayload(nextPayload);
+    if (!validation.ok) {
+      this.statusLog.write(`FAIL ${failPrefix}: ${validation.errors.join(" ")}`);
+      return;
+    }
+
+    this.currentPayload = validation.payload;
+    this.selectedObjectId = selectedObjectId;
+    this.actionNav.setJsonPayloadActionsEnabled(true);
+    this.renderPayload();
+    this.statusLog.write(okMessage);
+  }
+
+  cloneCurrentPayload() {
+    if (typeof this.window.structuredClone === "function") {
+      return this.window.structuredClone(this.currentPayload);
+    }
+    return JSON.parse(JSON.stringify(this.currentPayload));
+  }
+
+  selectedObject() {
+    return this.currentPayload?.objects.find((object) => object.id === this.selectedObjectId) || null;
+  }
+
+  uniqueObjectId(name, objects) {
+    const baseId = slugifyObjectName(name);
+    const usedIds = new Set(objects.map((object) => object.id));
+    if (!usedIds.has(baseId)) {
+      return baseId;
+    }
+
+    let suffix = 2;
+    let candidate = `${baseId}-${suffix}`;
+    while (usedIds.has(candidate)) {
+      suffix += 1;
+      candidate = `${baseId}-${suffix}`;
+    }
+    return candidate;
+  }
+
+  updateObjectActionState() {
+    const hasSelectedObject = Boolean(this.selectedObject());
+    this.elements.renameObjectButton.disabled = !hasSelectedObject;
+    this.elements.deleteObjectButton.disabled = !hasSelectedObject;
+    this.elements.flattenObjectButton.disabled = !hasSelectedObject;
   }
 
   async copyJson() {
@@ -215,8 +428,7 @@ export class ToolStarterApp {
 
     const json = JSON.stringify(this.currentPayload, null, 2);
     if (typeof this.window.navigator?.clipboard?.writeText !== "function") {
-      this.elements.jsonDetails.textContent = json;
-      this.statusLog.write("WARN Clipboard API unavailable. JSON Details contains the schema-valid payload.");
+      this.statusLog.write("WARN Clipboard API unavailable. JSON Details remains read-only on the active object.");
       return;
     }
 

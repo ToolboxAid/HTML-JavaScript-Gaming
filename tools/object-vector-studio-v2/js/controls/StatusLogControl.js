@@ -16,7 +16,7 @@ export class StatusLogControl {
   }
 
   error(message) {
-    this.write(`ERROR: ${message}`);
+    this.write(`FAIL ${message}`);
   }
 
   write(message) {

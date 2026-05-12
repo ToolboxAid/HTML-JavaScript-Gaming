@@ -308,6 +308,11 @@ textarea:hover {
   grid-template-columns: 96px minmax(0, 1fr);
 }
 
+.tool-starter__field--stacked {
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
 .tool-starter__field-patterns {
   display: grid;
   gap: 8px;
@@ -364,6 +369,20 @@ textarea:hover {
   overflow: auto;
 }
 
+.object-vector-studio-v2__object-actions,
+.object-vector-studio-v2__tool-display-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.object-vector-studio-v2__object-actions button {
+  min-width: 68px;
+  min-height: 32px;
+}
+
 .object-vector-studio-v2__tool-toggle-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -388,6 +407,26 @@ textarea:hover {
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 800;
+}
+
+.object-vector-studio-v2__tool-toggle-grid.is-icon-only {
+  grid-template-columns: repeat(4, minmax(42px, 1fr));
+}
+
+.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-toggle {
+  min-width: 42px;
+  min-height: 42px;
+  gap: 0;
+  padding: 4px;
+}
+
+.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-label {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .object-vector-studio-v2__tool-toggle.is-active,
@@ -455,6 +494,22 @@ textarea:hover {
   background: var(--tool-starter-surface);
   color: var(--tool-starter-text);
   padding: 18px;
+  overflow-wrap: anywhere;
+}
+
+.object-vector-studio-v2__object-detail-grid {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 8px 10px;
+}
+
+.object-vector-studio-v2__detail-label {
+  color: var(--tool-starter-muted);
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__detail-value {
+  min-width: 0;
   overflow-wrap: anywhere;
 }
 

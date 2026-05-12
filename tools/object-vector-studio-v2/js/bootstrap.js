@@ -31,14 +31,22 @@ window.addEventListener("DOMContentLoaded", () => {
       workspaceNav: requireElement(".tool-starter__workspace__menu")
     }),
     elements: {
+      addObjectButton: requireElement("#objectVectorStudioV2AddObjectButton"),
+      deleteObjectButton: requireElement("#objectVectorStudioV2DeleteObjectButton"),
+      flattenObjectButton: requireElement("#objectVectorStudioV2FlattenObjectButton"),
       jsonDetails: requireElement("#objectVectorStudioV2JsonDetails"),
       loadStatus: requireElement("#objectVectorStudioV2LoadStatus"),
+      objectCount: requireElement("#objectVectorStudioV2ObjectCount"),
       objectDetails: requireElement("#objectVectorStudioV2ObjectDetails"),
+      objectNameInput: requireElement("#objectVectorStudioV2ObjectNameInput"),
       objectTiles: requireElement("#objectVectorStudioV2ObjectTiles"),
       paletteGate: requireElement("#objectVectorStudioV2PaletteGate"),
       paletteSummary: requireElement("#objectVectorStudioV2PaletteSummary"),
+      renameObjectButton: requireElement("#objectVectorStudioV2RenameObjectButton"),
       selectedItemVisibility: requireElement("#objectVectorStudioV2SelectedItemVisibility"),
       sourceSummary: requireElement("#objectVectorStudioV2SourceSummary"),
+      toolLabelModeButton: requireElement("#objectVectorStudioV2ToolLabelModeButton"),
+      toolToggleGrid: requireElement("#objectVectorStudioV2ToolToggleGrid"),
       toolToggles: Array.from(document.querySelectorAll("[data-shape-tool]"))
     },
     schemaService: new ObjectVectorStudioV2SchemaService(),

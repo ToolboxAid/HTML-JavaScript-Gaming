@@ -1183,17 +1183,29 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Palette", "Object Details", "JSON Details", "Status Log"]);
       await expect(page.locator("#objectVectorStudioV2PaletteGate")).toHaveValue("Required before render");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
-      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["+ Select", "Sh Shape", "P Path", "M Move", "R Rotate", "G Group"]);
+      await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("0 objects");
+      await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2DeleteObjectButton")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2FlattenObjectButton")).toBeDisabled();
+      await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Blocked Object");
+      await page.locator("#objectVectorStudioV2AddObjectButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Add object blocked: load a schema-valid palette-backed payload before adding objects\./);
+      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["+ Select", "Re Rectangle", "El Ellipse", "P Path", "M Move", "R Rotate", "G Group"]);
 
       await page.locator('[data-shape-tool="path"]').click();
       await expect(page.locator('[data-shape-tool="path"]')).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Shape\/Tools shell toggle selected: path/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Shape\/Tools shell toggle selected: path/);
+      await page.locator("#objectVectorStudioV2ToolLabelModeButton").click();
+      await expect(page.locator("#objectVectorStudioV2ToolLabelModeButton")).toHaveText("Icons");
+      await expect(page.locator("#objectVectorStudioV2ToolToggleGrid")).toHaveClass(/is-icon-only/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Shape\/Tools display mode set to compact icons\./);
 
       const invalidPayloadPath = testInfo.outputPath("object-vector-invalid.json");
       await writeFile(invalidPayloadPath, JSON.stringify({ objects: [] }, null, 2), "utf8");
       await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(invalidPayloadPath);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid\.json: root\.palette is required\./);
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toHaveText("{}");
 
       const validPayload = {
         palette: {
@@ -1215,9 +1227,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2PaletteGate")).toHaveValue("Palette loaded");
       await expect(page.locator("#objectVectorStudioV2PaletteSummary")).toContainText("Palette arcade-primary: 2 swatches.");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles .object-vector-studio-v2__object-tile")).toHaveCount(18);
+      await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("18 objects");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Asteroids Ship");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Ship entity metadata framework");
       await expect(page.locator("#objectVectorStudioV2SelectedItemVisibility")).toContainText("Selected item visible: Asteroids Ship");
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"palette"');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Asteroids Ship"');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"palette"');
       await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeEnabled();
       await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeEnabled();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from import:object-vector-valid\.json: 18 objects, 2 palette swatches\./);
@@ -1225,6 +1240,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator('[data-object-id="object-2"]').click();
       await expect(page.locator('[data-object-id="object-2"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Object 2");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Enemy entity metadata framework");
+      await expect(page.locator("#objectVectorStudioV2ObjectNameInput")).toHaveValue("Object 2");
+
+      await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Object 2 Renamed");
+      await page.locator("#objectVectorStudioV2RenameObjectButton").click();
+      await expect(page.locator('[data-object-id="object-2"]')).toContainText("Object 2 Renamed");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Object 2 Renamed"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Renamed object object-2 to Object 2 Renamed\./);
+
+      await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Shield Pickup");
+      await page.locator("#objectVectorStudioV2AddObjectButton").click();
+      await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("19 objects");
+      await expect(page.locator('[data-object-id="shield-pickup"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator('[data-object-id="shield-pickup"]')).toContainText("Shield Pickup");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"type": "object"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Added object Shield Pickup with id shield-pickup\./);
+
+      await page.locator("#objectVectorStudioV2FlattenObjectButton").click();
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Flattened metadata foundation");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"flattened": true');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Flattened object metadata for Shield Pickup\./);
+
+      await page.locator("#objectVectorStudioV2DeleteObjectButton").click();
+      await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("18 objects");
+      await expect(page.locator('[data-object-id="shield-pickup"]')).toHaveCount(0);
+      await expect(page.locator('[data-object-id="object-1"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted object Shield Pickup\./);
 
       const leftOpenHeights = await page.locator(".tool-starter__panel--left .accordion-v2.is-open").evaluateAll((sections) => (
         sections.map((section) => Math.round(section.getBoundingClientRect().height))
