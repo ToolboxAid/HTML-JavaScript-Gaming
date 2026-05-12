@@ -25,6 +25,35 @@ function normalizeCatalogPath(value) {
   return normalized.replace(/\\/g, "/");
 }
 
+function normalizeAssetsPath(value) {
+  return typeof value === "string"
+    ? value.trim().replace(/\\/g, "/").replace(/^\/+|\/+$/g, "")
+    : "";
+}
+
+function normalizeAssetManagerPath(value, assetsPath) {
+  const raw = typeof value === "string" ? value.trim().replace(/\\/g, "/") : "";
+  if (!raw) {
+    return "";
+  }
+  if (/^(https?:|data:|blob:)/i.test(raw) || raw.startsWith("/")) {
+    return normalizeCatalogPath(raw);
+  }
+
+  const baseAssetsPath = normalizeAssetsPath(assetsPath);
+  if (!baseAssetsPath) {
+    return normalizeCatalogPath(raw);
+  }
+  if (raw.startsWith("games/") || raw.startsWith(`${baseAssetsPath}/`)) {
+    return normalizeCatalogPath(raw);
+  }
+
+  const relativePath = raw.startsWith("assets/")
+    ? raw.slice("assets/".length)
+    : raw.replace(/^\.?\//, "");
+  return normalizeCatalogPath(`${baseAssetsPath}/${relativePath}`);
+}
+
 function normalizeCatalogEntry(rawEntry) {
   const entry = toObject(rawEntry);
   const path = normalizeCatalogPath(entry.path || entry.runtimePath || entry.href);
@@ -47,6 +76,36 @@ function normalizeCatalogEntries(rawEntries) {
       return;
     }
     const normalizedEntry = normalizeCatalogEntry(rawEntry);
+    if (!normalizedEntry) {
+      return;
+    }
+    normalized[safeAssetId] = normalizedEntry;
+  });
+  return normalized;
+}
+
+function normalizeAssetManagerEntry(rawEntry, assetsPath) {
+  const entry = toObject(rawEntry);
+  const path = normalizeAssetManagerPath(entry.path || entry.runtimePath || entry.href, assetsPath);
+  if (!path) {
+    return null;
+  }
+  return {
+    path,
+    kind: typeof entry.kind === "string" ? entry.kind.trim() : "",
+    source: typeof entry.source === "string" ? entry.source.trim() : ""
+  };
+}
+
+function normalizeAssetManagerEntries(rawEntries, assetsPath) {
+  const entries = toObject(rawEntries);
+  const normalized = {};
+  Object.entries(entries).forEach(([assetId, rawEntry]) => {
+    const safeAssetId = typeof assetId === "string" ? assetId.trim() : "";
+    if (!safeAssetId) {
+      return;
+    }
+    const normalizedEntry = normalizeAssetManagerEntry(rawEntry, assetsPath);
     if (!normalizedEntry) {
       return;
     }
@@ -163,11 +222,16 @@ function normalizeManifestCatalogPayload(payload) {
   const source = toObject(payload);
   const schema = typeof source.schema === "string" ? source.schema.trim() : "";
   const version = Number(source.version);
-  const toolAssetEntries = normalizeCatalogEntries(
-    source?.tools?.["asset-browser"]?.assets
+  const workspace = toObject(source.game?.workspace || source.workspace || source);
+  const tools = toObject(workspace.tools || source.tools);
+  const assetManagerEntries = normalizeAssetManagerEntries(
+    tools?.["asset-manager-v2"]?.assets,
+    workspace.assetsPath
   );
+  const toolAssetEntries = normalizeCatalogEntries(tools?.["asset-browser"]?.assets);
   const entries = {
-    ...toolAssetEntries
+    ...toolAssetEntries,
+    ...assetManagerEntries
   };
   const isValidSchema = schema === GAME_MANIFEST_SCHEMA;
   const isValidVersion = Number.isFinite(version) && version >= 1;

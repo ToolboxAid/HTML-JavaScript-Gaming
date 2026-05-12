@@ -14,6 +14,7 @@ export default class GaplessLoopPlayer {
     this.registry = new Map();
     this.bufferCache = new Map();
     this.active = new Map();
+    this.lastError = '';
   }
 
   isSupported() {
@@ -64,12 +65,22 @@ export default class GaplessLoopPlayer {
 
     const config = this.registry.get(id);
     const context = this.ensureContext();
-    if (!config?.src || !context) {
+    if (!config?.src) {
+      this.lastError = `Missing media source for loop track: ${id}`;
+      return null;
+    }
+    if (!context) {
+      this.lastError = 'Web Audio playback is unavailable in this environment.';
       return null;
     }
 
     const bufferPromise = fetch(config.src)
-      .then((response) => response.arrayBuffer())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Unable to fetch ${config.src}: ${response.status} ${response.statusText}`.trim());
+        }
+        return response.arrayBuffer();
+      })
       .then((arrayBuffer) => context.decodeAudioData(arrayBuffer.slice(0)));
     this.bufferCache.set(id, bufferPromise);
     return bufferPromise;
@@ -78,15 +89,26 @@ export default class GaplessLoopPlayer {
   async play(id, { loopCount = null } = {}) {
     const config = this.registry.get(id);
     if (!config) {
+      this.lastError = `Unknown loop track: ${id}`;
       return false;
     }
 
-    await this.resume();
-    const context = this.ensureContext();
-    const buffer = await this.loadBuffer(id);
-    if (!context || !buffer) {
+    let context;
+    let buffer;
+    try {
+      await this.resume();
+      context = this.ensureContext();
+      buffer = await this.loadBuffer(id);
+    } catch (error) {
+      this.lastError = error?.message || `Loop track ${id} failed to load.`;
+      this.bufferCache.delete(id);
       return false;
     }
+    if (!context || !buffer) {
+      this.lastError = this.lastError || `Loop track ${id} could not start.`;
+      return false;
+    }
+    this.lastError = '';
 
     this.stop(id);
 

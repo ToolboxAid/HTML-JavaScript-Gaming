@@ -1316,11 +1316,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(validPayloadPath);
       await expect(page.locator("#objectVectorStudioV2PaletteGate")).toHaveValue("Palette loaded");
       await expect(page.locator("#objectVectorStudioV2PaletteSummary")).toContainText("Palette arcade-primary: 2 swatches.");
+      const swatchState = await page.locator(".object-vector-studio-v2__palette-swatch").evaluateAll((swatches) => swatches.map((swatch) => {
+        const rect = swatch.getBoundingClientRect();
+        return {
+          ariaLabel: swatch.getAttribute("aria-label"),
+          height: Math.round(rect.height),
+          text: swatch.textContent.trim(),
+          title: swatch.getAttribute("title"),
+          width: Math.round(rect.width)
+        };
+      }));
+      expect(swatchState).toEqual([
+        { ariaLabel: "Palette swatch white: #ffffff", height: 32, text: "", title: "white: #ffffff", width: 32 },
+        { ariaLabel: "Palette swatch cyan: #6fd3ff", height: 32, text: "", title: "cyan: #6fd3ff", width: 32 }
+      ]);
       await expect(page.locator("#objectVectorStudioV2ObjectTiles .object-vector-studio-v2__object-tile")).toHaveCount(18);
       await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("18 objects");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Asteroids Ship");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Ship entity metadata framework");
       await expect(page.locator("#objectVectorStudioV2SelectedItemVisibility")).toContainText("Selected item visible: Asteroids Ship");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Asteroids Ship"');
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"selectedShape": null');
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"palette"');
@@ -1421,12 +1437,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#objectVectorStudioV2ZoomInButton").click();
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 125%");
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "0 0 256 176");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-128 -88 256 176");
       await page.locator("#objectVectorStudioV2PanRightButton").click();
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "20 0 256 176");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-108 -88 256 176");
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "0 0 320 220");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport reset to 100% at origin\./);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Origin: 0, 0");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport reset to 100% at origin 0,0\./);
 
       await page.evaluate(() => {
         Object.defineProperty(navigator, "clipboard", {
@@ -1578,6 +1595,169 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html.*hostContextId=object-vector-v2-shell/);
       await expect(page).toHaveURL(/workspace=uat/);
 
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("resolves asset-manager-v2 audio catalog paths and plays Asteroids sounds", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    await page.route("**/synthetic-audio-game.manifest.json", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({
+          game: {
+            workspace: {
+              assetsPath: "games/Synthetic/assets",
+              tools: {
+                "asset-manager-v2": {
+                  assets: {
+                    "assets.audio.music.theme": {
+                      kind: "mp3",
+                      path: "assets/audio/theme.mp3",
+                      role: "music",
+                      source: "manifest",
+                      type: "audio"
+                    },
+                    "assets.audio.sound.click": {
+                      kind: "wav",
+                      path: "assets/audio/click.wav",
+                      role: "sound",
+                      source: "manifest",
+                      type: "audio"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          schema: "html-js-gaming.game-manifest",
+          version: 1
+        }),
+        contentType: "application/json",
+        status: 200
+      });
+    });
+
+    await page.addInitScript(() => {
+      window.__audioPlayCalls = [];
+      class MockAudio {
+        constructor(src) {
+          this.src = new URL(src, window.location.href).pathname;
+          this.currentTime = 0;
+          this.duration = 1;
+          this.loop = false;
+          this.paused = true;
+          this.preload = "";
+          this.volume = 1;
+        }
+
+        play() {
+          this.paused = false;
+          window.__audioPlayCalls.push(this.src);
+          return Promise.resolve();
+        }
+
+        pause() {
+          this.paused = true;
+        }
+      }
+
+      class MockAudioContext {
+        constructor() {
+          this.currentTime = 0;
+          this.destination = {};
+        }
+
+        resume() {
+          return Promise.resolve();
+        }
+
+        decodeAudioData() {
+          return Promise.resolve({ duration: 0.1 });
+        }
+
+        createBufferSource() {
+          return {
+            connect() {},
+            start() {},
+            stop() {},
+            set buffer(value) {
+              this._buffer = value;
+            }
+          };
+        }
+
+        createGain() {
+          return {
+            connect() {},
+            gain: {
+              linearRampToValueAtTime() {},
+              setValueAtTime() {}
+            }
+          };
+        }
+      }
+
+      window.Audio = MockAudio;
+      window.AudioContext = MockAudioContext;
+      window.webkitAudioContext = MockAudioContext;
+    });
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
+      const result = await page.evaluate(async () => {
+        const catalog = await import("/games/shared/workspaceGameAssetCatalog.js");
+        await catalog.preloadWorkspaceGameAssetCatalog("SyntheticAudio", { catalogPath: "/synthetic-audio-game.manifest.json" });
+        await catalog.preloadWorkspaceGameAssetCatalog("Asteroids", { catalogPath: "/games/Asteroids/game.manifest.json" });
+        const { default: AsteroidsAudio } = await import("/games/Asteroids/systems/AsteroidsAudio.js");
+        const audioWarnings = [];
+        const audio = new AsteroidsAudio({
+          logger: {
+            warn(message) {
+              audioWarnings.push(message);
+            }
+          }
+        });
+        const mediaPlayed = await audio.play("fire");
+        const loopPlayed = await audio.loopPlayer.play("extraShip", { loopCount: 1 });
+        audio.stopAll();
+        return {
+          audioWarnings,
+          asteroidsExtraShip: catalog.resolveWorkspaceGameAssetPath("Asteroids", "assets.audio.sound.extra-ship"),
+          asteroidsFire: catalog.resolveWorkspaceGameAssetPath("Asteroids", "assets.audio.sound.fire"),
+          asteroidsMusic: catalog.resolveWorkspaceGameAssetPath("Asteroids", "assets.audio.music.beat-1"),
+          fireState: audio.media.getState("fire"),
+          loopPlayed,
+          mediaPlayed,
+          playCalls: window.__audioPlayCalls,
+          syntheticMp3: catalog.resolveWorkspaceGameAssetPath("SyntheticAudio", "assets.audio.music.theme"),
+          syntheticWav: catalog.resolveWorkspaceGameAssetPath("SyntheticAudio", "assets.audio.sound.click")
+        };
+      });
+
+      expect(result.syntheticMp3).toBe("/games/Synthetic/assets/audio/theme.mp3");
+      expect(result.syntheticWav).toBe("/games/Synthetic/assets/audio/click.wav");
+      expect(result.asteroidsFire).toBe("/games/Asteroids/assets/audio/fire.wav");
+      expect(result.asteroidsMusic).toBe("/games/Asteroids/assets/audio/beat1.wav");
+      expect(result.asteroidsExtraShip).toBe("/games/Asteroids/assets/audio/extraShip.wav");
+      expect(result.mediaPlayed).toBe(true);
+      expect(result.loopPlayed).toBe(true);
+      expect(result.fireState).toMatchObject({
+        paused: false,
+        src: "/games/Asteroids/assets/audio/fire.wav",
+        volume: 0.55
+      });
+      expect(result.playCalls).toEqual(expect.arrayContaining(["/games/Asteroids/assets/audio/fire.wav"]));
+      expect(result.audioWarnings).toEqual([]);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

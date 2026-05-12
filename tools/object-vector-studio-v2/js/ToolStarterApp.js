@@ -396,8 +396,9 @@ export class ToolStarterApp {
     this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
     this.elements.jsonDetails.textContent = "{}";
     this.elements.renderSummary.textContent = "Render mode: idle. Capture mode: none.";
-    this.elements.coordinateDisplay.textContent = "Coordinates: 0, 0 | Zoom 100%";
+    this.elements.coordinateDisplay.textContent = "Origin: 0, 0 | Zoom 100%";
     this.elements.renderSurface.replaceChildren();
+    this.renderCenterOriginMarker();
     this.elements.objectTiles.replaceChildren(this.createEmptyObjectTile());
     this.actionNav.setJsonPayloadActionsEnabled(false);
     this.actionNav.setImportEnabled(this.schemaReady && !this.actionNav.isWorkspaceLaunch());
@@ -531,6 +532,7 @@ export class ToolStarterApp {
     this.elements.jsonDetails.textContent = "{}";
     this.elements.renderSummary.textContent = "Render mode: blocked. Capture mode: none.";
     this.elements.renderSurface.replaceChildren();
+    this.renderCenterOriginMarker();
     const tile = this.createEmptyObjectTile();
     tile.textContent = "Runtime palette required before rendering object tiles.";
     this.elements.objectTiles.replaceChildren(tile);
@@ -554,7 +556,10 @@ export class ToolStarterApp {
       item.className = "object-vector-studio-v2__palette-swatch";
       item.type = "button";
       item.dataset.paletteColor = color;
-      item.textContent = `${label}: ${color || "value unavailable"}`;
+      item.dataset.paletteLabel = label;
+      item.dataset.paletteDetails = `${label}: ${color || "value unavailable"}`;
+      item.title = item.dataset.paletteDetails;
+      item.setAttribute("aria-label", `Palette swatch ${item.dataset.paletteDetails}`);
       if (color) {
         item.style.setProperty("--object-vector-studio-v2-swatch", color);
       }
@@ -815,6 +820,7 @@ export class ToolStarterApp {
     const object = this.selectedObject();
     this.elements.renderSurface.replaceChildren();
     if (!object) {
+      this.renderCenterOriginMarker();
       this.elements.renderSummary.textContent = "Render mode: idle. Capture mode: none.";
       return;
     }
@@ -842,10 +848,22 @@ export class ToolStarterApp {
       }
     });
     this.renderSelectionOverlay(object);
+    this.renderCenterOriginMarker();
 
     const message = `Render mode svg-work-surface: rendered ${object.name} with ${renderedCount} visible shapes; capture mode none.`;
     this.elements.renderSummary.textContent = message;
     this.statusLog.write(`OK ${message}`);
+  }
+
+  renderCenterOriginMarker() {
+    const marker = document.createElementNS(SVG_NS, "circle");
+    marker.classList.add("object-vector-studio-v2__center-origin-dot");
+    marker.dataset.centerOrigin = "0,0";
+    marker.setAttribute("cx", "0");
+    marker.setAttribute("cy", "0");
+    marker.setAttribute("r", "3");
+    marker.setAttribute("aria-label", "Canvas origin 0,0");
+    this.elements.renderSurface.append(marker);
   }
 
   createSvgShape(shape) {
@@ -1014,8 +1032,15 @@ export class ToolStarterApp {
   updateViewport() {
     const width = DEFAULT_VIEWPORT.width / this.viewport.zoom;
     const height = DEFAULT_VIEWPORT.height / this.viewport.zoom;
-    this.elements.renderSurface.setAttribute("viewBox", `${this.viewport.x} ${this.viewport.y} ${width} ${height}`);
-    this.elements.coordinateDisplay.textContent = `Coordinates: 0, 0 | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
+    const viewX = this.formatViewportNumber(this.viewport.x - width / 2);
+    const viewY = this.formatViewportNumber(this.viewport.y - height / 2);
+    this.elements.renderSurface.setAttribute("viewBox", `${viewX} ${viewY} ${this.formatViewportNumber(width)} ${this.formatViewportNumber(height)}`);
+    this.elements.coordinateDisplay.textContent = `Origin: ${this.formatViewportNumber(this.viewport.x)}, ${this.formatViewportNumber(this.viewport.y)} | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
+  }
+
+  formatViewportNumber(value) {
+    const normalized = Number(Number(value).toFixed(3));
+    return Object.is(normalized, -0) ? 0 : normalized;
   }
 
   zoomViewport(factor) {
@@ -1039,7 +1064,7 @@ export class ToolStarterApp {
   resetViewport() {
     this.viewport = { ...DEFAULT_VIEWPORT };
     this.updateViewport();
-    this.statusLog.write("OK Viewport reset to 100% at origin.");
+    this.statusLog.write("OK Viewport reset to 100% at origin 0,0.");
   }
 
   updateCoordinateDisplay(event) {
@@ -1049,8 +1074,8 @@ export class ToolStarterApp {
     }
     const viewWidth = DEFAULT_VIEWPORT.width / this.viewport.zoom;
     const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
-    const x = this.viewport.x + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
-    const y = this.viewport.y + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
+    const x = this.viewport.x - viewWidth / 2 + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
+    const y = this.viewport.y - viewHeight / 2 + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
     this.elements.coordinateDisplay.textContent = `Coordinates: ${Math.round(x)}, ${Math.round(y)} | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
   }
 
@@ -1211,34 +1236,34 @@ export class ToolStarterApp {
       visible: true
     };
     if (type === "rectangle") {
-      return withTransform({ ...base, geometry: { height: 62, width: 86, x: 34, y: 48 } });
+      return withTransform({ ...base, geometry: { height: 62, width: 86, x: -90, y: -30 } });
     }
     if (type === "circle") {
-      return withTransform({ ...base, geometry: { cx: 244, cy: 72, r: 30 } });
+      return withTransform({ ...base, geometry: { cx: 70, cy: -10, r: 30 } });
     }
     if (type === "ellipse") {
-      return withTransform({ ...base, geometry: { cx: 238, cy: 152, rx: 52, ry: 26 } });
+      return withTransform({ ...base, geometry: { cx: 70, cy: 70, rx: 52, ry: 26 } });
     }
     if (type === "line") {
-      return withTransform({ ...base, geometry: { x1: 42, x2: 142, y1: 174, y2: 128 } });
+      return withTransform({ ...base, geometry: { x1: -100, x2: 0, y1: 80, y2: 30 } });
     }
     if (type === "polygon") {
       return withTransform({
         ...base,
         geometry: {
           points: [
-            { x: 154, y: 34 },
-            { x: 194, y: 106 },
-            { x: 116, y: 106 }
+            { x: 0, y: -80 },
+            { x: 40, y: -8 },
+            { x: -38, y: -8 }
           ]
         }
       });
     }
     if (type === "arc") {
-      return withTransform({ ...base, geometry: { cx: 158, cy: 162, endAngle: 135, r: 42, startAngle: -135 } });
+      return withTransform({ ...base, geometry: { cx: 0, cy: 70, endAngle: 135, r: 42, startAngle: -135 } });
     }
     if (type === "text") {
-      return withTransform({ ...base, geometry: { fontSize: 24, text: "Text", x: 132, y: 124 } });
+      return withTransform({ ...base, geometry: { fontSize: 24, text: "Text", x: -30, y: 40 } });
     }
     return base;
   }
