@@ -208,6 +208,427 @@
             }
           }
         },
+        "object-vector-studio-v2": {
+          "version": 1,
+          "toolId": "object-vector-studio-v2",
+          "name": "Asteroids Object Vector Assets",
+          "objects": [
+            {
+              "id": "object.asteroids.ship",
+              "name": "Asteroids Ship",
+              "type": "ship",
+              "shapes": [
+                {
+                  "id": "ship-hull",
+                  "type": "polygon",
+                  "order": 0,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "points": [
+                      {
+                        "x": 0,
+                        "y": -18
+                      },
+                      {
+                        "x": 14,
+                        "y": 16
+                      },
+                      {
+                        "x": 0,
+                        "y": 8
+                      },
+                      {
+                        "x": -14,
+                        "y": 16
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#FFFFFF",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": 0,
+                    "originY": 0
+                  }
+                },
+                {
+                  "id": "ship-thrust-port",
+                  "type": "line",
+                  "order": 1,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "x1": -6,
+                    "y1": 14,
+                    "x2": 0,
+                    "y2": 6
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#FFFFFF",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": -3,
+                    "originY": 10
+                  }
+                },
+                {
+                  "id": "ship-thrust-starboard",
+                  "type": "line",
+                  "order": 2,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "x1": 6,
+                    "y1": 14,
+                    "x2": 0,
+                    "y2": 6
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#FFFFFF",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": 3,
+                    "originY": 10
+                  }
+                }
+              ]
+            },
+            {
+              "id": "object.asteroids.asteroid.large",
+              "name": "Large Asteroid",
+              "type": "object",
+              "shapes": [
+                {
+                  "id": "large-asteroid-ridge",
+                  "type": "polygon",
+                  "order": 0,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "points": [
+                      {
+                        "x": -28,
+                        "y": -12
+                      },
+                      {
+                        "x": -10,
+                        "y": -30
+                      },
+                      {
+                        "x": 20,
+                        "y": -26
+                      },
+                      {
+                        "x": 32,
+                        "y": -8
+                      },
+                      {
+                        "x": 26,
+                        "y": 18
+                      },
+                      {
+                        "x": 6,
+                        "y": 32
+                      },
+                      {
+                        "x": -22,
+                        "y": 24
+                      },
+                      {
+                        "x": -34,
+                        "y": 2
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#CBD5E1",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": -1,
+                    "originY": 1
+                  }
+                }
+              ]
+            },
+            {
+              "id": "object.asteroids.asteroid.medium",
+              "name": "Medium Asteroid",
+              "type": "object",
+              "shapes": [
+                {
+                  "id": "medium-asteroid-ridge",
+                  "type": "polygon",
+                  "order": 0,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "points": [
+                      {
+                        "x": -16,
+                        "y": -10
+                      },
+                      {
+                        "x": -2,
+                        "y": -18
+                      },
+                      {
+                        "x": 16,
+                        "y": -14
+                      },
+                      {
+                        "x": 20,
+                        "y": 2
+                      },
+                      {
+                        "x": 8,
+                        "y": 18
+                      },
+                      {
+                        "x": -10,
+                        "y": 16
+                      },
+                      {
+                        "x": -20,
+                        "y": 4
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#CBD5E1",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": 0,
+                    "originY": 0
+                  }
+                }
+              ]
+            },
+            {
+              "id": "object.asteroids.asteroid.small",
+              "name": "Small Asteroid",
+              "type": "object",
+              "shapes": [
+                {
+                  "id": "small-asteroid-ridge",
+                  "type": "polygon",
+                  "order": 0,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "points": [
+                      {
+                        "x": -10,
+                        "y": -6
+                      },
+                      {
+                        "x": 0,
+                        "y": -12
+                      },
+                      {
+                        "x": 10,
+                        "y": -6
+                      },
+                      {
+                        "x": 8,
+                        "y": 8
+                      },
+                      {
+                        "x": -6,
+                        "y": 10
+                      },
+                      {
+                        "x": -12,
+                        "y": 0
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#CBD5E1",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": -1,
+                    "originY": -1
+                  }
+                }
+              ]
+            },
+            {
+              "id": "object.asteroids.ufo.large",
+              "name": "Large UFO",
+              "type": "enemy",
+              "shapes": [
+                {
+                  "id": "large-ufo-body",
+                  "type": "ellipse",
+                  "order": 0,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "cx": 0,
+                    "cy": 6,
+                    "rx": 24,
+                    "ry": 9
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#DBEAFE",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": 0,
+                    "originY": 6
+                  }
+                },
+                {
+                  "id": "large-ufo-canopy",
+                  "type": "ellipse",
+                  "order": 1,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "cx": 0,
+                    "cy": -2,
+                    "rx": 12,
+                    "ry": 7
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#DBEAFE",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": 0,
+                    "originY": -2
+                  }
+                }
+              ]
+            },
+            {
+              "id": "object.asteroids.ufo.small",
+              "name": "Small UFO",
+              "type": "enemy",
+              "shapes": [
+                {
+                  "id": "small-ufo-body",
+                  "type": "ellipse",
+                  "order": 0,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "cx": 0,
+                    "cy": 4,
+                    "rx": 16,
+                    "ry": 6
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#DBEAFE",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": 0,
+                    "originY": 4
+                  }
+                },
+                {
+                  "id": "small-ufo-canopy",
+                  "type": "ellipse",
+                  "order": 1,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "cx": 0,
+                    "cy": -2,
+                    "rx": 8,
+                    "ry": 5
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#DBEAFE",
+                    "strokeWidth": 2,
+                    "opacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "originX": 0,
+                    "originY": -2
+                  }
+                }
+              ]
+            }
+          ]
+        },
         "vector-map-editor": {
           "vectorMapDocument": {
             "schema": "html-js-gaming.vector-map",

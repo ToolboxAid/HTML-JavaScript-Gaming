@@ -488,6 +488,7 @@
       : { context: result.context, toolSummaries: {} };
     const paletteSummary = sessionRefresh.toolSummaries["palette-manager-v2"] || {};
     const assetSummary = sessionRefresh.toolSummaries["asset-manager-v2"] || {};
+    const objectVectorSummary = sessionRefresh.toolSummaries["object-vector-studio-v2"] || {};
     const textToSpeechSummary = sessionRefresh.toolSummaries["text2speech-V2"] || {};
     const dirtyByToolId = Object.fromEntries(Object.entries(sessionRefresh.toolSummaries)
       .map(([toolId, summary]) => [toolId, summary.dirtyStatus || "unknown"]));
@@ -497,6 +498,9 @@
     const assetCount = Number.isInteger(assetSummary.assetCount)
       ? assetSummary.assetCount
       : result.assetCount;
+    const objectVectorCount = Number.isInteger(objectVectorSummary.objectVectorCount)
+      ? objectVectorSummary.objectVectorCount
+      : result.objectVectorCount;
     const textToSpeechCount = Number.isInteger(textToSpeechSummary.speechQueueCount)
       ? textToSpeechSummary.speechQueueCount
       : 0;
@@ -525,6 +529,7 @@
       dirtyByToolId,
       enabledToolIds: hydration.ok ? hydration.hydratedToolIds : [],
       manifestStatus: this.activeToolStateRequiresRepoHandle ? "Repo folder required" : "Schema-valid manifest",
+      objectVectorCount,
       paletteSwatchCount,
       previewStatus: previewStatus.status,
       textToSpeechCount
@@ -558,6 +563,10 @@
     const textToSpeechSummary = this.activeToolStateRefresh?.toolSummaries?.["text2speech-V2"];
     if (textToSpeechSummary) {
       this.statusLog.info(`Loaded text2speech-V2 from ${this.activeGame?.manifestPath || "(missing manifest path)"} via workspace.tools.text2speech-V2.data: ${textToSpeechSummary.speechQueueCount} queue items; Schema validation: valid; Dirty: ${textToSpeechSummary.dirtyStatus}.`);
+    }
+    const objectVectorSummary = this.activeToolStateRefresh?.toolSummaries?.["object-vector-studio-v2"];
+    if (objectVectorSummary) {
+      this.statusLog.info(`Loaded object-vector-studio-v2 from ${this.activeGame?.manifestPath || "(missing manifest path)"} via workspace.tools.object-vector-studio-v2.data: ${objectVectorSummary.objectVectorCount} object assets; Palette source: workspace/session; Dirty: ${objectVectorSummary.dirtyStatus}.`);
     }
   }
 
@@ -667,6 +676,11 @@
       const textToSpeechPayload = this.activeContext.tools?.["text2speech-V2"];
       this.statusLog.ok(`Text to Speech V2 launch source: ${this.activeGame?.manifestPath || "(missing manifest path)"} via root.tools.text2speech-V2 array (${Array.isArray(textToSpeechPayload) ? textToSpeechPayload.length : 0} named speech items).`);
     }
+    if (toolId === "object-vector-studio-v2") {
+      const objectVectorPayload = this.activeContext.tools?.["object-vector-studio-v2"];
+      const palettePayload = this.activeContext.tools?.["palette-manager-v2"];
+      this.statusLog.ok(`Object Vector Studio V2 launch source: ${this.activeGame?.manifestPath || "(missing manifest path)"} via root.tools.object-vector-studio-v2 object (${Array.isArray(objectVectorPayload?.objects) ? objectVectorPayload.objects.length : 0} object assets); palette source: workspace.tools.palette-manager-v2 session (${Array.isArray(palettePayload?.swatches) ? palettePayload.swatches.length : 0} swatches).`);
+    }
     const hostContextId = this.activeHostContextId
       ? this.contextService.writePersistedContext(this.activeHostContextId, this.activeContext)
       : this.contextService.persistContext(this.activeContext);
@@ -756,9 +770,13 @@
       ? context.tools["palette-manager-v2"].swatches
       : [];
     const assets = context?.tools?.["asset-manager-v2"]?.assets;
+    const objectVectorObjects = context?.tools?.["object-vector-studio-v2"]?.objects;
     return {
       assetCount: assets && typeof assets === "object" && !Array.isArray(assets)
         ? Object.keys(assets).length
+        : 0,
+      objectVectorCount: Array.isArray(objectVectorObjects)
+        ? objectVectorObjects.length
         : 0,
       paletteSwatches
     };

@@ -81,6 +81,9 @@
         "asset-manager-v2": {
           "$ref": "./tools/asset-manager-v2.schema.json"
         },
+        "object-vector-studio-v2": {
+          "$ref": "./tools/object-vector-studio-v2.schema.json"
+        },
         "state-inspector": {
           "$ref": "./tools/state-inspector.schema.json"
         },

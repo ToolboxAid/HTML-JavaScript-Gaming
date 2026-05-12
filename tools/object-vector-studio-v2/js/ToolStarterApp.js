@@ -221,6 +221,10 @@ export class ToolStarterApp {
       }
     }
 
+    if (this.actionNav.isWorkspaceLaunch() && this.loadPaletteFromWorkspaceSession()) {
+      return;
+    }
+
     if (this.loadPaletteFromSessionKey(RUNTIME_PALETTE_SESSION_KEY)) {
       return;
     }

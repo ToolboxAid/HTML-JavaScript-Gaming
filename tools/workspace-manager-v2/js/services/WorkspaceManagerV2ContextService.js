@@ -8,11 +8,13 @@ const WORKSPACE_REPO_HANDLE_DB_NAME = "workspace-manager-v2-repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
+const OBJECT_VECTOR_STUDIO_V2_TOOL_KEY = "object-vector-studio-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const TEXT2SPEECH_V2_TOOL_KEY = "text2speech-V2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
 const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
+  [OBJECT_VECTOR_STUDIO_V2_TOOL_KEY]: "tools/schemas/tools/object-vector-studio-v2.schema.json",
   [PALETTE_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/palette-manager-v2.schema.json",
   [TEXT2SPEECH_V2_TOOL_KEY]: "tools/schemas/tools/text2speech-V2.schema.json"
 });
@@ -42,6 +44,13 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     id: "palette-manager-v2",
     name: "Palette Manager V2",
     path: "../palette-manager-v2/index.html"
+  }),
+  Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Editors",
+    id: OBJECT_VECTOR_STUDIO_V2_TOOL_KEY,
+    name: "Object Vector Studio V2",
+    path: "../object-vector-studio-v2/index.html"
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
@@ -861,6 +870,9 @@ export class WorkspaceManagerV2ContextService {
       paletteSwatchCount: tool.id === PALETTE_MANAGER_V2_TOOL_KEY && Array.isArray(data?.swatches)
         ? data.swatches.length
         : null,
+      objectVectorCount: tool.id === OBJECT_VECTOR_STUDIO_V2_TOOL_KEY && Array.isArray(data?.objects)
+        ? data.objects.length
+        : null,
       speechQueueCount: tool.id === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(data)
         ? data.length
         : null,
@@ -1496,6 +1508,9 @@ export class WorkspaceManagerV2ContextService {
         }
         if (toolId === PALETTE_MANAGER_V2_TOOL_KEY && Array.isArray(payload?.swatches)) {
           return `${toolId} swatches=${payload.swatches.length}`;
+        }
+        if (toolId === OBJECT_VECTOR_STUDIO_V2_TOOL_KEY && Array.isArray(payload?.objects)) {
+          return `${toolId} objects=${payload.objects.length}`;
         }
         if (Array.isArray(payload?.vectorMapDocument?.vectors)) {
           return `${toolId} vectors=${payload.vectorMapDocument.vectors.length}`;
