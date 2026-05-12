@@ -25,6 +25,16 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
+const ASTEROID_OBJECT_VECTOR_IDS = Object.freeze({
+  1: "object.asteroids.asteroid.small",
+  2: "object.asteroids.asteroid.medium",
+  3: "object.asteroids.asteroid.large",
+});
+const UFO_OBJECT_VECTOR_IDS = Object.freeze({
+  large: "object.asteroids.ufo.large",
+  small: "object.asteroids.ufo.small",
+});
+const SHIP_OBJECT_VECTOR_ID = "object.asteroids.ship";
 const LIFE_ICON_POINTS = [
   [14, 0],
   [-10, -8],
@@ -103,6 +113,15 @@ export default class AsteroidsGameScene extends Scene {
       logSceneBootStage('constructed');
     }
     this.devConsoleIntegration = options.devConsoleIntegration || null;
+    this.objectVectorAssets = options.objectVectorAssets || null;
+    this.objectVectorRuntime = options.objectVectorRuntime || null;
+    this.objectVectorPlaybackMs = 0;
+    this.objectVectorRenderCounts = {
+      asteroids: 0,
+      ship: 0,
+      ufo: 0,
+    };
+    this.objectVectorRenderFailures = new Set();
     this.debugConfig = options.debugConfig || {
       debugMode: 'prod',
       debugEnabled: Boolean(this.devConsoleIntegration),
@@ -131,7 +150,6 @@ export default class AsteroidsGameScene extends Scene {
     this.lastTwoPressed = false;
     this.lastPPressed = false;
     this.isPaused = false;
-    this.flamePulseTime = 0;
     this.beatTimer = 0;
     this.nextBeatId = 'beat1';
     this.scoreFlashTime = 0;
@@ -155,6 +173,7 @@ export default class AsteroidsGameScene extends Scene {
       onPhaseChange: (phase) => this.attractAdapter.setPhase(phase),
     });
     this.session.highScore = initialTopScore;
+    this.publishObjectVectorRuntimeDiagnostics();
   }
 
   isAttractExitInputActive() {
@@ -492,6 +511,7 @@ export default class AsteroidsGameScene extends Scene {
 
   update(dtSeconds, engine) {
     this.debugFrame += 1;
+    this.objectVectorPlaybackMs += Math.max(0, Number.isFinite(dtSeconds) ? dtSeconds * 1000 : 0);
     this.currentInput = engine.input ?? null;
     const enterPressed = engine.input?.isDown('Enter');
     const onePressed = engine.input?.isDown('Digit1');
@@ -640,7 +660,6 @@ export default class AsteroidsGameScene extends Scene {
     frameEvents.sfx = Array.isArray(events.sfx) ? events.sfx : [];
     this.shipDebris.update(dtSeconds);
     this.particles.update(dtSeconds);
-    this.flamePulseTime += dtSeconds;
     this.scoreFlashTime += dtSeconds;
     if (events.shipDestroyedState) {
       this.shipDebris.spawn({
@@ -713,21 +732,25 @@ export default class AsteroidsGameScene extends Scene {
     }
 
     this.world.asteroids.forEach((asteroid) => {
-      renderer.drawPolygon(asteroid.getPoints(), {
-        fillColor: null,
-        strokeColor: '#cbd5e1',
-        lineWidth: 2,
+      this.drawObjectVectorAsset(renderer, "asteroids", {
+        elapsedMs: this.objectVectorPlaybackMs,
+        fps: 12,
+        objectId: ASTEROID_OBJECT_VECTOR_IDS[asteroid.size],
+        rotation: asteroid.angle,
+        stateId: "active",
+        x: asteroid.x,
+        y: asteroid.y,
       });
     });
 
     if (this.world.ufo) {
-      this.world.ufo.getBodyLines().forEach((line) => {
-        renderer.drawPolygon(line, {
-          fillColor: null,
-          strokeColor: '#ffffff',
-          lineWidth: 2,
-          closePath: false,
-        });
+      this.drawObjectVectorAsset(renderer, "ufo", {
+        elapsedMs: this.objectVectorPlaybackMs,
+        fps: 12,
+        objectId: UFO_OBJECT_VECTOR_IDS[this.world.ufo.type],
+        stateId: "active",
+        x: this.world.ufo.x,
+        y: this.world.ufo.y,
       });
     }
 
@@ -741,19 +764,15 @@ export default class AsteroidsGameScene extends Scene {
 
     this.particles.render(renderer);
 
-    if (this.world.shipActive && !this.session.isTurnIntroActive() && this.world.ship.thrusting && this.session.mode === 'playing') {
-      const flamePulse = 0.5 + ((Math.sin(this.flamePulseTime * 20) + 1) * 0.5);
-      renderer.drawPolygon(this.world.ship.getFlamePoints(flamePulse), {
-        fillColor: null,
-        strokeColor: '#ffffff',
-        lineWidth: 2,
-      });
-    }
     if (this.world.shipActive && !this.session.isTurnIntroActive() && this.session.mode !== 'menu') {
-      renderer.drawPolygon(this.world.ship.getPoints(), {
-        fillColor: null,
-        strokeColor: '#ffffff',
-        lineWidth: 2,
+      this.drawObjectVectorAsset(renderer, "ship", {
+        elapsedMs: this.objectVectorPlaybackMs,
+        fps: 12,
+        objectId: SHIP_OBJECT_VECTOR_ID,
+        rotation: this.world.ship.angle + Math.PI / 2,
+        stateId: this.world.ship.thrusting && this.session.mode === 'playing' ? "thrust" : "idle",
+        x: this.world.ship.x,
+        y: this.world.ship.y,
       });
     }
 
@@ -820,6 +839,48 @@ export default class AsteroidsGameScene extends Scene {
       this.devConsoleIntegration.render(renderer, {
         worldStages: ['parallax', 'entities', 'sprite-effects', 'vector-overlay'],
       });
+    }
+    this.publishObjectVectorRuntimeDiagnostics();
+  }
+
+  drawObjectVectorAsset(renderer, renderKey, options) {
+    if (!this.objectVectorRuntime || !this.objectVectorAssets) {
+      this.recordObjectVectorRenderFailure(renderKey, options.objectId, "validated Object Vector runtime assets are not loaded");
+      return false;
+    }
+    const result = this.objectVectorRuntime.renderObject(renderer, this.objectVectorAssets, options);
+    if (!result.ok) {
+      this.recordObjectVectorRenderFailure(renderKey, options.objectId, "runtime render returned failed result");
+      return false;
+    }
+    this.objectVectorRenderCounts[renderKey] = (this.objectVectorRenderCounts[renderKey] || 0) + 1;
+    return true;
+  }
+
+  recordObjectVectorRenderFailure(renderKey, objectId, reason) {
+    const failureKey = `${renderKey}:${objectId || "unknown"}:${reason}`;
+    if (this.objectVectorRenderFailures.has(failureKey)) {
+      return;
+    }
+    this.objectVectorRenderFailures.add(failureKey);
+    this.pushDebugEvent('OBJECT_VECTOR_RUNTIME_FAIL', {
+      objectId: objectId || "unknown",
+      reason,
+      renderKey,
+    });
+    console.error(`FAIL Object Vector runtime render blocked for ${renderKey} ${objectId || "unknown"}: ${reason}.`);
+  }
+
+  publishObjectVectorRuntimeDiagnostics() {
+    try {
+      globalThis.__asteroidsObjectVectorRuntime = {
+        ...(this.objectVectorRuntime?.getDiagnostics?.() || {}),
+        loaded: Boolean(this.objectVectorAssets),
+        objectCount: this.objectVectorAssets?.objectsById?.size || 0,
+        renderCounts: { ...this.objectVectorRenderCounts },
+      };
+    } catch {
+      // Ignore diagnostics assignment in restricted runtimes.
     }
   }
 

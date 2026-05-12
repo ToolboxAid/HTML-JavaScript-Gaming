@@ -1,3 +1,5 @@
+import { ObjectVectorRuntimeAssetService } from "../../../src/engine/rendering/index.js";
+
 const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";
 const WORKSPACE_PALETTE_SESSION_KEY = "workspace.tools.palette-manager-v2";
 const RUNTIME_PALETTE_SESSION_KEY = "object-vector-studio-v2.runtimePalette";
@@ -178,13 +180,14 @@ function defaultShapeTransform(shape) {
 }
 
 export class ToolStarterApp {
-  constructor({ accordions, actionNav, elements, schemaService, shell, statusLog, windowRef = window }) {
+  constructor({ accordions, actionNav, elements, runtimeAssetService = null, schemaService, shell, statusLog, windowRef = window }) {
     this.accordions = accordions;
     this.actionNav = actionNav;
     this.elements = elements;
     this.schemaService = schemaService;
     this.shell = shell;
     this.statusLog = statusLog;
+    this.runtimeAssetService = runtimeAssetService || new ObjectVectorRuntimeAssetService({ logger: statusLog });
     this.window = windowRef;
     this.currentPayload = null;
     this.runtimePalette = null;
@@ -345,6 +348,9 @@ export class ToolStarterApp {
     this.elements.playButton.addEventListener("click", () => this.playAnimation());
     this.elements.pauseButton.addEventListener("click", () => this.pauseAnimation());
     this.elements.stopButton.addEventListener("click", () => this.stopAnimation());
+    this.elements.runtimePreviewButton.addEventListener("click", () => {
+      void this.previewRuntimeAsset();
+    });
     this.elements.onionSkinToggle.addEventListener("change", () => {
       this.renderWorkSurface();
       this.statusLog.write(`OK Onion-skin preview ${this.elements.onionSkinToggle.checked ? "enabled" : "disabled"}.`);
@@ -2633,6 +2639,7 @@ export class ToolStarterApp {
     this.elements.deleteObjectButton.disabled = !hasSelectedObject;
     this.elements.flattenObjectButton.disabled = !hasSelectedObject;
     this.elements.exportSvgButton.disabled = !hasSelectedObject;
+    this.elements.runtimePreviewButton.disabled = !hasSelectedObject;
     this.updateAnimationActionState();
   }
 
@@ -2666,6 +2673,45 @@ export class ToolStarterApp {
     } catch (error) {
       this.statusLog.write(`FAIL Copy JSON failed: ${error.message}`);
     }
+  }
+
+  async previewRuntimeAsset() {
+    const object = this.selectedObject();
+    const payload = this.validatedJsonActionPayload("Runtime Preview");
+    if (!object || !payload) {
+      this.statusLog.write("FAIL Runtime Preview blocked: select a schema-valid Object Vector Studio V2 object first.");
+      return;
+    }
+    if (!this.runtimePalette) {
+      this.loadPaletteFromSessionKey(RUNTIME_PALETTE_SESSION_KEY) || this.loadPaletteFromWorkspaceSession();
+    }
+    if (!this.runtimePalette) {
+      this.statusLog.write("FAIL Runtime Preview blocked: runtime palette is required from workspace/session and must not be embedded in object JSON.");
+      return;
+    }
+
+    const assetSet = await this.runtimeAssetService.loadPayload(payload, {
+      sourceLabel: "Object Vector Studio V2 runtime preview"
+    });
+    if (!assetSet) {
+      return;
+    }
+    const result = this.runtimeAssetService.createSvgString(assetSet, {
+      elapsedMs: 0,
+      frameId: this.selectedFrameId,
+      objectId: object.id,
+      stateId: this.selectedStateId
+    });
+    if (!result.ok) {
+      return;
+    }
+
+    this.elements.renderSurface.dataset.runtimePreview = "true";
+    this.elements.renderSurface.dataset.runtimePreviewFrame = this.selectedFrameId || "";
+    this.elements.renderSurface.dataset.runtimePreviewState = this.selectedStateId || "";
+    const message = `Runtime preview launched for ${object.name}${this.selectedStateId ? ` state ${this.selectedStateId}` : ""}${this.selectedFrameId ? ` frame ${this.selectedFrameId}` : ""}.`;
+    this.elements.renderSummary.textContent = `${message} Palette source: ${this.runtimePaletteSource}.`;
+    this.statusLog.write(`OK ${message} Runtime palette source ${this.runtimePaletteSource}; object JSON remains palette-free.`);
   }
 
   exportJson() {

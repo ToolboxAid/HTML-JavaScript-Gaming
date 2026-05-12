@@ -316,6 +316,50 @@
                     "originY": 10
                   }
                 }
+              ],
+              "states": [
+                {
+                  "id": "idle",
+                  "name": "Idle",
+                  "frames": [
+                    {
+                      "id": "idle-frame-1",
+                      "order": 0,
+                      "durationFrames": 1,
+                      "shapeOverrides": [
+                        {
+                          "shapeId": "ship-thrust-port",
+                          "visible": false
+                        },
+                        {
+                          "shapeId": "ship-thrust-starboard",
+                          "visible": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "thrust",
+                  "name": "Thrust",
+                  "frames": [
+                    {
+                      "id": "thrust-frame-1",
+                      "order": 0,
+                      "durationFrames": 1,
+                      "shapeOverrides": [
+                        {
+                          "shapeId": "ship-thrust-port",
+                          "visible": true
+                        },
+                        {
+                          "shapeId": "ship-thrust-starboard",
+                          "visible": true
+                        }
+                      ]
+                    }
+                  ]
+                }
               ]
             },
             {
@@ -381,6 +425,20 @@
                     "originY": 1
                   }
                 }
+              ],
+              "states": [
+                {
+                  "id": "active",
+                  "name": "Active",
+                  "frames": [
+                    {
+                      "id": "active-frame-1",
+                      "order": 0,
+                      "durationFrames": 1,
+                      "shapeOverrides": []
+                    }
+                  ]
+                }
               ]
             },
             {
@@ -442,6 +500,20 @@
                     "originY": 0
                   }
                 }
+              ],
+              "states": [
+                {
+                  "id": "active",
+                  "name": "Active",
+                  "frames": [
+                    {
+                      "id": "active-frame-1",
+                      "order": 0,
+                      "durationFrames": 1,
+                      "shapeOverrides": []
+                    }
+                  ]
+                }
               ]
             },
             {
@@ -498,6 +570,20 @@
                     "originX": -1,
                     "originY": -1
                   }
+                }
+              ],
+              "states": [
+                {
+                  "id": "active",
+                  "name": "Active",
+                  "frames": [
+                    {
+                      "id": "active-frame-1",
+                      "order": 0,
+                      "durationFrames": 1,
+                      "shapeOverrides": []
+                    }
+                  ]
                 }
               ]
             },
@@ -562,6 +648,20 @@
                     "originY": -2
                   }
                 }
+              ],
+              "states": [
+                {
+                  "id": "active",
+                  "name": "Active",
+                  "frames": [
+                    {
+                      "id": "active-frame-1",
+                      "order": 0,
+                      "durationFrames": 1,
+                      "shapeOverrides": []
+                    }
+                  ]
+                }
               ]
             },
             {
@@ -624,6 +724,20 @@
                     "originX": 0,
                     "originY": -2
                   }
+                }
+              ],
+              "states": [
+                {
+                  "id": "active",
+                  "name": "Active",
+                  "frames": [
+                    {
+                      "id": "active-frame-1",
+                      "order": 0,
+                      "durationFrames": 1,
+                      "shapeOverrides": []
+                    }
+                  ]
                 }
               ]
             }

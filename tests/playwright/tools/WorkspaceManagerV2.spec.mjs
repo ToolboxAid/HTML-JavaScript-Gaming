@@ -1804,6 +1804,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2StopButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Playback stopped\./);
 
+      await page.locator("#objectVectorStudioV2RuntimePreviewButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview", "true");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview-state", "idle");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime asset load from Object Vector Studio V2 runtime preview: 1 objects\./);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview-frame", "idle-frame-2");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime SVG preview generated for ship-template state=idle frame=idle-frame-2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime preview launched for Ship Template state idle frame idle-frame-2\. Runtime palette source object-vector-studio-v2\.runtimePalette; object JSON remains palette-free\./);
+
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.animation-copied-json")));
       expect(copiedPayload.objects[0].states.map((state) => state.id)).toEqual(expect.arrayContaining(["idle", "thrust"]));
@@ -2173,6 +2181,90 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(restoredLayout.canvasRectWidth).toBe(normalLayout.canvasRectWidth);
       expect(restoredLayout.canvasRectHeight).toBe(normalLayout.canvasRectHeight);
       expect(restoredLayout.headerHeight).toBe(normalLayout.headerHeight);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("loads Object Vector Studio V2 runtime assets into Asteroids gameplay rendering", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
+      await page.waitForFunction(() => window.__asteroidsNewBootStage === "boot-complete");
+      await page.waitForFunction(() => window.__asteroidsObjectVectorRuntime?.loaded === true);
+
+      const invalidRuntimeAssetResult = await page.evaluate(async () => {
+        const { ObjectVectorRuntimeAssetService } = await import("/src/engine/rendering/index.js");
+        const messages = [];
+        const service = new ObjectVectorRuntimeAssetService({
+          logger: {
+            write(message) {
+              messages.push(message);
+            }
+          }
+        });
+        const assetSet = await service.loadPayload({
+          name: "Invalid Runtime Payload",
+          objects: [
+            {
+              id: "runtime-invalid",
+              name: "Runtime Invalid",
+              shapes: [
+                {
+                  geometry: {},
+                  id: "bad-shape",
+                  locked: false,
+                  order: 0,
+                  style: { fill: "#ffffff", stroke: "#ffffff", strokeWidth: 1 },
+                  transform: { originX: 0, originY: 0, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                  type: "triangle",
+                  visible: true
+                }
+              ],
+              type: "object"
+            }
+          ],
+          toolId: "object-vector-studio-v2",
+          version: 1
+        }, { sourceLabel: "playwright invalid runtime asset" });
+        return {
+          assetSetLoaded: Boolean(assetSet),
+          messages
+        };
+      });
+      expect(invalidRuntimeAssetResult.assetSetLoaded).toBe(false);
+      expect(invalidRuntimeAssetResult.messages.join("\n")).toContain("FAIL Object Vector runtime asset validation failed from playwright invalid runtime asset: root.objects[0].shapes[0] must match exactly one Object Vector Studio V2 shape schema.");
+
+      await page.evaluate(() => {
+        const scene = window.__asteroidsNewEngine.scene;
+        scene.session.start(1);
+        scene.world.ufo = scene.world.createUfoEntity("small", scene.world.wave);
+      });
+      await page.waitForFunction(() => {
+        const counts = window.__asteroidsObjectVectorRuntime?.renderCounts || {};
+        return counts.asteroids > 0 && counts.ship > 0 && counts.ufo > 0;
+      });
+
+      const diagnostics = await page.evaluate(() => window.__asteroidsObjectVectorRuntime);
+      expect(diagnostics.loaded).toBe(true);
+      expect(diagnostics.objectCount).toBe(6);
+      expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
+      expect(diagnostics.renderCounts.ship).toBeGreaterThan(0);
+      expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);
+      const eventMessages = diagnostics.events.map((entry) => entry.message).join("\n");
+      expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 6 objects.");
+      expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/idle-frame-1.");
+      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=idle-frame-1.");
+      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ufo.small: 2 shapes state=active frame=active-frame-1.");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

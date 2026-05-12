@@ -4,6 +4,7 @@ import { highscoreFlow } from "./flow/highscore.js";
 import { createAsteroidsShowcaseDebugPlugin } from "./debug/asteroidsShowcaseDebug.js";
 import Engine from "../../src/engine/core/Engine.js";
 import { InputService } from "../../src/engine/input/index.js";
+import { ObjectVectorRuntimeAssetService } from "../../src/engine/rendering/index.js";
 import { Theme, ThemeTokens } from "../../src/engine/theme/index.js";
 import { resolveDebugConfig } from "../../src/shared/utils/debugConfigUtils.js";
 import { createNoopDevConsoleIntegration } from "../../src/shared/utils/createNoopDevConsoleIntegration.js";
@@ -17,6 +18,7 @@ export const asteroidFlow = Object.freeze({
 });
 const theme = new Theme(ThemeTokens);
 const BOOT_TRACE_PREFIX = "Asteroids";
+const ASTEROIDS_MANIFEST_PATH = "/games/Asteroids/game.manifest.json";
 
 function traceBoot(stage, details = null) {
   if (details === null) {
@@ -43,6 +45,17 @@ function traceBootFailure(stage, error) {
 }
 
 traceBoot("module-evaluated");
+
+function publishObjectVectorRuntimeDiagnostics(runtime, extra = {}) {
+  try {
+    globalThis.__asteroidsObjectVectorRuntime = {
+      ...(runtime?.getDiagnostics?.() || {}),
+      ...extra
+    };
+  } catch {
+    // Ignore diagnostics assignment in restricted runtimes.
+  }
+}
 
 export function loadAsteroidsWorldModule() {
   return import("./game/AsteroidsWorld.js");
@@ -123,7 +136,18 @@ export async function bootAsteroidsNew({
     stage = "preload-asset-catalog";
     traceBoot(stage);
     await preloadWorkspaceGameAssetCatalog("Asteroids", {
-      catalogPath: "/games/Asteroids/game.manifest.json"
+      catalogPath: ASTEROIDS_MANIFEST_PATH
+    });
+
+    stage = "preload-object-vector-runtime";
+    traceBoot(stage);
+    const objectVectorRuntime = new ObjectVectorRuntimeAssetService();
+    const objectVectorAssets = await objectVectorRuntime.loadFromManifest(ASTEROIDS_MANIFEST_PATH, {
+      sourceLabel: "Asteroids game.manifest.json"
+    });
+    publishObjectVectorRuntimeDiagnostics(objectVectorRuntime, {
+      loaded: Boolean(objectVectorAssets),
+      objectCount: objectVectorAssets?.objectsById?.size || 0
     });
 
     stage = "create-input";
@@ -167,12 +191,19 @@ export async function bootAsteroidsNew({
     traceBoot(stage);
     engine.setScene(new SceneClass({
       devConsoleIntegration,
-      debugConfig
+      debugConfig,
+      objectVectorAssets,
+      objectVectorRuntime
     }));
 
     stage = "start-engine";
     traceBoot(stage);
     engine.start();
+    try {
+      globalThis.__asteroidsNewEngine = engine;
+    } catch {
+      // Ignore global diagnostics assignment in restricted runtimes.
+    }
 
     stage = "bind-fullscreen-click";
     traceBoot(stage);

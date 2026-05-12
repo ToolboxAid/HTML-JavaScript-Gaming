@@ -67,6 +67,7 @@ window.addEventListener("DOMContentLoaded", () => {
       renderSummary: requireElement("#objectVectorStudioV2RenderSummary"),
       renderSurface: requireElement("#objectVectorStudioV2RenderSurface"),
       resetViewButton: requireElement("#objectVectorStudioV2ResetViewButton"),
+      runtimePreviewButton: requireElement("#objectVectorStudioV2RuntimePreviewButton"),
       searchFilter: requireElement("#objectVectorStudioV2SearchFilter"),
       selectionMetrics: requireElement("#objectVectorStudioV2SelectionMetrics"),
       selectedItemVisibility: requireElement("#objectVectorStudioV2SelectedItemVisibility"),

@@ -1,0 +1,805 @@
+const DEFAULT_SCHEMA_URL = new URL("../../../tools/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
+const OBJECT_VECTOR_TOOL_ID = "object-vector-studio-v2";
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function typeMatches(expectedType, value) {
+  if (expectedType === "array") {
+    return Array.isArray(value);
+  }
+  if (expectedType === "object") {
+    return isPlainObject(value);
+  }
+  if (expectedType === "integer") {
+    return Number.isInteger(value);
+  }
+  if (expectedType === "number") {
+    return typeof value === "number" && Number.isFinite(value);
+  }
+  return typeof value === expectedType;
+}
+
+function typeDescription(expectedType) {
+  if (expectedType === "boolean") {
+    return "true or false";
+  }
+  return expectedType === "object" ? "an object" : `a ${expectedType}`;
+}
+
+function resolveSchemaRef(schemaRoot, ref) {
+  if (typeof ref !== "string" || !ref.startsWith("#/")) {
+    throw new Error(`unsupported schema reference ${ref || "unknown"}`);
+  }
+  return ref.slice(2).split("/").reduce((current, segment) => current?.[segment], schemaRoot);
+}
+
+function normalizeManifestPayload(manifestPayload) {
+  const manifest = isPlainObject(manifestPayload) ? manifestPayload : {};
+  const workspace = isPlainObject(manifest.game?.workspace)
+    ? manifest.game.workspace
+    : (isPlainObject(manifest.workspace) ? manifest.workspace : manifest);
+  return isPlainObject(workspace?.tools?.[OBJECT_VECTOR_TOOL_ID])
+    ? workspace.tools[OBJECT_VECTOR_TOOL_ID]
+    : null;
+}
+
+function sortedShapes(object) {
+  return [...(object?.shapes || [])].sort((left, right) => left.order - right.order);
+}
+
+function sortedFrames(state) {
+  return [...(state?.frames || [])].sort((left, right) => left.order - right.order);
+}
+
+function shapeTransform(shape) {
+  return shape.transform || {
+    originX: 0,
+    originY: 0,
+    rotation: 0,
+    scaleX: 1,
+    scaleY: 1,
+    x: 0,
+    y: 0
+  };
+}
+
+function normalizeFill(value) {
+  return value && value !== "transparent" ? value : null;
+}
+
+function normalizeStroke(value) {
+  return value && value !== "transparent" ? value : null;
+}
+
+function escapeXml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function shapeBounds(shape) {
+  if (shape.type === "rectangle") {
+    return {
+      height: shape.geometry.height,
+      width: shape.geometry.width,
+      x: shape.geometry.x,
+      y: shape.geometry.y
+    };
+  }
+  if (shape.type === "circle") {
+    return {
+      height: shape.geometry.r * 2,
+      width: shape.geometry.r * 2,
+      x: shape.geometry.cx - shape.geometry.r,
+      y: shape.geometry.cy - shape.geometry.r
+    };
+  }
+  if (shape.type === "ellipse") {
+    return {
+      height: shape.geometry.ry * 2,
+      width: shape.geometry.rx * 2,
+      x: shape.geometry.cx - shape.geometry.rx,
+      y: shape.geometry.cy - shape.geometry.ry
+    };
+  }
+  if (shape.type === "line") {
+    const x = Math.min(shape.geometry.x1, shape.geometry.x2);
+    const y = Math.min(shape.geometry.y1, shape.geometry.y2);
+    return {
+      height: Math.max(1, Math.abs(shape.geometry.y2 - shape.geometry.y1)),
+      width: Math.max(1, Math.abs(shape.geometry.x2 - shape.geometry.x1)),
+      x,
+      y
+    };
+  }
+  if (shape.type === "polygon") {
+    const xValues = shape.geometry.points.map((point) => point.x);
+    const yValues = shape.geometry.points.map((point) => point.y);
+    const minX = Math.min(...xValues);
+    const minY = Math.min(...yValues);
+    return {
+      height: Math.max(1, Math.max(...yValues) - minY),
+      width: Math.max(1, Math.max(...xValues) - minX),
+      x: minX,
+      y: minY
+    };
+  }
+  if (shape.type === "arc") {
+    return {
+      height: shape.geometry.r * 2,
+      width: shape.geometry.r * 2,
+      x: shape.geometry.cx - shape.geometry.r,
+      y: shape.geometry.cy - shape.geometry.r
+    };
+  }
+  if (shape.type === "text") {
+    return {
+      height: shape.geometry.fontSize,
+      width: Math.max(24, shape.geometry.text.length * shape.geometry.fontSize * 0.6),
+      x: shape.geometry.x,
+      y: shape.geometry.y - shape.geometry.fontSize
+    };
+  }
+  throw new Error(`unsupported shape bounds for ${shape.type}`);
+}
+
+function objectBounds(object, frame) {
+  const visibleShapes = sortedShapes(object)
+    .map((shape) => effectiveShapeForFrame(shape, frame))
+    .filter((shape) => shape.visible);
+  if (!visibleShapes.length) {
+    return { height: 80, width: 120, x: -60, y: -40 };
+  }
+  const bounds = visibleShapes.map((shape) => {
+    const baseBounds = shapeBounds(shape);
+    const transform = shapeTransform(shape);
+    return {
+      height: Math.max(1, baseBounds.height * transform.scaleY),
+      width: Math.max(1, baseBounds.width * transform.scaleX),
+      x: baseBounds.x + transform.x,
+      y: baseBounds.y + transform.y
+    };
+  });
+  const minX = Math.min(...bounds.map((entry) => entry.x));
+  const minY = Math.min(...bounds.map((entry) => entry.y));
+  const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
+  const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
+  return {
+    height: Number((maxY - minY).toFixed(3)),
+    width: Number((maxX - minX).toFixed(3)),
+    x: Number(minX.toFixed(3)),
+    y: Number(minY.toFixed(3))
+  };
+}
+
+function effectiveShapeForFrame(shape, frame) {
+  const effective = clone(shape);
+  const override = frame?.shapeOverrides?.find((entry) => entry.shapeId === shape.id) || null;
+  if (override && Object.prototype.hasOwnProperty.call(override, "visible")) {
+    effective.visible = override.visible;
+  }
+  if (override?.transform) {
+    effective.transform = { ...override.transform };
+  }
+  return effective;
+}
+
+function svgTransformAttribute(transform) {
+  return [
+    `translate(${transform.x} ${transform.y})`,
+    `translate(${transform.originX} ${transform.originY})`,
+    `rotate(${transform.rotation})`,
+    `scale(${transform.scaleX} ${transform.scaleY})`,
+    `translate(${-transform.originX} ${-transform.originY})`
+  ].join(" ");
+}
+
+export class ObjectVectorRuntimeAssetService {
+  constructor({ fetchRef = (...args) => fetch(...args), logger = console, schemaUrl = DEFAULT_SCHEMA_URL } = {}) {
+    this.assetCache = new Map();
+    this.events = [];
+    this.fetchRef = fetchRef;
+    this.logger = logger;
+    this.payloadCache = new Map();
+    this.schema = null;
+    this.schemaUrl = schemaUrl;
+    this.reportedCacheKeys = new Set();
+    this.lastFrameByObject = new Map();
+  }
+
+  get schemaPath() {
+    return this.schemaUrl.pathname || String(this.schemaUrl);
+  }
+
+  async loadSchema() {
+    if (this.schema) {
+      return this.schema;
+    }
+    const response = await this.fetchRef(this.schemaUrl, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`${this.schemaPath} returned ${response.status}`);
+    }
+    const schema = await response.json();
+    const schemaErrors = [];
+    this.validateSchemaShape(schema, schemaErrors);
+    if (schemaErrors.length) {
+      throw new Error(schemaErrors.join(" "));
+    }
+    this.schema = schema;
+    this.log("OK", `Object Vector runtime schema loaded from ${this.schemaPath}.`);
+    return schema;
+  }
+
+  async loadFromManifest(manifestPath, { sourceLabel = manifestPath } = {}) {
+    await this.loadSchema();
+    try {
+      const response = await this.fetchRef(manifestPath, { cache: "no-store" });
+      if (!response.ok) {
+        this.log("FAIL", `Object Vector runtime asset manifest load failed from ${sourceLabel}: ${response.status}.`);
+        return null;
+      }
+      const manifest = await response.json();
+      const payload = normalizeManifestPayload(manifest);
+      if (!payload) {
+        this.log("FAIL", `Object Vector runtime asset load failed from ${sourceLabel}: root.game.workspace.tools.${OBJECT_VECTOR_TOOL_ID} is missing.`);
+        return null;
+      }
+      return this.loadPayload(payload, { sourceLabel: `${sourceLabel}:tools.${OBJECT_VECTOR_TOOL_ID}` });
+    } catch (error) {
+      this.log("FAIL", `Object Vector runtime asset manifest load failed from ${sourceLabel}: ${error.message}`);
+      return null;
+    }
+  }
+
+  async loadPayload(payload, { sourceLabel = "runtime payload" } = {}) {
+    await this.loadSchema();
+    const validation = this.validatePayload(payload);
+    if (!validation.ok) {
+      this.log("FAIL", `Object Vector runtime asset validation failed from ${sourceLabel}: ${validation.errors.join(" ")}`);
+      return null;
+    }
+
+    const cacheKey = JSON.stringify(validation.payload);
+    if (this.payloadCache.has(cacheKey)) {
+      this.log("OK", `Object Vector runtime cache hit for ${sourceLabel}: ${validation.payload.objects.length} objects.`);
+      return this.payloadCache.get(cacheKey);
+    }
+
+    const assetSet = this.buildAssetSet(validation.payload, sourceLabel);
+    this.payloadCache.set(cacheKey, assetSet);
+    this.log("OK", `Object Vector runtime cache miss for ${sourceLabel}; cached ${assetSet.objectsById.size} objects.`);
+    this.log("OK", `Object Vector runtime asset load from ${sourceLabel}: ${assetSet.objectsById.size} objects.`);
+    return assetSet;
+  }
+
+  buildAssetSet(payload, sourceLabel) {
+    const objectsById = new Map();
+    const objectsByName = new Map();
+    const objectsByType = new Map();
+    payload.objects.forEach((object) => {
+      objectsById.set(object.id, object);
+      objectsByName.set(object.name.toLowerCase(), object);
+      const typedObjects = objectsByType.get(object.type) || [];
+      typedObjects.push(object);
+      objectsByType.set(object.type, typedObjects);
+    });
+    return {
+      objectsById,
+      objectsByName,
+      objectsByType,
+      payload,
+      sourceLabel
+    };
+  }
+
+  resolveObject(assetSet, { objectId = "", name = "", type = "" } = {}) {
+    if (!assetSet) {
+      this.log("FAIL", "Object Vector runtime object resolution failed: no validated asset set is loaded.");
+      return null;
+    }
+    const cacheKey = `${assetSet.sourceLabel}:${objectId || name || type || "unknown"}`;
+    if (this.assetCache.has(cacheKey)) {
+      this.logCacheOnce(cacheKey, `Object Vector runtime cache hit for ${objectId || name || type}.`);
+      return this.assetCache.get(cacheKey);
+    }
+
+    let object = objectId ? assetSet.objectsById.get(objectId) : null;
+    if (!object && name) {
+      object = assetSet.objectsByName.get(name.toLowerCase()) || null;
+    }
+    if (!object && type) {
+      object = assetSet.objectsByType.get(type)?.[0] || null;
+    }
+    if (!object) {
+      this.log("FAIL", `Object Vector runtime object resolution failed: objectId=${objectId || "none"} name=${name || "none"} type=${type || "none"}.`);
+      return null;
+    }
+
+    this.assetCache.set(cacheKey, object);
+    this.logCacheOnce(cacheKey, `Object Vector runtime cache miss for ${object.id}; cached object.`);
+    return object;
+  }
+
+  resolveFrame(object, { elapsedMs = 0, frameId = "", fps = 12, stateId = "" } = {}) {
+    if (!stateId) {
+      return { frame: null, state: null };
+    }
+    const state = Array.isArray(object?.states)
+      ? object.states.find((candidate) => candidate.id === stateId)
+      : null;
+    if (!state) {
+      this.log("WARN", `Object Vector runtime state ${stateId} is not defined for ${object?.id || "unknown object"}; rendering base shapes.`);
+      return { frame: null, state: null };
+    }
+
+    const frames = sortedFrames(state);
+    if (!frames.length) {
+      this.log("FAIL", `Object Vector runtime state ${stateId} has no frames for ${object.id}.`);
+      return { frame: null, state };
+    }
+    const exactFrame = frameId ? frames.find((candidate) => candidate.id === frameId) : null;
+    if (frameId && !exactFrame) {
+      this.log("FAIL", `Object Vector runtime frame ${stateId}/${frameId} is not defined for ${object.id}.`);
+      return { frame: null, state };
+    }
+    const frame = exactFrame || this.frameAtElapsedTime(frames, elapsedMs, fps);
+    const lastFrameKey = `${object.id}:${state.id}`;
+    if (this.lastFrameByObject.get(lastFrameKey) !== frame.id) {
+      this.lastFrameByObject.set(lastFrameKey, frame.id);
+      this.log("OK", `Object Vector runtime frame resolved: ${object.id} ${state.id}/${frame.id}.`);
+    }
+    return { frame, state };
+  }
+
+  frameAtElapsedTime(frames, elapsedMs, fps) {
+    const safeFps = Number.isFinite(fps) && fps > 0 ? fps : 12;
+    const safeElapsedMs = Number.isFinite(elapsedMs) ? Math.max(0, elapsedMs) : 0;
+    const totalFrameUnits = frames.reduce((total, frame) => total + frame.durationFrames, 0);
+    const elapsedFrameUnit = Math.floor((safeElapsedMs / 1000) * safeFps) % totalFrameUnits;
+    let cursor = 0;
+    return frames.find((frame) => {
+      cursor += frame.durationFrames;
+      return elapsedFrameUnit < cursor;
+    }) || frames[0];
+  }
+
+  renderObject(renderer, assetSet, options = {}) {
+    const object = this.resolveObject(assetSet, options);
+    if (!object) {
+      return { frameId: "", ok: false, renderedShapes: 0, stateId: "" };
+    }
+    const context = renderer?.ctx;
+    if (!context) {
+      this.log("FAIL", `Object Vector runtime render failed for ${object.id}: renderer.ctx is unavailable.`);
+      return { frameId: "", ok: false, renderedShapes: 0, stateId: "" };
+    }
+
+    const { frame, state } = this.resolveFrame(object, options);
+    const renderedShapes = this.drawObjectToCanvas(context, object, frame, options);
+    if (renderedShapes < 0) {
+      return { frameId: frame?.id || "", ok: false, renderedShapes: 0, stateId: state?.id || "" };
+    }
+    this.logCacheOnce(
+      `render:${object.id}:${state?.id || "base"}:${frame?.id || "base"}`,
+      `Object Vector runtime rendered ${object.id}: ${renderedShapes} shapes${state ? ` state=${state.id}` : ""}${frame ? ` frame=${frame.id}` : ""}.`
+    );
+    return { frameId: frame?.id || "", ok: true, renderedShapes, stateId: state?.id || "" };
+  }
+
+  drawObjectToCanvas(context, object, frame, options = {}) {
+    try {
+      context.save();
+      context.translate(options.x || 0, options.y || 0);
+      context.rotate(options.rotation || 0);
+      const scale = Number.isFinite(options.scale) ? options.scale : 1;
+      context.scale(scale, scale);
+      let renderedShapes = 0;
+      sortedShapes(object).forEach((shape) => {
+        const effective = effectiveShapeForFrame(shape, frame);
+        if (!effective.visible) {
+          return;
+        }
+        this.drawShape(context, effective);
+        renderedShapes += 1;
+      });
+      context.restore();
+      return renderedShapes;
+    } catch (error) {
+      context.restore();
+      this.log("FAIL", `Object Vector runtime render failed for ${object.id}: ${error.message}`);
+      return -1;
+    }
+  }
+
+  drawShape(context, shape) {
+    const transform = shapeTransform(shape);
+    context.save();
+    try {
+      context.translate(transform.x, transform.y);
+      context.translate(transform.originX, transform.originY);
+      context.rotate((transform.rotation * Math.PI) / 180);
+      context.scale(transform.scaleX, transform.scaleY);
+      context.translate(-transform.originX, -transform.originY);
+      context.globalAlpha = typeof shape.style.opacity === "number" ? shape.style.opacity : 1;
+      context.lineWidth = shape.style.strokeWidth;
+      context.fillStyle = normalizeFill(shape.style.fill) || "transparent";
+      context.strokeStyle = normalizeStroke(shape.style.stroke) || "transparent";
+      this.buildPath(context, shape);
+      const fillColor = normalizeFill(shape.style.fill);
+      const strokeColor = normalizeStroke(shape.style.stroke);
+      if (fillColor) {
+        context.fill();
+      }
+      if (strokeColor && shape.style.strokeWidth > 0) {
+        context.stroke();
+      }
+    } finally {
+      context.restore();
+    }
+  }
+
+  buildPath(context, shape) {
+    context.beginPath();
+    if (shape.type === "rectangle") {
+      context.rect(shape.geometry.x, shape.geometry.y, shape.geometry.width, shape.geometry.height);
+      return;
+    }
+    if (shape.type === "circle") {
+      context.arc(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, 0, Math.PI * 2);
+      return;
+    }
+    if (shape.type === "ellipse") {
+      context.ellipse(shape.geometry.cx, shape.geometry.cy, shape.geometry.rx, shape.geometry.ry, 0, 0, Math.PI * 2);
+      return;
+    }
+    if (shape.type === "line") {
+      context.moveTo(shape.geometry.x1, shape.geometry.y1);
+      context.lineTo(shape.geometry.x2, shape.geometry.y2);
+      return;
+    }
+    if (shape.type === "polygon") {
+      shape.geometry.points.forEach((point, index) => {
+        if (index === 0) {
+          context.moveTo(point.x, point.y);
+        } else {
+          context.lineTo(point.x, point.y);
+        }
+      });
+      context.closePath();
+      return;
+    }
+    if (shape.type === "arc") {
+      context.arc(
+        shape.geometry.cx,
+        shape.geometry.cy,
+        shape.geometry.r,
+        (shape.geometry.startAngle * Math.PI) / 180,
+        (shape.geometry.endAngle * Math.PI) / 180
+      );
+      return;
+    }
+    if (shape.type === "text") {
+      context.font = `${shape.geometry.fontSize}px sans-serif`;
+      context.fillText(shape.geometry.text, shape.geometry.x, shape.geometry.y);
+      return;
+    }
+    throw new Error(`unsupported runtime shape type ${shape.type}`);
+  }
+
+  createSvgString(assetSet, options = {}) {
+    const object = this.resolveObject(assetSet, options);
+    if (!object) {
+      return { ok: false, svg: "" };
+    }
+    const { frame, state } = this.resolveFrame(object, options);
+    const visibleShapes = sortedShapes(object).map((shape) => effectiveShapeForFrame(shape, frame)).filter((shape) => shape.visible);
+    if (!visibleShapes.length) {
+      this.log("FAIL", `Object Vector runtime SVG preview failed for ${object.id}: no visible shapes.`);
+      return { ok: false, svg: "" };
+    }
+    const bounds = objectBounds(object, frame);
+    const padding = 12;
+    const viewBox = `${bounds.x - padding} ${bounds.y - padding} ${bounds.width + padding * 2} ${bounds.height + padding * 2}`;
+    const metadata = JSON.stringify({
+      frameId: frame?.id || null,
+      objectId: object.id,
+      stateId: state?.id || null,
+      toolId: OBJECT_VECTOR_TOOL_ID
+    });
+    const shapes = visibleShapes.map((shape) => this.shapeToSvg(shape)).join("");
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${escapeXml(object.name)} Object Vector runtime preview" data-runtime-object-vector="true" viewBox="${viewBox}"><metadata>${escapeXml(metadata)}</metadata>${shapes}</svg>`;
+    this.log("OK", `Object Vector runtime SVG preview generated for ${object.id}${state ? ` state=${state.id}` : ""}${frame ? ` frame=${frame.id}` : ""}.`);
+    return { ok: true, svg };
+  }
+
+  shapeToSvg(shape) {
+    const style = ` fill="${escapeXml(shape.style.fill)}" stroke="${escapeXml(shape.style.stroke)}" stroke-width="${shape.style.strokeWidth}" transform="${svgTransformAttribute(shapeTransform(shape))}"`;
+    if (shape.type === "rectangle") {
+      return `<rect x="${shape.geometry.x}" y="${shape.geometry.y}" width="${shape.geometry.width}" height="${shape.geometry.height}"${style}/>`;
+    }
+    if (shape.type === "circle") {
+      return `<circle cx="${shape.geometry.cx}" cy="${shape.geometry.cy}" r="${shape.geometry.r}"${style}/>`;
+    }
+    if (shape.type === "ellipse") {
+      return `<ellipse cx="${shape.geometry.cx}" cy="${shape.geometry.cy}" rx="${shape.geometry.rx}" ry="${shape.geometry.ry}"${style}/>`;
+    }
+    if (shape.type === "line") {
+      return `<line x1="${shape.geometry.x1}" y1="${shape.geometry.y1}" x2="${shape.geometry.x2}" y2="${shape.geometry.y2}"${style}/>`;
+    }
+    if (shape.type === "polygon") {
+      const points = shape.geometry.points.map((point) => `${point.x},${point.y}`).join(" ");
+      return `<polygon points="${points}"${style}/>`;
+    }
+    if (shape.type === "arc") {
+      const start = {
+        x: shape.geometry.cx + Math.cos((shape.geometry.startAngle * Math.PI) / 180) * shape.geometry.r,
+        y: shape.geometry.cy + Math.sin((shape.geometry.startAngle * Math.PI) / 180) * shape.geometry.r
+      };
+      const end = {
+        x: shape.geometry.cx + Math.cos((shape.geometry.endAngle * Math.PI) / 180) * shape.geometry.r,
+        y: shape.geometry.cy + Math.sin((shape.geometry.endAngle * Math.PI) / 180) * shape.geometry.r
+      };
+      return `<path d="M ${start.x} ${start.y} A ${shape.geometry.r} ${shape.geometry.r} 0 0 1 ${end.x} ${end.y}"${style}/>`;
+    }
+    if (shape.type === "text") {
+      return `<text x="${shape.geometry.x}" y="${shape.geometry.y}" font-size="${shape.geometry.fontSize}"${style}>${escapeXml(shape.geometry.text)}</text>`;
+    }
+    throw new Error(`unsupported runtime SVG shape type ${shape.type}`);
+  }
+
+  validateSchemaShape(schema, errors) {
+    if (!isPlainObject(schema)) {
+      errors.push("Object Vector Studio V2 schema root must be an object.");
+      return;
+    }
+    if (schema.$id !== "object-vector-studio-v2.schema.json") {
+      errors.push("Object Vector Studio V2 schema id must be object-vector-studio-v2.schema.json.");
+    }
+    if (schema.additionalProperties !== false) {
+      errors.push("Object Vector Studio V2 schema root must reject unknown properties.");
+    }
+    if (schema.properties?.toolId?.const !== OBJECT_VECTOR_TOOL_ID) {
+      errors.push(`Object Vector Studio V2 schema toolId must be ${OBJECT_VECTOR_TOOL_ID}.`);
+    }
+    if (!isPlainObject(schema.$defs?.shape) || !Array.isArray(schema.$defs.shape.oneOf)) {
+      errors.push("Object Vector Studio V2 schema must define shape variants.");
+    }
+  }
+
+  validatePayload(payload) {
+    if (!this.schema) {
+      return {
+        errors: ["Object Vector runtime schema is not loaded."],
+        ok: false,
+        payload: null
+      };
+    }
+    const errors = [];
+    this.validateValue(this.schema, payload, "root", errors);
+    if (!errors.length) {
+      this.validateAnimationReferences(payload, errors);
+    }
+    if (errors.length) {
+      return { errors, ok: false, payload: null };
+    }
+    return {
+      errors: [],
+      ok: true,
+      payload: this.normalizePayload(payload)
+    };
+  }
+
+  validateAnimationReferences(payload, errors) {
+    payload.objects.forEach((object, objectIndex) => {
+      const shapeIds = new Set(object.shapes.map((shape) => shape.id));
+      (object.states || []).forEach((state, stateIndex) => {
+        state.frames.forEach((frame, frameIndex) => {
+          frame.shapeOverrides.forEach((override, overrideIndex) => {
+            if (!shapeIds.has(override.shapeId)) {
+              errors.push(`root.objects[${objectIndex}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeId ${override.shapeId} must reference an existing shape.`);
+            }
+          });
+        });
+      });
+    });
+  }
+
+  validateValue(schemaNode, value, path, errors) {
+    const schema = schemaNode?.$ref ? resolveSchemaRef(this.schema, schemaNode.$ref) : schemaNode;
+    if (!schema) {
+      errors.push(`${path} references an unavailable Object Vector Studio V2 schema definition.`);
+      return;
+    }
+    if (Array.isArray(schema.allOf)) {
+      schema.allOf.forEach((entry) => this.validateValue(entry, value, path, errors));
+      return;
+    }
+    if (Array.isArray(schema.oneOf)) {
+      const matchedCount = schema.oneOf.reduce((count, entry) => {
+        const optionErrors = [];
+        this.validateValue(entry, value, path, optionErrors);
+        return optionErrors.length === 0 ? count + 1 : count;
+      }, 0);
+      if (matchedCount !== 1) {
+        errors.push(`${path} must match exactly one Object Vector Studio V2 shape schema.`);
+      }
+      return;
+    }
+    this.validateConst(schema, value, path, errors);
+    this.validateEnum(schema, value, path, errors);
+    if (schema.type && !this.validateType(schema, value, path, errors)) {
+      return;
+    }
+    this.validateString(schema, value, path, errors);
+    this.validateNumber(schema, value, path, errors);
+    this.validateArray(schema, value, path, errors);
+    this.validateObject(schema, value, path, errors);
+  }
+
+  validateConst(schema, value, path, errors) {
+    if (Object.prototype.hasOwnProperty.call(schema, "const") && value !== schema.const) {
+      errors.push(`${path} must be ${schema.const}.`);
+    }
+  }
+
+  validateEnum(schema, value, path, errors) {
+    if (Array.isArray(schema.enum) && !schema.enum.includes(value)) {
+      errors.push(`${path} must be one of ${schema.enum.join(", ")}.`);
+    }
+  }
+
+  validateType(schema, value, path, errors) {
+    const expectedTypes = Array.isArray(schema.type) ? schema.type : [schema.type];
+    const matched = expectedTypes.some((expectedType) => typeMatches(expectedType, value));
+    if (!matched) {
+      errors.push(expectedTypes.length > 1
+        ? `${path} must be one of ${expectedTypes.join(", ")}.`
+        : `${path} must be ${typeDescription(schema.type)}.`);
+    }
+    return matched;
+  }
+
+  validateString(schema, value, path, errors) {
+    if (typeof value === "string" && Number.isInteger(schema.minLength) && value.trim().length < schema.minLength) {
+      errors.push(`${path} must contain at least ${schema.minLength} characters.`);
+    }
+  }
+
+  validateNumber(schema, value, path, errors) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      return;
+    }
+    if (typeof schema.minimum === "number" && value < schema.minimum) {
+      errors.push(`${path} must be at least ${schema.minimum}.`);
+    }
+    if (typeof schema.exclusiveMinimum === "number" && value <= schema.exclusiveMinimum) {
+      errors.push(`${path} must be greater than ${schema.exclusiveMinimum}.`);
+    }
+    if (typeof schema.maximum === "number" && value > schema.maximum) {
+      errors.push(`${path} must be at most ${schema.maximum}.`);
+    }
+  }
+
+  validateArray(schema, value, path, errors) {
+    if (!Array.isArray(value)) {
+      return;
+    }
+    if (Number.isInteger(schema.minItems) && value.length < schema.minItems) {
+      errors.push(`${path} must contain at least ${schema.minItems} items.`);
+    }
+    if (schema.items) {
+      value.forEach((item, index) => this.validateValue(schema.items, item, `${path}[${index}]`, errors));
+    }
+  }
+
+  validateObject(schema, value, path, errors) {
+    if (!isPlainObject(value)) {
+      return;
+    }
+    if (Array.isArray(schema.required)) {
+      schema.required.forEach((key) => {
+        if (!Object.prototype.hasOwnProperty.call(value, key)) {
+          errors.push(`${path}.${key} is required.`);
+        }
+      });
+    }
+    const properties = isPlainObject(schema.properties) ? schema.properties : {};
+    Object.entries(properties).forEach(([key, childSchema]) => {
+      if (Object.prototype.hasOwnProperty.call(value, key)) {
+        this.validateValue(childSchema, value[key], `${path}.${key}`, errors);
+      }
+    });
+    if (schema.additionalProperties === false) {
+      Object.keys(value).forEach((key) => {
+        if (!Object.prototype.hasOwnProperty.call(properties, key)) {
+          errors.push(`${path}.${key} is not allowed.`);
+        }
+      });
+    }
+  }
+
+  normalizePayload(payload) {
+    const normalized = clone(payload);
+    normalized.name = normalized.name.trim();
+    normalized.objects = normalized.objects.map((object) => {
+      const normalizedObject = {
+        ...object,
+        id: object.id.trim(),
+        name: object.name.trim(),
+        type: object.type.trim().toLowerCase(),
+        shapes: object.shapes.map((shape) => ({
+          ...shape,
+          id: shape.id.trim(),
+          type: shape.type.trim().toLowerCase()
+        }))
+      };
+      if (Array.isArray(object.states)) {
+        normalizedObject.states = object.states.map((state) => ({
+          ...state,
+          id: state.id.trim().toLowerCase(),
+          name: state.name.trim(),
+          frames: state.frames.map((frame) => ({
+            ...frame,
+            id: frame.id.trim(),
+            shapeOverrides: frame.shapeOverrides.map((override) => ({
+              ...override,
+              shapeId: override.shapeId.trim()
+            }))
+          }))
+        }));
+      }
+      return normalizedObject;
+    });
+    return normalized;
+  }
+
+  logCacheOnce(cacheKey, message) {
+    if (this.reportedCacheKeys.has(cacheKey)) {
+      return;
+    }
+    this.reportedCacheKeys.add(cacheKey);
+    this.log("OK", message, { cacheKey });
+  }
+
+  log(level, message, details = {}) {
+    const entry = {
+      details: { ...details },
+      level,
+      message,
+      timestamp: new Date().toISOString()
+    };
+    this.events.push(entry);
+    if (this.events.length > 120) {
+      this.events.splice(0, this.events.length - 120);
+    }
+    const line = `${level} ${message}`;
+    if (typeof this.logger?.write === "function") {
+      this.logger.write(line);
+    } else if (level === "FAIL" && typeof this.logger?.error === "function") {
+      this.logger.error(line, details);
+    } else if (level === "WARN" && typeof this.logger?.warn === "function") {
+      this.logger.warn(line, details);
+    } else if (typeof this.logger?.info === "function") {
+      this.logger.info(line, details);
+    }
+  }
+
+  getDiagnostics() {
+    return {
+      cachedObjects: this.assetCache.size,
+      cachedPayloads: this.payloadCache.size,
+      events: this.events.slice(-40),
+      schemaLoaded: Boolean(this.schema)
+    };
+  }
+}
+
+export default ObjectVectorRuntimeAssetService;
