@@ -1,9 +1,5 @@
 ﻿const TOOL_NAME_SUFFIX_PATTERN = /(?:^|[\s_-])(v2|v3|new|final|copy)(?:$|[\s_-])/i;
 
-const TOOL_ID_ALIASES = Object.freeze({
-  "text2speach-V2": "text2speech-V2"
-});
-
 export const TOOL_REGISTRY = Object.freeze([
   {
     id: "vector-map-editor",
@@ -504,7 +500,7 @@ export { TOOL_NAME_SUFFIX_PATTERN };
 
 export function resolveToolIdAlias(toolId) {
   const normalizedToolId = typeof toolId === "string" ? toolId.trim() : "";
-  return TOOL_ID_ALIASES[normalizedToolId] || normalizedToolId;
+  return normalizedToolId;
 }
 
 export function getToolRegistry() {

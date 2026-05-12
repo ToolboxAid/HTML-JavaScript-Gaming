@@ -28,7 +28,6 @@ const TEXT_TO_SPEECH_REQUIRED_FIELDS = Object.freeze([
   "volume",
   "rate",
   "pitch",
-  "queueMode",
   "characterPreset",
   "ssmlLikePreset"
 ]);
@@ -457,7 +456,7 @@ function appendTextToSpeechContractFailures(parsed, rel, contractFailures) {
         contractFailures.push(`${rel}: item ${index} is missing required field ${field}.`);
       }
     }
-    for (const field of ["id", "name", "text", "gender", "language", "voice", "voiceAge", "queueMode", "characterPreset", "ssmlLikePreset"]) {
+    for (const field of ["id", "name", "text", "gender", "language", "voice", "voiceAge", "characterPreset", "ssmlLikePreset"]) {
       if (Object.prototype.hasOwnProperty.call(item, field) && typeof item[field] !== "string") {
         contractFailures.push(`${rel}: item ${index}.${field} must be a string.`);
       }

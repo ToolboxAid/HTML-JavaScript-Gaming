@@ -157,7 +157,18 @@
 }
 
 #text2speech-V2TextContent .text2speech-V2__field {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 0;
+  min-height: 0;
+}
+
+#text2speech-V2SpeechText {
+  flex: 1 1 0;
+  height: 100%;
+  min-height: 0;
+  resize: none;
 }
 
 #text2speech-V2TextContent .text2speech-V2__speech-actions {
@@ -261,6 +272,10 @@
 
 #text2speech-V2QueueContent {
   overflow: auto;
+}
+
+#text2speech-V2SpeechOptionsContent {
+  overflow-y: auto;
 }
 
 #text2speech-V2SpeechSummaryContent {
@@ -464,6 +479,11 @@ html:fullscreen body.tools-platform-surface[data-tool-id="text2speech-V2"] #text
   min-height: 0;
   max-height: 100%;
   overflow: auto;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speech-V2"] #text2speech-V2SpeechOptionsContent,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speech-V2"] #text2speech-V2SpeechOptionsContent {
+  overflow-y: auto;
 }
 
 body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speech-V2"] .text2speech-V2__accordion--fill,

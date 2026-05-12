@@ -10,8 +10,6 @@ const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const TEXT2SPEECH_V2_TOOL_KEY = "text2speech-V2";
-const LEGACY_TEXT2SPEECH_V2_TOOL_KEY = "text2speach-V2";
-const LEGACY_TEXT2SPEECH_V2_SCHEMA_REF = "tools/schemas/tools/text2speach-V2.schema.json";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
 const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
@@ -122,41 +120,6 @@ function runtimeBindingMetadata({
 
 function toolPayloadForContext(tool, context) {
   return context?.tools?.[tool.id];
-}
-
-function normalizeTextToSpeechWorkspaceToolKey(workspaceManifest) {
-  if (!isPlainObject(workspaceManifest) || !isPlainObject(workspaceManifest.tools)) {
-    return { manifest: workspaceManifest, migrationMessages: [] };
-  }
-  if (!Object.prototype.hasOwnProperty.call(workspaceManifest.tools, LEGACY_TEXT2SPEECH_V2_TOOL_KEY)) {
-    return { manifest: workspaceManifest, migrationMessages: [] };
-  }
-  const nextManifest = clone(workspaceManifest);
-  const migrationMessages = [];
-  if (!Object.prototype.hasOwnProperty.call(nextManifest.tools, TEXT2SPEECH_V2_TOOL_KEY)) {
-    nextManifest.tools[TEXT2SPEECH_V2_TOOL_KEY] = nextManifest.tools[LEGACY_TEXT2SPEECH_V2_TOOL_KEY];
-    migrationMessages.push(`Migrated root.tools.${LEGACY_TEXT2SPEECH_V2_TOOL_KEY} to root.tools.${TEXT2SPEECH_V2_TOOL_KEY}.`);
-  } else {
-    migrationMessages.push(`Ignored legacy root.tools.${LEGACY_TEXT2SPEECH_V2_TOOL_KEY} because root.tools.${TEXT2SPEECH_V2_TOOL_KEY} is already present.`);
-  }
-  delete nextManifest.tools[LEGACY_TEXT2SPEECH_V2_TOOL_KEY];
-  return { manifest: nextManifest, migrationMessages };
-}
-
-function normalizeTextToSpeechToolSession(session) {
-  const migratedSession = clone(session);
-  migratedSession.schema = {
-    ...(isPlainObject(migratedSession.schema) ? migratedSession.schema : {}),
-    toolId: TEXT2SPEECH_V2_TOOL_KEY,
-    schemaRef: migratedSession.schema?.schemaRef === LEGACY_TEXT2SPEECH_V2_SCHEMA_REF
-      ? TOOL_PAYLOAD_SCHEMA_REFS[TEXT2SPEECH_V2_TOOL_KEY]
-      : migratedSession.schema?.schemaRef
-  };
-  migratedSession.workspace = {
-    ...(isPlainObject(migratedSession.workspace) ? migratedSession.workspace : {}),
-    toolId: TEXT2SPEECH_V2_TOOL_KEY
-  };
-  return migratedSession;
 }
 
 function hasToolPayload(tool, context) {
@@ -681,16 +644,6 @@ export class WorkspaceManagerV2ContextService {
     if (result.ok) {
       return { ok: true, key, session: result.value };
     }
-    if (toolId === TEXT2SPEECH_V2_TOOL_KEY) {
-      const legacyKey = toolSessionKey(LEGACY_TEXT2SPEECH_V2_TOOL_KEY);
-      const legacyResult = this.readSessionJson(legacyKey);
-      if (legacyResult.ok) {
-        const session = normalizeTextToSpeechToolSession(legacyResult.value);
-        this.sessionStorage.setItem(key, JSON.stringify(session));
-        this.sessionStorage.removeItem(legacyKey);
-        return { ok: true, key, migratedFrom: legacyKey, session };
-      }
-    }
     return { ok: false, key, message: result.message };
   }
 
@@ -1076,17 +1029,15 @@ export class WorkspaceManagerV2ContextService {
   }
 
   async contextResultFromManifest(game, workspaceManifest, sourceLabel) {
-    const normalization = normalizeTextToSpeechWorkspaceToolKey(workspaceManifest);
-    const normalizedManifest = normalization.manifest;
-    const validation = await this.validateGeneratedManifest(normalizedManifest);
+    const validation = await this.validateGeneratedManifest(workspaceManifest);
     if (!validation.ok) {
       return { ok: false, message: `${sourceLabel} failed workspace manifest schema validation: ${validation.message}` };
     }
-    if (normalizedManifest.gameId !== game.id) {
-      return { ok: false, message: `${sourceLabel} gameId ${normalizedManifest.gameId || "(empty)"} does not match ${game.id}.` };
+    if (workspaceManifest.gameId !== game.id) {
+      return { ok: false, message: `${sourceLabel} gameId ${workspaceManifest.gameId || "(empty)"} does not match ${game.id}.` };
     }
-    const palettePayload = normalizedManifest.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
-    const assetPayload = normalizedManifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
+    const palettePayload = workspaceManifest.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
+    const assetPayload = workspaceManifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
     const paletteSwatches = Array.isArray(palettePayload?.swatches) ? clone(palettePayload.swatches) : [];
     const assetCount = Object.keys(assetPayload.assets || {}).length;
     const assetWarning = game.id === "Asteroids" && assetCount === 0
@@ -1097,20 +1048,19 @@ export class WorkspaceManagerV2ContextService {
     }
     return {
       ok: true,
-      context: clone(normalizedManifest),
+      context: clone(workspaceManifest),
       game: {
         ...game,
-        assetsPath: normalizedManifest.assetsPath,
-        gameRoot: normalizedManifest.gameRoot,
-        manifestId: normalizedManifest.id,
+        assetsPath: workspaceManifest.assetsPath,
+        gameRoot: workspaceManifest.gameRoot,
+        manifestId: workspaceManifest.id,
         paletteName: palettePayload.name || "Workspace Palette",
-        repoPath: normalizedManifest.repoPath || "",
-        repoRoot: normalizedManifest.repoRoot || ""
+        repoPath: workspaceManifest.repoPath || "",
+        repoRoot: workspaceManifest.repoRoot || ""
       },
       assetCount,
       assetWarning,
       boundaryContract: game.manifestKind === "game-manifest" ? gameManifestBoundaryContractMessage() : "",
-      migrationMessages: normalization.migrationMessages,
       paletteSwatches
     };
   }
@@ -1189,14 +1139,13 @@ export class WorkspaceManagerV2ContextService {
   }
 
   async validateGeneratedManifest(manifest) {
-    const normalizedManifest = normalizeTextToSpeechWorkspaceToolKey(manifest).manifest;
     const schemaResult = await this.loadWorkspaceManifestSchema();
     if (!schemaResult.ok) {
       return schemaResult;
     }
-    const errors = this.validateManifestAgainstSchema(normalizedManifest, schemaResult.schema);
+    const errors = this.validateManifestAgainstSchema(manifest, schemaResult.schema);
     if (!errors.length) {
-      const toolValidation = await this.validateToolPayloads(normalizedManifest, schemaResult.schema);
+      const toolValidation = await this.validateToolPayloads(manifest, schemaResult.schema);
       errors.push(...toolValidation.errors);
     }
     return errors.length

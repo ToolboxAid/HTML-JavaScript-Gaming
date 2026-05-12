@@ -130,7 +130,6 @@ const REQUIRED_TEXT2SPEECH_OPTION_FIELDS = [
   "volume",
   "rate",
   "pitch",
-  "queueMode",
   "characterPreset",
   "ssmlLikePreset"
 ];
@@ -1137,9 +1136,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("redirects legacy Text to Speech V2 path, sample, and schema references to canonical spelling", async ({ page }) => {
+  test("does not redirect legacy Text to Speech V2 path, sample, or schema references", async ({ page }) => {
     const server = await startRepoServer();
-    await installMockSpeechSynthesis(page);
     await coverageReporter.start(page);
     const pageErrors = [];
 
@@ -1148,13 +1146,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
 
     try {
-      await page.goto(`${server.baseUrl}/tools/text2speach-V2/index.html?samplePresetPath=${encodeURIComponent("/samples/phase-19/1903/sample.1903.text2speach-V2.json")}`, { waitUntil: "networkidle" });
-      await expect(page).toHaveURL(/tools\/text2speech-V2\/index\.html/);
-      await expect(page.locator("body[data-tool-id='text2speech-V2']")).toBeVisible();
-      await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(3);
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Loaded Text to Speech V2 payload source: \/samples\/phase-19\/1903\/sample\.1903\.text2speach-V2\.json\./);
-      const legacySchema = await page.evaluate(async () => fetch("/tools/schemas/tools/text2speach-V2.schema.json", { cache: "no-store" }).then((response) => response.json()));
-      expect(legacySchema.$id).toBe("tools/schemas/tools/text2speech-V2.schema.json");
+      const legacyResponse = await page.goto(`${server.baseUrl}/tools/text2speach-V2/index.html`, { waitUntil: "networkidle" });
+      expect(legacyResponse?.status()).toBe(404);
+      await expect(page).not.toHaveURL(/tools\/text2speech-V2\/index\.html/);
+      const legacyStatuses = await page.evaluate(async () => ({
+        sample: await fetch("/samples/phase-19/1903/sample.1903.text2speach-V2.json", { cache: "no-store" }).then((response) => response.status),
+        schema: await fetch("/tools/schemas/tools/text2speach-V2.schema.json", { cache: "no-store" }).then((response) => response.status)
+      }));
+      expect(legacyStatuses).toEqual({ sample: 404, schema: 404 });
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -1200,7 +1199,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("h1")).toHaveText("Text to Speech V2");
       await expect(page.locator(".tool-shell-common__header-frame")).toHaveCount(0);
       await expect(page.locator("[data-text2speech-v2-header] .tools-platform-frame__eyebrow")).toHaveText("Browser speech synthesis");
-      await expect(page.locator("[data-text2speech-v2-header] .tools-platform-frame__meta")).toHaveText("Configure voices, helper filters, presets, named sentences, queue behavior, and runtime playback.");
+      await expect(page.locator("[data-text2speech-v2-header] .tools-platform-frame__meta")).toHaveText("Configure voices, helper filters, presets, named sentences, and runtime playback.");
       await expect(page.locator("[data-text2speech-v2-header] .tools-platform-frame__description")).toHaveText("Preview speech lines for narration, prompts, and menu feedback with schema-valid named sentence options.");
       const textToSpeechHeaderLayout = await page.locator("[data-text2speech-v2-header]").evaluate((header) => {
         const frame = header.querySelector(".tools-platform-frame");
@@ -1244,7 +1243,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "text2speech-V2AgeFilterSelect",
         "text2speech-V2CharacterPresetSelect",
         "text2speech-V2SsmlLikePresetSelect",
-        "text2speech-V2QueueModeSelect",
         "text2speech-V2VolumeSlider",
         "text2speech-V2RateSlider",
         "text2speech-V2PitchSlider",
@@ -1282,6 +1280,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           contentFlexDirection: contentStyle.flexDirection,
           contentJustify: contentStyle.justifyContent,
           fieldMarginBottom: getComputedStyle(textarea.closest(".text2speech-V2__field")).marginBottom,
+          fieldFlexGrow: getComputedStyle(textarea.closest(".text2speech-V2__field")).flexGrow,
+          textareaFillsField: Math.abs(Math.round(textareaRect.height) - Math.round(fieldRect.height)) <= 2,
+          textareaHeight: Math.round(textareaRect.height),
           textareaResize: getComputedStyle(textarea).resize
         };
       });
@@ -1296,9 +1297,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         contentJustify: "flex-end",
         contentOverflowY: "auto",
         fieldMarginBottom: "0px",
+        fieldFlexGrow: "1",
+        textareaFillsField: true,
         textareaResize: "none"
       });
       expect(textAccordionLayout.contentHeight).toBeGreaterThan(120);
+      expect(textAccordionLayout.textareaHeight).toBeGreaterThan(120);
       const namedSentenceTopControls = await page.locator("#text2speech-V2QueueContent").evaluate((content) => {
         const firstElement = Array.from(content.children).find((child) => child.nodeType === Node.ELEMENT_NODE);
         return firstElement?.id || "";
@@ -1329,7 +1333,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.locator("#text2speech-V2LanguageSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEECH_LANGUAGE_VALUES);
       expect(await page.locator("#text2speech-V2VoiceSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(MOCK_TEXT2SPEECH_EN_US_VOICE_VALUES);
       await expect(page.locator("#text2speech-V2VoiceDetails")).toHaveText(MOCK_TEXT2SPEECH_EN_US_DETAILS);
-      expect(await page.locator("#text2speech-V2QueueModeSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["append", "replace"]);
+      await expect(page.locator("#text2speech-V2QueueModeSelect")).toHaveCount(0);
+      await expect(page.locator("#text2speech-V2SpeechOptionsContent")).not.toContainText("Queue mode");
+      expect(await page.locator("#text2speech-V2SpeechOptionsContent").evaluate((content) => getComputedStyle(content).overflowY)).toBe("auto");
       await expect(page.locator("#text2speech-V2RepeatCountSelect")).toHaveCount(0);
       await expect(page.locator("#text2speech-V2DelayBetweenRepeatsMsSlider")).toHaveCount(0);
       expect(await page.locator("#text2speech-V2CharacterPresetSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual(["manual", "alert", "calm", "dnd-dungeon-master", "dramatic", "narrator", "robot"]);
@@ -1382,7 +1388,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           rootMinItems: schema.minItems,
           rootType: schema.type,
           pitchMinimum: schema.$defs.speechQueueItem.properties.pitch.minimum,
-          queueModeEnum: schema.$defs.speechQueueItem.properties.queueMode.enum,
+          hasQueueMode: Object.hasOwn(schema.$defs.speechQueueItem.properties, "queueMode"),
           paletteManagerSchemaType: paletteSchema.type,
           rateMaximum: schema.$defs.speechQueueItem.properties.rate.maximum,
           required: schema.$defs.speechQueueItem.required,
@@ -1403,7 +1409,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(schemaRequiredFields.characterPresetEnum).toEqual(["manual", "alert", "calm", "dnd-dungeon-master", "dramatic", "narrator", "robot"]);
       expect(schemaRequiredFields.genderEnum).toEqual(MOCK_TEXT2SPEECH_SCHEMA_GENDER_VALUES);
       expect(schemaRequiredFields.languagePattern).toBe("^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$");
-      expect(schemaRequiredFields.queueModeEnum).toEqual(["append", "replace"]);
+      expect(schemaRequiredFields.hasQueueMode).toBe(false);
       expect(schemaRequiredFields.pitchMinimum).toBe(0.1);
       expect(schemaRequiredFields.rateMaximum).toBe(2);
       expect(schemaRequiredFields.volumeMaximum).toBe(1);
@@ -1449,6 +1455,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(readySummary.queue).toBeUndefined();
       readySummary.forEach((item) => {
         expect(REQUIRED_TEXT2SPEECH_OPTION_FIELDS.every((field) => Object.hasOwn(item, field))).toBe(true);
+        expect(Object.hasOwn(item, "queueMode")).toBe(false);
       });
       expect(JSON.stringify(readySummary)).not.toMatch(/queuedSpeechItems|selectedQueueItem|status/);
       const normalAccordionShare = await page.locator(".text2speech-V2__panel--center").evaluate((panel) => {
@@ -1500,7 +1507,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2AgeFilterSelect")).toHaveValue("adult");
       await expect(page.locator("#text2speech-V2CharacterPresetSelect")).toHaveValue("alert");
       await expect(page.locator("#text2speech-V2SsmlLikePresetSelect")).toHaveValue("normal");
-      await expect(page.locator("#text2speech-V2QueueModeSelect")).toHaveValue("replace");
       await expect(page.locator("#text2speech-V2VolumeSlider")).toHaveValue("0.9");
       await expect(page.locator("#text2speech-V2RateSlider")).toHaveValue("1.3");
       await expect(page.locator("#text2speech-V2PitchSlider")).toHaveValue("0.9");
@@ -1517,7 +1523,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         language: "en-US",
         name: "Alert warning",
         pitch: 0.9,
-        queueMode: "replace",
         rate: 1.3,
         ssmlLikePreset: "normal",
         text: "Warning. Incoming hazard detected. Please confirm the next action.",
@@ -1532,14 +1537,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2VoiceSelect")).toHaveValue("mock-google-us-english");
       await expect(page.locator("#text2speech-V2AgeFilterSelect")).toHaveValue("any");
       await expect(page.locator("#text2speech-V2CharacterPresetSelect")).toHaveValue("narrator");
-      await expect(page.locator("#text2speech-V2QueueModeSelect")).toHaveValue("replace");
       await expect(page.locator("#text2speech-V2SpeechItemName")).toHaveValue("Narrator welcome");
       await expect(page.locator("#text2speech-V2VolumeSlider")).toHaveValue("1");
       await expect(page.locator("#text2speech-V2RateSlider")).toHaveValue("1");
       await expect(page.locator("#text2speech-V2PitchSlider")).toHaveValue("1");
       await page.locator("#text2speech-V2SpeakButton").click();
       await expect.poll(async () => (await page.evaluate(() => window["__text2speech-V2Spoken"])).length).toBe(1);
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Narrator welcome; mode=replace; en-US; voice=Google US English; rate=1; pitch=1; volume=1; queuedItems=1\./);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Narrator welcome; en-US; voice=Google US English; rate=1; pitch=1; volume=1; queuedItems=1\./);
       await page.evaluate(() => {
         window["__text2speech-V2Canceled"] = 0;
         window["__text2speech-V2Paused"] = 0;
@@ -1559,7 +1563,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2VoiceSelect")).toHaveValue("mock-google-uk-english-male");
       await expect(page.locator("#text2speech-V2AgeFilterSelect")).toHaveValue("teen");
       await expect(page.locator("#text2speech-V2CharacterPresetSelect")).toHaveValue("dramatic");
-      await expect(page.locator("#text2speech-V2QueueModeSelect")).toHaveValue("append");
       await expect(page.locator("#text2speech-V2SpeechItemName")).toHaveValue("Hero ready");
       await expect(page.locator("#text2speech-V2RateSlider")).toHaveValue("1.2");
       await expect(page.locator("#text2speech-V2PitchSlider")).toHaveValue("1.4");
@@ -1638,7 +1641,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#text2speech-V2LanguageSelect").selectOption("en-GB");
       await expect(page.locator("#text2speech-V2VoiceSelect")).toHaveValue("mock-google-uk-english-female");
       await expect(page.locator("#text2speech-V2SpeakButton")).toBeEnabled();
-      await page.locator("#text2speech-V2QueueModeSelect").selectOption("append");
       await page.locator("#text2speech-V2CharacterPresetSelect").selectOption("calm");
       await expect(page.locator("#text2speech-V2RateSlider")).toHaveValue("0.8");
       await expect(page.locator("#text2speech-V2PitchSlider")).toHaveValue("1");
@@ -1680,15 +1682,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Voice Age shaping applied: Child; rate=1\.5; pitch=1\.2\./);
       await expect(page.locator("#text2speech-V2SpeechSummary")).toContainText('"ssmlLikePreset": "slow"');
       await page.locator("#text2speech-V2SpeakButton").click();
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Hero ready; mode=append; en-GB; voice=Google UK English Female; rate=1\.5; pitch=1\.2; volume=0\.8; queuedItems=1\./);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Hero ready; en-GB; voice=Google UK English Female; rate=1\.5; pitch=1\.2; volume=0\.8; queuedItems=1\./);
       await expect(page.locator("#text2speech-V2SpeechSummary")).not.toContainText('"status"');
       await selectTextToSpeechTile(page, "narrator-welcome");
       await expect(page.locator("#text2speech-V2SpeechText")).toHaveValue("");
       await page.locator("#text2speech-V2SpeechText").fill("Narrator replay line after empty text edit.");
       await expect(page.locator("#text2speech-V2SpeakButton")).toBeEnabled();
-      await page.locator("#text2speech-V2QueueModeSelect").selectOption("append");
       await page.locator("#text2speech-V2SpeakButton").click();
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Narrator welcome; mode=append; en-US; voice=Google US English; rate=1; pitch=1; volume=1; queuedItems=2\./);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Narrator welcome; en-US; voice=Google US English; rate=1; pitch=1; volume=1; queuedItems=2\./);
       const spoken = await page.evaluate(() => window["__text2speech-V2Spoken"]);
       expect(spoken).toHaveLength(2);
       expect(spoken[0]).toMatchObject({
@@ -1723,8 +1724,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.evaluate(() => window["__text2speech-V2Canceled"])).toBe(1);
       await selectTextToSpeechTile(page, "alert-warning");
       await page.locator("#text2speech-V2SpeakButton").click();
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Alert warning; mode=replace; en-US; voice=Microsoft Zira - English \(United States\); rate=1\.3; pitch=0\.9; volume=0\.9; queuedItems=1\./);
-      expect(await page.evaluate(() => window["__text2speech-V2Canceled"])).toBe(2);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Alert warning; en-US; voice=Microsoft Zira - English \(United States\); rate=1\.3; pitch=0\.9; volume=0\.9; queuedItems=1\./);
+      expect(await page.evaluate(() => window["__text2speech-V2Canceled"])).toBe(1);
+      await expect(page.locator(".text2speech-V2__status-accordion-header")).toHaveAttribute("aria-expanded", "true");
+      await page.locator("#text2speech-V2ClearStatusButton").click();
+      await expect(page.locator(".text2speech-V2__status-accordion-header")).toHaveAttribute("aria-expanded", "true");
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue("");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -1793,7 +1798,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         language: "en-US",
         name: "Imported root array line",
         pitch: 1,
-        queueMode: "replace",
         rate: 0.8,
         ssmlLikePreset: "normal",
         text: "Imported root array text.",
@@ -1829,6 +1833,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2SpeechItemName")).toHaveValue("Imported root array line");
       expect(JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent())).toEqual(importedPayload);
 
+      const payloadWithQueueMode = [{ ...importedPayload[0], queueMode: "replace" }];
+      await page.locator("#text2speech-V2ImportJsonInput").setInputFiles({
+        buffer: Buffer.from(JSON.stringify(payloadWithQueueMode)),
+        mimeType: "application/json",
+        name: "queue-mode-text-to-speech.json"
+      });
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/FAIL Import JSON blocked: Text to Speech V2 payload from queue-mode-text-to-speech\.json failed tools\/schemas\/tools\/text2speech-V2\.schema\.json validation: root\[0\]\.queueMode is not allowed/);
+      await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(1);
+      expect(JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent())).toEqual(importedPayload);
+
       await page.locator("#text2speech-V2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(window.__text2speechV2CopiedJson));
       expect(Array.isArray(copiedPayload)).toBe(true);
@@ -1836,7 +1850,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(copiedPayload.queue).toBeUndefined();
       expect(copiedPayload.status).toBeUndefined();
       expect(copiedPayload.selectedQueueItemId).toBeUndefined();
-      expect(JSON.stringify(copiedPayload)).not.toMatch(/queuedSpeechItems|selectedQueueItemName|status/);
+      expect(JSON.stringify(copiedPayload)).not.toMatch(/queueMode|queuedSpeechItems|selectedQueueItemName|status/);
 
       const downloadPromise = page.waitForEvent("download");
       await page.locator("#text2speech-V2ExportJsonButton").click();
@@ -1849,7 +1863,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(exportedPayload.queue).toBeUndefined();
       expect(exportedPayload.status).toBeUndefined();
       expect(exportedPayload.selectedQueueItemId).toBeUndefined();
-      expect(JSON.stringify(exportedPayload)).not.toMatch(/queuedSpeechItems|selectedQueueItemName|status/);
+      expect(JSON.stringify(exportedPayload)).not.toMatch(/queueMode|queuedSpeechItems|selectedQueueItemName|status/);
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Exported Text to Speech V2 JSON root array \(1 item\)\./);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -1979,7 +1993,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           language: "en-US",
           name: "Invalid TTS",
           pitch: 2.5,
-          queueMode: "replace",
           rate: 3,
           repeatCount: 2,
           ssmlLikePreset: "normal",
@@ -2051,6 +2064,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return {
           hasAutoSpeak: Object.hasOwn(schema.$defs.speechQueueItem.properties, "autoSpeak"),
           hasDelayBetweenRepeats: Object.hasOwn(schema.$defs.speechQueueItem.properties, "delayBetweenRepeats"),
+          hasQueueMode: Object.hasOwn(schema.$defs.speechQueueItem.properties, "queueMode"),
           hasRepeatCount: Object.hasOwn(schema.$defs.speechQueueItem.properties, "repeatCount"),
           itemAdditionalProperties: schema.$defs.speechQueueItem.additionalProperties,
           rootItemsRef: schema.items?.$ref,
@@ -2065,6 +2079,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(schemaContract.itemAdditionalProperties).toBe(false);
       expect(schemaContract.required).toEqual(REQUIRED_TEXT2SPEECH_OPTION_FIELDS);
       expect(schemaContract.hasAutoSpeak).toBe(false);
+      expect(schemaContract.hasQueueMode).toBe(false);
       expect(schemaContract.hasRepeatCount).toBe(false);
       expect(schemaContract.hasDelayBetweenRepeats).toBe(false);
 
@@ -2082,6 +2097,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
         await validate("removed-fields", (item) => {
           item.autoSpeak = true;
+          item.queueMode = "replace";
           item.repeatCount = 2;
           item.delayBetweenRepeats = 250;
         });
@@ -2089,7 +2105,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           delete item.voiceAge;
         });
         await validate("enum-field", (item) => {
-          item.queueMode = "parallel";
+          item.characterPreset = "parallel";
         });
         await validate("range-field", (item) => {
           item.volume = 1.5;
@@ -2112,10 +2128,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(validationMessages.find((entry) => entry.label === "valid-base")).toMatchObject({ ok: true });
       expect(validationMessages.find((entry) => entry.label === "old-root-object").message).toMatch(/root\.tools\.text2speech-V2: expected array/);
       expect(validationMessages.find((entry) => entry.label === "removed-fields").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.autoSpeak is not allowed/);
+      expect(validationMessages.find((entry) => entry.label === "removed-fields").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.queueMode is not allowed/);
       expect(validationMessages.find((entry) => entry.label === "removed-fields").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.repeatCount is not allowed/);
       expect(validationMessages.find((entry) => entry.label === "removed-fields").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.delayBetweenRepeats is not allowed/);
       expect(validationMessages.find((entry) => entry.label === "required-field").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.voiceAge is required/);
-      expect(validationMessages.find((entry) => entry.label === "enum-field").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.queueMode: expected one of "append", "replace"/);
+      expect(validationMessages.find((entry) => entry.label === "enum-field").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.characterPreset: expected one of "manual", "alert", "calm", "dnd-dungeon-master", "dramatic", "narrator", "robot"/);
       expect(validationMessages.find((entry) => entry.label === "range-field").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.volume: must be less than or equal to 1/);
       expect(validationMessages.find((entry) => entry.label === "range-field").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.rate: must be less than or equal to 2/);
       expect(validationMessages.find((entry) => entry.label === "range-field").message).toMatch(/root\.tools\.text2speech-V2\[0\]\.pitch: must be less than or equal to 2/);

@@ -21,7 +21,6 @@
         "volume",
         "rate",
         "pitch",
-        "queueMode",
         "characterPreset",
         "ssmlLikePreset"
       ],
@@ -69,10 +68,6 @@
           "type": "number",
           "minimum": 0.1,
           "maximum": 2
-        },
-        "queueMode": {
-          "type": "string",
-          "enum": ["append", "replace"]
         },
         "characterPreset": {
           "type": "string",

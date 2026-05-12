@@ -151,7 +151,6 @@ class TextToSpeechEngine {
     gender = TEXT_TO_SPEECH_DEFAULTS.gender,
     language = TEXT_TO_SPEECH_DEFAULTS.language,
     pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
-    queueMode = TEXT_TO_SPEECH_DEFAULTS.queueMode,
     rate = TEXT_TO_SPEECH_DEFAULTS.rate,
     speechItemId = "",
     speechItemName = "",
@@ -166,15 +165,6 @@ class TextToSpeechEngine {
       return firstUtterance;
     }
 
-    if (queueMode !== "append" && queueMode !== "replace") {
-      return { message: `Unsupported ${TEXT_TO_SPEECH_DISPLAY_NAME} queueMode: ${queueMode}.`, ok: false };
-    }
-
-    if (queueMode === "replace") {
-      this.speechSynthesis.cancel();
-      this.queuedSpeechItems.clear();
-    }
-
     this.queueSequence += 1;
     const selectedSpeechItemId = String(speechItemId || speechItemName || `speech-item-${Date.now().toString(36)}`);
     const queuedSpeechItemId = `${selectedSpeechItemId || "speech-item"}::${this.queueSequence}`;
@@ -184,7 +174,6 @@ class TextToSpeechEngine {
       language: firstUtterance.utterance.lang,
       name: queuedSpeechItemName,
       pitch: firstUtterance.utterance.pitch,
-      queueMode,
       rate: firstUtterance.utterance.rate,
       speechItemId: selectedSpeechItemId,
       status: "queued",
@@ -214,7 +203,6 @@ class TextToSpeechEngine {
       ok: true,
       pitch: firstUtterance.utterance.pitch,
       queuedSpeechItems: this.queuedSpeechItemList(),
-      queueMode,
       rate: firstUtterance.utterance.rate,
       speechItemId: selectedSpeechItemId,
       speechItemName: queuedSpeechItemName,

@@ -141,7 +141,6 @@ export class SpeechOptionsControl {
     languageSelect,
     pitchOutput,
     pitchSlider,
-    queueModeSelect,
     rateOutput,
     rateSlider,
     ssmlLikePresetSelect,
@@ -158,7 +157,6 @@ export class SpeechOptionsControl {
     this.languageSelect = languageSelect;
     this.pitchOutput = pitchOutput;
     this.pitchSlider = pitchSlider;
-    this.queueModeSelect = queueModeSelect;
     this.rateOutput = rateOutput;
     this.rateSlider = rateSlider;
     this.ssmlLikePresetSelect = ssmlLikePresetSelect;
@@ -179,7 +177,6 @@ export class SpeechOptionsControl {
     defaults,
     genderFilterOptions,
     languageOptions,
-    queueModeOptions,
     rangeDefaults,
     ssmlLikePresetDefaults,
     ssmlLikePresetOptions,
@@ -192,7 +189,6 @@ export class SpeechOptionsControl {
     populateSelect(this.ageFilterSelect, ageFilterOptions, "any");
     populateSelect(this.genderFilterSelect, genderFilterOptions, "any");
     populateSelect(this.languageSelect, languageOptions, defaults.language);
-    populateSelect(this.queueModeSelect, queueModeOptions, defaults.queueMode);
     populateSelect(this.characterPresetSelect, characterPresetOptions, defaults.characterPreset);
     populateSelect(this.ssmlLikePresetSelect, ssmlLikePresetOptions, defaults.ssmlLikePreset);
     configureRange(this.volumeSlider, this.volumeOutput, rangeDefaults.volume);
@@ -412,14 +408,9 @@ export class SpeechOptionsControl {
       this.syncOutputs();
       onChange({ controlId: "language" });
     });
-    [
-      this.queueModeSelect,
-      this.voiceSelect
-    ].forEach((control) => {
-      control.addEventListener(control.tagName === "SELECT" ? "change" : "input", () => {
-        this.syncOutputs();
-        onChange({ controlId: control.id });
-      });
+    this.voiceSelect.addEventListener("change", () => {
+      this.syncOutputs();
+      onChange({ controlId: this.voiceSelect.id });
     });
     [
       { input: this.pitchSlider, slider: "pitch" },
@@ -442,7 +433,6 @@ export class SpeechOptionsControl {
     }
     this.ageFilterSelect.value = String(value.voiceAge || "any");
     this.languageSelect.value = String(value.language);
-    this.queueModeSelect.value = String(value.queueMode);
     this.characterPresetSelect.value = String(value.characterPreset);
     this.ssmlLikePresetSelect.value = String(value.ssmlLikePreset);
     this.volumeSlider.value = String(value.volume);
@@ -475,7 +465,6 @@ export class SpeechOptionsControl {
       gender: payloadGenderValue(this.genderFilterSelect.value),
       language: this.languageSelect.value,
       pitch: numberValue(this.pitchSlider),
-      queueMode: this.queueModeSelect.value,
       rate: numberValue(this.rateSlider),
       ssmlLikePreset: this.ssmlLikePresetSelect.value,
       voice: this.voiceSelect.value,

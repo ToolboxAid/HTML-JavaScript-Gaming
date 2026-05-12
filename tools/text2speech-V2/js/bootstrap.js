@@ -51,7 +51,6 @@ window.addEventListener("DOMContentLoaded", () => {
       languageSelect: requireElement("#text2speech-V2LanguageSelect"),
       pitchOutput: requireElement("#text2speech-V2PitchOutput"),
       pitchSlider: requireElement("#text2speech-V2PitchSlider"),
-      queueModeSelect: requireElement("#text2speech-V2QueueModeSelect"),
       rateOutput: requireElement("#text2speech-V2RateOutput"),
       rateSlider: requireElement("#text2speech-V2RateSlider"),
       ssmlLikePresetSelect: requireElement("#text2speech-V2SsmlLikePresetSelect"),

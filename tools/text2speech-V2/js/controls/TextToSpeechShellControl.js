@@ -49,7 +49,7 @@
     summary.setAttribute("data-tools-platform-summary-state", isExpanded ? "expanded" : "collapsed");
     summary.setAttribute("data-tools-platform-summary-mode", isFullscreen ? "fullscreen" : "normal");
     summary.setAttribute("data-tool-id", "text2speech-V2");
-    summary.setAttribute("title", `${headerText}\nConfigure voices, helper filters, presets, named sentences, queue behavior, and runtime playback.`);
+    summary.setAttribute("title", `${headerText}\nConfigure voices, helper filters, presets, named sentences, and runtime playback.`);
   }
 
   async enterFullscreenIfAvailable() {

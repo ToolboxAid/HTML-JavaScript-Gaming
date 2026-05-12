@@ -6,7 +6,6 @@
   TEXT_TO_SPEECH_DISPLAY_NAME,
   TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
-  TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
   TEXT_TO_SPEECH_SCHEMA_ID,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
@@ -15,8 +14,6 @@
 } from "../../../src/engine/audio/TextToSpeechDefaults.js";
 
 const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speech-V2";
-const LEGACY_WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speach-V2";
-const LEGACY_TEXT_TO_SPEECH_SCHEMA_ID = "tools/schemas/tools/text2speach-V2.schema.json";
 const TEXT_TO_SPEECH_SCHEMA_URL = `/${TEXT_TO_SPEECH_SCHEMA_ID}`;
 const TEXT_TO_SPEECH_URL_SOURCE_PARAM = "samplePresetPath";
 
@@ -188,7 +185,6 @@ export class TextToSpeechToolApp {
       defaults: TEXT_TO_SPEECH_DEFAULTS,
       genderFilterOptions: TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
       languageOptions: TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
-      queueModeOptions: TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
       rangeDefaults: TEXT_TO_SPEECH_RANGE_DEFAULTS,
       ssmlLikePresetDefaults: TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
       ssmlLikePresetOptions: TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
@@ -308,9 +304,6 @@ export class TextToSpeechToolApp {
       this.actionNav.setSpeakEnabled(false);
       return;
     }
-    if (queueDataResult.migrationMessage) {
-      this.statusLog.ok(queueDataResult.migrationMessage);
-    }
     if (queueDataResult.empty) {
       this.clearRenderedQueue("empty");
       this.statusLog.ok(queueDataResult.message);
@@ -324,9 +317,7 @@ export class TextToSpeechToolApp {
       return;
     }
     const schemaRef = String(queueDataResult.schemaRef || "");
-    if (schemaRef === LEGACY_TEXT_TO_SPEECH_SCHEMA_ID) {
-      this.statusLog.ok(`Migrated ${TEXT_TO_SPEECH_DISPLAY_NAME} schema reference from ${LEGACY_TEXT_TO_SPEECH_SCHEMA_ID} to ${TEXT_TO_SPEECH_SCHEMA_ID}.`);
-    } else if (schemaRef && schemaRef !== TEXT_TO_SPEECH_SCHEMA_ID) {
+    if (schemaRef && schemaRef !== TEXT_TO_SPEECH_SCHEMA_ID) {
       this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} payload from ${queueDataResult.sourcePath} uses ${schemaRef}; expected ${TEXT_TO_SPEECH_SCHEMA_ID}.`);
       this.clearRenderedQueue("load-failed");
       this.actionNav.setSpeakEnabled(false);
@@ -379,16 +370,8 @@ export class TextToSpeechToolApp {
       }
       return this.queueDataFromUrlSource(samplePresetPath);
     }
-    let rawToolState = this.window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
-    let sourceKey = WORKSPACE_TOOL_STATE_KEY;
-    let migrationMessage = "";
-    if (!rawToolState) {
-      rawToolState = this.window.sessionStorage.getItem(LEGACY_WORKSPACE_TOOL_STATE_KEY);
-      sourceKey = rawToolState ? LEGACY_WORKSPACE_TOOL_STATE_KEY : WORKSPACE_TOOL_STATE_KEY;
-      migrationMessage = rawToolState
-        ? `Migrated ${TEXT_TO_SPEECH_DISPLAY_NAME} workspace toolState key from ${LEGACY_WORKSPACE_TOOL_STATE_KEY} to ${WORKSPACE_TOOL_STATE_KEY}.`
-        : "";
-    }
+    const rawToolState = this.window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
+    const sourceKey = WORKSPACE_TOOL_STATE_KEY;
     if (!rawToolState) {
       return { ok: false, message: `Workspace launch missing ${WORKSPACE_TOOL_STATE_KEY}; queue cannot render.` };
     }
@@ -404,27 +387,8 @@ export class TextToSpeechToolApp {
           message: `${TEXT_TO_SPEECH_DISPLAY_NAME} empty workspace launch: no workspace payload is loaded from ${sourceKey}. Use Import JSON in standalone mode or add Text to Speech V2 named speech items before saving.`
         };
       }
-      if (sourceKey === LEGACY_WORKSPACE_TOOL_STATE_KEY) {
-        const migratedToolState = {
-          ...toolState,
-          schema: {
-            ...(isPlainObject(toolState.schema) ? toolState.schema : {}),
-            toolId: "text2speech-V2",
-            schemaRef: toolState.schema?.schemaRef === LEGACY_TEXT_TO_SPEECH_SCHEMA_ID
-              ? TEXT_TO_SPEECH_SCHEMA_ID
-              : toolState.schema?.schemaRef
-          },
-          workspace: {
-            ...(isPlainObject(toolState.workspace) ? toolState.workspace : {}),
-            toolId: "text2speech-V2"
-          }
-        };
-        this.window.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify(migratedToolState));
-        this.window.sessionStorage.removeItem(LEGACY_WORKSPACE_TOOL_STATE_KEY);
-      }
       return {
         dirtyState: `isDirty=${toolState.dirty?.isDirty === true}; reason=${toolState.dirty?.reason || "clean"}`,
-        migrationMessage,
         ok: true,
         payload: toolState.data,
         schemaRef: toolState.schema?.schemaRef || "",
@@ -828,7 +792,7 @@ export class TextToSpeechToolApp {
       return;
     }
     this.outputSummary.render(this.queueControl.selectedQueue());
-    this.statusLog.ok(`Speech queued: ${result.speechItemName}; mode=${result.queueMode}; ${result.language}; voice=${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}; queuedItems=${result.queuedSpeechItems.length}.`);
+    this.statusLog.ok(`Speech queued: ${result.speechItemName}; ${result.language}; voice=${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}; queuedItems=${result.queuedSpeechItems.length}.`);
     this.refreshActionState();
   }
 

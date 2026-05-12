@@ -5,7 +5,8 @@
   }
 
   mount() {
-    this.clearButton.addEventListener("click", () => {
+    this.clearButton.addEventListener("click", (event) => {
+      event.stopPropagation();
       this.clear();
     });
   }

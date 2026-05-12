@@ -33,11 +33,6 @@ const TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS = Object.freeze({
   teen: Object.freeze({ pitchOffset: 0.2, rateMultiplier: 1.08 })
 });
 
-const TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS = Object.freeze([
-  Object.freeze({ label: "Append to queue", value: "append" }),
-  Object.freeze({ label: "Replace current speech", value: "replace" })
-]);
-
 const TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS = Object.freeze([
   Object.freeze({ label: "Manual", value: "manual" }),
   Object.freeze({ label: "Alert", value: "alert" }),
@@ -87,7 +82,6 @@ const TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS = Object.freeze([
   "volume",
   "rate",
   "pitch",
-  "queueMode",
   "characterPreset",
   "ssmlLikePreset"
 ]);
@@ -97,7 +91,6 @@ const TEXT_TO_SPEECH_DEFAULT_OPTIONS = Object.freeze({
   gender: "any",
   language: "en-US",
   pitch: TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual.pitch,
-  queueMode: "replace",
   rate: TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual.rate,
   ssmlLikePreset: TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual.ssmlLikePreset,
   voice: "",
@@ -119,7 +112,6 @@ export {
   TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
   TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS,
-  TEXT_TO_SPEECH_QUEUE_MODE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
   TEXT_TO_SPEECH_SCHEMA_ID,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
