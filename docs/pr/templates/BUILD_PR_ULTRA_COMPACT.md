@@ -22,3 +22,14 @@
 
 ## Output
 <project>/tmp/<NAME>_delta.zip
+
+## Generated Response Support
+When generated docs/templates include a commit comment, render it in a copy-friendly control/button pattern:
+
+```html
+<div class="copy-control" data-copy-kind="commit-comment">
+  <label for="commitCommentText">Commit comment</label>
+  <textarea id="commitCommentText" readonly><description> - <PR info></textarea>
+  <button type="button" data-copy-target="commitCommentText">Copy commit comment</button>
+</div>
+```
