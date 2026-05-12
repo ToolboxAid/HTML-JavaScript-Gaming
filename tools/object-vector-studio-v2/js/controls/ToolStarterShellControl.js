@@ -44,7 +44,8 @@ export class ToolStarterShellControl {
       return;
     }
 
-    const isFullscreen = Boolean(this.document.fullscreenElement);
+    const isFullscreen = Boolean(this.document.fullscreenElement)
+      || this.document.body.classList.contains("tools-platform-fullscreen-active");
     const isExpanded = details.open === true;
     summary.textContent = isExpanded
       ? "Hide Header and Details"

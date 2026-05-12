@@ -37,55 +37,92 @@
     </details>
 
     <nav class="tool-starter__menu tool-starter__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
-      <button id="toolExportButton" type="button">Export</button>
-      <button id="toolCopyJsonButton" type="button">Copy JSON</button>
-      <button id="toolExportToolStateButton" type="button">Export toolState</button>
+      <button id="objectVectorStudioV2ImportJsonButton" type="button">Import</button>
+      <input id="objectVectorStudioV2ImportJsonInput" type="file" accept="application/json,.json" hidden>
+      <button id="objectVectorStudioV2CopyJsonButton" type="button">Copy JSON</button>
+      <button id="objectVectorStudioV2ExportJsonButton" type="button">Export</button>
     </nav>
 
     <nav class="tool-starter__menu tool-starter__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
-      <button id="workspaceImportManifestButton" type="button">Import manifest</button>
-      <button id="workspaceCopyManifestButton" type="button">Copy manifest</button>
-      <button id="workspaceExportManifestButton" type="button">Export manifest</button>
-      <button id="returnToWorkspaceButton" type="button" hidden>Return to Workspace</button>
+      <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
     </nav>
 
-    <main class="tool-starter app-shell" data-tool-id="object-vector-studio-v2">
+    <main class="tool-starter object-vector-studio-v2 app-shell" data-tool-id="object-vector-studio-v2">
       <aside class="tool-starter__panel tool-starter__panel--left" aria-label="Tool inputs">
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="sourceInputContent">
-            <span>Input Source</span>
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectContent">
+            <span>Object</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="sourceInputContent" class="accordion-v2__content">
-            <label class="tool-starter__field" for="sourceInput">
-              <span>Source value</span>
-              <input id="sourceInput" type="text" autocomplete="off" placeholder="Enter a value to process">
+          <div id="objectVectorStudioV2ObjectContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2SourceSummary">
+              <span>Source</span>
+              <input id="objectVectorStudioV2SourceSummary" type="text" autocomplete="off" value="No schema-loaded payload" readonly>
             </label>
-            <div class="tool-starter__field-patterns" aria-label="Editable and non-editable field patterns">
-              <label class="tool-starter__field tool-starter__field--compact tool-starter__field--not-editable" for="notEditableField">
-                <span>Not Editable</span>
-                <input id="notEditableField" type="text" autocomplete="off" value="Read-only display value" readonly>
-              </label>
-              <label class="tool-starter__field tool-starter__field--compact tool-starter__field--editable" for="editableField">
-                <span>Editable</span>
-                <input id="editableField" class="tool-starter__editable-tags-box" type="text" autocomplete="off" value="No tags.">
-              </label>
-            </div>
-            <p id="sourceValidationMessage" class="tool-starter__hint">Input is required before Export can process.</p>
+            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2PaletteGate">
+              <span>Palette</span>
+              <input id="objectVectorStudioV2PaletteGate" type="text" autocomplete="off" value="Required before render" readonly>
+            </label>
+            <div id="objectVectorStudioV2LoadStatus" class="object-vector-studio-v2__callout" role="status">Schema-only loading is idle. Import JSON or launch with workspace toolState data that includes a palette.</div>
           </div>
         </section>
 
-      </aside>
-
-      <section class="tool-starter__panel tool-starter__panel--center" aria-label="Tool preview">
-        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="previewPanelContent">
-            <span>Preview</span>
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ShapeToolsContent">
+            <span>Shape/Tools</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="previewPanelContent" class="accordion-v2__content">
-            <div id="previewOutput" class="tool-starter__preview" role="img" aria-label="Tool preview output">
-              <p>No preview rendered yet.</p>
+          <div id="objectVectorStudioV2ShapeToolsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div class="object-vector-studio-v2__tool-toggle-grid" aria-label="Shape and tool toggles">
+              <button class="object-vector-studio-v2__tool-toggle is-active" type="button" aria-pressed="true" data-shape-tool="select">
+                <span aria-hidden="true">+</span>
+                <span>Select</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="shape">
+                <span aria-hidden="true">Sh</span>
+                <span>Shape</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="path">
+                <span aria-hidden="true">P</span>
+                <span>Path</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="move">
+                <span aria-hidden="true">M</span>
+                <span>Move</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="rotate">
+                <span aria-hidden="true">R</span>
+                <span>Rotate</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="group">
+                <span aria-hidden="true">G</span>
+                <span>Group</span>
+              </button>
+            </div>
+            <p class="tool-starter__hint">Tool toggles are shell-only placeholders until object editing is implemented.</p>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectsContent">
+            <span>Objects</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="objectVectorStudioV2ObjectsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2ObjectTiles" class="object-vector-studio-v2__object-tiles" aria-label="Object tiles"></div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="tool-starter__panel tool-starter__panel--center" aria-label="Object vector work area">
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2WorkAreaContent">
+            <span>Object Preview</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="objectVectorStudioV2WorkAreaContent" class="accordion-v2__content">
+            <div id="objectVectorStudioV2WorkArea" class="object-vector-studio-v2__work-area" role="img" aria-label="Object vector preview">
+              <div id="objectVectorStudioV2SelectedItemVisibility" class="object-vector-studio-v2__selected-visibility">No schema-valid object selected.</div>
             </div>
           </div>
         </section>
@@ -93,18 +130,38 @@
 
       <aside class="tool-starter__panel tool-starter__panel--right" aria-label="Tool output">
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="inspectorContent">
-            <span>Output Summary</span>
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2PaletteContent">
+            <span>Palette</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="inspectorContent" class="accordion-v2__content">
-            <pre id="inspectorOutput" class="tool-starter__output">{}</pre>
+          <div id="objectVectorStudioV2PaletteContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2PaletteSummary" class="object-vector-studio-v2__details">Palette required before render.</div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectDetailsContent">
+            <span>Object Details</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="objectVectorStudioV2ObjectDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2ObjectDetails" class="object-vector-studio-v2__details">No object selected.</div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2JsonDetailsContent">
+            <span>JSON Details</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="objectVectorStudioV2JsonDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <pre id="objectVectorStudioV2JsonDetails" class="tool-starter__output">{}</pre>
           </div>
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
           <div class="accordion-v2__header tool-starter__status-accordion-header" aria-expanded="true" aria-controls="statusLogContent">
-            <span>Status</span>
+            <span>Status Log</span>
             <div class="tool-starter__status-header-actions">
               <button id="clearStatusButton" class="tool-starter__status-clear-button" type="button">Clear</button>
               <span class="accordion-v2__icon" aria-hidden="true">+</span>

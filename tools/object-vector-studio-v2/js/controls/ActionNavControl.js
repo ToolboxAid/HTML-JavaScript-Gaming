@@ -4,65 +4,66 @@ export class ActionNavControl {
     returnToWorkspaceButton,
     windowRef = window,
     toolCopyJsonButton,
-    toolExportButton,
-    toolExportToolStateButton,
+    toolExportJsonButton,
+    toolImportJsonButton,
+    toolImportJsonInput,
     toolNav,
-    workspaceCopyManifestButton,
-    workspaceExportManifestButton,
-    workspaceImportManifestButton,
     workspaceNav
   }) {
     this.location = locationRef;
     this.returnToWorkspaceButton = returnToWorkspaceButton;
     this.toolCopyJsonButton = toolCopyJsonButton;
-    this.toolExportButton = toolExportButton;
-    this.toolExportToolStateButton = toolExportToolStateButton;
+    this.toolExportJsonButton = toolExportJsonButton;
+    this.toolImportJsonButton = toolImportJsonButton;
+    this.toolImportJsonInput = toolImportJsonInput;
     this.toolNav = toolNav;
-    this.workspaceCopyManifestButton = workspaceCopyManifestButton;
-    this.workspaceExportManifestButton = workspaceExportManifestButton;
-    this.workspaceImportManifestButton = workspaceImportManifestButton;
     this.workspaceNav = workspaceNav;
     this.window = windowRef;
   }
 
   mount({
-    onToolCopyJson,
-    onToolExport,
-    onToolExportToolState,
-    onWorkspaceCopyManifest,
-    onWorkspaceExportManifest,
-    onWorkspaceImportManifest
+    onCopyJson,
+    onExportJson,
+    onImportJson,
+    onReturnToWorkspace
   }) {
     this.applyLaunchMode();
-    this.toolExportButton.addEventListener("click", onToolExport);
-    this.toolCopyJsonButton.addEventListener("click", onToolCopyJson);
-    this.toolExportToolStateButton.addEventListener("click", onToolExportToolState);
-    this.workspaceImportManifestButton.addEventListener("click", onWorkspaceImportManifest);
-    this.workspaceCopyManifestButton.addEventListener("click", onWorkspaceCopyManifest);
-    this.workspaceExportManifestButton.addEventListener("click", onWorkspaceExportManifest);
+    this.toolImportJsonButton.addEventListener("click", () => {
+      this.toolImportJsonInput.click();
+    });
+    this.toolImportJsonInput.addEventListener("change", () => {
+      const file = this.toolImportJsonInput.files?.[0] || null;
+      onImportJson(file);
+      this.toolImportJsonInput.value = "";
+    });
+    this.toolCopyJsonButton.addEventListener("click", onCopyJson);
+    this.toolExportJsonButton.addEventListener("click", onExportJson);
     this.returnToWorkspaceButton.addEventListener("click", () => {
-      this.window.location.href = this.workspaceManagerUrl();
+      onReturnToWorkspace(this.workspaceManagerUrl());
     });
   }
 
   applyLaunchMode() {
     const params = new URLSearchParams(this.location.search);
-    const mode = params.get("launch") === "workspace"
-      ? "workspace"
-      : "tool";
-    const isWorkspaceManagerLaunch = mode === "workspace" && params.get("fromTool") === "workspace-manager-v2";
-    this.toolNav.hidden = mode !== "tool";
-    this.workspaceNav.hidden = mode !== "workspace";
-    this.workspaceImportManifestButton.hidden = isWorkspaceManagerLaunch;
-    this.workspaceCopyManifestButton.hidden = isWorkspaceManagerLaunch;
-    this.workspaceExportManifestButton.hidden = isWorkspaceManagerLaunch;
-    this.returnToWorkspaceButton.hidden = !isWorkspaceManagerLaunch;
+    const isWorkspaceManagerLaunch = params.get("launch") === "workspace"
+      && params.get("fromTool") === "workspace-manager-v2"
+      && Boolean(params.get("hostContextId"));
+    this.toolNav.hidden = isWorkspaceManagerLaunch;
+    this.workspaceNav.hidden = !isWorkspaceManagerLaunch;
   }
 
-  setToolActionsEnabled(isEnabled) {
-    this.toolExportButton.disabled = !isEnabled;
+  setJsonPayloadActionsEnabled(isEnabled) {
     this.toolCopyJsonButton.disabled = !isEnabled;
-    this.toolExportToolStateButton.disabled = !isEnabled;
+    this.toolExportJsonButton.disabled = !isEnabled;
+  }
+
+  setImportEnabled(isEnabled) {
+    this.toolImportJsonButton.disabled = !isEnabled;
+    this.toolImportJsonInput.disabled = !isEnabled;
+  }
+
+  isWorkspaceLaunch() {
+    return this.workspaceNav.hidden === false;
   }
 
   workspaceManagerUrl() {

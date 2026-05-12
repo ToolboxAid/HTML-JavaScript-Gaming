@@ -1,5 +1,5 @@
 ﻿import { expect, test } from "@playwright/test";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
@@ -1142,11 +1142,149 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await expect(page.locator("[data-tool-starter-header]")).toContainText(tool.description);
         await expect(page.locator(".tool-starter__tool__menu")).toBeVisible();
         await expect(page.locator(".tool-starter__workspace__menu")).toBeHidden();
-        await page.locator("#sourceInput").fill(`${tool.name} launch coverage`);
-        await page.locator("#toolExportButton").click();
-        await expect(page.locator("#inspectorOutput")).toContainText(`"toolId": "${tool.id}"`);
-        await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`Processed source value: ${tool.name} launch coverage`));
+        if (tool.id === "world-vector-studio-v2") {
+          await page.locator("#sourceInput").fill(`${tool.name} launch coverage`);
+          await page.locator("#toolExportButton").click();
+          await expect(page.locator("#inspectorOutput")).toContainText(`"toolId": "${tool.id}"`);
+          await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`Processed source value: ${tool.name} launch coverage`));
+        } else {
+          await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "Export"]);
+          await expect(page.locator("#objectVectorStudioV2LoadStatus")).toContainText("Schema-only loading is idle");
+          await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
+        }
       }
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("shows Object Vector Studio V2 layout shell and schema-only palette gate", async ({ page }, testInfo) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await expect(page.locator("body.tools-platform-tool-page[data-tool-id='object-vector-studio-v2']")).toBeVisible();
+      await expect(page.locator("[data-tool-starter-header]")).toContainText("Object Vector Studio V2");
+      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
+      await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "Export"]);
+      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeHidden();
+      await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeDisabled();
+
+      await expect(page.locator(".tool-starter__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Object", "Shape/Tools", "Objects"]);
+      await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Palette", "Object Details", "JSON Details", "Status Log"]);
+      await expect(page.locator("#objectVectorStudioV2PaletteGate")).toHaveValue("Required before render");
+      await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
+      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["+ Select", "Sh Shape", "P Path", "M Move", "R Rotate", "G Group"]);
+
+      await page.locator('[data-shape-tool="path"]').click();
+      await expect(page.locator('[data-shape-tool="path"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Shape\/Tools shell toggle selected: path/);
+
+      const invalidPayloadPath = testInfo.outputPath("object-vector-invalid.json");
+      await writeFile(invalidPayloadPath, JSON.stringify({ objects: [] }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(invalidPayloadPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid\.json: root\.palette is required\./);
+      await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
+
+      const validPayload = {
+        palette: {
+          id: "arcade-primary",
+          swatches: [
+            { id: "white", value: "#ffffff" },
+            { id: "cyan", value: "#6fd3ff" }
+          ]
+        },
+        objects: Array.from({ length: 18 }, (_, index) => ({
+          id: `object-${index + 1}`,
+          name: index === 0 ? "Asteroids Ship" : `Object ${index + 1}`,
+          type: index === 1 ? "enemy" : "ship"
+        }))
+      };
+      const validPayloadPath = testInfo.outputPath("object-vector-valid.json");
+      await writeFile(validPayloadPath, JSON.stringify(validPayload, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(validPayloadPath);
+      await expect(page.locator("#objectVectorStudioV2PaletteGate")).toHaveValue("Palette loaded");
+      await expect(page.locator("#objectVectorStudioV2PaletteSummary")).toContainText("Palette arcade-primary: 2 swatches.");
+      await expect(page.locator("#objectVectorStudioV2ObjectTiles .object-vector-studio-v2__object-tile")).toHaveCount(18);
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Asteroids Ship");
+      await expect(page.locator("#objectVectorStudioV2SelectedItemVisibility")).toContainText("Selected item visible: Asteroids Ship");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"palette"');
+      await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeEnabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from import:object-vector-valid\.json: 18 objects, 2 palette swatches\./);
+
+      await page.locator('[data-object-id="object-2"]').click();
+      await expect(page.locator('[data-object-id="object-2"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Object 2");
+
+      const leftOpenHeights = await page.locator(".tool-starter__panel--left .accordion-v2.is-open").evaluateAll((sections) => (
+        sections.map((section) => Math.round(section.getBoundingClientRect().height))
+      ));
+      expect(Math.max(...leftOpenHeights) - Math.min(...leftOpenHeights)).toBeLessThanOrEqual(18);
+
+      const tileScrollState = await page.locator("#objectVectorStudioV2ObjectTiles").evaluate((element) => ({
+        clientHeight: Math.round(element.clientHeight),
+        scrollHeight: Math.round(element.scrollHeight)
+      }));
+      expect(tileScrollState.scrollHeight).toBeGreaterThan(tileScrollState.clientHeight);
+
+      await page.getByRole("button", { name: "Shape/Tools" }).click();
+      await expect(page.locator("#objectVectorStudioV2ShapeToolsContent")).toBeHidden();
+      const collapsedLayout = await page.locator(".tool-starter__panel--left .accordion-v2").evaluateAll((sections) => (
+        sections.map((section) => ({
+          isOpen: section.classList.contains("is-open"),
+          height: Math.round(section.getBoundingClientRect().height)
+        }))
+      ));
+      const collapsedHeight = collapsedLayout.find((entry) => !entry.isOpen)?.height || 0;
+      expect(collapsedHeight).toBeLessThan(64);
+      const remainingHeights = collapsedLayout.filter((entry) => entry.isOpen).map((entry) => entry.height);
+      expect(Math.max(...remainingHeights) - Math.min(...remainingHeights)).toBeLessThanOrEqual(18);
+
+      const summary = page.locator("[data-tool-starter-summary]");
+      await summary.click();
+      await expect(page.locator(".is-collapsible")).not.toHaveAttribute("open", "");
+      const fullscreenActive = await page.locator("body").evaluate((body) => body.classList.contains("tools-platform-fullscreen-active"));
+      if (!fullscreenActive) {
+        await page.evaluate(() => {
+          window.__objectVectorStudioV2App.shell.applyFullscreenState(true);
+          window.__objectVectorStudioV2App.shell.updateSummary();
+        });
+      }
+      await expect(page.locator("body")).toHaveClass(/tools-platform-fullscreen-active/);
+      const fullscreenLayout = await page.evaluate(() => {
+        const left = document.querySelector(".tool-starter__panel--left").getBoundingClientRect();
+        const center = document.querySelector(".tool-starter__panel--center").getBoundingClientRect();
+        const right = document.querySelector(".tool-starter__panel--right").getBoundingClientRect();
+        return {
+          centerHeight: Math.round(center.height),
+          centerWidth: Math.round(center.width),
+          leftBeforeCenter: left.right <= center.left,
+          rightAfterCenter: right.left >= center.right
+        };
+      });
+      expect(fullscreenLayout.leftBeforeCenter).toBe(true);
+      expect(fullscreenLayout.rightAfterCenter).toBe(true);
+      expect(fullscreenLayout.centerWidth).toBeGreaterThan(300);
+      expect(fullscreenLayout.centerHeight).toBeGreaterThan(300);
+
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=object-vector-v2-shell&workspaceMode=uat`, { waitUntil: "networkidle" });
+      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
+      await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Return to Workspace"]);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Schema-only workspace loading blocked: workspace\.tools\.object-vector-studio-v2 is missing/);
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html.*hostContextId=object-vector-v2-shell/);
+      await expect(page).toHaveURL(/workspace=uat/);
+
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

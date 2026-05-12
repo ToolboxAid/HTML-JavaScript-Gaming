@@ -186,7 +186,7 @@ textarea:hover {
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
   background: var(--tool-starter-panel);
-  overflow: auto;
+  overflow: hidden;
   padding: 14px;
 }
 
@@ -210,7 +210,7 @@ textarea:hover {
 }
 
 .accordion-v2.is-open {
-  flex: 1 1 auto;
+  flex: 1 1 0;
 }
 
 .accordion-v2:not(.is-open) {
@@ -350,6 +350,114 @@ textarea:hover {
   color: var(--tool-starter-danger);
 }
 
+.object-vector-studio-v2__callout,
+.object-vector-studio-v2__details {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-panel-strong);
+  color: var(--tool-starter-text);
+  padding: 10px;
+}
+
+.object-vector-studio-v2__scroll-content {
+  min-height: 0;
+  overflow: auto;
+}
+
+.object-vector-studio-v2__tool-toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.object-vector-studio-v2__tool-toggle {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.object-vector-studio-v2__tool-toggle span:first-child {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__tool-toggle.is-active,
+.object-vector-studio-v2__tool-toggle[aria-pressed="true"] {
+  border-color: var(--tool-starter-accent) !important;
+  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.25);
+}
+
+.object-vector-studio-v2__object-tiles {
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.object-vector-studio-v2__object-tile {
+  width: 100%;
+  min-height: 58px;
+  display: grid;
+  gap: 4px;
+  border-radius: 8px !important;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.object-vector-studio-v2__object-tile.is-selected,
+.object-vector-studio-v2__object-tile[aria-pressed="true"] {
+  border-color: var(--tool-starter-accent) !important;
+  background: var(--tool-starter-input-surface);
+}
+
+.object-vector-studio-v2__object-tile--empty {
+  color: var(--tool-starter-muted);
+}
+
+.object-vector-studio-v2__object-tile-name {
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__object-tile-meta {
+  color: var(--tool-starter-muted);
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.object-vector-studio-v2__work-area {
+  min-height: 360px;
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-panel-strong);
+  color: var(--tool-starter-muted);
+  padding: 16px;
+  text-align: center;
+}
+
+.object-vector-studio-v2__selected-visibility {
+  width: min(520px, 100%);
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-surface);
+  color: var(--tool-starter-text);
+  padding: 18px;
+  overflow-wrap: anywhere;
+}
+
 .tool-starter__preview {
   min-height: 240px;
   flex: 1 1 auto;
@@ -386,7 +494,8 @@ textarea:hover {
 .tool-starter__output,
 #statusLog {
   width: 100%;
-  min-height: 160px;
+  min-height: 0;
+  height: 100%;
   margin: 0;
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px !important;
@@ -413,4 +522,107 @@ textarea:hover {
   .tool-starter__header {
     min-width: 0;
   }
+}
+
+html.tools-platform-fullscreen-active,
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"],
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] {
+  height: 100vh;
+  max-height: 100vh;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"],
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] {
+  display: flex;
+  flex-direction: column;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] > .is-collapsible,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] > .is-collapsible {
+  flex: 0 0 auto;
+  width: 100%;
+  margin: 0;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"],
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"] {
+  width: calc(100vw - 24px);
+  max-width: calc(100vw - 24px);
+  margin: 8px auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] > .tool-starter__menu,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] > .tool-starter__menu {
+  flex: 0 0 auto;
+  margin: 8px auto;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] > .tool-starter.app-shell,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] > .tool-starter.app-shell {
+  flex: 1 1 0;
+  grid-template-columns: 340px minmax(0, 1fr) 360px;
+  align-items: stretch;
+  gap: 16px;
+  height: 0;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  padding: 8px 12px 12px;
+  overflow: hidden;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .tool-starter__panel,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .tool-starter__panel {
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .tool-starter__panel--left,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .tool-starter__panel--left {
+  justify-self: start;
+  width: 340px;
+  max-width: 340px;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .tool-starter__panel--right,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .tool-starter__panel--right {
+  justify-self: end;
+  width: 360px;
+  max-width: 360px;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .tool-starter__panel--center,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .tool-starter__panel--center {
+  align-self: stretch;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .accordion-v2.is-open,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .accordion-v2.is-open {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .accordion-v2:not(.is-open),
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .accordion-v2:not(.is-open) {
+  flex: 0 0 auto;
+  max-height: 48px;
+  min-height: 0;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .accordion-v2__content,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .accordion-v2__content {
+  min-height: 0;
+  overflow: auto;
 }
