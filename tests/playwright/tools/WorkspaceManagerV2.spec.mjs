@@ -1717,6 +1717,138 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("supports Object Vector Studio V2 animation states and frame timeline foundation", async ({ page }, testInfo) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "animation-palette",
+          swatches: [
+            { id: "white", value: "#ffffff" },
+            { id: "cyan", value: "#6fd3ff" }
+          ]
+        }));
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: {
+            async writeText(text) {
+              sessionStorage.setItem("object-vector-studio-v2.animation-copied-json", text);
+            }
+          }
+        });
+      });
+
+      const payloadPath = testInfo.outputPath("object-vector-animation.json");
+      await writeFile(payloadPath, JSON.stringify({
+        name: "Animation Payload",
+        objects: [],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(payloadPath);
+
+      await page.locator("#objectVectorStudioV2TemplateSelect").selectOption("ship");
+      await page.locator("#objectVectorStudioV2CreateTemplateButton").click();
+      await expect(page.locator('[data-object-id="ship-template"]')).toHaveAttribute("aria-pressed", "true");
+
+      await page.locator("#objectVectorStudioV2StateSelect").selectOption("idle");
+      await page.locator("#objectVectorStudioV2CreateStateButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(1);
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='idle-frame-1']")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"id": "idle"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created state Idle with frame idle-frame-1\./);
+
+      await page.locator("#objectVectorStudioV2DuplicateFrameButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(2);
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='idle-frame-2']")).toHaveAttribute("aria-pressed", "true");
+      await page.locator("#objectVectorStudioV2FrameEarlierButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id]").first()).toHaveAttribute("data-frame-id", "idle-frame-2");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved frame idle-frame-2 earlier\./);
+      await page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='idle-frame-1']").click();
+
+      await page.locator("#objectVectorStudioV2MoveXInput").fill("12");
+      await page.locator("#objectVectorStudioV2MoveYInput").fill("6");
+      await page.locator("#objectVectorStudioV2MoveShapeButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"shapeOverrides"');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"x": 12');
+      await expect(page.locator("#objectVectorStudioV2SelectionMetrics")).toContainText("state idle");
+
+      await page.locator("#objectVectorStudioV2OnionSkinToggle").check();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-onion-skin-frame='idle-frame-2']")).toHaveCount(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Onion-skin preview enabled\./);
+
+      await page.locator("#objectVectorStudioV2StateSelect").selectOption("thrust");
+      await page.locator("#objectVectorStudioV2CreateStateButton").click();
+      await expect(page.locator('[data-object-id="ship-template"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='thrust']")).toHaveCount(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created state Thrust with frame thrust-frame-1\./);
+      await page.locator("#objectVectorStudioV2StateSelect").selectOption("idle");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(2);
+
+      await page.locator("#objectVectorStudioV2LoopToggle").check();
+      await page.locator("#objectVectorStudioV2FpsInput").fill("24");
+      await page.locator("#objectVectorStudioV2PlayButton").click();
+      await expect(page.locator("#objectVectorStudioV2PauseButton")).toBeEnabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Playback started for state Idle at 24 FPS\./);
+      await page.waitForTimeout(120);
+      await page.locator("#objectVectorStudioV2PauseButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Playback paused at frame/);
+      await page.locator("#objectVectorStudioV2StopButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Playback stopped\./);
+
+      await page.locator("#objectVectorStudioV2CopyJsonButton").click();
+      const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.animation-copied-json")));
+      expect(copiedPayload.objects[0].states.map((state) => state.id)).toEqual(expect.arrayContaining(["idle", "thrust"]));
+      expect(copiedPayload.objects[0].states.find((state) => state.id === "idle").frames).toHaveLength(2);
+
+      const svgDownloadPromise = page.waitForEvent("download");
+      await page.locator("#objectVectorStudioV2ExportSvgButton").click();
+      const svgDownload = await svgDownloadPromise;
+      const svgExportPath = testInfo.outputPath("object-vector-animation.svg");
+      await svgDownload.saveAs(svgExportPath);
+      const exportedSvg = await readFile(svgExportPath, "utf8");
+      expect(exportedSvg).toContain('data-object-state="idle"');
+      expect(exportedSvg).toContain('"frameId"');
+
+      const invalidPayloadPath = testInfo.outputPath("object-vector-invalid-animation.json");
+      await writeFile(invalidPayloadPath, JSON.stringify({
+        name: "Invalid Animation Payload",
+        objects: [
+          {
+            id: "bad-animation",
+            name: "Bad Animation",
+            shapes: [],
+            states: [
+              {
+                frames: [],
+                id: "flying",
+                name: "Flying"
+              }
+            ],
+            type: "ship"
+          }
+        ],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(invalidPayloadPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid-animation\.json: root\.objects\[0\]\.states\[0\]\.id must be one of idle, thrust, damaged, destroyed, active, inactive\./);
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("resolves asset-manager-v2 audio catalog paths and plays Asteroids sounds", async ({ page }) => {
     const server = await startRepoServer();
     const pageErrors = [];

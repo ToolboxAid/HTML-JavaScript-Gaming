@@ -303,12 +303,33 @@ export class ObjectVectorStudioV2SchemaService {
       id: object.id.trim(),
       name: object.name.trim(),
       type: object.type.trim().toLowerCase(),
+      states: Array.isArray(object.states)
+        ? object.states.map((state) => ({
+          ...state,
+          id: state.id.trim().toLowerCase(),
+          name: state.name.trim(),
+          frames: state.frames.map((frame) => ({
+            ...frame,
+            id: frame.id.trim(),
+            shapeOverrides: frame.shapeOverrides.map((override) => ({
+              ...override,
+              shapeId: override.shapeId.trim()
+            }))
+          }))
+        }))
+        : undefined,
       shapes: object.shapes.map((shape) => ({
         ...shape,
         id: shape.id.trim(),
         type: shape.type.trim().toLowerCase()
       }))
     }));
+    normalized.objects = normalized.objects.map((object) => {
+      if (object.states === undefined) {
+        delete object.states;
+      }
+      return object;
+    });
     return normalized;
   }
 }

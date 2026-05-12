@@ -106,6 +106,21 @@
               <button id="objectVectorStudioV2DeleteObjectButton" type="button">Delete</button>
               <button id="objectVectorStudioV2FlattenObjectButton" type="button">Flatten</button>
             </div>
+            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2StateSelect">
+              <span>State</span>
+              <select id="objectVectorStudioV2StateSelect">
+                <option value="">No state selected</option>
+                <option value="idle">Idle</option>
+                <option value="thrust">Thrust</option>
+                <option value="damaged">Damaged</option>
+                <option value="destroyed">Destroyed</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </label>
+            <div class="object-vector-studio-v2__object-actions" aria-label="State actions">
+              <button id="objectVectorStudioV2CreateStateButton" type="button">Create State</button>
+            </div>
             <div id="objectVectorStudioV2LoadStatus" class="object-vector-studio-v2__callout" role="status">Schema-only loading is idle. Import JSON or launch with workspace toolState data that includes a palette.</div>
           </div>
         </section>
@@ -208,6 +223,29 @@
               <div id="objectVectorStudioV2CoordinateDisplay" class="object-vector-studio-v2__coordinate-display">Coordinates: 0, 0 | Zoom 100%</div>
               <div id="objectVectorStudioV2SelectedItemVisibility" class="object-vector-studio-v2__selected-visibility">No schema-valid object selected.</div>
               <div id="objectVectorStudioV2SelectionMetrics" class="object-vector-studio-v2__selection-metrics">Selection metrics: none.</div>
+              <div class="object-vector-studio-v2__animation-controls" aria-label="Animation controls">
+                <button id="objectVectorStudioV2PlayButton" type="button" disabled>Play</button>
+                <button id="objectVectorStudioV2PauseButton" type="button" disabled>Pause</button>
+                <button id="objectVectorStudioV2StopButton" type="button" disabled>Stop</button>
+                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2LoopToggle">
+                  <input id="objectVectorStudioV2LoopToggle" type="checkbox">
+                  <span>Loop</span>
+                </label>
+                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2OnionSkinToggle">
+                  <input id="objectVectorStudioV2OnionSkinToggle" type="checkbox">
+                  <span>Onion</span>
+                </label>
+                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2FpsInput">
+                  <span>FPS</span>
+                  <input id="objectVectorStudioV2FpsInput" type="number" min="1" max="60" step="1" value="12">
+                </label>
+              </div>
+              <div class="object-vector-studio-v2__animation-controls" aria-label="Frame controls">
+                <button id="objectVectorStudioV2DuplicateFrameButton" type="button" disabled>Duplicate Frame</button>
+                <button id="objectVectorStudioV2FrameEarlierButton" type="button" disabled>Frame Earlier</button>
+                <button id="objectVectorStudioV2FrameLaterButton" type="button" disabled>Frame Later</button>
+              </div>
+              <div id="objectVectorStudioV2FrameTimeline" class="object-vector-studio-v2__frame-timeline" aria-label="Frame timeline"></div>
               <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" tabindex="0" role="img" aria-label="Object shape render surface"></svg>
               <div id="objectVectorStudioV2RenderSummary" class="object-vector-studio-v2__render-summary">Render mode: idle. Capture mode: none.</div>
             </div>

@@ -20,10 +20,9 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(44%) src/engine/runtime/fullscreenBezel.js - executed lines 1034/1034; executed functions 29/66
-(71%) src/engine/runtime/FullscreenService.js - executed lines 123/123; executed functions 10/14
-(80%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 78/78; executed functions 4/5
-(91%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 2062/2062; executed functions 220/242
+(80%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 90/90; executed functions 4/5
+(92%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 2553/2553; executed functions 293/317
+(93%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 307/307; executed functions 37/40
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -171,7 +170,7 @@ Files with executed line/function counts where available:
 (80%) src/engine/persistence/StorageService.js - executed lines 49/49; executed functions 4/5
 (80%) tools/asset-manager-v2/js/controls/AccordionSection.js - executed lines 27/27; executed functions 4/5
 (80%) tools/asset-manager-v2/js/controls/AssetFormControl.js - executed lines 563/563; executed functions 49/61
-(80%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 78/78; executed functions 4/5
+(80%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 90/90; executed functions 4/5
 (80%) tools/palette-manager-v2/modules/PaletteHistoryStack.js - executed lines 54/54; executed functions 8/10
 (80%) tools/preview-generator-v2/controls/AccordionSection.js - executed lines 31/31; executed functions 4/5
 (80%) tools/preview-generator-v2/PreviewGeneratorV2Logger.js - executed lines 19/19; executed functions 4/5
@@ -201,12 +200,12 @@ Files with executed line/function counts where available:
 (90%) tools/text2speech-V2/js/TextToSpeechToolApp.js - executed lines 807/807; executed functions 62/69
 (91%) games/Asteroids/entities/Asteroid.js - executed lines 72/72; executed functions 10/11
 (91%) tools/object-vector-studio-v2/js/controls/ActionNavControl.js - executed lines 75/75; executed functions 10/11
-(91%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 2062/2062; executed functions 220/242
 (91%) tools/toolRegistry.js - executed lines 526/526; executed functions 10/11
 (91%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1598/1598; executed functions 145/159
 (92%) tools/object-vector-studio-v2/js/controls/ToolStarterShellControl.js - executed lines 112/112; executed functions 11/12
-(92%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 286/286; executed functions 33/36
+(92%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 2553/2553; executed functions 293/317
 (93%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 305/305; executed functions 25/27
+(93%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 307/307; executed functions 37/40
 (93%) tools/session-inspector-v2/js/SessionInspectorV2App.js - executed lines 337/337; executed functions 42/45
 (93%) tools/text2speech-V2/js/controls/QueueControl.js - executed lines 122/122; executed functions 26/28
 (93%) tools/workspace-manager-v2/js/controls/GameSelectorControl.js - executed lines 59/59; executed functions 13/14
@@ -290,11 +289,10 @@ Files with executed line/function counts where available:
 (100%) tools/world-vector-studio-v2/js/services/ToolStateSerializer.js - executed lines 13/13; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(44%) src/engine/runtime/fullscreenBezel.js - WARNING: advisory low coverage; executed lines 1034/1034
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
 (0%) tests/playwright/tools/WorkspaceManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
-(44%) src/engine/runtime/fullscreenBezel.js - changed JS file with browser V8 coverage
-(71%) src/engine/runtime/FullscreenService.js - changed JS file with browser V8 coverage
 (80%) tools/object-vector-studio-v2/js/bootstrap.js - changed JS file with browser V8 coverage
-(91%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage
+(92%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage
+(93%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - changed JS file with browser V8 coverage

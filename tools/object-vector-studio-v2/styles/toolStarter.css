@@ -534,7 +534,7 @@ textarea:hover {
   min-height: 360px;
   flex: 1 1 auto;
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(280px, 1fr) auto;
+  grid-template-rows: auto auto auto auto auto auto minmax(260px, 1fr) auto;
   place-items: center;
   gap: 12px;
   border: 1px dashed var(--tool-starter-line);
@@ -547,6 +547,64 @@ textarea:hover {
 
 .object-vector-studio-v2__viewport-controls button {
   min-height: 30px;
+}
+
+.object-vector-studio-v2__animation-controls {
+  width: min(720px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.object-vector-studio-v2__inline-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--tool-starter-muted);
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__inline-field input[type="number"] {
+  width: 72px;
+  padding: 5px 7px;
+}
+
+.object-vector-studio-v2__frame-timeline {
+  width: min(720px, 100%);
+  min-height: 70px;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  overflow-x: auto;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-surface);
+  padding: 8px;
+}
+
+.object-vector-studio-v2__frame-tile {
+  min-width: 108px;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  border-radius: 8px !important;
+  text-align: center;
+}
+
+.object-vector-studio-v2__frame-tile.is-selected,
+.object-vector-studio-v2__frame-tile[aria-pressed="true"] {
+  border-color: var(--tool-starter-accent) !important;
+  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.25);
+}
+
+.object-vector-studio-v2__frame-thumbnail {
+  width: 84px;
+  height: 44px;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .object-vector-studio-v2__coordinate-display,
@@ -628,6 +686,16 @@ textarea:hover {
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
+}
+
+.object-vector-studio-v2__onion-skin {
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+.object-vector-studio-v2__onion-skin * {
+  stroke-dasharray: 5 4;
+  vector-effect: non-scaling-stroke;
 }
 
 .object-vector-studio-v2__resize-handle {

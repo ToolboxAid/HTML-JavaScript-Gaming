@@ -10,6 +10,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
 
 const OBJECT_TYPES = Object.freeze(["actor", "enemy", "object", "pickup", "ship", "ui", "weapon"]);
+const OBJECT_STATE_IDS = Object.freeze(["idle", "thrust", "damaged", "destroyed", "active", "inactive"]);
 
 const OBJECT_TEMPLATES = Object.freeze({
   asteroid: { label: "Asteroid", type: "enemy" },
@@ -17,6 +18,15 @@ const OBJECT_TEMPLATES = Object.freeze({
   pickup: { label: "Pickup", type: "pickup" },
   ship: { label: "Ship", type: "ship" },
   ufo: { label: "UFO", type: "enemy" }
+});
+
+const OBJECT_STATE_LABELS = Object.freeze({
+  active: "Active",
+  damaged: "Damaged",
+  destroyed: "Destroyed",
+  idle: "Idle",
+  inactive: "Inactive",
+  thrust: "Thrust"
 });
 
 const OBJECT_TYPE_DETAILS = Object.freeze({
@@ -78,6 +88,10 @@ function slugifyObjectName(name) {
 
 function sortedShapes(object) {
   return [...(object?.shapes || [])].sort((left, right) => left.order - right.order);
+}
+
+function sortedFrames(state) {
+  return [...(state?.frames || [])].sort((left, right) => left.order - right.order);
 }
 
 function swatchColor(swatch) {
@@ -178,6 +192,10 @@ export class ToolStarterApp {
     this.selectedObjectId = "";
     this.selectedShapeId = "";
     this.selectedShapeIds = new Set();
+    this.selectedStateId = "";
+    this.selectedFrameId = "";
+    this.playbackTimerId = 0;
+    this.isAnimationPlaying = false;
     this.gridSnapEnabled = false;
     this.angleSnapEnabled = false;
     this.gridRenderEnabled = false;
@@ -207,6 +225,7 @@ export class ToolStarterApp {
     this.bindSnapControls();
     this.bindViewportControls();
     this.bindObjectFilters();
+    this.bindAnimationControls();
     this.bindKeyboardShortcuts();
     this.applyToolDisplayMode(this.window.sessionStorage?.getItem(TOOL_DISPLAY_MODE_KEY) || "words", false);
     this.applySnapState();
@@ -309,12 +328,27 @@ export class ToolStarterApp {
   bindObjectActions() {
     this.elements.addObjectButton.addEventListener("click", () => this.addObject());
     this.elements.createTemplateButton.addEventListener("click", () => this.createObjectFromTemplate());
+    this.elements.createStateButton.addEventListener("click", () => this.createSelectedState());
     this.elements.renameObjectButton.addEventListener("click", () => this.renameSelectedObject());
     this.elements.duplicateObjectButton.addEventListener("click", () => this.duplicateSelectedObject());
     this.elements.deleteObjectButton.addEventListener("click", () => this.deleteSelectedObject());
     this.elements.flattenObjectButton.addEventListener("click", () => this.flattenSelectedObject());
     this.elements.objectTypeSelect.addEventListener("change", () => this.updateSelectedObjectType());
     this.elements.exportSvgButton.addEventListener("click", () => this.exportSelectedObjectSvg());
+  }
+
+  bindAnimationControls() {
+    this.elements.stateSelect.addEventListener("change", () => this.selectState(this.elements.stateSelect.value, "state selector"));
+    this.elements.duplicateFrameButton.addEventListener("click", () => this.duplicateSelectedFrame());
+    this.elements.frameEarlierButton.addEventListener("click", () => this.moveSelectedFrame("earlier"));
+    this.elements.frameLaterButton.addEventListener("click", () => this.moveSelectedFrame("later"));
+    this.elements.playButton.addEventListener("click", () => this.playAnimation());
+    this.elements.pauseButton.addEventListener("click", () => this.pauseAnimation());
+    this.elements.stopButton.addEventListener("click", () => this.stopAnimation());
+    this.elements.onionSkinToggle.addEventListener("change", () => {
+      this.renderWorkSurface();
+      this.statusLog.write(`OK Onion-skin preview ${this.elements.onionSkinToggle.checked ? "enabled" : "disabled"}.`);
+    });
   }
 
   bindToolToggles() {
@@ -418,12 +452,16 @@ export class ToolStarterApp {
     this.selectedObjectId = "";
     this.selectedShapeId = "";
     this.selectedShapeIds.clear();
+    this.selectedStateId = "";
+    this.selectedFrameId = "";
+    this.stopPlaybackTimer();
     this.elements.sourceSummary.value = "No schema-loaded payload";
     this.elements.paletteGate.value = this.runtimePalette ? "Palette loaded" : "Required before render";
     this.elements.objectCount.value = objectCountLabel(0);
     this.elements.shapeCount.value = shapeCountLabel(0);
     this.elements.objectNameInput.value = "";
     this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
+    this.elements.stateSelect.value = "";
     this.elements.loadStatus.textContent = message;
     this.elements.paletteSummary.textContent = this.runtimePalette
       ? `Runtime palette ${this.paletteDisplayName()}: ${this.runtimePalette.swatches.length} swatches.`
@@ -432,6 +470,7 @@ export class ToolStarterApp {
     this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
     this.elements.selectionMetrics.textContent = "Selection metrics: none.";
     this.elements.jsonDetails.textContent = "{}";
+    this.renderFrameTimeline();
     this.elements.renderSummary.textContent = "Render mode: idle. Capture mode: none.";
     this.elements.coordinateDisplay.textContent = "Origin: 0, 0 | Zoom 100%";
     this.elements.renderSurface.replaceChildren();
@@ -515,6 +554,9 @@ export class ToolStarterApp {
     const selectedShape = sortedShapes(selectedObject)[0] || null;
     this.selectedShapeId = selectedShape?.id || "";
     this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+    const selectedState = this.objectStates(selectedObject)[0] || null;
+    this.selectedStateId = selectedState?.id || "";
+    this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.viewport = { ...DEFAULT_VIEWPORT };
     this.updateViewport();
     if (sourceLabel) {
@@ -548,6 +590,7 @@ export class ToolStarterApp {
     }
     this.runtimePalette = paletteValidation.palette;
     this.ensureSelectedShape();
+    this.ensureSelectedFrame();
     this.renderPalette();
     this.renderObjectTiles();
     this.renderSelectedObject();
@@ -559,6 +602,9 @@ export class ToolStarterApp {
     this.selectedObjectId = "";
     this.selectedShapeId = "";
     this.selectedShapeIds.clear();
+    this.selectedStateId = "";
+    this.selectedFrameId = "";
+    this.stopPlaybackTimer();
     this.elements.paletteGate.value = "Required before render";
     this.elements.loadStatus.textContent = message;
     this.elements.paletteSummary.textContent = message;
@@ -566,10 +612,12 @@ export class ToolStarterApp {
     this.elements.shapeCount.value = shapeCountLabel(0);
     this.elements.objectNameInput.value = "";
     this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
+    this.elements.stateSelect.value = "";
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
     this.elements.selectedItemVisibility.textContent = "No schema-valid object rendered.";
     this.elements.selectionMetrics.textContent = "Selection metrics: none.";
     this.elements.jsonDetails.textContent = "{}";
+    this.renderFrameTimeline();
     this.elements.renderSummary.textContent = "Render mode: blocked. Capture mode: none.";
     this.elements.renderSurface.replaceChildren();
     this.renderCenterOriginMarker();
@@ -705,17 +753,20 @@ export class ToolStarterApp {
     if (!selected) {
       this.elements.objectNameInput.value = "";
       this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
+      this.elements.stateSelect.value = "";
       this.elements.shapeCount.value = shapeCountLabel(0);
       this.elements.objectDetails.textContent = "No object selected.";
       this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
       this.elements.selectionMetrics.textContent = "Selection metrics: none.";
       this.elements.jsonDetails.textContent = "{}";
+      this.renderFrameTimeline();
       return;
     }
 
     const shape = this.selectedShape();
     this.elements.objectNameInput.value = selected.name;
     this.elements.objectTypeSelect.value = objectTypeKey(selected);
+    this.elements.stateSelect.value = this.selectedStateId || "";
     this.elements.shapeCount.value = shapeCountLabel(selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
     this.elements.selectedItemVisibility.textContent = shape
@@ -724,9 +775,64 @@ export class ToolStarterApp {
     this.updateSelectionMetrics(selected, shape);
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
+      selectedFrame: this.activeFrame(),
       selectedShape: shape,
-      selectedShapeIds: Array.from(this.selectedShapeIds)
+      selectedShapeIds: Array.from(this.selectedShapeIds),
+      selectedState: this.selectedState()
     }, null, 2);
+    this.renderFrameTimeline();
+  }
+
+  renderFrameTimeline() {
+    this.elements.frameTimeline.replaceChildren();
+    const object = this.selectedObject();
+    const state = this.selectedState();
+    if (!object || !state) {
+      const empty = document.createElement("p");
+      empty.className = "tool-starter__hint";
+      empty.textContent = "No state timeline selected.";
+      this.elements.frameTimeline.append(empty);
+      this.updateAnimationActionState();
+      return;
+    }
+
+    sortedFrames(state).forEach((frame) => {
+      const button = document.createElement("button");
+      button.className = "object-vector-studio-v2__frame-tile";
+      button.type = "button";
+      button.dataset.stateId = state.id;
+      button.dataset.frameId = frame.id;
+      button.setAttribute("aria-pressed", String(frame.id === this.selectedFrameId));
+      button.classList.toggle("is-selected", frame.id === this.selectedFrameId);
+      button.append(this.createFrameThumbnail(object, frame));
+      const label = document.createElement("span");
+      label.textContent = `${frame.order}. ${frame.id}`;
+      button.append(label);
+      button.addEventListener("click", () => this.selectFrame(frame.id, "timeline"));
+      this.elements.frameTimeline.append(button);
+    });
+    this.updateAnimationActionState();
+  }
+
+  createFrameThumbnail(object, frame) {
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.classList.add("object-vector-studio-v2__frame-thumbnail");
+    svg.dataset.frameThumbnail = frame.id;
+    const bounds = this.objectBoundsForFrame(object, frame);
+    const padding = 12;
+    svg.setAttribute("viewBox", `${bounds.x - padding} ${bounds.y - padding} ${bounds.width + padding * 2} ${bounds.height + padding * 2}`);
+    sortedShapes(object).forEach((shape) => {
+      const renderShape = this.effectiveShapeForFrame(shape, frame);
+      if (!renderShape.visible) {
+        return;
+      }
+      try {
+        svg.append(this.createSvgShape(renderShape));
+      } catch (error) {
+        this.statusLog.write(`FAIL Frame thumbnail render failed for ${object.id}/${frame.id}/${shape.id}: ${error.message}`);
+      }
+    });
+    return svg;
   }
 
   createObjectDetails(object, shape) {
@@ -737,6 +843,8 @@ export class ToolStarterApp {
       ["Object ID", object.id],
       ["Object Type", objectTypeLabel(object)],
       ["Object Metadata", objectTypeDescription(object)],
+      ["States", String(this.objectStates(object).length)],
+      ["Active Frame", this.activeFrame()?.id || "None"],
       ["Shape Count", shapeCountLabel(object.shapes.length)]
     ]));
 
@@ -934,13 +1042,17 @@ export class ToolStarterApp {
       return;
     }
 
+    if (this.elements.onionSkinToggle.checked) {
+      this.renderOnionSkin(object);
+    }
     let renderedCount = 0;
     sortedShapes(object).forEach((shape) => {
-      if (!shape.visible) {
+      const renderShape = this.effectiveShape(shape);
+      if (!renderShape.visible) {
         return;
       }
       try {
-        const element = this.createSvgShape(shape);
+        const element = this.createSvgShape(renderShape);
         element.dataset.shapeId = shape.id;
         element.dataset.shapeType = shape.type;
         element.classList.add("object-vector-studio-v2__shape");
@@ -960,9 +1072,32 @@ export class ToolStarterApp {
     this.renderSelectionOverlay(object);
     this.renderCenterOriginMarker();
 
-    const message = `Render mode svg-work-surface: rendered ${object.name} with ${renderedCount} visible shapes; capture mode none.`;
+    const frame = this.activeFrame();
+    const message = `Render mode svg-work-surface: rendered ${object.name} with ${renderedCount} visible shapes${frame ? ` for ${this.selectedStateId}/${frame.id}` : ""}; capture mode none.`;
     this.elements.renderSummary.textContent = message;
     this.statusLog.write(`OK ${message}`);
+  }
+
+  renderOnionSkin(object) {
+    const previousFrame = this.previousFrame();
+    if (!previousFrame) {
+      return;
+    }
+    const group = document.createElementNS(SVG_NS, "g");
+    group.classList.add("object-vector-studio-v2__onion-skin");
+    group.dataset.onionSkinFrame = previousFrame.id;
+    sortedShapes(object).forEach((shape) => {
+      const renderShape = this.effectiveShapeForFrame(shape, previousFrame);
+      if (!renderShape.visible) {
+        return;
+      }
+      try {
+        group.append(this.createSvgShape(renderShape));
+      } catch (error) {
+        this.statusLog.write(`FAIL Onion-skin render failed for ${object.name}/${shape.id}: ${error.message}`);
+      }
+    });
+    this.elements.renderSurface.append(group);
   }
 
   renderGridLines() {
@@ -1083,6 +1218,22 @@ export class ToolStarterApp {
     return shape.transform || defaultShapeTransform(shape);
   }
 
+  effectiveShape(shape) {
+    return this.effectiveShapeForFrame(shape, this.activeFrame());
+  }
+
+  effectiveShapeForFrame(shape, frame) {
+    const effective = JSON.parse(JSON.stringify(shape));
+    const override = frame?.shapeOverrides?.find((entry) => entry.shapeId === shape.id) || null;
+    if (override && Object.prototype.hasOwnProperty.call(override, "visible")) {
+      effective.visible = override.visible;
+    }
+    if (override?.transform) {
+      effective.transform = { ...override.transform };
+    }
+    return effective;
+  }
+
   svgTransformAttribute(transform) {
     return [
       `translate(${transform.x} ${transform.y})`,
@@ -1117,6 +1268,32 @@ export class ToolStarterApp {
       };
     }
 
+    const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
+    const bounds = shapes.map((shape) => this.transformedBounds(this.effectiveShapeForFrame(shape, activeFrame)));
+    const minX = Math.min(...bounds.map((entry) => entry.x));
+    const minY = Math.min(...bounds.map((entry) => entry.y));
+    const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
+    const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
+    return {
+      height: Number((maxY - minY).toFixed(3)),
+      width: Number((maxX - minX).toFixed(3)),
+      x: Number(minX.toFixed(3)),
+      y: Number(minY.toFixed(3))
+    };
+  }
+
+  objectBoundsForFrame(object, frame) {
+    const shapes = sortedShapes(object)
+      .map((shape) => this.effectiveShapeForFrame(shape, frame))
+      .filter((shape) => shape.visible);
+    if (!shapes.length) {
+      return {
+        height: 80,
+        width: 120,
+        x: -60,
+        y: -40
+      };
+    }
     const bounds = shapes.map((shape) => this.transformedBounds(shape));
     const minX = Math.min(...bounds.map((entry) => entry.x));
     const minY = Math.min(...bounds.map((entry) => entry.y));
@@ -1135,6 +1312,8 @@ export class ToolStarterApp {
     const selectedLabel = shape ? `${shape.id} (${shape.type})` : object.name;
     this.elements.selectionMetrics.textContent = [
       `Selection: ${selectedLabel}`,
+      `state ${this.selectedStateId || "none"}`,
+      `frame ${this.selectedFrameId || "none"}`,
       `bounds ${this.formatViewportNumber(bounds.width)} x ${this.formatViewportNumber(bounds.height)}`,
       `origin ${this.formatViewportNumber(this.viewport.x)}, ${this.formatViewportNumber(this.viewport.y)}`,
       `zoom ${Math.round(this.viewport.zoom * 100)}%`
@@ -1147,7 +1326,7 @@ export class ToolStarterApp {
       return;
     }
     try {
-      const bounds = this.transformedBounds(selectedShape);
+      const bounds = this.transformedBounds(this.effectiveShape(selectedShape));
       const box = document.createElementNS(SVG_NS, "rect");
       box.classList.add("object-vector-studio-v2__selection-box");
       box.dataset.selectionBounds = selectedShape.id;
@@ -1270,8 +1449,12 @@ export class ToolStarterApp {
     }
 
     this.selectedObjectId = objectId;
-    this.selectedShapeId = sortedShapes(this.selectedObject())[0]?.id || "";
+    const selectedObject = this.selectedObject();
+    this.selectedShapeId = sortedShapes(selectedObject)[0]?.id || "";
     this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+    const selectedState = this.objectStates(selectedObject)[0] || null;
+    this.selectedStateId = selectedState?.id || "";
+    this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.renderPayload();
     const selected = this.selectedObject();
     this.statusLog.write(`OK Selected object from ${sourceLabel}: ${selected.name}.`);
@@ -1298,6 +1481,211 @@ export class ToolStarterApp {
     this.renderPayload();
     const shape = this.selectedShape();
     this.statusLog.write(`OK Selected shape from ${sourceLabel}: ${shape.id} (${shape.type}). Multi-select count: ${this.selectedShapeIds.size}.`);
+  }
+
+  selectState(stateId, sourceLabel) {
+    const object = this.selectedObject();
+    if (!object) {
+      this.statusLog.write("WARN State selection skipped: no object is selected.");
+      this.elements.stateSelect.value = "";
+      return;
+    }
+    if (!stateId) {
+      this.selectedStateId = "";
+      this.selectedFrameId = "";
+      this.stopPlaybackTimer();
+      this.renderPayload();
+      this.statusLog.write(`OK State selection cleared from ${sourceLabel}.`);
+      return;
+    }
+    const state = this.objectStates(object).find((candidate) => candidate.id === stateId);
+    if (!state) {
+      this.statusLog.write(`WARN State selection pending: ${stateId} is not created for ${object.name}. Use Create State to add it.`);
+      this.selectedStateId = "";
+      this.selectedFrameId = "";
+      this.renderFrameTimeline();
+      this.updateAnimationActionState();
+      return;
+    }
+    this.selectedStateId = state.id;
+    this.selectedFrameId = sortedFrames(state)[0]?.id || "";
+    this.stopPlaybackTimer();
+    this.renderPayload();
+    this.statusLog.write(`OK Selected state ${OBJECT_STATE_LABELS[state.id]} from ${sourceLabel}; active object remains ${object.name}.`);
+  }
+
+  selectFrame(frameId, sourceLabel) {
+    const state = this.selectedState();
+    if (!state) {
+      this.statusLog.write("WARN Frame selection skipped: no state is selected.");
+      return;
+    }
+    const frame = sortedFrames(state).find((candidate) => candidate.id === frameId);
+    if (!frame) {
+      this.statusLog.write(`WARN Frame selection skipped: frame id ${frameId || "unknown"} is not available.`);
+      return;
+    }
+    this.selectedFrameId = frame.id;
+    this.renderPayload();
+    this.statusLog.write(`OK Selected frame ${frame.id} from ${sourceLabel}.`);
+  }
+
+  createSelectedState() {
+    const object = this.selectedObject();
+    if (!object) {
+      this.statusLog.write("WARN Create state skipped: no object is selected.");
+      return;
+    }
+    const stateId = this.elements.stateSelect.value;
+    if (!OBJECT_STATE_IDS.includes(stateId)) {
+      this.statusLog.write("FAIL Create state blocked: choose idle, thrust, damaged, destroyed, active, or inactive.");
+      return;
+    }
+    if (this.objectStates(object).some((state) => state.id === stateId)) {
+      this.statusLog.write(`WARN Create state skipped: ${OBJECT_STATE_LABELS[stateId]} already exists for ${object.name}.`);
+      this.selectState(stateId, "existing state");
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    nextObject.states = this.objectStates(nextObject);
+    const frame = this.createFrameSnapshot(nextObject, stateId, `${stateId}-frame-1`, 1);
+    nextObject.states.push({
+      frames: [frame],
+      id: stateId,
+      name: OBJECT_STATE_LABELS[stateId]
+    });
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeId, `OK Created state ${OBJECT_STATE_LABELS[stateId]} with frame ${frame.id}.`, "Create state failed schema validation", {
+      selectedFrameId: frame.id,
+      selectedStateId: stateId
+    });
+  }
+
+  duplicateSelectedFrame() {
+    const object = this.selectedObject();
+    const state = this.selectedState();
+    const frame = this.activeFrame();
+    if (!object || !state || !frame) {
+      this.statusLog.write("WARN Duplicate frame skipped: select an object state and frame first.");
+      return;
+    }
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    const nextState = this.objectStates(nextObject).find((candidate) => candidate.id === state.id);
+    const frameCopy = JSON.parse(JSON.stringify(frame));
+    frameCopy.id = this.uniqueFrameId(nextState);
+    frameCopy.order = sortedFrames(nextState).length + 1;
+    nextState.frames.push(frameCopy);
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeId, `OK Duplicated frame ${frame.id} as ${frameCopy.id}.`, "Duplicate frame failed schema validation", {
+      selectedFrameId: frameCopy.id,
+      selectedStateId: state.id
+    });
+  }
+
+  moveSelectedFrame(direction) {
+    const object = this.selectedObject();
+    const state = this.selectedState();
+    const frame = this.activeFrame();
+    if (!object || !state || !frame) {
+      this.statusLog.write(`WARN Move frame ${direction} skipped: select an object state and frame first.`);
+      return;
+    }
+    const frames = sortedFrames(state);
+    const index = frames.findIndex((candidate) => candidate.id === frame.id);
+    const nextIndex = direction === "earlier" ? index - 1 : index + 1;
+    if (nextIndex < 0 || nextIndex >= frames.length) {
+      this.statusLog.write(`WARN Move frame ${direction} skipped: frame ${frame.id} cannot move ${direction}.`);
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    const nextState = this.objectStates(nextObject).find((candidate) => candidate.id === state.id);
+    const nextFrames = sortedFrames(nextState);
+    const [movedFrame] = nextFrames.splice(index, 1);
+    nextFrames.splice(nextIndex, 0, movedFrame);
+    nextFrames.forEach((candidate, frameIndex) => {
+      candidate.order = frameIndex + 1;
+    });
+    nextState.frames = nextFrames;
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeId, `OK Moved frame ${frame.id} ${direction}.`, "Move frame failed schema validation", {
+      selectedFrameId: frame.id,
+      selectedStateId: state.id
+    });
+  }
+
+  playAnimation() {
+    const state = this.selectedState();
+    const frames = sortedFrames(state);
+    if (!state || !frames.length) {
+      this.statusLog.write("FAIL Playback blocked: create and select an animation state with at least one frame.");
+      return;
+    }
+    const fps = Number(this.elements.fpsInput.value);
+    if (!Number.isInteger(fps) || fps < 1 || fps > 60) {
+      this.statusLog.write("FAIL Playback blocked: FPS must be an integer from 1 to 60.");
+      return;
+    }
+    this.stopPlaybackTimer(false);
+    this.isAnimationPlaying = true;
+    this.updateAnimationActionState();
+    this.playbackTimerId = this.window.setInterval(() => this.advancePlaybackFrame(), Math.round(1000 / fps));
+    this.statusLog.write(`OK Playback started for state ${OBJECT_STATE_LABELS[state.id]} at ${fps} FPS.`);
+  }
+
+  pauseAnimation() {
+    if (!this.isAnimationPlaying) {
+      this.statusLog.write("WARN Playback pause skipped: animation is not playing.");
+      return;
+    }
+    this.stopPlaybackTimer(false);
+    this.statusLog.write(`OK Playback paused at frame ${this.selectedFrameId || "none"}.`);
+  }
+
+  stopAnimation() {
+    const state = this.selectedState();
+    this.stopPlaybackTimer(false);
+    if (state) {
+      this.selectedFrameId = sortedFrames(state)[0]?.id || "";
+      this.renderPayload();
+    }
+    this.statusLog.write("OK Playback stopped.");
+  }
+
+  stopPlaybackTimer(shouldRender = true) {
+    if (this.playbackTimerId) {
+      this.window.clearInterval(this.playbackTimerId);
+      this.playbackTimerId = 0;
+    }
+    this.isAnimationPlaying = false;
+    if (shouldRender) {
+      this.updateAnimationActionState();
+    }
+  }
+
+  advancePlaybackFrame() {
+    const state = this.selectedState();
+    const frames = sortedFrames(state);
+    if (!state || !frames.length) {
+      this.stopPlaybackTimer();
+      this.statusLog.write("FAIL Playback stopped: selected state or frame timeline is missing.");
+      return;
+    }
+    const index = Math.max(0, frames.findIndex((frame) => frame.id === this.selectedFrameId));
+    const nextFrame = frames[index + 1];
+    if (nextFrame) {
+      this.selectedFrameId = nextFrame.id;
+      this.renderPayload();
+      return;
+    }
+    if (this.elements.loopToggle.checked) {
+      this.selectedFrameId = frames[0].id;
+      this.renderPayload();
+      return;
+    }
+    this.stopPlaybackTimer();
+    this.statusLog.write(`OK Playback completed for state ${OBJECT_STATE_LABELS[state.id]}.`);
   }
 
   addObject() {
@@ -1654,6 +2042,13 @@ export class ToolStarterApp {
     }
 
     const nextPayload = this.cloneCurrentPayload();
+    const override = this.frameOverrideInPayload(nextPayload, selected.id, { create: true });
+    if (override) {
+      const nextVisible = !this.effectiveShape(selected).visible;
+      override.visible = nextVisible;
+      this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK State ${this.selectedStateId} frame ${this.selectedFrameId} shape ${selected.id} visibility set to ${nextVisible ? "visible" : "hidden"}.`, "State frame visibility failed schema validation");
+      return;
+    }
     const shape = this.findShapeInPayload(nextPayload, selected.id);
     shape.visible = !shape.visible;
     this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Shape ${selected.id} visibility set to ${shape.visible ? "visible" : "hidden"}.`, "Shape visibility failed schema validation");
@@ -1853,7 +2248,10 @@ export class ToolStarterApp {
     }
 
     const nextPayload = this.cloneCurrentPayload();
-    const shape = this.findShapeInPayload(nextPayload, selected.id);
+    const override = this.frameOverrideInPayload(nextPayload, selected.id, { create: true });
+    const shape = override
+      ? this.effectiveShapeForFrame(this.findShapeInPayload(nextPayload, selected.id), this.activeFrame())
+      : this.findShapeInPayload(nextPayload, selected.id);
     try {
       updater(shape);
       const transformErrors = this.validateShapeForTransform(shape);
@@ -1864,6 +2262,9 @@ export class ToolStarterApp {
     } catch (error) {
       this.statusLog.write(`FAIL Invalid transform rejected for shape ${selected.id}: ${error.message}`);
       return;
+    }
+    if (override) {
+      override.transform = this.ensureShapeTransform(shape);
     }
     this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, okMessage, `Transform ${operation} failed schema validation`);
   }
@@ -2023,7 +2424,7 @@ export class ToolStarterApp {
     return errors;
   }
 
-  commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, okMessage, failPrefix) {
+  commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, okMessage, failPrefix, options = {}) {
     const validation = this.schemaService.validatePayload(nextPayload);
     if (!validation.ok) {
       this.statusLog.write(`FAIL ${failPrefix}: ${validation.errors.join(" ")}`);
@@ -2034,6 +2435,9 @@ export class ToolStarterApp {
     this.selectedObjectId = selectedObjectId;
     this.selectedShapeId = selectedShapeId || "";
     this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+    this.selectedStateId = options.selectedStateId ?? this.selectedStateId;
+    this.selectedFrameId = options.selectedFrameId ?? this.selectedFrameId;
+    this.ensureSelectedFrame();
     this.actionNav.setJsonPayloadActionsEnabled(true);
     this.renderPayload();
     this.statusLog.write(okMessage);
@@ -2069,6 +2473,84 @@ export class ToolStarterApp {
     }
     this.selectedShapeId = sortedShapes(object)[0]?.id || "";
     this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+  }
+
+  ensureSelectedFrame() {
+    const object = this.selectedObject();
+    if (!object) {
+      this.selectedStateId = "";
+      this.selectedFrameId = "";
+      return;
+    }
+    const states = this.objectStates(object);
+    const state = states.find((candidate) => candidate.id === this.selectedStateId) || states[0] || null;
+    this.selectedStateId = state?.id || "";
+    if (!state) {
+      this.selectedFrameId = "";
+      return;
+    }
+    const frames = sortedFrames(state);
+    const frame = frames.find((candidate) => candidate.id === this.selectedFrameId) || frames[0] || null;
+    this.selectedFrameId = frame?.id || "";
+  }
+
+  objectStates(object) {
+    return Array.isArray(object?.states) ? object.states : [];
+  }
+
+  selectedState() {
+    return this.objectStates(this.selectedObject()).find((state) => state.id === this.selectedStateId) || null;
+  }
+
+  activeFrame() {
+    return sortedFrames(this.selectedState()).find((frame) => frame.id === this.selectedFrameId) || null;
+  }
+
+  previousFrame() {
+    const state = this.selectedState();
+    const frame = this.activeFrame();
+    if (!state || !frame) {
+      return null;
+    }
+    const frames = sortedFrames(state);
+    const index = frames.findIndex((candidate) => candidate.id === frame.id);
+    return index > 0 ? frames[index - 1] : null;
+  }
+
+  createFrameSnapshot(object, stateId, frameId, order) {
+    return {
+      durationFrames: 1,
+      id: frameId,
+      order,
+      shapeOverrides: sortedShapes(object).map((shape) => ({
+        shapeId: shape.id,
+        transform: this.shapeTransform(shape),
+        visible: shape.visible
+      }))
+    };
+  }
+
+  frameOverrideInPayload(payload, shapeId, { create = false } = {}) {
+    const object = payload.objects.find((candidate) => candidate.id === this.selectedObjectId);
+    const state = this.objectStates(object).find((candidate) => candidate.id === this.selectedStateId);
+    const frame = sortedFrames(state).find((candidate) => candidate.id === this.selectedFrameId);
+    if (!object || !state || !frame) {
+      return null;
+    }
+    let override = frame.shapeOverrides.find((entry) => entry.shapeId === shapeId);
+    if (!override && create) {
+      const baseShape = object.shapes.find((shape) => shape.id === shapeId);
+      if (!baseShape) {
+        return null;
+      }
+      override = {
+        shapeId,
+        transform: this.shapeTransform(baseShape),
+        visible: baseShape.visible
+      };
+      frame.shapeOverrides.push(override);
+    }
+    return override || null;
   }
 
   findShapeInPayload(payload, shapeId) {
@@ -2130,15 +2612,40 @@ export class ToolStarterApp {
     return candidate;
   }
 
+  uniqueFrameId(state) {
+    const usedIds = new Set(sortedFrames(state).map((frame) => frame.id));
+    let suffix = usedIds.size + 1;
+    let candidate = `${state.id}-frame-${suffix}`;
+    while (usedIds.has(candidate)) {
+      suffix += 1;
+      candidate = `${state.id}-frame-${suffix}`;
+    }
+    return candidate;
+  }
+
   updateObjectActionState() {
     const hasSelectedObject = Boolean(this.selectedObject());
     this.elements.createTemplateButton.disabled = !this.currentPayload;
     this.elements.objectTypeSelect.disabled = !hasSelectedObject && !this.currentPayload;
+    this.elements.createStateButton.disabled = !hasSelectedObject;
     this.elements.renameObjectButton.disabled = !hasSelectedObject;
     this.elements.duplicateObjectButton.disabled = !hasSelectedObject;
     this.elements.deleteObjectButton.disabled = !hasSelectedObject;
     this.elements.flattenObjectButton.disabled = !hasSelectedObject;
     this.elements.exportSvgButton.disabled = !hasSelectedObject;
+    this.updateAnimationActionState();
+  }
+
+  updateAnimationActionState() {
+    const state = this.selectedState();
+    const frames = sortedFrames(state);
+    const hasFrame = Boolean(state && this.activeFrame());
+    this.elements.duplicateFrameButton.disabled = !hasFrame;
+    this.elements.frameEarlierButton.disabled = !hasFrame || frames.findIndex((frame) => frame.id === this.selectedFrameId) <= 0;
+    this.elements.frameLaterButton.disabled = !hasFrame || frames.findIndex((frame) => frame.id === this.selectedFrameId) >= frames.length - 1;
+    this.elements.playButton.disabled = !hasFrame || this.isAnimationPlaying;
+    this.elements.pauseButton.disabled = !this.isAnimationPlaying;
+    this.elements.stopButton.disabled = !hasFrame;
   }
 
   async copyJson() {
@@ -2205,7 +2712,7 @@ export class ToolStarterApp {
     if (!validation.ok) {
       throw new Error(`schema validation failed: ${validation.errors.join(" ")}`);
     }
-    const visibleShapes = sortedShapes(object).filter((shape) => shape.visible);
+    const visibleShapes = sortedShapes(object).filter((shape) => this.effectiveShape(shape).visible);
     if (!visibleShapes.length) {
       throw new Error("selected object has no visible shapes.");
     }
@@ -2215,9 +2722,24 @@ export class ToolStarterApp {
     svg.setAttribute("xmlns", SVG_NS);
     svg.setAttribute("role", "img");
     svg.setAttribute("aria-label", `${object.name} Object Vector Studio V2 export`);
+    if (this.selectedStateId) {
+      svg.dataset.objectState = this.selectedStateId;
+    }
+    if (this.selectedFrameId) {
+      svg.dataset.objectFrame = this.selectedFrameId;
+    }
     svg.setAttribute("viewBox", `${bounds.x - padding} ${bounds.y - padding} ${bounds.width + padding * 2} ${bounds.height + padding * 2}`);
+    if (this.selectedStateId || this.selectedFrameId) {
+      const metadata = this.window.document.createElementNS(SVG_NS, "metadata");
+      metadata.textContent = JSON.stringify({
+        frameId: this.selectedFrameId || null,
+        stateId: this.selectedStateId || null,
+        toolId: "object-vector-studio-v2"
+      });
+      svg.append(metadata);
+    }
     visibleShapes.forEach((shape) => {
-      const element = this.createSvgShape(shape);
+      const element = this.createSvgShape(this.effectiveShape(shape));
       element.removeAttribute("tabindex");
       element.removeAttribute("class");
       svg.append(element);

@@ -48,6 +48,76 @@
           "items": {
             "$ref": "#/$defs/shape"
           }
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/objectState"
+          }
+        }
+      }
+    },
+    "objectState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "frames"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": ["idle", "thrust", "damaged", "destroyed", "active", "inactive"]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "frames": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/animationFrame"
+          }
+        }
+      }
+    },
+    "animationFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "order", "durationFrames", "shapeOverrides"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "durationFrames": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "shapeOverrides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/shapeFrameOverride"
+          }
+        }
+      }
+    },
+    "shapeFrameOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shapeId"],
+      "properties": {
+        "shapeId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "transform": {
+          "$ref": "#/$defs/transform"
         }
       }
     },
