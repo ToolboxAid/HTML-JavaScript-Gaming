@@ -1,5 +1,7 @@
 # Skin Editor
 
+Deprecated: use Object Vector Studio for ships, enemies, pickups, actors, and reusable gameplay entities. Primitive Skin Editor remains available for existing workflows and has not been renamed or deleted.
+
 Skin Editor is a visual-plus-JSON skin workflow tool for:
 
 - Breakout

@@ -5,14 +5,14 @@ export const TOOL_REGISTRY = Object.freeze([
     id: "vector-map-editor",
     name: "Vector Map Editor",
     displayName: "Vector Map Editor",
-    shortDescription: "Place and arrange vector assets in space. Build layouts, scenes, and maps.",
+    shortDescription: "Deprecated: use World Vector Studio for terrain, world geometry, layered scenes, and environment layout.",
     shortLabel: "Map",
     path: "Vector Map Editor",
     folderName: "Vector Map Editor",
     entryPoint: "Vector Map Editor/index.html",
-    description: "Place and arrange vector assets in space. Build layouts, scenes, and maps.",
+    description: "Deprecated: use World Vector Studio for terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures.",
     showcaseTag: "Geometry",
-    showcaseStatus: "Deterministic Runtime Ready",
+    showcaseStatus: "Deprecated",
     active: true,
     legacy: false,
     order: 1,
@@ -24,6 +24,52 @@ export const TOOL_REGISTRY = Object.freeze([
       {
         label: "Sample 1208 - Tool Formatted Tiles Parallax",
         path: "../samples/phase-12/1208/index.html"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
+    id: "world-vector-studio-v2",
+    name: "World Vector Studio",
+    displayName: "World Vector Studio",
+    shortDescription: "Terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures.",
+    shortLabel: "World",
+    path: "world-vector-studio-v2",
+    folderName: "world-vector-studio-v2",
+    entryPoint: "world-vector-studio-v2/index.html",
+    description: "Terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures.",
+    showcaseTag: "World Vectors",
+    showcaseStatus: "Template Copied",
+    active: true,
+    legacy: false,
+    order: 1.25,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "world-vector-studio-v2/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
+    id: "object-vector-studio-v2",
+    name: "Object Vector Studio",
+    displayName: "Object Vector Studio",
+    shortDescription: "Ships, enemies, pickups, actors, and reusable gameplay entities.",
+    shortLabel: "Object",
+    path: "object-vector-studio-v2",
+    folderName: "object-vector-studio-v2",
+    entryPoint: "object-vector-studio-v2/index.html",
+    description: "Ships, enemies, pickups, actors, and reusable gameplay entities.",
+    showcaseTag: "Object Vectors",
+    showcaseStatus: "Template Copied",
+    active: true,
+    legacy: false,
+    order: 1.5,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "object-vector-studio-v2/README.md"
       }
     ],
     visibleInToolsList: true
@@ -147,13 +193,14 @@ export const TOOL_REGISTRY = Object.freeze([
     id: "skin-editor",
     name: "Primitive Skin Editor",
     displayName: "Primitive Skin Editor",
+    shortDescription: "Deprecated: use Object Vector Studio for ships, enemies, pickups, actors, and reusable gameplay entities.",
     shortLabel: "Skin",
     path: "Skin Editor",
     folderName: "Skin Editor",
     entryPoint: "Skin Editor/index.html",
-    description: "Primitive shape skin authoring workflow for game color and sizing presets across playable arcade titles.",
+    description: "Deprecated: use Object Vector Studio for ships, enemies, pickups, actors, and reusable gameplay entities.",
     showcaseTag: "Primitive Skins",
-    showcaseStatus: "Game Skin Ready",
+    showcaseStatus: "Deprecated",
     active: true,
     legacy: false,
     order: 5.5,

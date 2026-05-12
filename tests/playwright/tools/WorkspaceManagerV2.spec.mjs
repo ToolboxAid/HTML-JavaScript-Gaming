@@ -982,6 +982,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(textToSpeechToolCard).toBeVisible();
       await expect(textToSpeechToolCard.locator("a", { hasText: "Text to Speech V2" })).toHaveAttribute("href", "/tools/text2speech-V2/index.html");
       await expect(textToSpeechToolCard).toContainText("First-Class Tool V2 for browser speech synthesis");
+      const worldVectorStudioCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "World Vector Studio" }) });
+      await expect(worldVectorStudioCard).toBeVisible();
+      await expect(worldVectorStudioCard.locator("a", { hasText: "World Vector Studio" })).toHaveAttribute("href", "/tools/world-vector-studio-v2/index.html");
+      await expect(worldVectorStudioCard).toContainText("Terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures");
+      const objectVectorStudioCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Object Vector Studio" }) });
+      await expect(objectVectorStudioCard).toBeVisible();
+      await expect(objectVectorStudioCard.locator("a", { hasText: "Object Vector Studio" })).toHaveAttribute("href", "/tools/object-vector-studio-v2/index.html");
+      await expect(objectVectorStudioCard).toContainText("Ships, enemies, pickups, actors, and reusable gameplay entities");
+      const vectorMapEditorCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Vector Map Editor" }) });
+      await expect(vectorMapEditorCard).toContainText("Deprecated");
+      const primitiveSkinEditorCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Primitive Skin Editor" }) });
+      await expect(primitiveSkinEditorCard).toContainText("Deprecated");
       const toolsIndexState = await page.evaluate(async () => {
         const registryModule = await import("/tools/toolRegistry.js");
         const launchModule = await import("/tools/shared/toolLaunchSSoTData.js");
@@ -1010,6 +1022,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           plannedCards: Array.from(plannedToolsGrid?.querySelectorAll(".card h3") || [])
             .map((heading) => heading.textContent.trim()),
           registryIds: registryModule.getToolRegistry().map((tool) => tool.id),
+          studioLaunchDefinitions: {
+            world: launchModule.getSampleToolLaunchDefinition("world-vector-studio-v2"),
+            object: launchModule.getSampleToolLaunchDefinition("object-vector-studio-v2")
+          },
           removedLaunchDefinitions: {
             assetBrowser: launchModule.getSampleToolLaunchDefinition("asset-browser"),
             tileModelConverter: launchModule.getSampleToolLaunchDefinition("tile-model-converter")
@@ -1044,6 +1060,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.workflowCards).toEqual(["Workspace Manager V2"]);
       expect(toolsIndexState.utilitiesCards).not.toContain("Workspace Manager V2");
       expect(toolsIndexState.utilitiesCards).toContain("Text to Speech V2");
+      expect(toolsIndexState.allCards).toEqual(expect.arrayContaining(["World Vector Studio", "Object Vector Studio"]));
+      expect(toolsIndexState.registryIds).toEqual(expect.arrayContaining(["world-vector-studio-v2", "object-vector-studio-v2"]));
+      expect(toolsIndexState.launchIds).toEqual(expect.arrayContaining(["tool.world-vector-studio-v2", "tool.object-vector-studio-v2"]));
+      expect(toolsIndexState.studioLaunchDefinitions.world.launchDefinition.targetPath).toBe("/tools/world-vector-studio-v2/index.html");
+      expect(toolsIndexState.studioLaunchDefinitions.object.launchDefinition.targetPath).toBe("/tools/object-vector-studio-v2/index.html");
       expect(toolsIndexState.allCards).not.toContain("Asset Browser / Import Hub");
       expect(toolsIndexState.allCards).not.toContain("Tile Model Converter");
       expect(toolsIndexState.registryIds).not.toContain("asset-browser");
@@ -1084,6 +1105,48 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.sessionInspectorActionClasses["How To Use"]).toBe("tools-platform-card__action tools-platform-card__action--secondary");
       expect(toolsIndexState.actionLabels).not.toContain("README");
       expect(toolsIndexState.sampleLabels.every((label) => /^Samples \(\d+\)$/.test(label))).toBe(true);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("launches World Vector Studio and Object Vector Studio copied tool shells", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      for (const tool of [
+        {
+          description: "Terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures",
+          id: "world-vector-studio-v2",
+          name: "World Vector Studio",
+          path: "world-vector-studio-v2"
+        },
+        {
+          description: "Ships, enemies, pickups, actors, and reusable gameplay entities",
+          id: "object-vector-studio-v2",
+          name: "Object Vector Studio",
+          path: "object-vector-studio-v2"
+        }
+      ]) {
+        await page.goto(`${server.baseUrl}/tools/${tool.path}/index.html`, { waitUntil: "networkidle" });
+        await expect(page.locator(`body.tools-platform-tool-page[data-tool-id="${tool.id}"]`)).toBeVisible();
+        await expect(page.locator("[data-tool-starter-header]")).toContainText(tool.name);
+        await expect(page.locator("[data-tool-starter-header]")).toContainText(tool.description);
+        await expect(page.locator(".tool-starter__tool__menu")).toBeVisible();
+        await expect(page.locator(".tool-starter__workspace__menu")).toBeHidden();
+        await page.locator("#sourceInput").fill(`${tool.name} launch coverage`);
+        await page.locator("#toolExportButton").click();
+        await expect(page.locator("#inspectorOutput")).toContainText(`"toolId": "${tool.id}"`);
+        await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`Processed source value: ${tool.name} launch coverage`));
+      }
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
