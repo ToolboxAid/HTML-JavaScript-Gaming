@@ -18,7 +18,8 @@ export class ToolTilesControl {
       assetCount: 0,
       canLaunch: false,
       manifestStatus: "Waiting for manifest",
-      paletteSwatchCount: 0
+      paletteSwatchCount: 0,
+      textToSpeechCount: 0
     });
   }
 
@@ -28,7 +29,8 @@ export class ToolTilesControl {
     dirtyByToolId = {},
     enabledToolIds = [],
     manifestStatus = "Waiting for manifest",
-    paletteSwatchCount = 0
+    paletteSwatchCount = 0,
+    textToSpeechCount = 0
   } = {}) {
     const enabledToolIdSet = new Set(enabledToolIds);
     this.container.replaceChildren(...TOOL_GROUPS.map((group) => this.groupSection({
@@ -38,11 +40,12 @@ export class ToolTilesControl {
       enabledToolIdSet,
       group,
       manifestStatus,
-      paletteSwatchCount
+      paletteSwatchCount,
+      textToSpeechCount
     })));
   }
 
-  detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount }) {
+  detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount, textToSpeechCount }) {
     if (tool.id === "templates-v2") {
       return "Canonical V2 template";
     }
@@ -56,12 +59,12 @@ export class ToolTilesControl {
       return "";
     }
     if (tool.id === "text2speech-V2") {
-      return "Speech synthesis ready";
+      return `${textToSpeechCount} text to speech`;
     }
     return manifestStatus;
   }
 
-  groupSection({ assetCount, canLaunch, dirtyByToolId, enabledToolIdSet, group, manifestStatus, paletteSwatchCount }) {
+  groupSection({ assetCount, canLaunch, dirtyByToolId, enabledToolIdSet, group, manifestStatus, paletteSwatchCount, textToSpeechCount }) {
     const section = document.createElement("section");
     section.className = "workspace-manager-v2__tool-group";
     section.setAttribute("aria-label", `${group} tools`);
@@ -82,6 +85,7 @@ export class ToolTilesControl {
           enabledToolIdSet,
           manifestStatus,
           paletteSwatchCount,
+          textToSpeechCount,
           tool
         }));
       });
@@ -90,7 +94,7 @@ export class ToolTilesControl {
     return section;
   }
 
-  tile({ assetCount, canLaunch, dirtyByToolId, enabledToolIdSet, manifestStatus, paletteSwatchCount, tool }) {
+  tile({ assetCount, canLaunch, dirtyByToolId, enabledToolIdSet, manifestStatus, paletteSwatchCount, textToSpeechCount, tool }) {
     const isEnabledForGame = canLaunch && enabledToolIdSet.has(tool.id);
     const dirtyStatus = dirtyByToolId[tool.id] || "unknown";
     const button = document.createElement("button");
@@ -113,7 +117,7 @@ export class ToolTilesControl {
       ? "Ready to launch"
       : (canLaunch ? "Not enabled for game" : manifestStatus);
 
-    const detailText = this.detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount });
+    const detailText = this.detailForTool(tool, { assetCount, manifestStatus, paletteSwatchCount, textToSpeechCount });
 
     const actions = document.createElement("span");
     actions.className = "workspace-manager-v2__tool-tile-actions";

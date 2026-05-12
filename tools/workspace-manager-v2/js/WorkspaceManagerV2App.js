@@ -488,6 +488,7 @@
       : { context: result.context, toolSummaries: {} };
     const paletteSummary = sessionRefresh.toolSummaries["palette-manager-v2"] || {};
     const assetSummary = sessionRefresh.toolSummaries["asset-manager-v2"] || {};
+    const textToSpeechSummary = sessionRefresh.toolSummaries["text2speech-V2"] || {};
     const dirtyByToolId = Object.fromEntries(Object.entries(sessionRefresh.toolSummaries)
       .map(([toolId, summary]) => [toolId, summary.dirtyStatus || "unknown"]));
     const paletteSwatchCount = Number.isInteger(paletteSummary.paletteSwatchCount)
@@ -496,6 +497,9 @@
     const assetCount = Number.isInteger(assetSummary.assetCount)
       ? assetSummary.assetCount
       : result.assetCount;
+    const textToSpeechCount = Number.isInteger(textToSpeechSummary.speechQueueCount)
+      ? textToSpeechSummary.speechQueueCount
+      : 0;
     this.activeContext = sessionRefresh.context;
     this.activeGame = result.game;
     this.activeHostContextId = result.hostContextId || null;
@@ -517,7 +521,8 @@
       dirtyByToolId,
       enabledToolIds: hydration.ok ? hydration.hydratedToolIds : [],
       manifestStatus: this.activeToolStateRequiresRepoHandle ? "Repo folder required" : "Schema-valid manifest",
-      paletteSwatchCount
+      paletteSwatchCount,
+      textToSpeechCount
     });
     this.syncLifecycleControls();
   }

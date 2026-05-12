@@ -984,17 +984,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const utilitiesGrid = firstClassToolsSection?.querySelector("[data-active-tools-utilities-grid]");
         const viewersGrid = firstClassToolsSection?.querySelector("[data-active-tools-viewers-grid]");
         const workspaceCard = workflowGrid?.querySelector(".tools-platform-card");
+        const cards = Array.from(firstClassToolsSection?.querySelectorAll(".tools-platform-card") || []);
+        const actionClassesForCard = (title) => {
+          const toolCard = cards.find((candidate) => candidate.querySelector("h3")?.textContent?.trim() === title);
+          return Object.fromEntries(Array.from(toolCard?.querySelectorAll(".tools-platform-card__action") || [])
+            .map((action) => [action.textContent.trim(), action.className.trim()]));
+        };
         const plannedToolsGrid = document.querySelector("[data-planned-tools-grid]");
         return {
           actionLabels: Array.from(firstClassToolsSection?.querySelectorAll(".tools-platform-card__action") || [])
             .map((action) => action.textContent.trim()),
+          allCards: cards.map((toolCard) => toolCard.querySelector("h3")?.textContent?.trim() || ""),
           headings: Array.from(firstClassToolsSection?.querySelectorAll(":scope > h3") || [])
             .map((heading) => heading.textContent.trim()),
+          paletteManagerActionClasses: actionClassesForCard("Palette Manager V2"),
           plannedCards: Array.from(plannedToolsGrid?.querySelectorAll(".card h3") || [])
             .map((heading) => heading.textContent.trim()),
           sampleLabels: Array.from(firstClassToolsSection?.querySelectorAll(".tools-platform-card__action") || [])
             .map((action) => action.textContent.trim())
             .filter((label) => label.startsWith("Samples")),
+          sessionInspectorActionClasses: actionClassesForCard("Session Inspector V2"),
           utilitiesCards: Array.from(utilitiesGrid?.querySelectorAll(".tools-platform-card h3") || [])
             .map((heading) => heading.textContent.trim()),
           viewersCards: Array.from(viewersGrid?.querySelectorAll(".tools-platform-card h3") || [])
@@ -1009,10 +1018,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.workflowCards).toEqual(["Workspace Manager V2"]);
       expect(toolsIndexState.utilitiesCards).not.toContain("Workspace Manager V2");
       expect(toolsIndexState.utilitiesCards).toContain("Text to Speech V2");
+      expect(toolsIndexState.allCards).not.toContain("Asset Browser / Import Hub");
+      expect(toolsIndexState.allCards).not.toContain("Tile Model Converter");
       expect(toolsIndexState.plannedCards).toContain("Piper WASM Backend");
       expect(toolsIndexState.plannedCards).toContain("Optional SSML Processing Layer");
-      expect(toolsIndexState.plannedCards).toContain("Character Voice Presets");
-      expect(toolsIndexState.plannedCards).toContain("Game Character Voice / Event Integration");
+      expect(toolsIndexState.plannedCards).not.toContain("Character Voice Presets");
+      expect(toolsIndexState.plannedCards).not.toContain("Game Character Voice / Event Integration");
       expect(toolsIndexState.plannedCards).not.toEqual(expect.arrayContaining([
         "Raspberry Pi Speech Deployment",
         "Queue-Based Speech Playback",
@@ -1023,6 +1034,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.viewersCards).toContain("Session Inspector V2");
       expect(toolsIndexState.viewersCards).not.toContain("Session Inspector");
       expect(toolsIndexState.workspaceActionLabels).toEqual(["How To Use", "Read Me"]);
+      expect(toolsIndexState.sessionInspectorActionClasses["How To Use"]).toBe(toolsIndexState.paletteManagerActionClasses["How To Use"]);
+      expect(toolsIndexState.sessionInspectorActionClasses["Read Me"]).toBe(toolsIndexState.paletteManagerActionClasses["Read Me"]);
+      expect(toolsIndexState.sessionInspectorActionClasses["How To Use"]).toBe("tools-platform-card__action tools-platform-card__action--secondary");
       expect(toolsIndexState.actionLabels).not.toContain("README");
       expect(toolsIndexState.sampleLabels.every((label) => /^Samples \(\d+\)$/.test(label))).toBe(true);
       expect(pageErrors).toEqual([]);
@@ -2116,8 +2130,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await selectMockRepo(page);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expectWorkspaceReturnRehydrated(page);
-      expect(await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speech-V2"))).toBe(false);
-      expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2")).data)).toBeNull();
+      expect(await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speech-V2"))).toBe(true);
+      expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2")).data)).toEqual([]);
       const schemaContract = await page.evaluate(async () => {
         const schema = await fetch("/tools/schemas/tools/text2speech-V2.schema.json", { cache: "no-store" }).then((response) => response.json());
         return {
@@ -3198,7 +3212,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(textToSpeechToolTile).toBeEnabled();
       await expect(textToSpeechToolTile).toContainText("Text to Speech V2");
       await expect(textToSpeechToolTile).toContainText("Ready to launch");
-      await expect(textToSpeechToolTile).toContainText("Speech synthesis ready");
+      await expect(textToSpeechToolTile).toContainText("0 text to speech");
+      await expect(textToSpeechToolTile).not.toContainText("Speech synthesis ready");
       await expect(sessionInspectorTile).toBeEnabled();
       await expect(sessionInspectorTile).toContainText("Session Inspector V2");
       await expect(sessionInspectorTile).not.toContainText("Session storage inspector");
@@ -3692,7 +3707,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(textToSpeechToolTile).toBeEnabled();
       await expect(textToSpeechToolTile).toContainText("Text to Speech V2");
       await expect(textToSpeechToolTile).toContainText("Ready to launch");
-      await expect(textToSpeechToolTile).toContainText("Speech synthesis ready");
+      await expect(textToSpeechToolTile).toContainText("0 text to speech");
+      await expect(textToSpeechToolTile).not.toContainText("Speech synthesis ready");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, preview-generator-v2, text2speech-V2, session-inspector-v2\./);
       const textToSpeechSessionData = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2")).data);
       const activeContextHasTextToSpeechPayload = await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speech-V2"));
@@ -3737,6 +3753,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         context.tools["text2speech-V2"] = payload;
         const validation = await app.contextService.validateGeneratedManifest(context);
         const hostContextId = app.contextService.writePersistedContext(app.activeHostContextId, context);
+        const session = JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2"));
+        sessionStorage.setItem("workspace.tools.text2speech-V2", JSON.stringify({
+          ...session,
+          data: payload,
+          dirty: {
+            isDirty: false,
+            reason: null,
+            changedAt: null,
+            changedKeys: []
+          }
+        }));
         const metrics = app.contextSummaryMetrics(context);
         app.applyContextResult({
           assetCount: metrics.assetCount,
@@ -3748,6 +3775,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return { hostContextId, validation };
       }, TEXT_TO_SPEECH_SAMPLE_PRESET_PATH);
       expect(seededWorkspace.validation).toEqual({ ok: true });
+      await expect(page.locator('[data-workspace-tool-id="text2speech-V2"]')).toContainText("1 text to speech");
+      await expect(page.locator('[data-workspace-tool-id="text2speech-V2"]')).not.toContainText("Speech synthesis ready");
       expect(await page.evaluate(async () => {
         const app = window.__workspaceManagerV2App;
         const context = structuredClone(app.activeContext);
@@ -3768,6 +3797,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(new RegExp(`workspace-manager-v2/index\\.html\\?hostContextId=${seededWorkspace.hostContextId}`));
       await expectWorkspaceReturnedFromTool(page, { dirty: true });
+      await expect(page.locator('[data-workspace-tool-id="text2speech-V2"]')).toContainText("0 text to speech");
+      await expect(page.locator('[data-workspace-tool-id="text2speech-V2"]')).not.toContainText("Speech synthesis ready");
       const returnedState = await page.evaluate(() => {
         const session = JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2"));
         const outputContext = JSON.parse(document.querySelector("#workspaceContextOutput").value);
@@ -3987,7 +4018,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved path: games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved file size: \d+ bytes\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: (?:3 \(asset-manager-v2 assets=14; palette-manager-v2 swatches=11; vector-map-editor vectors=5\)|4 \(asset-manager-v2 assets=14; palette-manager-v2 swatches=11; text2speech-V2 queue=1; vector-map-editor vectors=5\))\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: (?:3 \(asset-manager-v2 assets=14; palette-manager-v2 swatches=11; vector-map-editor vectors=5\)|4 \(asset-manager-v2 assets=14; palette-manager-v2 swatches=11; text2speech-V2 queue=(?:0|1); vector-map-editor vectors=5\))\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root game\.workspace toolState valid; saved context matched re-read file\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 toolState context workspace-manager-v2-Asteroids\./);

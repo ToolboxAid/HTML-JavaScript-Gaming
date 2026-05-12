@@ -3,6 +3,10 @@ import { escapeHtml } from "../src/shared/string/stringUtil.js";
 
 const SAMPLES_INDEX_PATH = "/samples/index.html";
 const SAMPLES_METADATA_PATH = "/samples/metadata/samples.index.metadata.json";
+const TOOLS_INDEX_HIDDEN_TOOL_IDS = Object.freeze(new Set([
+  "asset-browser",
+  "tile-model-converter"
+]));
 
 function toStandaloneHref(entryPoint) {
   const normalized = String(entryPoint || "").replace(/^\.?\/*/, "");
@@ -83,10 +87,8 @@ function classifyToolGroup(toolId) {
     "performance-profiler"
   ]);
   const utilityToolIds = new Set([
-    "asset-browser",
     "asset-manager-v2",
     "asset-pipeline",
-    "tile-model-converter",
     "physics-sandbox",
     "text2speech-V2",
     "3d-json-payload"
@@ -154,6 +156,7 @@ function renderActiveToolsList(sampleCountByToolId) {
     .filter((entry) => entry.active === true)
     .filter((entry) => entry.visibleInToolsList === true)
     .filter((entry) => entry.id !== "state-inspector")
+    .filter((entry) => !TOOLS_INDEX_HIDDEN_TOOL_IDS.has(entry.id))
     .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")));
 
   const workflow = tools.filter((tool) => classifyToolGroup(tool.id) === "workflow").map((tool) => renderToolCard(tool, sampleCountByToolId));
