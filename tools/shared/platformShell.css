@@ -787,7 +787,6 @@ body.tools-platform-surface .canvas-toolbar {
  * Shared toolbar/header presentation for core sample-editing tools.
  * Scoped by tool id to avoid broad visual changes in unrelated tools.
  */
-body.tools-platform-surface[data-tool-id="asset-browser"] .asset-browser__topbar,
 body.tools-platform-surface[data-tool-id="sprite-editor"] .toolbar-row,
 body.tools-platform-surface[data-tool-id="tile-map-editor"] .toolbar,
 body.tools-platform-surface[data-tool-id="svg-asset-studio"] .toolbar,
@@ -801,15 +800,6 @@ body.tools-platform-surface[data-tool-id="vector-map-editor"] .toolbar {
   padding: 10px 12px;
 }
 
-body.tools-platform-surface[data-tool-id="asset-browser"] .asset-browser__topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-body.tools-platform-surface[data-tool-id="asset-browser"] .asset-browser__topbar > strong,
 body.tools-platform-surface[data-tool-id="sprite-editor"] .toolbar-row > strong,
 body.tools-platform-surface[data-tool-id="tile-map-editor"] .toolbar > strong,
 body.tools-platform-surface[data-tool-id="svg-asset-studio"] .toolbar > strong,
@@ -1043,7 +1033,6 @@ body.tools-platform-surface [data-selected="true"] {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #ddd6fe) 30%, transparent);
 }
 
-body.tools-platform-surface .asset-browser__list button,
 body.tools-platform-surface .tool-button,
 body.tools-platform-surface .swatch-button,
 body.tools-platform-surface .palette-swatch,

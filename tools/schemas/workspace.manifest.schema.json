@@ -96,9 +96,6 @@
         "asset-pipeline": {
           "$ref": "./tools/asset-pipeline.schema.json"
         },
-        "tile-model-converter": {
-          "$ref": "./tools/tile-model-converter.schema.json"
-        },
         "3d-json-payload": {
           "$ref": "./tools/3d-json-payload.schema.json"
         },

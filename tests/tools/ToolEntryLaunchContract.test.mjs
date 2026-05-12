@@ -6,7 +6,6 @@ import {
 } from "../../tools/shared/assetUsageIntegration.js";
 
 const FIRST_CLASS_TOOL_INDEXES = Object.freeze([
-  { toolId: "asset-browser", indexPath: "../../tools/Asset Browser/index.html" },
   { toolId: "sprite-editor", indexPath: "../../tools/Sprite Editor/index.html" },
   { toolId: "vector-map-editor", indexPath: "../../tools/Vector Map Editor/index.html" },
   { toolId: "svg-asset-studio", indexPath: "../../tools/SVG Asset Studio/index.html" },
@@ -18,7 +17,6 @@ const FIRST_CLASS_TOOL_INDEXES = Object.freeze([
   { toolId: "performance-profiler", indexPath: "../../tools/Performance Profiler/index.html" },
   { toolId: "physics-sandbox", indexPath: "../../tools/Physics Sandbox/index.html" },
   { toolId: "asset-pipeline", indexPath: "../../tools/Asset Pipeline/index.html" },
-  { toolId: "tile-model-converter", indexPath: "../../tools/Tile Model Converter/index.html" },
   { toolId: "3d-json-payload", indexPath: "../../tools/3D JSON Payload/index.html" },
   { toolId: "3d-asset-viewer", indexPath: "../../tools/3D Asset Viewer/index.html" },
   { toolId: "3d-camera-path-editor", indexPath: "../../tools/3D Camera Path Editor/index.html" }
@@ -35,30 +33,20 @@ export async function run() {
   try {
     FIRST_CLASS_TOOL_INDEXES.forEach(({ toolId }) => {
       const actions = getSharedShellActions(toolId, "tool");
-      assert.equal(actions.length, 4);
+      assert.equal(actions.length, 2);
       assert.deepEqual(
         actions.map((action) => action.label),
         [
-          SHARED_ACTION_LABELS.browseAssets,
-          SHARED_ACTION_LABELS.importAssets,
           SHARED_ACTION_LABELS.browsePalettes,
           SHARED_ACTION_LABELS.managePalettes
         ]
       );
       assert.equal(
         actions[0].href,
-        `../Asset Browser/index.html?view=browse&sourceToolId=${toolId}`
-      );
-      assert.equal(
-        actions[1].href,
-        `../Asset Browser/index.html?view=import&sourceToolId=${toolId}`
-      );
-      assert.equal(
-        actions[2].href,
         `../palette-manager-v2/index.html?view=browse&sourceToolId=${toolId}`
       );
       assert.equal(
-        actions[3].href,
+        actions[1].href,
         `../palette-manager-v2/index.html?view=manage&sourceToolId=${toolId}`
       );
     });

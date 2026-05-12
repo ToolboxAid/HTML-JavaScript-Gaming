@@ -249,10 +249,10 @@ export async function run() {
   );
 
   const injected = clone(sample1902);
-  injected.tools["asset-browser"].payload.__unknown = true;
+  injected.tools["asset-pipeline"].payload.__unknown = true;
   const unknownFieldErrors = validateWorkspace1902(injected, schemaIndex);
   assert.equal(
-    unknownFieldErrors.some((message) => message.includes("asset-browser.payload.__unknown")),
+    unknownFieldErrors.some((message) => message.includes("asset-pipeline.payload.__unknown")),
     true,
     "Unknown payload field injection must fail validation."
   );
@@ -264,13 +264,11 @@ export async function run() {
     "parallax-editor",
     "sprite-editor",
     "skin-editor",
-    "asset-browser",
     "state-inspector",
     "replay-visualizer",
     "performance-profiler",
     "physics-sandbox",
     "asset-pipeline",
-    "tile-model-converter",
     "3d-json-payload",
     "3d-asset-viewer",
     "3d-camera-path-editor",

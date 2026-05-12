@@ -373,7 +373,6 @@ function readExpectedMetadataSets() {
           const tileMapEntries = manifest?.tools?.["tile-map-editor"]?.maps;
           const parallaxEntries = manifest?.tools?.["parallax-editor"]?.parallaxLevels;
           const vectorEntries = manifest?.tools?.["svg-asset-studio"]?.vectors;
-          const assetBrowserEntries = manifest?.tools?.["asset-browser"]?.assets;
 
           const countEntries = (value) => {
             if (Array.isArray(value)) {
@@ -390,7 +389,6 @@ function readExpectedMetadataSets() {
             || countEntries(tileMapEntries) > 0
             || countEntries(parallaxEntries) > 0
             || countEntries(vectorEntries) > 0
-            || countEntries(assetBrowserEntries) > 0
           );
           hasManifestVectors = countEntries(vectorEntries) > 0;
           const firstSkin = hasManifestSkin ? skins[0] : null;

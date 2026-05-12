@@ -170,29 +170,6 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "asset-browser",
-    name: "Asset Browser / Import Hub",
-    displayName: "Asset Browser / Import Hub",
-    shortDescription: "Approved asset browse and import planning",
-    shortLabel: "Import",
-    path: "Asset Browser",
-    folderName: "Asset Browser",
-    entryPoint: "Asset Browser/index.html",
-    description: "Approved asset browsing and non-destructive import planning surface for vectors, palettes, parallax, tilemaps, and sprite workflow assets.",
-    showcaseTag: "Asset Workflow",
-    showcaseStatus: "Import Planning Ready",
-    active: true,
-    legacy: false,
-    order: 6,
-    sampleEntryPoints: [
-      {
-        label: "README",
-        path: "Asset Browser/README.md"
-      }
-    ],
-    visibleInToolsList: true
-  },
-  {
     id: "asset-manager-v2",
     name: "Asset Manager V2",
     displayName: "Asset Manager V2",
@@ -408,23 +385,6 @@ export const TOOL_REGISTRY = Object.freeze([
     active: true,
     legacy: false,
     order: 12,
-    sampleEntryPoints: [],
-    visibleInToolsList: true
-  },
-  {
-    id: "tile-model-converter",
-    name: "Tile Model Converter",
-    displayName: "Tile Model Converter",
-    shortLabel: "Convert",
-    path: "Tile Model Converter",
-    folderName: "Tile Model Converter",
-    entryPoint: "Tile Model Converter/index.html",
-    description: "Shared asset-converter surface for tile/vector conversion requests using normalized converter contracts.",
-    showcaseTag: "Pipeline",
-    showcaseStatus: "Converter Baseline",
-    active: true,
-    legacy: false,
-    order: 13,
     sampleEntryPoints: [],
     visibleInToolsList: true
   },

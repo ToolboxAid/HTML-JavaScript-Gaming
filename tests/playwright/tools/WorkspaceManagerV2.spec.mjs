@@ -977,7 +977,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(textToSpeechToolCard).toBeVisible();
       await expect(textToSpeechToolCard.locator("a", { hasText: "Text to Speech V2" })).toHaveAttribute("href", "/tools/text2speech-V2/index.html");
       await expect(textToSpeechToolCard).toContainText("First-Class Tool V2 for browser speech synthesis");
-      const toolsIndexState = await page.evaluate(() => {
+      const toolsIndexState = await page.evaluate(async () => {
+        const registryModule = await import("/tools/toolRegistry.js");
+        const launchModule = await import("/tools/shared/toolLaunchSSoTData.js");
         const firstClassToolsSection = Array.from(document.querySelectorAll("section"))
           .find((section) => section.querySelector(":scope > h2")?.textContent?.trim() === "First-Class Tools");
         const workflowGrid = firstClassToolsSection?.querySelector("[data-active-tools-workflow-grid]");
@@ -997,9 +999,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           allCards: cards.map((toolCard) => toolCard.querySelector("h3")?.textContent?.trim() || ""),
           headings: Array.from(firstClassToolsSection?.querySelectorAll(":scope > h3") || [])
             .map((heading) => heading.textContent.trim()),
+          launchIds: launchModule.listToolLaunchIds(),
           paletteManagerActionClasses: actionClassesForCard("Palette Manager V2"),
           plannedCards: Array.from(plannedToolsGrid?.querySelectorAll(".card h3") || [])
             .map((heading) => heading.textContent.trim()),
+          registryIds: registryModule.getToolRegistry().map((tool) => tool.id),
+          removedLaunchDefinitions: {
+            assetBrowser: launchModule.getSampleToolLaunchDefinition("asset-browser"),
+            tileModelConverter: launchModule.getSampleToolLaunchDefinition("tile-model-converter")
+          },
+          removedToolLookup: {
+            assetBrowser: registryModule.getToolById("asset-browser"),
+            tileModelConverter: registryModule.getToolById("tile-model-converter")
+          },
+          removedToolPathStatuses: await Promise.all([
+            fetch("/tools/Asset%20Browser/index.html", { cache: "no-store" }).then((response) => response.status),
+            fetch("/tools/Tile%20Model%20Converter/index.html", { cache: "no-store" }).then((response) => response.status)
+          ]),
           sampleLabels: Array.from(firstClassToolsSection?.querySelectorAll(".tools-platform-card__action") || [])
             .map((action) => action.textContent.trim())
             .filter((label) => label.startsWith("Samples")),
@@ -1020,6 +1036,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.utilitiesCards).toContain("Text to Speech V2");
       expect(toolsIndexState.allCards).not.toContain("Asset Browser / Import Hub");
       expect(toolsIndexState.allCards).not.toContain("Tile Model Converter");
+      expect(toolsIndexState.registryIds).not.toContain("asset-browser");
+      expect(toolsIndexState.registryIds).not.toContain("tile-model-converter");
+      expect(toolsIndexState.removedToolLookup).toEqual({
+        assetBrowser: null,
+        tileModelConverter: null
+      });
+      expect(toolsIndexState.launchIds).not.toContain("tool.asset-browser");
+      expect(toolsIndexState.launchIds).not.toContain("tool.tile-model-converter");
+      expect(toolsIndexState.removedLaunchDefinitions.assetBrowser.launchDefinition).toBeNull();
+      expect(toolsIndexState.removedLaunchDefinitions.tileModelConverter.launchDefinition).toBeNull();
+      expect(toolsIndexState.removedToolPathStatuses).toEqual([404, 404]);
       expect(toolsIndexState.plannedCards).toContain("Piper WASM Backend");
       expect(toolsIndexState.plannedCards).toContain("Optional SSML Processing Layer");
       expect(toolsIndexState.plannedCards).not.toContain("Character Voice Presets");
@@ -3006,6 +3033,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(6);
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="session-inspector"]')).toHaveCount(0);
+      await expect(page.locator('[data-workspace-tool-id="asset-browser"]')).toHaveCount(0);
+      await expect(page.locator('[data-workspace-tool-id="tile-model-converter"]')).toHaveCount(0);
       const toolGroupMembership = await page.locator(".workspace-manager-v2__tool-group").evaluateAll((groups) => Object.fromEntries(groups.map((group) => [
         group.querySelector(".workspace-manager-v2__tool-group-title")?.textContent?.trim(),
         Array.from(group.querySelectorAll(".workspace-manager-v2__tool-tile-name"), (name) => name.textContent.trim())
@@ -3221,6 +3250,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         height: Math.round(tile.getBoundingClientRect().height),
         width: Math.round(tile.getBoundingClientRect().width)
       })));
+      const tileActionLayout = await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.map((tile) => {
+        const tileRect = tile.getBoundingClientRect();
+        const actions = tile.querySelector(".workspace-manager-v2__tool-tile-actions");
+        const actionRect = actions.getBoundingClientRect();
+        return {
+          actionBottomGap: Math.round(tileRect.bottom - actionRect.bottom),
+          actionHeight: Math.round(actionRect.height),
+          chipHeights: Array.from(actions.querySelectorAll(".workspace-manager-v2__tool-tile-action"), (action) => Math.round(action.getBoundingClientRect().height))
+        };
+      }));
       expect(tileLayout).toEqual([
         { height: 142, width: 180 },
         { height: 142, width: 180 },
@@ -3229,6 +3268,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { height: 142, width: 180 },
         { height: 142, width: 180 }
       ]);
+      expect([...new Set(tileActionLayout.map((entry) => entry.actionBottomGap))]).toHaveLength(1);
+      expect(tileActionLayout.every((entry) => entry.actionHeight === 24)).toBe(true);
+      expect(tileActionLayout.every((entry) => entry.chipHeights.every((height) => height === 22))).toBe(true);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, preview-generator-v2, text2speech-V2, session-inspector-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for templates-v2: starter\/dev-only tool is not enabled by the selected game workspace config\./);

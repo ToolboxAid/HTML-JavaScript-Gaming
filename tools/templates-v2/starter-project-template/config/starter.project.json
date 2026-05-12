@@ -377,12 +377,6 @@
       },
       "projectTool": "pencil"
     },
-    "asset-browser": {
-      "selectedCategory": "All",
-      "search": "template",
-      "selectedAssetId": "asset-vector-player",
-      "importCategory": "Vector Assets"
-    },
     "palette-browser": {
       "search": "vector",
       "selectedPaletteId": "",

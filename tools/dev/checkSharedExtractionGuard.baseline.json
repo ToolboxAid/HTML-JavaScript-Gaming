@@ -2782,21 +2782,6 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Tile Model Converter/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/Tile Model Converter/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/Tile Model Converter/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
       "file": "tools/Tilemap Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"

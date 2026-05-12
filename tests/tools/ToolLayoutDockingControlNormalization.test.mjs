@@ -27,12 +27,6 @@ export async function run() {
     /\.tools-platform-dock-panel/
   ]);
 
-  assertIncludesAll("tools/Asset Browser/index.html", [
-    /asset-browser__layout tools-platform-layout-grid/,
-    /tools-platform-resize-panel" data-panel-side="left"/,
-    /tools-platform-resize-panel" data-panel-side="right"/
-  ]);
-
   assertIncludesAll("tools/palette-manager-v2/index.html", [
     /palette-manager-v2__layout tools-platform-layout-grid/,
     /tools-platform-resize-panel" data-panel-side="left"/,

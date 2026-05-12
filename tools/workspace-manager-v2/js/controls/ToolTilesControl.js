@@ -128,13 +128,11 @@ export class ToolTilesControl {
       actions.append(action);
     });
 
-    button.append(name, state);
-    if (detailText) {
-      const detail = document.createElement("span");
-      detail.className = "workspace-manager-v2__tool-tile-detail";
-      detail.textContent = detailText;
-      button.append(detail);
-    }
+    const detail = document.createElement("span");
+    detail.className = "workspace-manager-v2__tool-tile-detail";
+    detail.textContent = detailText;
+
+    button.append(name, state, detail);
     button.append(actions);
     return button;
   }

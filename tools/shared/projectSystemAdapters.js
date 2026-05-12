@@ -194,27 +194,6 @@ function createVectorAssetAdapter() {
   };
 }
 
-function createAssetBrowserAdapter() {
-  const api = readToolApi("asset-browser", "assetBrowserApp");
-  if (!api || typeof api.captureProjectState !== "function" || typeof api.applyProjectState !== "function") {
-    return buildUnavailableAdapter("asset-browser");
-  }
-
-  return {
-    toolId: "asset-browser",
-    ready: true,
-    getProjectName() {
-      return "Shared Asset Workflow";
-    },
-    captureState() {
-      return cloneValue(api.captureProjectState());
-    },
-    applyState(state) {
-      return api.applyProjectState(cloneValue(state)) === true;
-    }
-  };
-}
-
 function createPaletteManagerAdapter() {
   return buildUnavailableAdapter("palette-manager-v2");
 }
@@ -252,8 +231,6 @@ export function getProjectAdapter(toolId) {
       return createParallaxAdapter();
     case "sprite-editor":
       return createSpriteAdapter();
-    case "asset-browser":
-      return createAssetBrowserAdapter();
     case "palette-manager-v2":
       return createPaletteManagerAdapter();
     case "asset-pipeline":

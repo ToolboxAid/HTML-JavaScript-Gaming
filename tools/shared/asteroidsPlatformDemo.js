@@ -120,7 +120,7 @@ function createRegistry() {
       {
         id: "image.asteroids-bezel",
         name: "Asteroids Bezel",
-        path: "games/Asteroids/game.manifest.json#tools.asset-browser.assets.image.asteroids.bezel.path",
+        path: "games/Asteroids/game.manifest.json#tools.asset-manager-v2.assets.image.asteroids.bezel.path",
         sourceTool: "parallax-scene-studio"
       }
     ],

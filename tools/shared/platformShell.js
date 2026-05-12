@@ -1366,9 +1366,7 @@ function resolveAcceptedAssetKindsForTool(toolId = "") {
     "vector-map-editor": ["vector-map"],
     "3d-asset-viewer": ["model"],
     "3d-camera-path-editor": ["camera-path"],
-    "asset-browser": ["asset"],
-    "asset-pipeline": [],
-    "tile-model-converter": ["tilemap", "vector", "model"]
+    "asset-pipeline": []
   };
   return byTool[normalizedToolId] || [];
 }
@@ -1503,9 +1501,7 @@ function renderToolAssetBadge(toolId = "") {
 
   const asset = readSharedAssetHandoff();
   const compatibleAsset = isAssetCompatibleWithTool(toolId, asset) ? asset : null;
-  const missingAssetLabel = normalizedToolId === "skin-editor"
-    ? "select skin in Asset Browser"
-    : "none";
+  const missingAssetLabel = normalizedToolId === "skin-editor" ? "select a skin asset" : "none";
   const compatibleAssetLabel = resolveSharedAssetLabel(compatibleAsset);
   const assetLabel = compatibleAssetLabel || (
     normalizedToolId === "svg-asset-studio"
@@ -1556,9 +1552,7 @@ function classifyToolGroup(toolId) {
     "performance-profiler"
   ]);
   const utilityToolIds = new Set([
-    "asset-browser",
     "asset-pipeline",
-    "tile-model-converter",
     "physics-sandbox",
     "3d-json-payload"
   ]);

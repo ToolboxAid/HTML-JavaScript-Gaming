@@ -657,32 +657,6 @@ function findPresetFilePathForSample(sampleId, toolId) {
   return "";
 }
 
-async function runTargetedAssetBrowserAssertion(page, url) {
-  await page.navigate(url);
-  let status = null;
-  const started = Date.now();
-  while ((Date.now() - started) < 9000) {
-    status = await page.evaluate(`(() => {
-      const statusText = String(document.getElementById("importStatusText")?.textContent || "").trim();
-      const selectedCategory = String(document.getElementById("importCategorySelect")?.value || "").trim();
-      const selectedDestination = String(document.getElementById("importDestinationSelect")?.value || "").trim();
-      const destinationOptionCount = Number(document.getElementById("importDestinationSelect")?.options?.length || 0);
-      return { statusText, selectedCategory, selectedDestination, destinationOptionCount };
-    })()`);
-    if (/Loaded preset/i.test(status.statusText) || /Preset load failed/i.test(status.statusText)) {
-      break;
-    }
-    await wait(150);
-  }
-
-  assert.match(status.statusText, /Loaded preset/i, "Asset Browser did not report preset load.");
-  assert.doesNotMatch(status.statusText, /Preset load failed/i, "Asset Browser reported preset load failure.");
-  assert.ok(status.selectedCategory, "Asset Browser selected category is empty.");
-  assert.equal(status.selectedDestination, "", "Asset Browser destination should require explicit action-time selection.");
-  assert.ok(status.destinationOptionCount > 1, "Asset Browser destination options were not populated.");
-  return status;
-}
-
 async function runTargetedAssetPipelineAssertion(page, url, expectedGameId) {
   await page.navigate(url);
   let status = null;
@@ -771,9 +745,6 @@ function extractPaletteFromPresetPayload(rawPreset) {
 
 function buildTargetedCases(roundtripRows, toolMap) {
   const specs = [
-    { sampleId: "0204", toolId: "asset-browser" },
-    { sampleId: "1413", toolId: "asset-browser" },
-    { sampleId: "1505", toolId: "asset-browser" },
     { sampleId: "0510", toolId: "asset-pipeline" },
     { sampleId: "1413", toolId: "asset-pipeline" },
     { sampleId: "1417", toolId: "asset-pipeline" },
@@ -819,9 +790,6 @@ function buildGenericFailureCloseoutCases(roundtripRows, toolMap) {
     { sampleId: "0210", toolId: "physics-sandbox" },
     { sampleId: "0303", toolId: "physics-sandbox" },
     { sampleId: "1606", toolId: "physics-sandbox" },
-    { sampleId: "0221", toolId: "tile-model-converter" },
-    { sampleId: "0305", toolId: "tile-model-converter" },
-    { sampleId: "1209", toolId: "tile-model-converter" },
     { sampleId: "0221", toolId: "3d-json-payload" },
     { sampleId: "0305", toolId: "3d-json-payload" },
     { sampleId: "1208", toolId: "3d-json-payload" },
@@ -946,54 +914,6 @@ async function runPhysicsSandboxContractAssertion(page, url, expectedBody) {
     JSON.stringify(status.parsedBody),
     JSON.stringify(expectedBody),
     "Physics Sandbox input body does not match sample preset payload."
-  );
-  return status;
-}
-
-async function runTileModelConverterContractAssertion(page, url, expectedCandidate, expectedConversion) {
-  await page.navigate(url);
-  let status = null;
-  const started = Date.now();
-  while ((Date.now() - started) < 9000) {
-    status = await page.evaluate(`(() => {
-      const statusText = String(document.getElementById("converterStatus")?.textContent || "").trim();
-      const inputText = String(document.getElementById("converterInput")?.value || "").trim();
-      let parsed = null;
-      try {
-        parsed = inputText ? JSON.parse(inputText) : null;
-      } catch {
-        parsed = null;
-      }
-      const candidateKeys = parsed?.candidate && typeof parsed.candidate === "object" ? Object.keys(parsed.candidate) : [];
-      const conversionKeys = parsed?.conversion && typeof parsed.conversion === "object" ? Object.keys(parsed.conversion) : [];
-      return {
-        statusText,
-        parsedCandidate: parsed?.candidate || null,
-        parsedConversion: parsed?.conversion || null,
-        candidateCount: candidateKeys.length,
-        conversionCount: conversionKeys.length
-      };
-    })()`);
-    if (
-      /Preset load failed/i.test(status.statusText)
-      || (status.candidateCount > 0 && status.conversionCount > 0)
-    ) {
-      break;
-    }
-    await wait(150);
-  }
-  assert.doesNotMatch(status.statusText, /Preset load failed/i, "Tile Model Converter reported preset load failure.");
-  assert.ok(status.candidateCount > 0, "Tile Model Converter candidate payload is empty.");
-  assert.ok(status.conversionCount > 0, "Tile Model Converter conversion payload is empty.");
-  assert.equal(
-    JSON.stringify(status.parsedCandidate),
-    JSON.stringify(expectedCandidate),
-    "Tile Model Converter candidate payload mismatch."
-  );
-  assert.equal(
-    JSON.stringify(status.parsedConversion),
-    JSON.stringify(expectedConversion),
-    "Tile Model Converter conversion payload mismatch."
   );
   return status;
 }
@@ -1193,15 +1113,6 @@ export async function run() {
         genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
         continue;
       }
-      if (testCase.toolId === "tile-model-converter") {
-        const expectedCandidate = testCase.presetPayload?.config?.candidate;
-        const expectedConversion = testCase.presetPayload?.config?.conversion;
-        assert.ok(expectedCandidate && typeof expectedCandidate === "object", `Missing expected converter candidate in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
-        assert.ok(expectedConversion && typeof expectedConversion === "object", `Missing expected converter conversion in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
-        const result = await runTileModelConverterContractAssertion(page, url, expectedCandidate, expectedConversion);
-        genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
-        continue;
-      }
       if (testCase.toolId === "3d-json-payload") {
         const expectedPointCount = Array.isArray(testCase.presetPayload?.config?.mapPayload?.points)
           ? testCase.presetPayload.config.mapPayload.points.length
@@ -1250,11 +1161,6 @@ export async function run() {
 
     for (const testCase of targetedCases) {
       const url = buildStandaloneToolUrl(baseUrl, testCase.tool.entryPoint, testCase.row);
-      if (testCase.toolId === "asset-browser") {
-        const result = await runTargetedAssetBrowserAssertion(page, url);
-        targetedResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
-        continue;
-      }
       if (testCase.toolId === "asset-pipeline") {
         const expectedGameId = String(testCase.presetPayload?.config?.pipelinePayload?.gameId || "").trim();
         assert.ok(expectedGameId, `Missing expected pipeline gameId in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);

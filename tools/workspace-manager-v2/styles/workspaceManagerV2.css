@@ -349,15 +349,15 @@ textarea:hover {
 .workspace-manager-v2__tool-tile {
   width: 180px;
   height: 142px;
+  position: relative;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  align-content: start;
+  grid-template-rows: auto auto 1fr;
   gap: 5px;
   border: 1px solid var(--workspace-manager-v2-line) !important;
   border-radius: 8px !important;
   background: var(--workspace-manager-v2-surface);
   color: var(--workspace-manager-v2-text);
-  padding: 10px;
+  padding: 10px 10px 39px;
   text-align: left;
 }
 
@@ -377,17 +377,28 @@ textarea:hover {
 }
 
 .workspace-manager-v2__tool-tile-actions {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  align-items: end;
+  height: 24px;
+  min-height: 24px;
 }
 
 .workspace-manager-v2__tool-tile-action {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
   border: 1px solid var(--workspace-manager-v2-line);
   border-radius: 999px;
   color: var(--workspace-manager-v2-muted);
   font-size: 0.72rem;
   font-weight: 700;
+  height: 22px;
   line-height: 1;
   padding: 4px 6px;
 }

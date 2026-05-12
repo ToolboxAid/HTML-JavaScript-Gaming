@@ -6,8 +6,6 @@ export const SHARED_ASSET_HANDOFF_EVENT = "toolboxaid.shared.assetHandoff.change
 export const SHARED_PALETTE_HANDOFF_EVENT = "toolboxaid.shared.paletteHandoff.changed";
 
 export const SHARED_ACTION_LABELS = Object.freeze({
-  browseAssets: "Browse Assets",
-  importAssets: "Import Assets",
   browsePalettes: "Browse Palettes",
   managePalettes: "Manage Palettes"
 });
@@ -162,20 +160,6 @@ export function getSharedToolHref(targetToolId, pageMode = "tool", options = {})
 export function getSharedShellActions(currentToolId, pageMode = "tool") {
   const { view } = getSharedLaunchContext();
   return [
-    {
-      id: "browse-assets",
-      targetToolId: "asset-browser",
-      label: SHARED_ACTION_LABELS.browseAssets,
-      href: getSharedToolHref("asset-browser", pageMode, { view: "browse", sourceToolId: currentToolId }),
-      current: currentToolId === "asset-browser" && view !== "import"
-    },
-    {
-      id: "import-assets",
-      targetToolId: "asset-browser",
-      label: SHARED_ACTION_LABELS.importAssets,
-      href: getSharedToolHref("asset-browser", pageMode, { view: "import", sourceToolId: currentToolId }),
-      current: currentToolId === "asset-browser" && view === "import"
-    },
     {
       id: "browse-palettes",
       targetToolId: "palette-manager-v2",
