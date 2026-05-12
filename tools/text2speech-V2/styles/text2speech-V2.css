@@ -4,6 +4,20 @@
   margin: 10px auto;
 }
 
+body.tools-platform-tool-page[data-tool-id="text2speech-V2"] {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body.tools-platform-tool-page[data-tool-id="text2speech-V2"] > .is-collapsible,
+body.tools-platform-tool-page[data-tool-id="text2speech-V2"] > .palette-manager-v2__menu-sample {
+  flex: 0 0 auto;
+}
+
 .text2speech-V2__local-shell-frame.tools-platform-frame {
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 18px;
@@ -68,37 +82,45 @@
   max-width: 100%;
 }
 
-.text2speech-V2__menu {
+.palette-manager-v2__menu-sample {
+  box-sizing: border-box;
+  width: calc(100% - 32px);
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 10px;
-  width: min(1180px, calc(100% - 32px));
-  margin: 14px auto;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 16px 0;
+  border: 1px solid var(--line, rgba(226, 232, 240, 0.18));
+  border-radius: 8px;
+  background: var(--panel, rgba(15, 23, 42, 0.88));
+  padding: 10px 14px;
 }
 
-.text2speech-V2__menu[hidden] {
+.palette-manager-v2__menu-sample[hidden] {
   display: none;
 }
 
-.text2speech-V2__menu-actions {
+.palette-manager-v2__menu-actions {
+  flex: 0 1 auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
+  overflow: hidden;
+  padding: 8px 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .text2speech-V2__item-actions,
-.text2speech-V2__options .text2speech-V2__menu,
 .text2speech-V2__speech-actions {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 10px;
   width: 100%;
   margin: 12px 0 0;
-}
-
-.text2speech-V2__item-actions {
-  display: flex;
-  gap: 10px;
 }
 
 .text2speech-V2 {
@@ -363,7 +385,8 @@ html:fullscreen body.tools-platform-surface[data-tool-id="text2speech-V2"] {
   height: 100vh;
   max-height: 100vh;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speech-V2"],
@@ -389,8 +412,8 @@ html:fullscreen body.tools-platform-surface[data-tool-id="text2speech-V2"] > .is
   white-space: nowrap;
 }
 
-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speech-V2"] > .text2speech-V2__menu,
-html:fullscreen body.tools-platform-surface[data-tool-id="text2speech-V2"] > .text2speech-V2__menu {
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="text2speech-V2"] > .palette-manager-v2__menu-sample,
+html:fullscreen body.tools-platform-surface[data-tool-id="text2speech-V2"] > .palette-manager-v2__menu-sample {
   flex: 0 0 auto;
   margin: 8px auto;
 }

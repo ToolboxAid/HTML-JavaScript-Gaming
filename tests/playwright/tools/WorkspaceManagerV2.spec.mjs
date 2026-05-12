@@ -47,6 +47,7 @@ async function selectTextToSpeechTile(page, itemId) {
 
 const TEXT_TO_SPEECH_SAMPLE_PRESET_PATH = "/samples/phase-19/1903/sample.1903.text2speech-V2.json";
 const TEXT_TO_SPEECH_SAMPLE_QUERY = `?samplePresetPath=${encodeURIComponent(TEXT_TO_SPEECH_SAMPLE_PRESET_PATH)}`;
+const TEXT_TO_SPEECH_SAMPLE_ITEM_IDS = ["narrator-welcome", "hero-ready", "alert-warning", "alert-warning-2"];
 
 async function openToolsIndex(page) {
   const server = await startRepoServer();
@@ -1116,8 +1117,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     try {
       await expect(page.locator("body[data-tool-id='text2speech-V2']")).toBeVisible();
-      await expect(page.locator(".text2speech-V2__tool__menu")).toBeVisible();
-      await expect(page.locator(".text2speech-V2__workspace-menu")).toBeHidden();
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"]')).toBeVisible();
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"]')).toHaveAttribute("aria-label", "menuSample");
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"] button')).toHaveText(["Import JSON", "Copy JSON", "Export JSON"]);
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="workspace"]')).toBeHidden();
+      await expect(page.locator(".text2speech-V2__tool__menu")).toHaveCount(0);
+      await expect(page.locator(".text2speech-V2__workspace-menu")).toHaveCount(0);
+      await expect(page.locator(".text2speech-V2__menu")).toHaveCount(0);
       await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(0);
       await expect(page.locator("#text2speech-V2SpeechText")).toHaveValue("");
       await expect(page.locator("#text2speech-V2SpeechItemName")).toHaveValue("");
@@ -1173,10 +1179,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/tools\/text2speech-V2\/index\.html/);
       await expect(page).toHaveURL(/samplePresetPath=%2Fsamples%2Fphase-19%2F1903%2Fsample\.1903\.text2speech-V2\.json/);
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Loaded Text to Speech V2 payload source: \/samples\/phase-19\/1903\/sample\.1903\.text2speech-V2\.json\./);
-      await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(3);
+      await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length);
       const sampleSummary = JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent());
       expect(Array.isArray(sampleSummary)).toBe(true);
-      expect(sampleSummary.map((item) => item.id)).toEqual(["narrator-welcome", "hero-ready", "alert-warning"]);
+      expect(sampleSummary.map((item) => item.id)).toEqual(TEXT_TO_SPEECH_SAMPLE_ITEM_IDS);
       expect(JSON.stringify(sampleSummary)).not.toMatch(/queuedSpeechItems|selectedQueueItem|status|\"queue\"/);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -1219,23 +1225,48 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2SpeechActions")).toBeVisible();
       await expect(page.locator("#text2speech-V2TextContent > #text2speech-V2SpeechActions")).toBeVisible();
       await expect(page.locator("#text2speech-V2QueueContent > #text2speech-V2SpeechActions")).toHaveCount(0);
-      await expect(page.locator(".text2speech-V2__tool__menu")).toBeVisible();
-      await expect(page.locator(".text2speech-V2__tool__menu")).toHaveAttribute("data-launch-mode-nav", "tool");
-      await expect(page.locator(".text2speech-V2__tool__menu button")).toHaveText(["Import JSON", "Copy JSON", "Export JSON"]);
-      await expect(page.locator(".text2speech-V2__workspace-menu")).toBeHidden();
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"]')).toBeVisible();
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"]')).toHaveAttribute("aria-label", "menuSample");
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"] button')).toHaveText(["Import JSON", "Copy JSON", "Export JSON"]);
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="workspace"]')).toBeHidden();
+      await expect(page.locator(".text2speech-V2__tool__menu")).toHaveCount(0);
+      await expect(page.locator(".text2speech-V2__workspace-menu")).toHaveCount(0);
+      await expect(page.locator(".text2speech-V2__menu")).toHaveCount(0);
+      const pageScrollState = await page.evaluate(() => {
+        const probe = document.createElement("div");
+        probe.style.cssText = "height: 1200px; width: 1px; flex: 0 0 auto;";
+        document.body.append(probe);
+        window.scrollTo(0, 200);
+        const bodyStyle = getComputedStyle(document.body);
+        const htmlStyle = getComputedStyle(document.documentElement);
+        const state = {
+          bodyOverflowY: bodyStyle.overflowY,
+          clientHeight: document.documentElement.clientHeight,
+          htmlOverflowY: htmlStyle.overflowY,
+          scrollHeight: document.documentElement.scrollHeight,
+          scrollY: window.scrollY
+        };
+        probe.remove();
+        window.scrollTo(0, 0);
+        return state;
+      });
+      expect(pageScrollState.bodyOverflowY).toBe("auto");
+      expect(pageScrollState.htmlOverflowY).not.toBe("hidden");
+      expect(pageScrollState.scrollHeight).toBeGreaterThan(pageScrollState.clientHeight);
+      expect(pageScrollState.scrollY).toBeGreaterThan(0);
       await expect(page.locator("#text2speech-V2SpeechPreview")).toHaveCount(0);
       await expect(page.locator("#text2speech-V2SpeechText")).toHaveValue("Welcome to Toolbox Aid. This is the default Text to Speech V2 sample line for previewing narration, prompts, and menu feedback.");
       await expect(page.locator("#text2speech-V2SpeakButton")).toBeEnabled();
       await expect(page.locator("#text2speech-V2PauseButton")).toBeEnabled();
       await expect(page.locator("#text2speech-V2ResumeButton")).toBeEnabled();
       await expect(page.locator("#text2speech-V2StopButton")).toBeEnabled();
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Loaded 3 schema-complete Text to Speech V2 queue items\./);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(new RegExp(`OK Loaded ${TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length} schema-complete Text to Speech V2 queue items\\.`));
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(new RegExp(`OK Loaded Text to Speech V2 payload source: ${TEXT_TO_SPEECH_SAMPLE_PRESET_PATH.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\.`));
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Text to Speech V2 schema validation result: tools\/schemas\/tools\/text2speech-V2\.schema\.json valid; queue=3\./);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(new RegExp(`OK Text to Speech V2 schema validation result: tools\\/schemas\\/tools\\/text2speech-V2\\.schema\\.json valid; queue=${TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length}\\.`));
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Loaded 4 matching SpeechSynthesis voices for Text to Speech V2 \(22 voices; 18 languages; gender=Any; age=Any; language=en-US\)\./);
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Text to Speech V2 ready\. SpeechSynthesis is available\./);
       await expect(page.locator("#text2speech-V2QueueSelect")).toHaveCount(0);
-      expect(await page.locator("#text2speech-V2QueueTiles [data-speech-item-id]").evaluateAll((tiles) => tiles.map((tile) => tile.dataset.speechItemId))).toEqual(["narrator-welcome", "hero-ready", "alert-warning"]);
+      expect(await page.locator("#text2speech-V2QueueTiles [data-speech-item-id]").evaluateAll((tiles) => tiles.map((tile) => tile.dataset.speechItemId))).toEqual(TEXT_TO_SPEECH_SAMPLE_ITEM_IDS);
       expect(await page.locator("#text2speech-V2SpeechOptionsContent label").evaluateAll((labels) => labels.map((label) => label.getAttribute("for")))).toEqual([
         "text2speech-V2GenderFilterSelect",
         "text2speech-V2LanguageSelect",
@@ -1434,7 +1465,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         firstItemKeys: [...REQUIRED_TEXT2SPEECH_OPTION_FIELDS].sort(),
         hasRootQueue: false,
         isArray: true,
-        length: 3,
+        length: TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length,
         validation: { ok: true }
       });
       const validationSourceCleanup = await page.evaluate(async () => {
@@ -1451,7 +1482,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         hasValidateQueue: false
       });
       const readySummary = JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent());
-      expect(readySummary).toHaveLength(3);
+      expect(readySummary).toHaveLength(TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length);
       expect(readySummary.queue).toBeUndefined();
       readySummary.forEach((item) => {
         expect(REQUIRED_TEXT2SPEECH_OPTION_FIELDS.every((field) => Object.hasOwn(item, field))).toBe(true);
@@ -1497,13 +1528,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2SpeechSummary")).toContainText('"name": "Alert danger"');
       await page.locator("#text2speech-V2SpeechItemName").fill("");
       await page.locator("#text2speech-V2AddItemButton").click();
-      await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(3);
+      await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length);
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/FAIL Text to Speech V2 Add blocked: Name is required before creating a named speech item\./);
       await page.locator("#text2speech-V2SpeechItemName").fill("Alert warning");
       await expect(page.locator("#text2speech-V2SpeechText")).toHaveValue("Warning. Incoming hazard detected. Please confirm the next action.");
-      await expect(page.locator("#text2speech-V2GenderFilterSelect")).toHaveValue("female-preferred");
-      await expect(page.locator("#text2speech-V2LanguageSelect")).toHaveValue("en-US");
-      await expect(page.locator("#text2speech-V2VoiceSelect")).toHaveValue("mock-microsoft-zira");
+      await expect(page.locator("#text2speech-V2GenderFilterSelect")).toHaveValue("any");
+      await expect(page.locator("#text2speech-V2LanguageSelect")).toHaveValue("ja-JP");
+      await expect(page.locator("#text2speech-V2VoiceSelect")).toHaveValue("mock-google-japanese");
       await expect(page.locator("#text2speech-V2AgeFilterSelect")).toHaveValue("adult");
       await expect(page.locator("#text2speech-V2CharacterPresetSelect")).toHaveValue("alert");
       await expect(page.locator("#text2speech-V2SsmlLikePresetSelect")).toHaveValue("normal");
@@ -1511,22 +1542,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2RateSlider")).toHaveValue("1.3");
       await expect(page.locator("#text2speech-V2PitchSlider")).toHaveValue("0.9");
       await expect(page.locator("#text2speech-V2VoiceDetails")).toHaveText([
-        "1 voices match Female:",
-        "- en-US: Microsoft Zira - English (United States)"
+        "1 voices match Any:",
+        "- ja-JP: Google Japanese"
       ].join("\n"));
       const alertSummary = JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent());
-      expect(alertSummary).toHaveLength(3);
+      expect(alertSummary).toHaveLength(TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length);
       expect(alertSummary.find((item) => item.id === "alert-warning")).toMatchObject({
         characterPreset: "alert",
-        gender: "female-preferred",
+        gender: "any",
         id: "alert-warning",
-        language: "en-US",
+        language: "ja-JP",
         name: "Alert warning",
         pitch: 0.9,
         rate: 1.3,
         ssmlLikePreset: "normal",
         text: "Warning. Incoming hazard detected. Please confirm the next action.",
-        voice: "mock-microsoft-zira",
         voiceAge: "adult",
         volume: 0.9
       });
@@ -1710,7 +1740,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(await page.evaluate(() => window["__text2speech-V2Canceled"])).toBe(0);
       const queuedSummary = JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent());
-      expect(queuedSummary).toHaveLength(3);
+      expect(queuedSummary).toHaveLength(TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length);
       expect(queuedSummary.queue).toBeUndefined();
       expect(await page.evaluate(() => window["__text2speech-V2App"].engine.queuedSpeechItemList())).toHaveLength(2);
       await page.locator("#text2speech-V2PauseButton").click();
@@ -1724,7 +1754,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.evaluate(() => window["__text2speech-V2Canceled"])).toBe(1);
       await selectTextToSpeechTile(page, "alert-warning");
       await page.locator("#text2speech-V2SpeakButton").click();
-      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Alert warning; en-US; voice=Microsoft Zira - English \(United States\); rate=1\.3; pitch=0\.9; volume=0\.9; queuedItems=1\./);
+      await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Speech queued: Alert warning; ja-JP; voice=Google Japanese; rate=1\.3; pitch=0\.9; volume=0\.9; queuedItems=1\./);
       expect(await page.evaluate(() => window["__text2speech-V2Canceled"])).toBe(1);
       await expect(page.locator(".text2speech-V2__status-accordion-header")).toHaveAttribute("aria-expanded", "true");
       await page.locator("#text2speech-V2ClearStatusButton").click();
@@ -1746,10 +1776,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
 
     try {
-      await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(3);
-      await page.locator("#text2speech-V2DeleteItemButton").click();
-      await page.locator("#text2speech-V2DeleteItemButton").click();
-      await page.locator("#text2speech-V2DeleteItemButton").click();
+      await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length);
+      for (let index = 0; index < TEXT_TO_SPEECH_SAMPLE_ITEM_IDS.length; index += 1) {
+        await page.locator("#text2speech-V2DeleteItemButton").click();
+      }
       await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(0);
       await expect(page.locator("#text2speech-V2SpeechItemName")).toHaveValue("");
       await expect(page.locator("#text2speech-V2SpeechText")).toHaveValue("");
@@ -1787,9 +1817,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     });
 
     try {
-      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
-      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeHidden();
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"]')).toBeVisible();
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"]')).toHaveAttribute("aria-label", "menuSample");
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="workspace"]')).toBeHidden();
       await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import JSON", "Copy JSON", "Export JSON"]);
+      await expect(page.locator(".text2speech-V2__tool__menu")).toHaveCount(0);
+      await expect(page.locator(".text2speech-V2__menu")).toHaveCount(0);
 
       const importedPayload = [{
         characterPreset: "calm",
@@ -2029,14 +2062,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }));
         location.reload();
       }, invalidPayload);
-      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
-      await expect(page.locator("#returnToWorkspaceButton")).toBeVisible();
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="workspace"]')).toBeVisible();
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="workspace"] #returnToWorkspaceButton')).toHaveText("Return to Workspace");
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"]')).toBeHidden();
+      await expect(page.locator(".text2speech-V2__workspace-menu")).toHaveCount(0);
+      await expect(page.locator(".text2speech-V2__menu")).toHaveCount(0);
       await expect(page.locator("#text2speech-V2QueueTiles [data-speech-item-id]")).toHaveCount(0);
       await expect(page.locator("#text2speech-V2SpeechText")).toHaveValue("");
       await expect(page.locator("#text2speech-V2SpeakButton")).toBeDisabled();
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/FAIL Text to Speech V2 payload from \/games\/Asteroids\/game\.manifest\.json failed tools\/schemas\/tools\/text2speech-V2\.schema\.json validation: root: expected array/);
       expect(JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent())).toEqual([]);
       await expect(page.locator("#text2speech-V2SpeechSummary")).not.toContainText("This payload must not render.");
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=text2speech-v2-invalid-payload/);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -2993,7 +3031,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"asset-manager-v2"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"palette-manager-v2"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector-map-editor"/);
-      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"text2speech-V2"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"text2speech-V2"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector.asteroids.ship"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"palette-browser"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"asset-browser"/);
@@ -3076,7 +3114,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(selectedGameHydration.toolSessions["asset-manager-v2"].state).toBeUndefined();
       expect(JSON.stringify(selectedGameHydration.toolSessions)).not.toMatch(/getDirectoryHandle|createWritable|FileSystemDirectoryHandle/);
       expect(Object.keys(selectedGameHydration.dataByTool["asset-manager-v2"].assets)).toHaveLength(14);
-      expect(selectedGameHydration.dataByTool["text2speech-V2"]).toBeNull();
+      expect(selectedGameHydration.dataByTool["text2speech-V2"]).toHaveLength(1);
       expect(selectedGameHydration.toolSessions["templates-v2"]).toBeUndefined();
       expect(Object.values(selectedGameHydration.dirtyByTool)).toEqual([
         { isDirty: false, reason: null, changedAt: null, changedKeys: [] },
@@ -3181,11 +3219,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(asteroidsManifest.game.gameData.launch.directPath).toBe("/games/Asteroids/index.html");
       const manifestWorkspace = asteroidsManifest.game.workspace;
       expect(manifestWorkspace.documentKind).toBe("workspace-manifest");
-      expect(Object.keys(manifestWorkspace.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "vector-map-editor"]);
+      expect(Object.keys(manifestWorkspace.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "text2speech-V2", "vector-map-editor"]);
       expect(manifestWorkspace.repoRoot).toBe("HTML-JavaScript-Gaming");
       expect(manifestWorkspace.repoPath).toBe(manifestRepoPath(server));
       expect(manifestWorkspace.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
-      expect(manifestWorkspace.tools["text2speech-V2"]).toBeUndefined();
+      expect(manifestWorkspace.tools["text2speech-V2"]).toHaveLength(1);
       expect(Object.keys(manifestWorkspace.tools["asset-manager-v2"].assets)).toHaveLength(14);
       expect(manifestWorkspace.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
       expect(manifestWorkspace.tools["asset-manager-v2"].assets["assets.image.background.deluxe"]).toEqual({
@@ -3301,7 +3339,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         role: "ui",
         source: "manifest"
       });
-      expect(storedContext.tools["text2speech-V2"]).toBeUndefined();
+      expect(storedContext.tools["text2speech-V2"]).toHaveLength(1);
       expect(storedContext.workspaceMetadata).toBeUndefined();
       expect(storedContext.tools["asset-browser"]).toBeUndefined();
       expect(storedContext.tools["palette-browser"]).toBeUndefined();
@@ -3352,8 +3390,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         paletteMissingKeys: [],
         swatchExtraKeys: [],
         swatchMissingKeys: [],
-        textToSpeechPayload: undefined,
-        toolKeys: ["asset-manager-v2", "palette-manager-v2", "vector-map-editor"],
+        textToSpeechPayload: [expect.objectContaining({ id: "speak-this", name: "Speak this" })],
+        toolKeys: ["asset-manager-v2", "palette-manager-v2", "text2speech-V2", "vector-map-editor"],
         unsupportedToolKeys: [],
         vectorExtraKeys: [],
         vectorIds: [
@@ -3599,7 +3637,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("enables Text to Speech V2 after repo and game selection without Text to Speech-specific payload", async ({ page }) => {
+  test("enables Text to Speech V2 after repo and game selection and preserves workspace return nav", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
 
@@ -3618,8 +3656,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(textToSpeechToolTile).toContainText("Ready to launch");
       await expect(textToSpeechToolTile).toContainText("Speech synthesis ready");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, preview-generator-v2, text2speech-V2, session-inspector-v2\./);
-      expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2")).data)).toBeNull();
-      expect(await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speech-V2"))).toBe(false);
+      const textToSpeechSessionData = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2")).data);
+      const activeContextHasTextToSpeechPayload = await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speech-V2"));
+      expect(textToSpeechSessionData === null || Array.isArray(textToSpeechSessionData)).toBe(true);
+      expect(activeContextHasTextToSpeechPayload).toBe(textToSpeechSessionData !== null);
+      await textToSpeechToolTile.click();
+      await expect(page).toHaveURL(/text2speech-V2\/index\.html.*launch=workspace/);
+      const hostContextId = new URL(page.url()).searchParams.get("hostContextId");
+      expect(hostContextId).toMatch(/^workspace-manager-v2-/);
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="workspace"]')).toBeVisible();
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="workspace"] #returnToWorkspaceButton')).toHaveText("Return to Workspace");
+      await expect(page.locator('.palette-manager-v2__menu-sample[data-launch-mode-nav="tool"]')).toBeHidden();
+      await expect(page.locator(".text2speech-V2__workspace-menu")).toHaveCount(0);
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(new RegExp(`workspace-manager-v2/index\\.html\\?hostContextId=${hostContextId}`));
+      await expectWorkspaceReturnedFromTool(page);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -3785,7 +3836,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved path: games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved file size: \d+ bytes\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 3 \(asset-manager-v2 assets=14; palette-manager-v2 swatches=11; vector-map-editor vectors=5\)\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 4 \(asset-manager-v2 assets=14; palette-manager-v2 swatches=11; text2speech-V2 queue=1; vector-map-editor vectors=5\)\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root game\.workspace toolState valid; saved context matched re-read file\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 toolState context workspace-manager-v2-Asteroids\./);
@@ -3817,7 +3868,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         symbol: "@"
       });
       expect(Object.keys(writtenGameManifest.game.workspace.tools["asset-manager-v2"].assets)).toHaveLength(14);
-      expect(writtenGameManifest.game.workspace.tools["text2speech-V2"]).toBeUndefined();
+      expect(writtenGameManifest.game.workspace.tools["text2speech-V2"]).toHaveLength(1);
 
       await page.locator("#closeWorkspaceButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.asset-manager-v2\./);
