@@ -10,6 +10,19 @@ const DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME = "bezel.stretch.override.json";
 const DEFAULT_BEZEL_STRETCH_CONFIG = Object.freeze({
   uniformEdgeStretchPx: 0
 });
+const CANVAS_LAYOUT_STYLE_PROPERTIES = Object.freeze([
+  "display",
+  "height",
+  "left",
+  "margin",
+  "maxHeight",
+  "maxWidth",
+  "position",
+  "top",
+  "transform",
+  "width",
+  "zIndex"
+]);
 
 function toDisplayValue(visible) {
   return visible ? "block" : "none";
@@ -48,32 +61,6 @@ function nodeContains(parent, child) {
   return false;
 }
 
-function listChildElements(node) {
-  if (!node) {
-    return [];
-  }
-
-  if (Array.isArray(node.children)) {
-    return node.children;
-  }
-
-  if (typeof node.children?.length === "number") {
-    return Array.from(node.children);
-  }
-
-  return [];
-}
-
-function hasCanvasSiblings(parent, canvas) {
-  const children = listChildElements(parent);
-  for (const child of children) {
-    if (child !== canvas) {
-      return true;
-    }
-  }
-  return false;
-}
-
 function isRuntimeFullscreenHost(node) {
   if (!node || typeof node.getAttribute !== "function") {
     return false;
@@ -108,6 +95,8 @@ function createCanvasFullscreenHost(canvas, parent, documentRef) {
   host.style.position = "relative";
   host.style.display = "block";
   host.style.width = "100%";
+  host.style.overflow = "hidden";
+  host.style.isolation = "isolate";
 
   parent.insertBefore(host, canvas);
   host.appendChild(canvas);
@@ -142,6 +131,23 @@ function ensureCanvasStyles(canvas) {
   if (!canvas.style.zIndex) {
     canvas.style.zIndex = "1";
   }
+}
+
+function captureInlineStyles(element, properties) {
+  if (!element?.style) {
+    return null;
+  }
+  return Object.fromEntries(properties.map((property) => [property, element.style[property] || ""]));
+}
+
+function restoreInlineStyles(element, snapshot) {
+  if (!element?.style || !snapshot) {
+    return false;
+  }
+  Object.entries(snapshot).forEach(([property, value]) => {
+    element.style[property] = value;
+  });
+  return true;
 }
 
 function applyBezelStyles(element) {
@@ -687,22 +693,22 @@ export function resolvePreferredFullscreenTarget(options = {}) {
     return null;
   }
   const parent = canvas.parentElement || null;
-  if (parent && typeof parent.requestFullscreen === "function") {
-    if (hasCanvasSiblings(parent, canvas)) {
-      const wrapped = createCanvasFullscreenHost(canvas, parent, options.documentRef || null);
-      if (wrapped && typeof wrapped.requestFullscreen === "function") {
-        return wrapped;
-      }
+  if (parent) {
+    if (isRuntimeFullscreenHost(parent) && typeof parent.requestFullscreen === "function") {
+      return parent;
     }
-    return parent;
+    const wrapped = createCanvasFullscreenHost(canvas, parent, options.documentRef || null);
+    if (wrapped && typeof wrapped.requestFullscreen === "function") {
+      return wrapped;
+    }
+  }
+
+  if (typeof canvas.requestFullscreen === "function") {
+    return canvas;
   }
 
   const body = options.documentRef?.body || null;
-  if (body && typeof body.requestFullscreen === "function" && nodeContains(body, canvas)) {
-    return body;
-  }
-
-  return canvas;
+  return body && typeof body.requestFullscreen === "function" && nodeContains(body, canvas) ? body : canvas;
 }
 
 export default class fullscreenBezel {
@@ -733,6 +739,7 @@ export default class fullscreenBezel {
     this.transparentWindowRect = null;
     this.imageSize = null;
     this.canvasLayoutMode = "fallback";
+    this.canvasNormalStyles = null;
     this.manifestResolved = false;
     this.manifestResolvePromise = null;
   }
@@ -813,6 +820,7 @@ export default class fullscreenBezel {
       return false;
     }
 
+    this.captureCanvasNormalStyles();
     ensureHostStyles(nextHost);
     ensureCanvasStyles(this.canvas);
     if (this.element && this.host !== nextHost) {
@@ -820,6 +828,12 @@ export default class fullscreenBezel {
     }
     this.host = nextHost;
     return true;
+  }
+
+  captureCanvasNormalStyles() {
+    if (!this.canvasNormalStyles) {
+      this.canvasNormalStyles = captureInlineStyles(this.canvas, CANVAS_LAYOUT_STYLE_PROPERTIES);
+    }
   }
 
   applyStretchConfig(config) {
@@ -897,7 +911,7 @@ export default class fullscreenBezel {
         this.ready = false;
         this.missing = true;
         element.style.display = "none";
-        this.applyCanvasFallbackLayout();
+        this.applyCanvasNormalLayout();
         return;
       }
       this.transparentWindowRect = this.imageSize
@@ -913,7 +927,7 @@ export default class fullscreenBezel {
       element.style.display = "none";
       this.transparentWindowRect = null;
       this.imageSize = null;
-      this.applyCanvasFallbackLayout();
+      this.applyCanvasNormalLayout();
     };
     element.src = resolveRuntimeAssetUrl(this.path, this.documentRef);
 
@@ -923,7 +937,7 @@ export default class fullscreenBezel {
 
   detach() {
     if (!this.element) {
-      this.applyCanvasFallbackLayout();
+      this.applyCanvasNormalLayout();
       return;
     }
 
@@ -931,7 +945,16 @@ export default class fullscreenBezel {
     this.element.remove?.();
     this.element = null;
     this.host = null;
-    this.applyCanvasFallbackLayout();
+    this.applyCanvasNormalLayout();
+  }
+
+  applyCanvasNormalLayout() {
+    if (!this.canvas?.style) {
+      return false;
+    }
+    restoreInlineStyles(this.canvas, this.canvasNormalStyles);
+    this.canvasLayoutMode = "normal";
+    return true;
   }
 
   applyCanvasFallbackLayout() {
@@ -1072,38 +1095,54 @@ export default class fullscreenBezel {
 
   sync(options = {}) {
     this.ensureManifestResolved();
-
-    if (!this.path) {
-      this.applyCanvasFallbackLayout();
+    const fullscreenActive = options.fullscreenActive === true;
+    const fullscreenElement = options.fullscreenElement || this.documentRef?.fullscreenElement || null;
+    const activeHost = this.resolveActiveHost(fullscreenElement);
+    if (!this.mountOnHost(activeHost)) {
+      if (fullscreenActive) {
+        this.applyCanvasFallbackLayout();
+      } else {
+        this.applyCanvasNormalLayout();
+      }
       return {
         visible: false,
-        reason: this.manifestResolved ? "unavailable" : "manifest-pending",
-        path: this.path
+        reason: "host-unavailable",
+        path: this.path,
+        canvasLayoutMode: this.canvasLayoutMode
+      };
+    }
+
+    if (!this.path) {
+      if (fullscreenActive) {
+        this.applyCanvasFullscreenFitLayout() || this.applyCanvasFallbackLayout();
+      } else {
+        this.applyCanvasNormalLayout();
+      }
+      return {
+        visible: false,
+        reason: fullscreenActive ? "asset-unavailable" : (this.manifestResolved ? "unavailable" : "manifest-pending"),
+        path: this.path,
+        hostTagName: this.host?.tagName || "",
+        canvasLayoutMode: this.canvasLayoutMode
       };
     }
 
     this.attach();
     if (!this.element) {
-      this.applyCanvasFallbackLayout();
+      if (fullscreenActive) {
+        this.applyCanvasFullscreenFitLayout() || this.applyCanvasFallbackLayout();
+      } else {
+        this.applyCanvasNormalLayout();
+      }
       return {
         visible: false,
         reason: "attach-failed",
-        path: this.path
+        path: this.path,
+        canvasLayoutMode: this.canvasLayoutMode
       };
     }
 
-    const fullscreenElement = options.fullscreenElement || this.documentRef?.fullscreenElement || null;
-    const activeHost = this.resolveActiveHost(fullscreenElement);
-    if (!this.mountOnHost(activeHost)) {
-      this.applyCanvasFallbackLayout();
-      return {
-        visible: false,
-        reason: "host-unavailable",
-        path: this.path
-      };
-    }
-
-    const shouldShow = options.fullscreenActive === true && this.ready && !this.missing;
+    const shouldShow = fullscreenActive && this.ready && !this.missing;
     this.element.style.display = toDisplayValue(shouldShow);
     this.element.style.visibility = toVisibilityValue(shouldShow);
     this.element.style.opacity = toOpacityValue(shouldShow);
@@ -1112,14 +1151,14 @@ export default class fullscreenBezel {
       if (!fitted) {
         this.applyCanvasFullscreenFitLayout() || this.applyCanvasFallbackLayout();
       }
-    } else if (options.fullscreenActive === true) {
+    } else if (fullscreenActive) {
       this.applyCanvasFullscreenFitLayout() || this.applyCanvasFallbackLayout();
     } else {
-      this.applyCanvasFallbackLayout();
+      this.applyCanvasNormalLayout();
     }
     return {
       visible: shouldShow,
-      reason: shouldShow ? "visible" : (options.fullscreenActive === true ? "asset-unavailable" : "fullscreen-inactive"),
+      reason: shouldShow ? "visible" : (fullscreenActive ? "asset-unavailable" : "fullscreen-inactive"),
       path: this.path,
       hostTagName: this.host?.tagName || "",
       canvasLayoutMode: this.canvasLayoutMode

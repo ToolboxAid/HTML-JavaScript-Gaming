@@ -1765,6 +1765,174 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("fits the game canvas inside the fullscreen play area and restores layout on exit", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    await page.addInitScript(() => {
+      let currentFullscreenElement = null;
+      const fullscreenStyleSnapshots = new WeakMap();
+      window.__gameFullscreenRequests = [];
+
+      Object.defineProperty(document, "fullscreenEnabled", {
+        configurable: true,
+        get() {
+          return true;
+        }
+      });
+      Object.defineProperty(document, "fullscreenElement", {
+        configurable: true,
+        get() {
+          return currentFullscreenElement;
+        }
+      });
+      Object.defineProperty(document, "exitFullscreen", {
+        configurable: true,
+        value: async () => {
+          const element = currentFullscreenElement;
+          currentFullscreenElement = null;
+          if (element) {
+            const snapshot = fullscreenStyleSnapshots.get(element);
+            if (snapshot) {
+              element.style.width = snapshot.width;
+              element.style.height = snapshot.height;
+              element.style.position = snapshot.position;
+              element.style.display = snapshot.display;
+              element.style.background = snapshot.background;
+            }
+            element.removeAttribute("data-test-fullscreen-active");
+          }
+          document.dispatchEvent(new Event("fullscreenchange"));
+        }
+      });
+      Element.prototype.requestFullscreen = async function requestFullscreen() {
+        currentFullscreenElement = this;
+        fullscreenStyleSnapshots.set(this, {
+          background: this.style.background,
+          display: this.style.display,
+          height: this.style.height,
+          position: this.style.position,
+          width: this.style.width
+        });
+        this.setAttribute("data-test-fullscreen-active", "1");
+        this.style.display = "block";
+        this.style.position = "relative";
+        this.style.width = "1200px";
+        this.style.height = "900px";
+        this.style.background = "#000";
+        window.__gameFullscreenRequests.push({
+          containsCanvas: this.contains(document.getElementById("game")),
+          hostKind: this.getAttribute("data-runtime-fullscreen-host") || "",
+          tagName: this.tagName
+        });
+        document.dispatchEvent(new Event("fullscreenchange"));
+      };
+    });
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
+      await page.waitForFunction(() => window.__asteroidsNewBootStage === "boot-complete");
+      const normalLayout = await page.evaluate(() => {
+        const canvas = document.getElementById("game");
+        const header = document.getElementById("shared-theme-header");
+        const host = canvas.parentElement;
+        const canvasRect = canvas.getBoundingClientRect();
+        const headerRect = header.getBoundingClientRect();
+        return {
+          canvasInlineHeight: canvas.style.height,
+          canvasInlinePosition: canvas.style.position,
+          canvasInlineWidth: canvas.style.width,
+          canvasRectHeight: Math.round(canvasRect.height),
+          canvasRectWidth: Math.round(canvasRect.width),
+          headerHeight: Math.round(headerRect.height),
+          hostKind: host.getAttribute("data-runtime-fullscreen-host") || ""
+        };
+      });
+      expect(normalLayout.hostKind).toBe("canvas");
+      expect(normalLayout.canvasInlineHeight).toBe("");
+      expect(normalLayout.canvasInlinePosition).toBe("");
+      expect(normalLayout.canvasInlineWidth).toBe("");
+      expect(normalLayout.canvasRectWidth).toBeGreaterThan(900);
+      expect(normalLayout.headerHeight).toBeGreaterThan(0);
+
+      await page.locator("#game").click({ position: { x: 20, y: 20 } });
+      await page.waitForFunction(() => document.fullscreenElement?.getAttribute("data-runtime-fullscreen-host") === "canvas");
+      await page.waitForFunction(() => {
+        const canvas = document.getElementById("game");
+        return canvas.style.width === "1200px" && canvas.style.height === "900px";
+      });
+
+      const fullscreenLayout = await page.evaluate(() => {
+        const canvas = document.getElementById("game");
+        const fullscreenElement = document.fullscreenElement;
+        const canvasRect = canvas.getBoundingClientRect();
+        const hostRect = fullscreenElement.getBoundingClientRect();
+        return {
+          canvasHeight: Math.round(canvasRect.height),
+          canvasInlineHeight: canvas.style.height,
+          canvasInlineLeft: canvas.style.left,
+          canvasInlineTop: canvas.style.top,
+          canvasInlineWidth: canvas.style.width,
+          canvasWidth: Math.round(canvasRect.width),
+          fullscreenIsBody: fullscreenElement === document.body,
+          fullscreenIsDocumentElement: fullscreenElement === document.documentElement,
+          hostHeight: Math.round(hostRect.height),
+          hostKind: fullscreenElement.getAttribute("data-runtime-fullscreen-host") || "",
+          hostWidth: Math.round(hostRect.width),
+          requests: window.__gameFullscreenRequests
+        };
+      });
+      expect(fullscreenLayout.hostKind).toBe("canvas");
+      expect(fullscreenLayout.fullscreenIsBody).toBe(false);
+      expect(fullscreenLayout.fullscreenIsDocumentElement).toBe(false);
+      expect(fullscreenLayout.hostWidth).toBe(1200);
+      expect(fullscreenLayout.hostHeight).toBe(900);
+      expect(fullscreenLayout.canvasWidth).toBe(1200);
+      expect(fullscreenLayout.canvasHeight).toBe(900);
+      expect(fullscreenLayout.canvasInlineLeft).toBe("0px");
+      expect(fullscreenLayout.canvasInlineTop).toBe("0px");
+      expect(fullscreenLayout.requests).toEqual([
+        { containsCanvas: true, hostKind: "canvas", tagName: "DIV" }
+      ]);
+
+      await page.evaluate(() => document.exitFullscreen());
+      await page.waitForFunction(() => !document.fullscreenElement);
+      await page.waitForFunction(() => {
+        const canvas = document.getElementById("game");
+        return canvas.style.width === "" && canvas.style.height === "" && canvas.style.position === "";
+      });
+      const restoredLayout = await page.evaluate(() => {
+        const canvas = document.getElementById("game");
+        const header = document.getElementById("shared-theme-header");
+        const canvasRect = canvas.getBoundingClientRect();
+        const headerRect = header.getBoundingClientRect();
+        return {
+          canvasInlineHeight: canvas.style.height,
+          canvasInlinePosition: canvas.style.position,
+          canvasInlineWidth: canvas.style.width,
+          canvasRectHeight: Math.round(canvasRect.height),
+          canvasRectWidth: Math.round(canvasRect.width),
+          headerHeight: Math.round(headerRect.height)
+        };
+      });
+      expect(restoredLayout.canvasInlineHeight).toBe(normalLayout.canvasInlineHeight);
+      expect(restoredLayout.canvasInlinePosition).toBe(normalLayout.canvasInlinePosition);
+      expect(restoredLayout.canvasInlineWidth).toBe(normalLayout.canvasInlineWidth);
+      expect(restoredLayout.canvasRectWidth).toBe(normalLayout.canvasRectWidth);
+      expect(restoredLayout.canvasRectHeight).toBe(normalLayout.canvasRectHeight);
+      expect(restoredLayout.headerHeight).toBe(normalLayout.headerHeight);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("uses First-Class Tool V2 theme contract", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];

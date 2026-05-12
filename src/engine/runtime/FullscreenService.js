@@ -110,6 +110,12 @@ export default class FullscreenService {
       return true;
     }
 
+    if (this.documentRef.fullscreenElement !== this.target) {
+      this.lastError = '';
+      this.syncState();
+      return true;
+    }
+
     try {
       await this.documentRef.exitFullscreen();
       this.lastError = '';
@@ -135,6 +141,6 @@ export default class FullscreenService {
   }
 
   syncState() {
-    this.isActive = !!this.documentRef?.fullscreenElement;
+    this.isActive = !!this.documentRef?.fullscreenElement && this.documentRef.fullscreenElement === this.target;
   }
 }

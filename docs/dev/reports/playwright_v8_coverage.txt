@@ -20,11 +20,10 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
+(44%) src/engine/runtime/fullscreenBezel.js - executed lines 1034/1034; executed functions 29/66
+(71%) src/engine/runtime/FullscreenService.js - executed lines 123/123; executed functions 10/14
 (84%) src/engine/audio/GaplessLoopPlayer.js - executed lines 187/187; executed functions 16/19
-(86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 963/963; executed functions 42/49
-(91%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1598/1598; executed functions 145/159
 (92%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 1618/1618; executed functions 176/191
-(93%) tools/workspace-manager-v2/js/controls/ToolTilesControl.js - executed lines 137/137; executed functions 14/15
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -47,7 +46,6 @@ Files with executed line/function counts where available:
 (14%) src/engine/runtime/BrowserDownloadService.js - executed lines 38/38; executed functions 1/7
 (14%) src/engine/scene/TransitionScene.js - executed lines 58/58; executed functions 1/7
 (15%) games/Asteroids/game/AsteroidsAttractAdapter.js - executed lines 229/229; executed functions 3/20
-(16%) src/engine/audio/AudioService.js - executed lines 258/258; executed functions 4/25
 (17%) src/engine/camera/Camera2D.js - executed lines 44/44; executed functions 1/6
 (17%) src/engine/collision/polygon.js - executed lines 73/73; executed functions 1/6
 (17%) src/engine/input/ActionInputMap.js - executed lines 24/24; executed functions 1/6
@@ -73,10 +71,9 @@ Files with executed line/function counts where available:
 (25%) src/shared/utils/arrayUtils.js - executed lines 20/20; executed functions 1/4
 (25%) src/shared/utils/geometryUtils.js - executed lines 27/27; executed functions 1/4
 (25%) tools/shared/eventCommandUtils.js - executed lines 31/31; executed functions 1/4
-(26%) src/engine/runtime/fullscreenBezel.js - executed lines 993/993; executed functions 16/62
 (27%) src/engine/scene/AttractModeController.js - executed lines 143/143; executed functions 3/11
+(28%) src/engine/audio/AudioService.js - executed lines 258/258; executed functions 7/25
 (28%) tools/preview-generator-v2/PreviewGeneratorV2RepoAccess.js - executed lines 273/273; executed functions 7/25
-(29%) src/engine/audio/WebAudioToneBackend.js - executed lines 65/65; executed functions 2/7
 (32%) tools/shared/assetUsageIntegration.js - executed lines 301/301; executed functions 8/25
 (32%) tools/shared/platformShell.js - executed lines 2159/2159; executed functions 38/120
 (33%) src/engine/audio/FrequencyPlayer.js - executed lines 25/25; executed functions 1/3
@@ -93,10 +90,8 @@ Files with executed line/function counts where available:
 (33%) src/engine/scene/SceneTransitionController.js - executed lines 22/22; executed functions 1/3
 (33%) tools/shared/projectSystemValueUtils.js - executed lines 9/9; executed functions 1/3
 (33%) tools/shared/uiSafeUtils.js - executed lines 32/32; executed functions 2/6
-(36%) games/Asteroids/index.js - executed lines 179/179; executed functions 4/11
 (36%) src/engine/input/GamepadState.js - executed lines 92/92; executed functions 5/14
 (36%) tools/palette-manager-v2/controls/PaletteImportExportControl.js - executed lines 67/67; executed functions 4/11
-(37%) src/engine/input/InputService.js - executed lines 185/185; executed functions 11/30
 (37%) tools/asset-manager-v2/js/assetManagerMetadata.js - executed lines 331/331; executed functions 10/27
 (38%) src/engine/camera/Camera3D.js - executed lines 48/48; executed functions 3/8
 (39%) games/Asteroids/game/AsteroidsWorld.js - executed lines 756/756; executed functions 19/49
@@ -107,6 +102,9 @@ Files with executed line/function counts where available:
 (43%) games/Pong/game/PongAudio.js - executed lines 57/57; executed functions 3/7
 (44%) games/Asteroids/game/AsteroidsSession.js - executed lines 246/246; executed functions 7/16
 (44%) games/Asteroids/systems/ShipDebrisSystem.js - executed lines 84/84; executed functions 4/9
+(44%) src/engine/runtime/fullscreenBezel.js - executed lines 1034/1034; executed functions 29/66
+(45%) games/Asteroids/index.js - executed lines 179/179; executed functions 5/11
+(47%) src/engine/input/InputService.js - executed lines 185/185; executed functions 14/30
 (47%) src/engine/runtime/backgroundImage.js - executed lines 205/205; executed functions 8/17
 (47%) src/engine/runtime/RuntimeMonitoringHooks.js - executed lines 191/191; executed functions 8/17
 (50%) games/Asteroids/entities/Ship.js - executed lines 67/67; executed functions 3/6
@@ -131,7 +129,6 @@ Files with executed line/function counts where available:
 (56%) src/engine/logging/Logger.js - executed lines 56/56; executed functions 5/9
 (56%) tools/palette-manager-v2/controls/PaletteEditorControl.js - executed lines 225/225; executed functions 18/32
 (57%) src/engine/fx/ParticleSystem.js - executed lines 119/119; executed functions 4/7
-(57%) src/engine/runtime/FullscreenService.js - executed lines 118/118; executed functions 8/14
 (57%) tools/object-vector-studio-v2/js/controls/StatusLogControl.js - executed lines 24/24; executed functions 4/7
 (57%) tools/world-vector-studio-v2/js/controls/StatusLogControl.js - executed lines 24/24; executed functions 4/7
 (58%) src/shared/utils/createNoopDevConsoleIntegration.js - executed lines 25/25; executed functions 7/12
@@ -150,6 +147,7 @@ Files with executed line/function counts where available:
 (68%) tools/palette-manager-v2/controls/UserPaletteControl.js - executed lines 95/95; executed functions 13/19
 (70%) games/Asteroids/systems/AsteroidsHighScoreService.js - executed lines 73/73; executed functions 7/10
 (71%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 5/7
+(71%) src/engine/runtime/FullscreenService.js - executed lines 123/123; executed functions 10/14
 (71%) src/shared/utils/debugConfigUtils.js - executed lines 89/89; executed functions 5/7
 (71%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 156/156; executed functions 10/14
 (71%) tools/palette-manager-v2/controls/PaletteValidationErrorControl.js - executed lines 30/30; executed functions 5/7
@@ -186,6 +184,7 @@ Files with executed line/function counts where available:
 (83%) tools/session-inspector-v2/js/controls/AccordionSection.js - executed lines 41/41; executed functions 5/6
 (84%) src/engine/audio/GaplessLoopPlayer.js - executed lines 187/187; executed functions 16/19
 (86%) games/shared/gameSkinLoader.js - executed lines 352/352; executed functions 18/21
+(86%) src/engine/audio/WebAudioToneBackend.js - executed lines 65/65; executed functions 6/7
 (86%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 134/134; executed functions 12/14
 (86%) tools/workspace-manager-v2/js/controls/RepoDestinationControl.js - executed lines 25/25; executed functions 6/7
 (86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 963/963; executed functions 42/49
@@ -291,14 +290,13 @@ Files with executed line/function counts where available:
 (100%) tools/world-vector-studio-v2/js/services/ToolStateSerializer.js - executed lines 13/13; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(100%) none - no low-coverage changed runtime JS files
+(44%) src/engine/runtime/fullscreenBezel.js - WARNING: advisory low coverage; executed lines 1034/1034
 
 Changed JS files considered:
 (0%) tests/playwright/tools/WorkspaceManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
+(44%) src/engine/runtime/fullscreenBezel.js - changed JS file with browser V8 coverage
 (64%) games/Asteroids/systems/AsteroidsAudio.js - changed JS file with browser V8 coverage
+(71%) src/engine/runtime/FullscreenService.js - changed JS file with browser V8 coverage
 (84%) src/engine/audio/GaplessLoopPlayer.js - changed JS file with browser V8 coverage
-(86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - changed JS file with browser V8 coverage
 (88%) games/shared/workspaceGameAssetCatalog.js - changed JS file with browser V8 coverage
-(91%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - changed JS file with browser V8 coverage
 (92%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage
-(93%) tools/workspace-manager-v2/js/controls/ToolTilesControl.js - changed JS file with browser V8 coverage
