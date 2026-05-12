@@ -5,7 +5,7 @@ README.md
 
 # Vector Map Editor
 
-Deprecated: use World Vector Studio for terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures. Vector Map Editor remains available for existing workflows and has not been renamed or deleted.
+Deprecated: use World Vector Studio V2 for terrain, tile/world geometry, layered scenes, level/environment layout, and parallax/background structures. Vector Map Editor remains available for existing workflows and has not been renamed or deleted.
 
 High-level overview for 'Vector Map Editor' under 'tools/Vector Map Editor/'.
 

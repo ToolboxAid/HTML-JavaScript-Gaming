@@ -1,6 +1,6 @@
-# Object Vector Studio
+# Object Vector Studio V2
 
-Object Vector Studio is a First-Class Tool V2 surface for ships, enemies, pickups, actors, and reusable gameplay entities.
+Object Vector Studio V2 is a First-Class Tool V2 surface for ships, enemies, pickups, actors, and reusable gameplay entities.
 
 The tool folder was copied from `tools/templates-v2/` for `PR_26132_001-add-world-object-vector-studios`. It keeps the copied template CSS and modular control structure intact while giving the new studio its own first-class tool id: `object-vector-studio-v2`.
 
@@ -13,9 +13,10 @@ The tool folder was copied from `tools/templates-v2/` for `PR_26132_001-add-worl
 
 ## Runtime Notes
 
-- The current implementation is the copied Tool Template V2 shell with Object Vector Studio naming and documentation.
+- The current implementation is the copied Tool Template V2 shell with Object Vector Studio V2 naming and documentation.
 - JavaScript and CSS remain external.
 - The copied `docs/CONTROL_SERVICE_CONTRACTS.md` and `docs/BATCH_GUARDRAIL_CONTRACT.md` remain the local implementation contracts.
+- `docs/OBJECT_VECTOR_STUDIO_V2_REQUIREMENTS.md` captures the future Object Vector Studio V2 requirements and design constraints.
 - Primitive Skin Editor and Vector Map Editor remain available, but their active tool tiles are marked deprecated in favor of the new studio split.
 
 ## Validation

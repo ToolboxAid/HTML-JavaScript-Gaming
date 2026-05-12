@@ -49,7 +49,7 @@ async function startStaticServer() {
   starterUrl = `http://127.0.0.1:${address.port}/index.html`;
 }
 
-test.describe("World Vector Studio", () => {
+test.describe("World Vector Studio V2", () => {
   test.beforeAll(async () => {
     await startStaticServer();
   });
@@ -66,7 +66,7 @@ test.describe("World Vector Studio", () => {
     await expect(page.locator("body.tools-platform-tool-page[data-tool-id='world-vector-studio-v2']")).toBeVisible();
     await expect(page.locator(".is-collapsible")).toBeVisible();
     await expect(page.locator("#shared-theme-header")).toBeAttached();
-    await expect(page.locator("[data-tool-starter-header]")).toContainText("World Vector Studio");
+    await expect(page.locator("[data-tool-starter-header]")).toContainText("World Vector Studio V2");
     await expect(page.locator("[data-tool-starter-header]")).toContainText("First-Class Tools Surface V2");
     await expect(page.locator("[data-tool-starter-summary]")).toContainText("Hide Header and Details");
     await expect(page.locator("[data-tool-starter-summary]")).toHaveAttribute("data-tools-platform-summary-active", "1");
@@ -139,7 +139,7 @@ test.describe("World Vector Studio", () => {
     await summary.click();
     await expect(details).not.toHaveAttribute("open", "");
     await expect(summary).toHaveAttribute("data-tools-platform-summary-state", "collapsed");
-    await expect(summary).toContainText(/World Vector Studio|Show Header and Details/);
+    await expect(summary).toContainText(/World Vector Studio V2|Show Header and Details/);
   });
 
   test("accordion sections collapse and expand", async ({ page }) => {

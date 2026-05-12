@@ -31,7 +31,7 @@ export class ToolStarterApp {
     this.preview.clear();
     this.inspector.showObject({});
     this.refreshActions();
-    this.statusLog.write("World Vector Studio ready.");
+    this.statusLog.write("World Vector Studio V2 ready.");
   }
 
   run() {
@@ -54,7 +54,7 @@ export class ToolStarterApp {
     this.sourceInput.clear();
     this.preview.clear();
     this.inspector.showObject({});
-    this.statusLog.write("World Vector Studio reset.");
+    this.statusLog.write("World Vector Studio V2 reset.");
     this.refreshActions();
   }
 

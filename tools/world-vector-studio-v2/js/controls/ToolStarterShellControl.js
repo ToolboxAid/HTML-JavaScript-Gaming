@@ -2,7 +2,7 @@ export class ToolStarterShellControl {
   constructor({ documentRef = document } = {}) {
     this.document = documentRef;
     this.toolId = "world-vector-studio-v2";
-    this.toolName = "World Vector Studio";
+    this.toolName = "World Vector Studio V2";
     this.toolDescription = "First-Class Tools Surface V2";
     this.headerText = `${this.toolName} - ${this.toolDescription}`;
     this.introText = this.toolDescription;

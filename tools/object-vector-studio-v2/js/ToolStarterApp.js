@@ -31,7 +31,7 @@ export class ToolStarterApp {
     this.preview.clear();
     this.inspector.showObject({});
     this.refreshActions();
-    this.statusLog.write("Object Vector Studio ready.");
+    this.statusLog.write("Object Vector Studio V2 ready.");
   }
 
   run() {
@@ -54,7 +54,7 @@ export class ToolStarterApp {
     this.sourceInput.clear();
     this.preview.clear();
     this.inspector.showObject({});
-    this.statusLog.write("Object Vector Studio reset.");
+    this.statusLog.write("Object Vector Studio V2 reset.");
     this.refreshActions();
   }
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Add World Vector Studio and Object Vector Studio as copied First-Class Tool V2 starter surfaces while keeping Primitive Skin Editor and Vector Map Editor intact.
+Add World Vector Studio V2 and Object Vector Studio V2 as copied First-Class Tool V2 starter surfaces while keeping Primitive Skin Editor and Vector Map Editor intact.
 
 ## Changes
 
