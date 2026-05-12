@@ -1,4 +1,6 @@
 const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";
+const WORKSPACE_PALETTE_SESSION_KEY = "workspace.tools.palette-manager-v2";
+const RUNTIME_PALETTE_SESSION_KEY = "object-vector-studio-v2.runtimePalette";
 const TOOL_DISPLAY_MODE_KEY = "object-vector-studio-v2.toolDisplayMode";
 const GRID_SNAP_SESSION_KEY = "object-vector-studio-v2.gridSnap";
 const ANGLE_SNAP_SESSION_KEY = "object-vector-studio-v2.angleSnap";
@@ -29,7 +31,7 @@ const SHAPE_TYPE_DETAILS = Object.freeze({
 const PRIMITIVE_TOOLS = Object.freeze(["rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]);
 
 function objectTypeKey(object) {
-  const rawType = object?.type || object?.metadata?.objectType || DEFAULT_OBJECT_TYPE;
+  const rawType = object?.type || DEFAULT_OBJECT_TYPE;
   const key = String(rawType).trim().toLowerCase();
   return key || DEFAULT_OBJECT_TYPE;
 }
@@ -160,6 +162,8 @@ export class ToolStarterApp {
     this.statusLog = statusLog;
     this.window = windowRef;
     this.currentPayload = null;
+    this.runtimePalette = null;
+    this.runtimePaletteSource = "";
     this.selectedObjectId = "";
     this.selectedShapeId = "";
     this.selectedShapeIds = new Set();
@@ -200,10 +204,89 @@ export class ToolStarterApp {
     await this.schemaService.loadSchema();
     this.schemaReady = true;
     this.statusLog.write(`OK Object Vector Studio V2 schema contract loaded from ${this.schemaService.schemaPath}.`);
-    this.renderEmptyState("Schema-only loading is idle. Import JSON or launch with workspace toolState data that includes a palette.");
+    await this.loadRuntimePaletteFromSources();
+    this.renderEmptyState("Schema-only loading is idle. Import JSON or launch with workspace toolState data. Runtime palette is required before rendering.");
     if (this.actionNav.isWorkspaceLaunch()) {
       this.loadWorkspaceToolState();
     }
+  }
+
+  async loadRuntimePaletteFromSources() {
+    const params = new URLSearchParams(this.window.location.search);
+    const paletteSourcePath = params.get("paletteSourcePath") || "";
+    if (paletteSourcePath) {
+      await this.loadPaletteFromUrl(paletteSourcePath);
+      if (this.runtimePalette) {
+        return;
+      }
+    }
+
+    if (this.loadPaletteFromSessionKey(RUNTIME_PALETTE_SESSION_KEY)) {
+      return;
+    }
+    this.loadPaletteFromWorkspaceSession();
+  }
+
+  async loadPaletteFromUrl(paletteSourcePath) {
+    let paletteUrl;
+    try {
+      paletteUrl = new URL(paletteSourcePath, this.window.location.href);
+      const response = await this.window.fetch(paletteUrl, { cache: "no-store" });
+      if (!response.ok) {
+        this.statusLog.write(`FAIL Runtime palette load failed from ${paletteSourcePath}: ${response.status}.`);
+        return;
+      }
+      const palette = await response.json();
+      this.acceptRuntimePalette(palette, `paletteSourcePath:${paletteSourcePath}`, true);
+    } catch (error) {
+      this.statusLog.write(`FAIL Runtime palette load failed from ${paletteSourcePath}: ${error.message}`);
+    }
+  }
+
+  loadPaletteFromSessionKey(sessionKey) {
+    const storedPalette = this.window.sessionStorage?.getItem(sessionKey) || "";
+    if (!storedPalette) {
+      return false;
+    }
+    try {
+      const palette = JSON.parse(storedPalette);
+      return this.acceptRuntimePalette(palette, sessionKey, sessionKey !== RUNTIME_PALETTE_SESSION_KEY);
+    } catch (error) {
+      this.statusLog.write(`FAIL Runtime palette load failed from ${sessionKey}: ${error.message}`);
+      return false;
+    }
+  }
+
+  loadPaletteFromWorkspaceSession() {
+    const storedSession = this.window.sessionStorage?.getItem(WORKSPACE_PALETTE_SESSION_KEY) || "";
+    if (!storedSession) {
+      return false;
+    }
+    try {
+      const session = JSON.parse(storedSession);
+      const palette = session?.data && typeof session.data === "object" ? session.data : session;
+      return this.acceptRuntimePalette(palette, `${WORKSPACE_PALETTE_SESSION_KEY}.data`, true);
+    } catch (error) {
+      this.statusLog.write(`FAIL Runtime palette load failed from ${WORKSPACE_PALETTE_SESSION_KEY}: ${error.message}`);
+      return false;
+    }
+  }
+
+  acceptRuntimePalette(palette, sourceLabel, persistToRuntimeSession) {
+    const validation = this.schemaService.validateRuntimePalette(palette, sourceLabel);
+    if (!validation.ok) {
+      this.runtimePalette = null;
+      this.runtimePaletteSource = "";
+      this.statusLog.write(`FAIL Runtime palette validation failed from ${sourceLabel}: ${validation.errors.join(" ")}`);
+      return false;
+    }
+    this.runtimePalette = validation.palette;
+    this.runtimePaletteSource = sourceLabel;
+    if (persistToRuntimeSession) {
+      this.window.sessionStorage?.setItem(RUNTIME_PALETTE_SESSION_KEY, JSON.stringify(validation.palette));
+    }
+    this.statusLog.write(`OK Runtime palette loaded from ${sourceLabel}: ${validation.palette.swatches.length} swatches.`);
+    return true;
   }
 
   bindObjectActions() {
@@ -297,12 +380,14 @@ export class ToolStarterApp {
     this.selectedShapeId = "";
     this.selectedShapeIds.clear();
     this.elements.sourceSummary.value = "No schema-loaded payload";
-    this.elements.paletteGate.value = "Required before render";
+    this.elements.paletteGate.value = this.runtimePalette ? "Palette loaded" : "Required before render";
     this.elements.objectCount.value = objectCountLabel(0);
     this.elements.shapeCount.value = shapeCountLabel(0);
     this.elements.objectNameInput.value = "";
     this.elements.loadStatus.textContent = message;
-    this.elements.paletteSummary.textContent = "Palette required before render.";
+    this.elements.paletteSummary.textContent = this.runtimePalette
+      ? `Runtime palette ${this.paletteDisplayName()}: ${this.runtimePalette.swatches.length} swatches.`
+      : "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
     this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
     this.elements.jsonDetails.textContent = "{}";
@@ -318,7 +403,7 @@ export class ToolStarterApp {
   createEmptyObjectTile() {
     const tile = document.createElement("article");
     tile.className = "object-vector-studio-v2__object-tile object-vector-studio-v2__object-tile--empty";
-    tile.textContent = "No objects loaded. Import schema-valid JSON with a palette to show object tiles.";
+    tile.textContent = "No objects loaded. Import schema-valid Object Vector Studio V2 JSON and provide a runtime palette to show object tiles.";
     return tile;
   }
 
@@ -342,7 +427,7 @@ export class ToolStarterApp {
   loadWorkspaceToolState() {
     const storedPayload = this.window.sessionStorage?.getItem(WORKSPACE_TOOL_SESSION_KEY) || "";
     if (!storedPayload) {
-      const message = `Schema-only workspace loading blocked: ${WORKSPACE_TOOL_SESSION_KEY} is missing. A palette-backed Object Vector Studio V2 payload is required.`;
+      const message = `Schema-only workspace loading blocked: ${WORKSPACE_TOOL_SESSION_KEY} is missing. A schema-valid Object Vector Studio V2 payload is required.`;
       this.renderEmptyState(message);
       this.statusLog.write(`FAIL ${message}`);
       return;
@@ -350,7 +435,8 @@ export class ToolStarterApp {
 
     let payload;
     try {
-      payload = JSON.parse(storedPayload);
+      const session = JSON.parse(storedPayload);
+      payload = session?.data && typeof session.data === "object" ? session.data : session;
     } catch (error) {
       const message = `Schema-only workspace loading blocked: ${WORKSPACE_TOOL_SESSION_KEY} is invalid JSON: ${error.message}`;
       this.renderEmptyState(message);
@@ -373,42 +459,23 @@ export class ToolStarterApp {
     this.currentPayload = validation.payload;
     this.applyLoadedRuntimeState(sourceLabel);
     this.elements.sourceSummary.value = sourceLabel;
-    this.elements.paletteGate.value = "Palette loaded";
     this.elements.loadStatus.textContent = `Schema-valid payload loaded from ${sourceLabel}.`;
     this.actionNav.setJsonPayloadActionsEnabled(true);
     this.actionNav.setImportEnabled(!this.actionNav.isWorkspaceLaunch());
     this.renderPayload();
-    this.statusLog.write(`OK Loaded Object Vector Studio V2 schema payload from ${sourceLabel}: ${this.currentPayload.objects.length} objects, ${this.currentPayload.palette.swatches.length} palette swatches.`);
+    this.statusLog.write(`OK Loaded Object Vector Studio V2 schema payload from ${sourceLabel}: ${this.currentPayload.objects.length} objects.`);
   }
 
   applyLoadedRuntimeState(sourceLabel) {
-    const requestedObjectId = this.currentPayload.selection?.selectedObjectId || "";
-    const requestedShapeId = this.currentPayload.selection?.selectedShapeId || "";
-    const selectedObject = this.currentPayload.objects.find((object) => object.id === requestedObjectId) || this.currentPayload.objects[0] || null;
+    const selectedObject = this.currentPayload.objects[0] || null;
     this.selectedObjectId = selectedObject?.id || "";
-    if (requestedObjectId && requestedObjectId !== this.selectedObjectId) {
-      this.statusLog.write(`WARN Selection from ${sourceLabel} adjusted: object ${requestedObjectId} is not available.`);
-    }
-    const selectedShape = selectedObject?.shapes.find((shape) => shape.id === requestedShapeId) || sortedShapes(selectedObject)[0] || null;
+    const selectedShape = sortedShapes(selectedObject)[0] || null;
     this.selectedShapeId = selectedShape?.id || "";
-    if (requestedShapeId && requestedShapeId !== this.selectedShapeId) {
-      this.statusLog.write(`WARN Selection from ${sourceLabel} adjusted: shape ${requestedShapeId} is not available.`);
-    }
-    const requestedShapeIds = Array.isArray(this.currentPayload.selection?.selectedShapeIds)
-      ? this.currentPayload.selection.selectedShapeIds
-      : [];
-    const availableShapeIds = new Set(selectedObject?.shapes.map((shape) => shape.id) || []);
-    const selectedShapeIds = requestedShapeIds.filter((shapeId) => availableShapeIds.has(shapeId));
-    this.selectedShapeIds = new Set(selectedShapeIds.length ? selectedShapeIds : (this.selectedShapeId ? [this.selectedShapeId] : []));
-    if (this.currentPayload.viewport) {
-      this.viewport = {
-        height: this.currentPayload.viewport.height,
-        width: this.currentPayload.viewport.width,
-        x: this.currentPayload.viewport.x,
-        y: this.currentPayload.viewport.y,
-        zoom: this.currentPayload.viewport.zoom
-      };
-      this.updateViewport();
+    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+    this.viewport = { ...DEFAULT_VIEWPORT };
+    this.updateViewport();
+    if (sourceLabel) {
+      this.statusLog.write(`OK Runtime selection initialized from ${sourceLabel}: ${this.selectedObjectId || "no object selected"}.`);
     }
   }
 
@@ -426,6 +493,17 @@ export class ToolStarterApp {
     }
 
     this.currentPayload = validation.payload;
+    if (!this.runtimePalette) {
+      this.loadPaletteFromSessionKey(RUNTIME_PALETTE_SESSION_KEY) || this.loadPaletteFromWorkspaceSession();
+    }
+    const paletteValidation = this.schemaService.validateRuntimePalette(this.runtimePalette, "runtime palette");
+    if (!paletteValidation.ok) {
+      const message = `Render blocked: runtime palette is required separately from Object Vector Studio V2 JSON. ${paletteValidation.errors.join(" ")}`;
+      this.renderPaletteRequiredState(message);
+      this.statusLog.write(`FAIL ${message}`);
+      return;
+    }
+    this.runtimePalette = paletteValidation.palette;
     this.ensureSelectedShape();
     this.renderPalette();
     this.renderObjectTiles();
@@ -434,15 +512,39 @@ export class ToolStarterApp {
     this.updateObjectActionState();
   }
 
+  renderPaletteRequiredState(message) {
+    this.selectedObjectId = "";
+    this.selectedShapeId = "";
+    this.selectedShapeIds.clear();
+    this.elements.paletteGate.value = "Required before render";
+    this.elements.loadStatus.textContent = message;
+    this.elements.paletteSummary.textContent = message;
+    this.elements.objectCount.value = objectCountLabel(0);
+    this.elements.shapeCount.value = shapeCountLabel(0);
+    this.elements.objectNameInput.value = "";
+    this.elements.objectDetails.textContent = "Runtime palette required before object render.";
+    this.elements.selectedItemVisibility.textContent = "No schema-valid object rendered.";
+    this.elements.jsonDetails.textContent = "{}";
+    this.elements.renderSummary.textContent = "Render mode: blocked. Capture mode: none.";
+    this.elements.renderSurface.replaceChildren();
+    const tile = this.createEmptyObjectTile();
+    tile.textContent = "Runtime palette required before rendering object tiles.";
+    this.elements.objectTiles.replaceChildren(tile);
+    this.actionNav.setJsonPayloadActionsEnabled(Boolean(this.currentPayload));
+    this.actionNav.setImportEnabled(this.schemaReady && !this.actionNav.isWorkspaceLaunch());
+    this.updateObjectActionState();
+  }
+
   renderPalette() {
-    const swatchCount = this.currentPayload.palette.swatches.length;
+    const swatchCount = this.runtimePalette.swatches.length;
+    this.elements.paletteGate.value = "Palette loaded";
     this.elements.paletteSummary.replaceChildren();
     const heading = document.createElement("p");
-    heading.textContent = `Palette ${this.currentPayload.palette.id}: ${swatchCount} swatches.`;
+    heading.textContent = `Palette ${this.paletteDisplayName()}: ${swatchCount} swatches.`;
     const list = document.createElement("div");
     list.className = "object-vector-studio-v2__palette-swatch-list";
-    this.currentPayload.palette.swatches.forEach((swatch, index) => {
-      const label = swatch?.name || swatch?.id || `swatch-${index + 1}`;
+    this.runtimePalette.swatches.forEach((swatch, index) => {
+      const label = swatch?.name || swatch?.id || swatch?.symbol || `swatch-${index + 1}`;
       const color = swatchColor(swatch);
       const item = document.createElement("button");
       item.className = "object-vector-studio-v2__palette-swatch";
@@ -456,6 +558,10 @@ export class ToolStarterApp {
       list.append(item);
     });
     this.elements.paletteSummary.append(heading, list);
+  }
+
+  paletteDisplayName() {
+    return this.runtimePalette?.id || this.runtimePalette?.name || this.runtimePaletteSource || "runtime palette";
   }
 
   renderObjectTiles() {
@@ -523,8 +629,7 @@ export class ToolStarterApp {
       ["Object ID", object.id],
       ["Object Type", objectTypeLabel(object)],
       ["Object Metadata", objectTypeDescription(object)],
-      ["Shape Count", shapeCountLabel(object.shapes.length)],
-      ["Flatten State", object.flattened ? "Flattened metadata foundation" : "Not flattened"]
+      ["Shape Count", shapeCountLabel(object.shapes.length)]
     ]));
 
     const shapePanel = document.createElement("section");
@@ -543,7 +648,7 @@ export class ToolStarterApp {
     const transform = this.shapeTransform(shape);
     shapePanel.append(this.createDetailGrid([
       ["Shape Type", shapeTypeLabel(shape)],
-      ["Shape Metadata", SHAPE_TYPE_DETAILS[shape.type]],
+      ["Shape Details", SHAPE_TYPE_DETAILS[shape.type]],
       ["Order", String(shape.order)],
       ["Visible", shape.visible ? "Visible" : "Hidden"],
       ["Locked", shape.locked ? "Locked" : "Unlocked"],
@@ -985,7 +1090,7 @@ export class ToolStarterApp {
   addObject() {
     const name = this.elements.objectNameInput.value.trim();
     if (!this.currentPayload) {
-      this.statusLog.write("FAIL Add object blocked: load a schema-valid palette-backed payload before adding objects.");
+      this.statusLog.write("FAIL Add object blocked: load a schema-valid Object Vector Studio V2 payload before adding objects.");
       return;
     }
     if (!name) {
@@ -997,10 +1102,6 @@ export class ToolStarterApp {
     const id = this.uniqueObjectId(name, nextPayload.objects);
     nextPayload.objects.push({
       id,
-      metadata: {
-        objectType: DEFAULT_OBJECT_TYPE,
-        source: "Object Vector Studio V2 object management foundation"
-      },
       name,
       shapes: [],
       type: DEFAULT_OBJECT_TYPE
@@ -1038,10 +1139,6 @@ export class ToolStarterApp {
     const objectCopy = JSON.parse(JSON.stringify(selected));
     objectCopy.id = this.uniqueObjectId(`${selected.name} Copy`, nextPayload.objects);
     objectCopy.name = `${selected.name} Copy`;
-    objectCopy.metadata = {
-      ...(objectCopy.metadata || {}),
-      duplicatedFrom: selected.id
-    };
     nextPayload.objects.push(objectCopy);
     const selectedShapeId = sortedShapes(objectCopy)[0]?.id || "";
     this.commitPayloadUpdate(nextPayload, objectCopy.id, selectedShapeId, `OK Duplicated object ${selected.name} as ${objectCopy.name}.`, "Duplicate object failed schema validation");
@@ -1068,15 +1165,7 @@ export class ToolStarterApp {
       return;
     }
 
-    const nextPayload = this.cloneCurrentPayload();
-    const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
-    nextObject.flattened = true;
-    nextObject.metadata = {
-      ...(nextObject.metadata || {}),
-      flattenState: "flattened",
-      objectType: objectTypeKey(nextObject)
-    };
-    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Flattened object metadata for ${selected.name}.`, "Flatten object failed schema validation");
+    this.statusLog.write(`WARN Flatten object skipped: ${selected.name} has no durable flatten field in the trimmed Object Vector Studio V2 asset schema.`);
   }
 
   createShape(type) {
@@ -1108,10 +1197,6 @@ export class ToolStarterApp {
     const base = {
       id,
       locked: false,
-      metadata: {
-        renderMode: "svg-work-surface",
-        shapeType: type
-      },
       order,
       style: {
         fill: ["arc", "line"].includes(type) ? "none" : color,
@@ -1176,10 +1261,6 @@ export class ToolStarterApp {
     } else {
       shape.style.fill = color;
     }
-    shape.metadata = {
-      ...(shape.metadata || {}),
-      paletteSwatch: label
-    };
     this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Applied palette color ${color} from ${label} to shape ${selected.id}.`, "Palette color application failed schema validation");
   }
 
@@ -1371,10 +1452,6 @@ export class ToolStarterApp {
     shape.transform = this.ensureShapeTransform(shape);
     shape.transform.x = Number((shape.transform.x + 10).toFixed(3));
     shape.transform.y = Number((shape.transform.y + 10).toFixed(3));
-    shape.metadata = {
-      ...(shape.metadata || {}),
-      duplicatedFrom: selected.id
-    };
     object.shapes.push(shape);
     this.commitPayloadUpdate(nextPayload, object.id, shape.id, `OK Duplicated shape ${selected.id} as ${shape.id}.`, "Duplicate shape failed schema validation");
   }
@@ -1570,7 +1647,7 @@ export class ToolStarterApp {
   }
 
   firstPaletteColor() {
-    const swatch = this.currentPayload?.palette.swatches.find((candidate) => swatchColor(candidate));
+    const swatch = this.runtimePalette?.swatches.find((candidate) => swatchColor(candidate));
     return swatchColor(swatch);
   }
 
@@ -1651,24 +1728,6 @@ export class ToolStarterApp {
       return null;
     }
     const payload = this.cloneCurrentPayload();
-    payload.selection = {
-      multiSelect: this.selectedShapeIds.size > 1,
-      selectedObjectId: this.selectedObjectId,
-      selectedShapeId: this.selectedShapeId,
-      selectedShapeIds: Array.from(this.selectedShapeIds)
-    };
-    payload.viewport = {
-      height: DEFAULT_VIEWPORT.height / this.viewport.zoom,
-      width: DEFAULT_VIEWPORT.width / this.viewport.zoom,
-      x: this.viewport.x,
-      y: this.viewport.y,
-      zoom: this.viewport.zoom
-    };
-    payload.export = {
-      fileName: "object-vector-studio-v2.json",
-      format: "json",
-      includeSelection: true
-    };
     const validation = this.schemaService.validatePayload(payload);
     if (!validation.ok) {
       this.statusLog.write(`FAIL ${actionLabel} blocked by Object Vector Studio V2 schema: ${validation.errors.join(" ")}`);

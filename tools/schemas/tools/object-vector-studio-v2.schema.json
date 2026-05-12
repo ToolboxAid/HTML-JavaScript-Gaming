@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "object-vector-studio-v2.schema.json",
-  "title": "Object Vector Studio V2 Payload",
-  "description": "Schema contract derived from SVG Asset Studio palette/vector authoring state and Vector Map Editor object/point/transform document contracts.",
+  "title": "Object Vector Studio V2 Durable Asset Payload",
+  "description": "Strict durable asset data for Object Vector Studio V2. Runtime startup state and palette resources are loaded separately and are not stored in this payload.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["palette", "objects"],
+  "required": ["version", "toolId", "name", "objects"],
   "properties": {
     "version": {
       "type": "integer",
@@ -18,86 +18,14 @@
       "type": "string",
       "minLength": 1
     },
-    "palette": {
-      "$ref": "#/$defs/palette"
-    },
     "objects": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/object"
       }
-    },
-    "selection": {
-      "$ref": "#/$defs/selection"
-    },
-    "viewport": {
-      "$ref": "#/$defs/viewport"
-    },
-    "export": {
-      "$ref": "#/$defs/exportPayload"
     }
   },
   "$defs": {
-    "palette": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "swatches"],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "swatches": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/$defs/swatch"
-          }
-        }
-      }
-    },
-    "swatch": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id"],
-      "anyOf": [
-        {
-          "required": ["value"]
-        },
-        {
-          "required": ["hex"]
-        },
-        {
-          "required": ["color"]
-        }
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "value": {
-          "type": "string",
-          "minLength": 1
-        },
-        "hex": {
-          "type": "string",
-          "minLength": 1
-        },
-        "color": {
-          "type": "string",
-          "minLength": 1
-        }
-      }
-    },
     "object": {
       "type": "object",
       "additionalProperties": false,
@@ -112,13 +40,8 @@
           "minLength": 1
         },
         "type": {
+          "type": "string",
           "enum": ["actor", "enemy", "object", "pickup", "ship", "ui", "weapon"]
-        },
-        "metadata": {
-          "type": "object"
-        },
-        "flattened": {
-          "type": "boolean"
         },
         "shapes": {
           "type": "array",
@@ -156,17 +79,19 @@
     "shapeCommon": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "type", "order", "visible", "locked", "geometry", "style"],
+      "required": ["id", "type", "order", "visible", "locked", "geometry", "style", "transform"],
       "properties": {
         "id": {
           "type": "string",
           "minLength": 1
         },
         "type": {
+          "type": "string",
           "enum": ["rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]
         },
         "order": {
-          "type": "number"
+          "type": "integer",
+          "minimum": 0
         },
         "visible": {
           "type": "boolean"
@@ -179,9 +104,6 @@
         },
         "style": {
           "$ref": "#/$defs/style"
-        },
-        "metadata": {
-          "type": "object"
         },
         "transform": {
           "$ref": "#/$defs/transform"
@@ -514,70 +436,6 @@
         "text": {
           "type": "string",
           "minLength": 1
-        }
-      }
-    },
-    "selection": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["selectedObjectId", "selectedShapeId", "selectedShapeIds", "multiSelect"],
-      "properties": {
-        "selectedObjectId": {
-          "type": "string"
-        },
-        "selectedShapeId": {
-          "type": "string"
-        },
-        "selectedShapeIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "multiSelect": {
-          "type": "boolean"
-        }
-      }
-    },
-    "viewport": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["x", "y", "width", "height", "zoom"],
-      "properties": {
-        "x": {
-          "type": "number"
-        },
-        "y": {
-          "type": "number"
-        },
-        "width": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "height": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "zoom": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        }
-      }
-    },
-    "exportPayload": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["format", "fileName", "includeSelection"],
-      "properties": {
-        "format": {
-          "enum": ["json", "svg"]
-        },
-        "fileName": {
-          "type": "string",
-          "minLength": 1
-        },
-        "includeSelection": {
-          "type": "boolean"
         }
       }
     }

@@ -75,8 +75,20 @@ export class ObjectVectorStudioV2SchemaService {
     if (schema.additionalProperties !== false) {
       errors.push("Object Vector Studio V2 schema root must reject unknown properties.");
     }
-    if (!Array.isArray(schema.required) || !schema.required.includes("palette") || !schema.required.includes("objects")) {
-      errors.push("Object Vector Studio V2 schema root must require palette and objects.");
+    const requiredRootFields = ["version", "toolId", "name", "objects"];
+    if (!Array.isArray(schema.required) || requiredRootFields.some((key) => !schema.required.includes(key))) {
+      errors.push("Object Vector Studio V2 schema root must require version, toolId, name, and objects.");
+    }
+    ["palette", "selection", "viewport", "export"].forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(schema.properties || {}, key)) {
+        errors.push(`Object Vector Studio V2 schema root must not define ${key}.`);
+      }
+      if (Object.prototype.hasOwnProperty.call(schema.$defs || {}, key === "export" ? "exportPayload" : key)) {
+        errors.push(`Object Vector Studio V2 schema definitions must not define ${key}.`);
+      }
+    });
+    if (schema.properties?.toolId?.const !== "object-vector-studio-v2") {
+      errors.push("Object Vector Studio V2 schema toolId must be object-vector-studio-v2.");
     }
     if (!isPlainObject(schema.$defs?.shape) || !Array.isArray(schema.$defs.shape.oneOf)) {
       errors.push("Object Vector Studio V2 schema must define shape variants.");
@@ -102,6 +114,42 @@ export class ObjectVectorStudioV2SchemaService {
       errors: [],
       ok: true,
       payload: this.normalizePayload(payload)
+    };
+  }
+
+  validateRuntimePalette(palette, sourceLabel = "runtime palette") {
+    const errors = [];
+    if (!isPlainObject(palette)) {
+      errors.push(`${sourceLabel} must be a palette object.`);
+      return { errors, ok: false, palette: null };
+    }
+    if (!Array.isArray(palette.swatches) || !palette.swatches.length) {
+      errors.push(`${sourceLabel}.swatches must contain at least one swatch.`);
+      return { errors, ok: false, palette: null };
+    }
+
+    palette.swatches.forEach((swatch, index) => {
+      if (!isPlainObject(swatch)) {
+        errors.push(`${sourceLabel}.swatches[${index}] must be an object.`);
+        return;
+      }
+      const label = swatch.id || swatch.name || swatch.symbol;
+      if (typeof label !== "string" || !label.trim()) {
+        errors.push(`${sourceLabel}.swatches[${index}] must provide id, name, or symbol.`);
+      }
+      const color = swatch.value || swatch.hex || swatch.color;
+      if (typeof color !== "string" || !color.trim()) {
+        errors.push(`${sourceLabel}.swatches[${index}] must provide value, hex, or color.`);
+      }
+    });
+
+    if (errors.length) {
+      return { errors, ok: false, palette: null };
+    }
+    return {
+      errors: [],
+      ok: true,
+      palette: clone(palette)
     };
   }
 
@@ -249,15 +297,7 @@ export class ObjectVectorStudioV2SchemaService {
 
   normalizePayload(payload) {
     const normalized = clone(payload);
-    normalized.palette.id = normalized.palette.id.trim();
-    if (typeof normalized.palette.name === "string") {
-      normalized.palette.name = normalized.palette.name.trim();
-    }
-    normalized.palette.swatches = normalized.palette.swatches.map((swatch) => ({
-      ...swatch,
-      id: swatch.id.trim(),
-      name: typeof swatch.name === "string" ? swatch.name.trim() : swatch.name
-    }));
+    normalized.name = normalized.name.trim();
     normalized.objects = normalized.objects.map((object) => ({
       ...object,
       id: object.id.trim(),

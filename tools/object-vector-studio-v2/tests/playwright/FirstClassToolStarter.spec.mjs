@@ -85,25 +85,30 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.locator("#statusLog")).toHaveValue(/Object Vector Studio V2 layout shell ready\./);
   });
 
-  test("imports only schema-valid payloads with a palette", async ({ page }, testInfo) => {
+  test("imports only schema-valid payloads with a session palette", async ({ page }, testInfo) => {
     const invalidPayloadPath = testInfo.outputPath("object-vector-invalid.json");
     await writeFile(invalidPayloadPath, JSON.stringify({ objects: [] }, null, 2), "utf8");
     await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(invalidPayloadPath);
-    await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid\.json: root\.palette is required\./);
+    await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid\.json: root\.version is required\./);
     await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
 
     const validPayloadPath = testInfo.outputPath("object-vector-valid.json");
-    await writeFile(validPayloadPath, JSON.stringify({
-      palette: {
+    await page.evaluate(() => {
+      sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
         id: "arcade-primary",
         swatches: [
           { id: "ship-white", value: "#ffffff" }
         ]
-      },
+      }));
+    });
+    await writeFile(validPayloadPath, JSON.stringify({
+      name: "Local Object Set",
       objects: [
         { id: "ship", name: "Asteroids Ship", shapes: [], type: "ship" },
         { id: "pickup", name: "Energy Pickup", shapes: [], type: "pickup" }
-      ]
+      ],
+      toolId: "object-vector-studio-v2",
+      version: 1
     }, null, 2), "utf8");
     await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(validPayloadPath);
 
