@@ -1,66 +1,99 @@
-const ROOT_KEYS = Object.freeze(["objects", "palette"]);
-const SHAPE_TYPES = Object.freeze(["rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]);
+const SCHEMA_URL = new URL("../../../schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function hasText(value) {
-  return typeof value === "string" && value.trim().length > 0;
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
-function isFiniteNumber(value) {
-  return typeof value === "number" && Number.isFinite(value);
+function typeMatches(expectedType, value) {
+  if (expectedType === "array") {
+    return Array.isArray(value);
+  }
+  if (expectedType === "object") {
+    return isPlainObject(value);
+  }
+  if (expectedType === "integer") {
+    return Number.isInteger(value);
+  }
+  if (expectedType === "number") {
+    return typeof value === "number" && Number.isFinite(value);
+  }
+  return typeof value === expectedType;
+}
+
+function typeDescription(expectedType) {
+  if (expectedType === "boolean") {
+    return "true or false";
+  }
+  return expectedType === "object" ? "an object" : `a ${expectedType}`;
+}
+
+function resolveSchemaRef(schemaRoot, ref) {
+  if (typeof ref !== "string" || !ref.startsWith("#/")) {
+    throw new Error(`unsupported schema reference ${ref || "unknown"}`);
+  }
+  return ref.slice(2).split("/").reduce((current, segment) => current?.[segment], schemaRoot);
 }
 
 export class ObjectVectorStudioV2SchemaService {
+  constructor({ fetchRef = (...args) => fetch(...args), schemaUrl = SCHEMA_URL } = {}) {
+    this.fetchRef = fetchRef;
+    this.schema = null;
+    this.schemaUrl = schemaUrl;
+  }
+
+  get schemaPath() {
+    return this.schemaUrl.pathname || String(this.schemaUrl);
+  }
+
+  async loadSchema() {
+    const response = await this.fetchRef(this.schemaUrl, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`${this.schemaPath} returned ${response.status}`);
+    }
+    const schema = await response.json();
+    const schemaErrors = [];
+    this.validateSchemaShape(schema, schemaErrors);
+    if (schemaErrors.length) {
+      throw new Error(schemaErrors.join(" "));
+    }
+    this.schema = schema;
+    return schema;
+  }
+
+  validateSchemaShape(schema, errors) {
+    if (!isPlainObject(schema)) {
+      errors.push("Object Vector Studio V2 schema root must be an object.");
+      return;
+    }
+    if (schema.$id !== "object-vector-studio-v2.schema.json") {
+      errors.push("Object Vector Studio V2 schema id must be object-vector-studio-v2.schema.json.");
+    }
+    if (schema.additionalProperties !== false) {
+      errors.push("Object Vector Studio V2 schema root must reject unknown properties.");
+    }
+    if (!Array.isArray(schema.required) || !schema.required.includes("palette") || !schema.required.includes("objects")) {
+      errors.push("Object Vector Studio V2 schema root must require palette and objects.");
+    }
+    if (!isPlainObject(schema.$defs?.shape) || !Array.isArray(schema.$defs.shape.oneOf)) {
+      errors.push("Object Vector Studio V2 schema must define shape variants.");
+    }
+  }
+
   validatePayload(payload) {
-    const errors = [];
-    if (!isPlainObject(payload)) {
+    if (!this.schema) {
       return {
-        errors: ["root payload must be an object."],
+        errors: ["Object Vector Studio V2 schema is not loaded."],
         ok: false,
         payload: null
       };
     }
 
-    Object.keys(payload).forEach((key) => {
-      if (!ROOT_KEYS.includes(key)) {
-        errors.push(`root.${key} is not allowed.`);
-      }
-    });
-
-    const palette = payload.palette;
-    if (!isPlainObject(palette)) {
-      errors.push("root.palette is required.");
-    } else {
-      if (!hasText(palette.id)) {
-        errors.push("root.palette.id is required.");
-      }
-      if (!Array.isArray(palette.swatches) || palette.swatches.length === 0) {
-        errors.push("root.palette.swatches must contain at least one swatch.");
-      }
-    }
-
-    const objects = payload.objects;
-    if (!Array.isArray(objects)) {
-      errors.push("root.objects must be an array.");
-    } else {
-      objects.forEach((object, index) => {
-        if (!isPlainObject(object)) {
-          errors.push(`root.objects[${index}] must be an object.`);
-          return;
-        }
-        if (!hasText(object.id)) {
-          errors.push(`root.objects[${index}].id is required.`);
-        }
-        if (!hasText(object.name)) {
-          errors.push(`root.objects[${index}].name is required.`);
-        }
-        this.validateShapes(object, index, errors);
-      });
-    }
-
+    const errors = [];
+    this.validateValue(this.schema, payload, "root", errors);
     if (errors.length) {
       return { errors, ok: false, payload: null };
     }
@@ -68,143 +101,174 @@ export class ObjectVectorStudioV2SchemaService {
     return {
       errors: [],
       ok: true,
-      payload: {
-        palette: {
-          ...palette,
-          id: palette.id.trim()
-        },
-        objects: objects.map((object) => ({
-          ...object,
-          id: object.id.trim(),
-          name: object.name.trim(),
-          shapes: object.shapes.map((shape) => ({
-            ...shape,
-            id: shape.id.trim(),
-            transform: shape.transform ? { ...shape.transform } : undefined,
-            type: shape.type.trim().toLowerCase()
-          }))
-        }))
-      }
+      payload: this.normalizePayload(payload)
     };
   }
 
-  validateShapes(object, objectIndex, errors) {
-    if (!Array.isArray(object.shapes)) {
-      errors.push(`root.objects[${objectIndex}].shapes must be an array.`);
+  validateValue(schemaNode, value, path, errors) {
+    const schema = schemaNode?.$ref ? resolveSchemaRef(this.schema, schemaNode.$ref) : schemaNode;
+    if (!schema) {
+      errors.push(`${path} references an unavailable Object Vector Studio V2 schema definition.`);
       return;
     }
 
-    object.shapes.forEach((shape, shapeIndex) => {
-      const shapePath = `root.objects[${objectIndex}].shapes[${shapeIndex}]`;
-      if (!isPlainObject(shape)) {
-        errors.push(`${shapePath} must be an object.`);
-        return;
+    if (Array.isArray(schema.allOf)) {
+      schema.allOf.forEach((entry) => this.validateValue(entry, value, path, errors));
+      return;
+    }
+
+    if (Array.isArray(schema.anyOf)) {
+      const matched = schema.anyOf.some((entry) => {
+        const optionErrors = [];
+        this.validateValue(entry, value, path, optionErrors);
+        return optionErrors.length === 0;
+      });
+      if (!matched) {
+        errors.push(`${path} must match at least one allowed schema option.`);
       }
-      if (!hasText(shape.id)) {
-        errors.push(`${shapePath}.id is required.`);
+      return;
+    }
+
+    if (Array.isArray(schema.oneOf)) {
+      const matchedCount = schema.oneOf.reduce((count, entry) => {
+        const optionErrors = [];
+        this.validateValue(entry, value, path, optionErrors);
+        return optionErrors.length === 0 ? count + 1 : count;
+      }, 0);
+      if (matchedCount !== 1) {
+        errors.push(`${path} must match exactly one Object Vector Studio V2 shape schema.`);
       }
-      if (!hasText(shape.type) || !SHAPE_TYPES.includes(shape.type.trim().toLowerCase())) {
-        errors.push(`${shapePath}.type must be one of ${SHAPE_TYPES.join(", ")}.`);
+      return;
+    }
+
+    this.validateConst(schema, value, path, errors);
+    this.validateEnum(schema, value, path, errors);
+    if (schema.type && !this.validateType(schema, value, path, errors)) {
+      return;
+    }
+    this.validateString(schema, value, path, errors);
+    this.validateNumber(schema, value, path, errors);
+    this.validateArray(schema, value, path, errors);
+    this.validateObject(schema, value, path, errors);
+  }
+
+  validateConst(schema, value, path, errors) {
+    if (!Object.prototype.hasOwnProperty.call(schema, "const")) {
+      return;
+    }
+    if (value !== schema.const) {
+      errors.push(`${path} must be ${schema.const}.`);
+    }
+  }
+
+  validateEnum(schema, value, path, errors) {
+    if (!Array.isArray(schema.enum)) {
+      return;
+    }
+    if (!schema.enum.includes(value)) {
+      errors.push(`${path} must be one of ${schema.enum.join(", ")}.`);
+    }
+  }
+
+  validateType(schema, value, path, errors) {
+    if (Array.isArray(schema.type)) {
+      const matched = schema.type.some((expectedType) => typeMatches(expectedType, value));
+      if (!matched) {
+        errors.push(`${path} must be one of ${schema.type.join(", ")}.`);
       }
-      if (!isFiniteNumber(shape.order)) {
-        errors.push(`${shapePath}.order must be a number.`);
-      }
-      if (typeof shape.visible !== "boolean") {
-        errors.push(`${shapePath}.visible must be true or false.`);
-      }
-      if (typeof shape.locked !== "boolean") {
-        errors.push(`${shapePath}.locked must be true or false.`);
-      }
-      if (!isPlainObject(shape.geometry)) {
-        errors.push(`${shapePath}.geometry is required.`);
-      } else {
-        this.validateShapeGeometry(shape, shapePath, errors);
-      }
-      if (!isPlainObject(shape.style)) {
-        errors.push(`${shapePath}.style is required.`);
-      } else {
-        if (!hasText(shape.style.fill)) {
-          errors.push(`${shapePath}.style.fill is required.`);
+      return matched;
+    }
+    const matched = typeMatches(schema.type, value);
+    if (!matched) {
+      errors.push(`${path} must be ${typeDescription(schema.type)}.`);
+    }
+    return matched;
+  }
+
+  validateString(schema, value, path, errors) {
+    if (typeof value !== "string") {
+      return;
+    }
+    if (Number.isInteger(schema.minLength) && value.trim().length < schema.minLength) {
+      errors.push(`${path} must contain at least ${schema.minLength} characters.`);
+    }
+  }
+
+  validateNumber(schema, value, path, errors) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      return;
+    }
+    if (typeof schema.minimum === "number" && value < schema.minimum) {
+      errors.push(`${path} must be at least ${schema.minimum}.`);
+    }
+    if (typeof schema.exclusiveMinimum === "number" && value <= schema.exclusiveMinimum) {
+      errors.push(`${path} must be greater than ${schema.exclusiveMinimum}.`);
+    }
+    if (typeof schema.maximum === "number" && value > schema.maximum) {
+      errors.push(`${path} must be at most ${schema.maximum}.`);
+    }
+  }
+
+  validateArray(schema, value, path, errors) {
+    if (!Array.isArray(value)) {
+      return;
+    }
+    if (Number.isInteger(schema.minItems) && value.length < schema.minItems) {
+      errors.push(`${path} must contain at least ${schema.minItems} items.`);
+    }
+    if (schema.items) {
+      value.forEach((item, index) => this.validateValue(schema.items, item, `${path}[${index}]`, errors));
+    }
+  }
+
+  validateObject(schema, value, path, errors) {
+    if (!isPlainObject(value)) {
+      return;
+    }
+    if (Array.isArray(schema.required)) {
+      schema.required.forEach((key) => {
+        if (!Object.prototype.hasOwnProperty.call(value, key)) {
+          errors.push(`${path}.${key} is required.`);
         }
-        if (!hasText(shape.style.stroke)) {
-          errors.push(`${shapePath}.style.stroke is required.`);
-        }
-        if (!isFiniteNumber(shape.style.strokeWidth)) {
-          errors.push(`${shapePath}.style.strokeWidth must be a number.`);
-        }
+      });
+    }
+    const properties = isPlainObject(schema.properties) ? schema.properties : {};
+    Object.entries(properties).forEach(([key, childSchema]) => {
+      if (Object.prototype.hasOwnProperty.call(value, key)) {
+        this.validateValue(childSchema, value[key], `${path}.${key}`, errors);
       }
-      this.validateShapeTransform(shape, shapePath, errors);
     });
-  }
-
-  validateShapeTransform(shape, shapePath, errors) {
-    if (shape.transform === undefined) {
-      return;
-    }
-    if (!isPlainObject(shape.transform)) {
-      errors.push(`${shapePath}.transform must be an object when provided.`);
-      return;
-    }
-    this.requireNumbers(shape.transform, ["x", "y", "rotation", "scaleX", "scaleY", "originX", "originY"], `${shapePath}.transform`, errors);
-    if (isFiniteNumber(shape.transform.scaleX) && shape.transform.scaleX <= 0) {
-      errors.push(`${shapePath}.transform.scaleX must be greater than 0.`);
-    }
-    if (isFiniteNumber(shape.transform.scaleY) && shape.transform.scaleY <= 0) {
-      errors.push(`${shapePath}.transform.scaleY must be greater than 0.`);
-    }
-  }
-
-  validateShapeGeometry(shape, shapePath, errors) {
-    const type = typeof shape.type === "string" ? shape.type.trim().toLowerCase() : "";
-    const geometry = shape.geometry;
-    if (type === "rectangle") {
-      this.requireNumbers(geometry, ["x", "y", "width", "height"], `${shapePath}.geometry`, errors);
-      return;
-    }
-    if (type === "circle") {
-      this.requireNumbers(geometry, ["cx", "cy", "r"], `${shapePath}.geometry`, errors);
-      return;
-    }
-    if (type === "ellipse") {
-      this.requireNumbers(geometry, ["cx", "cy", "rx", "ry"], `${shapePath}.geometry`, errors);
-      return;
-    }
-    if (type === "line") {
-      this.requireNumbers(geometry, ["x1", "y1", "x2", "y2"], `${shapePath}.geometry`, errors);
-      return;
-    }
-    if (type === "arc") {
-      this.requireNumbers(geometry, ["cx", "cy", "r", "startAngle", "endAngle"], `${shapePath}.geometry`, errors);
-      return;
-    }
-    if (type === "text") {
-      this.requireNumbers(geometry, ["x", "y", "fontSize"], `${shapePath}.geometry`, errors);
-      if (!hasText(geometry.text)) {
-        errors.push(`${shapePath}.geometry.text is required.`);
-      }
-      return;
-    }
-    if (type === "polygon") {
-      if (!Array.isArray(geometry.points) || geometry.points.length < 3) {
-        errors.push(`${shapePath}.geometry.points must contain at least three points.`);
-        return;
-      }
-      geometry.points.forEach((point, pointIndex) => {
-        const pointPath = `${shapePath}.geometry.points[${pointIndex}]`;
-        if (!isPlainObject(point)) {
-          errors.push(`${pointPath} must be an object.`);
-          return;
+    if (schema.additionalProperties === false) {
+      Object.keys(value).forEach((key) => {
+        if (!Object.prototype.hasOwnProperty.call(properties, key)) {
+          errors.push(`${path}.${key} is not allowed.`);
         }
-        this.requireNumbers(point, ["x", "y"], pointPath, errors);
       });
     }
   }
 
-  requireNumbers(target, keys, path, errors) {
-    keys.forEach((key) => {
-      if (!isFiniteNumber(target[key])) {
-        errors.push(`${path}.${key} must be a number.`);
-      }
-    });
+  normalizePayload(payload) {
+    const normalized = clone(payload);
+    normalized.palette.id = normalized.palette.id.trim();
+    if (typeof normalized.palette.name === "string") {
+      normalized.palette.name = normalized.palette.name.trim();
+    }
+    normalized.palette.swatches = normalized.palette.swatches.map((swatch) => ({
+      ...swatch,
+      id: swatch.id.trim(),
+      name: typeof swatch.name === "string" ? swatch.name.trim() : swatch.name
+    }));
+    normalized.objects = normalized.objects.map((object) => ({
+      ...object,
+      id: object.id.trim(),
+      name: object.name.trim(),
+      type: object.type.trim().toLowerCase(),
+      shapes: object.shapes.map((shape) => ({
+        ...shape,
+        id: shape.id.trim(),
+        type: shape.type.trim().toLowerCase()
+      }))
+    }));
+    return normalized;
   }
 }

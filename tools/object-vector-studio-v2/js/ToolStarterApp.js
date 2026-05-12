@@ -165,10 +165,11 @@ export class ToolStarterApp {
     this.selectedShapeIds = new Set();
     this.gridSnapEnabled = false;
     this.angleSnapEnabled = false;
+    this.schemaReady = false;
     this.viewport = { ...DEFAULT_VIEWPORT };
   }
 
-  start() {
+  async start() {
     this.window.__objectVectorStudioV2App = this;
     this.shell.mount();
     this.accordions.forEach((accordion) => accordion.mount());
@@ -193,8 +194,13 @@ export class ToolStarterApp {
     this.applyToolDisplayMode(this.window.sessionStorage?.getItem(TOOL_DISPLAY_MODE_KEY) || "words", false);
     this.applySnapState();
     this.updateViewport();
-    this.renderEmptyState("Schema-only loading is idle. Import JSON or launch with workspace toolState data that includes a palette.");
+    this.actionNav.setImportEnabled(false);
+    this.renderEmptyState("Object Vector Studio V2 schema contract is loading.");
     this.statusLog.write("OK Object Vector Studio V2 layout shell ready.");
+    await this.schemaService.loadSchema();
+    this.schemaReady = true;
+    this.statusLog.write(`OK Object Vector Studio V2 schema contract loaded from ${this.schemaService.schemaPath}.`);
+    this.renderEmptyState("Schema-only loading is idle. Import JSON or launch with workspace toolState data that includes a palette.");
     if (this.actionNav.isWorkspaceLaunch()) {
       this.loadWorkspaceToolState();
     }
@@ -305,7 +311,7 @@ export class ToolStarterApp {
     this.elements.renderSurface.replaceChildren();
     this.elements.objectTiles.replaceChildren(this.createEmptyObjectTile());
     this.actionNav.setJsonPayloadActionsEnabled(false);
-    this.actionNav.setImportEnabled(!this.actionNav.isWorkspaceLaunch());
+    this.actionNav.setImportEnabled(this.schemaReady && !this.actionNav.isWorkspaceLaunch());
     this.updateObjectActionState();
   }
 
@@ -365,9 +371,7 @@ export class ToolStarterApp {
     }
 
     this.currentPayload = validation.payload;
-    this.selectedObjectId = this.currentPayload.objects[0]?.id || "";
-    this.selectedShapeId = sortedShapes(this.currentPayload.objects[0])[0]?.id || "";
-    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+    this.applyLoadedRuntimeState(sourceLabel);
     this.elements.sourceSummary.value = sourceLabel;
     this.elements.paletteGate.value = "Palette loaded";
     this.elements.loadStatus.textContent = `Schema-valid payload loaded from ${sourceLabel}.`;
@@ -375,6 +379,37 @@ export class ToolStarterApp {
     this.actionNav.setImportEnabled(!this.actionNav.isWorkspaceLaunch());
     this.renderPayload();
     this.statusLog.write(`OK Loaded Object Vector Studio V2 schema payload from ${sourceLabel}: ${this.currentPayload.objects.length} objects, ${this.currentPayload.palette.swatches.length} palette swatches.`);
+  }
+
+  applyLoadedRuntimeState(sourceLabel) {
+    const requestedObjectId = this.currentPayload.selection?.selectedObjectId || "";
+    const requestedShapeId = this.currentPayload.selection?.selectedShapeId || "";
+    const selectedObject = this.currentPayload.objects.find((object) => object.id === requestedObjectId) || this.currentPayload.objects[0] || null;
+    this.selectedObjectId = selectedObject?.id || "";
+    if (requestedObjectId && requestedObjectId !== this.selectedObjectId) {
+      this.statusLog.write(`WARN Selection from ${sourceLabel} adjusted: object ${requestedObjectId} is not available.`);
+    }
+    const selectedShape = selectedObject?.shapes.find((shape) => shape.id === requestedShapeId) || sortedShapes(selectedObject)[0] || null;
+    this.selectedShapeId = selectedShape?.id || "";
+    if (requestedShapeId && requestedShapeId !== this.selectedShapeId) {
+      this.statusLog.write(`WARN Selection from ${sourceLabel} adjusted: shape ${requestedShapeId} is not available.`);
+    }
+    const requestedShapeIds = Array.isArray(this.currentPayload.selection?.selectedShapeIds)
+      ? this.currentPayload.selection.selectedShapeIds
+      : [];
+    const availableShapeIds = new Set(selectedObject?.shapes.map((shape) => shape.id) || []);
+    const selectedShapeIds = requestedShapeIds.filter((shapeId) => availableShapeIds.has(shapeId));
+    this.selectedShapeIds = new Set(selectedShapeIds.length ? selectedShapeIds : (this.selectedShapeId ? [this.selectedShapeId] : []));
+    if (this.currentPayload.viewport) {
+      this.viewport = {
+        height: this.currentPayload.viewport.height,
+        width: this.currentPayload.viewport.width,
+        x: this.currentPayload.viewport.x,
+        y: this.currentPayload.viewport.y,
+        zoom: this.currentPayload.viewport.zoom
+      };
+      this.updateViewport();
+    }
   }
 
   renderPayload() {
@@ -1575,12 +1610,12 @@ export class ToolStarterApp {
   }
 
   async copyJson() {
-    if (!this.currentPayload) {
-      this.statusLog.write("FAIL Copy JSON blocked: no schema-valid Object Vector Studio V2 payload is loaded.");
+    const payload = this.validatedJsonActionPayload("Copy JSON");
+    if (!payload) {
       return;
     }
 
-    const json = JSON.stringify(this.currentPayload, null, 2);
+    const json = JSON.stringify(payload, null, 2);
     if (typeof this.window.navigator?.clipboard?.writeText !== "function") {
       this.statusLog.write("WARN Clipboard API unavailable. JSON Details remains read-only on the active object.");
       return;
@@ -1595,18 +1630,50 @@ export class ToolStarterApp {
   }
 
   exportJson() {
-    if (!this.currentPayload) {
-      this.statusLog.write("FAIL Export blocked: no schema-valid Object Vector Studio V2 payload is loaded.");
+    const payload = this.validatedJsonActionPayload("Export");
+    if (!payload) {
       return;
     }
 
-    const blob = new Blob([JSON.stringify(this.currentPayload, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const anchor = this.window.document.createElement("a");
     anchor.href = url;
     anchor.download = "object-vector-studio-v2.json";
     anchor.click();
     URL.revokeObjectURL(url);
-    this.statusLog.write(`OK Export prepared for ${this.currentPayload.objects.length} Object Vector Studio V2 objects.`);
+    this.statusLog.write(`OK Export prepared for ${payload.objects.length} Object Vector Studio V2 objects.`);
+  }
+
+  validatedJsonActionPayload(actionLabel) {
+    if (!this.currentPayload) {
+      this.statusLog.write(`FAIL ${actionLabel} blocked: no schema-valid Object Vector Studio V2 payload is loaded.`);
+      return null;
+    }
+    const payload = this.cloneCurrentPayload();
+    payload.selection = {
+      multiSelect: this.selectedShapeIds.size > 1,
+      selectedObjectId: this.selectedObjectId,
+      selectedShapeId: this.selectedShapeId,
+      selectedShapeIds: Array.from(this.selectedShapeIds)
+    };
+    payload.viewport = {
+      height: DEFAULT_VIEWPORT.height / this.viewport.zoom,
+      width: DEFAULT_VIEWPORT.width / this.viewport.zoom,
+      x: this.viewport.x,
+      y: this.viewport.y,
+      zoom: this.viewport.zoom
+    };
+    payload.export = {
+      fileName: "object-vector-studio-v2.json",
+      format: "json",
+      includeSelection: true
+    };
+    const validation = this.schemaService.validatePayload(payload);
+    if (!validation.ok) {
+      this.statusLog.write(`FAIL ${actionLabel} blocked by Object Vector Studio V2 schema: ${validation.errors.join(" ")}`);
+      return null;
+    }
+    return validation.payload;
   }
 }

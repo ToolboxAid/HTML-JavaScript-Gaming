@@ -67,5 +67,7 @@ window.addEventListener("DOMContentLoaded", () => {
     windowRef: window
   });
 
-  app.start();
+  app.start().catch((error) => {
+    statusLog.write(`FAIL Object Vector Studio V2 schema contract failed to load: ${error.message}`);
+  });
 });

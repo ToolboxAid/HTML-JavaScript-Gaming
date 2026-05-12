@@ -1173,6 +1173,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='object-vector-studio-v2']")).toBeVisible();
       await expect(page.locator("[data-tool-starter-header]")).toContainText("Object Vector Studio V2");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector Studio V2 schema contract loaded from \/tools\/schemas\/tools\/object-vector-studio-v2\.schema\.json\./);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "Export"]);
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeHidden();
@@ -1210,6 +1211,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toHaveText("{}");
 
+      const unknownRootPayloadPath = testInfo.outputPath("object-vector-unknown-root.json");
+      await writeFile(unknownRootPayloadPath, JSON.stringify({
+        palette: {
+          id: "arcade-primary",
+          swatches: [
+            { id: "white", value: "#ffffff" }
+          ]
+        },
+        objects: [],
+        unexpected: true
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(unknownRootPayloadPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-unknown-root\.json: root\.unexpected is not allowed\./);
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toHaveText("{}");
+
       const invalidShapePayloadPath = testInfo.outputPath("object-vector-invalid-shape.json");
       await writeFile(invalidShapePayloadPath, JSON.stringify({
         palette: {
@@ -1238,7 +1254,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ]
       }, null, 2), "utf8");
       await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(invalidShapePayloadPath);
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid-shape\.json: root\.objects\[0\]\.shapes\[0\]\.type must be one of rectangle, circle, ellipse, line, polygon, arc, text\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid-shape\.json: root\.objects\[0\]\.shapes\[0\] must match exactly one Object Vector Studio V2 shape schema\./);
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toHaveText("{}");
 
@@ -1374,6 +1390,35 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "0 0 320 220");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport reset to 100% at origin\./);
 
+      await page.evaluate(() => {
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: {
+            async writeText(text) {
+              sessionStorage.setItem("object-vector-studio-v2.copied-json", text);
+            }
+          }
+        });
+      });
+      await page.locator("#objectVectorStudioV2CopyJsonButton").click();
+      const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.copied-json")));
+      expect(copiedPayload.selection.selectedObjectId).toBe("object-1");
+      expect(copiedPayload.selection.selectedShapeId).toBe("rectangle-1");
+      expect(copiedPayload.viewport.zoom).toBe(1);
+      expect(copiedPayload.export.format).toBe("json");
+      const copiedSchemaValidation = await page.evaluate((payload) => window.__objectVectorStudioV2App.schemaService.validatePayload(payload), copiedPayload);
+      expect(copiedSchemaValidation).toEqual({ errors: [], ok: true, payload: copiedPayload });
+
+      const downloadPromise = page.waitForEvent("download");
+      await page.locator("#objectVectorStudioV2ExportJsonButton").click();
+      const download = await downloadPromise;
+      const exportPath = testInfo.outputPath("object-vector-export.json");
+      await download.saveAs(exportPath);
+      const exportedPayload = JSON.parse(await readFile(exportPath, "utf8"));
+      expect(exportedPayload.selection.selectedShapeIds).toContain("rectangle-1");
+      const exportedSchemaValidation = await page.evaluate((payload) => window.__objectVectorStudioV2App.schemaService.validatePayload(payload), exportedPayload);
+      expect(exportedSchemaValidation).toEqual({ errors: [], ok: true, payload: exportedPayload });
+
       await page.locator('[data-object-id="object-2"]').click();
       await expect(page.locator('[data-object-id="object-2"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Object 2");
@@ -1465,6 +1510,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(fullscreenLayout.centerWidth).toBeGreaterThan(300);
       expect(fullscreenLayout.centerHeight).toBeGreaterThan(300);
 
+      await page.evaluate(() => {
+        sessionStorage.setItem("workspace.tools.object-vector-studio-v2", JSON.stringify({ objects: [] }));
+      });
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=object-vector-v2-missing-palette&workspaceMode=uat`, { waitUntil: "networkidle" });
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from workspace\.tools\.object-vector-studio-v2: root\.palette is required\./);
+      await page.evaluate(() => {
+        sessionStorage.removeItem("workspace.tools.object-vector-studio-v2");
+      });
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=object-vector-v2-shell&workspaceMode=uat`, { waitUntil: "networkidle" });
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
       await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Return to Workspace"]);
