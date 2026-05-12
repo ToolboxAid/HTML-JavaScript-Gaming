@@ -331,7 +331,13 @@ export class TextToSpeechToolApp {
       return;
     }
     this.queueControl.populate(queueDataResult.payload);
-    this.applyQueueItem(this.queueControl.selectedItem() || queueDataResult.payload[0], "queue-loaded");
+    if (queueDataResult.payload.length > 0) {
+      this.applyQueueItem(this.queueControl.selectedItem() || queueDataResult.payload[0], "queue-loaded");
+    } else {
+      this.textInput.setText("", { emit: false });
+      this.refreshOutputSummary("queue-loaded-empty");
+      this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} empty state: 0 named speech items. Add a Name and click Add to create a new item.`);
+    }
     this.statusLog.ok(`Loaded ${TEXT_TO_SPEECH_DISPLAY_NAME} payload source: ${queueDataResult.sourcePath}.`);
     if (queueDataResult.sourceKind === "url-json") {
       this.statusLog.ok(`Loaded preset for ${TEXT_TO_SPEECH_DISPLAY_NAME}: ${queueDataResult.sourcePath}.`);
@@ -498,12 +504,9 @@ export class TextToSpeechToolApp {
       const nextData = this.queueControl.selectedQueue();
       if (this.payloadSchema) {
         const validation = this.validatePayload(nextData, toolState.workspace?.gameManifestPath || WORKSPACE_TOOL_STATE_KEY);
-        if (!validation.ok && nextData.length > 0) {
+        if (!validation.ok) {
           this.statusLog.fail(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${validation.message}`);
           return;
-        }
-        if (!validation.ok) {
-          this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} payload is empty; schema requires at least one named speech item before export or workspace save.`);
         }
       }
       this.window.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify({
@@ -569,7 +572,13 @@ export class TextToSpeechToolApp {
       return;
     }
     this.queueControl.populate(payload);
-    this.applyQueueItem(this.queueControl.selectedItem() || payload[0], "json-imported");
+    if (payload.length > 0) {
+      this.applyQueueItem(this.queueControl.selectedItem() || payload[0], "json-imported");
+    } else {
+      this.textInput.setText("", { emit: false });
+      this.refreshOutputSummary("json-imported-empty");
+      this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} empty state: 0 named speech items. Add a Name and click Add to create a new item.`);
+    }
     this.refreshVoices("json-imported");
     this.refreshOutputSummary("json-imported");
     this.statusLog.ok(`Imported ${payload.length} ${TEXT_TO_SPEECH_DISPLAY_NAME} item${payload.length === 1 ? "" : "s"} from ${sourcePath}; schema validation result: ${TEXT_TO_SPEECH_SCHEMA_ID} valid.`);
@@ -649,7 +658,6 @@ export class TextToSpeechToolApp {
     }
     const selectedItem = this.queueControl.selectedItem();
     if (!selectedItem) {
-      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} name update failed: no named speech item is selected.`);
       return;
     }
     const itemName = String(name || "").trim();
@@ -697,7 +705,7 @@ export class TextToSpeechToolApp {
     } else {
       this.textInput.setText("", { emit: false });
       this.refreshOutputSummary("queue-empty");
-      this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} empty state: add a named speech item before playback, export, copy, or workspace save.`);
+      this.statusLog.ok(`${TEXT_TO_SPEECH_DISPLAY_NAME} empty state: 0 named speech items. Add a Name and click Add to create a new item.`);
     }
     this.markWorkspaceDirty("speech-item-deleted", ["queue"]);
     this.statusLog.ok(`Deleted speech item: ${selectedItem.name}.`);
