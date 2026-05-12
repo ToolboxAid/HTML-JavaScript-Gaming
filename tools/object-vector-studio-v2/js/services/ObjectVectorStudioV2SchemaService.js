@@ -80,6 +80,7 @@ export class ObjectVectorStudioV2SchemaService {
           shapes: object.shapes.map((shape) => ({
             ...shape,
             id: shape.id.trim(),
+            transform: shape.transform ? { ...shape.transform } : undefined,
             type: shape.type.trim().toLowerCase()
           }))
         }))
@@ -132,7 +133,25 @@ export class ObjectVectorStudioV2SchemaService {
           errors.push(`${shapePath}.style.strokeWidth must be a number.`);
         }
       }
+      this.validateShapeTransform(shape, shapePath, errors);
     });
+  }
+
+  validateShapeTransform(shape, shapePath, errors) {
+    if (shape.transform === undefined) {
+      return;
+    }
+    if (!isPlainObject(shape.transform)) {
+      errors.push(`${shapePath}.transform must be an object when provided.`);
+      return;
+    }
+    this.requireNumbers(shape.transform, ["x", "y", "rotation", "scaleX", "scaleY", "originX", "originY"], `${shapePath}.transform`, errors);
+    if (isFiniteNumber(shape.transform.scaleX) && shape.transform.scaleX <= 0) {
+      errors.push(`${shapePath}.transform.scaleX must be greater than 0.`);
+    }
+    if (isFiniteNumber(shape.transform.scaleY) && shape.transform.scaleY <= 0) {
+      errors.push(`${shapePath}.transform.scaleY must be greater than 0.`);
+    }
   }
 
   validateShapeGeometry(shape, shapePath, errors) {

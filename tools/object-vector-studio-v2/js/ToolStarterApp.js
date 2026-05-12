@@ -1,7 +1,10 @@
 const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";
 const TOOL_DISPLAY_MODE_KEY = "object-vector-studio-v2.toolDisplayMode";
+const GRID_SNAP_SESSION_KEY = "object-vector-studio-v2.gridSnap";
+const ANGLE_SNAP_SESSION_KEY = "object-vector-studio-v2.angleSnap";
 const DEFAULT_OBJECT_TYPE = "object";
 const SVG_NS = "http://www.w3.org/2000/svg";
+const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
 
 const OBJECT_TYPE_DETAILS = Object.freeze({
   actor: "Actor entity metadata framework for reusable gameplay participants.",
@@ -68,6 +71,85 @@ function swatchColor(swatch) {
   return swatch?.value || swatch?.hex || swatch?.color || "";
 }
 
+function shapeBounds(shape) {
+  if (shape.type === "rectangle") {
+    return {
+      height: shape.geometry.height,
+      width: shape.geometry.width,
+      x: shape.geometry.x,
+      y: shape.geometry.y
+    };
+  }
+  if (shape.type === "circle") {
+    return {
+      height: shape.geometry.r * 2,
+      width: shape.geometry.r * 2,
+      x: shape.geometry.cx - shape.geometry.r,
+      y: shape.geometry.cy - shape.geometry.r
+    };
+  }
+  if (shape.type === "ellipse") {
+    return {
+      height: shape.geometry.ry * 2,
+      width: shape.geometry.rx * 2,
+      x: shape.geometry.cx - shape.geometry.rx,
+      y: shape.geometry.cy - shape.geometry.ry
+    };
+  }
+  if (shape.type === "line") {
+    const x = Math.min(shape.geometry.x1, shape.geometry.x2);
+    const y = Math.min(shape.geometry.y1, shape.geometry.y2);
+    return {
+      height: Math.max(1, Math.abs(shape.geometry.y2 - shape.geometry.y1)),
+      width: Math.max(1, Math.abs(shape.geometry.x2 - shape.geometry.x1)),
+      x,
+      y
+    };
+  }
+  if (shape.type === "polygon") {
+    const xValues = shape.geometry.points.map((point) => point.x);
+    const yValues = shape.geometry.points.map((point) => point.y);
+    const minX = Math.min(...xValues);
+    const minY = Math.min(...yValues);
+    return {
+      height: Math.max(1, Math.max(...yValues) - minY),
+      width: Math.max(1, Math.max(...xValues) - minX),
+      x: minX,
+      y: minY
+    };
+  }
+  if (shape.type === "arc") {
+    return {
+      height: shape.geometry.r * 2,
+      width: shape.geometry.r * 2,
+      x: shape.geometry.cx - shape.geometry.r,
+      y: shape.geometry.cy - shape.geometry.r
+    };
+  }
+  if (shape.type === "text") {
+    return {
+      height: shape.geometry.fontSize,
+      width: Math.max(24, shape.geometry.text.length * shape.geometry.fontSize * 0.6),
+      x: shape.geometry.x,
+      y: shape.geometry.y - shape.geometry.fontSize
+    };
+  }
+  throw new Error(`unsupported shape bounds for ${shape.type}`);
+}
+
+function defaultShapeTransform(shape) {
+  const bounds = shapeBounds(shape);
+  return {
+    originX: Number((bounds.x + bounds.width / 2).toFixed(3)),
+    originY: Number((bounds.y + bounds.height / 2).toFixed(3)),
+    rotation: 0,
+    scaleX: 1,
+    scaleY: 1,
+    x: 0,
+    y: 0
+  };
+}
+
 export class ToolStarterApp {
   constructor({ accordions, actionNav, elements, schemaService, shell, statusLog, windowRef = window }) {
     this.accordions = accordions;
@@ -80,6 +162,10 @@ export class ToolStarterApp {
     this.currentPayload = null;
     this.selectedObjectId = "";
     this.selectedShapeId = "";
+    this.selectedShapeIds = new Set();
+    this.gridSnapEnabled = false;
+    this.angleSnapEnabled = false;
+    this.viewport = { ...DEFAULT_VIEWPORT };
   }
 
   start() {
@@ -101,7 +187,12 @@ export class ToolStarterApp {
     this.statusLog.mount();
     this.bindObjectActions();
     this.bindToolToggles();
+    this.bindSnapControls();
+    this.bindViewportControls();
+    this.bindKeyboardShortcuts();
     this.applyToolDisplayMode(this.window.sessionStorage?.getItem(TOOL_DISPLAY_MODE_KEY) || "words", false);
+    this.applySnapState();
+    this.updateViewport();
     this.renderEmptyState("Schema-only loading is idle. Import JSON or launch with workspace toolState data that includes a palette.");
     this.statusLog.write("OK Object Vector Studio V2 layout shell ready.");
     if (this.actionNav.isWorkspaceLaunch()) {
@@ -112,6 +203,7 @@ export class ToolStarterApp {
   bindObjectActions() {
     this.elements.addObjectButton.addEventListener("click", () => this.addObject());
     this.elements.renameObjectButton.addEventListener("click", () => this.renameSelectedObject());
+    this.elements.duplicateObjectButton.addEventListener("click", () => this.duplicateSelectedObject());
     this.elements.deleteObjectButton.addEventListener("click", () => this.deleteSelectedObject());
     this.elements.flattenObjectButton.addEventListener("click", () => this.flattenSelectedObject());
   }
@@ -133,6 +225,46 @@ export class ToolStarterApp {
         this.statusLog.write(`OK Shape/Tools mode selected: ${tool}.`);
       });
     });
+  }
+
+  bindSnapControls() {
+    this.elements.gridSnapButton.addEventListener("click", () => {
+      this.gridSnapEnabled = !this.gridSnapEnabled;
+      this.window.sessionStorage?.setItem(GRID_SNAP_SESSION_KEY, this.gridSnapEnabled ? "1" : "0");
+      this.applySnapState();
+      this.statusLog.write(`OK Grid snap ${this.gridSnapEnabled ? "enabled" : "disabled"}.`);
+    });
+    this.elements.angleSnapButton.addEventListener("click", () => {
+      this.angleSnapEnabled = !this.angleSnapEnabled;
+      this.window.sessionStorage?.setItem(ANGLE_SNAP_SESSION_KEY, this.angleSnapEnabled ? "1" : "0");
+      this.applySnapState();
+      this.statusLog.write(`OK Angle snap ${this.angleSnapEnabled ? "enabled" : "disabled"}.`);
+    });
+  }
+
+  bindViewportControls() {
+    this.elements.zoomInButton.addEventListener("click", () => this.zoomViewport(1.25));
+    this.elements.zoomOutButton.addEventListener("click", () => this.zoomViewport(0.8));
+    this.elements.panLeftButton.addEventListener("click", () => this.panViewport(-20, 0));
+    this.elements.panRightButton.addEventListener("click", () => this.panViewport(20, 0));
+    this.elements.resetViewButton.addEventListener("click", () => this.resetViewport());
+    this.elements.renderSurface.addEventListener("mousemove", (event) => this.updateCoordinateDisplay(event));
+  }
+
+  bindKeyboardShortcuts() {
+    this.elements.renderSurface.addEventListener("keydown", (event) => {
+      if (event.key === "Delete" || event.key === "Backspace") {
+        event.preventDefault();
+        this.deleteSelectedShape("keyboard");
+      }
+    });
+  }
+
+  applySnapState() {
+    this.gridSnapEnabled = this.window.sessionStorage?.getItem(GRID_SNAP_SESSION_KEY) === "1";
+    this.angleSnapEnabled = this.window.sessionStorage?.getItem(ANGLE_SNAP_SESSION_KEY) === "1";
+    this.elements.gridSnapButton.setAttribute("aria-pressed", String(this.gridSnapEnabled));
+    this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
   }
 
   applyToolDisplayMode(mode, shouldLog) {
@@ -157,6 +289,7 @@ export class ToolStarterApp {
     this.currentPayload = null;
     this.selectedObjectId = "";
     this.selectedShapeId = "";
+    this.selectedShapeIds.clear();
     this.elements.sourceSummary.value = "No schema-loaded payload";
     this.elements.paletteGate.value = "Required before render";
     this.elements.objectCount.value = objectCountLabel(0);
@@ -168,6 +301,7 @@ export class ToolStarterApp {
     this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
     this.elements.jsonDetails.textContent = "{}";
     this.elements.renderSummary.textContent = "Render mode: idle. Capture mode: none.";
+    this.elements.coordinateDisplay.textContent = "Coordinates: 0, 0 | Zoom 100%";
     this.elements.renderSurface.replaceChildren();
     this.elements.objectTiles.replaceChildren(this.createEmptyObjectTile());
     this.actionNav.setJsonPayloadActionsEnabled(false);
@@ -233,6 +367,7 @@ export class ToolStarterApp {
     this.currentPayload = validation.payload;
     this.selectedObjectId = this.currentPayload.objects[0]?.id || "";
     this.selectedShapeId = sortedShapes(this.currentPayload.objects[0])[0]?.id || "";
+    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
     this.elements.sourceSummary.value = sourceLabel;
     this.elements.paletteGate.value = "Palette loaded";
     this.elements.loadStatus.textContent = `Schema-valid payload loaded from ${sourceLabel}.`;
@@ -336,11 +471,12 @@ export class ToolStarterApp {
     this.elements.shapeCount.value = shapeCountLabel(selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
     this.elements.selectedItemVisibility.textContent = shape
-      ? `Selected item visible: ${selected.name} / ${shape.id} (${shape.type})`
+      ? `Selected item visible: ${selected.name} / ${shape.id} (${shape.type}); ${this.selectedShapeIds.size} shape selection.`
       : `Selected item visible: ${selected.name}`;
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
-      selectedShape: shape
+      selectedShape: shape,
+      selectedShapeIds: Array.from(this.selectedShapeIds)
     }, null, 2);
   }
 
@@ -369,14 +505,18 @@ export class ToolStarterApp {
       return wrapper;
     }
 
+    const transform = this.shapeTransform(shape);
     shapePanel.append(this.createDetailGrid([
       ["Shape Type", shapeTypeLabel(shape)],
       ["Shape Metadata", SHAPE_TYPE_DETAILS[shape.type]],
       ["Order", String(shape.order)],
       ["Visible", shape.visible ? "Visible" : "Hidden"],
       ["Locked", shape.locked ? "Locked" : "Unlocked"],
-      ["Color", shape.style.fill === "none" ? shape.style.stroke : shape.style.fill]
+      ["Color", shape.style.fill === "none" ? shape.style.stroke : shape.style.fill],
+      ["Transform", `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`]
     ]));
+    shapePanel.append(this.createShapeGeometryControls(shape));
+    shapePanel.append(this.createShapeTransformControls());
     shapePanel.append(this.createShapeActions(shape));
     wrapper.append(shapePanel);
     return wrapper;
@@ -397,14 +537,125 @@ export class ToolStarterApp {
     return grid;
   }
 
+  createShapeGeometryControls(shape) {
+    const section = document.createElement("section");
+    section.className = "object-vector-studio-v2__edit-panel";
+    const heading = document.createElement("h4");
+    heading.textContent = `${shapeTypeLabel(shape)} Geometry`;
+    const grid = document.createElement("div");
+    grid.className = "object-vector-studio-v2__edit-grid";
+    this.shapeGeometryFields(shape).forEach((field) => {
+      const label = document.createElement("label");
+      label.className = "object-vector-studio-v2__edit-field";
+      const caption = document.createElement("span");
+      caption.textContent = field.label;
+      const input = document.createElement("input");
+      input.dataset.shapeGeometryField = field.key;
+      input.type = field.kind;
+      input.value = String(field.value);
+      label.append(caption, input);
+      grid.append(label);
+    });
+    const applyButton = document.createElement("button");
+    applyButton.id = "objectVectorStudioV2ApplyGeometryButton";
+    applyButton.type = "button";
+    applyButton.textContent = "Apply Geometry";
+    applyButton.addEventListener("click", () => this.applyShapeGeometryEdits());
+    section.append(heading, grid, applyButton);
+    return section;
+  }
+
+  createShapeTransformControls() {
+    const section = document.createElement("section");
+    section.className = "object-vector-studio-v2__edit-panel";
+    const heading = document.createElement("h4");
+    heading.textContent = "Transform";
+    const grid = document.createElement("div");
+    grid.className = "object-vector-studio-v2__edit-grid";
+    [
+      ["objectVectorStudioV2MoveXInput", "Move X", "10"],
+      ["objectVectorStudioV2MoveYInput", "Move Y", "0"],
+      ["objectVectorStudioV2RotateInput", "Rotate", "15"],
+      ["objectVectorStudioV2ScaleInput", "Scale", "1.1"],
+      ["objectVectorStudioV2ResizeInput", "Resize", "10"]
+    ].forEach(([id, labelText, value]) => {
+      const label = document.createElement("label");
+      label.className = "object-vector-studio-v2__edit-field";
+      const caption = document.createElement("span");
+      caption.textContent = labelText;
+      const input = document.createElement("input");
+      input.id = id;
+      input.type = "number";
+      input.step = "0.1";
+      input.value = value;
+      label.append(caption, input);
+      grid.append(label);
+    });
+    const actions = document.createElement("div");
+    actions.className = "object-vector-studio-v2__shape-actions";
+    [
+      ["objectVectorStudioV2MoveShapeButton", "Move", () => this.moveSelectedShape()],
+      ["objectVectorStudioV2RotateShapeButton", "Rotate", () => this.rotateSelectedShape()],
+      ["objectVectorStudioV2ScaleShapeButton", "Scale", () => this.scaleSelectedShape()],
+      ["objectVectorStudioV2ResizeShapeButton", "Resize", () => this.resizeSelectedShape()]
+    ].forEach(([id, label, handler]) => {
+      const button = document.createElement("button");
+      button.id = id;
+      button.type = "button";
+      button.textContent = label;
+      button.addEventListener("click", handler);
+      actions.append(button);
+    });
+    section.append(heading, grid, actions);
+    return section;
+  }
+
+  shapeGeometryFields(shape) {
+    if (shape.type === "rectangle") {
+      return ["x", "y", "width", "height"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
+    }
+    if (shape.type === "circle") {
+      return ["cx", "cy", "r"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
+    }
+    if (shape.type === "ellipse") {
+      return ["cx", "cy", "rx", "ry"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
+    }
+    if (shape.type === "line") {
+      return ["x1", "y1", "x2", "y2"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
+    }
+    if (shape.type === "arc") {
+      return ["cx", "cy", "r", "startAngle", "endAngle"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
+    }
+    if (shape.type === "text") {
+      return [
+        { key: "x", kind: "number", label: "x", value: shape.geometry.x },
+        { key: "y", kind: "number", label: "y", value: shape.geometry.y },
+        { key: "fontSize", kind: "number", label: "fontSize", value: shape.geometry.fontSize },
+        { key: "text", kind: "text", label: "text", value: shape.geometry.text }
+      ];
+    }
+    return [
+      {
+        key: "points",
+        kind: "text",
+        label: "points",
+        value: shape.geometry.points.map((point) => `${point.x},${point.y}`).join(" ")
+      }
+    ];
+  }
+
   createShapeActions(shape) {
     const actions = document.createElement("div");
     actions.className = "object-vector-studio-v2__shape-actions";
     [
       ["objectVectorStudioV2ShapeVisibilityButton", shape.visible ? "Hide Shape" : "Show Shape", () => this.toggleSelectedShapeVisibility()],
       ["objectVectorStudioV2ShapeLockButton", shape.locked ? "Unlock Shape" : "Lock Shape", () => this.toggleSelectedShapeLock()],
-      ["objectVectorStudioV2ShapeMoveUpButton", "Move Up", () => this.moveSelectedShape(-1)],
-      ["objectVectorStudioV2ShapeMoveDownButton", "Move Down", () => this.moveSelectedShape(1)]
+      ["objectVectorStudioV2DuplicateShapeButton", "Duplicate Shape", () => this.duplicateSelectedShape()],
+      ["objectVectorStudioV2DeleteShapeButton", "Delete Shape", () => this.deleteSelectedShape("button")],
+      ["objectVectorStudioV2BringForwardButton", "Bring Forward", () => this.changeSelectedShapeOrder("forward")],
+      ["objectVectorStudioV2SendBackwardButton", "Send Backward", () => this.changeSelectedShapeOrder("backward")],
+      ["objectVectorStudioV2BringToFrontButton", "Bring To Front", () => this.changeSelectedShapeOrder("front")],
+      ["objectVectorStudioV2SendToBackButton", "Send To Back", () => this.changeSelectedShapeOrder("back")]
     ].forEach(([id, label, handler]) => {
       const button = document.createElement("button");
       button.id = id;
@@ -434,15 +685,19 @@ export class ToolStarterApp {
         element.dataset.shapeId = shape.id;
         element.dataset.shapeType = shape.type;
         element.classList.add("object-vector-studio-v2__shape");
-        element.classList.toggle("is-selected", shape.id === this.selectedShapeId);
+        element.classList.toggle("is-selected", this.selectedShapeIds.has(shape.id));
         element.setAttribute("tabindex", "0");
-        element.addEventListener("click", () => this.selectShape(shape.id, "render surface"));
+        element.addEventListener("click", (event) => {
+          event.stopPropagation();
+          this.selectShape(shape.id, "render surface", { additive: event.shiftKey });
+        });
         this.elements.renderSurface.append(element);
         renderedCount += 1;
       } catch (error) {
         this.statusLog.write(`FAIL Render mode svg-work-surface failed for shape ${shape.id} (${shape.type}): ${error.message}`);
       }
     });
+    this.renderSelectionOverlay(object);
 
     const message = `Render mode svg-work-surface: rendered ${object.name} with ${renderedCount} visible shapes; capture mode none.`;
     this.elements.renderSummary.textContent = message;
@@ -513,6 +768,88 @@ export class ToolStarterApp {
     element.setAttribute("fill", shape.style.fill);
     element.setAttribute("stroke", shape.style.stroke);
     element.setAttribute("stroke-width", shape.style.strokeWidth);
+    const transform = this.shapeTransform(shape);
+    element.setAttribute("transform", this.svgTransformAttribute(transform));
+  }
+
+  shapeTransform(shape) {
+    return shape.transform || defaultShapeTransform(shape);
+  }
+
+  svgTransformAttribute(transform) {
+    return [
+      `translate(${transform.x} ${transform.y})`,
+      `translate(${transform.originX} ${transform.originY})`,
+      `rotate(${transform.rotation})`,
+      `scale(${transform.scaleX} ${transform.scaleY})`,
+      `translate(${-transform.originX} ${-transform.originY})`
+    ].join(" ");
+  }
+
+  transformedBounds(shape) {
+    const bounds = shapeBounds(shape);
+    const transform = this.shapeTransform(shape);
+    return {
+      height: Math.max(1, bounds.height * transform.scaleY),
+      originX: transform.originX + transform.x,
+      originY: transform.originY + transform.y,
+      width: Math.max(1, bounds.width * transform.scaleX),
+      x: bounds.x + transform.x,
+      y: bounds.y + transform.y
+    };
+  }
+
+  renderSelectionOverlay(object) {
+    const selectedShape = this.selectedShape();
+    if (!selectedShape || selectedShape.visible === false) {
+      return;
+    }
+    try {
+      const bounds = this.transformedBounds(selectedShape);
+      const box = document.createElementNS(SVG_NS, "rect");
+      box.classList.add("object-vector-studio-v2__selection-box");
+      box.dataset.selectionBounds = selectedShape.id;
+      box.setAttribute("x", bounds.x - 4);
+      box.setAttribute("y", bounds.y - 4);
+      box.setAttribute("width", bounds.width + 8);
+      box.setAttribute("height", bounds.height + 8);
+      this.elements.renderSurface.append(box);
+
+      [
+        [bounds.x - 4, bounds.y - 4, "nw"],
+        [bounds.x + bounds.width + 4, bounds.y - 4, "ne"],
+        [bounds.x - 4, bounds.y + bounds.height + 4, "sw"],
+        [bounds.x + bounds.width + 4, bounds.y + bounds.height + 4, "se"]
+      ].forEach(([cx, cy, handle]) => {
+        const point = document.createElementNS(SVG_NS, "rect");
+        point.classList.add("object-vector-studio-v2__resize-handle");
+        point.dataset.resizeHandle = handle;
+        point.dataset.resizeShapeId = selectedShape.id;
+        point.setAttribute("x", cx - 3);
+        point.setAttribute("y", cy - 3);
+        point.setAttribute("width", 6);
+        point.setAttribute("height", 6);
+        this.elements.renderSurface.append(point);
+      });
+
+      const pivot = document.createElementNS(SVG_NS, "g");
+      pivot.classList.add("object-vector-studio-v2__pivot-origin");
+      pivot.dataset.pivotOrigin = selectedShape.id;
+      const horizontal = document.createElementNS(SVG_NS, "line");
+      horizontal.setAttribute("x1", bounds.originX - 7);
+      horizontal.setAttribute("x2", bounds.originX + 7);
+      horizontal.setAttribute("y1", bounds.originY);
+      horizontal.setAttribute("y2", bounds.originY);
+      const vertical = document.createElementNS(SVG_NS, "line");
+      vertical.setAttribute("x1", bounds.originX);
+      vertical.setAttribute("x2", bounds.originX);
+      vertical.setAttribute("y1", bounds.originY - 7);
+      vertical.setAttribute("y2", bounds.originY + 7);
+      pivot.append(horizontal, vertical);
+      this.elements.renderSurface.append(pivot);
+    } catch (error) {
+      this.statusLog.write(`FAIL Selection overlay render failed for ${object.name}/${selectedShape.id} (${selectedShape.type}): ${error.message}`);
+    }
   }
 
   arcPath(geometry) {
@@ -530,6 +867,49 @@ export class ToolStarterApp {
     };
   }
 
+  updateViewport() {
+    const width = DEFAULT_VIEWPORT.width / this.viewport.zoom;
+    const height = DEFAULT_VIEWPORT.height / this.viewport.zoom;
+    this.elements.renderSurface.setAttribute("viewBox", `${this.viewport.x} ${this.viewport.y} ${width} ${height}`);
+    this.elements.coordinateDisplay.textContent = `Coordinates: 0, 0 | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
+  }
+
+  zoomViewport(factor) {
+    const nextZoom = Number((this.viewport.zoom * factor).toFixed(3));
+    if (!Number.isFinite(nextZoom) || nextZoom < 0.25 || nextZoom > 4) {
+      this.statusLog.write(`WARN Viewport zoom skipped: ${nextZoom} is outside 25% to 400%.`);
+      return;
+    }
+    this.viewport.zoom = nextZoom;
+    this.updateViewport();
+    this.statusLog.write(`OK Viewport zoom set to ${Math.round(this.viewport.zoom * 100)}%.`);
+  }
+
+  panViewport(x, y) {
+    this.viewport.x = Number((this.viewport.x + x).toFixed(3));
+    this.viewport.y = Number((this.viewport.y + y).toFixed(3));
+    this.updateViewport();
+    this.statusLog.write(`OK Viewport pan set to ${this.viewport.x}, ${this.viewport.y}.`);
+  }
+
+  resetViewport() {
+    this.viewport = { ...DEFAULT_VIEWPORT };
+    this.updateViewport();
+    this.statusLog.write("OK Viewport reset to 100% at origin.");
+  }
+
+  updateCoordinateDisplay(event) {
+    const bounds = this.elements.renderSurface.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) {
+      return;
+    }
+    const viewWidth = DEFAULT_VIEWPORT.width / this.viewport.zoom;
+    const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
+    const x = this.viewport.x + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
+    const y = this.viewport.y + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
+    this.elements.coordinateDisplay.textContent = `Coordinates: ${Math.round(x)}, ${Math.round(y)} | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
+  }
+
   selectObject(objectId, sourceLabel) {
     if (!this.currentPayload?.objects.some((object) => object.id === objectId)) {
       this.statusLog.write(`WARN Select object skipped: object id ${objectId || "unknown"} is not available.`);
@@ -538,12 +918,13 @@ export class ToolStarterApp {
 
     this.selectedObjectId = objectId;
     this.selectedShapeId = sortedShapes(this.selectedObject())[0]?.id || "";
+    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
     this.renderPayload();
     const selected = this.selectedObject();
     this.statusLog.write(`OK Selected object from ${sourceLabel}: ${selected.name}.`);
   }
 
-  selectShape(shapeId, sourceLabel) {
+  selectShape(shapeId, sourceLabel, options = {}) {
     const object = this.selectedObject();
     if (!object?.shapes.some((shape) => shape.id === shapeId)) {
       this.statusLog.write(`WARN Select shape skipped: shape id ${shapeId || "unknown"} is not available.`);
@@ -551,9 +932,19 @@ export class ToolStarterApp {
     }
 
     this.selectedShapeId = shapeId;
+    if (options.additive) {
+      if (this.selectedShapeIds.has(shapeId) && this.selectedShapeIds.size > 1) {
+        this.selectedShapeIds.delete(shapeId);
+        this.selectedShapeId = Array.from(this.selectedShapeIds).at(-1) || "";
+      } else {
+        this.selectedShapeIds.add(shapeId);
+      }
+    } else {
+      this.selectedShapeIds = new Set([shapeId]);
+    }
     this.renderPayload();
     const shape = this.selectedShape();
-    this.statusLog.write(`OK Selected shape from ${sourceLabel}: ${shape.id} (${shape.type}).`);
+    this.statusLog.write(`OK Selected shape from ${sourceLabel}: ${shape.id} (${shape.type}). Multi-select count: ${this.selectedShapeIds.size}.`);
   }
 
   addObject() {
@@ -599,6 +990,26 @@ export class ToolStarterApp {
     const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
     nextObject.name = name;
     this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Renamed object ${selected.id} to ${name}.`, "Rename object failed schema validation");
+  }
+
+  duplicateSelectedObject() {
+    const selected = this.selectedObject();
+    if (!selected) {
+      this.statusLog.write("WARN Duplicate object skipped: no object is selected.");
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const objectCopy = JSON.parse(JSON.stringify(selected));
+    objectCopy.id = this.uniqueObjectId(`${selected.name} Copy`, nextPayload.objects);
+    objectCopy.name = `${selected.name} Copy`;
+    objectCopy.metadata = {
+      ...(objectCopy.metadata || {}),
+      duplicatedFrom: selected.id
+    };
+    nextPayload.objects.push(objectCopy);
+    const selectedShapeId = sortedShapes(objectCopy)[0]?.id || "";
+    this.commitPayloadUpdate(nextPayload, objectCopy.id, selectedShapeId, `OK Duplicated object ${selected.name} as ${objectCopy.name}.`, "Duplicate object failed schema validation");
   }
 
   deleteSelectedObject() {
@@ -655,6 +1066,10 @@ export class ToolStarterApp {
   }
 
   createPrimitiveShape(type, id, order, color) {
+    const withTransform = (shape) => ({
+      ...shape,
+      transform: defaultShapeTransform(shape)
+    });
     const base = {
       id,
       locked: false,
@@ -672,19 +1087,19 @@ export class ToolStarterApp {
       visible: true
     };
     if (type === "rectangle") {
-      return { ...base, geometry: { height: 62, width: 86, x: 34, y: 48 } };
+      return withTransform({ ...base, geometry: { height: 62, width: 86, x: 34, y: 48 } });
     }
     if (type === "circle") {
-      return { ...base, geometry: { cx: 244, cy: 72, r: 30 } };
+      return withTransform({ ...base, geometry: { cx: 244, cy: 72, r: 30 } });
     }
     if (type === "ellipse") {
-      return { ...base, geometry: { cx: 238, cy: 152, rx: 52, ry: 26 } };
+      return withTransform({ ...base, geometry: { cx: 238, cy: 152, rx: 52, ry: 26 } });
     }
     if (type === "line") {
-      return { ...base, geometry: { x1: 42, x2: 142, y1: 174, y2: 128 } };
+      return withTransform({ ...base, geometry: { x1: 42, x2: 142, y1: 174, y2: 128 } });
     }
     if (type === "polygon") {
-      return {
+      return withTransform({
         ...base,
         geometry: {
           points: [
@@ -693,13 +1108,13 @@ export class ToolStarterApp {
             { x: 116, y: 106 }
           ]
         }
-      };
+      });
     }
     if (type === "arc") {
-      return { ...base, geometry: { cx: 158, cy: 162, endAngle: 135, r: 42, startAngle: -135 } };
+      return withTransform({ ...base, geometry: { cx: 158, cy: 162, endAngle: 135, r: 42, startAngle: -135 } });
     }
     if (type === "text") {
-      return { ...base, geometry: { fontSize: 24, text: "Text", x: 132, y: 124 } };
+      return withTransform({ ...base, geometry: { fontSize: 24, text: "Text", x: 132, y: 124 } });
     }
     return base;
   }
@@ -763,7 +1178,7 @@ export class ToolStarterApp {
     this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Shape ${selected.id} lock set to ${shape.locked ? "locked" : "unlocked"}.`, "Shape lock failed schema validation");
   }
 
-  moveSelectedShape(direction) {
+  changeSelectedShapeOrder(action) {
     const selected = this.selectedShape();
     if (!selected) {
       this.statusLog.write("WARN Shape order skipped: no shape is selected.");
@@ -778,16 +1193,291 @@ export class ToolStarterApp {
     const object = nextPayload.objects.find((candidate) => candidate.id === this.selectedObjectId);
     const shapes = sortedShapes(object);
     const index = shapes.findIndex((shape) => shape.id === selected.id);
-    const swapIndex = index + direction;
-    if (swapIndex < 0 || swapIndex >= shapes.length) {
-      this.statusLog.write(`WARN Shape order skipped: shape ${selected.id} is already at the ${direction < 0 ? "front" : "back"}.`);
+    if (shapes.length < 2) {
+      this.statusLog.write(`WARN Shape order skipped: shape ${selected.id} is the only shape in ${object.name}.`);
       return;
     }
 
-    const currentOrder = shapes[index].order;
-    shapes[index].order = shapes[swapIndex].order;
-    shapes[swapIndex].order = currentOrder;
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Shape ${selected.id} order changed to ${shapes[index].order}.`, "Shape order failed schema validation");
+    const nextIndexByAction = {
+      back: 0,
+      backward: index - 1,
+      forward: index + 1,
+      front: shapes.length - 1
+    };
+    const nextIndex = nextIndexByAction[action];
+    if (!Number.isInteger(nextIndex) || nextIndex < 0 || nextIndex >= shapes.length || nextIndex === index) {
+      this.statusLog.write(`WARN Shape z-order skipped: shape ${selected.id} cannot move ${action}.`);
+      return;
+    }
+
+    const [movedShape] = shapes.splice(index, 1);
+    shapes.splice(nextIndex, 0, movedShape);
+    shapes.forEach((shape, shapeIndex) => {
+      shape.order = shapeIndex + 1;
+    });
+    object.shapes = shapes;
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Shape ${selected.id} z-order ${action}.`, "Shape z-order failed schema validation");
+  }
+
+  moveSelectedShape() {
+    const x = this.numberInputValue("objectVectorStudioV2MoveXInput", "Move X");
+    const y = this.numberInputValue("objectVectorStudioV2MoveYInput", "Move Y");
+    if (!x.ok || !y.ok) {
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${x.error || y.error}`);
+      return;
+    }
+    const moveX = this.snapDistance(x.value);
+    const moveY = this.snapDistance(y.value);
+    this.updateSelectedShapeTransform("move", (shape) => {
+      shape.transform = this.ensureShapeTransform(shape);
+      shape.transform.x = Number((shape.transform.x + moveX).toFixed(3));
+      shape.transform.y = Number((shape.transform.y + moveY).toFixed(3));
+    }, `OK Moved shape ${this.selectedShapeId} by ${moveX}, ${moveY}.`);
+  }
+
+  rotateSelectedShape() {
+    const input = this.numberInputValue("objectVectorStudioV2RotateInput", "Rotate");
+    if (!input.ok) {
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${input.error}`);
+      return;
+    }
+    const rotation = this.snapAngle(input.value);
+    this.updateSelectedShapeTransform("rotate", (shape) => {
+      shape.transform = this.ensureShapeTransform(shape);
+      shape.transform.rotation = Number((shape.transform.rotation + rotation).toFixed(3));
+    }, `OK Rotated shape ${this.selectedShapeId} by ${rotation} degrees.`);
+  }
+
+  scaleSelectedShape() {
+    const input = this.numberInputValue("objectVectorStudioV2ScaleInput", "Scale");
+    if (!input.ok || input.value <= 0) {
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: scale must be greater than 0.`);
+      return;
+    }
+    this.updateSelectedShapeTransform("scale", (shape) => {
+      shape.transform = this.ensureShapeTransform(shape);
+      shape.transform.scaleX = Number((shape.transform.scaleX * input.value).toFixed(3));
+      shape.transform.scaleY = Number((shape.transform.scaleY * input.value).toFixed(3));
+    }, `OK Scaled shape ${this.selectedShapeId} by ${input.value}.`);
+  }
+
+  resizeSelectedShape() {
+    const input = this.numberInputValue("objectVectorStudioV2ResizeInput", "Resize");
+    if (!input.ok) {
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${input.error}`);
+      return;
+    }
+    this.updateSelectedShapeTransform("resize", (shape) => {
+      this.resizeShapeGeometry(shape, input.value);
+      shape.transform = this.ensureShapeTransform(shape);
+    }, `OK Resized shape ${this.selectedShapeId} by ${input.value}.`);
+  }
+
+  applyShapeGeometryEdits() {
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write("WARN Geometry edit skipped: no shape is selected.");
+      return;
+    }
+    const fields = Array.from(this.elements.objectDetails.querySelectorAll("[data-shape-geometry-field]"));
+    this.updateSelectedShapeTransform("geometry edit", (shape) => {
+      if (shape.type === "polygon") {
+        const pointsInput = fields.find((input) => input.dataset.shapeGeometryField === "points");
+        shape.geometry.points = this.parsePolygonPoints(pointsInput?.value || "");
+      } else {
+        fields.forEach((input) => {
+          const key = input.dataset.shapeGeometryField;
+          shape.geometry[key] = input.type === "number" ? Number(input.value) : input.value;
+        });
+      }
+      shape.transform = this.ensureShapeTransform(shape);
+    }, `OK Applied geometry edits to shape ${selected.id}.`);
+  }
+
+  updateSelectedShapeTransform(operation, updater, okMessage) {
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write(`WARN Transform ${operation} skipped: no shape is selected.`);
+      return;
+    }
+    if (selected.locked) {
+      this.statusLog.write(`WARN Transform ${operation} skipped: shape ${selected.id} is locked.`);
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const shape = this.findShapeInPayload(nextPayload, selected.id);
+    try {
+      updater(shape);
+      const transformErrors = this.validateShapeForTransform(shape);
+      if (transformErrors.length) {
+        this.statusLog.write(`FAIL Invalid transform rejected for shape ${selected.id}: ${transformErrors.join(" ")}`);
+        return;
+      }
+    } catch (error) {
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${selected.id}: ${error.message}`);
+      return;
+    }
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, okMessage, `Transform ${operation} failed schema validation`);
+  }
+
+  duplicateSelectedShape() {
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write("WARN Duplicate shape skipped: no shape is selected.");
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const object = nextPayload.objects.find((candidate) => candidate.id === this.selectedObjectId);
+    const shape = JSON.parse(JSON.stringify(selected));
+    shape.id = this.uniqueShapeId(selected.type, object.shapes);
+    shape.order = object.shapes.length ? Math.max(...object.shapes.map((candidate) => candidate.order)) + 1 : 1;
+    shape.transform = this.ensureShapeTransform(shape);
+    shape.transform.x = Number((shape.transform.x + 10).toFixed(3));
+    shape.transform.y = Number((shape.transform.y + 10).toFixed(3));
+    shape.metadata = {
+      ...(shape.metadata || {}),
+      duplicatedFrom: selected.id
+    };
+    object.shapes.push(shape);
+    this.commitPayloadUpdate(nextPayload, object.id, shape.id, `OK Duplicated shape ${selected.id} as ${shape.id}.`, "Duplicate shape failed schema validation");
+  }
+
+  deleteSelectedShape(sourceLabel) {
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write(`WARN Delete shape skipped from ${sourceLabel}: no shape is selected.`);
+      return;
+    }
+    if (selected.locked) {
+      this.statusLog.write(`WARN Delete shape skipped: shape ${selected.id} is locked.`);
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const object = nextPayload.objects.find((candidate) => candidate.id === this.selectedObjectId);
+    object.shapes = sortedShapes(object).filter((shape) => shape.id !== selected.id)
+      .map((shape, index) => ({ ...shape, order: index + 1 }));
+    const selectedShapeId = sortedShapes(object)[0]?.id || "";
+    this.commitPayloadUpdate(nextPayload, object.id, selectedShapeId, `OK Deleted shape ${selected.id} from ${sourceLabel}.`, "Delete shape failed schema validation");
+  }
+
+  numberInputValue(id, label) {
+    const element = this.window.document.getElementById(id);
+    const value = Number(element?.value);
+    if (!Number.isFinite(value)) {
+      return {
+        error: `${label} must be a finite number.`,
+        ok: false,
+        value: 0
+      };
+    }
+    return {
+      error: "",
+      ok: true,
+      value
+    };
+  }
+
+  snapDistance(value) {
+    if (!this.gridSnapEnabled) {
+      return value;
+    }
+    return Math.round(value / 10) * 10;
+  }
+
+  snapAngle(value) {
+    if (!this.angleSnapEnabled) {
+      return value;
+    }
+    return Math.round(value / 15) * 15;
+  }
+
+  ensureShapeTransform(shape) {
+    if (!shape.transform) {
+      return defaultShapeTransform(shape);
+    }
+    return { ...shape.transform };
+  }
+
+  resizeShapeGeometry(shape, amount) {
+    if (shape.type === "rectangle") {
+      shape.geometry.width = Number((shape.geometry.width + amount).toFixed(3));
+      shape.geometry.height = Number((shape.geometry.height + amount).toFixed(3));
+      return;
+    }
+    if (shape.type === "circle") {
+      shape.geometry.r = Number((shape.geometry.r + amount).toFixed(3));
+      return;
+    }
+    if (shape.type === "ellipse") {
+      shape.geometry.rx = Number((shape.geometry.rx + amount).toFixed(3));
+      shape.geometry.ry = Number((shape.geometry.ry + amount).toFixed(3));
+      return;
+    }
+    if (shape.type === "line") {
+      shape.geometry.x2 = Number((shape.geometry.x2 + amount).toFixed(3));
+      return;
+    }
+    if (shape.type === "arc") {
+      shape.geometry.r = Number((shape.geometry.r + amount).toFixed(3));
+      return;
+    }
+    if (shape.type === "text") {
+      shape.geometry.fontSize = Number((shape.geometry.fontSize + amount).toFixed(3));
+      return;
+    }
+    const factor = 1 + amount / 100;
+    const bounds = shapeBounds(shape);
+    const centerX = bounds.x + bounds.width / 2;
+    const centerY = bounds.y + bounds.height / 2;
+    shape.geometry.points = shape.geometry.points.map((point) => ({
+      x: Number((centerX + (point.x - centerX) * factor).toFixed(3)),
+      y: Number((centerY + (point.y - centerY) * factor).toFixed(3))
+    }));
+  }
+
+  parsePolygonPoints(value) {
+    const points = value.trim().split(/\s+/).filter(Boolean).map((token) => {
+      const [xValue, yValue] = token.split(",");
+      return {
+        x: Number(xValue),
+        y: Number(yValue)
+      };
+    });
+    if (points.length < 3 || points.some((point) => !Number.isFinite(point.x) || !Number.isFinite(point.y))) {
+      throw new Error("polygon points must contain at least three x,y pairs.");
+    }
+    return points;
+  }
+
+  validateShapeForTransform(shape) {
+    const errors = [];
+    try {
+      const bounds = shapeBounds(shape);
+      if (bounds.width <= 0 || bounds.height <= 0) {
+        errors.push("shape bounds must remain positive.");
+      }
+    } catch (error) {
+      errors.push(error.message);
+    }
+    const transform = shape.transform;
+    if (!transform) {
+      return errors;
+    }
+    ["x", "y", "rotation", "scaleX", "scaleY", "originX", "originY"].forEach((key) => {
+      if (!Number.isFinite(transform[key])) {
+        errors.push(`transform.${key} must be a finite number.`);
+      }
+    });
+    if (Number.isFinite(transform.scaleX) && transform.scaleX <= 0) {
+      errors.push("scaleX must be greater than 0.");
+    }
+    if (Number.isFinite(transform.scaleY) && transform.scaleY <= 0) {
+      errors.push("scaleY must be greater than 0.");
+    }
+    return errors;
   }
 
   commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, okMessage, failPrefix) {
@@ -800,6 +1490,7 @@ export class ToolStarterApp {
     this.currentPayload = validation.payload;
     this.selectedObjectId = selectedObjectId;
     this.selectedShapeId = selectedShapeId || "";
+    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
     this.actionNav.setJsonPayloadActionsEnabled(true);
     this.renderPayload();
     this.statusLog.write(okMessage);
@@ -824,12 +1515,17 @@ export class ToolStarterApp {
     const object = this.selectedObject();
     if (!object) {
       this.selectedShapeId = "";
+      this.selectedShapeIds.clear();
       return;
     }
     if (object.shapes.some((shape) => shape.id === this.selectedShapeId)) {
+      if (!this.selectedShapeIds.size) {
+        this.selectedShapeIds = new Set([this.selectedShapeId]);
+      }
       return;
     }
     this.selectedShapeId = sortedShapes(object)[0]?.id || "";
+    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
   }
 
   findShapeInPayload(payload, shapeId) {
@@ -873,6 +1569,7 @@ export class ToolStarterApp {
   updateObjectActionState() {
     const hasSelectedObject = Boolean(this.selectedObject());
     this.elements.renameObjectButton.disabled = !hasSelectedObject;
+    this.elements.duplicateObjectButton.disabled = !hasSelectedObject;
     this.elements.deleteObjectButton.disabled = !hasSelectedObject;
     this.elements.flattenObjectButton.disabled = !hasSelectedObject;
   }

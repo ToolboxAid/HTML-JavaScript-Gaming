@@ -78,6 +78,7 @@
             <div class="object-vector-studio-v2__object-actions" aria-label="Object actions">
               <button id="objectVectorStudioV2AddObjectButton" type="button">Add</button>
               <button id="objectVectorStudioV2RenameObjectButton" type="button">Rename</button>
+              <button id="objectVectorStudioV2DuplicateObjectButton" type="button">Duplicate</button>
               <button id="objectVectorStudioV2DeleteObjectButton" type="button">Delete</button>
               <button id="objectVectorStudioV2FlattenObjectButton" type="button">Flatten</button>
             </div>
@@ -128,6 +129,10 @@
                 <span class="object-vector-studio-v2__tool-label">Text</span>
               </button>
             </div>
+            <div class="object-vector-studio-v2__snap-actions" aria-label="Snap controls">
+              <button id="objectVectorStudioV2GridSnapButton" type="button" aria-pressed="false">Grid Snap</button>
+              <button id="objectVectorStudioV2AngleSnapButton" type="button" aria-pressed="false">Angle Snap</button>
+            </div>
             <p class="tool-starter__hint">Primitive buttons create schema-valid shapes on the selected object.</p>
           </div>
         </section>
@@ -151,8 +156,16 @@
           </button>
           <div id="objectVectorStudioV2WorkAreaContent" class="accordion-v2__content">
             <div id="objectVectorStudioV2WorkArea" class="object-vector-studio-v2__work-area" role="img" aria-label="Object vector preview">
+              <div id="objectVectorStudioV2ViewportControls" class="object-vector-studio-v2__viewport-controls" aria-label="Viewport controls">
+                <button id="objectVectorStudioV2ZoomOutButton" type="button">Zoom Out</button>
+                <button id="objectVectorStudioV2ZoomInButton" type="button">Zoom In</button>
+                <button id="objectVectorStudioV2PanLeftButton" type="button">Pan Left</button>
+                <button id="objectVectorStudioV2PanRightButton" type="button">Pan Right</button>
+                <button id="objectVectorStudioV2ResetViewButton" type="button">Reset View</button>
+              </div>
+              <div id="objectVectorStudioV2CoordinateDisplay" class="object-vector-studio-v2__coordinate-display">Coordinates: 0, 0 | Zoom 100%</div>
               <div id="objectVectorStudioV2SelectedItemVisibility" class="object-vector-studio-v2__selected-visibility">No schema-valid object selected.</div>
-              <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" role="img" aria-label="Object shape render surface"></svg>
+              <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" tabindex="0" role="img" aria-label="Object shape render surface"></svg>
               <div id="objectVectorStudioV2RenderSummary" class="object-vector-studio-v2__render-summary">Render mode: idle. Capture mode: none.</div>
             </div>
           </div>

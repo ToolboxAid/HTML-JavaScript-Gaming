@@ -1305,6 +1305,74 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ShapeLockButton").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"locked": true');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Shape rectangle-1 lock set to locked\./);
+      await page.locator("#objectVectorStudioV2ShapeLockButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"locked": false');
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='rectangle-1']")).toHaveCount(1);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-resize-handle]")).toHaveCount(4);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-pivot-origin='rectangle-1']")).toHaveCount(1);
+
+      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='circle-2']").click({ modifiers: ["Shift"] });
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-1']")).toHaveClass(/is-selected/);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='circle-2']")).toHaveClass(/is-selected/);
+      await expect(page.locator("#objectVectorStudioV2SelectedItemVisibility")).toContainText("2 shape selection");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"selectedShapeIds"');
+      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-1']").click();
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Rectangle Geometry");
+
+      await page.locator("#objectVectorStudioV2GridSnapButton").click();
+      await expect(page.locator("#objectVectorStudioV2GridSnapButton")).toHaveAttribute("aria-pressed", "true");
+      await page.locator("#objectVectorStudioV2MoveXInput").fill("13");
+      await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
+      await page.locator("#objectVectorStudioV2MoveShapeButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"x": 10');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"y": 10');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape rectangle-1 by 10, 10\./);
+
+      await page.locator("#objectVectorStudioV2AngleSnapButton").click();
+      await page.locator("#objectVectorStudioV2RotateInput").fill("22");
+      await page.locator("#objectVectorStudioV2RotateShapeButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 15');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape rectangle-1 by 15 degrees\./);
+
+      await page.locator("#objectVectorStudioV2ScaleInput").fill("0");
+      await page.locator("#objectVectorStudioV2ScaleShapeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Invalid transform rejected for shape rectangle-1: scale must be greater than 0\./);
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"scaleX": 0');
+      await page.locator("#objectVectorStudioV2ScaleInput").fill("1.2");
+      await page.locator("#objectVectorStudioV2ScaleShapeButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"scaleX": 1.2');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Scaled shape rectangle-1 by 1\.2\./);
+
+      await page.locator("#objectVectorStudioV2ResizeInput").fill("5");
+      await page.locator("#objectVectorStudioV2ResizeShapeButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"width": 91');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Resized shape rectangle-1 by 5\./);
+
+      await page.locator("#objectVectorStudioV2BringForwardButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"order": 2');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Shape rectangle-1 z-order forward\./);
+      await page.locator("#objectVectorStudioV2SendToBackButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"order": 1');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Shape rectangle-1 z-order back\./);
+
+      await page.locator("#objectVectorStudioV2DuplicateShapeButton").click();
+      await expect(page.locator("#objectVectorStudioV2ShapeCount")).toHaveValue("3 shapes");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-3']")).toHaveClass(/is-selected/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Duplicated shape rectangle-1 as rectangle-3\./);
+      await page.locator("#objectVectorStudioV2RenderSurface").focus();
+      await page.keyboard.press("Delete");
+      await expect(page.locator("#objectVectorStudioV2ShapeCount")).toHaveValue("2 shapes");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-3']")).toHaveCount(0);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted shape rectangle-3 from keyboard\./);
+
+      await page.locator("#objectVectorStudioV2ZoomInButton").click();
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 125%");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "0 0 256 176");
+      await page.locator("#objectVectorStudioV2PanRightButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "20 0 256 176");
+      await page.locator("#objectVectorStudioV2ResetViewButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "0 0 320 220");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport reset to 100% at origin\./);
 
       await page.locator('[data-object-id="object-2"]').click();
       await expect(page.locator('[data-object-id="object-2"]')).toHaveAttribute("aria-pressed", "true");
@@ -1317,6 +1385,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-object-id="object-2"]')).toContainText("Object 2 Renamed");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Object 2 Renamed"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Renamed object object-2 to Object 2 Renamed\./);
+
+      await page.locator("#objectVectorStudioV2DuplicateObjectButton").click();
+      await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("19 objects");
+      await expect(page.locator('[data-object-id="object-2-renamed-copy"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Duplicated object Object 2 Renamed as Object 2 Renamed Copy\./);
+      await page.locator("#objectVectorStudioV2DeleteObjectButton").click();
+      await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("18 objects");
+      await expect(page.locator('[data-object-id="object-2-renamed-copy"]')).toHaveCount(0);
 
       await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Shield Pickup");
       await page.locator("#objectVectorStudioV2AddObjectButton").click();

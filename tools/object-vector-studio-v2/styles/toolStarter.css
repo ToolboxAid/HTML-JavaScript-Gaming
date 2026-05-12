@@ -393,7 +393,9 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-actions,
-.object-vector-studio-v2__tool-display-actions {
+.object-vector-studio-v2__tool-display-actions,
+.object-vector-studio-v2__snap-actions,
+.object-vector-studio-v2__viewport-controls {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -501,7 +503,7 @@ textarea:hover {
   min-height: 360px;
   flex: 1 1 auto;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   place-items: center;
   gap: 12px;
   border: 1px dashed var(--tool-starter-line);
@@ -510,6 +512,20 @@ textarea:hover {
   color: var(--tool-starter-muted);
   padding: 16px;
   text-align: center;
+}
+
+.object-vector-studio-v2__viewport-controls button {
+  min-height: 30px;
+}
+
+.object-vector-studio-v2__coordinate-display {
+  width: min(520px, 100%);
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-surface);
+  color: var(--tool-starter-muted);
+  padding: 8px 10px;
+  font-size: 0.9rem;
 }
 
 .object-vector-studio-v2__selected-visibility {
@@ -552,6 +568,27 @@ textarea:hover {
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.92));
 }
 
+.object-vector-studio-v2__selection-box {
+  fill: none;
+  stroke: var(--tool-starter-accent);
+  stroke-dasharray: 5 4;
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
+.object-vector-studio-v2__resize-handle {
+  fill: var(--tool-starter-accent);
+  stroke: #ffffff;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.object-vector-studio-v2__pivot-origin line {
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
 .object-vector-studio-v2__object-detail-grid {
   display: grid;
   grid-template-columns: 104px minmax(0, 1fr);
@@ -559,7 +596,8 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-detail-stack,
-.object-vector-studio-v2__shape-panel {
+.object-vector-studio-v2__shape-panel,
+.object-vector-studio-v2__edit-panel {
   display: grid;
   gap: 12px;
 }
@@ -570,8 +608,31 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__shape-panel h3,
+.object-vector-studio-v2__shape-panel h4,
 .object-vector-studio-v2__shape-panel p {
   margin: 0;
+}
+
+.object-vector-studio-v2__edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.object-vector-studio-v2__edit-field {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  color: var(--tool-starter-muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: left;
+}
+
+.object-vector-studio-v2__edit-field input {
+  min-width: 0;
+  width: 100%;
+  padding: 6px 8px;
 }
 
 .object-vector-studio-v2__shape-actions {
