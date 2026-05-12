@@ -1217,6 +1217,50 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2StopButton")).toBeDisabled();
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Text to Speech V2 empty launch: no samplePresetPath URL JSON source, workspace payload, or imported JSON is loaded\. Use Import JSON or open a sample JSON source to load named speech items\./);
       await expect(page.locator("#text2speech-V2StatusLog")).not.toHaveValue(/Text to Speech V2 default queue|Loaded 3 schema-complete/);
+      const statusLogLayout = await page.locator("#text2speech-V2StatusLogContent").evaluate((content) => {
+        const log = content.querySelector("#text2speech-V2StatusLog");
+        const contentRect = content.getBoundingClientRect();
+        const logRect = log.getBoundingClientRect();
+        const contentStyle = getComputedStyle(content);
+        const logStyle = getComputedStyle(log);
+        const paddingBottom = Number.parseFloat(contentStyle.paddingBottom || "0");
+        const paddingTop = Number.parseFloat(contentStyle.paddingTop || "0");
+        const innerHeight = content.clientHeight - paddingTop - paddingBottom;
+        return {
+          contentOverflowY: contentStyle.overflowY,
+          logFlexGrow: logStyle.flexGrow,
+          logHeight: Math.round(logRect.height),
+          logOverflowY: logStyle.overflowY,
+          logResize: logStyle.resize,
+          statusContentInnerHeight: Math.round(innerHeight),
+          unusedBottomSpace: Math.round(contentRect.bottom - logRect.bottom - paddingBottom)
+        };
+      });
+      expect(statusLogLayout).toMatchObject({
+        contentOverflowY: "hidden",
+        logFlexGrow: "1",
+        logOverflowY: "auto",
+        logResize: "none"
+      });
+      expect(statusLogLayout.logHeight).toBeGreaterThanOrEqual(statusLogLayout.statusContentInnerHeight - 2);
+      expect(statusLogLayout.unusedBottomSpace).toBeLessThanOrEqual(2);
+      const statusLogScrollState = await page.locator("#text2speech-V2StatusLog").evaluate((log) => {
+        const pageHadScrollbarBefore = document.documentElement.scrollHeight > document.documentElement.clientHeight;
+        log.value = Array.from({ length: 80 }, (_, index) => `OK Status log overflow probe ${index + 1}`).join("\n");
+        log.scrollTop = log.scrollHeight;
+        return {
+          internalScrollHeight: log.scrollHeight,
+          pageHasScrollbarAfter: document.documentElement.scrollHeight > document.documentElement.clientHeight,
+          pageHadScrollbarBefore,
+          statusHasInternalScrollbar: log.scrollHeight > log.clientHeight,
+          statusScrolledInternally: log.scrollTop > 0
+        };
+      });
+      expect(statusLogScrollState.statusHasInternalScrollbar).toBe(true);
+      expect(statusLogScrollState.statusScrolledInternally).toBe(true);
+      expect(statusLogScrollState.pageHadScrollbarBefore).toBe(false);
+      expect(statusLogScrollState.pageHasScrollbarAfter).toBe(false);
+      await page.locator("#text2speech-V2ClearStatusButton").click();
       const emptySummary = JSON.parse(await page.locator("#text2speech-V2SpeechSummary").textContent());
       expect(emptySummary).toEqual([]);
       await page.locator("#text2speech-V2AddItemButton").click();

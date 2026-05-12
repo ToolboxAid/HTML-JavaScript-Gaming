@@ -306,6 +306,11 @@ body.tools-platform-tool-page[data-tool-id="text2speech-V2"] > .palette-manager-
   overflow: auto;
 }
 
+#text2speech-V2StatusLogContent {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .text2speech-V2__queue-tile {
   min-height: 82px;
   display: grid;
@@ -356,9 +361,12 @@ body.tools-platform-tool-page[data-tool-id="text2speech-V2"] > .palette-manager-
 }
 
 #text2speech-V2StatusLog {
-  min-height: 180px;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
   padding: 10px;
-  resize: vertical;
+  resize: none;
 }
 
 .text2speech-V2__status-accordion-header {
