@@ -463,6 +463,7 @@ textarea:hover {
 
 .object-vector-studio-v2__object-tiles {
   min-height: 0;
+  flex: 1 1 auto;
   display: grid;
   align-content: start;
   gap: 8px;
@@ -474,6 +475,8 @@ textarea:hover {
   width: 100%;
   min-height: 58px;
   display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
   gap: 4px;
   border-radius: 8px !important;
   padding: 8px 10px;
@@ -487,7 +490,34 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-tile--empty {
+  grid-template-columns: 1fr;
   color: var(--tool-starter-muted);
+}
+
+.object-vector-studio-v2__object-tile-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.object-vector-studio-v2__object-thumbnail {
+  width: 50px;
+  height: 42px;
+  display: block;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.object-vector-studio-v2__object-thumbnail-shape {
+  pointer-events: none;
+}
+
+.object-vector-studio-v2__object-thumbnail-empty {
+  fill: none;
+  stroke: var(--tool-starter-muted);
+  stroke-dasharray: 4 3;
+  stroke-width: 2;
 }
 
 .object-vector-studio-v2__object-tile-name {
@@ -504,7 +534,7 @@ textarea:hover {
   min-height: 360px;
   flex: 1 1 auto;
   display: grid;
-  grid-template-rows: auto auto auto minmax(280px, 1fr) auto;
+  grid-template-rows: auto auto auto auto minmax(280px, 1fr) auto;
   place-items: center;
   gap: 12px;
   border: 1px dashed var(--tool-starter-line);
@@ -519,7 +549,8 @@ textarea:hover {
   min-height: 30px;
 }
 
-.object-vector-studio-v2__coordinate-display {
+.object-vector-studio-v2__coordinate-display,
+.object-vector-studio-v2__selection-metrics {
   width: min(520px, 100%);
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
@@ -527,6 +558,11 @@ textarea:hover {
   color: var(--tool-starter-muted);
   padding: 8px 10px;
   font-size: 0.9rem;
+}
+
+.object-vector-studio-v2__selection-metrics {
+  color: var(--tool-starter-text);
+  overflow-wrap: anywhere;
 }
 
 .object-vector-studio-v2__selected-visibility {
@@ -575,6 +611,22 @@ textarea:hover {
   stroke: var(--tool-starter-accent);
   stroke-dasharray: 5 4;
   stroke-width: 1.5;
+  pointer-events: none;
+}
+
+.object-vector-studio-v2__object-bounds {
+  fill: none;
+  stroke: #67e8f9;
+  stroke-dasharray: 8 5;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.object-vector-studio-v2__grid-lines line {
+  stroke: rgba(221, 214, 254, 0.2);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
   pointer-events: none;
 }
 

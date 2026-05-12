@@ -99,6 +99,10 @@
         "locked": {
           "type": "boolean"
         },
+        "groupId": {
+          "type": "string",
+          "minLength": 1
+        },
         "geometry": {
           "type": "object"
         },

@@ -41,6 +41,7 @@
       <input id="objectVectorStudioV2ImportJsonInput" type="file" accept="application/json,.json" hidden>
       <button id="objectVectorStudioV2CopyJsonButton" type="button">Copy JSON</button>
       <button id="objectVectorStudioV2ExportJsonButton" type="button">Export</button>
+      <button id="objectVectorStudioV2ExportSvgButton" type="button" disabled>Export SVG</button>
     </nav>
 
     <nav class="tool-starter__menu tool-starter__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
@@ -75,8 +76,31 @@
               <span>Object Name</span>
               <input id="objectVectorStudioV2ObjectNameInput" type="text" autocomplete="off" placeholder="Object name">
             </label>
+            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2ObjectTypeSelect">
+              <span>Object Type</span>
+              <select id="objectVectorStudioV2ObjectTypeSelect">
+                <option value="actor">Actor</option>
+                <option value="enemy">Enemy</option>
+                <option value="object" selected>Object</option>
+                <option value="pickup">Pickup</option>
+                <option value="ship">Ship</option>
+                <option value="ui">UI</option>
+                <option value="weapon">Weapon</option>
+              </select>
+            </label>
+            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2TemplateSelect">
+              <span>Template</span>
+              <select id="objectVectorStudioV2TemplateSelect">
+                <option value="ship">Ship</option>
+                <option value="asteroid">Asteroid</option>
+                <option value="ufo">UFO</option>
+                <option value="bullet">Bullet</option>
+                <option value="pickup">Pickup</option>
+              </select>
+            </label>
             <div class="object-vector-studio-v2__object-actions" aria-label="Object actions">
               <button id="objectVectorStudioV2AddObjectButton" type="button">Add</button>
+              <button id="objectVectorStudioV2CreateTemplateButton" type="button">Create Template</button>
               <button id="objectVectorStudioV2RenameObjectButton" type="button">Rename</button>
               <button id="objectVectorStudioV2DuplicateObjectButton" type="button">Duplicate</button>
               <button id="objectVectorStudioV2DeleteObjectButton" type="button">Delete</button>
@@ -132,6 +156,7 @@
             <div class="object-vector-studio-v2__snap-actions" aria-label="Snap controls">
               <button id="objectVectorStudioV2GridSnapButton" type="button" aria-pressed="false">Grid Snap</button>
               <button id="objectVectorStudioV2AngleSnapButton" type="button" aria-pressed="false">Angle Snap</button>
+              <button id="objectVectorStudioV2GridRenderButton" type="button" aria-pressed="false">Grid</button>
             </div>
             <p class="tool-starter__hint">Primitive buttons create schema-valid shapes on the selected object.</p>
           </div>
@@ -143,6 +168,23 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2ObjectsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2CategoryFilter">
+              <span>Category</span>
+              <select id="objectVectorStudioV2CategoryFilter">
+                <option value="all">All</option>
+                <option value="actor">Actor</option>
+                <option value="enemy">Enemy</option>
+                <option value="object">Object</option>
+                <option value="pickup">Pickup</option>
+                <option value="ship">Ship</option>
+                <option value="ui">UI</option>
+                <option value="weapon">Weapon</option>
+              </select>
+            </label>
+            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2SearchFilter">
+              <span>Search</span>
+              <input id="objectVectorStudioV2SearchFilter" type="search" autocomplete="off" placeholder="Filter objects">
+            </label>
             <div id="objectVectorStudioV2ObjectTiles" class="object-vector-studio-v2__object-tiles" aria-label="Object tiles"></div>
           </div>
         </section>
@@ -165,6 +207,7 @@
               </div>
               <div id="objectVectorStudioV2CoordinateDisplay" class="object-vector-studio-v2__coordinate-display">Coordinates: 0, 0 | Zoom 100%</div>
               <div id="objectVectorStudioV2SelectedItemVisibility" class="object-vector-studio-v2__selected-visibility">No schema-valid object selected.</div>
+              <div id="objectVectorStudioV2SelectionMetrics" class="object-vector-studio-v2__selection-metrics">Selection metrics: none.</div>
               <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" tabindex="0" role="img" aria-label="Object shape render surface"></svg>
               <div id="objectVectorStudioV2RenderSummary" class="object-vector-studio-v2__render-summary">Render mode: idle. Capture mode: none.</div>
             </div>

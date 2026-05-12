@@ -1157,7 +1157,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           await expect(page.locator("#inspectorOutput")).toContainText(`"toolId": "${tool.id}"`);
           await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`Processed source value: ${tool.name} launch coverage`));
         } else {
-          await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "Export"]);
+          await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "Export", "Export SVG"]);
           await expect(page.locator("#objectVectorStudioV2LoadStatus")).toContainText("Schema-only loading is idle");
           await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
         }
@@ -1184,10 +1184,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("[data-tool-starter-header]")).toContainText("Object Vector Studio V2");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector Studio V2 schema contract loaded from \/tools\/schemas\/tools\/object-vector-studio-v2\.schema\.json\./);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
-      await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "Export"]);
+      await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "Export", "Export SVG"]);
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeHidden();
       await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeDisabled();
       await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2ExportSvgButton")).toBeDisabled();
 
       await expect(page.locator(".tool-starter__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Object", "Shape/Tools", "Objects"]);
       await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Palette", "Object Details", "JSON Details", "Status Log"]);
@@ -1342,6 +1343,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"palette"');
       await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeEnabled();
       await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2ExportSvgButton")).toBeEnabled();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from import:object-vector-valid\.json: 18 objects\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Render mode svg-work-surface: rendered Asteroids Ship with 0 visible shapes; capture mode none\./);
 
@@ -1482,7 +1484,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const exportedSchemaValidation = await page.evaluate((payload) => window.__objectVectorStudioV2App.schemaService.validatePayload(payload), exportedPayload);
       expect(exportedSchemaValidation).toEqual({ errors: [], ok: true, payload: exportedPayload });
 
-      await page.locator('[data-object-id="object-2"]').click();
+      await page.locator('[data-object-id="object-2"]').evaluate((button) => button.click());
       await expect(page.locator('[data-object-id="object-2"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Object 2");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Enemy entity metadata framework");
@@ -1513,7 +1515,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#objectVectorStudioV2FlattenObjectButton").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"flattened": true');
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Flatten object skipped: Shield Pickup has no durable flatten field in the trimmed Object Vector Studio V2 asset schema\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Flatten object skipped: Shield Pickup has no shapes to flatten\./);
 
       await page.locator("#objectVectorStudioV2DeleteObjectButton").click();
       await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("18 objects");
@@ -1594,6 +1596,119 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html.*hostContextId=object-vector-v2-shell/);
       await expect(page).toHaveURL(/workspace=uat/);
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("expands Object Vector Studio V2 asset authoring controls", async ({ page }, testInfo) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "authoring-palette",
+          swatches: [
+            { id: "cyan", value: "#6fd3ff" },
+            { id: "amber", value: "#fbbf24" }
+          ]
+        }));
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: {
+            async writeText(text) {
+              sessionStorage.setItem("object-vector-studio-v2.authoring-copied-json", text);
+            }
+          }
+        });
+      });
+
+      const payloadPath = testInfo.outputPath("object-vector-authoring.json");
+      await writeFile(payloadPath, JSON.stringify({
+        name: "Authoring Payload",
+        objects: [],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(payloadPath);
+
+      await page.locator("#objectVectorStudioV2TemplateSelect").selectOption("ufo");
+      await page.locator("#objectVectorStudioV2CreateTemplateButton").click();
+      await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("1 object");
+      await expect(page.locator('[data-object-id="ufo-template"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator('[data-object-thumbnail="ufo-template"] .object-vector-studio-v2__object-thumbnail-shape')).toHaveCount(2);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-object-bounds='ufo-template']")).toHaveCount(1);
+      await expect(page.locator("#objectVectorStudioV2SelectionMetrics")).toContainText("bounds");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created UFO template object UFO Template with 2 shapes\./);
+
+      await page.locator("#objectVectorStudioV2CategoryFilter").selectOption("enemy");
+      await expect(page.locator("#objectVectorStudioV2ObjectTiles .object-vector-studio-v2__object-tile")).toHaveCount(1);
+      await page.locator("#objectVectorStudioV2SearchFilter").fill("ufo");
+      await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("UFO Template");
+
+      await page.locator("#objectVectorStudioV2GridRenderButton").click();
+      await expect(page.locator("#objectVectorStudioV2GridRenderButton")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-grid-rendered='true'] line")).toHaveCount(28);
+
+      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='ufo-template-dome']").click({ modifiers: ["Shift"] });
+      await page.locator("#objectVectorStudioV2GroupShapesButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"groupId": "group-1"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-1\./);
+
+      await page.locator("#objectVectorStudioV2GridSnapButton").click();
+      await page.locator("#objectVectorStudioV2MoveXInput").fill("13");
+      await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
+      await page.locator("#objectVectorStudioV2MoveShapeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape ufo-template-dome by 10, 10\./);
+      await page.locator("#objectVectorStudioV2FlattenObjectButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Flattened object UFO Template: baked transforms into 2 shapes\./);
+
+      await page.locator("#objectVectorStudioV2CopyJsonButton").click();
+      const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.authoring-copied-json")));
+      expect(copiedPayload.palette).toBeUndefined();
+      expect(copiedPayload.objects[0].shapes[0]).toHaveProperty("groupId", "group-1");
+      const copiedSchemaValidation = await page.evaluate((payload) => window.__objectVectorStudioV2App.schemaService.validatePayload(payload), copiedPayload);
+      expect(copiedSchemaValidation).toEqual({ errors: [], ok: true, payload: copiedPayload });
+
+      const jsonDownloadPromise = page.waitForEvent("download");
+      await page.locator("#objectVectorStudioV2ExportJsonButton").click();
+      const jsonDownload = await jsonDownloadPromise;
+      const jsonExportPath = testInfo.outputPath("object-vector-authoring-export.json");
+      await jsonDownload.saveAs(jsonExportPath);
+      const exportedPayload = JSON.parse(await readFile(jsonExportPath, "utf8"));
+      expect(exportedPayload.objects[0].name).toBe("UFO Template");
+      expect(exportedPayload.palette).toBeUndefined();
+
+      const svgDownloadPromise = page.waitForEvent("download");
+      await page.locator("#objectVectorStudioV2ExportSvgButton").click();
+      const svgDownload = await svgDownloadPromise;
+      const svgExportPath = testInfo.outputPath("object-vector-ufo.svg");
+      await svgDownload.saveAs(svgExportPath);
+      const exportedSvg = await readFile(svgExportPath, "utf8");
+      expect(exportedSvg).toContain("<svg");
+      expect(exportedSvg).toContain("ellipse");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Export SVG generated for UFO Template: 2 visible shapes\./);
+
+      const invalidPayloadPath = testInfo.outputPath("object-vector-authoring-invalid.json");
+      await writeFile(invalidPayloadPath, JSON.stringify({
+        name: "Invalid Authoring Payload",
+        objects: [],
+        toolId: "object-vector-studio-v2",
+        version: 1,
+        unexpected: "blocked"
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(invalidPayloadPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-authoring-invalid\.json: root\.unexpected is not allowed\./);
 
       expect(pageErrors).toEqual([]);
     } finally {

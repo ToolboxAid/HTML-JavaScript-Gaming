@@ -4,9 +4,20 @@ const RUNTIME_PALETTE_SESSION_KEY = "object-vector-studio-v2.runtimePalette";
 const TOOL_DISPLAY_MODE_KEY = "object-vector-studio-v2.toolDisplayMode";
 const GRID_SNAP_SESSION_KEY = "object-vector-studio-v2.gridSnap";
 const ANGLE_SNAP_SESSION_KEY = "object-vector-studio-v2.angleSnap";
+const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
 const DEFAULT_OBJECT_TYPE = "object";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
+
+const OBJECT_TYPES = Object.freeze(["actor", "enemy", "object", "pickup", "ship", "ui", "weapon"]);
+
+const OBJECT_TEMPLATES = Object.freeze({
+  asteroid: { label: "Asteroid", type: "enemy" },
+  bullet: { label: "Bullet", type: "weapon" },
+  pickup: { label: "Pickup", type: "pickup" },
+  ship: { label: "Ship", type: "ship" },
+  ufo: { label: "UFO", type: "enemy" }
+});
 
 const OBJECT_TYPE_DETAILS = Object.freeze({
   actor: "Actor entity metadata framework for reusable gameplay participants.",
@@ -169,6 +180,7 @@ export class ToolStarterApp {
     this.selectedShapeIds = new Set();
     this.gridSnapEnabled = false;
     this.angleSnapEnabled = false;
+    this.gridRenderEnabled = false;
     this.schemaReady = false;
     this.viewport = { ...DEFAULT_VIEWPORT };
   }
@@ -194,6 +206,7 @@ export class ToolStarterApp {
     this.bindToolToggles();
     this.bindSnapControls();
     this.bindViewportControls();
+    this.bindObjectFilters();
     this.bindKeyboardShortcuts();
     this.applyToolDisplayMode(this.window.sessionStorage?.getItem(TOOL_DISPLAY_MODE_KEY) || "words", false);
     this.applySnapState();
@@ -295,10 +308,13 @@ export class ToolStarterApp {
 
   bindObjectActions() {
     this.elements.addObjectButton.addEventListener("click", () => this.addObject());
+    this.elements.createTemplateButton.addEventListener("click", () => this.createObjectFromTemplate());
     this.elements.renameObjectButton.addEventListener("click", () => this.renameSelectedObject());
     this.elements.duplicateObjectButton.addEventListener("click", () => this.duplicateSelectedObject());
     this.elements.deleteObjectButton.addEventListener("click", () => this.deleteSelectedObject());
     this.elements.flattenObjectButton.addEventListener("click", () => this.flattenSelectedObject());
+    this.elements.objectTypeSelect.addEventListener("change", () => this.updateSelectedObjectType());
+    this.elements.exportSvgButton.addEventListener("click", () => this.exportSelectedObjectSvg());
   }
 
   bindToolToggles() {
@@ -333,6 +349,13 @@ export class ToolStarterApp {
       this.applySnapState();
       this.statusLog.write(`OK Angle snap ${this.angleSnapEnabled ? "enabled" : "disabled"}.`);
     });
+    this.elements.gridRenderButton.addEventListener("click", () => {
+      this.gridRenderEnabled = !this.gridRenderEnabled;
+      this.window.sessionStorage?.setItem(GRID_RENDER_SESSION_KEY, this.gridRenderEnabled ? "1" : "0");
+      this.applySnapState();
+      this.renderWorkSurface();
+      this.statusLog.write(`OK Grid rendering ${this.gridRenderEnabled ? "enabled" : "disabled"}.`);
+    });
   }
 
   bindViewportControls() {
@@ -342,6 +365,16 @@ export class ToolStarterApp {
     this.elements.panRightButton.addEventListener("click", () => this.panViewport(20, 0));
     this.elements.resetViewButton.addEventListener("click", () => this.resetViewport());
     this.elements.renderSurface.addEventListener("mousemove", (event) => this.updateCoordinateDisplay(event));
+  }
+
+  bindObjectFilters() {
+    this.elements.categoryFilter.addEventListener("change", () => {
+      this.renderObjectTiles();
+      this.statusLog.write(`OK Object category filter set to ${this.elements.categoryFilter.value}.`);
+    });
+    this.elements.searchFilter.addEventListener("input", () => {
+      this.renderObjectTiles();
+    });
   }
 
   bindKeyboardShortcuts() {
@@ -356,8 +389,10 @@ export class ToolStarterApp {
   applySnapState() {
     this.gridSnapEnabled = this.window.sessionStorage?.getItem(GRID_SNAP_SESSION_KEY) === "1";
     this.angleSnapEnabled = this.window.sessionStorage?.getItem(ANGLE_SNAP_SESSION_KEY) === "1";
+    this.gridRenderEnabled = this.window.sessionStorage?.getItem(GRID_RENDER_SESSION_KEY) === "1";
     this.elements.gridSnapButton.setAttribute("aria-pressed", String(this.gridSnapEnabled));
     this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
+    this.elements.gridRenderButton.setAttribute("aria-pressed", String(this.gridRenderEnabled));
   }
 
   applyToolDisplayMode(mode, shouldLog) {
@@ -388,12 +423,14 @@ export class ToolStarterApp {
     this.elements.objectCount.value = objectCountLabel(0);
     this.elements.shapeCount.value = shapeCountLabel(0);
     this.elements.objectNameInput.value = "";
+    this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
     this.elements.loadStatus.textContent = message;
     this.elements.paletteSummary.textContent = this.runtimePalette
       ? `Runtime palette ${this.paletteDisplayName()}: ${this.runtimePalette.swatches.length} swatches.`
       : "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
     this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
+    this.elements.selectionMetrics.textContent = "Selection metrics: none.";
     this.elements.jsonDetails.textContent = "{}";
     this.elements.renderSummary.textContent = "Render mode: idle. Capture mode: none.";
     this.elements.coordinateDisplay.textContent = "Origin: 0, 0 | Zoom 100%";
@@ -401,6 +438,7 @@ export class ToolStarterApp {
     this.renderCenterOriginMarker();
     this.elements.objectTiles.replaceChildren(this.createEmptyObjectTile());
     this.actionNav.setJsonPayloadActionsEnabled(false);
+    this.elements.exportSvgButton.disabled = true;
     this.actionNav.setImportEnabled(this.schemaReady && !this.actionNav.isWorkspaceLaunch());
     this.updateObjectActionState();
   }
@@ -527,8 +565,10 @@ export class ToolStarterApp {
     this.elements.objectCount.value = objectCountLabel(0);
     this.elements.shapeCount.value = shapeCountLabel(0);
     this.elements.objectNameInput.value = "";
+    this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
     this.elements.selectedItemVisibility.textContent = "No schema-valid object rendered.";
+    this.elements.selectionMetrics.textContent = "Selection metrics: none.";
     this.elements.jsonDetails.textContent = "{}";
     this.elements.renderSummary.textContent = "Render mode: blocked. Capture mode: none.";
     this.elements.renderSurface.replaceChildren();
@@ -537,6 +577,7 @@ export class ToolStarterApp {
     tile.textContent = "Runtime palette required before rendering object tiles.";
     this.elements.objectTiles.replaceChildren(tile);
     this.actionNav.setJsonPayloadActionsEnabled(Boolean(this.currentPayload));
+    this.elements.exportSvgButton.disabled = true;
     this.actionNav.setImportEnabled(this.schemaReady && !this.actionNav.isWorkspaceLaunch());
     this.updateObjectActionState();
   }
@@ -581,7 +622,15 @@ export class ToolStarterApp {
       return;
     }
 
-    this.currentPayload.objects.forEach((object) => {
+    const filteredObjects = this.filteredObjects();
+    if (!filteredObjects.length) {
+      const tile = this.createEmptyObjectTile();
+      tile.textContent = "No objects match the current category or search filter.";
+      this.elements.objectTiles.append(tile);
+      return;
+    }
+
+    filteredObjects.forEach((object) => {
       const tile = document.createElement("button");
       tile.className = "object-vector-studio-v2__object-tile";
       tile.type = "button";
@@ -589,6 +638,7 @@ export class ToolStarterApp {
       tile.setAttribute("aria-pressed", String(object.id === this.selectedObjectId));
       tile.classList.toggle("is-selected", object.id === this.selectedObjectId);
 
+      const thumbnail = this.createObjectThumbnail(object);
       const name = document.createElement("span");
       name.className = "object-vector-studio-v2__object-tile-name";
       name.textContent = object.name;
@@ -597,7 +647,11 @@ export class ToolStarterApp {
       meta.className = "object-vector-studio-v2__object-tile-meta";
       meta.textContent = `${object.id} - ${objectTypeLabel(object)} - ${shapeCountLabel(object.shapes.length)}`;
 
-      tile.append(name, meta);
+      const copy = document.createElement("span");
+      copy.className = "object-vector-studio-v2__object-tile-copy";
+      copy.append(name, meta);
+
+      tile.append(thumbnail, copy);
       tile.addEventListener("click", () => {
         this.selectObject(object.id, "tile");
       });
@@ -605,24 +659,69 @@ export class ToolStarterApp {
     });
   }
 
+  filteredObjects() {
+    const category = this.elements.categoryFilter.value || "all";
+    const query = this.elements.searchFilter.value.trim().toLowerCase();
+    return this.currentPayload.objects.filter((object) => {
+      const matchesCategory = category === "all" || objectTypeKey(object) === category;
+      const haystack = `${object.id} ${object.name} ${objectTypeKey(object)}`.toLowerCase();
+      return matchesCategory && (!query || haystack.includes(query));
+    });
+  }
+
+  createObjectThumbnail(object) {
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.classList.add("object-vector-studio-v2__object-thumbnail");
+    svg.dataset.objectThumbnail = object.id;
+    svg.setAttribute("aria-label", `${object.name} thumbnail`);
+    svg.setAttribute("role", "img");
+
+    const bounds = this.objectBounds(object, { includeInvisible: false });
+    const padding = 12;
+    svg.setAttribute("viewBox", `${bounds.x - padding} ${bounds.y - padding} ${bounds.width + padding * 2} ${bounds.height + padding * 2}`);
+    sortedShapes(object).filter((shape) => shape.visible).forEach((shape) => {
+      try {
+        const element = this.createSvgShape(shape);
+        element.classList.add("object-vector-studio-v2__object-thumbnail-shape");
+        svg.append(element);
+      } catch (error) {
+        this.statusLog.write(`FAIL Thumbnail render failed for ${object.id}/${shape.id} (${shape.type}): ${error.message}`);
+      }
+    });
+    if (!svg.children.length) {
+      const empty = document.createElementNS(SVG_NS, "rect");
+      empty.setAttribute("x", bounds.x);
+      empty.setAttribute("y", bounds.y);
+      empty.setAttribute("width", bounds.width);
+      empty.setAttribute("height", bounds.height);
+      empty.classList.add("object-vector-studio-v2__object-thumbnail-empty");
+      svg.append(empty);
+    }
+    return svg;
+  }
+
   renderSelectedObject() {
     const selected = this.selectedObject();
     if (!selected) {
       this.elements.objectNameInput.value = "";
+      this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
       this.elements.shapeCount.value = shapeCountLabel(0);
       this.elements.objectDetails.textContent = "No object selected.";
       this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
+      this.elements.selectionMetrics.textContent = "Selection metrics: none.";
       this.elements.jsonDetails.textContent = "{}";
       return;
     }
 
     const shape = this.selectedShape();
     this.elements.objectNameInput.value = selected.name;
+    this.elements.objectTypeSelect.value = objectTypeKey(selected);
     this.elements.shapeCount.value = shapeCountLabel(selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
     this.elements.selectedItemVisibility.textContent = shape
       ? `Selected item visible: ${selected.name} / ${shape.id} (${shape.type}); ${this.selectedShapeIds.size} shape selection.`
       : `Selected item visible: ${selected.name}`;
+    this.updateSelectionMetrics(selected, shape);
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
       selectedShape: shape,
@@ -659,13 +758,14 @@ export class ToolStarterApp {
       ["Shape Type", shapeTypeLabel(shape)],
       ["Shape Details", SHAPE_TYPE_DETAILS[shape.type]],
       ["Order", String(shape.order)],
+      ["Group", shape.groupId || "None"],
       ["Visible", shape.visible ? "Visible" : "Hidden"],
       ["Locked", shape.locked ? "Locked" : "Unlocked"],
       ["Color", shape.style.fill === "none" ? shape.style.stroke : shape.style.fill],
       ["Transform", `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`]
     ]));
     shapePanel.append(this.createShapeGeometryControls(shape));
-    shapePanel.append(this.createShapeTransformControls());
+    shapePanel.append(this.createShapeTransformControls(shape));
     shapePanel.append(this.createShapeActions(shape));
     wrapper.append(shapePanel);
     return wrapper;
@@ -714,19 +814,22 @@ export class ToolStarterApp {
     return section;
   }
 
-  createShapeTransformControls() {
+  createShapeTransformControls(shape) {
     const section = document.createElement("section");
     section.className = "object-vector-studio-v2__edit-panel";
     const heading = document.createElement("h4");
     heading.textContent = "Transform";
     const grid = document.createElement("div");
     grid.className = "object-vector-studio-v2__edit-grid";
+    const transform = this.shapeTransform(shape);
     [
       ["objectVectorStudioV2MoveXInput", "Move X", "10"],
       ["objectVectorStudioV2MoveYInput", "Move Y", "0"],
       ["objectVectorStudioV2RotateInput", "Rotate", "15"],
       ["objectVectorStudioV2ScaleInput", "Scale", "1.1"],
-      ["objectVectorStudioV2ResizeInput", "Resize", "10"]
+      ["objectVectorStudioV2ResizeInput", "Resize", "10"],
+      ["objectVectorStudioV2OriginXInput", "Origin X", String(transform.originX)],
+      ["objectVectorStudioV2OriginYInput", "Origin Y", String(transform.originY)]
     ].forEach(([id, labelText, value]) => {
       const label = document.createElement("label");
       label.className = "object-vector-studio-v2__edit-field";
@@ -746,7 +849,8 @@ export class ToolStarterApp {
       ["objectVectorStudioV2MoveShapeButton", "Move", () => this.moveSelectedShape()],
       ["objectVectorStudioV2RotateShapeButton", "Rotate", () => this.rotateSelectedShape()],
       ["objectVectorStudioV2ScaleShapeButton", "Scale", () => this.scaleSelectedShape()],
-      ["objectVectorStudioV2ResizeShapeButton", "Resize", () => this.resizeSelectedShape()]
+      ["objectVectorStudioV2ResizeShapeButton", "Resize", () => this.resizeSelectedShape()],
+      ["objectVectorStudioV2ApplyOriginButton", "Apply Origin", () => this.applySelectedShapeOrigin()]
     ].forEach(([id, label, handler]) => {
       const button = document.createElement("button");
       button.id = id;
@@ -804,7 +908,9 @@ export class ToolStarterApp {
       ["objectVectorStudioV2BringForwardButton", "Bring Forward", () => this.changeSelectedShapeOrder("forward")],
       ["objectVectorStudioV2SendBackwardButton", "Send Backward", () => this.changeSelectedShapeOrder("backward")],
       ["objectVectorStudioV2BringToFrontButton", "Bring To Front", () => this.changeSelectedShapeOrder("front")],
-      ["objectVectorStudioV2SendToBackButton", "Send To Back", () => this.changeSelectedShapeOrder("back")]
+      ["objectVectorStudioV2SendToBackButton", "Send To Back", () => this.changeSelectedShapeOrder("back")],
+      ["objectVectorStudioV2GroupShapesButton", "Group Shapes", () => this.groupSelectedShapes()],
+      ["objectVectorStudioV2UngroupShapesButton", "Ungroup", () => this.ungroupSelectedShapes()]
     ].forEach(([id, label, handler]) => {
       const button = document.createElement("button");
       button.id = id;
@@ -819,6 +925,9 @@ export class ToolStarterApp {
   renderWorkSurface() {
     const object = this.selectedObject();
     this.elements.renderSurface.replaceChildren();
+    if (this.gridRenderEnabled) {
+      this.renderGridLines();
+    }
     if (!object) {
       this.renderCenterOriginMarker();
       this.elements.renderSummary.textContent = "Render mode: idle. Capture mode: none.";
@@ -847,12 +956,48 @@ export class ToolStarterApp {
         this.statusLog.write(`FAIL Render mode svg-work-surface failed for shape ${shape.id} (${shape.type}): ${error.message}`);
       }
     });
+    this.renderObjectBounds(object);
     this.renderSelectionOverlay(object);
     this.renderCenterOriginMarker();
 
     const message = `Render mode svg-work-surface: rendered ${object.name} with ${renderedCount} visible shapes; capture mode none.`;
     this.elements.renderSummary.textContent = message;
     this.statusLog.write(`OK ${message}`);
+  }
+
+  renderGridLines() {
+    const group = document.createElementNS(SVG_NS, "g");
+    group.classList.add("object-vector-studio-v2__grid-lines");
+    group.dataset.gridRendered = "true";
+    for (let x = -160; x <= 160; x += 20) {
+      const line = document.createElementNS(SVG_NS, "line");
+      line.setAttribute("x1", x);
+      line.setAttribute("x2", x);
+      line.setAttribute("y1", -110);
+      line.setAttribute("y2", 110);
+      group.append(line);
+    }
+    for (let y = -100; y <= 100; y += 20) {
+      const line = document.createElementNS(SVG_NS, "line");
+      line.setAttribute("x1", -160);
+      line.setAttribute("x2", 160);
+      line.setAttribute("y1", y);
+      line.setAttribute("y2", y);
+      group.append(line);
+    }
+    this.elements.renderSurface.append(group);
+  }
+
+  renderObjectBounds(object) {
+    const bounds = this.objectBounds(object, { includeInvisible: false });
+    const box = document.createElementNS(SVG_NS, "rect");
+    box.classList.add("object-vector-studio-v2__object-bounds");
+    box.dataset.objectBounds = object.id;
+    box.setAttribute("x", bounds.x - 6);
+    box.setAttribute("y", bounds.y - 6);
+    box.setAttribute("width", bounds.width + 12);
+    box.setAttribute("height", bounds.height + 12);
+    this.elements.renderSurface.append(box);
   }
 
   renderCenterOriginMarker() {
@@ -961,6 +1106,41 @@ export class ToolStarterApp {
     };
   }
 
+  objectBounds(object, { includeInvisible = true } = {}) {
+    const shapes = sortedShapes(object).filter((shape) => includeInvisible || shape.visible);
+    if (!shapes.length) {
+      return {
+        height: 80,
+        width: 120,
+        x: -60,
+        y: -40
+      };
+    }
+
+    const bounds = shapes.map((shape) => this.transformedBounds(shape));
+    const minX = Math.min(...bounds.map((entry) => entry.x));
+    const minY = Math.min(...bounds.map((entry) => entry.y));
+    const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
+    const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
+    return {
+      height: Number((maxY - minY).toFixed(3)),
+      width: Number((maxX - minX).toFixed(3)),
+      x: Number(minX.toFixed(3)),
+      y: Number(minY.toFixed(3))
+    };
+  }
+
+  updateSelectionMetrics(object, shape) {
+    const bounds = shape ? this.transformedBounds(shape) : this.objectBounds(object);
+    const selectedLabel = shape ? `${shape.id} (${shape.type})` : object.name;
+    this.elements.selectionMetrics.textContent = [
+      `Selection: ${selectedLabel}`,
+      `bounds ${this.formatViewportNumber(bounds.width)} x ${this.formatViewportNumber(bounds.height)}`,
+      `origin ${this.formatViewportNumber(this.viewport.x)}, ${this.formatViewportNumber(this.viewport.y)}`,
+      `zoom ${Math.round(this.viewport.zoom * 100)}%`
+    ].join(" | ");
+  }
+
   renderSelectionOverlay(object) {
     const selectedShape = this.selectedShape();
     if (!selectedShape || selectedShape.visible === false) {
@@ -1035,7 +1215,11 @@ export class ToolStarterApp {
     const viewX = this.formatViewportNumber(this.viewport.x - width / 2);
     const viewY = this.formatViewportNumber(this.viewport.y - height / 2);
     this.elements.renderSurface.setAttribute("viewBox", `${viewX} ${viewY} ${this.formatViewportNumber(width)} ${this.formatViewportNumber(height)}`);
-    this.elements.coordinateDisplay.textContent = `Origin: ${this.formatViewportNumber(this.viewport.x)}, ${this.formatViewportNumber(this.viewport.y)} | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
+    this.elements.coordinateDisplay.textContent = `Origin: ${this.formatViewportNumber(this.viewport.x)}, ${this.formatViewportNumber(this.viewport.y)} | Canvas 0,0 centered | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
+    const object = this.selectedObject();
+    if (object) {
+      this.updateSelectionMetrics(object, this.selectedShape());
+    }
   }
 
   formatViewportNumber(value) {
@@ -1076,7 +1260,7 @@ export class ToolStarterApp {
     const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
     const x = this.viewport.x - viewWidth / 2 + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
     const y = this.viewport.y - viewHeight / 2 + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
-    this.elements.coordinateDisplay.textContent = `Coordinates: ${Math.round(x)}, ${Math.round(y)} | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
+    this.elements.coordinateDisplay.textContent = `Pointer ${Math.round(x)}, ${Math.round(y)} | Canvas origin 0,0 centered | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
   }
 
   selectObject(objectId, sourceLabel) {
@@ -1138,6 +1322,110 @@ export class ToolStarterApp {
     this.commitPayloadUpdate(nextPayload, id, "", `OK Added object ${name} with id ${id}.`, "Add object failed schema validation");
   }
 
+  createObjectFromTemplate() {
+    if (!this.currentPayload) {
+      this.statusLog.write("FAIL Create template blocked: load a schema-valid Object Vector Studio V2 payload before adding template objects.");
+      return;
+    }
+
+    const templateKey = this.elements.templateSelect.value || "ship";
+    const template = OBJECT_TEMPLATES[templateKey];
+    if (!template) {
+      this.statusLog.write(`FAIL Create template blocked: unknown template ${templateKey}.`);
+      return;
+    }
+
+    const color = this.firstPaletteColor();
+    if (!color) {
+      this.statusLog.write(`FAIL Create template ${template.label} blocked: palette swatches do not provide a usable color value.`);
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const object = this.buildTemplateObject(templateKey, nextPayload.objects, color);
+    nextPayload.objects.push(object);
+    const selectedShapeId = sortedShapes(object)[0]?.id || "";
+    this.commitPayloadUpdate(
+      nextPayload,
+      object.id,
+      selectedShapeId,
+      `OK Created ${template.label} template object ${object.name} with ${object.shapes.length} shapes.`,
+      `${template.label} template object failed schema validation`
+    );
+  }
+
+  buildTemplateObject(templateKey, objects, color) {
+    const template = OBJECT_TEMPLATES[templateKey];
+    const name = `${template.label} Template`;
+    const id = this.uniqueObjectId(name, objects);
+    const accent = this.secondPaletteColor(color);
+    const shape = (type, suffix, order, geometry, style = {}) => ({
+      geometry,
+      id: `${id}-${suffix}`,
+      locked: false,
+      order,
+      style: {
+        fill: style.fill ?? (["arc", "line"].includes(type) ? "none" : color),
+        stroke: style.stroke ?? accent,
+        strokeWidth: style.strokeWidth ?? 3
+      },
+      transform: {
+        originX: 0,
+        originY: 0,
+        rotation: 0,
+        scaleX: 1,
+        scaleY: 1,
+        x: 0,
+        y: 0
+      },
+      type,
+      visible: true
+    });
+    const templates = {
+      asteroid: [
+        shape("polygon", "body", 1, { points: [{ x: -62, y: -22 }, { x: -34, y: -58 }, { x: 18, y: -48 }, { x: 62, y: -12 }, { x: 42, y: 42 }, { x: -22, y: 54 }, { x: -70, y: 16 }] }),
+        shape("circle", "crater", 2, { cx: 18, cy: -8, r: 10 }, { fill: "none", stroke: accent, strokeWidth: 2 })
+      ],
+      bullet: [
+        shape("rectangle", "core", 1, { height: 12, width: 76, x: -38, y: -6 }),
+        shape("line", "trail", 2, { x1: -70, x2: -42, y1: 0, y2: 0 }, { stroke: accent, strokeWidth: 4 })
+      ],
+      pickup: [
+        shape("circle", "halo", 1, { cx: 0, cy: 0, r: 46 }, { fill: "none", stroke: accent, strokeWidth: 4 }),
+        shape("polygon", "gem", 2, { points: [{ x: 0, y: -42 }, { x: 34, y: -10 }, { x: 20, y: 42 }, { x: -20, y: 42 }, { x: -34, y: -10 }] })
+      ],
+      ship: [
+        shape("polygon", "hull", 1, { points: [{ x: 0, y: -64 }, { x: 48, y: 48 }, { x: 0, y: 24 }, { x: -48, y: 48 }] }),
+        shape("line", "spine", 2, { x1: 0, x2: 0, y1: -44, y2: 34 }, { stroke: accent, strokeWidth: 4 })
+      ],
+      ufo: [
+        shape("ellipse", "saucer", 1, { cx: 0, cy: 12, rx: 74, ry: 24 }),
+        shape("ellipse", "dome", 2, { cx: 0, cy: -10, rx: 34, ry: 24 }, { fill: accent, stroke: color, strokeWidth: 3 })
+      ]
+    };
+    return {
+      id,
+      name,
+      shapes: templates[templateKey],
+      type: template.type
+    };
+  }
+
+  updateSelectedObjectType() {
+    const selected = this.selectedObject();
+    if (!selected) {
+      this.statusLog.write("WARN Object type update skipped: no object is selected.");
+      this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
+      return;
+    }
+
+    const type = this.validObjectType(this.elements.objectTypeSelect.value);
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
+    nextObject.type = type;
+    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Object ${selected.name} type set to ${objectTypeLabel(nextObject)}.`, "Object type update failed schema validation");
+  }
+
   renameSelectedObject() {
     const selected = this.selectedObject();
     if (!selected) {
@@ -1194,7 +1482,26 @@ export class ToolStarterApp {
       return;
     }
 
-    this.statusLog.write(`WARN Flatten object skipped: ${selected.name} has no durable flatten field in the trimmed Object Vector Studio V2 asset schema.`);
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
+    if (!nextObject.shapes.length) {
+      this.statusLog.write(`WARN Flatten object skipped: ${selected.name} has no shapes to flatten.`);
+      return;
+    }
+    const rotatedShape = sortedShapes(nextObject).find((shape) => this.shapeTransform(shape).rotation !== 0);
+    if (rotatedShape) {
+      this.statusLog.write(`FAIL Flatten object blocked: shape ${rotatedShape.id} has rotation ${this.shapeTransform(rotatedShape).rotation}; rotate-safe flatten is not available in this schema pass.`);
+      return;
+    }
+    let flattenedCount = 0;
+    nextObject.shapes = sortedShapes(nextObject).map((shape, index) => {
+      const flattened = this.flattenShapeTransform(shape);
+      flattened.order = index + 1;
+      flattenedCount += 1;
+      return flattened;
+    });
+    const selectedShapeId = sortedShapes(nextObject)[0]?.id || "";
+    this.commitPayloadUpdate(nextPayload, selected.id, selectedShapeId, `OK Flattened object ${selected.name}: baked transforms into ${flattenedCount} shapes.`, "Flatten object failed schema validation");
   }
 
   createShape(type) {
@@ -1266,6 +1573,48 @@ export class ToolStarterApp {
       return withTransform({ ...base, geometry: { fontSize: 24, text: "Text", x: -30, y: 40 } });
     }
     return base;
+  }
+
+  flattenShapeTransform(shape) {
+    const nextShape = JSON.parse(JSON.stringify(shape));
+    const transform = this.shapeTransform(nextShape);
+    const applyX = (value) => Number((transform.x + transform.originX + (value - transform.originX) * transform.scaleX).toFixed(3));
+    const applyY = (value) => Number((transform.y + transform.originY + (value - transform.originY) * transform.scaleY).toFixed(3));
+    if (nextShape.type === "rectangle") {
+      nextShape.geometry.x = applyX(nextShape.geometry.x);
+      nextShape.geometry.y = applyY(nextShape.geometry.y);
+      nextShape.geometry.width = Number((nextShape.geometry.width * transform.scaleX).toFixed(3));
+      nextShape.geometry.height = Number((nextShape.geometry.height * transform.scaleY).toFixed(3));
+    } else if (nextShape.type === "circle") {
+      nextShape.geometry.cx = applyX(nextShape.geometry.cx);
+      nextShape.geometry.cy = applyY(nextShape.geometry.cy);
+      nextShape.geometry.r = Number((nextShape.geometry.r * Math.max(transform.scaleX, transform.scaleY)).toFixed(3));
+    } else if (nextShape.type === "ellipse") {
+      nextShape.geometry.cx = applyX(nextShape.geometry.cx);
+      nextShape.geometry.cy = applyY(nextShape.geometry.cy);
+      nextShape.geometry.rx = Number((nextShape.geometry.rx * transform.scaleX).toFixed(3));
+      nextShape.geometry.ry = Number((nextShape.geometry.ry * transform.scaleY).toFixed(3));
+    } else if (nextShape.type === "line") {
+      nextShape.geometry.x1 = applyX(nextShape.geometry.x1);
+      nextShape.geometry.y1 = applyY(nextShape.geometry.y1);
+      nextShape.geometry.x2 = applyX(nextShape.geometry.x2);
+      nextShape.geometry.y2 = applyY(nextShape.geometry.y2);
+    } else if (nextShape.type === "polygon") {
+      nextShape.geometry.points = nextShape.geometry.points.map((point) => ({
+        x: applyX(point.x),
+        y: applyY(point.y)
+      }));
+    } else if (nextShape.type === "arc") {
+      nextShape.geometry.cx = applyX(nextShape.geometry.cx);
+      nextShape.geometry.cy = applyY(nextShape.geometry.cy);
+      nextShape.geometry.r = Number((nextShape.geometry.r * Math.max(transform.scaleX, transform.scaleY)).toFixed(3));
+    } else if (nextShape.type === "text") {
+      nextShape.geometry.x = applyX(nextShape.geometry.x);
+      nextShape.geometry.y = applyY(nextShape.geometry.y);
+      nextShape.geometry.fontSize = Number((nextShape.geometry.fontSize * Math.max(transform.scaleX, transform.scaleY)).toFixed(3));
+    }
+    nextShape.transform = defaultShapeTransform(nextShape);
+    return nextShape;
   }
 
   applyPaletteColor(color, label) {
@@ -1416,6 +1765,59 @@ export class ToolStarterApp {
       this.resizeShapeGeometry(shape, input.value);
       shape.transform = this.ensureShapeTransform(shape);
     }, `OK Resized shape ${this.selectedShapeId} by ${input.value}.`);
+  }
+
+  applySelectedShapeOrigin() {
+    const originX = this.numberInputValue("objectVectorStudioV2OriginXInput", "Origin X");
+    const originY = this.numberInputValue("objectVectorStudioV2OriginYInput", "Origin Y");
+    if (!originX.ok || !originY.ok) {
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${originX.error || originY.error}`);
+      return;
+    }
+    this.updateSelectedShapeTransform("origin", (shape) => {
+      shape.transform = this.ensureShapeTransform(shape);
+      shape.transform.originX = Number(originX.value.toFixed(3));
+      shape.transform.originY = Number(originY.value.toFixed(3));
+    }, `OK Updated shape ${this.selectedShapeId} origin/pivot to ${originX.value}, ${originY.value}.`);
+  }
+
+  groupSelectedShapes() {
+    const object = this.selectedObject();
+    if (!object || this.selectedShapeIds.size < 2) {
+      this.statusLog.write("WARN Group shapes skipped: select at least two shapes.");
+      return;
+    }
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    const groupId = this.uniqueGroupId(nextObject);
+    nextObject.shapes.forEach((shape) => {
+      if (this.selectedShapeIds.has(shape.id)) {
+        shape.groupId = groupId;
+      }
+    });
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeId, `OK Grouped ${this.selectedShapeIds.size} shapes into ${groupId}.`, "Group shapes failed schema validation");
+  }
+
+  ungroupSelectedShapes() {
+    const object = this.selectedObject();
+    const selected = this.selectedShape();
+    if (!object || !selected) {
+      this.statusLog.write("WARN Ungroup skipped: no shape is selected.");
+      return;
+    }
+    const groupId = selected.groupId;
+    if (!groupId) {
+      this.statusLog.write(`WARN Ungroup skipped: shape ${selected.id} is not grouped.`);
+      return;
+    }
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    nextObject.shapes.forEach((shape) => {
+      if (shape.groupId === groupId) {
+        delete shape.groupId;
+      }
+    });
+    this.commitPayloadUpdate(nextPayload, object.id, selected.id, `OK Ungrouped shapes from ${groupId}.`, "Ungroup shapes failed schema validation");
   }
 
   applyShapeGeometryEdits() {
@@ -1680,6 +2082,16 @@ export class ToolStarterApp {
     return swatchColor(swatch);
   }
 
+  secondPaletteColor(firstColor) {
+    const swatch = this.runtimePalette?.swatches.find((candidate) => swatchColor(candidate) && swatchColor(candidate) !== firstColor);
+    return swatchColor(swatch) || firstColor;
+  }
+
+  validObjectType(value) {
+    const type = String(value || "").trim().toLowerCase();
+    return OBJECT_TYPES.includes(type) ? type : DEFAULT_OBJECT_TYPE;
+  }
+
   uniqueObjectId(name, objects) {
     const baseId = slugifyObjectName(name);
     const usedIds = new Set(objects.map((object) => object.id));
@@ -1707,12 +2119,26 @@ export class ToolStarterApp {
     return candidate;
   }
 
+  uniqueGroupId(object) {
+    const usedIds = new Set((object?.shapes || []).map((shape) => shape.groupId).filter(Boolean));
+    let suffix = usedIds.size + 1;
+    let candidate = `group-${suffix}`;
+    while (usedIds.has(candidate)) {
+      suffix += 1;
+      candidate = `group-${suffix}`;
+    }
+    return candidate;
+  }
+
   updateObjectActionState() {
     const hasSelectedObject = Boolean(this.selectedObject());
+    this.elements.createTemplateButton.disabled = !this.currentPayload;
+    this.elements.objectTypeSelect.disabled = !hasSelectedObject && !this.currentPayload;
     this.elements.renameObjectButton.disabled = !hasSelectedObject;
     this.elements.duplicateObjectButton.disabled = !hasSelectedObject;
     this.elements.deleteObjectButton.disabled = !hasSelectedObject;
     this.elements.flattenObjectButton.disabled = !hasSelectedObject;
+    this.elements.exportSvgButton.disabled = !hasSelectedObject;
   }
 
   async copyJson() {
@@ -1748,7 +2174,55 @@ export class ToolStarterApp {
     anchor.download = "object-vector-studio-v2.json";
     anchor.click();
     URL.revokeObjectURL(url);
-    this.statusLog.write(`OK Export prepared for ${payload.objects.length} Object Vector Studio V2 objects.`);
+    this.statusLog.write(`OK Export JSON prepared for ${payload.objects.length} Object Vector Studio V2 objects.`);
+  }
+
+  exportSelectedObjectSvg() {
+    const object = this.selectedObject();
+    if (!object) {
+      this.statusLog.write("FAIL Export SVG blocked: no Object Vector Studio V2 object is selected.");
+      return;
+    }
+
+    try {
+      const svg = this.createObjectSvgExport(object);
+      const blob = new Blob([svg], { type: "image/svg+xml" });
+      const url = URL.createObjectURL(blob);
+      const anchor = this.window.document.createElement("a");
+      anchor.href = url;
+      anchor.download = `${slugifyObjectName(object.name)}.svg`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      const visibleShapeCount = sortedShapes(object).filter((shape) => shape.visible).length;
+      this.statusLog.write(`OK Export SVG generated for ${object.name}: ${visibleShapeCount} visible shapes.`);
+    } catch (error) {
+      this.statusLog.write(`FAIL Export SVG failed for ${object.name}: ${error.message}`);
+    }
+  }
+
+  createObjectSvgExport(object) {
+    const validation = this.schemaService.validatePayload(this.currentPayload);
+    if (!validation.ok) {
+      throw new Error(`schema validation failed: ${validation.errors.join(" ")}`);
+    }
+    const visibleShapes = sortedShapes(object).filter((shape) => shape.visible);
+    if (!visibleShapes.length) {
+      throw new Error("selected object has no visible shapes.");
+    }
+    const bounds = this.objectBounds(object, { includeInvisible: false });
+    const padding = 12;
+    const svg = this.window.document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("xmlns", SVG_NS);
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", `${object.name} Object Vector Studio V2 export`);
+    svg.setAttribute("viewBox", `${bounds.x - padding} ${bounds.y - padding} ${bounds.width + padding * 2} ${bounds.height + padding * 2}`);
+    visibleShapes.forEach((shape) => {
+      const element = this.createSvgShape(shape);
+      element.removeAttribute("tabindex");
+      element.removeAttribute("class");
+      svg.append(element);
+    });
+    return new this.window.XMLSerializer().serializeToString(svg);
   }
 
   validatedJsonActionPayload(actionLabel) {
