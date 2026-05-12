@@ -101,8 +101,8 @@ test.describe("Object Vector Studio V2", () => {
         ]
       },
       objects: [
-        { id: "ship", name: "Asteroids Ship", type: "ship" },
-        { id: "pickup", name: "Energy Pickup", type: "pickup" }
+        { id: "ship", name: "Asteroids Ship", shapes: [], type: "ship" },
+        { id: "pickup", name: "Energy Pickup", shapes: [], type: "pickup" }
       ]
     }, null, 2), "utf8");
     await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(validPayloadPath);
@@ -120,6 +120,11 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("3 objects");
     await expect(page.locator('[data-object-id="local-object"]')).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Local Object"');
+
+    await page.locator('[data-shape-tool="rectangle"]').click();
+    await expect(page.locator("#objectVectorStudioV2ShapeCount")).toHaveValue("1 shape");
+    await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-1']")).toHaveClass(/is-selected/);
+    await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape rectangle-1 on Local Object\./);
 
     await page.locator("#objectVectorStudioV2DeleteObjectButton").click();
     await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("2 objects");

@@ -67,6 +67,10 @@
               <span>Objects</span>
               <input id="objectVectorStudioV2ObjectCount" type="text" autocomplete="off" value="0 objects" readonly>
             </label>
+            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2ShapeCount">
+              <span>Shapes</span>
+              <input id="objectVectorStudioV2ShapeCount" type="text" autocomplete="off" value="0 shapes" readonly>
+            </label>
             <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2ObjectNameInput">
               <span>Object Name</span>
               <input id="objectVectorStudioV2ObjectNameInput" type="text" autocomplete="off" placeholder="Object name">
@@ -99,28 +103,32 @@
                 <span aria-hidden="true">Re</span>
                 <span class="object-vector-studio-v2__tool-label">Rectangle</span>
               </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="circle">
+                <span aria-hidden="true">Ci</span>
+                <span class="object-vector-studio-v2__tool-label">Circle</span>
+              </button>
               <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="ellipse">
                 <span aria-hidden="true">El</span>
                 <span class="object-vector-studio-v2__tool-label">Ellipse</span>
               </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="path">
-                <span aria-hidden="true">P</span>
-                <span class="object-vector-studio-v2__tool-label">Path</span>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="line">
+                <span aria-hidden="true">Li</span>
+                <span class="object-vector-studio-v2__tool-label">Line</span>
               </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="move">
-                <span aria-hidden="true">M</span>
-                <span class="object-vector-studio-v2__tool-label">Move</span>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="polygon">
+                <span aria-hidden="true">Po</span>
+                <span class="object-vector-studio-v2__tool-label">Polygon</span>
               </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="rotate">
-                <span aria-hidden="true">R</span>
-                <span class="object-vector-studio-v2__tool-label">Rotate</span>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="arc">
+                <span aria-hidden="true">Ar</span>
+                <span class="object-vector-studio-v2__tool-label">Arc</span>
               </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="group">
-                <span aria-hidden="true">G</span>
-                <span class="object-vector-studio-v2__tool-label">Group</span>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="text">
+                <span aria-hidden="true">Tx</span>
+                <span class="object-vector-studio-v2__tool-label">Text</span>
               </button>
             </div>
-            <p class="tool-starter__hint">Tool toggles are shell-only placeholders until object editing is implemented.</p>
+            <p class="tool-starter__hint">Primitive buttons create schema-valid shapes on the selected object.</p>
           </div>
         </section>
 
@@ -144,6 +152,8 @@
           <div id="objectVectorStudioV2WorkAreaContent" class="accordion-v2__content">
             <div id="objectVectorStudioV2WorkArea" class="object-vector-studio-v2__work-area" role="img" aria-label="Object vector preview">
               <div id="objectVectorStudioV2SelectedItemVisibility" class="object-vector-studio-v2__selected-visibility">No schema-valid object selected.</div>
+              <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" role="img" aria-label="Object shape render surface"></svg>
+              <div id="objectVectorStudioV2RenderSummary" class="object-vector-studio-v2__render-summary">Render mode: idle. Capture mode: none.</div>
             </div>
           </div>
         </section>

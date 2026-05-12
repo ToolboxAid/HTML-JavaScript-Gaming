@@ -369,6 +369,29 @@ textarea:hover {
   overflow: auto;
 }
 
+.object-vector-studio-v2__palette-swatch-list {
+  display: grid;
+  gap: 8px;
+}
+
+.object-vector-studio-v2__palette-swatch {
+  min-height: 34px;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.object-vector-studio-v2__palette-swatch::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  background: var(--object-vector-studio-v2-swatch, transparent);
+}
+
 .object-vector-studio-v2__object-actions,
 .object-vector-studio-v2__tool-display-actions {
   display: flex;
@@ -478,7 +501,9 @@ textarea:hover {
   min-height: 360px;
   flex: 1 1 auto;
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   place-items: center;
+  gap: 12px;
   border: 1px dashed var(--tool-starter-line);
   border-radius: 8px;
   background: var(--tool-starter-panel-strong);
@@ -497,10 +522,63 @@ textarea:hover {
   overflow-wrap: anywhere;
 }
 
+.object-vector-studio-v2__render-surface {
+  width: min(100%, 720px);
+  min-height: 280px;
+  align-self: stretch;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    rgba(0, 0, 0, 0.16);
+  background-size: 20px 20px;
+}
+
+.object-vector-studio-v2__render-summary {
+  width: min(720px, 100%);
+  color: var(--tool-starter-muted);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.object-vector-studio-v2__shape {
+  cursor: pointer;
+  transition: filter 120ms ease, opacity 120ms ease;
+}
+
+.object-vector-studio-v2__shape:hover,
+.object-vector-studio-v2__shape.is-selected {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.92));
+}
+
 .object-vector-studio-v2__object-detail-grid {
   display: grid;
   grid-template-columns: 104px minmax(0, 1fr);
   gap: 8px 10px;
+}
+
+.object-vector-studio-v2__object-detail-stack,
+.object-vector-studio-v2__shape-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.object-vector-studio-v2__shape-panel {
+  border-top: 1px solid var(--tool-starter-line);
+  padding-top: 12px;
+}
+
+.object-vector-studio-v2__shape-panel h3,
+.object-vector-studio-v2__shape-panel p {
+  margin: 0;
+}
+
+.object-vector-studio-v2__shape-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
 }
 
 .object-vector-studio-v2__detail-label {
