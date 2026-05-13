@@ -13,6 +13,7 @@
 - Confirmed negative snapped Move X/Move Y values move the selected shape back across both axes instead of snapping half-step negatives to zero.
 - Confirmed Object Transform summary renders as `Transform x 0, y 0, rot 0, scale 1 x 1` and updates after transform actions.
 - Confirmed Object Preview controls use compact final-word labels and include working Up/Down pan controls after In.
+- Confirmed Object actions render as a single compact Add/Rename/Dup/Delete row.
 - Confirmed the center origin dot renders at radius 9.
 - Confirmed preview mouse drag, negative drag, rectangle handle resize, and line endpoint movement still edit the selected shape.
 - Confirmed Polygon Geometry renders separate X/Y point inputs, applies valid edits, marks invalid point cells with `aria-invalid`, and preserves invalid text without partial apply.

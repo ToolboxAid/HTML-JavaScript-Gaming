@@ -16,4 +16,4 @@ Coverage source: `docs/dev/reports/playwright_v8_coverage_report.txt`, refreshed
 - Main command: `npm run test:workspace-v2`.
 - Result: 47 passed.
 - Focused Object Vector Studio V2 layout, preview coordinate, mouse-editing, and asset-authoring scenarios passed.
-- Coverage includes the runtime paths for transform summary updates, negative snapped movement, compact preview controls, Up/Down panning, larger center dot rendering, preview mouse edits, polygon X/Y point-list geometry editing, invalid point rejection, and two-row inline ellipse fields.
+- Coverage includes the runtime paths for transform summary updates, negative snapped movement, compact preview controls, Up/Down panning, larger center dot rendering, preview mouse edits, polygon X/Y point-list geometry editing, invalid point rejection, and two-row inline ellipse fields. The compact Add/Rename/Dup/Delete object action row is covered by Playwright layout assertions.
