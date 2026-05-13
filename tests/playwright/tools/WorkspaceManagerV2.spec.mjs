@@ -1857,6 +1857,199 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("supports Object Vector Studio V2 asset library inheritance foundation", async ({ page }, testInfo) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "library-palette",
+          swatches: [
+            { id: "white", value: "#ffffff" },
+            { id: "gold", value: "#fbbf24" }
+          ]
+        }));
+      });
+
+      const rectangleShape = {
+        geometry: { height: 36, width: 52, x: -26, y: -18 },
+        id: "ship-hull",
+        locked: false,
+        order: 1,
+        style: { fill: "transparent", stroke: "#ffffff", strokeWidth: 3 },
+        transform: { originX: 0, originY: 0, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+        type: "rectangle",
+        visible: true
+      };
+      const activeState = {
+        frames: [
+          {
+            durationFrames: 1,
+            id: "active-frame-1",
+            order: 1,
+            shapeOverrides: [
+              {
+                shapeId: "ship-hull",
+                transform: { originX: 0, originY: 0, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                visible: true
+              }
+            ]
+          }
+        ],
+        id: "active",
+        name: "Active"
+      };
+      const inheritedPayloadPath = testInfo.outputPath("object-vector-inherited-library.json");
+      await writeFile(inheritedPayloadPath, JSON.stringify({
+        assetLibrary: {
+          assets: [
+            {
+              category: "ship",
+              id: "asset.base-ship",
+              name: "Base Ship Asset",
+              objectId: "base-ship",
+              tags: ["base", "ship"]
+            },
+            {
+              category: "ship",
+              id: "asset.derived-ship",
+              name: "Derived Ship Asset",
+              objectId: "derived-ship",
+              tags: ["derived", "ship"]
+            }
+          ]
+        },
+        name: "Inherited Library Payload",
+        objects: [
+          {
+            category: "ship",
+            id: "base-ship",
+            name: "Base Ship",
+            shapes: [rectangleShape],
+            states: [activeState],
+            tags: ["base", "shared"],
+            type: "ship"
+          },
+          {
+            baseObjectId: "base-ship",
+            category: "ship",
+            id: "derived-ship",
+            name: "Derived Ship",
+            shapes: [
+              {
+                ...rectangleShape,
+                style: { fill: "transparent", stroke: "#fbbf24", strokeWidth: 4 }
+              }
+            ],
+            states: [
+              {
+                ...activeState,
+                frames: [
+                  {
+                    ...activeState.frames[0],
+                    shapeOverrides: [
+                      {
+                        shapeId: "ship-hull",
+                        transform: { originX: 0, originY: 0, rotation: 8, scaleX: 1.1, scaleY: 1.1, x: 4, y: 0 },
+                        visible: true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            tags: ["derived", "override"],
+            type: "ship"
+          }
+        ],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(inheritedPayloadPath);
+      await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("2 objects");
+      await expect(page.locator("#objectVectorStudioV2AssetLibraryBrowser [data-asset-id]")).toHaveCount(2);
+      await expect(page.locator("#objectVectorStudioV2AssetUsageReport")).toContainText("2 library assets registered");
+      await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("derived-ship inherits base-ship");
+
+      await page.locator("[data-asset-id='asset.derived-ship']").evaluate((button) => button.click());
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Base Object");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("base-ship");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Base shapes/states are read-only until Duplicate As Local");
+
+      await page.locator("#objectVectorStudioV2RuntimePreviewButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime asset asset\.derived-ship resolved to derived-ship\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime inheritance resolved for derived-ship from base-ship; cached inherited render payload\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime preview launched for Derived Ship state active frame active-frame-1\./);
+
+      await page.locator("#objectVectorStudioV2CreateLibraryAssetButton").click();
+      await expect(page.locator("#objectVectorStudioV2AssetLibraryBrowser [data-asset-id]")).toHaveCount(3);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created reusable library asset asset\.derived-ship-2 for Derived Ship\./);
+
+      await page.locator("#objectVectorStudioV2DuplicateAsLocalButton").click();
+      await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("3 objects");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Derived Ship Local Copy"');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"baseObjectId"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Duplicated Derived Ship as local object Derived Ship Local Copy; inherited fields are now editable locally\./);
+
+      const circularPayloadPath = testInfo.outputPath("object-vector-circular-inheritance.json");
+      await writeFile(circularPayloadPath, JSON.stringify({
+        name: "Circular Payload",
+        objects: [
+          {
+            baseObjectId: "derived-circular",
+            id: "base-circular",
+            name: "Base Circular",
+            shapes: [rectangleShape],
+            type: "ship"
+          },
+          {
+            baseObjectId: "base-circular",
+            id: "derived-circular",
+            name: "Derived Circular",
+            shapes: [rectangleShape],
+            type: "ship"
+          }
+        ],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(circularPayloadPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-circular-inheritance\.json: root\.objects\[0\]\.baseObjectId creates a circular inheritance chain at base-circular\./);
+
+      const missingDependencyPayloadPath = testInfo.outputPath("object-vector-missing-dependency.json");
+      await writeFile(missingDependencyPayloadPath, JSON.stringify({
+        name: "Missing Dependency Payload",
+        objects: [
+          {
+            baseObjectId: "missing-base",
+            id: "derived-missing",
+            name: "Derived Missing",
+            shapes: [rectangleShape],
+            type: "ship"
+          }
+        ],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(missingDependencyPayloadPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-missing-dependency\.json: root\.objects\[0\]\.baseObjectId missing-base must reference an existing base object\./);
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("resolves asset-manager-v2 audio catalog paths and plays Asteroids sounds", async ({ page }) => {
     const server = await startRepoServer();
     const pageErrors = [];
@@ -2256,12 +2449,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       const diagnostics = await page.evaluate(() => window.__asteroidsObjectVectorRuntime);
       expect(diagnostics.loaded).toBe(true);
+      expect(diagnostics.assetCount).toBe(6);
       expect(diagnostics.objectCount).toBe(6);
       expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ship).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);
       const eventMessages = diagnostics.events.map((entry) => entry.message).join("\n");
       expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 6 objects.");
+      expect(eventMessages).toContain("Object Vector runtime asset asset.asteroids.ship resolved to object.asteroids.ship.");
+      expect(eventMessages).toContain("Object Vector runtime asset asset.asteroids.ufo.small resolved to object.asteroids.ufo.small.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ufo.small: 2 shapes state=active frame=active-frame-1.");
@@ -4476,6 +4672,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object.asteroids.ufo.large",
         "object.asteroids.ufo.small"
       ]));
+      expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].assetLibrary.assets.map((asset) => asset.id)).toEqual(expect.arrayContaining([
+        "asset.asteroids.ship",
+        "asset.asteroids.asteroid.large",
+        "asset.asteroids.asteroid.medium",
+        "asset.asteroids.asteroid.small",
+        "asset.asteroids.ufo.large",
+        "asset.asteroids.ufo.small"
+      ]));
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].palette).toBeUndefined();
       expect(
         selectedGameHydration.dataByTool["text2speech-V2"] === null
@@ -4619,6 +4823,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object.asteroids.asteroid.small",
         "object.asteroids.ufo.large",
         "object.asteroids.ufo.small"
+      ]));
+      expect(manifestWorkspace.tools["object-vector-studio-v2"].assetLibrary.assets.map((asset) => asset.id)).toEqual(expect.arrayContaining([
+        "asset.asteroids.ship",
+        "asset.asteroids.asteroid.large",
+        "asset.asteroids.asteroid.medium",
+        "asset.asteroids.asteroid.small",
+        "asset.asteroids.ufo.large",
+        "asset.asteroids.ufo.small"
       ]));
       if (Object.hasOwn(manifestWorkspace.tools, "text2speech-V2")) {
         expect(manifestWorkspace.tools["text2speech-V2"]).toEqual(expect.any(Array));
@@ -4856,6 +5068,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Asteroids Ship");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Large Asteroid");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Large UFO");
+      await expect(page.locator("#objectVectorStudioV2AssetLibraryBrowser [data-asset-id]")).toHaveCount(6);
+      await expect(page.locator("#objectVectorStudioV2AssetLibraryBrowser")).toContainText("asset.asteroids.ship");
+      await expect(page.locator("#objectVectorStudioV2AssetUsageReport")).toContainText("6 library assets registered");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"palette"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime palette loaded from workspace\.tools\.palette-manager-v2\.data: 10 swatches\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from workspace\.tools\.object-vector-studio-v2: 6 objects\./);

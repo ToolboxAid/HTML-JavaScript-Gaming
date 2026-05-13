@@ -23,6 +23,9 @@
       "items": {
         "$ref": "#/$defs/object"
       }
+    },
+    "assetLibrary": {
+      "$ref": "#/$defs/assetLibrary"
     }
   },
   "$defs": {
@@ -43,6 +46,17 @@
           "type": "string",
           "enum": ["actor", "enemy", "object", "pickup", "ship", "ui", "weapon"]
         },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "$ref": "#/$defs/tags"
+        },
+        "baseObjectId": {
+          "type": "string",
+          "minLength": 1
+        },
         "shapes": {
           "type": "array",
           "items": {
@@ -55,6 +69,52 @@
             "$ref": "#/$defs/objectState"
           }
         }
+      }
+    },
+    "assetLibrary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assets"],
+      "properties": {
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/libraryAsset"
+          }
+        }
+      }
+    },
+    "libraryAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "objectId", "category", "tags"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "objectId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "$ref": "#/$defs/tags"
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
       }
     },
     "objectState": {

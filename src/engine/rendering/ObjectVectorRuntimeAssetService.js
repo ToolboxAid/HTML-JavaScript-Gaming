@@ -207,6 +207,7 @@ export class ObjectVectorRuntimeAssetService {
     this.assetCache = new Map();
     this.events = [];
     this.fetchRef = fetchRef;
+    this.inheritedObjectCache = new Map();
     this.logger = logger;
     this.payloadCache = new Map();
     this.schema = null;
@@ -275,12 +276,15 @@ export class ObjectVectorRuntimeAssetService {
 
     const assetSet = this.buildAssetSet(validation.payload, sourceLabel);
     this.payloadCache.set(cacheKey, assetSet);
-    this.log("OK", `Object Vector runtime cache miss for ${sourceLabel}; cached ${assetSet.objectsById.size} objects.`);
-    this.log("OK", `Object Vector runtime asset load from ${sourceLabel}: ${assetSet.objectsById.size} objects.`);
+    this.log("OK", `Object Vector runtime cache miss for ${sourceLabel}; cached ${assetSet.objectsById.size} objects and ${assetSet.assetsById.size} library assets.`);
+    this.log("OK", `Object Vector runtime asset load from ${sourceLabel}: ${assetSet.objectsById.size} objects. ${assetSet.assetsById.size} library assets.`);
     return assetSet;
   }
 
   buildAssetSet(payload, sourceLabel) {
+    const assetsById = new Map();
+    const assetUsageByObjectId = new Map();
+    const dependencyGraph = new Map();
     const objectsById = new Map();
     const objectsByName = new Map();
     const objectsByType = new Map();
@@ -290,8 +294,18 @@ export class ObjectVectorRuntimeAssetService {
       const typedObjects = objectsByType.get(object.type) || [];
       typedObjects.push(object);
       objectsByType.set(object.type, typedObjects);
+      dependencyGraph.set(object.id, object.baseObjectId ? [object.baseObjectId] : []);
+    });
+    (payload.assetLibrary?.assets || []).forEach((asset) => {
+      assetsById.set(asset.id, asset);
+      const usage = assetUsageByObjectId.get(asset.objectId) || [];
+      usage.push(asset.id);
+      assetUsageByObjectId.set(asset.objectId, usage);
     });
     return {
+      assetUsageByObjectId,
+      assetsById,
+      dependencyGraph,
       objectsById,
       objectsByName,
       objectsByType,
@@ -300,18 +314,29 @@ export class ObjectVectorRuntimeAssetService {
     };
   }
 
-  resolveObject(assetSet, { objectId = "", name = "", type = "" } = {}) {
+  resolveObject(assetSet, { assetId = "", objectId = "", name = "", type = "" } = {}) {
     if (!assetSet) {
       this.log("FAIL", "Object Vector runtime object resolution failed: no validated asset set is loaded.");
       return null;
     }
-    const cacheKey = `${assetSet.sourceLabel}:${objectId || name || type || "unknown"}`;
+    const cacheKey = `${assetSet.sourceLabel}:${assetId || objectId || name || type || "unknown"}`;
     if (this.assetCache.has(cacheKey)) {
-      this.logCacheOnce(cacheKey, `Object Vector runtime cache hit for ${objectId || name || type}.`);
+      this.logCacheOnce(cacheKey, `Object Vector runtime cache hit for ${assetId || objectId || name || type}.`);
       return this.assetCache.get(cacheKey);
     }
 
-    let object = objectId ? assetSet.objectsById.get(objectId) : null;
+    let resolvedObjectId = objectId;
+    if (assetId) {
+      const asset = assetSet.assetsById.get(assetId);
+      if (!asset) {
+        this.log("FAIL", `Object Vector runtime asset resolution failed: assetId=${assetId} is missing from the asset library.`);
+        return null;
+      }
+      resolvedObjectId = asset.objectId;
+      this.logCacheOnce(`asset:${assetSet.sourceLabel}:${assetId}`, `Object Vector runtime asset ${assetId} resolved to ${resolvedObjectId}.`);
+    }
+
+    let object = resolvedObjectId ? assetSet.objectsById.get(resolvedObjectId) : null;
     if (!object && name) {
       object = assetSet.objectsByName.get(name.toLowerCase()) || null;
     }
@@ -323,9 +348,70 @@ export class ObjectVectorRuntimeAssetService {
       return null;
     }
 
-    this.assetCache.set(cacheKey, object);
-    this.logCacheOnce(cacheKey, `Object Vector runtime cache miss for ${object.id}; cached object.`);
-    return object;
+    const resolvedObject = this.resolveInheritedObject(assetSet, object);
+    if (!resolvedObject) {
+      return null;
+    }
+    this.assetCache.set(cacheKey, resolvedObject);
+    this.logCacheOnce(cacheKey, `Object Vector runtime cache miss for ${assetId || object.id}; cached resolved object.`);
+    return resolvedObject;
+  }
+
+  resolveInheritedObject(assetSet, object) {
+    if (!object?.baseObjectId) {
+      return object;
+    }
+    const cacheKey = `${assetSet.sourceLabel}:inherit:${object.id}`;
+    if (this.inheritedObjectCache.has(cacheKey)) {
+      this.logCacheOnce(`${cacheKey}:hit`, `Object Vector runtime inherited cache hit for ${object.id}.`);
+      return this.inheritedObjectCache.get(cacheKey);
+    }
+    const resolved = this.mergeInheritedObject(assetSet, object, []);
+    if (!resolved) {
+      return null;
+    }
+    this.inheritedObjectCache.set(cacheKey, resolved);
+    this.log("OK", `Object Vector runtime inheritance resolved for ${object.id} from ${object.baseObjectId}; cached inherited render payload.`);
+    return resolved;
+  }
+
+  mergeInheritedObject(assetSet, object, chain) {
+    if (chain.includes(object.id)) {
+      this.log("FAIL", `Object Vector runtime inheritance resolution failed for ${object.id}: circular inheritance chain ${[...chain, object.id].join(" -> ")}.`);
+      return null;
+    }
+    if (!object.baseObjectId) {
+      return clone(object);
+    }
+    const baseObject = assetSet.objectsById.get(object.baseObjectId);
+    if (!baseObject) {
+      this.log("FAIL", `Object Vector runtime inheritance resolution failed for ${object.id}: missing base object ${object.baseObjectId}.`);
+      return null;
+    }
+    const resolvedBase = this.mergeInheritedObject(assetSet, baseObject, [...chain, object.id]);
+    if (!resolvedBase) {
+      return null;
+    }
+    const shapeById = new Map(resolvedBase.shapes.map((shape) => [shape.id, clone(shape)]));
+    object.shapes.forEach((shape) => {
+      shapeById.set(shape.id, clone(shape));
+    });
+    const stateById = new Map((resolvedBase.states || []).map((state) => [state.id, clone(state)]));
+    (object.states || []).forEach((state) => {
+      stateById.set(state.id, clone(state));
+    });
+    const merged = {
+      ...resolvedBase,
+      ...clone(object),
+      inheritedFrom: object.baseObjectId,
+      shapes: Array.from(shapeById.values()).sort((left, right) => left.order - right.order)
+    };
+    if (stateById.size) {
+      merged.states = Array.from(stateById.values());
+    } else {
+      delete merged.states;
+    }
+    return merged;
   }
 
   resolveFrame(object, { elapsedMs = 0, frameId = "", fps = 12, stateId = "" } = {}) {
@@ -585,6 +671,9 @@ export class ObjectVectorRuntimeAssetService {
     const errors = [];
     this.validateValue(this.schema, payload, "root", errors);
     if (!errors.length) {
+      this.validateInheritanceReferences(payload, errors);
+    }
+    if (!errors.length) {
       this.validateAnimationReferences(payload, errors);
     }
     if (errors.length) {
@@ -598,18 +687,77 @@ export class ObjectVectorRuntimeAssetService {
   }
 
   validateAnimationReferences(payload, errors) {
+    const objectsById = new Map(payload.objects.map((object) => [object.id, object]));
     payload.objects.forEach((object, objectIndex) => {
-      const shapeIds = new Set(object.shapes.map((shape) => shape.id));
+      const shapeIds = this.collectInheritedShapeIds(object, objectsById, new Set(), errors, `root.objects[${objectIndex}]`);
       (object.states || []).forEach((state, stateIndex) => {
         state.frames.forEach((frame, frameIndex) => {
           frame.shapeOverrides.forEach((override, overrideIndex) => {
             if (!shapeIds.has(override.shapeId)) {
-              errors.push(`root.objects[${objectIndex}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeId ${override.shapeId} must reference an existing shape.`);
+              errors.push(`root.objects[${objectIndex}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeId ${override.shapeId} must reference a local or inherited shape.`);
             }
           });
         });
       });
     });
+  }
+
+  validateInheritanceReferences(payload, errors) {
+    const objectsById = new Map();
+    payload.objects.forEach((object, objectIndex) => {
+      if (objectsById.has(object.id)) {
+        errors.push(`root.objects[${objectIndex}].id ${object.id} duplicates an existing object id.`);
+        return;
+      }
+      objectsById.set(object.id, object);
+    });
+    payload.objects.forEach((object, objectIndex) => {
+      const seen = new Set([object.id]);
+      let current = object;
+      while (current?.baseObjectId) {
+        const baseId = current.baseObjectId;
+        if (seen.has(baseId)) {
+          errors.push(`root.objects[${objectIndex}].baseObjectId creates a circular inheritance chain at ${baseId}.`);
+          return;
+        }
+        const baseObject = objectsById.get(baseId);
+        if (!baseObject) {
+          errors.push(`root.objects[${objectIndex}].baseObjectId ${baseId} must reference an existing base object.`);
+          return;
+        }
+        seen.add(baseId);
+        current = baseObject;
+      }
+    });
+    const assetIds = new Set();
+    (payload.assetLibrary?.assets || []).forEach((asset, assetIndex) => {
+      if (assetIds.has(asset.id)) {
+        errors.push(`root.assetLibrary.assets[${assetIndex}].id ${asset.id} duplicates an existing library asset id.`);
+      }
+      assetIds.add(asset.id);
+      if (!objectsById.has(asset.objectId)) {
+        errors.push(`root.assetLibrary.assets[${assetIndex}].objectId ${asset.objectId} must reference an existing object.`);
+      }
+    });
+  }
+
+  collectInheritedShapeIds(object, objectsById, seen, errors, path) {
+    const shapeIds = new Set();
+    if (!object || seen.has(object.id)) {
+      if (object) {
+        errors.push(`${path}.baseObjectId creates a circular shape inheritance chain at ${object.id}.`);
+      }
+      return shapeIds;
+    }
+    seen.add(object.id);
+    if (object.baseObjectId) {
+      const baseObject = objectsById.get(object.baseObjectId);
+      if (baseObject) {
+        this.collectInheritedShapeIds(baseObject, objectsById, seen, errors, path).forEach((shapeId) => shapeIds.add(shapeId));
+      }
+    }
+    object.shapes.forEach((shape) => shapeIds.add(shape.id));
+    return shapeIds;
   }
 
   validateValue(schemaNode, value, path, errors) {
@@ -732,8 +880,11 @@ export class ObjectVectorRuntimeAssetService {
     normalized.objects = normalized.objects.map((object) => {
       const normalizedObject = {
         ...object,
+        baseObjectId: typeof object.baseObjectId === "string" ? object.baseObjectId.trim() : undefined,
+        category: typeof object.category === "string" ? object.category.trim() : undefined,
         id: object.id.trim(),
         name: object.name.trim(),
+        tags: Array.isArray(object.tags) ? object.tags.map((tag) => tag.trim()).filter(Boolean) : undefined,
         type: object.type.trim().toLowerCase(),
         shapes: object.shapes.map((shape) => ({
           ...shape,
@@ -756,8 +907,28 @@ export class ObjectVectorRuntimeAssetService {
           }))
         }));
       }
+      if (normalizedObject.baseObjectId === undefined) {
+        delete normalizedObject.baseObjectId;
+      }
+      if (normalizedObject.category === undefined) {
+        delete normalizedObject.category;
+      }
+      if (normalizedObject.tags === undefined) {
+        delete normalizedObject.tags;
+      }
       return normalizedObject;
     });
+    if (normalized.assetLibrary) {
+      normalized.assetLibrary = {
+        assets: normalized.assetLibrary.assets.map((asset) => ({
+          category: asset.category.trim(),
+          id: asset.id.trim(),
+          name: asset.name.trim(),
+          objectId: asset.objectId.trim(),
+          tags: asset.tags.map((tag) => tag.trim()).filter(Boolean)
+        }))
+      };
+    }
     return normalized;
   }
 
@@ -795,6 +966,7 @@ export class ObjectVectorRuntimeAssetService {
   getDiagnostics() {
     return {
       cachedObjects: this.assetCache.size,
+      cachedInheritedObjects: this.inheritedObjectCache.size,
       cachedPayloads: this.payloadCache.size,
       events: this.events.slice(-40),
       schemaLoaded: Boolean(this.schema)

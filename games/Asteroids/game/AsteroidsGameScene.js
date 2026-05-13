@@ -25,16 +25,16 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
-const ASTEROID_OBJECT_VECTOR_IDS = Object.freeze({
-  1: "object.asteroids.asteroid.small",
-  2: "object.asteroids.asteroid.medium",
-  3: "object.asteroids.asteroid.large",
+const ASTEROID_OBJECT_VECTOR_ASSET_IDS = Object.freeze({
+  1: "asset.asteroids.asteroid.small",
+  2: "asset.asteroids.asteroid.medium",
+  3: "asset.asteroids.asteroid.large",
 });
-const UFO_OBJECT_VECTOR_IDS = Object.freeze({
-  large: "object.asteroids.ufo.large",
-  small: "object.asteroids.ufo.small",
+const UFO_OBJECT_VECTOR_ASSET_IDS = Object.freeze({
+  large: "asset.asteroids.ufo.large",
+  small: "asset.asteroids.ufo.small",
 });
-const SHIP_OBJECT_VECTOR_ID = "object.asteroids.ship";
+const SHIP_OBJECT_VECTOR_ASSET_ID = "asset.asteroids.ship";
 const LIFE_ICON_POINTS = [
   [14, 0],
   [-10, -8],
@@ -735,7 +735,7 @@ export default class AsteroidsGameScene extends Scene {
       this.drawObjectVectorAsset(renderer, "asteroids", {
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: ASTEROID_OBJECT_VECTOR_IDS[asteroid.size],
+        assetId: ASTEROID_OBJECT_VECTOR_ASSET_IDS[asteroid.size],
         rotation: asteroid.angle,
         stateId: "active",
         x: asteroid.x,
@@ -747,7 +747,7 @@ export default class AsteroidsGameScene extends Scene {
       this.drawObjectVectorAsset(renderer, "ufo", {
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: UFO_OBJECT_VECTOR_IDS[this.world.ufo.type],
+        assetId: UFO_OBJECT_VECTOR_ASSET_IDS[this.world.ufo.type],
         stateId: "active",
         x: this.world.ufo.x,
         y: this.world.ufo.y,
@@ -768,7 +768,7 @@ export default class AsteroidsGameScene extends Scene {
       this.drawObjectVectorAsset(renderer, "ship", {
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: SHIP_OBJECT_VECTOR_ID,
+        assetId: SHIP_OBJECT_VECTOR_ASSET_ID,
         rotation: this.world.ship.angle + Math.PI / 2,
         stateId: this.world.ship.thrusting && this.session.mode === 'playing' ? "thrust" : "idle",
         x: this.world.ship.x,
@@ -845,12 +845,12 @@ export default class AsteroidsGameScene extends Scene {
 
   drawObjectVectorAsset(renderer, renderKey, options) {
     if (!this.objectVectorRuntime || !this.objectVectorAssets) {
-      this.recordObjectVectorRenderFailure(renderKey, options.objectId, "validated Object Vector runtime assets are not loaded");
+      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId, "validated Object Vector runtime assets are not loaded");
       return false;
     }
     const result = this.objectVectorRuntime.renderObject(renderer, this.objectVectorAssets, options);
     if (!result.ok) {
-      this.recordObjectVectorRenderFailure(renderKey, options.objectId, "runtime render returned failed result");
+      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId, "runtime render returned failed result");
       return false;
     }
     this.objectVectorRenderCounts[renderKey] = (this.objectVectorRenderCounts[renderKey] || 0) + 1;
@@ -875,6 +875,7 @@ export default class AsteroidsGameScene extends Scene {
     try {
       globalThis.__asteroidsObjectVectorRuntime = {
         ...(this.objectVectorRuntime?.getDiagnostics?.() || {}),
+        assetCount: this.objectVectorAssets?.assetsById?.size || 0,
         loaded: Boolean(this.objectVectorAssets),
         objectCount: this.objectVectorAssets?.objectsById?.size || 0,
         renderCounts: { ...this.objectVectorRenderCounts },

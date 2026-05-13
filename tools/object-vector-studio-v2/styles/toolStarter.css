@@ -471,6 +471,22 @@ textarea:hover {
   padding-right: 2px;
 }
 
+.object-vector-studio-v2__library-panel,
+.object-vector-studio-v2__asset-library {
+  min-height: 0;
+  gap: 8px;
+}
+
+.object-vector-studio-v2__library-panel {
+  display: grid;
+}
+
+.object-vector-studio-v2__asset-library {
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
 .object-vector-studio-v2__object-tile {
   width: 100%;
   min-height: 58px;
@@ -481,6 +497,23 @@ textarea:hover {
   border-radius: 8px !important;
   padding: 8px 10px;
   text-align: left;
+}
+
+.object-vector-studio-v2__asset-tile {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  flex: 0 0 auto;
+  min-height: 54px;
+  display: grid;
+  gap: 4px;
+  border-radius: 8px !important;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.object-vector-studio-v2__asset-tile--empty {
+  color: var(--tool-starter-muted);
 }
 
 .object-vector-studio-v2__object-tile.is-selected,

@@ -88,6 +88,22 @@
                 <option value="weapon">Weapon</option>
               </select>
             </label>
+            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2AssetCategorySelect">
+              <span>Asset Category</span>
+              <select id="objectVectorStudioV2AssetCategorySelect">
+                <option value="actor">Actor</option>
+                <option value="enemy">Enemy</option>
+                <option value="object" selected>Object</option>
+                <option value="pickup">Pickup</option>
+                <option value="ship">Ship</option>
+                <option value="ui">UI</option>
+                <option value="weapon">Weapon</option>
+              </select>
+            </label>
+            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2AssetTagsInput">
+              <span>Asset Tags</span>
+              <input id="objectVectorStudioV2AssetTagsInput" type="text" autocomplete="off" placeholder="comma-separated tags">
+            </label>
             <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2TemplateSelect">
               <span>Template</span>
               <select id="objectVectorStudioV2TemplateSelect">
@@ -103,8 +119,10 @@
               <button id="objectVectorStudioV2CreateTemplateButton" type="button">Create Template</button>
               <button id="objectVectorStudioV2RenameObjectButton" type="button">Rename</button>
               <button id="objectVectorStudioV2DuplicateObjectButton" type="button">Duplicate</button>
+              <button id="objectVectorStudioV2DuplicateAsLocalButton" type="button">Duplicate As Local</button>
               <button id="objectVectorStudioV2DeleteObjectButton" type="button">Delete</button>
               <button id="objectVectorStudioV2FlattenObjectButton" type="button">Flatten</button>
+              <button id="objectVectorStudioV2CreateLibraryAssetButton" type="button">Create Library Asset</button>
             </div>
             <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2StateSelect">
               <span>State</span>
@@ -201,6 +219,28 @@
               <input id="objectVectorStudioV2SearchFilter" type="search" autocomplete="off" placeholder="Filter objects">
             </label>
             <div id="objectVectorStudioV2ObjectTiles" class="object-vector-studio-v2__object-tiles" aria-label="Object tiles"></div>
+            <div class="object-vector-studio-v2__library-panel" aria-label="Asset library browser">
+              <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2AssetCategoryFilter">
+                <span>Library Category</span>
+                <select id="objectVectorStudioV2AssetCategoryFilter">
+                  <option value="all">All</option>
+                  <option value="actor">Actor</option>
+                  <option value="enemy">Enemy</option>
+                  <option value="object">Object</option>
+                  <option value="pickup">Pickup</option>
+                  <option value="ship">Ship</option>
+                  <option value="ui">UI</option>
+                  <option value="weapon">Weapon</option>
+                </select>
+              </label>
+              <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2AssetSearchFilter">
+                <span>Library Search</span>
+                <input id="objectVectorStudioV2AssetSearchFilter" type="search" autocomplete="off" placeholder="Filter library assets">
+              </label>
+              <div id="objectVectorStudioV2AssetLibraryBrowser" class="object-vector-studio-v2__asset-library" aria-label="Reusable asset library"></div>
+              <div id="objectVectorStudioV2AssetUsageReport" class="object-vector-studio-v2__details">No library usage loaded.</div>
+              <div id="objectVectorStudioV2DependencyGraph" class="object-vector-studio-v2__details">No dependency graph loaded.</div>
+            </div>
           </div>
         </section>
       </aside>

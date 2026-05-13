@@ -106,6 +106,9 @@ export class ObjectVectorStudioV2SchemaService {
 
     const errors = [];
     this.validateValue(this.schema, payload, "root", errors);
+    if (!errors.length) {
+      this.validatePayloadReferences(payload, errors);
+    }
     if (errors.length) {
       return { errors, ok: false, payload: null };
     }
@@ -115,6 +118,85 @@ export class ObjectVectorStudioV2SchemaService {
       ok: true,
       payload: this.normalizePayload(payload)
     };
+  }
+
+  validatePayloadReferences(payload, errors) {
+    const objects = Array.isArray(payload?.objects) ? payload.objects : [];
+    const objectsById = new Map();
+    objects.forEach((object, index) => {
+      if (objectsById.has(object.id)) {
+        errors.push(`root.objects[${index}].id ${object.id} duplicates an existing object id.`);
+        return;
+      }
+      objectsById.set(object.id, object);
+    });
+
+    objects.forEach((object, index) => {
+      this.validateInheritanceChain(object, objectsById, `root.objects[${index}]`, errors);
+    });
+
+    objects.forEach((object, index) => {
+      const shapeIds = this.collectInheritedShapeIds(object, objectsById, new Set(), errors, `root.objects[${index}]`);
+      (object.states || []).forEach((state, stateIndex) => {
+        state.frames.forEach((frame, frameIndex) => {
+          frame.shapeOverrides.forEach((override, overrideIndex) => {
+            if (!shapeIds.has(override.shapeId)) {
+              errors.push(`root.objects[${index}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeId ${override.shapeId} must reference a local or inherited shape.`);
+            }
+          });
+        });
+      });
+    });
+
+    const libraryAssets = Array.isArray(payload?.assetLibrary?.assets) ? payload.assetLibrary.assets : [];
+    const assetIds = new Set();
+    libraryAssets.forEach((asset, index) => {
+      if (assetIds.has(asset.id)) {
+        errors.push(`root.assetLibrary.assets[${index}].id ${asset.id} duplicates an existing library asset id.`);
+      }
+      assetIds.add(asset.id);
+      if (!objectsById.has(asset.objectId)) {
+        errors.push(`root.assetLibrary.assets[${index}].objectId ${asset.objectId} must reference an existing object.`);
+      }
+    });
+  }
+
+  validateInheritanceChain(object, objectsById, path, errors) {
+    const seen = new Set([object.id]);
+    let current = object;
+    while (current?.baseObjectId) {
+      const baseId = current.baseObjectId;
+      if (seen.has(baseId)) {
+        errors.push(`${path}.baseObjectId creates a circular inheritance chain at ${baseId}.`);
+        return;
+      }
+      const baseObject = objectsById.get(baseId);
+      if (!baseObject) {
+        errors.push(`${path}.baseObjectId ${baseId} must reference an existing base object.`);
+        return;
+      }
+      seen.add(baseId);
+      current = baseObject;
+    }
+  }
+
+  collectInheritedShapeIds(object, objectsById, seen, errors, path) {
+    const shapeIds = new Set();
+    if (!object || seen.has(object.id)) {
+      if (object) {
+        errors.push(`${path}.baseObjectId creates a circular shape inheritance chain at ${object.id}.`);
+      }
+      return shapeIds;
+    }
+    seen.add(object.id);
+    if (object.baseObjectId) {
+      const baseObject = objectsById.get(object.baseObjectId);
+      if (baseObject) {
+        this.collectInheritedShapeIds(baseObject, objectsById, seen, errors, path).forEach((shapeId) => shapeIds.add(shapeId));
+      }
+    }
+    object.shapes.forEach((shape) => shapeIds.add(shape.id));
+    return shapeIds;
   }
 
   validateRuntimePalette(palette, sourceLabel = "runtime palette") {
@@ -300,8 +382,11 @@ export class ObjectVectorStudioV2SchemaService {
     normalized.name = normalized.name.trim();
     normalized.objects = normalized.objects.map((object) => ({
       ...object,
+      baseObjectId: typeof object.baseObjectId === "string" ? object.baseObjectId.trim() : undefined,
+      category: typeof object.category === "string" ? object.category.trim() : undefined,
       id: object.id.trim(),
       name: object.name.trim(),
+      tags: Array.isArray(object.tags) ? object.tags.map((tag) => tag.trim()).filter(Boolean) : undefined,
       type: object.type.trim().toLowerCase(),
       states: Array.isArray(object.states)
         ? object.states.map((state) => ({
@@ -328,8 +413,28 @@ export class ObjectVectorStudioV2SchemaService {
       if (object.states === undefined) {
         delete object.states;
       }
+      if (object.baseObjectId === undefined) {
+        delete object.baseObjectId;
+      }
+      if (object.category === undefined) {
+        delete object.category;
+      }
+      if (object.tags === undefined) {
+        delete object.tags;
+      }
       return object;
     });
+    if (normalized.assetLibrary) {
+      normalized.assetLibrary = {
+        assets: normalized.assetLibrary.assets.map((asset) => ({
+          category: asset.category.trim(),
+          id: asset.id.trim(),
+          name: asset.name.trim(),
+          objectId: asset.objectId.trim(),
+          tags: asset.tags.map((tag) => tag.trim()).filter(Boolean)
+        }))
+      };
+    }
     return normalized;
   }
 }

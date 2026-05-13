@@ -8,10 +8,12 @@ const GRID_SNAP_SESSION_KEY = "object-vector-studio-v2.gridSnap";
 const ANGLE_SNAP_SESSION_KEY = "object-vector-studio-v2.angleSnap";
 const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
 const DEFAULT_OBJECT_TYPE = "object";
+const DEFAULT_ASSET_CATEGORY = "object";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
 
 const OBJECT_TYPES = Object.freeze(["actor", "enemy", "object", "pickup", "ship", "ui", "weapon"]);
+const ASSET_CATEGORIES = Object.freeze(["actor", "enemy", "object", "pickup", "ship", "ui", "weapon"]);
 const OBJECT_STATE_IDS = Object.freeze(["idle", "thrust", "damaged", "destroyed", "active", "inactive"]);
 
 const OBJECT_TEMPLATES = Object.freeze({
@@ -77,6 +79,26 @@ function objectCountLabel(count) {
 
 function shapeCountLabel(count) {
   return `${count} ${count === 1 ? "shape" : "shapes"}`;
+}
+
+function assetCountLabel(count) {
+  return `${count} ${count === 1 ? "library asset" : "library assets"}`;
+}
+
+function tagList(value) {
+  if (Array.isArray(value)) {
+    return value.map((tag) => String(tag).trim()).filter(Boolean);
+  }
+  return String(value || "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function assetCategoryLabel(value) {
+  return String(value || DEFAULT_ASSET_CATEGORY)
+    .replace(/(^|-)([a-z])/g, (match) => match.toUpperCase())
+    .replaceAll("-", " ");
 }
 
 function slugifyObjectName(name) {
@@ -332,8 +354,10 @@ export class ToolStarterApp {
     this.elements.addObjectButton.addEventListener("click", () => this.addObject());
     this.elements.createTemplateButton.addEventListener("click", () => this.createObjectFromTemplate());
     this.elements.createStateButton.addEventListener("click", () => this.createSelectedState());
+    this.elements.createLibraryAssetButton.addEventListener("click", () => this.createLibraryAssetForSelectedObject());
     this.elements.renameObjectButton.addEventListener("click", () => this.renameSelectedObject());
     this.elements.duplicateObjectButton.addEventListener("click", () => this.duplicateSelectedObject());
+    this.elements.duplicateAsLocalButton.addEventListener("click", () => this.duplicateSelectedObjectAsLocal());
     this.elements.deleteObjectButton.addEventListener("click", () => this.deleteSelectedObject());
     this.elements.flattenObjectButton.addEventListener("click", () => this.flattenSelectedObject());
     this.elements.objectTypeSelect.addEventListener("change", () => this.updateSelectedObjectType());
@@ -415,6 +439,13 @@ export class ToolStarterApp {
     this.elements.searchFilter.addEventListener("input", () => {
       this.renderObjectTiles();
     });
+    this.elements.assetCategoryFilter.addEventListener("change", () => {
+      this.renderAssetLibrary();
+      this.statusLog.write(`OK Asset library category filter set to ${this.elements.assetCategoryFilter.value}.`);
+    });
+    this.elements.assetSearchFilter.addEventListener("input", () => {
+      this.renderAssetLibrary();
+    });
   }
 
   bindKeyboardShortcuts() {
@@ -467,6 +498,8 @@ export class ToolStarterApp {
     this.elements.shapeCount.value = shapeCountLabel(0);
     this.elements.objectNameInput.value = "";
     this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
+    this.elements.assetCategorySelect.value = DEFAULT_ASSET_CATEGORY;
+    this.elements.assetTagsInput.value = "";
     this.elements.stateSelect.value = "";
     this.elements.loadStatus.textContent = message;
     this.elements.paletteSummary.textContent = this.runtimePalette
@@ -482,6 +515,7 @@ export class ToolStarterApp {
     this.elements.renderSurface.replaceChildren();
     this.renderCenterOriginMarker();
     this.elements.objectTiles.replaceChildren(this.createEmptyObjectTile());
+    this.renderAssetLibrary();
     this.actionNav.setJsonPayloadActionsEnabled(false);
     this.elements.exportSvgButton.disabled = true;
     this.actionNav.setImportEnabled(this.schemaReady && !this.actionNav.isWorkspaceLaunch());
@@ -551,7 +585,7 @@ export class ToolStarterApp {
     this.actionNav.setJsonPayloadActionsEnabled(true);
     this.actionNav.setImportEnabled(!this.actionNav.isWorkspaceLaunch());
     this.renderPayload();
-    this.statusLog.write(`OK Loaded Object Vector Studio V2 schema payload from ${sourceLabel}: ${this.currentPayload.objects.length} objects.`);
+    this.statusLog.write(`OK Loaded Object Vector Studio V2 schema payload from ${sourceLabel}: ${this.currentPayload.objects.length} objects. ${assetCountLabel(this.currentPayload.assetLibrary?.assets?.length || 0)}.`);
   }
 
   applyLoadedRuntimeState(sourceLabel) {
@@ -599,6 +633,7 @@ export class ToolStarterApp {
     this.ensureSelectedFrame();
     this.renderPalette();
     this.renderObjectTiles();
+    this.renderAssetLibrary();
     this.renderSelectedObject();
     this.renderWorkSurface();
     this.updateObjectActionState();
@@ -618,6 +653,8 @@ export class ToolStarterApp {
     this.elements.shapeCount.value = shapeCountLabel(0);
     this.elements.objectNameInput.value = "";
     this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
+    this.elements.assetCategorySelect.value = DEFAULT_ASSET_CATEGORY;
+    this.elements.assetTagsInput.value = "";
     this.elements.stateSelect.value = "";
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
     this.elements.selectedItemVisibility.textContent = "No schema-valid object rendered.";
@@ -630,6 +667,7 @@ export class ToolStarterApp {
     const tile = this.createEmptyObjectTile();
     tile.textContent = "Runtime palette required before rendering object tiles.";
     this.elements.objectTiles.replaceChildren(tile);
+    this.renderAssetLibrary();
     this.actionNav.setJsonPayloadActionsEnabled(Boolean(this.currentPayload));
     this.elements.exportSvgButton.disabled = true;
     this.actionNav.setImportEnabled(this.schemaReady && !this.actionNav.isWorkspaceLaunch());
@@ -699,7 +737,9 @@ export class ToolStarterApp {
 
       const meta = document.createElement("span");
       meta.className = "object-vector-studio-v2__object-tile-meta";
-      meta.textContent = `${object.id} - ${objectTypeLabel(object)} - ${shapeCountLabel(object.shapes.length)}`;
+      const libraryRefs = this.assetLibraryAssets().filter((asset) => asset.objectId === object.id).length;
+      const inheritedText = object.baseObjectId ? ` - inherits ${object.baseObjectId}` : "";
+      meta.textContent = `${object.id} - ${objectTypeLabel(object)} - ${shapeCountLabel(object.shapes.length)} - ${libraryRefs} refs${inheritedText}`;
 
       const copy = document.createElement("span");
       copy.className = "object-vector-studio-v2__object-tile-copy";
@@ -718,9 +758,72 @@ export class ToolStarterApp {
     const query = this.elements.searchFilter.value.trim().toLowerCase();
     return this.currentPayload.objects.filter((object) => {
       const matchesCategory = category === "all" || objectTypeKey(object) === category;
-      const haystack = `${object.id} ${object.name} ${objectTypeKey(object)}`.toLowerCase();
+      const haystack = `${object.id} ${object.name} ${objectTypeKey(object)} ${(object.tags || []).join(" ")} ${object.category || ""} ${object.baseObjectId || ""}`.toLowerCase();
       return matchesCategory && (!query || haystack.includes(query));
     });
+  }
+
+  assetLibraryAssets() {
+    return Array.isArray(this.currentPayload?.assetLibrary?.assets)
+      ? this.currentPayload.assetLibrary.assets
+      : [];
+  }
+
+  filteredLibraryAssets() {
+    const category = this.elements.assetCategoryFilter.value || "all";
+    const query = this.elements.assetSearchFilter.value.trim().toLowerCase();
+    return this.assetLibraryAssets().filter((asset) => {
+      const matchesCategory = category === "all" || asset.category === category;
+      const haystack = `${asset.id} ${asset.name} ${asset.objectId} ${asset.category} ${asset.tags.join(" ")}`.toLowerCase();
+      return matchesCategory && (!query || haystack.includes(query));
+    });
+  }
+
+  renderAssetLibrary() {
+    this.elements.assetLibraryBrowser.replaceChildren();
+    const assets = this.filteredLibraryAssets();
+    if (!this.currentPayload) {
+      this.elements.assetLibraryBrowser.append(this.createEmptyLibraryTile("No schema-valid payload loaded."));
+      this.elements.assetUsageReport.textContent = "No library usage loaded.";
+      this.elements.dependencyGraph.textContent = "No dependency graph loaded.";
+      return;
+    }
+    if (!assets.length) {
+      this.elements.assetLibraryBrowser.append(this.createEmptyLibraryTile("No reusable assets match the current library filter."));
+    }
+    assets.forEach((asset) => {
+      const button = document.createElement("button");
+      button.className = "object-vector-studio-v2__asset-tile";
+      button.type = "button";
+      button.dataset.assetId = asset.id;
+      button.dataset.objectId = asset.objectId;
+      button.setAttribute("aria-pressed", String(asset.objectId === this.selectedObjectId));
+
+      const name = document.createElement("span");
+      name.className = "object-vector-studio-v2__object-tile-name";
+      name.textContent = asset.name;
+      const meta = document.createElement("span");
+      meta.className = "object-vector-studio-v2__object-tile-meta";
+      meta.textContent = `${asset.id} -> ${asset.objectId} - ${assetCategoryLabel(asset.category)} - ${asset.tags.join(", ") || "no tags"}`;
+      button.append(name, meta);
+      button.addEventListener("click", () => {
+        this.selectObject(asset.objectId, `asset library ${asset.id}`);
+        this.statusLog.write(`OK Asset library selected ${asset.id}; object reference ${asset.objectId}.`);
+      });
+      this.elements.assetLibraryBrowser.append(button);
+    });
+    const usageLines = this.assetLibraryAssets().map((asset) => `${asset.id}: ${asset.objectId}`);
+    this.elements.assetUsageReport.textContent = `${assetCountLabel(this.assetLibraryAssets().length)} registered.\n${usageLines.join("\n") || "No shared asset references."}`;
+    const graphLines = this.currentPayload.objects
+      .map((object) => `${object.id}${object.baseObjectId ? ` inherits ${object.baseObjectId}` : " has no base object"}`);
+    this.elements.dependencyGraph.textContent = `Dependency graph:\n${graphLines.join("\n") || "No objects loaded."}`;
+  }
+
+  createEmptyLibraryTile(message) {
+    const tile = document.createElement("article");
+    tile.className = "object-vector-studio-v2__asset-tile object-vector-studio-v2__asset-tile--empty";
+    tile.textContent = message;
+    return tile;
   }
 
   createObjectThumbnail(object) {
@@ -759,6 +862,8 @@ export class ToolStarterApp {
     if (!selected) {
       this.elements.objectNameInput.value = "";
       this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
+      this.elements.assetCategorySelect.value = DEFAULT_ASSET_CATEGORY;
+      this.elements.assetTagsInput.value = "";
       this.elements.stateSelect.value = "";
       this.elements.shapeCount.value = shapeCountLabel(0);
       this.elements.objectDetails.textContent = "No object selected.";
@@ -772,6 +877,8 @@ export class ToolStarterApp {
     const shape = this.selectedShape();
     this.elements.objectNameInput.value = selected.name;
     this.elements.objectTypeSelect.value = objectTypeKey(selected);
+    this.elements.assetCategorySelect.value = this.validAssetCategory(selected.category || selected.type);
+    this.elements.assetTagsInput.value = (selected.tags || []).join(", ");
     this.elements.stateSelect.value = this.selectedStateId || "";
     this.elements.shapeCount.value = shapeCountLabel(selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
@@ -844,10 +951,16 @@ export class ToolStarterApp {
   createObjectDetails(object, shape) {
     const wrapper = document.createElement("div");
     wrapper.className = "object-vector-studio-v2__object-detail-stack";
+    const libraryAssets = this.assetLibraryAssets().filter((asset) => asset.objectId === object.id);
     wrapper.append(this.createDetailGrid([
       ["Object Name", object.name],
       ["Object ID", object.id],
       ["Object Type", objectTypeLabel(object)],
+      ["Asset Category", assetCategoryLabel(object.category || object.type)],
+      ["Asset Tags", (object.tags || []).join(", ") || "None"],
+      ["Library Refs", libraryAssets.map((asset) => asset.id).join(", ") || "None"],
+      ["Base Object", object.baseObjectId || "None"],
+      ["Inherited Fields", object.baseObjectId ? "Base shapes/states are read-only until Duplicate As Local." : "None"],
       ["Object Metadata", objectTypeDescription(object)],
       ["States", String(this.objectStates(object).length)],
       ["Active Frame", this.activeFrame()?.id || "None"],
@@ -1708,9 +1821,11 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const id = this.uniqueObjectId(name, nextPayload.objects);
     nextPayload.objects.push({
+      category: this.validAssetCategory(this.elements.assetCategorySelect.value),
       id,
       name,
       shapes: [],
+      tags: tagList(this.elements.assetTagsInput.value),
       type: DEFAULT_OBJECT_TYPE
     });
     this.commitPayloadUpdate(nextPayload, id, "", `OK Added object ${name} with id ${id}.`, "Add object failed schema validation");
@@ -1798,9 +1913,11 @@ export class ToolStarterApp {
       ]
     };
     return {
+      category: this.validAssetCategory(template.type),
       id,
       name,
       shapes: templates[templateKey],
+      tags: [templateKey, template.type, "template"],
       type: template.type
     };
   }
@@ -1853,6 +1970,55 @@ export class ToolStarterApp {
     nextPayload.objects.push(objectCopy);
     const selectedShapeId = sortedShapes(objectCopy)[0]?.id || "";
     this.commitPayloadUpdate(nextPayload, objectCopy.id, selectedShapeId, `OK Duplicated object ${selected.name} as ${objectCopy.name}.`, "Duplicate object failed schema validation");
+  }
+
+  createLibraryAssetForSelectedObject() {
+    const selected = this.selectedObject();
+    if (!selected) {
+      this.statusLog.write("FAIL Library asset creation blocked: select a schema-valid object first.");
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    nextPayload.assetLibrary = nextPayload.assetLibrary || { assets: [] };
+    const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
+    nextObject.category = this.validAssetCategory(this.elements.assetCategorySelect.value || nextObject.category || nextObject.type);
+    nextObject.tags = tagList(this.elements.assetTagsInput.value || nextObject.tags || [nextObject.type]);
+    const asset = {
+      category: nextObject.category,
+      id: this.uniqueAssetId(nextObject.name, nextPayload.assetLibrary.assets),
+      name: nextObject.name,
+      objectId: nextObject.id,
+      tags: nextObject.tags
+    };
+    nextPayload.assetLibrary.assets.push(asset);
+    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Created reusable library asset ${asset.id} for ${selected.name}.`, "Library asset creation failed schema validation");
+  }
+
+  duplicateSelectedObjectAsLocal() {
+    const selected = this.selectedObject();
+    if (!selected) {
+      this.statusLog.write("WARN Duplicate As Local skipped: no object is selected.");
+      return;
+    }
+
+    const resolved = this.resolveObjectForPayload(this.currentPayload, selected.id);
+    if (!resolved) {
+      this.statusLog.write(`FAIL Duplicate As Local blocked: inheritance dependency resolution failed for ${selected.id}.`);
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const localCopy = JSON.parse(JSON.stringify(resolved));
+    delete localCopy.baseObjectId;
+    delete localCopy.inheritedFrom;
+    localCopy.id = this.uniqueObjectId(`${selected.name} Local Copy`, nextPayload.objects);
+    localCopy.name = `${selected.name} Local Copy`;
+    localCopy.category = this.validAssetCategory(localCopy.category || localCopy.type);
+    localCopy.tags = Array.from(new Set([...(localCopy.tags || []), "local"]));
+    nextPayload.objects.push(localCopy);
+    const selectedShapeId = sortedShapes(localCopy)[0]?.id || "";
+    this.commitPayloadUpdate(nextPayload, localCopy.id, selectedShapeId, `OK Duplicated ${selected.name} as local object ${localCopy.name}; inherited fields are now editable locally.`, "Duplicate As Local failed schema validation");
   }
 
   deleteSelectedObject() {
@@ -2460,6 +2626,43 @@ export class ToolStarterApp {
     return this.currentPayload?.objects.find((object) => object.id === this.selectedObjectId) || null;
   }
 
+  resolveObjectForPayload(payload, objectId, chain = []) {
+    const object = payload?.objects.find((candidate) => candidate.id === objectId) || null;
+    if (!object) {
+      return null;
+    }
+    if (chain.includes(object.id)) {
+      return null;
+    }
+    if (!object.baseObjectId) {
+      return JSON.parse(JSON.stringify(object));
+    }
+    const baseObject = this.resolveObjectForPayload(payload, object.baseObjectId, [...chain, object.id]);
+    if (!baseObject) {
+      return null;
+    }
+    const shapeById = new Map(baseObject.shapes.map((shape) => [shape.id, JSON.parse(JSON.stringify(shape))]));
+    object.shapes.forEach((shape) => {
+      shapeById.set(shape.id, JSON.parse(JSON.stringify(shape)));
+    });
+    const stateById = new Map((baseObject.states || []).map((state) => [state.id, JSON.parse(JSON.stringify(state))]));
+    (object.states || []).forEach((state) => {
+      stateById.set(state.id, JSON.parse(JSON.stringify(state)));
+    });
+    const resolved = {
+      ...baseObject,
+      ...JSON.parse(JSON.stringify(object)),
+      inheritedFrom: object.baseObjectId,
+      shapes: Array.from(shapeById.values()).sort((left, right) => left.order - right.order)
+    };
+    if (stateById.size) {
+      resolved.states = Array.from(stateById.values());
+    } else {
+      delete resolved.states;
+    }
+    return resolved;
+  }
+
   selectedShape() {
     return this.selectedObject()?.shapes.find((shape) => shape.id === this.selectedShapeId) || null;
   }
@@ -2580,9 +2783,30 @@ export class ToolStarterApp {
     return OBJECT_TYPES.includes(type) ? type : DEFAULT_OBJECT_TYPE;
   }
 
+  validAssetCategory(value) {
+    const category = String(value || "").trim().toLowerCase();
+    return ASSET_CATEGORIES.includes(category) ? category : DEFAULT_ASSET_CATEGORY;
+  }
+
   uniqueObjectId(name, objects) {
     const baseId = slugifyObjectName(name);
     const usedIds = new Set(objects.map((object) => object.id));
+    if (!usedIds.has(baseId)) {
+      return baseId;
+    }
+
+    let suffix = 2;
+    let candidate = `${baseId}-${suffix}`;
+    while (usedIds.has(candidate)) {
+      suffix += 1;
+      candidate = `${baseId}-${suffix}`;
+    }
+    return candidate;
+  }
+
+  uniqueAssetId(name, assets) {
+    const baseId = `asset.${slugifyObjectName(name)}`;
+    const usedIds = new Set(assets.map((asset) => asset.id));
     if (!usedIds.has(baseId)) {
       return baseId;
     }
@@ -2636,8 +2860,10 @@ export class ToolStarterApp {
     this.elements.createStateButton.disabled = !hasSelectedObject;
     this.elements.renameObjectButton.disabled = !hasSelectedObject;
     this.elements.duplicateObjectButton.disabled = !hasSelectedObject;
+    this.elements.duplicateAsLocalButton.disabled = !hasSelectedObject;
     this.elements.deleteObjectButton.disabled = !hasSelectedObject;
     this.elements.flattenObjectButton.disabled = !hasSelectedObject;
+    this.elements.createLibraryAssetButton.disabled = !hasSelectedObject;
     this.elements.exportSvgButton.disabled = !hasSelectedObject;
     this.elements.runtimePreviewButton.disabled = !hasSelectedObject;
     this.updateAnimationActionState();
@@ -2669,7 +2895,7 @@ export class ToolStarterApp {
 
     try {
       await this.window.navigator.clipboard.writeText(json);
-      this.statusLog.write("OK Object Vector Studio V2 JSON copied.");
+      this.statusLog.write(`OK Object Vector Studio V2 JSON copied with ${payload.objects.length} objects and ${assetCountLabel(payload.assetLibrary?.assets?.length || 0)}.`);
     } catch (error) {
       this.statusLog.write(`FAIL Copy JSON failed: ${error.message}`);
     }
@@ -2697,6 +2923,7 @@ export class ToolStarterApp {
       return;
     }
     const result = this.runtimeAssetService.createSvgString(assetSet, {
+      assetId: this.assetLibraryAssets().find((asset) => asset.objectId === object.id)?.id || "",
       elapsedMs: 0,
       frameId: this.selectedFrameId,
       objectId: object.id,
@@ -2727,7 +2954,7 @@ export class ToolStarterApp {
     anchor.download = "object-vector-studio-v2.json";
     anchor.click();
     URL.revokeObjectURL(url);
-    this.statusLog.write(`OK Export JSON prepared for ${payload.objects.length} Object Vector Studio V2 objects.`);
+    this.statusLog.write(`OK Export JSON prepared for ${payload.objects.length} Object Vector Studio V2 objects and ${assetCountLabel(payload.assetLibrary?.assets?.length || 0)}.`);
   }
 
   exportSelectedObjectSvg() {
