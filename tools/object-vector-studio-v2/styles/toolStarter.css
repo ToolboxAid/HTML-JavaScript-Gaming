@@ -1258,11 +1258,13 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__render-surface {
-  width: min(100%, 480px);
+  width: 100%;
+  max-width: 100%;
   height: auto;
   min-height: 0;
   aspect-ratio: 16 / 11;
   align-self: stretch;
+  justify-self: stretch;
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.16);
@@ -1276,6 +1278,7 @@ textarea:hover {
 .object-vector-studio-v2__svg-grid {
   stroke: rgba(255, 255, 255, 0.18);
   stroke-width: 1;
+  vector-effect: non-scaling-stroke;
   pointer-events: none;
 }
 

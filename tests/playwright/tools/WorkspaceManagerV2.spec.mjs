@@ -1578,6 +1578,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(shapeHierarchyDensity.rowHeight).toBeLessThanOrEqual(28);
       const gridObjectScale = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
         const rectangle = surface.querySelector("[data-shape-id='rectangle-1']");
+        const workArea = document.querySelector(".object-vector-studio-v2__work-area");
+        const workAreaStyle = getComputedStyle(workArea);
+        const availableWidth = workArea.clientWidth - Number.parseFloat(workAreaStyle.paddingLeft) - Number.parseFloat(workAreaStyle.paddingRight);
         const verticalLines = Array.from(surface.querySelectorAll("[data-grid-rendered='true'] line"))
           .filter((line) => line.getAttribute("x1") === line.getAttribute("x2"))
           .map((line) => Number(line.getAttribute("x1")));
@@ -1588,6 +1591,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const surfaceRect = surface.getBoundingClientRect();
         return {
           aspectRatioMatchesViewBox: Math.abs((surfaceRect.width / surfaceRect.height) - (viewBox[2] / viewBox[3])) < 0.02,
+          canvasFillsAvailableWidth: Math.abs(surfaceRect.width - availableWidth) <= 2,
           rectangle: {
             height: Number(rectangle.getAttribute("height")),
             width: Number(rectangle.getAttribute("width")),
@@ -1595,14 +1599,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             y: Number(rectangle.getAttribute("y"))
           },
           rectangleSpansGridLines: verticalLines.includes(-80) && verticalLines.includes(0) && horizontalLines.includes(-30) && horizontalLines.includes(30),
-          stepMatchesSnap: verticalLines.includes(-80) && verticalLines.includes(-70)
+          unitGridSpacing: verticalLines.includes(-80) && verticalLines.includes(-79) && horizontalLines.includes(-30) && horizontalLines.includes(-29)
         };
       });
       expect(gridObjectScale).toEqual({
         aspectRatioMatchesViewBox: true,
+        canvasFillsAvailableWidth: true,
         rectangle: { height: 60, width: 80, x: -80, y: -30 },
         rectangleSpansGridLines: true,
-        stepMatchesSnap: true
+        unitGridSpacing: true
       });
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility']")).toHaveText("");
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock']")).toHaveText("");
@@ -2037,6 +2042,143 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/workspace=uat/);
 
       expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("maps Object Vector Studio V2 preview coordinates directly to visible grid lines", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    const consoleErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "asteroids-ship-grid",
+          swatches: [
+            { id: "white", value: "#ffffff" },
+            { id: "cyan", value: "#6fd3ff" }
+          ]
+        }));
+      });
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles({
+        buffer: Buffer.from(JSON.stringify({
+          name: "Asteroids Ship Grid Check",
+          objects: [
+            {
+              id: "object.asteroids.ship-grid",
+              name: "Asteroids Ship Grid Check",
+              shapes: [
+                {
+                  geometry: {
+                    points: [
+                      { x: 0, y: -18 },
+                      { x: 14, y: 16 },
+                      { x: 0, y: 8 },
+                      { x: -14, y: 16 }
+                    ]
+                  },
+                  id: "asteroids-ship-outline",
+                  locked: false,
+                  order: 1,
+                  style: { fill: "#ffffff", stroke: "#6fd3ff", strokeWidth: 1 },
+                  transform: { originX: 0, originY: 0, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                  type: "polygon",
+                  visible: true
+                }
+              ]
+            }
+          ],
+          toolId: "object-vector-studio-v2",
+          version: 1
+        }, null, 2)),
+        mimeType: "application/json",
+        name: "asteroids-ship-grid.object-vector.json"
+      });
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Render mode svg-work-surface: rendered Asteroids Ship Grid Check with 1 visible shapes; capture mode none\./);
+
+      const readPreviewScale = async () => page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
+        const workArea = document.querySelector(".object-vector-studio-v2__work-area");
+        const workAreaStyle = getComputedStyle(workArea);
+        const availableWidth = workArea.clientWidth - Number.parseFloat(workAreaStyle.paddingLeft) - Number.parseFloat(workAreaStyle.paddingRight);
+        const surfaceRect = surface.getBoundingClientRect();
+        const viewBox = surface.getAttribute("viewBox").split(/\s+/).map(Number);
+        const horizontalLines = Array.from(surface.querySelectorAll("[data-grid-rendered='true'] line"))
+          .filter((line) => line.getAttribute("y1") === line.getAttribute("y2"))
+          .map((line) => Number(line.getAttribute("y1")));
+        const verticalLines = Array.from(surface.querySelectorAll("[data-grid-rendered='true'] line"))
+          .filter((line) => line.getAttribute("x1") === line.getAttribute("x2"))
+          .map((line) => Number(line.getAttribute("x1")));
+        const screenPoint = (x, y) => {
+          const point = surface.createSVGPoint();
+          point.x = x;
+          point.y = y;
+          const transformed = point.matrixTransform(surface.getScreenCTM());
+          return { x: transformed.x, y: transformed.y };
+        };
+        const shipPoints = [
+          { x: 0, y: -18 },
+          { x: 14, y: 16 },
+          { x: 0, y: 8 },
+          { x: -14, y: 16 }
+        ];
+        const pointScreens = shipPoints.map((point) => screenPoint(point.x, point.y));
+        const lineScreens = {
+          bottom: screenPoint(0, 16).y,
+          origin: screenPoint(0, 0).y,
+          top: screenPoint(0, -18).y
+        };
+        return {
+          aspectRatioStable: Math.abs((surfaceRect.width / surfaceRect.height) - (viewBox[2] / viewBox[3])) < 0.02,
+          canvasFillsAvailableWidth: Math.abs(surfaceRect.width - availableWidth) <= 2,
+          gridLinesAboveOrigin: horizontalLines.filter((y) => y < 0 && y >= -18).length,
+          gridLinesBelowOrigin: horizontalLines.filter((y) => y > 0 && y <= 16).length,
+          originCentered: Math.abs(lineScreens.origin - (surfaceRect.top + surfaceRect.height / 2)) <= 1,
+          pointsOnVisibleGridLines: shipPoints.every((point) => horizontalLines.includes(point.y) && verticalLines.includes(point.x)),
+          pointScreensMatchGrid: Math.abs(pointScreens[0].y - lineScreens.top) <= 0.01
+            && Math.abs(pointScreens[1].y - lineScreens.bottom) <= 0.01
+            && Math.abs(pointScreens[3].y - lineScreens.bottom) <= 0.01,
+          unitGridSpacing: horizontalLines.includes(-18) && horizontalLines.includes(-17) && horizontalLines.includes(15) && horizontalLines.includes(16),
+          viewBox: surface.getAttribute("viewBox")
+        };
+      });
+
+      const initialPreviewScale = await readPreviewScale();
+      expect(initialPreviewScale).toEqual({
+        aspectRatioStable: true,
+        canvasFillsAvailableWidth: true,
+        gridLinesAboveOrigin: 18,
+        gridLinesBelowOrigin: 16,
+        originCentered: true,
+        pointsOnVisibleGridLines: true,
+        pointScreensMatchGrid: true,
+        unitGridSpacing: true,
+        viewBox: "-160 -110 320 220"
+      });
+
+      await page.setViewportSize({ width: 1040, height: 720 });
+      const resizedPreviewScale = await readPreviewScale();
+      expect(resizedPreviewScale.aspectRatioStable).toBe(true);
+      expect(resizedPreviewScale.canvasFillsAvailableWidth).toBe(true);
+      expect(resizedPreviewScale.gridLinesAboveOrigin).toBe(18);
+      expect(resizedPreviewScale.gridLinesBelowOrigin).toBe(16);
+      expect(resizedPreviewScale.pointsOnVisibleGridLines).toBe(true);
+
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
       await server.close();
