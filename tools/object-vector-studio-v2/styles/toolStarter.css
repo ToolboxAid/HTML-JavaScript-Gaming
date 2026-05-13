@@ -198,6 +198,10 @@ textarea:hover {
   overflow-y: auto;
 }
 
+.tool-starter__panel--left > .accordion-v2.is-open {
+  flex: 1 0 220px;
+}
+
 .accordion-v2 {
   --accordion-v2-accent: var(--tool-starter-accent);
   --accordion-v2-line: var(--tool-starter-line);
@@ -328,6 +332,10 @@ textarea:hover {
   padding: 7px 9px;
 }
 
+#objectVectorStudioV2ObjectContent .tool-starter__field--compact > span {
+  white-space: nowrap;
+}
+
 .tool-starter__field input[readonly] {
   color: var(--tool-starter-muted);
   cursor: default;
@@ -384,8 +392,9 @@ textarea:hover {
 }
 
 #objectVectorStudioV2ShapeToolsContent {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   max-height: none;
+  min-height: 0;
 }
 
 .object-vector-studio-v2__palette-swatch-list {
@@ -908,27 +917,27 @@ textarea:hover {
 .object-vector-studio-v2__object-tile-shapes {
   grid-column: 1 / -1;
   display: grid;
-  gap: 2px;
+  gap: 1px;
   border-top: 1px solid var(--tool-starter-line);
-  padding-top: 5px;
+  padding-top: 4px;
 }
 
 .object-vector-studio-v2__object-tile-shape-row {
   display: block;
-  font-size: 0.74rem;
-  line-height: 1.12;
+  font-size: 0.7rem;
+  line-height: 1.08;
 }
 
 .object-vector-studio-v2__shape-select {
   width: 100% !important;
-  min-height: 24px;
+  min-height: 22px;
   position: relative;
   z-index: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 3px 6px !important;
+  gap: 6px;
+  padding: 2px 5px !important;
   text-align: left;
 }
 

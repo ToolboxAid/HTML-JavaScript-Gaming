@@ -1563,14 +1563,60 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Create line blocked: object Asteroids Ship is locked for this runtime session\./);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock']").click();
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeEnabled();
-      const shapeScrollBefore = await page.locator("#objectVectorStudioV2ObjectsContent").evaluate((element) => {
-        element.scrollTop = 32;
-        return element.scrollTop;
+
+      const forceLeftPanelScroll = async () => page.evaluate(() => {
+        const leftPanel = document.querySelector(".tool-starter__panel--left");
+        const objectsContent = document.querySelector("#objectVectorStudioV2ObjectsContent");
+        if (!leftPanel.dataset.scrollPersistenceStylesCaptured) {
+          leftPanel.dataset.scrollPersistenceStylesCaptured = "true";
+          leftPanel.dataset.scrollPersistenceHeight = leftPanel.style.height;
+          leftPanel.dataset.scrollPersistenceMaxHeight = leftPanel.style.maxHeight;
+          leftPanel.dataset.scrollPersistenceOverflowY = leftPanel.style.overflowY;
+        }
+        leftPanel.style.height = "150px";
+        leftPanel.style.maxHeight = "150px";
+        leftPanel.style.overflowY = "auto";
+        leftPanel.scrollTop = 24;
+        objectsContent.scrollTop = 32;
+        return {
+          leftPanelScrollTop: leftPanel.scrollTop,
+          objectsScrollTop: objectsContent.scrollTop
+        };
       });
+      const readLeftPanelScroll = async () => page.evaluate(() => {
+        const leftPanel = document.querySelector(".tool-starter__panel--left");
+        const objectsContent = document.querySelector("#objectVectorStudioV2ObjectsContent");
+        return {
+          leftPanelScrollTop: leftPanel.scrollTop,
+          objectsScrollTop: objectsContent.scrollTop
+        };
+      });
+      const restoreLeftPanelStyle = async () => page.evaluate(() => {
+        const leftPanel = document.querySelector(".tool-starter__panel--left");
+        leftPanel.style.height = leftPanel.dataset.scrollPersistenceHeight || "";
+        leftPanel.style.maxHeight = leftPanel.dataset.scrollPersistenceMaxHeight || "";
+        leftPanel.style.overflowY = leftPanel.dataset.scrollPersistenceOverflowY || "";
+        delete leftPanel.dataset.scrollPersistenceStylesCaptured;
+        delete leftPanel.dataset.scrollPersistenceHeight;
+        delete leftPanel.dataset.scrollPersistenceMaxHeight;
+        delete leftPanel.dataset.scrollPersistenceOverflowY;
+      });
+
+      const leftPanelObjectScrollBefore = await forceLeftPanelScroll();
+      expect(leftPanelObjectScrollBefore.leftPanelScrollTop).toBeGreaterThan(0);
+      await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-2']").evaluate((tile) => tile.click());
+      await expect.poll(readLeftPanelScroll).toEqual(leftPanelObjectScrollBefore);
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-2']")).toHaveClass(/is-selected/);
+      await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1']").evaluate((tile) => tile.click());
+      await expect.poll(readLeftPanelScroll).toEqual(leftPanelObjectScrollBefore);
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1']")).toHaveClass(/is-selected/);
+
+      const shapeScrollBefore = await forceLeftPanelScroll();
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-id='rectangle-1']").evaluate((button) => button.click());
-      await expect.poll(async () => page.locator("#objectVectorStudioV2ObjectsContent").evaluate((element) => element.scrollTop)).toBe(shapeScrollBefore);
+      await expect.poll(readLeftPanelScroll).toEqual(shapeScrollBefore);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-1']")).toHaveClass(/is-selected/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected shape from object tile shape list: rectangle-1 \(rectangle\)\./);
+      await restoreLeftPanelStyle();
 
       await page.locator("[data-palette-color='#6fd3ff']").click();
       await expect(page.locator("[data-palette-color='#6fd3ff']")).toHaveClass(/is-selected/);

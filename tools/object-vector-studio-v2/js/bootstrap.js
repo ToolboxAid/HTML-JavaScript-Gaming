@@ -50,6 +50,7 @@ window.addEventListener("DOMContentLoaded", () => {
       gridSnapButton: requireElement("#objectVectorStudioV2GridSnapButton"),
       groupShapesButton: requireElement("#objectVectorStudioV2GroupShapesButton"),
       jsonDetails: requireElement("#objectVectorStudioV2JsonDetails"),
+      leftPanel: requireElement(".tool-starter__panel--left"),
       loopToggle: requireElement("#objectVectorStudioV2LoopToggle"),
       objectDetails: requireElement("#objectVectorStudioV2ObjectDetails"),
       objectDetailsCount: requireElement("#objectVectorStudioV2ObjectDetailsCount"),

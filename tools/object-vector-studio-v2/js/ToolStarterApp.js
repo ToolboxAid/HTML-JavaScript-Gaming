@@ -930,8 +930,24 @@ export class ToolStarterApp {
   }
 
   restoreObjectsScroll(scrollTop) {
-    const maxScrollTop = Math.max(0, this.elements.objectsContent.scrollHeight - this.elements.objectsContent.clientHeight);
-    this.elements.objectsContent.scrollTop = Math.min(scrollTop, maxScrollTop);
+    this.restoreElementScrollTop(this.elements.objectsContent, scrollTop);
+  }
+
+  captureLeftPanelScrollState() {
+    return {
+      leftPanelScrollTop: this.elements.leftPanel.scrollTop,
+      objectsScrollTop: this.elements.objectsContent.scrollTop
+    };
+  }
+
+  restoreLeftPanelScrollState(scrollState) {
+    this.restoreElementScrollTop(this.elements.leftPanel, scrollState.leftPanelScrollTop);
+    this.restoreElementScrollTop(this.elements.objectsContent, scrollState.objectsScrollTop);
+  }
+
+  restoreElementScrollTop(element, scrollTop) {
+    const maxScrollTop = Math.max(0, element.scrollHeight - element.clientHeight);
+    element.scrollTop = Math.min(scrollTop, maxScrollTop);
   }
 
   createObjectTileControl(object, kind) {
@@ -1850,6 +1866,7 @@ export class ToolStarterApp {
       return;
     }
 
+    const scrollState = this.captureLeftPanelScrollState();
     this.selectedObjectId = objectId;
     const selectedObject = this.selectedObject();
     this.selectedShapeId = sortedShapes(selectedObject)[0]?.id || "";
@@ -1858,6 +1875,7 @@ export class ToolStarterApp {
     this.selectedStateId = selectedState?.id || "";
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.renderPayload();
+    this.restoreLeftPanelScrollState(scrollState);
     const selected = this.selectedObject();
     this.statusLog.write(`OK Selected object from ${sourceLabel}: ${selected.name}.`);
   }
@@ -1869,6 +1887,7 @@ export class ToolStarterApp {
       return;
     }
 
+    const scrollState = this.captureLeftPanelScrollState();
     this.selectedShapeId = shapeId;
     if (options.additive) {
       if (this.selectedShapeIds.has(shapeId) && this.selectedShapeIds.size > 1) {
@@ -1881,6 +1900,7 @@ export class ToolStarterApp {
       this.selectedShapeIds = new Set([shapeId]);
     }
     this.renderPayload();
+    this.restoreLeftPanelScrollState(scrollState);
     const shape = this.selectedShape();
     this.statusLog.write(`OK Selected shape from ${sourceLabel}: ${shape.id} (${shape.type}). Multi-select count: ${this.selectedShapeIds.size}.`);
   }
