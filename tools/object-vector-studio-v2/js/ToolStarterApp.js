@@ -654,7 +654,7 @@ export class ToolStarterApp {
     this.selectedStateId = "";
     this.selectedFrameId = "";
     this.stopPlaybackTimer();
-    this.updateObjectDetailsHeader(0, 0);
+    this.updateObjectsHeader(0, 0);
     this.updatePaletteHeader(this.runtimePalette?.swatches?.length || 0);
     this.elements.objectNameInput.value = "";
     this.elements.objectTagInput.value = "";
@@ -677,8 +677,8 @@ export class ToolStarterApp {
     this.updateObjectActionState();
   }
 
-  updateObjectDetailsHeader(objectCount, shapeCount) {
-    this.elements.objectDetailsCount.textContent = `(${objectCount} obj, ${shapeCount} ${shapeCount === 1 ? "shape" : "shapes"})`;
+  updateObjectsHeader(objectCount, shapeCount) {
+    this.elements.objectsCount.textContent = `(${objectCount} obj, ${shapeCount} ${shapeCount === 1 ? "shape" : "shapes"})`;
   }
 
   updatePaletteHeader(swatchCount) {
@@ -813,7 +813,7 @@ export class ToolStarterApp {
     this.selectedStateId = "";
     this.selectedFrameId = "";
     this.stopPlaybackTimer();
-    this.updateObjectDetailsHeader(0, 0);
+    this.updateObjectsHeader(0, 0);
     this.updatePaletteHeader(0);
     this.elements.paletteSummary.textContent = message;
     this.elements.objectNameInput.value = "";
@@ -881,7 +881,7 @@ export class ToolStarterApp {
 
   renderObjectTiles() {
     const previousScrollTop = this.elements.objectsContent.scrollTop;
-    this.updateObjectDetailsHeader(this.currentPayload.objects.length, this.selectedObject()?.shapes.length || 0);
+    this.updateObjectsHeader(this.currentPayload.objects.length, this.selectedObject()?.shapes.length || 0);
     this.elements.objectTiles.replaceChildren();
     if (!this.currentPayload.objects.length) {
       this.elements.objectTiles.append(this.createEmptyObjectTile());
@@ -1019,33 +1019,38 @@ export class ToolStarterApp {
       const label = document.createElement("span");
       label.className = "object-vector-studio-v2__shape-select-label";
       label.textContent = `${shape.order}. ${shape.id}`;
-      const eyeIcon = this.createIconSpan("eye", shape.visible);
-      eyeIcon.classList.add("object-vector-studio-v2__shape-eye-inline");
-      eyeIcon.dataset.shapeVisibilityId = shape.id;
-      eyeIcon.setAttribute("role", "button");
-      eyeIcon.setAttribute("aria-label", `${shape.visible ? "Hide" : "Show"} shape ${shape.id}`);
-      eyeIcon.title = "Toggle shape visibility";
-      const deleteIcon = this.createIconSpan("delete", true);
-      deleteIcon.classList.add("object-vector-studio-v2__shape-delete-inline");
-      deleteIcon.dataset.shapeDeleteId = shape.id;
-      deleteIcon.setAttribute("role", "button");
-      deleteIcon.setAttribute("aria-label", `Delete shape ${shape.id}`);
-      deleteIcon.title = "Delete this shape";
-      selectButton.append(label, eyeIcon, deleteIcon);
+      selectButton.append(label);
       selectButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        if (event.target?.dataset?.shapeVisibilityId) {
-          this.selectShape(shape.id, "object tile shape visibility");
-          this.toggleSelectedShapeVisibility();
-          return;
-        }
-        if (event.target?.dataset?.shapeDeleteId) {
-          this.deleteShapeById(shape.id, "object tile shape delete");
-          return;
-        }
         this.selectShape(shape.id, "object tile shape list", { additive: event.shiftKey || event.ctrlKey || event.metaKey });
       });
-      row.append(selectButton);
+      const actions = document.createElement("div");
+      actions.className = "object-vector-studio-v2__shape-inline-actions";
+      const visibilityButton = document.createElement("button");
+      visibilityButton.type = "button";
+      visibilityButton.className = "object-vector-studio-v2__shape-inline-button object-vector-studio-v2__shape-eye-inline";
+      visibilityButton.dataset.shapeVisibilityId = shape.id;
+      visibilityButton.setAttribute("aria-label", `${shape.visible ? "Hide" : "Show"} shape ${shape.id}`);
+      visibilityButton.title = "Toggle shape visibility";
+      visibilityButton.append(this.createIconSpan("eye", shape.visible));
+      visibilityButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        this.selectShape(shape.id, "object tile shape visibility");
+        this.toggleSelectedShapeVisibility();
+      });
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "object-vector-studio-v2__shape-inline-button object-vector-studio-v2__shape-delete-inline";
+      deleteButton.dataset.shapeDeleteId = shape.id;
+      deleteButton.setAttribute("aria-label", `Delete shape ${shape.id}`);
+      deleteButton.title = "Delete this shape";
+      deleteButton.append(this.createIconSpan("delete", true));
+      deleteButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        this.deleteShapeById(shape.id, "object tile shape delete");
+      });
+      actions.append(visibilityButton, deleteButton);
+      row.append(selectButton, actions);
       list.append(row);
     });
     if (!list.children.length) {
@@ -1185,7 +1190,7 @@ export class ToolStarterApp {
       this.elements.objectNameInput.value = "";
       this.elements.objectTagInput.value = "";
       this.renderObjectTagList(null);
-      this.updateObjectDetailsHeader(this.currentPayload?.objects.length || 0, 0);
+      this.updateObjectsHeader(this.currentPayload?.objects.length || 0, 0);
       this.elements.objectDetails.textContent = "No object selected.";
       this.elements.objectTransform.textContent = "No shape selected.";
       this.elements.objectPreviewFooter.textContent = "Object ID: none";
@@ -1197,7 +1202,7 @@ export class ToolStarterApp {
     const shape = this.selectedShape();
     this.elements.objectNameInput.value = selected.name;
     this.renderObjectTagList(selected);
-    this.updateObjectDetailsHeader(this.currentPayload.objects.length, selected.shapes.length);
+    this.updateObjectsHeader(this.currentPayload.objects.length, selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
     this.elements.objectTransform.replaceChildren(this.createObjectTransformDetails(shape));
     this.elements.objectPreviewFooter.textContent = `Object ID: ${selected.id}`;
@@ -1389,20 +1394,37 @@ export class ToolStarterApp {
     const heading = document.createElement("h4");
     heading.textContent = `${shapeTypeLabel(shape)} Geometry`;
     const grid = document.createElement("div");
-    grid.className = "object-vector-studio-v2__edit-grid";
-    this.shapeGeometryFields(shape).forEach((field) => {
-      const label = document.createElement("label");
-      label.className = "object-vector-studio-v2__edit-field";
-      const caption = document.createElement("span");
-      caption.textContent = field.label;
-      const input = document.createElement("input");
-      input.dataset.shapeGeometryField = field.key;
-      input.type = field.kind;
-      input.value = String(field.value);
-      input.addEventListener("input", () => this.clearInputValidity(input));
-      label.append(caption, input);
-      grid.append(label);
-    });
+    grid.className = shape.type === "polygon" ? "object-vector-studio-v2__polygon-point-list" : "object-vector-studio-v2__edit-grid";
+    if (shape.type === "polygon") {
+      shape.geometry.points.forEach((point, index) => {
+        const label = document.createElement("label");
+        label.className = "object-vector-studio-v2__edit-field object-vector-studio-v2__polygon-point-field";
+        const caption = document.createElement("span");
+        caption.textContent = `Point ${index + 1}`;
+        const input = document.createElement("input");
+        input.dataset.shapeGeometryField = "points";
+        input.dataset.polygonPointIndex = String(index);
+        input.type = "text";
+        input.value = `${point.x},${point.y}`;
+        input.addEventListener("input", () => this.clearInputValidity(input));
+        label.append(caption, input);
+        grid.append(label);
+      });
+    } else {
+      this.shapeGeometryFields(shape).forEach((field) => {
+        const label = document.createElement("label");
+        label.className = "object-vector-studio-v2__edit-field";
+        const caption = document.createElement("span");
+        caption.textContent = field.label;
+        const input = document.createElement("input");
+        input.dataset.shapeGeometryField = field.key;
+        input.type = field.kind;
+        input.value = String(field.value);
+        input.addEventListener("input", () => this.clearInputValidity(input));
+        label.append(caption, input);
+        grid.append(label);
+      });
+    }
     const applyButton = document.createElement("button");
     applyButton.id = "objectVectorStudioV2ApplyGeometryButton";
     applyButton.type = "button";
@@ -3124,10 +3146,15 @@ export class ToolStarterApp {
   readShapeGeometryFields(shape, fields) {
     try {
       if (shape.type === "polygon") {
-        const pointsInput = fields.find((input) => input.dataset.shapeGeometryField === "points");
-        const points = this.parsePolygonPoints(pointsInput?.value || "");
-        if (pointsInput) {
-          this.clearInputValidity(pointsInput);
+        const pointInputs = fields.filter((input) => input.dataset.shapeGeometryField === "points");
+        if (pointInputs.length < 3) {
+          throw new Error("polygon points must contain at least three point rows.");
+        }
+        const points = [];
+        for (const input of pointInputs) {
+          const point = this.parsePolygonPointEntry(input.value, Number(input.dataset.polygonPointIndex) + 1);
+          points.push(point);
+          this.clearInputValidity(input);
         }
         return { ok: true, value: { points } };
       }
@@ -3147,9 +3174,13 @@ export class ToolStarterApp {
       }
       return { ok: true, value: geometry };
     } catch (error) {
-      const pointsInput = fields.find((input) => input.dataset.shapeGeometryField === "points");
-      if (pointsInput) {
-        this.markInputInvalid(pointsInput, error.message);
+      if (error.input) {
+        this.markInputInvalid(error.input, error.message);
+      } else {
+        const pointsInput = fields.find((input) => input.dataset.shapeGeometryField === "points");
+        if (pointsInput) {
+          this.markInputInvalid(pointsInput, error.message);
+        }
       }
       return { error: error.message, ok: false, value: null };
     }
@@ -3396,6 +3427,22 @@ export class ToolStarterApp {
       throw new Error("polygon points must contain at least three x,y pairs.");
     }
     return points;
+  }
+
+  parsePolygonPointEntry(value, pointNumber) {
+    const [xValue, yValue, extra] = String(value || "").trim().split(",");
+    const xText = String(xValue || "").trim();
+    const yText = String(yValue || "").trim();
+    const point = {
+      x: Number(xText),
+      y: Number(yText)
+    };
+    if (extra !== undefined || !xText || !yText || !Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+      const error = new Error(`Point ${pointNumber} must be an x,y pair with finite numbers.`);
+      error.input = this.elements.objectDetails.querySelector(`[data-polygon-point-index="${pointNumber - 1}"]`);
+      throw error;
+    }
+    return point;
   }
 
   validateShapeForTransform(shape) {

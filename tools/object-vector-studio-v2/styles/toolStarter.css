@@ -975,7 +975,10 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-tile-shape-row {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
   font-size: 0.7rem;
   line-height: 1.08;
 }
@@ -996,6 +999,22 @@ textarea:hover {
 .object-vector-studio-v2__shape-select-label {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.object-vector-studio-v2__shape-inline-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.object-vector-studio-v2__shape-inline-button {
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 !important;
 }
 
 .object-vector-studio-v2__object-tile-shape-row.is-selected .object-vector-studio-v2__shape-select,
@@ -1077,12 +1096,6 @@ textarea:hover {
 
 .object-vector-studio-v2__tile-icon.is-off {
   opacity: 0.42;
-}
-
-.object-vector-studio-v2__shape-eye-inline,
-.object-vector-studio-v2__shape-delete-inline {
-  flex: 0 0 auto;
-  pointer-events: auto;
 }
 
 .object-vector-studio-v2__shape-delete-inline {
@@ -1410,6 +1423,11 @@ textarea:hover {
   gap: 8px;
 }
 
+.object-vector-studio-v2__polygon-point-list {
+  display: grid;
+  gap: 6px;
+}
+
 .object-vector-studio-v2__edit-field {
   min-width: 0;
   display: grid;
@@ -1418,6 +1436,12 @@ textarea:hover {
   font-size: 0.88rem;
   font-weight: 800;
   text-align: left;
+}
+
+.object-vector-studio-v2__polygon-point-field {
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
 }
 
 .object-vector-studio-v2__edit-field input {
