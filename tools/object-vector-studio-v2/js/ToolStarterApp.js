@@ -1867,12 +1867,24 @@ export class ToolStarterApp {
     const viewX = this.formatViewportNumber(this.viewport.x - width / 2);
     const viewY = this.formatViewportNumber(this.viewport.y - height / 2);
     this.elements.renderSurface.setAttribute("viewBox", `${viewX} ${viewY} ${this.formatViewportNumber(width)} ${this.formatViewportNumber(height)}`);
-    this.elements.coordinateDisplay.textContent = `Origin: ${this.formatViewportNumber(this.viewport.x)}, ${this.formatViewportNumber(this.viewport.y)} | Canvas 0,0 centered | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
+    this.elements.coordinateDisplay.textContent = `Origin: ${this.formatLogicalCoordinate(this.viewport.x)}, ${this.formatLogicalCoordinate(this.viewport.y)} | Canvas 0,0 centered | Zoom ${this.formatZoomPercentage()}%`;
   }
 
   formatViewportNumber(value) {
     const normalized = Number(Number(value).toFixed(3));
     return Object.is(normalized, -0) ? 0 : normalized;
+  }
+
+  formatLogicalCoordinate(value) {
+    return this.formatViewportNumber(value / GRID_STEP);
+  }
+
+  formatLogicalPointerCoordinate(value) {
+    return Math.round(this.formatLogicalCoordinate(value));
+  }
+
+  formatZoomPercentage() {
+    return Math.round(this.viewport.zoom * 100);
   }
 
   zoomViewportByStep(step) {
@@ -1913,7 +1925,7 @@ export class ToolStarterApp {
     const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
     const x = this.viewport.x - viewWidth / 2 + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
     const y = this.viewport.y - viewHeight / 2 + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
-    this.elements.coordinateDisplay.textContent = `Pointer ${Math.round(x)}, ${Math.round(y)} | Canvas origin 0,0 centered | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
+    this.elements.coordinateDisplay.textContent = `Pointer ${this.formatLogicalPointerCoordinate(x)}, ${this.formatLogicalPointerCoordinate(y)} | Canvas origin 0,0 centered | Zoom ${this.formatZoomPercentage()}%`;
   }
 
   selectObject(objectId, sourceLabel) {

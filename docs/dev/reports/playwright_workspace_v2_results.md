@@ -1,27 +1,27 @@
-# PR_26133_004 Workspace V2 Results
+# PR_26133_005 Workspace V2 Results
 
 ## Command Results
 
 - `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`: passed.
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`: passed.
-- `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --grep "Object Vector Studio V2 (layout shell|preview coordinates)"`: 2 passed.
+- `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --grep "Object Vector Studio V2 (layout shell|preview coordinates)"`: 2 passed after correcting the pointer-event test probe.
 - `npm run test:workspace-v2`: 46 passed.
 - `git diff --check`: passed with the existing LF-to-CRLF working-copy warning for `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`.
 
 ## Targeted Object Preview Verification
 
 - Standalone Playwright manual probe reported `consoleErrors: []` and `pageErrors: []`.
-- Object Preview grid rendered with 10-unit visible spacing.
-- Object Preview shape drawing used 10x preview scale while preserving persisted object coordinates.
-- Asteroids ship source points `0,-18`, `14,16`, `0,8`, `-14,16` rendered as `0,-180`, `140,160`, `0,80`, `-140,160`.
-- At 25% zoom, the Asteroids ship measured 18 visible grid lines above origin and 16 visible grid lines below origin.
-- Object Preview canvas filled available horizontal work-area width and kept the SVG viewBox aspect ratio stable.
-- Zoom, pan, and reset view remained functional: panned viewBox `-620 -440 1280 880`, reset viewBox `-160 -110 320 220`.
+- Object Preview visuals remained unchanged: grid step `10`, viewBox `-640 -440 1280 880` at 25% zoom, and Asteroids ship drawn points `0,-180`, `140,160`, `0,80`, `-140,160`.
+- Pointer display now reports logical coordinates: grid-space `-140,-160` displays as `Pointer -14, -16 | Canvas origin 0,0 centered | Zoom 25%`.
+- Canvas origin display now reports logical coordinates: panning right displays `Origin: 2, 0 | Canvas 0,0 centered | Zoom 25%`.
+- Reset view displays `Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%`.
+- Zoom display remains logical viewport zoom and is not multiplied by `GRID_STEP`.
 
 ## Contract Checks
 
-- `const GRID_STEP = 10;` is restored in Object Preview.
-- Canvas side-to-side fit and aspect-ratio behavior from the prior PR are preserved.
-- No sample JSON files were modified.
+- `const GRID_STEP = 10;` remains unchanged.
+- Object rendering scale was not changed.
+- Grid rendering was not changed.
+- Canvas sizing was not changed.
 - No unrelated tool/runtime files were changed.
 - No fallback behavior was added.

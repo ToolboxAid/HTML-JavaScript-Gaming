@@ -1842,9 +1842,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-145.455 -100 290.909 200");
       await page.locator("#objectVectorStudioV2PanRightButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-125.455 -100 290.909 200");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas 0,0 centered | Zoom 110%");
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Origin: 0, 0");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport reset to 100% at origin 0,0\./);
       await page.locator("#objectVectorStudioV2RenderSurface").hover();
       for (let index = 0; index < 40; index += 1) {
@@ -2206,8 +2207,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#objectVectorStudioV2PanRightButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-620 -440 1280 880");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas 0,0 centered | Zoom 25%");
       await page.locator("#objectVectorStudioV2PanLeftButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 25%");
+      const examplePointerScreen = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
+        const point = surface.createSVGPoint();
+        point.x = -140;
+        point.y = -160;
+        const transformed = point.matrixTransform(surface.getScreenCTM());
+        return { x: transformed.x, y: transformed.y };
+      });
+      await page.locator("#objectVectorStudioV2RenderSurface").dispatchEvent("mousemove", {
+        bubbles: true,
+        clientX: examplePointerScreen.x,
+        clientY: examplePointerScreen.y
+      });
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Pointer -14, -16 | Canvas origin 0,0 centered | Zoom 25%");
       await page.setViewportSize({ width: 1040, height: 720 });
       const resizedPreviewScale = await readPreviewScale();
       expect(resizedPreviewScale.aspectRatioStable).toBe(true);
