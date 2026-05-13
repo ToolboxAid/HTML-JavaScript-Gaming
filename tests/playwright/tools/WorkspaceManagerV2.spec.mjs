@@ -1469,7 +1469,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='circle-2']")).toHaveClass(/is-selected/);
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1']")).toHaveClass(/is-selected/);
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1'] [data-object-tile-shape-id]")).toHaveCount(2);
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1'] [data-object-tile-shape-id] .object-vector-studio-v2__shape-select-label")).toHaveText(["1. rectangle-1", "2. circle-2"]);
       await expect(page.locator(".object-vector-studio-v2__object-tile-shape-row.is-selected [data-object-tile-shape-id='circle-2']")).toHaveCount(1);
+      const shapeHierarchyDensity = await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1']").evaluate((tile) => {
+        const shapeList = tile.querySelector(".object-vector-studio-v2__object-tile-shapes");
+        const shapeRow = tile.querySelector(".object-vector-studio-v2__object-tile-shape-row");
+        const shapeButton = tile.querySelector("[data-object-tile-shape-id]");
+        const shapeLabel = tile.querySelector(".object-vector-studio-v2__shape-select-label");
+        return {
+          fontSize: Number.parseFloat(getComputedStyle(shapeRow).fontSize),
+          gap: Number.parseFloat(getComputedStyle(shapeList).gap),
+          labelLineHeight: Number.parseFloat(getComputedStyle(shapeLabel).lineHeight),
+          rowHeight: Math.round(shapeButton.getBoundingClientRect().height)
+        };
+      });
+      expect(shapeHierarchyDensity.fontSize).toBeLessThanOrEqual(12);
+      expect(shapeHierarchyDensity.gap).toBeLessThanOrEqual(3);
+      expect(shapeHierarchyDensity.labelLineHeight).toBeLessThanOrEqual(14);
+      expect(shapeHierarchyDensity.rowHeight).toBeLessThanOrEqual(28);
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1'] [data-object-control='visibility']")).toHaveText("");
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1'] [data-object-control='lock']")).toHaveText("");
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1'] [data-object-control='visibility'] .object-vector-studio-v2__tile-icon--eye")).toHaveCount(1);
@@ -1487,7 +1504,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Create line blocked: object Asteroids Ship is locked for this runtime session\./);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1'] [data-object-control='lock']").click();
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeEnabled();
-      await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1'] [data-object-tile-shape-id='rectangle-1']").click();
+      const shapeScrollBefore = await page.locator("#objectVectorStudioV2ObjectsContent").evaluate((element) => {
+        element.scrollTop = 32;
+        return element.scrollTop;
+      });
+      await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object-1'] [data-object-tile-shape-id='rectangle-1']").evaluate((button) => button.click());
+      await expect.poll(async () => page.locator("#objectVectorStudioV2ObjectsContent").evaluate((element) => element.scrollTop)).toBe(shapeScrollBefore);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-1']")).toHaveClass(/is-selected/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected shape from object tile shape list: rectangle-1 \(rectangle\)\./);
 
@@ -1681,7 +1703,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const exportedSchemaValidation = await page.evaluate((payload) => window.__objectVectorStudioV2App.schemaService.validatePayload(payload), exportedPayload);
       expect(exportedSchemaValidation).toEqual({ errors: [], ok: true, payload: exportedPayload });
 
+      const objectScrollBefore = await page.locator("#objectVectorStudioV2ObjectsContent").evaluate((element) => {
+        element.scrollTop = 120;
+        return element.scrollTop;
+      });
       await page.locator('.object-vector-studio-v2__object-tile[data-object-id="object-2"]').evaluate((button) => button.click());
+      await expect.poll(async () => page.locator("#objectVectorStudioV2ObjectsContent").evaluate((element) => element.scrollTop)).toBe(objectScrollBefore);
       await expect(page.locator('[data-object-id="object-2"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2ObjectNameInput")).toHaveValue("Object 2");
       await expect(page.locator("#objectVectorStudioV2ObjectPreviewFooter")).toContainText("Object ID: object-2");
@@ -5334,6 +5361,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Asteroids Ship");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Large Asteroid");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Large UFO");
+      const smallUfoTile = page.locator('.object-vector-studio-v2__object-tile[data-object-id="object.asteroids.ufo.small"]');
+      await smallUfoTile.scrollIntoViewIfNeeded();
+      await smallUfoTile.click();
+      await expect(smallUfoTile).toContainText("objects > Small UFO");
+      await expect(smallUfoTile.locator("[data-object-tile-shape-id] .object-vector-studio-v2__shape-select-label")).toHaveText(["0. small-ufo-body", "1. small-ufo-canopy"]);
       await page.locator('button[aria-controls="objectVectorStudioV2DependencyGraphContent"]').click();
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("Deferred reusable library capability");
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("asset.asteroids.ship");

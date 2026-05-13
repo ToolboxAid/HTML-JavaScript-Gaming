@@ -860,10 +860,12 @@ export class ToolStarterApp {
   }
 
   renderObjectTiles() {
+    const previousScrollTop = this.elements.objectsContent.scrollTop;
     this.updateObjectDetailsHeader(this.currentPayload.objects.length, this.selectedObject()?.shapes.length || 0);
     this.elements.objectTiles.replaceChildren();
     if (!this.currentPayload.objects.length) {
       this.elements.objectTiles.append(this.createEmptyObjectTile());
+      this.restoreObjectsScroll(previousScrollTop);
       return;
     }
 
@@ -872,6 +874,7 @@ export class ToolStarterApp {
       const tile = this.createEmptyObjectTile();
       tile.textContent = "No objects match the current tag or search filter.";
       this.elements.objectTiles.append(tile);
+      this.restoreObjectsScroll(previousScrollTop);
       return;
     }
 
@@ -925,6 +928,12 @@ export class ToolStarterApp {
       }
       this.elements.objectTiles.append(tile);
     });
+    this.restoreObjectsScroll(previousScrollTop);
+  }
+
+  restoreObjectsScroll(scrollTop) {
+    const maxScrollTop = Math.max(0, this.elements.objectsContent.scrollHeight - this.elements.objectsContent.clientHeight);
+    this.elements.objectsContent.scrollTop = Math.min(scrollTop, maxScrollTop);
   }
 
   createObjectTileControl(object, kind) {
@@ -972,7 +981,7 @@ export class ToolStarterApp {
       selectButton.setAttribute("aria-pressed", String(this.selectedShapeIds.has(shape.id)));
       const label = document.createElement("span");
       label.className = "object-vector-studio-v2__shape-select-label";
-      label.textContent = `objects > ${object.name} > ${shape.order}. ${shape.id}`;
+      label.textContent = `${shape.order}. ${shape.id}`;
       const eyeIcon = this.createIconSpan("eye", shape.visible);
       eyeIcon.classList.add("object-vector-studio-v2__shape-eye-inline");
       eyeIcon.dataset.shapeVisibilityId = shape.id;

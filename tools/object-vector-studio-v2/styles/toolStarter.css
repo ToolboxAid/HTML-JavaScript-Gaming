@@ -856,7 +856,7 @@ textarea:hover {
 .object-vector-studio-v2__object-tile-copy {
   min-width: 0;
   display: grid;
-  gap: 4px;
+  gap: 2px;
 }
 
 .object-vector-studio-v2__object-select {
@@ -882,8 +882,7 @@ textarea:hover {
   gap: 4px;
 }
 
-.object-vector-studio-v2__object-tile-control,
-.object-vector-studio-v2__object-tile-shape-row button {
+.object-vector-studio-v2__object-tile-control {
   position: relative;
   z-index: 3;
   width: 34px;
@@ -895,21 +894,27 @@ textarea:hover {
 .object-vector-studio-v2__object-tile-shapes {
   grid-column: 1 / -1;
   display: grid;
-  gap: 6px;
+  gap: 2px;
   border-top: 1px solid var(--tool-starter-line);
-  padding-top: 8px;
+  padding-top: 5px;
 }
 
 .object-vector-studio-v2__object-tile-shape-row {
   display: block;
+  font-size: 0.74rem;
+  line-height: 1.12;
 }
 
 .object-vector-studio-v2__shape-select {
   width: 100% !important;
+  min-height: 24px;
+  position: relative;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  padding: 3px 6px !important;
   text-align: left;
 }
 
@@ -1006,11 +1011,13 @@ textarea:hover {
 
 .object-vector-studio-v2__object-tile-name {
   font-weight: 800;
+  line-height: 1.14;
 }
 
 .object-vector-studio-v2__object-tile-meta {
   color: var(--tool-starter-muted);
-  font-size: 0.88rem;
+  font-size: 0.78rem;
+  line-height: 1.16;
   overflow-wrap: anywhere;
 }
 
