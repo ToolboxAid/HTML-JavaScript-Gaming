@@ -1438,10 +1438,18 @@ textarea:hover {
 
 .object-vector-studio-v2__polygon-point-list {
   display: grid;
-  gap: 6px;
+  gap: 5px;
   max-height: 138px;
   overflow-y: auto;
   padding-right: 2px;
+}
+
+.object-vector-studio-v2__edit-panel--polygon {
+  gap: 5px;
+}
+
+.object-vector-studio-v2__edit-panel--polygon h4 {
+  margin: 0;
 }
 
 .object-vector-studio-v2__edit-grid--ellipse {
@@ -1580,7 +1588,23 @@ textarea:hover {
   gap: 8px;
 }
 
+.object-vector-studio-v2__tag-editor {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px;
+}
+
+.object-vector-studio-v2__tag-editor input {
+  width: 100%;
+}
+
+#objectVectorStudioV2AddTagButton {
+  min-height: 28px;
+  padding: 3px 7px !important;
+}
+
 .object-vector-studio-v2__tag-list {
+  grid-column: 1 / -1;
   grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
 }
 

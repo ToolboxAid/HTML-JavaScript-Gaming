@@ -1323,11 +1323,9 @@ export class ToolStarterApp {
     if (!shape) {
       const shapePanel = document.createElement("section");
       shapePanel.className = "object-vector-studio-v2__shape-panel";
-      const heading = document.createElement("h3");
-      heading.textContent = "Selected Shape";
       const empty = document.createElement("p");
       empty.textContent = "No shape selected. Create a primitive from Shape/Tools.";
-      shapePanel.append(heading, empty);
+      shapePanel.append(empty);
       wrapper.append(shapePanel);
       return wrapper;
     }
@@ -1339,17 +1337,30 @@ export class ToolStarterApp {
   createSelectedShapeSummary(shape) {
     const shapePanel = document.createElement("section");
     shapePanel.className = "object-vector-studio-v2__shape-panel";
-    const heading = document.createElement("h3");
-    heading.textContent = `Selected Shape: ${shape.id}`;
-    const editableHint = document.createElement("p");
-    editableHint.className = "tool-starter__hint";
-    editableHint.textContent = "Editable fields below are limited to schema-valid geometry fields for the selected shape.";
-    shapePanel.append(heading, this.createDetailGrid([
-      ["Selected Shape", `${shape.id} (${shape.type})`],
+    const [colorLabel, colorValue] = this.selectedShapeColorEntry(shape);
+    shapePanel.append(this.createDetailGrid([
+      ["Shape", `${shape.id} (${shape.type})`],
       ["Group", shape.groupId || "None"],
-      ["Color", shape.style.fill === "none" ? shape.style.stroke : shape.style.fill]
-    ]), editableHint);
+      [colorLabel, colorValue]
+    ]));
     return shapePanel;
+  }
+
+  selectedShapeColorEntry(shape) {
+    const fill = String(shape.style?.fill || "").trim();
+    const stroke = String(shape.style?.stroke || "").trim();
+    if (fill && !this.isTransparentColor(fill)) {
+      return ["Fill Color", fill];
+    }
+    if (stroke && !this.isTransparentColor(stroke)) {
+      return ["Stroke Color", stroke];
+    }
+    return ["Transparent Color", fill || stroke || "none"];
+  }
+
+  isTransparentColor(color) {
+    const normalized = String(color || "").trim().toLowerCase();
+    return !normalized || normalized === "none" || normalized === "transparent" || /^rgba\([^)]*,\s*0(?:\.0+)?\)$/u.test(normalized);
   }
 
   createObjectTransformDetails(shape) {
@@ -1398,6 +1409,9 @@ export class ToolStarterApp {
   createShapeGeometryControls(shape) {
     const section = document.createElement("section");
     section.className = "object-vector-studio-v2__edit-panel";
+    if (shape.type === "polygon") {
+      section.classList.add("object-vector-studio-v2__edit-panel--polygon");
+    }
     const heading = document.createElement("h4");
     heading.textContent = `${shapeTypeLabel(shape)} Geometry`;
     const grid = document.createElement("div");
