@@ -1251,8 +1251,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const before = getComputedStyle(element, "::before");
           return {
             fontFamily: before.fontFamily,
+            fontSize: Number.parseFloat(before.fontSize),
             glyphPresent: Boolean(element.dataset.ovsIcon),
-            iconKey: element.dataset.ovsIconKey
+            iconKey: element.dataset.ovsIconKey,
+            iconName: element.dataset.ovsIconName
           };
         };
         const title = (selector) => document.querySelector(selector).title;
@@ -1260,9 +1262,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           actionIcons: {
             add: icon("#objectVectorStudioV2AddObjectButton"),
             delete: icon("#objectVectorStudioV2DeleteObjectButton"),
-            rename: icon("#objectVectorStudioV2RenameObjectButton")
+            paint: icon("#objectVectorStudioV2PaintModeButton"),
+            rename: icon("#objectVectorStudioV2RenameObjectButton"),
+            stroke: icon("#objectVectorStudioV2StrokeModeButton")
           },
           fontAssetOk: fontResponse.ok,
+          paletteSortIcons: {
+            bri: icon("[data-palette-sort='bri']"),
+            hue: icon("[data-palette-sort='hue']"),
+            name: icon("[data-palette-sort='name']"),
+            sat: icon("[data-palette-sort='sat']")
+          },
           shapeIcons: {
             arc: icon(".object-vector-studio-v2__shape-icon--arc"),
             circle: icon(".object-vector-studio-v2__shape-icon--circle"),
@@ -1296,12 +1306,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.fontAssetOk).toBe(true);
       [
         ...Object.values(iconStyleState.actionIcons),
+        ...Object.values(iconStyleState.paletteSortIcons),
         ...Object.values(iconStyleState.shapeIcons),
         ...Object.values(iconStyleState.viewportIcons),
         ...Object.values(iconStyleState.zIcons)
       ].forEach((icon) => {
         expect(icon.glyphPresent).toBe(true);
         expect(icon.fontFamily).toContain("0xProto Nerd Font");
+        expect(icon.fontSize).toBeGreaterThanOrEqual(21);
+      });
+      expect(iconStyleState.actionIcons.delete.iconName).toBe("nf-md-trash_can_outline");
+      expect(iconStyleState.actionIcons.paint.iconName).toBe("nf-fa-paint_brush");
+      expect(iconStyleState.actionIcons.stroke.iconName).toBe("nf-fa-pencil");
+      expect(iconStyleState.paletteSortIcons).toMatchObject({
+        bri: { iconKey: "bri", iconName: "nf-fa-sun_o" },
+        hue: { iconKey: "hue", iconName: "nf-fa-eyedropper" },
+        name: { iconKey: "name", iconName: "nf-fa-font" },
+        sat: { iconKey: "sat", iconName: "nf-fa-tint" }
       });
       expect(Object.fromEntries(Object.entries(iconStyleState.shapeIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
         arc: "arc",
@@ -1313,6 +1334,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         text: "text",
         triangle: "triangle"
       });
+      expect(iconStyleState.shapeIcons.polygon.iconName).toBe("nf-md-vector_polygon");
+      expect(iconStyleState.shapeIcons.circle.iconName).toBe("nf-fa-circle_o");
+      expect(iconStyleState.shapeIcons.ellipse.iconName).toBe("nf-fa-circle_o");
       expect(Object.fromEntries(Object.entries(iconStyleState.viewportIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
         down: "panDown",
         reset: "reset",
@@ -1535,7 +1559,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Runtime palette is read-only session\/workspace data; Object Vector JSON remains palette-free\./);
       await expect(page.locator("#objectVectorStudioV2PaletteSummary")).not.toContainText(/^Palette/);
       await expect(page.locator("#objectVectorStudioV2StrokeWidth")).toHaveValue("2");
-      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["hue", "sat", "bri", "name"]);
+      await expect(page.locator(".object-vector-studio-v2__palette-sort")).not.toContainText("Sort");
+      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue", "Sat", "Bri", "Name"]);
       const swatchState = await page.locator(".object-vector-studio-v2__palette-swatch").evaluateAll((swatches) => swatches.map((swatch) => {
         const rect = swatch.getBoundingClientRect();
         return {
@@ -1763,21 +1788,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           deleteTitle: deleteButton.title,
           iconFontsUseNerd: controls.every((control) => getComputedStyle(control.querySelector("[data-ovs-icon]"), "::before").fontFamily.includes("0xProto Nerd Font")),
           iconKeys: controls.map((control) => control.querySelector("[data-ovs-icon]")?.dataset.ovsIconKey),
+          iconNames: controls.map((control) => control.querySelector("[data-ovs-icon]")?.dataset.ovsIconName),
+          iconGlyphSizes: controls.map((control) => Number.parseFloat(getComputedStyle(control.querySelector("[data-ovs-icon]"), "::before").fontSize)),
           iconSizes: rects.map((rect) => Math.round(Math.max(rect.width, rect.height))),
           stacked: rects.every((rect, index) => index === 0
             || (Math.abs(rect.left - rects[index - 1].left) <= 1 && rect.top > rects[index - 1].top))
         };
       });
-      expect(objectTileActionLayout).toEqual({
+      expect(objectTileActionLayout).toMatchObject({
         allTextEmpty: true,
         controlOrder: ["visibility", "lock", "delete"],
         deleteAtFarRight: true,
         deleteTitle: "Delete this object",
         iconFontsUseNerd: true,
         iconKeys: ["eye", "unlock", "delete"],
+        iconNames: ["nf-fa-eye", "nf-fa-unlock", "nf-md-trash_can_outline"],
         iconSizes: [26, 26, 26],
         stacked: true
       });
+      expect(objectTileActionLayout.iconGlyphSizes.every((size) => size >= 22)).toBe(true);
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility']")).toHaveText("");
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock']")).toHaveText("");
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='delete']")).toHaveText("");
@@ -2535,8 +2564,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const geometryLayout = async () => page.locator("#objectVectorStudioV2ObjectDetails").evaluate((details) => {
       const panel = details.querySelector(".object-vector-studio-v2__edit-panel--geometry");
       const grid = panel?.querySelector(".object-vector-studio-v2__edit-grid");
+      const applyButton = panel?.querySelector("#objectVectorStudioV2ApplyGeometryButton");
+      const shapePanel = details.querySelector(".object-vector-studio-v2__edit-panel--geometry + .object-vector-studio-v2__shape-panel");
       const panelStyle = panel ? getComputedStyle(panel) : null;
       const gridStyle = grid ? getComputedStyle(grid) : null;
+      const shapePanelStyle = shapePanel ? getComputedStyle(shapePanel) : null;
+      const applyRect = applyButton?.getBoundingClientRect();
+      const shapePanelRect = shapePanel?.getBoundingClientRect();
       const fields = Array.from(panel?.querySelectorAll(".object-vector-studio-v2__edit-field") || []).map((field) => {
         const input = field.querySelector("input");
         const label = field.querySelector("span");
@@ -2551,6 +2585,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       return {
+        applyToSummaryGap: applyRect && shapePanelRect ? Math.round(shapePanelRect.top - applyRect.bottom) : null,
         fieldOrder: fields.map((field) => field.key),
         fillColorRemoved: !details.textContent.includes("Fill Color"),
         heading: panel?.querySelector("h4")?.textContent.trim(),
@@ -2558,6 +2593,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         inputPaddingTopMax: Math.max(...fields.map((field) => field.paddingTop)),
         panelGap: Number.parseFloat(panelStyle?.gap || "0"),
         rowGap: Number.parseFloat(gridStyle?.rowGap || "0"),
+        shapePanelPaddingTop: Number.parseFloat(shapePanelStyle?.paddingTop || "0"),
         tops: Object.fromEntries(fields.map((field) => [field.key, field.top])),
         wideFields: fields.filter((field) => field.wide).map((field) => field.key)
       };
@@ -2574,6 +2610,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(layout.inputPaddingTopMax).toBeLessThanOrEqual(4);
       expect(layout.panelGap).toBeLessThanOrEqual(5);
       expect(layout.rowGap).toBeLessThanOrEqual(4);
+      expect(layout.applyToSummaryGap).toBeLessThanOrEqual(8);
+      expect(layout.shapePanelPaddingTop).toBeLessThanOrEqual(6);
       expect(layout.wideFields).toEqual(wideFields);
       pairs.forEach(([left, right]) => {
         expect(Math.abs(layout.tops[left] - layout.tops[right])).toBeLessThanOrEqual(3);
@@ -2658,8 +2696,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectGeometryLayout({
         heading: "Arc Geometry",
         order: ["cx", "cy", "r", "startAngle", "endAngle"],
-        pairs: [["cx", "cy"]],
-        shapeId: "arc-5"
+        pairs: [["cx", "cy"], ["startAngle", "endAngle"]],
+        shapeId: "arc-5",
+        wideFields: ["r"]
       });
       await expectGeometryLayout({
         heading: "Text Geometry",
@@ -2793,6 +2832,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(lineAfterEndpoint.geometry.y2).not.toBe(lineBeforeEndpoint.geometry.y2);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved line end for shape line-2\./);
 
+      const shapeDeleteIconState = await page.locator("[data-shape-delete-id='line-2']").evaluate((button) => {
+        const icon = button.querySelector("[data-ovs-icon]");
+        return {
+          objectId: button.dataset.shapeDeleteObjectId,
+          title: button.title,
+          iconKey: icon?.dataset.ovsIconKey,
+          iconName: icon?.dataset.ovsIconName
+        };
+      });
+      expect(shapeDeleteIconState).toEqual({
+        objectId: "object.mouse.editor",
+        title: "Delete this shape",
+        iconKey: "delete",
+        iconName: "nf-md-trash_can_outline"
+      });
       await page.locator("[data-shape-delete-id='line-2']").click();
       await expect(page.locator("[data-object-tile-shape-id='line-2']")).toHaveCount(0);
       await expect(page.locator("[data-object-tile-shape-id='rectangle-1']")).toHaveCount(1);

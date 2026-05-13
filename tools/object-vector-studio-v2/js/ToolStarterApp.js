@@ -16,44 +16,52 @@ const MAX_ZOOM = 0.5;
 const MIN_ZOOM = 0.01;
 const ZOOM_STEP = 0.01;
 
+const objectVectorStudioIcon = (name, glyph) => Object.freeze({ glyph, name });
+
 const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
-  add: "\uf067",
-  angle: "\uf1de",
-  arc: "\uf1da",
-  bringForward: "\uf062",
-  bringFront: "\uf102",
-  center: "\uf192",
-  circle: "\uf111",
-  delete: "\uf00d",
-  duplicate: "\uf0c5",
-  edit: "\uf044",
-  ellipse: "\uf111",
-  eye: "\uf06e",
-  eyeOff: "\uf070",
-  grid: "\uf00a",
-  group: "\uf247",
-  line: "\uf068",
-  lock: "\uf023",
-  move: "\uf047",
-  panDown: "\uf063",
-  panLeft: "\uf060",
-  panRight: "\uf061",
-  panUp: "\uf062",
-  polygon: "\uf1fe",
-  rectangle: "\uf096",
-  reset: "\uf0e2",
-  resize: "\uf065",
-  rotate: "\uf01e",
-  scale: "\uf065",
-  select: "\uf245",
-  sendBack: "\uf103",
-  sendBackward: "\uf063",
-  text: "\uf031",
-  triangle: "\uf0d8",
-  ungroup: "\uf248",
-  unlock: "\uf09c",
-  zoomIn: "\uf00e",
-  zoomOut: "\uf010"
+  add: objectVectorStudioIcon("nf-fa-plus", "\uf067"),
+  angle: objectVectorStudioIcon("nf-fa-sliders", "\uf1de"),
+  arc: objectVectorStudioIcon("nf-fa-history", "\uf1da"),
+  bri: objectVectorStudioIcon("nf-fa-sun_o", "\uf185"),
+  bringForward: objectVectorStudioIcon("nf-fa-arrow_up", "\uf062"),
+  bringFront: objectVectorStudioIcon("nf-fa-angle_double_up", "\uf102"),
+  center: objectVectorStudioIcon("nf-fa-dot_circle_o", "\uf192"),
+  circle: objectVectorStudioIcon("nf-fa-circle_o", "\uf10c"),
+  delete: objectVectorStudioIcon("nf-md-trash_can_outline", "\u{f0a7a}"),
+  duplicate: objectVectorStudioIcon("nf-fa-copy", "\uf0c5"),
+  edit: objectVectorStudioIcon("nf-fa-pencil_square_o", "\uf044"),
+  ellipse: objectVectorStudioIcon("nf-fa-circle_o", "\uf10c"),
+  eye: objectVectorStudioIcon("nf-fa-eye", "\uf06e"),
+  eyeOff: objectVectorStudioIcon("nf-fa-eye_slash", "\uf070"),
+  grid: objectVectorStudioIcon("nf-fa-th", "\uf00a"),
+  group: objectVectorStudioIcon("nf-fa-object_group", "\uf247"),
+  hue: objectVectorStudioIcon("nf-fa-eyedropper", "\uf1fb"),
+  line: objectVectorStudioIcon("nf-fa-minus", "\uf068"),
+  lock: objectVectorStudioIcon("nf-fa-lock", "\uf023"),
+  move: objectVectorStudioIcon("nf-fa-arrows", "\uf047"),
+  name: objectVectorStudioIcon("nf-fa-font", "\uf031"),
+  paint: objectVectorStudioIcon("nf-fa-paint_brush", "\uf1fc"),
+  panDown: objectVectorStudioIcon("nf-fa-arrow_down", "\uf063"),
+  panLeft: objectVectorStudioIcon("nf-fa-arrow_left", "\uf060"),
+  panRight: objectVectorStudioIcon("nf-fa-arrow_right", "\uf061"),
+  panUp: objectVectorStudioIcon("nf-fa-arrow_up", "\uf062"),
+  polygon: objectVectorStudioIcon("nf-md-vector_polygon", "\u{f0560}"),
+  rectangle: objectVectorStudioIcon("nf-fa-square_o", "\uf096"),
+  reset: objectVectorStudioIcon("nf-fa-undo", "\uf0e2"),
+  resize: objectVectorStudioIcon("nf-fa-expand", "\uf065"),
+  rotate: objectVectorStudioIcon("nf-fa-repeat", "\uf01e"),
+  sat: objectVectorStudioIcon("nf-fa-tint", "\uf043"),
+  scale: objectVectorStudioIcon("nf-fa-expand", "\uf065"),
+  select: objectVectorStudioIcon("nf-fa-mouse_pointer", "\uf245"),
+  sendBack: objectVectorStudioIcon("nf-fa-angle_double_down", "\uf103"),
+  sendBackward: objectVectorStudioIcon("nf-fa-arrow_down", "\uf063"),
+  stroke: objectVectorStudioIcon("nf-fa-pencil", "\uf040"),
+  text: objectVectorStudioIcon("nf-fa-font", "\uf031"),
+  triangle: objectVectorStudioIcon("nf-fa-caret_up", "\uf0d8"),
+  ungroup: objectVectorStudioIcon("nf-fa-object_ungroup", "\uf248"),
+  unlock: objectVectorStudioIcon("nf-fa-unlock", "\uf09c"),
+  zoomIn: objectVectorStudioIcon("nf-fa-search_plus", "\uf00e"),
+  zoomOut: objectVectorStudioIcon("nf-fa-search_minus", "\uf010")
 });
 
 const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
@@ -62,6 +70,12 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   ["#objectVectorStudioV2RenameObjectButton", "edit"],
   ["#objectVectorStudioV2DuplicateObjectButton", "duplicate"],
   ["#objectVectorStudioV2DeleteObjectButton", "delete"],
+  ["#objectVectorStudioV2PaintModeButton", "paint"],
+  ["#objectVectorStudioV2StrokeModeButton", "stroke"],
+  [".object-vector-studio-v2__palette-sort [data-palette-sort='hue']", "hue"],
+  [".object-vector-studio-v2__palette-sort [data-palette-sort='sat']", "sat"],
+  [".object-vector-studio-v2__palette-sort [data-palette-sort='bri']", "bri"],
+  [".object-vector-studio-v2__palette-sort [data-palette-sort='name']", "name"],
   ["#objectVectorStudioV2ZoomOutButton", "zoomOut"],
   ["#objectVectorStudioV2ZoomInButton", "zoomIn"],
   ["#objectVectorStudioV2PanUpButton", "panUp"],
@@ -487,12 +501,13 @@ export class ToolStarterApp {
   }
 
   applyIconGlyph(element, iconKey) {
-    const glyph = OBJECT_VECTOR_STUDIO_ICON_GLYPHS[iconKey];
-    if (!element || !glyph) {
+    const icon = OBJECT_VECTOR_STUDIO_ICON_GLYPHS[iconKey];
+    if (!element || !icon?.glyph) {
       return;
     }
-    element.dataset.ovsIcon = glyph;
+    element.dataset.ovsIcon = icon.glyph;
     element.dataset.ovsIconKey = iconKey;
+    element.dataset.ovsIconName = icon.name;
     element.classList.add("object-vector-studio-v2__nerd-icon");
   }
 
@@ -1154,12 +1169,13 @@ export class ToolStarterApp {
       deleteButton.type = "button";
       deleteButton.className = "object-vector-studio-v2__shape-inline-button object-vector-studio-v2__shape-delete-inline";
       deleteButton.dataset.shapeDeleteId = shape.id;
+      deleteButton.dataset.shapeDeleteObjectId = object.id;
       deleteButton.setAttribute("aria-label", `Delete shape ${shape.id}`);
       deleteButton.title = "Delete this shape";
       deleteButton.append(this.createIconSpan("delete", true));
       deleteButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        this.deleteShapeById(shape.id, "object tile shape delete");
+        this.deleteShapeById(shape.id, "object tile shape delete", object.id);
       });
       actions.append(visibilityButton, deleteButton);
       row.append(selectButton, actions);
@@ -1651,7 +1667,13 @@ export class ToolStarterApp {
       return ["x1", "y1", "x2", "y2"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
     }
     if (shape.type === "arc") {
-      return ["cx", "cy", "r", "startAngle", "endAngle"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
+      return ["cx", "cy", "r", "startAngle", "endAngle"].map((key) => ({
+        key,
+        kind: "number",
+        label: key,
+        value: shape.geometry[key],
+        wide: key === "r"
+      }));
     }
     if (shape.type === "text") {
       return [
@@ -3488,8 +3510,8 @@ export class ToolStarterApp {
     this.commitPayloadUpdate(nextPayload, object.id, selectedShapeId, `OK Deleted shape ${selected.id} from ${sourceLabel}.`, "Delete shape failed schema validation");
   }
 
-  deleteShapeById(shapeId, sourceLabel) {
-    const object = this.selectedObject();
+  deleteShapeById(shapeId, sourceLabel, objectId = this.selectedObjectId) {
+    const object = this.currentPayload?.objects.find((candidate) => candidate.id === objectId) || null;
     const shape = object?.shapes.find((candidate) => candidate.id === shapeId) || null;
     if (!object || !shape) {
       this.statusLog.write(`WARN Delete shape skipped from ${sourceLabel}: shape ${shapeId || "unknown"} is not available.`);
@@ -3499,7 +3521,8 @@ export class ToolStarterApp {
       this.statusLog.write(`WARN Delete shape skipped: shape ${shape.id} is locked.`);
       return;
     }
-    if (this.guardSelectedObjectMutation("Delete shape")) {
+    if (this.isObjectLocked(object.id)) {
+      this.statusLog.write(`WARN Delete shape blocked: object ${object.name} is locked for this runtime session.`);
       return;
     }
 

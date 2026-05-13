@@ -54,6 +54,10 @@ button {
   padding: 2px 6px;
 }
 
+.object-vector-studio-v2 {
+  --object-vector-studio-v2-icon-scale: 1.75;
+}
+
 button:disabled {
   cursor: not-allowed;
   opacity: 0.62;
@@ -1145,7 +1149,7 @@ textarea:hover {
   content: attr(data-ovs-icon);
   display: inline-block;
   font-family: "0xProto Nerd Font", "Cascadia Mono", monospace;
-  font-size: 1em;
+  font-size: calc(1em * var(--object-vector-studio-v2-icon-scale, 1.75));
   font-style: normal;
   font-weight: 400;
   line-height: 1;
@@ -1527,6 +1531,17 @@ textarea:hover {
 .object-vector-studio-v2__edit-panel {
   display: grid;
   gap: 12px;
+  margin-top: 0;
+}
+
+.object-vector-studio-v2__object-detail-stack {
+  align-content: start;
+  gap: 6px;
+}
+
+.object-vector-studio-v2 .object-vector-studio-v2__shape-panel,
+.object-vector-studio-v2 .object-vector-studio-v2__edit-panel {
+  margin-top: 0;
 }
 
 .object-vector-studio-v2__shape-panel {
@@ -1570,6 +1585,10 @@ textarea:hover {
   gap: 5px;
 }
 
+.object-vector-studio-v2__edit-panel--geometry + .object-vector-studio-v2__shape-panel {
+  padding-top: 6px;
+}
+
 .object-vector-studio-v2__edit-panel--geometry h4 {
   margin: 0;
   font-size: 0.86rem;
@@ -1585,6 +1604,12 @@ textarea:hover {
   align-items: center;
   gap: 4px;
   font-size: 0.78rem;
+}
+
+.object-vector-studio-v2__edit-panel--geometry #objectVectorStudioV2ApplyGeometryButton {
+  margin-top: 0;
+  min-height: 24px;
+  padding: 2px 6px;
 }
 
 .object-vector-studio-v2__edit-field--wide {
