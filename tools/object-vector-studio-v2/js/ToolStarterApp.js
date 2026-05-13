@@ -234,6 +234,7 @@ export class ToolStarterApp {
     this.isPaintDragging = false;
     this.previewPointerEdit = null;
     this.transformInputValues = new Map();
+    this.shapeToolLabelsById = new Map();
     this.pendingAddObjectClick = false;
     this.hiddenObjectIds = new Set();
     this.lockedObjectIds = new Set();
@@ -655,6 +656,7 @@ export class ToolStarterApp {
     this.selectedShapeIds.clear();
     this.selectedStateId = "";
     this.selectedFrameId = "";
+    this.shapeToolLabelsById.clear();
     this.stopPlaybackTimer();
     this.updateObjectsHeader(0, 0);
     this.updatePaletteHeader(this.runtimePalette?.swatches?.length || 0);
@@ -762,6 +764,7 @@ export class ToolStarterApp {
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.hiddenObjectIds.clear();
     this.lockedObjectIds.clear();
+    this.shapeToolLabelsById.clear();
     this.viewport = { ...DEFAULT_VIEWPORT };
     this.updateViewport();
     if (sourceLabel) {
@@ -1350,30 +1353,19 @@ export class ToolStarterApp {
   createSelectedShapeSummary(shape) {
     const shapePanel = document.createElement("section");
     shapePanel.className = "object-vector-studio-v2__shape-panel";
-    const [colorLabel, colorValue] = this.selectedShapeColorEntry(shape);
     shapePanel.append(this.createDetailGrid([
-      ["Shape", `${shape.id} (${shape.type})`],
-      ["Group", shape.groupId || "None"],
-      [colorLabel, colorValue]
+      ["Shape", `${shape.id} (${this.shapeSummaryTypeLabel(shape)})`],
+      ["Group", shape.groupId || "None"]
     ]));
     return shapePanel;
   }
 
-  selectedShapeColorEntry(shape) {
-    const fill = String(shape.style?.fill || "").trim();
-    const stroke = String(shape.style?.stroke || "").trim();
-    if (fill && !this.isTransparentColor(fill)) {
-      return ["Fill Color", fill];
-    }
-    if (stroke && !this.isTransparentColor(stroke)) {
-      return ["Stroke Color", stroke];
-    }
-    return ["Transparent Color", fill || stroke || "none"];
+  shapeSummaryTypeLabel(shape) {
+    return this.shapeToolLabelsById.get(shape.id)?.toLowerCase() || shape.type;
   }
 
-  isTransparentColor(color) {
-    const normalized = String(color || "").trim().toLowerCase();
-    return !normalized || normalized === "none" || normalized === "transparent" || /^rgba\([^)]*,\s*0(?:\.0+)?\)$/u.test(normalized);
+  shapeGeometryHeadingLabel(shape) {
+    return this.shapeToolLabelsById.get(shape.id) || shapeTypeLabel(shape);
   }
 
   createObjectTransformDetails(shape) {
@@ -1421,16 +1413,16 @@ export class ToolStarterApp {
 
   createShapeGeometryControls(shape) {
     const section = document.createElement("section");
-    section.className = "object-vector-studio-v2__edit-panel";
+    section.className = `object-vector-studio-v2__edit-panel object-vector-studio-v2__edit-panel--geometry object-vector-studio-v2__edit-panel--${shape.type}`;
     if (shape.type === "polygon") {
       section.classList.add("object-vector-studio-v2__edit-panel--polygon");
     }
     const heading = document.createElement("h4");
-    heading.textContent = `${shapeTypeLabel(shape)} Geometry`;
+    heading.textContent = `${this.shapeGeometryHeadingLabel(shape)} Geometry`;
     const grid = document.createElement("div");
     grid.className = shape.type === "polygon"
       ? "object-vector-studio-v2__polygon-point-list"
-      : `object-vector-studio-v2__edit-grid${shape.type === "ellipse" ? " object-vector-studio-v2__edit-grid--ellipse" : ""}`;
+      : `object-vector-studio-v2__edit-grid object-vector-studio-v2__edit-grid--${shape.type}${shape.type === "ellipse" ? " object-vector-studio-v2__edit-grid--ellipse" : ""}`;
     if (shape.type === "polygon") {
       shape.geometry.points.forEach((point, index) => {
         const row = document.createElement("div");
@@ -1464,6 +1456,9 @@ export class ToolStarterApp {
       this.shapeGeometryFields(shape).forEach((field) => {
         const label = document.createElement("label");
         label.className = "object-vector-studio-v2__edit-field";
+        if (field.wide) {
+          label.classList.add("object-vector-studio-v2__edit-field--wide");
+        }
         const caption = document.createElement("span");
         caption.textContent = field.label;
         const input = document.createElement("input");
@@ -1546,7 +1541,7 @@ export class ToolStarterApp {
       return ["x", "y", "width", "height"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
     }
     if (shape.type === "circle") {
-      return ["cx", "cy", "r"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
+      return ["cx", "cy", "r"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key], wide: key === "r" }));
     }
     if (shape.type === "ellipse") {
       return [
@@ -1566,8 +1561,8 @@ export class ToolStarterApp {
       return [
         { key: "x", kind: "number", label: "x", value: shape.geometry.x },
         { key: "y", kind: "number", label: "y", value: shape.geometry.y },
-        { key: "fontSize", kind: "number", label: "fontSize", value: shape.geometry.fontSize },
-        { key: "text", kind: "text", label: "text", value: shape.geometry.text }
+        { key: "fontSize", kind: "number", label: "fontSize", value: shape.geometry.fontSize, wide: true },
+        { key: "text", kind: "text", label: "text", value: shape.geometry.text, wide: true }
       ];
     }
     return [
@@ -2709,6 +2704,9 @@ export class ToolStarterApp {
     const order = nextObject.shapes.length ? Math.max(...nextObject.shapes.map((shape) => shape.order)) + 1 : 1;
     const shapeType = type === "triangle" ? "polygon" : type;
     const shape = this.createPrimitiveShape(type, this.uniqueShapeId(shapeType, nextObject.shapes), order, color);
+    if (type === "triangle") {
+      this.shapeToolLabelsById.set(shape.id, "Triangle");
+    }
     nextObject.shapes.push(shape);
     this.commitPayloadUpdate(nextPayload, nextObject.id, shape.id, `OK Created ${type} shape ${shape.id} on ${nextObject.name}.`, `Create ${type} failed schema validation`);
   }

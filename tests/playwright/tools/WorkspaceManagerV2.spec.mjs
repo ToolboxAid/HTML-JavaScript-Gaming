@@ -1557,6 +1557,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"type": "rectangle"');
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Editable fields below are limited to schema-valid geometry");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Selected Shape");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Fill Color");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Shaperectangle-1 (rectangle)");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Transform");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails #objectVectorStudioV2MoveShapeButton")).toHaveCount(0);
@@ -1583,9 +1584,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "Shape",
         "rectangle-1 (rectangle)",
         "Group",
-        "None",
-        "Fill Color",
-        "#ffffff"
+        "None"
       ]);
       const transformFieldLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => (
         Array.from(panel.querySelectorAll(".object-vector-studio-v2__edit-field--inline")).map((field) => {
@@ -2446,6 +2445,179 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(resizedPreviewScale.pointsOnVisibleGridLines).toBe(true);
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
+
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("compacts Object Vector Studio V2 geometry layouts and selected palette state", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    const consoleErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    const shape = (id, type, order, geometry, style = { fill: "#020617", stroke: "#6fd3ff", strokeWidth: 2 }) => ({
+      geometry,
+      id,
+      locked: false,
+      order,
+      style,
+      transform: { originX: 0, originY: 0, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+      type,
+      visible: true
+    });
+    const geometryLayout = async () => page.locator("#objectVectorStudioV2ObjectDetails").evaluate((details) => {
+      const panel = details.querySelector(".object-vector-studio-v2__edit-panel--geometry");
+      const grid = panel?.querySelector(".object-vector-studio-v2__edit-grid");
+      const panelStyle = panel ? getComputedStyle(panel) : null;
+      const gridStyle = grid ? getComputedStyle(grid) : null;
+      const fields = Array.from(panel?.querySelectorAll(".object-vector-studio-v2__edit-field") || []).map((field) => {
+        const input = field.querySelector("input");
+        const label = field.querySelector("span");
+        const inputRect = input.getBoundingClientRect();
+        const labelRect = label.getBoundingClientRect();
+        return {
+          inline: Math.abs((labelRect.top + labelRect.height / 2) - (inputRect.top + inputRect.height / 2)) < 4 && labelRect.right <= inputRect.left,
+          key: input.dataset.shapeGeometryField,
+          paddingTop: Number.parseFloat(getComputedStyle(input).paddingTop),
+          top: Math.round(inputRect.top),
+          wide: field.classList.contains("object-vector-studio-v2__edit-field--wide")
+        };
+      });
+      return {
+        fieldOrder: fields.map((field) => field.key),
+        fillColorRemoved: !details.textContent.includes("Fill Color"),
+        heading: panel?.querySelector("h4")?.textContent.trim(),
+        inlineFields: fields.every((field) => field.inline),
+        inputPaddingTopMax: Math.max(...fields.map((field) => field.paddingTop)),
+        panelGap: Number.parseFloat(panelStyle?.gap || "0"),
+        rowGap: Number.parseFloat(gridStyle?.rowGap || "0"),
+        tops: Object.fromEntries(fields.map((field) => [field.key, field.top])),
+        wideFields: fields.filter((field) => field.wide).map((field) => field.key)
+      };
+    });
+    const expectGeometryLayout = async ({ heading, order, pairs, shapeId, wideFields = [] }) => {
+      if (shapeId) {
+        await page.locator(`[data-object-tile-shape-id="${shapeId}"]`).click();
+      }
+      const layout = await geometryLayout();
+      expect(layout.heading).toBe(heading);
+      expect(layout.fieldOrder).toEqual(order);
+      expect(layout.fillColorRemoved).toBe(true);
+      expect(layout.inlineFields).toBe(true);
+      expect(layout.inputPaddingTopMax).toBeLessThanOrEqual(4);
+      expect(layout.panelGap).toBeLessThanOrEqual(5);
+      expect(layout.rowGap).toBeLessThanOrEqual(4);
+      expect(layout.wideFields).toEqual(wideFields);
+      pairs.forEach(([left, right]) => {
+        expect(Math.abs(layout.tops[left] - layout.tops[right])).toBeLessThanOrEqual(3);
+      });
+    };
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "geometry-layout-palette",
+          swatches: [
+            { id: "space-black", name: "Space Black", value: "#020617" },
+            { id: "cyan", name: "Cyan", value: "#6fd3ff" }
+          ]
+        }));
+      });
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles({
+        buffer: Buffer.from(JSON.stringify({
+          name: "Geometry Layout Object Set",
+          objects: [
+            {
+              id: "object.layout.geometry",
+              name: "Geometry Layout",
+              shapes: [
+                shape("rectangle-1", "rectangle", 1, { height: 18, width: 24, x: -12, y: -9 }),
+                shape("circle-2", "circle", 2, { cx: 18, cy: 12, r: 8 }),
+                shape("ellipse-3", "ellipse", 3, { cx: -18, cy: 14, rx: 16, ry: 9 }),
+                shape("line-4", "line", 4, { x1: -22, x2: 22, y1: 24, y2: 8 }, { fill: "none", stroke: "#6fd3ff", strokeWidth: 2 }),
+                shape("arc-5", "arc", 5, { cx: 0, cy: 26, endAngle: 150, r: 16, startAngle: -120 }, { fill: "none", stroke: "#6fd3ff", strokeWidth: 2 }),
+                shape("text-6", "text", 6, { fontSize: 12, text: "Label", x: -20, y: 34 })
+              ]
+            }
+          ],
+          toolId: "object-vector-studio-v2",
+          version: 1
+        }, null, 2)),
+        mimeType: "application/json",
+        name: "object-vector-geometry-layout.json"
+      });
+
+      await expectGeometryLayout({
+        heading: "Rectangle Geometry",
+        order: ["x", "y", "width", "height"],
+        pairs: [["x", "y"], ["width", "height"]]
+      });
+      const selectedPaletteState = await page.locator("[data-palette-color='#020617']").evaluate((swatch) => {
+        const style = getComputedStyle(swatch);
+        const before = getComputedStyle(swatch, "::before");
+        return {
+          beforeDisplay: before.display,
+          boxShadow: style.boxShadow,
+          isSelected: swatch.classList.contains("is-selected"),
+          outlineWidth: Number.parseFloat(style.outlineWidth)
+        };
+      });
+      expect(selectedPaletteState.isSelected).toBe(true);
+      expect(selectedPaletteState.beforeDisplay).toBe("block");
+      expect(selectedPaletteState.boxShadow).not.toBe("none");
+      expect(selectedPaletteState.outlineWidth).toBeGreaterThanOrEqual(3);
+
+      await expectGeometryLayout({
+        heading: "Circle Geometry",
+        order: ["cx", "cy", "r"],
+        pairs: [["cx", "cy"]],
+        shapeId: "circle-2",
+        wideFields: ["r"]
+      });
+      await expectGeometryLayout({
+        heading: "Ellipse Geometry",
+        order: ["cx", "cy", "rx", "ry"],
+        pairs: [["cx", "cy"], ["rx", "ry"]],
+        shapeId: "ellipse-3"
+      });
+      await expectGeometryLayout({
+        heading: "Line Geometry",
+        order: ["x1", "y1", "x2", "y2"],
+        pairs: [["x1", "y1"], ["x2", "y2"]],
+        shapeId: "line-4"
+      });
+      await expectGeometryLayout({
+        heading: "Arc Geometry",
+        order: ["cx", "cy", "r", "startAngle", "endAngle"],
+        pairs: [["cx", "cy"]],
+        shapeId: "arc-5"
+      });
+      await expectGeometryLayout({
+        heading: "Text Geometry",
+        order: ["x", "y", "fontSize", "text"],
+        pairs: [["x", "y"]],
+        shapeId: "text-6",
+        wideFields: ["fontSize", "text"]
+      });
+
+      await page.locator('[data-shape-tool="triangle"]').click();
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails h4")).toHaveText("Triangle Geometry");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails h4")).not.toHaveText("Polygon Geometry");
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
