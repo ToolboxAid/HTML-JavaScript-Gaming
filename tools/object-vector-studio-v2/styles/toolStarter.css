@@ -369,6 +369,10 @@ textarea:hover {
   overflow: auto;
 }
 
+#objectVectorStudioV2ObjectsContent {
+  overflow: visible;
+}
+
 #objectVectorStudioV2ShapeToolsContent,
 #objectVectorStudioV2PaletteContent {
   flex: 0 1 auto;
@@ -386,21 +390,43 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__palette-swatch {
+  position: relative;
   width: 32px;
   height: 32px;
   min-height: 32px;
   aspect-ratio: 1;
   display: block;
   padding: 0 !important;
-  overflow: hidden;
+  overflow: visible;
   background: var(--object-vector-studio-v2-swatch, transparent) !important;
   border-radius: 4px !important;
   color: transparent !important;
-  text-indent: -9999px;
+  font-size: 0;
 }
 
 .object-vector-studio-v2__palette-swatch::before {
   display: none;
+}
+
+.object-vector-studio-v2__palette-swatch:hover::after,
+.object-vector-studio-v2__palette-swatch:focus-visible::after {
+  content: attr(data-palette-details);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  z-index: 5;
+  min-width: 96px;
+  transform: translateX(-50%);
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.96);
+  color: var(--tool-starter-text);
+  font-size: 0.74rem;
+  line-height: 1.25;
+  padding: 5px 7px;
+  text-align: center;
+  white-space: pre-line;
+  text-indent: 0;
 }
 
 .object-vector-studio-v2__object-actions,
@@ -426,7 +452,9 @@ textarea:hover {
 }
 
 #objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__snap-actions {
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
 }
 
 .object-vector-studio-v2__control-group h3,
@@ -443,15 +471,17 @@ textarea:hover {
 
 .object-vector-studio-v2__tool-toggle-grid {
   display: grid;
-  grid-template-columns: repeat(4, 58px);
-  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+  align-items: center;
+  justify-content: stretch;
   gap: 8px;
 }
 
-.object-vector-studio-v2__tool-toggle,
-.object-vector-studio-v2__preview-action {
-  width: 58px;
-  height: 58px;
+.object-vector-studio-v2__tool-toggle {
+  width: 100%;
+  height: auto;
+  min-height: 48px;
+  aspect-ratio: 1;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -461,32 +491,97 @@ textarea:hover {
   text-align: center;
 }
 
-.object-vector-studio-v2__tool-toggle span:first-child,
-.object-vector-studio-v2__preview-action span:first-child {
+.object-vector-studio-v2__shape-icon {
   width: 24px;
   height: 24px;
   display: inline-grid;
   place-items: center;
   border: 1px solid var(--tool-starter-line);
-  border-radius: 999px;
+  border-radius: 4px;
   font-size: 0.78rem;
   font-weight: 800;
 }
 
-.object-vector-studio-v2__tool-toggle-grid.is-icon-only {
-  grid-template-columns: repeat(4, 42px);
+.object-vector-studio-v2__shape-icon--select {
+  border-radius: 999px;
 }
 
-.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-toggle,
-.object-vector-studio-v2__preview-action.is-icon-only {
-  width: 42px;
-  height: 42px;
+.object-vector-studio-v2__shape-icon--select::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 7px solid var(--tool-starter-text);
+  border-top: 11px solid transparent;
+  transform: rotate(-18deg);
+}
+
+.object-vector-studio-v2__shape-icon--triangle {
+  width: 0;
+  height: 0;
+  border: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 22px solid var(--tool-starter-text);
+  background: transparent;
+}
+
+.object-vector-studio-v2__shape-icon--rectangle {
+  border-radius: 3px;
+}
+
+.object-vector-studio-v2__shape-icon--circle {
+  border-radius: 999px;
+}
+
+.object-vector-studio-v2__shape-icon--ellipse {
+  width: 28px;
+  height: 18px;
+  border-radius: 999px;
+}
+
+.object-vector-studio-v2__shape-icon--line {
+  height: 0;
+  border-width: 0;
+  border-top: 3px solid var(--tool-starter-text);
+  border-radius: 0;
+  transform: rotate(-28deg);
+}
+
+.object-vector-studio-v2__shape-icon--polygon {
+  clip-path: polygon(50% 0, 95% 35%, 82% 100%, 18% 100%, 5% 35%);
+  background: transparent;
+  border-radius: 0;
+  outline: 2px solid var(--tool-starter-text);
+  outline-offset: -2px;
+}
+
+.object-vector-studio-v2__shape-icon--arc {
+  border-color: transparent transparent var(--tool-starter-text) var(--tool-starter-text);
+  border-radius: 0 0 0 999px;
+  transform: rotate(-45deg);
+}
+
+.object-vector-studio-v2__shape-icon--text {
+  border: 0;
+  font-size: 1.08rem;
+  color: var(--tool-starter-text);
+}
+
+.object-vector-studio-v2__shape-icon--text::before {
+  content: "T";
+}
+
+.object-vector-studio-v2__tool-toggle-grid.is-icon-only {
+  grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+}
+
+.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-toggle {
+  min-height: 42px;
   gap: 0;
   padding: 4px;
 }
 
-.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-label,
-.object-vector-studio-v2__preview-action.is-icon-only .object-vector-studio-v2__tool-label {
+.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-label {
   width: 1px;
   height: 1px;
   position: absolute;
@@ -503,11 +598,11 @@ textarea:hover {
 
 .object-vector-studio-v2__object-tiles {
   min-height: 0;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   display: grid;
   align-content: start;
   gap: 8px;
-  overflow-y: auto;
+  overflow: visible;
   padding-right: 2px;
 }
 
@@ -531,9 +626,11 @@ textarea:hover {
   width: 100%;
   min-height: 52px;
   display: grid;
-  grid-template-columns: 50px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  border: 1px solid var(--tool-starter-line);
+  background: var(--tool-starter-panel-strong);
   border-radius: 8px !important;
   padding: 8px 10px;
   text-align: left;
@@ -562,6 +659,14 @@ textarea:hover {
   background: var(--tool-starter-input-surface);
 }
 
+.object-vector-studio-v2__object-tile.is-hidden {
+  opacity: 0.62;
+}
+
+.object-vector-studio-v2__object-tile.is-locked {
+  box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.58);
+}
+
 .object-vector-studio-v2__object-tile--empty {
   grid-template-columns: 1fr;
   color: var(--tool-starter-muted);
@@ -571,6 +676,49 @@ textarea:hover {
   min-width: 0;
   display: grid;
   gap: 4px;
+}
+
+.object-vector-studio-v2__object-select {
+  min-width: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  text-align: left;
+}
+
+.object-vector-studio-v2__object-tile-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 6px;
+}
+
+.object-vector-studio-v2__object-tile-control,
+.object-vector-studio-v2__object-tile-shape-row button {
+  min-height: 28px;
+}
+
+.object-vector-studio-v2__object-tile-shapes {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 6px;
+  border-top: 1px solid var(--tool-starter-line);
+  padding-top: 8px;
+}
+
+.object-vector-studio-v2__object-tile-shape-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
+
+.object-vector-studio-v2__object-tile-shape-row.is-selected button:first-child,
+.object-vector-studio-v2__object-tile-shape-row button[aria-pressed="true"] {
+  border-color: var(--tool-starter-accent) !important;
+  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.2);
 }
 
 .object-vector-studio-v2__object-thumbnail {
@@ -607,7 +755,7 @@ textarea:hover {
   min-height: 360px;
   flex: 1 1 auto;
   display: grid;
-  grid-template-rows: auto auto auto minmax(260px, 1fr);
+  grid-template-rows: auto minmax(280px, 1fr) auto auto auto auto auto;
   place-items: center;
   gap: 12px;
   border: 1px dashed var(--tool-starter-line);
@@ -627,6 +775,11 @@ textarea:hover {
 
 .object-vector-studio-v2__viewport-controls button {
   min-height: 30px;
+}
+
+.object-vector-studio-v2__snap-actions button,
+.object-vector-studio-v2__palette-sort button {
+  min-height: 42px;
 }
 
 .object-vector-studio-v2__animation-controls {
@@ -735,6 +888,22 @@ textarea:hover {
   width: 80px;
 }
 
+.object-vector-studio-v2__palette-sort {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--tool-starter-line);
+  padding-top: 8px;
+}
+
+.object-vector-studio-v2__palette-sort button[aria-pressed="true"] {
+  border-color: var(--tool-starter-accent) !important;
+  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.25);
+}
+
 .object-vector-studio-v2__selection-metrics {
   color: var(--tool-starter-text);
   overflow-wrap: anywhere;
@@ -757,18 +926,16 @@ textarea:hover {
   align-self: stretch;
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
+  background: rgba(0, 0, 0, 0.16);
+  background-size: 20px 20px;
+}
+
+.object-vector-studio-v2__render-surface.is-grid-visible {
   background:
     linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
     rgba(0, 0, 0, 0.16);
   background-size: 20px 20px;
-}
-
-.object-vector-studio-v2__render-summary {
-  width: min(720px, 100%);
-  color: var(--tool-starter-muted);
-  font-size: 0.9rem;
-  overflow-wrap: anywhere;
 }
 
 .object-vector-studio-v2__shape {
@@ -794,13 +961,6 @@ textarea:hover {
   stroke: #67e8f9;
   stroke-dasharray: 8 5;
   stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
-  pointer-events: none;
-}
-
-.object-vector-studio-v2__grid-lines line {
-  stroke: rgba(221, 214, 254, 0.2);
-  stroke-width: 1;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
 }
@@ -887,6 +1047,34 @@ textarea:hover {
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
+}
+
+.object-vector-studio-v2__details-actions {
+  width: min(720px, 100%);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--tool-starter-muted);
+}
+
+.object-vector-studio-v2__preview-footer {
+  width: min(720px, 100%);
+  color: var(--tool-starter-muted);
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.object-vector-studio-v2__tag-editor,
+.object-vector-studio-v2__tag-list {
+  display: grid;
+  gap: 8px;
+}
+
+.object-vector-studio-v2__tag-list {
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
 }
 
 .object-vector-studio-v2__detail-label {
