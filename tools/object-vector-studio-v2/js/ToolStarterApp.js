@@ -10,6 +10,10 @@ const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
 const DEFAULT_OBJECT_TYPE = "object";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
+const GRID_STEP = 20;
+const MAX_ZOOM = 4;
+const MIN_ZOOM = 0.25;
+const ZOOM_STEP = 0.1;
 
 const OBJECT_STATE_IDS = Object.freeze(["idle", "thrust", "damaged", "destroyed", "active", "inactive"]);
 
@@ -515,15 +519,15 @@ export class ToolStarterApp {
   }
 
   bindViewportControls() {
-    this.elements.zoomInButton.addEventListener("click", () => this.zoomViewport(1.25));
-    this.elements.zoomOutButton.addEventListener("click", () => this.zoomViewport(0.8));
+    this.elements.zoomInButton.addEventListener("click", () => this.zoomViewportByStep(ZOOM_STEP));
+    this.elements.zoomOutButton.addEventListener("click", () => this.zoomViewportByStep(-ZOOM_STEP));
     this.elements.panLeftButton.addEventListener("click", () => this.panViewport(-20, 0));
     this.elements.panRightButton.addEventListener("click", () => this.panViewport(20, 0));
     this.elements.resetViewButton.addEventListener("click", () => this.resetViewport());
     this.elements.renderSurface.addEventListener("mousemove", (event) => this.updateCoordinateDisplay(event));
     this.elements.renderSurface.addEventListener("wheel", (event) => {
       event.preventDefault();
-      this.zoomViewport(event.deltaY < 0 ? 1.1 : 0.9);
+      this.zoomViewportByStep(event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP);
     }, { passive: false });
     this.window.addEventListener("pointerup", () => {
       this.isPaintDragging = false;
@@ -592,6 +596,7 @@ export class ToolStarterApp {
   applyToolDisplayMode(mode, shouldLog) {
     const isCompact = mode === "icons";
     this.elements.toolToggleGrid.classList.toggle("is-icon-only", isCompact);
+    this.elements.zOrderActions.classList.toggle("is-icon-only", isCompact);
     this.elements.toolLabelModeButton.setAttribute("aria-pressed", String(isCompact));
     this.elements.toolLabelModeButton.textContent = isCompact ? "Words" : "Icons";
     this.window.sessionStorage?.setItem(TOOL_DISPLAY_MODE_KEY, isCompact ? "icons" : "words");
@@ -641,6 +646,7 @@ export class ToolStarterApp {
     this.renderFrameTimeline();
     this.elements.coordinateDisplay.textContent = "Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%";
     this.elements.renderSurface.replaceChildren();
+    this.renderSvgGrid();
     this.renderCenterOriginMarker();
     this.elements.objectTiles.replaceChildren(this.createEmptyObjectTile());
     this.renderDependencyGraph();
@@ -799,6 +805,7 @@ export class ToolStarterApp {
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
     this.elements.renderSurface.replaceChildren();
+    this.renderSvgGrid();
     this.renderCenterOriginMarker();
     const tile = this.createEmptyObjectTile();
     tile.textContent = "Runtime palette required before rendering object tiles.";
@@ -1183,7 +1190,7 @@ export class ToolStarterApp {
       const button = document.createElement("button");
       button.type = "button";
       button.dataset.objectTag = tag;
-      button.textContent = `${tag} x`;
+      button.textContent = tag;
       button.title = `Remove tag ${tag}`;
       button.addEventListener("click", () => this.removeTagFromSelectedObject(tag));
       this.elements.objectTagList.append(button);
@@ -1405,6 +1412,7 @@ export class ToolStarterApp {
   renderWorkSurface() {
     const object = this.selectedObject();
     this.elements.renderSurface.replaceChildren();
+    this.renderSvgGrid();
     if (!object) {
       this.renderCenterOriginMarker();
       return;
@@ -1460,6 +1468,38 @@ export class ToolStarterApp {
     const frame = this.activeFrame();
     const message = `Render mode svg-work-surface: rendered ${object.name} with ${renderedCount} visible shapes${frame ? ` for ${this.selectedStateId}/${frame.id}` : ""}; capture mode none.`;
     this.statusLog.write(`OK ${message}`);
+  }
+
+  renderSvgGrid() {
+    if (!this.gridRenderEnabled) {
+      return;
+    }
+    const width = DEFAULT_VIEWPORT.width / this.viewport.zoom;
+    const height = DEFAULT_VIEWPORT.height / this.viewport.zoom;
+    const minX = this.viewport.x - width / 2;
+    const maxX = this.viewport.x + width / 2;
+    const minY = this.viewport.y - height / 2;
+    const maxY = this.viewport.y + height / 2;
+    const group = document.createElementNS(SVG_NS, "g");
+    group.classList.add("object-vector-studio-v2__svg-grid");
+    group.dataset.gridRendered = "true";
+    for (let x = Math.floor(minX / GRID_STEP) * GRID_STEP; x <= maxX; x += GRID_STEP) {
+      const line = document.createElementNS(SVG_NS, "line");
+      line.setAttribute("x1", this.formatViewportNumber(x));
+      line.setAttribute("x2", this.formatViewportNumber(x));
+      line.setAttribute("y1", this.formatViewportNumber(minY));
+      line.setAttribute("y2", this.formatViewportNumber(maxY));
+      group.append(line);
+    }
+    for (let y = Math.floor(minY / GRID_STEP) * GRID_STEP; y <= maxY; y += GRID_STEP) {
+      const line = document.createElementNS(SVG_NS, "line");
+      line.setAttribute("x1", this.formatViewportNumber(minX));
+      line.setAttribute("x2", this.formatViewportNumber(maxX));
+      line.setAttribute("y1", this.formatViewportNumber(y));
+      line.setAttribute("y2", this.formatViewportNumber(y));
+      group.append(line);
+    }
+    this.elements.renderSurface.append(group);
   }
 
   handleShapePointer(event, shape, options = {}) {
@@ -1772,14 +1812,19 @@ export class ToolStarterApp {
     return Object.is(normalized, -0) ? 0 : normalized;
   }
 
-  zoomViewport(factor) {
-    const nextZoom = Number((this.viewport.zoom * factor).toFixed(3));
-    if (!Number.isFinite(nextZoom) || nextZoom < 0.25 || nextZoom > 4) {
-      this.statusLog.write(`WARN Viewport zoom skipped: ${nextZoom} is outside 25% to 400%.`);
+  zoomViewportByStep(step) {
+    const nextZoom = Number((this.viewport.zoom + step).toFixed(3));
+    this.zoomViewport(nextZoom);
+  }
+
+  zoomViewport(nextZoom) {
+    if (!Number.isFinite(nextZoom)) {
+      this.statusLog.write("WARN Viewport zoom skipped: zoom value is invalid.");
       return;
     }
-    this.viewport.zoom = nextZoom;
+    this.viewport.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(nextZoom.toFixed(3))));
     this.updateViewport();
+    this.renderWorkSurface();
     this.statusLog.write(`OK Viewport zoom set to ${Math.round(this.viewport.zoom * 100)}%.`);
   }
 
@@ -2125,9 +2170,16 @@ export class ToolStarterApp {
     }
     const nextPayload = this.cloneCurrentPayload();
     const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
-    nextObject.tags = Array.from(new Set([...tagList(nextObject.tags), ...tags])).sort();
+    const nextTags = tagList(nextObject.tags);
+    const addedTags = [];
+    tags.forEach((tag) => {
+      const nextTag = this.uniqueTag(tag, nextTags);
+      nextTags.push(nextTag);
+      addedTags.push(nextTag);
+    });
+    nextObject.tags = nextTags.sort();
     this.elements.objectTagInput.value = "";
-    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Added tag ${tags.join(", ")} to ${selected.name}.`, "Object tag update failed schema validation");
+    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Added tag ${addedTags.join(", ")} to ${selected.name}.`, "Object tag update failed schema validation");
   }
 
   removeTagFromSelectedObject(tag) {
@@ -2371,22 +2423,41 @@ export class ToolStarterApp {
     return this.paletteTarget === "stroke" ? this.selectedStrokeColor : this.selectedFillColor;
   }
 
+  paletteSwatchForColor(color) {
+    const normalized = String(color || "").trim().toLowerCase();
+    if (!normalized || !this.runtimePalette?.swatches?.length) {
+      return null;
+    }
+    return this.runtimePalette.swatches.find((swatch) => String(swatchColor(swatch)).trim().toLowerCase() === normalized) || null;
+  }
+
+  paletteLabelForColor(color, fallbackLabel) {
+    const swatch = this.paletteSwatchForColor(color);
+    return swatch?.name || swatch?.id || swatch?.symbol || fallbackLabel;
+  }
+
   selectPaletteColor(color, label, options = {}) {
     if (!color) {
       this.statusLog.write(`FAIL Palette color application blocked: swatch ${label} has no usable color value.`);
       return;
     }
+    const swatch = this.paletteSwatchForColor(color);
+    if (!swatch) {
+      this.statusLog.write(`FAIL Palette color selection rejected: ${color} is not in the loaded palette.`);
+      return;
+    }
+    const paletteLabel = swatch.name || swatch.id || swatch.symbol || label;
     if (this.paletteTarget === "stroke") {
       this.selectedStrokeColor = color;
-      this.selectedStrokeLabel = label;
+      this.selectedStrokeLabel = paletteLabel;
     } else {
       this.selectedFillColor = color;
-      this.selectedFillLabel = label;
+      this.selectedFillLabel = paletteLabel;
     }
     if (this.runtimePalette) {
       this.renderPalette();
     }
-    this.statusLog.write(`OK Selected ${this.paletteTarget === "stroke" ? "stroke" : "paint"} color ${color} from ${label}.`);
+    this.statusLog.write(`OK Selected ${this.paletteTarget === "stroke" ? "stroke" : "paint"} color ${color} from ${paletteLabel}.`);
     if (options.applyToSelection === false || !this.selectedShapeId) {
       return;
     }
@@ -2421,6 +2492,12 @@ export class ToolStarterApp {
       this.statusLog.write(`FAIL Palette color application blocked: no ${shouldApplyStroke ? "stroke" : "paint"} color is selected.`);
       return;
     }
+    const swatch = this.paletteSwatchForColor(color);
+    if (!swatch) {
+      this.statusLog.write(`FAIL Palette color application rejected: ${color} is not in the loaded palette.`);
+      return;
+    }
+    const paletteLabel = swatch.name || swatch.id || swatch.symbol || label;
     if (shouldApplyStroke) {
       shape.style.stroke = color;
       shape.style.strokeWidth = Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : 2;
@@ -2428,7 +2505,7 @@ export class ToolStarterApp {
       shape.style.fill = color;
     }
     const targetLabel = shouldApplyStroke ? `Target: stroke width ${shape.style.strokeWidth}.` : "Target: paint.";
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Applied palette color ${color} from ${label} to shape ${selected.id} by ${sourceLabel}. ${targetLabel}`, "Palette color application failed schema validation");
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Applied palette color ${color} from ${paletteLabel} to shape ${selected.id} by ${sourceLabel}. ${targetLabel}`, "Palette color application failed schema validation");
   }
 
   sampleShapeColor(shapeId, target) {
@@ -2442,13 +2519,19 @@ export class ToolStarterApp {
       this.statusLog.write(`WARN Eyedropper skipped: shape ${selected.id} has no ${target} color.`);
       return;
     }
+    const swatch = this.paletteSwatchForColor(color);
+    if (!swatch) {
+      this.statusLog.write(`FAIL Eyedropper rejected ${target} color ${color} from shape ${selected.id}: color is not in the loaded palette.`);
+      return;
+    }
+    const label = swatch.name || swatch.id || swatch.symbol || selected.id;
     if (target === "stroke") {
       this.selectedStrokeColor = color;
-      this.selectedStrokeLabel = `${selected.id} stroke`;
+      this.selectedStrokeLabel = label;
       this.setPaletteTarget("stroke", false);
     } else {
       this.selectedFillColor = color;
-      this.selectedFillLabel = `${selected.id} fill`;
+      this.selectedFillLabel = label;
       this.setPaletteTarget("paint", false);
     }
     if (this.runtimePalette) {
@@ -2471,12 +2554,18 @@ export class ToolStarterApp {
   }
 
   restoreDefaultColors() {
-    this.selectedFillColor = "#ffffff";
-    this.selectedStrokeColor = "#000000";
-    this.selectedFillLabel = "default fill";
-    this.selectedStrokeLabel = "default stroke";
+    const fillColor = this.firstPaletteColor();
+    const strokeColor = this.secondPaletteColor(fillColor);
+    if (!fillColor || !strokeColor) {
+      this.statusLog.write("FAIL Default colors blocked: a loaded palette color is required.");
+      return;
+    }
+    this.selectedFillColor = fillColor;
+    this.selectedStrokeColor = strokeColor;
+    this.selectedFillLabel = this.paletteLabelForColor(fillColor, "default fill");
+    this.selectedStrokeLabel = this.paletteLabelForColor(strokeColor, "default stroke");
     this.renderPalette();
-    this.statusLog.write("OK Restored default paint/stroke colors.");
+    this.statusLog.write(`OK Restored default paint/stroke colors from loaded palette: fill ${fillColor}, stroke ${strokeColor}.`);
   }
 
   toggleSelectedShapeVisibility() {
@@ -3129,6 +3218,22 @@ export class ToolStarterApp {
     while (usedIds.has(candidate)) {
       suffix += 1;
       candidate = `group-${suffix}`;
+    }
+    return candidate;
+  }
+
+  uniqueTag(tag, tags) {
+    const baseTag = slugifyObjectName(tag);
+    const usedTags = new Set(tags);
+    if (!usedTags.has(baseTag)) {
+      return baseTag;
+    }
+
+    let suffix = 2;
+    let candidate = `${baseTag}-${suffix}`;
+    while (usedTags.has(candidate)) {
+      suffix += 1;
+      candidate = `${baseTag}-${suffix}`;
     }
     return candidate;
   }

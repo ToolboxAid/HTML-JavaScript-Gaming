@@ -194,6 +194,10 @@ textarea:hover {
   min-height: 0;
 }
 
+.tool-starter__panel--left {
+  overflow-y: auto;
+}
+
 .accordion-v2 {
   --accordion-v2-accent: var(--tool-starter-accent);
   --accordion-v2-line: var(--tool-starter-line);
@@ -379,6 +383,11 @@ textarea:hover {
   max-height: 260px;
 }
 
+#objectVectorStudioV2ShapeToolsContent {
+  flex: 1 1 auto;
+  max-height: none;
+}
+
 .object-vector-studio-v2__palette-swatch-list {
   display: grid;
   flex: 0 0 auto;
@@ -435,6 +444,7 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-actions,
+.object-vector-studio-v2__objects-actions,
 .object-vector-studio-v2__tool-display-actions,
 .object-vector-studio-v2__snap-actions,
 .object-vector-studio-v2__z-order-actions,
@@ -467,6 +477,15 @@ textarea:hover {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   align-items: stretch;
+}
+
+.object-vector-studio-v2__z-action {
+  min-width: 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .object-vector-studio-v2__control-group h3,
@@ -517,8 +536,9 @@ textarea:hover {
   height: 24px;
   display: inline-grid;
   place-items: center;
-  border: 1px solid var(--tool-starter-line);
+  border: 1px solid #ffffff;
   border-radius: 4px;
+  color: #ffffff;
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -537,29 +557,41 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__shape-icon--triangle {
-  width: 0;
-  height: 0;
+  width: 24px;
+  height: 24px;
+  position: relative;
   border: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-bottom: 22px solid var(--tool-starter-text);
+  background: transparent;
+}
+
+.object-vector-studio-v2__shape-icon--triangle::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  left: 3px;
+  top: 4px;
+  border-left: 4px solid #ffffff;
+  border-bottom: 4px solid #ffffff;
+  transform: rotate(135deg) skew(12deg, 12deg);
+  transform-origin: center;
   background: transparent;
 }
 
 .object-vector-studio-v2__shape-icon--rectangle {
-  border-width: 2px;
+  border-width: 4px;
   border-radius: 3px;
 }
 
 .object-vector-studio-v2__shape-icon--circle {
-  border-width: 2px;
+  border-width: 4px;
   border-radius: 999px;
 }
 
 .object-vector-studio-v2__shape-icon--ellipse {
   width: 28px;
   height: 18px;
-  border-width: 2px;
+  border-width: 4px;
   border-radius: 999px;
 }
 
@@ -575,12 +607,13 @@ textarea:hover {
   clip-path: polygon(50% 0, 95% 35%, 82% 100%, 18% 100%, 5% 35%);
   background: transparent;
   border-radius: 0;
-  outline: 2px solid var(--tool-starter-text);
-  outline-offset: -2px;
+  outline: 4px solid #ffffff;
+  outline-offset: -4px;
 }
 
 .object-vector-studio-v2__shape-icon--arc {
-  border-color: transparent transparent var(--tool-starter-text) var(--tool-starter-text);
+  border-width: 0 0 4px 4px;
+  border-color: transparent transparent #ffffff #ffffff;
   border-radius: 0 0 0 999px;
   transform: rotate(-45deg);
 }
@@ -614,6 +647,125 @@ textarea:hover {
   white-space: nowrap;
 }
 
+.object-vector-studio-v2__z-order-actions.is-icon-only {
+  grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+}
+
+.object-vector-studio-v2__z-order-actions.is-icon-only .object-vector-studio-v2__z-action {
+  aspect-ratio: 1;
+  min-height: 42px;
+  padding: 4px !important;
+}
+
+.object-vector-studio-v2__z-order-actions.is-icon-only .object-vector-studio-v2__z-label {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.object-vector-studio-v2__z-icon {
+  width: 22px;
+  height: 22px;
+  position: relative;
+  display: inline-block;
+  color: #ffffff;
+}
+
+.object-vector-studio-v2__z-icon::before,
+.object-vector-studio-v2__z-icon::after {
+  content: "";
+  position: absolute;
+  border-color: currentColor;
+}
+
+.object-vector-studio-v2__z-icon--bring-forward::before,
+.object-vector-studio-v2__z-icon--send-backward::before,
+.object-vector-studio-v2__z-icon--bring-front::before,
+.object-vector-studio-v2__z-icon--send-back::before {
+  width: 11px;
+  height: 11px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.object-vector-studio-v2__z-icon--bring-forward::before,
+.object-vector-studio-v2__z-icon--bring-front::before {
+  left: 7px;
+  top: 3px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.object-vector-studio-v2__z-icon--send-backward::before,
+.object-vector-studio-v2__z-icon--send-back::before {
+  left: 3px;
+  top: 7px;
+}
+
+.object-vector-studio-v2__z-icon--bring-forward::after,
+.object-vector-studio-v2__z-icon--send-backward::after,
+.object-vector-studio-v2__z-icon--bring-front::after,
+.object-vector-studio-v2__z-icon--send-back::after {
+  width: 11px;
+  height: 11px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.object-vector-studio-v2__z-icon--bring-forward::after,
+.object-vector-studio-v2__z-icon--send-backward::after {
+  left: 3px;
+  top: 7px;
+}
+
+.object-vector-studio-v2__z-icon--bring-front::after {
+  left: 1px;
+  top: 15px;
+  width: 20px;
+  height: 0;
+  border-width: 2px 0 0;
+}
+
+.object-vector-studio-v2__z-icon--send-back::after {
+  left: 1px;
+  top: 2px;
+  width: 20px;
+  height: 0;
+  border-width: 2px 0 0;
+}
+
+.object-vector-studio-v2__z-icon--group::before {
+  inset: 4px;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+}
+
+.object-vector-studio-v2__z-icon--group::after {
+  inset: 0;
+  border: 2px dashed currentColor;
+  border-radius: 5px;
+}
+
+.object-vector-studio-v2__z-icon--ungroup::before {
+  left: 1px;
+  top: 1px;
+  width: 7px;
+  height: 7px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
+.object-vector-studio-v2__z-icon--ungroup::after {
+  right: 1px;
+  bottom: 1px;
+  width: 7px;
+  height: 7px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+}
+
 .object-vector-studio-v2__tool-toggle.is-active,
 .object-vector-studio-v2__tool-toggle[aria-pressed="true"] {
   border-color: var(--tool-starter-accent) !important;
@@ -622,7 +774,7 @@ textarea:hover {
 
 .object-vector-studio-v2__object-tiles {
   min-height: 0;
-  flex: 0 0 auto;
+  flex: 1 0 auto;
   display: grid;
   align-content: start;
   gap: 8px;
@@ -632,6 +784,7 @@ textarea:hover {
 
 .object-vector-studio-v2__objects-actions {
   flex: 0 0 auto;
+  padding-top: 8px;
 }
 
 .object-vector-studio-v2__library-panel,
@@ -1042,11 +1195,13 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__render-surface.is-grid-visible {
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    rgba(0, 0, 0, 0.16);
-  background-size: 20px 20px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.object-vector-studio-v2__svg-grid {
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 1;
+  pointer-events: none;
 }
 
 .object-vector-studio-v2__shape {

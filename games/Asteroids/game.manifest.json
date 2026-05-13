@@ -218,37 +218,37 @@
                 "id": "asset.asteroids.ship",
                 "name": "Asteroids Ship",
                 "objectId": "object.asteroids.ship",
-                "tags": ["asteroids", "player", "ship"]
+                "tags": ["player", "ship"]
               },
               {
                 "id": "asset.asteroids.asteroid.large",
                 "name": "Large Asteroid",
                 "objectId": "object.asteroids.asteroid.large",
-                "tags": ["asteroids", "asteroid", "large"]
+                "tags": ["asteroid", "large"]
               },
               {
                 "id": "asset.asteroids.asteroid.medium",
                 "name": "Medium Asteroid",
                 "objectId": "object.asteroids.asteroid.medium",
-                "tags": ["asteroids", "asteroid", "medium"]
+                "tags": ["asteroid", "medium"]
               },
               {
                 "id": "asset.asteroids.asteroid.small",
                 "name": "Small Asteroid",
                 "objectId": "object.asteroids.asteroid.small",
-                "tags": ["asteroids", "asteroid", "small"]
+                "tags": ["asteroid", "small"]
               },
               {
                 "id": "asset.asteroids.ufo.large",
                 "name": "Large UFO",
                 "objectId": "object.asteroids.ufo.large",
-                "tags": ["asteroids", "ufo", "large"]
+                "tags": ["ufo", "large"]
               },
               {
                 "id": "asset.asteroids.ufo.small",
                 "name": "Small UFO",
                 "objectId": "object.asteroids.ufo.small",
-                "tags": ["asteroids", "ufo", "small"]
+                "tags": ["ufo", "small"]
               }
             ]
           },

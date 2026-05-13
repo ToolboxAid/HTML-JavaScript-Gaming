@@ -86,7 +86,8 @@ window.addEventListener("DOMContentLoaded", () => {
       toolToggles: Array.from(document.querySelectorAll("[data-shape-tool]")),
       ungroupButton: requireElement("#objectVectorStudioV2UngroupButton"),
       zoomInButton: requireElement("#objectVectorStudioV2ZoomInButton"),
-      zoomOutButton: requireElement("#objectVectorStudioV2ZoomOutButton")
+      zoomOutButton: requireElement("#objectVectorStudioV2ZoomOutButton"),
+      zOrderActions: requireElement(".object-vector-studio-v2__z-order-actions")
     },
     schemaService: new ObjectVectorStudioV2SchemaService(),
     shell: new ToolStarterShellControl(),

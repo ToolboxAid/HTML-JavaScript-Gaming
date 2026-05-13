@@ -92,25 +92,22 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2ObjectsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2TagFilter">
+            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2TagFilter">
               <span>Tag Filter</span>
               <select id="objectVectorStudioV2TagFilter">
                 <option value="all">All</option>
               </select>
             </label>
-            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2SearchFilter">
+            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2SearchFilter">
               <span>Search</span>
               <input id="objectVectorStudioV2SearchFilter" type="search" autocomplete="off" placeholder="Filter objects">
             </label>
             <div id="objectVectorStudioV2ObjectTiles" class="object-vector-studio-v2__object-tiles" aria-label="Object tiles"></div>
-            <div class="object-vector-studio-v2__control-group object-vector-studio-v2__objects-actions" data-control-group="object-actions">
-              <h3>Object Actions</h3>
-              <div class="object-vector-studio-v2__object-actions" aria-label="Object actions">
-                <button id="objectVectorStudioV2AddObjectButton" type="button" title="Add a schema-valid object to the loaded payload">Add</button>
-                <button id="objectVectorStudioV2RenameObjectButton" type="button" title="Rename the selected object and update its object ID">Rename</button>
-                <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Duplicate</button>
-                <button id="objectVectorStudioV2DeleteObjectButton" type="button" title="Delete the selected object">Delete</button>
-              </div>
+            <div class="object-vector-studio-v2__objects-actions" aria-label="Object actions">
+              <button id="objectVectorStudioV2AddObjectButton" type="button" title="Add a schema-valid object to the loaded payload">Add</button>
+              <button id="objectVectorStudioV2RenameObjectButton" type="button" title="Rename the selected object and update its object ID">Rename</button>
+              <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Duplicate</button>
+              <button id="objectVectorStudioV2DeleteObjectButton" type="button" title="Delete the selected object">Delete</button>
             </div>
           </div>
         </section>
@@ -210,12 +207,30 @@
             </div>
             <hr class="object-vector-studio-v2__separator">
             <div class="object-vector-studio-v2__z-order-actions" aria-label="Shape order and grouping controls">
-              <button id="objectVectorStudioV2BringForwardButton" type="button">Bring Forward</button>
-              <button id="objectVectorStudioV2SendBackwardButton" type="button">Send Backward</button>
-              <button id="objectVectorStudioV2BringToFrontButton" type="button">Bring To Front</button>
-              <button id="objectVectorStudioV2SendToBackButton" type="button">Send To Back</button>
-              <button id="objectVectorStudioV2GroupShapesButton" type="button">Group Shapes</button>
-              <button id="objectVectorStudioV2UngroupButton" type="button">Ungroup</button>
+              <button id="objectVectorStudioV2BringForwardButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="bring-forward">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--bring-forward" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Bring Forward</span>
+              </button>
+              <button id="objectVectorStudioV2SendBackwardButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="send-backward">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--send-backward" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Send Backward</span>
+              </button>
+              <button id="objectVectorStudioV2BringToFrontButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="bring-front">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--bring-front" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Bring To Front</span>
+              </button>
+              <button id="objectVectorStudioV2SendToBackButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="send-back">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--send-back" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Send To Back</span>
+              </button>
+              <button id="objectVectorStudioV2GroupShapesButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="group">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--group" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Group Shapes</span>
+              </button>
+              <button id="objectVectorStudioV2UngroupButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="ungroup">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--ungroup" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Ungroup</span>
+              </button>
             </div>
             <hr class="object-vector-studio-v2__separator">
             <div class="object-vector-studio-v2__snap-actions" aria-label="Snap controls">
