@@ -16,6 +16,81 @@ const MAX_ZOOM = 0.5;
 const MIN_ZOOM = 0.01;
 const ZOOM_STEP = 0.01;
 
+const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
+  add: "\uf067",
+  angle: "\uf1de",
+  arc: "\uf1da",
+  bringForward: "\uf062",
+  bringFront: "\uf102",
+  center: "\uf192",
+  circle: "\uf111",
+  delete: "\uf00d",
+  duplicate: "\uf0c5",
+  edit: "\uf044",
+  ellipse: "\uf111",
+  eye: "\uf06e",
+  eyeOff: "\uf070",
+  grid: "\uf00a",
+  group: "\uf247",
+  line: "\uf068",
+  lock: "\uf023",
+  move: "\uf047",
+  panDown: "\uf063",
+  panLeft: "\uf060",
+  panRight: "\uf061",
+  panUp: "\uf062",
+  polygon: "\uf1fe",
+  rectangle: "\uf096",
+  reset: "\uf0e2",
+  resize: "\uf065",
+  rotate: "\uf01e",
+  scale: "\uf065",
+  select: "\uf245",
+  sendBack: "\uf103",
+  sendBackward: "\uf063",
+  text: "\uf031",
+  triangle: "\uf0d8",
+  ungroup: "\uf248",
+  unlock: "\uf09c",
+  zoomIn: "\uf00e",
+  zoomOut: "\uf010"
+});
+
+const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
+  ["#objectVectorStudioV2AddTagButton", "add"],
+  ["#objectVectorStudioV2AddObjectButton", "add"],
+  ["#objectVectorStudioV2RenameObjectButton", "edit"],
+  ["#objectVectorStudioV2DuplicateObjectButton", "duplicate"],
+  ["#objectVectorStudioV2DeleteObjectButton", "delete"],
+  ["#objectVectorStudioV2ZoomOutButton", "zoomOut"],
+  ["#objectVectorStudioV2ZoomInButton", "zoomIn"],
+  ["#objectVectorStudioV2PanUpButton", "panUp"],
+  ["#objectVectorStudioV2PanDownButton", "panDown"],
+  ["#objectVectorStudioV2PanLeftButton", "panLeft"],
+  ["#objectVectorStudioV2PanRightButton", "panRight"],
+  ["#objectVectorStudioV2ResetViewButton", "reset"],
+  ["#objectVectorStudioV2CenterDotButton", "center"],
+  ["#objectVectorStudioV2DuplicateFrameButton", "duplicate"],
+  ["#objectVectorStudioV2GridSnapButton", "grid"],
+  ["#objectVectorStudioV2AngleSnapButton", "angle"],
+  ["#objectVectorStudioV2GridRenderButton", "grid"],
+  [".object-vector-studio-v2__shape-icon--select", "select"],
+  [".object-vector-studio-v2__shape-icon--triangle", "triangle"],
+  [".object-vector-studio-v2__shape-icon--rectangle", "rectangle"],
+  [".object-vector-studio-v2__shape-icon--circle", "circle"],
+  [".object-vector-studio-v2__shape-icon--ellipse", "ellipse"],
+  [".object-vector-studio-v2__shape-icon--line", "line"],
+  [".object-vector-studio-v2__shape-icon--polygon", "polygon"],
+  [".object-vector-studio-v2__shape-icon--arc", "arc"],
+  [".object-vector-studio-v2__shape-icon--text", "text"],
+  [".object-vector-studio-v2__z-icon--bring-forward", "bringForward"],
+  [".object-vector-studio-v2__z-icon--send-backward", "sendBackward"],
+  [".object-vector-studio-v2__z-icon--bring-front", "bringFront"],
+  [".object-vector-studio-v2__z-icon--send-back", "sendBack"],
+  [".object-vector-studio-v2__z-icon--group", "group"],
+  [".object-vector-studio-v2__z-icon--ungroup", "ungroup"]
+]);
+
 const OBJECT_STATE_IDS = Object.freeze(["idle", "thrust", "damaged", "destroyed", "active", "inactive"]);
 
 const OBJECT_STATE_LABELS = Object.freeze({
@@ -263,6 +338,7 @@ export class ToolStarterApp {
       }
     });
     this.statusLog.mount();
+    this.applyNerdFontIcons();
     this.bindObjectActions();
     this.bindToolToggles();
     this.bindSnapControls();
@@ -402,6 +478,22 @@ export class ToolStarterApp {
     this.elements.sendToBackButton.addEventListener("click", () => this.changeSelectedShapeOrder("back"));
     this.elements.groupShapesButton.addEventListener("click", () => this.groupSelectedShapes());
     this.elements.ungroupButton.addEventListener("click", () => this.ungroupSelectedShapes());
+  }
+
+  applyNerdFontIcons() {
+    OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS.forEach(([selector, iconKey]) => {
+      this.window.document.querySelectorAll(selector).forEach((element) => this.applyIconGlyph(element, iconKey));
+    });
+  }
+
+  applyIconGlyph(element, iconKey) {
+    const glyph = OBJECT_VECTOR_STUDIO_ICON_GLYPHS[iconKey];
+    if (!element || !glyph) {
+      return;
+    }
+    element.dataset.ovsIcon = glyph;
+    element.dataset.ovsIconKey = iconKey;
+    element.classList.add("object-vector-studio-v2__nerd-icon");
   }
 
   bindAnimationControls() {
@@ -1019,6 +1111,8 @@ export class ToolStarterApp {
     icon.className = `object-vector-studio-v2__tile-icon object-vector-studio-v2__tile-icon--${kind}`;
     icon.classList.toggle("is-off", !isActive);
     icon.setAttribute("aria-hidden", "true");
+    const iconKey = kind === "eye" && !isActive ? "eyeOff" : kind === "lock" && !isActive ? "unlock" : kind;
+    this.applyIconGlyph(icon, iconKey);
     return icon;
   }
 
@@ -1474,6 +1568,7 @@ export class ToolStarterApp {
     applyButton.id = "objectVectorStudioV2ApplyGeometryButton";
     applyButton.type = "button";
     applyButton.textContent = "Apply Geometry";
+    this.applyIconGlyph(applyButton, "edit");
     applyButton.addEventListener("click", () => this.applyShapeGeometryEdits());
     section.append(heading, grid, applyButton);
     return section;
@@ -1515,16 +1610,17 @@ export class ToolStarterApp {
     const actions = document.createElement("div");
     actions.className = "object-vector-studio-v2__shape-actions";
     [
-      ["objectVectorStudioV2MoveShapeButton", "Move", () => this.moveSelectedShape()],
-      ["objectVectorStudioV2RotateShapeButton", "Rotate", () => this.rotateSelectedShape()],
-      ["objectVectorStudioV2ScaleShapeButton", "Scale", () => this.scaleSelectedShape()],
-      ["objectVectorStudioV2ResizeShapeButton", "Resize", () => this.resizeSelectedShape()],
-      ["objectVectorStudioV2ApplyOriginButton", "Apply Origin", () => this.applySelectedShapeOrigin()]
-    ].forEach(([id, label, handler]) => {
+      ["objectVectorStudioV2MoveShapeButton", "Move", "move", () => this.moveSelectedShape()],
+      ["objectVectorStudioV2RotateShapeButton", "Rotate", "rotate", () => this.rotateSelectedShape()],
+      ["objectVectorStudioV2ScaleShapeButton", "Scale", "scale", () => this.scaleSelectedShape()],
+      ["objectVectorStudioV2ResizeShapeButton", "Resize", "resize", () => this.resizeSelectedShape()],
+      ["objectVectorStudioV2ApplyOriginButton", "Apply Origin", "center", () => this.applySelectedShapeOrigin()]
+    ].forEach(([id, label, iconKey, handler]) => {
       const button = document.createElement("button");
       button.id = id;
       button.type = "button";
       button.textContent = label;
+      this.applyIconGlyph(button, iconKey);
       button.addEventListener("click", handler);
       actions.append(button);
     });

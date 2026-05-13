@@ -1,19 +1,21 @@
-# PR_26133_017 Workspace V2 Results
+# PR_26133_018 Workspace V2 Results
 
 ## Command Results
 
 - `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`: passed.
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`: passed.
+- `npm run test:workspace-v2 -- --grep "shows Object Vector Studio V2 layout shell"`: 48 passed.
 - `npm run test:workspace-v2`: 48 passed.
 - `git diff --check`: passed with LF-to-CRLF working-copy warnings for touched files.
 
 ## Targeted Object Vector Studio V2 Verification
 
-- Confirmed Object Details no longer renders the `Fill Color` summary row/value.
-- Confirmed Rectangle, Circle, Ellipse, Line, Arc, and Text Geometry controls use compact reduced spacing.
-- Confirmed requested geometry input rows render on the same line: rectangle `x/y` and `width/height`, circle `cx/cy` and inline `r`, ellipse `cx/cy` and `rx/ry`, line `x1/y1` and `x2/y2`, arc `cx/cy`, and text `x/y` plus inline `fontSize` and `text` fields.
-- Confirmed the selected palette swatch renders with a visible selected state, outline, shadow, and check mark.
-- Confirmed Triangle tool creation displays `Triangle Geometry`, not `Polygon Geometry`, while preserving schema-valid polygon storage.
+- Confirmed Object Vector Studio V2 registers `@font-face` for `0xProto Nerd Font` from `src/shared/font/0xProtoNerdFont/0xProtoNerdFontMono-Regular.ttf`.
+- Confirmed static and dynamic Object Vector Studio V2 icon targets render glyphs with `0xProto Nerd Font` through the scoped icon mapping.
+- Confirmed object action, viewport, shape tool, z-order/group, snap/grid, transform, shape tile, and object tile icons preserve their existing click actions.
+- Confirmed visible button text, aria labels, and titles/tooltips remain available; disabled controls keep their existing disabled-reason tooltip behavior.
+- Confirmed show/hide and lock/unlock tile buttons swap to the matching visible/hidden and locked/unlocked glyph keys without changing behavior.
+- Confirmed `src/shared/font/0xProtoNerdFont` had no file changes.
 - Confirmed workspace-v2 Object Vector Studio V2 scenarios reported no console/page errors.
 
 ## Scope Checks

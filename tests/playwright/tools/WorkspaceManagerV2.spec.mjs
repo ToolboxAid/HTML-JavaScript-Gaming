@@ -1244,41 +1244,88 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Triangle", "Rectangle", "Circle", "Ellipse", "Line", "Polygon", "Arc", "Text"]);
       await expect(page.locator(".object-vector-studio-v2__shape-icon--triangle")).toBeVisible();
       await expect(page.locator(".object-vector-studio-v2__shape-icon--arc")).toBeVisible();
-      const iconStyleState = await page.evaluate(() => {
-        const style = (selector, pseudo = null) => {
+      const iconStyleState = await page.evaluate(async () => {
+        const fontResponse = await fetch("/src/shared/font/0xProtoNerdFont/0xProtoNerdFontMono-Regular.ttf", { cache: "no-store" });
+        const icon = (selector) => {
           const element = document.querySelector(selector);
-          return getComputedStyle(element, pseudo);
+          const before = getComputedStyle(element, "::before");
+          return {
+            fontFamily: before.fontFamily,
+            glyphPresent: Boolean(element.dataset.ovsIcon),
+            iconKey: element.dataset.ovsIconKey
+          };
         };
+        const title = (selector) => document.querySelector(selector).title;
         return {
-          arcBorderBottomColor: style(".object-vector-studio-v2__shape-icon--arc").borderBottomColor,
-          arcBorderBottomWidth: style(".object-vector-studio-v2__shape-icon--arc").borderBottomWidth,
-          circleBorderTopColor: style(".object-vector-studio-v2__shape-icon--circle").borderTopColor,
-          circleBorderTopWidth: style(".object-vector-studio-v2__shape-icon--circle").borderTopWidth,
-          ellipseBorderTopColor: style(".object-vector-studio-v2__shape-icon--ellipse").borderTopColor,
-          ellipseBorderTopWidth: style(".object-vector-studio-v2__shape-icon--ellipse").borderTopWidth,
-          polygonOutlineColor: style(".object-vector-studio-v2__shape-icon--polygon").outlineColor,
-          polygonOutlineWidth: style(".object-vector-studio-v2__shape-icon--polygon").outlineWidth,
-          rectangleBorderTopColor: style(".object-vector-studio-v2__shape-icon--rectangle").borderTopColor,
-          rectangleBorderTopWidth: style(".object-vector-studio-v2__shape-icon--rectangle").borderTopWidth,
-          triangleBackground: style(".object-vector-studio-v2__shape-icon--triangle").backgroundColor,
-          triangleBorderBottomWidth: style(".object-vector-studio-v2__shape-icon--triangle").borderBottomWidth,
-          triangleStrokeWidth: style(".object-vector-studio-v2__shape-icon--triangle", "::before").borderLeftWidth
+          actionIcons: {
+            add: icon("#objectVectorStudioV2AddObjectButton"),
+            delete: icon("#objectVectorStudioV2DeleteObjectButton"),
+            rename: icon("#objectVectorStudioV2RenameObjectButton")
+          },
+          fontAssetOk: fontResponse.ok,
+          shapeIcons: {
+            arc: icon(".object-vector-studio-v2__shape-icon--arc"),
+            circle: icon(".object-vector-studio-v2__shape-icon--circle"),
+            ellipse: icon(".object-vector-studio-v2__shape-icon--ellipse"),
+            polygon: icon(".object-vector-studio-v2__shape-icon--polygon"),
+            rectangle: icon(".object-vector-studio-v2__shape-icon--rectangle"),
+            select: icon(".object-vector-studio-v2__shape-icon--select"),
+            text: icon(".object-vector-studio-v2__shape-icon--text"),
+            triangle: icon(".object-vector-studio-v2__shape-icon--triangle")
+          },
+          titles: {
+            add: title("#objectVectorStudioV2AddObjectButton"),
+            grid: title("#objectVectorStudioV2GridRenderButton"),
+            rename: title("#objectVectorStudioV2RenameObjectButton"),
+            shape: title("[data-shape-tool='rectangle']"),
+            zoomIn: title("#objectVectorStudioV2ZoomInButton")
+          },
+          viewportIcons: {
+            down: icon("#objectVectorStudioV2PanDownButton"),
+            reset: icon("#objectVectorStudioV2ResetViewButton"),
+            up: icon("#objectVectorStudioV2PanUpButton"),
+            zoomIn: icon("#objectVectorStudioV2ZoomInButton"),
+            zoomOut: icon("#objectVectorStudioV2ZoomOutButton")
+          },
+          zIcons: {
+            group: icon(".object-vector-studio-v2__z-icon--group"),
+            ungroup: icon(".object-vector-studio-v2__z-icon--ungroup")
+          }
         };
       });
-      expect(iconStyleState).toEqual({
-        arcBorderBottomColor: "rgb(255, 255, 255)",
-        arcBorderBottomWidth: "4px",
-        circleBorderTopColor: "rgb(255, 255, 255)",
-        circleBorderTopWidth: "4px",
-        ellipseBorderTopColor: "rgb(255, 255, 255)",
-        ellipseBorderTopWidth: "4px",
-        polygonOutlineColor: "rgb(255, 255, 255)",
-        polygonOutlineWidth: "4px",
-        rectangleBorderTopColor: "rgb(255, 255, 255)",
-        rectangleBorderTopWidth: "4px",
-        triangleBackground: "rgba(0, 0, 0, 0)",
-        triangleBorderBottomWidth: "0px",
-        triangleStrokeWidth: "4px"
+      expect(iconStyleState.fontAssetOk).toBe(true);
+      [
+        ...Object.values(iconStyleState.actionIcons),
+        ...Object.values(iconStyleState.shapeIcons),
+        ...Object.values(iconStyleState.viewportIcons),
+        ...Object.values(iconStyleState.zIcons)
+      ].forEach((icon) => {
+        expect(icon.glyphPresent).toBe(true);
+        expect(icon.fontFamily).toContain("0xProto Nerd Font");
+      });
+      expect(Object.fromEntries(Object.entries(iconStyleState.shapeIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
+        arc: "arc",
+        circle: "circle",
+        ellipse: "ellipse",
+        polygon: "polygon",
+        rectangle: "rectangle",
+        select: "select",
+        text: "text",
+        triangle: "triangle"
+      });
+      expect(Object.fromEntries(Object.entries(iconStyleState.viewportIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
+        down: "panDown",
+        reset: "reset",
+        up: "panUp",
+        zoomIn: "zoomIn",
+        zoomOut: "zoomOut"
+      });
+      expect(iconStyleState.titles).toEqual({
+        add: "Add a schema-valid object to the loaded payload",
+        grid: "Show or hide the preview grid",
+        rename: "Disabled until a schema-valid object is selected.",
+        shape: "Create a rectangle shape on the selected object",
+        zoomIn: "Zoom the work surface in"
       });
 
       await page.locator('[data-shape-tool="rectangle"]').click();
@@ -1714,6 +1761,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           controlOrder: controls.map((control) => control.dataset.objectControl),
           deleteAtFarRight: Math.abs(tileRect.right - deleteRect.right) <= 12,
           deleteTitle: deleteButton.title,
+          iconFontsUseNerd: controls.every((control) => getComputedStyle(control.querySelector("[data-ovs-icon]"), "::before").fontFamily.includes("0xProto Nerd Font")),
+          iconKeys: controls.map((control) => control.querySelector("[data-ovs-icon]")?.dataset.ovsIconKey),
           iconSizes: rects.map((rect) => Math.round(Math.max(rect.width, rect.height))),
           stacked: rects.every((rect, index) => index === 0
             || (Math.abs(rect.left - rects[index - 1].left) <= 1 && rect.top > rects[index - 1].top))
@@ -1724,6 +1773,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         controlOrder: ["visibility", "lock", "delete"],
         deleteAtFarRight: true,
         deleteTitle: "Delete this object",
+        iconFontsUseNerd: true,
+        iconKeys: ["eye", "unlock", "delete"],
         iconSizes: [26, 26, 26],
         stacked: true
       });
@@ -1735,11 +1786,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='delete'] .object-vector-studio-v2__tile-icon--delete")).toHaveCount(1);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility']").click();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1']")).toHaveClass(/is-hidden/);
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility'] [data-ovs-icon-key='eyeOff']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id]")).toHaveCount(0);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility']").click();
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility'] [data-ovs-icon-key='eye']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id]")).toHaveCount(2);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock']").click();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1']")).toHaveClass(/is-locked/);
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock'] [data-ovs-icon-key='lock']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeDisabled();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='delete']")).toBeDisabled();
       await page.locator('[data-shape-tool="line"]').click();
