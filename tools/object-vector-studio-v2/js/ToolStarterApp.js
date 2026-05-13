@@ -657,6 +657,7 @@ export class ToolStarterApp {
     this.renderObjectTagList(null);
     this.elements.paletteSummary.textContent = this.runtimePalette ? "" : "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
+    this.elements.objectTransform.textContent = "No shape selected.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
@@ -815,6 +816,7 @@ export class ToolStarterApp {
     this.elements.objectTagInput.value = "";
     this.renderObjectTagList(null);
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
+    this.elements.objectTransform.textContent = "Runtime palette required before object transform.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
@@ -1171,6 +1173,7 @@ export class ToolStarterApp {
       this.renderObjectTagList(null);
       this.updateObjectDetailsHeader(this.currentPayload?.objects.length || 0, 0);
       this.elements.objectDetails.textContent = "No object selected.";
+      this.elements.objectTransform.textContent = "No shape selected.";
       this.elements.objectPreviewFooter.textContent = "Object ID: none";
       this.elements.jsonDetails.textContent = "{}";
       this.renderFrameTimeline();
@@ -1182,6 +1185,7 @@ export class ToolStarterApp {
     this.renderObjectTagList(selected);
     this.updateObjectDetailsHeader(this.currentPayload.objects.length, selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
+    this.elements.objectTransform.replaceChildren(this.createObjectTransformDetails(shape));
     this.elements.objectPreviewFooter.textContent = `Object ID: ${selected.id}`;
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
@@ -1290,20 +1294,40 @@ export class ToolStarterApp {
       return wrapper;
     }
 
-    const transform = this.shapeTransform(shape);
     const editableHint = document.createElement("p");
     editableHint.className = "tool-starter__hint";
-    editableHint.textContent = "Editable fields below are limited to schema-valid geometry, transform, visibility, lock, order, and grouping fields for the selected shape.";
+    editableHint.textContent = "Editable fields below are limited to schema-valid geometry fields for the selected shape.";
     shapePanel.append(this.createDetailGrid([
       ["Selected Shape", `${shape.id} (${shape.type})`],
       ["Group", shape.groupId || "None"],
-      ["Color", shape.style.fill === "none" ? shape.style.stroke : shape.style.fill],
-      ["Transform", `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`]
+      ["Color", shape.style.fill === "none" ? shape.style.stroke : shape.style.fill]
     ]));
     shapePanel.append(editableHint);
     shapePanel.append(this.createShapeGeometryControls(shape));
-    shapePanel.append(this.createShapeTransformControls(shape));
     wrapper.append(shapePanel);
+    return wrapper;
+  }
+
+  createObjectTransformDetails(shape) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "object-vector-studio-v2__object-detail-stack";
+    if (!shape) {
+      const empty = document.createElement("p");
+      empty.textContent = "No shape selected. Create a primitive from Shape/Tools.";
+      wrapper.append(empty);
+      return wrapper;
+    }
+
+    const transformPanel = document.createElement("section");
+    transformPanel.className = "object-vector-studio-v2__shape-panel";
+    const heading = document.createElement("h3");
+    heading.textContent = `Selected Shape: ${shape.id}`;
+    const transform = this.shapeTransform(shape);
+    transformPanel.append(heading, this.createDetailGrid([
+      ["Transform", `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`]
+    ]));
+    transformPanel.append(this.createShapeTransformControls(shape));
+    wrapper.append(transformPanel);
     return wrapper;
   }
 

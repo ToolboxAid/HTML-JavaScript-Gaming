@@ -50,7 +50,7 @@
 
     <main class="tool-starter object-vector-studio-v2 app-shell" data-tool-id="object-vector-studio-v2">
       <aside class="tool-starter__panel tool-starter__panel--left" aria-label="Tool inputs">
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectContent">
             <span>Object</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -77,13 +77,23 @@
           </div>
         </section>
 
-        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectDetailsContent">
             <span>Object Details <span id="objectVectorStudioV2ObjectDetailsCount" class="object-vector-studio-v2__header-count">(0 obj, 0 shapes)</span></span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2ObjectDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
             <div id="objectVectorStudioV2ObjectDetails" class="object-vector-studio-v2__details">No object selected.</div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectTransformContent">
+            <span>Object Transform</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="objectVectorStudioV2ObjectTransformContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2ObjectTransform" class="object-vector-studio-v2__details">No shape selected.</div>
           </div>
         </section>
 

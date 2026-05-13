@@ -206,6 +206,14 @@ textarea:hover {
   flex: 1 0 220px;
 }
 
+.tool-starter__panel--left > .accordion-v2.tool-starter__accordion--compact.is-open {
+  flex: 0 0 auto;
+}
+
+.tool-starter__panel--left > .accordion-v2.tool-starter__accordion--compact.is-open > .accordion-v2__content {
+  flex: 0 0 auto;
+}
+
 .accordion-v2 {
   --accordion-v2-accent: var(--tool-starter-accent);
   --accordion-v2-line: var(--tool-starter-line);

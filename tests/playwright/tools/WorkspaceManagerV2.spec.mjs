@@ -1193,7 +1193,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeDisabled();
       await expect(page.locator("#objectVectorStudioV2ExportSvgButton")).toBeDisabled();
 
-      await expect(page.locator(".tool-starter__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Object", "Object Details (0 obj, 0 shapes)", "Objects"]);
+      await expect(page.locator(".tool-starter__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Object", "Object Details (0 obj, 0 shapes)", "Object Transform", "Objects"]);
       await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Shape/Tools", "Palette (0 swatches)", "JSON Details", "Dependency Graph", "Status Log"]);
       await expect(page.locator(".tool-starter__panel--right > .accordion-v2").first().locator(".accordion-v2__header > span:first-child")).toHaveText("Shape/Tools");
       await expect(page.locator("#objectVectorStudioV2JsonDetailsContent")).toBeHidden();
@@ -1202,6 +1202,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2PaletteSwatchCount")).toHaveText("(0 swatches)");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
       await expect(page.locator("#objectVectorStudioV2ObjectDetailsCount")).toHaveText("(0 obj, 0 shapes)");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toHaveText("No shape selected.");
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeDisabled();
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toHaveAttribute("data-disabled-reason", "Disabled until a schema-valid object is selected.");
       await expect(page.locator("#objectVectorStudioV2DeleteObjectButton")).toBeDisabled();
@@ -1544,6 +1545,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"type": "rectangle"');
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Editable fields below are limited to schema-valid geometry");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Selected Shaperectangle-1 (rectangle)");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Transform");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails #objectVectorStudioV2MoveShapeButton")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toContainText("Selected Shape: rectangle-1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toContainText("Transform");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform #objectVectorStudioV2MoveShapeButton")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2ObjectDetailsActions")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ShapeVisibilityButton")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ShapeLockButton")).toHaveCount(0);
@@ -1729,6 +1735,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await clickPreviewShape("rectangle-1");
       await expect(page.locator("[data-palette-color='#6fd3ff']")).toHaveClass(/is-selected/);
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Rectangle Geometry");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toContainText("Transform");
+      await page.locator('button[aria-controls="objectVectorStudioV2ObjectTransformContent"]').click();
+      await expect(page.locator("#objectVectorStudioV2ObjectTransformContent")).toBeHidden();
+      await page.locator('button[aria-controls="objectVectorStudioV2ObjectTransformContent"]').click();
+      await expect(page.locator("#objectVectorStudioV2ObjectTransformContent")).toBeVisible();
       const reviewLayoutState = await page.evaluate(() => {
         const jsonContent = document.querySelector("#objectVectorStudioV2JsonDetailsContent");
         const statusSection = document.querySelector("#statusLogContent").closest(".accordion-v2");
@@ -1980,10 +1991,22 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-object-id="object.asteroids.object-1"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted object Shield Pickup\./);
 
-      const leftOpenHeights = await page.locator(".tool-starter__panel--left .accordion-v2.is-open").evaluateAll((sections) => (
-        sections.map((section) => Math.round(section.getBoundingClientRect().height))
+      const leftAccordionLayout = await page.locator(".tool-starter__panel--left > .accordion-v2").evaluateAll((sections) => (
+        sections.map((section) => {
+          const content = section.querySelector(".accordion-v2__content");
+          const sectionRect = section.getBoundingClientRect();
+          const contentRect = content?.getBoundingClientRect();
+          const style = getComputedStyle(section);
+          return {
+            contentReachesSectionBottom: !content || content.hidden || Math.abs(contentRect.bottom - sectionRect.bottom) <= 2,
+            flexGrow: style.flexGrow,
+            isOpen: section.classList.contains("is-open"),
+            title: section.querySelector(".accordion-v2__header > span:first-child")?.textContent.trim() || ""
+          };
+        })
       ));
-      expect(Math.max(...leftOpenHeights) - Math.min(...leftOpenHeights)).toBeLessThanOrEqual(18);
+      expect(leftAccordionLayout.map((entry) => entry.title)).toEqual(["Object", "Object Details (18 obj, 2 shapes)", "Object Transform", "Objects"]);
+      expect(leftAccordionLayout.slice(0, 3).every((entry) => entry.isOpen && entry.contentReachesSectionBottom && entry.flexGrow === "0")).toBe(true);
 
       const tileScrollState = await page.locator("#objectVectorStudioV2ObjectsContent").evaluate((element) => ({
         actionsInsideObjects: element.querySelector(":scope > .object-vector-studio-v2__objects-actions") !== null,
