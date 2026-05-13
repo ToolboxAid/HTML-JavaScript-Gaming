@@ -1,4 +1,4 @@
-# PR_26133_007 Playwright V8 Coverage Report
+# PR_26133_009 Playwright V8 Coverage Report
 
 Coverage source: `docs/dev/reports/playwright_v8_coverage_report.txt`, refreshed by the final `npm run test:workspace-v2` run.
 
@@ -16,4 +16,4 @@ Coverage source: `docs/dev/reports/playwright_v8_coverage_report.txt`, refreshed
 - Main command: `npm run test:workspace-v2`.
 - Result: 46 passed.
 - Focused Object Vector Studio V2 layout and preview-coordinate scenarios also passed.
-- Manual Object Preview probe confirmed default zoom display, 1% control steps, min/max range, unchanged visual scale, and no console/runtime errors.
+- Manual Object Preview probe confirmed the applied zoom hack values, confirmed default view, max zoom cap, preserved logical coordinates, and no console/runtime errors.
