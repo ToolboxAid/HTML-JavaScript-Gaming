@@ -7,9 +7,10 @@ const TOOL_DISPLAY_MODE_KEY = "object-vector-studio-v2.toolDisplayMode";
 const GRID_SNAP_SESSION_KEY = "object-vector-studio-v2.gridSnap";
 const ANGLE_SNAP_SESSION_KEY = "object-vector-studio-v2.angleSnap";
 const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
+const CENTER_ORIGIN_SESSION_KEY = "object-vector-studio-v2.centerOrigin";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
-const GRID_STEP = 20;
+const GRID_STEP = 10;
 const MAX_ZOOM = 4;
 const MIN_ZOOM = 0.25;
 const ZOOM_STEP = 0.1;
@@ -236,6 +237,7 @@ export class ToolStarterApp {
     this.gridSnapEnabled = false;
     this.angleSnapEnabled = false;
     this.gridRenderEnabled = true;
+    this.centerOriginVisible = true;
     this.schemaReady = false;
     this.viewport = { ...DEFAULT_VIEWPORT };
   }
@@ -464,6 +466,13 @@ export class ToolStarterApp {
       this.renderWorkSurface();
       this.statusLog.write(`OK Grid rendering ${this.gridRenderEnabled ? "enabled" : "disabled"}.`);
     });
+    this.elements.centerDotButton.addEventListener("click", () => {
+      this.centerOriginVisible = !this.centerOriginVisible;
+      this.window.sessionStorage?.setItem(CENTER_ORIGIN_SESSION_KEY, this.centerOriginVisible ? "1" : "0");
+      this.applySnapState();
+      this.renderWorkSurface();
+      this.statusLog.write(`OK Center dot ${this.centerOriginVisible ? "shown" : "hidden"}.`);
+    });
   }
 
   bindPaletteControls() {
@@ -505,6 +514,10 @@ export class ToolStarterApp {
     this.elements.strokeModeButton.setAttribute("aria-pressed", String(this.paletteTarget === "stroke"));
     this.elements.paintModeButton.classList.toggle("is-active", this.paletteTarget === "paint");
     this.elements.strokeModeButton.classList.toggle("is-active", this.paletteTarget === "stroke");
+    this.syncPaletteSelectionFromCurrentShape({ logMissing: shouldLog, render: false });
+    if (this.runtimePalette) {
+      this.renderPalette();
+    }
     if (shouldLog) {
       this.activeTool = this.paletteTarget === "stroke" ? "stroke" : "paint";
       this.setActiveToolButton(null);
@@ -589,9 +602,11 @@ export class ToolStarterApp {
     this.gridSnapEnabled = this.window.sessionStorage?.getItem(GRID_SNAP_SESSION_KEY) === "1";
     this.angleSnapEnabled = this.window.sessionStorage?.getItem(ANGLE_SNAP_SESSION_KEY) === "1";
     this.gridRenderEnabled = this.window.sessionStorage?.getItem(GRID_RENDER_SESSION_KEY) !== "0";
+    this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
     this.elements.gridSnapButton.setAttribute("aria-pressed", String(this.gridSnapEnabled));
     this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
     this.elements.gridRenderButton.setAttribute("aria-pressed", String(this.gridRenderEnabled));
+    this.elements.centerDotButton.setAttribute("aria-pressed", String(this.centerOriginVisible));
     this.elements.renderSurface.classList.toggle("is-grid-visible", this.gridRenderEnabled);
   }
 
@@ -773,6 +788,7 @@ export class ToolStarterApp {
     this.runtimePalette = paletteValidation.palette;
     this.ensureSelectedShape();
     this.ensureSelectedFrame();
+    this.syncPaletteSelectionFromCurrentShape({ render: false });
     if (this.runtimePalette) {
       this.renderPalette();
     }
@@ -1010,7 +1026,7 @@ export class ToolStarterApp {
           this.toggleSelectedShapeVisibility();
           return;
         }
-        this.selectShape(shape.id, "object tile shape list");
+        this.selectShape(shape.id, "object tile shape list", { additive: event.shiftKey || event.ctrlKey || event.metaKey });
       });
       row.append(selectButton);
       list.append(row);
@@ -1566,6 +1582,9 @@ export class ToolStarterApp {
   }
 
   renderCenterOriginMarker() {
+    if (!this.centerOriginVisible) {
+      return;
+    }
     const marker = document.createElementNS(SVG_NS, "circle");
     marker.classList.add("object-vector-studio-v2__center-origin-dot");
     marker.dataset.centerOrigin = "0,0";
@@ -1763,10 +1782,10 @@ export class ToolStarterApp {
         point.classList.add("object-vector-studio-v2__resize-handle");
         point.dataset.resizeHandle = handle;
         point.dataset.resizeShapeId = selectedShape.id;
-        point.setAttribute("x", cx - 3);
-        point.setAttribute("y", cy - 3);
-        point.setAttribute("width", 6);
-        point.setAttribute("height", 6);
+        point.setAttribute("x", cx - 1.5);
+        point.setAttribute("y", cy - 1.5);
+        point.setAttribute("width", 3);
+        point.setAttribute("height", 3);
         this.elements.renderSurface.append(point);
       });
 
@@ -1874,6 +1893,7 @@ export class ToolStarterApp {
     const selectedState = this.objectStates(selectedObject)[0] || null;
     this.selectedStateId = selectedState?.id || "";
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
+    this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
     this.renderPayload();
     this.restoreLeftPanelScrollState(scrollState);
     const selected = this.selectedObject();
@@ -1899,6 +1919,7 @@ export class ToolStarterApp {
     } else {
       this.selectedShapeIds = new Set([shapeId]);
     }
+    this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
     this.renderPayload();
     this.restoreLeftPanelScrollState(scrollState);
     const shape = this.selectedShape();
@@ -2332,13 +2353,13 @@ export class ToolStarterApp {
       visible: true
     };
     if (type === "rectangle") {
-      return withTransform({ ...base, geometry: { height: 62, width: 86, x: -90, y: -30 } });
+      return withTransform({ ...base, geometry: { height: 60, width: 80, x: -80, y: -30 } });
     }
     if (type === "circle") {
       return withTransform({ ...base, geometry: { cx: 70, cy: -10, r: 30 } });
     }
     if (type === "ellipse") {
-      return withTransform({ ...base, geometry: { cx: 70, cy: 70, rx: 52, ry: 26 } });
+      return withTransform({ ...base, geometry: { cx: 70, cy: 70, rx: 50, ry: 30 } });
     }
     if (type === "line") {
       return withTransform({ ...base, geometry: { x1: -100, x2: 0, y1: 80, y2: 30 } });
@@ -2349,17 +2370,17 @@ export class ToolStarterApp {
         geometry: {
           points: [
             { x: 0, y: -80 },
-            { x: 40, y: -8 },
-            { x: -38, y: -8 }
+            { x: 40, y: -10 },
+            { x: -40, y: -10 }
           ]
         }
       });
     }
     if (type === "arc") {
-      return withTransform({ ...base, geometry: { cx: 0, cy: 70, endAngle: 135, r: 42, startAngle: -135 } });
+      return withTransform({ ...base, geometry: { cx: 0, cy: 70, endAngle: 135, r: 40, startAngle: -135 } });
     }
     if (type === "text") {
-      return withTransform({ ...base, geometry: { fontSize: 24, text: "Text", x: -30, y: 40 } });
+      return withTransform({ ...base, geometry: { fontSize: 20, text: "Text", x: -30, y: 40 } });
     }
     return base;
   }
@@ -2421,6 +2442,48 @@ export class ToolStarterApp {
   paletteLabelForColor(color, fallbackLabel) {
     const swatch = this.paletteSwatchForColor(color);
     return swatch?.name || swatch?.id || swatch?.symbol || fallbackLabel;
+  }
+
+  syncPaletteSelectionFromCurrentShape(options = {}) {
+    this.syncPaletteSelectionFromShape(this.selectedShape(), options);
+  }
+
+  syncPaletteSelectionFromShape(shape, options = {}) {
+    if (!shape || !this.runtimePalette) {
+      return;
+    }
+    const { logMissing = false, render = true } = options;
+    const effectiveShape = this.effectiveShape(shape);
+    let changed = false;
+    const syncTarget = (target, color) => {
+      const normalizedColor = String(color || "").trim();
+      if (!normalizedColor || normalizedColor === "none") {
+        return;
+      }
+      const swatch = this.paletteSwatchForColor(normalizedColor);
+      if (!swatch) {
+        if (logMissing) {
+          this.statusLog.write(`WARN Palette sync skipped for ${shape.id} ${target} color ${normalizedColor}: color is not in the loaded palette.`);
+        }
+        return;
+      }
+      const label = swatch.name || swatch.id || swatch.symbol || shape.id;
+      const paletteColor = swatchColor(swatch) || normalizedColor;
+      if (target === "stroke") {
+        changed = changed || this.selectedStrokeColor !== paletteColor || this.selectedStrokeLabel !== label;
+        this.selectedStrokeColor = paletteColor;
+        this.selectedStrokeLabel = label;
+        return;
+      }
+      changed = changed || this.selectedFillColor !== paletteColor || this.selectedFillLabel !== label;
+      this.selectedFillColor = paletteColor;
+      this.selectedFillLabel = label;
+    };
+    syncTarget("paint", effectiveShape.style?.fill);
+    syncTarget("stroke", effectiveShape.style?.stroke);
+    if (changed && render) {
+      this.renderPalette();
+    }
   }
 
   selectPaletteColor(color, label, options = {}) {
@@ -3264,7 +3327,12 @@ export class ToolStarterApp {
     [this.elements.bringForwardButton, this.elements.sendBackwardButton, this.elements.bringToFrontButton, this.elements.sendToBackButton, this.elements.ungroupButton].forEach((button) => {
       this.setControlDisabled(button, !hasSelectedShape || isLocked, isLocked ? lockedReason : noShapeReason, "Adjust selected shape ordering or grouping.");
     });
-    this.setControlDisabled(this.elements.groupShapesButton, this.selectedShapeIds.size < 2 || isLocked, isLocked ? lockedReason : "Disabled until two or more shapes are selected.", "Group selected shapes.");
+    this.setControlDisabled(
+      this.elements.groupShapesButton,
+      this.selectedShapeIds.size < 2 || isLocked,
+      isLocked ? lockedReason : "Disabled until two or more shapes are selected. Shift-click shapes in the preview or object shape list to build a group selection.",
+      "Group selected shapes. Shift-click shapes to select more than one."
+    );
     this.updateAnimationActionState();
   }
 

@@ -198,6 +198,10 @@ textarea:hover {
   overflow-y: auto;
 }
 
+.tool-starter__panel--right {
+  overflow-y: auto;
+}
+
 .tool-starter__panel--left > .accordion-v2.is-open {
   flex: 1 0 220px;
 }
@@ -303,6 +307,14 @@ textarea:hover {
   flex: 1 1 auto;
 }
 
+.tool-starter__accordion--compact.is-open {
+  flex: 0 0 auto;
+}
+
+.tool-starter__accordion--compact .accordion-v2__content {
+  flex: 0 0 auto;
+}
+
 .tool-starter__field {
   min-width: 0;
   display: grid;
@@ -392,9 +404,21 @@ textarea:hover {
 }
 
 #objectVectorStudioV2ShapeToolsContent {
-  flex: 1 1 0;
+  flex: 0 0 auto;
   max-height: none;
   min-height: 0;
+}
+
+.tool-starter__panel--right > .accordion-v2.is-open {
+  flex: 0 0 auto;
+}
+
+.tool-starter__panel--right > .accordion-v2.is-open > .accordion-v2__content {
+  flex: 0 0 auto;
+}
+
+.tool-starter__panel--right > .accordion-v2.is-open > .accordion-v2__content:not(#objectVectorStudioV2ShapeToolsContent) {
+  max-height: 260px;
 }
 
 .object-vector-studio-v2__palette-swatch-list {
@@ -404,7 +428,18 @@ textarea:hover {
   gap: 8px;
   align-content: start;
   max-height: 176px;
+  min-height: 0;
   overflow-y: auto;
+}
+
+.object-vector-studio-v2__palette-swatch-list:not(:has(.object-vector-studio-v2__palette-swatch)) {
+  display: block;
+  max-height: none;
+  overflow: visible;
+  color: var(--tool-starter-muted);
+  font-size: 0.85rem;
+  line-height: 1.25;
+  text-align: center;
 }
 
 .object-vector-studio-v2__palette-swatch {
@@ -483,16 +518,15 @@ textarea:hover {
 
 #objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__z-order-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 42px);
+  grid-template-columns: repeat(auto-fill, 86px);
   align-items: stretch;
   justify-content: center;
 }
 
 .object-vector-studio-v2__z-action {
-  width: 100%;
+  width: auto;
   min-height: 0;
-  min-width: 0;
-  aspect-ratio: 1;
+  min-width: 86px;
   position: relative;
   display: inline-flex;
   flex-direction: column;
@@ -518,16 +552,16 @@ textarea:hover {
 
 .object-vector-studio-v2__tool-toggle-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 42px);
+  grid-template-columns: repeat(auto-fill, 76px);
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
 
 .object-vector-studio-v2__tool-toggle {
-  width: 100%;
+  width: auto;
   min-height: 0;
-  aspect-ratio: 1;
+  min-width: 76px;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -658,7 +692,10 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-toggle {
+  width: 100%;
+  min-width: 0;
   min-height: 0;
+  aspect-ratio: 1;
   gap: 0;
   padding: 4px;
 }
@@ -676,8 +713,15 @@ textarea:hover {
   grid-template-columns: repeat(auto-fill, 42px);
 }
 
+#objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__z-order-actions.is-icon-only {
+  grid-template-columns: repeat(auto-fill, 42px);
+}
+
 .object-vector-studio-v2__z-order-actions.is-icon-only .object-vector-studio-v2__z-action {
+  width: 100%;
+  min-width: 0;
   min-height: 0;
+  aspect-ratio: 1;
 }
 
 .object-vector-studio-v2__z-order-actions.is-icon-only .object-vector-studio-v2__z-label {
@@ -1045,17 +1089,17 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__work-area {
-  min-height: 360px;
-  flex: 1 1 auto;
+  min-height: 0;
+  flex: 0 0 auto;
   display: grid;
-  grid-template-rows: auto minmax(280px, 1fr) auto auto auto auto auto;
+  grid-template-rows: auto auto auto auto auto auto auto;
   place-items: center;
-  gap: 12px;
+  gap: 8px;
   border: 1px dashed var(--tool-starter-line);
   border-radius: 8px;
   background: var(--tool-starter-panel-strong);
   color: var(--tool-starter-muted);
-  padding: 16px;
+  padding: 12px;
   text-align: center;
 }
 
@@ -1100,7 +1144,7 @@ textarea:hover {
 
 .object-vector-studio-v2__frame-timeline {
   width: min(720px, 100%);
-  min-height: 70px;
+  min-height: 52px;
   display: flex;
   align-items: stretch;
   gap: 8px;
@@ -1214,9 +1258,10 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__render-surface {
-  width: min(100%, 720px);
-  height: 100%;
-  min-height: 280px;
+  width: min(100%, 480px);
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 16 / 11;
   align-self: stretch;
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
@@ -1248,7 +1293,8 @@ textarea:hover {
   fill: none;
   stroke: var(--tool-starter-accent);
   stroke-dasharray: 5 4;
-  stroke-width: 1.5;
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
   pointer-events: none;
 }
 
@@ -1274,7 +1320,8 @@ textarea:hover {
 .object-vector-studio-v2__resize-handle {
   fill: var(--tool-starter-accent);
   stroke: #ffffff;
-  stroke-width: 1;
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
   pointer-events: none;
 }
 
@@ -1550,4 +1597,9 @@ body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="objec
 html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .accordion-v2__content {
   min-height: 0;
   overflow: auto;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .tool-starter__accordion--compact.is-open,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .tool-starter__accordion--compact.is-open {
+  flex: 0 0 auto;
 }
