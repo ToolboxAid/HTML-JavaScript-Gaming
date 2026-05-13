@@ -73,10 +73,6 @@ function shapeTypeLabel(shape) {
   return shape.type.replace(/(^|-)([a-z])/g, (match) => match.toUpperCase()).replaceAll("-", " ");
 }
 
-function objectCountLabel(count) {
-  return `${count} ${count === 1 ? "object" : "objects"}`;
-}
-
 function shapeCountLabel(count) {
   return `${count} ${count === 1 ? "shape" : "shapes"}`;
 }
@@ -221,6 +217,7 @@ export class ToolStarterApp {
     this.selectedFrameId = "";
     this.playbackTimerId = 0;
     this.isAnimationPlaying = false;
+    this.paletteTarget = "paint";
     this.gridSnapEnabled = false;
     this.angleSnapEnabled = false;
     this.gridRenderEnabled = false;
@@ -248,9 +245,11 @@ export class ToolStarterApp {
     this.bindObjectActions();
     this.bindToolToggles();
     this.bindSnapControls();
+    this.bindPaletteControls();
     this.bindViewportControls();
     this.bindObjectFilters();
     this.bindAnimationControls();
+    this.bindJsonDetailsActions();
     this.bindKeyboardShortcuts();
     this.applyToolDisplayMode(this.window.sessionStorage?.getItem(TOOL_DISPLAY_MODE_KEY) || "words", false);
     this.applySnapState();
@@ -258,6 +257,9 @@ export class ToolStarterApp {
     this.actionNav.setImportEnabled(false);
     this.renderEmptyState("Object Vector Studio V2 schema contract is loading.");
     this.statusLog.write("OK Object Vector Studio V2 layout shell ready.");
+    this.statusLog.write("INFO Schema-only loading is idle. Import JSON or launch with workspace toolState data. Runtime palette is required before rendering.");
+    this.statusLog.write("INFO Shape/Tools primitive buttons create schema-valid shapes on the selected object.");
+    this.statusLog.write("INFO Disabled controls stay inactive until a schema-valid payload, runtime palette, selected object, or active frame is available.");
     await this.schemaService.loadSchema();
     this.schemaReady = true;
     this.statusLog.write(`OK Object Vector Studio V2 schema contract loaded from ${this.schemaService.schemaPath}.`);
@@ -347,6 +349,7 @@ export class ToolStarterApp {
       this.window.sessionStorage?.setItem(RUNTIME_PALETTE_SESSION_KEY, JSON.stringify(validation.palette));
     }
     this.statusLog.write(`OK Runtime palette loaded from ${sourceLabel}: ${validation.palette.swatches.length} swatches.`);
+    this.statusLog.write("INFO Runtime palette is read-only session/workspace data; Object Vector JSON remains palette-free.");
     return true;
   }
 
@@ -422,6 +425,39 @@ export class ToolStarterApp {
     });
   }
 
+  bindPaletteControls() {
+    this.elements.paintModeButton.addEventListener("click", () => this.setPaletteTarget("paint"));
+    this.elements.strokeModeButton.addEventListener("click", () => this.setPaletteTarget("stroke"));
+    this.elements.strokeWidth.addEventListener("change", () => {
+      const width = Number(this.elements.strokeWidth.value);
+      if (!Number.isFinite(width) || width <= 0) {
+        this.elements.strokeWidth.value = "2";
+        this.statusLog.write("WARN Stroke width reset to 2: value must be greater than 0.");
+        return;
+      }
+      this.statusLog.write(`OK Palette stroke width set to ${width}.`);
+    });
+    this.setPaletteTarget("paint", false);
+  }
+
+  bindJsonDetailsActions() {
+    this.elements.copyJsonDetailsButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      void this.copyJson();
+    });
+  }
+
+  setPaletteTarget(target, shouldLog = true) {
+    this.paletteTarget = target === "stroke" ? "stroke" : "paint";
+    this.elements.paintModeButton.setAttribute("aria-pressed", String(this.paletteTarget === "paint"));
+    this.elements.strokeModeButton.setAttribute("aria-pressed", String(this.paletteTarget === "stroke"));
+    this.elements.paintModeButton.classList.toggle("is-active", this.paletteTarget === "paint");
+    this.elements.strokeModeButton.classList.toggle("is-active", this.paletteTarget === "stroke");
+    if (shouldLog) {
+      this.statusLog.write(`OK Palette target set to ${this.paletteTarget === "stroke" ? "Stroke" : "Paint"}.`);
+    }
+  }
+
   bindViewportControls() {
     this.elements.zoomInButton.addEventListener("click", () => this.zoomViewport(1.25));
     this.elements.zoomOutButton.addEventListener("click", () => this.zoomViewport(0.8));
@@ -469,6 +505,9 @@ export class ToolStarterApp {
   applyToolDisplayMode(mode, shouldLog) {
     const isCompact = mode === "icons";
     this.elements.toolToggleGrid.classList.toggle("is-icon-only", isCompact);
+    this.elements.previewActionButtons.forEach((button) => {
+      button.classList.toggle("is-icon-only", isCompact);
+    });
     this.elements.toolLabelModeButton.setAttribute("aria-pressed", String(isCompact));
     this.elements.toolLabelModeButton.textContent = isCompact ? "Words" : "Icons";
     this.window.sessionStorage?.setItem(TOOL_DISPLAY_MODE_KEY, isCompact ? "icons" : "words");
@@ -492,26 +531,20 @@ export class ToolStarterApp {
     this.selectedStateId = "";
     this.selectedFrameId = "";
     this.stopPlaybackTimer();
-    this.elements.sourceSummary.value = "No schema-loaded payload";
-    this.elements.paletteGate.value = this.runtimePalette ? "Palette loaded" : "Required before render";
-    this.elements.objectCount.value = objectCountLabel(0);
-    this.elements.shapeCount.value = shapeCountLabel(0);
+    this.updateObjectDetailsHeader(0, 0);
+    this.updatePaletteHeader(this.runtimePalette?.swatches?.length || 0);
     this.elements.objectNameInput.value = "";
     this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
     this.elements.assetCategorySelect.value = DEFAULT_ASSET_CATEGORY;
     this.elements.assetTagsInput.value = "";
     this.elements.stateSelect.value = "";
-    this.elements.loadStatus.textContent = message;
-    this.elements.paletteSummary.textContent = this.runtimePalette
-      ? `Runtime palette ${this.paletteDisplayName()}: ${this.runtimePalette.swatches.length} swatches.`
-      : "Palette required before render.";
+    this.elements.currentColor.value = "None";
+    this.elements.paletteSummary.textContent = this.runtimePalette ? "" : "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
-    this.elements.selectedItemVisibility.textContent = "Selected Object: none. Selected Shape: none. Selected State: none. Selected Frame: none.";
-    this.elements.selectionMetrics.textContent = "Selection metrics: none.";
+    this.renderShapeList();
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
-    this.elements.renderSummary.textContent = "Render mode: idle. Capture mode: none.";
-    this.elements.coordinateDisplay.textContent = "Origin: 0, 0 | Zoom 100%";
+    this.elements.coordinateDisplay.textContent = "Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%";
     this.elements.renderSurface.replaceChildren();
     this.renderCenterOriginMarker();
     this.elements.objectTiles.replaceChildren(this.createEmptyObjectTile());
@@ -520,6 +553,14 @@ export class ToolStarterApp {
     this.elements.exportSvgButton.disabled = true;
     this.actionNav.setImportEnabled(this.schemaReady && !this.actionNav.isWorkspaceLaunch());
     this.updateObjectActionState();
+  }
+
+  updateObjectDetailsHeader(objectCount, shapeCount) {
+    this.elements.objectDetailsCount.textContent = `(${objectCount} obj, ${shapeCount} ${shapeCount === 1 ? "shape" : "shapes"})`;
+  }
+
+  updatePaletteHeader(swatchCount) {
+    this.elements.paletteSwatchCount.textContent = `(${swatchCount} ${swatchCount === 1 ? "swatch" : "swatches"})`;
   }
 
   createEmptyObjectTile() {
@@ -580,8 +621,6 @@ export class ToolStarterApp {
 
     this.currentPayload = validation.payload;
     this.applyLoadedRuntimeState(sourceLabel);
-    this.elements.sourceSummary.value = sourceLabel;
-    this.elements.loadStatus.textContent = `Schema-valid payload loaded from ${sourceLabel}.`;
     this.actionNav.setJsonPayloadActionsEnabled(true);
     this.actionNav.setImportEnabled(!this.actionNav.isWorkspaceLaunch());
     this.renderPayload();
@@ -646,22 +685,19 @@ export class ToolStarterApp {
     this.selectedStateId = "";
     this.selectedFrameId = "";
     this.stopPlaybackTimer();
-    this.elements.paletteGate.value = "Required before render";
-    this.elements.loadStatus.textContent = message;
+    this.updateObjectDetailsHeader(0, 0);
+    this.updatePaletteHeader(0);
     this.elements.paletteSummary.textContent = message;
-    this.elements.objectCount.value = objectCountLabel(0);
-    this.elements.shapeCount.value = shapeCountLabel(0);
     this.elements.objectNameInput.value = "";
     this.elements.objectTypeSelect.value = DEFAULT_OBJECT_TYPE;
     this.elements.assetCategorySelect.value = DEFAULT_ASSET_CATEGORY;
     this.elements.assetTagsInput.value = "";
     this.elements.stateSelect.value = "";
+    this.elements.currentColor.value = "None";
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
-    this.elements.selectedItemVisibility.textContent = "Selected Object: none. Selected Shape: none. Selected State: none. Selected Frame: none.";
-    this.elements.selectionMetrics.textContent = "Selection metrics: none.";
+    this.renderShapeList();
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
-    this.elements.renderSummary.textContent = "Render mode: blocked. Capture mode: none.";
     this.elements.renderSurface.replaceChildren();
     this.renderCenterOriginMarker();
     const tile = this.createEmptyObjectTile();
@@ -676,12 +712,8 @@ export class ToolStarterApp {
 
   renderPalette() {
     const swatchCount = this.runtimePalette.swatches.length;
-    this.elements.paletteGate.value = "Palette loaded";
+    this.updatePaletteHeader(swatchCount);
     this.elements.paletteSummary.replaceChildren();
-    const heading = document.createElement("p");
-    heading.textContent = `Palette ${this.paletteDisplayName()}: ${swatchCount} read-only swatches. Palette source is session/workspace data and is not stored in Object Vector Studio V2 JSON.`;
-    const list = document.createElement("div");
-    list.className = "object-vector-studio-v2__palette-swatch-list";
     this.runtimePalette.swatches.forEach((swatch, index) => {
       const label = swatch?.name || swatch?.id || swatch?.symbol || `swatch-${index + 1}`;
       const color = swatchColor(swatch);
@@ -697,9 +729,8 @@ export class ToolStarterApp {
         item.style.setProperty("--object-vector-studio-v2-swatch", color);
       }
       item.addEventListener("click", () => this.applyPaletteColor(color, label));
-      list.append(item);
+      this.elements.paletteSummary.append(item);
     });
-    this.elements.paletteSummary.append(heading, list);
   }
 
   paletteDisplayName() {
@@ -707,7 +738,7 @@ export class ToolStarterApp {
   }
 
   renderObjectTiles() {
-    this.elements.objectCount.value = objectCountLabel(this.currentPayload.objects.length);
+    this.updateObjectDetailsHeader(this.currentPayload.objects.length, this.selectedObject()?.shapes.length || 0);
     this.elements.objectTiles.replaceChildren();
     if (!this.currentPayload.objects.length) {
       this.elements.objectTiles.append(this.createEmptyObjectTile());
@@ -867,10 +898,9 @@ export class ToolStarterApp {
       this.elements.assetCategorySelect.value = DEFAULT_ASSET_CATEGORY;
       this.elements.assetTagsInput.value = "";
       this.elements.stateSelect.value = "";
-      this.elements.shapeCount.value = shapeCountLabel(0);
+      this.updateObjectDetailsHeader(this.currentPayload?.objects.length || 0, 0);
       this.elements.objectDetails.textContent = "No object selected.";
-      this.elements.selectedItemVisibility.textContent = "Selected Object: none. Selected Shape: none. Selected State: none. Selected Frame: none.";
-      this.elements.selectionMetrics.textContent = "Selection metrics: none.";
+      this.renderShapeList();
       this.elements.jsonDetails.textContent = "{}";
       this.renderFrameTimeline();
       return;
@@ -882,16 +912,9 @@ export class ToolStarterApp {
     this.elements.assetCategorySelect.value = this.validAssetCategory(selected.category || selected.type);
     this.elements.assetTagsInput.value = (selected.tags || []).join(", ");
     this.elements.stateSelect.value = this.selectedStateId || "";
-    this.elements.shapeCount.value = shapeCountLabel(selected.shapes.length);
+    this.updateObjectDetailsHeader(this.currentPayload.objects.length, selected.shapes.length);
+    this.renderShapeList();
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
-    this.elements.selectedItemVisibility.textContent = [
-      `Selected Object: ${selected.name} (${selected.id})`,
-      `Selected Shape: ${shape ? `${shape.id} (${shape.type})` : "none"}`,
-      `Selected State: ${this.selectedStateId || "none"}`,
-      `Selected Frame: ${this.selectedFrameId || "none"}`,
-      `Selection Count: ${this.selectedShapeIds.size} ${this.selectedShapeIds.size === 1 ? "shape" : "shapes"}`
-    ].join(" | ");
-    this.updateSelectionMetrics(selected, shape);
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
       selectedFrame: this.activeFrame(),
@@ -900,6 +923,38 @@ export class ToolStarterApp {
       selectedState: this.selectedState()
     }, null, 2);
     this.renderFrameTimeline();
+  }
+
+  renderShapeList() {
+    this.elements.shapeList.replaceChildren();
+    const object = this.selectedObject();
+    if (!object) {
+      const empty = document.createElement("div");
+      empty.className = "object-vector-studio-v2__shape-list-empty";
+      empty.textContent = "No selected object shapes.";
+      this.elements.shapeList.append(empty);
+      return;
+    }
+    const shapes = sortedShapes(object);
+    if (!shapes.length) {
+      const empty = document.createElement("div");
+      empty.className = "object-vector-studio-v2__shape-list-empty";
+      empty.textContent = "Selected object has no shapes.";
+      this.elements.shapeList.append(empty);
+      return;
+    }
+    shapes.forEach((shape) => {
+      const button = document.createElement("button");
+      button.className = "object-vector-studio-v2__shape-list-button";
+      button.type = "button";
+      button.dataset.shapeListId = shape.id;
+      button.setAttribute("aria-pressed", String(this.selectedShapeIds.has(shape.id)));
+      button.classList.toggle("is-selected", this.selectedShapeIds.has(shape.id));
+      button.textContent = `${shape.order}. ${shape.id} (${shape.type})`;
+      button.title = `Select shape ${shape.id}`;
+      button.addEventListener("click", () => this.selectShape(shape.id, "shape list"));
+      this.elements.shapeList.append(button);
+    });
   }
 
   renderFrameTimeline() {
@@ -973,7 +1028,10 @@ export class ToolStarterApp {
       ["Inherited Fields", object.baseObjectId ? "Base shapes/states are read-only until Duplicate As Local." : "None"],
       ["Object Metadata", objectTypeDescription(object)],
       ["States", String(this.objectStates(object).length)],
+      ["Active State", this.selectedStateId || "None"],
       ["Active Frame", this.activeFrame()?.id || "None"],
+      ["Selected Shape", shape ? `${shape.id} (${shape.type})` : "None"],
+      ["Selection Count", String(this.selectedShapeIds.size)],
       ["Shape Count", shapeCountLabel(object.shapes.length)]
     ]));
 
@@ -1171,7 +1229,6 @@ export class ToolStarterApp {
     }
     if (!object) {
       this.renderCenterOriginMarker();
-      this.elements.renderSummary.textContent = "Render mode: idle. Capture mode: none.";
       return;
     }
 
@@ -1207,7 +1264,6 @@ export class ToolStarterApp {
 
     const frame = this.activeFrame();
     const message = `Render mode svg-work-surface: rendered ${object.name} with ${renderedCount} visible shapes${frame ? ` for ${this.selectedStateId}/${frame.id}` : ""}; capture mode none.`;
-    this.elements.renderSummary.textContent = message;
     this.statusLog.write(`OK ${message}`);
   }
 
@@ -1440,19 +1496,6 @@ export class ToolStarterApp {
     };
   }
 
-  updateSelectionMetrics(object, shape) {
-    const bounds = shape ? this.transformedBounds(shape) : this.objectBounds(object);
-    const selectedLabel = shape ? `${shape.id} (${shape.type})` : object.name;
-    this.elements.selectionMetrics.textContent = [
-      `Selection: ${selectedLabel}`,
-      `state ${this.selectedStateId || "none"}`,
-      `frame ${this.selectedFrameId || "none"}`,
-      `bounds ${this.formatViewportNumber(bounds.width)} x ${this.formatViewportNumber(bounds.height)}`,
-      `origin ${this.formatViewportNumber(this.viewport.x)}, ${this.formatViewportNumber(this.viewport.y)}`,
-      `zoom ${Math.round(this.viewport.zoom * 100)}%`
-    ].join(" | ");
-  }
-
   renderSelectionOverlay(object) {
     const selectedShape = this.selectedShape();
     if (!selectedShape || selectedShape.visible === false) {
@@ -1528,10 +1571,6 @@ export class ToolStarterApp {
     const viewY = this.formatViewportNumber(this.viewport.y - height / 2);
     this.elements.renderSurface.setAttribute("viewBox", `${viewX} ${viewY} ${this.formatViewportNumber(width)} ${this.formatViewportNumber(height)}`);
     this.elements.coordinateDisplay.textContent = `Origin: ${this.formatViewportNumber(this.viewport.x)}, ${this.formatViewportNumber(this.viewport.y)} | Canvas 0,0 centered | Zoom ${Math.round(this.viewport.zoom * 100)}%`;
-    const object = this.selectedObject();
-    if (object) {
-      this.updateSelectionMetrics(object, this.selectedShape());
-    }
   }
 
   formatViewportNumber(value) {
@@ -2208,12 +2247,17 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     const shape = this.findShapeInPayload(nextPayload, selected.id);
-    if (["arc", "line"].includes(shape.type)) {
+    const strokeWidth = Number(this.elements.strokeWidth.value);
+    const shouldApplyStroke = this.paletteTarget === "stroke" || ["arc", "line"].includes(shape.type);
+    if (shouldApplyStroke) {
       shape.style.stroke = color;
+      shape.style.strokeWidth = Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : 2;
     } else {
       shape.style.fill = color;
     }
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Applied palette color ${color} from ${label} to shape ${selected.id}.`, "Palette color application failed schema validation");
+    this.elements.currentColor.value = color;
+    const targetLabel = shouldApplyStroke ? `Target: stroke width ${shape.style.strokeWidth}.` : "Target: paint.";
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Applied palette color ${color} from ${label} to shape ${selected.id}. ${targetLabel}`, "Palette color application failed schema validation");
   }
 
   toggleSelectedShapeVisibility() {
@@ -2889,7 +2933,6 @@ export class ToolStarterApp {
     this.setControlDisabled(this.elements.createLibraryAssetButton, !hasSelectedObject, noObjectReason, "Register the selected object as a reusable library asset.");
     this.setControlDisabled(this.elements.exportSvgButton, !hasSelectedObject, noObjectReason, "Export the selected object as SVG.");
     this.setControlDisabled(this.elements.runtimePreviewButton, !hasSelectedObject, noObjectReason, "Preview the selected object through the runtime asset renderer.");
-    this.updateDisabledReasonSummary();
     this.updateAnimationActionState();
   }
 
@@ -2916,28 +2959,6 @@ export class ToolStarterApp {
       return;
     }
     delete element.dataset.disabledReason;
-  }
-
-  updateDisabledReasonSummary() {
-    const reasons = [];
-    if (!this.currentPayload) {
-      reasons.push("load a schema-valid payload");
-    }
-    if (!this.runtimePalette) {
-      reasons.push("provide a read-only runtime palette from session/workspace");
-    }
-    const selectedObject = this.selectedObject();
-    if (!selectedObject) {
-      reasons.push("select an object to enable object, SVG, runtime preview, and state actions");
-    } else if (!selectedObject.baseObjectId) {
-      reasons.push("Duplicate As Local is available only for inherited objects");
-    }
-    if (!this.activeFrame()) {
-      reasons.push("create/select a state frame for playback and frame actions");
-    }
-    this.elements.disabledReason.textContent = reasons.length
-      ? `Disabled controls: ${reasons.join("; ")}.`
-      : "All current Object Vector Studio V2 controls are reviewable for the selected object, shape, state, and frame.";
   }
 
   async copyJson() {
@@ -2996,7 +3017,6 @@ export class ToolStarterApp {
     this.elements.renderSurface.dataset.runtimePreviewFrame = this.selectedFrameId || "";
     this.elements.renderSurface.dataset.runtimePreviewState = this.selectedStateId || "";
     const message = `Runtime preview launched for ${object.name}${this.selectedStateId ? ` state ${this.selectedStateId}` : ""}${this.selectedFrameId ? ` frame ${this.selectedFrameId}` : ""}.`;
-    this.elements.renderSummary.textContent = `${message} Palette source: ${this.runtimePaletteSource}.`;
     this.statusLog.write(`OK ${message} Runtime palette source ${this.runtimePaletteSource}; object JSON remains palette-free.`);
   }
 

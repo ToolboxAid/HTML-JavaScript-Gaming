@@ -169,12 +169,12 @@ textarea:hover {
   margin: 0 auto 16px;
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr) 360px;
-  gap: 14px;
+  gap: 10px;
   border: 1px solid var(--tool-starter-line);
   border-radius: 20px;
   box-shadow: var(--tool-starter-shadow-strong);
   overflow: hidden;
-  padding: 16px;
+  padding: 12px;
 }
 
 .tool-starter__panel {
@@ -182,12 +182,12 @@ textarea:hover {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
   border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
   background: var(--tool-starter-panel);
   overflow: hidden;
-  padding: 14px;
+  padding: 10px;
 }
 
 .tool-starter__panel--center {
@@ -253,10 +253,10 @@ textarea:hover {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   border-top: 1px solid var(--tool-starter-line);
   overflow: auto;
-  padding: 12px;
+  padding: 10px;
 }
 
 .accordion-v2__content[hidden] {
@@ -369,10 +369,20 @@ textarea:hover {
   overflow: auto;
 }
 
+#objectVectorStudioV2ShapeToolsContent,
+#objectVectorStudioV2PaletteContent {
+  flex: 0 1 auto;
+  max-height: 260px;
+}
+
 .object-vector-studio-v2__palette-swatch-list {
   display: grid;
+  flex: 0 0 auto;
   grid-template-columns: repeat(auto-fill, 32px);
   gap: 8px;
+  align-content: start;
+  max-height: 176px;
+  overflow-y: auto;
 }
 
 .object-vector-studio-v2__palette-swatch {
@@ -396,7 +406,9 @@ textarea:hover {
 .object-vector-studio-v2__object-actions,
 .object-vector-studio-v2__tool-display-actions,
 .object-vector-studio-v2__snap-actions,
-.object-vector-studio-v2__viewport-controls {
+.object-vector-studio-v2__viewport-controls,
+.object-vector-studio-v2__palette-controls,
+.object-vector-studio-v2__json-actions {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -413,6 +425,10 @@ textarea:hover {
   padding: 10px;
 }
 
+#objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__snap-actions {
+  flex-wrap: nowrap;
+}
+
 .object-vector-studio-v2__control-group h3,
 .object-vector-studio-v2__object-detail-stack h3 {
   margin: 0;
@@ -427,20 +443,26 @@ textarea:hover {
 
 .object-vector-studio-v2__tool-toggle-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.object-vector-studio-v2__tool-toggle {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
+  grid-template-columns: repeat(4, 58px);
   justify-content: center;
   gap: 8px;
-  white-space: nowrap;
 }
 
-.object-vector-studio-v2__tool-toggle span:first-child {
+.object-vector-studio-v2__tool-toggle,
+.object-vector-studio-v2__preview-action {
+  width: 58px;
+  height: 58px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.object-vector-studio-v2__tool-toggle span:first-child,
+.object-vector-studio-v2__preview-action span:first-child {
   width: 24px;
   height: 24px;
   display: inline-grid;
@@ -452,17 +474,19 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__tool-toggle-grid.is-icon-only {
-  grid-template-columns: repeat(4, minmax(42px, 1fr));
+  grid-template-columns: repeat(4, 42px);
 }
 
-.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-toggle {
-  min-width: 42px;
-  min-height: 42px;
+.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-toggle,
+.object-vector-studio-v2__preview-action.is-icon-only {
+  width: 42px;
+  height: 42px;
   gap: 0;
   padding: 4px;
 }
 
-.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-label {
+.object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-label,
+.object-vector-studio-v2__preview-action.is-icon-only .object-vector-studio-v2__tool-label {
   width: 1px;
   height: 1px;
   position: absolute;
@@ -505,9 +529,9 @@ textarea:hover {
 
 .object-vector-studio-v2__object-tile {
   width: 100%;
-  min-height: 58px;
+  min-height: 52px;
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-columns: 50px minmax(0, 1fr);
   align-items: center;
   gap: 4px;
   border-radius: 8px !important;
@@ -550,8 +574,8 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-thumbnail {
-  width: 50px;
-  height: 42px;
+  width: 44px;
+  height: 36px;
   display: block;
   border: 1px solid var(--tool-starter-line);
   border-radius: 4px;
@@ -583,7 +607,7 @@ textarea:hover {
   min-height: 360px;
   flex: 1 1 auto;
   display: grid;
-  grid-template-rows: auto auto auto auto auto auto minmax(260px, 1fr) auto;
+  grid-template-rows: auto auto auto minmax(260px, 1fr);
   place-items: center;
   gap: 12px;
   border: 1px dashed var(--tool-starter-line);
@@ -592,6 +616,13 @@ textarea:hover {
   color: var(--tool-starter-muted);
   padding: 16px;
   text-align: center;
+}
+
+.object-vector-studio-v2__separator {
+  width: min(720px, 100%);
+  border: 0;
+  border-top: 1px solid var(--tool-starter-line);
+  margin: 0;
 }
 
 .object-vector-studio-v2__viewport-controls button {
@@ -665,6 +696,43 @@ textarea:hover {
   color: var(--tool-starter-muted);
   padding: 8px 10px;
   font-size: 0.9rem;
+}
+
+.object-vector-studio-v2__header-count {
+  color: var(--tool-starter-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.object-vector-studio-v2__shape-list {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 6px;
+  max-height: 132px;
+  overflow-y: auto;
+}
+
+.object-vector-studio-v2__shape-list-button {
+  min-height: 30px;
+  text-align: left;
+}
+
+.object-vector-studio-v2__shape-list-button.is-selected,
+.object-vector-studio-v2__shape-list-button[aria-pressed="true"],
+.object-vector-studio-v2__palette-controls button.is-active,
+.object-vector-studio-v2__palette-controls button[aria-pressed="true"] {
+  border-color: var(--tool-starter-accent) !important;
+  box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.25);
+}
+
+.object-vector-studio-v2__shape-list-empty {
+  color: var(--tool-starter-muted);
+  font-size: 0.9rem;
+}
+
+.object-vector-studio-v2__palette-controls .object-vector-studio-v2__inline-field input {
+  width: 80px;
 }
 
 .object-vector-studio-v2__selection-metrics {

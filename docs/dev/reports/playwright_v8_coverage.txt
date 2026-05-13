@@ -22,9 +22,7 @@ Exercised tool entry points detected:
 Changed runtime JS files covered:
 (80%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 101/101; executed functions 4/5
 (91%) tools/object-vector-studio-v2/js/controls/ActionNavControl.js - executed lines 78/78; executed functions 10/11
-(92%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 2862/2862; executed functions 328/356
-(95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 406/406; executed functions 52/55
-(98%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 919/919; executed functions 105/107
+(91%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 2879/2879; executed functions 334/366
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -200,10 +198,10 @@ Files with executed line/function counts where available:
 (90%) tools/text2speech-V2/js/controls/ActionNavControl.js - executed lines 117/117; executed functions 19/21
 (90%) tools/text2speech-V2/js/TextToSpeechToolApp.js - executed lines 807/807; executed functions 62/69
 (91%) tools/object-vector-studio-v2/js/controls/ActionNavControl.js - executed lines 78/78; executed functions 10/11
+(91%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 2879/2879; executed functions 334/366
 (91%) tools/toolRegistry.js - executed lines 526/526; executed functions 10/11
 (91%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1598/1598; executed functions 145/159
 (92%) tools/object-vector-studio-v2/js/controls/ToolStarterShellControl.js - executed lines 112/112; executed functions 11/12
-(92%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 2862/2862; executed functions 328/356
 (93%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 305/305; executed functions 25/27
 (93%) tools/session-inspector-v2/js/SessionInspectorV2App.js - executed lines 337/337; executed functions 42/45
 (93%) tools/text2speech-V2/js/controls/QueueControl.js - executed lines 122/122; executed functions 26/28
@@ -296,10 +294,7 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) tests/playwright/tools/WorkspaceManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
-(50%) games/Asteroids/index.js - changed JS file with browser V8 coverage
-(52%) games/Asteroids/game/AsteroidsGameScene.js - changed JS file with browser V8 coverage
+(0%) tools/object-vector-studio-v2/tests/playwright/FirstClassToolStarter.spec.mjs - changed JS file not collected as browser runtime coverage
 (80%) tools/object-vector-studio-v2/js/bootstrap.js - changed JS file with browser V8 coverage
 (91%) tools/object-vector-studio-v2/js/controls/ActionNavControl.js - changed JS file with browser V8 coverage
-(92%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage
-(95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - changed JS file with browser V8 coverage
-(98%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - changed JS file with browser V8 coverage
+(91%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage

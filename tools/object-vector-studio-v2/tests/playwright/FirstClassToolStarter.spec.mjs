@@ -70,8 +70,8 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.locator("#objectVectorStudioV2ImportJsonButton")).toHaveText("Import");
     await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeDisabled();
     await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeDisabled();
-    await expect(page.locator("#objectVectorStudioV2PaletteGate")).toHaveValue("Required before render");
-    await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("0 objects");
+    await expect(page.locator("#objectVectorStudioV2PaletteSwatchCount")).toHaveText("(0 swatches)");
+    await expect(page.locator("#objectVectorStudioV2ObjectDetailsCount")).toHaveText("(0 obj, 0 shapes)");
     await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
     await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeDisabled();
     await expect(page.locator("#objectVectorStudioV2DeleteObjectButton")).toBeDisabled();
@@ -79,10 +79,11 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.getByRole("button", { name: "Object" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Shape/Tools" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Objects" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Palette" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Object Details" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Palette (0 swatches)" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Object Details (0 obj, 0 shapes)" })).toBeVisible();
     await expect(page.getByRole("button", { name: "JSON Details" })).toBeVisible();
     await expect(page.locator("#statusLog")).toHaveValue(/Object Vector Studio V2 layout shell ready\./);
+    await expect(page.locator("#statusLog")).toHaveValue(/INFO Shape\/Tools primitive buttons create schema-valid shapes on the selected object\./);
   });
 
   test("imports only schema-valid payloads with a session palette", async ({ page }, testInfo) => {
@@ -112,27 +113,27 @@ test.describe("Object Vector Studio V2", () => {
     }, null, 2), "utf8");
     await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(validPayloadPath);
 
-    await expect(page.locator("#objectVectorStudioV2PaletteGate")).toHaveValue("Palette loaded");
-    await expect(page.locator("#objectVectorStudioV2PaletteSummary")).toContainText("Palette arcade-primary: 1 swatches.");
+    await expect(page.locator("#objectVectorStudioV2PaletteSwatchCount")).toHaveText("(1 swatch)");
+    await expect(page.locator("#objectVectorStudioV2PaletteSummary [data-palette-color]")).toHaveCount(1);
     await expect(page.locator("#objectVectorStudioV2ObjectTiles .object-vector-studio-v2__object-tile")).toHaveCount(2);
     await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Asteroids Ship");
-    await expect(page.locator("#objectVectorStudioV2SelectedItemVisibility")).toContainText("Selected item visible: Asteroids Ship");
+    await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Asteroids Ship");
     await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeEnabled();
     await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeEnabled();
 
     await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Local Object");
     await page.locator("#objectVectorStudioV2AddObjectButton").click();
-    await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("3 objects");
+    await expect(page.locator("#objectVectorStudioV2ObjectDetailsCount")).toHaveText("(3 obj, 0 shapes)");
     await expect(page.locator('[data-object-id="local-object"]')).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Local Object"');
 
     await page.locator('[data-shape-tool="rectangle"]').click();
-    await expect(page.locator("#objectVectorStudioV2ShapeCount")).toHaveValue("1 shape");
+    await expect(page.locator("#objectVectorStudioV2ObjectDetailsCount")).toHaveText("(3 obj, 1 shape)");
     await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-1']")).toHaveClass(/is-selected/);
     await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape rectangle-1 on Local Object\./);
 
     await page.locator("#objectVectorStudioV2DeleteObjectButton").click();
-    await expect(page.locator("#objectVectorStudioV2ObjectCount")).toHaveValue("2 objects");
+    await expect(page.locator("#objectVectorStudioV2ObjectDetailsCount")).toHaveText("(2 obj, 0 shapes)");
     await expect(page.locator('[data-object-id="local-object"]')).toHaveCount(0);
   });
 

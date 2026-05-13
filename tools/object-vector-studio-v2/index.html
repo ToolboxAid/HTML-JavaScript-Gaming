@@ -56,22 +56,6 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2ObjectContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2SourceSummary">
-              <span>Source</span>
-              <input id="objectVectorStudioV2SourceSummary" type="text" autocomplete="off" value="No schema-loaded payload" readonly>
-            </label>
-            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2PaletteGate">
-              <span>Palette</span>
-              <input id="objectVectorStudioV2PaletteGate" type="text" autocomplete="off" value="Required before render" readonly>
-            </label>
-            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2ObjectCount">
-              <span>Objects</span>
-              <input id="objectVectorStudioV2ObjectCount" type="text" autocomplete="off" value="0 objects" readonly>
-            </label>
-            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2ShapeCount">
-              <span>Shapes</span>
-              <input id="objectVectorStudioV2ShapeCount" type="text" autocomplete="off" value="0 shapes" readonly>
-            </label>
             <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2ObjectNameInput">
               <span>Object Name</span>
               <input id="objectVectorStudioV2ObjectNameInput" type="text" autocomplete="off" placeholder="Object name">
@@ -151,60 +135,17 @@
                 <button id="objectVectorStudioV2CreateStateButton" type="button" title="Create the selected state on the active object">Create State</button>
               </div>
             </div>
-            <div id="objectVectorStudioV2DisabledReason" class="object-vector-studio-v2__callout" role="status">Disabled controls: load a schema-valid payload, provide a runtime palette, and select an object.</div>
-            <div id="objectVectorStudioV2LoadStatus" class="object-vector-studio-v2__callout" role="status">Schema-only loading is idle. Import JSON or launch with workspace toolState data that includes a palette.</div>
           </div>
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ShapeToolsContent">
-            <span>Shape/Tools</span>
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectDetailsContent">
+            <span>Object Details <span id="objectVectorStudioV2ObjectDetailsCount" class="object-vector-studio-v2__header-count">(0 obj, 0 shapes)</span></span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="objectVectorStudioV2ShapeToolsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <div class="object-vector-studio-v2__tool-display-actions">
-              <button id="objectVectorStudioV2ToolLabelModeButton" type="button" aria-pressed="false" title="Toggle shape tool labels between icon-only and icon plus text">Icon/Text</button>
-            </div>
-            <div id="objectVectorStudioV2ToolToggleGrid" class="object-vector-studio-v2__tool-toggle-grid" aria-label="Shape and tool toggles">
-              <button class="object-vector-studio-v2__tool-toggle is-active" type="button" aria-pressed="true" data-shape-tool="select" title="Select shapes on the object work surface">
-                <span aria-hidden="true">+</span>
-                <span class="object-vector-studio-v2__tool-label">Select</span>
-              </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="rectangle" title="Create a rectangle shape on the selected object">
-                <span aria-hidden="true">Re</span>
-                <span class="object-vector-studio-v2__tool-label">Rectangle</span>
-              </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="circle" title="Create a circle shape on the selected object">
-                <span aria-hidden="true">Ci</span>
-                <span class="object-vector-studio-v2__tool-label">Circle</span>
-              </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="ellipse" title="Create an ellipse shape on the selected object">
-                <span aria-hidden="true">El</span>
-                <span class="object-vector-studio-v2__tool-label">Ellipse</span>
-              </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="line" title="Create a line shape on the selected object">
-                <span aria-hidden="true">Li</span>
-                <span class="object-vector-studio-v2__tool-label">Line</span>
-              </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="polygon" title="Create a polygon shape on the selected object">
-                <span aria-hidden="true">Po</span>
-                <span class="object-vector-studio-v2__tool-label">Polygon</span>
-              </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="arc" title="Create an arc shape on the selected object">
-                <span aria-hidden="true">Ar</span>
-                <span class="object-vector-studio-v2__tool-label">Arc</span>
-              </button>
-              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="text" title="Create a text shape on the selected object">
-                <span aria-hidden="true">Tx</span>
-                <span class="object-vector-studio-v2__tool-label">Text</span>
-              </button>
-            </div>
-            <div class="object-vector-studio-v2__snap-actions" aria-label="Snap controls">
-              <button id="objectVectorStudioV2GridSnapButton" type="button" aria-pressed="false" title="Snap move and resize edits to the grid">Grid Snap</button>
-              <button id="objectVectorStudioV2AngleSnapButton" type="button" aria-pressed="false" title="Snap rotation edits to 15 degree increments">Angle Snap</button>
-              <button id="objectVectorStudioV2GridRenderButton" type="button" aria-pressed="false" title="Show or hide the preview grid">Grid</button>
-            </div>
-            <p class="tool-starter__hint">Primitive buttons create schema-valid shapes on the selected object.</p>
+          <div id="objectVectorStudioV2ObjectDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2ShapeList" class="object-vector-studio-v2__shape-list" aria-label="Shapes in selected object"></div>
+            <div id="objectVectorStudioV2ObjectDetails" class="object-vector-studio-v2__details">No object selected.</div>
           </div>
         </section>
 
@@ -252,7 +193,6 @@
               </label>
               <div id="objectVectorStudioV2AssetLibraryBrowser" class="object-vector-studio-v2__asset-library" aria-label="Reusable asset library"></div>
               <div id="objectVectorStudioV2AssetUsageReport" class="object-vector-studio-v2__details">No library usage loaded.</div>
-              <div id="objectVectorStudioV2DependencyGraph" class="object-vector-studio-v2__details">No dependency graph loaded.</div>
             </div>
           </div>
         </section>
@@ -261,7 +201,7 @@
       <section class="tool-starter__panel tool-starter__panel--center" aria-label="Object vector work area">
         <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2WorkAreaContent">
-            <span>Object Preview</span>
+            <span>Object Preview <span id="objectVectorStudioV2CoordinateDisplay" class="object-vector-studio-v2__header-count">Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%</span></span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2WorkAreaContent" class="accordion-v2__content">
@@ -273,14 +213,11 @@
                 <button id="objectVectorStudioV2PanRightButton" type="button" title="Pan the work surface right">Pan Right</button>
                 <button id="objectVectorStudioV2ResetViewButton" type="button" title="Reset zoom and origin to 0,0">Reset View</button>
               </div>
-              <div id="objectVectorStudioV2CoordinateDisplay" class="object-vector-studio-v2__coordinate-display">Coordinates: 0, 0 | Zoom 100%</div>
-              <div id="objectVectorStudioV2SelectedItemVisibility" class="object-vector-studio-v2__selected-visibility">No schema-valid object selected.</div>
-              <div id="objectVectorStudioV2SelectionMetrics" class="object-vector-studio-v2__selection-metrics">Selection metrics: none.</div>
               <div class="object-vector-studio-v2__animation-controls" aria-label="Animation controls">
-                <button id="objectVectorStudioV2PlayButton" type="button" disabled title="Disabled until a state frame is selected">Play</button>
-                <button id="objectVectorStudioV2PauseButton" type="button" disabled title="Disabled until playback starts">Pause</button>
-                <button id="objectVectorStudioV2StopButton" type="button" disabled title="Disabled until a state frame is selected">Stop</button>
-                <button id="objectVectorStudioV2RuntimePreviewButton" type="button" disabled title="Disabled until an object is selected">Runtime Preview</button>
+                <button id="objectVectorStudioV2PlayButton" class="object-vector-studio-v2__preview-action" type="button" disabled title="Disabled until a state frame is selected"><span aria-hidden="true">Pl</span><span class="object-vector-studio-v2__tool-label">Play</span></button>
+                <button id="objectVectorStudioV2PauseButton" class="object-vector-studio-v2__preview-action" type="button" disabled title="Disabled until playback starts"><span aria-hidden="true">Ps</span><span class="object-vector-studio-v2__tool-label">Pause</span></button>
+                <button id="objectVectorStudioV2StopButton" class="object-vector-studio-v2__preview-action" type="button" disabled title="Disabled until a state frame is selected"><span aria-hidden="true">St</span><span class="object-vector-studio-v2__tool-label">Stop</span></button>
+                <button id="objectVectorStudioV2RuntimePreviewButton" class="object-vector-studio-v2__preview-action" type="button" disabled title="Disabled until an object is selected"><span aria-hidden="true">RP</span><span class="object-vector-studio-v2__tool-label">Runtime Preview</span></button>
                 <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2LoopToggle">
                   <input id="objectVectorStudioV2LoopToggle" type="checkbox">
                   <span>Loop</span>
@@ -294,14 +231,14 @@
                   <input id="objectVectorStudioV2FpsInput" type="number" min="1" max="60" step="1" value="12">
                 </label>
               </div>
+              <hr class="object-vector-studio-v2__separator">
               <div class="object-vector-studio-v2__animation-controls" aria-label="Frame controls">
-                <button id="objectVectorStudioV2DuplicateFrameButton" type="button" disabled title="Disabled until a state frame is selected">Duplicate Frame</button>
-                <button id="objectVectorStudioV2FrameEarlierButton" type="button" disabled title="Disabled until the selected frame can move earlier">Frame Earlier</button>
-                <button id="objectVectorStudioV2FrameLaterButton" type="button" disabled title="Disabled until the selected frame can move later">Frame Later</button>
+                <button id="objectVectorStudioV2DuplicateFrameButton" class="object-vector-studio-v2__preview-action" type="button" disabled title="Disabled until a state frame is selected"><span aria-hidden="true">DF</span><span class="object-vector-studio-v2__tool-label">Duplicate Frame</span></button>
+                <button id="objectVectorStudioV2FrameEarlierButton" class="object-vector-studio-v2__preview-action" type="button" disabled title="Disabled until the selected frame can move earlier"><span aria-hidden="true">FE</span><span class="object-vector-studio-v2__tool-label">Frame Earlier</span></button>
+                <button id="objectVectorStudioV2FrameLaterButton" class="object-vector-studio-v2__preview-action" type="button" disabled title="Disabled until the selected frame can move later"><span aria-hidden="true">FL</span><span class="object-vector-studio-v2__tool-label">Frame Later</span></button>
               </div>
               <div id="objectVectorStudioV2FrameTimeline" class="object-vector-studio-v2__frame-timeline" aria-label="Frame timeline"></div>
               <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" tabindex="0" role="img" aria-label="Object shape render surface"></svg>
-              <div id="objectVectorStudioV2RenderSummary" class="object-vector-studio-v2__render-summary">Render mode: idle. Capture mode: none.</div>
             </div>
           </div>
         </section>
@@ -309,22 +246,74 @@
 
       <aside class="tool-starter__panel tool-starter__panel--right" aria-label="Tool output">
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2PaletteContent">
-            <span>Palette</span>
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ShapeToolsContent">
+            <span>Shape/Tools</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="objectVectorStudioV2PaletteContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <div id="objectVectorStudioV2PaletteSummary" class="object-vector-studio-v2__details">Palette required before render. Palette data is read-only session/workspace input; swatches apply color to selected shapes without mutating the palette.</div>
+          <div id="objectVectorStudioV2ShapeToolsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2ToolToggleGrid" class="object-vector-studio-v2__tool-toggle-grid" aria-label="Shape and tool toggles">
+              <button class="object-vector-studio-v2__tool-toggle is-active" type="button" aria-pressed="true" data-shape-tool="select" title="Select shapes on the object work surface">
+                <span aria-hidden="true">+</span>
+                <span class="object-vector-studio-v2__tool-label">Select</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="rectangle" title="Create a rectangle shape on the selected object">
+                <span aria-hidden="true">Re</span>
+                <span class="object-vector-studio-v2__tool-label">Rectangle</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="circle" title="Create a circle shape on the selected object">
+                <span aria-hidden="true">Ci</span>
+                <span class="object-vector-studio-v2__tool-label">Circle</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="ellipse" title="Create an ellipse shape on the selected object">
+                <span aria-hidden="true">El</span>
+                <span class="object-vector-studio-v2__tool-label">Ellipse</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="line" title="Create a line shape on the selected object">
+                <span aria-hidden="true">Li</span>
+                <span class="object-vector-studio-v2__tool-label">Line</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="polygon" title="Create a polygon shape on the selected object">
+                <span aria-hidden="true">Po</span>
+                <span class="object-vector-studio-v2__tool-label">Polygon</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="arc" title="Create an arc shape on the selected object">
+                <span aria-hidden="true">Ar</span>
+                <span class="object-vector-studio-v2__tool-label">Arc</span>
+              </button>
+              <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="text" title="Create a text shape on the selected object">
+                <span aria-hidden="true">Tx</span>
+                <span class="object-vector-studio-v2__tool-label">Text</span>
+              </button>
+            </div>
+            <div class="object-vector-studio-v2__snap-actions" aria-label="Snap controls">
+              <button id="objectVectorStudioV2GridSnapButton" type="button" aria-pressed="false" title="Snap move and resize edits to the grid">Grid Snap</button>
+              <button id="objectVectorStudioV2AngleSnapButton" type="button" aria-pressed="false" title="Snap rotation edits to 15 degree increments">Angle Snap</button>
+              <button id="objectVectorStudioV2GridRenderButton" type="button" aria-pressed="false" title="Show or hide the preview grid">Grid</button>
+              <button id="objectVectorStudioV2ToolLabelModeButton" type="button" aria-pressed="false" title="Toggle shape tool labels between icon-only and icon plus text">Icon/Text</button>
+            </div>
           </div>
         </section>
 
         <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectDetailsContent">
-            <span>Object Details</span>
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2PaletteContent">
+            <span>Palette <span id="objectVectorStudioV2PaletteSwatchCount" class="object-vector-studio-v2__header-count">(0 swatches)</span></span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="objectVectorStudioV2ObjectDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <div id="objectVectorStudioV2ObjectDetails" class="object-vector-studio-v2__details">No object selected.</div>
+          <div id="objectVectorStudioV2PaletteContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div class="object-vector-studio-v2__palette-controls" aria-label="Palette paint controls">
+              <button id="objectVectorStudioV2PaintModeButton" type="button" aria-pressed="true">Paint</button>
+              <button id="objectVectorStudioV2StrokeModeButton" type="button" aria-pressed="false">Stroke</button>
+              <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2CurrentColor">
+                <span>Current Color</span>
+                <input id="objectVectorStudioV2CurrentColor" type="text" value="None" readonly>
+              </label>
+              <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeWidth">
+                <span>Stroke Width</span>
+                <input id="objectVectorStudioV2StrokeWidth" type="number" min="0.1" step="0.1" value="2">
+              </label>
+            </div>
+            <hr class="object-vector-studio-v2__separator">
+            <div id="objectVectorStudioV2PaletteSummary" class="object-vector-studio-v2__palette-swatch-list" aria-label="Read-only palette swatches"></div>
           </div>
         </section>
 
@@ -334,7 +323,20 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2JsonDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div class="object-vector-studio-v2__json-actions">
+              <button id="objectVectorStudioV2CopyJsonDetailsButton" type="button">Copy JSON</button>
+            </div>
             <pre id="objectVectorStudioV2JsonDetails" class="tool-starter__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2DependencyGraphContent">
+            <span>Dependency Graph</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="objectVectorStudioV2DependencyGraphContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2DependencyGraph" class="object-vector-studio-v2__details">No dependency graph loaded.</div>
           </div>
         </section>
 
