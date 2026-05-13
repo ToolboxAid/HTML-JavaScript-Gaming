@@ -858,8 +858,21 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
   margin-top: auto;
-  padding-top: 8px;
+  padding-top: 4px;
+}
+
+.object-vector-studio-v2__object-actions button {
+  height: 28px;
+  min-width: 0;
+  min-height: 28px;
+  padding: 2px 5px !important;
+  font-size: 0.78rem;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .object-vector-studio-v2__library-panel,
@@ -1426,6 +1439,19 @@ textarea:hover {
 .object-vector-studio-v2__polygon-point-list {
   display: grid;
   gap: 6px;
+  max-height: 138px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.object-vector-studio-v2__edit-grid--ellipse {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.object-vector-studio-v2__edit-grid--ellipse .object-vector-studio-v2__edit-field {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
 }
 
 .object-vector-studio-v2__edit-field {
@@ -1439,15 +1465,39 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__polygon-point-field {
-  grid-template-columns: 72px minmax(0, 1fr);
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+}
+
+.object-vector-studio-v2__polygon-point-label {
+  color: var(--tool-starter-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__polygon-point-axis {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  color: var(--tool-starter-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
 }
 
 .object-vector-studio-v2__edit-field input {
   min-width: 0;
   width: 100%;
   padding: 6px 8px;
+}
+
+.object-vector-studio-v2__polygon-point-axis input {
+  min-width: 0;
+  width: 100%;
+  padding: 5px 7px;
 }
 
 .object-vector-studio-v2__edit-field--inline {
@@ -1485,7 +1535,16 @@ textarea:hover {
   gap: 4px;
 }
 
-.object-vector-studio-v2__edit-field input.is-invalid {
+.object-vector-studio-v2__transform-summary {
+  margin: 0;
+  color: var(--tool-starter-text);
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.object-vector-studio-v2__edit-field input.is-invalid,
+.object-vector-studio-v2__polygon-point-axis input.is-invalid {
   border-color: var(--tool-starter-danger);
   box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.22);
 }

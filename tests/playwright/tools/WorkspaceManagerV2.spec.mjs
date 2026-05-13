@@ -1209,7 +1209,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2FlattenObjectButton")).toHaveCount(0);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Disabled controls stay inactive until a schema-valid payload/);
       await expect(page.locator("[data-control-group='object-actions']")).toHaveCount(0);
-      await expect(page.locator("#objectVectorStudioV2ObjectContent > .object-vector-studio-v2__object-actions button")).toHaveText(["Add", "Rename", "Duplicate", "Delete"]);
+      await expect(page.locator("#objectVectorStudioV2ObjectContent > .object-vector-studio-v2__object-actions button")).toHaveText(["Add", "Rename", "Dup", "Delete"]);
       await expect(page.locator("#objectVectorStudioV2ObjectsContent > .object-vector-studio-v2__objects-actions")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ObjectTypeInput")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ObjectTypeSelect")).toHaveCount(0);
@@ -1221,13 +1221,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const tagLabel = element.querySelector("label[for='objectVectorStudioV2ObjectTagInput'] span");
         const tagInput = element.querySelector("#objectVectorStudioV2ObjectTagInput");
         const actions = element.querySelector(".object-vector-studio-v2__object-actions");
+        const actionButtons = Array.from(actions.querySelectorAll("button"));
+        const actionButtonRects = actionButtons.map((button) => button.getBoundingClientRect());
         return {
+          actionButtonLabels: actionButtons.map((button) => button.textContent.trim()),
+          actionButtonMaxHeight: Math.max(...actionButtonRects.map((rect) => Math.round(rect.height))),
+          actionsSingleLine: actionButtonRects.every((rect) => Math.abs(rect.top - actionButtonRects[0].top) < 2),
           actionsAtBottom: actions.getBoundingClientRect().bottom >= element.getBoundingClientRect().bottom - 12,
           nameInline: Math.abs((nameLabel.getBoundingClientRect().top + nameLabel.getBoundingClientRect().height / 2) - (nameInput.getBoundingClientRect().top + nameInput.getBoundingClientRect().height / 2)) < 4,
           tagInline: Math.abs((tagLabel.getBoundingClientRect().top + tagLabel.getBoundingClientRect().height / 2) - (tagInput.getBoundingClientRect().top + tagInput.getBoundingClientRect().height / 2)) < 4
         };
       });
-      expect(objectPanelLayout).toEqual({ actionsAtBottom: true, nameInline: true, tagInline: true });
+      expect(objectPanelLayout).toEqual({ actionButtonLabels: ["Add", "Rename", "Dup", "Delete"], actionButtonMaxHeight: 28, actionsAtBottom: true, actionsSingleLine: true, nameInline: true, tagInline: true });
       await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Blocked Object");
       await page.locator("#objectVectorStudioV2AddObjectButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Add object blocked: load a schema-valid Object Vector Studio V2 payload before adding objects\./);
@@ -1517,6 +1522,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectPreviewFooter")).toContainText("Object ID: object.asteroids.object-1");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveAttribute("r", "9");
+      await expect(page.locator("#objectVectorStudioV2ViewportControls button")).toHaveText(["Out", "In", "Up", "Down", "Left", "Right", "View", "Dot"]);
       await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "true");
       await page.locator("#objectVectorStudioV2CenterDotButton").click();
       await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "false");
@@ -1548,7 +1555,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Transform");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails #objectVectorStudioV2MoveShapeButton")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toContainText("Selected Shape: rectangle-1");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toContainText("Transform");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 0, y 0, rot 0, scale 1 x 1");
       await expect(page.locator("#objectVectorStudioV2ObjectTransform #objectVectorStudioV2MoveShapeButton")).toHaveCount(1);
       const objectDetailsOrder = await page.locator("#objectVectorStudioV2ObjectDetails").evaluate((details) => {
         const applyButton = details.querySelector("#objectVectorStudioV2ApplyGeometryButton");
@@ -2254,18 +2261,32 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Render mode svg-work-surface: rendered Asteroids Ship Grid Check with 1 visible shapes; capture mode none\./);
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Polygon Geometry");
-      await expect.poll(() => page.locator("#objectVectorStudioV2ObjectDetails [data-shape-geometry-field='points']").evaluateAll((inputs) => inputs.map((input) => input.value))).toEqual(["0,-18", "14,16", "0,8", "-14,16"]);
-      await page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1']").fill("14,17");
+      await expect.poll(() => page.locator("#objectVectorStudioV2ObjectDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.map((row) => ({
+        label: row.querySelector(".object-vector-studio-v2__polygon-point-label").textContent.trim(),
+        x: row.querySelector("[data-polygon-point-axis='x']").value,
+        y: row.querySelector("[data-polygon-point-axis='y']").value
+      })))).toEqual([
+        { label: "Point 1", x: "0", y: "-18" },
+        { label: "Point 2", x: "14", y: "16" },
+        { label: "Point 3", x: "0", y: "8" },
+        { label: "Point 4", x: "-14", y: "16" }
+      ]);
+      const polygonPointListLayout = await page.locator("#objectVectorStudioV2ObjectDetails .object-vector-studio-v2__polygon-point-list").evaluate((list) => ({
+        maxHeight: Number.parseFloat(getComputedStyle(list).maxHeight),
+        overflowY: getComputedStyle(list).overflowY
+      }));
+      expect(polygonPointListLayout).toEqual({ maxHeight: 138, overflowY: "auto" });
+      await page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1'][data-polygon-point-axis='y']").fill("17");
       await page.locator("#objectVectorStudioV2ApplyGeometryButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='asteroids-ship-outline']")).toHaveAttribute("points", "0,-180 140,170 0,80 -140,160");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Applied geometry edits to shape asteroids-ship-outline\./);
-      await page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1']").fill("bad");
+      await page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1'][data-polygon-point-axis='y']").fill("bad");
       await page.locator("#objectVectorStudioV2ApplyGeometryButton").click();
-      await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1']")).toHaveAttribute("aria-invalid", "true");
-      await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1']")).toHaveValue("bad");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1'][data-polygon-point-axis='y']")).toHaveAttribute("aria-invalid", "true");
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1'][data-polygon-point-axis='y']")).toHaveValue("bad");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='asteroids-ship-outline']")).toHaveAttribute("points", "0,-180 140,170 0,80 -140,160");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Invalid geometry rejected for shape asteroids-ship-outline: Point 2 must be an x,y pair with finite numbers\./);
-      await page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1']").fill("14,16");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Invalid geometry rejected for shape asteroids-ship-outline: Point 2 Y must be a finite number\./);
+      await page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='1'][data-polygon-point-axis='y']").fill("16");
       await page.locator("#objectVectorStudioV2ApplyGeometryButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='asteroids-ship-outline']")).toHaveAttribute("points", "0,-180 140,160 0,80 -140,160");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
@@ -2354,6 +2375,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-620 -440 1280 880");
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas 0,0 centered | Zoom 250%");
       await page.locator("#objectVectorStudioV2PanLeftButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 250%");
+      await page.locator("#objectVectorStudioV2PanUpButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -460 1280 880");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, -2 | Canvas 0,0 centered | Zoom 250%");
+      await page.locator("#objectVectorStudioV2PanDownButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 250%");
       const examplePointerScreen = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
@@ -2477,6 +2504,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(rectangleAfterDrag.transform.y).not.toBe(rectangleBeforeDrag.transform.y);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Dragged shape rectangle-1 by/);
 
+      const rectangleBeforeNegativeDrag = await shapeSnapshot("rectangle-1");
+      await dragLocator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-1']", -36, -24);
+      const rectangleAfterNegativeDrag = await shapeSnapshot("rectangle-1");
+      expect(rectangleAfterNegativeDrag.transform.x).toBeLessThan(rectangleBeforeNegativeDrag.transform.x);
+      expect(rectangleAfterNegativeDrag.transform.y).toBeLessThan(rectangleBeforeNegativeDrag.transform.y);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Dragged shape rectangle-1 by/);
+
       const rectangleBeforeResize = await shapeSnapshot("rectangle-1");
       await dragLocator("#objectVectorStudioV2RenderSurface [data-resize-handle='se']", 28, 20);
       const rectangleAfterResize = await shapeSnapshot("rectangle-1");
@@ -2563,6 +2597,28 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-object-bounds='object.authoring.ufo-template']")).toHaveCount(1);
       await expect(page.locator('[data-object-id="object.authoring.ufo-template"] [data-object-tile-shape-id]')).toHaveCount(2);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Created ellipse shape ellipse-2 on UFO Template\./);
+      const ellipseGeometryLayout = await page.locator("#objectVectorStudioV2ObjectDetails .object-vector-studio-v2__edit-grid--ellipse").evaluate((grid) => {
+        const fields = Array.from(grid.querySelectorAll(".object-vector-studio-v2__edit-field"));
+        const fieldRects = fields.map((field) => field.getBoundingClientRect());
+        const inlineFields = fields.map((field) => {
+          const label = field.querySelector("span").getBoundingClientRect();
+          const input = field.querySelector("input").getBoundingClientRect();
+          return Math.abs((label.top + label.height / 2) - (input.top + input.height / 2)) <= 2 && label.right <= input.left;
+        });
+        return {
+          labels: fields.map((field) => field.querySelector("span").textContent.trim()),
+          inlineFields,
+          rowLabels: [
+            fields.filter((field, index) => Math.abs(fieldRects[index].top - fieldRects[0].top) <= 2).map((field) => field.querySelector("span").textContent.trim()),
+            fields.filter((field, index) => Math.abs(fieldRects[index].top - fieldRects[2].top) <= 2).map((field) => field.querySelector("span").textContent.trim())
+          ]
+        };
+      });
+      expect(ellipseGeometryLayout).toEqual({
+        inlineFields: [true, true, true, true],
+        labels: ["Cx", "Cy", "Rx", "Ry"],
+        rowLabels: [["Cx", "Cy"], ["Rx", "Ry"]]
+      });
 
       await page.locator("#objectVectorStudioV2TagFilter").selectOption("enemy");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles .object-vector-studio-v2__object-tile")).toHaveCount(1);
@@ -2587,6 +2643,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape ellipse-1 by 10, 10\./);
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 10, y 10, rot 0, scale 1 x 1");
+      await page.locator("#objectVectorStudioV2MoveXInput").fill("-5");
+      await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
+      await page.locator("#objectVectorStudioV2MoveShapeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape ellipse-1 by -10, -10\./);
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 0, y 0, rot 0, scale 1 x 1");
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.authoring-copied-json")));

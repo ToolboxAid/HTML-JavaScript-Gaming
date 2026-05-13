@@ -1,21 +1,23 @@
-# PR_26133_012 Workspace V2 Results
+# PR_26133_013 Workspace V2 Results
 
 ## Command Results
 
 - `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js`: passed.
 - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`: passed.
-- `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --grep "Object Vector Studio V2 (layout shell|preview coordinates|preview shapes with mouse actions)"`: 3 passed.
+- `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --grep "Object Vector Studio V2 (layout shell|preview coordinates|preview shapes with mouse actions|asset authoring controls)"`: 4 passed.
 - `npm run test:workspace-v2`: 47 passed.
 - `git diff --check`: passed with LF-to-CRLF working-copy warnings for touched files.
 
 ## Targeted Object Vector Studio V2 Verification
 
-- Confirmed the Objects accordion header shows the object/shape count text.
-- Confirmed shape tile visibility and delete icon buttons are adjacent on the right, with `Toggle shape visibility` immediately beside `Delete this shape`.
-- Confirmed selecting a shape highlights the matching palette swatch.
-- Confirmed Polygon Geometry renders as an editable point list with one `x,y` entry per polygon point.
-- Confirmed Apply Geometry commits valid polygon point-list edits to the selected polygon.
-- Confirmed invalid polygon point rows are marked with `aria-invalid`, report an actionable failure, preserve the invalid text for correction, and do not partially apply geometry.
+- Confirmed negative snapped Move X/Move Y values move the selected shape back across both axes instead of snapping half-step negatives to zero.
+- Confirmed Object Transform summary renders as `Transform x 0, y 0, rot 0, scale 1 x 1` and updates after transform actions.
+- Confirmed Object Preview controls use compact final-word labels and include working Up/Down pan controls after In.
+- Confirmed the center origin dot renders at radius 9.
+- Confirmed preview mouse drag, negative drag, rectangle handle resize, and line endpoint movement still edit the selected shape.
+- Confirmed Polygon Geometry renders separate X/Y point inputs, applies valid edits, marks invalid point cells with `aria-invalid`, and preserves invalid text without partial apply.
+- Confirmed the polygon point list uses a fixed scrolling area.
+- Confirmed Ellipse Geometry renders as two inline label/input rows: Cx/Cy, then Rx/Ry.
 - Confirmed Object Preview coordinate/grid/zoom expectations from prior PRs remain covered by the workspace-v2 suite.
 - Confirmed targeted Object Vector Studio tests reported no console/page errors.
 

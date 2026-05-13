@@ -71,7 +71,7 @@
             <div class="object-vector-studio-v2__object-actions" aria-label="Object actions">
               <button id="objectVectorStudioV2AddObjectButton" type="button" title="Add a schema-valid object to the loaded payload">Add</button>
               <button id="objectVectorStudioV2RenameObjectButton" type="button" title="Rename the selected object and update its object/game/name id">Rename</button>
-              <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Duplicate</button>
+              <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Dup</button>
               <button id="objectVectorStudioV2DeleteObjectButton" type="button" title="Delete the selected object">Delete</button>
             </div>
           </div>
@@ -127,12 +127,14 @@
           <div id="objectVectorStudioV2WorkAreaContent" class="accordion-v2__content">
             <div id="objectVectorStudioV2WorkArea" class="object-vector-studio-v2__work-area" role="img" aria-label="Object vector preview">
               <div id="objectVectorStudioV2ViewportControls" class="object-vector-studio-v2__viewport-controls" aria-label="Viewport controls">
-                <button id="objectVectorStudioV2ZoomOutButton" type="button" title="Zoom the work surface out">Zoom Out</button>
-                <button id="objectVectorStudioV2ZoomInButton" type="button" title="Zoom the work surface in">Zoom In</button>
-                <button id="objectVectorStudioV2PanLeftButton" type="button" title="Pan the work surface left">Pan Left</button>
-                <button id="objectVectorStudioV2PanRightButton" type="button" title="Pan the work surface right">Pan Right</button>
-                <button id="objectVectorStudioV2ResetViewButton" type="button" title="Reset zoom and origin to 0,0">Reset View</button>
-                <button id="objectVectorStudioV2CenterDotButton" type="button" aria-pressed="true" title="Hide or show the canvas center dot">Center Dot</button>
+                <button id="objectVectorStudioV2ZoomOutButton" type="button" title="Zoom the work surface out">Out</button>
+                <button id="objectVectorStudioV2ZoomInButton" type="button" title="Zoom the work surface in">In</button>
+                <button id="objectVectorStudioV2PanUpButton" type="button" title="Pan the work surface up">Up</button>
+                <button id="objectVectorStudioV2PanDownButton" type="button" title="Pan the work surface down">Down</button>
+                <button id="objectVectorStudioV2PanLeftButton" type="button" title="Pan the work surface left">Left</button>
+                <button id="objectVectorStudioV2PanRightButton" type="button" title="Pan the work surface right">Right</button>
+                <button id="objectVectorStudioV2ResetViewButton" type="button" title="Reset zoom and origin to 0,0">View</button>
+                <button id="objectVectorStudioV2CenterDotButton" type="button" aria-pressed="true" title="Hide or show the canvas center dot">Dot</button>
               </div>
               <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" tabindex="0" role="img" aria-label="Object shape render surface"></svg>
               <div id="objectVectorStudioV2ObjectPreviewFooter" class="object-vector-studio-v2__preview-footer">Object ID: none</div>
@@ -141,7 +143,7 @@
                 <button id="objectVectorStudioV2PlayButton" type="button" disabled title="Disabled until a state frame is selected">Play</button>
                 <button id="objectVectorStudioV2PauseButton" type="button" disabled title="Disabled until playback starts">Pause</button>
                 <button id="objectVectorStudioV2StopButton" type="button" disabled title="Disabled until a state frame is selected">Stop</button>
-                <button id="objectVectorStudioV2RuntimePreviewButton" type="button" disabled title="Disabled until an object is selected">Runtime Preview</button>
+                <button id="objectVectorStudioV2RuntimePreviewButton" type="button" disabled title="Disabled until an object is selected">Preview</button>
                 <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2LoopToggle">
                   <input id="objectVectorStudioV2LoopToggle" type="checkbox">
                   <span>Loop</span>

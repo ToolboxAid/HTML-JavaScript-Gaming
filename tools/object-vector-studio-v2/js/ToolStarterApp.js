@@ -540,6 +540,8 @@ export class ToolStarterApp {
   bindViewportControls() {
     this.elements.zoomInButton.addEventListener("click", () => this.zoomViewportByStep(ZOOM_STEP));
     this.elements.zoomOutButton.addEventListener("click", () => this.zoomViewportByStep(-ZOOM_STEP));
+    this.elements.panUpButton.addEventListener("click", () => this.panViewport(0, -20));
+    this.elements.panDownButton.addEventListener("click", () => this.panViewport(0, 20));
     this.elements.panLeftButton.addEventListener("click", () => this.panViewport(-20, 0));
     this.elements.panRightButton.addEventListener("click", () => this.panViewport(20, 0));
     this.elements.resetViewButton.addEventListener("click", () => this.resetViewport());
@@ -1364,13 +1366,18 @@ export class ToolStarterApp {
     transformPanel.className = "object-vector-studio-v2__shape-panel";
     const heading = document.createElement("h3");
     heading.textContent = `Selected Shape: ${shape.id}`;
-    const transform = this.shapeTransform(shape);
-    transformPanel.append(heading, this.createDetailGrid([
-      ["Transform", `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`]
-    ]));
+    const transform = this.shapeTransform(this.effectiveShape(shape));
+    const summary = document.createElement("p");
+    summary.className = "object-vector-studio-v2__transform-summary";
+    summary.textContent = this.formatTransformSummary(transform);
     transformPanel.append(this.createShapeTransformControls(shape));
+    transformPanel.prepend(heading, summary);
     wrapper.append(transformPanel);
     return wrapper;
+  }
+
+  formatTransformSummary(transform) {
+    return `Transform x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`;
   }
 
   createDetailGrid(entries) {
@@ -1394,21 +1401,37 @@ export class ToolStarterApp {
     const heading = document.createElement("h4");
     heading.textContent = `${shapeTypeLabel(shape)} Geometry`;
     const grid = document.createElement("div");
-    grid.className = shape.type === "polygon" ? "object-vector-studio-v2__polygon-point-list" : "object-vector-studio-v2__edit-grid";
+    grid.className = shape.type === "polygon"
+      ? "object-vector-studio-v2__polygon-point-list"
+      : `object-vector-studio-v2__edit-grid${shape.type === "ellipse" ? " object-vector-studio-v2__edit-grid--ellipse" : ""}`;
     if (shape.type === "polygon") {
       shape.geometry.points.forEach((point, index) => {
-        const label = document.createElement("label");
-        label.className = "object-vector-studio-v2__edit-field object-vector-studio-v2__polygon-point-field";
+        const row = document.createElement("div");
+        row.className = "object-vector-studio-v2__polygon-point-field";
         const caption = document.createElement("span");
+        caption.className = "object-vector-studio-v2__polygon-point-label";
         caption.textContent = `Point ${index + 1}`;
-        const input = document.createElement("input");
-        input.dataset.shapeGeometryField = "points";
-        input.dataset.polygonPointIndex = String(index);
-        input.type = "text";
-        input.value = `${point.x},${point.y}`;
-        input.addEventListener("input", () => this.clearInputValidity(input));
-        label.append(caption, input);
-        grid.append(label);
+        row.append(caption);
+        [
+          ["x", "X", point.x],
+          ["y", "Y", point.y]
+        ].forEach(([axis, labelText, value]) => {
+          const label = document.createElement("label");
+          label.className = "object-vector-studio-v2__polygon-point-axis";
+          const axisLabel = document.createElement("span");
+          axisLabel.textContent = labelText;
+          const input = document.createElement("input");
+          input.dataset.shapeGeometryField = "points";
+          input.dataset.polygonPointAxis = axis;
+          input.dataset.polygonPointIndex = String(index);
+          input.inputMode = "decimal";
+          input.type = "text";
+          input.value = String(value);
+          input.addEventListener("input", () => this.clearInputValidity(input));
+          label.append(axisLabel, input);
+          row.append(label);
+        });
+        grid.append(row);
       });
     } else {
       this.shapeGeometryFields(shape).forEach((field) => {
@@ -1441,7 +1464,7 @@ export class ToolStarterApp {
     heading.textContent = "Transform";
     const grid = document.createElement("div");
     grid.className = "object-vector-studio-v2__edit-grid";
-    const transform = this.shapeTransform(shape);
+    const transform = this.shapeTransform(this.effectiveShape(shape));
     [
       ["objectVectorStudioV2MoveXInput", "Move X", "10"],
       ["objectVectorStudioV2MoveYInput", "Move Y", "0"],
@@ -1499,7 +1522,12 @@ export class ToolStarterApp {
       return ["cx", "cy", "r"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
     }
     if (shape.type === "ellipse") {
-      return ["cx", "cy", "rx", "ry"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
+      return [
+        { key: "cx", kind: "number", label: "Cx", value: shape.geometry.cx },
+        { key: "cy", kind: "number", label: "Cy", value: shape.geometry.cy },
+        { key: "rx", kind: "number", label: "Rx", value: shape.geometry.rx },
+        { key: "ry", kind: "number", label: "Ry", value: shape.geometry.ry }
+      ];
     }
     if (shape.type === "line") {
       return ["x1", "y1", "x2", "y2"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
@@ -1685,7 +1713,7 @@ export class ToolStarterApp {
     marker.dataset.centerOrigin = "0,0";
     marker.setAttribute("cx", "0");
     marker.setAttribute("cy", "0");
-    marker.setAttribute("r", "3");
+    marker.setAttribute("r", "9");
     marker.setAttribute("aria-label", "Canvas origin 0,0");
     this.elements.renderSurface.append(marker);
   }
@@ -3150,11 +3178,28 @@ export class ToolStarterApp {
         if (pointInputs.length < 3) {
           throw new Error("polygon points must contain at least three point rows.");
         }
+        const pointRows = new Map();
+        pointInputs.forEach((input) => {
+          const index = Number(input.dataset.polygonPointIndex);
+          const axis = input.dataset.polygonPointAxis;
+          if (!pointRows.has(index)) {
+            pointRows.set(index, {});
+          }
+          pointRows.get(index)[axis] = input;
+        });
+        if (pointRows.size < 3) {
+          throw new Error("polygon points must contain at least three point rows.");
+        }
         const points = [];
-        for (const input of pointInputs) {
-          const point = this.parsePolygonPointEntry(input.value, Number(input.dataset.polygonPointIndex) + 1);
-          points.push(point);
-          this.clearInputValidity(input);
+        for (const index of [...pointRows.keys()].sort((left, right) => left - right)) {
+          const row = pointRows.get(index);
+          const pointNumber = index + 1;
+          const x = this.numberInputElementValue(row.x, `Point ${pointNumber} X`);
+          const y = this.numberInputElementValue(row.y, `Point ${pointNumber} Y`);
+          if (!x.ok || !y.ok) {
+            return { error: x.error || y.error, ok: false, value: null };
+          }
+          points.push({ x: x.value, y: y.value });
         }
         return { ok: true, value: { points } };
       }
@@ -3361,7 +3406,8 @@ export class ToolStarterApp {
     if (!this.gridSnapEnabled) {
       return value;
     }
-    return Math.round(value / 10) * 10;
+    const snapped = Math.round(Math.abs(value) / GRID_STEP) * GRID_STEP;
+    return value < 0 ? -snapped : snapped;
   }
 
   snapAngle(value) {
@@ -3413,36 +3459,6 @@ export class ToolStarterApp {
       x: Number((centerX + (point.x - centerX) * factor).toFixed(3)),
       y: Number((centerY + (point.y - centerY) * factor).toFixed(3))
     }));
-  }
-
-  parsePolygonPoints(value) {
-    const points = value.trim().split(/\s+/).filter(Boolean).map((token) => {
-      const [xValue, yValue] = token.split(",");
-      return {
-        x: Number(xValue),
-        y: Number(yValue)
-      };
-    });
-    if (points.length < 3 || points.some((point) => !Number.isFinite(point.x) || !Number.isFinite(point.y))) {
-      throw new Error("polygon points must contain at least three x,y pairs.");
-    }
-    return points;
-  }
-
-  parsePolygonPointEntry(value, pointNumber) {
-    const [xValue, yValue, extra] = String(value || "").trim().split(",");
-    const xText = String(xValue || "").trim();
-    const yText = String(yValue || "").trim();
-    const point = {
-      x: Number(xText),
-      y: Number(yText)
-    };
-    if (extra !== undefined || !xText || !yText || !Number.isFinite(point.x) || !Number.isFinite(point.y)) {
-      const error = new Error(`Point ${pointNumber} must be an x,y pair with finite numbers.`);
-      error.input = this.elements.objectDetails.querySelector(`[data-polygon-point-index="${pointNumber - 1}"]`);
-      throw error;
-    }
-    return point;
   }
 
   validateShapeForTransform(shape) {
