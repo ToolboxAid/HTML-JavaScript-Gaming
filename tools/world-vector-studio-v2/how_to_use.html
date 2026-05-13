@@ -24,6 +24,7 @@
         <h2>Architectural Split</h2>
         <p><strong>World Vector Studio V2:</strong> Build the place. It owns the map, world, and environment structures where game objects appear and move.</p>
         <p><strong>Object Vector Studio V2:</strong> Build the thing. It owns reusable gameplay entities, ships, enemies, pickups, actors, weapons, UI vector assets, SVG/vector authoring, primitives/shapes/path editing, and animation-ready structures.</p>
+        <p>Object Vector Studio V2 asset references are read-only in World Vector Studio V2. World Vector Studio V2 must not mutate Object Vector Studio V2 source assets; use Duplicate As Local in Object Vector Studio V2 before editing detached object data.</p>
       </section>
 
       <section class="card">

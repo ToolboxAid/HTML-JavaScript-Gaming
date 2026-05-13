@@ -55,11 +55,14 @@ export class ActionNavControl {
   setJsonPayloadActionsEnabled(isEnabled) {
     this.toolCopyJsonButton.disabled = !isEnabled;
     this.toolExportJsonButton.disabled = !isEnabled;
+    this.toolCopyJsonButton.title = isEnabled ? "Copy schema-valid Object Vector Studio V2 JSON." : "Disabled until a schema-valid Object Vector Studio V2 payload is loaded.";
+    this.toolExportJsonButton.title = isEnabled ? "Export schema-valid Object Vector Studio V2 JSON." : "Disabled until a schema-valid Object Vector Studio V2 payload is loaded.";
   }
 
   setImportEnabled(isEnabled) {
     this.toolImportJsonButton.disabled = !isEnabled;
     this.toolImportJsonInput.disabled = !isEnabled;
+    this.toolImportJsonButton.title = isEnabled ? "Import Object Vector Studio V2 JSON." : "Disabled while schema is loading or workspace launch owns the payload source.";
   }
 
   isWorkspaceLaunch() {

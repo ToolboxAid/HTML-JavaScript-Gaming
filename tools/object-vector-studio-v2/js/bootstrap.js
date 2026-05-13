@@ -46,6 +46,7 @@ window.addEventListener("DOMContentLoaded", () => {
       createStateButton: requireElement("#objectVectorStudioV2CreateStateButton"),
       deleteObjectButton: requireElement("#objectVectorStudioV2DeleteObjectButton"),
       dependencyGraph: requireElement("#objectVectorStudioV2DependencyGraph"),
+      disabledReason: requireElement("#objectVectorStudioV2DisabledReason"),
       duplicateAsLocalButton: requireElement("#objectVectorStudioV2DuplicateAsLocalButton"),
       duplicateFrameButton: requireElement("#objectVectorStudioV2DuplicateFrameButton"),
       duplicateObjectButton: requireElement("#objectVectorStudioV2DuplicateObjectButton"),

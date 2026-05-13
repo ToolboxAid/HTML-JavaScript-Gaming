@@ -404,6 +404,22 @@ textarea:hover {
   gap: 8px;
 }
 
+.object-vector-studio-v2__control-group {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-panel-strong);
+  padding: 10px;
+}
+
+.object-vector-studio-v2__control-group h3,
+.object-vector-studio-v2__object-detail-stack h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
 .object-vector-studio-v2__object-actions button {
   min-width: 68px;
   min-height: 32px;

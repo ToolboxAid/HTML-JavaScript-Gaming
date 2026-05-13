@@ -506,7 +506,7 @@ export class ToolStarterApp {
       ? `Runtime palette ${this.paletteDisplayName()}: ${this.runtimePalette.swatches.length} swatches.`
       : "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
-    this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
+    this.elements.selectedItemVisibility.textContent = "Selected Object: none. Selected Shape: none. Selected State: none. Selected Frame: none.";
     this.elements.selectionMetrics.textContent = "Selection metrics: none.";
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
@@ -657,7 +657,7 @@ export class ToolStarterApp {
     this.elements.assetTagsInput.value = "";
     this.elements.stateSelect.value = "";
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
-    this.elements.selectedItemVisibility.textContent = "No schema-valid object rendered.";
+    this.elements.selectedItemVisibility.textContent = "Selected Object: none. Selected Shape: none. Selected State: none. Selected Frame: none.";
     this.elements.selectionMetrics.textContent = "Selection metrics: none.";
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
@@ -679,7 +679,7 @@ export class ToolStarterApp {
     this.elements.paletteGate.value = "Palette loaded";
     this.elements.paletteSummary.replaceChildren();
     const heading = document.createElement("p");
-    heading.textContent = `Palette ${this.paletteDisplayName()}: ${swatchCount} swatches.`;
+    heading.textContent = `Palette ${this.paletteDisplayName()}: ${swatchCount} read-only swatches. Palette source is session/workspace data and is not stored in Object Vector Studio V2 JSON.`;
     const list = document.createElement("div");
     list.className = "object-vector-studio-v2__palette-swatch-list";
     this.runtimePalette.swatches.forEach((swatch, index) => {
@@ -727,6 +727,7 @@ export class ToolStarterApp {
       tile.className = "object-vector-studio-v2__object-tile";
       tile.type = "button";
       tile.dataset.objectId = object.id;
+      tile.title = `Select object ${object.name}`;
       tile.setAttribute("aria-pressed", String(object.id === this.selectedObjectId));
       tile.classList.toggle("is-selected", object.id === this.selectedObjectId);
 
@@ -797,6 +798,7 @@ export class ToolStarterApp {
       button.type = "button";
       button.dataset.assetId = asset.id;
       button.dataset.objectId = asset.objectId;
+      button.title = `Select reusable asset ${asset.name}; source object ${asset.objectId}`;
       button.setAttribute("aria-pressed", String(asset.objectId === this.selectedObjectId));
 
       const name = document.createElement("span");
@@ -867,7 +869,7 @@ export class ToolStarterApp {
       this.elements.stateSelect.value = "";
       this.elements.shapeCount.value = shapeCountLabel(0);
       this.elements.objectDetails.textContent = "No object selected.";
-      this.elements.selectedItemVisibility.textContent = "No schema-valid object selected.";
+      this.elements.selectedItemVisibility.textContent = "Selected Object: none. Selected Shape: none. Selected State: none. Selected Frame: none.";
       this.elements.selectionMetrics.textContent = "Selection metrics: none.";
       this.elements.jsonDetails.textContent = "{}";
       this.renderFrameTimeline();
@@ -882,9 +884,13 @@ export class ToolStarterApp {
     this.elements.stateSelect.value = this.selectedStateId || "";
     this.elements.shapeCount.value = shapeCountLabel(selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
-    this.elements.selectedItemVisibility.textContent = shape
-      ? `Selected item visible: ${selected.name} / ${shape.id} (${shape.type}); ${this.selectedShapeIds.size} shape selection.`
-      : `Selected item visible: ${selected.name}`;
+    this.elements.selectedItemVisibility.textContent = [
+      `Selected Object: ${selected.name} (${selected.id})`,
+      `Selected Shape: ${shape ? `${shape.id} (${shape.type})` : "none"}`,
+      `Selected State: ${this.selectedStateId || "none"}`,
+      `Selected Frame: ${this.selectedFrameId || "none"}`,
+      `Selection Count: ${this.selectedShapeIds.size} ${this.selectedShapeIds.size === 1 ? "shape" : "shapes"}`
+    ].join(" | ");
     this.updateSelectionMetrics(selected, shape);
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
@@ -915,6 +921,7 @@ export class ToolStarterApp {
       button.type = "button";
       button.dataset.stateId = state.id;
       button.dataset.frameId = frame.id;
+      button.title = `Select frame ${frame.id} in state ${state.id}`;
       button.setAttribute("aria-pressed", String(frame.id === this.selectedFrameId));
       button.classList.toggle("is-selected", frame.id === this.selectedFrameId);
       button.append(this.createFrameThumbnail(object, frame));
@@ -952,6 +959,9 @@ export class ToolStarterApp {
     const wrapper = document.createElement("div");
     wrapper.className = "object-vector-studio-v2__object-detail-stack";
     const libraryAssets = this.assetLibraryAssets().filter((asset) => asset.objectId === object.id);
+    const metadataHeading = document.createElement("h3");
+    metadataHeading.textContent = "Read-only Object Metadata";
+    wrapper.append(metadataHeading);
     wrapper.append(this.createDetailGrid([
       ["Object Name", object.name],
       ["Object ID", object.id],
@@ -981,6 +991,9 @@ export class ToolStarterApp {
     }
 
     const transform = this.shapeTransform(shape);
+    const editableHint = document.createElement("p");
+    editableHint.className = "tool-starter__hint";
+    editableHint.textContent = "Editable fields below are limited to schema-valid geometry, transform, visibility, lock, order, and grouping fields for the selected shape.";
     shapePanel.append(this.createDetailGrid([
       ["Shape Type", shapeTypeLabel(shape)],
       ["Shape Details", SHAPE_TYPE_DETAILS[shape.type]],
@@ -991,6 +1004,7 @@ export class ToolStarterApp {
       ["Color", shape.style.fill === "none" ? shape.style.stroke : shape.style.fill],
       ["Transform", `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`]
     ]));
+    shapePanel.append(editableHint);
     shapePanel.append(this.createShapeGeometryControls(shape));
     shapePanel.append(this.createShapeTransformControls(shape));
     shapePanel.append(this.createShapeActions(shape));
@@ -2855,17 +2869,27 @@ export class ToolStarterApp {
 
   updateObjectActionState() {
     const hasSelectedObject = Boolean(this.selectedObject());
-    this.elements.createTemplateButton.disabled = !this.currentPayload;
-    this.elements.objectTypeSelect.disabled = !hasSelectedObject && !this.currentPayload;
-    this.elements.createStateButton.disabled = !hasSelectedObject;
-    this.elements.renameObjectButton.disabled = !hasSelectedObject;
-    this.elements.duplicateObjectButton.disabled = !hasSelectedObject;
-    this.elements.duplicateAsLocalButton.disabled = !hasSelectedObject;
-    this.elements.deleteObjectButton.disabled = !hasSelectedObject;
-    this.elements.flattenObjectButton.disabled = !hasSelectedObject;
-    this.elements.createLibraryAssetButton.disabled = !hasSelectedObject;
-    this.elements.exportSvgButton.disabled = !hasSelectedObject;
-    this.elements.runtimePreviewButton.disabled = !hasSelectedObject;
+    const selectedObject = this.selectedObject();
+    const noPayloadReason = "Disabled until a schema-valid Object Vector Studio V2 payload is loaded.";
+    const noObjectReason = "Disabled until a schema-valid object is selected.";
+    const noInheritedReason = "Disabled unless the selected object inherits from a base object; use Duplicate for local copies.";
+    this.setControlDisabled(this.elements.createTemplateButton, !this.currentPayload, noPayloadReason, "Create an object from the selected template.");
+    this.setControlDisabled(this.elements.objectTypeSelect, !hasSelectedObject && !this.currentPayload, noPayloadReason, "Set object type metadata for the next or selected object.");
+    this.setControlDisabled(this.elements.createStateButton, !hasSelectedObject, noObjectReason, "Create the selected state on the active object.");
+    this.setControlDisabled(this.elements.renameObjectButton, !hasSelectedObject, noObjectReason, "Rename the selected object.");
+    this.setControlDisabled(this.elements.duplicateObjectButton, !hasSelectedObject, noObjectReason, "Duplicate the selected object.");
+    this.setControlDisabled(
+      this.elements.duplicateAsLocalButton,
+      !hasSelectedObject || !selectedObject?.baseObjectId,
+      hasSelectedObject ? noInheritedReason : noObjectReason,
+      "Detach the inherited selected object into a local editable copy."
+    );
+    this.setControlDisabled(this.elements.deleteObjectButton, !hasSelectedObject, noObjectReason, "Delete the selected object.");
+    this.setControlDisabled(this.elements.flattenObjectButton, !hasSelectedObject, noObjectReason, "Bake selected object transforms into local shape data.");
+    this.setControlDisabled(this.elements.createLibraryAssetButton, !hasSelectedObject, noObjectReason, "Register the selected object as a reusable library asset.");
+    this.setControlDisabled(this.elements.exportSvgButton, !hasSelectedObject, noObjectReason, "Export the selected object as SVG.");
+    this.setControlDisabled(this.elements.runtimePreviewButton, !hasSelectedObject, noObjectReason, "Preview the selected object through the runtime asset renderer.");
+    this.updateDisabledReasonSummary();
     this.updateAnimationActionState();
   }
 
@@ -2873,12 +2897,47 @@ export class ToolStarterApp {
     const state = this.selectedState();
     const frames = sortedFrames(state);
     const hasFrame = Boolean(state && this.activeFrame());
-    this.elements.duplicateFrameButton.disabled = !hasFrame;
-    this.elements.frameEarlierButton.disabled = !hasFrame || frames.findIndex((frame) => frame.id === this.selectedFrameId) <= 0;
-    this.elements.frameLaterButton.disabled = !hasFrame || frames.findIndex((frame) => frame.id === this.selectedFrameId) >= frames.length - 1;
-    this.elements.playButton.disabled = !hasFrame || this.isAnimationPlaying;
-    this.elements.pauseButton.disabled = !this.isAnimationPlaying;
-    this.elements.stopButton.disabled = !hasFrame;
+    const frameIndex = frames.findIndex((frame) => frame.id === this.selectedFrameId);
+    const noFrameReason = "Disabled until the selected object has an active state frame.";
+    this.setControlDisabled(this.elements.duplicateFrameButton, !hasFrame, noFrameReason, "Duplicate the active animation frame.");
+    this.setControlDisabled(this.elements.frameEarlierButton, !hasFrame || frameIndex <= 0, hasFrame ? "Disabled because the selected frame is already first." : noFrameReason, "Move the selected frame earlier.");
+    this.setControlDisabled(this.elements.frameLaterButton, !hasFrame || frameIndex >= frames.length - 1, hasFrame ? "Disabled because the selected frame is already last." : noFrameReason, "Move the selected frame later.");
+    this.setControlDisabled(this.elements.playButton, !hasFrame || this.isAnimationPlaying, this.isAnimationPlaying ? "Disabled while playback is already running." : noFrameReason, "Play the selected state timeline.");
+    this.setControlDisabled(this.elements.pauseButton, !this.isAnimationPlaying, "Disabled until playback starts.", "Pause animation playback.");
+    this.setControlDisabled(this.elements.stopButton, !hasFrame, noFrameReason, "Stop animation playback.");
+  }
+
+  setControlDisabled(element, isDisabled, disabledReason, enabledTitle) {
+    element.disabled = isDisabled;
+    element.title = isDisabled ? disabledReason : enabledTitle;
+    element.setAttribute("aria-disabled", String(isDisabled));
+    if (isDisabled) {
+      element.dataset.disabledReason = disabledReason;
+      return;
+    }
+    delete element.dataset.disabledReason;
+  }
+
+  updateDisabledReasonSummary() {
+    const reasons = [];
+    if (!this.currentPayload) {
+      reasons.push("load a schema-valid payload");
+    }
+    if (!this.runtimePalette) {
+      reasons.push("provide a read-only runtime palette from session/workspace");
+    }
+    const selectedObject = this.selectedObject();
+    if (!selectedObject) {
+      reasons.push("select an object to enable object, SVG, runtime preview, and state actions");
+    } else if (!selectedObject.baseObjectId) {
+      reasons.push("Duplicate As Local is available only for inherited objects");
+    }
+    if (!this.activeFrame()) {
+      reasons.push("create/select a state frame for playback and frame actions");
+    }
+    this.elements.disabledReason.textContent = reasons.length
+      ? `Disabled controls: ${reasons.join("; ")}.`
+      : "All current Object Vector Studio V2 controls are reviewable for the selected object, shape, state, and frame.";
   }
 
   async copyJson() {

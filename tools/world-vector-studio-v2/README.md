@@ -25,6 +25,8 @@ Use World Vector Studio V2 for:
 
 Use Object Vector Studio V2 instead for reusable gameplay entities, ships, enemies, pickups, actors, weapons, UI vector assets, SVG/vector authoring, primitives/shapes/path editing, and animation-ready structures.
 
+Object Vector Studio V2 asset references are read-only inside World Vector Studio V2. World Vector Studio V2 must not mutate Object Vector Studio V2 source assets; Duplicate As Local in Object Vector Studio V2 is the only allowed detachment path before editing object source data.
+
 ## Migration Direction
 
 - Vector Map Editor remains deprecated compatibility during the transition.
