@@ -1,4 +1,4 @@
-# PR_26133_003 Playwright V8 Coverage Report
+# PR_26133_004 Playwright V8 Coverage Report
 
 Coverage source: `docs/dev/reports/playwright_v8_coverage_report.txt`, refreshed by the final `npm run test:workspace-v2` run.
 
@@ -7,12 +7,13 @@ Coverage source: `docs/dev/reports/playwright_v8_coverage_report.txt`, refreshed
 - Coverage is advisory only; no thresholds are enforced.
 - Workspace Manager V2 entry point: 91%.
 - Object Vector Studio V2 runtime coverage entries from the generated report:
-  - `tools/object-vector-studio-v2/js/ToolStarterApp.js`: 90%, executed lines 3270/3270, executed functions 342/378.
+  - `tools/object-vector-studio-v2/js/ToolStarterApp.js`: 91%, executed lines 3304/3304, executed functions 346/381.
   - `tools/object-vector-studio-v2/js/bootstrap.js`: 80%, executed lines 99/99, executed functions 4/5.
-- The generated report lists no low-coverage changed runtime JS files.
+- The generated report lists `tools/object-vector-studio-v2/js/ToolStarterApp.js` as a changed JS file with browser V8 coverage.
 
 ## Validation Context
 
 - Main command: `npm run test:workspace-v2`.
 - Result: 46 passed.
 - Focused Object Vector Studio V2 layout and preview-coordinate scenarios also passed.
+- Manual Object Preview probe confirmed restored 10-unit grid spacing, 10x object drawing scale, zoom/pan/reset behavior, and no console/runtime errors.

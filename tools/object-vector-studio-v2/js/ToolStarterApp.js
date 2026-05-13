@@ -10,7 +10,8 @@ const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
 const CENTER_ORIGIN_SESSION_KEY = "object-vector-studio-v2.centerOrigin";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
-const GRID_STEP = 1;
+const GRID_STEP = 10;
+const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;
 const MAX_ZOOM = 4;
 const MIN_ZOOM = 0.25;
 const ZOOM_STEP = 0.1;
@@ -1456,7 +1457,7 @@ export class ToolStarterApp {
         return;
       }
       try {
-        const element = this.createSvgShape(renderShape);
+        const element = this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
         element.dataset.shapeId = shape.id;
         element.dataset.shapeType = shape.type;
         element.classList.add("object-vector-studio-v2__shape");
@@ -1561,7 +1562,7 @@ export class ToolStarterApp {
         return;
       }
       try {
-        group.append(this.createSvgShape(renderShape));
+        group.append(this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE }));
       } catch (error) {
         this.statusLog.write(`FAIL Onion-skin render failed for ${object.name}/${shape.id}: ${error.message}`);
       }
@@ -1570,7 +1571,7 @@ export class ToolStarterApp {
   }
 
   renderObjectBounds(object) {
-    const bounds = this.objectBounds(object, { includeInvisible: false });
+    const bounds = this.objectBounds(object, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE, includeInvisible: false });
     const box = document.createElementNS(SVG_NS, "rect");
     box.classList.add("object-vector-studio-v2__object-bounds");
     box.dataset.objectBounds = object.id;
@@ -1595,71 +1596,76 @@ export class ToolStarterApp {
     this.elements.renderSurface.append(marker);
   }
 
-  createSvgShape(shape) {
+  createSvgShape(shape, { drawingScale = 1 } = {}) {
     if (shape.type === "rectangle") {
       const element = document.createElementNS(SVG_NS, "rect");
-      element.setAttribute("x", shape.geometry.x);
-      element.setAttribute("y", shape.geometry.y);
-      element.setAttribute("width", shape.geometry.width);
-      element.setAttribute("height", shape.geometry.height);
-      this.applySvgStyle(element, shape);
+      element.setAttribute("x", this.scaleDrawingValue(shape.geometry.x, drawingScale));
+      element.setAttribute("y", this.scaleDrawingValue(shape.geometry.y, drawingScale));
+      element.setAttribute("width", this.scaleDrawingValue(shape.geometry.width, drawingScale));
+      element.setAttribute("height", this.scaleDrawingValue(shape.geometry.height, drawingScale));
+      this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
     if (shape.type === "circle") {
       const element = document.createElementNS(SVG_NS, "circle");
-      element.setAttribute("cx", shape.geometry.cx);
-      element.setAttribute("cy", shape.geometry.cy);
-      element.setAttribute("r", shape.geometry.r);
-      this.applySvgStyle(element, shape);
+      element.setAttribute("cx", this.scaleDrawingValue(shape.geometry.cx, drawingScale));
+      element.setAttribute("cy", this.scaleDrawingValue(shape.geometry.cy, drawingScale));
+      element.setAttribute("r", this.scaleDrawingValue(shape.geometry.r, drawingScale));
+      this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
     if (shape.type === "ellipse") {
       const element = document.createElementNS(SVG_NS, "ellipse");
-      element.setAttribute("cx", shape.geometry.cx);
-      element.setAttribute("cy", shape.geometry.cy);
-      element.setAttribute("rx", shape.geometry.rx);
-      element.setAttribute("ry", shape.geometry.ry);
-      this.applySvgStyle(element, shape);
+      element.setAttribute("cx", this.scaleDrawingValue(shape.geometry.cx, drawingScale));
+      element.setAttribute("cy", this.scaleDrawingValue(shape.geometry.cy, drawingScale));
+      element.setAttribute("rx", this.scaleDrawingValue(shape.geometry.rx, drawingScale));
+      element.setAttribute("ry", this.scaleDrawingValue(shape.geometry.ry, drawingScale));
+      this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
     if (shape.type === "line") {
       const element = document.createElementNS(SVG_NS, "line");
-      element.setAttribute("x1", shape.geometry.x1);
-      element.setAttribute("y1", shape.geometry.y1);
-      element.setAttribute("x2", shape.geometry.x2);
-      element.setAttribute("y2", shape.geometry.y2);
-      this.applySvgStyle(element, shape);
+      element.setAttribute("x1", this.scaleDrawingValue(shape.geometry.x1, drawingScale));
+      element.setAttribute("y1", this.scaleDrawingValue(shape.geometry.y1, drawingScale));
+      element.setAttribute("x2", this.scaleDrawingValue(shape.geometry.x2, drawingScale));
+      element.setAttribute("y2", this.scaleDrawingValue(shape.geometry.y2, drawingScale));
+      this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
     if (shape.type === "polygon") {
       const element = document.createElementNS(SVG_NS, "polygon");
-      element.setAttribute("points", shape.geometry.points.map((point) => `${point.x},${point.y}`).join(" "));
-      this.applySvgStyle(element, shape);
+      element.setAttribute("points", shape.geometry.points.map((point) => `${this.scaleDrawingValue(point.x, drawingScale)},${this.scaleDrawingValue(point.y, drawingScale)}`).join(" "));
+      this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
     if (shape.type === "arc") {
       const element = document.createElementNS(SVG_NS, "path");
-      element.setAttribute("d", this.arcPath(shape.geometry));
-      this.applySvgStyle(element, shape);
+      element.setAttribute("d", this.arcPath({
+        ...shape.geometry,
+        cx: this.scaleDrawingValue(shape.geometry.cx, drawingScale),
+        cy: this.scaleDrawingValue(shape.geometry.cy, drawingScale),
+        r: this.scaleDrawingValue(shape.geometry.r, drawingScale)
+      }));
+      this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
     if (shape.type === "text") {
       const element = document.createElementNS(SVG_NS, "text");
-      element.setAttribute("x", shape.geometry.x);
-      element.setAttribute("y", shape.geometry.y);
-      element.setAttribute("font-size", shape.geometry.fontSize);
+      element.setAttribute("x", this.scaleDrawingValue(shape.geometry.x, drawingScale));
+      element.setAttribute("y", this.scaleDrawingValue(shape.geometry.y, drawingScale));
+      element.setAttribute("font-size", this.scaleDrawingValue(shape.geometry.fontSize, drawingScale));
       element.textContent = shape.geometry.text;
-      this.applySvgStyle(element, shape);
+      this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
     throw new Error(`unsupported shape type ${shape.type}`);
   }
 
-  applySvgStyle(element, shape) {
+  applySvgStyle(element, shape, { drawingScale = 1 } = {}) {
     element.setAttribute("fill", shape.style.fill);
     element.setAttribute("stroke", shape.style.stroke);
     element.setAttribute("stroke-width", shape.style.strokeWidth);
-    const transform = this.shapeTransform(shape);
+    const transform = this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale);
     element.setAttribute("transform", this.svgTransformAttribute(transform));
   }
 
@@ -1693,20 +1699,51 @@ export class ToolStarterApp {
     ].join(" ");
   }
 
-  transformedBounds(shape) {
+  scaleDrawingValue(value, drawingScale = 1) {
+    return drawingScale === 1 ? value : this.formatViewportNumber(value * drawingScale);
+  }
+
+  scaledDrawingTransform(transform, drawingScale = 1) {
+    if (drawingScale === 1) {
+      return transform;
+    }
+    return {
+      ...transform,
+      originX: this.scaleDrawingValue(transform.originX, drawingScale),
+      originY: this.scaleDrawingValue(transform.originY, drawingScale),
+      x: this.scaleDrawingValue(transform.x, drawingScale),
+      y: this.scaleDrawingValue(transform.y, drawingScale)
+    };
+  }
+
+  scaledDrawingBounds(bounds, drawingScale = 1) {
+    if (drawingScale === 1) {
+      return bounds;
+    }
+    return {
+      height: this.scaleDrawingValue(bounds.height, drawingScale),
+      originX: this.scaleDrawingValue(bounds.originX, drawingScale),
+      originY: this.scaleDrawingValue(bounds.originY, drawingScale),
+      width: this.scaleDrawingValue(bounds.width, drawingScale),
+      x: this.scaleDrawingValue(bounds.x, drawingScale),
+      y: this.scaleDrawingValue(bounds.y, drawingScale)
+    };
+  }
+
+  transformedBounds(shape, { drawingScale = 1 } = {}) {
     const bounds = shapeBounds(shape);
     const transform = this.shapeTransform(shape);
-    return {
+    return this.scaledDrawingBounds({
       height: Math.max(1, bounds.height * transform.scaleY),
       originX: transform.originX + transform.x,
       originY: transform.originY + transform.y,
       width: Math.max(1, bounds.width * transform.scaleX),
       x: bounds.x + transform.x,
       y: bounds.y + transform.y
-    };
+    }, drawingScale);
   }
 
-  objectBounds(object, { includeInvisible = true } = {}) {
+  objectBounds(object, { drawingScale = 1, includeInvisible = true } = {}) {
     const shapes = sortedShapes(object).filter((shape) => includeInvisible || shape.visible);
     if (!shapes.length) {
       return {
@@ -1718,7 +1755,7 @@ export class ToolStarterApp {
     }
 
     const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
-    const bounds = shapes.map((shape) => this.transformedBounds(this.effectiveShapeForFrame(shape, activeFrame)));
+    const bounds = shapes.map((shape) => this.transformedBounds(this.effectiveShapeForFrame(shape, activeFrame), { drawingScale }));
     const minX = Math.min(...bounds.map((entry) => entry.x));
     const minY = Math.min(...bounds.map((entry) => entry.y));
     const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
@@ -1762,7 +1799,7 @@ export class ToolStarterApp {
       return;
     }
     try {
-      const bounds = this.transformedBounds(this.effectiveShape(selectedShape));
+      const bounds = this.transformedBounds(this.effectiveShape(selectedShape), { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
       const box = document.createElementNS(SVG_NS, "rect");
       box.classList.add("object-vector-studio-v2__selection-box");
       box.dataset.selectionBounds = selectedShape.id;

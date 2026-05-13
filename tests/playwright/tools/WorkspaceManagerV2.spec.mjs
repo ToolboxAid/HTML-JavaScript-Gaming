@@ -1592,22 +1592,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return {
           aspectRatioMatchesViewBox: Math.abs((surfaceRect.width / surfaceRect.height) - (viewBox[2] / viewBox[3])) < 0.02,
           canvasFillsAvailableWidth: Math.abs(surfaceRect.width - availableWidth) <= 2,
+          gridStepRestored: Math.min(...verticalLines.filter((x) => x > 0)) === 10 && Math.min(...horizontalLines.filter((y) => y > 0)) === 10,
           rectangle: {
             height: Number(rectangle.getAttribute("height")),
             width: Number(rectangle.getAttribute("width")),
             x: Number(rectangle.getAttribute("x")),
             y: Number(rectangle.getAttribute("y"))
           },
-          rectangleSpansGridLines: verticalLines.includes(-80) && verticalLines.includes(0) && horizontalLines.includes(-30) && horizontalLines.includes(30),
-          unitGridSpacing: verticalLines.includes(-80) && verticalLines.includes(-79) && horizontalLines.includes(-30) && horizontalLines.includes(-29)
+          rectangleUsesPreviewDrawingScale: Number(rectangle.getAttribute("x")) === -800
+            && Number(rectangle.getAttribute("y")) === -300
+            && Number(rectangle.getAttribute("width")) === 800
+            && Number(rectangle.getAttribute("height")) === 600,
+          unitGridSpacingRemoved: !verticalLines.includes(-79) && !horizontalLines.includes(-29)
         };
       });
       expect(gridObjectScale).toEqual({
         aspectRatioMatchesViewBox: true,
         canvasFillsAvailableWidth: true,
-        rectangle: { height: 60, width: 80, x: -80, y: -30 },
-        rectangleSpansGridLines: true,
-        unitGridSpacing: true
+        gridStepRestored: true,
+        rectangle: { height: 600, width: 800, x: -800, y: -300 },
+        rectangleUsesPreviewDrawingScale: true,
+        unitGridSpacingRemoved: true
       });
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility']")).toHaveText("");
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock']")).toHaveText("");
@@ -1707,13 +1712,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(selectionChrome).toEqual({ handleHeight: 3, handleWidth: 3, selectionStrokeWidth: "0.75px" });
 
-      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='circle-2']").click({ modifiers: ["Shift"] });
+      const clickPreviewShape = async (shapeId, eventInit = {}) => {
+        await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-id='${shapeId}']`).dispatchEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          ...eventInit
+        });
+      };
+
+      await clickPreviewShape("circle-2", { shiftKey: true });
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-1']")).toHaveClass(/is-selected/);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='circle-2']")).toHaveClass(/is-selected/);
       await expect(page.locator("[data-palette-color='#ffffff']")).toHaveClass(/is-selected/);
       await expect(page.locator("#statusLog")).toHaveValue(/Multi-select count: 2/);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"selectedShapeIds"');
-      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='rectangle-1']").click();
+      await clickPreviewShape("rectangle-1");
       await expect(page.locator("[data-palette-color='#6fd3ff']")).toHaveClass(/is-selected/);
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Rectangle Geometry");
       const reviewLayoutState = await page.evaluate(() => {
@@ -1798,11 +1811,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.keyboard.press("F");
       await page.locator("[data-palette-color='#6fd3ff']").click();
-      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='circle-2']").click();
+      await clickPreviewShape("circle-2");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"fill": "#6fd3ff"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #6fd3ff from cyan to shape circle-2 by render surface click\. Target: paint\./);
       await page.keyboard.press("S");
-      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='circle-2']").click();
+      await clickPreviewShape("circle-2");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"stroke": "#ffffff"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #ffffff from white to shape circle-2 by render surface click\. Target: stroke width 2\./);
       await page.evaluate(() => {
@@ -1810,12 +1823,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         window.__objectVectorStudioV2App.selectedStrokeLabel = "manual rogue";
         window.__objectVectorStudioV2App.activeTool = "stroke";
       });
-      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='circle-2']").click();
+      await clickPreviewShape("circle-2");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Palette color application rejected: #123456 is not in the loaded palette\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText("#123456");
       await page.locator("[data-palette-color='#ffffff']").click();
       await page.keyboard.press("I");
-      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-id='circle-2']").click();
+      await clickPreviewShape("circle-2");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Sampled stroke color #ffffff from shape circle-2\./);
       await page.keyboard.press("X");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Swapped fill and stroke colors/);
@@ -2109,6 +2122,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         name: "asteroids-ship-grid.object-vector.json"
       });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Render mode svg-work-surface: rendered Asteroids Ship Grid Check with 1 visible shapes; capture mode none\./);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
+      for (let index = 0; index < 8; index += 1) {
+        await page.locator("#objectVectorStudioV2ZoomOutButton").click();
+      }
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 25%");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
 
       const readPreviewScale = async () => page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
         const workArea = document.querySelector(".object-vector-studio-v2__work-area");
@@ -2129,29 +2148,38 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const transformed = point.matrixTransform(surface.getScreenCTM());
           return { x: transformed.x, y: transformed.y };
         };
-        const shipPoints = [
+        const sourceShipPoints = [
           { x: 0, y: -18 },
           { x: 14, y: 16 },
           { x: 0, y: 8 },
           { x: -14, y: 16 }
         ];
+        const shipPoints = sourceShipPoints.map((point) => ({ x: point.x * 10, y: point.y * 10 }));
+        const drawnPoints = surface.querySelector("[data-shape-id='asteroids-ship-outline']").getAttribute("points")
+          .split(/\s+/)
+          .map((entry) => {
+            const [x, y] = entry.split(",").map(Number);
+            return { x, y };
+          });
         const pointScreens = shipPoints.map((point) => screenPoint(point.x, point.y));
         const lineScreens = {
-          bottom: screenPoint(0, 16).y,
+          bottom: screenPoint(0, 160).y,
           origin: screenPoint(0, 0).y,
-          top: screenPoint(0, -18).y
+          top: screenPoint(0, -180).y
         };
         return {
           aspectRatioStable: Math.abs((surfaceRect.width / surfaceRect.height) - (viewBox[2] / viewBox[3])) < 0.02,
           canvasFillsAvailableWidth: Math.abs(surfaceRect.width - availableWidth) <= 2,
-          gridLinesAboveOrigin: horizontalLines.filter((y) => y < 0 && y >= -18).length,
-          gridLinesBelowOrigin: horizontalLines.filter((y) => y > 0 && y <= 16).length,
+          drawnPoints,
+          gridLinesAboveOrigin: horizontalLines.filter((y) => y < 0 && y >= -180).length,
+          gridLinesBelowOrigin: horizontalLines.filter((y) => y > 0 && y <= 160).length,
+          gridStepRestored: Math.min(...verticalLines.filter((x) => x > 0)) === 10 && Math.min(...horizontalLines.filter((y) => y > 0)) === 10,
           originCentered: Math.abs(lineScreens.origin - (surfaceRect.top + surfaceRect.height / 2)) <= 1,
           pointsOnVisibleGridLines: shipPoints.every((point) => horizontalLines.includes(point.y) && verticalLines.includes(point.x)),
           pointScreensMatchGrid: Math.abs(pointScreens[0].y - lineScreens.top) <= 0.01
             && Math.abs(pointScreens[1].y - lineScreens.bottom) <= 0.01
             && Math.abs(pointScreens[3].y - lineScreens.bottom) <= 0.01,
-          unitGridSpacing: horizontalLines.includes(-18) && horizontalLines.includes(-17) && horizontalLines.includes(15) && horizontalLines.includes(16),
+          unitGridSpacingRemoved: !horizontalLines.includes(-18) && !horizontalLines.includes(-17) && !horizontalLines.includes(15) && !horizontalLines.includes(16),
           viewBox: surface.getAttribute("viewBox")
         };
       });
@@ -2160,22 +2188,36 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(initialPreviewScale).toEqual({
         aspectRatioStable: true,
         canvasFillsAvailableWidth: true,
+        drawnPoints: [
+          { x: 0, y: -180 },
+          { x: 140, y: 160 },
+          { x: 0, y: 80 },
+          { x: -140, y: 160 }
+        ],
         gridLinesAboveOrigin: 18,
         gridLinesBelowOrigin: 16,
+        gridStepRestored: true,
         originCentered: true,
         pointsOnVisibleGridLines: true,
         pointScreensMatchGrid: true,
-        unitGridSpacing: true,
-        viewBox: "-160 -110 320 220"
+        unitGridSpacingRemoved: true,
+        viewBox: "-640 -440 1280 880"
       });
 
+      await page.locator("#objectVectorStudioV2PanRightButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-620 -440 1280 880");
+      await page.locator("#objectVectorStudioV2PanLeftButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
       await page.setViewportSize({ width: 1040, height: 720 });
       const resizedPreviewScale = await readPreviewScale();
       expect(resizedPreviewScale.aspectRatioStable).toBe(true);
       expect(resizedPreviewScale.canvasFillsAvailableWidth).toBe(true);
       expect(resizedPreviewScale.gridLinesAboveOrigin).toBe(18);
       expect(resizedPreviewScale.gridLinesBelowOrigin).toBe(16);
+      expect(resizedPreviewScale.gridStepRestored).toBe(true);
       expect(resizedPreviewScale.pointsOnVisibleGridLines).toBe(true);
+      await page.locator("#objectVectorStudioV2ResetViewButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
