@@ -32,17 +32,14 @@
     "object": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "name", "type", "shapes"],
+      "required": ["id", "name", "shapes"],
       "properties": {
         "id": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "^object\\.[a-z0-9-]+\\.[a-z0-9][a-z0-9.-]*$"
         },
         "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "type": {
           "type": "string",
           "minLength": 1
         },

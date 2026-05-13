@@ -8,6 +8,10 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function isObjectIdentityId(value) {
+  return /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9.-]*$/.test(String(value || ""));
+}
+
 function typeMatches(expectedType, value) {
   if (expectedType === "array") {
     return Array.isArray(value);
@@ -93,6 +97,9 @@ export class ObjectVectorStudioV2SchemaService {
     if (!isPlainObject(schema.$defs?.shape) || !Array.isArray(schema.$defs.shape.oneOf)) {
       errors.push("Object Vector Studio V2 schema must define shape variants.");
     }
+    if (Object.prototype.hasOwnProperty.call(schema.$defs?.object?.properties || {}, "type")) {
+      errors.push("Object Vector Studio V2 object schema must not define object type.");
+    }
   }
 
   validatePayload(payload) {
@@ -124,6 +131,9 @@ export class ObjectVectorStudioV2SchemaService {
     const objects = Array.isArray(payload?.objects) ? payload.objects : [];
     const objectsById = new Map();
     objects.forEach((object, index) => {
+      if (!isObjectIdentityId(object.id)) {
+        errors.push(`root.objects[${index}].id ${object.id} must follow object.game.name.`);
+      }
       if (objectsById.has(object.id)) {
         errors.push(`root.objects[${index}].id ${object.id} duplicates an existing object id.`);
         return;
@@ -386,7 +396,6 @@ export class ObjectVectorStudioV2SchemaService {
       id: object.id.trim(),
       name: object.name.trim(),
       tags: Array.isArray(object.tags) ? object.tags.map((tag) => tag.trim()).filter(Boolean) : undefined,
-      type: object.type.trim().toLowerCase(),
       states: Array.isArray(object.states)
         ? object.states.map((state) => ({
           ...state,

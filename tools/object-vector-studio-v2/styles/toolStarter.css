@@ -444,7 +444,6 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-actions,
-.object-vector-studio-v2__objects-actions,
 .object-vector-studio-v2__tool-display-actions,
 .object-vector-studio-v2__snap-actions,
 .object-vector-studio-v2__z-order-actions,
@@ -475,17 +474,25 @@ textarea:hover {
 
 #objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__z-order-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  grid-template-columns: repeat(auto-fill, 42px);
   align-items: stretch;
+  justify-content: center;
 }
 
 .object-vector-studio-v2__z-action {
+  width: 100%;
+  min-height: 0;
   min-width: 0;
+  aspect-ratio: 1;
   position: relative;
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 3px;
+  overflow: hidden;
+  padding: 4px !important;
+  text-align: center;
 }
 
 .object-vector-studio-v2__control-group h3,
@@ -502,9 +509,9 @@ textarea:hover {
 
 .object-vector-studio-v2__tool-toggle-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+  grid-template-columns: repeat(auto-fill, 42px);
   align-items: center;
-  justify-content: stretch;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -523,6 +530,15 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__tool-label {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 0.68rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.object-vector-studio-v2__z-label {
   max-width: 100%;
   overflow: hidden;
   font-size: 0.68rem;
@@ -629,11 +645,11 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__tool-toggle-grid.is-icon-only {
-  grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+  grid-template-columns: repeat(auto-fill, 42px);
 }
 
 .object-vector-studio-v2__tool-toggle-grid.is-icon-only .object-vector-studio-v2__tool-toggle {
-  min-height: 42px;
+  min-height: 0;
   gap: 0;
   padding: 4px;
 }
@@ -648,13 +664,11 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__z-order-actions.is-icon-only {
-  grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+  grid-template-columns: repeat(auto-fill, 42px);
 }
 
 .object-vector-studio-v2__z-order-actions.is-icon-only .object-vector-studio-v2__z-action {
-  aspect-ratio: 1;
-  min-height: 42px;
-  padding: 4px !important;
+  min-height: 0;
 }
 
 .object-vector-studio-v2__z-order-actions.is-icon-only .object-vector-studio-v2__z-label {
@@ -667,8 +681,8 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__z-icon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   position: relative;
   display: inline-block;
   color: #ffffff;
@@ -782,8 +796,8 @@ textarea:hover {
   padding-right: 2px;
 }
 
-.object-vector-studio-v2__objects-actions {
-  flex: 0 0 auto;
+.object-vector-studio-v2__object-actions {
+  margin-top: auto;
   padding-top: 8px;
 }
 

@@ -84,7 +84,7 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.getByRole("button", { name: "JSON Details" })).toBeVisible();
     await expect(page.locator("#statusLog")).toHaveValue(/Object Vector Studio V2 layout shell ready\./);
     await expect(page.locator("#statusLog")).toHaveValue(/INFO Shape\/Tools primitive buttons create schema-valid shapes on the selected object\./);
-    await expect(page.locator("#statusLog")).toHaveValue(/INFO Object type is a single editable value with suggestions from existing object types and tags/);
+    await expect(page.locator("#statusLog")).toHaveValue(/INFO Object identity uses object\.game\.name ids\./);
   });
 
   test("imports only schema-valid payloads with a session palette", async ({ page }, testInfo) => {
@@ -106,8 +106,8 @@ test.describe("Object Vector Studio V2", () => {
     await writeFile(validPayloadPath, JSON.stringify({
       name: "Local Object Set",
       objects: [
-        { id: "ship", name: "Asteroids Ship", shapes: [], type: "ship" },
-        { id: "pickup", name: "Energy Pickup", shapes: [], type: "pickup" }
+        { id: "object.local.ship", name: "Asteroids Ship", shapes: [] },
+        { id: "object.local.energy-pickup", name: "Energy Pickup", shapes: [] }
       ],
       toolId: "object-vector-studio-v2",
       version: 1
@@ -117,8 +117,8 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.locator("#objectVectorStudioV2PaletteSwatchCount")).toHaveText("(1 swatch)");
     await expect(page.locator("#objectVectorStudioV2PaletteSummary [data-palette-color]")).toHaveCount(1);
     await expect(page.locator("#objectVectorStudioV2ObjectTiles .object-vector-studio-v2__object-tile")).toHaveCount(2);
-    await expect(page.locator('[data-object-id="ship"]')).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator('[data-object-id="ship"]')).toContainText("objects > Asteroids Ship");
+    await expect(page.locator('[data-object-id="object.local.ship"]')).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator('[data-object-id="object.local.ship"]')).toContainText("object > local > Asteroids Ship");
     await expect(page.locator("#objectVectorStudioV2ObjectNameInput")).toHaveValue("Asteroids Ship");
     await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeEnabled();
     await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeEnabled();
@@ -126,7 +126,7 @@ test.describe("Object Vector Studio V2", () => {
     await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Local Object");
     await page.locator("#objectVectorStudioV2AddObjectButton").click();
     await expect(page.locator("#objectVectorStudioV2ObjectDetailsCount")).toHaveText("(3 obj, 0 shapes)");
-    await expect(page.locator('[data-object-id="local-object"]')).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator('[data-object-id="object.local.local-object"]')).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Local Object"');
 
     await page.locator('[data-shape-tool="rectangle"]').click();
@@ -136,7 +136,7 @@ test.describe("Object Vector Studio V2", () => {
 
     await page.locator("#objectVectorStudioV2DeleteObjectButton").click();
     await expect(page.locator("#objectVectorStudioV2ObjectDetailsCount")).toHaveText("(2 obj, 0 shapes)");
-    await expect(page.locator('[data-object-id="local-object"]')).toHaveCount(0);
+    await expect(page.locator('[data-object-id="object.local.local-object"]')).toHaveCount(0);
   });
 
   test("workspace launch shows Return to Workspace only", async ({ page }) => {

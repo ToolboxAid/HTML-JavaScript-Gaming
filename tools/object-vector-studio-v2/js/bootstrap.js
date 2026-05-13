@@ -57,8 +57,6 @@ window.addEventListener("DOMContentLoaded", () => {
       objectPreviewFooter: requireElement("#objectVectorStudioV2ObjectPreviewFooter"),
       objectTagInput: requireElement("#objectVectorStudioV2ObjectTagInput"),
       objectTagList: requireElement("#objectVectorStudioV2ObjectTagList"),
-      objectTypeInput: requireElement("#objectVectorStudioV2ObjectTypeInput"),
-      objectTypeOptions: requireElement("#objectVectorStudioV2ObjectTypeOptions"),
       objectsContent: requireElement("#objectVectorStudioV2ObjectsContent"),
       objectTiles: requireElement("#objectVectorStudioV2ObjectTiles"),
       paintModeButton: requireElement("#objectVectorStudioV2PaintModeButton"),

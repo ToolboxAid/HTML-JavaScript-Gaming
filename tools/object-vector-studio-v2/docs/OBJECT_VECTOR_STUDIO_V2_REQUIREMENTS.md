@@ -76,7 +76,7 @@ Object controls must mark dirty only when they change schema-owned payload data.
 
 ## Object Tiles
 
-- Object tiles must show object name, singular object type, hierarchy, and selected state.
+- Object tiles must show object/game/name identity, hierarchy, and selected state.
 - Tiles must support keyboard and pointer selection.
 - Tiles must remain stable in height so label changes do not cause layout jumps.
 - Tiles must expose enough metadata to distinguish ships, enemies, pickups, actors, and reusable gameplay entities.

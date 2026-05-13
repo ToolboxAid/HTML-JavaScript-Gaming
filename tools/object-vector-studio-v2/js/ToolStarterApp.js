@@ -7,7 +7,6 @@ const TOOL_DISPLAY_MODE_KEY = "object-vector-studio-v2.toolDisplayMode";
 const GRID_SNAP_SESSION_KEY = "object-vector-studio-v2.gridSnap";
 const ANGLE_SNAP_SESSION_KEY = "object-vector-studio-v2.angleSnap";
 const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
-const DEFAULT_OBJECT_TYPE = "object";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
 const GRID_STEP = 20;
@@ -38,12 +37,6 @@ const SHAPE_TYPE_DETAILS = Object.freeze({
 
 const PRIMITIVE_TOOLS = Object.freeze(["triangle", "rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]);
 
-function objectTypeKey(object) {
-  const rawType = object?.type || DEFAULT_OBJECT_TYPE;
-  const key = String(rawType).trim().toLowerCase();
-  return key || DEFAULT_OBJECT_TYPE;
-}
-
 function shapeTypeLabel(shape) {
   return shape.type.replace(/(^|-)([a-z])/g, (match) => match.toUpperCase()).replaceAll("-", " ");
 }
@@ -73,6 +66,17 @@ function slugifyObjectName(name) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
   return slug || "object";
+}
+
+function objectGameSegment(objectId) {
+  const match = /^object\.([a-z0-9-]+)\./.exec(String(objectId || ""));
+  return match?.[1] || "";
+}
+
+function payloadGameSlugFromName(name) {
+  const slug = slugifyObjectName(name || "game")
+    .replace(/-(object-vector-assets|object-vector-asset|object-assets|object-set|payload|assets)$/u, "");
+  return slug || "game";
 }
 
 function sortedShapes(object) {
@@ -271,7 +275,7 @@ export class ToolStarterApp {
     this.statusLog.write("INFO Schema-only loading is idle. Import JSON or launch with workspace toolState data. Runtime palette is required before rendering.");
     this.statusLog.write("INFO Shape/Tools primitive buttons create schema-valid shapes on the selected object.");
     this.statusLog.write("INFO Disabled controls stay inactive until a schema-valid payload, runtime palette, selected object, or active frame is available.");
-    this.statusLog.write("INFO Object type is a single editable value with suggestions from existing object types and tags; asset category controls are not part of this tool surface.");
+    this.statusLog.write("INFO Object identity uses object.game.name ids.");
     this.statusLog.write("INFO Paint and stroke selection is structured to scale later into shaders, gradients, patterns, neon, SVG export, and runtime rendering.");
     await this.schemaService.loadSchema();
     this.schemaReady = true;
@@ -384,8 +388,6 @@ export class ToolStarterApp {
     this.elements.renameObjectButton.addEventListener("click", () => this.renameSelectedObject());
     this.elements.duplicateObjectButton.addEventListener("click", () => this.duplicateSelectedObject());
     this.elements.deleteObjectButton.addEventListener("click", () => this.deleteSelectedObject());
-    this.elements.objectTypeInput.addEventListener("change", () => this.updateSelectedObjectTypeFromInput());
-    this.elements.objectTypeInput.addEventListener("blur", () => this.updateSelectedObjectTypeFromInput());
     this.elements.exportSvgButton.addEventListener("click", () => this.exportSelectedObjectSvg());
     this.elements.bringForwardButton.addEventListener("click", () => this.changeSelectedShapeOrder("forward"));
     this.elements.sendBackwardButton.addEventListener("click", () => this.changeSelectedShapeOrder("backward"));
@@ -636,8 +638,6 @@ export class ToolStarterApp {
     this.updatePaletteHeader(this.runtimePalette?.swatches?.length || 0);
     this.elements.objectNameInput.value = "";
     this.elements.objectTagInput.value = "";
-    this.elements.objectTypeInput.value = "";
-    this.renderObjectTypeOptions();
     this.renderObjectTagList(null);
     this.elements.paletteSummary.textContent = this.runtimePalette ? "" : "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
@@ -777,7 +777,6 @@ export class ToolStarterApp {
       this.renderPalette();
     }
     this.renderTagFilter();
-    this.renderObjectTypeOptions();
     this.renderObjectTiles();
     this.renderDependencyGraph();
     this.renderSelectedObject();
@@ -797,8 +796,6 @@ export class ToolStarterApp {
     this.elements.paletteSummary.textContent = message;
     this.elements.objectNameInput.value = "";
     this.elements.objectTagInput.value = "";
-    this.elements.objectTypeInput.value = "";
-    this.renderObjectTypeOptions();
     this.renderObjectTagList(null);
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
@@ -902,7 +899,8 @@ export class ToolStarterApp {
       meta.className = "object-vector-studio-v2__object-tile-meta";
       const tags = tagList(object.tags);
       const inheritedText = object.baseObjectId ? ` - inherits ${object.baseObjectId}` : "";
-      meta.textContent = `objects > ${object.name} | ${objectTypeKey(object)} | ${shapeCountLabel(object.shapes.length)}${tags.length ? ` | ${tags.join(", ")}` : ""}${inheritedText}`;
+      const gameSegment = objectGameSegment(object.id) || this.payloadGameKey();
+      meta.textContent = `object > ${gameSegment} > ${object.name} | ${shapeCountLabel(object.shapes.length)}${tags.length ? ` | ${tags.join(", ")}` : ""}${inheritedText}`;
 
       const copy = document.createElement("span");
       copy.className = "object-vector-studio-v2__object-tile-copy";
@@ -1053,7 +1051,7 @@ export class ToolStarterApp {
     const query = this.elements.searchFilter.value.trim().toLowerCase();
     return this.currentPayload.objects.filter((object) => {
       const matchesTag = tag === "all" || tagList(object.tags).includes(tag);
-      const haystack = `${object.id} ${object.name} ${objectTypeKey(object)} ${(object.tags || []).join(" ")} ${object.baseObjectId || ""}`.toLowerCase();
+      const haystack = `${object.id} ${object.name} ${objectGameSegment(object.id)} ${(object.tags || []).join(" ")} ${object.baseObjectId || ""}`.toLowerCase();
       return matchesTag && (!query || haystack.includes(query));
     });
   }
@@ -1076,20 +1074,6 @@ export class ToolStarterApp {
 
   availableObjectTags() {
     return Array.from(new Set((this.currentPayload?.objects || []).flatMap((object) => tagList(object.tags)))).sort();
-  }
-
-  renderObjectTypeOptions() {
-    const suggestions = new Set();
-    (this.currentPayload?.objects || []).forEach((object) => {
-      suggestions.add(objectTypeKey(object));
-      tagList(object.tags).forEach((tag) => suggestions.add(tag));
-    });
-    this.elements.objectTypeOptions.replaceChildren();
-    [...suggestions].sort().forEach((value) => {
-      const option = document.createElement("option");
-      option.value = value;
-      this.elements.objectTypeOptions.append(option);
-    });
   }
 
   assetLibraryAssets() {
@@ -1151,7 +1135,6 @@ export class ToolStarterApp {
     if (!selected) {
       this.elements.objectNameInput.value = "";
       this.elements.objectTagInput.value = "";
-      this.elements.objectTypeInput.value = "";
       this.renderObjectTagList(null);
       this.updateObjectDetailsHeader(this.currentPayload?.objects.length || 0, 0);
       this.elements.objectDetails.textContent = "No object selected.";
@@ -1163,7 +1146,6 @@ export class ToolStarterApp {
 
     const shape = this.selectedShape();
     this.elements.objectNameInput.value = selected.name;
-    this.elements.objectTypeInput.value = objectTypeKey(selected);
     this.renderObjectTagList(selected);
     this.updateObjectDetailsHeader(this.currentPayload.objects.length, selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
@@ -2130,37 +2112,13 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     const id = this.uniqueObjectId(name, nextPayload.objects);
-    const type = slugifyObjectName(this.elements.objectTypeInput.value.trim() || DEFAULT_OBJECT_TYPE);
     nextPayload.objects.push({
       id,
       name,
       shapes: [],
-      tags: tagList(this.elements.objectTagInput.value),
-      type
+      tags: tagList(this.elements.objectTagInput.value)
     });
-    this.commitPayloadUpdate(nextPayload, id, "", `OK Added object ${name} with id ${id} and type ${type}.`, "Add object failed schema validation");
-  }
-
-  updateSelectedObjectTypeFromInput() {
-    if (this.pendingAddObjectClick) {
-      return;
-    }
-    const selected = this.selectedObject();
-    if (!selected) {
-      return;
-    }
-    if (this.guardSelectedObjectMutation("Object type update")) {
-      return;
-    }
-    const type = slugifyObjectName(this.elements.objectTypeInput.value.trim() || DEFAULT_OBJECT_TYPE);
-    if (type === objectTypeKey(selected)) {
-      this.elements.objectTypeInput.value = type;
-      return;
-    }
-    const nextPayload = this.cloneCurrentPayload();
-    const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
-    nextObject.type = type;
-    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Object ${selected.name} type set to ${type}.`, "Object type update failed schema validation");
+    this.commitPayloadUpdate(nextPayload, id, "", `OK Added object ${name} with object/game/name id ${id}.`, "Add object failed schema validation");
   }
 
   addTagToSelectedObject() {
@@ -2226,7 +2184,7 @@ export class ToolStarterApp {
     const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
     const oldId = nextObject.id;
     const siblingObjects = nextPayload.objects.filter((object) => object.id !== oldId);
-    const nextId = this.uniqueObjectId(name, siblingObjects);
+    const nextId = this.uniqueObjectId(name, siblingObjects, objectGameSegment(oldId) || this.payloadGameKey());
     nextPayload.objects.forEach((object) => {
       if (object.baseObjectId === oldId) {
         object.baseObjectId = nextId;
@@ -2239,7 +2197,7 @@ export class ToolStarterApp {
     });
     nextObject.id = nextId;
     nextObject.name = name;
-    this.commitPayloadUpdate(nextPayload, nextId, this.selectedShapeId, `OK Renamed object ${oldId} to ${name} and updated Object ID to ${nextId}.`, "Rename object failed schema validation");
+    this.commitPayloadUpdate(nextPayload, nextId, this.selectedShapeId, `OK Renamed object ${oldId} to ${name} and updated object/game/name id to ${nextId}.`, "Rename object failed schema validation");
   }
 
   duplicateSelectedObject() {
@@ -2254,7 +2212,7 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     const objectCopy = JSON.parse(JSON.stringify(selected));
-    objectCopy.id = this.uniqueObjectId(`${selected.name} Copy`, nextPayload.objects);
+    objectCopy.id = this.uniqueObjectId(`${selected.name} Copy`, nextPayload.objects, objectGameSegment(selected.id) || this.payloadGameKey());
     objectCopy.name = `${selected.name} Copy`;
     nextPayload.objects.push(objectCopy);
     const selectedShapeId = sortedShapes(objectCopy)[0]?.id || "";
@@ -3193,8 +3151,8 @@ export class ToolStarterApp {
     return swatchColor(swatch) || firstColor;
   }
 
-  uniqueObjectId(name, objects) {
-    const baseId = slugifyObjectName(name);
+  uniqueObjectId(name, objects, gameKey = this.payloadGameKey()) {
+    const baseId = `object.${gameKey}.${slugifyObjectName(name)}`;
     const usedIds = new Set(objects.map((object) => object.id));
     if (!usedIds.has(baseId)) {
       return baseId;
@@ -3207,6 +3165,18 @@ export class ToolStarterApp {
       candidate = `${baseId}-${suffix}`;
     }
     return candidate;
+  }
+
+  payloadGameKey() {
+    const counts = new Map();
+    (this.currentPayload?.objects || []).forEach((object) => {
+      const segment = objectGameSegment(object.id);
+      if (segment) {
+        counts.set(segment, (counts.get(segment) || 0) + 1);
+      }
+    });
+    const existingGame = [...counts.entries()].sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))[0]?.[0];
+    return existingGame || payloadGameSlugFromName(this.currentPayload?.name);
   }
 
   uniqueShapeId(type, shapes) {

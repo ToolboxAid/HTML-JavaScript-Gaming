@@ -56,22 +56,23 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2ObjectContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2ObjectNameInput">
+            <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2ObjectNameInput">
               <span>Object Name</span>
               <input id="objectVectorStudioV2ObjectNameInput" type="text" autocomplete="off" placeholder="Object name">
             </label>
-            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2ObjectTypeInput">
-              <span>Object Type</span>
-              <input id="objectVectorStudioV2ObjectTypeInput" type="text" list="objectVectorStudioV2ObjectTypeOptions" autocomplete="off" placeholder="Single type">
-              <datalist id="objectVectorStudioV2ObjectTypeOptions"></datalist>
-            </label>
             <div class="object-vector-studio-v2__tag-editor" aria-label="Object tags">
-              <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2ObjectTagInput">
-                <span>Tags</span>
+              <label class="tool-starter__field tool-starter__field--compact" for="objectVectorStudioV2ObjectTagInput">
+                <span>Tag</span>
                 <input id="objectVectorStudioV2ObjectTagInput" type="text" autocomplete="off" placeholder="Add tag">
               </label>
               <button id="objectVectorStudioV2AddTagButton" type="button">Add Tag</button>
               <div id="objectVectorStudioV2ObjectTagList" class="object-vector-studio-v2__tag-list" aria-label="Selected object tags"></div>
+            </div>
+            <div class="object-vector-studio-v2__object-actions" aria-label="Object actions">
+              <button id="objectVectorStudioV2AddObjectButton" type="button" title="Add a schema-valid object to the loaded payload">Add</button>
+              <button id="objectVectorStudioV2RenameObjectButton" type="button" title="Rename the selected object and update its object/game/name id">Rename</button>
+              <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Duplicate</button>
+              <button id="objectVectorStudioV2DeleteObjectButton" type="button" title="Delete the selected object">Delete</button>
             </div>
           </div>
         </section>
@@ -103,12 +104,6 @@
               <input id="objectVectorStudioV2SearchFilter" type="search" autocomplete="off" placeholder="Filter objects">
             </label>
             <div id="objectVectorStudioV2ObjectTiles" class="object-vector-studio-v2__object-tiles" aria-label="Object tiles"></div>
-            <div class="object-vector-studio-v2__objects-actions" aria-label="Object actions">
-              <button id="objectVectorStudioV2AddObjectButton" type="button" title="Add a schema-valid object to the loaded payload">Add</button>
-              <button id="objectVectorStudioV2RenameObjectButton" type="button" title="Rename the selected object and update its object ID">Rename</button>
-              <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Duplicate</button>
-              <button id="objectVectorStudioV2DeleteObjectButton" type="button" title="Delete the selected object">Delete</button>
-            </div>
           </div>
         </section>
       </aside>

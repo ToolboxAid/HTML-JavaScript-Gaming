@@ -9,6 +9,10 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function isObjectIdentityId(value) {
+  return /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9.-]*$/.test(String(value || ""));
+}
+
 function typeMatches(expectedType, value) {
   if (expectedType === "array") {
     return Array.isArray(value);
@@ -287,13 +291,9 @@ export class ObjectVectorRuntimeAssetService {
     const dependencyGraph = new Map();
     const objectsById = new Map();
     const objectsByName = new Map();
-    const objectsByType = new Map();
     payload.objects.forEach((object) => {
       objectsById.set(object.id, object);
       objectsByName.set(object.name.toLowerCase(), object);
-      const typedObjects = objectsByType.get(object.type) || [];
-      typedObjects.push(object);
-      objectsByType.set(object.type, typedObjects);
       dependencyGraph.set(object.id, object.baseObjectId ? [object.baseObjectId] : []);
     });
     (payload.assetLibrary?.assets || []).forEach((asset) => {
@@ -308,20 +308,19 @@ export class ObjectVectorRuntimeAssetService {
       dependencyGraph,
       objectsById,
       objectsByName,
-      objectsByType,
       payload,
       sourceLabel
     };
   }
 
-  resolveObject(assetSet, { assetId = "", objectId = "", name = "", type = "" } = {}) {
+  resolveObject(assetSet, { assetId = "", objectId = "", name = "" } = {}) {
     if (!assetSet) {
       this.log("FAIL", "Object Vector runtime object resolution failed: no validated asset set is loaded.");
       return null;
     }
-    const cacheKey = `${assetSet.sourceLabel}:${assetId || objectId || name || type || "unknown"}`;
+    const cacheKey = `${assetSet.sourceLabel}:${assetId || objectId || name || "unknown"}`;
     if (this.assetCache.has(cacheKey)) {
-      this.logCacheOnce(cacheKey, `Object Vector runtime cache hit for ${assetId || objectId || name || type}.`);
+      this.logCacheOnce(cacheKey, `Object Vector runtime cache hit for ${assetId || objectId || name}.`);
       return this.assetCache.get(cacheKey);
     }
 
@@ -340,11 +339,8 @@ export class ObjectVectorRuntimeAssetService {
     if (!object && name) {
       object = assetSet.objectsByName.get(name.toLowerCase()) || null;
     }
-    if (!object && type) {
-      object = assetSet.objectsByType.get(type)?.[0] || null;
-    }
     if (!object) {
-      this.log("FAIL", `Object Vector runtime object resolution failed: objectId=${objectId || "none"} name=${name || "none"} type=${type || "none"}.`);
+      this.log("FAIL", `Object Vector runtime object resolution failed: objectId=${objectId || "none"} name=${name || "none"}.`);
       return null;
     }
 
@@ -658,6 +654,9 @@ export class ObjectVectorRuntimeAssetService {
     if (!isPlainObject(schema.$defs?.shape) || !Array.isArray(schema.$defs.shape.oneOf)) {
       errors.push("Object Vector Studio V2 schema must define shape variants.");
     }
+    if (Object.prototype.hasOwnProperty.call(schema.$defs?.object?.properties || {}, "type")) {
+      errors.push("Object Vector Studio V2 object schema must not define object type.");
+    }
   }
 
   validatePayload(payload) {
@@ -705,6 +704,9 @@ export class ObjectVectorRuntimeAssetService {
   validateInheritanceReferences(payload, errors) {
     const objectsById = new Map();
     payload.objects.forEach((object, objectIndex) => {
+      if (!isObjectIdentityId(object.id)) {
+        errors.push(`root.objects[${objectIndex}].id ${object.id} must follow object.game.name.`);
+      }
       if (objectsById.has(object.id)) {
         errors.push(`root.objects[${objectIndex}].id ${object.id} duplicates an existing object id.`);
         return;
@@ -884,7 +886,6 @@ export class ObjectVectorRuntimeAssetService {
         id: object.id.trim(),
         name: object.name.trim(),
         tags: Array.isArray(object.tags) ? object.tags.map((tag) => tag.trim()).filter(Boolean) : undefined,
-        type: object.type.trim().toLowerCase(),
         shapes: object.shapes.map((shape) => ({
           ...shape,
           id: shape.id.trim(),

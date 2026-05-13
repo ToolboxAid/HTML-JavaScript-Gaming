@@ -256,7 +256,6 @@
             {
               "id": "object.asteroids.ship",
               "name": "Asteroids Ship",
-              "type": "ship",
               "shapes": [
                 {
                   "id": "ship-hull",
@@ -405,7 +404,6 @@
             {
               "id": "object.asteroids.asteroid.large",
               "name": "Large Asteroid",
-              "type": "object",
               "shapes": [
                 {
                   "id": "large-asteroid-ridge",
@@ -484,7 +482,6 @@
             {
               "id": "object.asteroids.asteroid.medium",
               "name": "Medium Asteroid",
-              "type": "object",
               "shapes": [
                 {
                   "id": "medium-asteroid-ridge",
@@ -559,7 +556,6 @@
             {
               "id": "object.asteroids.asteroid.small",
               "name": "Small Asteroid",
-              "type": "object",
               "shapes": [
                 {
                   "id": "small-asteroid-ridge",
@@ -630,7 +626,6 @@
             {
               "id": "object.asteroids.ufo.large",
               "name": "Large UFO",
-              "type": "enemy",
               "shapes": [
                 {
                   "id": "large-ufo-body",
@@ -707,7 +702,6 @@
             {
               "id": "object.asteroids.ufo.small",
               "name": "Small UFO",
-              "type": "enemy",
               "shapes": [
                 {
                   "id": "small-ufo-body",
