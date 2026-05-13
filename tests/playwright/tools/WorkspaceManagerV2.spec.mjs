@@ -1704,10 +1704,36 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         rectangleUsesPreviewDrawingScale: true,
         unitGridSpacingRemoved: true
       });
+      const objectTileActionLayout = await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1']").evaluate((tile) => {
+        const controls = Array.from(tile.querySelectorAll("[data-object-control]"));
+        const rects = controls.map((control) => control.getBoundingClientRect());
+        const deleteButton = tile.querySelector("[data-object-control='delete']");
+        const deleteRect = deleteButton.getBoundingClientRect();
+        const tileRect = tile.getBoundingClientRect();
+        return {
+          allTextEmpty: controls.every((control) => control.textContent.trim() === ""),
+          controlOrder: controls.map((control) => control.dataset.objectControl),
+          deleteAtFarRight: Math.abs(tileRect.right - deleteRect.right) <= 12,
+          deleteTitle: deleteButton.title,
+          iconSizes: rects.map((rect) => Math.round(Math.max(rect.width, rect.height))),
+          stacked: rects.every((rect, index) => index === 0
+            || (Math.abs(rect.left - rects[index - 1].left) <= 1 && rect.top > rects[index - 1].top))
+        };
+      });
+      expect(objectTileActionLayout).toEqual({
+        allTextEmpty: true,
+        controlOrder: ["visibility", "lock", "delete"],
+        deleteAtFarRight: true,
+        deleteTitle: "Delete this object",
+        iconSizes: [26, 26, 26],
+        stacked: true
+      });
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility']")).toHaveText("");
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock']")).toHaveText("");
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='delete']")).toHaveText("");
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility'] .object-vector-studio-v2__tile-icon--eye")).toHaveCount(1);
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock'] .object-vector-studio-v2__tile-icon--lock")).toHaveCount(1);
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='delete'] .object-vector-studio-v2__tile-icon--delete")).toHaveCount(1);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='visibility']").click();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1']")).toHaveClass(/is-hidden/);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-id]")).toHaveCount(0);
@@ -1716,11 +1742,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock']").click();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1']")).toHaveClass(/is-locked/);
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeDisabled();
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='delete']")).toBeDisabled();
       await page.locator('[data-shape-tool="line"]').click();
       await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(18 obj, 2 shapes)");
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Create line blocked: object Asteroids Ship is locked for this runtime session\./);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock']").click();
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeEnabled();
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='delete']")).toBeEnabled();
 
       const forceLeftPanelScroll = async () => page.evaluate(() => {
         const leftPanel = document.querySelector(".tool-starter__panel--left");
@@ -2081,11 +2109,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"shapes": []');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Added object Shield Pickup with object\/game\/name id object\.asteroids\.shield-pickup\./);
 
-      await page.locator("#objectVectorStudioV2DeleteObjectButton").click();
+      await page.locator('[data-object-id="object.asteroids.shield-pickup"] [data-object-control="delete"]').click();
       await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(18 obj, 2 shapes)");
       await expect(page.locator('[data-object-id="object.asteroids.shield-pickup"]')).toHaveCount(0);
       await expect(page.locator('[data-object-id="object.asteroids.object-1"]')).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted object Shield Pickup\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted object Shield Pickup from object tile delete\./);
 
       const leftAccordionLayout = await page.locator(".tool-starter__panel--left > .accordion-v2").evaluateAll((sections) => (
         sections.map((section) => {

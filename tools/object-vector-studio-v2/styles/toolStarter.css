@@ -960,23 +960,29 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-tile-controls {
-  align-self: end;
+  align-self: center;
+  justify-self: end;
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  justify-content: end;
-  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
 }
 
 .object-vector-studio-v2__object-tile-control {
   position: relative;
   z-index: 3;
-  width: 34px;
-  height: 34px;
-  min-height: 34px;
+  width: 26px;
+  height: 26px;
+  min-height: 26px;
   padding: 0 !important;
+}
+
+.object-vector-studio-v2__object-tile-control--delete {
+  color: var(--tool-starter-danger);
 }
 
 .object-vector-studio-v2__object-tile-shapes {

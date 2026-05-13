@@ -940,7 +940,8 @@ export class ToolStarterApp {
       controls.className = "object-vector-studio-v2__object-tile-controls";
       controls.append(
         this.createObjectTileControl(object, "visibility"),
-        this.createObjectTileControl(object, "lock")
+        this.createObjectTileControl(object, "lock"),
+        this.createObjectTileControl(object, "delete")
       );
       tile.append(selectButton, controls);
       tile.addEventListener("click", () => {
@@ -980,17 +981,29 @@ export class ToolStarterApp {
     button.className = "object-vector-studio-v2__object-tile-control";
     button.type = "button";
     const isVisibility = kind === "visibility";
-    const isActive = isVisibility ? !this.isObjectHidden(object.id) : this.isObjectLocked(object.id);
+    const isDelete = kind === "delete";
+    const isLocked = this.isObjectLocked(object.id);
+    const isActive = isVisibility ? !this.isObjectHidden(object.id) : !isDelete && isLocked;
     button.dataset.objectControl = kind;
     button.dataset.objectControlId = object.id;
-    button.setAttribute("aria-pressed", String(isActive));
-    button.setAttribute("aria-label", isVisibility ? `${isActive ? "Hide" : "Show"} object ${object.name}` : `${isActive ? "Unlock" : "Lock"} object ${object.name}`);
-    button.append(this.createIconSpan(isVisibility ? "eye" : "lock", isActive));
-    button.title = isVisibility ? "Toggle object visibility" : "Toggle runtime object lock";
+    if (isDelete) {
+      button.classList.add("object-vector-studio-v2__object-tile-control--delete");
+      button.setAttribute("aria-label", `Delete object ${object.name}`);
+      button.append(this.createIconSpan("delete", true));
+      button.title = isLocked ? "Unlock object before deleting" : "Delete this object";
+      button.disabled = isLocked;
+    } else {
+      button.setAttribute("aria-pressed", String(isActive));
+      button.setAttribute("aria-label", isVisibility ? `${isActive ? "Hide" : "Show"} object ${object.name}` : `${isActive ? "Unlock" : "Lock"} object ${object.name}`);
+      button.append(this.createIconSpan(isVisibility ? "eye" : "lock", isActive));
+      button.title = isVisibility ? "Toggle object visibility" : "Toggle runtime object lock";
+    }
     button.addEventListener("click", (event) => {
       event.stopPropagation();
       if (isVisibility) {
         this.toggleObjectVisibility(object.id);
+      } else if (isDelete) {
+        this.deleteObjectById(object.id, "object tile delete");
       } else {
         this.toggleObjectLock(object.id);
       }
@@ -2616,6 +2629,31 @@ export class ToolStarterApp {
     const selectedObjectId = nextPayload.objects[0]?.id || "";
     const selectedShapeId = nextPayload.objects[0] ? sortedShapes(nextPayload.objects[0])[0]?.id || "" : "";
     this.commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, `OK Deleted object ${selected.name}.`, "Delete object failed schema validation");
+  }
+
+  deleteObjectById(objectId, sourceLabel) {
+    const selected = this.currentPayload?.objects.find((object) => object.id === objectId);
+    if (!selected) {
+      this.statusLog.write(`WARN Delete object skipped: object id ${objectId || "unknown"} is not available.`);
+      return;
+    }
+    if (this.isObjectLocked(selected.id)) {
+      this.statusLog.write(`WARN Delete object blocked: object ${selected.name} is locked for this runtime session.`);
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    nextPayload.objects = nextPayload.objects.filter((object) => object.id !== selected.id);
+    const selectedObjectStillExists = nextPayload.objects.some((object) => object.id === this.selectedObjectId);
+    const nextSelectedObject = selectedObjectStillExists
+      ? nextPayload.objects.find((object) => object.id === this.selectedObjectId)
+      : nextPayload.objects[0] || null;
+    const selectedObjectId = nextSelectedObject?.id || "";
+    const selectedShapeStillExists = nextSelectedObject?.shapes.some((shape) => shape.id === this.selectedShapeId);
+    const selectedShapeId = selectedShapeStillExists ? this.selectedShapeId : nextSelectedObject ? sortedShapes(nextSelectedObject)[0]?.id || "" : "";
+    this.hiddenObjectIds.delete(selected.id);
+    this.lockedObjectIds.delete(selected.id);
+    this.commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, `OK Deleted object ${selected.name} from ${sourceLabel}.`, "Delete object failed schema validation");
   }
 
   flattenSelectedObject() {
