@@ -12,7 +12,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
 const GRID_STEP = 10;
 const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;
-const MAX_ZOOM = 4;
+const MAX_ZOOM = 1;
 const MIN_ZOOM = 0.25;
 const ZOOM_STEP = 0.1;
 
@@ -660,7 +660,7 @@ export class ToolStarterApp {
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
-    this.elements.coordinateDisplay.textContent = "Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%";
+    this.elements.coordinateDisplay.textContent = `Origin: 0, 0 | Canvas 0,0 centered | Zoom ${this.formatZoomPercentage()}%`;
     this.elements.renderSurface.replaceChildren();
     this.renderSvgGrid();
     this.renderCenterOriginMarker();
@@ -1884,7 +1884,7 @@ export class ToolStarterApp {
   }
 
   formatZoomPercentage() {
-    return Math.round(this.viewport.zoom * 100);
+    return Math.round(this.viewport.zoom * 100 * GRID_STEP);
   }
 
   zoomViewportByStep(step) {
@@ -1900,7 +1900,7 @@ export class ToolStarterApp {
     this.viewport.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(nextZoom.toFixed(3))));
     this.updateViewport();
     this.renderWorkSurface();
-    this.statusLog.write(`OK Viewport zoom set to ${Math.round(this.viewport.zoom * 100)}%.`);
+    this.statusLog.write(`OK Viewport zoom set to ${this.formatZoomPercentage()}%.`);
   }
 
   panViewport(x, y) {
@@ -1913,7 +1913,7 @@ export class ToolStarterApp {
   resetViewport() {
     this.viewport = { ...DEFAULT_VIEWPORT };
     this.updateViewport();
-    this.statusLog.write("OK Viewport reset to 100% at origin 0,0.");
+    this.statusLog.write(`OK Viewport reset to ${this.formatZoomPercentage()}% at origin 0,0.`);
   }
 
   updateCoordinateDisplay(event) {

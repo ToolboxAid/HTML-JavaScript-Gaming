@@ -1,4 +1,4 @@
-# PR_26133_005 Playwright V8 Coverage Report
+# PR_26133_006 Playwright V8 Coverage Report
 
 Coverage source: `docs/dev/reports/playwright_v8_coverage_report.txt`, refreshed by the final `npm run test:workspace-v2` run.
 
@@ -16,4 +16,4 @@ Coverage source: `docs/dev/reports/playwright_v8_coverage_report.txt`, refreshed
 - Main command: `npm run test:workspace-v2`.
 - Result: 46 passed.
 - Focused Object Vector Studio V2 layout and preview-coordinate scenarios also passed.
-- Manual Object Preview probe confirmed logical pointer/origin display, unchanged visual scale, and no console/runtime errors.
+- Manual Object Preview probe confirmed normalized zoom display, unchanged visual scale, and no console/runtime errors.
