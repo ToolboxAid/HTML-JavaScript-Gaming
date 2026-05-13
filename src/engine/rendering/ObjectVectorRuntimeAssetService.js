@@ -881,7 +881,6 @@ export class ObjectVectorRuntimeAssetService {
       const normalizedObject = {
         ...object,
         baseObjectId: typeof object.baseObjectId === "string" ? object.baseObjectId.trim() : undefined,
-        category: typeof object.category === "string" ? object.category.trim() : undefined,
         id: object.id.trim(),
         name: object.name.trim(),
         tags: Array.isArray(object.tags) ? object.tags.map((tag) => tag.trim()).filter(Boolean) : undefined,
@@ -910,9 +909,6 @@ export class ObjectVectorRuntimeAssetService {
       if (normalizedObject.baseObjectId === undefined) {
         delete normalizedObject.baseObjectId;
       }
-      if (normalizedObject.category === undefined) {
-        delete normalizedObject.category;
-      }
       if (normalizedObject.tags === undefined) {
         delete normalizedObject.tags;
       }
@@ -921,7 +917,6 @@ export class ObjectVectorRuntimeAssetService {
     if (normalized.assetLibrary) {
       normalized.assetLibrary = {
         assets: normalized.assetLibrary.assets.map((asset) => ({
-          category: asset.category.trim(),
           id: asset.id.trim(),
           name: asset.name.trim(),
           objectId: asset.objectId.trim(),

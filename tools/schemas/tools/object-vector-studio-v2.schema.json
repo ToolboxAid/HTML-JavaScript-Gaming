@@ -44,10 +44,6 @@
         },
         "type": {
           "type": "string",
-          "enum": ["actor", "enemy", "object", "pickup", "ship", "ui", "weapon"]
-        },
-        "category": {
-          "type": "string",
           "minLength": 1
         },
         "tags": {
@@ -87,7 +83,7 @@
     "libraryAsset": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "name", "objectId", "category", "tags"],
+      "required": ["id", "name", "objectId", "tags"],
       "properties": {
         "id": {
           "type": "string",
@@ -98,10 +94,6 @@
           "minLength": 1
         },
         "objectId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "category": {
           "type": "string",
           "minLength": 1
         },

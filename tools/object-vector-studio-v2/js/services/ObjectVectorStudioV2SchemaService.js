@@ -383,7 +383,6 @@ export class ObjectVectorStudioV2SchemaService {
     normalized.objects = normalized.objects.map((object) => ({
       ...object,
       baseObjectId: typeof object.baseObjectId === "string" ? object.baseObjectId.trim() : undefined,
-      category: typeof object.category === "string" ? object.category.trim() : undefined,
       id: object.id.trim(),
       name: object.name.trim(),
       tags: Array.isArray(object.tags) ? object.tags.map((tag) => tag.trim()).filter(Boolean) : undefined,
@@ -416,9 +415,6 @@ export class ObjectVectorStudioV2SchemaService {
       if (object.baseObjectId === undefined) {
         delete object.baseObjectId;
       }
-      if (object.category === undefined) {
-        delete object.category;
-      }
       if (object.tags === undefined) {
         delete object.tags;
       }
@@ -427,7 +423,6 @@ export class ObjectVectorStudioV2SchemaService {
     if (normalized.assetLibrary) {
       normalized.assetLibrary = {
         assets: normalized.assetLibrary.assets.map((asset) => ({
-          category: asset.category.trim(),
           id: asset.id.trim(),
           name: asset.name.trim(),
           objectId: asset.objectId.trim(),

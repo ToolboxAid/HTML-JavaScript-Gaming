@@ -214,8 +214,15 @@ export class ToolStarterApp {
     this.selectedFrameId = "";
     this.playbackTimerId = 0;
     this.isAnimationPlaying = false;
+    this.activeTool = "select";
     this.paletteTarget = "paint";
     this.paletteSortMode = "name";
+    this.selectedFillColor = "#ffffff";
+    this.selectedStrokeColor = "#000000";
+    this.selectedFillLabel = "default fill";
+    this.selectedStrokeLabel = "default stroke";
+    this.isPaintDragging = false;
+    this.pendingAddObjectClick = false;
     this.hiddenObjectIds = new Set();
     this.lockedObjectIds = new Set();
     this.gridSnapEnabled = false;
@@ -260,7 +267,8 @@ export class ToolStarterApp {
     this.statusLog.write("INFO Schema-only loading is idle. Import JSON or launch with workspace toolState data. Runtime palette is required before rendering.");
     this.statusLog.write("INFO Shape/Tools primitive buttons create schema-valid shapes on the selected object.");
     this.statusLog.write("INFO Disabled controls stay inactive until a schema-valid payload, runtime palette, selected object, or active frame is available.");
-    this.statusLog.write("INFO Object type/template, active state editing, and library asset editing are deferred future capabilities; current controls focus on direct object and shape editing.");
+    this.statusLog.write("INFO Object type is a single editable value with suggestions from existing object types and tags; asset category controls are not part of this tool surface.");
+    this.statusLog.write("INFO Paint and stroke selection is structured to scale later into shaders, gradients, patterns, neon, SVG export, and runtime rendering.");
     await this.schemaService.loadSchema();
     this.schemaReady = true;
     this.statusLog.write(`OK Object Vector Studio V2 schema contract loaded from ${this.schemaService.schemaPath}.`);
@@ -346,6 +354,15 @@ export class ToolStarterApp {
     }
     this.runtimePalette = validation.palette;
     this.runtimePaletteSource = sourceLabel;
+    const firstColor = validation.palette.swatches.map((swatch) => swatchColor(swatch)).find(Boolean);
+    if (firstColor) {
+      this.selectedFillColor = firstColor;
+      this.selectedStrokeColor = firstColor;
+      const firstSwatch = validation.palette.swatches.find((swatch) => swatchColor(swatch) === firstColor);
+      const firstLabel = firstSwatch?.name || firstSwatch?.id || firstSwatch?.symbol || "first swatch";
+      this.selectedFillLabel = firstLabel;
+      this.selectedStrokeLabel = firstLabel;
+    }
     if (persistToRuntimeSession) {
       this.window.sessionStorage?.setItem(RUNTIME_PALETTE_SESSION_KEY, JSON.stringify(validation.palette));
     }
@@ -355,13 +372,23 @@ export class ToolStarterApp {
   }
 
   bindObjectActions() {
+    this.elements.addObjectButton.addEventListener("pointerdown", () => {
+      this.pendingAddObjectClick = true;
+    });
     this.elements.addObjectButton.addEventListener("click", () => this.addObject());
     this.elements.addTagButton.addEventListener("click", () => this.addTagToSelectedObject());
     this.elements.renameObjectButton.addEventListener("click", () => this.renameSelectedObject());
     this.elements.duplicateObjectButton.addEventListener("click", () => this.duplicateSelectedObject());
     this.elements.deleteObjectButton.addEventListener("click", () => this.deleteSelectedObject());
-    this.elements.flattenObjectButton.addEventListener("click", () => this.flattenSelectedObject());
+    this.elements.objectTypeInput.addEventListener("change", () => this.updateSelectedObjectTypeFromInput());
+    this.elements.objectTypeInput.addEventListener("blur", () => this.updateSelectedObjectTypeFromInput());
     this.elements.exportSvgButton.addEventListener("click", () => this.exportSelectedObjectSvg());
+    this.elements.bringForwardButton.addEventListener("click", () => this.changeSelectedShapeOrder("forward"));
+    this.elements.sendBackwardButton.addEventListener("click", () => this.changeSelectedShapeOrder("backward"));
+    this.elements.bringToFrontButton.addEventListener("click", () => this.changeSelectedShapeOrder("front"));
+    this.elements.sendToBackButton.addEventListener("click", () => this.changeSelectedShapeOrder("back"));
+    this.elements.groupShapesButton.addEventListener("click", () => this.groupSelectedShapes());
+    this.elements.ungroupButton.addEventListener("click", () => this.ungroupSelectedShapes());
   }
 
   bindAnimationControls() {
@@ -390,8 +417,20 @@ export class ToolStarterApp {
       button.addEventListener("click", () => {
         const tool = button.dataset.shapeTool || "unknown";
         this.setActiveToolButton(button);
+        this.activeTool = tool;
         if (PRIMITIVE_TOOLS.includes(tool)) {
           this.createShape(tool);
+          return;
+        }
+        if (tool === "select" && this.selectedShapeId) {
+          const clearedShape = this.selectedShapeId;
+          this.selectedShapeId = "";
+          this.selectedShapeIds.clear();
+          this.renderObjectTiles();
+          this.renderSelectedObject();
+          this.renderWorkSurface();
+          this.updateObjectActionState();
+          this.statusLog.write(`OK Select tool cleared selected shape ${clearedShape}.`);
           return;
         }
         this.statusLog.write(`OK Shape/Tools mode selected: ${tool}.`);
@@ -461,6 +500,8 @@ export class ToolStarterApp {
     this.elements.paintModeButton.classList.toggle("is-active", this.paletteTarget === "paint");
     this.elements.strokeModeButton.classList.toggle("is-active", this.paletteTarget === "stroke");
     if (shouldLog) {
+      this.activeTool = this.paletteTarget === "stroke" ? "stroke" : "paint";
+      this.setActiveToolButton(null);
       this.statusLog.write(`OK Palette target set to ${this.paletteTarget === "stroke" ? "Stroke" : "Paint"}.`);
     }
   }
@@ -480,6 +521,13 @@ export class ToolStarterApp {
     this.elements.panRightButton.addEventListener("click", () => this.panViewport(20, 0));
     this.elements.resetViewButton.addEventListener("click", () => this.resetViewport());
     this.elements.renderSurface.addEventListener("mousemove", (event) => this.updateCoordinateDisplay(event));
+    this.elements.renderSurface.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      this.zoomViewport(event.deltaY < 0 ? 1.1 : 0.9);
+    }, { passive: false });
+    this.window.addEventListener("pointerup", () => {
+      this.isPaintDragging = false;
+    });
   }
 
   bindObjectFilters() {
@@ -493,12 +541,42 @@ export class ToolStarterApp {
   }
 
   bindKeyboardShortcuts() {
-    this.elements.renderSurface.addEventListener("keydown", (event) => {
+    const handleShortcut = (event) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+      const tagName = event.target?.tagName || "";
+      if (["INPUT", "SELECT", "TEXTAREA"].includes(tagName)) {
+        return;
+      }
       if (event.key === "Delete" || event.key === "Backspace") {
         event.preventDefault();
         this.deleteSelectedShape("keyboard");
+        return;
       }
-    });
+      const key = event.key.toLowerCase();
+      if (key === "v") {
+        event.preventDefault();
+        this.activateToolMode("select", "keyboard");
+      } else if (key === "f") {
+        event.preventDefault();
+        this.setPaletteTarget("paint");
+      } else if (key === "s") {
+        event.preventDefault();
+        this.setPaletteTarget("stroke");
+      } else if (key === "i") {
+        event.preventDefault();
+        this.activateToolMode("eyedropper", "keyboard");
+      } else if (key === "x") {
+        event.preventDefault();
+        this.swapFillStrokeColors();
+      } else if (key === "d") {
+        event.preventDefault();
+        this.restoreDefaultColors();
+      }
+    };
+    this.elements.renderSurface.addEventListener("keydown", handleShortcut);
+    this.window.document.addEventListener("keydown", handleShortcut);
   }
 
   applySnapState() {
@@ -529,6 +607,18 @@ export class ToolStarterApp {
     });
   }
 
+  activateToolMode(tool, sourceLabel) {
+    this.activeTool = tool;
+    const button = this.elements.toolToggles.find((candidate) => candidate.dataset.shapeTool === tool) || null;
+    this.setActiveToolButton(button);
+    if (tool === "paint") {
+      this.setPaletteTarget("paint", false);
+    } else if (tool === "stroke") {
+      this.setPaletteTarget("stroke", false);
+    }
+    this.statusLog.write(`OK Shape/Tools mode selected from ${sourceLabel}: ${tool}.`);
+  }
+
   renderEmptyState(message) {
     this.currentPayload = null;
     this.selectedObjectId = "";
@@ -541,12 +631,12 @@ export class ToolStarterApp {
     this.updatePaletteHeader(this.runtimePalette?.swatches?.length || 0);
     this.elements.objectNameInput.value = "";
     this.elements.objectTagInput.value = "";
+    this.elements.objectTypeInput.value = "";
+    this.renderObjectTypeOptions();
     this.renderObjectTagList(null);
     this.elements.paletteSummary.textContent = this.runtimePalette ? "" : "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
-    this.elements.objectDetailsActions.textContent = "Select a shape to show Object Details actions.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
-    this.renderShapeList();
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
     this.elements.coordinateDisplay.textContent = "Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%";
@@ -677,8 +767,11 @@ export class ToolStarterApp {
     this.runtimePalette = paletteValidation.palette;
     this.ensureSelectedShape();
     this.ensureSelectedFrame();
-    this.renderPalette();
+    if (this.runtimePalette) {
+      this.renderPalette();
+    }
     this.renderTagFilter();
+    this.renderObjectTypeOptions();
     this.renderObjectTiles();
     this.renderDependencyGraph();
     this.renderSelectedObject();
@@ -698,11 +791,11 @@ export class ToolStarterApp {
     this.elements.paletteSummary.textContent = message;
     this.elements.objectNameInput.value = "";
     this.elements.objectTagInput.value = "";
+    this.elements.objectTypeInput.value = "";
+    this.renderObjectTypeOptions();
     this.renderObjectTagList(null);
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
-    this.elements.objectDetailsActions.textContent = "Runtime palette required before Object Details actions.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
-    this.renderShapeList();
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
     this.elements.renderSurface.replaceChildren();
@@ -732,10 +825,11 @@ export class ToolStarterApp {
       item.dataset.paletteDetails = `${label}\n${color || "value unavailable"}`;
       item.title = item.dataset.paletteDetails;
       item.setAttribute("aria-label", `Palette swatch ${label} ${color || "value unavailable"}`);
+      item.classList.toggle("is-selected", color && color === this.currentTargetColor());
       if (color) {
         item.style.setProperty("--object-vector-studio-v2-swatch", color);
       }
-      item.addEventListener("click", () => this.applyPaletteColor(color, label));
+      item.addEventListener("click", () => this.selectPaletteColor(color, label));
       this.elements.paletteSummary.append(item);
     });
   }
@@ -798,7 +892,7 @@ export class ToolStarterApp {
       meta.className = "object-vector-studio-v2__object-tile-meta";
       const tags = tagList(object.tags);
       const inheritedText = object.baseObjectId ? ` - inherits ${object.baseObjectId}` : "";
-      meta.textContent = `${shapeCountLabel(object.shapes.length)}${tags.length ? ` - ${tags.join(", ")}` : ""}${inheritedText}`;
+      meta.textContent = `objects > ${object.name} | ${objectTypeKey(object)} | ${shapeCountLabel(object.shapes.length)}${tags.length ? ` | ${tags.join(", ")}` : ""}${inheritedText}`;
 
       const copy = document.createElement("span");
       copy.className = "object-vector-studio-v2__object-tile-copy";
@@ -835,7 +929,8 @@ export class ToolStarterApp {
     button.dataset.objectControl = kind;
     button.dataset.objectControlId = object.id;
     button.setAttribute("aria-pressed", String(isActive));
-    button.textContent = isVisibility ? (isActive ? "Eye" : "Hide") : (isActive ? "Locked" : "Lock");
+    button.setAttribute("aria-label", isVisibility ? `${isActive ? "Hide" : "Show"} object ${object.name}` : `${isActive ? "Unlock" : "Lock"} object ${object.name}`);
+    button.append(this.createIconSpan(isVisibility ? "eye" : "lock", isActive));
     button.title = isVisibility ? "Toggle object visibility" : "Toggle runtime object lock";
     button.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -848,6 +943,14 @@ export class ToolStarterApp {
     return button;
   }
 
+  createIconSpan(kind, isActive = true) {
+    const icon = document.createElement("span");
+    icon.className = `object-vector-studio-v2__tile-icon object-vector-studio-v2__tile-icon--${kind}`;
+    icon.classList.toggle("is-off", !isActive);
+    icon.setAttribute("aria-hidden", "true");
+    return icon;
+  }
+
   createObjectTileShapeList(object) {
     const list = document.createElement("div");
     list.className = "object-vector-studio-v2__object-tile-shapes";
@@ -857,24 +960,29 @@ export class ToolStarterApp {
       row.classList.toggle("is-selected", this.selectedShapeIds.has(shape.id));
       const selectButton = document.createElement("button");
       selectButton.type = "button";
+      selectButton.className = "object-vector-studio-v2__shape-select";
       selectButton.dataset.objectTileShapeId = shape.id;
       selectButton.setAttribute("aria-pressed", String(this.selectedShapeIds.has(shape.id)));
-      selectButton.textContent = `${shape.order}. ${shape.id}`;
+      const label = document.createElement("span");
+      label.className = "object-vector-studio-v2__shape-select-label";
+      label.textContent = `objects > ${object.name} > ${shape.order}. ${shape.id}`;
+      const eyeIcon = this.createIconSpan("eye", shape.visible);
+      eyeIcon.classList.add("object-vector-studio-v2__shape-eye-inline");
+      eyeIcon.dataset.shapeVisibilityId = shape.id;
+      eyeIcon.setAttribute("role", "button");
+      eyeIcon.setAttribute("aria-label", `${shape.visible ? "Hide" : "Show"} shape ${shape.id}`);
+      eyeIcon.title = "Toggle shape visibility";
+      selectButton.append(label, eyeIcon);
       selectButton.addEventListener("click", (event) => {
         event.stopPropagation();
+        if (event.target?.dataset?.shapeVisibilityId) {
+          this.selectShape(shape.id, "object tile shape visibility");
+          this.toggleSelectedShapeVisibility();
+          return;
+        }
         this.selectShape(shape.id, "object tile shape list");
       });
-      const eyeButton = document.createElement("button");
-      eyeButton.type = "button";
-      eyeButton.dataset.shapeVisibilityId = shape.id;
-      eyeButton.textContent = shape.visible ? "Eye" : "Hide";
-      eyeButton.title = "Toggle shape visibility";
-      eyeButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        this.selectShape(shape.id, "object tile shape visibility");
-        this.toggleSelectedShapeVisibility();
-      });
-      row.append(selectButton, eyeButton);
+      row.append(selectButton);
       list.append(row);
     });
     if (!list.children.length) {
@@ -929,7 +1037,7 @@ export class ToolStarterApp {
     const query = this.elements.searchFilter.value.trim().toLowerCase();
     return this.currentPayload.objects.filter((object) => {
       const matchesTag = tag === "all" || tagList(object.tags).includes(tag);
-      const haystack = `${object.id} ${object.name} ${objectTypeKey(object)} ${(object.tags || []).join(" ")} ${object.category || ""} ${object.baseObjectId || ""}`.toLowerCase();
+      const haystack = `${object.id} ${object.name} ${objectTypeKey(object)} ${(object.tags || []).join(" ")} ${object.baseObjectId || ""}`.toLowerCase();
       return matchesTag && (!query || haystack.includes(query));
     });
   }
@@ -952,6 +1060,20 @@ export class ToolStarterApp {
 
   availableObjectTags() {
     return Array.from(new Set((this.currentPayload?.objects || []).flatMap((object) => tagList(object.tags)))).sort();
+  }
+
+  renderObjectTypeOptions() {
+    const suggestions = new Set();
+    (this.currentPayload?.objects || []).forEach((object) => {
+      suggestions.add(objectTypeKey(object));
+      tagList(object.tags).forEach((tag) => suggestions.add(tag));
+    });
+    this.elements.objectTypeOptions.replaceChildren();
+    [...suggestions].sort().forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      this.elements.objectTypeOptions.append(option);
+    });
   }
 
   assetLibraryAssets() {
@@ -1013,12 +1135,11 @@ export class ToolStarterApp {
     if (!selected) {
       this.elements.objectNameInput.value = "";
       this.elements.objectTagInput.value = "";
+      this.elements.objectTypeInput.value = "";
       this.renderObjectTagList(null);
       this.updateObjectDetailsHeader(this.currentPayload?.objects.length || 0, 0);
       this.elements.objectDetails.textContent = "No object selected.";
-      this.elements.objectDetailsActions.textContent = "Select a shape to show Object Details actions.";
       this.elements.objectPreviewFooter.textContent = "Object ID: none";
-      this.renderShapeList();
       this.elements.jsonDetails.textContent = "{}";
       this.renderFrameTimeline();
       return;
@@ -1026,11 +1147,10 @@ export class ToolStarterApp {
 
     const shape = this.selectedShape();
     this.elements.objectNameInput.value = selected.name;
+    this.elements.objectTypeInput.value = objectTypeKey(selected);
     this.renderObjectTagList(selected);
     this.updateObjectDetailsHeader(this.currentPayload.objects.length, selected.shapes.length);
-    this.renderShapeList();
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
-    this.renderObjectDetailsActions(shape);
     this.elements.objectPreviewFooter.textContent = `Object ID: ${selected.id}`;
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
@@ -1067,38 +1187,6 @@ export class ToolStarterApp {
       button.title = `Remove tag ${tag}`;
       button.addEventListener("click", () => this.removeTagFromSelectedObject(tag));
       this.elements.objectTagList.append(button);
-    });
-  }
-
-  renderShapeList() {
-    this.elements.shapeList.replaceChildren();
-    const object = this.selectedObject();
-    if (!object) {
-      const empty = document.createElement("div");
-      empty.className = "object-vector-studio-v2__shape-list-empty";
-      empty.textContent = "No selected object shapes.";
-      this.elements.shapeList.append(empty);
-      return;
-    }
-    const shapes = sortedShapes(object);
-    if (!shapes.length) {
-      const empty = document.createElement("div");
-      empty.className = "object-vector-studio-v2__shape-list-empty";
-      empty.textContent = "Selected object has no shapes.";
-      this.elements.shapeList.append(empty);
-      return;
-    }
-    shapes.forEach((shape) => {
-      const button = document.createElement("button");
-      button.className = "object-vector-studio-v2__shape-list-button";
-      button.type = "button";
-      button.dataset.shapeListId = shape.id;
-      button.setAttribute("aria-pressed", String(this.selectedShapeIds.has(shape.id)));
-      button.classList.toggle("is-selected", this.selectedShapeIds.has(shape.id));
-      button.textContent = `${shape.order}. ${shape.id} (${shape.type})`;
-      button.title = `Select shape ${shape.id}`;
-      button.addEventListener("click", () => this.selectShape(shape.id, "shape list"));
-      this.elements.shapeList.append(button);
     });
   }
 
@@ -1186,15 +1274,6 @@ export class ToolStarterApp {
     shapePanel.append(this.createShapeTransformControls(shape));
     wrapper.append(shapePanel);
     return wrapper;
-  }
-
-  renderObjectDetailsActions(shape) {
-    this.elements.objectDetailsActions.replaceChildren();
-    if (!shape) {
-      this.elements.objectDetailsActions.textContent = "Select a shape to show Object Details actions.";
-      return;
-    }
-    this.elements.objectDetailsActions.append(this.createShapeActions(shape));
   }
 
   createDetailGrid(entries) {
@@ -1323,31 +1402,6 @@ export class ToolStarterApp {
     ];
   }
 
-  createShapeActions(shape) {
-    const actions = document.createElement("div");
-    actions.className = "object-vector-studio-v2__shape-actions";
-    [
-      ["objectVectorStudioV2ShapeVisibilityButton", shape.visible ? "Hide Shape" : "Show Shape", () => this.toggleSelectedShapeVisibility()],
-      ["objectVectorStudioV2ShapeLockButton", shape.locked ? "Unlock Shape" : "Lock Shape", () => this.toggleSelectedShapeLock()],
-      ["objectVectorStudioV2DuplicateShapeButton", "Duplicate Shape", () => this.duplicateSelectedShape()],
-      ["objectVectorStudioV2DeleteShapeButton", "Delete Shape", () => this.deleteSelectedShape("button")],
-      ["objectVectorStudioV2BringForwardButton", "Bring Forward", () => this.changeSelectedShapeOrder("forward")],
-      ["objectVectorStudioV2SendBackwardButton", "Send Backward", () => this.changeSelectedShapeOrder("backward")],
-      ["objectVectorStudioV2BringToFrontButton", "Bring To Front", () => this.changeSelectedShapeOrder("front")],
-      ["objectVectorStudioV2SendToBackButton", "Send To Back", () => this.changeSelectedShapeOrder("back")],
-      ["objectVectorStudioV2GroupShapesButton", "Group Shapes", () => this.groupSelectedShapes()],
-      ["objectVectorStudioV2UngroupShapesButton", "Ungroup", () => this.ungroupSelectedShapes()]
-    ].forEach(([id, label, handler]) => {
-      const button = document.createElement("button");
-      button.id = id;
-      button.type = "button";
-      button.textContent = label;
-      button.addEventListener("click", handler);
-      actions.append(button);
-    });
-    return actions;
-  }
-
   renderWorkSurface() {
     const object = this.selectedObject();
     this.elements.renderSurface.replaceChildren();
@@ -1377,9 +1431,21 @@ export class ToolStarterApp {
         element.classList.add("object-vector-studio-v2__shape");
         element.classList.toggle("is-selected", this.selectedShapeIds.has(shape.id));
         element.setAttribute("tabindex", "0");
+        element.addEventListener("pointerdown", (event) => {
+          event.stopPropagation();
+          if (this.activeTool === "paint" || this.activeTool === "stroke") {
+            this.isPaintDragging = true;
+          }
+        });
         element.addEventListener("click", (event) => {
           event.stopPropagation();
-          this.selectShape(shape.id, "render surface", { additive: event.shiftKey });
+          this.handleShapePointer(event, shape, { source: "render surface click" });
+        });
+        element.addEventListener("pointerenter", (event) => {
+          if (this.isPaintDragging) {
+            event.stopPropagation();
+            this.handleShapePointer(event, shape, { source: "render surface drag" });
+          }
         });
         this.elements.renderSurface.append(element);
         renderedCount += 1;
@@ -1394,6 +1460,28 @@ export class ToolStarterApp {
     const frame = this.activeFrame();
     const message = `Render mode svg-work-surface: rendered ${object.name} with ${renderedCount} visible shapes${frame ? ` for ${this.selectedStateId}/${frame.id}` : ""}; capture mode none.`;
     this.statusLog.write(`OK ${message}`);
+  }
+
+  handleShapePointer(event, shape, options = {}) {
+    if (event.altKey || this.activeTool === "eyedropper") {
+      const target = this.paletteTarget === "stroke" ? "stroke" : "fill";
+      this.sampleShapeColor(shape.id, target);
+      return;
+    }
+    if (event.shiftKey) {
+      this.selectShape(shape.id, "render surface additive", { additive: true });
+      return;
+    }
+    const isStrokeMode = this.activeTool === "stroke";
+    const isPaintMode = this.activeTool === "paint";
+    if (isStrokeMode || isPaintMode) {
+      if (options.dragStart) {
+        this.isPaintDragging = true;
+      }
+      this.applySelectedPaletteColorToShape(shape.id, isStrokeMode ? "stroke" : "fill", options.source || (options.dragStart ? "render surface click" : "render surface drag"));
+      return;
+    }
+    this.selectShape(shape.id, "render surface");
   }
 
   renderOnionSkin(object) {
@@ -1976,6 +2064,7 @@ export class ToolStarterApp {
 
   addObject() {
     const name = this.elements.objectNameInput.value.trim();
+    this.pendingAddObjectClick = false;
     if (!this.currentPayload) {
       this.statusLog.write("FAIL Add object blocked: load a schema-valid Object Vector Studio V2 payload before adding objects.");
       return;
@@ -1987,14 +2076,37 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     const id = this.uniqueObjectId(name, nextPayload.objects);
+    const type = slugifyObjectName(this.elements.objectTypeInput.value.trim() || DEFAULT_OBJECT_TYPE);
     nextPayload.objects.push({
       id,
       name,
       shapes: [],
       tags: tagList(this.elements.objectTagInput.value),
-      type: DEFAULT_OBJECT_TYPE
+      type
     });
-    this.commitPayloadUpdate(nextPayload, id, "", `OK Added object ${name} with id ${id}.`, "Add object failed schema validation");
+    this.commitPayloadUpdate(nextPayload, id, "", `OK Added object ${name} with id ${id} and type ${type}.`, "Add object failed schema validation");
+  }
+
+  updateSelectedObjectTypeFromInput() {
+    if (this.pendingAddObjectClick) {
+      return;
+    }
+    const selected = this.selectedObject();
+    if (!selected) {
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Object type update")) {
+      return;
+    }
+    const type = slugifyObjectName(this.elements.objectTypeInput.value.trim() || DEFAULT_OBJECT_TYPE);
+    if (type === objectTypeKey(selected)) {
+      this.elements.objectTypeInput.value = type;
+      return;
+    }
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
+    nextObject.type = type;
+    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Object ${selected.name} type set to ${type}.`, "Object type update failed schema validation");
   }
 
   addTagToSelectedObject() {
@@ -2051,8 +2163,22 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
+    const oldId = nextObject.id;
+    const siblingObjects = nextPayload.objects.filter((object) => object.id !== oldId);
+    const nextId = this.uniqueObjectId(name, siblingObjects);
+    nextPayload.objects.forEach((object) => {
+      if (object.baseObjectId === oldId) {
+        object.baseObjectId = nextId;
+      }
+    });
+    (nextPayload.assetLibrary?.assets || []).forEach((asset) => {
+      if (asset.objectId === oldId) {
+        asset.objectId = nextId;
+      }
+    });
+    nextObject.id = nextId;
     nextObject.name = name;
-    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Renamed object ${selected.id} to ${name}.`, "Rename object failed schema validation");
+    this.commitPayloadUpdate(nextPayload, nextId, this.selectedShapeId, `OK Renamed object ${oldId} to ${name} and updated Object ID to ${nextId}.`, "Rename object failed schema validation");
   }
 
   duplicateSelectedObject() {
@@ -2241,14 +2367,40 @@ export class ToolStarterApp {
     return nextShape;
   }
 
-  applyPaletteColor(color, label) {
-    const selected = this.selectedShape();
-    if (!selected) {
-      this.statusLog.write("FAIL Palette color application blocked: select a shape first.");
-      return;
-    }
+  currentTargetColor() {
+    return this.paletteTarget === "stroke" ? this.selectedStrokeColor : this.selectedFillColor;
+  }
+
+  selectPaletteColor(color, label, options = {}) {
     if (!color) {
       this.statusLog.write(`FAIL Palette color application blocked: swatch ${label} has no usable color value.`);
+      return;
+    }
+    if (this.paletteTarget === "stroke") {
+      this.selectedStrokeColor = color;
+      this.selectedStrokeLabel = label;
+    } else {
+      this.selectedFillColor = color;
+      this.selectedFillLabel = label;
+    }
+    if (this.runtimePalette) {
+      this.renderPalette();
+    }
+    this.statusLog.write(`OK Selected ${this.paletteTarget === "stroke" ? "stroke" : "paint"} color ${color} from ${label}.`);
+    if (options.applyToSelection === false || !this.selectedShapeId) {
+      return;
+    }
+    this.applySelectedPaletteColorToShape(this.selectedShapeId, this.paletteTarget === "stroke" ? "stroke" : "fill", "palette swatch");
+  }
+
+  applyPaletteColor(color, label) {
+    this.selectPaletteColor(color, label);
+  }
+
+  applySelectedPaletteColorToShape(shapeId, target, sourceLabel) {
+    const selected = this.selectedObject()?.shapes.find((shape) => shape.id === shapeId);
+    if (!selected) {
+      this.statusLog.write("FAIL Palette color application blocked: select a shape first.");
       return;
     }
     if (selected.locked) {
@@ -2262,7 +2414,13 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const shape = this.findShapeInPayload(nextPayload, selected.id);
     const strokeWidth = Number(this.elements.strokeWidth.value);
-    const shouldApplyStroke = this.paletteTarget === "stroke" || ["arc", "line"].includes(shape.type);
+    const shouldApplyStroke = target === "stroke" || ["arc", "line"].includes(shape.type);
+    const color = shouldApplyStroke ? this.selectedStrokeColor : this.selectedFillColor;
+    const label = shouldApplyStroke ? this.selectedStrokeLabel : this.selectedFillLabel;
+    if (!color) {
+      this.statusLog.write(`FAIL Palette color application blocked: no ${shouldApplyStroke ? "stroke" : "paint"} color is selected.`);
+      return;
+    }
     if (shouldApplyStroke) {
       shape.style.stroke = color;
       shape.style.strokeWidth = Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : 2;
@@ -2270,7 +2428,55 @@ export class ToolStarterApp {
       shape.style.fill = color;
     }
     const targetLabel = shouldApplyStroke ? `Target: stroke width ${shape.style.strokeWidth}.` : "Target: paint.";
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Applied palette color ${color} from ${label} to shape ${selected.id}. ${targetLabel}`, "Palette color application failed schema validation");
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Applied palette color ${color} from ${label} to shape ${selected.id} by ${sourceLabel}. ${targetLabel}`, "Palette color application failed schema validation");
+  }
+
+  sampleShapeColor(shapeId, target) {
+    const selected = this.selectedObject()?.shapes.find((shape) => shape.id === shapeId);
+    if (!selected) {
+      this.statusLog.write(`WARN Eyedropper skipped: shape ${shapeId || "unknown"} is not available.`);
+      return;
+    }
+    const color = target === "stroke" ? selected.style.stroke : selected.style.fill;
+    if (!color || color === "none") {
+      this.statusLog.write(`WARN Eyedropper skipped: shape ${selected.id} has no ${target} color.`);
+      return;
+    }
+    if (target === "stroke") {
+      this.selectedStrokeColor = color;
+      this.selectedStrokeLabel = `${selected.id} stroke`;
+      this.setPaletteTarget("stroke", false);
+    } else {
+      this.selectedFillColor = color;
+      this.selectedFillLabel = `${selected.id} fill`;
+      this.setPaletteTarget("paint", false);
+    }
+    if (this.runtimePalette) {
+      this.renderPalette();
+    }
+    this.statusLog.write(`OK Sampled ${target} color ${color} from shape ${selected.id}.`);
+  }
+
+  swapFillStrokeColors() {
+    const nextFill = this.selectedStrokeColor;
+    const nextFillLabel = this.selectedStrokeLabel;
+    this.selectedStrokeColor = this.selectedFillColor;
+    this.selectedStrokeLabel = this.selectedFillLabel;
+    this.selectedFillColor = nextFill;
+    this.selectedFillLabel = nextFillLabel;
+    if (this.runtimePalette) {
+      this.renderPalette();
+    }
+    this.statusLog.write(`OK Swapped fill and stroke colors: fill ${this.selectedFillColor}, stroke ${this.selectedStrokeColor}.`);
+  }
+
+  restoreDefaultColors() {
+    this.selectedFillColor = "#ffffff";
+    this.selectedStrokeColor = "#000000";
+    this.selectedFillLabel = "default fill";
+    this.selectedStrokeLabel = "default stroke";
+    this.renderPalette();
+    this.statusLog.write("OK Restored default paint/stroke colors.");
   }
 
   toggleSelectedShapeVisibility() {
@@ -2947,9 +3153,14 @@ export class ToolStarterApp {
     this.setControlDisabled(this.elements.renameObjectButton, !hasSelectedObject || isLocked, lockedReason, "Rename the selected object.");
     this.setControlDisabled(this.elements.duplicateObjectButton, !hasSelectedObject || isLocked, lockedReason, "Duplicate the selected object.");
     this.setControlDisabled(this.elements.deleteObjectButton, !hasSelectedObject || isLocked, lockedReason, "Delete the selected object.");
-    this.setControlDisabled(this.elements.flattenObjectButton, !hasSelectedObject || isLocked, lockedReason, "Bake selected object transforms into local shape data.");
     this.setControlDisabled(this.elements.exportSvgButton, !hasSelectedObject, noObjectReason, "Export the selected object as SVG.");
     this.setControlDisabled(this.elements.runtimePreviewButton, !hasSelectedObject, noObjectReason, "Preview the selected object through the runtime asset renderer.");
+    const hasSelectedShape = Boolean(this.selectedShape());
+    const noShapeReason = "Disabled until a schema-valid shape is selected.";
+    [this.elements.bringForwardButton, this.elements.sendBackwardButton, this.elements.bringToFrontButton, this.elements.sendToBackButton, this.elements.ungroupButton].forEach((button) => {
+      this.setControlDisabled(button, !hasSelectedShape || isLocked, isLocked ? lockedReason : noShapeReason, "Adjust selected shape ordering or grouping.");
+    });
+    this.setControlDisabled(this.elements.groupShapesButton, this.selectedShapeIds.size < 2 || isLocked, isLocked ? lockedReason : "Disabled until two or more shapes are selected.", "Group selected shapes.");
     this.updateAnimationActionState();
   }
 

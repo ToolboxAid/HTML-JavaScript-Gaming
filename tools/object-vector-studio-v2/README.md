@@ -42,6 +42,7 @@ Use World Vector Studio V2 instead for terrain, maps, tile/world geometry, layer
 
 - The current implementation is the copied Tool Template V2 shell with Object Vector Studio V2 naming and documentation.
 - JavaScript and CSS remain external.
+- Paint and Stroke modes use selectable palette swatches, click/drag application, Alt-click sampling, and fill/stroke swap/default shortcuts. This model is intended to scale into shaders, gradients, patterns, neon effects, SVG export, and runtime rendering without storing palette data inside object JSON.
 - The copied `docs/CONTROL_SERVICE_CONTRACTS.md` and `docs/BATCH_GUARDRAIL_CONTRACT.md` remain the local implementation contracts.
 - `docs/OBJECT_VECTOR_STUDIO_V2_REQUIREMENTS.md` captures the future Object Vector Studio V2 requirements and design constraints.
 

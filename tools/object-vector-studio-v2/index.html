@@ -60,6 +60,11 @@
               <span>Object Name</span>
               <input id="objectVectorStudioV2ObjectNameInput" type="text" autocomplete="off" placeholder="Object name">
             </label>
+            <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2ObjectTypeInput">
+              <span>Object Type</span>
+              <input id="objectVectorStudioV2ObjectTypeInput" type="text" list="objectVectorStudioV2ObjectTypeOptions" autocomplete="off" placeholder="Single type">
+              <datalist id="objectVectorStudioV2ObjectTypeOptions"></datalist>
+            </label>
             <div class="object-vector-studio-v2__tag-editor" aria-label="Object tags">
               <label class="tool-starter__field tool-starter__field--stacked" for="objectVectorStudioV2ObjectTagInput">
                 <span>Tags</span>
@@ -67,16 +72,6 @@
               </label>
               <button id="objectVectorStudioV2AddTagButton" type="button">Add Tag</button>
               <div id="objectVectorStudioV2ObjectTagList" class="object-vector-studio-v2__tag-list" aria-label="Selected object tags"></div>
-            </div>
-            <div class="object-vector-studio-v2__control-group" data-control-group="object-actions">
-              <h3>Object Actions</h3>
-              <div class="object-vector-studio-v2__object-actions" aria-label="Object actions">
-                <button id="objectVectorStudioV2AddObjectButton" type="button" title="Add a schema-valid object to the loaded payload">Add</button>
-                <button id="objectVectorStudioV2RenameObjectButton" type="button" title="Rename the selected object">Rename</button>
-                <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Duplicate</button>
-                <button id="objectVectorStudioV2DeleteObjectButton" type="button" title="Delete the selected object">Delete</button>
-                <button id="objectVectorStudioV2FlattenObjectButton" type="button" title="Bake selected object transforms into local shape data">Flatten</button>
-              </div>
             </div>
           </div>
         </section>
@@ -87,7 +82,6 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2ObjectDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <div id="objectVectorStudioV2ShapeList" class="object-vector-studio-v2__shape-list" aria-label="Shapes in selected object"></div>
             <div id="objectVectorStudioV2ObjectDetails" class="object-vector-studio-v2__details">No object selected.</div>
           </div>
         </section>
@@ -109,6 +103,15 @@
               <input id="objectVectorStudioV2SearchFilter" type="search" autocomplete="off" placeholder="Filter objects">
             </label>
             <div id="objectVectorStudioV2ObjectTiles" class="object-vector-studio-v2__object-tiles" aria-label="Object tiles"></div>
+            <div class="object-vector-studio-v2__control-group object-vector-studio-v2__objects-actions" data-control-group="object-actions">
+              <h3>Object Actions</h3>
+              <div class="object-vector-studio-v2__object-actions" aria-label="Object actions">
+                <button id="objectVectorStudioV2AddObjectButton" type="button" title="Add a schema-valid object to the loaded payload">Add</button>
+                <button id="objectVectorStudioV2RenameObjectButton" type="button" title="Rename the selected object and update its object ID">Rename</button>
+                <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Duplicate</button>
+                <button id="objectVectorStudioV2DeleteObjectButton" type="button" title="Delete the selected object">Delete</button>
+              </div>
+            </div>
           </div>
         </section>
       </aside>
@@ -130,7 +133,6 @@
               </div>
               <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" tabindex="0" role="img" aria-label="Object shape render surface"></svg>
               <div id="objectVectorStudioV2ObjectPreviewFooter" class="object-vector-studio-v2__preview-footer">Object ID: none</div>
-              <div id="objectVectorStudioV2ObjectDetailsActions" class="object-vector-studio-v2__details-actions" aria-label="Object Details actions"></div>
               <hr class="object-vector-studio-v2__separator">
               <div class="object-vector-studio-v2__animation-controls" aria-label="Animation controls">
                 <button id="objectVectorStudioV2PlayButton" type="button" disabled title="Disabled until a state frame is selected">Play</button>
@@ -205,6 +207,15 @@
                 <span class="object-vector-studio-v2__shape-icon object-vector-studio-v2__shape-icon--text" aria-hidden="true"></span>
                 <span class="object-vector-studio-v2__tool-label">Text</span>
               </button>
+            </div>
+            <hr class="object-vector-studio-v2__separator">
+            <div class="object-vector-studio-v2__z-order-actions" aria-label="Shape order and grouping controls">
+              <button id="objectVectorStudioV2BringForwardButton" type="button">Bring Forward</button>
+              <button id="objectVectorStudioV2SendBackwardButton" type="button">Send Backward</button>
+              <button id="objectVectorStudioV2BringToFrontButton" type="button">Bring To Front</button>
+              <button id="objectVectorStudioV2SendToBackButton" type="button">Send To Back</button>
+              <button id="objectVectorStudioV2GroupShapesButton" type="button">Group Shapes</button>
+              <button id="objectVectorStudioV2UngroupButton" type="button">Ungroup</button>
             </div>
             <hr class="object-vector-studio-v2__separator">
             <div class="object-vector-studio-v2__snap-actions" aria-label="Snap controls">
