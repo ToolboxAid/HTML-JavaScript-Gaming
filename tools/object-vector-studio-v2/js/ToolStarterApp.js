@@ -232,6 +232,8 @@ export class ToolStarterApp {
     this.selectedFillLabel = "default fill";
     this.selectedStrokeLabel = "default stroke";
     this.isPaintDragging = false;
+    this.previewPointerEdit = null;
+    this.transformInputValues = new Map();
     this.pendingAddObjectClick = false;
     this.hiddenObjectIds = new Set();
     this.lockedObjectIds = new Set();
@@ -388,6 +390,7 @@ export class ToolStarterApp {
     });
     this.elements.addObjectButton.addEventListener("click", () => this.addObject());
     this.elements.addTagButton.addEventListener("click", () => this.addTagToSelectedObject());
+    this.elements.objectNameInput.addEventListener("input", () => this.updateObjectPreviewFooterFromNameInput());
     this.elements.renameObjectButton.addEventListener("click", () => this.renameSelectedObject());
     this.elements.duplicateObjectButton.addEventListener("click", () => this.duplicateSelectedObject());
     this.elements.deleteObjectButton.addEventListener("click", () => this.deleteSelectedObject());
@@ -545,8 +548,9 @@ export class ToolStarterApp {
       event.preventDefault();
       this.zoomViewportByStep(event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP);
     }, { passive: false });
-    this.window.addEventListener("pointerup", () => {
+    this.window.addEventListener("pointerup", (event) => {
       this.isPaintDragging = false;
+      this.finishPreviewPointerEdit(event);
     });
   }
 
@@ -1021,12 +1025,22 @@ export class ToolStarterApp {
       eyeIcon.setAttribute("role", "button");
       eyeIcon.setAttribute("aria-label", `${shape.visible ? "Hide" : "Show"} shape ${shape.id}`);
       eyeIcon.title = "Toggle shape visibility";
-      selectButton.append(label, eyeIcon);
+      const deleteIcon = this.createIconSpan("delete", true);
+      deleteIcon.classList.add("object-vector-studio-v2__shape-delete-inline");
+      deleteIcon.dataset.shapeDeleteId = shape.id;
+      deleteIcon.setAttribute("role", "button");
+      deleteIcon.setAttribute("aria-label", `Delete shape ${shape.id}`);
+      deleteIcon.title = "Delete this shape";
+      selectButton.append(label, eyeIcon, deleteIcon);
       selectButton.addEventListener("click", (event) => {
         event.stopPropagation();
         if (event.target?.dataset?.shapeVisibilityId) {
           this.selectShape(shape.id, "object tile shape visibility");
           this.toggleSelectedShapeVisibility();
+          return;
+        }
+        if (event.target?.dataset?.shapeDeleteId) {
+          this.deleteShapeById(shape.id, "object tile shape delete");
           return;
         }
         this.selectShape(shape.id, "object tile shape list", { additive: event.shiftKey || event.ctrlKey || event.metaKey });
@@ -1197,6 +1211,24 @@ export class ToolStarterApp {
     this.renderFrameTimeline();
   }
 
+  updateObjectPreviewFooterFromNameInput() {
+    const selected = this.selectedObject();
+    if (!selected) {
+      this.elements.objectPreviewFooter.textContent = "Object ID: none";
+      return;
+    }
+
+    const name = this.elements.objectNameInput.value.trim();
+    if (!name) {
+      this.elements.objectPreviewFooter.textContent = `Object ID: ${selected.id}`;
+      return;
+    }
+
+    const siblingObjects = this.currentPayload.objects.filter((object) => object.id !== selected.id);
+    const previewId = this.uniqueObjectId(name, siblingObjects, objectGameSegment(selected.id) || this.payloadGameKey());
+    this.elements.objectPreviewFooter.textContent = `Object ID: ${previewId}`;
+  }
+
   renderObjectTagList(object) {
     this.elements.objectTagList.replaceChildren();
     if (!object) {
@@ -1281,31 +1313,36 @@ export class ToolStarterApp {
   createObjectDetails(object, shape) {
     const wrapper = document.createElement("div");
     wrapper.className = "object-vector-studio-v2__object-detail-stack";
-    const shapePanel = document.createElement("section");
-    shapePanel.className = "object-vector-studio-v2__shape-panel";
-    const heading = document.createElement("h3");
-    heading.textContent = shape ? `Selected Shape: ${shape.id}` : "Selected Shape";
-    shapePanel.append(heading);
     if (!shape) {
+      const shapePanel = document.createElement("section");
+      shapePanel.className = "object-vector-studio-v2__shape-panel";
+      const heading = document.createElement("h3");
+      heading.textContent = "Selected Shape";
       const empty = document.createElement("p");
       empty.textContent = "No shape selected. Create a primitive from Shape/Tools.";
-      shapePanel.append(empty);
+      shapePanel.append(heading, empty);
       wrapper.append(shapePanel);
       return wrapper;
     }
 
+    wrapper.append(this.createShapeGeometryControls(shape), this.createSelectedShapeSummary(shape));
+    return wrapper;
+  }
+
+  createSelectedShapeSummary(shape) {
+    const shapePanel = document.createElement("section");
+    shapePanel.className = "object-vector-studio-v2__shape-panel";
+    const heading = document.createElement("h3");
+    heading.textContent = `Selected Shape: ${shape.id}`;
     const editableHint = document.createElement("p");
     editableHint.className = "tool-starter__hint";
     editableHint.textContent = "Editable fields below are limited to schema-valid geometry fields for the selected shape.";
-    shapePanel.append(this.createDetailGrid([
+    shapePanel.append(heading, this.createDetailGrid([
       ["Selected Shape", `${shape.id} (${shape.type})`],
       ["Group", shape.groupId || "None"],
       ["Color", shape.style.fill === "none" ? shape.style.stroke : shape.style.fill]
-    ]));
-    shapePanel.append(editableHint);
-    shapePanel.append(this.createShapeGeometryControls(shape));
-    wrapper.append(shapePanel);
-    return wrapper;
+    ]), editableHint);
+    return shapePanel;
   }
 
   createObjectTransformDetails(shape) {
@@ -1362,6 +1399,7 @@ export class ToolStarterApp {
       input.dataset.shapeGeometryField = field.key;
       input.type = field.kind;
       input.value = String(field.value);
+      input.addEventListener("input", () => this.clearInputValidity(input));
       label.append(caption, input);
       grid.append(label);
     });
@@ -1376,7 +1414,7 @@ export class ToolStarterApp {
 
   createShapeTransformControls(shape) {
     const section = document.createElement("section");
-    section.className = "object-vector-studio-v2__edit-panel";
+    section.className = "object-vector-studio-v2__edit-panel object-vector-studio-v2__edit-panel--transform";
     const heading = document.createElement("h4");
     heading.textContent = "Transform";
     const grid = document.createElement("div");
@@ -1387,19 +1425,23 @@ export class ToolStarterApp {
       ["objectVectorStudioV2MoveYInput", "Move Y", "0"],
       ["objectVectorStudioV2RotateInput", "Rotate", "15"],
       ["objectVectorStudioV2ScaleInput", "Scale", "1.1"],
-      ["objectVectorStudioV2ResizeInput", "Resize", "10"],
       ["objectVectorStudioV2OriginXInput", "Origin X", String(transform.originX)],
-      ["objectVectorStudioV2OriginYInput", "Origin Y", String(transform.originY)]
+      ["objectVectorStudioV2OriginYInput", "Origin Y", String(transform.originY)],
+      ["objectVectorStudioV2ResizeInput", "Resize", "10"]
     ].forEach(([id, labelText, value]) => {
       const label = document.createElement("label");
-      label.className = "object-vector-studio-v2__edit-field";
+      label.className = "object-vector-studio-v2__edit-field object-vector-studio-v2__edit-field--inline";
       const caption = document.createElement("span");
       caption.textContent = labelText;
       const input = document.createElement("input");
       input.id = id;
       input.type = "number";
       input.step = "0.1";
-      input.value = value;
+      input.value = this.transformInputValue(id, value);
+      input.addEventListener("input", () => {
+        this.transformInputValues.set(id, input.value);
+        this.clearInputValidity(input);
+      });
       label.append(caption, input);
       grid.append(label);
     });
@@ -1421,6 +1463,10 @@ export class ToolStarterApp {
     });
     section.append(heading, grid, actions);
     return section;
+  }
+
+  transformInputValue(id, defaultValue) {
+    return this.transformInputValues.has(id) ? this.transformInputValues.get(id) : defaultValue;
   }
 
   shapeGeometryFields(shape) {
@@ -1491,7 +1537,9 @@ export class ToolStarterApp {
           event.stopPropagation();
           if (this.activeTool === "paint" || this.activeTool === "stroke") {
             this.isPaintDragging = true;
+            return;
           }
+          this.startPreviewShapeMove(event, shape.id);
         });
         element.addEventListener("click", (event) => {
           event.stopPropagation();
@@ -1847,8 +1895,29 @@ export class ToolStarterApp {
         point.setAttribute("y", cy - 1.5);
         point.setAttribute("width", 3);
         point.setAttribute("height", 3);
+        point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, selectedShape.id, { handle, mode: "resize" }));
         this.elements.renderSurface.append(point);
       });
+
+      if (selectedShape.type === "line") {
+        const effectiveLine = this.effectiveShape(selectedShape);
+        const transform = this.shapeTransform(effectiveLine);
+        [
+          ["start", effectiveLine.geometry.x1 + transform.x, effectiveLine.geometry.y1 + transform.y],
+          ["end", effectiveLine.geometry.x2 + transform.x, effectiveLine.geometry.y2 + transform.y]
+        ].forEach(([endpoint, x, y]) => {
+          const point = document.createElementNS(SVG_NS, "rect");
+          point.classList.add("object-vector-studio-v2__resize-handle", "object-vector-studio-v2__line-endpoint-handle");
+          point.dataset.lineEndpoint = endpoint;
+          point.dataset.resizeShapeId = selectedShape.id;
+          point.setAttribute("x", this.scaleDrawingValue(x, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
+          point.setAttribute("y", this.scaleDrawingValue(y, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
+          point.setAttribute("width", 4);
+          point.setAttribute("height", 4);
+          point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, selectedShape.id, { endpoint, mode: "line-endpoint" }));
+          this.elements.renderSurface.append(point);
+        });
+      }
 
       const pivot = document.createElementNS(SVG_NS, "g");
       pivot.classList.add("object-vector-studio-v2__pivot-origin");
@@ -1950,6 +2019,141 @@ export class ToolStarterApp {
     const x = this.viewport.x - viewWidth / 2 + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
     const y = this.viewport.y - viewHeight / 2 + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
     this.elements.coordinateDisplay.textContent = `Pointer ${this.formatLogicalPointerCoordinate(x)}, ${this.formatLogicalPointerCoordinate(y)} | Canvas origin 0,0 centered | Zoom ${this.formatZoomPercentage() * 10}%`;
+  }
+
+  pointerPreviewPoint(event) {
+    const bounds = this.elements.renderSurface.getBoundingClientRect();
+    const viewWidth = DEFAULT_VIEWPORT.width / this.viewport.zoom;
+    const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
+    const x = this.viewport.x - viewWidth / 2 + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
+    const y = this.viewport.y - viewHeight / 2 + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
+    return {
+      x: this.formatViewportNumber(x / OBJECT_PREVIEW_DRAWING_SCALE),
+      y: this.formatViewportNumber(y / OBJECT_PREVIEW_DRAWING_SCALE)
+    };
+  }
+
+  startPreviewShapeMove(event, shapeId) {
+    if (event.button !== 0 || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey || !this.selectedShapeIds.has(shapeId)) {
+      return;
+    }
+    const selected = this.selectedShape();
+    if (!selected || selected.id !== shapeId) {
+      return;
+    }
+    event.preventDefault();
+    this.previewPointerEdit = {
+      mode: "move",
+      originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
+      originalTransform: { ...this.shapeTransform(selected) },
+      shapeId,
+      start: this.pointerPreviewPoint(event)
+    };
+  }
+
+  startPreviewHandleEdit(event, shapeId, options) {
+    if (event.button !== 0) {
+      return;
+    }
+    const selected = this.selectedShape();
+    if (!selected || selected.id !== shapeId) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.previewPointerEdit = {
+      ...options,
+      originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
+      originalTransform: { ...this.shapeTransform(selected) },
+      shapeId,
+      start: this.pointerPreviewPoint(event)
+    };
+  }
+
+  finishPreviewPointerEdit(event) {
+    const edit = this.previewPointerEdit;
+    if (!edit) {
+      return;
+    }
+    this.previewPointerEdit = null;
+    const end = this.pointerPreviewPoint(event);
+    const delta = {
+      x: this.snapDistance(this.formatViewportNumber(end.x - edit.start.x)),
+      y: this.snapDistance(this.formatViewportNumber(end.y - edit.start.y))
+    };
+    if (Math.abs(delta.x) < 0.001 && Math.abs(delta.y) < 0.001) {
+      return;
+    }
+
+    if (edit.mode === "move") {
+      this.updateSelectedShapeTransform("preview move", (shape) => {
+        shape.transform = this.ensureShapeTransform(shape);
+        shape.transform.x = Number((edit.originalTransform.x + delta.x).toFixed(3));
+        shape.transform.y = Number((edit.originalTransform.y + delta.y).toFixed(3));
+      }, `OK Dragged shape ${edit.shapeId} by ${delta.x}, ${delta.y}.`);
+      return;
+    }
+
+    if (edit.mode === "line-endpoint") {
+      this.updateSelectedShapeGeometry("preview line endpoint", (shape) => {
+        shape.geometry = this.previewLineEndpointGeometry(shape, edit, delta);
+      }, `OK Moved line ${edit.endpoint} for shape ${edit.shapeId}.`);
+      return;
+    }
+
+    if (edit.mode === "resize") {
+      this.updateSelectedShapeGeometry("preview resize", (shape) => {
+        shape.geometry = this.previewResizeGeometry(shape, edit, delta);
+      }, `OK Resized shape ${edit.shapeId} with ${edit.handle} handle.`);
+    }
+  }
+
+  previewLineEndpointGeometry(shape, edit, delta) {
+    const geometry = { ...edit.originalGeometry };
+    if (shape.type !== "line") {
+      return geometry;
+    }
+    if (edit.endpoint === "start") {
+      geometry.x1 = Number((edit.originalGeometry.x1 + delta.x).toFixed(3));
+      geometry.y1 = Number((edit.originalGeometry.y1 + delta.y).toFixed(3));
+    } else {
+      geometry.x2 = Number((edit.originalGeometry.x2 + delta.x).toFixed(3));
+      geometry.y2 = Number((edit.originalGeometry.y2 + delta.y).toFixed(3));
+    }
+    return geometry;
+  }
+
+  previewResizeGeometry(shape, edit, delta) {
+    const geometry = JSON.parse(JSON.stringify(edit.originalGeometry));
+    if (shape.type === "rectangle") {
+      if (edit.handle.includes("w")) {
+        geometry.x = Number((edit.originalGeometry.x + delta.x).toFixed(3));
+        geometry.width = Number((edit.originalGeometry.width - delta.x).toFixed(3));
+      }
+      if (edit.handle.includes("e")) {
+        geometry.width = Number((edit.originalGeometry.width + delta.x).toFixed(3));
+      }
+      if (edit.handle.includes("n")) {
+        geometry.y = Number((edit.originalGeometry.y + delta.y).toFixed(3));
+        geometry.height = Number((edit.originalGeometry.height - delta.y).toFixed(3));
+      }
+      if (edit.handle.includes("s")) {
+        geometry.height = Number((edit.originalGeometry.height + delta.y).toFixed(3));
+      }
+      return geometry;
+    }
+    if (shape.type === "ellipse") {
+      geometry.rx = Number(Math.max(1, edit.originalGeometry.rx + (edit.handle.includes("e") ? delta.x : -delta.x)).toFixed(3));
+      geometry.ry = Number(Math.max(1, edit.originalGeometry.ry + (edit.handle.includes("s") ? delta.y : -delta.y)).toFixed(3));
+      return geometry;
+    }
+    if (shape.type === "circle") {
+      const radiusDelta = Math.max(Math.abs(delta.x), Math.abs(delta.y));
+      const sign = edit.handle.includes("n") || edit.handle.includes("w") ? -1 : 1;
+      geometry.r = Number(Math.max(1, edit.originalGeometry.r + radiusDelta * sign).toFixed(3));
+      return geometry;
+    }
+    return geometry;
   }
 
   selectObject(objectId, sourceLabel) {
@@ -2809,7 +3013,12 @@ export class ToolStarterApp {
 
   scaleSelectedShape() {
     const input = this.numberInputValue("objectVectorStudioV2ScaleInput", "Scale");
-    if (!input.ok || input.value <= 0) {
+    if (!input.ok) {
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${input.error}`);
+      return;
+    }
+    if (input.value <= 0) {
+      this.markInputInvalid(this.window.document.getElementById("objectVectorStudioV2ScaleInput"), "Scale must be greater than 0.");
       this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: scale must be greater than 0.`);
       return;
     }
@@ -2901,18 +3110,80 @@ export class ToolStarterApp {
       return;
     }
     const fields = Array.from(this.elements.objectDetails.querySelectorAll("[data-shape-geometry-field]"));
-    this.updateSelectedShapeTransform("geometry edit", (shape) => {
-      if (shape.type === "polygon") {
-        const pointsInput = fields.find((input) => input.dataset.shapeGeometryField === "points");
-        shape.geometry.points = this.parsePolygonPoints(pointsInput?.value || "");
-      } else {
-        fields.forEach((input) => {
-          const key = input.dataset.shapeGeometryField;
-          shape.geometry[key] = input.type === "number" ? Number(input.value) : input.value;
-        });
-      }
+    const geometry = this.readShapeGeometryFields(selected, fields);
+    if (!geometry.ok) {
+      this.statusLog.write(`FAIL Invalid geometry rejected for shape ${selected.id}: ${geometry.error}`);
+      return;
+    }
+    this.updateSelectedShapeGeometry("geometry edit", (shape) => {
+      shape.geometry = geometry.value;
       shape.transform = this.ensureShapeTransform(shape);
     }, `OK Applied geometry edits to shape ${selected.id}.`);
+  }
+
+  readShapeGeometryFields(shape, fields) {
+    try {
+      if (shape.type === "polygon") {
+        const pointsInput = fields.find((input) => input.dataset.shapeGeometryField === "points");
+        const points = this.parsePolygonPoints(pointsInput?.value || "");
+        if (pointsInput) {
+          this.clearInputValidity(pointsInput);
+        }
+        return { ok: true, value: { points } };
+      }
+      const geometry = {};
+      for (const input of fields) {
+        const key = input.dataset.shapeGeometryField;
+        if (input.type === "number") {
+          const parsed = this.numberInputElementValue(input, key);
+          if (!parsed.ok) {
+            return { error: parsed.error, ok: false, value: null };
+          }
+          geometry[key] = parsed.value;
+        } else {
+          this.clearInputValidity(input);
+          geometry[key] = input.value;
+        }
+      }
+      return { ok: true, value: geometry };
+    } catch (error) {
+      const pointsInput = fields.find((input) => input.dataset.shapeGeometryField === "points");
+      if (pointsInput) {
+        this.markInputInvalid(pointsInput, error.message);
+      }
+      return { error: error.message, ok: false, value: null };
+    }
+  }
+
+  updateSelectedShapeGeometry(operation, updater, okMessage) {
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write(`WARN Geometry ${operation} skipped: no shape is selected.`);
+      return;
+    }
+    if (selected.locked) {
+      this.statusLog.write(`WARN Geometry ${operation} skipped: shape ${selected.id} is locked.`);
+      return;
+    }
+    if (this.guardSelectedObjectMutation(`Geometry ${operation}`)) {
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const shape = this.findShapeInPayload(nextPayload, selected.id);
+    try {
+      updater(shape);
+      shape.transform = this.ensureShapeTransform(shape);
+      const transformErrors = this.validateShapeForTransform(shape);
+      if (transformErrors.length) {
+        this.statusLog.write(`FAIL Invalid geometry rejected for shape ${selected.id}: ${transformErrors.join(" ")}`);
+        return;
+      }
+    } catch (error) {
+      this.statusLog.write(`FAIL Invalid geometry rejected for shape ${selected.id}: ${error.message}`);
+      return;
+    }
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, okMessage, `Geometry ${operation} failed schema validation`);
   }
 
   updateSelectedShapeTransform(operation, updater, okMessage) {
@@ -2995,21 +3266,64 @@ export class ToolStarterApp {
     this.commitPayloadUpdate(nextPayload, object.id, selectedShapeId, `OK Deleted shape ${selected.id} from ${sourceLabel}.`, "Delete shape failed schema validation");
   }
 
+  deleteShapeById(shapeId, sourceLabel) {
+    const object = this.selectedObject();
+    const shape = object?.shapes.find((candidate) => candidate.id === shapeId) || null;
+    if (!object || !shape) {
+      this.statusLog.write(`WARN Delete shape skipped from ${sourceLabel}: shape ${shapeId || "unknown"} is not available.`);
+      return;
+    }
+    if (shape.locked) {
+      this.statusLog.write(`WARN Delete shape skipped: shape ${shape.id} is locked.`);
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Delete shape")) {
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    nextObject.shapes = sortedShapes(nextObject).filter((candidate) => candidate.id !== shape.id)
+      .map((candidate, index) => ({ ...candidate, order: index + 1 }));
+    const selectedShapeStillExists = nextObject.shapes.some((candidate) => candidate.id === this.selectedShapeId);
+    const selectedShapeId = selectedShapeStillExists ? this.selectedShapeId : sortedShapes(nextObject)[0]?.id || "";
+    this.commitPayloadUpdate(nextPayload, object.id, selectedShapeId, `OK Deleted shape ${shape.id} from ${sourceLabel}.`, "Delete shape failed schema validation");
+  }
+
   numberInputValue(id, label) {
     const element = this.window.document.getElementById(id);
-    const value = Number(element?.value);
-    if (!Number.isFinite(value)) {
-      return {
-        error: `${label} must be a finite number.`,
-        ok: false,
-        value: 0
-      };
+    return this.numberInputElementValue(element, label);
+  }
+
+  numberInputElementValue(element, label) {
+    const rawValue = element?.value?.trim() || "";
+    const value = Number(rawValue);
+    if (!element || rawValue === "" || !Number.isFinite(value)) {
+      const error = `${label} must be a finite number.`;
+      this.markInputInvalid(element, error);
+      return { error, ok: false, value: 0 };
     }
-    return {
-      error: "",
-      ok: true,
-      value
-    };
+    this.clearInputValidity(element);
+    return { error: "", ok: true, value };
+  }
+
+  markInputInvalid(element, message) {
+    if (!element) {
+      return;
+    }
+    element.classList.add("is-invalid");
+    element.setAttribute("aria-invalid", "true");
+    element.setCustomValidity(message);
+    element.reportValidity();
+  }
+
+  clearInputValidity(element) {
+    if (!element) {
+      return;
+    }
+    element.classList.remove("is-invalid");
+    element.removeAttribute("aria-invalid");
+    element.setCustomValidity("");
   }
 
   snapDistance(value) {
