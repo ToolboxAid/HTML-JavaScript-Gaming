@@ -12,9 +12,9 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1 });
 const GRID_STEP = 10;
 const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;
-const MAX_ZOOM = 1;
-const MIN_ZOOM = 0.25;
-const ZOOM_STEP = 0.1;
+const MAX_ZOOM = 2;
+const MIN_ZOOM = 0.01;
+const ZOOM_STEP = 0.01;
 
 const OBJECT_STATE_IDS = Object.freeze(["idle", "thrust", "damaged", "destroyed", "active", "inactive"]);
 
@@ -1884,7 +1884,7 @@ export class ToolStarterApp {
   }
 
   formatZoomPercentage() {
-    return Math.round(this.viewport.zoom * 100 * GRID_STEP);
+    return Math.round(this.viewport.zoom * 100);
   }
 
   zoomViewportByStep(step) {
