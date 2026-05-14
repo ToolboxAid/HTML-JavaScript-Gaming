@@ -1566,6 +1566,57 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(objectIdentityPayloadPath);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-object-identity-drift\.json: root\.objects\[0\]\.id typed-object must follow object\.game\.name\./);
 
+      const runtimeAliasPayloadPath = testInfo.outputPath("object-vector-runtime-alias-drift.json");
+      await writeFile(runtimeAliasPayloadPath, JSON.stringify({
+        assetLibrary: {
+          assets: [
+            {
+              id: "asset.drift.typed-object",
+              name: "Runtime Alias",
+              objectId: "object.drift.typed-object",
+              tags: ["alias"]
+            }
+          ]
+        },
+        name: "Runtime Alias Drift",
+        objects: [
+          {
+            id: "object.drift.typed-object",
+            name: "Typed Object",
+            shapes: []
+          }
+        ],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(runtimeAliasPayloadPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-runtime-alias-drift\.json: root\.assetLibrary\.assets\[0\]\.objectId is not allowed\./);
+
+      const assetRuntimeIdPayloadPath = testInfo.outputPath("object-vector-asset-runtime-id-drift.json");
+      await writeFile(assetRuntimeIdPayloadPath, JSON.stringify({
+        assetLibrary: {
+          assets: [
+            {
+              id: "asset.drift.typed-object",
+              name: "Runtime Alias",
+              tags: ["alias"]
+            }
+          ]
+        },
+        name: "Asset Runtime ID Drift",
+        objects: [
+          {
+            id: "object.drift.typed-object",
+            name: "Typed Object",
+            shapes: []
+          }
+        ],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(assetRuntimeIdPayloadPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-asset-runtime-id-drift\.json: root\.assetLibrary\.assets\[0\]\.id asset\.drift\.typed-object must reference an existing object\./);
+
       const startupStatePayloadPath = testInfo.outputPath("object-vector-startup-state.json");
       await writeFile(startupStatePayloadPath, JSON.stringify({
         export: { fileName: "object-vector-studio-v2.json", format: "json", includeSelection: true },
@@ -3480,15 +3531,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         assetLibrary: {
           assets: [
             {
-              id: "asset.base-ship",
+              id: "object.library.base-ship",
               name: "Base Ship Asset",
-              objectId: "object.library.base-ship",
               tags: ["base", "ship"]
             },
             {
-              id: "asset.derived-ship",
+              id: "object.library.derived-ship",
               name: "Derived Ship Asset",
-              objectId: "object.library.derived-ship",
               tags: ["derived", "ship"]
             }
           ]
@@ -3541,7 +3590,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator('button[aria-controls="objectVectorStudioV2DependencyGraphContent"]').click();
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("object.library.derived-ship inherits object.library.base-ship");
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("Deferred reusable library capability");
-      await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("asset.derived-ship: object.library.derived-ship");
+      await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("object.library.derived-ship: Derived Ship Asset");
 
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.library.derived-ship']").click();
       await expect(page.locator('[data-object-id="object.library.derived-ship"]')).toHaveAttribute("aria-pressed", "true");
@@ -3550,7 +3599,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#objectVectorStudioV2RuntimePreviewButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview", "true");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime asset asset\.derived-ship resolved to object\.library\.derived-ship\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime library id object\.library\.derived-ship resolved to object object\.library\.derived-ship\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime inheritance resolved for object\.library\.derived-ship from object\.library\.base-ship; cached inherited render payload\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime preview launched for Derived Ship state active frame active-frame-1\./);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.library.base-ship'] [data-object-control='delete']").click();
@@ -3558,14 +3607,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const objectReferenceCleanup = await page.evaluate(() => {
         const payload = window.__objectVectorStudioV2App.currentPayload;
         return {
-          assetObjectIds: payload.assetLibrary.assets.map((asset) => asset.objectId),
+          assetIds: payload.assetLibrary.assets.map((asset) => asset.id),
+          assetObjectIdFields: payload.assetLibrary.assets.map((asset) => Object.hasOwn(asset, "objectId")),
           baseObjectIds: payload.objects.map((object) => object.baseObjectId || ""),
           objectIds: payload.objects.map((object) => object.id),
           schemaOk: window.__objectVectorStudioV2App.schemaService.validatePayload(payload).ok
         };
       });
       expect(objectReferenceCleanup).toEqual({
-        assetObjectIds: ["object.library.derived-ship"],
+        assetIds: ["object.library.derived-ship"],
+        assetObjectIdFields: [false],
         baseObjectIds: [""],
         objectIds: ["object.library.derived-ship"],
         schemaOk: true
@@ -4047,8 +4098,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 6 objects.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.ship; cached resolved object.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.ufo.small; cached resolved object.");
-      expect(eventMessages).not.toContain("Object Vector runtime asset asset.asteroids.ship resolved to object.asteroids.ship.");
-      expect(eventMessages).not.toContain("Object Vector runtime asset asset.asteroids.ufo.small resolved to object.asteroids.ufo.small.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ufo.small: 2 shapes state=active frame=active-frame-1.");
@@ -6264,13 +6313,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object.asteroids.ufo.small"
       ]));
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].assetLibrary.assets.map((asset) => asset.id)).toEqual(expect.arrayContaining([
-        "asset.asteroids.ship",
-        "asset.asteroids.asteroid.large",
-        "asset.asteroids.asteroid.medium",
-        "asset.asteroids.asteroid.small",
-        "asset.asteroids.ufo.large",
-        "asset.asteroids.ufo.small"
+        "object.asteroids.ship",
+        "object.asteroids.asteroid.large",
+        "object.asteroids.asteroid.medium",
+        "object.asteroids.asteroid.small",
+        "object.asteroids.ufo.large",
+        "object.asteroids.ufo.small"
       ]));
+      expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].assetLibrary.assets.every((asset) => asset.id.startsWith("object.") && !Object.hasOwn(asset, "objectId"))).toBe(true);
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].palette).toBeUndefined();
       expect(
         selectedGameHydration.dataByTool["text2speech-V2"] === null
@@ -6425,13 +6475,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object.asteroids.ufo.small"
       ]));
       expect(manifestWorkspace.tools["object-vector-studio-v2"].assetLibrary.assets.map((asset) => asset.id)).toEqual(expect.arrayContaining([
-        "asset.asteroids.ship",
-        "asset.asteroids.asteroid.large",
-        "asset.asteroids.asteroid.medium",
-        "asset.asteroids.asteroid.small",
-        "asset.asteroids.ufo.large",
-        "asset.asteroids.ufo.small"
+        "object.asteroids.ship",
+        "object.asteroids.asteroid.large",
+        "object.asteroids.asteroid.medium",
+        "object.asteroids.asteroid.small",
+        "object.asteroids.ufo.large",
+        "object.asteroids.ufo.small"
       ]));
+      expect(manifestWorkspace.tools["object-vector-studio-v2"].assetLibrary.assets.every((asset) => asset.id.startsWith("object.") && !Object.hasOwn(asset, "objectId"))).toBe(true);
       if (Object.hasOwn(manifestWorkspace.tools, "text2speech-V2")) {
         expect(manifestWorkspace.tools["text2speech-V2"]).toEqual(expect.any(Array));
       }
@@ -6678,7 +6729,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(smallUfoTile.locator("[data-object-tile-shape-id] .object-vector-studio-v2__shape-select-label")).toHaveText(["0. small-ufo-body", "1. small-ufo-canopy"]);
       await page.locator('button[aria-controls="objectVectorStudioV2DependencyGraphContent"]').click();
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("Deferred reusable library capability");
-      await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("asset.asteroids.ship");
+      await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("object.asteroids.ship: Asteroids Ship");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"palette"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime palette loaded from workspace\.tools\.palette-manager-v2\.data: 10 swatches\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from workspace\.tools\.object-vector-studio-v2: 6 objects\./);

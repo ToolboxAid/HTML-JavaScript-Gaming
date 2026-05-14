@@ -100,6 +100,9 @@ export class ObjectVectorStudioV2SchemaService {
     if (Object.prototype.hasOwnProperty.call(schema.$defs?.object?.properties || {}, "type")) {
       errors.push("Object Vector Studio V2 object schema must not define object type.");
     }
+    if (Object.prototype.hasOwnProperty.call(schema.$defs?.libraryAsset?.properties || {}, "objectId")) {
+      errors.push("Object Vector Studio V2 library asset schema must not define objectId.");
+    }
   }
 
   validatePayload(payload) {
@@ -165,8 +168,8 @@ export class ObjectVectorStudioV2SchemaService {
         errors.push(`root.assetLibrary.assets[${index}].id ${asset.id} duplicates an existing library asset id.`);
       }
       assetIds.add(asset.id);
-      if (!objectsById.has(asset.objectId)) {
-        errors.push(`root.assetLibrary.assets[${index}].objectId ${asset.objectId} must reference an existing object.`);
+      if (!objectsById.has(asset.id)) {
+        errors.push(`root.assetLibrary.assets[${index}].id ${asset.id} must reference an existing object.`);
       }
     });
   }
@@ -434,7 +437,6 @@ export class ObjectVectorStudioV2SchemaService {
         assets: normalized.assetLibrary.assets.map((asset) => ({
           id: asset.id.trim(),
           name: asset.name.trim(),
-          objectId: asset.objectId.trim(),
           tags: asset.tags.map((tag) => tag.trim()).filter(Boolean)
         }))
       };

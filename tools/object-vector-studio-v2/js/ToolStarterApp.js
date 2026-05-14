@@ -1292,7 +1292,7 @@ export class ToolStarterApp {
       this.elements.dependencyGraph.textContent = "No dependency graph loaded.";
       return;
     }
-    const usageLines = this.assetLibraryAssets().map((asset) => `${asset.id}: ${asset.objectId}`);
+    const usageLines = this.assetLibraryAssets().map((asset) => `${asset.id}: ${asset.name}`);
     const graphLines = this.currentPayload.objects
       .map((object) => `${object.id}${object.baseObjectId ? ` inherits ${object.baseObjectId}` : " has no base object"}`);
     this.elements.dependencyGraph.textContent = [
@@ -2766,8 +2766,8 @@ export class ToolStarterApp {
       }
     });
     (nextPayload.assetLibrary?.assets || []).forEach((asset) => {
-      if (asset.objectId === oldId) {
-        asset.objectId = nextId;
+      if (asset.id === oldId) {
+        asset.id = nextId;
       }
     });
     nextObject.id = nextId;
@@ -2842,7 +2842,7 @@ export class ToolStarterApp {
 
   removeDeletedObjectReferences(payload, objectId) {
     if (Array.isArray(payload.assetLibrary?.assets)) {
-      payload.assetLibrary.assets = payload.assetLibrary.assets.filter((asset) => asset.objectId !== objectId);
+      payload.assetLibrary.assets = payload.assetLibrary.assets.filter((asset) => asset.id !== objectId);
     }
     payload.objects.forEach((object) => {
       if (object.baseObjectId === objectId) {
@@ -4394,7 +4394,7 @@ export class ToolStarterApp {
       return;
     }
     const result = this.runtimeAssetService.createSvgString(assetSet, {
-      assetId: this.assetLibraryAssets().find((asset) => asset.objectId === object.id)?.id || "",
+      assetId: this.assetLibraryAssets().some((asset) => asset.id === object.id) ? object.id : "",
       elapsedMs: 0,
       frameId: this.selectedFrameId,
       objectId: object.id,
