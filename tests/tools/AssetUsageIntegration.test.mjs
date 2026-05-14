@@ -52,26 +52,26 @@ export async function run() {
     );
 
     const validAsset = createAssetHandoff({
-      assetId: "asset-vector-player",
-      assetType: "vector",
-      sourcePath: "../../games/Asteroids/game.manifest.json#tools.vector-map-editor.vectorMapDocument.vectors.vector.asteroids.ship",
-      displayName: "Asteroids Ship Vector",
-      metadata: { category: "Vector Assets" },
+      assetId: "object.asteroids.ship",
+      assetType: "object-vector",
+      sourcePath: "../../games/Asteroids/game.manifest.json#tools.object-vector-studio-v2.objects.object.asteroids.ship",
+      displayName: "Asteroids Ship Object Vector",
+      metadata: { category: "Object Vector Assets" },
       sourceToolId: "tile-map-editor"
     });
     assert.equal(writeSharedAssetHandoff(validAsset), true);
     const storedAsset = readSharedAssetHandoff();
-    assert.equal(storedAsset.assetId, "asset-vector-player");
-    assert.equal(storedAsset.assetType, "vector");
-    assert.equal(storedAsset.sourcePath, "../../games/Asteroids/game.manifest.json#tools.vector-map-editor.vectorMapDocument.vectors.vector.asteroids.ship");
-    assert.equal(storedAsset.displayName, "Asteroids Ship Vector");
+    assert.equal(storedAsset.assetId, "object.asteroids.ship");
+    assert.equal(storedAsset.assetType, "object-vector");
+    assert.equal(storedAsset.sourcePath, "../../games/Asteroids/game.manifest.json#tools.object-vector-studio-v2.objects.object.asteroids.ship");
+    assert.equal(storedAsset.displayName, "Asteroids Ship Object Vector");
     assert.equal(storedAsset.sourceToolId, "tile-map-editor");
     assert.equal(typeof storedAsset.selectedAt, "string");
-    assert.equal(storedAsset.metadata.category, "Vector Assets");
+    assert.equal(storedAsset.metadata.category, "Object Vector Assets");
 
     assert.equal(writeSharedAssetHandoff({ assetId: "broken-only-id" }), false);
     const stillStoredAsset = readSharedAssetHandoff();
-    assert.equal(stillStoredAsset.assetId, "asset-vector-player");
+    assert.equal(stillStoredAsset.assetId, "object.asteroids.ship");
 
     const validPalette = createPaletteHandoff({
       paletteId: "builtin:crayola032",

@@ -9,20 +9,21 @@ export async function run() {
   assert.equal(Array.isArray(binding?.issues), true);
   assert.equal(binding.issues.length, 0);
 
-  const vectorBinding = (binding.domains.vectors || []).find((entry) => entry.assetId === "vector.asteroids.ship");
-  const tilemapBinding = (binding.domains.tilemaps || []).find((entry) => entry.assetId === "tilemap.asteroids-stage");
-  const parallaxBinding = (binding.domains.parallax || []).find((entry) => entry.assetId === "parallax.asteroids-title");
+  const objectVectorSource = result.demo.runtimeAssetSources["object.asteroids.ship"];
+  const rejectedIds = (binding.rejected || []).map((entry) => entry.assetId).sort();
 
-  assert.equal(Boolean(vectorBinding), true);
-  assert.equal(Boolean(tilemapBinding), true);
-  assert.equal(Boolean(parallaxBinding), true);
-  assert.equal(vectorBinding.runtimePath.includes("/data/"), false);
-  assert.equal(tilemapBinding.runtimePath.includes("/data/"), false);
-  assert.equal(parallaxBinding.runtimePath.includes("/data/"), false);
+  assert.equal((binding.domains.vectors || []).length, 0);
+  assert.deepEqual(rejectedIds, [
+    "parallax.asteroids-overlay",
+    "parallax.asteroids-title",
+    "tilemap.asteroids-stage"
+  ]);
+  assert.equal(objectVectorSource.file.includes("tools.object-vector-studio-v2.objects.object.asteroids.ship"), true);
 
   const runtimeAssetTable = result.demo.runtimeResult?.bootstrap?.assetTable || {};
   const runtimePathFor = (entry) => entry?.file || entry?.path || "";
-  assert.equal(runtimePathFor(runtimeAssetTable["vector.asteroids.ship"]), vectorBinding.runtimePath);
-  assert.equal(runtimePathFor(runtimeAssetTable["tilemap.asteroids-stage"]), tilemapBinding.runtimePath);
-  assert.equal(runtimePathFor(runtimeAssetTable["parallax.asteroids-title"]), parallaxBinding.runtimePath);
+  assert.equal(Object.keys(runtimeAssetTable).some((assetId) => assetId.startsWith(`vector.${"asteroids"}.`)), false);
+  assert.equal(runtimePathFor(runtimeAssetTable["tilemap.asteroids-stage"]).includes("/data/"), false);
+  assert.equal(runtimePathFor(runtimeAssetTable["parallax.asteroids-title"]).includes("/data/"), false);
+  assert.equal(runtimeAssetTable["tilemap.asteroids-stage"].visualPreference.objectIds.ship, "object.asteroids.ship");
 }

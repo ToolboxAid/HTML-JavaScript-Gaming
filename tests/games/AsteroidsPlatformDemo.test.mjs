@@ -22,21 +22,15 @@ export async function run() {
   const runtimeModule = await import(new URL(`../../${first.demo.runtimeHandoff.modulePath}`, import.meta.url));
   assert.equal(typeof runtimeModule[first.demo.runtimeHandoff.exportName], "function");
   assert.equal(first.demo.packageResult.manifest.package.projectId, "asteroids-platform-demo");
-  assert.equal(first.demo.definition.demo.visualBaseline.preferred, "vector");
+  assert.equal(first.demo.definition.demo.visualBaseline.preferred, "object-vector");
   assert.equal(first.demo.definition.demo.visualBaseline.rollbackDocumented, true);
   assert.deepEqual(
     first.demo.packageResult.manifest.package.assets.filter((asset) => asset.type === "vector").map((asset) => asset.id),
-    [
-      "vector.asteroids.asteroid.large",
-      "vector.asteroids.asteroid.medium",
-      "vector.asteroids.asteroid.small",
-      "vector.asteroids.ship",
-      "vector.asteroids.ui.title"
-    ]
+    []
   );
-  assert.equal(first.demo.vectorOnly.hasSpriteRuntimeDependency, false);
-  assert.deepEqual(first.demo.vectorOnly.missingRequiredVectorIds, []);
-  assert.match(first.demo.debugVisualizationResult.debugVisualization.reportText, /geometry=/);
+  assert.equal(first.demo.objectVector.hasSpriteRuntimeDependency, false);
+  assert.deepEqual(first.demo.objectVector.missingRequiredObjectIds, []);
+  assert.match(first.demo.debugVisualizationResult.debugVisualization.reportText, /nodes=7/);
   assert.match(first.demo.performanceResult.performance.reportText, /Geometry: assets=/);
   assert.equal(
     first.demo.packageResult.manifest.package.assets.some((asset) => asset.id === "sprite.asteroids-demo"),
@@ -44,9 +38,9 @@ export async function run() {
   );
   assert.deepEqual(first, second);
   assert.match(first.demo.reportText, /title, start, game-over, and restart loop/i);
-  assert.match(first.demo.reportText, /Visual path: vector only/);
-  assert.match(first.demo.reportText, /ASTEROIDS_VECTOR_ONLY_RUNTIME/);
+  assert.match(first.demo.reportText, /Visual path: object-vector only/);
+  assert.match(first.demo.reportText, /ASTEROIDS_OBJECT_VECTOR_RUNTIME/);
   assert.match(first.demo.reportText, /ASTEROIDS_ROLLBACK_NOTES_ONLY/);
   assert.match(first.demo.reportText, /Publishing pipeline ready with 5 release targets\./);
-  assert.equal(summarizeAsteroidsPlatformDemo(first), "Asteroids platform demo ready with 12 packaged assets.");
+  assert.equal(summarizeAsteroidsPlatformDemo(first), "Asteroids platform demo ready with 7 packaged assets.");
 }

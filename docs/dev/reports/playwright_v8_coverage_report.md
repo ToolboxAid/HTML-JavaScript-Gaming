@@ -1,6 +1,6 @@
-# PR_26133_027 Playwright V8 Coverage Report
+# PR_26133_028 Playwright V8 Coverage Report
 
-Task: PR_26133_027-object-id-ssot-manifest-schema-cleanup
+Task: PR_26133_028-remove-vector-map-editor-runtime-dependency
 Date: 2026-05-13
 
 ## Result
@@ -23,19 +23,18 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## Changed Runtime JS Coverage
 
-- `tools/object-vector-studio-v2/js/ToolStarterApp.js`: 94% function coverage, 4190/4190 reported lines executed, 452/483 reported functions executed.
-- `tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`: 95% function coverage, 411/411 reported lines executed, 53/56 reported functions executed.
-- `src/engine/rendering/ObjectVectorRuntimeAssetService.js`: 98% function coverage, 916/916 reported lines executed, 106/108 reported functions executed.
+- `tools/shared/asteroidsPlatformDemo.js`: not collected by Playwright V8 coverage; covered by focused node probe.
+- `tools/shared/vectorAssetSystem.js`: not collected by Playwright V8 coverage; covered by focused node probe.
+- Object Vector Studio V2 runtime/editor modules from the prior object-ID path remain covered by the Workspace V2 run.
 
 ## PR-Specific Coverage/Validation Relevance
 
-The workspace-v2 run exercises the Object Vector Studio V2 editor and Asteroids runtime paths changed in this PR:
+The workspace-v2 run exercises the Object Vector Studio V2 editor and Asteroids runtime paths affected by this PR:
 
-- Object Vector Studio V2 schema rejection for duplicate runtime identity aliases.
-- Object Vector Studio V2 assetLibrary hydration through `object.*` IDs.
-- Asset library inheritance and runtime preview resolution through object IDs.
+- Asteroids workspace hydration without `vector-map-editor`.
+- Object Vector Studio V2 loading/editing of Asteroids objects through `object-vector-studio-v2.objects`.
 - Asteroids runtime Object Vector rendering through `object.asteroids.*` IDs.
-- Triangle/non-triangle polygon point control behavior.
-- Duplicate Frame control ordering.
+- Workspace save summaries without vector-map-editor tool state.
+- Asteroids manifest schema validation after vector-map removal.
 
 Generated source report: `docs/dev/reports/playwright_v8_coverage_report.txt`.

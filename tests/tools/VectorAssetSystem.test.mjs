@@ -29,12 +29,12 @@ export async function run() {
     vectorDocument: fixture.vectorDocument
   });
   assert.equal(validation.validation.status, "valid");
-  assert.equal(validation.assetDependencyGraph.nodes["vector.asteroids.ship"].type, "vector");
-  assert.equal(validation.assetDependencyGraph.nodes["vector.asteroids.asteroid.medium"].type, "vector");
-  assert.equal(validation.assetDependencyGraph.nodes["vector.asteroids.asteroid.small"].type, "vector");
+  assert.equal(validation.assetDependencyGraph.nodes["object.asteroids.ship"].type, "vector");
+  assert.equal(validation.assetDependencyGraph.nodes["object.asteroids.asteroid.medium"].type, "vector");
+  assert.equal(validation.assetDependencyGraph.nodes["object.asteroids.asteroid.small"].type, "vector");
   assert.deepEqual(
-    validation.assetDependencyGraph.edges.filter((edge) => edge.source === "vector.asteroids.ship"),
-    [{ id: "usesPalette:vector.asteroids.ship->palette.asteroids-hud", source: "vector.asteroids.ship", target: "palette.asteroids-hud", type: "usesPalette" }]
+    validation.assetDependencyGraph.edges.filter((edge) => edge.source === "object.asteroids.ship"),
+    [{ id: "usesPalette:object.asteroids.ship->palette.asteroids-hud", source: "object.asteroids.ship", target: "palette.asteroids-hud", type: "usesPalette" }]
   );
 
   const packageResult = buildProjectPackage({
@@ -46,12 +46,11 @@ export async function run() {
   assert.deepEqual(
     packageResult.manifest.package.assets.map((asset) => asset.id),
     [
+      "object.asteroids.asteroid.large",
+      "object.asteroids.asteroid.medium",
+      "object.asteroids.asteroid.small",
+      "object.asteroids.ship",
       "palette.asteroids-hud",
-      "vector.asteroids.asteroid.large",
-      "vector.asteroids.asteroid.medium",
-      "vector.asteroids.asteroid.small",
-      "vector.asteroids.ship",
-      "vector.asteroids.ui.title"
     ]
   );
 
@@ -60,11 +59,11 @@ export async function run() {
     resolvePackagedAsset: (asset) => fixture.runtimeAssets[asset.id] || null
   });
   assert.equal(runtimeResult.runtimeLoader.status, "ready");
-  assert.equal(runtimeResult.bootstrap.assetTable["vector.asteroids.ship"].type, "vector");
-  assert.equal(runtimeResult.bootstrap.assetTable["vector.asteroids.ship"].runtimeKind, "vector-geometry");
-  assert.equal(runtimeResult.bootstrap.assetTable["vector.asteroids.ship"].renderables.length, 2);
-  assert.equal(runtimeResult.bootstrap.assetTable["vector.asteroids.asteroid.medium"].renderables.length, 1);
-  assert.equal(runtimeResult.bootstrap.assetTable["vector.asteroids.asteroid.small"].renderables.length, 1);
+  assert.equal(runtimeResult.bootstrap.assetTable["object.asteroids.ship"].type, "vector");
+  assert.equal(runtimeResult.bootstrap.assetTable["object.asteroids.ship"].runtimeKind, "vector-geometry");
+  assert.equal(runtimeResult.bootstrap.assetTable["object.asteroids.ship"].renderables.length, 2);
+  assert.equal(runtimeResult.bootstrap.assetTable["object.asteroids.asteroid.medium"].renderables.length, 1);
+  assert.equal(runtimeResult.bootstrap.assetTable["object.asteroids.asteroid.small"].renderables.length, 1);
 
   const invalidValidation = validateProjectAssetState({
     registry: {
