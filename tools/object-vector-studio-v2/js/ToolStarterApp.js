@@ -1498,6 +1498,14 @@ export class ToolStarterApp {
     return this.shapeToolLabelsById.get(shape.id)?.toLowerCase() || shape.type;
   }
 
+  isTriangleShape(shape) {
+    return this.shapeSummaryTypeLabel(shape) === "triangle";
+  }
+
+  isEditablePolygonShape(shape) {
+    return shape?.type === "polygon" && !this.isTriangleShape(shape);
+  }
+
   shapeGeometryHeadingLabel(shape) {
     return this.shapeToolLabelsById.get(shape.id) || shapeTypeLabel(shape);
   }
@@ -1554,9 +1562,10 @@ export class ToolStarterApp {
     grid.className = shape.type === "polygon"
       ? "object-vector-studio-v2__polygon-point-list"
       : `object-vector-studio-v2__edit-grid object-vector-studio-v2__edit-grid--${shape.type}${shape.type === "ellipse" ? " object-vector-studio-v2__edit-grid--ellipse" : ""}`;
+    const editablePolygon = this.isEditablePolygonShape(shape);
     if (shape.type === "polygon") {
       shape.geometry.points.forEach((point, index) => {
-        grid.append(this.createPolygonPointRow(point, index));
+        grid.append(this.createPolygonPointRow(point, index, { selectable: editablePolygon }));
       });
     } else {
       this.shapeGeometryFields(shape).forEach((field) => {
@@ -1582,7 +1591,7 @@ export class ToolStarterApp {
     applyButton.textContent = "Apply Geometry";
     this.applyIconGlyph(applyButton, "edit");
     applyButton.addEventListener("click", () => this.applyShapeGeometryEdits());
-    if (shape.type === "polygon") {
+    if (editablePolygon) {
       section.append(heading, grid, this.createPolygonSideActions(), applyButton);
     } else {
       section.append(heading, grid, applyButton);
@@ -1590,7 +1599,7 @@ export class ToolStarterApp {
     return section;
   }
 
-  createPolygonPointRow(point, index) {
+  createPolygonPointRow(point, index, { selectable = true } = {}) {
     const row = document.createElement("div");
     row.className = "object-vector-studio-v2__polygon-point-field";
     const caption = document.createElement("span");
@@ -1616,15 +1625,17 @@ export class ToolStarterApp {
       label.append(axisLabel, input);
       row.append(label);
     });
-    const selectLabel = document.createElement("label");
-    selectLabel.className = "object-vector-studio-v2__polygon-point-toggle";
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.dataset.polygonPointSelect = "true";
-    checkbox.dataset.polygonPointIndex = String(index);
-    checkbox.setAttribute("aria-label", `Select point ${index + 1}`);
-    selectLabel.append(checkbox);
-    row.append(selectLabel);
+    if (selectable) {
+      const selectLabel = document.createElement("label");
+      selectLabel.className = "object-vector-studio-v2__polygon-point-toggle";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.dataset.polygonPointSelect = "true";
+      checkbox.dataset.polygonPointIndex = String(index);
+      checkbox.setAttribute("aria-label", `Select point ${index + 1}`);
+      selectLabel.append(checkbox);
+      row.append(selectLabel);
+    }
     return row;
   }
 
@@ -3464,6 +3475,10 @@ export class ToolStarterApp {
       this.statusLog.write("WARN Add polygon point skipped: no polygon shape is selected.");
       return;
     }
+    if (!this.isEditablePolygonShape(selected)) {
+      this.statusLog.write(`WARN Add polygon point skipped for shape ${selected.id}: triangle point count is fixed.`);
+      return;
+    }
     const geometry = this.readCurrentPolygonGeometry(selected);
     if (!geometry.ok) {
       this.statusLog.write(`FAIL Add polygon point rejected for shape ${selected.id}: ${geometry.error}`);
@@ -3484,6 +3499,10 @@ export class ToolStarterApp {
     const selected = this.selectedShape();
     if (!selected || selected.type !== "polygon") {
       this.statusLog.write("WARN Delete polygon point skipped: no polygon shape is selected.");
+      return;
+    }
+    if (!this.isEditablePolygonShape(selected)) {
+      this.statusLog.write(`WARN Delete polygon point skipped for shape ${selected.id}: triangle point count is fixed.`);
       return;
     }
     const geometry = this.readCurrentPolygonGeometry(selected);
@@ -3536,7 +3555,9 @@ export class ToolStarterApp {
     if (!list) {
       return;
     }
-    list.replaceChildren(...points.map((point, index) => this.createPolygonPointRow(point, index)));
+    const selected = this.selectedShape();
+    const selectable = this.isEditablePolygonShape(selected);
+    list.replaceChildren(...points.map((point, index) => this.createPolygonPointRow(point, index, { selectable })));
   }
 
   nextPolygonSidePoint(points) {

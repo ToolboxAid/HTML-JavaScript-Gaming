@@ -182,6 +182,17 @@ function createVectorDocument() {
   };
 }
 
+function createRuntimeObjectIdMap() {
+  return {
+    asteroidLarge: "object.asteroids.asteroid.large",
+    asteroidMedium: "object.asteroids.asteroid.medium",
+    asteroidSmall: "object.asteroids.asteroid.small",
+    ship: "object.asteroids.ship",
+    ufoLarge: "object.asteroids.ufo.large",
+    ufoSmall: "object.asteroids.ufo.small"
+  };
+}
+
 function createTileMapDocument() {
   return {
     schema: "toolbox.tilemap/1",
@@ -195,6 +206,7 @@ function createTileMapDocument() {
     assetRefs: {
       tilemapId: "tilemap.asteroids-stage",
       tilesetId: "tileset.asteroids-ui",
+      objectIds: createRuntimeObjectIdMap(),
       parallaxSourceIds: ["parallax.asteroids-overlay", "parallax.asteroids-title"]
     },
     gameplay: {
@@ -290,14 +302,8 @@ function createRuntimeAssetSources(registry) {
         restart: true
       },
       visualPreference: {
-        preferredAssetType: "vector",
-        vectorIds: [
-          "vector.asteroids.ship",
-          "vector.asteroids.asteroid.large",
-          "vector.asteroids.asteroid.medium",
-          "vector.asteroids.asteroid.small",
-          "vector.asteroids.ui.title"
-        ]
+        objectIds: createRuntimeObjectIdMap(),
+        preferredRuntimeIdentity: "object-vector-object"
       },
       runtimeEntry: {
         modulePath: "games/Asteroids/main.js",
@@ -486,7 +492,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
     createReport("info", "ASTEROIDS_PLATFORM_DEMO_READY", "Asteroids demo completed strict validation, packaging, runtime, export, and publishing flows."),
     createReport("info", "ASTEROIDS_RUNTIME_HANDOFF", `Runtime handoff preserved ${handoff.exportName} from ${handoff.modulePath}.`),
     createReport("info", "ASTEROIDS_RUNTIME_BINDING_ADOPTED", `Manifest-driven runtime asset binding active for domains: vectors, tilemaps, parallax.`),
-    createReport("info", "ASTEROIDS_VECTOR_ONLY_RUNTIME", "Vector assets are the sole active visual runtime path for ship, asteroid variants, and title presentation."),
+    createReport("info", "ASTEROIDS_VECTOR_ONLY_RUNTIME", "Runtime identity resolves through Object Vector object IDs; vector IDs remain editor geometry references for ship, asteroid variants, and title presentation."),
     createReport("info", "ASTEROIDS_ROLLBACK_NOTES_ONLY", "Rollback guidance remains documented historically and is not part of the active packaged runtime dependency set.")
   ];
 
@@ -509,6 +515,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
     `Runtime entry: ${handoff.modulePath}#${handoff.exportName}`,
     `Visual path: ${definition.demo.visualBaseline.preferred} only`,
     `Required vectors: ${requiredVectorIds.join(", ")}`,
+    `Runtime object IDs: ${Object.values(createRuntimeObjectIdMap()).join(", ")}`,
     `Rollback notes: documented=${definition.demo.visualBaseline.rollbackDocumented}`,
     `Startup roots: ${(runtimeManifest?.roots || []).map((root) => root.id).join(", ")}`,
     `Gameplay pillars: ${definition.demo.gameplay.join("; ")}`,

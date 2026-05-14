@@ -11,6 +11,16 @@
         "directPath": "/games/Asteroids/index.html",
         "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?gameId=Asteroids",
         "workspaceManagerOptional": true
+      },
+      "objectVectorRuntime": {
+        "objectIds": {
+          "ship": "object.asteroids.ship",
+          "asteroidLarge": "object.asteroids.asteroid.large",
+          "asteroidMedium": "object.asteroids.asteroid.medium",
+          "asteroidSmall": "object.asteroids.asteroid.small",
+          "ufoLarge": "object.asteroids.ufo.large",
+          "ufoSmall": "object.asteroids.ufo.small"
+        }
       }
     },
     "workspace": {

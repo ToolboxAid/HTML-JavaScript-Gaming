@@ -1,6 +1,6 @@
-﻿# PR_26133_025 Playwright V8 Coverage Report
+# PR_26133_026 Playwright V8 Coverage Report
 
-Task: PR_26133_025-object-vector-studio-dirty-state-save-tracking
+Task: PR_26133_026-object-id-ssot-schema-and-editor-controls
 Date: 2026-05-13
 
 ## Result
@@ -23,17 +23,18 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## Changed Runtime JS Coverage
 
-- `tools/object-vector-studio-v2/js/ToolStarterApp.js`: 94% function coverage, 4171/4171 reported lines executed, 450/481 reported functions executed.
+- `tools/object-vector-studio-v2/js/ToolStarterApp.js`: 94% function coverage, 4190/4190 reported lines executed, 452/483 reported functions executed.
+- `games/Asteroids/game/AsteroidsGameScene.js`: 52% function coverage, 846/846 reported lines executed, 25/48 reported functions executed.
+- `tools/shared/asteroidsPlatformDemo.js`: not collected by Playwright V8 coverage; covered by focused node test `AsteroidsPlatformDemo.test.mjs`.
 
 ## PR-Specific Coverage/Validation Relevance
 
-The new Workspace Manager V2 Playwright coverage exercises the Object Vector Studio V2 workspace dirty contract end to end:
+The workspace-v2 run exercises the Object Vector Studio V2 editor and Asteroids runtime paths changed in this PR:
 
-- clean startup session state,
-- selection/preview actions remaining clean,
-- every requested persisted edit category marking the Object Vector session dirty,
-- Workspace Manager Save becoming enabled after return,
-- invalid save preserving dirty state without manifest writes,
-- successful save clearing dirty state only after verified write-back.
+- triangle geometry layout and controls,
+- frame control ordering,
+- objectId-based Asteroids Object Vector runtime rendering,
+- Workspace Manager game manifest schema loading and validation,
+- Object Vector Studio V2 loading of Asteroids workspace objects.
 
 Generated source report: `docs/dev/reports/playwright_v8_coverage_report.txt`.

@@ -2890,6 +2890,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectGeometrySummary")).toHaveText("(triangle)");
       await expect(page.locator("#objectVectorStudioV2ObjectGeometryName")).toHaveText(/polygon-\d+/);
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText(/Shape\s*polygon-\d+ \(triangle\)/);
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-side-action]")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-select='true']")).toHaveCount(0);
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
@@ -3333,6 +3335,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("ship-template-hull");
       await expect(page.locator("#objectVectorStudioV2ObjectGeometrySummary")).toHaveText("(polygon)");
       await expect(page.locator("#objectVectorStudioV2ObjectGeometryName")).toHaveText("ship-template-hull");
+      await expect(page.locator("[aria-label='Frame controls'] button")).toHaveText(["Frame Earlier", "Duplicate Frame", "Frame Later"]);
 
       await page.locator("#objectVectorStudioV2DuplicateFrameButton").click();
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(2);
@@ -4042,8 +4045,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);
       const eventMessages = diagnostics.events.map((entry) => entry.message).join("\n");
       expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 6 objects.");
-      expect(eventMessages).toContain("Object Vector runtime asset asset.asteroids.ship resolved to object.asteroids.ship.");
-      expect(eventMessages).toContain("Object Vector runtime asset asset.asteroids.ufo.small resolved to object.asteroids.ufo.small.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.ship; cached resolved object.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.ufo.small; cached resolved object.");
+      expect(eventMessages).not.toContain("Object Vector runtime asset asset.asteroids.ship resolved to object.asteroids.ship.");
+      expect(eventMessages).not.toContain("Object Vector runtime asset asset.asteroids.ufo.small resolved to object.asteroids.ufo.small.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ufo.small: 2 shapes state=active frame=active-frame-1.");
@@ -6395,6 +6400,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(asteroidsManifest.documentKind).toBeUndefined();
       expect(asteroidsManifest.tools).toBeUndefined();
       expect(asteroidsManifest.game.gameData.launch.directPath).toBe("/games/Asteroids/index.html");
+      expect(asteroidsManifest.game.gameData.objectVectorRuntime.objectIds).toEqual({
+        asteroidLarge: "object.asteroids.asteroid.large",
+        asteroidMedium: "object.asteroids.asteroid.medium",
+        asteroidSmall: "object.asteroids.asteroid.small",
+        ship: "object.asteroids.ship",
+        ufoLarge: "object.asteroids.ufo.large",
+        ufoSmall: "object.asteroids.ufo.small"
+      });
+      expect(Object.values(asteroidsManifest.game.gameData.objectVectorRuntime.objectIds).every((id) => id.startsWith("object."))).toBe(true);
       const manifestWorkspace = asteroidsManifest.game.workspace;
       expect(manifestWorkspace.documentKind).toBe("workspace-manifest");
       expect(Object.keys(manifestWorkspace.tools).sort()).toEqual(expect.arrayContaining(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2", "vector-map-editor"]));
