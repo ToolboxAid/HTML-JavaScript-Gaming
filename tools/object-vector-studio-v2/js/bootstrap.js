@@ -13,6 +13,10 @@ function requireElement(selector) {
   return element;
 }
 
+function optionalElement(selector) {
+  return document.querySelector(selector);
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   const accordions = Array.from(document.querySelectorAll(".accordion-v2"), (section) => new AccordionSection(section));
   const statusLog = new StatusLogControl({
@@ -38,7 +42,7 @@ window.addEventListener("DOMContentLoaded", () => {
       bringToFrontButton: requireElement("#objectVectorStudioV2BringToFrontButton"),
       centerDotButton: requireElement("#objectVectorStudioV2CenterDotButton"),
       coordinateDisplay: requireElement("#objectVectorStudioV2CoordinateDisplay"),
-      deleteObjectButton: requireElement("#objectVectorStudioV2DeleteObjectButton"),
+      deleteObjectButton: optionalElement("#objectVectorStudioV2DeleteObjectButton"),
       dependencyGraph: requireElement("#objectVectorStudioV2DependencyGraph"),
       duplicateFrameButton: requireElement("#objectVectorStudioV2DuplicateFrameButton"),
       duplicateObjectButton: requireElement("#objectVectorStudioV2DuplicateObjectButton"),

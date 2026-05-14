@@ -69,7 +69,6 @@
               <button id="objectVectorStudioV2AddObjectButton" type="button" title="Add a schema-valid object to the loaded payload">Add</button>
               <button id="objectVectorStudioV2RenameObjectButton" type="button" title="Rename the selected object and update its object/game/name id">Rename</button>
               <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Dup</button>
-              <button id="objectVectorStudioV2DeleteObjectButton" type="button" title="Delete the selected object">Delete</button>
             </div>
           </div>
         </section>
@@ -254,8 +253,14 @@
           </button>
           <div id="objectVectorStudioV2PaletteContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
             <div class="object-vector-studio-v2__palette-controls" aria-label="Palette paint controls">
-              <button id="objectVectorStudioV2PaintModeButton" type="button" aria-pressed="true">Paint</button>
-              <button id="objectVectorStudioV2StrokeModeButton" type="button" aria-pressed="false">Stroke</button>
+              <button id="objectVectorStudioV2PaintModeButton" type="button" aria-pressed="true">
+                <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="paint" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__palette-mode-label">Paint</span>
+              </button>
+              <button id="objectVectorStudioV2StrokeModeButton" type="button" aria-pressed="false">
+                <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="stroke" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__palette-mode-label">Stroke</span>
+              </button>
               <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeWidth">
                 <span>Stroke Width</span>
                 <input id="objectVectorStudioV2StrokeWidth" type="number" min="0.1" step="0.1" value="2">

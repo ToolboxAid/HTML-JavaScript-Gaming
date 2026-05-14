@@ -1186,6 +1186,14 @@ textarea:hover {
   transform: scaleX(1.35);
 }
 
+.object-vector-studio-v2__shape-icon--select[data-ovs-icon]::before {
+  font-size: calc(1em * var(--object-vector-studio-v2-icon-scale, 1.75) * 0.75);
+}
+
+.object-vector-studio-v2__shape-icon--rectangle[data-ovs-icon]::before {
+  font-size: calc(1em * var(--object-vector-studio-v2-icon-scale, 1.75) * 1.25);
+}
+
 .object-vector-studio-v2__z-icon[data-ovs-icon] {
   width: 24px;
   height: 24px;
@@ -1220,8 +1228,7 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__object-tile-control--delete .object-vector-studio-v2__tile-icon[data-ovs-icon],
-.object-vector-studio-v2__shape-delete-inline .object-vector-studio-v2__tile-icon[data-ovs-icon],
-#objectVectorStudioV2DeleteObjectButton[data-ovs-icon]::before {
+.object-vector-studio-v2__shape-delete-inline .object-vector-studio-v2__tile-icon[data-ovs-icon] {
   color: var(--tool-starter-danger);
 }
 
@@ -1397,6 +1404,25 @@ textarea:hover {
 
 .object-vector-studio-v2__palette-controls .object-vector-studio-v2__inline-field input {
   width: 80px;
+}
+
+.object-vector-studio-v2__palette-controls button[data-ovs-icon]::before {
+  order: 2;
+}
+
+.object-vector-studio-v2__palette-mode-swatch {
+  order: 1;
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 2px;
+  background: var(--object-vector-studio-v2-mode-swatch, transparent);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.object-vector-studio-v2__palette-mode-label {
+  order: 3;
 }
 
 .object-vector-studio-v2__palette-sort {
@@ -1667,6 +1693,17 @@ textarea:hover {
   padding: 5px 7px;
 }
 
+.object-vector-studio-v2__polygon-side-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.object-vector-studio-v2__polygon-side-actions button {
+  min-height: 26px;
+  padding: 2px 6px;
+}
+
 .object-vector-studio-v2__edit-field--inline {
   grid-template-columns: 78px minmax(0, 1fr);
   align-items: center;
@@ -1713,6 +1750,11 @@ textarea:hover {
 .object-vector-studio-v2__edit-field input.is-invalid,
 .object-vector-studio-v2__polygon-point-axis input.is-invalid {
   border-color: var(--tool-starter-danger);
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.22);
+}
+
+.object-vector-studio-v2 [data-validation-state="invalid"] {
+  border-color: var(--tool-starter-danger) !important;
   box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.22);
 }
 

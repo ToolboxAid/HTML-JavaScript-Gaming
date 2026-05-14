@@ -33,10 +33,10 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   ellipse: objectVectorStudioIcon("nf-fa-circle_o", "\uf10c"),
   eye: objectVectorStudioIcon("nf-fa-eye", "\uf06e"),
   eyeOff: objectVectorStudioIcon("nf-fa-eye_slash", "\uf070"),
-  grid: objectVectorStudioIcon("nf-fa-th", "\uf00a"),
+  grid: objectVectorStudioIcon("nf-md-grid_off", "\u{f02c2}"),
   group: objectVectorStudioIcon("nf-fa-object_group", "\uf247"),
   hue: objectVectorStudioIcon("nf-fa-eyedropper", "\uf1fb"),
-  line: objectVectorStudioIcon("nf-fa-minus", "\uf068"),
+  line: objectVectorStudioIcon("nf-md-vector_line", "\u{f055e}"),
   lock: objectVectorStudioIcon("nf-fa-lock", "\uf023"),
   move: objectVectorStudioIcon("nf-fa-arrows", "\uf047"),
   name: objectVectorStudioIcon("nf-fa-font", "\uf031"),
@@ -46,22 +46,22 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   panRight: objectVectorStudioIcon("nf-fa-arrow_right", "\uf061"),
   panUp: objectVectorStudioIcon("nf-fa-arrow_up", "\uf062"),
   polygon: objectVectorStudioIcon("nf-md-vector_polygon", "\u{f0560}"),
-  rectangle: objectVectorStudioIcon("nf-fa-square_o", "\uf096"),
+  rectangle: objectVectorStudioIcon("nf-md-vector_rectangle", "\u{f05c6}"),
   reset: objectVectorStudioIcon("nf-fa-undo", "\uf0e2"),
   resize: objectVectorStudioIcon("nf-fa-expand", "\uf065"),
   rotate: objectVectorStudioIcon("nf-fa-repeat", "\uf01e"),
   sat: objectVectorStudioIcon("nf-fa-tint", "\uf043"),
   scale: objectVectorStudioIcon("nf-fa-expand", "\uf065"),
-  select: objectVectorStudioIcon("nf-fa-mouse_pointer", "\uf245"),
+  select: objectVectorStudioIcon("nf-md-select", "\u{f0485}"),
   sendBack: objectVectorStudioIcon("nf-fa-angle_double_down", "\uf103"),
   sendBackward: objectVectorStudioIcon("nf-fa-arrow_down", "\uf063"),
   stroke: objectVectorStudioIcon("nf-fa-pencil", "\uf040"),
   text: objectVectorStudioIcon("nf-fa-font", "\uf031"),
-  triangle: objectVectorStudioIcon("nf-fa-caret_up", "\uf0d8"),
+  triangle: objectVectorStudioIcon("nf-md-vector_triangle", "\u{f0563}"),
   ungroup: objectVectorStudioIcon("nf-fa-object_ungroup", "\uf248"),
   unlock: objectVectorStudioIcon("nf-fa-unlock", "\uf09c"),
-  zoomIn: objectVectorStudioIcon("nf-fa-search_plus", "\uf00e"),
-  zoomOut: objectVectorStudioIcon("nf-fa-search_minus", "\uf010")
+  zoomIn: objectVectorStudioIcon("nf-oct-zoom_in", "\u{f531}"),
+  zoomOut: objectVectorStudioIcon("nf-oct-zoom_out", "\u{f532}")
 });
 
 const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
@@ -69,7 +69,6 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   ["#objectVectorStudioV2AddObjectButton", "add"],
   ["#objectVectorStudioV2RenameObjectButton", "edit"],
   ["#objectVectorStudioV2DuplicateObjectButton", "duplicate"],
-  ["#objectVectorStudioV2DeleteObjectButton", "delete"],
   ["#objectVectorStudioV2PaintModeButton", "paint"],
   ["#objectVectorStudioV2StrokeModeButton", "stroke"],
   [".object-vector-studio-v2__palette-sort [data-palette-sort='hue']", "hue"],
@@ -484,7 +483,7 @@ export class ToolStarterApp {
     this.elements.objectNameInput.addEventListener("input", () => this.updateObjectPreviewFooterFromNameInput());
     this.elements.renameObjectButton.addEventListener("click", () => this.renameSelectedObject());
     this.elements.duplicateObjectButton.addEventListener("click", () => this.duplicateSelectedObject());
-    this.elements.deleteObjectButton.addEventListener("click", () => this.deleteSelectedObject());
+    this.elements.deleteObjectButton?.addEventListener("click", () => this.deleteSelectedObject());
     this.elements.exportSvgButton.addEventListener("click", () => this.exportSelectedObjectSvg());
     this.elements.bringForwardButton.addEventListener("click", () => this.changeSelectedShapeOrder("forward"));
     this.elements.sendBackwardButton.addEventListener("click", () => this.changeSelectedShapeOrder("backward"));
@@ -611,6 +610,7 @@ export class ToolStarterApp {
     });
     this.setPaletteTarget("paint", false);
     this.updatePaletteSortButtons();
+    this.updatePaletteModeSwatches();
   }
 
   bindJsonDetailsActions() {
@@ -627,6 +627,7 @@ export class ToolStarterApp {
     this.elements.paintModeButton.classList.toggle("is-active", this.paletteTarget === "paint");
     this.elements.strokeModeButton.classList.toggle("is-active", this.paletteTarget === "stroke");
     this.syncPaletteSelectionFromCurrentShape({ logMissing: shouldLog, render: false });
+    this.updatePaletteModeSwatches();
     if (this.runtimePalette) {
       this.renderPalette();
     }
@@ -643,6 +644,13 @@ export class ToolStarterApp {
       button.setAttribute("aria-pressed", String(isActive));
       button.classList.toggle("is-active", isActive);
     });
+  }
+
+  updatePaletteModeSwatches() {
+    this.elements.paintModeButton.style.setProperty("--object-vector-studio-v2-mode-swatch", this.selectedFillColor);
+    this.elements.strokeModeButton.style.setProperty("--object-vector-studio-v2-mode-swatch", this.selectedStrokeColor);
+    this.elements.paintModeButton.dataset.paletteModeColor = this.selectedFillColor;
+    this.elements.strokeModeButton.dataset.paletteModeColor = this.selectedStrokeColor;
   }
 
   bindViewportControls() {
@@ -951,6 +959,7 @@ export class ToolStarterApp {
 
   renderPalette() {
     const swatchCount = this.runtimePalette.swatches.length;
+    this.updatePaletteModeSwatches();
     this.updatePaletteHeader(swatchCount);
     this.elements.paletteSummary.replaceChildren();
     this.sortedPaletteSwatches().forEach((swatch, index) => {
@@ -1535,32 +1544,7 @@ export class ToolStarterApp {
       : `object-vector-studio-v2__edit-grid object-vector-studio-v2__edit-grid--${shape.type}${shape.type === "ellipse" ? " object-vector-studio-v2__edit-grid--ellipse" : ""}`;
     if (shape.type === "polygon") {
       shape.geometry.points.forEach((point, index) => {
-        const row = document.createElement("div");
-        row.className = "object-vector-studio-v2__polygon-point-field";
-        const caption = document.createElement("span");
-        caption.className = "object-vector-studio-v2__polygon-point-label";
-        caption.textContent = `Point ${index + 1}`;
-        row.append(caption);
-        [
-          ["x", "X", point.x],
-          ["y", "Y", point.y]
-        ].forEach(([axis, labelText, value]) => {
-          const label = document.createElement("label");
-          label.className = "object-vector-studio-v2__polygon-point-axis";
-          const axisLabel = document.createElement("span");
-          axisLabel.textContent = labelText;
-          const input = document.createElement("input");
-          input.dataset.shapeGeometryField = "points";
-          input.dataset.polygonPointAxis = axis;
-          input.dataset.polygonPointIndex = String(index);
-          input.inputMode = "decimal";
-          input.type = "text";
-          input.value = String(value);
-          input.addEventListener("input", () => this.clearInputValidity(input));
-          label.append(axisLabel, input);
-          row.append(label);
-        });
-        grid.append(row);
+        grid.append(this.createPolygonPointRow(point, index));
       });
     } else {
       this.shapeGeometryFields(shape).forEach((field) => {
@@ -1586,8 +1570,59 @@ export class ToolStarterApp {
     applyButton.textContent = "Apply Geometry";
     this.applyIconGlyph(applyButton, "edit");
     applyButton.addEventListener("click", () => this.applyShapeGeometryEdits());
-    section.append(heading, grid, applyButton);
+    if (shape.type === "polygon") {
+      section.append(heading, grid, this.createPolygonSideActions(), applyButton);
+    } else {
+      section.append(heading, grid, applyButton);
+    }
     return section;
+  }
+
+  createPolygonPointRow(point, index) {
+    const row = document.createElement("div");
+    row.className = "object-vector-studio-v2__polygon-point-field";
+    const caption = document.createElement("span");
+    caption.className = "object-vector-studio-v2__polygon-point-label";
+    caption.textContent = `Point ${index + 1}`;
+    row.append(caption);
+    [
+      ["x", "X", point.x],
+      ["y", "Y", point.y]
+    ].forEach(([axis, labelText, value]) => {
+      const label = document.createElement("label");
+      label.className = "object-vector-studio-v2__polygon-point-axis";
+      const axisLabel = document.createElement("span");
+      axisLabel.textContent = labelText;
+      const input = document.createElement("input");
+      input.dataset.shapeGeometryField = "points";
+      input.dataset.polygonPointAxis = axis;
+      input.dataset.polygonPointIndex = String(index);
+      input.inputMode = "decimal";
+      input.type = "text";
+      input.value = String(value);
+      input.addEventListener("input", () => this.clearInputValidity(input));
+      label.append(axisLabel, input);
+      row.append(label);
+    });
+    return row;
+  }
+
+  createPolygonSideActions() {
+    const actions = document.createElement("div");
+    actions.className = "object-vector-studio-v2__polygon-side-actions";
+    [
+      ["add", "Add Side", "add", () => this.addPolygonSideRow()],
+      ["subtract", "Subtract Side", "line", () => this.subtractPolygonSideRow()]
+    ].forEach(([action, label, iconKey, handler]) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.polygonSideAction = action;
+      button.textContent = label;
+      this.applyIconGlyph(button, iconKey);
+      button.addEventListener("click", handler);
+      actions.append(button);
+    });
+    return actions;
   }
 
   createShapeTransformControls(shape) {
@@ -2739,6 +2774,8 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     nextPayload.objects = nextPayload.objects.filter((object) => object.id !== selected.id);
+    this.removeDeletedObjectReferences(nextPayload, selected.id);
+    this.removeDanglingShapeOverrideReferences(nextPayload);
     const selectedObjectId = nextPayload.objects[0]?.id || "";
     const selectedShapeId = nextPayload.objects[0] ? sortedShapes(nextPayload.objects[0])[0]?.id || "" : "";
     this.commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, `OK Deleted object ${selected.name}.`, "Delete object failed schema validation");
@@ -2757,6 +2794,8 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     nextPayload.objects = nextPayload.objects.filter((object) => object.id !== selected.id);
+    this.removeDeletedObjectReferences(nextPayload, selected.id);
+    this.removeDanglingShapeOverrideReferences(nextPayload);
     const selectedObjectStillExists = nextPayload.objects.some((object) => object.id === this.selectedObjectId);
     const nextSelectedObject = selectedObjectStillExists
       ? nextPayload.objects.find((object) => object.id === this.selectedObjectId)
@@ -2767,6 +2806,65 @@ export class ToolStarterApp {
     this.hiddenObjectIds.delete(selected.id);
     this.lockedObjectIds.delete(selected.id);
     this.commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, `OK Deleted object ${selected.name} from ${sourceLabel}.`, "Delete object failed schema validation");
+  }
+
+  removeDeletedObjectReferences(payload, objectId) {
+    if (Array.isArray(payload.assetLibrary?.assets)) {
+      payload.assetLibrary.assets = payload.assetLibrary.assets.filter((asset) => asset.objectId !== objectId);
+    }
+    payload.objects.forEach((object) => {
+      if (object.baseObjectId === objectId) {
+        delete object.baseObjectId;
+      }
+    });
+    this.removeDirectReferenceEntries(payload, "objectId", objectId);
+  }
+
+  removeDirectReferenceEntries(value, referenceKey, targetId) {
+    if (!value || typeof value !== "object") {
+      return;
+    }
+    if (Array.isArray(value)) {
+      for (let index = value.length - 1; index >= 0; index -= 1) {
+        const item = value[index];
+        if (item && typeof item === "object" && item[referenceKey] === targetId) {
+          value.splice(index, 1);
+        } else {
+          this.removeDirectReferenceEntries(item, referenceKey, targetId);
+        }
+      }
+      return;
+    }
+    Object.entries(value).forEach(([key, child]) => {
+      if (key === referenceKey && child === targetId) {
+        delete value[key];
+        return;
+      }
+      this.removeDirectReferenceEntries(child, referenceKey, targetId);
+    });
+  }
+
+  removeDanglingShapeOverrideReferences(payload) {
+    const objectsById = new Map(payload.objects.map((object) => [object.id, object]));
+    const collectShapeIds = (object, seen = new Set()) => {
+      if (!object || seen.has(object.id)) {
+        return new Set();
+      }
+      seen.add(object.id);
+      const shapeIds = object.baseObjectId
+        ? collectShapeIds(objectsById.get(object.baseObjectId), seen)
+        : new Set();
+      object.shapes.forEach((shape) => shapeIds.add(shape.id));
+      return shapeIds;
+    };
+    payload.objects.forEach((object) => {
+      const validShapeIds = collectShapeIds(object);
+      this.objectStates(object).forEach((state) => {
+        state.frames.forEach((frame) => {
+          frame.shapeOverrides = frame.shapeOverrides.filter((override) => validShapeIds.has(override.shapeId));
+        });
+      });
+    });
   }
 
   flattenSelectedObject() {
@@ -3339,6 +3437,95 @@ export class ToolStarterApp {
     }, `OK Applied geometry edits to shape ${selected.id}.`);
   }
 
+  addPolygonSideRow() {
+    const selected = this.selectedShape();
+    if (!selected || selected.type !== "polygon") {
+      this.statusLog.write("WARN Add polygon side skipped: no polygon shape is selected.");
+      return;
+    }
+    const geometry = this.readCurrentPolygonGeometry(selected);
+    if (!geometry.ok) {
+      this.statusLog.write(`FAIL Add polygon side rejected for shape ${selected.id}: ${geometry.error}`);
+      return;
+    }
+    const points = geometry.value.points;
+    const nextPoint = this.nextPolygonSidePoint(points);
+    const list = this.elements.objectDetails.querySelector(".object-vector-studio-v2__polygon-point-list");
+    list?.append(this.createPolygonPointRow(nextPoint, points.length));
+    this.clearPolygonSideActionValidity();
+    this.statusLog.write(`OK Added polygon side to shape ${selected.id}.`);
+  }
+
+  subtractPolygonSideRow() {
+    const selected = this.selectedShape();
+    if (!selected || selected.type !== "polygon") {
+      this.statusLog.write("WARN Subtract polygon side skipped: no polygon shape is selected.");
+      return;
+    }
+    const geometry = this.readCurrentPolygonGeometry(selected);
+    if (!geometry.ok) {
+      this.statusLog.write(`FAIL Subtract polygon side rejected for shape ${selected.id}: ${geometry.error}`);
+      return;
+    }
+    if (geometry.value.points.length <= 3) {
+      const message = "polygon must keep at least three sides.";
+      this.markPolygonSideActionInvalid("subtract", message);
+      this.statusLog.write(`FAIL Subtract polygon side rejected for shape ${selected.id}: ${message}`);
+      return;
+    }
+    const rows = Array.from(this.elements.objectDetails.querySelectorAll(".object-vector-studio-v2__polygon-point-field"));
+    rows.at(-1)?.remove();
+    this.reindexPolygonPointRows();
+    this.clearPolygonSideActionValidity();
+    this.statusLog.write(`OK Subtracted polygon side from shape ${selected.id}.`);
+  }
+
+  readCurrentPolygonGeometry(shape) {
+    const fields = Array.from(this.elements.objectDetails.querySelectorAll("[data-shape-geometry-field='points']"));
+    return this.readShapeGeometryFields(shape, fields);
+  }
+
+  nextPolygonSidePoint(points) {
+    const previous = points.at(-2) || { x: 0, y: 0 };
+    const last = points.at(-1) || { x: 0, y: 0 };
+    const deltaX = last.x - previous.x;
+    const deltaY = last.y - previous.y;
+    return {
+      x: Number((last.x + (deltaX || 10)).toFixed(3)),
+      y: Number((last.y + (deltaY || 10)).toFixed(3))
+    };
+  }
+
+  reindexPolygonPointRows() {
+    this.elements.objectDetails.querySelectorAll(".object-vector-studio-v2__polygon-point-field").forEach((row, index) => {
+      const caption = row.querySelector(".object-vector-studio-v2__polygon-point-label");
+      if (caption) {
+        caption.textContent = `Point ${index + 1}`;
+      }
+      row.querySelectorAll("[data-polygon-point-index]").forEach((input) => {
+        input.dataset.polygonPointIndex = String(index);
+      });
+    });
+  }
+
+  markPolygonSideActionInvalid(action, message) {
+    const button = this.elements.objectDetails.querySelector(`[data-polygon-side-action='${action}']`);
+    if (!button) {
+      return;
+    }
+    button.dataset.validationState = "invalid";
+    button.setAttribute("aria-invalid", "true");
+    button.title = message;
+  }
+
+  clearPolygonSideActionValidity() {
+    this.elements.objectDetails.querySelectorAll("[data-polygon-side-action]").forEach((button) => {
+      delete button.dataset.validationState;
+      button.removeAttribute("aria-invalid");
+      button.title = "";
+    });
+  }
+
   readShapeGeometryFields(shape, fields) {
     try {
       if (shape.type === "polygon") {
@@ -3506,6 +3693,8 @@ export class ToolStarterApp {
     const object = nextPayload.objects.find((candidate) => candidate.id === this.selectedObjectId);
     object.shapes = sortedShapes(object).filter((shape) => shape.id !== selected.id)
       .map((shape, index) => ({ ...shape, order: index + 1 }));
+    this.removeDeletedShapeReferences(object, selected.id);
+    this.removeDanglingShapeOverrideReferences(nextPayload);
     const selectedShapeId = sortedShapes(object)[0]?.id || "";
     this.commitPayloadUpdate(nextPayload, object.id, selectedShapeId, `OK Deleted shape ${selected.id} from ${sourceLabel}.`, "Delete shape failed schema validation");
   }
@@ -3530,9 +3719,15 @@ export class ToolStarterApp {
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
     nextObject.shapes = sortedShapes(nextObject).filter((candidate) => candidate.id !== shape.id)
       .map((candidate, index) => ({ ...candidate, order: index + 1 }));
+    this.removeDeletedShapeReferences(nextObject, shape.id);
+    this.removeDanglingShapeOverrideReferences(nextPayload);
     const selectedShapeStillExists = nextObject.shapes.some((candidate) => candidate.id === this.selectedShapeId);
     const selectedShapeId = selectedShapeStillExists ? this.selectedShapeId : sortedShapes(nextObject)[0]?.id || "";
     this.commitPayloadUpdate(nextPayload, object.id, selectedShapeId, `OK Deleted shape ${shape.id} from ${sourceLabel}.`, "Delete shape failed schema validation");
+  }
+
+  removeDeletedShapeReferences(object, shapeId) {
+    this.removeDirectReferenceEntries(object, "shapeId", shapeId);
   }
 
   numberInputValue(id, label) {
@@ -3938,7 +4133,9 @@ export class ToolStarterApp {
     const isLocked = Boolean(selectedObject && this.isObjectLocked(selectedObject.id));
     this.setControlDisabled(this.elements.renameObjectButton, !hasSelectedObject || isLocked, lockedReason, "Rename the selected object.");
     this.setControlDisabled(this.elements.duplicateObjectButton, !hasSelectedObject || isLocked, lockedReason, "Duplicate the selected object.");
-    this.setControlDisabled(this.elements.deleteObjectButton, !hasSelectedObject || isLocked, lockedReason, "Delete the selected object.");
+    if (this.elements.deleteObjectButton) {
+      this.setControlDisabled(this.elements.deleteObjectButton, !hasSelectedObject || isLocked, lockedReason, "Delete the selected object.");
+    }
     this.setControlDisabled(this.elements.exportSvgButton, !hasSelectedObject, noObjectReason, "Export the selected object as SVG.");
     this.setControlDisabled(this.elements.runtimePreviewButton, !hasSelectedObject, noObjectReason, "Preview the selected object through the runtime asset renderer.");
     const hasSelectedShape = Boolean(this.selectedShape());
