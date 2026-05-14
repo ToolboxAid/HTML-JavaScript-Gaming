@@ -576,6 +576,31 @@ async function dirtyPaletteToolState(page, swatch) {
   }, swatch);
 }
 
+async function readObjectVectorWorkspaceSession(page) {
+  return await page.evaluate(() => {
+    const session = JSON.parse(sessionStorage.getItem("workspace.tools.object-vector-studio-v2"));
+    return {
+      dataText: JSON.stringify(session.data),
+      dirty: session.dirty,
+      objectCount: Array.isArray(session.data?.objects) ? session.data.objects.length : 0,
+      session
+    };
+  });
+}
+
+async function resetObjectVectorWorkspaceDirty(page) {
+  await page.evaluate(() => {
+    const session = JSON.parse(sessionStorage.getItem("workspace.tools.object-vector-studio-v2"));
+    session.dirty = {
+      isDirty: false,
+      reason: null,
+      changedAt: null,
+      changedKeys: []
+    };
+    sessionStorage.setItem("workspace.tools.object-vector-studio-v2", JSON.stringify(session));
+  });
+}
+
 async function installMissingGamePreviewRepoPicker(page) {
   await page.addInitScript(() => {
     function makeDirectoryHandle(name, children = {}, path = name) {
@@ -7184,6 +7209,173 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(previewWrites).toHaveLength(1);
       expect(previewWrites[0].path).toBe("HTML-JavaScript-Gaming/games/Asteroids/assets/images/preview.svg");
       expect(previewWrites[0].contents).toContain("<svg");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("tracks Object Vector Studio V2 dirty state through persisted edits and save outcomes", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await selectMockRepo(page);
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expectWorkspaceReturnRehydrated(page);
+      await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+
+      await page.locator('[data-workspace-tool-id="object-vector-studio-v2"]').click();
+      await expect(page).toHaveURL(/object-vector-studio-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(6 obj, 3 shapes)");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from workspace\.tools\.object-vector-studio-v2: 6 objects\./);
+
+      let objectVectorSession = await readObjectVectorWorkspaceSession(page);
+      expect(objectVectorSession.dirty).toEqual({
+        isDirty: false,
+        reason: null,
+        changedAt: null,
+        changedKeys: []
+      });
+      let lastDataText = objectVectorSession.dataText;
+
+      async function expectObjectVectorDirtyAfter(label, action, { resetDirty = true } = {}) {
+        await action();
+        await expect.poll(async () => {
+          const session = await readObjectVectorWorkspaceSession(page);
+          return session.dirty.isDirty === true && session.dataText !== lastDataText;
+        }, { message: `${label} should mark Object Vector Studio V2 workspace data dirty` }).toBe(true);
+        const dirtySession = await readObjectVectorWorkspaceSession(page);
+        expect(dirtySession.dirty).toMatchObject({
+          isDirty: true,
+          reason: "object-vector-updated"
+        });
+        expect(Date.parse(dirtySession.dirty.changedAt)).not.toBeNaN();
+        expect(dirtySession.dirty.changedKeys).toEqual(expect.arrayContaining(["data.objects"]));
+        lastDataText = dirtySession.dataText;
+        if (resetDirty) {
+          await resetObjectVectorWorkspaceDirty(page);
+        }
+        return dirtySession;
+      }
+
+      await page.locator('.object-vector-studio-v2__object-tile[data-object-id="object.asteroids.asteroid.large"] .object-vector-studio-v2__object-select').click();
+      await page.locator("#objectVectorStudioV2ZoomInButton").click();
+      await page.locator("#objectVectorStudioV2PanDownButton").click();
+      await page.locator("#objectVectorStudioV2GridRenderButton").click();
+      objectVectorSession = await readObjectVectorWorkspaceSession(page);
+      expect(objectVectorSession.dataText).toBe(lastDataText);
+      expect(objectVectorSession.dirty.isDirty).toBe(false);
+
+      await expectObjectVectorDirtyAfter("object tag edit", async () => {
+        await page.locator("#objectVectorStudioV2ObjectTagInput").fill("dirty-state");
+        await page.locator("#objectVectorStudioV2AddTagButton").click();
+      });
+      await expectObjectVectorDirtyAfter("object geometry edit", async () => {
+        await page.locator("#objectVectorStudioV2ObjectDetails [data-shape-geometry-field='points'][data-polygon-point-index='0'][data-polygon-point-axis='x']").fill("11");
+        await page.locator("#objectVectorStudioV2ApplyGeometryButton").click();
+      });
+      await expectObjectVectorDirtyAfter("object transform edit", async () => {
+        await page.locator("#objectVectorStudioV2MoveXInput").fill("5");
+        await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
+        await page.locator("#objectVectorStudioV2MoveShapeButton").click();
+      });
+      await expectObjectVectorDirtyAfter("palette color edit", async () => {
+        await page.locator("#objectVectorStudioV2PaletteSummary [data-palette-color]").first().click();
+      });
+      await expectObjectVectorDirtyAfter("shape add edit", async () => {
+        await page.locator("[data-shape-tool='rectangle']").click();
+      });
+      await expectObjectVectorDirtyAfter("shape visibility edit", async () => {
+        const selectedShapeId = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeId);
+        await page.locator(`[data-shape-visibility-id="${selectedShapeId}"]`).click();
+      });
+      await expectObjectVectorDirtyAfter("shape lock edit", async () => {
+        await page.evaluate(() => window.__objectVectorStudioV2App.toggleSelectedShapeLock());
+      });
+      await expectObjectVectorDirtyAfter("shape unlock edit", async () => {
+        await page.evaluate(() => window.__objectVectorStudioV2App.toggleSelectedShapeLock());
+      });
+      await expectObjectVectorDirtyAfter("shape delete edit", async () => {
+        const selectedShapeId = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeId);
+        await page.locator(`[data-shape-delete-id="${selectedShapeId}"]`).click();
+      });
+      await expectObjectVectorDirtyAfter("object add edit", async () => {
+        await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Dirty Probe");
+        await page.locator("#objectVectorStudioV2AddObjectButton").click();
+      });
+      await expectObjectVectorDirtyAfter("object rename edit", async () => {
+        await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Dirty Probe Renamed");
+        await page.locator("#objectVectorStudioV2RenameObjectButton").click();
+      });
+      await expectObjectVectorDirtyAfter("object duplicate edit", async () => {
+        await page.locator("#objectVectorStudioV2DuplicateObjectButton").click();
+      });
+      const validDirtyObjectVectorSession = await expectObjectVectorDirtyAfter("object delete edit", async () => {
+        const selectedObjectId = await page.evaluate(() => window.__objectVectorStudioV2App.selectedObjectId);
+        await page.locator(`[data-object-control="delete"][data-object-control-id="${selectedObjectId}"]`).click();
+      }, { resetDirty: false });
+
+      await page.locator("#returnToWorkspaceButton").click();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
+      await expectWorkspaceReturnedFromTool(page, { dirty: true });
+      const objectVectorTile = page.locator('[data-workspace-tool-id="object-vector-studio-v2"]');
+      await expect(objectVectorTile).toHaveAttribute("data-workspace-tool-dirty", "true");
+      await expect(page.locator("#saveWorkspaceButton")).toBeEnabled();
+
+      await page.evaluate(() => {
+        const session = JSON.parse(sessionStorage.getItem("workspace.tools.object-vector-studio-v2"));
+        session.data.unexpected = "blocked";
+        session.dirty = {
+          isDirty: true,
+          reason: "object-vector-invalid-save",
+          changedAt: new Date().toISOString(),
+          changedKeys: ["data.objects.invalid"]
+        };
+        sessionStorage.setItem("workspace.tools.object-vector-studio-v2", JSON.stringify(session));
+        window.__workspaceManagerV2App.syncLifecycleControls();
+      });
+      await page.locator("#saveWorkspaceButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Save blocked: Generated Workspace Manager V2 manifest failed schema validation:/);
+      const failedSaveState = await page.evaluate(() => ({
+        dirty: JSON.parse(sessionStorage.getItem("workspace.tools.object-vector-studio-v2")).dirty,
+        writes: JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]")
+      }));
+      expect(failedSaveState.dirty).toMatchObject({
+        isDirty: true,
+        reason: "object-vector-invalid-save"
+      });
+      expect(failedSaveState.writes).toEqual([]);
+      await expect(page.locator("#saveWorkspaceButton")).toBeEnabled();
+
+      await page.evaluate((session) => {
+        sessionStorage.setItem("workspace.tools.object-vector-studio-v2", JSON.stringify(session));
+        window.__workspaceManagerV2App.syncLifecycleControls();
+      }, validDirtyObjectVectorSession.session);
+      await page.locator("#saveWorkspaceButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Saved and marked clean: workspace\.tools\.object-vector-studio-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
+      await expect(objectVectorTile).toHaveAttribute("data-workspace-tool-dirty", "false");
+      await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+      await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
+      const savedState = await page.evaluate(() => ({
+        session: JSON.parse(sessionStorage.getItem("workspace.tools.object-vector-studio-v2")),
+        writes: JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]")
+      }));
+      expect(savedState.session.dirty).toEqual({
+        isDirty: false,
+        reason: null,
+        changedAt: null,
+        changedKeys: []
+      });
+      const writtenManifest = JSON.parse(savedState.writes.at(-1).contents);
+      expect(writtenManifest.game.workspace.tools["object-vector-studio-v2"].objects.some((object) => object.name === "Dirty Probe Renamed")).toBe(true);
+      expect(writtenManifest.game.workspace.tools["object-vector-studio-v2"].objects.find((object) => object.id === "object.asteroids.asteroid.large").tags).toContain("dirty-state");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

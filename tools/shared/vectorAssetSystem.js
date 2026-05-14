@@ -21,27 +21,44 @@ function createReport(level, code, message) {
 
 const ASTEROIDS_SHIP_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 48 48"><path d="M 0 -18 L 14 16 L 0 8 L -14 16 Z" /><path d="M -6 14 L 0 6 L 6 14" /></svg>`;
 const ASTEROIDS_LARGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -40 80 80"><path d="M -28 -12 L -10 -30 L 20 -26 L 32 -8 L 26 18 L 6 32 L -22 24 L -34 2 Z" /></svg>`;
+const ASTEROIDS_MEDIUM_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 56"><path d="M -16 -10 L -2 -18 L 16 -14 L 20 2 L 8 18 L -10 16 L -20 4 Z" /></svg>`;
+const ASTEROIDS_SMALL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 36 36"><path d="M -10 -6 L 0 -12 L 10 -6 L 8 8 L -6 10 L -12 0 Z" /></svg>`;
 const ASTEROIDS_TITLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48"><path d="M 6 40 L 24 6 L 42 40 Z" /><path d="M 58 40 L 58 8 L 88 8 L 88 18 L 70 18 L 70 22 L 86 22 L 86 32 L 70 32 L 70 40 Z" /><path d="M 100 40 L 100 8 L 112 8 L 128 26 L 128 8 L 140 8 L 140 40 L 128 40 L 112 22 L 112 40 Z" /><path d="M 154 40 L 154 8 L 184 8 L 184 18 L 166 18 L 166 22 L 182 22 L 182 32 L 166 32 L 166 40 Z" /><path d="M 194 40 L 212 6 L 214 40 Z" /></svg>`;
+const ASTEROIDS_VECTOR_MANIFEST_PATH = "games/Asteroids/game.manifest.json#tools.vector-map-editor.vectorMapDocument.vectors";
 
 export function createVectorAssetSystemFixture() {
   const shipVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ship",
     name: "Asteroids Ship",
-    path: "games/Asteroids/game.manifest.json#tools.svg-asset-studio.vectors.vector.asteroids.ship",
+    path: `${ASTEROIDS_VECTOR_MANIFEST_PATH}.vector.asteroids.ship`,
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_SHIP_SVG
   });
   const asteroidLargeVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.asteroid.large",
     name: "Asteroids Large Rock",
-    path: "games/Asteroids/game.manifest.json#tools.svg-asset-studio.vectors.vector.asteroids.asteroid.large",
+    path: `${ASTEROIDS_VECTOR_MANIFEST_PATH}.vector.asteroids.asteroid.large`,
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_LARGE_SVG
+  });
+  const asteroidMediumVector = normalizeSvgToVectorAsset({
+    id: "vector.asteroids.asteroid.medium",
+    name: "Asteroids Medium Rock",
+    path: `${ASTEROIDS_VECTOR_MANIFEST_PATH}.vector.asteroids.asteroid.medium`,
+    paletteId: "palette.asteroids-hud",
+    svgText: ASTEROIDS_MEDIUM_SVG
+  });
+  const asteroidSmallVector = normalizeSvgToVectorAsset({
+    id: "vector.asteroids.asteroid.small",
+    name: "Asteroids Small Rock",
+    path: `${ASTEROIDS_VECTOR_MANIFEST_PATH}.vector.asteroids.asteroid.small`,
+    paletteId: "palette.asteroids-hud",
+    svgText: ASTEROIDS_SMALL_SVG
   });
   const titleVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ui.title",
     name: "Asteroids Title Vector",
-    path: "games/Asteroids/game.manifest.json#tools.svg-asset-studio.vectors.vector.asteroids.ui.title",
+    path: `${ASTEROIDS_VECTOR_MANIFEST_PATH}.vector.asteroids.ui.title`,
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_TITLE_SVG
   });
@@ -60,7 +77,13 @@ export function createVectorAssetSystemFixture() {
         }
       ],
       sprites: [],
-      vectors: [shipVector, asteroidLargeVector, titleVector],
+      vectors: [
+        shipVector,
+        asteroidLargeVector,
+        asteroidMediumVector,
+        asteroidSmallVector,
+        titleVector
+      ],
       tilesets: [],
       tilemaps: [],
       images: [],
@@ -69,9 +92,16 @@ export function createVectorAssetSystemFixture() {
     vectorDocument: {
       schema: "toolbox.vector/1",
       version: 1,
-      name: "Asteroids Ship Vector Document",
+      name: "Asteroids Vector Document",
       assetRefs: {
         vectorId: "vector.asteroids.ship",
+        vectorIds: [
+          "vector.asteroids.ship",
+          "vector.asteroids.asteroid.large",
+          "vector.asteroids.asteroid.medium",
+          "vector.asteroids.asteroid.small",
+          "vector.asteroids.ui.title"
+        ],
         paletteId: "palette.asteroids-hud"
       }
     },
@@ -80,7 +110,11 @@ export function createVectorAssetSystemFixture() {
         kind: "palette",
         colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"]
       },
-      "vector.asteroids.ship": cloneJson(shipVector)
+      "vector.asteroids.ship": cloneJson(shipVector),
+      "vector.asteroids.asteroid.large": cloneJson(asteroidLargeVector),
+      "vector.asteroids.asteroid.medium": cloneJson(asteroidMediumVector),
+      "vector.asteroids.asteroid.small": cloneJson(asteroidSmallVector),
+      "vector.asteroids.ui.title": cloneJson(titleVector)
     }
   };
 }

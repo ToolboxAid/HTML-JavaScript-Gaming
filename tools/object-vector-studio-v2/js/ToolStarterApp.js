@@ -170,6 +170,10 @@ function payloadGameSlugFromName(name) {
   return slug || "game";
 }
 
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
 function sortedShapes(object) {
   return [...(object?.shapes || [])].sort((left, right) => left.order - right.order);
 }
@@ -3929,6 +3933,15 @@ export class ToolStarterApp {
       return;
     }
 
+    const workspaceSync = this.syncWorkspaceToolSessionPayload(validation.payload, {
+      changedKeys: options.changedKeys,
+      reason: options.dirtyReason
+    });
+    if (!workspaceSync.ok) {
+      this.statusLog.write(`FAIL ${failPrefix}: ${workspaceSync.message}`);
+      return;
+    }
+
     this.currentPayload = validation.payload;
     this.selectedObjectId = selectedObjectId;
     this.selectedShapeId = selectedShapeId || "";
@@ -3938,7 +3951,76 @@ export class ToolStarterApp {
     this.ensureSelectedFrame();
     this.actionNav.setJsonPayloadActionsEnabled(true);
     this.renderPayload();
+    if (workspaceSync.changed) {
+      this.statusLog.write(`OK Object Vector Studio V2 workspace dirty state: true; reason=${workspaceSync.reason}; changedKeys=${workspaceSync.changedKeys.join(", ")}.`);
+    }
     this.statusLog.write(okMessage);
+  }
+
+  syncWorkspaceToolSessionPayload(payload, { changedKeys = ["data.objects"], reason = "object-vector-updated" } = {}) {
+    if (!this.actionNav.isWorkspaceLaunch()) {
+      return { changed: false, ok: true };
+    }
+    const rawSession = this.window.sessionStorage?.getItem(WORKSPACE_TOOL_SESSION_KEY) || "";
+    if (!rawSession) {
+      return { ok: false, message: `workspace dirty tracking failed: missing ${WORKSPACE_TOOL_SESSION_KEY}.` };
+    }
+
+    let session;
+    try {
+      session = JSON.parse(rawSession);
+    } catch (error) {
+      return { ok: false, message: `workspace dirty tracking failed: ${WORKSPACE_TOOL_SESSION_KEY} is invalid JSON: ${error.message}.` };
+    }
+    if (!isPlainObject(session)
+      || !isPlainObject(session.schema)
+      || !isPlainObject(session.workspace)
+      || !Object.prototype.hasOwnProperty.call(session, "data")
+      || !isPlainObject(session.dirty)) {
+      return { ok: false, message: `workspace dirty tracking failed: ${WORKSPACE_TOOL_SESSION_KEY} must use the normalized schema/workspace/data/dirty object shape.` };
+    }
+
+    const dataChanged = JSON.stringify(session.data) !== JSON.stringify(payload);
+    if (!dataChanged) {
+      return { changed: false, ok: true };
+    }
+
+    const normalizedKeys = this.normalizedWorkspaceDirtyKeys(changedKeys);
+    const previousKeys = session.dirty.isDirty === true
+      ? this.normalizedWorkspaceDirtyKeys(session.dirty.changedKeys)
+      : [];
+    const mergedChangedKeys = Array.from(new Set([...previousKeys, ...normalizedKeys]));
+    const dirtyReason = String(reason || "object-vector-updated").trim() || "object-vector-updated";
+    const nextSession = {
+      ...session,
+      data: payload,
+      dirty: {
+        isDirty: true,
+        reason: dirtyReason,
+        changedAt: new Date().toISOString(),
+        changedKeys: mergedChangedKeys
+      }
+    };
+    try {
+      this.window.sessionStorage?.setItem(WORKSPACE_TOOL_SESSION_KEY, JSON.stringify(nextSession));
+    } catch (error) {
+      return { ok: false, message: `workspace dirty tracking failed: unable to write ${WORKSPACE_TOOL_SESSION_KEY}: ${error.message}.` };
+    }
+    return {
+      changed: true,
+      changedKeys: mergedChangedKeys,
+      ok: true,
+      reason: dirtyReason,
+      session: nextSession
+    };
+  }
+
+  normalizedWorkspaceDirtyKeys(changedKeys) {
+    const keys = Array.isArray(changedKeys) ? changedKeys : ["data.objects"];
+    const normalized = keys
+      .map((key) => String(key || "").trim())
+      .filter(Boolean);
+    return normalized.length ? normalized : ["data.objects"];
   }
 
   cloneCurrentPayload() {
