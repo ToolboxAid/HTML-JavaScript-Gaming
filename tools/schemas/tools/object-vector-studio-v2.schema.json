@@ -153,11 +153,13 @@
     "shapeFrameOverride": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["shapeId"],
+      "required": ["shapeKey"],
       "properties": {
-        "shapeId": {
+        "shapeKey": {
+          "description": "Local editor/UI shape key for the shape this frame override targets.",
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "^(?!object\\.).+$"
         },
         "visible": {
           "type": "boolean"
@@ -195,11 +197,23 @@
     "shapeCommon": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "type", "order", "visible", "locked", "geometry", "style", "transform"],
+      "required": ["shapeKey", "label", "tool", "type", "order", "visible", "locked", "geometry", "style", "transform"],
       "properties": {
-        "id": {
+        "shapeKey": {
+          "description": "Local editor/UI shape key. This is scoped to the owning object and is not a runtime object identity.",
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!object\\.).+$"
+        },
+        "label": {
+          "description": "Display label for the local editable shape/tool row.",
           "type": "string",
           "minLength": 1
+        },
+        "tool": {
+          "description": "Editor tool identity used to distinguish polygon-authored shapes such as Triangle from generic Polygon.",
+          "type": "string",
+          "enum": ["triangle", "rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]
         },
         "type": {
           "type": "string",

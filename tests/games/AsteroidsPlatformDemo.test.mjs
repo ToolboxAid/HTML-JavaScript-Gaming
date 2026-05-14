@@ -44,9 +44,9 @@ export async function run() {
   assert.equal(geometryProfiles[2].points.length, 7);
   assert.equal(geometryProfiles[3].points.length, 12);
 
-  const shapeIds = payload.objects.flatMap((object) => object.shapes.map((shape) => shape.id));
-  assert.equal(shapeIds.includes('ship-hull'), true);
-  assert.equal(shapeIds.some((shapeId) => shapeId.startsWith('object.')), false);
+  const shapeKeys = payload.objects.flatMap((object) => object.shapes.map((shape) => shape.shapeKey));
+  assert.equal(shapeKeys.includes('ship-hull'), true);
+  assert.equal(shapeKeys.some((shapeKey) => shapeKey.startsWith('object.')), false);
 
   const runtime = new ObjectVectorRuntimeAssetService({
     fetchRef: createLocalFetch(),

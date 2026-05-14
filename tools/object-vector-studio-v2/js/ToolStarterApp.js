@@ -132,6 +132,10 @@ function shapeTypeLabel(shape) {
   return shape.type.replace(/(^|-)([a-z])/g, (match) => match.toUpperCase()).replaceAll("-", " ");
 }
 
+function shapeDisplayLabel(shape) {
+  return String(shape?.label || shape?.shapeKey || "").trim();
+}
+
 function shapeCountLabel(count) {
   return `${count} ${count === 1 ? "shape" : "shapes"}`;
 }
@@ -311,8 +315,8 @@ export class ToolStarterApp {
     this.runtimePalette = null;
     this.runtimePaletteSource = "";
     this.selectedObjectId = "";
-    this.selectedShapeId = "";
-    this.selectedShapeIds = new Set();
+    this.selectedShapeKey = "";
+    this.selectedShapeKeys = new Set();
     this.selectedStateId = "";
     this.selectedFrameId = "";
     this.playbackTimerId = 0;
@@ -327,7 +331,7 @@ export class ToolStarterApp {
     this.isPaintDragging = false;
     this.previewPointerEdit = null;
     this.transformInputValues = new Map();
-    this.shapeToolLabelsById = new Map();
+    this.shapeToolLabelsByKey = new Map();
     this.pendingAddObjectClick = false;
     this.hiddenObjectIds = new Set();
     this.lockedObjectIds = new Set();
@@ -546,10 +550,10 @@ export class ToolStarterApp {
           this.createShape(tool);
           return;
         }
-        if (tool === "select" && this.selectedShapeId) {
-          const clearedShape = this.selectedShapeId;
-          this.selectedShapeId = "";
-          this.selectedShapeIds.clear();
+        if (tool === "select" && this.selectedShapeKey) {
+          const clearedShape = this.selectedShapeKey;
+          this.selectedShapeKey = "";
+          this.selectedShapeKeys.clear();
           this.renderObjectTiles();
           this.renderSelectedObject();
           this.renderWorkSurface();
@@ -772,11 +776,11 @@ export class ToolStarterApp {
   renderEmptyState(message) {
     this.currentPayload = null;
     this.selectedObjectId = "";
-    this.selectedShapeId = "";
-    this.selectedShapeIds.clear();
+    this.selectedShapeKey = "";
+    this.selectedShapeKeys.clear();
     this.selectedStateId = "";
     this.selectedFrameId = "";
-    this.shapeToolLabelsById.clear();
+    this.shapeToolLabelsByKey.clear();
     this.stopPlaybackTimer();
     this.updateObjectsHeader(0, 0);
     this.updatePaletteHeader(this.runtimePalette?.swatches?.length || 0);
@@ -807,9 +811,9 @@ export class ToolStarterApp {
   }
 
   updateObjectGeometryHeader(shape) {
-    this.elements.objectGeometrySummary.textContent = shape ? `(${this.shapeSummaryTypeLabel(shape)})` : "";
+    this.elements.objectGeometrySummary.textContent = "";
     if (this.elements.objectGeometryName) {
-      this.elements.objectGeometryName.textContent = shape ? shape.id : "";
+      this.elements.objectGeometryName.textContent = "";
     }
   }
 
@@ -885,14 +889,14 @@ export class ToolStarterApp {
     const selectedObject = this.currentPayload.objects[0] || null;
     this.selectedObjectId = selectedObject?.id || "";
     const selectedShape = sortedShapes(selectedObject)[0] || null;
-    this.selectedShapeId = selectedShape?.id || "";
-    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+    this.selectedShapeKey = selectedShape?.shapeKey || "";
+    this.selectedShapeKeys = new Set(this.selectedShapeKey ? [this.selectedShapeKey] : []);
     const selectedState = this.objectStates(selectedObject)[0] || null;
     this.selectedStateId = selectedState?.id || "";
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.hiddenObjectIds.clear();
     this.lockedObjectIds.clear();
-    this.shapeToolLabelsById.clear();
+    this.shapeToolLabelsByKey.clear();
     this.viewport = { ...DEFAULT_VIEWPORT };
     this.updateViewport();
     if (sourceLabel) {
@@ -941,8 +945,8 @@ export class ToolStarterApp {
 
   renderPaletteRequiredState(message) {
     this.selectedObjectId = "";
-    this.selectedShapeId = "";
-    this.selectedShapeIds.clear();
+    this.selectedShapeKey = "";
+    this.selectedShapeKeys.clear();
     this.selectedStateId = "";
     this.selectedFrameId = "";
     this.stopPlaybackTimer();
@@ -1160,45 +1164,45 @@ export class ToolStarterApp {
     sortedShapes(object).forEach((shape) => {
       const row = document.createElement("div");
       row.className = "object-vector-studio-v2__object-tile-shape-row";
-      row.classList.toggle("is-selected", this.selectedShapeIds.has(shape.id));
+      row.classList.toggle("is-selected", this.selectedShapeKeys.has(shape.shapeKey));
       const selectButton = document.createElement("button");
       selectButton.type = "button";
       selectButton.className = "object-vector-studio-v2__shape-select";
-      selectButton.dataset.objectTileShapeId = shape.id;
-      selectButton.setAttribute("aria-pressed", String(this.selectedShapeIds.has(shape.id)));
+      selectButton.dataset.objectTileShapeKey = shape.shapeKey;
+      selectButton.setAttribute("aria-pressed", String(this.selectedShapeKeys.has(shape.shapeKey)));
       const label = document.createElement("span");
       label.className = "object-vector-studio-v2__shape-select-label";
-      label.textContent = `${shape.order}. ${shape.id}`;
+      label.textContent = `${shape.order}. ${shapeDisplayLabel(shape)}`;
       selectButton.append(label);
       selectButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        this.selectShape(shape.id, "object tile shape list", { additive: event.shiftKey || event.ctrlKey || event.metaKey });
+        this.selectShape(shape.shapeKey, "object tile shape list", { additive: event.shiftKey || event.ctrlKey || event.metaKey });
       });
       const actions = document.createElement("div");
       actions.className = "object-vector-studio-v2__shape-inline-actions";
       const visibilityButton = document.createElement("button");
       visibilityButton.type = "button";
       visibilityButton.className = "object-vector-studio-v2__shape-inline-button object-vector-studio-v2__shape-eye-inline";
-      visibilityButton.dataset.shapeVisibilityId = shape.id;
-      visibilityButton.setAttribute("aria-label", `${shape.visible ? "Hide" : "Show"} shape ${shape.id}`);
+      visibilityButton.dataset.shapeVisibilityKey = shape.shapeKey;
+      visibilityButton.setAttribute("aria-label", `${shape.visible ? "Hide" : "Show"} shape ${shapeDisplayLabel(shape)}`);
       visibilityButton.title = "Toggle shape visibility";
       visibilityButton.append(this.createIconSpan("eye", shape.visible));
       visibilityButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        this.selectShape(shape.id, "object tile shape visibility");
+        this.selectShape(shape.shapeKey, "object tile shape visibility");
         this.toggleSelectedShapeVisibility();
       });
       const deleteButton = document.createElement("button");
       deleteButton.type = "button";
       deleteButton.className = "object-vector-studio-v2__shape-inline-button object-vector-studio-v2__shape-delete-inline";
-      deleteButton.dataset.shapeDeleteId = shape.id;
+      deleteButton.dataset.shapeDeleteKey = shape.shapeKey;
       deleteButton.dataset.shapeDeleteObjectId = object.id;
-      deleteButton.setAttribute("aria-label", `Delete shape ${shape.id}`);
+      deleteButton.setAttribute("aria-label", `Delete shape ${shapeDisplayLabel(shape)}`);
       deleteButton.title = "Delete this shape";
       deleteButton.append(this.createIconSpan("delete", true));
       deleteButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        this.deleteShapeById(shape.id, "object tile shape delete", object.id);
+        this.deleteShapeById(shape.shapeKey, "object tile shape delete", object.id);
       });
       actions.append(visibilityButton, deleteButton);
       row.append(selectButton, actions);
@@ -1320,7 +1324,7 @@ export class ToolStarterApp {
         element.classList.add("object-vector-studio-v2__object-thumbnail-shape");
         svg.append(element);
       } catch (error) {
-        this.statusLog.write(`FAIL Thumbnail render failed for ${object.id}/${shape.id} (${shape.type}): ${error.message}`);
+        this.statusLog.write(`FAIL Thumbnail render failed for ${object.id}/${shape.shapeKey} (${shape.type}): ${error.message}`);
       }
     });
     if (!svg.children.length) {
@@ -1363,7 +1367,7 @@ export class ToolStarterApp {
       object: selected,
       selectedFrame: this.activeFrame(),
       selectedShape: shape,
-      selectedShapeIds: Array.from(this.selectedShapeIds),
+      selectedShapeKeys: Array.from(this.selectedShapeKeys),
       selectedState: this.selectedState()
     }, null, 2);
     this.renderFrameTimeline();
@@ -1462,7 +1466,7 @@ export class ToolStarterApp {
       try {
         svg.append(this.createSvgShape(renderShape));
       } catch (error) {
-        this.statusLog.write(`FAIL Frame thumbnail render failed for ${object.id}/${frame.id}/${shape.id}: ${error.message}`);
+        this.statusLog.write(`FAIL Frame thumbnail render failed for ${object.id}/${frame.id}/${shape.shapeKey}: ${error.message}`);
       }
     });
     return svg;
@@ -1495,7 +1499,7 @@ export class ToolStarterApp {
   }
 
   shapeSummaryTypeLabel(shape) {
-    return this.shapeToolLabelsById.get(shape.id)?.toLowerCase() || shape.type;
+    return this.shapeToolLabelsByKey.get(shape.shapeKey)?.toLowerCase() || shape.tool || shape.type;
   }
 
   isTriangleShape(shape) {
@@ -1507,7 +1511,7 @@ export class ToolStarterApp {
   }
 
   shapeGeometryHeadingLabel(shape) {
-    return this.shapeToolLabelsById.get(shape.id) || shapeTypeLabel(shape);
+    return this.shapeToolLabelsByKey.get(shape.shapeKey) || (shape.tool ? shapeTypeLabel({ type: shape.tool }) : shapeTypeLabel(shape));
   }
 
   createObjectTransformDetails(shape) {
@@ -1785,10 +1789,10 @@ export class ToolStarterApp {
       }
       try {
         const element = this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
-        element.dataset.shapeId = shape.id;
+        element.dataset.shapeKey = shape.shapeKey;
         element.dataset.shapeType = shape.type;
         element.classList.add("object-vector-studio-v2__shape");
-        element.classList.toggle("is-selected", this.selectedShapeIds.has(shape.id));
+        element.classList.toggle("is-selected", this.selectedShapeKeys.has(shape.shapeKey));
         element.setAttribute("tabindex", "0");
         element.addEventListener("pointerdown", (event) => {
           event.stopPropagation();
@@ -1796,7 +1800,7 @@ export class ToolStarterApp {
             this.isPaintDragging = true;
             return;
           }
-          this.startPreviewShapeMove(event, shape.id);
+          this.startPreviewShapeMove(event, shape.shapeKey);
         });
         element.addEventListener("click", (event) => {
           event.stopPropagation();
@@ -1811,7 +1815,7 @@ export class ToolStarterApp {
         this.elements.renderSurface.append(element);
         renderedCount += 1;
       } catch (error) {
-        this.statusLog.write(`FAIL Render mode svg-work-surface failed for shape ${shape.id} (${shape.type}): ${error.message}`);
+        this.statusLog.write(`FAIL Render mode svg-work-surface failed for shape ${shape.shapeKey} (${shape.type}): ${error.message}`);
       }
     });
     this.renderObjectBounds(object);
@@ -1858,11 +1862,11 @@ export class ToolStarterApp {
   handleShapePointer(event, shape, options = {}) {
     if (event.altKey || this.activeTool === "eyedropper") {
       const target = this.paletteTarget === "stroke" ? "stroke" : "fill";
-      this.sampleShapeColor(shape.id, target);
+      this.sampleShapeColor(shape.shapeKey, target);
       return;
     }
     if (event.shiftKey) {
-      this.selectShape(shape.id, "render surface additive", { additive: true });
+      this.selectShape(shape.shapeKey, "render surface additive", { additive: true });
       return;
     }
     const isStrokeMode = this.activeTool === "stroke";
@@ -1871,10 +1875,10 @@ export class ToolStarterApp {
       if (options.dragStart) {
         this.isPaintDragging = true;
       }
-      this.applySelectedPaletteColorToShape(shape.id, isStrokeMode ? "stroke" : "fill", options.source || (options.dragStart ? "render surface click" : "render surface drag"));
+      this.applySelectedPaletteColorToShape(shape.shapeKey, isStrokeMode ? "stroke" : "fill", options.source || (options.dragStart ? "render surface click" : "render surface drag"));
       return;
     }
-    this.selectShape(shape.id, "render surface");
+    this.selectShape(shape.shapeKey, "render surface");
   }
 
   renderOnionSkin(object) {
@@ -1893,7 +1897,7 @@ export class ToolStarterApp {
       try {
         group.append(this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE }));
       } catch (error) {
-        this.statusLog.write(`FAIL Onion-skin render failed for ${object.name}/${shape.id}: ${error.message}`);
+        this.statusLog.write(`FAIL Onion-skin render failed for ${object.name}/${shape.shapeKey}: ${error.message}`);
       }
     });
     this.elements.renderSurface.append(group);
@@ -2008,7 +2012,7 @@ export class ToolStarterApp {
 
   effectiveShapeForFrame(shape, frame) {
     const effective = JSON.parse(JSON.stringify(shape));
-    const override = frame?.shapeOverrides?.find((entry) => entry.shapeId === shape.id) || null;
+    const override = frame?.shapeOverrides?.find((entry) => entry.shapeKey === shape.shapeKey) || null;
     if (override && Object.prototype.hasOwnProperty.call(override, "visible")) {
       effective.visible = override.visible;
     }
@@ -2131,7 +2135,7 @@ export class ToolStarterApp {
       const bounds = this.transformedBounds(this.effectiveShape(selectedShape), { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
       const box = document.createElementNS(SVG_NS, "rect");
       box.classList.add("object-vector-studio-v2__selection-box");
-      box.dataset.selectionBounds = selectedShape.id;
+      box.dataset.selectionBounds = selectedShape.shapeKey;
       box.setAttribute("x", bounds.x - 4);
       box.setAttribute("y", bounds.y - 4);
       box.setAttribute("width", bounds.width + 8);
@@ -2147,12 +2151,12 @@ export class ToolStarterApp {
         const point = document.createElementNS(SVG_NS, "rect");
         point.classList.add("object-vector-studio-v2__resize-handle");
         point.dataset.resizeHandle = handle;
-        point.dataset.resizeShapeId = selectedShape.id;
+        point.dataset.resizeShapeKey = selectedShape.shapeKey;
         point.setAttribute("x", cx - 1.5);
         point.setAttribute("y", cy - 1.5);
         point.setAttribute("width", 3);
         point.setAttribute("height", 3);
-        point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, selectedShape.id, { handle, mode: "resize" }));
+        point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, selectedShape.shapeKey, { handle, mode: "resize" }));
         this.elements.renderSurface.append(point);
       });
 
@@ -2166,19 +2170,19 @@ export class ToolStarterApp {
           const point = document.createElementNS(SVG_NS, "rect");
           point.classList.add("object-vector-studio-v2__resize-handle", "object-vector-studio-v2__line-endpoint-handle");
           point.dataset.lineEndpoint = endpoint;
-          point.dataset.resizeShapeId = selectedShape.id;
+          point.dataset.resizeShapeKey = selectedShape.shapeKey;
           point.setAttribute("x", this.scaleDrawingValue(x, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
           point.setAttribute("y", this.scaleDrawingValue(y, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
           point.setAttribute("width", 4);
           point.setAttribute("height", 4);
-          point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, selectedShape.id, { endpoint, mode: "line-endpoint" }));
+          point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, selectedShape.shapeKey, { endpoint, mode: "line-endpoint" }));
           this.elements.renderSurface.append(point);
         });
       }
 
       const pivot = document.createElementNS(SVG_NS, "g");
       pivot.classList.add("object-vector-studio-v2__pivot-origin");
-      pivot.dataset.pivotOrigin = selectedShape.id;
+      pivot.dataset.pivotOrigin = selectedShape.shapeKey;
       const horizontal = document.createElementNS(SVG_NS, "line");
       horizontal.setAttribute("x1", bounds.originX - 7);
       horizontal.setAttribute("x2", bounds.originX + 7);
@@ -2192,7 +2196,7 @@ export class ToolStarterApp {
       pivot.append(horizontal, vertical);
       this.elements.renderSurface.append(pivot);
     } catch (error) {
-      this.statusLog.write(`FAIL Selection overlay render failed for ${object.name}/${selectedShape.id} (${selectedShape.type}): ${error.message}`);
+      this.statusLog.write(`FAIL Selection overlay render failed for ${object.name}/${selectedShape.shapeKey} (${selectedShape.type}): ${error.message}`);
     }
   }
 
@@ -2290,12 +2294,12 @@ export class ToolStarterApp {
     };
   }
 
-  startPreviewShapeMove(event, shapeId) {
-    if (event.button !== 0 || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey || !this.selectedShapeIds.has(shapeId)) {
+  startPreviewShapeMove(event, shapeKey) {
+    if (event.button !== 0 || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey || !this.selectedShapeKeys.has(shapeKey)) {
       return;
     }
     const selected = this.selectedShape();
-    if (!selected || selected.id !== shapeId) {
+    if (!selected || selected.shapeKey !== shapeKey) {
       return;
     }
     event.preventDefault();
@@ -2303,17 +2307,17 @@ export class ToolStarterApp {
       mode: "move",
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
-      shapeId,
+      shapeKey,
       start: this.pointerPreviewPoint(event)
     };
   }
 
-  startPreviewHandleEdit(event, shapeId, options) {
+  startPreviewHandleEdit(event, shapeKey, options) {
     if (event.button !== 0) {
       return;
     }
     const selected = this.selectedShape();
-    if (!selected || selected.id !== shapeId) {
+    if (!selected || selected.shapeKey !== shapeKey) {
       return;
     }
     event.preventDefault();
@@ -2322,7 +2326,7 @@ export class ToolStarterApp {
       ...options,
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
-      shapeId,
+      shapeKey,
       start: this.pointerPreviewPoint(event)
     };
   }
@@ -2347,21 +2351,21 @@ export class ToolStarterApp {
         shape.transform = this.ensureShapeTransform(shape);
         shape.transform.x = Number((edit.originalTransform.x + delta.x).toFixed(3));
         shape.transform.y = Number((edit.originalTransform.y + delta.y).toFixed(3));
-      }, `OK Dragged shape ${edit.shapeId} by ${delta.x}, ${delta.y}.`);
+      }, `OK Dragged shape ${edit.shapeKey} by ${delta.x}, ${delta.y}.`);
       return;
     }
 
     if (edit.mode === "line-endpoint") {
       this.updateSelectedShapeGeometry("preview line endpoint", (shape) => {
         shape.geometry = this.previewLineEndpointGeometry(shape, edit, delta);
-      }, `OK Moved line ${edit.endpoint} for shape ${edit.shapeId}.`);
+      }, `OK Moved line ${edit.endpoint} for shape ${edit.shapeKey}.`);
       return;
     }
 
     if (edit.mode === "resize") {
       this.updateSelectedShapeGeometry("preview resize", (shape) => {
         shape.geometry = this.previewResizeGeometry(shape, edit, delta);
-      }, `OK Resized shape ${edit.shapeId} with ${edit.handle} handle.`);
+      }, `OK Resized shape ${edit.shapeKey} with ${edit.handle} handle.`);
     }
   }
 
@@ -2422,8 +2426,8 @@ export class ToolStarterApp {
     const scrollState = this.captureLeftPanelScrollState();
     this.selectedObjectId = objectId;
     const selectedObject = this.selectedObject();
-    this.selectedShapeId = sortedShapes(selectedObject)[0]?.id || "";
-    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+    this.selectedShapeKey = sortedShapes(selectedObject)[0]?.shapeKey || "";
+    this.selectedShapeKeys = new Set(this.selectedShapeKey ? [this.selectedShapeKey] : []);
     const selectedState = this.objectStates(selectedObject)[0] || null;
     this.selectedStateId = selectedState?.id || "";
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
@@ -2434,30 +2438,30 @@ export class ToolStarterApp {
     this.statusLog.write(`OK Selected object from ${sourceLabel}: ${selected.name}.`);
   }
 
-  selectShape(shapeId, sourceLabel, options = {}) {
+  selectShape(shapeKey, sourceLabel, options = {}) {
     const object = this.selectedObject();
-    if (!object?.shapes.some((shape) => shape.id === shapeId)) {
-      this.statusLog.write(`WARN Select shape skipped: shape id ${shapeId || "unknown"} is not available.`);
+    if (!object?.shapes.some((shape) => shape.shapeKey === shapeKey)) {
+      this.statusLog.write(`WARN Select shape skipped: shape key ${shapeKey || "unknown"} is not available.`);
       return;
     }
 
     const scrollState = this.captureLeftPanelScrollState();
-    this.selectedShapeId = shapeId;
+    this.selectedShapeKey = shapeKey;
     if (options.additive) {
-      if (this.selectedShapeIds.has(shapeId) && this.selectedShapeIds.size > 1) {
-        this.selectedShapeIds.delete(shapeId);
-        this.selectedShapeId = Array.from(this.selectedShapeIds).at(-1) || "";
+      if (this.selectedShapeKeys.has(shapeKey) && this.selectedShapeKeys.size > 1) {
+        this.selectedShapeKeys.delete(shapeKey);
+        this.selectedShapeKey = Array.from(this.selectedShapeKeys).at(-1) || "";
       } else {
-        this.selectedShapeIds.add(shapeId);
+        this.selectedShapeKeys.add(shapeKey);
       }
     } else {
-      this.selectedShapeIds = new Set([shapeId]);
+      this.selectedShapeKeys = new Set([shapeKey]);
     }
     this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
     this.renderPayload();
     this.restoreLeftPanelScrollState(scrollState);
     const shape = this.selectedShape();
-    this.statusLog.write(`OK Selected shape from ${sourceLabel}: ${shape.id} (${shape.type}). Multi-select count: ${this.selectedShapeIds.size}.`);
+    this.statusLog.write(`OK Selected shape from ${sourceLabel}: ${shape.shapeKey} (${shape.type}). Multi-select count: ${this.selectedShapeKeys.size}.`);
   }
 
   selectState(stateId, sourceLabel) {
@@ -2535,7 +2539,7 @@ export class ToolStarterApp {
       id: stateId,
       name: OBJECT_STATE_LABELS[stateId]
     });
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeId, `OK Created state ${OBJECT_STATE_LABELS[stateId]} with frame ${frame.id}.`, "Create state failed schema validation", {
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeKey, `OK Created state ${OBJECT_STATE_LABELS[stateId]} with frame ${frame.id}.`, "Create state failed schema validation", {
       selectedFrameId: frame.id,
       selectedStateId: stateId
     });
@@ -2559,7 +2563,7 @@ export class ToolStarterApp {
     frameCopy.id = this.uniqueFrameId(nextState);
     frameCopy.order = sortedFrames(nextState).length + 1;
     nextState.frames.push(frameCopy);
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeId, `OK Duplicated frame ${frame.id} as ${frameCopy.id}.`, "Duplicate frame failed schema validation", {
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeKey, `OK Duplicated frame ${frame.id} as ${frameCopy.id}.`, "Duplicate frame failed schema validation", {
       selectedFrameId: frameCopy.id,
       selectedStateId: state.id
     });
@@ -2594,7 +2598,7 @@ export class ToolStarterApp {
       candidate.order = frameIndex + 1;
     });
     nextState.frames = nextFrames;
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeId, `OK Moved frame ${frame.id} ${direction}.`, "Move frame failed schema validation", {
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeKey, `OK Moved frame ${frame.id} ${direction}.`, "Move frame failed schema validation", {
       selectedFrameId: frame.id,
       selectedStateId: state.id
     });
@@ -2721,7 +2725,7 @@ export class ToolStarterApp {
     });
     nextObject.tags = nextTags.sort();
     this.elements.objectTagInput.value = "";
-    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Added tag ${addedTags.join(", ")} to ${selected.name}.`, "Object tag update failed schema validation");
+    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeKey, `OK Added tag ${addedTags.join(", ")} to ${selected.name}.`, "Object tag update failed schema validation");
   }
 
   removeTagFromSelectedObject(tag) {
@@ -2736,7 +2740,7 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const nextObject = nextPayload.objects.find((object) => object.id === selected.id);
     nextObject.tags = tagList(nextObject.tags).filter((candidate) => candidate !== tag);
-    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeId, `OK Removed tag ${tag} from ${selected.name}.`, "Object tag update failed schema validation");
+    this.commitPayloadUpdate(nextPayload, selected.id, this.selectedShapeKey, `OK Removed tag ${tag} from ${selected.name}.`, "Object tag update failed schema validation");
   }
 
   renameSelectedObject() {
@@ -2772,7 +2776,7 @@ export class ToolStarterApp {
     });
     nextObject.id = nextId;
     nextObject.name = name;
-    this.commitPayloadUpdate(nextPayload, nextId, this.selectedShapeId, `OK Renamed object ${oldId} to ${name} and updated object/game/name id to ${nextId}.`, "Rename object failed schema validation");
+    this.commitPayloadUpdate(nextPayload, nextId, this.selectedShapeKey, `OK Renamed object ${oldId} to ${name} and updated object/game/name id to ${nextId}.`, "Rename object failed schema validation");
   }
 
   duplicateSelectedObject() {
@@ -2790,8 +2794,8 @@ export class ToolStarterApp {
     objectCopy.id = this.uniqueObjectId(`${selected.name} Copy`, nextPayload.objects, objectGameSegment(selected.id) || this.payloadGameKey());
     objectCopy.name = `${selected.name} Copy`;
     nextPayload.objects.push(objectCopy);
-    const selectedShapeId = sortedShapes(objectCopy)[0]?.id || "";
-    this.commitPayloadUpdate(nextPayload, objectCopy.id, selectedShapeId, `OK Duplicated object ${selected.name} as ${objectCopy.name}.`, "Duplicate object failed schema validation");
+    const selectedShapeKey = sortedShapes(objectCopy)[0]?.shapeKey || "";
+    this.commitPayloadUpdate(nextPayload, objectCopy.id, selectedShapeKey, `OK Duplicated object ${selected.name} as ${objectCopy.name}.`, "Duplicate object failed schema validation");
   }
 
   deleteSelectedObject() {
@@ -2809,8 +2813,8 @@ export class ToolStarterApp {
     this.removeDeletedObjectReferences(nextPayload, selected.id);
     this.removeDanglingShapeOverrideReferences(nextPayload);
     const selectedObjectId = nextPayload.objects[0]?.id || "";
-    const selectedShapeId = nextPayload.objects[0] ? sortedShapes(nextPayload.objects[0])[0]?.id || "" : "";
-    this.commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, `OK Deleted object ${selected.name}.`, "Delete object failed schema validation");
+    const selectedShapeKey = nextPayload.objects[0] ? sortedShapes(nextPayload.objects[0])[0]?.shapeKey || "" : "";
+    this.commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeKey, `OK Deleted object ${selected.name}.`, "Delete object failed schema validation");
   }
 
   deleteObjectById(objectId, sourceLabel) {
@@ -2833,11 +2837,11 @@ export class ToolStarterApp {
       ? nextPayload.objects.find((object) => object.id === this.selectedObjectId)
       : nextPayload.objects[0] || null;
     const selectedObjectId = nextSelectedObject?.id || "";
-    const selectedShapeStillExists = nextSelectedObject?.shapes.some((shape) => shape.id === this.selectedShapeId);
-    const selectedShapeId = selectedShapeStillExists ? this.selectedShapeId : nextSelectedObject ? sortedShapes(nextSelectedObject)[0]?.id || "" : "";
+    const selectedShapeStillExists = nextSelectedObject?.shapes.some((shape) => shape.shapeKey === this.selectedShapeKey);
+    const selectedShapeKey = selectedShapeStillExists ? this.selectedShapeKey : nextSelectedObject ? sortedShapes(nextSelectedObject)[0]?.shapeKey || "" : "";
     this.hiddenObjectIds.delete(selected.id);
     this.lockedObjectIds.delete(selected.id);
-    this.commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, `OK Deleted object ${selected.name} from ${sourceLabel}.`, "Delete object failed schema validation");
+    this.commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeKey, `OK Deleted object ${selected.name} from ${sourceLabel}.`, "Delete object failed schema validation");
   }
 
   removeDeletedObjectReferences(payload, objectId) {
@@ -2878,22 +2882,22 @@ export class ToolStarterApp {
 
   removeDanglingShapeOverrideReferences(payload) {
     const objectsById = new Map(payload.objects.map((object) => [object.id, object]));
-    const collectShapeIds = (object, seen = new Set()) => {
+    const collectShapeKeys = (object, seen = new Set()) => {
       if (!object || seen.has(object.id)) {
         return new Set();
       }
       seen.add(object.id);
-      const shapeIds = object.baseObjectId
-        ? collectShapeIds(objectsById.get(object.baseObjectId), seen)
+      const shapeKeys = object.baseObjectId
+        ? collectShapeKeys(objectsById.get(object.baseObjectId), seen)
         : new Set();
-      object.shapes.forEach((shape) => shapeIds.add(shape.id));
-      return shapeIds;
+      object.shapes.forEach((shape) => shapeKeys.add(shape.shapeKey));
+      return shapeKeys;
     };
     payload.objects.forEach((object) => {
-      const validShapeIds = collectShapeIds(object);
+      const validShapeKeys = collectShapeKeys(object);
       this.objectStates(object).forEach((state) => {
         state.frames.forEach((frame) => {
-          frame.shapeOverrides = frame.shapeOverrides.filter((override) => validShapeIds.has(override.shapeId));
+          frame.shapeOverrides = frame.shapeOverrides.filter((override) => validShapeKeys.has(override.shapeKey));
         });
       });
     });
@@ -2927,8 +2931,8 @@ export class ToolStarterApp {
       flattenedCount += 1;
       return flattened;
     });
-    const selectedShapeId = sortedShapes(nextObject)[0]?.id || "";
-    this.commitPayloadUpdate(nextPayload, selected.id, selectedShapeId, `OK Flattened object ${selected.name}: baked transforms into ${flattenedCount} shapes.`, "Flatten object failed schema validation");
+    const selectedShapeKey = sortedShapes(nextObject)[0]?.shapeKey || "";
+    this.commitPayloadUpdate(nextPayload, selected.id, selectedShapeKey, `OK Flattened object ${selected.name}: baked transforms into ${flattenedCount} shapes.`, "Flatten object failed schema validation");
   }
 
   createShape(type) {
@@ -2951,12 +2955,12 @@ export class ToolStarterApp {
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
     const order = nextObject.shapes.length ? Math.max(...nextObject.shapes.map((shape) => shape.order)) + 1 : 1;
     const shapeType = type === "triangle" ? "polygon" : type;
-    const shape = this.createPrimitiveShape(type, this.uniqueShapeId(shapeType, nextObject.shapes), order, color);
+    const shape = this.createPrimitiveShape(type, this.uniqueShapeKey(shapeType, nextObject.shapes), order, color);
     if (type === "triangle") {
-      this.shapeToolLabelsById.set(shape.id, "Triangle");
+      this.shapeToolLabelsByKey.set(shape.shapeKey, "Triangle");
     }
     nextObject.shapes.push(shape);
-    this.commitPayloadUpdate(nextPayload, nextObject.id, shape.id, `OK Created ${type} shape ${shape.id} on ${nextObject.name}.`, `Create ${type} failed schema validation`);
+    this.commitPayloadUpdate(nextPayload, nextObject.id, shape.shapeKey, `OK Created ${type} shape ${shape.shapeKey} on ${nextObject.name}.`, `Create ${type} failed schema validation`);
   }
 
   createPrimitiveShape(type, id, order, color) {
@@ -2966,7 +2970,8 @@ export class ToolStarterApp {
     });
     const schemaType = type === "triangle" ? "polygon" : type;
     const base = {
-      id,
+      shapeKey: id,
+      label: id,
       locked: false,
       order,
       style: {
@@ -2974,6 +2979,7 @@ export class ToolStarterApp {
         stroke: color,
         strokeWidth: 3
       },
+      tool: type,
       type: schemaType,
       visible: true
     };
@@ -3088,11 +3094,11 @@ export class ToolStarterApp {
       const swatch = this.paletteSwatchForColor(normalizedColor);
       if (!swatch) {
         if (logMissing) {
-          this.statusLog.write(`WARN Palette sync skipped for ${shape.id} ${target} color ${normalizedColor}: color is not in the loaded palette.`);
+          this.statusLog.write(`WARN Palette sync skipped for ${shape.shapeKey} ${target} color ${normalizedColor}: color is not in the loaded palette.`);
         }
         return;
       }
-      const label = swatch.name || swatch.id || swatch.symbol || shape.id;
+      const label = swatch.name || swatch.id || swatch.symbol || shape.shapeKey;
       const paletteColor = swatchColor(swatch) || normalizedColor;
       if (target === "stroke") {
         changed = changed || this.selectedStrokeColor !== paletteColor || this.selectedStrokeLabel !== label;
@@ -3133,24 +3139,24 @@ export class ToolStarterApp {
       this.renderPalette();
     }
     this.statusLog.write(`OK Selected ${this.paletteTarget === "stroke" ? "stroke" : "paint"} color ${color} from ${paletteLabel}.`);
-    if (options.applyToSelection === false || !this.selectedShapeId) {
+    if (options.applyToSelection === false || !this.selectedShapeKey) {
       return;
     }
-    this.applySelectedPaletteColorToShape(this.selectedShapeId, this.paletteTarget === "stroke" ? "stroke" : "fill", "palette swatch");
+    this.applySelectedPaletteColorToShape(this.selectedShapeKey, this.paletteTarget === "stroke" ? "stroke" : "fill", "palette swatch");
   }
 
   applyPaletteColor(color, label) {
     this.selectPaletteColor(color, label);
   }
 
-  applySelectedPaletteColorToShape(shapeId, target, sourceLabel) {
-    const selected = this.selectedObject()?.shapes.find((shape) => shape.id === shapeId);
+  applySelectedPaletteColorToShape(shapeKey, target, sourceLabel) {
+    const selected = this.selectedObject()?.shapes.find((shape) => shape.shapeKey === shapeKey);
     if (!selected) {
       this.statusLog.write("FAIL Palette color application blocked: select a shape first.");
       return;
     }
     if (selected.locked) {
-      this.statusLog.write(`WARN Palette color application skipped: shape ${selected.id} is locked.`);
+      this.statusLog.write(`WARN Palette color application skipped: shape ${selected.shapeKey} is locked.`);
       return;
     }
     if (this.guardSelectedObjectMutation("Palette color application")) {
@@ -3158,7 +3164,7 @@ export class ToolStarterApp {
     }
 
     const nextPayload = this.cloneCurrentPayload();
-    const shape = this.findShapeInPayload(nextPayload, selected.id);
+    const shape = this.findShapeInPayload(nextPayload, selected.shapeKey);
     const strokeWidth = Number(this.elements.strokeWidth.value);
     const shouldApplyStroke = target === "stroke" || ["arc", "line"].includes(shape.type);
     const color = shouldApplyStroke ? this.selectedStrokeColor : this.selectedFillColor;
@@ -3180,26 +3186,26 @@ export class ToolStarterApp {
       shape.style.fill = color;
     }
     const targetLabel = shouldApplyStroke ? `Target: stroke width ${shape.style.strokeWidth}.` : "Target: paint.";
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Applied palette color ${color} from ${paletteLabel} to shape ${selected.id} by ${sourceLabel}. ${targetLabel}`, "Palette color application failed schema validation");
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.shapeKey, `OK Applied palette color ${color} from ${paletteLabel} to shape ${selected.shapeKey} by ${sourceLabel}. ${targetLabel}`, "Palette color application failed schema validation");
   }
 
-  sampleShapeColor(shapeId, target) {
-    const selected = this.selectedObject()?.shapes.find((shape) => shape.id === shapeId);
+  sampleShapeColor(shapeKey, target) {
+    const selected = this.selectedObject()?.shapes.find((shape) => shape.shapeKey === shapeKey);
     if (!selected) {
-      this.statusLog.write(`WARN Eyedropper skipped: shape ${shapeId || "unknown"} is not available.`);
+      this.statusLog.write(`WARN Eyedropper skipped: shape ${shapeKey || "unknown"} is not available.`);
       return;
     }
     const color = target === "stroke" ? selected.style.stroke : selected.style.fill;
     if (!color || color === "none") {
-      this.statusLog.write(`WARN Eyedropper skipped: shape ${selected.id} has no ${target} color.`);
+      this.statusLog.write(`WARN Eyedropper skipped: shape ${selected.shapeKey} has no ${target} color.`);
       return;
     }
     const swatch = this.paletteSwatchForColor(color);
     if (!swatch) {
-      this.statusLog.write(`FAIL Eyedropper rejected ${target} color ${color} from shape ${selected.id}: color is not in the loaded palette.`);
+      this.statusLog.write(`FAIL Eyedropper rejected ${target} color ${color} from shape ${selected.shapeKey}: color is not in the loaded palette.`);
       return;
     }
-    const label = swatch.name || swatch.id || swatch.symbol || selected.id;
+    const label = swatch.name || swatch.id || swatch.symbol || selected.shapeKey;
     if (target === "stroke") {
       this.selectedStrokeColor = color;
       this.selectedStrokeLabel = label;
@@ -3212,7 +3218,7 @@ export class ToolStarterApp {
     if (this.runtimePalette) {
       this.renderPalette();
     }
-    this.statusLog.write(`OK Sampled ${target} color ${color} from shape ${selected.id}.`);
+    this.statusLog.write(`OK Sampled ${target} color ${color} from shape ${selected.shapeKey}.`);
   }
 
   swapFillStrokeColors() {
@@ -3250,7 +3256,7 @@ export class ToolStarterApp {
       return;
     }
     if (selected.locked) {
-      this.statusLog.write(`WARN Shape visibility skipped: shape ${selected.id} is locked.`);
+      this.statusLog.write(`WARN Shape visibility skipped: shape ${selected.shapeKey} is locked.`);
       return;
     }
     if (this.guardSelectedObjectMutation("Shape visibility")) {
@@ -3258,16 +3264,16 @@ export class ToolStarterApp {
     }
 
     const nextPayload = this.cloneCurrentPayload();
-    const override = this.frameOverrideInPayload(nextPayload, selected.id, { create: true });
+    const override = this.frameOverrideInPayload(nextPayload, selected.shapeKey, { create: true });
     if (override) {
       const nextVisible = !this.effectiveShape(selected).visible;
       override.visible = nextVisible;
-      this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK State ${this.selectedStateId} frame ${this.selectedFrameId} shape ${selected.id} visibility set to ${nextVisible ? "visible" : "hidden"}.`, "State frame visibility failed schema validation");
+      this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.shapeKey, `OK State ${this.selectedStateId} frame ${this.selectedFrameId} shape ${selected.shapeKey} visibility set to ${nextVisible ? "visible" : "hidden"}.`, "State frame visibility failed schema validation");
       return;
     }
-    const shape = this.findShapeInPayload(nextPayload, selected.id);
+    const shape = this.findShapeInPayload(nextPayload, selected.shapeKey);
     shape.visible = !shape.visible;
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Shape ${selected.id} visibility set to ${shape.visible ? "visible" : "hidden"}.`, "Shape visibility failed schema validation");
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.shapeKey, `OK Shape ${selected.shapeKey} visibility set to ${shape.visible ? "visible" : "hidden"}.`, "Shape visibility failed schema validation");
   }
 
   toggleSelectedShapeLock() {
@@ -3281,9 +3287,9 @@ export class ToolStarterApp {
     }
 
     const nextPayload = this.cloneCurrentPayload();
-    const shape = this.findShapeInPayload(nextPayload, selected.id);
+    const shape = this.findShapeInPayload(nextPayload, selected.shapeKey);
     shape.locked = !shape.locked;
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Shape ${selected.id} lock set to ${shape.locked ? "locked" : "unlocked"}.`, "Shape lock failed schema validation");
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.shapeKey, `OK Shape ${selected.shapeKey} lock set to ${shape.locked ? "locked" : "unlocked"}.`, "Shape lock failed schema validation");
   }
 
   changeSelectedShapeOrder(action) {
@@ -3293,7 +3299,7 @@ export class ToolStarterApp {
       return;
     }
     if (selected.locked) {
-      this.statusLog.write(`WARN Shape order skipped: shape ${selected.id} is locked.`);
+      this.statusLog.write(`WARN Shape order skipped: shape ${selected.shapeKey} is locked.`);
       return;
     }
     if (this.guardSelectedObjectMutation("Shape order")) {
@@ -3303,9 +3309,9 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const object = nextPayload.objects.find((candidate) => candidate.id === this.selectedObjectId);
     const shapes = sortedShapes(object);
-    const index = shapes.findIndex((shape) => shape.id === selected.id);
+    const index = shapes.findIndex((shape) => shape.shapeKey === selected.shapeKey);
     if (shapes.length < 2) {
-      this.statusLog.write(`WARN Shape order skipped: shape ${selected.id} is the only shape in ${object.name}.`);
+      this.statusLog.write(`WARN Shape order skipped: shape ${selected.shapeKey} is the only shape in ${object.name}.`);
       return;
     }
 
@@ -3317,7 +3323,7 @@ export class ToolStarterApp {
     };
     const nextIndex = nextIndexByAction[action];
     if (!Number.isInteger(nextIndex) || nextIndex < 0 || nextIndex >= shapes.length || nextIndex === index) {
-      this.statusLog.write(`WARN Shape z-order skipped: shape ${selected.id} cannot move ${action}.`);
+      this.statusLog.write(`WARN Shape z-order skipped: shape ${selected.shapeKey} cannot move ${action}.`);
       return;
     }
 
@@ -3327,14 +3333,14 @@ export class ToolStarterApp {
       shape.order = shapeIndex + 1;
     });
     object.shapes = shapes;
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, `OK Shape ${selected.id} z-order ${action}.`, "Shape z-order failed schema validation");
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.shapeKey, `OK Shape ${selected.shapeKey} z-order ${action}.`, "Shape z-order failed schema validation");
   }
 
   moveSelectedShape() {
     const x = this.numberInputValue("objectVectorStudioV2MoveXInput", "Move X");
     const y = this.numberInputValue("objectVectorStudioV2MoveYInput", "Move Y");
     if (!x.ok || !y.ok) {
-      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${x.error || y.error}`);
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeKey || "unknown"}: ${x.error || y.error}`);
       return;
     }
     const moveX = this.snapDistance(x.value);
@@ -3343,69 +3349,69 @@ export class ToolStarterApp {
       shape.transform = this.ensureShapeTransform(shape);
       shape.transform.x = Number((shape.transform.x + moveX).toFixed(3));
       shape.transform.y = Number((shape.transform.y + moveY).toFixed(3));
-    }, `OK Moved shape ${this.selectedShapeId} by ${moveX}, ${moveY}.`);
+    }, `OK Moved shape ${this.selectedShapeKey} by ${moveX}, ${moveY}.`);
   }
 
   rotateSelectedShape() {
     const input = this.numberInputValue("objectVectorStudioV2RotateInput", "Rotate");
     if (!input.ok) {
-      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${input.error}`);
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeKey || "unknown"}: ${input.error}`);
       return;
     }
     const rotation = this.snapAngle(input.value);
     this.updateSelectedShapeTransform("rotate", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
       shape.transform.rotation = Number((shape.transform.rotation + rotation).toFixed(3));
-    }, `OK Rotated shape ${this.selectedShapeId} by ${rotation} degrees.`);
+    }, `OK Rotated shape ${this.selectedShapeKey} by ${rotation} degrees.`);
   }
 
   scaleSelectedShape() {
     const input = this.numberInputValue("objectVectorStudioV2ScaleInput", "Scale");
     if (!input.ok) {
-      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${input.error}`);
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeKey || "unknown"}: ${input.error}`);
       return;
     }
     if (input.value <= 0) {
       this.markInputInvalid(this.window.document.getElementById("objectVectorStudioV2ScaleInput"), "Scale must be greater than 0.");
-      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: scale must be greater than 0.`);
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeKey || "unknown"}: scale must be greater than 0.`);
       return;
     }
     this.updateSelectedShapeTransform("scale", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
       shape.transform.scaleX = Number((shape.transform.scaleX * input.value).toFixed(3));
       shape.transform.scaleY = Number((shape.transform.scaleY * input.value).toFixed(3));
-    }, `OK Scaled shape ${this.selectedShapeId} by ${input.value}.`);
+    }, `OK Scaled shape ${this.selectedShapeKey} by ${input.value}.`);
   }
 
   resizeSelectedShape() {
     const input = this.numberInputValue("objectVectorStudioV2ResizeInput", "Resize");
     if (!input.ok) {
-      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${input.error}`);
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeKey || "unknown"}: ${input.error}`);
       return;
     }
     this.updateSelectedShapeTransform("resize", (shape) => {
       this.resizeShapeGeometry(shape, input.value);
       shape.transform = this.ensureShapeTransform(shape);
-    }, `OK Resized shape ${this.selectedShapeId} by ${input.value}.`);
+    }, `OK Resized shape ${this.selectedShapeKey} by ${input.value}.`);
   }
 
   applySelectedShapeOrigin() {
     const originX = this.numberInputValue("objectVectorStudioV2OriginXInput", "Origin X");
     const originY = this.numberInputValue("objectVectorStudioV2OriginYInput", "Origin Y");
     if (!originX.ok || !originY.ok) {
-      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeId || "unknown"}: ${originX.error || originY.error}`);
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${this.selectedShapeKey || "unknown"}: ${originX.error || originY.error}`);
       return;
     }
     this.updateSelectedShapeTransform("origin", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
       shape.transform.originX = Number(originX.value.toFixed(3));
       shape.transform.originY = Number(originY.value.toFixed(3));
-    }, `OK Updated shape ${this.selectedShapeId} origin/pivot to ${originX.value}, ${originY.value}.`);
+    }, `OK Updated shape ${this.selectedShapeKey} origin/pivot to ${originX.value}, ${originY.value}.`);
   }
 
   groupSelectedShapes() {
     const object = this.selectedObject();
-    if (!object || this.selectedShapeIds.size < 2) {
+    if (!object || this.selectedShapeKeys.size < 2) {
       this.statusLog.write("WARN Group shapes skipped: select at least two shapes.");
       return;
     }
@@ -3416,11 +3422,11 @@ export class ToolStarterApp {
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
     const groupId = this.uniqueGroupId(nextObject);
     nextObject.shapes.forEach((shape) => {
-      if (this.selectedShapeIds.has(shape.id)) {
+      if (this.selectedShapeKeys.has(shape.shapeKey)) {
         shape.groupId = groupId;
       }
     });
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeId, `OK Grouped ${this.selectedShapeIds.size} shapes into ${groupId}.`, "Group shapes failed schema validation");
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeKey, `OK Grouped ${this.selectedShapeKeys.size} shapes into ${groupId}.`, "Group shapes failed schema validation");
   }
 
   ungroupSelectedShapes() {
@@ -3435,7 +3441,7 @@ export class ToolStarterApp {
     }
     const groupId = selected.groupId;
     if (!groupId) {
-      this.statusLog.write(`WARN Ungroup skipped: shape ${selected.id} is not grouped.`);
+      this.statusLog.write(`WARN Ungroup skipped: shape ${selected.shapeKey} is not grouped.`);
       return;
     }
     const nextPayload = this.cloneCurrentPayload();
@@ -3445,7 +3451,7 @@ export class ToolStarterApp {
         delete shape.groupId;
       }
     });
-    this.commitPayloadUpdate(nextPayload, object.id, selected.id, `OK Ungrouped shapes from ${groupId}.`, "Ungroup shapes failed schema validation");
+    this.commitPayloadUpdate(nextPayload, object.id, selected.shapeKey, `OK Ungrouped shapes from ${groupId}.`, "Ungroup shapes failed schema validation");
   }
 
   applyShapeGeometryEdits() {
@@ -3460,13 +3466,13 @@ export class ToolStarterApp {
     const fields = Array.from(this.elements.objectDetails.querySelectorAll("[data-shape-geometry-field]"));
     const geometry = this.readShapeGeometryFields(selected, fields);
     if (!geometry.ok) {
-      this.statusLog.write(`FAIL Invalid geometry rejected for shape ${selected.id}: ${geometry.error}`);
+      this.statusLog.write(`FAIL Invalid geometry rejected for shape ${selected.shapeKey}: ${geometry.error}`);
       return;
     }
     this.updateSelectedShapeGeometry("geometry edit", (shape) => {
       shape.geometry = geometry.value;
       shape.transform = this.ensureShapeTransform(shape);
-    }, `OK Applied geometry edits to shape ${selected.id}.`);
+    }, `OK Applied geometry edits to shape ${selected.shapeKey}.`);
   }
 
   addPolygonSideRow() {
@@ -3476,12 +3482,12 @@ export class ToolStarterApp {
       return;
     }
     if (!this.isEditablePolygonShape(selected)) {
-      this.statusLog.write(`WARN Add polygon point skipped for shape ${selected.id}: triangle point count is fixed.`);
+      this.statusLog.write(`WARN Add polygon point skipped for shape ${selected.shapeKey}: triangle point count is fixed.`);
       return;
     }
     const geometry = this.readCurrentPolygonGeometry(selected);
     if (!geometry.ok) {
-      this.statusLog.write(`FAIL Add polygon point rejected for shape ${selected.id}: ${geometry.error}`);
+      this.statusLog.write(`FAIL Add polygon point rejected for shape ${selected.shapeKey}: ${geometry.error}`);
       return;
     }
     const points = geometry.value.points;
@@ -3492,7 +3498,7 @@ export class ToolStarterApp {
     this.rebuildPolygonPointList(points);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
-    this.statusLog.write(`OK Added polygon point to shape ${selected.id}.`);
+    this.statusLog.write(`OK Added polygon point to shape ${selected.shapeKey}.`);
   }
 
   deletePolygonPointRows() {
@@ -3502,12 +3508,12 @@ export class ToolStarterApp {
       return;
     }
     if (!this.isEditablePolygonShape(selected)) {
-      this.statusLog.write(`WARN Delete polygon point skipped for shape ${selected.id}: triangle point count is fixed.`);
+      this.statusLog.write(`WARN Delete polygon point skipped for shape ${selected.shapeKey}: triangle point count is fixed.`);
       return;
     }
     const geometry = this.readCurrentPolygonGeometry(selected);
     if (!geometry.ok) {
-      this.statusLog.write(`FAIL Delete polygon point rejected for shape ${selected.id}: ${geometry.error}`);
+      this.statusLog.write(`FAIL Delete polygon point rejected for shape ${selected.shapeKey}: ${geometry.error}`);
       return;
     }
     const checkedIndexes = this.checkedPolygonPointIndexes();
@@ -3515,7 +3521,7 @@ export class ToolStarterApp {
       const message = "select at least one polygon point to delete.";
       this.markPolygonSideActionInvalid("delete", message);
       this.clearPolygonPointSelections();
-      this.statusLog.write(`FAIL Delete polygon point rejected for shape ${selected.id}: ${message}`);
+      this.statusLog.write(`FAIL Delete polygon point rejected for shape ${selected.shapeKey}: ${message}`);
       return;
     }
     const checkedSet = new Set(checkedIndexes);
@@ -3524,13 +3530,13 @@ export class ToolStarterApp {
       const message = "polygon must keep at least three sides.";
       this.markPolygonSideActionInvalid("delete", message);
       this.clearPolygonPointSelections();
-      this.statusLog.write(`FAIL Delete polygon point rejected for shape ${selected.id}: ${message}`);
+      this.statusLog.write(`FAIL Delete polygon point rejected for shape ${selected.shapeKey}: ${message}`);
       return;
     }
     this.rebuildPolygonPointList(nextPoints);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
-    this.statusLog.write(`OK Deleted ${checkedIndexes.length} polygon point${checkedIndexes.length === 1 ? "" : "s"} from shape ${selected.id}.`);
+    this.statusLog.write(`OK Deleted ${checkedIndexes.length} polygon point${checkedIndexes.length === 1 ? "" : "s"} from shape ${selected.shapeKey}.`);
   }
 
   readCurrentPolygonGeometry(shape) {
@@ -3687,7 +3693,7 @@ export class ToolStarterApp {
       return;
     }
     if (selected.locked) {
-      this.statusLog.write(`WARN Geometry ${operation} skipped: shape ${selected.id} is locked.`);
+      this.statusLog.write(`WARN Geometry ${operation} skipped: shape ${selected.shapeKey} is locked.`);
       return;
     }
     if (this.guardSelectedObjectMutation(`Geometry ${operation}`)) {
@@ -3695,20 +3701,20 @@ export class ToolStarterApp {
     }
 
     const nextPayload = this.cloneCurrentPayload();
-    const shape = this.findShapeInPayload(nextPayload, selected.id);
+    const shape = this.findShapeInPayload(nextPayload, selected.shapeKey);
     try {
       updater(shape);
       shape.transform = this.ensureShapeTransform(shape);
       const transformErrors = this.validateShapeForTransform(shape);
       if (transformErrors.length) {
-        this.statusLog.write(`FAIL Invalid geometry rejected for shape ${selected.id}: ${transformErrors.join(" ")}`);
+        this.statusLog.write(`FAIL Invalid geometry rejected for shape ${selected.shapeKey}: ${transformErrors.join(" ")}`);
         return;
       }
     } catch (error) {
-      this.statusLog.write(`FAIL Invalid geometry rejected for shape ${selected.id}: ${error.message}`);
+      this.statusLog.write(`FAIL Invalid geometry rejected for shape ${selected.shapeKey}: ${error.message}`);
       return;
     }
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, okMessage, `Geometry ${operation} failed schema validation`);
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.shapeKey, okMessage, `Geometry ${operation} failed schema validation`);
   }
 
   updateSelectedShapeTransform(operation, updater, okMessage) {
@@ -3718,7 +3724,7 @@ export class ToolStarterApp {
       return;
     }
     if (selected.locked) {
-      this.statusLog.write(`WARN Transform ${operation} skipped: shape ${selected.id} is locked.`);
+      this.statusLog.write(`WARN Transform ${operation} skipped: shape ${selected.shapeKey} is locked.`);
       return;
     }
     if (this.guardSelectedObjectMutation(`Transform ${operation}`)) {
@@ -3726,25 +3732,25 @@ export class ToolStarterApp {
     }
 
     const nextPayload = this.cloneCurrentPayload();
-    const override = this.frameOverrideInPayload(nextPayload, selected.id, { create: true });
+    const override = this.frameOverrideInPayload(nextPayload, selected.shapeKey, { create: true });
     const shape = override
-      ? this.effectiveShapeForFrame(this.findShapeInPayload(nextPayload, selected.id), this.activeFrame())
-      : this.findShapeInPayload(nextPayload, selected.id);
+      ? this.effectiveShapeForFrame(this.findShapeInPayload(nextPayload, selected.shapeKey), this.activeFrame())
+      : this.findShapeInPayload(nextPayload, selected.shapeKey);
     try {
       updater(shape);
       const transformErrors = this.validateShapeForTransform(shape);
       if (transformErrors.length) {
-        this.statusLog.write(`FAIL Invalid transform rejected for shape ${selected.id}: ${transformErrors.join(" ")}`);
+        this.statusLog.write(`FAIL Invalid transform rejected for shape ${selected.shapeKey}: ${transformErrors.join(" ")}`);
         return;
       }
     } catch (error) {
-      this.statusLog.write(`FAIL Invalid transform rejected for shape ${selected.id}: ${error.message}`);
+      this.statusLog.write(`FAIL Invalid transform rejected for shape ${selected.shapeKey}: ${error.message}`);
       return;
     }
     if (override) {
       override.transform = this.ensureShapeTransform(shape);
     }
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.id, okMessage, `Transform ${operation} failed schema validation`);
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selected.shapeKey, okMessage, `Transform ${operation} failed schema validation`);
   }
 
   duplicateSelectedShape() {
@@ -3760,13 +3766,14 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const object = nextPayload.objects.find((candidate) => candidate.id === this.selectedObjectId);
     const shape = JSON.parse(JSON.stringify(selected));
-    shape.id = this.uniqueShapeId(selected.type, object.shapes);
+    shape.shapeKey = this.uniqueShapeKey(selected.type, object.shapes);
+    shape.label = shape.shapeKey;
     shape.order = object.shapes.length ? Math.max(...object.shapes.map((candidate) => candidate.order)) + 1 : 1;
     shape.transform = this.ensureShapeTransform(shape);
     shape.transform.x = Number((shape.transform.x + 10).toFixed(3));
     shape.transform.y = Number((shape.transform.y + 10).toFixed(3));
     object.shapes.push(shape);
-    this.commitPayloadUpdate(nextPayload, object.id, shape.id, `OK Duplicated shape ${selected.id} as ${shape.id}.`, "Duplicate shape failed schema validation");
+    this.commitPayloadUpdate(nextPayload, object.id, shape.shapeKey, `OK Duplicated shape ${selected.shapeKey} as ${shape.shapeKey}.`, "Duplicate shape failed schema validation");
   }
 
   deleteSelectedShape(sourceLabel) {
@@ -3776,7 +3783,7 @@ export class ToolStarterApp {
       return;
     }
     if (selected.locked) {
-      this.statusLog.write(`WARN Delete shape skipped: shape ${selected.id} is locked.`);
+      this.statusLog.write(`WARN Delete shape skipped: shape ${selected.shapeKey} is locked.`);
       return;
     }
     if (this.guardSelectedObjectMutation("Delete shape")) {
@@ -3785,23 +3792,23 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     const object = nextPayload.objects.find((candidate) => candidate.id === this.selectedObjectId);
-    object.shapes = sortedShapes(object).filter((shape) => shape.id !== selected.id)
+    object.shapes = sortedShapes(object).filter((shape) => shape.shapeKey !== selected.shapeKey)
       .map((shape, index) => ({ ...shape, order: index + 1 }));
-    this.removeDeletedShapeReferences(object, selected.id);
+    this.removeDeletedShapeReferences(object, selected.shapeKey);
     this.removeDanglingShapeOverrideReferences(nextPayload);
-    const selectedShapeId = sortedShapes(object)[0]?.id || "";
-    this.commitPayloadUpdate(nextPayload, object.id, selectedShapeId, `OK Deleted shape ${selected.id} from ${sourceLabel}.`, "Delete shape failed schema validation");
+    const selectedShapeKey = sortedShapes(object)[0]?.shapeKey || "";
+    this.commitPayloadUpdate(nextPayload, object.id, selectedShapeKey, `OK Deleted shape ${selected.shapeKey} from ${sourceLabel}.`, "Delete shape failed schema validation");
   }
 
-  deleteShapeById(shapeId, sourceLabel, objectId = this.selectedObjectId) {
+  deleteShapeById(shapeKey, sourceLabel, objectId = this.selectedObjectId) {
     const object = this.currentPayload?.objects.find((candidate) => candidate.id === objectId) || null;
-    const shape = object?.shapes.find((candidate) => candidate.id === shapeId) || null;
+    const shape = object?.shapes.find((candidate) => candidate.shapeKey === shapeKey) || null;
     if (!object || !shape) {
-      this.statusLog.write(`WARN Delete shape skipped from ${sourceLabel}: shape ${shapeId || "unknown"} is not available.`);
+      this.statusLog.write(`WARN Delete shape skipped from ${sourceLabel}: shape ${shapeKey || "unknown"} is not available.`);
       return;
     }
     if (shape.locked) {
-      this.statusLog.write(`WARN Delete shape skipped: shape ${shape.id} is locked.`);
+      this.statusLog.write(`WARN Delete shape skipped: shape ${shape.shapeKey} is locked.`);
       return;
     }
     if (this.isObjectLocked(object.id)) {
@@ -3811,17 +3818,17 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
-    nextObject.shapes = sortedShapes(nextObject).filter((candidate) => candidate.id !== shape.id)
+    nextObject.shapes = sortedShapes(nextObject).filter((candidate) => candidate.shapeKey !== shape.shapeKey)
       .map((candidate, index) => ({ ...candidate, order: index + 1 }));
-    this.removeDeletedShapeReferences(nextObject, shape.id);
+    this.removeDeletedShapeReferences(nextObject, shape.shapeKey);
     this.removeDanglingShapeOverrideReferences(nextPayload);
-    const selectedShapeStillExists = nextObject.shapes.some((candidate) => candidate.id === this.selectedShapeId);
-    const selectedShapeId = selectedShapeStillExists ? this.selectedShapeId : sortedShapes(nextObject)[0]?.id || "";
-    this.commitPayloadUpdate(nextPayload, object.id, selectedShapeId, `OK Deleted shape ${shape.id} from ${sourceLabel}.`, "Delete shape failed schema validation");
+    const selectedShapeStillExists = nextObject.shapes.some((candidate) => candidate.shapeKey === this.selectedShapeKey);
+    const selectedShapeKey = selectedShapeStillExists ? this.selectedShapeKey : sortedShapes(nextObject)[0]?.shapeKey || "";
+    this.commitPayloadUpdate(nextPayload, object.id, selectedShapeKey, `OK Deleted shape ${shape.shapeKey} from ${sourceLabel}.`, "Delete shape failed schema validation");
   }
 
-  removeDeletedShapeReferences(object, shapeId) {
-    this.removeDirectReferenceEntries(object, "shapeId", shapeId);
+  removeDeletedShapeReferences(object, shapeKey) {
+    this.removeDirectReferenceEntries(object, "shapeKey", shapeKey);
   }
 
   numberInputValue(id, label) {
@@ -3947,7 +3954,7 @@ export class ToolStarterApp {
     return errors;
   }
 
-  commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeId, okMessage, failPrefix, options = {}) {
+  commitPayloadUpdate(nextPayload, selectedObjectId, selectedShapeKey, okMessage, failPrefix, options = {}) {
     const validation = this.schemaService.validatePayload(nextPayload);
     if (!validation.ok) {
       this.statusLog.write(`FAIL ${failPrefix}: ${validation.errors.join(" ")}`);
@@ -3965,8 +3972,8 @@ export class ToolStarterApp {
 
     this.currentPayload = validation.payload;
     this.selectedObjectId = selectedObjectId;
-    this.selectedShapeId = selectedShapeId || "";
-    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+    this.selectedShapeKey = selectedShapeKey || "";
+    this.selectedShapeKeys = new Set(this.selectedShapeKey ? [this.selectedShapeKey] : []);
     this.selectedStateId = options.selectedStateId ?? this.selectedStateId;
     this.selectedFrameId = options.selectedFrameId ?? this.selectedFrameId;
     this.ensureSelectedFrame();
@@ -4083,9 +4090,9 @@ export class ToolStarterApp {
     if (!baseObject) {
       return null;
     }
-    const shapeById = new Map(baseObject.shapes.map((shape) => [shape.id, JSON.parse(JSON.stringify(shape))]));
+    const shapeByKey = new Map(baseObject.shapes.map((shape) => [shape.shapeKey, JSON.parse(JSON.stringify(shape))]));
     object.shapes.forEach((shape) => {
-      shapeById.set(shape.id, JSON.parse(JSON.stringify(shape)));
+      shapeByKey.set(shape.shapeKey, JSON.parse(JSON.stringify(shape)));
     });
     const stateById = new Map((baseObject.states || []).map((state) => [state.id, JSON.parse(JSON.stringify(state))]));
     (object.states || []).forEach((state) => {
@@ -4095,7 +4102,7 @@ export class ToolStarterApp {
       ...baseObject,
       ...JSON.parse(JSON.stringify(object)),
       inheritedFrom: object.baseObjectId,
-      shapes: Array.from(shapeById.values()).sort((left, right) => left.order - right.order)
+      shapes: Array.from(shapeByKey.values()).sort((left, right) => left.order - right.order)
     };
     if (stateById.size) {
       resolved.states = Array.from(stateById.values());
@@ -4106,24 +4113,24 @@ export class ToolStarterApp {
   }
 
   selectedShape() {
-    return this.selectedObject()?.shapes.find((shape) => shape.id === this.selectedShapeId) || null;
+    return this.selectedObject()?.shapes.find((shape) => shape.shapeKey === this.selectedShapeKey) || null;
   }
 
   ensureSelectedShape() {
     const object = this.selectedObject();
     if (!object) {
-      this.selectedShapeId = "";
-      this.selectedShapeIds.clear();
+      this.selectedShapeKey = "";
+      this.selectedShapeKeys.clear();
       return;
     }
-    if (object.shapes.some((shape) => shape.id === this.selectedShapeId)) {
-      if (!this.selectedShapeIds.size) {
-        this.selectedShapeIds = new Set([this.selectedShapeId]);
+    if (object.shapes.some((shape) => shape.shapeKey === this.selectedShapeKey)) {
+      if (!this.selectedShapeKeys.size) {
+        this.selectedShapeKeys = new Set([this.selectedShapeKey]);
       }
       return;
     }
-    this.selectedShapeId = sortedShapes(object)[0]?.id || "";
-    this.selectedShapeIds = new Set(this.selectedShapeId ? [this.selectedShapeId] : []);
+    this.selectedShapeKey = sortedShapes(object)[0]?.shapeKey || "";
+    this.selectedShapeKeys = new Set(this.selectedShapeKey ? [this.selectedShapeKey] : []);
   }
 
   ensureSelectedFrame() {
@@ -4174,28 +4181,28 @@ export class ToolStarterApp {
       id: frameId,
       order,
       shapeOverrides: sortedShapes(object).map((shape) => ({
-        shapeId: shape.id,
+        shapeKey: shape.shapeKey,
         transform: this.shapeTransform(shape),
         visible: shape.visible
       }))
     };
   }
 
-  frameOverrideInPayload(payload, shapeId, { create = false } = {}) {
+  frameOverrideInPayload(payload, shapeKey, { create = false } = {}) {
     const object = payload.objects.find((candidate) => candidate.id === this.selectedObjectId);
     const state = this.objectStates(object).find((candidate) => candidate.id === this.selectedStateId);
     const frame = sortedFrames(state).find((candidate) => candidate.id === this.selectedFrameId);
     if (!object || !state || !frame) {
       return null;
     }
-    let override = frame.shapeOverrides.find((entry) => entry.shapeId === shapeId);
+    let override = frame.shapeOverrides.find((entry) => entry.shapeKey === shapeKey);
     if (!override && create) {
-      const baseShape = object.shapes.find((shape) => shape.id === shapeId);
+      const baseShape = object.shapes.find((shape) => shape.shapeKey === shapeKey);
       if (!baseShape) {
         return null;
       }
       override = {
-        shapeId,
+        shapeKey,
         transform: this.shapeTransform(baseShape),
         visible: baseShape.visible
       };
@@ -4204,10 +4211,10 @@ export class ToolStarterApp {
     return override || null;
   }
 
-  findShapeInPayload(payload, shapeId) {
+  findShapeInPayload(payload, shapeKey) {
     return payload.objects
       .find((object) => object.id === this.selectedObjectId)
-      ?.shapes.find((shape) => shape.id === shapeId);
+      ?.shapes.find((shape) => shape.shapeKey === shapeKey);
   }
 
   firstPaletteColor() {
@@ -4248,8 +4255,8 @@ export class ToolStarterApp {
     return existingGame || payloadGameSlugFromName(this.currentPayload?.name);
   }
 
-  uniqueShapeId(type, shapes) {
-    const usedIds = new Set(shapes.map((shape) => shape.id));
+  uniqueShapeKey(type, shapes) {
+    const usedIds = new Set(shapes.map((shape) => shape.shapeKey));
     let suffix = shapes.length + 1;
     let candidate = `${type}-${suffix}`;
     while (usedIds.has(candidate)) {
@@ -4317,7 +4324,7 @@ export class ToolStarterApp {
     });
     this.setControlDisabled(
       this.elements.groupShapesButton,
-      this.selectedShapeIds.size < 2 || isLocked,
+      this.selectedShapeKeys.size < 2 || isLocked,
       isLocked ? lockedReason : "Disabled until two or more shapes are selected. Shift-click shapes in the preview or object shape list to build a group selection.",
       "Group selected shapes. Shift-click shapes to select more than one."
     );

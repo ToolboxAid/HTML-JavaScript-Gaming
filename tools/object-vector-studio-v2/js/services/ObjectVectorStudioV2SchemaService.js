@@ -103,6 +103,13 @@ export class ObjectVectorStudioV2SchemaService {
     if (Object.prototype.hasOwnProperty.call(schema.$defs?.libraryAsset?.properties || {}, "objectId")) {
       errors.push("Object Vector Studio V2 library asset schema must not define objectId.");
     }
+    if (Object.prototype.hasOwnProperty.call(schema.$defs?.shapeCommon?.properties || {}, "id")) {
+      errors.push("Object Vector Studio V2 shape schema must not define runtime-like shape id.");
+    }
+    const requiredShapeFields = schema.$defs?.shapeCommon?.required || [];
+    if (!requiredShapeFields.includes("shapeKey") || !requiredShapeFields.includes("label") || !requiredShapeFields.includes("tool")) {
+      errors.push("Object Vector Studio V2 shape schema must require shapeKey, label, and tool.");
+    }
   }
 
   validatePayload(payload) {
@@ -146,15 +153,25 @@ export class ObjectVectorStudioV2SchemaService {
 
     objects.forEach((object, index) => {
       this.validateInheritanceChain(object, objectsById, `root.objects[${index}]`, errors);
+      const localShapeKeys = new Set();
+      object.shapes.forEach((shape, shapeIndex) => {
+        if (isObjectIdentityId(shape.shapeKey)) {
+          errors.push(`root.objects[${index}].shapes[${shapeIndex}].shapeKey ${shape.shapeKey} must be local editor metadata, not an object id.`);
+        }
+        if (localShapeKeys.has(shape.shapeKey)) {
+          errors.push(`root.objects[${index}].shapes[${shapeIndex}].shapeKey ${shape.shapeKey} duplicates a local shape key.`);
+        }
+        localShapeKeys.add(shape.shapeKey);
+      });
     });
 
     objects.forEach((object, index) => {
-      const shapeIds = this.collectInheritedShapeIds(object, objectsById, new Set(), errors, `root.objects[${index}]`);
+      const shapeKeys = this.collectInheritedShapeKeys(object, objectsById, new Set(), errors, `root.objects[${index}]`);
       (object.states || []).forEach((state, stateIndex) => {
         state.frames.forEach((frame, frameIndex) => {
           frame.shapeOverrides.forEach((override, overrideIndex) => {
-            if (!shapeIds.has(override.shapeId)) {
-              errors.push(`root.objects[${index}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeId ${override.shapeId} must reference a local or inherited shape.`);
+            if (!shapeKeys.has(override.shapeKey)) {
+              errors.push(`root.objects[${index}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeKey ${override.shapeKey} must reference a local or inherited shape.`);
             }
           });
         });
@@ -193,23 +210,23 @@ export class ObjectVectorStudioV2SchemaService {
     }
   }
 
-  collectInheritedShapeIds(object, objectsById, seen, errors, path) {
-    const shapeIds = new Set();
+  collectInheritedShapeKeys(object, objectsById, seen, errors, path) {
+    const shapeKeys = new Set();
     if (!object || seen.has(object.id)) {
       if (object) {
         errors.push(`${path}.baseObjectId creates a circular shape inheritance chain at ${object.id}.`);
       }
-      return shapeIds;
+      return shapeKeys;
     }
     seen.add(object.id);
     if (object.baseObjectId) {
       const baseObject = objectsById.get(object.baseObjectId);
       if (baseObject) {
-        this.collectInheritedShapeIds(baseObject, objectsById, seen, errors, path).forEach((shapeId) => shapeIds.add(shapeId));
+        this.collectInheritedShapeKeys(baseObject, objectsById, seen, errors, path).forEach((shapeKey) => shapeKeys.add(shapeKey));
       }
     }
-    object.shapes.forEach((shape) => shapeIds.add(shape.id));
-    return shapeIds;
+    object.shapes.forEach((shape) => shapeKeys.add(shape.shapeKey));
+    return shapeKeys;
   }
 
   validateRuntimePalette(palette, sourceLabel = "runtime palette") {
@@ -409,14 +426,16 @@ export class ObjectVectorStudioV2SchemaService {
             id: frame.id.trim(),
             shapeOverrides: frame.shapeOverrides.map((override) => ({
               ...override,
-              shapeId: override.shapeId.trim()
+              shapeKey: override.shapeKey.trim()
             }))
           }))
         }))
         : undefined,
       shapes: object.shapes.map((shape) => ({
         ...shape,
-        id: shape.id.trim(),
+        shapeKey: shape.shapeKey.trim(),
+        label: shape.label.trim(),
+        tool: shape.tool.trim().toLowerCase(),
         type: shape.type.trim().toLowerCase()
       }))
     }));

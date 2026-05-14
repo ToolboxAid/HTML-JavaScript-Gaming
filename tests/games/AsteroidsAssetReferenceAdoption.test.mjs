@@ -19,7 +19,8 @@ export async function run() {
   assert.equal(profiles[2].objectId, "object.asteroids.asteroid.medium");
   assert.equal(profiles[3].objectId, "object.asteroids.asteroid.large");
 
-  const shapeIds = payload.objects.flatMap((object) => object.shapes.map((shape) => shape.id));
-  assert.equal(shapeIds.includes("small-asteroid-ridge"), true);
-  assert.equal(shapeIds.some((shapeId) => shapeId.startsWith("object.")), false);
+  const shapeKeys = payload.objects.flatMap((object) => object.shapes.map((shape) => shape.shapeKey));
+  assert.equal(shapeKeys.includes("small-asteroid-ridge"), true);
+  assert.equal(shapeKeys.some((shapeKey) => shapeKey.startsWith("object.")), false);
+  assert.equal(payload.objects.some((object) => object.shapes.some((shape) => Object.prototype.hasOwnProperty.call(shape, "id"))), false);
 }

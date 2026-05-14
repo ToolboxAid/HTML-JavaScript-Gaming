@@ -186,7 +186,7 @@ function objectBounds(object, frame) {
 
 function effectiveShapeForFrame(shape, frame) {
   const effective = clone(shape);
-  const override = frame?.shapeOverrides?.find((entry) => entry.shapeId === shape.id) || null;
+  const override = frame?.shapeOverrides?.find((entry) => entry.shapeKey === shape.shapeKey) || null;
   if (override && Object.prototype.hasOwnProperty.call(override, "visible")) {
     effective.visible = override.visible;
   }
@@ -388,9 +388,9 @@ export class ObjectVectorRuntimeAssetService {
     if (!resolvedBase) {
       return null;
     }
-    const shapeById = new Map(resolvedBase.shapes.map((shape) => [shape.id, clone(shape)]));
+    const shapeByKey = new Map(resolvedBase.shapes.map((shape) => [shape.shapeKey, clone(shape)]));
     object.shapes.forEach((shape) => {
-      shapeById.set(shape.id, clone(shape));
+      shapeByKey.set(shape.shapeKey, clone(shape));
     });
     const stateById = new Map((resolvedBase.states || []).map((state) => [state.id, clone(state)]));
     (object.states || []).forEach((state) => {
@@ -400,7 +400,7 @@ export class ObjectVectorRuntimeAssetService {
       ...resolvedBase,
       ...clone(object),
       inheritedFrom: object.baseObjectId,
-      shapes: Array.from(shapeById.values()).sort((left, right) => left.order - right.order)
+      shapes: Array.from(shapeByKey.values()).sort((left, right) => left.order - right.order)
     };
     if (stateById.size) {
       merged.states = Array.from(stateById.values());
@@ -660,6 +660,13 @@ export class ObjectVectorRuntimeAssetService {
     if (Object.prototype.hasOwnProperty.call(schema.$defs?.libraryAsset?.properties || {}, "objectId")) {
       errors.push("Object Vector Studio V2 library asset schema must not define objectId.");
     }
+    if (Object.prototype.hasOwnProperty.call(schema.$defs?.shapeCommon?.properties || {}, "id")) {
+      errors.push("Object Vector Studio V2 shape schema must not define runtime-like shape id.");
+    }
+    const requiredShapeFields = schema.$defs?.shapeCommon?.required || [];
+    if (!requiredShapeFields.includes("shapeKey") || !requiredShapeFields.includes("label") || !requiredShapeFields.includes("tool")) {
+      errors.push("Object Vector Studio V2 shape schema must require shapeKey, label, and tool.");
+    }
   }
 
   validatePayload(payload) {
@@ -691,12 +698,12 @@ export class ObjectVectorRuntimeAssetService {
   validateAnimationReferences(payload, errors) {
     const objectsById = new Map(payload.objects.map((object) => [object.id, object]));
     payload.objects.forEach((object, objectIndex) => {
-      const shapeIds = this.collectInheritedShapeIds(object, objectsById, new Set(), errors, `root.objects[${objectIndex}]`);
+      const shapeKeys = this.collectInheritedShapeKeys(object, objectsById, new Set(), errors, `root.objects[${objectIndex}]`);
       (object.states || []).forEach((state, stateIndex) => {
         state.frames.forEach((frame, frameIndex) => {
           frame.shapeOverrides.forEach((override, overrideIndex) => {
-            if (!shapeIds.has(override.shapeId)) {
-              errors.push(`root.objects[${objectIndex}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeId ${override.shapeId} must reference a local or inherited shape.`);
+            if (!shapeKeys.has(override.shapeKey)) {
+              errors.push(`root.objects[${objectIndex}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeKey ${override.shapeKey} must reference a local or inherited shape.`);
             }
           });
         });
@@ -717,6 +724,16 @@ export class ObjectVectorRuntimeAssetService {
       objectsById.set(object.id, object);
     });
     payload.objects.forEach((object, objectIndex) => {
+      const localShapeKeys = new Set();
+      object.shapes.forEach((shape, shapeIndex) => {
+        if (isObjectIdentityId(shape.shapeKey)) {
+          errors.push(`root.objects[${objectIndex}].shapes[${shapeIndex}].shapeKey ${shape.shapeKey} must be local editor metadata, not an object id.`);
+        }
+        if (localShapeKeys.has(shape.shapeKey)) {
+          errors.push(`root.objects[${objectIndex}].shapes[${shapeIndex}].shapeKey ${shape.shapeKey} duplicates a local shape key.`);
+        }
+        localShapeKeys.add(shape.shapeKey);
+      });
       const seen = new Set([object.id]);
       let current = object;
       while (current?.baseObjectId) {
@@ -746,23 +763,23 @@ export class ObjectVectorRuntimeAssetService {
     });
   }
 
-  collectInheritedShapeIds(object, objectsById, seen, errors, path) {
-    const shapeIds = new Set();
+  collectInheritedShapeKeys(object, objectsById, seen, errors, path) {
+    const shapeKeys = new Set();
     if (!object || seen.has(object.id)) {
       if (object) {
         errors.push(`${path}.baseObjectId creates a circular shape inheritance chain at ${object.id}.`);
       }
-      return shapeIds;
+      return shapeKeys;
     }
     seen.add(object.id);
     if (object.baseObjectId) {
       const baseObject = objectsById.get(object.baseObjectId);
       if (baseObject) {
-        this.collectInheritedShapeIds(baseObject, objectsById, seen, errors, path).forEach((shapeId) => shapeIds.add(shapeId));
+        this.collectInheritedShapeKeys(baseObject, objectsById, seen, errors, path).forEach((shapeKey) => shapeKeys.add(shapeKey));
       }
     }
-    object.shapes.forEach((shape) => shapeIds.add(shape.id));
-    return shapeIds;
+    object.shapes.forEach((shape) => shapeKeys.add(shape.shapeKey));
+    return shapeKeys;
   }
 
   validateValue(schemaNode, value, path, errors) {
@@ -891,7 +908,9 @@ export class ObjectVectorRuntimeAssetService {
         tags: Array.isArray(object.tags) ? object.tags.map((tag) => tag.trim()).filter(Boolean) : undefined,
         shapes: object.shapes.map((shape) => ({
           ...shape,
-          id: shape.id.trim(),
+          shapeKey: shape.shapeKey.trim(),
+          label: shape.label.trim(),
+          tool: shape.tool.trim().toLowerCase(),
           type: shape.type.trim().toLowerCase()
         }))
       };
@@ -905,7 +924,7 @@ export class ObjectVectorRuntimeAssetService {
             id: frame.id.trim(),
             shapeOverrides: frame.shapeOverrides.map((override) => ({
               ...override,
-              shapeId: override.shapeId.trim()
+              shapeKey: override.shapeKey.trim()
             }))
           }))
         }));
