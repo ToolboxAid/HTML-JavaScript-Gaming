@@ -100,8 +100,8 @@ export class ObjectVectorStudioV2SchemaService {
     if (Object.prototype.hasOwnProperty.call(schema.$defs?.object?.properties || {}, "type")) {
       errors.push("Object Vector Studio V2 object schema must not define object type.");
     }
-    if (Object.prototype.hasOwnProperty.call(schema.$defs?.libraryAsset?.properties || {}, "objectId")) {
-      errors.push("Object Vector Studio V2 library asset schema must not define objectId.");
+    if (Object.prototype.hasOwnProperty.call(schema.properties || {}, "assetLibrary")) {
+      errors.push("Object Vector Studio V2 schema must not define assetLibrary.");
     }
     ["id", "shapeKey", "label", "type"].forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(schema.$defs?.shapeCommon?.properties || {}, key)) {
@@ -181,17 +181,6 @@ export class ObjectVectorStudioV2SchemaService {
       });
     });
 
-    const libraryAssets = Array.isArray(payload?.assetLibrary?.assets) ? payload.assetLibrary.assets : [];
-    const assetIds = new Set();
-    libraryAssets.forEach((asset, index) => {
-      if (assetIds.has(asset.id)) {
-        errors.push(`root.assetLibrary.assets[${index}].id ${asset.id} duplicates an existing library asset id.`);
-      }
-      assetIds.add(asset.id);
-      if (!objectsById.has(asset.id)) {
-        errors.push(`root.assetLibrary.assets[${index}].id ${asset.id} must reference an existing object.`);
-      }
-    });
   }
 
   validateInheritanceChain(object, objectsById, path, errors) {
@@ -384,6 +373,9 @@ export class ObjectVectorStudioV2SchemaService {
     if (Number.isInteger(schema.minItems) && value.length < schema.minItems) {
       errors.push(`${path} must contain at least ${schema.minItems} items.`);
     }
+    if (Number.isInteger(schema.maxItems) && value.length > schema.maxItems) {
+      errors.push(`${path} must contain no more than ${schema.maxItems} items.`);
+    }
     if (schema.items) {
       value.forEach((item, index) => this.validateValue(schema.items, item, `${path}[${index}]`, errors));
     }
@@ -456,15 +448,6 @@ export class ObjectVectorStudioV2SchemaService {
       }
       return object;
     });
-    if (normalized.assetLibrary) {
-      normalized.assetLibrary = {
-        assets: normalized.assetLibrary.assets.map((asset) => ({
-          id: asset.id.trim(),
-          name: asset.name.trim(),
-          tags: asset.tags.map((tag) => tag.trim()).filter(Boolean)
-        }))
-      };
-    }
     return normalized;
   }
 }

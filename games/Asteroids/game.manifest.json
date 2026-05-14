@@ -222,40 +222,6 @@
           "version": 1,
           "toolId": "object-vector-studio-v2",
           "name": "Asteroids Object Vector Assets",
-          "assetLibrary": {
-            "assets": [
-              {
-                "id": "object.asteroids.ship",
-                "name": "Asteroids Ship",
-                "tags": ["player", "ship"]
-              },
-              {
-                "id": "object.asteroids.asteroid.large",
-                "name": "Large Asteroid",
-                "tags": ["asteroid", "large"]
-              },
-              {
-                "id": "object.asteroids.asteroid.medium",
-                "name": "Medium Asteroid",
-                "tags": ["asteroid", "medium"]
-              },
-              {
-                "id": "object.asteroids.asteroid.small",
-                "name": "Small Asteroid",
-                "tags": ["asteroid", "small"]
-              },
-              {
-                "id": "object.asteroids.ufo.large",
-                "name": "Large UFO",
-                "tags": ["ufo", "large"]
-              },
-              {
-                "id": "object.asteroids.ufo.small",
-                "name": "Small UFO",
-                "tags": ["ufo", "small"]
-              }
-            ]
-          },
           "objects": [
             {
               "id": "object.asteroids.ship",
@@ -290,7 +256,8 @@
                     "fill": "transparent",
                     "stroke": "#FFFFFF",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -298,8 +265,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": 0,
-                    "originY": 0
+                    "origin": {
+                      "x": 0,
+                      "y": 0
+                    }
                   }
                 },
                 {
@@ -308,16 +277,21 @@
                   "visible": true,
                   "locked": false,
                   "geometry": {
-                    "x1": -6,
-                    "y1": 14,
-                    "x2": 0,
-                    "y2": 6
+                    "point1": {
+                      "x": -6,
+                      "y": 14
+                    },
+                    "point2": {
+                      "x": 0,
+                      "y": 6
+                    }
                   },
                   "style": {
                     "fill": "transparent",
                     "stroke": "#FFFFFF",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -325,8 +299,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": -3,
-                    "originY": 10
+                    "origin": {
+                      "x": -3,
+                      "y": 10
+                    }
                   }
                 },
                 {
@@ -335,16 +311,21 @@
                   "visible": true,
                   "locked": false,
                   "geometry": {
-                    "x1": 6,
-                    "y1": 14,
-                    "x2": 0,
-                    "y2": 6
+                    "point1": {
+                      "x": 6,
+                      "y": 14
+                    },
+                    "point2": {
+                      "x": 0,
+                      "y": 6
+                    }
                   },
                   "style": {
                     "fill": "transparent",
                     "stroke": "#FFFFFF",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -352,8 +333,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": 3,
-                    "originY": 10
+                    "origin": {
+                      "x": 3,
+                      "y": 10
+                    }
                   }
                 }
               ],
@@ -400,6 +383,10 @@
                     }
                   ]
                 }
+              ],
+              "tags": [
+                "player",
+                "ship"
               ]
             },
             {
@@ -467,7 +454,8 @@
                     "fill": "transparent",
                     "stroke": "#CBD5E1",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -475,8 +463,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": -1,
-                    "originY": 1
+                    "origin": {
+                      "x": -1,
+                      "y": 1
+                    }
                   }
                 }
               ],
@@ -493,6 +483,10 @@
                     }
                   ]
                 }
+              ],
+              "tags": [
+                "asteroid",
+                "large"
               ]
             },
             {
@@ -540,7 +534,8 @@
                     "fill": "transparent",
                     "stroke": "#CBD5E1",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -548,8 +543,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": 0,
-                    "originY": 0
+                    "origin": {
+                      "x": 0,
+                      "y": 0
+                    }
                   }
                 }
               ],
@@ -566,6 +563,10 @@
                     }
                   ]
                 }
+              ],
+              "tags": [
+                "asteroid",
+                "medium"
               ]
             },
             {
@@ -609,7 +610,8 @@
                     "fill": "transparent",
                     "stroke": "#CBD5E1",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -617,8 +619,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": -1,
-                    "originY": -1
+                    "origin": {
+                      "x": -1,
+                      "y": -1
+                    }
                   }
                 }
               ],
@@ -635,6 +639,10 @@
                     }
                   ]
                 }
+              ],
+              "tags": [
+                "asteroid",
+                "small"
               ]
             },
             {
@@ -656,7 +664,8 @@
                     "fill": "transparent",
                     "stroke": "#DBEAFE",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -664,8 +673,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": 0,
-                    "originY": 6
+                    "origin": {
+                      "x": 0,
+                      "y": 6
+                    }
                   }
                 },
                 {
@@ -683,7 +694,8 @@
                     "fill": "transparent",
                     "stroke": "#DBEAFE",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -691,8 +703,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": 0,
-                    "originY": -2
+                    "origin": {
+                      "x": 0,
+                      "y": -2
+                    }
                   }
                 }
               ],
@@ -709,6 +723,10 @@
                     }
                   ]
                 }
+              ],
+              "tags": [
+                "ufo",
+                "large"
               ]
             },
             {
@@ -730,7 +748,8 @@
                     "fill": "transparent",
                     "stroke": "#DBEAFE",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -738,8 +757,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": 0,
-                    "originY": 4
+                    "origin": {
+                      "x": 0,
+                      "y": 4
+                    }
                   }
                 },
                 {
@@ -757,7 +778,8 @@
                     "fill": "transparent",
                     "stroke": "#DBEAFE",
                     "strokeWidth": 2,
-                    "opacity": 1
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
                   },
                   "transform": {
                     "x": 0,
@@ -765,8 +787,10 @@
                     "rotation": 0,
                     "scaleX": 1,
                     "scaleY": 1,
-                    "originX": 0,
-                    "originY": -2
+                    "origin": {
+                      "x": 0,
+                      "y": -2
+                    }
                   }
                 }
               ],
@@ -783,6 +807,10 @@
                     }
                   ]
                 }
+              ],
+              "tags": [
+                "ufo",
+                "small"
               ]
             }
           ]

@@ -23,16 +23,13 @@
       "items": {
         "$ref": "#/$defs/object"
       }
-    },
-    "assetLibrary": {
-      "$ref": "#/$defs/assetLibrary"
     }
   },
   "$defs": {
     "object": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "name", "shapes"],
+      "required": ["id", "name", "tags", "shapes"],
       "properties": {
         "id": {
           "type": "string",
@@ -61,38 +58,6 @@
           "items": {
             "$ref": "#/$defs/objectState"
           }
-        }
-      }
-    },
-    "assetLibrary": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["assets"],
-      "properties": {
-        "assets": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/libraryAsset"
-          }
-        }
-      }
-    },
-    "libraryAsset": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "name", "tags"],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^object\\.[a-z0-9-]+\\.[a-z0-9][a-z0-9.-]*$"
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "tags": {
-          "$ref": "#/$defs/tags"
         }
       }
     },
@@ -181,6 +146,9 @@
         },
         {
           "$ref": "#/$defs/lineShape"
+        },
+        {
+          "$ref": "#/$defs/triangleShape"
         },
         {
           "$ref": "#/$defs/polygonShape"
@@ -309,10 +277,28 @@
           "type": "object",
           "properties": {
             "tool": {
-              "enum": ["polygon", "triangle"]
+              "const": "polygon"
             },
             "geometry": {
               "$ref": "#/$defs/polygonGeometry"
+            }
+          }
+        }
+      ]
+    },
+    "triangleShape": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/shapeCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tool": {
+              "const": "triangle"
+            },
+            "geometry": {
+              "$ref": "#/$defs/triangleGeometry"
             }
           }
         }
@@ -357,7 +343,7 @@
     "style": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["fill", "stroke", "strokeWidth"],
+      "required": ["fill", "stroke", "strokeWidth", "fillOpacity", "strokeOpacity"],
       "properties": {
         "fill": {
           "type": "string",
@@ -371,7 +357,12 @@
           "type": "number",
           "minimum": 0
         },
-        "opacity": {
+        "fillOpacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "strokeOpacity": {
           "type": "number",
           "minimum": 0,
           "maximum": 1
@@ -381,7 +372,7 @@
     "transform": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["x", "y", "rotation", "scaleX", "scaleY", "originX", "originY"],
+      "required": ["x", "y", "rotation", "scaleX", "scaleY", "origin"],
       "properties": {
         "x": {
           "type": "number"
@@ -400,11 +391,8 @@
           "type": "number",
           "exclusiveMinimum": 0
         },
-        "originX": {
-          "type": "number"
-        },
-        "originY": {
-          "type": "number"
+        "origin": {
+          "$ref": "#/$defs/point2d"
         }
       }
     },
@@ -483,19 +471,13 @@
     "lineGeometry": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["x1", "y1", "x2", "y2"],
+      "required": ["point1", "point2"],
       "properties": {
-        "x1": {
-          "type": "number"
+        "point1": {
+          "$ref": "#/$defs/point2d"
         },
-        "y1": {
-          "type": "number"
-        },
-        "x2": {
-          "type": "number"
-        },
-        "y2": {
-          "type": "number"
+        "point2": {
+          "$ref": "#/$defs/point2d"
         }
       }
     },
@@ -506,7 +488,29 @@
       "properties": {
         "points": {
           "type": "array",
+          "minItems": 4,
+          "default": [
+            { "x": 0, "y": -80 },
+            { "x": 76, "y": -25 },
+            { "x": 47, "y": 65 },
+            { "x": -47, "y": 65 },
+            { "x": -76, "y": -25 }
+          ],
+          "items": {
+            "$ref": "#/$defs/point2d"
+          }
+        }
+      }
+    },
+    "triangleGeometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["points"],
+      "properties": {
+        "points": {
+          "type": "array",
           "minItems": 3,
+          "maxItems": 3,
           "items": {
             "$ref": "#/$defs/point2d"
           }

@@ -71,15 +71,15 @@ function shapeGeometryTool(shape) {
 }
 
 function shapeTransform(shape) {
-  return shape.transform || {
-    originX: 0,
-    originY: 0,
+  const transform = shape.transform || {
+    origin: { x: 0, y: 0 },
     rotation: 0,
     scaleX: 1,
     scaleY: 1,
     x: 0,
     y: 0
   };
+  return transform;
 }
 
 function normalizeFill(value) {
@@ -125,11 +125,11 @@ function shapeBounds(shape) {
     };
   }
   if (geometryTool === "line") {
-    const x = Math.min(shape.geometry.x1, shape.geometry.x2);
-    const y = Math.min(shape.geometry.y1, shape.geometry.y2);
+    const x = Math.min(shape.geometry.point1.x, shape.geometry.point2.x);
+    const y = Math.min(shape.geometry.point1.y, shape.geometry.point2.y);
     return {
-      height: Math.max(1, Math.abs(shape.geometry.y2 - shape.geometry.y1)),
-      width: Math.max(1, Math.abs(shape.geometry.x2 - shape.geometry.x1)),
+      height: Math.max(1, Math.abs(shape.geometry.point2.y - shape.geometry.point1.y)),
+      width: Math.max(1, Math.abs(shape.geometry.point2.x - shape.geometry.point1.x)),
       x,
       y
     };
@@ -209,10 +209,10 @@ function effectiveShapeForFrame(shape, frame, shapeIndex) {
 function svgTransformAttribute(transform) {
   return [
     `translate(${transform.x} ${transform.y})`,
-    `translate(${transform.originX} ${transform.originY})`,
+    `translate(${transform.origin.x} ${transform.origin.y})`,
     `rotate(${transform.rotation})`,
     `scale(${transform.scaleX} ${transform.scaleY})`,
-    `translate(${-transform.originX} ${-transform.originY})`
+    `translate(${-transform.origin.x} ${-transform.origin.y})`
   ].join(" ");
 }
 
@@ -290,14 +290,12 @@ export class ObjectVectorRuntimeAssetService {
 
     const assetSet = this.buildAssetSet(validation.payload, sourceLabel);
     this.payloadCache.set(cacheKey, assetSet);
-    this.log("OK", `Object Vector runtime cache miss for ${sourceLabel}; cached ${assetSet.objectsById.size} objects and ${assetSet.assetsById.size} library assets.`);
-    this.log("OK", `Object Vector runtime asset load from ${sourceLabel}: ${assetSet.objectsById.size} objects. ${assetSet.assetsById.size} library assets.`);
+    this.log("OK", `Object Vector runtime cache miss for ${sourceLabel}; cached ${assetSet.objectsById.size} objects.`);
+    this.log("OK", `Object Vector runtime asset load from ${sourceLabel}: ${assetSet.objectsById.size} objects.`);
     return assetSet;
   }
 
   buildAssetSet(payload, sourceLabel) {
-    const assetsById = new Map();
-    const assetUsageByObjectId = new Map();
     const dependencyGraph = new Map();
     const objectsById = new Map();
     const objectsByName = new Map();
@@ -306,15 +304,7 @@ export class ObjectVectorRuntimeAssetService {
       objectsByName.set(object.name.toLowerCase(), object);
       dependencyGraph.set(object.id, object.baseObjectId ? [object.baseObjectId] : []);
     });
-    (payload.assetLibrary?.assets || []).forEach((asset) => {
-      assetsById.set(asset.id, asset);
-      const usage = assetUsageByObjectId.get(asset.id) || [];
-      usage.push(asset.id);
-      assetUsageByObjectId.set(asset.id, usage);
-    });
     return {
-      assetUsageByObjectId,
-      assetsById,
       dependencyGraph,
       objectsById,
       objectsByName,
@@ -334,16 +324,7 @@ export class ObjectVectorRuntimeAssetService {
       return this.assetCache.get(cacheKey);
     }
 
-    let resolvedObjectId = objectId;
-    if (assetId) {
-      const asset = assetSet.assetsById.get(assetId);
-      if (!asset) {
-        this.log("FAIL", `Object Vector runtime asset resolution failed: assetId=${assetId} is missing from the asset library.`);
-        return null;
-      }
-      resolvedObjectId = asset.id;
-      this.logCacheOnce(`asset:${assetSet.sourceLabel}:${assetId}`, `Object Vector runtime library id ${assetId} resolved to object ${resolvedObjectId}.`);
-    }
+    const resolvedObjectId = objectId || assetId;
 
     let object = resolvedObjectId ? assetSet.objectsById.get(resolvedObjectId) : null;
     if (!object && name) {
@@ -516,11 +497,10 @@ export class ObjectVectorRuntimeAssetService {
     context.save();
     try {
       context.translate(transform.x, transform.y);
-      context.translate(transform.originX, transform.originY);
+      context.translate(transform.origin.x, transform.origin.y);
       context.rotate((transform.rotation * Math.PI) / 180);
       context.scale(transform.scaleX, transform.scaleY);
-      context.translate(-transform.originX, -transform.originY);
-      context.globalAlpha = typeof shape.style.opacity === "number" ? shape.style.opacity : 1;
+      context.translate(-transform.origin.x, -transform.origin.y);
       context.lineWidth = shape.style.strokeWidth;
       context.fillStyle = normalizeFill(shape.style.fill) || "transparent";
       context.strokeStyle = normalizeStroke(shape.style.stroke) || "transparent";
@@ -528,9 +508,11 @@ export class ObjectVectorRuntimeAssetService {
       const fillColor = normalizeFill(shape.style.fill);
       const strokeColor = normalizeStroke(shape.style.stroke);
       if (fillColor) {
+        context.globalAlpha = shape.style.fillOpacity;
         context.fill();
       }
       if (strokeColor && shape.style.strokeWidth > 0) {
+        context.globalAlpha = shape.style.strokeOpacity;
         context.stroke();
       }
     } finally {
@@ -554,8 +536,8 @@ export class ObjectVectorRuntimeAssetService {
       return;
     }
     if (geometryTool === "line") {
-      context.moveTo(shape.geometry.x1, shape.geometry.y1);
-      context.lineTo(shape.geometry.x2, shape.geometry.y2);
+      context.moveTo(shape.geometry.point1.x, shape.geometry.point1.y);
+      context.lineTo(shape.geometry.point2.x, shape.geometry.point2.y);
       return;
     }
     if (geometryTool === "polygon") {
@@ -614,7 +596,7 @@ export class ObjectVectorRuntimeAssetService {
   }
 
   shapeToSvg(shape) {
-    const style = ` fill="${escapeXml(shape.style.fill)}" stroke="${escapeXml(shape.style.stroke)}" stroke-width="${shape.style.strokeWidth}" transform="${svgTransformAttribute(shapeTransform(shape))}"`;
+    const style = ` fill="${escapeXml(shape.style.fill)}" fill-opacity="${shape.style.fillOpacity}" stroke="${escapeXml(shape.style.stroke)}" stroke-opacity="${shape.style.strokeOpacity}" stroke-width="${shape.style.strokeWidth}" transform="${svgTransformAttribute(shapeTransform(shape))}"`;
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
       return `<rect x="${shape.geometry.x}" y="${shape.geometry.y}" width="${shape.geometry.width}" height="${shape.geometry.height}"${style}/>`;
@@ -626,7 +608,7 @@ export class ObjectVectorRuntimeAssetService {
       return `<ellipse cx="${shape.geometry.cx}" cy="${shape.geometry.cy}" rx="${shape.geometry.rx}" ry="${shape.geometry.ry}"${style}/>`;
     }
     if (geometryTool === "line") {
-      return `<line x1="${shape.geometry.x1}" y1="${shape.geometry.y1}" x2="${shape.geometry.x2}" y2="${shape.geometry.y2}"${style}/>`;
+      return `<line x1="${shape.geometry.point1.x}" y1="${shape.geometry.point1.y}" x2="${shape.geometry.point2.x}" y2="${shape.geometry.point2.y}"${style}/>`;
     }
     if (geometryTool === "polygon") {
       const points = shape.geometry.points.map((point) => `${point.x},${point.y}`).join(" ");
@@ -669,8 +651,8 @@ export class ObjectVectorRuntimeAssetService {
     if (Object.prototype.hasOwnProperty.call(schema.$defs?.object?.properties || {}, "type")) {
       errors.push("Object Vector Studio V2 object schema must not define object type.");
     }
-    if (Object.prototype.hasOwnProperty.call(schema.$defs?.libraryAsset?.properties || {}, "objectId")) {
-      errors.push("Object Vector Studio V2 library asset schema must not define objectId.");
+    if (Object.prototype.hasOwnProperty.call(schema.properties || {}, "assetLibrary")) {
+      errors.push("Object Vector Studio V2 schema must not define assetLibrary.");
     }
     ["id", "shapeKey", "label", "type"].forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(schema.$defs?.shapeCommon?.properties || {}, key)) {
@@ -764,16 +746,6 @@ export class ObjectVectorRuntimeAssetService {
         }
         seen.add(baseId);
         current = baseObject;
-      }
-    });
-    const assetIds = new Set();
-    (payload.assetLibrary?.assets || []).forEach((asset, assetIndex) => {
-      if (assetIds.has(asset.id)) {
-        errors.push(`root.assetLibrary.assets[${assetIndex}].id ${asset.id} duplicates an existing library asset id.`);
-      }
-      assetIds.add(asset.id);
-      if (!objectsById.has(asset.id)) {
-        errors.push(`root.assetLibrary.assets[${assetIndex}].id ${asset.id} must reference an existing object.`);
       }
     });
   }
@@ -885,6 +857,9 @@ export class ObjectVectorRuntimeAssetService {
     if (Number.isInteger(schema.minItems) && value.length < schema.minItems) {
       errors.push(`${path} must contain at least ${schema.minItems} items.`);
     }
+    if (Number.isInteger(schema.maxItems) && value.length > schema.maxItems) {
+      errors.push(`${path} must contain no more than ${schema.maxItems} items.`);
+    }
     if (schema.items) {
       value.forEach((item, index) => this.validateValue(schema.items, item, `${path}[${index}]`, errors));
     }
@@ -954,15 +929,6 @@ export class ObjectVectorRuntimeAssetService {
       }
       return normalizedObject;
     });
-    if (normalized.assetLibrary) {
-      normalized.assetLibrary = {
-        assets: normalized.assetLibrary.assets.map((asset) => ({
-          id: asset.id.trim(),
-          name: asset.name.trim(),
-          tags: asset.tags.map((tag) => tag.trim()).filter(Boolean)
-        }))
-      };
-    }
     return normalized;
   }
 

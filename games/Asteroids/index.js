@@ -147,7 +147,7 @@ export async function bootAsteroidsNew({
       sourceLabel: "Asteroids game.manifest.json"
     });
     publishObjectVectorRuntimeDiagnostics(objectVectorRuntime, {
-      assetCount: objectVectorAssets?.assetsById?.size || 0,
+      assetCount: objectVectorAssets?.objectsById?.size || 0,
       loaded: Boolean(objectVectorAssets),
       objectCount: objectVectorAssets?.objectsById?.size || 0
     });

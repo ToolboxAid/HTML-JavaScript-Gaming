@@ -196,45 +196,12 @@
           "items": {
             "$ref": "#/$defs/objectVectorStudioObject"
           }
-        },
-        "assetLibrary": {
-          "$ref": "#/$defs/objectVectorStudioAssetLibrary"
-        }
-      }
-    },
-    "objectVectorStudioAssetLibrary": {
-      "type": "object",
-      "required": ["assets"],
-      "additionalProperties": false,
-      "properties": {
-        "assets": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/objectVectorStudioLibraryAsset"
-          }
-        }
-      }
-    },
-    "objectVectorStudioLibraryAsset": {
-      "type": "object",
-      "required": ["id", "name", "tags"],
-      "additionalProperties": false,
-      "properties": {
-        "id": {
-          "$ref": "#/$defs/objectIdentityId"
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "tags": {
-          "$ref": "#/$defs/objectVectorStudioTags"
         }
       }
     },
     "objectVectorStudioObject": {
       "type": "object",
-      "required": ["id", "name", "shapes"],
+      "required": ["id", "name", "tags", "shapes"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -272,6 +239,34 @@
       }
     },
     "objectVectorStudioShape": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/objectVectorStudioRectangleShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioCircleShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioEllipseShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioLineShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioTriangleShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioPolygonShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioArcShape"
+        },
+        {
+          "$ref": "#/$defs/objectVectorStudioTextShape"
+        }
+      ]
+    },
+    "objectVectorStudioShapeCommon": {
       "type": "object",
       "required": ["tool", "order", "visible", "locked", "geometry", "style", "transform"],
       "additionalProperties": false,
@@ -306,9 +301,105 @@
         }
       }
     },
+    "objectVectorStudioRectangleShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "rectangle" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioRectangleGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioCircleShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "circle" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioCircleGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioEllipseShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "ellipse" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioEllipseGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioLineShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "line" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioLineGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioTriangleShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "triangle" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioTriangleGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioPolygonShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "polygon" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioPolygonGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioArcShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "arc" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioArcGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioTextShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "text" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioTextGeometry" }
+          }
+        }
+      ]
+    },
     "objectVectorStudioStyle": {
       "type": "object",
-      "required": ["fill", "stroke", "strokeWidth"],
+      "required": ["fill", "stroke", "strokeWidth", "fillOpacity", "strokeOpacity"],
       "additionalProperties": false,
       "properties": {
         "fill": {
@@ -321,7 +412,12 @@
           "type": "number",
           "minimum": 0
         },
-        "opacity": {
+        "fillOpacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "strokeOpacity": {
           "type": "number",
           "minimum": 0,
           "maximum": 1
@@ -330,7 +426,7 @@
     },
     "objectVectorStudioTransform": {
       "type": "object",
-      "required": ["x", "y", "rotation", "scaleX", "scaleY", "originX", "originY"],
+      "required": ["x", "y", "rotation", "scaleX", "scaleY", "origin"],
       "additionalProperties": false,
       "properties": {
         "x": {
@@ -348,11 +444,120 @@
         "scaleY": {
           "type": "number"
         },
-        "originX": {
+        "origin": {
+          "$ref": "#/$defs/objectVectorStudioPoint2d"
+        }
+      }
+    },
+    "objectVectorStudioPoint2d": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": {
           "type": "number"
         },
-        "originY": {
+        "y": {
           "type": "number"
+        }
+      }
+    },
+    "objectVectorStudioRectangleGeometry": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "objectVectorStudioCircleGeometry": {
+      "type": "object",
+      "required": ["cx", "cy", "r"],
+      "additionalProperties": false,
+      "properties": {
+        "cx": { "type": "number" },
+        "cy": { "type": "number" },
+        "r": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "objectVectorStudioEllipseGeometry": {
+      "type": "object",
+      "required": ["cx", "cy", "rx", "ry"],
+      "additionalProperties": false,
+      "properties": {
+        "cx": { "type": "number" },
+        "cy": { "type": "number" },
+        "rx": { "type": "number", "exclusiveMinimum": 0 },
+        "ry": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "objectVectorStudioLineGeometry": {
+      "type": "object",
+      "required": ["point1", "point2"],
+      "additionalProperties": false,
+      "properties": {
+        "point1": { "$ref": "#/$defs/objectVectorStudioPoint2d" },
+        "point2": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
+      }
+    },
+    "objectVectorStudioPolygonGeometry": {
+      "type": "object",
+      "required": ["points"],
+      "additionalProperties": false,
+      "properties": {
+        "points": {
+          "type": "array",
+          "minItems": 4,
+          "default": [
+            { "x": 0, "y": -80 },
+            { "x": 76, "y": -25 },
+            { "x": 47, "y": 65 },
+            { "x": -47, "y": 65 },
+            { "x": -76, "y": -25 }
+          ],
+          "items": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
+        }
+      }
+    },
+    "objectVectorStudioTriangleGeometry": {
+      "type": "object",
+      "required": ["points"],
+      "additionalProperties": false,
+      "properties": {
+        "points": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
+        }
+      }
+    },
+    "objectVectorStudioArcGeometry": {
+      "type": "object",
+      "required": ["cx", "cy", "r", "startAngle", "endAngle"],
+      "additionalProperties": false,
+      "properties": {
+        "cx": { "type": "number" },
+        "cy": { "type": "number" },
+        "r": { "type": "number", "exclusiveMinimum": 0 },
+        "startAngle": { "type": "number" },
+        "endAngle": { "type": "number" }
+      }
+    },
+    "objectVectorStudioTextGeometry": {
+      "type": "object",
+      "required": ["x", "y", "fontSize", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "fontSize": { "type": "number", "exclusiveMinimum": 0 },
+        "text": {
+          "type": "string",
+          "minLength": 1
         }
       }
     },

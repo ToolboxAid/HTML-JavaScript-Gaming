@@ -878,7 +878,7 @@ export default class AsteroidsGameScene extends Scene {
     try {
       globalThis.__asteroidsObjectVectorRuntime = {
         ...(this.objectVectorRuntime?.getDiagnostics?.() || {}),
-        assetCount: this.objectVectorAssets?.assetsById?.size || 0,
+        assetCount: this.objectVectorAssets?.objectsById?.size || 0,
         loaded: Boolean(this.objectVectorAssets),
         objectCount: this.objectVectorAssets?.objectsById?.size || 0,
         renderCounts: { ...this.objectVectorRenderCounts },

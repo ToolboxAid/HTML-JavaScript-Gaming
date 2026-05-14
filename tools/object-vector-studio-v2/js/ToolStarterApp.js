@@ -155,8 +155,8 @@ function normalizeShapeIndex(value) {
   return Number.isInteger(index) && index >= 0 ? index : -1;
 }
 
-function assetCountLabel(count) {
-  return `${count} ${count === 1 ? "library asset" : "library assets"}`;
+function linePoint(geometry, pointKey) {
+  return geometry?.[pointKey];
 }
 
 function tagList(value) {
@@ -264,11 +264,13 @@ function shapeBounds(shape) {
     };
   }
   if (geometryTool === "line") {
-    const x = Math.min(shape.geometry.x1, shape.geometry.x2);
-    const y = Math.min(shape.geometry.y1, shape.geometry.y2);
+    const point1 = linePoint(shape.geometry, "point1");
+    const point2 = linePoint(shape.geometry, "point2");
+    const x = Math.min(point1.x, point2.x);
+    const y = Math.min(point1.y, point2.y);
     return {
-      height: Math.max(1, Math.abs(shape.geometry.y2 - shape.geometry.y1)),
-      width: Math.max(1, Math.abs(shape.geometry.x2 - shape.geometry.x1)),
+      height: Math.max(1, Math.abs(point2.y - point1.y)),
+      width: Math.max(1, Math.abs(point2.x - point1.x)),
       x,
       y
     };
@@ -307,8 +309,10 @@ function shapeBounds(shape) {
 function defaultShapeTransform(shape) {
   const bounds = shapeBounds(shape);
   return {
-    originX: Number((bounds.x + bounds.width / 2).toFixed(3)),
-    originY: Number((bounds.y + bounds.height / 2).toFixed(3)),
+    origin: {
+      x: Number((bounds.x + bounds.width / 2).toFixed(3)),
+      y: Number((bounds.y + bounds.height / 2).toFixed(3))
+    },
     rotation: 0,
     scaleX: 1,
     scaleY: 1,
@@ -344,6 +348,8 @@ export class ToolStarterApp {
     this.selectedStrokeColor = "#000000";
     this.selectedFillLabel = "default fill";
     this.selectedStrokeLabel = "default stroke";
+    this.selectedFillOpacity = 1;
+    this.selectedStrokeOpacity = 1;
     this.isPaintDragging = false;
     this.previewPointerEdit = null;
     this.transformInputValues = new Map();
@@ -622,6 +628,8 @@ export class ToolStarterApp {
       }
       this.statusLog.write(`OK Palette stroke width set to ${width}.`);
     });
+    this.elements.fillOpacity.addEventListener("change", () => this.changePaletteOpacity("fill"));
+    this.elements.strokeOpacity.addEventListener("change", () => this.changePaletteOpacity("stroke"));
     this.elements.paletteSortButtons.forEach((button) => {
       button.addEventListener("click", () => {
         this.paletteSortMode = button.dataset.paletteSort || "name";
@@ -672,9 +680,13 @@ export class ToolStarterApp {
 
   updatePaletteModeSwatches() {
     this.elements.paintModeButton.style.setProperty("--object-vector-studio-v2-mode-swatch", this.selectedFillColor);
+    this.elements.paintModeButton.style.setProperty("--object-vector-studio-v2-mode-opacity", String(this.selectedFillOpacity));
     this.elements.strokeModeButton.style.setProperty("--object-vector-studio-v2-mode-swatch", this.selectedStrokeColor);
+    this.elements.strokeModeButton.style.setProperty("--object-vector-studio-v2-mode-opacity", String(this.selectedStrokeOpacity));
     this.elements.paintModeButton.dataset.paletteModeColor = this.selectedFillColor;
+    this.elements.paintModeButton.dataset.paletteModeOpacity = String(this.selectedFillOpacity);
     this.elements.strokeModeButton.dataset.paletteModeColor = this.selectedStrokeColor;
+    this.elements.strokeModeButton.dataset.paletteModeOpacity = String(this.selectedStrokeOpacity);
   }
 
   bindViewportControls() {
@@ -896,7 +908,7 @@ export class ToolStarterApp {
     this.actionNav.setJsonPayloadActionsEnabled(true);
     this.actionNav.setImportEnabled(!this.actionNav.isWorkspaceLaunch());
     this.renderPayload();
-    this.statusLog.write(`OK Loaded Object Vector Studio V2 schema payload from ${sourceLabel}: ${this.currentPayload.objects.length} objects. ${assetCountLabel(this.currentPayload.assetLibrary?.assets?.length || 0)}.`);
+    this.statusLog.write(`OK Loaded Object Vector Studio V2 schema payload from ${sourceLabel}: ${this.currentPayload.objects.length} objects.`);
   }
 
   applyLoadedRuntimeState(sourceLabel) {
@@ -1298,26 +1310,20 @@ export class ToolStarterApp {
     return Array.from(new Set((this.currentPayload?.objects || []).flatMap((object) => tagList(object.tags)))).sort();
   }
 
-  assetLibraryAssets() {
-    return Array.isArray(this.currentPayload?.assetLibrary?.assets)
-      ? this.currentPayload.assetLibrary.assets
-      : [];
-  }
-
   renderDependencyGraph() {
     if (!this.currentPayload) {
       this.elements.dependencyGraph.textContent = "No dependency graph loaded.";
       return;
     }
-    const usageLines = this.assetLibraryAssets().map((asset) => `${asset.id}: ${asset.name}`);
+    const usageLines = this.currentPayload.objects.map((object) => `${object.id}: ${object.name}${tagList(object.tags).length ? ` [${tagList(object.tags).join(", ")}]` : ""}`);
     const graphLines = this.currentPayload.objects
       .map((object) => `${object.id}${object.baseObjectId ? ` inherits ${object.baseObjectId}` : " has no base object"}`);
     this.elements.dependencyGraph.textContent = [
       "Dependency graph:",
       graphLines.join("\n") || "No objects loaded.",
       "",
-      "Deferred reusable library capability:",
-      usageLines.join("\n") || "No shared asset references."
+      "Object tags:",
+      usageLines.join("\n") || "No object tags."
     ].join("\n");
   }
 
@@ -1688,8 +1694,8 @@ export class ToolStarterApp {
       ["objectVectorStudioV2MoveYInput", "Move Y", "0"],
       ["objectVectorStudioV2RotateInput", "Rotate", "15"],
       ["objectVectorStudioV2ScaleInput", "Scale", "1.1"],
-      ["objectVectorStudioV2OriginXInput", "Origin X", String(transform.originX)],
-      ["objectVectorStudioV2OriginYInput", "Origin Y", String(transform.originY)],
+      ["objectVectorStudioV2OriginXInput", "Origin X", String(transform.origin.x)],
+      ["objectVectorStudioV2OriginYInput", "Origin Y", String(transform.origin.y)],
       ["objectVectorStudioV2ResizeInput", "Resize", "10"]
     ].forEach(([id, labelText, value]) => {
       const label = document.createElement("label");
@@ -1750,7 +1756,14 @@ export class ToolStarterApp {
       ];
     }
     if (geometryTool === "line") {
-      return ["x1", "y1", "x2", "y2"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
+      const point1 = linePoint(shape.geometry, "point1");
+      const point2 = linePoint(shape.geometry, "point2");
+      return [
+        { key: "point1.x", kind: "number", label: "Point 1 X", value: point1.x },
+        { key: "point1.y", kind: "number", label: "Point 1 Y", value: point1.y },
+        { key: "point2.x", kind: "number", label: "Point 2 X", value: point2.x },
+        { key: "point2.y", kind: "number", label: "Point 2 Y", value: point2.y }
+      ];
     }
     if (geometryTool === "arc") {
       return ["cx", "cy", "r", "startAngle", "endAngle"].map((key) => ({
@@ -1974,10 +1987,10 @@ export class ToolStarterApp {
     }
     if (geometryTool === "line") {
       const element = document.createElementNS(SVG_NS, "line");
-      element.setAttribute("x1", this.scaleDrawingValue(shape.geometry.x1, drawingScale));
-      element.setAttribute("y1", this.scaleDrawingValue(shape.geometry.y1, drawingScale));
-      element.setAttribute("x2", this.scaleDrawingValue(shape.geometry.x2, drawingScale));
-      element.setAttribute("y2", this.scaleDrawingValue(shape.geometry.y2, drawingScale));
+      element.setAttribute("x1", this.scaleDrawingValue(shape.geometry.point1.x, drawingScale));
+      element.setAttribute("y1", this.scaleDrawingValue(shape.geometry.point1.y, drawingScale));
+      element.setAttribute("x2", this.scaleDrawingValue(shape.geometry.point2.x, drawingScale));
+      element.setAttribute("y2", this.scaleDrawingValue(shape.geometry.point2.y, drawingScale));
       this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
@@ -2014,6 +2027,8 @@ export class ToolStarterApp {
     element.setAttribute("fill", shape.style.fill);
     element.setAttribute("stroke", shape.style.stroke);
     element.setAttribute("stroke-width", shape.style.strokeWidth);
+    element.setAttribute("fill-opacity", shape.style.fillOpacity);
+    element.setAttribute("stroke-opacity", shape.style.strokeOpacity);
     const transform = this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale);
     element.setAttribute("transform", this.svgTransformAttribute(transform));
   }
@@ -2041,10 +2056,10 @@ export class ToolStarterApp {
   svgTransformAttribute(transform) {
     return [
       `translate(${transform.x} ${transform.y})`,
-      `translate(${transform.originX} ${transform.originY})`,
+      `translate(${transform.origin.x} ${transform.origin.y})`,
       `rotate(${transform.rotation})`,
       `scale(${transform.scaleX} ${transform.scaleY})`,
-      `translate(${-transform.originX} ${-transform.originY})`
+      `translate(${-transform.origin.x} ${-transform.origin.y})`
     ].join(" ");
   }
 
@@ -2058,8 +2073,10 @@ export class ToolStarterApp {
     }
     return {
       ...transform,
-      originX: this.scaleDrawingValue(transform.originX, drawingScale),
-      originY: this.scaleDrawingValue(transform.originY, drawingScale),
+      origin: {
+        x: this.scaleDrawingValue(transform.origin.x, drawingScale),
+        y: this.scaleDrawingValue(transform.origin.y, drawingScale)
+      },
       x: this.scaleDrawingValue(transform.x, drawingScale),
       y: this.scaleDrawingValue(transform.y, drawingScale)
     };
@@ -2084,8 +2101,8 @@ export class ToolStarterApp {
     const transform = this.shapeTransform(shape);
     return this.scaledDrawingBounds({
       height: Math.max(1, bounds.height * transform.scaleY),
-      originX: transform.originX + transform.x,
-      originY: transform.originY + transform.y,
+      originX: transform.origin.x + transform.x,
+      originY: transform.origin.y + transform.y,
       width: Math.max(1, bounds.width * transform.scaleX),
       x: bounds.x + transform.x,
       y: bounds.y + transform.y
@@ -2182,8 +2199,8 @@ export class ToolStarterApp {
         const effectiveLine = this.effectiveShape(selectedShape);
         const transform = this.shapeTransform(effectiveLine);
         [
-          ["start", effectiveLine.geometry.x1 + transform.x, effectiveLine.geometry.y1 + transform.y],
-          ["end", effectiveLine.geometry.x2 + transform.x, effectiveLine.geometry.y2 + transform.y]
+          ["start", effectiveLine.geometry.point1.x + transform.x, effectiveLine.geometry.point1.y + transform.y],
+          ["end", effectiveLine.geometry.point2.x + transform.x, effectiveLine.geometry.point2.y + transform.y]
         ].forEach(([endpoint, x, y]) => {
           const point = document.createElementNS(SVG_NS, "rect");
           point.classList.add("object-vector-studio-v2__resize-handle", "object-vector-studio-v2__line-endpoint-handle");
@@ -2390,16 +2407,16 @@ export class ToolStarterApp {
   }
 
   previewLineEndpointGeometry(shape, edit, delta) {
-    const geometry = { ...edit.originalGeometry };
+    const geometry = JSON.parse(JSON.stringify(edit.originalGeometry));
     if (shapeGeometryTool(shape) !== "line") {
       return geometry;
     }
     if (edit.endpoint === "start") {
-      geometry.x1 = Number((edit.originalGeometry.x1 + delta.x).toFixed(3));
-      geometry.y1 = Number((edit.originalGeometry.y1 + delta.y).toFixed(3));
+      geometry.point1.x = Number((edit.originalGeometry.point1.x + delta.x).toFixed(3));
+      geometry.point1.y = Number((edit.originalGeometry.point1.y + delta.y).toFixed(3));
     } else {
-      geometry.x2 = Number((edit.originalGeometry.x2 + delta.x).toFixed(3));
-      geometry.y2 = Number((edit.originalGeometry.y2 + delta.y).toFixed(3));
+      geometry.point2.x = Number((edit.originalGeometry.point2.x + delta.x).toFixed(3));
+      geometry.point2.y = Number((edit.originalGeometry.point2.y + delta.y).toFixed(3));
     }
     return geometry;
   }
@@ -2792,11 +2809,6 @@ export class ToolStarterApp {
         object.baseObjectId = nextId;
       }
     });
-    (nextPayload.assetLibrary?.assets || []).forEach((asset) => {
-      if (asset.id === oldId) {
-        asset.id = nextId;
-      }
-    });
     nextObject.id = nextId;
     nextObject.name = name;
     this.commitPayloadUpdate(nextPayload, nextId, this.selectedShapeIndex, `OK Renamed object ${oldId} to ${name} and updated object/game/name id to ${nextId}.`, "Rename object failed schema validation");
@@ -2868,9 +2880,6 @@ export class ToolStarterApp {
   }
 
   removeDeletedObjectReferences(payload, objectId) {
-    if (Array.isArray(payload.assetLibrary?.assets)) {
-      payload.assetLibrary.assets = payload.assetLibrary.assets.filter((asset) => asset.id !== objectId);
-    }
     payload.objects.forEach((object) => {
       if (object.baseObjectId === objectId) {
         delete object.baseObjectId;
@@ -3004,7 +3013,9 @@ export class ToolStarterApp {
       order,
       style: {
         fill: ["arc", "line"].includes(schemaType) ? "none" : color,
+        fillOpacity: this.selectedFillOpacity,
         stroke: color,
+        strokeOpacity: this.selectedStrokeOpacity,
         strokeWidth: 3
       },
       tool: type,
@@ -3020,9 +3031,9 @@ export class ToolStarterApp {
       return withTransform({ ...base, geometry: { cx: 70, cy: 70, rx: 50, ry: 30 } });
     }
     if (type === "line") {
-      return withTransform({ ...base, geometry: { x1: -100, x2: 0, y1: 80, y2: 30 } });
+      return withTransform({ ...base, geometry: { point1: { x: -100, y: 80 }, point2: { x: 0, y: 30 } } });
     }
-    if (type === "polygon" || type === "triangle") {
+    if (type === "triangle") {
       return withTransform({
         ...base,
         geometry: {
@@ -3030,6 +3041,20 @@ export class ToolStarterApp {
             { x: 0, y: -80 },
             { x: 40, y: -10 },
             { x: -40, y: -10 }
+          ]
+        }
+      });
+    }
+    if (type === "polygon") {
+      return withTransform({
+        ...base,
+        geometry: {
+          points: [
+            { x: 0, y: -80 },
+            { x: 76, y: -25 },
+            { x: 47, y: 65 },
+            { x: -47, y: 65 },
+            { x: -76, y: -25 }
           ]
         }
       });
@@ -3046,8 +3071,8 @@ export class ToolStarterApp {
   flattenShapeTransform(shape) {
     const nextShape = JSON.parse(JSON.stringify(shape));
     const transform = this.shapeTransform(nextShape);
-    const applyX = (value) => Number((transform.x + transform.originX + (value - transform.originX) * transform.scaleX).toFixed(3));
-    const applyY = (value) => Number((transform.y + transform.originY + (value - transform.originY) * transform.scaleY).toFixed(3));
+    const applyX = (value) => Number((transform.x + transform.origin.x + (value - transform.origin.x) * transform.scaleX).toFixed(3));
+    const applyY = (value) => Number((transform.y + transform.origin.y + (value - transform.origin.y) * transform.scaleY).toFixed(3));
     const geometryTool = shapeGeometryTool(nextShape);
     if (geometryTool === "rectangle") {
       nextShape.geometry.x = applyX(nextShape.geometry.x);
@@ -3064,10 +3089,10 @@ export class ToolStarterApp {
       nextShape.geometry.rx = Number((nextShape.geometry.rx * transform.scaleX).toFixed(3));
       nextShape.geometry.ry = Number((nextShape.geometry.ry * transform.scaleY).toFixed(3));
     } else if (geometryTool === "line") {
-      nextShape.geometry.x1 = applyX(nextShape.geometry.x1);
-      nextShape.geometry.y1 = applyY(nextShape.geometry.y1);
-      nextShape.geometry.x2 = applyX(nextShape.geometry.x2);
-      nextShape.geometry.y2 = applyY(nextShape.geometry.y2);
+      nextShape.geometry.point1.x = applyX(nextShape.geometry.point1.x);
+      nextShape.geometry.point1.y = applyY(nextShape.geometry.point1.y);
+      nextShape.geometry.point2.x = applyX(nextShape.geometry.point2.x);
+      nextShape.geometry.point2.y = applyY(nextShape.geometry.point2.y);
     } else if (geometryTool === "polygon") {
       nextShape.geometry.points = nextShape.geometry.points.map((point) => ({
         x: applyX(point.x),
@@ -3140,9 +3165,63 @@ export class ToolStarterApp {
     };
     syncTarget("paint", effectiveShape.style?.fill);
     syncTarget("stroke", effectiveShape.style?.stroke);
+    if (Number.isFinite(effectiveShape.style?.fillOpacity)) {
+      changed = changed || this.selectedFillOpacity !== effectiveShape.style.fillOpacity;
+      this.selectedFillOpacity = effectiveShape.style.fillOpacity;
+      this.elements.fillOpacity.value = String(effectiveShape.style.fillOpacity);
+    }
+    if (Number.isFinite(effectiveShape.style?.strokeOpacity)) {
+      changed = changed || this.selectedStrokeOpacity !== effectiveShape.style.strokeOpacity;
+      this.selectedStrokeOpacity = effectiveShape.style.strokeOpacity;
+      this.elements.strokeOpacity.value = String(effectiveShape.style.strokeOpacity);
+    }
     if (changed && render) {
       this.renderPalette();
     }
+  }
+
+  opacityInputValue(target) {
+    const element = target === "stroke" ? this.elements.strokeOpacity : this.elements.fillOpacity;
+    const value = Number(element.value);
+    if (!Number.isFinite(value) || value < 0 || value > 1) {
+      return { ok: false, error: `${target === "stroke" ? "Stroke" : "Fill"} opacity must be between 0 and 1.` };
+    }
+    return { ok: true, value: Number(value.toFixed(3)) };
+  }
+
+  changePaletteOpacity(target) {
+    const normalizedTarget = target === "stroke" ? "stroke" : "fill";
+    const opacity = this.opacityInputValue(normalizedTarget);
+    if (!opacity.ok) {
+      this.statusLog.write(`FAIL Palette ${normalizedTarget} opacity rejected: ${opacity.error}`);
+      return;
+    }
+    if (normalizedTarget === "stroke") {
+      this.selectedStrokeOpacity = opacity.value;
+    } else {
+      this.selectedFillOpacity = opacity.value;
+    }
+    this.updatePaletteModeSwatches();
+    if (this.selectedShapeIndex < 0) {
+      this.statusLog.write(`OK Palette ${normalizedTarget} opacity set to ${opacity.value}.`);
+      return;
+    }
+    const selected = sortedShapes(this.selectedObject())[this.selectedShapeIndex] || null;
+    if (!selected) {
+      this.statusLog.write(`OK Palette ${normalizedTarget} opacity set to ${opacity.value}.`);
+      return;
+    }
+    if (selected.locked) {
+      this.statusLog.write(`WARN Palette ${normalizedTarget} opacity skipped: shape row ${this.selectedShapeIndex} is locked.`);
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Palette opacity application")) {
+      return;
+    }
+    const nextPayload = this.cloneCurrentPayload();
+    const shape = this.findShapeInPayload(nextPayload, this.selectedShapeIndex);
+    shape.style[normalizedTarget === "stroke" ? "strokeOpacity" : "fillOpacity"] = opacity.value;
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Applied ${normalizedTarget} opacity ${opacity.value} to shape row ${this.selectedShapeIndex}.`, "Palette opacity application failed schema validation");
   }
 
   selectPaletteColor(color, label, options = {}) {
@@ -3211,10 +3290,12 @@ export class ToolStarterApp {
     if (shouldApplyStroke) {
       shape.style.stroke = color;
       shape.style.strokeWidth = Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : 2;
+      shape.style.strokeOpacity = this.selectedStrokeOpacity;
     } else {
       shape.style.fill = color;
+      shape.style.fillOpacity = this.selectedFillOpacity;
     }
-    const targetLabel = shouldApplyStroke ? `Target: stroke width ${shape.style.strokeWidth}.` : "Target: paint.";
+    const targetLabel = shouldApplyStroke ? `Target: stroke width ${shape.style.strokeWidth}, opacity ${shape.style.strokeOpacity}.` : `Target: paint opacity ${shape.style.fillOpacity}.`;
     this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selectedIndex, `OK Applied palette color ${color} from ${paletteLabel} to shape row ${selectedIndex} by ${sourceLabel}. ${targetLabel}`, "Palette color application failed schema validation");
   }
 
@@ -3436,8 +3517,10 @@ export class ToolStarterApp {
     }
     this.updateSelectedShapeTransform("origin", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
-      shape.transform.originX = Number(originX.value.toFixed(3));
-      shape.transform.originY = Number(originY.value.toFixed(3));
+      shape.transform.origin = {
+        x: Number(originX.value.toFixed(3)),
+        y: Number(originY.value.toFixed(3))
+      };
     }, `OK Updated shape row ${this.selectedShapeIndex} origin/pivot to ${originX.value}, ${originY.value}.`);
   }
 
@@ -3558,8 +3641,8 @@ export class ToolStarterApp {
     }
     const checkedSet = new Set(checkedIndexes);
     const nextPoints = geometry.value.points.filter((_, index) => !checkedSet.has(index));
-    if (nextPoints.length < 3) {
-      const message = "polygon must keep at least three sides.";
+    if (nextPoints.length < 4) {
+      const message = "polygon must keep at least four sides.";
       this.markPolygonSideActionInvalid("delete", message);
       this.clearPolygonPointSelections();
       this.statusLog.write(`FAIL Delete polygon point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
@@ -3662,8 +3745,9 @@ export class ToolStarterApp {
     try {
       if (shapeGeometryTool(shape) === "polygon") {
         const pointInputs = fields.filter((input) => input.dataset.shapeGeometryField === "points");
-        if (pointInputs.length < 3) {
-          throw new Error("polygon points must contain at least three point rows.");
+        const requiredPointCount = this.isTriangleShape(shape) ? 3 : 4;
+        if (pointInputs.length < requiredPointCount) {
+          throw new Error(`${this.isTriangleShape(shape) ? "triangle" : "polygon"} points must contain at least ${requiredPointCount} point rows.`);
         }
         const pointRows = new Map();
         pointInputs.forEach((input) => {
@@ -3674,8 +3758,11 @@ export class ToolStarterApp {
           }
           pointRows.get(index)[axis] = input;
         });
-        if (pointRows.size < 3) {
-          throw new Error("polygon points must contain at least three point rows.");
+        if (pointRows.size < requiredPointCount) {
+          throw new Error(`${this.isTriangleShape(shape) ? "triangle" : "polygon"} points must contain at least ${requiredPointCount} point rows.`);
+        }
+        if (this.isTriangleShape(shape) && pointRows.size !== 3) {
+          throw new Error("triangle points must contain exactly three point rows.");
         }
         const points = [];
         for (const index of [...pointRows.keys()].sort((left, right) => left - right)) {
@@ -3698,10 +3785,10 @@ export class ToolStarterApp {
           if (!parsed.ok) {
             return { error: parsed.error, ok: false, value: null };
           }
-          geometry[key] = parsed.value;
+          this.writeGeometryFieldValue(geometry, key, parsed.value);
         } else {
           this.clearInputValidity(input);
-          geometry[key] = input.value;
+          this.writeGeometryFieldValue(geometry, key, input.value);
         }
       }
       return { ok: true, value: geometry };
@@ -3716,6 +3803,18 @@ export class ToolStarterApp {
       }
       return { error: error.message, ok: false, value: null };
     }
+  }
+
+  writeGeometryFieldValue(geometry, key, value) {
+    if (!key.includes(".")) {
+      geometry[key] = value;
+      return;
+    }
+    const [parentKey, childKey] = key.split(".");
+    geometry[parentKey] = {
+      ...(geometry[parentKey] || {}),
+      [childKey]: value
+    };
   }
 
   updateSelectedShapeGeometry(operation, updater, okMessage) {
@@ -3946,7 +4045,10 @@ export class ToolStarterApp {
     if (!shape.transform) {
       return defaultShapeTransform(shape);
     }
-    return { ...shape.transform };
+    return {
+      ...shape.transform,
+      origin: { ...shape.transform.origin }
+    };
   }
 
   resizeShapeGeometry(shape, amount) {
@@ -3966,7 +4068,7 @@ export class ToolStarterApp {
       return;
     }
     if (geometryTool === "line") {
-      shape.geometry.x2 = Number((shape.geometry.x2 + amount).toFixed(3));
+      shape.geometry.point2.x = Number((shape.geometry.point2.x + amount).toFixed(3));
       return;
     }
     if (geometryTool === "arc") {
@@ -4001,11 +4103,14 @@ export class ToolStarterApp {
     if (!transform) {
       return errors;
     }
-    ["x", "y", "rotation", "scaleX", "scaleY", "originX", "originY"].forEach((key) => {
+    ["x", "y", "rotation", "scaleX", "scaleY"].forEach((key) => {
       if (!Number.isFinite(transform[key])) {
         errors.push(`transform.${key} must be a finite number.`);
       }
     });
+    if (!transform.origin || !Number.isFinite(transform.origin.x) || !Number.isFinite(transform.origin.y)) {
+      errors.push("transform.origin.x and transform.origin.y must be finite numbers.");
+    }
     if (Number.isFinite(transform.scaleX) && transform.scaleX <= 0) {
       errors.push("scaleX must be greater than 0.");
     }
@@ -4423,7 +4528,7 @@ export class ToolStarterApp {
 
     try {
       await this.window.navigator.clipboard.writeText(json);
-      this.statusLog.write(`OK Object Vector Studio V2 JSON copied with ${payload.objects.length} objects and ${assetCountLabel(payload.assetLibrary?.assets?.length || 0)}.`);
+      this.statusLog.write(`OK Object Vector Studio V2 JSON copied with ${payload.objects.length} objects.`);
     } catch (error) {
       this.statusLog.write(`FAIL Copy JSON failed: ${error.message}`);
     }
@@ -4451,7 +4556,6 @@ export class ToolStarterApp {
       return;
     }
     const result = this.runtimeAssetService.createSvgString(assetSet, {
-      assetId: this.assetLibraryAssets().some((asset) => asset.id === object.id) ? object.id : "",
       elapsedMs: 0,
       frameId: this.selectedFrameId,
       objectId: object.id,
@@ -4481,7 +4585,7 @@ export class ToolStarterApp {
     anchor.download = "object-vector-studio-v2.json";
     anchor.click();
     URL.revokeObjectURL(url);
-    this.statusLog.write(`OK Export JSON prepared for ${payload.objects.length} Object Vector Studio V2 objects and ${assetCountLabel(payload.assetLibrary?.assets?.length || 0)}.`);
+    this.statusLog.write(`OK Export JSON prepared for ${payload.objects.length} Object Vector Studio V2 objects.`);
   }
 
   exportSelectedObjectSvg() {
