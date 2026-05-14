@@ -20,7 +20,7 @@ const objectVectorStudioIcon = (name, glyph) => Object.freeze({ glyph, name });
 
 const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   add: objectVectorStudioIcon("nf-fa-plus", "\uf067"),
-  angle: objectVectorStudioIcon("nf-fa-sliders", "\uf1de"),
+  angle: objectVectorStudioIcon("nf-md-angle_acute", "\u{f0937}"),
   arc: objectVectorStudioIcon("nf-fa-history", "\uf1da"),
   bri: objectVectorStudioIcon("nf-fa-sun_o", "\uf185"),
   bringForward: objectVectorStudioIcon("nf-fa-arrow_up", "\uf062"),
@@ -48,10 +48,10 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   polygon: objectVectorStudioIcon("nf-md-vector_polygon", "\u{f0560}"),
   rectangle: objectVectorStudioIcon("nf-md-vector_rectangle", "\u{f05c6}"),
   reset: objectVectorStudioIcon("nf-fa-undo", "\uf0e2"),
-  resize: objectVectorStudioIcon("nf-fa-expand", "\uf065"),
+  resize: objectVectorStudioIcon("nf-md-resize", "\u{f0a68}"),
   rotate: objectVectorStudioIcon("nf-fa-repeat", "\uf01e"),
   sat: objectVectorStudioIcon("nf-fa-tint", "\uf043"),
-  scale: objectVectorStudioIcon("nf-fa-expand", "\uf065"),
+  scale: objectVectorStudioIcon("nf-fa-scale_unbalanced", "\u{eddf}"),
   select: objectVectorStudioIcon("nf-md-select", "\u{f0485}"),
   sendBack: objectVectorStudioIcon("nf-fa-angle_double_down", "\uf103"),
   sendBackward: objectVectorStudioIcon("nf-fa-arrow_down", "\uf063"),
@@ -780,6 +780,7 @@ export class ToolStarterApp {
     this.renderObjectTagList(null);
     this.elements.paletteSummary.textContent = this.runtimePalette ? "" : "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
+    this.elements.objectGeometrySummary.textContent = "";
     this.elements.objectTransform.textContent = "No shape selected.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
@@ -940,6 +941,7 @@ export class ToolStarterApp {
     this.elements.objectTagInput.value = "";
     this.renderObjectTagList(null);
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
+    this.elements.objectGeometrySummary.textContent = "";
     this.elements.objectTransform.textContent = "Runtime palette required before object transform.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
@@ -1330,6 +1332,7 @@ export class ToolStarterApp {
       this.updateObjectsHeader(this.currentPayload?.objects.length || 0, 0);
       this.elements.objectDetails.textContent = "No object selected.";
       this.elements.objectTransform.textContent = "No shape selected.";
+      this.elements.objectGeometrySummary.textContent = "";
       this.elements.objectPreviewFooter.textContent = "Object ID: none";
       this.elements.jsonDetails.textContent = "{}";
       this.renderFrameTimeline();
@@ -1342,6 +1345,7 @@ export class ToolStarterApp {
     this.updateObjectsHeader(this.currentPayload.objects.length, selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
     this.elements.objectTransform.replaceChildren(this.createObjectTransformDetails(shape));
+    this.elements.objectGeometrySummary.textContent = shape ? `${shape.id} (${this.shapeSummaryTypeLabel(shape)})` : "";
     this.elements.objectPreviewFooter.textContent = `Object ID: ${selected.id}`;
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
@@ -1473,7 +1477,6 @@ export class ToolStarterApp {
     const shapePanel = document.createElement("section");
     shapePanel.className = "object-vector-studio-v2__shape-panel";
     shapePanel.append(this.createDetailGrid([
-      ["Shape", `${shape.id} (${this.shapeSummaryTypeLabel(shape)})`],
       ["Group", shape.groupId || "None"]
     ]));
     return shapePanel;
@@ -1604,6 +1607,15 @@ export class ToolStarterApp {
       label.append(axisLabel, input);
       row.append(label);
     });
+    const selectLabel = document.createElement("label");
+    selectLabel.className = "object-vector-studio-v2__polygon-point-toggle";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.dataset.polygonPointSelect = "true";
+    checkbox.dataset.polygonPointIndex = String(index);
+    checkbox.setAttribute("aria-label", `Select point ${index + 1}`);
+    selectLabel.append(checkbox);
+    row.append(selectLabel);
     return row;
   }
 
@@ -1612,7 +1624,7 @@ export class ToolStarterApp {
     actions.className = "object-vector-studio-v2__polygon-side-actions";
     [
       ["add", "Add Side", "add", () => this.addPolygonSideRow()],
-      ["subtract", "Subtract Side", "line", () => this.subtractPolygonSideRow()]
+      ["delete", "Delete Point", "delete", () => this.deletePolygonPointRows()]
     ].forEach(([action, label, iconKey, handler]) => {
       const button = document.createElement("button");
       button.type = "button";
@@ -3449,40 +3461,73 @@ export class ToolStarterApp {
       return;
     }
     const points = geometry.value.points;
-    const nextPoint = this.nextPolygonSidePoint(points);
-    const list = this.elements.objectDetails.querySelector(".object-vector-studio-v2__polygon-point-list");
-    list?.append(this.createPolygonPointRow(nextPoint, points.length));
+    const checkedIndexes = this.checkedPolygonPointIndexes();
+    const insertAfterIndex = checkedIndexes.length ? checkedIndexes.at(-1) : points.length - 1;
+    const nextPoint = this.insertedPolygonSidePoint(points, insertAfterIndex);
+    points.splice(insertAfterIndex + 1, 0, nextPoint);
+    this.rebuildPolygonPointList(points);
+    this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
     this.statusLog.write(`OK Added polygon side to shape ${selected.id}.`);
   }
 
-  subtractPolygonSideRow() {
+  deletePolygonPointRows() {
     const selected = this.selectedShape();
     if (!selected || selected.type !== "polygon") {
-      this.statusLog.write("WARN Subtract polygon side skipped: no polygon shape is selected.");
+      this.statusLog.write("WARN Delete polygon point skipped: no polygon shape is selected.");
       return;
     }
     const geometry = this.readCurrentPolygonGeometry(selected);
     if (!geometry.ok) {
-      this.statusLog.write(`FAIL Subtract polygon side rejected for shape ${selected.id}: ${geometry.error}`);
+      this.statusLog.write(`FAIL Delete polygon point rejected for shape ${selected.id}: ${geometry.error}`);
       return;
     }
-    if (geometry.value.points.length <= 3) {
+    const checkedIndexes = this.checkedPolygonPointIndexes();
+    if (!checkedIndexes.length) {
+      const message = "select at least one polygon point to delete.";
+      this.markPolygonSideActionInvalid("delete", message);
+      this.clearPolygonPointSelections();
+      this.statusLog.write(`FAIL Delete polygon point rejected for shape ${selected.id}: ${message}`);
+      return;
+    }
+    const checkedSet = new Set(checkedIndexes);
+    const nextPoints = geometry.value.points.filter((_, index) => !checkedSet.has(index));
+    if (nextPoints.length < 3) {
       const message = "polygon must keep at least three sides.";
-      this.markPolygonSideActionInvalid("subtract", message);
-      this.statusLog.write(`FAIL Subtract polygon side rejected for shape ${selected.id}: ${message}`);
+      this.markPolygonSideActionInvalid("delete", message);
+      this.clearPolygonPointSelections();
+      this.statusLog.write(`FAIL Delete polygon point rejected for shape ${selected.id}: ${message}`);
       return;
     }
-    const rows = Array.from(this.elements.objectDetails.querySelectorAll(".object-vector-studio-v2__polygon-point-field"));
-    rows.at(-1)?.remove();
-    this.reindexPolygonPointRows();
+    this.rebuildPolygonPointList(nextPoints);
+    this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
-    this.statusLog.write(`OK Subtracted polygon side from shape ${selected.id}.`);
+    this.statusLog.write(`OK Deleted ${checkedIndexes.length} polygon point${checkedIndexes.length === 1 ? "" : "s"} from shape ${selected.id}.`);
   }
 
   readCurrentPolygonGeometry(shape) {
     const fields = Array.from(this.elements.objectDetails.querySelectorAll("[data-shape-geometry-field='points']"));
     return this.readShapeGeometryFields(shape, fields);
+  }
+
+  checkedPolygonPointIndexes() {
+    return Array.from(this.elements.objectDetails.querySelectorAll("[data-polygon-point-select='true']"))
+      .map((checkbox) => checkbox.checked ? Number(checkbox.dataset.polygonPointIndex) : null)
+      .filter((index) => Number.isInteger(index));
+  }
+
+  clearPolygonPointSelections() {
+    this.elements.objectDetails.querySelectorAll("[data-polygon-point-select='true']").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+  }
+
+  rebuildPolygonPointList(points) {
+    const list = this.elements.objectDetails.querySelector(".object-vector-studio-v2__polygon-point-list");
+    if (!list) {
+      return;
+    }
+    list.replaceChildren(...points.map((point, index) => this.createPolygonPointRow(point, index)));
   }
 
   nextPolygonSidePoint(points) {
@@ -3496,6 +3541,21 @@ export class ToolStarterApp {
     };
   }
 
+  insertedPolygonSidePoint(points, insertAfterIndex) {
+    const current = points[insertAfterIndex];
+    const next = points[insertAfterIndex + 1];
+    if (!current) {
+      return this.nextPolygonSidePoint(points);
+    }
+    if (!next) {
+      return this.nextPolygonSidePoint(points);
+    }
+    return {
+      x: Number(((current.x + next.x) / 2).toFixed(3)),
+      y: Number(((current.y + next.y) / 2).toFixed(3))
+    };
+  }
+
   reindexPolygonPointRows() {
     this.elements.objectDetails.querySelectorAll(".object-vector-studio-v2__polygon-point-field").forEach((row, index) => {
       const caption = row.querySelector(".object-vector-studio-v2__polygon-point-label");
@@ -3505,6 +3565,10 @@ export class ToolStarterApp {
       row.querySelectorAll("[data-polygon-point-index]").forEach((input) => {
         input.dataset.polygonPointIndex = String(index);
       });
+      const checkbox = row.querySelector("[data-polygon-point-select='true']");
+      if (checkbox) {
+        checkbox.setAttribute("aria-label", `Select point ${index + 1}`);
+      }
     });
   }
 

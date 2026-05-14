@@ -887,10 +887,10 @@ textarea:hover {
 
 .object-vector-studio-v2__object-actions {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
-  margin-top: auto;
-  padding-top: 4px;
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .object-vector-studio-v2__object-actions button {
@@ -1186,12 +1186,14 @@ textarea:hover {
   transform: scaleX(1.35);
 }
 
-.object-vector-studio-v2__shape-icon--select[data-ovs-icon]::before {
-  font-size: calc(1em * var(--object-vector-studio-v2-icon-scale, 1.75) * 0.75);
+.object-vector-studio-v2__shape-icon--select[data-ovs-icon]::before,
+.object-vector-studio-v2__shape-icon--triangle[data-ovs-icon]::before {
+  font-size: calc(1em * var(--object-vector-studio-v2-icon-scale, 1.75) * 1.25);
 }
 
 .object-vector-studio-v2__shape-icon--rectangle[data-ovs-icon]::before {
   font-size: calc(1em * var(--object-vector-studio-v2-icon-scale, 1.75) * 1.25);
+  transform: translateY(-6px);
 }
 
 .object-vector-studio-v2__z-icon[data-ovs-icon] {
@@ -1403,7 +1405,25 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__palette-controls .object-vector-studio-v2__inline-field input {
-  width: 80px;
+  width: 54px;
+}
+
+.object-vector-studio-v2__palette-controls {
+  flex-wrap: nowrap;
+  gap: 5px;
+}
+
+.object-vector-studio-v2__palette-controls button {
+  min-width: 0;
+  min-height: 30px;
+  padding: 3px 5px !important;
+}
+
+.object-vector-studio-v2__palette-controls .object-vector-studio-v2__inline-field {
+  flex: 0 0 auto;
+  gap: 4px;
+  font-size: 0.82rem;
+  white-space: nowrap;
 }
 
 .object-vector-studio-v2__palette-controls button[data-ovs-icon]::before {
@@ -1654,7 +1674,7 @@ textarea:hover {
 
 .object-vector-studio-v2__polygon-point-field {
   display: grid;
-  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 1fr) 22px;
   align-items: center;
   gap: 6px;
 }
@@ -1691,6 +1711,19 @@ textarea:hover {
   min-width: 0;
   width: 100%;
   padding: 5px 7px;
+}
+
+.object-vector-studio-v2__polygon-point-toggle {
+  display: inline-grid;
+  place-items: center;
+  min-width: 0;
+}
+
+.object-vector-studio-v2__polygon-point-toggle input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: var(--tool-starter-accent);
 }
 
 .object-vector-studio-v2__polygon-side-actions {

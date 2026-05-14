@@ -60,22 +60,22 @@
               <span>Object Name</span>
               <input id="objectVectorStudioV2ObjectNameInput" type="text" autocomplete="off" placeholder="Object name">
             </label>
-            <div class="object-vector-studio-v2__tag-editor" aria-label="Object tags">
-              <input id="objectVectorStudioV2ObjectTagInput" type="text" autocomplete="off" placeholder="Add tag" aria-label="Object tag">
-              <button id="objectVectorStudioV2AddTagButton" type="button" title="Add tag">Add</button>
-              <div id="objectVectorStudioV2ObjectTagList" class="object-vector-studio-v2__tag-list" aria-label="Selected object tags"></div>
-            </div>
             <div class="object-vector-studio-v2__object-actions" aria-label="Object actions">
               <button id="objectVectorStudioV2AddObjectButton" type="button" title="Add a schema-valid object to the loaded payload">Add</button>
               <button id="objectVectorStudioV2RenameObjectButton" type="button" title="Rename the selected object and update its object/game/name id">Rename</button>
               <button id="objectVectorStudioV2DuplicateObjectButton" type="button" title="Duplicate the selected object">Dup</button>
+            </div>
+            <div class="object-vector-studio-v2__tag-editor" aria-label="Object tags">
+              <input id="objectVectorStudioV2ObjectTagInput" type="text" autocomplete="off" placeholder="Add tag" aria-label="Object tag">
+              <button id="objectVectorStudioV2AddTagButton" type="button" title="Add tag">Add</button>
+              <div id="objectVectorStudioV2ObjectTagList" class="object-vector-studio-v2__tag-list" aria-label="Selected object tags"></div>
             </div>
           </div>
         </section>
 
         <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectDetailsContent">
-            <span>Object Details</span>
+            <span>Object Geometry <span id="objectVectorStudioV2ObjectGeometrySummary" class="object-vector-studio-v2__header-count"></span></span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2ObjectDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
@@ -262,7 +262,7 @@
                 <span class="object-vector-studio-v2__palette-mode-label">Stroke</span>
               </button>
               <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeWidth">
-                <span>Stroke Width</span>
+                <span>Width</span>
                 <input id="objectVectorStudioV2StrokeWidth" type="number" min="0.1" step="0.1" value="2">
               </label>
             </div>

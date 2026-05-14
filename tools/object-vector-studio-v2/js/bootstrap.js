@@ -58,6 +58,7 @@ window.addEventListener("DOMContentLoaded", () => {
       leftPanel: requireElement(".tool-starter__panel--left"),
       loopToggle: requireElement("#objectVectorStudioV2LoopToggle"),
       objectDetails: requireElement("#objectVectorStudioV2ObjectDetails"),
+      objectGeometrySummary: requireElement("#objectVectorStudioV2ObjectGeometrySummary"),
       objectNameInput: requireElement("#objectVectorStudioV2ObjectNameInput"),
       objectPreviewFooter: requireElement("#objectVectorStudioV2ObjectPreviewFooter"),
       objectTagInput: requireElement("#objectVectorStudioV2ObjectTagInput"),
