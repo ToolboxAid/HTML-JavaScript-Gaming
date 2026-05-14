@@ -1,37 +1,36 @@
-# PR_26133_028 Workspace V2 Validation
+# PR_26133_029 Workspace V2 Validation
 
-Task: PR_26133_028-remove-vector-map-editor-runtime-dependency
-Date: 2026-05-13
+Task: PR_26133_029-remove-asteroids-shared-tool-fallbacks
+Date: 2026-05-14
 
 ## Result
 
 PASS - `npm run test:workspace-v2`
 
 - 49 Playwright tests passed.
-- Focused Asteroids/Object Vector workspace checks passed before the full run.
-- Asteroids manifest schema validation passed after removing the Asteroids `vector-map-editor` payload.
+- Object Vector Studio V2 still loads and edits the Asteroids object payload through `tools.object-vector-studio-v2.objects`.
+- Asteroids runtime coverage in Workspace Manager V2 still renders Object Vector assets through `object.asteroids.*` object IDs.
 - No sample JSON files were changed.
 
 ## Targeted Verification
 
-- PASS - Asteroids Workspace Manager V2 context no longer includes `vector-map-editor`.
-- PASS - Object Vector Studio V2 still loads the 6 Asteroids objects from `object-vector-studio-v2.objects`.
-- PASS - Asteroids runtime renders ship, asteroid, and UFO Object Vector objects through `object.asteroids.*` IDs.
-- PASS - Asteroids manifest contains no `vector.asteroids.*` runtime/editor payload.
-- PASS - `tools/shared/asteroidsPlatformDemo.js` and `tools/shared/vectorAssetSystem.js` no longer reference Asteroids `vector-map-editor` data.
-- PASS - Save summaries no longer include `vector-map-editor vectors=5`.
-- PASS - No runtime console/page errors were reported by the targeted Playwright coverage.
+- PASS - `tools/shared/asteroidsPlatformDemo.js` was removed.
+- PASS - `tools/shared` contains no hardcoded Asteroids SVG constants or Asteroids object-vector fallback data.
+- PASS - `games/Asteroids/entities/Asteroid.js` no longer defines `BASE_VECTOR_MAP`.
+- PASS - Asteroid collision geometry is derived from the manifest Object Vector payload.
+- PASS - Object Vector runtime payload validation loads 6 Asteroids objects from `games/Asteroids/game.manifest.json`.
+- PASS - Small, medium, and large asteroid geometry profiles resolve from object IDs while shape IDs remain local shape identifiers.
+- PASS - No `vector.asteroids.*` references remain in the active Asteroids runtime/shared-tool validation targets.
 
 ## Commands
 
-- PASS - `node --check tools/shared/asteroidsPlatformDemo.js`
+- PASS - `node --check games/Asteroids/game/asteroidObjectGeometry.js`
+- PASS - `node --check games/Asteroids/entities/Asteroid.js`
+- PASS - `node --check games/Asteroids/game/AsteroidsWorld.js`
+- PASS - `node --check games/Asteroids/game/AsteroidsGameScene.js`
+- PASS - `node --check games/Asteroids/index.js`
 - PASS - `node --check tools/shared/vectorAssetSystem.js`
-- PASS - `node --check tests/playwright/tools/WorkspaceManagerV2.spec.mjs`
 - PASS - `node --check tests/games/AsteroidsPlatformDemo.test.mjs`
-- PASS - `node --check tests/games/AsteroidsAssetReferenceAdoption.test.mjs`
-- PASS - `node --check tests/tools/VectorAssetSystem.test.mjs`
-- PASS - `node --check tests/tools/AssetUsageIntegration.test.mjs`
-- PASS - Asteroids manifest schema and runtime object ID probe with `WorkspaceManagerV2ContextService` and `ObjectVectorRuntimeAssetService`.
-- PASS - Focused node test probes for Asteroids platform demo, Asteroids asset reference adoption, VectorAssetSystem, and AssetUsageIntegration.
-- PASS - `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "header lifecycle|loads Object Vector Studio V2 runtime assets|saves empty Text to Speech|syncs Workspace Manager V2 dirty lifecycle|warns instead of injecting"`
+- PASS - focused node probes for Asteroids manifest Object Vector runtime, asteroid vector transforms, collision timing, Asteroids validation boot, and VectorAssetSystem.
+- PASS - targeted `rg` scans for removed Asteroids SVG constants, `BASE_VECTOR_MAP`, `vector.asteroids.*`, and shared Asteroids fallback usage.
 - PASS - `npm run test:workspace-v2`

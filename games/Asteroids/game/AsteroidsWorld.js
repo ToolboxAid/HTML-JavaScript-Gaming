@@ -136,11 +136,12 @@ function getRectOverlapDepth(x, y, radius, rect) {
 }
 
 export default class AsteroidsWorld {
-  constructor(bounds, { rng = Math.random } = {}) {
+  constructor(bounds, { rng = Math.random, asteroidGeometryProfiles = null } = {}) {
     if (!hasLoggedWorldConstruction) {
       hasLoggedWorldConstruction = true;
       logWorldBootStage('constructed', bounds);
     }
+    this.asteroidGeometryProfiles = asteroidGeometryProfiles;
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.bounds = sanitizeBounds(bounds);
     this.starfield = Array.from({ length: 70 }, () => ({
@@ -153,7 +154,7 @@ export default class AsteroidsWorld {
   }
 
   createAsteroidEntity(x, y, size = 3) {
-    return new Asteroid(x, y, size, this.rng);
+    return new Asteroid(x, y, size, this.rng, this.asteroidGeometryProfiles);
   }
 
   createUfoEntity(type = 'large', level = 1) {

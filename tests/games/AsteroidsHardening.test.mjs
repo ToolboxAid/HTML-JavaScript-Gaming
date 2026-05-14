@@ -9,6 +9,7 @@ import { wrap } from '../../src/shared/utils/mathUtils.js';
 import AsteroidsGameScene from '../../games/Asteroids/game/AsteroidsGameScene.js';
 import AsteroidsSession from '../../games/Asteroids/game/AsteroidsSession.js';
 import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';
+import { createAsteroidsTestGeometryProfiles } from './asteroidsManifestObjectVectors.mjs';
 
 function createInput(keys = {}) {
   return {
@@ -31,10 +32,11 @@ function createWorldEvents() {
 }
 
 export function run() {
+  const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
   assert.equal(wrap(5000, 0, 960), 200);
   assert.equal(wrap(-5000, 0, 960), 760);
 
-  const world = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25 });
+  const world = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25, asteroidGeometryProfiles });
   world.loadState({
     wave: Number.NaN,
     shipActive: 'yes',
@@ -61,12 +63,12 @@ export function run() {
   assert.equal(Number.isFinite(world.ship.x), true);
   assert.equal(Number.isFinite(world.ship.y), true);
 
-  const roundTripWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.33 });
+  const roundTripWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.33, asteroidGeometryProfiles });
   const snapshot = roundTripWorld.getState();
   roundTripWorld.loadState(snapshot);
   assert.deepEqual(roundTripWorld.getState(), snapshot);
 
-  const respawnWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.4 });
+  const respawnWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.4, asteroidGeometryProfiles });
   respawnWorld.shipActive = false;
   respawnWorld.respawnDelay = 0;
   respawnWorld.respawnLocked = false;
@@ -77,7 +79,7 @@ export function run() {
   respawnWorld.asteroids = [];
   assert.equal(respawnWorld.tryRespawn(), true);
 
-  const fairnessWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0 });
+  const fairnessWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0, asteroidGeometryProfiles });
   const wave = fairnessWorld.createWave(6);
   const everySpawnSafe = wave.every((asteroid) => !fairnessWorld.isInsideSafeRect(
     asteroid.x,
@@ -86,7 +88,7 @@ export function run() {
   ));
   assert.equal(everySpawnSafe, true);
 
-  const waveGateWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.6 });
+  const waveGateWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.6, asteroidGeometryProfiles });
   let canFireCalled = false;
   let pauseSnapshot = null;
   waveGateWorld.wave = 2;
@@ -138,7 +140,7 @@ export function run() {
   assert.equal(waveGateWorld.asteroids.length > 0, true);
   assert.equal(waveGateWorld.ufo, null);
 
-  const sessionWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5 });
+  const sessionWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
   const session = new AsteroidsSession(sessionWorld, {
     load: () => 0,
     save: (score) => score,
@@ -163,7 +165,7 @@ export function run() {
     clear: () => {},
   };
   try {
-    const scene = new AsteroidsGameScene();
+    const scene = new AsteroidsGameScene({ asteroidGeometryProfiles });
     scene.session.mode = 'playing';
     scene.isPaused = true;
     const drawRectCalls = [];

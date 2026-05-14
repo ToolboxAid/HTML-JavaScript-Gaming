@@ -14,6 +14,10 @@ import AsteroidsAttractAdapter from './AsteroidsAttractAdapter.js';
 import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
 import {
+  ASTEROID_OBJECT_VECTOR_OBJECT_IDS,
+  createAsteroidGeometryProfilesFromObjectVectorAssets
+} from './asteroidObjectGeometry.js';
+import {
   ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE
 } from "../rules/flowRules.js";
 import { ASTEROIDS_GAME_OVER_RETURN_STATUS } from "../rules/flowContent.js";
@@ -25,11 +29,6 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
-const ASTEROID_OBJECT_VECTOR_OBJECT_IDS = Object.freeze({
-  1: "object.asteroids.asteroid.small",
-  2: "object.asteroids.asteroid.medium",
-  3: "object.asteroids.asteroid.large",
-});
 const UFO_OBJECT_VECTOR_OBJECT_IDS = Object.freeze({
   large: "object.asteroids.ufo.large",
   small: "object.asteroids.ufo.small",
@@ -115,6 +114,8 @@ export default class AsteroidsGameScene extends Scene {
     this.devConsoleIntegration = options.devConsoleIntegration || null;
     this.objectVectorAssets = options.objectVectorAssets || null;
     this.objectVectorRuntime = options.objectVectorRuntime || null;
+    this.asteroidGeometryProfiles = options.asteroidGeometryProfiles
+      || createAsteroidGeometryProfilesFromObjectVectorAssets(this.objectVectorAssets);
     this.objectVectorPlaybackMs = 0;
     this.objectVectorRenderCounts = {
       asteroids: 0,
@@ -126,7 +127,9 @@ export default class AsteroidsGameScene extends Scene {
       debugMode: 'prod',
       debugEnabled: Boolean(this.devConsoleIntegration),
     };
-    this.world = new AsteroidsWorld({ width: 960, height: 720 });
+    this.world = new AsteroidsWorld({ width: 960, height: 720 }, {
+      asteroidGeometryProfiles: this.asteroidGeometryProfiles
+    });
     this.highScoreService = new AsteroidsHighScoreService();
     this.highScoreRows = this.highScoreService.loadTable();
     const initialTopScore = this.highScoreService.getTopScore(this.highScoreRows);

@@ -7,6 +7,8 @@ import { normalizeSvgToVectorAsset, summarizeVectorAssetDefinition } from "./vec
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 import { createRuntimeManifestAssetLookup } from "./pipeline/runtimeAssetLookup.js";
 
+const DEFAULT_VECTOR_FIXTURE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 20 20"><path d="M 0 -8 L 6 8 L 0 4 L -6 8 Z" /></svg>';
+
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -19,102 +21,85 @@ function createReport(level, code, message) {
   };
 }
 
-const ASTEROIDS_SHIP_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 48 48"><path d="M 0 -18 L 14 16 L 0 8 L -14 16 Z" /><path d="M -6 14 L 0 6 L 6 14" /></svg>`;
-const ASTEROIDS_LARGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><path d="M 10 40 L 50 20 L 45 5 L 25 -10 L 50 -35 L 30 -45 L 10 -38 L -20 -45 L -43 -18 L -43 20 L -25 20 L -25 40 Z" /></svg>`;
-const ASTEROIDS_MEDIUM_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 56"><path d="M -16 -10 L -2 -18 L 16 -14 L 20 2 L 8 18 L -10 16 L -20 4 Z" /></svg>`;
-const ASTEROIDS_SMALL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 36 36"><path d="M -10 -6 L 0 -12 L 10 -6 L 8 8 L -6 10 L -12 0 Z" /></svg>`;
-const ASTEROIDS_OBJECT_VECTOR_MANIFEST_PATH = "games/Asteroids/game.manifest.json#tools.object-vector-studio-v2.objects";
+function createDefaultPalette() {
+  return {
+    id: "palette.vector-demo",
+    name: "Vector Demo Palette",
+    path: "",
+    colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"],
+    sourceTool: "pixel-asset-studio"
+  };
+}
 
-export function createVectorAssetSystemFixture() {
-  const shipVector = normalizeSvgToVectorAsset({
-    id: "object.asteroids.ship",
-    name: "Asteroids Ship",
-    path: `${ASTEROIDS_OBJECT_VECTOR_MANIFEST_PATH}.object.asteroids.ship`,
-    paletteId: "palette.asteroids-hud",
-    svgText: ASTEROIDS_SHIP_SVG
+function createDefaultVector(paletteId) {
+  return normalizeSvgToVectorAsset({
+    id: "vector.demo.ship",
+    name: "Demo Ship",
+    path: "tools/shared/vectorAssetSystem.js#fixture.vector.demo.ship",
+    paletteId,
+    svgText: DEFAULT_VECTOR_FIXTURE_SVG
   });
-  const asteroidLargeVector = normalizeSvgToVectorAsset({
-    id: "object.asteroids.asteroid.large",
-    name: "Asteroids Large Rock",
-    path: `${ASTEROIDS_OBJECT_VECTOR_MANIFEST_PATH}.object.asteroids.asteroid.large`,
-    paletteId: "palette.asteroids-hud",
-    svgText: ASTEROIDS_LARGE_SVG
-  });
-  const asteroidMediumVector = normalizeSvgToVectorAsset({
-    id: "object.asteroids.asteroid.medium",
-    name: "Asteroids Medium Rock",
-    path: `${ASTEROIDS_OBJECT_VECTOR_MANIFEST_PATH}.object.asteroids.asteroid.medium`,
-    paletteId: "palette.asteroids-hud",
-    svgText: ASTEROIDS_MEDIUM_SVG
-  });
-  const asteroidSmallVector = normalizeSvgToVectorAsset({
-    id: "object.asteroids.asteroid.small",
-    name: "Asteroids Small Rock",
-    path: `${ASTEROIDS_OBJECT_VECTOR_MANIFEST_PATH}.object.asteroids.asteroid.small`,
-    paletteId: "palette.asteroids-hud",
-    svgText: ASTEROIDS_SMALL_SVG
-  });
+}
+
+function normalizeFixtureVectors(vectors, paletteId) {
+  if (Array.isArray(vectors) && vectors.length > 0) {
+    return vectors.map((vector) => cloneJson(vector));
+  }
+  return [createDefaultVector(paletteId)];
+}
+
+function createRuntimeAssets(palette, vectors, runtimeAssets) {
+  return {
+    [palette.id]: {
+      kind: "palette",
+      colors: cloneJson(palette.colors)
+    },
+    ...vectors.reduce((accumulator, vector) => {
+      accumulator[vector.id] = cloneJson(vector);
+      return accumulator;
+    }, {}),
+    ...(runtimeAssets && typeof runtimeAssets === "object" ? cloneJson(runtimeAssets) : {})
+  };
+}
+
+export function createVectorAssetSystemFixture(options = {}) {
+  const palette = cloneJson(options.palette || createDefaultPalette());
+  const vectors = normalizeFixtureVectors(options.vectors, palette.id);
+  const vectorIds = vectors.map((vector) => sanitizeText(vector.id)).filter(Boolean);
 
   return {
     registry: {
       version: 1,
-      projectId: "object-vector-asteroids-demo",
-      palettes: [
-        {
-          id: "palette.asteroids-hud",
-          name: "Asteroids HUD Palette",
-          path: "",
-          colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"],
-          sourceTool: "pixel-asset-studio"
-        }
-      ],
+      projectId: sanitizeText(options.projectId) || "vector-asset-system-demo",
+      palettes: [palette],
       sprites: [],
-      vectors: [
-        shipVector,
-        asteroidLargeVector,
-        asteroidMediumVector,
-        asteroidSmallVector
-      ],
+      vectors,
       tilesets: [],
       tilemaps: [],
       images: [],
       parallaxSources: []
     },
-    vectorDocument: {
+    vectorDocument: cloneJson(options.vectorDocument || {
       schema: "toolbox.vector/1",
       version: 1,
-      name: "Asteroids Object Vector Document",
+      name: "Vector Asset System Document",
       assetRefs: {
-        vectorId: "object.asteroids.ship",
-        vectorIds: [
-          "object.asteroids.ship",
-          "object.asteroids.asteroid.large",
-          "object.asteroids.asteroid.medium",
-          "object.asteroids.asteroid.small"
-        ],
-        paletteId: "palette.asteroids-hud"
+        vectorId: vectorIds[0] || "",
+        vectorIds,
+        paletteId: palette.id
       }
-    },
-    runtimeAssets: {
-      "palette.asteroids-hud": {
-        kind: "palette",
-        colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"]
-      },
-      "object.asteroids.ship": cloneJson(shipVector),
-      "object.asteroids.asteroid.large": cloneJson(asteroidLargeVector),
-      "object.asteroids.asteroid.medium": cloneJson(asteroidMediumVector),
-      "object.asteroids.asteroid.small": cloneJson(asteroidSmallVector)
-    }
+    }),
+    runtimeAssets: createRuntimeAssets(palette, vectors, options.runtimeAssets)
   };
 }
 
 export async function buildVectorAssetSystem(options = {}) {
-  const fixture = createVectorAssetSystemFixture();
+  const fixture = createVectorAssetSystemFixture(options.fixtureOptions || options);
   const registry = cloneJson(options.registry || fixture.registry);
   const vectorDocument = cloneJson(options.vectorDocument || fixture.vectorDocument);
   const runtimeAssets = cloneJson(options.runtimeAssets || fixture.runtimeAssets);
   const runtimeLookup = createRuntimeManifestAssetLookup({
-    gameId: "Asteroids",
+    gameId: sanitizeText(options.gameId) || "VectorDemo",
     runtimeAssetSources: runtimeAssets,
     sourceToolId: "runtime-adoption-09-13",
     missingBindingBehavior: "static"
@@ -180,4 +165,3 @@ export async function buildVectorAssetSystem(options = {}) {
     }
   };
 }
-

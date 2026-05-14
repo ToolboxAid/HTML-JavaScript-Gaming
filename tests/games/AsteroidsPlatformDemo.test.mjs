@@ -1,46 +1,69 @@
-import assert from "node:assert/strict";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { buildAsteroidsPlatformDemo, summarizeAsteroidsPlatformDemo } from "../../tools/shared/asteroidsPlatformDemo.js";
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { ObjectVectorRuntimeAssetService } from '../../src/engine/rendering/index.js';
+import {
+  createAsteroidsTestGeometryProfiles,
+  loadAsteroidsManifest,
+  loadAsteroidsObjectVectorPayload
+} from './asteroidsManifestObjectVectors.mjs';
+
+function createJsonResponse(payload) {
+  return {
+    ok: true,
+    status: 200,
+    async json() {
+      return payload;
+    }
+  };
+}
+
+function createLocalFetch() {
+  return async (url) => {
+    const targetPath = fileURLToPath(url);
+    return createJsonResponse(JSON.parse(fs.readFileSync(targetPath, 'utf8')));
+  };
+}
 
 export async function run() {
-  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-  const first = await buildAsteroidsPlatformDemo();
-  const second = await buildAsteroidsPlatformDemo();
+  const manifest = loadAsteroidsManifest();
+  const payload = loadAsteroidsObjectVectorPayload();
+  const manifestText = JSON.stringify(manifest);
 
-  assert.equal(first.demo.status, "ready");
-  assert.equal(first.demo.validationResult.validation.status, "valid");
-  assert.equal(first.demo.packageResult.packageStatus, "ready");
-  assert.equal(first.demo.runtimeResult.runtimeLoader.status, "ready");
-  assert.equal(first.demo.multiTargetExportResult.multiTargetExport.status, "ready");
-  assert.equal(first.demo.publishingResult.publishing.status, "ready");
-  assert.equal(first.demo.runtimeHandoff.modulePath, "games/Asteroids/main.js");
-  assert.equal(first.demo.runtimeHandoff.exportName, "bootAsteroids");
-  const runtimeModulePath = path.join(repoRoot, ...first.demo.runtimeHandoff.modulePath.split("/"));
-  assert.equal(fs.existsSync(runtimeModulePath), true);
-  const runtimeModule = await import(new URL(`../../${first.demo.runtimeHandoff.modulePath}`, import.meta.url));
-  assert.equal(typeof runtimeModule[first.demo.runtimeHandoff.exportName], "function");
-  assert.equal(first.demo.packageResult.manifest.package.projectId, "asteroids-platform-demo");
-  assert.equal(first.demo.definition.demo.visualBaseline.preferred, "object-vector");
-  assert.equal(first.demo.definition.demo.visualBaseline.rollbackDocumented, true);
-  assert.deepEqual(
-    first.demo.packageResult.manifest.package.assets.filter((asset) => asset.type === "vector").map((asset) => asset.id),
-    []
-  );
-  assert.equal(first.demo.objectVector.hasSpriteRuntimeDependency, false);
-  assert.deepEqual(first.demo.objectVector.missingRequiredObjectIds, []);
-  assert.match(first.demo.debugVisualizationResult.debugVisualization.reportText, /nodes=7/);
-  assert.match(first.demo.performanceResult.performance.reportText, /Geometry: assets=/);
-  assert.equal(
-    first.demo.packageResult.manifest.package.assets.some((asset) => asset.id === "sprite.asteroids-demo"),
-    false
-  );
-  assert.deepEqual(first, second);
-  assert.match(first.demo.reportText, /title, start, game-over, and restart loop/i);
-  assert.match(first.demo.reportText, /Visual path: object-vector only/);
-  assert.match(first.demo.reportText, /ASTEROIDS_OBJECT_VECTOR_RUNTIME/);
-  assert.match(first.demo.reportText, /ASTEROIDS_ROLLBACK_NOTES_ONLY/);
-  assert.match(first.demo.reportText, /Publishing pipeline ready with 5 release targets\./);
-  assert.equal(summarizeAsteroidsPlatformDemo(first), "Asteroids platform demo ready with 7 packaged assets.");
+  assert.equal(manifest.game.workspace.tools['vector-map-editor'], undefined);
+  assert.equal(manifestText.includes(`vector.${'asteroids'}.`), false);
+  assert.equal(Array.isArray(payload.objects), true);
+  assert.equal(payload.objects.some((object) => object.id === 'object.asteroids.ship'), true);
+  assert.equal(payload.objects.some((object) => object.id === 'object.asteroids.asteroid.small'), true);
+
+  const geometryProfiles = createAsteroidsTestGeometryProfiles();
+  assert.equal(geometryProfiles[1].objectId, 'object.asteroids.asteroid.small');
+  assert.equal(geometryProfiles[2].objectId, 'object.asteroids.asteroid.medium');
+  assert.equal(geometryProfiles[3].objectId, 'object.asteroids.asteroid.large');
+  assert.equal(geometryProfiles[1].points.length, 6);
+  assert.equal(geometryProfiles[2].points.length, 7);
+  assert.equal(geometryProfiles[3].points.length, 12);
+
+  const shapeIds = payload.objects.flatMap((object) => object.shapes.map((shape) => shape.id));
+  assert.equal(shapeIds.includes('ship-hull'), true);
+  assert.equal(shapeIds.some((shapeId) => shapeId.startsWith('object.')), false);
+
+  const runtime = new ObjectVectorRuntimeAssetService({
+    fetchRef: createLocalFetch(),
+    logger: { info() {}, warn() {}, error() {} }
+  });
+  const assetSet = await runtime.loadPayload(payload, {
+    sourceLabel: 'Asteroids game.manifest.json:tools.object-vector-studio-v2'
+  });
+  assert.equal(assetSet.objectsById.has('object.asteroids.asteroid.small'), true);
+  assert.equal(assetSet.objectsById.has('object.asteroids.ship'), true);
+
+  const smallPreview = runtime.createSvgString(assetSet, {
+    objectId: 'object.asteroids.asteroid.small',
+    stateId: 'active'
+  });
+  assert.equal(smallPreview.ok, true);
+  assert.match(smallPreview.svg, /data-runtime-object-vector="true"/);
+  assert.match(smallPreview.svg, /<polygon /);
+  assert.equal(smallPreview.svg.includes(`vector.${'asteroids'}.`), false);
 }

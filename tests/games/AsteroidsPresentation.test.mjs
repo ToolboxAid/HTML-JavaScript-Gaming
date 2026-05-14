@@ -8,6 +8,9 @@ import assert from 'node:assert/strict';
 import AsteroidsGameScene from '../../games/Asteroids/game/AsteroidsGameScene.js';
 import AsteroidsHighScoreService from '../../games/Asteroids/systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../../games/Asteroids/systems/AsteroidsInitialsEntry.js';
+import { createAsteroidsTestGeometryProfiles } from './asteroidsManifestObjectVectors.mjs';
+
+const ASTEROIDS_TEST_GEOMETRY_PROFILES = createAsteroidsTestGeometryProfiles();
 
 function createInput({ down = [], pressed = [] } = {}) {
   const downSet = new Set(down);
@@ -68,7 +71,7 @@ function testAsteroidsInitialsEntry() {
 }
 
 function testAsteroidsAttractMenuFlow() {
-  const scene = new AsteroidsGameScene();
+  const scene = new AsteroidsGameScene({ asteroidGeometryProfiles: ASTEROIDS_TEST_GEOMETRY_PROFILES });
   const engine = {
     input: createInput(),
     canvas: { style: {} },
@@ -86,7 +89,7 @@ function testAsteroidsAttractMenuFlow() {
 }
 
 function testAsteroidsGameOverQualifyingScoreInitialsFlow() {
-  const scene = new AsteroidsGameScene();
+  const scene = new AsteroidsGameScene({ asteroidGeometryProfiles: ASTEROIDS_TEST_GEOMETRY_PROFILES });
   const storage = createStorage();
   scene.highScoreService = new AsteroidsHighScoreService({ storage, tableSize: 5 });
   scene.highScoreRows = [
@@ -127,7 +130,7 @@ function testAsteroidsGameOverQualifyingScoreInitialsFlow() {
 }
 
 function testAsteroidsMenuHighScoreUsesLeaderboardTop() {
-  const scene = new AsteroidsGameScene();
+  const scene = new AsteroidsGameScene({ asteroidGeometryProfiles: ASTEROIDS_TEST_GEOMETRY_PROFILES });
   scene.highScoreRows = [
     { initials: 'ACE', score: 1800 },
     { initials: 'VTR', score: 1400 },
@@ -157,7 +160,7 @@ function testAsteroidsMenuHighScoreUsesLeaderboardTop() {
 }
 
 function testAsteroidsGameplayRenderDoesNotCoverBackgroundLayer() {
-  const scene = new AsteroidsGameScene();
+  const scene = new AsteroidsGameScene({ asteroidGeometryProfiles: ASTEROIDS_TEST_GEOMETRY_PROFILES });
   scene.session.mode = 'playing';
   scene.attractController.active = false;
 

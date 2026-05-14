@@ -105,6 +105,7 @@ export async function bootAsteroidsNew({
   documentRef = globalThis.document ?? null,
   EngineClass = Engine,
   InputServiceClass = InputService,
+  ObjectVectorRuntimeClass = ObjectVectorRuntimeAssetService,
   SceneClass = AsteroidsGameScene,
   createDevConsoleIntegration = createNoopDevConsoleIntegration
 } = {}) {
@@ -141,7 +142,7 @@ export async function bootAsteroidsNew({
 
     stage = "preload-object-vector-runtime";
     traceBoot(stage);
-    const objectVectorRuntime = new ObjectVectorRuntimeAssetService();
+    const objectVectorRuntime = new ObjectVectorRuntimeClass();
     const objectVectorAssets = await objectVectorRuntime.loadFromManifest(ASTEROIDS_MANIFEST_PATH, {
       sourceLabel: "Asteroids game.manifest.json"
     });

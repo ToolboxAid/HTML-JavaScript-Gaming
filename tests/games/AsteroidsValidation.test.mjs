@@ -10,6 +10,10 @@ import AsteroidsGameScene from '../../games/Asteroids/game/AsteroidsGameScene.js
 import AsteroidsSession from '../../games/Asteroids/game/AsteroidsSession.js';
 import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';
 import { bootAsteroidsNew as bootAsteroids } from '../../games/Asteroids/index.js';
+import {
+  createAsteroidsTestGeometryProfiles,
+  loadAsteroidsObjectVectorPayload
+} from './asteroidsManifestObjectVectors.mjs';
 
 function createCanvas() {
   const listeners = new Map();
@@ -95,6 +99,27 @@ function createWorldEvents() {
   };
 }
 
+class TestObjectVectorRuntime {
+  async loadFromManifest() {
+    const payload = loadAsteroidsObjectVectorPayload();
+    return {
+      assetsById: new Map(),
+      objectsById: new Map(payload.objects.map((object) => [object.id, object])),
+      payload
+    };
+  }
+
+  getDiagnostics() {
+    return {
+      cachedObjects: 0,
+      cachedInheritedObjects: 0,
+      cachedPayloads: 1,
+      events: [],
+      schemaLoaded: true
+    };
+  }
+}
+
 function withBlockedLocalStorage(run) {
   const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
 
@@ -117,6 +142,7 @@ function withBlockedLocalStorage(run) {
 }
 
 export async function run() {
+  const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
   const createdDocumentShim = typeof globalThis.document === 'undefined';
   const createdWindowShim = typeof globalThis.window === 'undefined';
   const shimCanvas = createCanvas();
@@ -236,6 +262,7 @@ export async function run() {
           this.kind = 'input';
         }
       },
+      ObjectVectorRuntimeClass: TestObjectVectorRuntime,
       SceneClass: class {
         constructor() {
           this.kind = 'scene';
@@ -271,6 +298,7 @@ export async function run() {
   await bootAsteroids({
     documentRef: showcaseDocument,
     InputServiceClass: class {},
+    ObjectVectorRuntimeClass: TestObjectVectorRuntime,
     EngineClass: class {
       constructor({ canvas }) {
         this.canvas = canvas;
@@ -314,6 +342,7 @@ export async function run() {
   await bootAsteroids({
     documentRef: productionDocument,
     InputServiceClass: class {},
+    ObjectVectorRuntimeClass: TestObjectVectorRuntime,
     EngineClass: class {
       constructor({ canvas }) {
         this.canvas = canvas;
@@ -356,6 +385,7 @@ export async function run() {
   await bootAsteroids({
     documentRef: localDocument,
     InputServiceClass: class {},
+    ObjectVectorRuntimeClass: TestObjectVectorRuntime,
     EngineClass: class {
       constructor({ canvas }) {
         this.canvas = canvas;
@@ -387,7 +417,7 @@ export async function run() {
   assert.equal(capturedLocalOptions.devConsoleIntegration.getState().overlayVisible, false);
 
   withBlockedLocalStorage(() => {
-    const scene = new AsteroidsGameScene();
+    const scene = new AsteroidsGameScene({ asteroidGeometryProfiles });
     assert.equal(scene.session.highScore >= 0, true);
   });
 
@@ -403,7 +433,7 @@ export async function run() {
       },
     },
   });
-  const scene = new AsteroidsGameScene();
+  const scene = new AsteroidsGameScene({ asteroidGeometryProfiles });
   let stopAllCount = 0;
   scene.audio = {
     stopAll() {
@@ -423,7 +453,7 @@ export async function run() {
   assert.equal(stopAllCount, 1);
   assert.equal(lifecycleCanvas.style.cursor, 'default');
 
-  const world = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25 });
+  const world = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25, asteroidGeometryProfiles });
   const session = new AsteroidsSession(world, {
     load: () => 0,
     save: (score) => score,

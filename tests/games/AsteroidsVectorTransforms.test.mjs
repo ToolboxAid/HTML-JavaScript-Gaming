@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import Asteroid from '../../games/Asteroids/entities/Asteroid.js';
 import Ship from '../../games/Asteroids/entities/Ship.js';
 import Ufo from '../../games/Asteroids/entities/Ufo.js';
+import { createAsteroidsTestGeometryProfiles } from './asteroidsManifestObjectVectors.mjs';
 
 function assertPointClose(actual, expected) {
   assert.equal(Math.abs(actual.x - expected.x) < 1e-9, true);
@@ -15,6 +16,7 @@ function assertPointClose(actual, expected) {
 }
 
 export function run() {
+  const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
   const ship = new Ship(100, 200);
   ship.angle = Math.PI / 2;
   const shipPoints = ship.getPoints();
@@ -23,7 +25,7 @@ export function run() {
   assertPointClose(shipPoints[1], { x: 108, y: 190 });
   assertPointClose(shipPoints[5], { x: 100, y: 214 });
 
-  const asteroid = new Asteroid(320, 240, 3, () => 0.5);
+  const asteroid = new Asteroid(320, 240, 3, () => 0.5, asteroidGeometryProfiles);
   asteroid.angle = 0;
   asteroid.scale = 1;
   const asteroidPoints = asteroid.getPoints();

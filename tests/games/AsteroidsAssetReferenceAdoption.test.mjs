@@ -1,29 +1,25 @@
 import assert from "node:assert/strict";
-import { buildAsteroidsPlatformDemo } from "../../tools/shared/asteroidsPlatformDemo.js";
+import {
+  createAsteroidsTestGeometryProfiles,
+  loadAsteroidsManifest,
+  loadAsteroidsObjectVectorPayload
+} from "./asteroidsManifestObjectVectors.mjs";
 
 export async function run() {
-  const result = await buildAsteroidsPlatformDemo();
-  const binding = result.demo.runtimeBinding;
+  const manifest = loadAsteroidsManifest();
+  const payload = loadAsteroidsObjectVectorPayload();
+  const profiles = createAsteroidsTestGeometryProfiles();
+  const manifestText = JSON.stringify(manifest);
 
-  assert.equal(binding?.status, "ready");
-  assert.equal(Array.isArray(binding?.issues), true);
-  assert.equal(binding.issues.length, 0);
+  assert.equal(manifest.game.workspace.tools["vector-map-editor"], undefined);
+  assert.equal(manifestText.includes(`vector.${"asteroids"}.`), false);
+  assert.equal(payload.objects.some((object) => object.id === "object.asteroids.ship"), true);
+  assert.equal(payload.objects.some((object) => object.id === "object.asteroids.asteroid.small"), true);
+  assert.equal(profiles[1].objectId, "object.asteroids.asteroid.small");
+  assert.equal(profiles[2].objectId, "object.asteroids.asteroid.medium");
+  assert.equal(profiles[3].objectId, "object.asteroids.asteroid.large");
 
-  const objectVectorSource = result.demo.runtimeAssetSources["object.asteroids.ship"];
-  const rejectedIds = (binding.rejected || []).map((entry) => entry.assetId).sort();
-
-  assert.equal((binding.domains.vectors || []).length, 0);
-  assert.deepEqual(rejectedIds, [
-    "parallax.asteroids-overlay",
-    "parallax.asteroids-title",
-    "tilemap.asteroids-stage"
-  ]);
-  assert.equal(objectVectorSource.file.includes("tools.object-vector-studio-v2.objects.object.asteroids.ship"), true);
-
-  const runtimeAssetTable = result.demo.runtimeResult?.bootstrap?.assetTable || {};
-  const runtimePathFor = (entry) => entry?.file || entry?.path || "";
-  assert.equal(Object.keys(runtimeAssetTable).some((assetId) => assetId.startsWith(`vector.${"asteroids"}.`)), false);
-  assert.equal(runtimePathFor(runtimeAssetTable["tilemap.asteroids-stage"]).includes("/data/"), false);
-  assert.equal(runtimePathFor(runtimeAssetTable["parallax.asteroids-title"]).includes("/data/"), false);
-  assert.equal(runtimeAssetTable["tilemap.asteroids-stage"].visualPreference.objectIds.ship, "object.asteroids.ship");
+  const shapeIds = payload.objects.flatMap((object) => object.shapes.map((shape) => shape.id));
+  assert.equal(shapeIds.includes("small-asteroid-ridge"), true);
+  assert.equal(shapeIds.some((shapeId) => shapeId.startsWith("object.")), false);
 }

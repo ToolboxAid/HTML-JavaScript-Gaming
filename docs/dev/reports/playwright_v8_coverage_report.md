@@ -1,7 +1,7 @@
-# PR_26133_028 Playwright V8 Coverage Report
+# PR_26133_029 Playwright V8 Coverage Report
 
-Task: PR_26133_028-remove-vector-map-editor-runtime-dependency
-Date: 2026-05-13
+Task: PR_26133_029-remove-asteroids-shared-tool-fallbacks
+Date: 2026-05-14
 
 ## Result
 
@@ -14,27 +14,27 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## Exercised Tool Entry Points
 
-- Workspace Manager V2: 91%, 10 runtime JS files exercised.
-- Asset Manager V2: 74%, 13 runtime JS files exercised.
-- Preview Generator V2: 82%, 19 runtime JS files exercised.
-- Palette Manager V2: 62%, 12 runtime JS files exercised.
-- Tool Template V2: not exercised by this Playwright run.
-- Workspace Manager: not exercised by this Playwright run.
+- Workspace Manager V2: exercised by all 49 tests.
+- Object Vector Studio V2: exercised through shell, editing, dirty-state, geometry, and Asteroids runtime-loading flows.
+- Asset Manager V2 and Preview Generator V2: exercised by Workspace Manager V2 cross-tool tests.
+- Tool Template V2 and legacy Workspace Manager: not targeted by this Playwright run.
 
 ## Changed Runtime JS Coverage
 
-- `tools/shared/asteroidsPlatformDemo.js`: not collected by Playwright V8 coverage; covered by focused node probe.
-- `tools/shared/vectorAssetSystem.js`: not collected by Playwright V8 coverage; covered by focused node probe.
-- Object Vector Studio V2 runtime/editor modules from the prior object-ID path remain covered by the Workspace V2 run.
+- `games/Asteroids/game/asteroidObjectGeometry.js`: covered by focused node probes; used by Asteroids scene/world construction.
+- `games/Asteroids/entities/Asteroid.js`: covered by focused Asteroids vector-transform and collision probes.
+- `games/Asteroids/game/AsteroidsWorld.js`: covered by focused collision timing probes.
+- `games/Asteroids/game/AsteroidsGameScene.js` and `games/Asteroids/index.js`: covered by focused validation boot probe and Workspace V2 Asteroids runtime test.
+- `tools/shared/vectorAssetSystem.js`: covered by focused node probe.
+- `tools/shared/asteroidsPlatformDemo.js`: removed.
 
 ## PR-Specific Coverage/Validation Relevance
 
-The workspace-v2 run exercises the Object Vector Studio V2 editor and Asteroids runtime paths affected by this PR:
+The Workspace V2 run plus focused probes verify the paths affected by this PR:
 
-- Asteroids workspace hydration without `vector-map-editor`.
-- Object Vector Studio V2 loading/editing of Asteroids objects through `object-vector-studio-v2.objects`.
-- Asteroids runtime Object Vector rendering through `object.asteroids.*` IDs.
-- Workspace save summaries without vector-map-editor tool state.
-- Asteroids manifest schema validation after vector-map removal.
+- Object Vector Studio V2 remains the editor/source payload for Asteroids geometry.
+- Asteroids runtime uses manifest-backed `object.asteroids.*` object IDs.
+- Shared tools no longer carry Asteroids-specific SVG fallback constants or the Asteroids platform demo module.
+- Shape IDs remain local editable shape IDs inside each object and are not used as runtime object identity.
 
 Generated source report: `docs/dev/reports/playwright_v8_coverage_report.txt`.

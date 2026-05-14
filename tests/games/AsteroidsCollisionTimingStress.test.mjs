@@ -6,6 +6,7 @@
 */
 import assert from 'node:assert/strict';
 import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';
+import { createAsteroidsTestGeometryProfiles } from './asteroidsManifestObjectVectors.mjs';
 
 function createInput(keys = {}) {
   return {
@@ -59,7 +60,8 @@ function assertClose(actual, expected, message) {
 }
 
 export function run() {
-  const collisionWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5 });
+  const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
+  const collisionWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
   collisionWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   collisionWorld.asteroids = [createStationaryAsteroid(collisionWorld, { x: 480, y: 400, size: 3 })];
   collisionWorld.bullets = [collisionWorld.createBulletFromState(createBulletState({
@@ -73,7 +75,7 @@ export function run() {
   assert.equal(collisionWorld.bullets.length, 0);
   assert.equal(collisionWorld.asteroids.length, 2);
 
-  const waveWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25 });
+  const waveWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25, asteroidGeometryProfiles });
   waveWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   waveWorld.asteroids = [createStationaryAsteroid(waveWorld, { x: 480, y: 400, size: 1 })];
   waveWorld.bullets = [waveWorld.createBulletFromState(createBulletState({
@@ -87,7 +89,7 @@ export function run() {
   assert.equal(waveWorld.wave, 2);
   assert.equal(waveWorld.asteroids.length > 0, true);
 
-  const respawnLargeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.35 });
+  const respawnLargeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.35, asteroidGeometryProfiles });
   respawnLargeWorld.asteroids = [createStationaryAsteroid(respawnLargeWorld, {
     x: respawnLargeWorld.ship.spawnX,
     y: respawnLargeWorld.ship.spawnY,
@@ -102,7 +104,7 @@ export function run() {
   respawnLargeWorld.ufoBullets = [];
   const respawnLargeEvents = respawnLargeWorld.update(1, createInput());
 
-  const respawnSteppedWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.35 });
+  const respawnSteppedWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.35, asteroidGeometryProfiles });
   respawnSteppedWorld.asteroids = [createStationaryAsteroid(respawnSteppedWorld, {
     x: respawnSteppedWorld.ship.spawnX,
     y: respawnSteppedWorld.ship.spawnY,
@@ -121,7 +123,7 @@ export function run() {
   assert.equal(respawnLargeWorld.shipActive, respawnSteppedWorld.shipActive);
   assert.equal(respawnLargeWorld.status, respawnSteppedWorld.status);
 
-  const timingLargeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.45 });
+  const timingLargeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.45, asteroidGeometryProfiles });
   timingLargeWorld.asteroids = [];
   timingLargeWorld.ufo = null;
   timingLargeWorld.ufoBullets = [];
@@ -129,7 +131,7 @@ export function run() {
   timingLargeWorld.ship.invulnerable = 0;
   timingLargeWorld.update(0.5, createInput({ ArrowUp: true }));
 
-  const timingSteppedWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.45 });
+  const timingSteppedWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.45, asteroidGeometryProfiles });
   timingSteppedWorld.asteroids = [];
   timingSteppedWorld.ufo = null;
   timingSteppedWorld.ufoBullets = [];
