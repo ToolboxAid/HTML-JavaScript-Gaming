@@ -1211,6 +1211,30 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='object-vector-studio-v2']")).toBeVisible();
       await expect(page.locator("[data-tool-starter-header]")).toContainText("Object Vector Studio V2");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector Studio V2 schema contract loaded from \/tools\/schemas\/tools\/object-vector-studio-v2\.schema\.json\./);
+      const objectVectorSchemaDefaults = await page.evaluate(async () => {
+        const toolSchema = window.__objectVectorStudioV2App.schemaService.schema;
+        const gameSchema = await fetch("/tools/schemas/game.manifest.schema.json", { cache: "no-store" }).then((response) => response.json());
+        return {
+          gameObjectDefaultTags: gameSchema.$defs.objectVectorStudioObject.default.tags,
+          gamePolygonDefaultPointCount: gameSchema.$defs.objectVectorStudioPolygonGeometry.default.points.length,
+          gameShapeCommonDefaultTool: gameSchema.$defs.objectVectorStudioShapeCommon.default.tool,
+          gameTransformDefaultOrigin: gameSchema.$defs.objectVectorStudioTransform.default.origin,
+          toolPolygonDefaultPointCount: toolSchema.$defs.polygonGeometry.default.points.length,
+          toolShapeCommonDefaultTool: toolSchema.$defs.shapeCommon.default.tool,
+          toolStyleDefaultStrokeWidth: toolSchema.$defs.style.default.strokeWidth,
+          toolTransformDefaultOrigin: toolSchema.$defs.transform.default.origin
+        };
+      });
+      expect(objectVectorSchemaDefaults).toEqual({
+        gameObjectDefaultTags: [],
+        gamePolygonDefaultPointCount: 5,
+        gameShapeCommonDefaultTool: "polygon",
+        gameTransformDefaultOrigin: { x: 0, y: 0 },
+        toolPolygonDefaultPointCount: 5,
+        toolShapeCommonDefaultTool: "polygon",
+        toolStyleDefaultStrokeWidth: 3,
+        toolTransformDefaultOrigin: { x: 0, y: 0 }
+      });
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "Export", "Export SVG"]);
       await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeHidden();
@@ -1869,6 +1893,44 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2DeleteShapeButton")).toHaveCount(0);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape on Asteroids Ship\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Render mode svg-work-surface: rendered Asteroids Ship with 1 visible shapes; capture mode none\./);
+      const createdRectangleSchemaDefaults = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const schema = app.schemaService.schema;
+        const shape = app.selectedShape();
+        return {
+          geometry: shape.geometry,
+          locked: shape.locked,
+          schemaGeometry: schema.$defs.rectangleGeometry.default,
+          schemaShapeCommon: schema.$defs.shapeCommon.default,
+          schemaStyle: schema.$defs.style.default,
+          schemaTransform: schema.$defs.transform.default,
+          style: shape.style,
+          tool: shape.tool,
+          transform: shape.transform,
+          visible: shape.visible
+        };
+      });
+      expect(createdRectangleSchemaDefaults).toMatchObject({
+        geometry: createdRectangleSchemaDefaults.schemaGeometry,
+        locked: createdRectangleSchemaDefaults.schemaShapeCommon.locked,
+        style: {
+          fill: "#ffffff",
+          fillOpacity: createdRectangleSchemaDefaults.schemaStyle.fillOpacity,
+          stroke: "#ffffff",
+          strokeOpacity: createdRectangleSchemaDefaults.schemaStyle.strokeOpacity,
+          strokeWidth: createdRectangleSchemaDefaults.schemaStyle.strokeWidth
+        },
+        tool: "rectangle",
+        transform: {
+          origin: { x: -40, y: 0 },
+          rotation: createdRectangleSchemaDefaults.schemaTransform.rotation,
+          scaleX: createdRectangleSchemaDefaults.schemaTransform.scaleX,
+          scaleY: createdRectangleSchemaDefaults.schemaTransform.scaleY,
+          x: createdRectangleSchemaDefaults.schemaTransform.x,
+          y: createdRectangleSchemaDefaults.schemaTransform.y
+        },
+        visible: createdRectangleSchemaDefaults.schemaShapeCommon.visible
+      });
 
       await page.locator('[data-shape-tool="circle"]').click();
       await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(18 obj, 2 shapes)");
@@ -7278,6 +7340,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expectWorkspaceReturnRehydrated(page);
       await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
+      const generatedObjectVectorPayload = JSON.parse(await page.locator("#workspaceContextOutput").inputValue()).tools["object-vector-studio-v2"];
+      expect(generatedObjectVectorPayload.assetLibrary).toBeUndefined();
+      expect(generatedObjectVectorPayload.objects.every((object) => Array.isArray(object.tags))).toBe(true);
+      expect(generatedObjectVectorPayload.objects.find((object) => object.id === "object.asteroids.asteroid.small").tags).toEqual(["asteroid", "small"]);
 
       await page.locator('[data-workspace-tool-id="object-vector-studio-v2"]').click();
       await expect(page).toHaveURL(/object-vector-studio-v2\/index\.html.*launch=workspace/);

@@ -203,6 +203,12 @@
       "type": "object",
       "required": ["id", "name", "tags", "shapes"],
       "additionalProperties": false,
+      "default": {
+        "id": "object.game.object",
+        "name": "Object",
+        "tags": [],
+        "shapes": []
+      },
       "properties": {
         "id": {
           "$ref": "#/$defs/objectIdentityId"
@@ -270,6 +276,28 @@
       "type": "object",
       "required": ["tool", "order", "visible", "locked", "geometry", "style", "transform"],
       "additionalProperties": false,
+      "default": {
+        "tool": "polygon",
+        "order": 0,
+        "visible": true,
+        "locked": false,
+        "geometry": {},
+        "style": {
+          "fill": "#ffffff",
+          "stroke": "#ffffff",
+          "strokeWidth": 3,
+          "fillOpacity": 1,
+          "strokeOpacity": 1
+        },
+        "transform": {
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "origin": { "x": 0, "y": 0 }
+        }
+      },
       "properties": {
         "tool": {
           "type": "string",
@@ -401,6 +429,13 @@
       "type": "object",
       "required": ["fill", "stroke", "strokeWidth", "fillOpacity", "strokeOpacity"],
       "additionalProperties": false,
+      "default": {
+        "fill": "#ffffff",
+        "stroke": "#ffffff",
+        "strokeWidth": 3,
+        "fillOpacity": 1,
+        "strokeOpacity": 1
+      },
       "properties": {
         "fill": {
           "type": "string"
@@ -428,6 +463,14 @@
       "type": "object",
       "required": ["x", "y", "rotation", "scaleX", "scaleY", "origin"],
       "additionalProperties": false,
+      "default": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "origin": { "x": 0, "y": 0 }
+      },
       "properties": {
         "x": {
           "type": "number"
@@ -453,6 +496,7 @@
       "type": "object",
       "required": ["x", "y"],
       "additionalProperties": false,
+      "default": { "x": 0, "y": 0 },
       "properties": {
         "x": {
           "type": "number"
@@ -466,6 +510,7 @@
       "type": "object",
       "required": ["x", "y", "width", "height"],
       "additionalProperties": false,
+      "default": { "x": -80, "y": -30, "width": 80, "height": 60 },
       "properties": {
         "x": { "type": "number" },
         "y": { "type": "number" },
@@ -477,6 +522,7 @@
       "type": "object",
       "required": ["cx", "cy", "r"],
       "additionalProperties": false,
+      "default": { "cx": 70, "cy": -10, "r": 30 },
       "properties": {
         "cx": { "type": "number" },
         "cy": { "type": "number" },
@@ -487,6 +533,7 @@
       "type": "object",
       "required": ["cx", "cy", "rx", "ry"],
       "additionalProperties": false,
+      "default": { "cx": 70, "cy": 70, "rx": 50, "ry": 30 },
       "properties": {
         "cx": { "type": "number" },
         "cy": { "type": "number" },
@@ -498,6 +545,10 @@
       "type": "object",
       "required": ["point1", "point2"],
       "additionalProperties": false,
+      "default": {
+        "point1": { "x": -100, "y": 80 },
+        "point2": { "x": 0, "y": 30 }
+      },
       "properties": {
         "point1": { "$ref": "#/$defs/objectVectorStudioPoint2d" },
         "point2": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
@@ -507,6 +558,15 @@
       "type": "object",
       "required": ["points"],
       "additionalProperties": false,
+      "default": {
+        "points": [
+          { "x": 0, "y": -80 },
+          { "x": 76, "y": -25 },
+          { "x": 47, "y": 65 },
+          { "x": -47, "y": 65 },
+          { "x": -76, "y": -25 }
+        ]
+      },
       "properties": {
         "points": {
           "type": "array",
@@ -526,6 +586,13 @@
       "type": "object",
       "required": ["points"],
       "additionalProperties": false,
+      "default": {
+        "points": [
+          { "x": 0, "y": -80 },
+          { "x": 40, "y": -10 },
+          { "x": -40, "y": -10 }
+        ]
+      },
       "properties": {
         "points": {
           "type": "array",
@@ -539,6 +606,7 @@
       "type": "object",
       "required": ["cx", "cy", "r", "startAngle", "endAngle"],
       "additionalProperties": false,
+      "default": { "cx": 0, "cy": 70, "r": 40, "startAngle": -135, "endAngle": 135 },
       "properties": {
         "cx": { "type": "number" },
         "cy": { "type": "number" },
@@ -551,6 +619,7 @@
       "type": "object",
       "required": ["x", "y", "fontSize", "text"],
       "additionalProperties": false,
+      "default": { "x": -30, "y": 40, "fontSize": 20, "text": "Text" },
       "properties": {
         "x": { "type": "number" },
         "y": { "type": "number" },

@@ -603,6 +603,32 @@ export default class AsteroidsWorld {
     this.status = 'Ship destroyed.';
   }
 
+  resolveBulletCrossfire(events) {
+    for (let bulletIndex = this.bullets.length - 1; bulletIndex >= 0; bulletIndex -= 1) {
+      const bullet = this.bullets[bulletIndex];
+      const bulletPolygon = bullet.getCollisionPolygon();
+
+      for (let ufoBulletIndex = this.ufoBullets.length - 1; ufoBulletIndex >= 0; ufoBulletIndex -= 1) {
+        const ufoBullet = this.ufoBullets[ufoBulletIndex];
+        if (!arePolygonsColliding(bulletPolygon, ufoBullet.getCollisionPolygon())) {
+          continue;
+        }
+
+        this.bullets.splice(bulletIndex, 1);
+        this.ufoBullets.splice(ufoBulletIndex, 1);
+        events.explosions.push({
+          x: (bullet.x + ufoBullet.x) / 2,
+          y: (bullet.y + ufoBullet.y) / 2,
+          size: 1,
+          source: 'bullet-crossfire',
+        });
+        events.sfx.push('bangSmall');
+        this.status = 'Opposing shots collided.';
+        break;
+      }
+    }
+  }
+
   updateStep(dtSeconds, input) {
     const events = createWorldEvents();
 
@@ -663,6 +689,7 @@ export default class AsteroidsWorld {
 
     this.ufoBullets.forEach((bullet) => bullet.update(safeDtSeconds, this.bounds));
     this.ufoBullets = this.ufoBullets.filter((bullet) => bullet.isAlive());
+    this.resolveBulletCrossfire(events);
 
     if (this.ufo) {
       const ufoPolygon = this.ufo.getCollisionPolygon();

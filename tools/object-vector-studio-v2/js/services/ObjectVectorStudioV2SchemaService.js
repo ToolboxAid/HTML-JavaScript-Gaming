@@ -68,6 +68,17 @@ export class ObjectVectorStudioV2SchemaService {
     return schema;
   }
 
+  getDefinitionDefault(definitionName) {
+    if (!this.schema) {
+      throw new Error("Object Vector Studio V2 schema is not loaded.");
+    }
+    const definition = this.schema.$defs?.[definitionName];
+    if (!isPlainObject(definition) || !Object.prototype.hasOwnProperty.call(definition, "default")) {
+      throw new Error(`Object Vector Studio V2 schema default is missing for $defs.${definitionName}.default.`);
+    }
+    return clone(definition.default);
+  }
+
   validateSchemaShape(schema, errors) {
     if (!isPlainObject(schema)) {
       errors.push("Object Vector Studio V2 schema root must be an object.");
@@ -115,6 +126,32 @@ export class ObjectVectorStudioV2SchemaService {
     const overrideFields = schema.$defs?.shapeFrameOverride?.required || [];
     if (!overrideFields.includes("shapeIndex")) {
       errors.push("Object Vector Studio V2 shape frame override schema must require shapeIndex.");
+    }
+    [
+      "object",
+      "shapeCommon",
+      "style",
+      "transform",
+      "rectangleGeometry",
+      "circleGeometry",
+      "ellipseGeometry",
+      "lineGeometry",
+      "triangleGeometry",
+      "polygonGeometry",
+      "arcGeometry",
+      "textGeometry"
+    ].forEach((definitionName) => {
+      if (!Object.prototype.hasOwnProperty.call(schema.$defs?.[definitionName] || {}, "default")) {
+        errors.push(`Object Vector Studio V2 schema must define $defs.${definitionName}.default.`);
+      }
+    });
+    const polygonDefaultPoints = schema.$defs?.polygonGeometry?.default?.points;
+    if (!Array.isArray(polygonDefaultPoints) || polygonDefaultPoints.length !== 5) {
+      errors.push("Object Vector Studio V2 schema polygonGeometry.default must provide five default points.");
+    }
+    const triangleDefaultPoints = schema.$defs?.triangleGeometry?.default?.points;
+    if (!Array.isArray(triangleDefaultPoints) || triangleDefaultPoints.length !== 3) {
+      errors.push("Object Vector Studio V2 schema triangleGeometry.default must provide exactly three default points.");
     }
   }
 

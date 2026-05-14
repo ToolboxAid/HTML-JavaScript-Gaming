@@ -60,7 +60,7 @@ function sortedShapes(object) {
 function extractPrimaryPolygonPoints(object) {
   const shape = sortedShapes(object).find((candidate) => (
     candidate?.visible !== false
-    && candidate?.type === 'polygon'
+    && candidate?.tool === 'polygon'
     && asArray(candidate?.geometry?.points).length >= 3
   ));
   return asArray(shape?.geometry?.points).map(cleanPoint);

@@ -61,6 +61,10 @@ function assertClose(actual, expected, message) {
 
 export function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
+  Object.entries(asteroidGeometryProfiles).forEach(([size, profile]) => {
+    assert.equal(profile.points.length >= 4, true, `Asteroid size ${size} should load polygon collision points from object-vector-studio-v2 tool geometry.`);
+  });
+
   const collisionWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
   collisionWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   collisionWorld.asteroids = [createStationaryAsteroid(collisionWorld, { x: 480, y: 400, size: 3 })];
@@ -74,6 +78,89 @@ export function run() {
   assert.deepEqual(collisionEvents.scoreEvents, [20]);
   assert.equal(collisionWorld.bullets.length, 0);
   assert.equal(collisionWorld.asteroids.length, 2);
+
+  const shipImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  shipImpactWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
+  shipImpactWorld.ship.invulnerable = 0;
+  shipImpactWorld.asteroids = [createStationaryAsteroid(shipImpactWorld, {
+    x: shipImpactWorld.ship.x,
+    y: shipImpactWorld.ship.y,
+    size: 3,
+  })];
+  const shipImpactEvents = shipImpactWorld.update(0, createInput());
+  assert.equal(shipImpactEvents.shipDestroyed, true);
+  assert.equal(shipImpactWorld.shipActive, false);
+
+  const ufoImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  ufoImpactWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
+  ufoImpactWorld.asteroids = [createStationaryAsteroid(ufoImpactWorld, { x: 480, y: 360, size: 3 })];
+  ufoImpactWorld.ufo = ufoImpactWorld.createUfoEntity('large', 1);
+  ufoImpactWorld.ufo.x = 480;
+  ufoImpactWorld.ufo.y = 360;
+  ufoImpactWorld.ufo.vx = 0;
+  ufoImpactWorld.ufo.vy = 0;
+  ufoImpactWorld.ufo.turnTimer = Number.POSITIVE_INFINITY;
+  ufoImpactWorld.ufo.fireTimer = Number.POSITIVE_INFINITY;
+  const ufoImpactEvents = ufoImpactWorld.update(0, createInput());
+  assert.equal(ufoImpactWorld.ufo, null);
+  assert.equal(ufoImpactEvents.explosions.some((explosion) => explosion.source === 'ufo'), true);
+
+  const ufoBulletImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  ufoBulletImpactWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
+  ufoBulletImpactWorld.asteroids = [createStationaryAsteroid(ufoBulletImpactWorld, { x: 480, y: 360, size: 3 })];
+  ufoBulletImpactWorld.ufo = ufoBulletImpactWorld.createUfoEntity('large', 1);
+  ufoBulletImpactWorld.ufo.x = 80;
+  ufoBulletImpactWorld.ufo.y = 80;
+  ufoBulletImpactWorld.ufo.vx = 0;
+  ufoBulletImpactWorld.ufo.vy = 0;
+  ufoBulletImpactWorld.ufo.turnTimer = Number.POSITIVE_INFINITY;
+  ufoBulletImpactWorld.ufo.fireTimer = Number.POSITIVE_INFINITY;
+  ufoBulletImpactWorld.ufoBullets = [ufoBulletImpactWorld.createBulletFromState(createBulletState({
+    x: 480,
+    y: 360,
+    vx: 0,
+    vy: 0,
+  }))];
+  const ufoBulletImpactEvents = ufoBulletImpactWorld.update(0, createInput());
+  assert.equal(ufoBulletImpactWorld.ufoBullets.length, 0);
+  assert.equal(ufoBulletImpactWorld.asteroids.length, 2);
+  assert.equal(ufoBulletImpactEvents.explosions.length > 0, true);
+
+  const bulletCrossfireWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  bulletCrossfireWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
+  bulletCrossfireWorld.asteroids = [];
+  bulletCrossfireWorld.ufo = null;
+  bulletCrossfireWorld.bullets = [bulletCrossfireWorld.createBulletFromState(createBulletState({
+    x: 480,
+    y: 360,
+    vx: 0,
+    vy: 0,
+  }))];
+  bulletCrossfireWorld.ufoBullets = [bulletCrossfireWorld.createBulletFromState(createBulletState({
+    x: 480,
+    y: 360,
+    vx: 0,
+    vy: 0,
+  }))];
+  const bulletCrossfireEvents = bulletCrossfireWorld.update(0, createInput());
+  assert.equal(bulletCrossfireWorld.bullets.length, 0);
+  assert.equal(bulletCrossfireWorld.ufoBullets.length, 0);
+  assert.equal(bulletCrossfireEvents.explosions.some((explosion) => explosion.source === 'bullet-crossfire'), true);
+
+  const shipUfoCrashWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  shipUfoCrashWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
+  shipUfoCrashWorld.asteroids = [];
+  shipUfoCrashWorld.ship.invulnerable = 0;
+  shipUfoCrashWorld.ufo = shipUfoCrashWorld.createUfoEntity('large', 1);
+  shipUfoCrashWorld.ufo.x = shipUfoCrashWorld.ship.x;
+  shipUfoCrashWorld.ufo.y = shipUfoCrashWorld.ship.y;
+  shipUfoCrashWorld.ufo.vx = 0;
+  shipUfoCrashWorld.ufo.vy = 0;
+  shipUfoCrashWorld.ufo.turnTimer = Number.POSITIVE_INFINITY;
+  shipUfoCrashWorld.ufo.fireTimer = Number.POSITIVE_INFINITY;
+  const shipUfoCrashEvents = shipUfoCrashWorld.update(0, createInput());
+  assert.equal(shipUfoCrashEvents.shipDestroyed, true);
+  assert.equal(shipUfoCrashWorld.ufo, null);
 
   const waveWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25, asteroidGeometryProfiles });
   waveWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;

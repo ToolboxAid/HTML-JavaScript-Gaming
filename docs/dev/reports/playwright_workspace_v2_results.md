@@ -1,6 +1,6 @@
-# PR_26133_032 Workspace V2 Playwright Results
+# PR_26133_033 Workspace V2 Playwright Results
 
-Task: PR_26133_032-object-vector-schema-geometry-and-style-ssot
+Task: PR_26133_033-asteroids-collision-and-object-vector-schema-defaults
 Date: 2026-05-14
 
 ## Result
@@ -10,21 +10,20 @@ PASS - `npm run test:workspace-v2` completed successfully.
 - Command: `npm run test:workspace-v2`
 - Playwright target: `tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list`
 - Final result: 49 passed, 0 failed.
-- Focused rerun before the full suite: 1 passed for the Object Vector Studio V2 schema-only palette gate after opacity-control test updates.
+- Runtime/console guard: Workspace V2 tests that monitor page errors completed with no reported page errors.
 
 ## PR-Specific Coverage
 
-- Fill and stroke opacity controls apply to selected Object Vector shapes and persist as `fillOpacity` / `strokeOpacity`.
-- Object Vector Studio V2 loads Asteroids object tags from `objects[*].tags` with no `assetLibrary` payload.
-- Polygon editing enforces the new minimum of 4 points; default created polygons use 5 points.
-- Triangle shapes use fixed 3-point triangle geometry and keep Add/Delete Point hidden.
-- Line geometry loads/edits through `point1` / `point2`.
-- Transform origin loads/edits through `origin: { x, y }`.
-- Runtime object-vector rendering uses object ids as SSoT and validates the reduced Object Vector payload.
-- Runtime console checks: covered Workspace V2 flows asserted no page errors or console errors where the suite monitors them.
+- Object Vector Studio V2 schema defaults are present in the game manifest schema and the standalone tool schema.
+- New rectangle creation was verified against schema-cloned geometry/style/transform defaults.
+- Workspace Manager V2 generated the Asteroids Object Vector payload without `assetLibrary` and with `objects[*].tags` present.
+- Launching Object Vector Studio V2 for Asteroids from Workspace Manager V2 loaded 6 objects and validated the payload.
+- Dirty-state and save validation still pass after the generated manifest cleanup.
 
 ## Additional Validation
 
-PASS - Custom manifest/schema validation loaded `games/Asteroids/game.manifest.json`, validated the embedded Object Vector Studio V2 payload, and loaded it through `ObjectVectorRuntimeAssetService`.
+PASS - Targeted Asteroids collision checks covered ship/asteroid, bullet/asteroid, UFO/asteroid, UFO bullet/asteroid, ship bullet/UFO bullet crossfire, and ship/UFO crash cases.
 
-PASS - `node --check` for changed Object Vector JS and the Workspace Manager V2 Playwright spec.
+PASS - Targeted Asteroids validation smoke completed.
+
+PASS - Node schema validation reported `games/Asteroids/game.manifest.json` and the generated workspace manifest as schema-valid.

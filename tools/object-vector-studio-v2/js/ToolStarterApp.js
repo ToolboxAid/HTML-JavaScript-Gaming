@@ -2731,10 +2731,17 @@ export class ToolStarterApp {
 
     const nextPayload = this.cloneCurrentPayload();
     const id = this.uniqueObjectId(name, nextPayload.objects);
+    let objectDefault;
+    try {
+      objectDefault = this.schemaDefault("object");
+    } catch (error) {
+      this.statusLog.write(`FAIL Add object blocked: ${error.message}`);
+      return;
+    }
     nextPayload.objects.push({
+      ...objectDefault,
       id,
       name,
-      shapes: [],
       tags: tagList(this.elements.objectTagInput.value)
     });
     this.commitPayloadUpdate(nextPayload, id, "", `OK Added object ${name} with object/game/name id ${id}.`, "Add object failed schema validation");
@@ -2978,6 +2985,33 @@ export class ToolStarterApp {
     this.commitPayloadUpdate(nextPayload, selected.id, selectedShapeIndex, `OK Flattened object ${selected.name}: baked transforms into ${flattenedCount} shapes.`, "Flatten object failed schema validation");
   }
 
+  schemaDefault(definitionName) {
+    if (typeof this.schemaService.getDefinitionDefault !== "function") {
+      throw new Error("Object Vector Studio V2 schema default reader is unavailable.");
+    }
+    return this.schemaService.getDefinitionDefault(definitionName);
+  }
+
+  createShapeStyleDefault(type, color) {
+    const style = this.schemaDefault("style");
+    return {
+      ...style,
+      fill: ["arc", "line"].includes(type) ? "none" : color,
+      fillOpacity: this.selectedFillOpacity,
+      stroke: color,
+      strokeOpacity: this.selectedStrokeOpacity
+    };
+  }
+
+  createShapeTransformDefault(shape) {
+    const transform = this.schemaDefault("transform");
+    const centeredTransform = defaultShapeTransform(shape);
+    return {
+      ...transform,
+      origin: centeredTransform.origin
+    };
+  }
+
   createShape(type) {
     const object = this.selectedObject();
     if (!object) {
@@ -2997,75 +3031,33 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
     const order = nextObject.shapes.length ? Math.max(...nextObject.shapes.map((shape) => shape.order)) + 1 : 1;
-    const shape = this.createPrimitiveShape(type, order, color);
+    let shape;
+    try {
+      shape = this.createPrimitiveShape(type, order, color);
+    } catch (error) {
+      this.statusLog.write(`FAIL Create ${type} blocked: ${error.message}`);
+      return;
+    }
     nextObject.shapes.push(shape);
     this.commitPayloadUpdate(nextPayload, nextObject.id, sortedShapes(nextObject).length - 1, `OK Created ${type} shape on ${nextObject.name}.`, `Create ${type} failed schema validation`);
   }
 
   createPrimitiveShape(type, order, color) {
-    const withTransform = (shape) => ({
-      ...shape,
-      transform: defaultShapeTransform(shape)
-    });
-    const schemaType = type === "triangle" ? "polygon" : type;
-    const base = {
-      locked: false,
+    if (!PRIMITIVE_TOOLS.includes(type)) {
+      throw new Error(`unsupported shape tool ${type}.`);
+    }
+
+    const base = this.schemaDefault("shapeCommon");
+    const shape = {
+      ...base,
+      geometry: this.schemaDefault(`${type}Geometry`),
       order,
-      style: {
-        fill: ["arc", "line"].includes(schemaType) ? "none" : color,
-        fillOpacity: this.selectedFillOpacity,
-        stroke: color,
-        strokeOpacity: this.selectedStrokeOpacity,
-        strokeWidth: 3
-      },
+      style: this.createShapeStyleDefault(type, color),
       tool: type,
-      visible: true
+      visible: base.visible
     };
-    if (type === "rectangle") {
-      return withTransform({ ...base, geometry: { height: 60, width: 80, x: -80, y: -30 } });
-    }
-    if (type === "circle") {
-      return withTransform({ ...base, geometry: { cx: 70, cy: -10, r: 30 } });
-    }
-    if (type === "ellipse") {
-      return withTransform({ ...base, geometry: { cx: 70, cy: 70, rx: 50, ry: 30 } });
-    }
-    if (type === "line") {
-      return withTransform({ ...base, geometry: { point1: { x: -100, y: 80 }, point2: { x: 0, y: 30 } } });
-    }
-    if (type === "triangle") {
-      return withTransform({
-        ...base,
-        geometry: {
-          points: [
-            { x: 0, y: -80 },
-            { x: 40, y: -10 },
-            { x: -40, y: -10 }
-          ]
-        }
-      });
-    }
-    if (type === "polygon") {
-      return withTransform({
-        ...base,
-        geometry: {
-          points: [
-            { x: 0, y: -80 },
-            { x: 76, y: -25 },
-            { x: 47, y: 65 },
-            { x: -47, y: 65 },
-            { x: -76, y: -25 }
-          ]
-        }
-      });
-    }
-    if (type === "arc") {
-      return withTransform({ ...base, geometry: { cx: 0, cy: 70, endAngle: 135, r: 40, startAngle: -135 } });
-    }
-    if (type === "text") {
-      return withTransform({ ...base, geometry: { fontSize: 20, text: "Text", x: -30, y: 40 } });
-    }
-    return base;
+    shape.transform = this.createShapeTransformDefault(shape);
+    return shape;
   }
 
   flattenShapeTransform(shape) {

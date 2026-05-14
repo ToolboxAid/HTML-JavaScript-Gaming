@@ -30,6 +30,12 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "name", "tags", "shapes"],
+      "default": {
+        "id": "object.game.object",
+        "name": "Object",
+        "tags": [],
+        "shapes": []
+      },
       "properties": {
         "id": {
           "type": "string",
@@ -165,6 +171,28 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["tool", "order", "visible", "locked", "geometry", "style", "transform"],
+      "default": {
+        "tool": "polygon",
+        "order": 0,
+        "visible": true,
+        "locked": false,
+        "geometry": {},
+        "style": {
+          "fill": "#ffffff",
+          "stroke": "#ffffff",
+          "strokeWidth": 3,
+          "fillOpacity": 1,
+          "strokeOpacity": 1
+        },
+        "transform": {
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "origin": { "x": 0, "y": 0 }
+        }
+      },
       "properties": {
         "tool": {
           "description": "Editor and runtime shape/tool kind. Triangle is polygon geometry authored by the triangle tool.",
@@ -344,6 +372,13 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["fill", "stroke", "strokeWidth", "fillOpacity", "strokeOpacity"],
+      "default": {
+        "fill": "#ffffff",
+        "stroke": "#ffffff",
+        "strokeWidth": 3,
+        "fillOpacity": 1,
+        "strokeOpacity": 1
+      },
       "properties": {
         "fill": {
           "type": "string",
@@ -373,6 +408,14 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["x", "y", "rotation", "scaleX", "scaleY", "origin"],
+      "default": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "origin": { "x": 0, "y": 0 }
+      },
       "properties": {
         "x": {
           "type": "number"
@@ -400,6 +443,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["x", "y"],
+      "default": { "x": 0, "y": 0 },
       "properties": {
         "x": {
           "type": "number"
@@ -413,6 +457,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["x", "y", "width", "height"],
+      "default": { "x": -80, "y": -30, "width": 80, "height": 60 },
       "properties": {
         "x": {
           "type": "number"
@@ -434,6 +479,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["cx", "cy", "r"],
+      "default": { "cx": 70, "cy": -10, "r": 30 },
       "properties": {
         "cx": {
           "type": "number"
@@ -451,6 +497,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["cx", "cy", "rx", "ry"],
+      "default": { "cx": 70, "cy": 70, "rx": 50, "ry": 30 },
       "properties": {
         "cx": {
           "type": "number"
@@ -472,6 +519,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["point1", "point2"],
+      "default": {
+        "point1": { "x": -100, "y": 80 },
+        "point2": { "x": 0, "y": 30 }
+      },
       "properties": {
         "point1": {
           "$ref": "#/$defs/point2d"
@@ -485,6 +536,15 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["points"],
+      "default": {
+        "points": [
+          { "x": 0, "y": -80 },
+          { "x": 76, "y": -25 },
+          { "x": 47, "y": 65 },
+          { "x": -47, "y": 65 },
+          { "x": -76, "y": -25 }
+        ]
+      },
       "properties": {
         "points": {
           "type": "array",
@@ -506,6 +566,13 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["points"],
+      "default": {
+        "points": [
+          { "x": 0, "y": -80 },
+          { "x": 40, "y": -10 },
+          { "x": -40, "y": -10 }
+        ]
+      },
       "properties": {
         "points": {
           "type": "array",
@@ -521,6 +588,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["cx", "cy", "r", "startAngle", "endAngle"],
+      "default": { "cx": 0, "cy": 70, "r": 40, "startAngle": -135, "endAngle": 135 },
       "properties": {
         "cx": {
           "type": "number"
@@ -544,6 +612,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["x", "y", "fontSize", "text"],
+      "default": { "x": -30, "y": 40, "fontSize": 20, "text": "Text" },
       "properties": {
         "x": {
           "type": "number"
