@@ -39,7 +39,7 @@ This PR must fix the code that still expects nested `media` sections instead of 
         "source": "workspace-manager"
       },
       "font.asteroids.vector-battle": {
-        "path": "/games/Asteroids/assets/fonts/vector_battle.ttf",
+        "path": "/src/assets/fonts/vector_battle/vector_battle.ttf",
         "kind": "font",
         "source": "workspace-manager"
       },
@@ -94,7 +94,7 @@ const fontAssets = Object.entries(assets).filter(([, asset]) => asset.kind === "
 - `image.asteroids.bezel.path` must be `/games/Asteroids/assets/images/bezel.png`.
 - Do not use `bezel1.png`.
 - `image.asteroids.background.path` must be `/games/Asteroids/assets/images/deluxe.png`.
-- `font.asteroids.vector-battle` must exist and point to `/games/Asteroids/assets/fonts/vector_battle.ttf`.
+- `font.asteroids.vector-battle` must exist and point to `/src/assets/fonts/vector_battle/vector_battle.ttf`.
 - Existing Asteroids audio files must be listed as flat `audio.asteroids.*` entries if they are currently nested under media.
 
 ## Tool Requirements

@@ -1252,7 +1252,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".object-vector-studio-v2__shape-icon--triangle")).toBeVisible();
       await expect(page.locator(".object-vector-studio-v2__shape-icon--arc")).toBeVisible();
       const iconStyleState = await page.evaluate(async () => {
-        const fontResponse = await fetch("/src/shared/font/0xProtoNerdFont/0xProtoNerdFontMono-Regular.ttf", { cache: "no-store" });
+        const fontResponse = await fetch("/src/assets/fonts/0xProtoNerdFont/0xProtoNerdFontMono-Regular.ttf", { cache: "no-store" });
         const toolCss = await (await fetch("/tools/object-vector-studio-v2/styles/toolStarter.css", { cache: "no-store" })).text();
         const icon = (selector) => {
           const element = document.querySelector(selector);
@@ -3935,6 +3935,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
       await page.waitForFunction(() => window.__asteroidsNewBootStage === "boot-complete");
       await page.waitForFunction(() => window.__asteroidsObjectVectorRuntime?.loaded === true);
+      const vectorBattleFontState = await page.evaluate(async () => {
+        const obsoletePath = ["/games", "Asteroids", "assets", "fonts", "vector_battle.ttf"].join("/");
+        const cssText = await (await fetch("/games/shared/styles/vectorBattleFont.css", { cache: "no-store" })).text();
+        const fontResponse = await fetch("/src/assets/fonts/vector_battle/vector_battle.ttf", { cache: "no-store" });
+        const oldFontResponse = await fetch(obsoletePath, { cache: "no-store" });
+        await document.fonts.load('16px "Vector Battle"');
+        return {
+          cssUsesNewPath: cssText.includes("/src/assets/fonts/vector_battle/vector_battle.ttf"),
+          cssUsesOldPath: cssText.includes(obsoletePath),
+          fontReady: document.fonts.check('16px "Vector Battle"'),
+          fontResponseOk: fontResponse.ok,
+          oldFontResponseOk: oldFontResponse.ok
+        };
+      });
+      expect(vectorBattleFontState).toEqual({
+        cssUsesNewPath: true,
+        cssUsesOldPath: false,
+        fontReady: true,
+        fontResponseOk: true,
+        oldFontResponseOk: false
+      });
 
       const invalidRuntimeAssetResult = await page.evaluate(async () => {
         const { ObjectVectorRuntimeAssetService } = await import("/src/engine/rendering/index.js");
@@ -6493,7 +6514,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(storedContext.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toContain("vector.asteroids.ship");
       expect(storedContext.tools["asset-manager-v2"].assets["assets.font.ui.vector-battle"]).toEqual({
-        path: "assets/fonts/vector_battle.ttf",
+        path: "src/assets/fonts/vector_battle/vector_battle.ttf",
         type: "font",
         kind: "ttf",
         role: "ui",

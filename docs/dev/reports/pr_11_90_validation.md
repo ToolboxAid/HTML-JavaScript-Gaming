@@ -17,7 +17,7 @@ Applied `docs/pr/PR_11_90_ASTEROIDS_ENGINE_OWNERSHIP_AND_FONT_MANIFEST.md` using
   - `image.asteroids.background.path` set to `/games/Asteroids/assets/images/deluxe.png`
   - `image.asteroids.bezel.stretchOverride.uniformEdgeStretchPx` remains `10`
   - Added `font.asteroids.vector-battle` under `asset-browser.assets.media`:
-    - `/games/Asteroids/assets/fonts/vector_battle.ttf`
+    - `/src/assets/fonts/vector_battle/vector_battle.ttf`
 - Removed remaining game-level frame background ownership:
   - Removed full-canvas background draw from `AsteroidsGameScene.render()`.
 - Removed game-level full-frame attract dim ownership:

@@ -23,7 +23,7 @@ The uploaded Asteroids game still contains game-level render/chrome overrides:
    - The desired Asteroids bezel is `/games/Asteroids/assets/images/bezel1.png`.
    - Keep `stretchOverride.uniformEdgeStretchPx = 10` only on `image.asteroids.bezel`.
 
-5. `games/Asteroids/assets/fonts/vector_battle.ttf` exists, but no font asset entry is present in `asset-browser.assets`.
+5. `src/assets/fonts/vector_battle/vector_battle.ttf` exists, but no font asset entry is present in `asset-browser.assets`.
 
 ## Required changes
 
@@ -37,7 +37,7 @@ Update `games/Asteroids/game.manifest.json`:
 
 ```json
 "font.asteroids.vector-battle": {
-  "path": "/games/Asteroids/assets/fonts/vector_battle.ttf",
+  "path": "/src/assets/fonts/vector_battle/vector_battle.ttf",
   "kind": "font",
   "source": "workspace-manager"
 }

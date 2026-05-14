@@ -63,7 +63,7 @@ Ensure the flat asset map includes:
   "source": "workspace-manager"
 },
 "font.asteroids.vector-battle": {
-  "path": "/games/Asteroids/assets/fonts/vector_battle.ttf",
+  "path": "/src/assets/fonts/vector_battle/vector_battle.ttf",
   "kind": "font",
   "source": "workspace-manager"
 }

@@ -14,5 +14,5 @@
 
 ## Boundary Checks
 
-- `src/shared/font/0xProtoNerdFont` was not deleted, moved, or modified.
+- Superseded by PR_26133_023: Nerd Font assets now live under `src/assets/fonts/0xProtoNerdFont`.
 - No sample JSON files were changed.

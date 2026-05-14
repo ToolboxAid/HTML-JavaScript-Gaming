@@ -32,7 +32,7 @@ Remaining issues found in the uploaded Asteroids bundle:
 4. `games/Asteroids/game.manifest.json`
    - `image.asteroids.bezel` is correct and must stay `/games/Asteroids/assets/images/bezel.png`.
    - `image.asteroids.background` is correct and must stay `/games/Asteroids/assets/images/deluxe.png`.
-   - `font.asteroids.vector-battle` is missing from `asset-browser.assets` even though `assets/fonts/vector_battle.ttf` exists and the game uses `Vector Battle`.
+   - `font.asteroids.vector-battle` is missing from `asset-browser.assets` even though `src/assets/fonts/vector_battle/vector_battle.ttf` exists and the game uses `Vector Battle`.
 
 ## Required changes
 
@@ -85,7 +85,7 @@ In `games/Asteroids/game.manifest.json`, under `tools.asset-browser.assets`, add
 
 ```json
 "font.asteroids.vector-battle": {
-  "path": "/games/Asteroids/assets/fonts/vector_battle.ttf",
+  "path": "/src/assets/fonts/vector_battle/vector_battle.ttf",
   "kind": "font",
   "source": "workspace-manager"
 }

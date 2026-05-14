@@ -1,24 +1,41 @@
-# PR_26133_022 Playwright V8 Coverage Report
+﻿# PR_26133_023 Playwright V8 Coverage Report
 
-Coverage source: `docs/dev/reports/playwright_v8_coverage_report.txt`, refreshed by the final `npm run test:workspace-v2` run.
+Task: PR_26133_023-font-assets-standardization
+Date: 2026-05-13
 
-## Summary
+## Result
 
-- Coverage is advisory only; no thresholds are enforced.
-- Workspace Manager V2 entry point: `(91%) Workspace Manager V2 - exercised 10 runtime JS files`.
-- Changed Object Vector Studio V2 runtime JS coverage from the generated report:
-  - `(83%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 107/107; executed functions 5/6`
-  - `(93%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4096/4096; executed functions 443/477`
-- Changed JS files considered by the generated report:
-  - `tools/object-vector-studio-v2/js/bootstrap.js`: covered by browser V8 coverage.
-  - `tools/object-vector-studio-v2/js/ToolStarterApp.js`: covered by browser V8 coverage.
-  - `tools/object-vector-studio-v2/playwright.config.mjs`: not collected as browser runtime coverage.
-  - `tests/playwright/tools/ObjectVectorStudioV2FirstClassToolStarter.spec.mjs`: not collected as browser runtime coverage.
-  - `tests/playwright/tools/WorkspaceManagerV2.spec.mjs`: not collected as browser runtime coverage.
+PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
-## Validation Context
+- Test result: 48 passed.
+- Coverage source: Playwright/Chromium built-in V8 coverage.
+- Thresholds: none enforced.
+- Coverage is advisory for this PR.
 
-- Main command: `npm run test:workspace-v2`.
-- Result: 48 passed.
-- Focused Object Vector Studio V2 scenarios covered the Nerd Font icon mapping cleanup, tighter accordion spacing, Object Geometry header layout, Object Transform summary placement, palette same-line controls, polygon Add Point behavior, preview coordinate/grid behavior, mouse editing, animation states, and asset-library scenarios.
-- The required moved spec also passed through `npx playwright test --config=tools/object-vector-studio-v2/playwright.config.mjs --workers=1 --reporter=list`.
+## Exercised Tool Entry Points
+
+- Workspace Manager V2: 91%, 10 runtime JS files exercised.
+- Asset Manager V2: 74%, 13 runtime JS files exercised.
+- Preview Generator V2: 82%, 19 runtime JS files exercised.
+- Palette Manager V2: 62%, 12 runtime JS files exercised.
+- Tool Template V2: not exercised by this Playwright run.
+- Workspace Manager: not exercised by this Playwright run.
+
+## Changed Runtime JS Coverage Notes
+
+PR_26133_023 is a font asset standardization change. The intended runtime surface is CSS, manifest path data, font files, and Playwright validation updates; no Object Vector Studio V2 runtime JavaScript implementation was changed by this PR.
+
+The generated V8 coverage text still lists Object Vector Studio V2 JavaScript from the current HEAD comparison baseline:
+
+- `tools/object-vector-studio-v2/js/bootstrap.js`: 83% function coverage, 107/107 reported lines executed.
+- `tools/object-vector-studio-v2/js/ToolStarterApp.js`: 93% function coverage, 4096/4096 reported lines executed.
+- `tools/object-vector-studio-v2/playwright.config.mjs`: advisory warning, not collected by browser V8 coverage.
+
+## PR-Specific Coverage/Validation Relevance
+
+- Object Vector Studio V2 Nerd Font loading is validated through Workspace V2 Playwright font fetch and UI flow coverage.
+- Asteroids Vector Battle font loading is validated through Workspace V2 Playwright CSS/font fetch checks plus `document.fonts.load()` and `document.fonts.check()`.
+- Legacy font path behavior is validated by direct path scans and Asteroids generated URL 404 coverage.
+- No additional V8 threshold was introduced for this asset-path-only PR.
+
+Generated source report: `docs/dev/reports/playwright_v8_coverage_report.txt`.

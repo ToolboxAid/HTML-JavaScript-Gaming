@@ -1,6 +1,6 @@
 @font-face {
   font-family: "0xProto Nerd Font";
-  src: url("../../../src/shared/font/0xProtoNerdFont/0xProtoNerdFontMono-Regular.ttf") format("truetype");
+  src: url("../../../src/assets/fonts/0xProtoNerdFont/0xProtoNerdFontMono-Regular.ttf") format("truetype");
   font-display: swap;
   font-style: normal;
   font-weight: 400;

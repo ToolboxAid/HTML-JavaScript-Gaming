@@ -173,7 +173,7 @@
               "source": "manifest"
             },
             "assets.font.ui.vector-battle": {
-              "path": "assets/fonts/vector_battle.ttf",
+              "path": "src/assets/fonts/vector_battle/vector_battle.ttf",
               "type": "font",
               "kind": "ttf",
               "role": "ui",
@@ -414,36 +414,52 @@
                   "geometry": {
                     "points": [
                       {
-                        "x": -28,
-                        "y": -12
+                        "x": 10,
+                        "y": 40
                       },
                       {
-                        "x": -10,
-                        "y": -30
+                        "x": 50,
+                        "y": 20
                       },
                       {
-                        "x": 20,
-                        "y": -26
+                        "x": 45,
+                        "y": 5
                       },
                       {
-                        "x": 32,
-                        "y": -8
+                        "x": 25,
+                        "y": -10
                       },
                       {
-                        "x": 26,
-                        "y": 18
+                        "x": 50,
+                        "y": -35
                       },
                       {
-                        "x": 6,
-                        "y": 32
+                        "x": 30,
+                        "y": -45
                       },
                       {
-                        "x": -22,
-                        "y": 24
+                        "x": 10,
+                        "y": -38
                       },
                       {
-                        "x": -34,
-                        "y": 2
+                        "x": -20,
+                        "y": -45
+                      },
+                      {
+                        "x": -43,
+                        "y": -18
+                      },
+                      {
+                        "x": -43,
+                        "y": 20
+                      },
+                      {
+                        "x": -25,
+                        "y": 20
+                      },
+                      {
+                        "x": -25,
+                        "y": 40
                       }
                     ]
                   },

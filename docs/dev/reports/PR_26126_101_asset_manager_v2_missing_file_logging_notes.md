@@ -11,7 +11,7 @@
 - The warning includes the asset ID and original path.
 
 ## Example
-- `File availability warning: Missing referenced file for assets.font.ui.vector-battle: assets/fonts/vector_battle.ttf.`
+- `File availability warning: Missing referenced file for assets.font.ui.vector-battle: src/assets/fonts/vector_battle/vector_battle.ttf.`
 
 ## Validation
 - Playwright imports valid Asset Manager V2 JSON with missing referenced file paths.

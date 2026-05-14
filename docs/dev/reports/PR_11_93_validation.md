@@ -11,7 +11,7 @@ Aligned `games/Asteroids/game.manifest.json` asset-browser shape from wrapped `a
   - `image.asteroids.bezel.path = /games/Asteroids/assets/images/bezel.png`
   - `image.asteroids.bezel.stretchOverride.uniformEdgeStretchPx = 10`
   - `image.asteroids.background.path = /games/Asteroids/assets/images/deluxe.png`
-  - `font.asteroids.vector-battle.path = /games/Asteroids/assets/fonts/vector_battle.ttf`
+  - `font.asteroids.vector-battle.path = /src/assets/fonts/vector_battle/vector_battle.ttf`
 
 ## Targeted Manifest Validation
 

@@ -19,7 +19,7 @@ Fix the incorrectly duplicated nested directories created during the full-copy b
 - `games/asteroids_new/assets/saucerBig.wav`
 - `games/asteroids_new/assets/saucerSmall.wav`
 - `games/asteroids_new/assets/thrust.wav`
-- `games/asteroids_new/assets/vector_battle.ttf`
+- `src/assets/fonts/vector_battle/vector_battle.ttf`
 - `games/asteroids_new/debug/asteroidsShowcaseDebug.js`
 - `games/asteroids_new/entities/Asteroid.js`
 - `games/asteroids_new/entities/Bullet.js`

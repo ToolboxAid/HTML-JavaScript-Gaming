@@ -14,5 +14,5 @@
 ## Validation
 - Playwright validates these resolved paths with `gameId: "Asteroids"`:
   - `/games/Asteroids/assets/audio/fire.wav`
-  - `/games/Asteroids/assets/fonts/vector_battle.ttf`
+  - `/src/assets/fonts/vector_battle/vector_battle.ttf`
   - `/games/Asteroids/assets/images/preview.png`

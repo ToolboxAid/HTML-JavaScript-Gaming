@@ -7,7 +7,7 @@
 - Project-root path trimming still converts absolute repo paths to repo-relative asset paths.
 
 ## Examples
-- `HTML-JavaScript-Gaming/assets/fonts/vector_battle.ttf` becomes `assets/fonts/vector_battle.ttf`.
+- `HTML-JavaScript-Gaming/src/assets/fonts/vector_battle/vector_battle.ttf` becomes `src/assets/fonts/vector_battle/vector_battle.ttf`.
 - The generated ID for that font remains `assets.font.ui.vector-battle`.
 - `HTML-JavaScript-Gaming/assets/video/8 mile.mp4` becomes `assets/video/8 mile.mp4`.
 - The generated ID for that video remains `assets.video.cutscene.8-mile`.

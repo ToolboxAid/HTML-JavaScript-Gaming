@@ -74,7 +74,7 @@
         "fonts": [
           {
             "assetId": "font.asteroids.vector-battle",
-            "path": "/games/Asteroids/assets/fonts/vector_battle.ttf",
+            "path": "/src/assets/fonts/vector_battle/vector_battle.ttf",
             "kind": "font",
             "source": "asset-browser"
           }

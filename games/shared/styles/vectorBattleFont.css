@@ -1,8 +1,8 @@
 /*
-Vector Battle font face for game-owned vector arcade UIs.
+Vector Battle font face for shared vector arcade UIs.
 */
 @font-face {
   font-family: "Vector Battle";
-  src: url("/games/Asteroids/assets/fonts/vector_battle.ttf") format("truetype");
+  src: url("/src/assets/fonts/vector_battle/vector_battle.ttf") format("truetype");
   font-display: swap;
 }

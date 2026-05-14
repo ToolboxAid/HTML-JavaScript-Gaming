@@ -976,7 +976,7 @@ test.describe("Asset Manager V2", () => {
           name: "vector_battle.ttf",
           mimeType: "font/ttf",
           contents: "font",
-          path: "HTML-JavaScript-Gaming/assets/fonts/vector_battle.ttf"
+          path: "HTML-JavaScript-Gaming/src/assets/fonts/vector_battle/vector_battle.ttf"
         },
         {
           name: "8 mile.mp4",
@@ -1038,7 +1038,7 @@ test.describe("Asset Manager V2", () => {
       await page.locator("#assetKindFont").check();
       await page.locator("#pickAssetFileButton").click();
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.font.ui.vector-battle");
-      await expect(page.locator("#assetPathInput")).toHaveValue("assets/fonts/vector_battle.ttf");
+      await expect(page.locator("#assetPathInput")).toHaveValue("src/assets/fonts/vector_battle/vector_battle.ttf");
       await page.locator("#addAssetButton").click();
       await expect(page.locator('#assetPreview [data-preview-type="font"][data-preview-kind="ttf"]')).toBeVisible();
       const fontPreviewState = await page.locator("#assetPreview").evaluate((preview) => {
@@ -1051,12 +1051,12 @@ test.describe("Asset Manager V2", () => {
         };
       });
       expect(fontPreviewState.style).toContain('@font-face{font-family:"asset-preview-assets-font-ui-vector-battle"');
-      expect(fontPreviewState.style).toContain('/games/_template/assets/fonts/vector_battle.ttf');
+      expect(fontPreviewState.style).toContain('/src/assets/fonts/vector_battle/vector_battle.ttf');
       expect(fontPreviewState.fontFamily).toContain("asset-preview-assets-font-ui-vector-battle");
       expect(fontPreviewState.scopedFamily).toBe("asset-preview-assets-font-ui-vector-battle");
       await expect.poll(async () => await page.evaluate(() => window.__assetManagerV2FontFaceLoads)).toEqual([{
         family: "asset-preview-assets-font-ui-vector-battle",
-        source: 'url("/games/_template/assets/fonts/vector_battle.ttf")'
+        source: 'url("/src/assets/fonts/vector_battle/vector_battle.ttf")'
       }]);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Font preview failed for assets\.font\.ui\.vector-battle: UAT font load rejected\./);
 
