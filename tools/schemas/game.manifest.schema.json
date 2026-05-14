@@ -176,7 +176,7 @@
     },
     "objectVectorStudioV2Payload": {
       "type": "object",
-      "description": "Object Vector Studio V2 durable object geometry. Object IDs are runtime identity; shapeKey/label/tool are local editor metadata.",
+      "description": "Object Vector Studio V2 durable object geometry. Object IDs are runtime identity; shape rows use tool plus sorted local order for editor/runtime behavior.",
       "required": ["version", "toolId", "name", "objects"],
       "additionalProperties": false,
       "properties": {
@@ -273,25 +273,12 @@
     },
     "objectVectorStudioShape": {
       "type": "object",
-      "required": ["shapeKey", "label", "tool", "type", "order", "visible", "locked", "geometry", "style", "transform"],
+      "required": ["tool", "order", "visible", "locked", "geometry", "style", "transform"],
       "additionalProperties": false,
       "properties": {
-        "shapeKey": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^(?!object\\.).+$"
-        },
-        "label": {
-          "type": "string",
-          "minLength": 1
-        },
         "tool": {
           "type": "string",
           "enum": ["triangle", "rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]
-        },
-        "type": {
-          "type": "string",
-          "enum": ["rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]
         },
         "order": {
           "type": "integer",
@@ -418,13 +405,13 @@
     },
     "objectVectorStudioShapeOverride": {
       "type": "object",
-      "required": ["shapeKey"],
+      "required": ["shapeIndex"],
       "additionalProperties": false,
       "properties": {
-        "shapeKey": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^(?!object\\.).+$"
+        "shapeIndex": {
+          "description": "Zero-based local sorted shape row index for the target shape.",
+          "type": "integer",
+          "minimum": 0
         },
         "visible": {
           "type": "boolean"

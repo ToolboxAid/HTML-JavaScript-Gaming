@@ -262,10 +262,7 @@
               "name": "Asteroids Ship",
               "shapes": [
                 {
-                  "shapeKey": "ship-hull",
-                  "label": "ship-hull",
                   "tool": "polygon",
-                  "type": "polygon",
                   "order": 0,
                   "visible": true,
                   "locked": false,
@@ -306,10 +303,7 @@
                   }
                 },
                 {
-                  "shapeKey": "ship-thrust-port",
-                  "label": "ship-thrust-port",
                   "tool": "line",
-                  "type": "line",
                   "order": 1,
                   "visible": true,
                   "locked": false,
@@ -336,10 +330,7 @@
                   }
                 },
                 {
-                  "shapeKey": "ship-thrust-starboard",
-                  "label": "ship-thrust-starboard",
                   "tool": "line",
-                  "type": "line",
                   "order": 2,
                   "visible": true,
                   "locked": false,
@@ -377,12 +368,12 @@
                       "durationFrames": 1,
                       "shapeOverrides": [
                         {
-                          "shapeKey": "ship-thrust-port",
-                          "visible": false
+                          "visible": false,
+                          "shapeIndex": 1
                         },
                         {
-                          "shapeKey": "ship-thrust-starboard",
-                          "visible": false
+                          "visible": false,
+                          "shapeIndex": 2
                         }
                       ]
                     }
@@ -398,12 +389,12 @@
                       "durationFrames": 1,
                       "shapeOverrides": [
                         {
-                          "shapeKey": "ship-thrust-port",
-                          "visible": true
+                          "visible": true,
+                          "shapeIndex": 1
                         },
                         {
-                          "shapeKey": "ship-thrust-starboard",
-                          "visible": true
+                          "visible": true,
+                          "shapeIndex": 2
                         }
                       ]
                     }
@@ -416,10 +407,7 @@
               "name": "Large Asteroid",
               "shapes": [
                 {
-                  "shapeKey": "large-asteroid-ridge",
-                  "label": "large-asteroid-ridge",
                   "tool": "polygon",
-                  "type": "polygon",
                   "order": 0,
                   "visible": true,
                   "locked": false,
@@ -512,10 +500,7 @@
               "name": "Medium Asteroid",
               "shapes": [
                 {
-                  "shapeKey": "medium-asteroid-ridge",
-                  "label": "medium-asteroid-ridge",
                   "tool": "polygon",
-                  "type": "polygon",
                   "order": 0,
                   "visible": true,
                   "locked": false,
@@ -588,10 +573,7 @@
               "name": "Small Asteroid",
               "shapes": [
                 {
-                  "shapeKey": "small-asteroid-ridge",
-                  "label": "small-asteroid-ridge",
                   "tool": "polygon",
-                  "type": "polygon",
                   "order": 0,
                   "visible": true,
                   "locked": false,
@@ -660,10 +642,7 @@
               "name": "Large UFO",
               "shapes": [
                 {
-                  "shapeKey": "large-ufo-body",
-                  "label": "large-ufo-body",
                   "tool": "ellipse",
-                  "type": "ellipse",
                   "order": 0,
                   "visible": true,
                   "locked": false,
@@ -690,10 +669,7 @@
                   }
                 },
                 {
-                  "shapeKey": "large-ufo-canopy",
-                  "label": "large-ufo-canopy",
                   "tool": "ellipse",
-                  "type": "ellipse",
                   "order": 1,
                   "visible": true,
                   "locked": false,
@@ -740,10 +716,7 @@
               "name": "Small UFO",
               "shapes": [
                 {
-                  "shapeKey": "small-ufo-body",
-                  "label": "small-ufo-body",
                   "tool": "ellipse",
-                  "type": "ellipse",
                   "order": 0,
                   "visible": true,
                   "locked": false,
@@ -770,10 +743,7 @@
                   }
                 },
                 {
-                  "shapeKey": "small-ufo-canopy",
-                  "label": "small-ufo-canopy",
                   "tool": "ellipse",
-                  "type": "ellipse",
                   "order": 1,
                   "visible": true,
                   "locked": false,

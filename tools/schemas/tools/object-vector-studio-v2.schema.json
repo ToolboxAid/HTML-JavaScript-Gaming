@@ -153,13 +153,12 @@
     "shapeFrameOverride": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["shapeKey"],
+      "required": ["shapeIndex"],
       "properties": {
-        "shapeKey": {
-          "description": "Local editor/UI shape key for the shape this frame override targets.",
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^(?!object\\.).+$"
+        "shapeIndex": {
+          "description": "Zero-based local sorted shape row index for the shape this frame override targets.",
+          "type": "integer",
+          "minimum": 0
         },
         "visible": {
           "type": "boolean"
@@ -197,27 +196,12 @@
     "shapeCommon": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["shapeKey", "label", "tool", "type", "order", "visible", "locked", "geometry", "style", "transform"],
+      "required": ["tool", "order", "visible", "locked", "geometry", "style", "transform"],
       "properties": {
-        "shapeKey": {
-          "description": "Local editor/UI shape key. This is scoped to the owning object and is not a runtime object identity.",
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^(?!object\\.).+$"
-        },
-        "label": {
-          "description": "Display label for the local editable shape/tool row.",
-          "type": "string",
-          "minLength": 1
-        },
         "tool": {
-          "description": "Editor tool identity used to distinguish polygon-authored shapes such as Triangle from generic Polygon.",
+          "description": "Editor and runtime shape/tool kind. Triangle is polygon geometry authored by the triangle tool.",
           "type": "string",
           "enum": ["triangle", "rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]
-        },
-        "type": {
-          "type": "string",
-          "enum": ["rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]
         },
         "order": {
           "type": "integer",
@@ -252,7 +236,7 @@
         {
           "type": "object",
           "properties": {
-            "type": {
+            "tool": {
               "const": "rectangle"
             },
             "geometry": {
@@ -270,7 +254,7 @@
         {
           "type": "object",
           "properties": {
-            "type": {
+            "tool": {
               "const": "circle"
             },
             "geometry": {
@@ -288,7 +272,7 @@
         {
           "type": "object",
           "properties": {
-            "type": {
+            "tool": {
               "const": "ellipse"
             },
             "geometry": {
@@ -306,7 +290,7 @@
         {
           "type": "object",
           "properties": {
-            "type": {
+            "tool": {
               "const": "line"
             },
             "geometry": {
@@ -324,8 +308,8 @@
         {
           "type": "object",
           "properties": {
-            "type": {
-              "const": "polygon"
+            "tool": {
+              "enum": ["polygon", "triangle"]
             },
             "geometry": {
               "$ref": "#/$defs/polygonGeometry"
@@ -342,7 +326,7 @@
         {
           "type": "object",
           "properties": {
-            "type": {
+            "tool": {
               "const": "arc"
             },
             "geometry": {
@@ -360,7 +344,7 @@
         {
           "type": "object",
           "properties": {
-            "type": {
+            "tool": {
               "const": "text"
             },
             "geometry": {

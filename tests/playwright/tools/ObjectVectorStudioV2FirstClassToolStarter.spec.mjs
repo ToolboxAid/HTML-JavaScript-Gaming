@@ -132,8 +132,8 @@ test.describe("Object Vector Studio V2", () => {
 
     await page.locator('[data-shape-tool="rectangle"]').click();
     await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(3 obj, 1 shape)");
-    await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-key='rectangle-1']")).toHaveClass(/is-selected/);
-    await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape rectangle-1 on Local Object\./);
+    await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveClass(/is-selected/);
+    await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape on Local Object\./);
 
     await page.locator('[data-object-id="object.local.local-object"] [data-object-control="delete"]').click();
     await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(2 obj, 0 shapes)");

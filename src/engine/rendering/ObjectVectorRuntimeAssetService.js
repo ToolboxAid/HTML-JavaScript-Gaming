@@ -61,6 +61,15 @@ function sortedFrames(state) {
   return [...(state?.frames || [])].sort((left, right) => left.order - right.order);
 }
 
+function shapeTool(shape) {
+  return String(shape?.tool || "").trim().toLowerCase();
+}
+
+function shapeGeometryTool(shape) {
+  const tool = shapeTool(shape);
+  return tool === "triangle" ? "polygon" : tool;
+}
+
 function shapeTransform(shape) {
   return shape.transform || {
     originX: 0,
@@ -90,7 +99,8 @@ function escapeXml(value) {
 }
 
 function shapeBounds(shape) {
-  if (shape.type === "rectangle") {
+  const geometryTool = shapeGeometryTool(shape);
+  if (geometryTool === "rectangle") {
     return {
       height: shape.geometry.height,
       width: shape.geometry.width,
@@ -98,7 +108,7 @@ function shapeBounds(shape) {
       y: shape.geometry.y
     };
   }
-  if (shape.type === "circle") {
+  if (geometryTool === "circle") {
     return {
       height: shape.geometry.r * 2,
       width: shape.geometry.r * 2,
@@ -106,7 +116,7 @@ function shapeBounds(shape) {
       y: shape.geometry.cy - shape.geometry.r
     };
   }
-  if (shape.type === "ellipse") {
+  if (geometryTool === "ellipse") {
     return {
       height: shape.geometry.ry * 2,
       width: shape.geometry.rx * 2,
@@ -114,7 +124,7 @@ function shapeBounds(shape) {
       y: shape.geometry.cy - shape.geometry.ry
     };
   }
-  if (shape.type === "line") {
+  if (geometryTool === "line") {
     const x = Math.min(shape.geometry.x1, shape.geometry.x2);
     const y = Math.min(shape.geometry.y1, shape.geometry.y2);
     return {
@@ -124,7 +134,7 @@ function shapeBounds(shape) {
       y
     };
   }
-  if (shape.type === "polygon") {
+  if (geometryTool === "polygon") {
     const xValues = shape.geometry.points.map((point) => point.x);
     const yValues = shape.geometry.points.map((point) => point.y);
     const minX = Math.min(...xValues);
@@ -136,7 +146,7 @@ function shapeBounds(shape) {
       y: minY
     };
   }
-  if (shape.type === "arc") {
+  if (geometryTool === "arc") {
     return {
       height: shape.geometry.r * 2,
       width: shape.geometry.r * 2,
@@ -144,7 +154,7 @@ function shapeBounds(shape) {
       y: shape.geometry.cy - shape.geometry.r
     };
   }
-  if (shape.type === "text") {
+  if (geometryTool === "text") {
     return {
       height: shape.geometry.fontSize,
       width: Math.max(24, shape.geometry.text.length * shape.geometry.fontSize * 0.6),
@@ -152,12 +162,12 @@ function shapeBounds(shape) {
       y: shape.geometry.y - shape.geometry.fontSize
     };
   }
-  throw new Error(`unsupported shape bounds for ${shape.type}`);
+  throw new Error(`unsupported shape bounds for ${shapeTool(shape)}`);
 }
 
 function objectBounds(object, frame) {
   const visibleShapes = sortedShapes(object)
-    .map((shape) => effectiveShapeForFrame(shape, frame))
+    .map((shape, shapeIndex) => effectiveShapeForFrame(shape, frame, shapeIndex))
     .filter((shape) => shape.visible);
   if (!visibleShapes.length) {
     return { height: 80, width: 120, x: -60, y: -40 };
@@ -184,9 +194,9 @@ function objectBounds(object, frame) {
   };
 }
 
-function effectiveShapeForFrame(shape, frame) {
+function effectiveShapeForFrame(shape, frame, shapeIndex) {
   const effective = clone(shape);
-  const override = frame?.shapeOverrides?.find((entry) => entry.shapeKey === shape.shapeKey) || null;
+  const override = frame?.shapeOverrides?.find((entry) => entry.shapeIndex === shapeIndex) || null;
   if (override && Object.prototype.hasOwnProperty.call(override, "visible")) {
     effective.visible = override.visible;
   }
@@ -388,9 +398,9 @@ export class ObjectVectorRuntimeAssetService {
     if (!resolvedBase) {
       return null;
     }
-    const shapeByKey = new Map(resolvedBase.shapes.map((shape) => [shape.shapeKey, clone(shape)]));
+    const shapeByOrder = new Map(resolvedBase.shapes.map((shape) => [shape.order, clone(shape)]));
     object.shapes.forEach((shape) => {
-      shapeByKey.set(shape.shapeKey, clone(shape));
+      shapeByOrder.set(shape.order, clone(shape));
     });
     const stateById = new Map((resolvedBase.states || []).map((state) => [state.id, clone(state)]));
     (object.states || []).forEach((state) => {
@@ -400,7 +410,7 @@ export class ObjectVectorRuntimeAssetService {
       ...resolvedBase,
       ...clone(object),
       inheritedFrom: object.baseObjectId,
-      shapes: Array.from(shapeByKey.values()).sort((left, right) => left.order - right.order)
+      shapes: Array.from(shapeByOrder.values()).sort((left, right) => left.order - right.order)
     };
     if (stateById.size) {
       merged.states = Array.from(stateById.values());
@@ -484,8 +494,8 @@ export class ObjectVectorRuntimeAssetService {
       const scale = Number.isFinite(options.scale) ? options.scale : 1;
       context.scale(scale, scale);
       let renderedShapes = 0;
-      sortedShapes(object).forEach((shape) => {
-        const effective = effectiveShapeForFrame(shape, frame);
+      sortedShapes(object).forEach((shape, shapeIndex) => {
+        const effective = effectiveShapeForFrame(shape, frame, shapeIndex);
         if (!effective.visible) {
           return;
         }
@@ -530,24 +540,25 @@ export class ObjectVectorRuntimeAssetService {
 
   buildPath(context, shape) {
     context.beginPath();
-    if (shape.type === "rectangle") {
+    const geometryTool = shapeGeometryTool(shape);
+    if (geometryTool === "rectangle") {
       context.rect(shape.geometry.x, shape.geometry.y, shape.geometry.width, shape.geometry.height);
       return;
     }
-    if (shape.type === "circle") {
+    if (geometryTool === "circle") {
       context.arc(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, 0, Math.PI * 2);
       return;
     }
-    if (shape.type === "ellipse") {
+    if (geometryTool === "ellipse") {
       context.ellipse(shape.geometry.cx, shape.geometry.cy, shape.geometry.rx, shape.geometry.ry, 0, 0, Math.PI * 2);
       return;
     }
-    if (shape.type === "line") {
+    if (geometryTool === "line") {
       context.moveTo(shape.geometry.x1, shape.geometry.y1);
       context.lineTo(shape.geometry.x2, shape.geometry.y2);
       return;
     }
-    if (shape.type === "polygon") {
+    if (geometryTool === "polygon") {
       shape.geometry.points.forEach((point, index) => {
         if (index === 0) {
           context.moveTo(point.x, point.y);
@@ -558,7 +569,7 @@ export class ObjectVectorRuntimeAssetService {
       context.closePath();
       return;
     }
-    if (shape.type === "arc") {
+    if (geometryTool === "arc") {
       context.arc(
         shape.geometry.cx,
         shape.geometry.cy,
@@ -568,12 +579,12 @@ export class ObjectVectorRuntimeAssetService {
       );
       return;
     }
-    if (shape.type === "text") {
+    if (geometryTool === "text") {
       context.font = `${shape.geometry.fontSize}px sans-serif`;
       context.fillText(shape.geometry.text, shape.geometry.x, shape.geometry.y);
       return;
     }
-    throw new Error(`unsupported runtime shape type ${shape.type}`);
+    throw new Error(`unsupported runtime shape tool ${shapeTool(shape)}`);
   }
 
   createSvgString(assetSet, options = {}) {
@@ -582,7 +593,7 @@ export class ObjectVectorRuntimeAssetService {
       return { ok: false, svg: "" };
     }
     const { frame, state } = this.resolveFrame(object, options);
-    const visibleShapes = sortedShapes(object).map((shape) => effectiveShapeForFrame(shape, frame)).filter((shape) => shape.visible);
+    const visibleShapes = sortedShapes(object).map((shape, shapeIndex) => effectiveShapeForFrame(shape, frame, shapeIndex)).filter((shape) => shape.visible);
     if (!visibleShapes.length) {
       this.log("FAIL", `Object Vector runtime SVG preview failed for ${object.id}: no visible shapes.`);
       return { ok: false, svg: "" };
@@ -604,23 +615,24 @@ export class ObjectVectorRuntimeAssetService {
 
   shapeToSvg(shape) {
     const style = ` fill="${escapeXml(shape.style.fill)}" stroke="${escapeXml(shape.style.stroke)}" stroke-width="${shape.style.strokeWidth}" transform="${svgTransformAttribute(shapeTransform(shape))}"`;
-    if (shape.type === "rectangle") {
+    const geometryTool = shapeGeometryTool(shape);
+    if (geometryTool === "rectangle") {
       return `<rect x="${shape.geometry.x}" y="${shape.geometry.y}" width="${shape.geometry.width}" height="${shape.geometry.height}"${style}/>`;
     }
-    if (shape.type === "circle") {
+    if (geometryTool === "circle") {
       return `<circle cx="${shape.geometry.cx}" cy="${shape.geometry.cy}" r="${shape.geometry.r}"${style}/>`;
     }
-    if (shape.type === "ellipse") {
+    if (geometryTool === "ellipse") {
       return `<ellipse cx="${shape.geometry.cx}" cy="${shape.geometry.cy}" rx="${shape.geometry.rx}" ry="${shape.geometry.ry}"${style}/>`;
     }
-    if (shape.type === "line") {
+    if (geometryTool === "line") {
       return `<line x1="${shape.geometry.x1}" y1="${shape.geometry.y1}" x2="${shape.geometry.x2}" y2="${shape.geometry.y2}"${style}/>`;
     }
-    if (shape.type === "polygon") {
+    if (geometryTool === "polygon") {
       const points = shape.geometry.points.map((point) => `${point.x},${point.y}`).join(" ");
       return `<polygon points="${points}"${style}/>`;
     }
-    if (shape.type === "arc") {
+    if (geometryTool === "arc") {
       const start = {
         x: shape.geometry.cx + Math.cos((shape.geometry.startAngle * Math.PI) / 180) * shape.geometry.r,
         y: shape.geometry.cy + Math.sin((shape.geometry.startAngle * Math.PI) / 180) * shape.geometry.r
@@ -631,10 +643,10 @@ export class ObjectVectorRuntimeAssetService {
       };
       return `<path d="M ${start.x} ${start.y} A ${shape.geometry.r} ${shape.geometry.r} 0 0 1 ${end.x} ${end.y}"${style}/>`;
     }
-    if (shape.type === "text") {
+    if (geometryTool === "text") {
       return `<text x="${shape.geometry.x}" y="${shape.geometry.y}" font-size="${shape.geometry.fontSize}"${style}>${escapeXml(shape.geometry.text)}</text>`;
     }
-    throw new Error(`unsupported runtime SVG shape type ${shape.type}`);
+    throw new Error(`unsupported runtime SVG shape tool ${shapeTool(shape)}`);
   }
 
   validateSchemaShape(schema, errors) {
@@ -660,12 +672,18 @@ export class ObjectVectorRuntimeAssetService {
     if (Object.prototype.hasOwnProperty.call(schema.$defs?.libraryAsset?.properties || {}, "objectId")) {
       errors.push("Object Vector Studio V2 library asset schema must not define objectId.");
     }
-    if (Object.prototype.hasOwnProperty.call(schema.$defs?.shapeCommon?.properties || {}, "id")) {
-      errors.push("Object Vector Studio V2 shape schema must not define runtime-like shape id.");
-    }
+    ["id", "shapeKey", "label", "type"].forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(schema.$defs?.shapeCommon?.properties || {}, key)) {
+        errors.push(`Object Vector Studio V2 shape schema must not define deprecated shape field ${key}.`);
+      }
+    });
     const requiredShapeFields = schema.$defs?.shapeCommon?.required || [];
-    if (!requiredShapeFields.includes("shapeKey") || !requiredShapeFields.includes("label") || !requiredShapeFields.includes("tool")) {
-      errors.push("Object Vector Studio V2 shape schema must require shapeKey, label, and tool.");
+    if (!requiredShapeFields.includes("tool")) {
+      errors.push("Object Vector Studio V2 shape schema must require tool.");
+    }
+    const overrideFields = schema.$defs?.shapeFrameOverride?.required || [];
+    if (!overrideFields.includes("shapeIndex")) {
+      errors.push("Object Vector Studio V2 shape frame override schema must require shapeIndex.");
     }
   }
 
@@ -698,12 +716,12 @@ export class ObjectVectorRuntimeAssetService {
   validateAnimationReferences(payload, errors) {
     const objectsById = new Map(payload.objects.map((object) => [object.id, object]));
     payload.objects.forEach((object, objectIndex) => {
-      const shapeKeys = this.collectInheritedShapeKeys(object, objectsById, new Set(), errors, `root.objects[${objectIndex}]`);
+      const shapeCount = this.collectInheritedShapeCount(object, objectsById, new Set(), errors, `root.objects[${objectIndex}]`);
       (object.states || []).forEach((state, stateIndex) => {
         state.frames.forEach((frame, frameIndex) => {
           frame.shapeOverrides.forEach((override, overrideIndex) => {
-            if (!shapeKeys.has(override.shapeKey)) {
-              errors.push(`root.objects[${objectIndex}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeKey ${override.shapeKey} must reference a local or inherited shape.`);
+            if (override.shapeIndex >= shapeCount) {
+              errors.push(`root.objects[${objectIndex}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeIndex ${override.shapeIndex} must reference a local or inherited sorted shape row.`);
             }
           });
         });
@@ -724,15 +742,12 @@ export class ObjectVectorRuntimeAssetService {
       objectsById.set(object.id, object);
     });
     payload.objects.forEach((object, objectIndex) => {
-      const localShapeKeys = new Set();
+      const localShapeOrders = new Set();
       object.shapes.forEach((shape, shapeIndex) => {
-        if (isObjectIdentityId(shape.shapeKey)) {
-          errors.push(`root.objects[${objectIndex}].shapes[${shapeIndex}].shapeKey ${shape.shapeKey} must be local editor metadata, not an object id.`);
+        if (localShapeOrders.has(shape.order)) {
+          errors.push(`root.objects[${objectIndex}].shapes[${shapeIndex}].order ${shape.order} duplicates a local shape order.`);
         }
-        if (localShapeKeys.has(shape.shapeKey)) {
-          errors.push(`root.objects[${objectIndex}].shapes[${shapeIndex}].shapeKey ${shape.shapeKey} duplicates a local shape key.`);
-        }
-        localShapeKeys.add(shape.shapeKey);
+        localShapeOrders.add(shape.order);
       });
       const seen = new Set([object.id]);
       let current = object;
@@ -763,23 +778,28 @@ export class ObjectVectorRuntimeAssetService {
     });
   }
 
-  collectInheritedShapeKeys(object, objectsById, seen, errors, path) {
-    const shapeKeys = new Set();
+  collectInheritedShapeCount(object, objectsById, seen, errors, path) {
+    return this.collectInheritedShapesByOrder(object, objectsById, seen, errors, path).size;
+  }
+
+  collectInheritedShapesByOrder(object, objectsById, seen, errors, path) {
+    const shapeByOrder = new Map();
     if (!object || seen.has(object.id)) {
       if (object) {
         errors.push(`${path}.baseObjectId creates a circular shape inheritance chain at ${object.id}.`);
       }
-      return shapeKeys;
+      return shapeByOrder;
     }
     seen.add(object.id);
     if (object.baseObjectId) {
       const baseObject = objectsById.get(object.baseObjectId);
       if (baseObject) {
-        this.collectInheritedShapeKeys(baseObject, objectsById, seen, errors, path).forEach((shapeKey) => shapeKeys.add(shapeKey));
+        this.collectInheritedShapesByOrder(baseObject, objectsById, seen, errors, path)
+          .forEach((shape, order) => shapeByOrder.set(order, shape));
       }
     }
-    object.shapes.forEach((shape) => shapeKeys.add(shape.shapeKey));
-    return shapeKeys;
+    object.shapes.forEach((shape) => shapeByOrder.set(shape.order, shape));
+    return shapeByOrder;
   }
 
   validateValue(schemaNode, value, path, errors) {
@@ -908,10 +928,7 @@ export class ObjectVectorRuntimeAssetService {
         tags: Array.isArray(object.tags) ? object.tags.map((tag) => tag.trim()).filter(Boolean) : undefined,
         shapes: object.shapes.map((shape) => ({
           ...shape,
-          shapeKey: shape.shapeKey.trim(),
-          label: shape.label.trim(),
-          tool: shape.tool.trim().toLowerCase(),
-          type: shape.type.trim().toLowerCase()
+          tool: shape.tool.trim().toLowerCase()
         }))
       };
       if (Array.isArray(object.states)) {
@@ -924,7 +941,7 @@ export class ObjectVectorRuntimeAssetService {
             id: frame.id.trim(),
             shapeOverrides: frame.shapeOverrides.map((override) => ({
               ...override,
-              shapeKey: override.shapeKey.trim()
+              shapeIndex: override.shapeIndex
             }))
           }))
         }));

@@ -103,12 +103,18 @@ export class ObjectVectorStudioV2SchemaService {
     if (Object.prototype.hasOwnProperty.call(schema.$defs?.libraryAsset?.properties || {}, "objectId")) {
       errors.push("Object Vector Studio V2 library asset schema must not define objectId.");
     }
-    if (Object.prototype.hasOwnProperty.call(schema.$defs?.shapeCommon?.properties || {}, "id")) {
-      errors.push("Object Vector Studio V2 shape schema must not define runtime-like shape id.");
-    }
+    ["id", "shapeKey", "label", "type"].forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(schema.$defs?.shapeCommon?.properties || {}, key)) {
+        errors.push(`Object Vector Studio V2 shape schema must not define deprecated shape field ${key}.`);
+      }
+    });
     const requiredShapeFields = schema.$defs?.shapeCommon?.required || [];
-    if (!requiredShapeFields.includes("shapeKey") || !requiredShapeFields.includes("label") || !requiredShapeFields.includes("tool")) {
-      errors.push("Object Vector Studio V2 shape schema must require shapeKey, label, and tool.");
+    if (!requiredShapeFields.includes("tool")) {
+      errors.push("Object Vector Studio V2 shape schema must require tool.");
+    }
+    const overrideFields = schema.$defs?.shapeFrameOverride?.required || [];
+    if (!overrideFields.includes("shapeIndex")) {
+      errors.push("Object Vector Studio V2 shape frame override schema must require shapeIndex.");
     }
   }
 
@@ -153,25 +159,22 @@ export class ObjectVectorStudioV2SchemaService {
 
     objects.forEach((object, index) => {
       this.validateInheritanceChain(object, objectsById, `root.objects[${index}]`, errors);
-      const localShapeKeys = new Set();
+      const localShapeOrders = new Set();
       object.shapes.forEach((shape, shapeIndex) => {
-        if (isObjectIdentityId(shape.shapeKey)) {
-          errors.push(`root.objects[${index}].shapes[${shapeIndex}].shapeKey ${shape.shapeKey} must be local editor metadata, not an object id.`);
+        if (localShapeOrders.has(shape.order)) {
+          errors.push(`root.objects[${index}].shapes[${shapeIndex}].order ${shape.order} duplicates a local shape order.`);
         }
-        if (localShapeKeys.has(shape.shapeKey)) {
-          errors.push(`root.objects[${index}].shapes[${shapeIndex}].shapeKey ${shape.shapeKey} duplicates a local shape key.`);
-        }
-        localShapeKeys.add(shape.shapeKey);
+        localShapeOrders.add(shape.order);
       });
     });
 
     objects.forEach((object, index) => {
-      const shapeKeys = this.collectInheritedShapeKeys(object, objectsById, new Set(), errors, `root.objects[${index}]`);
+      const shapeCount = this.collectInheritedShapeCount(object, objectsById, new Set(), errors, `root.objects[${index}]`);
       (object.states || []).forEach((state, stateIndex) => {
         state.frames.forEach((frame, frameIndex) => {
           frame.shapeOverrides.forEach((override, overrideIndex) => {
-            if (!shapeKeys.has(override.shapeKey)) {
-              errors.push(`root.objects[${index}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeKey ${override.shapeKey} must reference a local or inherited shape.`);
+            if (override.shapeIndex >= shapeCount) {
+              errors.push(`root.objects[${index}].states[${stateIndex}].frames[${frameIndex}].shapeOverrides[${overrideIndex}].shapeIndex ${override.shapeIndex} must reference a local or inherited sorted shape row.`);
             }
           });
         });
@@ -210,23 +213,28 @@ export class ObjectVectorStudioV2SchemaService {
     }
   }
 
-  collectInheritedShapeKeys(object, objectsById, seen, errors, path) {
-    const shapeKeys = new Set();
+  collectInheritedShapeCount(object, objectsById, seen, errors, path) {
+    return this.collectInheritedShapesByOrder(object, objectsById, seen, errors, path).size;
+  }
+
+  collectInheritedShapesByOrder(object, objectsById, seen, errors, path) {
+    const shapeByOrder = new Map();
     if (!object || seen.has(object.id)) {
       if (object) {
         errors.push(`${path}.baseObjectId creates a circular shape inheritance chain at ${object.id}.`);
       }
-      return shapeKeys;
+      return shapeByOrder;
     }
     seen.add(object.id);
     if (object.baseObjectId) {
       const baseObject = objectsById.get(object.baseObjectId);
       if (baseObject) {
-        this.collectInheritedShapeKeys(baseObject, objectsById, seen, errors, path).forEach((shapeKey) => shapeKeys.add(shapeKey));
+        this.collectInheritedShapesByOrder(baseObject, objectsById, seen, errors, path)
+          .forEach((shape, order) => shapeByOrder.set(order, shape));
       }
     }
-    object.shapes.forEach((shape) => shapeKeys.add(shape.shapeKey));
-    return shapeKeys;
+    object.shapes.forEach((shape) => shapeByOrder.set(shape.order, shape));
+    return shapeByOrder;
   }
 
   validateRuntimePalette(palette, sourceLabel = "runtime palette") {
@@ -426,17 +434,14 @@ export class ObjectVectorStudioV2SchemaService {
             id: frame.id.trim(),
             shapeOverrides: frame.shapeOverrides.map((override) => ({
               ...override,
-              shapeKey: override.shapeKey.trim()
+              shapeIndex: override.shapeIndex
             }))
           }))
         }))
         : undefined,
       shapes: object.shapes.map((shape) => ({
         ...shape,
-        shapeKey: shape.shapeKey.trim(),
-        label: shape.label.trim(),
-        tool: shape.tool.trim().toLowerCase(),
-        type: shape.type.trim().toLowerCase()
+        tool: shape.tool.trim().toLowerCase()
       }))
     }));
     normalized.objects = normalized.objects.map((object) => {
