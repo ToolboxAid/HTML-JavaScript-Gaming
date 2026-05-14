@@ -34,6 +34,7 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   eye: objectVectorStudioIcon("nf-fa-eye", "\uf06e"),
   eyeOff: objectVectorStudioIcon("nf-fa-eye_slash", "\uf070"),
   grid: objectVectorStudioIcon("nf-md-grid_off", "\u{f02c2}"),
+  gridSnap: objectVectorStudioIcon("nf-md-vector_point", "\u{f055f}"),
   group: objectVectorStudioIcon("nf-fa-object_group", "\uf247"),
   hue: objectVectorStudioIcon("nf-fa-eyedropper", "\uf1fb"),
   line: objectVectorStudioIcon("nf-md-vector_line", "\u{f055e}"),
@@ -84,7 +85,7 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   ["#objectVectorStudioV2ResetViewButton", "reset"],
   ["#objectVectorStudioV2CenterDotButton", "center"],
   ["#objectVectorStudioV2DuplicateFrameButton", "duplicate"],
-  ["#objectVectorStudioV2GridSnapButton", "grid"],
+  ["#objectVectorStudioV2GridSnapButton", "gridSnap"],
   ["#objectVectorStudioV2AngleSnapButton", "angle"],
   ["#objectVectorStudioV2GridRenderButton", "grid"],
   [".object-vector-studio-v2__shape-icon--select", "select"],
@@ -780,7 +781,7 @@ export class ToolStarterApp {
     this.renderObjectTagList(null);
     this.elements.paletteSummary.textContent = this.runtimePalette ? "" : "Palette required before render.";
     this.elements.objectDetails.textContent = "No object selected.";
-    this.elements.objectGeometrySummary.textContent = "";
+    this.updateObjectGeometryHeader(null);
     this.elements.objectTransform.textContent = "No shape selected.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
@@ -799,6 +800,13 @@ export class ToolStarterApp {
 
   updateObjectsHeader(objectCount, shapeCount) {
     this.elements.objectsCount.textContent = `(${objectCount} obj, ${shapeCount} ${shapeCount === 1 ? "shape" : "shapes"})`;
+  }
+
+  updateObjectGeometryHeader(shape) {
+    this.elements.objectGeometrySummary.textContent = shape ? `(${this.shapeSummaryTypeLabel(shape)})` : "";
+    if (this.elements.objectGeometryName) {
+      this.elements.objectGeometryName.textContent = shape ? shape.id : "";
+    }
   }
 
   updatePaletteHeader(swatchCount) {
@@ -941,7 +949,7 @@ export class ToolStarterApp {
     this.elements.objectTagInput.value = "";
     this.renderObjectTagList(null);
     this.elements.objectDetails.textContent = "Runtime palette required before object render.";
-    this.elements.objectGeometrySummary.textContent = "";
+    this.updateObjectGeometryHeader(null);
     this.elements.objectTransform.textContent = "Runtime palette required before object transform.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
@@ -1332,7 +1340,7 @@ export class ToolStarterApp {
       this.updateObjectsHeader(this.currentPayload?.objects.length || 0, 0);
       this.elements.objectDetails.textContent = "No object selected.";
       this.elements.objectTransform.textContent = "No shape selected.";
-      this.elements.objectGeometrySummary.textContent = "";
+      this.updateObjectGeometryHeader(null);
       this.elements.objectPreviewFooter.textContent = "Object ID: none";
       this.elements.jsonDetails.textContent = "{}";
       this.renderFrameTimeline();
@@ -1345,7 +1353,7 @@ export class ToolStarterApp {
     this.updateObjectsHeader(this.currentPayload.objects.length, selected.shapes.length);
     this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
     this.elements.objectTransform.replaceChildren(this.createObjectTransformDetails(shape));
-    this.elements.objectGeometrySummary.textContent = shape ? `${shape.id} (${this.shapeSummaryTypeLabel(shape)})` : "";
+    this.updateObjectGeometryHeader(shape);
     this.elements.objectPreviewFooter.textContent = `Object ID: ${selected.id}`;
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
@@ -1502,14 +1510,11 @@ export class ToolStarterApp {
 
     const transformPanel = document.createElement("section");
     transformPanel.className = "object-vector-studio-v2__shape-panel";
-    const heading = document.createElement("h3");
-    heading.textContent = `Selected Shape: ${shape.id}`;
     const transform = this.shapeTransform(this.effectiveShape(shape));
     const summary = document.createElement("p");
     summary.className = "object-vector-studio-v2__transform-summary";
     summary.textContent = this.formatTransformSummary(transform);
-    transformPanel.append(this.createShapeTransformControls(shape));
-    transformPanel.prepend(heading, summary);
+    transformPanel.append(this.createShapeTransformControls(shape), summary);
     wrapper.append(transformPanel);
     return wrapper;
   }
@@ -1623,7 +1628,7 @@ export class ToolStarterApp {
     const actions = document.createElement("div");
     actions.className = "object-vector-studio-v2__polygon-side-actions";
     [
-      ["add", "Add Side", "add", () => this.addPolygonSideRow()],
+      ["add", "Add Point", "add", () => this.addPolygonSideRow()],
       ["delete", "Delete Point", "delete", () => this.deletePolygonPointRows()]
     ].forEach(([action, label, iconKey, handler]) => {
       const button = document.createElement("button");
@@ -3452,12 +3457,12 @@ export class ToolStarterApp {
   addPolygonSideRow() {
     const selected = this.selectedShape();
     if (!selected || selected.type !== "polygon") {
-      this.statusLog.write("WARN Add polygon side skipped: no polygon shape is selected.");
+      this.statusLog.write("WARN Add polygon point skipped: no polygon shape is selected.");
       return;
     }
     const geometry = this.readCurrentPolygonGeometry(selected);
     if (!geometry.ok) {
-      this.statusLog.write(`FAIL Add polygon side rejected for shape ${selected.id}: ${geometry.error}`);
+      this.statusLog.write(`FAIL Add polygon point rejected for shape ${selected.id}: ${geometry.error}`);
       return;
     }
     const points = geometry.value.points;
@@ -3468,7 +3473,7 @@ export class ToolStarterApp {
     this.rebuildPolygonPointList(points);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
-    this.statusLog.write(`OK Added polygon side to shape ${selected.id}.`);
+    this.statusLog.write(`OK Added polygon point to shape ${selected.id}.`);
   }
 
   deletePolygonPointRows() {

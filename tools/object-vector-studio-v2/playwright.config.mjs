@@ -1,5 +1,6 @@
 export default {
-  testDir: "./tests/playwright",
+  testDir: "../../tests/playwright/tools",
+  testMatch: "ObjectVectorStudioV2FirstClassToolStarter.spec.mjs",
   timeout: 30000,
   outputDir: "./tests/results",
   use: {
@@ -7,4 +8,3 @@ export default {
     trace: "retain-on-failure"
   }
 };
-
