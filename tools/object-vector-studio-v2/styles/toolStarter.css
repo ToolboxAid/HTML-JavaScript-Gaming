@@ -1641,11 +1641,19 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__scale-input {
+  appearance: textfield;
+  -moz-appearance: textfield;
   min-width: 0;
   width: 100%;
   min-height: 22px;
   padding: 2px 3px;
   text-align: center;
+}
+
+.object-vector-studio-v2__scale-input::-webkit-inner-spin-button,
+.object-vector-studio-v2__scale-input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 
 .object-vector-studio-v2__transform-summary {

@@ -63,10 +63,7 @@ export async function run() {
   const bindingValidation = validateAsteroidsRuntimeObjectBindings(payload.objects, runtimeBindings);
   assert.equal(bindingValidation.ok, true);
   assert.equal(bindingValidation.objectsByRole.asteroidMedium.id, "object.asteroids.medium-asteroid");
-  assert.equal(bindingValidation.warnings.some((entry) => (
-    entry.message.includes("matched multiple objects by tags [asteroid, medium]")
-    && entry.details.candidates.some((candidate) => candidate.includes("object.asteroids.medium-asteroid-2"))
-  )), true);
+  assert.deepEqual(bindingValidation.warnings, []);
   const missingMediumBindings = { ...runtimeBindings };
   delete missingMediumBindings.asteroidMedium;
   const missingBindingValidation = validateAsteroidsRuntimeObjectBindings(payload.objects, missingMediumBindings);
@@ -74,7 +71,6 @@ export async function run() {
   assert.equal(missingBindingValidation.errors.some((entry) => (
     entry.message.includes("objectIds.asteroidMedium")
     && entry.details.candidates.some((candidate) => candidate.includes("object.asteroids.medium-asteroid"))
-    && entry.details.candidates.some((candidate) => candidate.includes("object.asteroids.medium-asteroid-2"))
   )), true);
 
   const recreatedPayload = createPayloadWithRecreatedMediumAsteroid(payload);

@@ -1,30 +1,24 @@
 export const ASTEROIDS_RUNTIME_OBJECT_ROLES = Object.freeze({
   ship: Object.freeze({
     label: 'Ship',
-    tags: Object.freeze(['player', 'ship']),
   }),
   asteroidLarge: Object.freeze({
     label: 'Large Asteroid',
     size: 3,
-    tags: Object.freeze(['asteroid', 'large']),
   }),
   asteroidMedium: Object.freeze({
     label: 'Medium Asteroid',
     size: 2,
-    tags: Object.freeze(['asteroid', 'medium']),
   }),
   asteroidSmall: Object.freeze({
     label: 'Small Asteroid',
     size: 1,
-    tags: Object.freeze(['asteroid', 'small']),
   }),
   ufoLarge: Object.freeze({
     label: 'Large UFO',
-    tags: Object.freeze(['ufo', 'large']),
   }),
   ufoSmall: Object.freeze({
     label: 'Small UFO',
-    tags: Object.freeze(['ufo', 'small']),
   }),
 });
 
@@ -50,36 +44,21 @@ function normalizeString(value) {
   return String(value || '').trim();
 }
 
-function normalizeTag(value) {
+function normalizeSearchText(value) {
   return normalizeString(value).toLowerCase();
-}
-
-function normalizeTags(value) {
-  return asArray(value).map(normalizeTag).filter(Boolean);
-}
-
-function objectTagSet(object) {
-  return new Set(normalizeTags(object?.tags));
-}
-
-function hasTags(object, tags) {
-  const tagSet = objectTagSet(object);
-  return normalizeTags(tags).every((tag) => tagSet.has(tag));
 }
 
 function oldObjectSignal(object) {
   const text = [
     object?.id,
     object?.name,
-    ...asArray(object?.tags),
-  ].map(normalizeTag).join(' ');
+  ].map(normalizeSearchText).join(' ');
   return /(^|[.\s_-])(old|legacy|deprecated|archive|archived|renamed|stale)($|[.\s_-])/.test(text);
 }
 
 function candidateLabel(candidate) {
-  const tags = normalizeTags(candidate.object?.tags).join(',');
   const oldLabel = candidate.oldSignal ? ' old-signal' : '';
-  return `${candidate.object?.id || 'unknown'} tags=[${tags}] index=${candidate.index}${oldLabel}`;
+  return `${candidate.object?.id || 'unknown'} name="${candidate.object?.name || 'unknown'}" index=${candidate.index}${oldLabel}`;
 }
 
 function logResolution(logger, level, message, details = {}) {
@@ -101,7 +80,6 @@ export function runtimeObjectRoleOptions(roleId, runtimeBindings = {}) {
       objectId: '',
       requireManifestBinding: true,
       runtimeRole: roleId,
-      tags: [],
     };
   }
   const bindings = asRecord(runtimeBindings);
@@ -109,7 +87,6 @@ export function runtimeObjectRoleOptions(roleId, runtimeBindings = {}) {
     objectId: normalizeString(bindings[roleId]),
     requireManifestBinding: true,
     runtimeRole: roleId,
-    tags: [...role.tags],
   };
 }
 
@@ -134,7 +111,7 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
       object,
       oldSignal: oldObjectSignal(object),
     }))
-    .filter((candidate) => candidate.object && hasTags(candidate.object, role.tags));
+    .filter((candidate) => candidate.object);
 
   if (!explicitObjectId) {
     logResolution(
@@ -144,7 +121,6 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
       {
         candidates: candidates.map(candidateLabel),
         objectCount: objectList.length,
-        tags: [...role.tags],
       }
     );
     return null;
@@ -159,7 +135,6 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
         candidates: candidates.map(candidateLabel),
         explicitObjectId,
         objectCount: objectList.length,
-        tags: [...role.tags],
       }
     );
     return null;
@@ -173,51 +148,9 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
       {
         candidates: candidates.map(candidateLabel),
         explicitObjectId,
-        tags: normalizeTags(explicitObject.tags),
       }
     );
     return null;
-  }
-
-  if (!hasTags(explicitObject, role.tags)) {
-    logResolution(
-      logger,
-      'FAIL',
-      `Asteroids Object Vector runtime role ${roleId} manifest binding ${explicitObjectId} is missing required tags [${role.tags.join(', ')}].`,
-      {
-        candidates: candidates.map(candidateLabel),
-        explicitObjectId,
-        objectTags: normalizeTags(explicitObject.tags),
-        requiredTags: [...role.tags],
-      }
-    );
-    return null;
-  }
-
-  if (!candidates.some((candidate) => candidate.object.id === explicitObjectId)) {
-    logResolution(
-      logger,
-      'FAIL',
-      `Asteroids Object Vector runtime role ${roleId} manifest binding ${explicitObjectId} was not found in tag candidates [${role.tags.join(', ')}].`,
-      {
-        candidates: candidates.map(candidateLabel),
-        explicitObjectId,
-        requiredTags: [...role.tags],
-      }
-    );
-    return null;
-  }
-
-  if (candidates.length > 1) {
-    logResolution(
-      logger,
-      'WARN',
-      `Asteroids Object Vector runtime role ${roleId} matched multiple objects by tags [${role.tags.join(', ')}]; using explicit manifest binding ${explicitObjectId}.`,
-      {
-        candidates: candidates.map(candidateLabel),
-        selectedObjectId: explicitObjectId,
-      }
-    );
   }
 
   return explicitObject;

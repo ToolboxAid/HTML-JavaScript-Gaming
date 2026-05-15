@@ -1647,7 +1647,10 @@ export class ToolStarterApp {
   }
 
   formatTransformSummary(transform) {
-    return `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`;
+    const scaleText = transform.scaleX === transform.scaleY
+      ? String(transform.scaleX)
+      : `${transform.scaleX} x ${transform.scaleY}`;
+    return `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${scaleText}`;
   }
 
   createDetailGrid(entries) {
@@ -1760,7 +1763,7 @@ export class ToolStarterApp {
     actions.className = "object-vector-studio-v2__polygon-side-actions";
     [
       ["add", "Add Point", "add", () => this.addPolygonSideRow()],
-      ["delete", "Delete Point", "delete", () => this.deletePolygonPointRows()]
+      ["delete", "Delete Point(s)", "delete", () => this.deletePolygonPointRows()]
     ].forEach(([action, label, iconKey, handler]) => {
       const button = document.createElement("button");
       button.type = "button";
@@ -1823,7 +1826,10 @@ export class ToolStarterApp {
     const label = document.createElement("span");
     label.className = "object-vector-studio-v2__transform-control-label";
     label.textContent = "Rotate";
-    const input = this.createTransformNumberInput("objectVectorStudioV2RotateInput", "Rotate", "15");
+    const input = this.createTransformNumberInput("objectVectorStudioV2RotateInput", "Rotate", "15", {
+      max: "360",
+      min: "0"
+    });
     const button = this.createTransformActionButton({
       handler: () => this.rotateSelectedShape(),
       iconKey: "rotate",
@@ -1865,13 +1871,19 @@ export class ToolStarterApp {
     return label;
   }
 
-  createTransformNumberInput(id, label, value) {
+  createTransformNumberInput(id, label, value, options = {}) {
     const input = document.createElement("input");
     input.id = id;
     input.type = "number";
     input.step = "0.1";
     input.value = this.transformInputValue(id, value);
     input.setAttribute("aria-label", label);
+    if (options.min !== undefined) {
+      input.min = options.min;
+    }
+    if (options.max !== undefined) {
+      input.max = options.max;
+    }
     input.addEventListener("input", () => {
       this.transformInputValues.set(id, input.value);
       this.clearInputValidity(input);
@@ -3699,11 +3711,24 @@ export class ToolStarterApp {
       this.statusLog.write(`FAIL Invalid transform rejected for shape row ${this.selectedShapeIndex}: ${input.error}`);
       return;
     }
-    const rotation = this.snapAngle(input.value);
+    const rotation = this.snapAngle(this.normalizeRotationInputValue(input.value));
+    const inputElement = this.window.document.getElementById("objectVectorStudioV2RotateInput");
+    if (inputElement) {
+      inputElement.value = String(rotation);
+      this.transformInputValues.set(inputElement.id, inputElement.value);
+    }
     this.updateSelectedShapeTransform("rotate", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
       shape.transform.rotation = Number((shape.transform.rotation + rotation).toFixed(3));
     }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.`);
+  }
+
+  normalizeRotationInputValue(value) {
+    if (!Number.isFinite(value)) {
+      return value;
+    }
+    const normalized = ((value % 360) + 360) % 360;
+    return value > 0 && normalized === 0 ? 360 : Number(normalized.toFixed(3));
   }
 
   formatScaleInputValue(value) {

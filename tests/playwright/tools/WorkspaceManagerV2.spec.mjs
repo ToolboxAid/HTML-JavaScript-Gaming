@@ -1812,7 +1812,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Transform");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails #objectVectorStudioV2MoveShapeButton")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ObjectTransform")).not.toContainText("Selected Shape:");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1 x 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1");
       await expect(page.locator("#objectVectorStudioV2ObjectTransform #objectVectorStudioV2MoveShapeButton")).toHaveCount(1);
       const transformSummaryLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => {
         const scaleRow = panel.querySelector(".object-vector-studio-v2__scale-control-row");
@@ -1849,16 +1849,28 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const rect = child.getBoundingClientRect();
           return Math.round(rect.top + rect.height / 2);
         });
+        const scaleInput = row.querySelector("#objectVectorStudioV2ScaleInput");
+        const scaleInputStyle = getComputedStyle(scaleInput);
+        const spinnerCssRuleExists = Array.from(document.styleSheets).some((sheet) => (
+          Array.from(sheet.cssRules || []).some((rule) => (
+            rule.selectorText?.includes(".object-vector-studio-v2__scale-input::-webkit-inner-spin-button")
+              && rule.cssText.toLowerCase().includes("appearance: none")
+          ))
+        ));
         return {
           allOneLine: centers.every((center) => Math.abs(center - centers[0]) <= 2),
+          appearance: scaleInputStyle.appearance,
           order: children.map((child) => child.tagName === "INPUT" ? child.value : child.textContent.trim()),
-          resizeTitle: row.querySelector("#objectVectorStudioV2ResizeShapeButton").title
+          resizeTitle: row.querySelector("#objectVectorStudioV2ResizeShapeButton").title,
+          spinnerCssRuleExists
         };
       });
       expect(scaleControlLayout).toEqual({
         allOneLine: true,
+        appearance: "textfield",
         order: ["Scale", "--", "-", "1", "+", "++", "Resize"],
-        resizeTitle: "Resize Geometry"
+        resizeTitle: "Resize Geometry",
+        spinnerCssRuleExists: true
       });
       const objectDetailsOrder = await page.locator("#objectVectorStudioV2ObjectDetails").evaluate((details) => {
         const applyButton = details.querySelector("#objectVectorStudioV2ApplyGeometryButton");
@@ -2274,7 +2286,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2RotateInput").fill("22");
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 15');
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("15");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 15 degrees\./);
+      await page.locator("#objectVectorStudioV2AngleSnapButton").click();
+      await page.locator("#objectVectorStudioV2RotateInput").fill("725");
+      await page.locator("#objectVectorStudioV2RotateShapeButton").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 20');
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("5");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 5 degrees\./);
       await page.locator("#objectVectorStudioV2OriginXInput").fill("2");
       await page.locator("#objectVectorStudioV2OriginYInput").fill("-3");
       await page.locator("#objectVectorStudioV2ApplyOriginButton").click();
@@ -2290,7 +2309,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).not.toHaveAttribute("aria-invalid", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.2 for shape row 0\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"scaleX": 1.2');
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 15, scale 1.2 x 1.2");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 20, scale 1.2");
       const selectionBeforeScaleStep = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
         height: Number(box.getAttribute("height")),
         width: Number(box.getAttribute("width"))
@@ -2342,7 +2361,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
       });
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 15, scale 1 x 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 20, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Resize Geometry applied scale 1\.2 to shape row 0; transform scale reset to 1\./);
 
       await page.locator("#objectVectorStudioV2BringForwardButton").click();
@@ -2793,7 +2812,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         sectionGap: Number.parseFloat(getComputedStyle(list.closest(".object-vector-studio-v2__edit-panel--polygon")).gap)
       }));
       expect(polygonPointListLayout).toEqual({ headingMarginBottom: 0, headingMarginTop: 0, listGap: 5, maxHeight: 138, overflowY: "auto", sectionGap: 5 });
-      await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-side-action]")).toHaveText(["Add Point", "Delete Point"]);
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-side-action]")).toHaveText(["Add Point", "Delete Point(s)"]);
       await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-select='true']")).toHaveCount(4);
       await page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-select='true'][data-polygon-point-index='1']").check();
       await page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-side-action='add']").click();
@@ -3693,12 +3712,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by 10, 10\./);
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 0, scale 1 x 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 0, scale 1");
       await page.locator("#objectVectorStudioV2MoveXInput").fill("-5");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by -10, -10\./);
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1 x 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1");
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.authoring-copied-json")));
@@ -4537,16 +4556,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       const diagnostics = await page.evaluate(() => window.__asteroidsObjectVectorRuntime);
       const runtimeBindingValidation = await page.evaluate(() => window.__asteroidsNewEngine.scene.objectVectorRuntimeBindingValidation);
+      const taglessRuntimeBindingValidation = await page.evaluate(async () => {
+        const { validateAsteroidsRuntimeObjectBindings } = await import("/games/Asteroids/game/asteroidsObjectVectorRoles.js");
+        const scene = window.__asteroidsNewEngine.scene;
+        const objects = scene.objectVectorAssets.payload.objects.map((object) => ({
+          ...object,
+          tags: []
+        }));
+        return validateAsteroidsRuntimeObjectBindings(objects, scene.objectVectorRuntimeBindings);
+      });
       expect(diagnostics.loaded).toBe(true);
       expect(diagnostics.assetCount).toBe(7);
       expect(diagnostics.objectCount).toBe(7);
       expect(diagnostics.runtimeBindingsValid).toBe(true);
       expect(runtimeBindingValidation.ok).toBe(true);
       expect(runtimeBindingValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
-      expect(runtimeBindingValidation.warnings.some((entry) => (
-        entry.message.includes("matched multiple objects by tags [asteroid, medium]")
-        && entry.details.candidates.some((candidate) => candidate.includes("object.asteroids.medium-asteroid-2"))
-      ))).toBe(true);
+      expect(runtimeBindingValidation.warnings).toEqual([]);
+      expect(taglessRuntimeBindingValidation.ok).toBe(true);
+      expect(taglessRuntimeBindingValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
       expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ship).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);
@@ -4557,6 +4584,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 2 shapes state=active frame=active-frame-1.");
+      expect(eventMessages).not.toContain("matched multiple objects by tags");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -4593,6 +4621,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const panelStyle = getComputedStyle(document.querySelector(".workspace-manager-v2__panel"));
         const summaryStyle = getComputedStyle(document.querySelector(".tools-platform-frame__accordion-summary"));
         const textareaStyle = getComputedStyle(document.querySelector("#statusLog"));
+        const sectionProbeA = document.createElement("section");
+        const sectionProbeB = document.createElement("section");
+        sectionProbeA.style.cssText = "position:absolute;left:-10000px;top:-10000px;visibility:hidden;";
+        sectionProbeB.style.cssText = "position:absolute;left:-10000px;top:-10000px;visibility:hidden;";
+        document.body.append(sectionProbeA, sectionProbeB);
+        const hubSectionMarginTop = Number.parseFloat(getComputedStyle(sectionProbeB).marginTop);
+        sectionProbeA.remove();
+        sectionProbeB.remove();
         return {
           bodyBackground: bodyStyle.backgroundImage,
           bodyColor: bodyStyle.color,
@@ -4611,6 +4647,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           expectedLine: probeStyle("borderColor", "var(--line)"),
           expectedPanel: probeStyle("backgroundColor", "var(--panel)"),
           expectedText: probeStyle("color", "var(--text)"),
+          hubSectionMarginTop,
           panelBackground: panelStyle.backgroundColor,
           shellBorder: shellStyle.borderTopColor,
           stylesheetPaths,
@@ -4628,6 +4665,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(themeContract.cssUsesThemeTokens).toBe(true);
       expect(themeContract.bodyColor).toBe(themeContract.expectedText);
       expect(themeContract.bodyBackground).toBe(themeContract.expectedBackground);
+      expect(themeContract.hubSectionMarginTop).toBe(12);
       expect(themeContract.shellBorder).toBe(themeContract.expectedLine);
       expect(themeContract.panelBackground).toBe(themeContract.expectedPanel);
       expect(themeContract.summaryBackground).toBe(themeContract.expectedPanel);

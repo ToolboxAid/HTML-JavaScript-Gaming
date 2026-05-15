@@ -1,6 +1,6 @@
-# PR_26133_040 Workspace V2 Playwright Results
+# PR_26133_041 Workspace V2 Playwright Results
 
-Task: PR_26133_040-object-transform-one-line-control-layout
+Task: PR_26133_041-object-transform-summary-and-runtime-validation-cleanup
 Date: 2026-05-15
 
 ## Result
@@ -14,13 +14,14 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Verified Object Transform Move controls render on one line as `Move X [input] Y [input] [Move]`.
-- Verified Object Transform Origin controls render on one line as `Origin X [input] Y [input] [Apply]`.
-- Verified Object Transform Rotate controls render on one line as `Rotate [input] [Rotate]`.
-- Verified existing Scale controls remain one line as `Scale [--] [-] [scale input] [+] [++] [Resize]`.
-- Verified Move, Origin Apply, and Rotate buttons continue to update the selected shape transform.
-- Verified transform summary is horizontally centered and no longer starts with `Transform`.
+- Verified Object Transform Scale input renders with spinner-removal CSS (`appearance: textfield` and WebKit spin-button removal rule).
+- Verified transform summary renders singular same-axis scale text such as `x 0, y 0, rot 0, scale 1`.
+- Verified Rotate input constrains to `min=0` and `max=360`, normalizes out-of-range input before applying, and writes the normalized value back to the textbox.
+- Verified Object Geometry polygon action label renders `Delete Point(s)`.
+- Verified Asteroids runtime binding validation succeeds when object `tags` are removed from the runtime payload, keeping tags as Object Vector Studio V2 editor metadata rather than runtime validation data.
+- Verified hub page tool section margin resolves to `12px`.
+- Targeted Node validation also passed for `AsteroidsAssetReferenceAdoption` and `AsteroidsPlatformDemo`.
 
 ## Manual Verification Equivalent
 
-Targeted Object Vector Studio V2 browser automation covered the requested transform row layouts, preserved transform actions, centered summary text, retained Scale row layout, and no-console-error checks.
+Targeted Object Vector Studio V2 browser automation covered the requested Scale input styling, transform summary formatting, Rotate normalization, Delete Point(s) label, Asteroids runtime tag-validation cleanup, hub spacing contract, and no-console-error checks.
