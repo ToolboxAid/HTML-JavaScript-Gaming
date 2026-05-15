@@ -1,6 +1,6 @@
-# PR_26133_037 Playwright V8 Coverage Report
+# PR_26133_038 Playwright V8 Coverage Report
 
-Task: PR_26133_037-object-preview-transform-bounds-fix
+Task: PR_26133_038-object-transform-scale-resize-geometry
 Date: 2026-05-15
 
 ## Result
@@ -26,7 +26,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Changed Runtime JS Coverage
 
 ```text
-(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4416/4416; executed functions 466/498
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4646/4646; executed functions 479/510
 ```
 
 ## Changed Test Coverage Note
@@ -43,4 +43,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 transformed selection bounds, transformed handle placement, transformed hit testing, and drag interaction startup from the transformed visual shape region. Coverage remains advisory only.
+The Workspace V2 run exercised Object Vector Studio V2 live scale preview, scale step buttons, Resize Geometry baking, scale reset, schema validation, transformed selection bounds refresh, and supported shape-tool geometry rewrite paths. Coverage remains advisory only.

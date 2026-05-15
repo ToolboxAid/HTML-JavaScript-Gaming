@@ -1826,16 +1826,31 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const transformIconState = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => ({
         resize: {
           iconKey: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").dataset.ovsIconKey,
-          iconName: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").dataset.ovsIconName
+          iconName: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").dataset.ovsIconName,
+          title: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").title
         },
-        scale: {
-          iconKey: panel.querySelector("#objectVectorStudioV2ScaleShapeButton").dataset.ovsIconKey,
-          iconName: panel.querySelector("#objectVectorStudioV2ScaleShapeButton").dataset.ovsIconName
-        }
+        scaleActionRemoved: panel.querySelector("#objectVectorStudioV2ScaleShapeButton") === null
       }));
       expect(transformIconState).toEqual({
-        resize: { iconKey: "resize", iconName: "nf-md-resize" },
-        scale: { iconKey: "scale", iconName: "nf-fa-scale_unbalanced" }
+        resize: { iconKey: "resize", iconName: "nf-md-resize", title: "Resize Geometry" },
+        scaleActionRemoved: true
+      });
+      const scaleControlLayout = await page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__scale-control-row").evaluate((row) => {
+        const children = Array.from(row.children);
+        const centers = children.map((child) => {
+          const rect = child.getBoundingClientRect();
+          return Math.round(rect.top + rect.height / 2);
+        });
+        return {
+          allOneLine: centers.every((center) => Math.abs(center - centers[0]) <= 2),
+          order: children.map((child) => child.tagName === "INPUT" ? child.value : child.textContent.trim()),
+          resizeTitle: row.querySelector("#objectVectorStudioV2ResizeShapeButton").title
+        };
+      });
+      expect(scaleControlLayout).toEqual({
+        allOneLine: true,
+        order: ["Scale", "--", "-", "1", "+", "++", "Resize"],
+        resizeTitle: "Resize Geometry"
       });
       const objectDetailsOrder = await page.locator("#objectVectorStudioV2ObjectDetails").evaluate((details) => {
         const applyButton = details.querySelector("#objectVectorStudioV2ApplyGeometryButton");
@@ -1873,10 +1888,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { inline: true, label: "Move X" },
         { inline: true, label: "Move Y" },
         { inline: true, label: "Rotate" },
-        { inline: true, label: "Scale" },
         { inline: true, label: "Origin X" },
-        { inline: true, label: "Origin Y" },
-        { inline: true, label: "Resize" }
+        { inline: true, label: "Origin Y" }
       ]);
       const transformBeforeInvalid = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform);
       await page.locator("#objectVectorStudioV2MoveXInput").fill("");
@@ -2223,19 +2236,67 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 15 degrees\./);
 
       await page.locator("#objectVectorStudioV2ScaleInput").fill("0");
-      await page.locator("#objectVectorStudioV2ScaleShapeButton").click();
+      await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveAttribute("aria-invalid", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Invalid transform rejected for shape row 0: scale must be greater than 0\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"scaleX": 0');
       await page.locator("#objectVectorStudioV2ScaleInput").fill("1.2");
-      await page.locator("#objectVectorStudioV2ScaleShapeButton").click();
+      await expect(page.locator("#objectVectorStudioV2ScaleInput")).not.toHaveAttribute("aria-invalid", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.2 for shape row 0\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"scaleX": 1.2');
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Scaled shape row 0 by 1\.2\./);
-
-      await page.locator("#objectVectorStudioV2ResizeInput").fill("5");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 10, y 10, rot 15, scale 1.2 x 1.2");
+      const selectionBeforeScaleStep = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
+        height: Number(box.getAttribute("height")),
+        width: Number(box.getAttribute("width"))
+      }));
+      await page.locator("#objectVectorStudioV2ScaleDownSmallButton").click();
+      await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1.19");
+      await page.locator("#objectVectorStudioV2ScaleDownLargeButton").click();
+      await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1.09");
+      await page.locator("#objectVectorStudioV2ScaleUpSmallButton").click();
+      await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1.1");
+      await page.locator("#objectVectorStudioV2ScaleUpLargeButton").click();
+      await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1.2");
+      const selectionAfterScaleStep = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
+        height: Number(box.getAttribute("height")),
+        width: Number(box.getAttribute("width"))
+      }));
+      expect(selectionAfterScaleStep.width).toBeCloseTo(selectionBeforeScaleStep.width, 1);
+      expect(selectionAfterScaleStep.height).toBeCloseTo(selectionBeforeScaleStep.height, 1);
+      const rectangleBeforeResizeGeometry = await page.evaluate(() => {
+        const shape = window.__objectVectorStudioV2App.selectedShape();
+        return {
+          geometry: { ...shape.geometry },
+          transform: { ...shape.transform, origin: { ...shape.transform.origin } }
+        };
+      });
       await page.locator("#objectVectorStudioV2ResizeShapeButton").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"width": 85');
-      await expect(page.locator("#objectVectorStudioV2ResizeInput")).toHaveValue("5");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Resized shape row 0 by 5\./);
+      const rectangleAfterResizeGeometry = await page.evaluate(() => {
+        const shape = window.__objectVectorStudioV2App.selectedShape();
+        return {
+          geometry: { ...shape.geometry },
+          schemaOk: window.__objectVectorStudioV2App.schemaService.validatePayload(window.__objectVectorStudioV2App.currentPayload).ok,
+          transform: { ...shape.transform, origin: { ...shape.transform.origin } }
+        };
+      });
+      expect(rectangleAfterResizeGeometry).toMatchObject({
+        geometry: {
+          height: Number((rectangleBeforeResizeGeometry.geometry.height * 1.2).toFixed(3)),
+          width: Number((rectangleBeforeResizeGeometry.geometry.width * 1.2).toFixed(3)),
+          x: Number((rectangleBeforeResizeGeometry.transform.origin.x + (rectangleBeforeResizeGeometry.geometry.x - rectangleBeforeResizeGeometry.transform.origin.x) * 1.2).toFixed(3)),
+          y: Number((rectangleBeforeResizeGeometry.transform.origin.y + (rectangleBeforeResizeGeometry.geometry.y - rectangleBeforeResizeGeometry.transform.origin.y) * 1.2).toFixed(3))
+        },
+        schemaOk: true,
+        transform: {
+          rotation: rectangleBeforeResizeGeometry.transform.rotation,
+          scaleX: 1,
+          scaleY: 1,
+          x: rectangleBeforeResizeGeometry.transform.x,
+          y: rectangleBeforeResizeGeometry.transform.y
+        }
+      });
+      await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 10, y 10, rot 15, scale 1 x 1");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Resize Geometry applied scale 1\.2 to shape row 0; transform scale reset to 1\./);
 
       await page.locator("#objectVectorStudioV2BringForwardButton").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"order": 2');
@@ -3382,6 +3443,99 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(transformAfterDrag.x).not.toBe(transformBeforeDrag.x);
       expect(transformAfterDrag.y).not.toBe(transformBeforeDrag.y);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Dragged shape row 0 by/);
+
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("applies Object Vector Studio V2 Resize Geometry across supported shape tools", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    const consoleErrors = [];
+    const scaledTransform = { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1.5, scaleY: 1.5, x: 0, y: 0 };
+    const style = { fill: "#ffffff", fillOpacity: 1, stroke: "#60a5fa", strokeOpacity: 1, strokeWidth: 1 };
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.setViewportSize({ width: 1366, height: 1000 });
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "resize-geometry-palette",
+          swatches: [
+            { id: "white", value: "#ffffff" },
+            { id: "blue", value: "#60a5fa" }
+          ]
+        }));
+      });
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles({
+        buffer: Buffer.from(JSON.stringify({
+          name: "Resize Geometry Object Set",
+          objects: [
+            {
+              id: "object.resize.geometry-probe",
+              name: "Resize Geometry Probe",
+              shapes: [
+                { geometry: { points: [{ x: 0, y: -10 }, { x: 10, y: 0 }, { x: 0, y: 10 }, { x: -10, y: 0 }] }, locked: false, order: 1, style, tool: "polygon", transform: scaledTransform, visible: true },
+                { geometry: { points: [{ x: 0, y: -8 }, { x: 8, y: 8 }, { x: -8, y: 8 }] }, locked: false, order: 2, style, tool: "triangle", transform: scaledTransform, visible: true },
+                { geometry: { point1: { x: -10, y: -5 }, point2: { x: 10, y: 5 } }, locked: false, order: 3, style: { ...style, fill: "none" }, tool: "line", transform: scaledTransform, visible: true },
+                { geometry: { height: 10, width: 20, x: -10, y: -5 }, locked: false, order: 4, style, tool: "rectangle", transform: scaledTransform, visible: true },
+                { geometry: { cx: 5, cy: -5, r: 10 }, locked: false, order: 5, style, tool: "circle", transform: scaledTransform, visible: true },
+                { geometry: { cx: 4, cy: -6, rx: 8, ry: 12 }, locked: false, order: 6, style, tool: "ellipse", transform: scaledTransform, visible: true },
+                { geometry: { cx: 2, cy: -4, r: 9, startAngle: -90, endAngle: 90 }, locked: false, order: 7, style: { ...style, fill: "none" }, tool: "arc", transform: scaledTransform, visible: true },
+                { geometry: { fontSize: 12, text: "Hi", x: 6, y: -6 }, locked: false, order: 8, style, tool: "text", transform: scaledTransform, visible: true }
+              ],
+              tags: []
+            }
+          ],
+          toolId: "object-vector-studio-v2",
+          version: 1
+        }, null, 2)),
+        mimeType: "application/json",
+        name: "object-vector-resize-geometry.json"
+      });
+
+      for (let shapeIndex = 0; shapeIndex < 8; shapeIndex += 1) {
+        await page.locator(`[data-object-tile-shape-index='${shapeIndex}']`).click();
+        await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1.5");
+        await page.locator("#objectVectorStudioV2ResizeShapeButton").click();
+        await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Resize Geometry applied scale 1\\.5 to shape row ${shapeIndex}; transform scale reset to 1\\.`));
+      }
+
+      const resizeResult = await page.evaluate(() => {
+        const payload = window.__objectVectorStudioV2App.currentPayload;
+        const shapes = payload.objects[0].shapes;
+        return {
+          geometries: shapes.map((shape) => shape.geometry),
+          schemaOk: window.__objectVectorStudioV2App.schemaService.validatePayload(payload).ok,
+          scales: shapes.map((shape) => ({ scaleX: shape.transform.scaleX, scaleY: shape.transform.scaleY }))
+        };
+      });
+      expect(resizeResult.schemaOk).toBe(true);
+      expect(resizeResult.scales.every((scale) => scale.scaleX === 1 && scale.scaleY === 1)).toBe(true);
+      expect(resizeResult.geometries).toEqual([
+        { points: [{ x: 0, y: -15 }, { x: 15, y: 0 }, { x: 0, y: 15 }, { x: -15, y: 0 }] },
+        { points: [{ x: 0, y: -12 }, { x: 12, y: 12 }, { x: -12, y: 12 }] },
+        { point1: { x: -15, y: -7.5 }, point2: { x: 15, y: 7.5 } },
+        { height: 15, width: 30, x: -15, y: -7.5 },
+        { cx: 7.5, cy: -7.5, r: 15 },
+        { cx: 6, cy: -9, rx: 12, ry: 18 },
+        { cx: 3, cy: -6, r: 13.5, startAngle: -90, endAngle: 90 },
+        { fontSize: 18, text: "Hi", x: 9, y: -9 }
+      ]);
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);

@@ -1455,6 +1455,17 @@ export class ToolStarterApp {
     this.elements.objectTransform.replaceChildren(this.createObjectTransformDetails(shape));
     this.updateObjectGeometryHeader(shape);
     this.elements.objectPreviewFooter.textContent = `Object ID: ${selected.id}`;
+    this.updateSelectedObjectJsonDetails();
+    this.renderFrameTimeline();
+  }
+
+  updateSelectedObjectJsonDetails() {
+    const selected = this.selectedObject();
+    if (!selected) {
+      this.elements.jsonDetails.textContent = "{}";
+      return;
+    }
+    const shape = this.selectedShape();
     this.elements.jsonDetails.textContent = JSON.stringify({
       object: selected,
       selectedFrame: this.activeFrame(),
@@ -1462,7 +1473,15 @@ export class ToolStarterApp {
       selectedShapeIndexes: Array.from(this.selectedShapeIndexes),
       selectedState: this.selectedState()
     }, null, 2);
-    this.renderFrameTimeline();
+  }
+
+  updateTransformSummaryText() {
+    const summary = this.elements.objectTransform.querySelector(".object-vector-studio-v2__transform-summary");
+    const shape = this.selectedShape();
+    if (!summary || !shape) {
+      return;
+    }
+    summary.textContent = this.formatTransformSummary(this.shapeTransform(this.effectiveShape(shape)));
   }
 
   updateObjectPreviewFooterFromNameInput() {
@@ -1766,10 +1785,8 @@ export class ToolStarterApp {
       ["objectVectorStudioV2MoveXInput", "Move X", "10"],
       ["objectVectorStudioV2MoveYInput", "Move Y", "0"],
       ["objectVectorStudioV2RotateInput", "Rotate", "15"],
-      ["objectVectorStudioV2ScaleInput", "Scale", "1.1"],
       ["objectVectorStudioV2OriginXInput", "Origin X", String(transform.origin.x)],
-      ["objectVectorStudioV2OriginYInput", "Origin Y", String(transform.origin.y)],
-      ["objectVectorStudioV2ResizeInput", "Resize", "10"]
+      ["objectVectorStudioV2OriginYInput", "Origin Y", String(transform.origin.y)]
     ].forEach(([id, labelText, value]) => {
       const label = document.createElement("label");
       label.className = "object-vector-studio-v2__edit-field object-vector-studio-v2__edit-field--inline";
@@ -1792,8 +1809,6 @@ export class ToolStarterApp {
     [
       ["objectVectorStudioV2MoveShapeButton", "Move", "move", () => this.moveSelectedShape()],
       ["objectVectorStudioV2RotateShapeButton", "Rotate", "rotate", () => this.rotateSelectedShape()],
-      ["objectVectorStudioV2ScaleShapeButton", "Scale", "scale", () => this.scaleSelectedShape()],
-      ["objectVectorStudioV2ResizeShapeButton", "Resize", "resize", () => this.resizeSelectedShape()],
       ["objectVectorStudioV2ApplyOriginButton", "Apply Origin", "center", () => this.applySelectedShapeOrigin()]
     ].forEach(([id, label, iconKey, handler]) => {
       const button = document.createElement("button");
@@ -1804,8 +1819,67 @@ export class ToolStarterApp {
       button.addEventListener("click", handler);
       actions.append(button);
     });
-    section.append(heading, grid, actions);
+    section.append(heading, grid, this.createScaleControlRow(transform), actions);
     return section;
+  }
+
+  createScaleControlRow(transform) {
+    const row = document.createElement("div");
+    row.className = "object-vector-studio-v2__scale-control-row";
+    const label = document.createElement("span");
+    label.className = "object-vector-studio-v2__scale-control-label";
+    label.textContent = "Scale";
+    row.append(label);
+
+    [
+      ["objectVectorStudioV2ScaleDownLargeButton", "--", -0.1],
+      ["objectVectorStudioV2ScaleDownSmallButton", "-", -0.01]
+    ].forEach(([id, text, delta]) => {
+      row.append(this.createScaleStepButton(id, text, delta));
+    });
+
+    const input = document.createElement("input");
+    input.id = "objectVectorStudioV2ScaleInput";
+    input.className = "object-vector-studio-v2__scale-input";
+    input.type = "number";
+    input.min = "0.01";
+    input.step = "0.01";
+    input.value = this.formatScaleInputValue(transform.scaleX);
+    input.setAttribute("aria-label", "Scale");
+    input.addEventListener("input", () => {
+      this.transformInputValues.set(input.id, input.value);
+      this.applyScaleInputLive(input);
+    });
+    row.append(input);
+
+    [
+      ["objectVectorStudioV2ScaleUpSmallButton", "+", 0.01],
+      ["objectVectorStudioV2ScaleUpLargeButton", "++", 0.1]
+    ].forEach(([id, text, delta]) => {
+      row.append(this.createScaleStepButton(id, text, delta));
+    });
+
+    const resizeButton = document.createElement("button");
+    resizeButton.id = "objectVectorStudioV2ResizeShapeButton";
+    resizeButton.type = "button";
+    resizeButton.textContent = "Resize";
+    resizeButton.title = "Resize Geometry";
+    resizeButton.setAttribute("aria-label", "Resize Geometry");
+    this.applyIconGlyph(resizeButton, "resize");
+    resizeButton.addEventListener("click", () => this.resizeSelectedShape());
+    row.append(resizeButton);
+    return row;
+  }
+
+  createScaleStepButton(id, text, delta) {
+    const button = document.createElement("button");
+    button.id = id;
+    button.type = "button";
+    button.dataset.scaleStep = String(delta);
+    button.textContent = text;
+    button.title = `Scale ${delta > 0 ? "up" : "down"} ${Math.abs(delta).toFixed(2)}`;
+    button.addEventListener("click", () => this.adjustSelectedShapeScale(delta));
+    return button;
   }
 
   transformInputValue(id, defaultValue) {
@@ -3562,34 +3636,183 @@ export class ToolStarterApp {
     }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.`);
   }
 
-  scaleSelectedShape() {
+  formatScaleInputValue(value) {
+    return String(Number(Number(value).toFixed(3)));
+  }
+
+  readScaleInput() {
     const input = this.numberInputValue("objectVectorStudioV2ScaleInput", "Scale");
+    if (!input.ok) {
+      return input;
+    }
+    if (input.value <= 0) {
+      this.markInputInvalid(this.window.document.getElementById("objectVectorStudioV2ScaleInput"), "Scale must be greater than 0.");
+      return { error: "scale must be greater than 0.", ok: false, value: input.value };
+    }
+    return { error: "", ok: true, value: Number(input.value.toFixed(3)) };
+  }
+
+  applyScaleInputLive(inputElement) {
+    const rawValue = inputElement?.value?.trim() || "";
+    if (!rawValue) {
+      this.markInputInvalid(inputElement, "Scale must be a finite number.");
+      return;
+    }
+    const input = this.readScaleInput();
     if (!input.ok) {
       this.statusLog.write(`FAIL Invalid transform rejected for shape row ${this.selectedShapeIndex}: ${input.error}`);
       return;
     }
-    if (input.value <= 0) {
+    this.applySelectedShapeScaleValue(input.value, {
+      okMessage: `OK Scale preview set to ${this.formatScaleInputValue(input.value)} for shape row ${this.selectedShapeIndex}.`,
+      renderControls: false
+    });
+  }
+
+  adjustSelectedShapeScale(delta) {
+    const input = this.readScaleInput();
+    if (!input.ok) {
+      this.statusLog.write(`FAIL Invalid transform rejected for shape row ${this.selectedShapeIndex}: ${input.error}`);
+      return;
+    }
+    const nextScale = Number((input.value + delta).toFixed(3));
+    if (nextScale <= 0) {
       this.markInputInvalid(this.window.document.getElementById("objectVectorStudioV2ScaleInput"), "Scale must be greater than 0.");
       this.statusLog.write(`FAIL Invalid transform rejected for shape row ${this.selectedShapeIndex}: scale must be greater than 0.`);
       return;
     }
-    this.updateSelectedShapeTransform("scale", (shape) => {
-      shape.transform = this.ensureShapeTransform(shape);
-      shape.transform.scaleX = Number((shape.transform.scaleX * input.value).toFixed(3));
-      shape.transform.scaleY = Number((shape.transform.scaleY * input.value).toFixed(3));
-    }, `OK Scaled shape row ${this.selectedShapeIndex} by ${input.value}.`);
+    const inputElement = this.window.document.getElementById("objectVectorStudioV2ScaleInput");
+    if (inputElement) {
+      inputElement.value = this.formatScaleInputValue(nextScale);
+      this.transformInputValues.set(inputElement.id, inputElement.value);
+    }
+    this.applySelectedShapeScaleValue(nextScale, {
+      okMessage: `OK Scale preview set to ${this.formatScaleInputValue(nextScale)} for shape row ${this.selectedShapeIndex}.`,
+      renderControls: false
+    });
+  }
+
+  applySelectedShapeScaleValue(scale, { okMessage, renderControls = false } = {}) {
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write("WARN Transform scale skipped: no shape is selected.");
+      return false;
+    }
+    if (selected.locked) {
+      this.statusLog.write(`WARN Transform scale skipped: shape row ${this.selectedShapeIndex} is locked.`);
+      return false;
+    }
+    if (this.guardSelectedObjectMutation("Transform scale")) {
+      return false;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const override = this.frameOverrideInPayload(nextPayload, this.selectedShapeIndex, { create: true });
+    const shape = override
+      ? this.effectiveShapeForFrame(this.findShapeInPayload(nextPayload, this.selectedShapeIndex), this.activeFrame(), this.selectedShapeIndex)
+      : this.findShapeInPayload(nextPayload, this.selectedShapeIndex);
+    shape.transform = this.ensureShapeTransform(shape);
+    shape.transform.scaleX = Number(scale.toFixed(3));
+    shape.transform.scaleY = Number(scale.toFixed(3));
+    const transformErrors = this.validateShapeForTransform(shape);
+    if (transformErrors.length) {
+      this.statusLog.write(`FAIL Invalid transform rejected for shape row ${this.selectedShapeIndex}: ${transformErrors.join(" ")}`);
+      return false;
+    }
+    if (override) {
+      override.transform = this.ensureShapeTransform(shape);
+    }
+
+    const validation = this.schemaService.validatePayload(nextPayload);
+    if (!validation.ok) {
+      this.statusLog.write(`FAIL Transform scale failed schema validation: ${validation.errors.join(" ")}`);
+      return false;
+    }
+    const workspaceSync = this.syncWorkspaceToolSessionPayload(validation.payload, {
+      changedKeys: ["data.objects"],
+      reason: "object-vector-transform-scale"
+    });
+    if (!workspaceSync.ok) {
+      this.statusLog.write(`FAIL Transform scale failed schema validation: ${workspaceSync.message}`);
+      return false;
+    }
+
+    this.currentPayload = validation.payload;
+    this.actionNav.setJsonPayloadActionsEnabled(true);
+    this.ensureSelectedFrame();
+    if (renderControls) {
+      this.renderPayload();
+    } else {
+      this.renderObjectTiles();
+      this.renderWorkSurface();
+      this.updateTransformSummaryText();
+      this.updateSelectedObjectJsonDetails();
+      this.updateObjectActionState();
+    }
+    if (workspaceSync.changed) {
+      this.statusLog.write(`OK Object Vector Studio V2 workspace dirty state: true; reason=${workspaceSync.reason}; changedKeys=${workspaceSync.changedKeys.join(", ")}.`);
+    }
+    if (okMessage) {
+      this.statusLog.write(okMessage);
+    }
+    return true;
   }
 
   resizeSelectedShape() {
-    const input = this.numberInputValue("objectVectorStudioV2ResizeInput", "Resize");
+    const input = this.readScaleInput();
     if (!input.ok) {
-      this.statusLog.write(`FAIL Invalid transform rejected for shape row ${this.selectedShapeIndex}: ${input.error}`);
+      this.statusLog.write(`FAIL Resize Geometry rejected for shape row ${this.selectedShapeIndex}: ${input.error}`);
       return;
     }
-    this.updateSelectedShapeTransform("resize", (shape) => {
-      this.resizeShapeGeometry(shape, input.value);
-      shape.transform = this.ensureShapeTransform(shape);
-    }, `OK Resized shape row ${this.selectedShapeIndex} by ${input.value}.`);
+
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write("WARN Resize Geometry skipped: no shape is selected.");
+      return;
+    }
+    if (selected.locked) {
+      this.statusLog.write(`WARN Resize Geometry skipped: shape row ${this.selectedShapeIndex} is locked.`);
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Resize Geometry")) {
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const baseShape = this.findShapeInPayload(nextPayload, this.selectedShapeIndex);
+    const override = this.frameOverrideInPayload(nextPayload, this.selectedShapeIndex, { create: false });
+    const transformTarget = override?.transform ? { transform: override.transform, geometry: baseShape.geometry } : baseShape;
+    const transform = this.ensureShapeTransform(transformTarget);
+    transform.scaleX = input.value;
+    transform.scaleY = input.value;
+
+    try {
+      this.resizeShapeGeometryByTransformScale(baseShape, transform);
+      transform.scaleX = 1;
+      transform.scaleY = 1;
+      if (override?.transform) {
+        override.transform = transform;
+      } else {
+        baseShape.transform = transform;
+      }
+      const transformErrors = this.validateShapeForTransform(baseShape);
+      if (transformErrors.length) {
+        this.statusLog.write(`FAIL Resize Geometry rejected for shape row ${this.selectedShapeIndex}: ${transformErrors.join(" ")}`);
+        return;
+      }
+    } catch (error) {
+      this.statusLog.write(`FAIL Resize Geometry rejected for shape row ${this.selectedShapeIndex}: ${error.message}`);
+      return;
+    }
+
+    this.transformInputValues.set("objectVectorStudioV2ScaleInput", "1");
+    this.commitPayloadUpdate(
+      nextPayload,
+      this.selectedObjectId,
+      this.selectedShapeIndex,
+      `OK Resize Geometry applied scale ${this.formatScaleInputValue(input.value)} to shape row ${this.selectedShapeIndex}; transform scale reset to 1.`,
+      "Resize Geometry failed schema validation"
+    );
   }
 
   applySelectedShapeOrigin() {
@@ -4135,41 +4358,67 @@ export class ToolStarterApp {
     };
   }
 
-  resizeShapeGeometry(shape, amount) {
+  resizeShapeGeometryByTransformScale(shape, transform) {
+    if (!Number.isFinite(transform.scaleX) || !Number.isFinite(transform.scaleY) || transform.scaleX <= 0 || transform.scaleY <= 0) {
+      throw new Error("scale must be greater than 0.");
+    }
+    const scaleX = transform.scaleX;
+    const scaleY = transform.scaleY;
+    const uniformScale = Number(((scaleX + scaleY) / 2).toFixed(3));
+    const requiresUniformScale = (label) => {
+      if (Math.abs(scaleX - scaleY) > 0.001) {
+        throw new Error(`${label} geometry cannot bake non-uniform scale; set matching X/Y scale first.`);
+      }
+      return uniformScale;
+    };
+    const applyX = (value) => Number((transform.origin.x + (value - transform.origin.x) * scaleX).toFixed(3));
+    const applyY = (value) => Number((transform.origin.y + (value - transform.origin.y) * scaleY).toFixed(3));
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
-      shape.geometry.width = Number((shape.geometry.width + amount).toFixed(3));
-      shape.geometry.height = Number((shape.geometry.height + amount).toFixed(3));
+      shape.geometry.x = applyX(shape.geometry.x);
+      shape.geometry.y = applyY(shape.geometry.y);
+      shape.geometry.width = Number((shape.geometry.width * scaleX).toFixed(3));
+      shape.geometry.height = Number((shape.geometry.height * scaleY).toFixed(3));
       return;
     }
     if (geometryTool === "circle") {
-      shape.geometry.r = Number((shape.geometry.r + amount).toFixed(3));
+      const scale = requiresUniformScale("circle");
+      shape.geometry.cx = applyX(shape.geometry.cx);
+      shape.geometry.cy = applyY(shape.geometry.cy);
+      shape.geometry.r = Number((shape.geometry.r * scale).toFixed(3));
       return;
     }
     if (geometryTool === "ellipse") {
-      shape.geometry.rx = Number((shape.geometry.rx + amount).toFixed(3));
-      shape.geometry.ry = Number((shape.geometry.ry + amount).toFixed(3));
+      shape.geometry.cx = applyX(shape.geometry.cx);
+      shape.geometry.cy = applyY(shape.geometry.cy);
+      shape.geometry.rx = Number((shape.geometry.rx * scaleX).toFixed(3));
+      shape.geometry.ry = Number((shape.geometry.ry * scaleY).toFixed(3));
       return;
     }
     if (geometryTool === "line") {
-      shape.geometry.point2.x = Number((shape.geometry.point2.x + amount).toFixed(3));
+      shape.geometry.point1.x = applyX(shape.geometry.point1.x);
+      shape.geometry.point1.y = applyY(shape.geometry.point1.y);
+      shape.geometry.point2.x = applyX(shape.geometry.point2.x);
+      shape.geometry.point2.y = applyY(shape.geometry.point2.y);
       return;
     }
     if (geometryTool === "arc") {
-      shape.geometry.r = Number((shape.geometry.r + amount).toFixed(3));
+      const scale = requiresUniformScale("arc");
+      shape.geometry.cx = applyX(shape.geometry.cx);
+      shape.geometry.cy = applyY(shape.geometry.cy);
+      shape.geometry.r = Number((shape.geometry.r * scale).toFixed(3));
       return;
     }
     if (geometryTool === "text") {
-      shape.geometry.fontSize = Number((shape.geometry.fontSize + amount).toFixed(3));
+      const scale = requiresUniformScale("text");
+      shape.geometry.x = applyX(shape.geometry.x);
+      shape.geometry.y = applyY(shape.geometry.y);
+      shape.geometry.fontSize = Number((shape.geometry.fontSize * scale).toFixed(3));
       return;
     }
-    const factor = 1 + amount / 100;
-    const bounds = shapeBounds(shape);
-    const centerX = bounds.x + bounds.width / 2;
-    const centerY = bounds.y + bounds.height / 2;
     shape.geometry.points = shape.geometry.points.map((point) => ({
-      x: Number((centerX + (point.x - centerX) * factor).toFixed(3)),
-      y: Number((centerY + (point.y - centerY) * factor).toFixed(3))
+      x: applyX(point.x),
+      y: applyY(point.y)
     }));
   }
 

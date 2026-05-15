@@ -1564,6 +1564,44 @@ textarea:hover {
   gap: 4px;
 }
 
+.object-vector-studio-v2__scale-control-row {
+  display: grid;
+  grid-template-columns: max-content 24px 22px minmax(38px, 48px) 22px 24px minmax(62px, max-content);
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  width: 100%;
+  white-space: nowrap;
+  --object-vector-studio-v2-icon-scale: 1.05;
+}
+
+.object-vector-studio-v2__scale-control-label {
+  color: var(--tool-starter-text);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__scale-control-row button {
+  min-width: 0;
+  min-height: 22px;
+  padding: 1px 3px;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.object-vector-studio-v2__scale-control-row #objectVectorStudioV2ResizeShapeButton {
+  gap: 2px;
+  padding-inline: 4px;
+}
+
+.object-vector-studio-v2__scale-input {
+  min-width: 0;
+  width: 100%;
+  min-height: 22px;
+  padding: 2px 3px;
+  text-align: center;
+}
+
 .object-vector-studio-v2__transform-summary {
   margin: 0;
   color: var(--tool-starter-text);
@@ -1573,6 +1611,7 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__edit-field input.is-invalid,
+.object-vector-studio-v2__scale-input.is-invalid,
 .object-vector-studio-v2__polygon-point-axis input.is-invalid {
   border-color: var(--tool-starter-danger);
   box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.22);
