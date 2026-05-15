@@ -3902,13 +3902,31 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2MoveXInput").fill("13");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by 10, 10\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-1 \(2 shapes\) by 10, 10\./);
       await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 0, scale 1");
+      const groupedMoveForwardTransforms = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { x: transform.x, y: transform.y };
+        });
+      });
+      expect(groupedMoveForwardTransforms).toEqual([{ x: 10, y: 10 }, { x: 10, y: 10 }]);
       await page.locator("#objectVectorStudioV2MoveXInput").fill("-5");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by -10, -10\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-1 \(2 shapes\) by -10, -10\./);
       await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1");
+      const groupedMoveBackTransforms = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { x: transform.x, y: transform.y };
+        });
+      });
+      expect(groupedMoveBackTransforms).toEqual([{ x: 0, y: 0 }, { x: 0, y: 0 }]);
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.authoring-copied-json")));
@@ -4053,16 +4071,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-state-select]")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-state-help]")).toHaveCount(0);
       const selectedObjectStatePanel = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.animation.ship-template'] .object-vector-studio-v2__object-state-panel");
-      await expect(selectedObjectStatePanel.locator(".object-vector-studio-v2__object-state-controls button")).toHaveText(["Add", "?"]);
+      await expect(selectedObjectStatePanel.locator(".object-vector-studio-v2__object-state-controls button")).toHaveText(["Add", "Delete", "?"]);
       const stateControlLayout = await selectedObjectStatePanel.locator(".object-vector-studio-v2__object-state-controls").evaluate((controls) => Array.from(controls.children).map((element) => {
         if (element.tagName.toLowerCase() === "select") {
           return `select:${element.dataset.objectStateSelect}`;
         }
         return `${element.dataset.objectStateAction || element.dataset.objectStateHelp}:${element.textContent.trim()}`;
       }));
-      expect(stateControlLayout).toEqual(["select:object.animation.ship-template", "add:Add", "all:?"]);
+      expect(stateControlLayout).toEqual(["select:object.animation.ship-template", "add:Add", "delete:Delete", "all:?"]);
       await expect(selectedObjectStatePanel.locator("[data-object-state-select='object.animation.ship-template']")).toHaveValue("idle");
       await expect(selectedObjectStatePanel.locator("[data-object-state-action='add']")).toBeDisabled();
+      await expect(selectedObjectStatePanel.locator("[data-object-state-action='delete']")).toBeEnabled();
       await expect(selectedObjectStatePanel.locator("[data-object-state-help='all']")).toHaveAttribute("title", /idle\nDefault stationary state\.\nNo movement or action animation active\.\n\nmove\nMovement\/action state\.\nUsed for thrusting, walking, flying, or active movement visuals\./);
       await expect(selectedObjectStatePanel.locator("[data-object-state-tile]")).toHaveText(["idle", "move"]);
       await expect(selectedObjectStatePanel.locator("[data-object-state-tile='idle']")).toHaveAttribute("aria-pressed", "true");
@@ -4275,6 +4294,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 tool: "rectangle",
                 transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                 visible: true
+              },
+              {
+                geometry: { x: 36, y: -20, width: 16, height: 16 },
+                locked: false,
+                order: 3,
+                style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
+                tool: "rectangle",
+                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                visible: true
+              },
+              {
+                geometry: { x: 64, y: -20, width: 16, height: 16 },
+                locked: false,
+                order: 4,
+                style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
+                tool: "rectangle",
+                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                visible: true
               }
             ],
             states: [
@@ -4297,6 +4334,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const objectTile = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.test.group-state']");
       const statePanel = objectTile.locator(".object-vector-studio-v2__object-state-panel");
       const addStateButton = statePanel.locator("[data-object-state-action='add']");
+      const deleteStateButton = statePanel.locator("[data-object-state-action='delete']");
       const stateSelect = statePanel.locator("[data-object-state-select='object.test.group-state']");
       const stateControlLayout = await statePanel.locator(".object-vector-studio-v2__object-state-controls").evaluate((controls) => Array.from(controls.children).map((element) => {
         if (element.tagName.toLowerCase() === "select") {
@@ -4304,8 +4342,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
         return element.dataset.objectStateAction || element.dataset.objectStateHelp;
       }));
-      expect(stateControlLayout).toEqual(["select", "add", "all"]);
+      expect(stateControlLayout).toEqual(["select", "add", "delete", "all"]);
       await expect(addStateButton).toBeDisabled();
+      await expect(deleteStateButton).toBeDisabled();
       await expect(statePanel.locator("[data-object-state-tile]")).toHaveText(["idle"]);
 
       await stateSelect.selectOption("move");
@@ -4317,22 +4356,73 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='move']")).toHaveCount(1);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Created state Move with frame frame-1\./);
       await expect(addStateButton).toBeDisabled();
+      await expect(deleteStateButton).toBeEnabled();
       await expect(statePanel.locator("[data-object-state-tile='move']")).toHaveCount(1);
+      await deleteStateButton.click();
+      await expect(statePanel.locator("[data-object-state-tile]")).toHaveText(["idle"]);
+      await expect(statePanel.locator("[data-object-state-tile='idle']")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted state move from Group State\./);
+      await expect(deleteStateButton).toBeDisabled();
 
       await expect(objectTile.locator("[data-shape-group-id='group-1']")).toHaveCount(2);
       await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
-        app.selectedShapeIndex = 0;
-        app.selectedShapeIndexes = new Set([0]);
-        app.renderPayload();
+        app.selectShape(0, "regroup existing shape");
+        app.selectShape(2, "regroup ungrouped shape", { additive: true });
       });
       const selectedShapeActions = objectTile.locator(".object-vector-studio-v2__shape-list-actions");
+      await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toBeEnabled();
+      await selectedShapeActions.locator("[data-shape-list-action='group']").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-2\./);
+      const groupsAfterRegroup = await page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.map((shape) => shape.groupId || ""));
+      expect(groupsAfterRegroup).toEqual(["group-2", "", "group-2", ""]);
+      await expect(objectTile.locator("[data-shape-group-id='group-1']")).toHaveCount(0);
+      await expect(objectTile.locator("[data-shape-group-id='group-2']")).toHaveCount(2);
+
+      await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(0, "group move probe"));
+      await page.locator("#objectVectorStudioV2MoveXInput").fill("5");
+      await page.locator("#objectVectorStudioV2MoveYInput").fill("5");
+      await page.locator("#objectVectorStudioV2MoveShapeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-2 \(2 shapes\) by 5, 5\./);
+      const transformsAfterGroupMove = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { x: transform.x, y: transform.y };
+        });
+      });
+      expect(transformsAfterGroupMove).toEqual([{ x: 5, y: 5 }, { x: 0, y: 0 }, { x: 5, y: 5 }, { x: 0, y: 0 }]);
+
+      await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(1, "single move probe"));
+      await page.locator("#objectVectorStudioV2MoveXInput").fill("-2");
+      await page.locator("#objectVectorStudioV2MoveYInput").fill("-3");
+      await page.locator("#objectVectorStudioV2MoveShapeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 1 by -2, -3\./);
+      const transformsAfterSingleMove = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { x: transform.x, y: transform.y };
+        });
+      });
+      expect(transformsAfterSingleMove).toEqual([{ x: 5, y: 5 }, { x: -2, y: -3 }, { x: 5, y: 5 }, { x: 0, y: 0 }]);
+
+      await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        app.selectedShapeIndex = 0;
+        app.selectedShapeIndexes = new Set([0]);
+        app.directSelectedShapeIndexes = new Set([0]);
+        app.renderPayload();
+      });
       await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toBeEnabled();
       await selectedShapeActions.locator("[data-shape-list-action='ungroup']").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"groupId": "group-1"');
-      await expect(objectTile.locator("[data-shape-group-id='group-1']")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"groupId": "group-2"');
+      await expect(objectTile.locator("[data-shape-group-id='group-2']")).toHaveCount(0);
       await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toBeDisabled();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Ungrouped 1 selected shapes from group-1\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Ungrouped 1 selected shapes from group-2\./);
 
       expect(pageErrors).toEqual([]);
     } finally {
@@ -8259,6 +8349,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await selectedObjectTile.locator(`[data-object-state-select="${selectedObjectId}"]`).selectOption(stateId);
         await expect(selectedObjectTile.locator("[data-object-state-action='add']")).toBeEnabled();
         await selectedObjectTile.locator("[data-object-state-action='add']").click();
+      });
+      await expectObjectVectorDirtyAfter("object state delete edit", async () => {
+        const selectedObjectId = await page.evaluate(() => window.__objectVectorStudioV2App.selectedObjectId);
+        const selectedObjectTile = page.locator(`.object-vector-studio-v2__object-tile[data-object-id="${selectedObjectId}"]`);
+        await expect(selectedObjectTile.locator("[data-object-state-action='delete']")).toBeEnabled();
+        await selectedObjectTile.locator("[data-object-state-action='delete']").click();
       });
       await expectObjectVectorDirtyAfter("object geometry edit", async () => {
         await page.locator("#objectVectorStudioV2ObjectDetails [data-shape-geometry-field='points'][data-polygon-point-index='0'][data-polygon-point-axis='x']").fill("11");

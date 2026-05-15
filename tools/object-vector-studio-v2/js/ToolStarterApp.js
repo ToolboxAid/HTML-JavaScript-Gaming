@@ -426,6 +426,7 @@ export class ToolStarterApp {
     this.selectedObjectId = "";
     this.selectedShapeIndex = -1;
     this.selectedShapeIndexes = new Set();
+    this.directSelectedShapeIndexes = new Set();
     this.selectedStateId = "";
     this.selectedFrameId = "";
     this.playbackTimerId = 0;
@@ -663,6 +664,7 @@ export class ToolStarterApp {
           const clearedShape = this.selectedShapeIndex;
           this.selectedShapeIndex = -1;
           this.selectedShapeIndexes.clear();
+          this.directSelectedShapeIndexes.clear();
           this.renderObjectTiles();
           this.renderSelectedObject();
           this.renderWorkSurface();
@@ -909,6 +911,7 @@ export class ToolStarterApp {
     this.selectedObjectId = "";
     this.selectedShapeIndex = -1;
     this.selectedShapeIndexes.clear();
+    this.directSelectedShapeIndexes.clear();
     this.selectedStateId = "";
     this.stateControlStateId = "";
     this.selectedFrameId = "";
@@ -1023,6 +1026,7 @@ export class ToolStarterApp {
     const selectedShape = sortedShapes(selectedObject)[0] || null;
     this.selectedShapeIndex = selectedShape ? 0 : -1;
     this.selectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
+    this.directSelectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
     const selectedState = this.objectStates(selectedObject)[0] || null;
     this.selectedStateId = selectedState?.id || "";
     this.stateControlStateId = this.selectedStateId || OBJECT_STATE_IDS[0];
@@ -1079,6 +1083,7 @@ export class ToolStarterApp {
     this.selectedObjectId = "";
     this.selectedShapeIndex = -1;
     this.selectedShapeIndexes.clear();
+    this.directSelectedShapeIndexes.clear();
     this.selectedStateId = "";
     this.stateControlStateId = "";
     this.selectedFrameId = "";
@@ -1341,6 +1346,17 @@ export class ToolStarterApp {
       this.statusLog.write(`INFO State ${select.value} is ready to add for ${object.name}.`);
     });
 
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.dataset.objectStateAction = "delete";
+    deleteButton.textContent = "Delete";
+    deleteButton.title = stateExists ? `Delete ${selectedStateId} state` : "Selected state has not been added.";
+    deleteButton.disabled = isLocked || !stateExists || this.objectStates(object).length <= 1;
+    deleteButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      this.deleteSelectedState(selectedStateId);
+    });
+
     const helpButton = document.createElement("button");
     helpButton.className = "object-vector-studio-v2__object-state-help";
     helpButton.type = "button";
@@ -1350,7 +1366,7 @@ export class ToolStarterApp {
     helpButton.dataset.objectStateHelp = "all";
     helpButton.setAttribute("aria-label", `State help for all states: ${allHelpText.replace(/\s+/gu, " ")}`);
 
-    controls.append(select, addButton, helpButton);
+    controls.append(select, addButton, deleteButton, helpButton);
     panel.append(controls, this.createObjectStateTileList(object));
     return panel;
   }
@@ -2978,6 +2994,7 @@ export class ToolStarterApp {
     const selectedObject = this.selectedObject();
     this.selectedShapeIndex = sortedShapes(selectedObject).length ? 0 : -1;
     this.selectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
+    this.directSelectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
     const selectedState = this.objectStates(selectedObject)[0] || null;
     this.selectedStateId = selectedState?.id || "";
     this.stateControlStateId = this.selectedStateId || OBJECT_STATE_IDS[0];
@@ -3005,12 +3022,15 @@ export class ToolStarterApp {
       const allGroupSelected = groupIndexes.every((index) => this.selectedShapeIndexes.has(index));
       if (allGroupSelected && this.selectedShapeIndexes.size > groupIndexes.length) {
         groupIndexes.forEach((index) => this.selectedShapeIndexes.delete(index));
+        this.directSelectedShapeIndexes.delete(normalizedIndex);
         this.selectedShapeIndex = Array.from(this.selectedShapeIndexes).at(-1) ?? -1;
       } else {
+        this.directSelectedShapeIndexes.add(normalizedIndex);
         groupIndexes.forEach((index) => this.selectedShapeIndexes.add(index));
       }
     } else {
       this.selectedShapeIndexes = new Set(groupIndexes);
+      this.directSelectedShapeIndexes = new Set([normalizedIndex]);
     }
     this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
     this.renderPayload();
@@ -4066,11 +4086,88 @@ export class ToolStarterApp {
     }
     const moveX = this.snapDistance(x.value);
     const moveY = this.snapDistance(y.value);
+    const object = this.selectedObject();
+    if (this.shapeBelongsToValidGroup(object, this.selectedShapeIndex)) {
+      const targetIndexes = this.shapeSelectionGroupIndexes(sortedShapes(object), this.selectedShapeIndex);
+      const groupId = String(sortedShapes(object)[this.selectedShapeIndex]?.groupId || "").trim();
+      this.moveSelectedShapeGroup(targetIndexes, moveX, moveY, groupId);
+      return;
+    }
     this.updateSelectedShapeTransform("move", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
       shape.transform.x = Number((shape.transform.x + moveX).toFixed(3));
       shape.transform.y = Number((shape.transform.y + moveY).toFixed(3));
     }, `OK Moved shape row ${this.selectedShapeIndex} by ${moveX}, ${moveY}.`);
+  }
+
+  moveSelectedShapeGroup(shapeIndexes, moveX, moveY, groupId) {
+    const object = this.selectedObject();
+    if (!object) {
+      this.statusLog.write("WARN Transform move skipped: no object is selected.");
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Transform move")) {
+      return;
+    }
+
+    const objectShapes = sortedShapes(object);
+    const targetIndexes = Array.from(new Set(shapeIndexes
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
+      .sort((left, right) => left - right);
+    if (targetIndexes.length < 2) {
+      this.updateSelectedShapeTransform("move", (shape) => {
+        shape.transform = this.ensureShapeTransform(shape);
+        shape.transform.x = Number((shape.transform.x + moveX).toFixed(3));
+        shape.transform.y = Number((shape.transform.y + moveY).toFixed(3));
+      }, `OK Moved shape row ${this.selectedShapeIndex} by ${moveX}, ${moveY}.`);
+      return;
+    }
+
+    const lockedIndex = targetIndexes.find((shapeIndex) => objectShapes[shapeIndex]?.locked);
+    if (Number.isInteger(lockedIndex)) {
+      this.statusLog.write(`WARN Transform move skipped: shape row ${lockedIndex} is locked.`);
+      return;
+    }
+
+    this.selectedShapeIndexes = new Set(targetIndexes);
+    const directShapeIndexes = this.directSelectedShapeIndexes.size
+      ? new Set(Array.from(this.directSelectedShapeIndexes).filter((shapeIndex) => targetIndexes.includes(shapeIndex)))
+      : new Set([this.selectedShapeIndex]);
+    if (!directShapeIndexes.size && this.selectedShapeIndex >= 0) {
+      directShapeIndexes.add(this.selectedShapeIndex);
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    try {
+      targetIndexes.forEach((shapeIndex) => {
+        const override = this.frameOverrideInPayload(nextPayload, shapeIndex, { create: true });
+        const shape = override
+          ? this.effectiveShapeForFrame(this.findShapeInPayload(nextPayload, shapeIndex), this.activeFrame(), shapeIndex)
+          : this.findShapeInPayload(nextPayload, shapeIndex);
+        if (!shape) {
+          throw new Error(`shape row ${shapeIndex} is not available.`);
+        }
+        shape.transform = this.ensureShapeTransform(shape);
+        shape.transform.x = Number((shape.transform.x + moveX).toFixed(3));
+        shape.transform.y = Number((shape.transform.y + moveY).toFixed(3));
+        const transformErrors = this.validateShapeForTransform(shape);
+        if (transformErrors.length) {
+          throw new Error(`shape row ${shapeIndex}: ${transformErrors.join(" ")}`);
+        }
+        if (override) {
+          override.transform = this.ensureShapeTransform(shape);
+        }
+      });
+    } catch (error) {
+      this.statusLog.write(`FAIL Invalid transform rejected for group ${groupId || "selected group"}: ${error.message}`);
+      return;
+    }
+
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Moved group ${groupId || "selected group"} (${targetIndexes.length} shapes) by ${moveX}, ${moveY}.`, "Transform move failed schema validation", {
+      directSelectedShapeIndexes: directShapeIndexes,
+      selectedShapeIndexes: new Set(targetIndexes)
+    });
   }
 
   rotateSelectedShape() {
@@ -4301,13 +4398,24 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
     const groupId = this.uniqueGroupId(nextObject);
-    const selectedIndexes = new Set(this.selectedShapeIndexes);
+    const directIndexes = Array.from(this.directSelectedShapeIndexes)
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => this.selectedShapeIndexes.has(shapeIndex));
+    const selectedIndexes = new Set((directIndexes.length >= 2 ? directIndexes : Array.from(this.selectedShapeIndexes))
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0));
+    if (selectedIndexes.size < 2) {
+      this.statusLog.write("WARN Group shapes skipped: select at least two shapes.");
+      return;
+    }
     sortedShapes(nextObject).forEach((shape, shapeIndex) => {
       if (selectedIndexes.has(shapeIndex)) {
         shape.groupId = groupId;
       }
     });
+    this.pruneSingleMemberShapeGroups(nextObject);
     this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Grouped ${selectedIndexes.size} shapes into ${groupId}.`, "Group shapes failed schema validation", {
+      directSelectedShapeIndexes: selectedIndexes,
       selectedShapeIndexes: selectedIndexes
     });
   }
@@ -4339,6 +4447,7 @@ export class ToolStarterApp {
     });
     this.pruneSingleMemberShapeGroups(nextObject);
     this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Ungrouped ${selectedIndexes.size} selected shapes from ${Array.from(selectedGroupIds).join(", ")}.`, "Ungroup shapes failed schema validation", {
+      directSelectedShapeIndexes: selectedIndexes,
       selectedShapeIndexes: selectedIndexes
     });
   }
@@ -4961,6 +5070,11 @@ export class ToolStarterApp {
     this.selectedShapeIndexes = options.selectedShapeIndexes
       ? new Set(Array.from(options.selectedShapeIndexes).map((index) => normalizeShapeIndex(index)).filter((index) => index >= 0))
       : new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
+    this.directSelectedShapeIndexes = options.directSelectedShapeIndexes
+      ? new Set(Array.from(options.directSelectedShapeIndexes).map((index) => normalizeShapeIndex(index)).filter((index) => index >= 0))
+      : (options.selectedShapeIndexes
+        ? new Set(this.selectedShapeIndexes)
+        : new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []));
     this.selectedStateId = options.selectedStateId ?? this.selectedStateId;
     this.stateControlStateId = this.selectedStateId || this.stateControlStateId;
     this.selectedFrameId = options.selectedFrameId ?? this.selectedFrameId;
@@ -5109,16 +5223,24 @@ export class ToolStarterApp {
     if (!object) {
       this.selectedShapeIndex = -1;
       this.selectedShapeIndexes.clear();
+      this.directSelectedShapeIndexes.clear();
       return;
     }
     if (this.selectedShapeIndex >= 0 && this.selectedShapeIndex < sortedShapes(object).length) {
       if (!this.selectedShapeIndexes.size) {
         this.selectedShapeIndexes = new Set([this.selectedShapeIndex]);
       }
+      this.directSelectedShapeIndexes = new Set(Array.from(this.directSelectedShapeIndexes)
+        .map((index) => normalizeShapeIndex(index))
+        .filter((index) => index >= 0 && index < sortedShapes(object).length));
+      if (!this.directSelectedShapeIndexes.size) {
+        this.directSelectedShapeIndexes = new Set([this.selectedShapeIndex]);
+      }
       return;
     }
     this.selectedShapeIndex = sortedShapes(object).length ? 0 : -1;
     this.selectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
+    this.directSelectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
   }
 
   ensureSelectedFrame() {
