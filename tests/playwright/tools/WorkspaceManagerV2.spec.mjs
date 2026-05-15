@@ -1308,7 +1308,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Blocked Object");
       await page.locator("#objectVectorStudioV2AddObjectButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Add object blocked: load a schema-valid Object Vector Studio V2 payload before adding objects\./);
-      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Triangle", "Rectangle", "Circle", "Ellipse", "Line", "Polygon", "Arc", "Text"]);
+      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Triangle", "Rectangle", "Square", "Circle", "Ellipse", "Line", "Polygon", "Arc", "Text"]);
       await expect(page.locator(".object-vector-studio-v2__shape-icon--triangle")).toBeVisible();
       await expect(page.locator(".object-vector-studio-v2__shape-icon--arc")).toBeVisible();
       const iconStyleState = await page.evaluate(async () => {
@@ -1378,6 +1378,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             polygon: icon(".object-vector-studio-v2__shape-icon--polygon"),
             rectangle: icon(".object-vector-studio-v2__shape-icon--rectangle"),
             select: icon(".object-vector-studio-v2__shape-icon--select"),
+            square: icon(".object-vector-studio-v2__shape-icon--square"),
             text: icon(".object-vector-studio-v2__shape-icon--text"),
             triangle: icon(".object-vector-studio-v2__shape-icon--triangle")
           },
@@ -1444,23 +1445,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         polygon: "polygon",
         rectangle: "rectangle",
         select: "select",
+        square: "square",
         text: "text",
         triangle: "triangle"
       });
+      expect(iconStyleState.shapeIcons.arc.iconName).toBe("nf-md-vector_radius");
+      expect(iconStyleState.shapeIcons.circle.iconName).toBe("nf-md-vector_circle_variant");
+      expect(iconStyleState.shapeIcons.ellipse.iconName).toBe("nf-md-vector_ellipse");
       expect(iconStyleState.shapeIcons.polygon.iconName).toBe("nf-md-vector_polygon");
+      expect(iconStyleState.shapeIcons.square.iconName).toBe("nf-fa-vector_square");
       expect(iconStyleState.shapeIcons.triangle.iconName).toBe("nf-md-vector_triangle");
       expect(iconStyleState.shapeIcons.select.iconName).toBe("nf-md-select");
       expect(iconStyleState.shapeIcons.line.iconName).toBe("nf-md-vector_line");
       expect(iconStyleState.shapeIcons.rectangle.iconName).toBe("nf-md-vector_rectangle");
-      expect(iconStyleState.shapeIcons.circle.iconName).toBe("nf-fa-circle_o");
-      expect(iconStyleState.shapeIcons.ellipse.iconName).toBe("nf-fa-circle_o");
       expect(Math.round(iconStyleState.shapeIcons.select.fontSize)).toBe(Math.round(iconStyleState.shapeIcons.circle.fontSize * 1.125));
       expect(Math.round(iconStyleState.shapeIcons.triangle.fontSize)).toBe(Math.round(iconStyleState.shapeIcons.circle.fontSize * 1.25));
       expect(Math.round(iconStyleState.shapeIcons.rectangle.fontSize)).toBe(Math.round(iconStyleState.shapeIcons.circle.fontSize * 1.25));
-      expect(iconStyleState.shapeIcons.select.transform).not.toBe("none");
-      expect(iconStyleState.shapeIcons.triangle.transform).not.toBe("none");
-      expect(iconStyleState.shapeIcons.line.transform).not.toBe("none");
-      expect(iconStyleState.shapeIcons.rectangle.transform).not.toBe("none");
+      expect(Object.fromEntries(Object.entries(iconStyleState.shapeIcons).map(([key, value]) => [key, value.transform]))).toEqual({
+        arc: "none",
+        circle: "none",
+        ellipse: "none",
+        line: "none",
+        polygon: "none",
+        rectangle: "none",
+        select: "none",
+        square: "none",
+        text: "none",
+        triangle: "none"
+      });
       expect(Object.fromEntries(Object.entries(iconStyleState.viewportIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
         down: "panDown",
         reset: "reset",
@@ -1488,19 +1500,29 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const shapeToolsContent = document.querySelector("#objectVectorStudioV2ShapeToolsContent").getBoundingClientRect();
         const shapeToolsAccordion = document.querySelector("#objectVectorStudioV2ShapeToolsContent").closest(".accordion-v2").getBoundingClientRect();
         const leftPanel = document.querySelector(".tool-starter__panel--left");
+        const toolButtons = Array.from(document.querySelectorAll(".object-vector-studio-v2__tool-toggle"));
+        const iconTopOffsets = toolButtons.map((toolButton) => {
+          const buttonRect = toolButton.getBoundingClientRect();
+          const iconRect = toolButton.querySelector(".object-vector-studio-v2__shape-icon").getBoundingClientRect();
+          return Math.round(iconRect.top - buttonRect.top);
+        });
         return {
+          buttonCount: toolButtons.length,
           labelBesideGrid: gridButton.getBoundingClientRect().right <= labelButton.getBoundingClientRect().left,
           leftPanelOverflowY: getComputedStyle(leftPanel).overflowY,
           textButtonWider: Math.round(rect.width) > Math.round(rect.height),
+          visibleIconTopOffsetRange: Math.max(...iconTopOffsets) - Math.min(...iconTopOffsets),
           shapeToolsReachesBottom: Math.abs(shapeToolsContent.bottom - shapeToolsAccordion.bottom) <= 1,
           zOrderAbsentBeforeObjectSelection: !document.querySelector(".object-vector-studio-v2__z-order-actions"),
           zOrderAbsentFromShapeTools: !document.querySelector("#objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__z-order-actions")
         };
       });
       expect(shapeToolLayout).toEqual({
+        buttonCount: 10,
         labelBesideGrid: true,
         leftPanelOverflowY: "auto",
         textButtonWider: true,
+        visibleIconTopOffsetRange: 0,
         shapeToolsReachesBottom: true,
         zOrderAbsentBeforeObjectSelection: true,
         zOrderAbsentFromShapeTools: true
@@ -1511,6 +1533,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".object-vector-studio-v2__z-order-actions")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ResetViewButton")).not.toHaveClass(/is-icon-only/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Shape\/Tools display mode set to compact icons\./);
+      const iconOnlyToolLayout = await page.locator("#objectVectorStudioV2ToolToggleGrid").evaluate((grid) => {
+        const toolButtons = Array.from(grid.querySelectorAll(".object-vector-studio-v2__tool-toggle"));
+        const measurements = toolButtons.map((toolButton) => {
+          const buttonRect = toolButton.getBoundingClientRect();
+          const iconRect = toolButton.querySelector(".object-vector-studio-v2__shape-icon").getBoundingClientRect();
+          return {
+            centerDeltaX: Math.abs((iconRect.left + iconRect.width / 2) - (buttonRect.left + buttonRect.width / 2)),
+            centerDeltaY: Math.abs((iconRect.top + iconRect.height / 2) - (buttonRect.top + buttonRect.height / 2)),
+            height: Math.round(buttonRect.height),
+            width: Math.round(buttonRect.width)
+          };
+        });
+        return {
+          iconsCentered: measurements.every((entry) => entry.centerDeltaX < 1 && entry.centerDeltaY < 1),
+          squareButtons: measurements.every((entry) => entry.width === entry.height)
+        };
+      });
+      expect(iconOnlyToolLayout).toEqual({ iconsCentered: true, squareButtons: true });
       await page.reload({ waitUntil: "networkidle" });
       await expect(page.locator("#objectVectorStudioV2ToolToggleGrid")).toHaveClass(/is-icon-only/);
       await expect(page.locator(".object-vector-studio-v2__z-order-actions")).toHaveCount(0);
@@ -3014,6 +3054,104 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/workspace=uat/);
 
       expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("creates Object Vector Studio V2 square shapes with one size control", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    const consoleErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "square-tool-palette",
+          swatches: [
+            { id: "white", value: "#ffffff" }
+          ]
+        }));
+      });
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles({
+        buffer: Buffer.from(JSON.stringify({
+          name: "Square Tool Check",
+          objects: [
+            {
+              id: "object.square.tool-check",
+              name: "Square Tool Check",
+              shapes: [],
+              tags: []
+            }
+          ],
+          toolId: "object-vector-studio-v2",
+          version: 1
+        }, null, 2)),
+        mimeType: "application/json",
+        name: "square-tool-check.object-vector.json"
+      });
+
+      await page.locator('[data-shape-tool="square"]').click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created square shape on Square Tool Check\./);
+      await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Square Geometry");
+      await expect(page.locator(".object-vector-studio-v2__shape-select-label")).toHaveText("0. Square");
+      const createdSquare = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const fields = Array.from(document.querySelectorAll("#objectVectorStudioV2ObjectDetails [data-shape-geometry-field]")).map((input) => ({
+          key: input.dataset.shapeGeometryField,
+          label: input.closest("label").querySelector("span").textContent.trim(),
+          value: input.value
+        }));
+        const shape = app.selectedShape();
+        return {
+          fields,
+          geometry: shape.geometry,
+          schemaOk: app.schemaService.validatePayload(app.currentPayload).ok,
+          tool: shape.tool
+        };
+      });
+      expect(createdSquare).toEqual({
+        fields: [
+          { key: "x", label: "x", value: "-80" },
+          { key: "y", label: "y", value: "-30" },
+          { key: "size", label: "Size", value: "60" }
+        ],
+        geometry: { height: 60, width: 60, x: -80, y: -30 },
+        schemaOk: true,
+        tool: "square"
+      });
+
+      await page.locator("#objectVectorStudioV2ObjectDetails [data-shape-geometry-field='size']").fill("42");
+      await page.locator("#objectVectorStudioV2ApplyGeometryButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied geometry edits to shape row 0\./);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveAttribute("width", "420");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveAttribute("height", "420");
+      const resizedSquare = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        return {
+          geometry: app.selectedShape().geometry,
+          schemaOk: app.schemaService.validatePayload(app.currentPayload).ok
+        };
+      });
+      expect(resizedSquare).toEqual({
+        geometry: { height: 42, width: 42, x: -80, y: -30 },
+        schemaOk: true
+      });
+
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
       await server.close();

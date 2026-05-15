@@ -106,7 +106,13 @@ function shapeTool(shape) {
 
 function shapeGeometryTool(shape) {
   const tool = shapeTool(shape);
-  return tool === "triangle" ? "polygon" : tool;
+  if (tool === "triangle") {
+    return "polygon";
+  }
+  if (tool === "square") {
+    return "rectangle";
+  }
+  return tool;
 }
 
 function shapeTransform(shape) {

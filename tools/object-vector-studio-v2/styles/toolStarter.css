@@ -612,9 +612,9 @@ textarea:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   overflow: hidden;
-  padding: 4px !important;
+  padding: 5px 4px !important;
   text-align: center;
 }
 
@@ -1015,27 +1015,16 @@ textarea:hover {
   font-size: 1.08rem;
 }
 
-.object-vector-studio-v2__shape-icon--ellipse[data-ovs-icon]::before {
-  transform: scaleX(1.35);
-}
-
 .object-vector-studio-v2__shape-icon--select[data-ovs-icon]::before {
   font-size: calc(1em * var(--object-vector-studio-v2-icon-scale, 1.75) * 1.125);
-  transform: translateY(-9px);
 }
 
 .object-vector-studio-v2__shape-icon--triangle[data-ovs-icon]::before {
   font-size: calc(1em * var(--object-vector-studio-v2-icon-scale, 1.75) * 1.25);
-  transform: translateY(-9px);
 }
 
 .object-vector-studio-v2__shape-icon--rectangle[data-ovs-icon]::before {
   font-size: calc(1em * var(--object-vector-studio-v2-icon-scale, 1.75) * 1.25);
-  transform: translateY(-6px);
-}
-
-.object-vector-studio-v2__shape-icon--line[data-ovs-icon]::before {
-  transform: translateY(-5px);
 }
 
 .object-vector-studio-v2__z-icon[data-ovs-icon] {

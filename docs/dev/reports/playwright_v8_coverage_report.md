@@ -1,6 +1,6 @@
-# PR_26133_059 Playwright V8 Coverage Report
+# PR_26133_061 Playwright V8 Coverage Report
 
-Task: PR_26133_059-palette-opacity-mode-and-application-flow
+Task: PR_26133_061-shape-tools-square-and-icon-alignment
 Date: 2026-05-15
 
 ## Result
@@ -24,7 +24,8 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Relevant Runtime Coverage
 
 ```text
-(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5669/5669; executed functions 600/631
+(94%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 1131/1131; executed functions 111/118
+(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5710/5710; executed functions 601/632
 ```
 
 ## Guardrail
@@ -35,4 +36,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 opacity control layout, active Fill/Stroke opacity selection without immediate shape mutation, shape-click opacity application through the existing Paint/Stroke workflow, schema validation, and Asteroids runtime object-vector rendering.
+The Workspace V2 run exercised Object Vector Studio V2 Square tool creation, schema validation for `tool: "square"` shapes backed by rectangle geometry, one-size Square geometry editing, Shape/Tools Nerd Font icon mapping and alignment, and Asteroids runtime object-vector rendering.

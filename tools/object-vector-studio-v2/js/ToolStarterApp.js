@@ -21,16 +21,16 @@ const objectVectorStudioIcon = (name, glyph) => Object.freeze({ glyph, name });
 const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   add: objectVectorStudioIcon("nf-fa-plus", "\uf067"),
   angle: objectVectorStudioIcon("nf-md-angle_acute", "\u{f0937}"),
-  arc: objectVectorStudioIcon("nf-fa-history", "\uf1da"),
+  arc: objectVectorStudioIcon("nf-md-vector_radius", "\u{f074a}"),
   bri: objectVectorStudioIcon("nf-fa-sun_o", "\uf185"),
   bringForward: objectVectorStudioIcon("nf-fa-arrow_up", "\uf062"),
   bringFront: objectVectorStudioIcon("nf-fa-angle_double_up", "\uf102"),
   center: objectVectorStudioIcon("nf-fa-dot_circle_o", "\uf192"),
-  circle: objectVectorStudioIcon("nf-fa-circle_o", "\uf10c"),
+  circle: objectVectorStudioIcon("nf-md-vector_circle_variant", "\u{f0557}"),
   delete: objectVectorStudioIcon("nf-md-trash_can_outline", "\u{f0a7a}"),
   duplicate: objectVectorStudioIcon("nf-fa-copy", "\uf0c5"),
   edit: objectVectorStudioIcon("nf-fa-pencil_square_o", "\uf044"),
-  ellipse: objectVectorStudioIcon("nf-fa-circle_o", "\uf10c"),
+  ellipse: objectVectorStudioIcon("nf-md-vector_ellipse", "\u{f0893}"),
   eye: objectVectorStudioIcon("nf-fa-eye", "\uf06e"),
   eyeOff: objectVectorStudioIcon("nf-fa-eye_slash", "\uf070"),
   grid: objectVectorStudioIcon("nf-md-grid_off", "\u{f02c2}"),
@@ -57,6 +57,7 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   sendBack: objectVectorStudioIcon("nf-fa-angle_double_down", "\uf103"),
   sendBackward: objectVectorStudioIcon("nf-fa-arrow_down", "\uf063"),
   stroke: objectVectorStudioIcon("nf-fa-pencil", "\uf040"),
+  square: objectVectorStudioIcon("nf-fa-vector_square", "\u{ee92}"),
   tag: objectVectorStudioIcon("nf-fa-tag", "\uf02b"),
   text: objectVectorStudioIcon("nf-fa-font", "\uf031"),
   triangle: objectVectorStudioIcon("nf-md-vector_triangle", "\u{f0563}"),
@@ -98,6 +99,7 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   [".object-vector-studio-v2__shape-icon--select", "select"],
   [".object-vector-studio-v2__shape-icon--triangle", "triangle"],
   [".object-vector-studio-v2__shape-icon--rectangle", "rectangle"],
+  [".object-vector-studio-v2__shape-icon--square", "square"],
   [".object-vector-studio-v2__shape-icon--circle", "circle"],
   [".object-vector-studio-v2__shape-icon--ellipse", "ellipse"],
   [".object-vector-studio-v2__shape-icon--line", "line"],
@@ -141,10 +143,11 @@ const SHAPE_TYPE_DETAILS = Object.freeze({
   line: "Line primitive metadata with start and end points.",
   polygon: "Polygon primitive metadata with ordered point ownership.",
   rectangle: "Rectangle primitive metadata with position and dimensions.",
+  square: "Square tool metadata backed by rectangle geometry with equal width and height.",
   text: "Text primitive metadata with position, font size, and content."
 });
 
-const PRIMITIVE_TOOLS = Object.freeze(["triangle", "rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]);
+const PRIMITIVE_TOOLS = Object.freeze(["triangle", "rectangle", "square", "circle", "ellipse", "line", "polygon", "arc", "text"]);
 const OBJECT_ID_SIZE_WORDS = Object.freeze(new Set(["large", "medium", "small"]));
 const OBJECT_ID_ORDERED_NOUNS = Object.freeze(new Set(["asteroid", "ufo"]));
 
@@ -154,7 +157,13 @@ function shapeTool(shape) {
 
 function shapeGeometryTool(shape) {
   const tool = shapeTool(shape);
-  return tool === "triangle" ? "polygon" : tool;
+  if (tool === "triangle") {
+    return "polygon";
+  }
+  if (tool === "square") {
+    return "rectangle";
+  }
+  return tool;
 }
 
 function shapeTypeLabel(shapeOrTool) {
@@ -2259,6 +2268,13 @@ export class ToolStarterApp {
 
   shapeGeometryFields(shape) {
     const geometryTool = shapeGeometryTool(shape);
+    if (shapeTool(shape) === "square") {
+      return [
+        { key: "x", kind: "number", label: "x", value: shape.geometry.x },
+        { key: "y", kind: "number", label: "y", value: shape.geometry.y },
+        { key: "size", kind: "number", label: "Size", value: shape.geometry.width, wide: true }
+      ];
+    }
     if (geometryTool === "rectangle") {
       return ["x", "y", "width", "height"].map((key) => ({ key, kind: "number", label: key, value: shape.geometry[key] }));
     }
@@ -4037,14 +4053,20 @@ export class ToolStarterApp {
     }
 
     const base = this.schemaDefault("shapeCommon");
+    const geometryDefinition = type === "square" ? "rectangleGeometry" : `${type}Geometry`;
     const shape = {
       ...base,
-      geometry: this.schemaDefault(`${type}Geometry`),
+      geometry: this.schemaDefault(geometryDefinition),
       order,
       style: this.createShapeStyleDefault(type, color),
       tool: type,
       visible: base.visible
     };
+    if (type === "square") {
+      const size = Math.min(shape.geometry.width, shape.geometry.height);
+      shape.geometry.width = size;
+      shape.geometry.height = size;
+    }
     shape.transform = this.createShapeTransformDefault(shape);
     return shape;
   }
@@ -5169,6 +5191,25 @@ export class ToolStarterApp {
           this.clearInputValidity(input);
           this.writeGeometryFieldValue(geometry, key, input.value);
         }
+      }
+      if (shapeTool(shape) === "square") {
+        const sizeInput = fields.find((input) => input.dataset.shapeGeometryField === "size") || null;
+        if (!(geometry.size > 0)) {
+          const message = "Size must be greater than 0.";
+          if (sizeInput) {
+            this.markInputInvalid(sizeInput, message);
+          }
+          return { error: message, ok: false, value: null };
+        }
+        return {
+          ok: true,
+          value: {
+            height: geometry.size,
+            width: geometry.size,
+            x: geometry.x,
+            y: geometry.y
+          }
+        };
       }
       return { ok: true, value: geometry };
     } catch (error) {

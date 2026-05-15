@@ -145,6 +145,9 @@
           "$ref": "#/$defs/rectangleShape"
         },
         {
+          "$ref": "#/$defs/squareShape"
+        },
+        {
           "$ref": "#/$defs/circleShape"
         },
         {
@@ -195,9 +198,9 @@
       },
       "properties": {
         "tool": {
-          "description": "Editor and runtime shape/tool kind. Triangle is polygon geometry authored by the triangle tool.",
+          "description": "Editor and runtime shape/tool kind. Triangle is polygon geometry authored by the triangle tool. Square is rectangle geometry authored with equal width and height.",
           "type": "string",
-          "enum": ["triangle", "rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]
+          "enum": ["triangle", "rectangle", "square", "circle", "ellipse", "line", "polygon", "arc", "text"]
         },
         "order": {
           "type": "integer",
@@ -234,6 +237,24 @@
           "properties": {
             "tool": {
               "const": "rectangle"
+            },
+            "geometry": {
+              "$ref": "#/$defs/rectangleGeometry"
+            }
+          }
+        }
+      ]
+    },
+    "squareShape": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/shapeCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tool": {
+              "const": "square"
             },
             "geometry": {
               "$ref": "#/$defs/rectangleGeometry"

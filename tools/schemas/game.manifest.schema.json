@@ -232,6 +232,9 @@
           "$ref": "#/$defs/objectVectorStudioRectangleShape"
         },
         {
+          "$ref": "#/$defs/objectVectorStudioSquareShape"
+        },
+        {
           "$ref": "#/$defs/objectVectorStudioCircleShape"
         },
         {
@@ -283,7 +286,7 @@
       "properties": {
         "tool": {
           "type": "string",
-          "enum": ["triangle", "rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]
+          "enum": ["triangle", "rectangle", "square", "circle", "ellipse", "line", "polygon", "arc", "text"]
         },
         "order": {
           "type": "integer",
@@ -318,6 +321,18 @@
           "type": "object",
           "properties": {
             "tool": { "const": "rectangle" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioRectangleGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioSquareShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "square" },
             "geometry": { "$ref": "#/$defs/objectVectorStudioRectangleGeometry" }
           }
         }
