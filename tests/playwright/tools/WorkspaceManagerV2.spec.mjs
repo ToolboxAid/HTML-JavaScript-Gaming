@@ -3227,6 +3227,170 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("aligns Object Vector Studio V2 selection bounds to transformed preview geometry", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    const consoleErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.setViewportSize({ width: 1366, height: 1000 });
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "transform-bounds-palette",
+          swatches: [
+            { id: "white", value: "#ffffff" },
+            { id: "blue", value: "#60a5fa" }
+          ]
+        }));
+      });
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles({
+        buffer: Buffer.from(JSON.stringify({
+          name: "Transform Bounds Object Set",
+          objects: [
+            {
+              id: "object.bounds.transformed-rectangle",
+              name: "Transformed Rectangle",
+              shapes: [
+                {
+                  geometry: { height: 40, width: 80, x: -40, y: -20 },
+                  locked: false,
+                  order: 1,
+                  style: { fill: "#ffffff", fillOpacity: 1, stroke: "#60a5fa", strokeOpacity: 1, strokeWidth: 1 },
+                  tool: "rectangle",
+                  transform: { origin: { x: -10, y: 5 }, rotation: 30, scaleX: 0.5, scaleY: 0.5, x: 60, y: 10 },
+                  visible: true
+                }
+              ],
+              tags: []
+            }
+          ],
+          toolId: "object-vector-studio-v2",
+          version: 1
+        }, null, 2)),
+        mimeType: "application/json",
+        name: "object-vector-transform-bounds.json"
+      });
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveClass(/is-selected/);
+
+      const metrics = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
+        const drawingScale = 10;
+        const app = window.__objectVectorStudioV2App;
+        const shape = app.selectedShape();
+        const transform = shape.transform;
+        const geometry = shape.geometry;
+        const transformPoint = (point) => {
+          const radians = transform.rotation * Math.PI / 180;
+          const relativeX = (point.x - transform.origin.x) * transform.scaleX;
+          const relativeY = (point.y - transform.origin.y) * transform.scaleY;
+          const rotatedX = relativeX * Math.cos(radians) - relativeY * Math.sin(radians);
+          const rotatedY = relativeX * Math.sin(radians) + relativeY * Math.cos(radians);
+          return {
+            x: (transform.x + transform.origin.x + rotatedX) * drawingScale,
+            y: (transform.y + transform.origin.y + rotatedY) * drawingScale
+          };
+        };
+        const corners = [
+          { x: geometry.x, y: geometry.y },
+          { x: geometry.x + geometry.width, y: geometry.y },
+          { x: geometry.x + geometry.width, y: geometry.y + geometry.height },
+          { x: geometry.x, y: geometry.y + geometry.height }
+        ].map(transformPoint);
+        const xValues = corners.map((point) => point.x);
+        const yValues = corners.map((point) => point.y);
+        const expected = {
+          center: transformPoint({ x: geometry.x + geometry.width / 2, y: geometry.y + geometry.height / 2 }),
+          height: Math.max(...yValues) - Math.min(...yValues),
+          width: Math.max(...xValues) - Math.min(...xValues),
+          x: Math.min(...xValues),
+          y: Math.min(...yValues)
+        };
+        const selectionBox = surface.querySelector("[data-selection-bounds='0']");
+        const handles = Object.fromEntries(Array.from(surface.querySelectorAll("[data-resize-handle]")).map((handle) => [
+          handle.dataset.resizeHandle,
+          {
+            cx: Number(handle.getAttribute("x")) + Number(handle.getAttribute("width")) / 2,
+            cy: Number(handle.getAttribute("y")) + Number(handle.getAttribute("height")) / 2
+          }
+        ]));
+        const raw = {
+          height: geometry.height * drawingScale,
+          width: geometry.width * drawingScale,
+          x: geometry.x * drawingScale,
+          y: geometry.y * drawingScale
+        };
+        const svgPoint = surface.createSVGPoint();
+        svgPoint.x = expected.center.x;
+        svgPoint.y = expected.center.y;
+        const screenCenter = svgPoint.matrixTransform(surface.getScreenCTM());
+        const hitShape = document.elementFromPoint(screenCenter.x, screenCenter.y)?.closest("[data-shape-index]");
+
+        return {
+          expected,
+          handles,
+          hitShapeIndex: hitShape?.dataset.shapeIndex || null,
+          raw,
+          rawContainsTransformedCenter: expected.center.x >= raw.x
+            && expected.center.x <= raw.x + raw.width
+            && expected.center.y >= raw.y
+            && expected.center.y <= raw.y + raw.height,
+          screenCenter: { x: screenCenter.x, y: screenCenter.y },
+          selection: {
+            height: Number(selectionBox.getAttribute("height")),
+            width: Number(selectionBox.getAttribute("width")),
+            x: Number(selectionBox.getAttribute("x")),
+            y: Number(selectionBox.getAttribute("y"))
+          }
+        };
+      });
+
+      expect(metrics.rawContainsTransformedCenter).toBe(false);
+      expect(metrics.hitShapeIndex).toBe("0");
+      expect(metrics.selection.x).toBeCloseTo(metrics.expected.x - 4, 3);
+      expect(metrics.selection.y).toBeCloseTo(metrics.expected.y - 4, 3);
+      expect(metrics.selection.width).toBeCloseTo(metrics.expected.width + 8, 3);
+      expect(metrics.selection.height).toBeCloseTo(metrics.expected.height + 8, 3);
+      expect(metrics.selection.width).toBeLessThan(metrics.raw.width);
+
+      const expectedHandleCenters = {
+        ne: { x: metrics.expected.x + metrics.expected.width + 4, y: metrics.expected.y - 4 },
+        nw: { x: metrics.expected.x - 4, y: metrics.expected.y - 4 },
+        se: { x: metrics.expected.x + metrics.expected.width + 4, y: metrics.expected.y + metrics.expected.height + 4 },
+        sw: { x: metrics.expected.x - 4, y: metrics.expected.y + metrics.expected.height + 4 }
+      };
+      for (const [handle, expectedCenter] of Object.entries(expectedHandleCenters)) {
+        expect(metrics.handles[handle].cx).toBeCloseTo(expectedCenter.x, 3);
+        expect(metrics.handles[handle].cy).toBeCloseTo(expectedCenter.y, 3);
+      }
+
+      const transformBeforeDrag = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().transform }));
+      await page.mouse.move(metrics.screenCenter.x, metrics.screenCenter.y);
+      await page.mouse.down();
+      await page.mouse.move(metrics.screenCenter.x + 40, metrics.screenCenter.y + 24, { steps: 4 });
+      await page.mouse.up();
+      const transformAfterDrag = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().transform }));
+      expect(transformAfterDrag.x).not.toBe(transformBeforeDrag.x);
+      expect(transformAfterDrag.y).not.toBe(transformBeforeDrag.y);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Dragged shape row 0 by/);
+
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("expands Object Vector Studio V2 asset authoring controls", async ({ page }, testInfo) => {
     const server = await startRepoServer();
     const pageErrors = [];

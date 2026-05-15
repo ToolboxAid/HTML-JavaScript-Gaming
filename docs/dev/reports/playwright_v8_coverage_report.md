@@ -1,6 +1,6 @@
-# PR_26133_036 Playwright V8 Coverage Report
+# PR_26133_037 Playwright V8 Coverage Report
 
-Task: PR_26133_036-asteroids-manifest-name-validation-no-fallback
+Task: PR_26133_037-object-preview-transform-bounds-fix
 Date: 2026-05-15
 
 ## Result
@@ -26,14 +26,13 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Changed Runtime JS Coverage
 
 ```text
-(97%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 1145/1145; executed functions 123/127
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4416/4416; executed functions 466/498
 ```
 
-Additional changed Asteroids runtime modules were exercised by the Workspace V2 Asteroids gameplay rendering test:
+## Changed Test Coverage Note
 
 ```text
-(50%) games/Asteroids/index.js - executed lines 211/211; executed functions 6/12
-(52%) games/Asteroids/game/AsteroidsGameScene.js - executed lines 874/874; executed functions 26/50
+(0%) tests/playwright/tools/WorkspaceManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
 ```
 
 ## Guardrail
@@ -44,4 +43,4 @@ Additional changed Asteroids runtime modules were exercised by the Workspace V2 
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Asteroids Object Vector manifest loading, strict runtime binding validation, duplicate medium-candidate diagnostics, and gameplay rendering with manifest-selected object IDs. Coverage remains advisory only.
+The Workspace V2 run exercised Object Vector Studio V2 transformed selection bounds, transformed handle placement, transformed hit testing, and drag interaction startup from the transformed visual shape region. Coverage remains advisory only.

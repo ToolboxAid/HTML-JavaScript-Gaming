@@ -324,6 +324,61 @@ function shapeBounds(shape) {
   throw new Error(`unsupported shape bounds for ${shapeTool(shape)}`);
 }
 
+function boundsCornerPoints(bounds) {
+  return [
+    { x: bounds.x, y: bounds.y },
+    { x: bounds.x + bounds.width, y: bounds.y },
+    { x: bounds.x + bounds.width, y: bounds.y + bounds.height },
+    { x: bounds.x, y: bounds.y + bounds.height }
+  ];
+}
+
+function ellipseSamplePoints(cx, cy, rx, ry, sampleCount = 64) {
+  return Array.from({ length: sampleCount }, (_, index) => {
+    const radians = (index / sampleCount) * Math.PI * 2;
+    return {
+      x: cx + Math.cos(radians) * rx,
+      y: cy + Math.sin(radians) * ry
+    };
+  });
+}
+
+function arcSamplePoints(geometry, sampleCount = 32) {
+  const startAngle = geometry.startAngle;
+  const endAngle = geometry.endAngle;
+  const span = endAngle - startAngle;
+  const steps = Math.max(1, Math.ceil(Math.abs(span) / (360 / sampleCount)));
+
+  return Array.from({ length: steps + 1 }, (_, index) => {
+    const angle = startAngle + (span * index) / steps;
+    const radians = ((angle - 90) * Math.PI) / 180;
+    return {
+      x: geometry.cx + Math.cos(radians) * geometry.r,
+      y: geometry.cy + Math.sin(radians) * geometry.r
+    };
+  });
+}
+
+function shapeBoundsPoints(shape) {
+  const geometryTool = shapeGeometryTool(shape);
+  if (geometryTool === "line") {
+    return [linePoint(shape.geometry, "point1"), linePoint(shape.geometry, "point2")].filter(Boolean);
+  }
+  if (geometryTool === "polygon") {
+    return Array.isArray(shape.geometry.points) ? shape.geometry.points : [];
+  }
+  if (geometryTool === "circle") {
+    return ellipseSamplePoints(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, shape.geometry.r);
+  }
+  if (geometryTool === "ellipse") {
+    return ellipseSamplePoints(shape.geometry.cx, shape.geometry.cy, shape.geometry.rx, shape.geometry.ry);
+  }
+  if (geometryTool === "arc") {
+    return arcSamplePoints(shape.geometry);
+  }
+  return boundsCornerPoints(shapeBounds(shape));
+}
+
 function defaultShapeTransform(shape) {
   const bounds = shapeBounds(shape);
   return {
@@ -2114,16 +2169,35 @@ export class ToolStarterApp {
     };
   }
 
+  transformedPoint(point, transform) {
+    const radians = (transform.rotation * Math.PI) / 180;
+    const relativeX = (point.x - transform.origin.x) * transform.scaleX;
+    const relativeY = (point.y - transform.origin.y) * transform.scaleY;
+    const rotatedX = relativeX * Math.cos(radians) - relativeY * Math.sin(radians);
+    const rotatedY = relativeX * Math.sin(radians) + relativeY * Math.cos(radians);
+
+    return {
+      x: transform.x + transform.origin.x + rotatedX,
+      y: transform.y + transform.origin.y + rotatedY
+    };
+  }
+
   transformedBounds(shape, { drawingScale = 1 } = {}) {
-    const bounds = shapeBounds(shape);
     const transform = this.shapeTransform(shape);
+    const points = shapeBoundsPoints(shape).map((point) => this.transformedPoint(point, transform));
+    const xValues = points.map((point) => point.x);
+    const yValues = points.map((point) => point.y);
+    const minX = Math.min(...xValues);
+    const minY = Math.min(...yValues);
+    const origin = this.transformedPoint(transform.origin, transform);
+
     return this.scaledDrawingBounds({
-      height: Math.max(1, bounds.height * transform.scaleY),
-      originX: transform.origin.x + transform.x,
-      originY: transform.origin.y + transform.y,
-      width: Math.max(1, bounds.width * transform.scaleX),
-      x: bounds.x + transform.x,
-      y: bounds.y + transform.y
+      height: Math.max(1, Math.max(...yValues) - minY),
+      originX: origin.x,
+      originY: origin.y,
+      width: Math.max(1, Math.max(...xValues) - minX),
+      x: minX,
+      y: minY
     }, drawingScale);
   }
 
@@ -2217,15 +2291,15 @@ export class ToolStarterApp {
         const effectiveLine = this.effectiveShape(selectedShape);
         const transform = this.shapeTransform(effectiveLine);
         [
-          ["start", effectiveLine.geometry.point1.x + transform.x, effectiveLine.geometry.point1.y + transform.y],
-          ["end", effectiveLine.geometry.point2.x + transform.x, effectiveLine.geometry.point2.y + transform.y]
-        ].forEach(([endpoint, x, y]) => {
+          ["start", this.transformedPoint(effectiveLine.geometry.point1, transform)],
+          ["end", this.transformedPoint(effectiveLine.geometry.point2, transform)]
+        ].forEach(([endpoint, position]) => {
           const point = document.createElementNS(SVG_NS, "rect");
           point.classList.add("object-vector-studio-v2__resize-handle", "object-vector-studio-v2__line-endpoint-handle");
           point.dataset.lineEndpoint = endpoint;
           point.dataset.resizeShapeIndex = String(this.selectedShapeIndex);
-          point.setAttribute("x", this.scaleDrawingValue(x, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
-          point.setAttribute("y", this.scaleDrawingValue(y, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
+          point.setAttribute("x", this.scaleDrawingValue(position.x, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
+          point.setAttribute("y", this.scaleDrawingValue(position.y, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
           point.setAttribute("width", 4);
           point.setAttribute("height", 4);
           point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, this.selectedShapeIndex, { endpoint, mode: "line-endpoint" }));
