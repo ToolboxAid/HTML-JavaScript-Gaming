@@ -794,7 +794,7 @@ export default class AsteroidsGameScene extends Scene {
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
         rotation: this.world.ship.angle + Math.PI / 2,
-        stateId: this.world.ship.thrusting && this.session.mode === 'playing' ? "thrust" : "idle",
+        stateId: this.world.ship.thrusting && this.session.mode === 'playing' ? "move" : "idle",
         x: this.world.ship.x,
         y: this.world.ship.y,
       });

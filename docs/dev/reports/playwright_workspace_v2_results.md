@@ -1,6 +1,6 @@
-# PR_26133_047 Workspace V2 Playwright Results
+# PR_26133_048 Workspace V2 Playwright Results
 
-Task: PR_26133_047-frame-state-help-and-frame-id-generation-fix
+Task: PR_26133_048-frame-state-schema-ssot-and-palette-filter-layout
 Date: 2026-05-15
 
 ## Result
@@ -14,14 +14,14 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Verified the Object Vector Studio V2 frame state dropdown renders beside a `?` help button.
-- Verified the `idle` help text title is `Default stationary state.` and `No movement or action animation active.`
-- Verified the `move` help text title is `Movement/action state.` and `Used for thrusting, walking, flying, or active movement visuals.`
-- Verified new schema-valid state IDs include `move` while legacy `thrust` manifests still load.
-- Verified duplicate frame generation uses generic `frame-x` IDs and does not continue legacy `idle-frame-x` naming.
-- Verified a legacy `idle-frame-1` import duplicates into `frame-1`.
+- Verified Hue, Sat, Bri, and Name palette sort controls fit on one line with reduced text and icon sizing.
+- Verified `thrust` is removed from the Object Vector Studio V2 state enum.
+- Verified `game.manifest.schema.json` references the Object Vector Studio V2 `objectState` definition instead of duplicating a local state enum.
+- Verified Asteroids runtime state selection now uses `move` for thrust visuals.
+- Verified each frame tile renders a compact state dropdown directly under the frame tile label.
+- Verified each frame tile renders a `?` hover help button using the contextual state help text.
 
 ## Additional Validation
 
-- Targeted Playwright check passed for `supports Object Vector Studio V2 animation states and frame timeline foundation`.
+- Targeted Playwright checks passed for Object Vector Studio V2 shell/schema/palette layout and animation frame controls.
 - `git diff --check` passed.

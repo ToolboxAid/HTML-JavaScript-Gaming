@@ -1215,23 +1215,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const toolSchema = window.__objectVectorStudioV2App.schemaService.schema;
         const gameSchema = await fetch("/tools/schemas/game.manifest.schema.json", { cache: "no-store" }).then((response) => response.json());
         return {
+          gameHasLocalObjectStateDefinition: Object.prototype.hasOwnProperty.call(gameSchema.$defs, "objectVectorStudioState"),
           gameObjectDefaultTags: gameSchema.$defs.objectVectorStudioObject.default.tags,
           gamePolygonDefaultPointCount: gameSchema.$defs.objectVectorStudioPolygonGeometry.default.points.length,
           gameShapeCommonDefaultTool: gameSchema.$defs.objectVectorStudioShapeCommon.default.tool,
+          gameStateSchemaRef: gameSchema.$defs.objectVectorStudioObject.properties.states.items.$ref,
+          gameStateThrustMentionRemoved: !JSON.stringify(gameSchema).includes('"thrust"'),
           gameTransformDefaultOrigin: gameSchema.$defs.objectVectorStudioTransform.default.origin,
           toolPolygonDefaultPointCount: toolSchema.$defs.polygonGeometry.default.points.length,
           toolShapeCommonDefaultTool: toolSchema.$defs.shapeCommon.default.tool,
+          toolStateEnum: toolSchema.$defs.objectState.properties.id.enum,
+          toolStateThrustRemoved: !toolSchema.$defs.objectState.properties.id.enum.includes("thrust"),
           toolStyleDefaultStrokeWidth: toolSchema.$defs.style.default.strokeWidth,
           toolTransformDefaultOrigin: toolSchema.$defs.transform.default.origin
         };
       });
       expect(objectVectorSchemaDefaults).toEqual({
+        gameHasLocalObjectStateDefinition: false,
         gameObjectDefaultTags: [],
         gamePolygonDefaultPointCount: 5,
         gameShapeCommonDefaultTool: "polygon",
+        gameStateSchemaRef: "tools/object-vector-studio-v2.schema.json#/$defs/objectState",
+        gameStateThrustMentionRemoved: true,
         gameTransformDefaultOrigin: { x: 0, y: 0 },
         toolPolygonDefaultPointCount: 5,
         toolShapeCommonDefaultTool: "polygon",
+        toolStateEnum: ["idle", "move", "active", "inactive", "damaged", "destroyed"],
+        toolStateThrustRemoved: true,
         toolStyleDefaultStrokeWidth: 3,
         toolTransformDefaultOrigin: { x: 0, y: 0 }
       });
@@ -1317,6 +1327,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           };
         };
         const title = (selector) => document.querySelector(selector).title;
+        const paletteSortButtons = Array.from(document.querySelectorAll(".object-vector-studio-v2__palette-sort button"));
+        const paletteSortRects = paletteSortButtons.map((button) => button.getBoundingClientRect());
+        const paletteSortButtonStyles = paletteSortButtons.map((button) => getComputedStyle(button));
         return {
           actionIcons: {
             add: icon("#objectVectorStudioV2AddObjectButton"),
@@ -1331,6 +1344,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             hue: icon("[data-palette-sort='hue']"),
             name: icon("[data-palette-sort='name']"),
             sat: icon("[data-palette-sort='sat']")
+          },
+          paletteSortLayout: {
+            buttonFontSizes: paletteSortButtonStyles.map((style) => Number.parseFloat(style.fontSize)),
+            iconFontSizes: paletteSortButtons.map((button) => Number.parseFloat(getComputedStyle(button, "::before").fontSize)),
+            singleLine: paletteSortRects.every((rect) => Math.abs(rect.top - paletteSortRects[0].top) < 2)
           },
           gridIcons: {
             angle: icon("#objectVectorStudioV2AngleSnapButton"),
@@ -1387,7 +1405,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       [
         ...Object.values(iconStyleState.actionIcons),
         ...Object.values(iconStyleState.gridIcons),
-        ...Object.values(iconStyleState.paletteSortIcons),
         ...Object.values(iconStyleState.shapeIcons),
         ...Object.values(iconStyleState.viewportIcons),
         ...Object.values(iconStyleState.zIcons)
@@ -1396,6 +1413,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         expect(icon.fontFamily).toContain("0xProto Nerd Font");
         expect(icon.fontSize).toBeGreaterThanOrEqual(21);
       });
+      Object.values(iconStyleState.paletteSortIcons).forEach((icon) => {
+        expect(icon.glyphPresent).toBe(true);
+        expect(icon.fontFamily).toContain("0xProto Nerd Font");
+        expect(icon.fontSize).toBeGreaterThanOrEqual(10);
+        expect(icon.fontSize).toBeLessThanOrEqual(16);
+      });
+      expect(iconStyleState.paletteSortLayout.singleLine).toBe(true);
+      expect(Math.max(...iconStyleState.paletteSortLayout.buttonFontSizes)).toBeLessThanOrEqual(12);
+      expect(Math.max(...iconStyleState.paletteSortLayout.iconFontSizes)).toBeLessThanOrEqual(16);
       expect(iconStyleState.actionIcons.paint.iconName).toBe("nf-fa-paint_brush");
       expect(iconStyleState.actionIcons.stroke.iconName).toBe("nf-fa-pencil");
       expect(iconStyleState.modeButtons).toEqual({
@@ -3997,8 +4023,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-object-id="object.animation.ship-template"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1']")).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#objectVectorStudioV2StateSelect")).toHaveValue("idle");
-      await expect(page.locator("#objectVectorStudioV2StateHelpButton")).toHaveAttribute("title", "Default stationary state.\nNo movement or action animation active.");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-select='frame-1']")).toHaveValue("idle");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-help='frame-1']")).toHaveAttribute("title", "Default stationary state.\nNo movement or action animation active.");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"id": "idle"');
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Selected Shape");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("ship-template-hull");
@@ -4044,12 +4070,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-onion-skin-frame='frame-2']")).toHaveCount(1);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Onion-skin preview enabled\./);
 
-      await page.evaluate(() => window.__objectVectorStudioV2App.selectState("move", "test state selection"));
+      await page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-select='frame-1']").selectOption("move");
       await expect(page.locator('[data-object-id="object.animation.ship-template"]')).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#objectVectorStudioV2StateSelect")).toHaveValue("move");
-      await expect(page.locator("#objectVectorStudioV2StateHelpButton")).toHaveAttribute("title", "Movement/action state.\nUsed for thrusting, walking, flying, or active movement visuals.");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-select='frame-1']")).toHaveValue("move");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-help='frame-1']")).toHaveAttribute("title", "Movement/action state.\nUsed for thrusting, walking, flying, or active movement visuals.");
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='move']")).toHaveCount(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected state Move from test state selection; active object remains Ship Template\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected state Move from frame frame-1 state dropdown; active object remains Ship Template\./);
       await page.evaluate(() => window.__objectVectorStudioV2App.selectState("idle", "test state selection"));
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(2);
 
@@ -4131,7 +4157,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         version: 1
       }, null, 2), "utf8");
       await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(invalidPayloadPath);
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid-animation\.json: root\.objects\[0\]\.states\[0\]\.id must be one of idle, move, active, inactive, damaged, destroyed, thrust\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid-animation\.json: root\.objects\[0\]\.states\[0\]\.id must be one of idle, move, active, inactive, damaged, destroyed\./);
 
       expect(pageErrors).toEqual([]);
     } finally {

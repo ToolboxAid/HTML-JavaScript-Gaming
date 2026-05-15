@@ -110,7 +110,7 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   [".object-vector-studio-v2__z-icon--ungroup", "ungroup"]
 ]);
 
-const OBJECT_STATE_IDS = Object.freeze(["idle", "move", "active", "inactive", "damaged", "destroyed", "thrust"]);
+const OBJECT_STATE_IDS = Object.freeze(["idle", "move", "active", "inactive", "damaged", "destroyed"]);
 
 const OBJECT_STATE_LABELS = Object.freeze({
   active: "Active",
@@ -118,8 +118,7 @@ const OBJECT_STATE_LABELS = Object.freeze({
   destroyed: "Destroyed",
   idle: "Idle",
   inactive: "Inactive",
-  move: "Move",
-  thrust: "Thrust"
+  move: "Move"
 });
 
 const OBJECT_STATE_HELP = Object.freeze({
@@ -128,8 +127,7 @@ const OBJECT_STATE_HELP = Object.freeze({
   destroyed: ["Object destruction/death state.", "Usually final or transitional before removal."],
   idle: ["Default stationary state.", "No movement or action animation active."],
   inactive: ["Object is disabled, hidden, sleeping, or not participating in gameplay."],
-  move: ["Movement/action state.", "Used for thrusting, walking, flying, or active movement visuals."],
-  thrust: ["Movement/action state.", "Used for thrusting, walking, flying, or active movement visuals."]
+  move: ["Movement/action state.", "Used for thrusting, walking, flying, or active movement visuals."]
 });
 
 const SHAPE_TYPE_DETAILS = Object.freeze({
@@ -631,7 +629,6 @@ export class ToolStarterApp {
   }
 
   bindAnimationControls() {
-    this.elements.stateSelect.addEventListener("change", () => this.selectState(this.elements.stateSelect.value, "state dropdown"));
     this.elements.deleteFrameButton.addEventListener("click", () => this.deleteSelectedFrame());
     this.elements.duplicateFrameButton.addEventListener("click", () => this.duplicateSelectedFrame());
     this.elements.frameLeftButton.addEventListener("click", () => this.moveSelectedFrame("earlier", "left"));
@@ -1572,7 +1569,6 @@ export class ToolStarterApp {
   }
 
   renderFrameTimeline() {
-    this.renderStateSelect();
     this.elements.frameTimeline.replaceChildren();
     const object = this.selectedObject();
     const state = this.selectedState();
@@ -1586,72 +1582,68 @@ export class ToolStarterApp {
     }
 
     sortedFrames(state).forEach((frame) => {
-      const button = document.createElement("button");
+      const button = document.createElement("div");
       button.className = "object-vector-studio-v2__frame-tile";
-      button.type = "button";
       button.dataset.stateId = state.id;
       button.dataset.frameId = frame.id;
       button.title = `Select frame ${frame.id} in state ${state.id}`;
       button.setAttribute("aria-pressed", String(frame.id === this.selectedFrameId));
+      button.setAttribute("role", "button");
+      button.tabIndex = 0;
       button.classList.toggle("is-selected", frame.id === this.selectedFrameId);
       button.append(this.createFrameThumbnail(object, frame));
       const label = document.createElement("span");
       label.textContent = `${frame.order}. ${frame.id}`;
       button.append(label);
       button.addEventListener("click", () => this.selectFrame(frame.id, "timeline"));
+      button.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+        event.preventDefault();
+        this.selectFrame(frame.id, "timeline");
+      });
+      button.append(this.createFrameStateControls(object, state, frame));
       this.elements.frameTimeline.append(button);
     });
     this.updateAnimationActionState();
   }
 
-  renderStateSelect() {
-    const object = this.selectedObject();
+  createFrameStateControls(object, state, frame) {
     const states = this.objectStates(object);
-    this.elements.stateSelect.replaceChildren();
-    if (!object || !states.length) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No state";
-      this.elements.stateSelect.append(option);
-      this.elements.stateSelect.value = "";
-      this.elements.stateSelect.disabled = true;
-      this.updateStateHelpButton(null);
-      return;
-    }
+    const row = document.createElement("div");
+    row.className = "object-vector-studio-v2__frame-state-row";
+    row.addEventListener("click", (event) => event.stopPropagation());
+    row.addEventListener("pointerdown", (event) => event.stopPropagation());
 
-    const currentState = this.selectedState();
-    if (!currentState) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No state";
-      this.elements.stateSelect.append(option);
-    }
+    const select = document.createElement("select");
+    select.className = "object-vector-studio-v2__frame-state-select";
+    select.dataset.frameStateSelect = frame.id;
+    select.setAttribute("aria-label", `State for frame ${frame.id}`);
     states.forEach((state) => {
       const option = document.createElement("option");
       option.value = state.id;
       option.textContent = state.id;
-      this.elements.stateSelect.append(option);
+      select.append(option);
     });
-    this.elements.stateSelect.disabled = false;
-    this.elements.stateSelect.value = currentState?.id || "";
-    this.updateStateHelpButton(currentState);
-  }
-
-  updateStateHelpButton(state) {
-    const hasState = Boolean(state);
-    this.elements.stateHelpButton.disabled = !hasState;
-    this.elements.stateHelpButton.setAttribute("aria-disabled", String(!hasState));
-    if (!hasState) {
-      this.elements.stateHelpButton.title = "Disabled until a state is selected";
-      this.elements.stateHelpButton.dataset.stateHelp = "";
-      this.elements.stateHelpButton.setAttribute("aria-label", "State help");
-      return;
-    }
+    select.value = state.id;
+    select.addEventListener("change", (event) => {
+      event.stopPropagation();
+      this.selectState(select.value, `frame ${frame.id} state dropdown`);
+    });
 
     const helpText = this.stateHelpText(state.id);
-    this.elements.stateHelpButton.title = helpText;
-    this.elements.stateHelpButton.dataset.stateHelp = helpText;
-    this.elements.stateHelpButton.setAttribute("aria-label", `State help for ${state.id}: ${helpText.replace(/\s+/gu, " ")}`);
+    const helpButton = document.createElement("button");
+    helpButton.className = "object-vector-studio-v2__frame-state-help";
+    helpButton.type = "button";
+    helpButton.textContent = "?";
+    helpButton.title = helpText;
+    helpButton.dataset.frameStateHelp = frame.id;
+    helpButton.setAttribute("aria-label", `State help for ${state.id}: ${helpText.replace(/\s+/gu, " ")}`);
+    helpButton.addEventListener("click", (event) => event.stopPropagation());
+
+    row.append(select, helpButton);
+    return row;
   }
 
   stateHelpText(stateId) {

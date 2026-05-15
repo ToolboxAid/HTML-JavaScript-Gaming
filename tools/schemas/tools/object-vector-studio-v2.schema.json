@@ -81,7 +81,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "enum": ["idle", "move", "active", "inactive", "damaged", "destroyed", "thrust"]
+          "enum": ["idle", "move", "active", "inactive", "damaged", "destroyed"]
         },
         "name": {
           "type": "string",

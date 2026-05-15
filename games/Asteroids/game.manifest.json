@@ -353,8 +353,8 @@
                   ]
                 },
                 {
-                  "id": "thrust",
-                  "name": "Thrust",
+                  "id": "move",
+                  "name": "Move",
                   "frames": [
                     {
                       "id": "frame-1",

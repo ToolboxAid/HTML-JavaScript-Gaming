@@ -1089,21 +1089,6 @@ textarea:hover {
   gap: 8px;
 }
 
-.object-vector-studio-v2__state-select {
-  min-height: 30px;
-  max-width: 132px;
-  padding: 4px 7px;
-  font-size: 0.82rem;
-}
-
-.object-vector-studio-v2__state-help {
-  width: 30px;
-  min-width: 30px;
-  min-height: 30px;
-  padding: 0 !important;
-  font-weight: 900;
-}
-
 .object-vector-studio-v2__inline-field {
   display: inline-flex;
   align-items: center;
@@ -1135,7 +1120,12 @@ textarea:hover {
   display: grid;
   gap: 4px;
   justify-items: center;
+  border: 1px solid var(--tool-starter-line) !important;
   border-radius: 8px !important;
+  background: ButtonFace;
+  color: ButtonText;
+  cursor: pointer;
+  padding: 6px;
   text-align: center;
 }
 
@@ -1151,6 +1141,30 @@ textarea:hover {
   border: 1px solid var(--tool-starter-line);
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.18);
+}
+
+.object-vector-studio-v2__frame-state-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+}
+
+.object-vector-studio-v2__frame-state-select {
+  width: 70px;
+  min-height: 24px;
+  padding: 2px 4px;
+  font-size: 0.72rem;
+}
+
+.object-vector-studio-v2__frame-state-help {
+  width: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0 !important;
+  font-size: 0.72rem;
+  font-weight: 900;
 }
 
 .object-vector-studio-v2__coordinate-display,
@@ -1281,14 +1295,26 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__palette-sort {
-  display: flex;
-  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
+  width: 100%;
   border-top: 1px solid var(--tool-starter-line);
-  padding-top: 8px;
+  padding-top: 6px;
+}
+
+.object-vector-studio-v2__palette-sort button {
+  min-width: 0;
+  min-height: 28px;
+  gap: 2px;
+  padding: 2px 3px !important;
+  font-size: 0.66rem;
+  line-height: 1;
+}
+
+.object-vector-studio-v2__palette-sort button[data-ovs-icon]::before {
+  font-size: 1.08em;
 }
 
 .object-vector-studio-v2__palette-sort button[aria-pressed="true"] {

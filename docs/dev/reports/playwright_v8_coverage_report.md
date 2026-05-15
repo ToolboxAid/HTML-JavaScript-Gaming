@@ -1,6 +1,6 @@
-# PR_26133_047 Playwright V8 Coverage Report
+# PR_26133_048 Playwright V8 Coverage Report
 
-Task: PR_26133_047-frame-state-help-and-frame-id-generation-fix
+Task: PR_26133_048-frame-state-schema-ssot-and-palette-filter-layout
 Date: 2026-05-15
 
 ## Result
@@ -27,6 +27,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 (80%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 97/97; executed functions 4/5
 (90%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 3187/3187; executed functions 331/369
 (95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 409/409; executed functions 53/56
+(91%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1598/1598; executed functions 145/159
 ```
 
 ## Guardrail
@@ -37,4 +38,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 state selection, contextual state help text, legacy state/frame manifest loading, generic frame duplication, playback, runtime preview, and export paths.
+The Workspace V2 run exercised Object Vector Studio V2 palette sort layout, frame-tile state dropdown/help controls, Object Vector state schema validation, Workspace Manager game-manifest validation with an external Object Vector schema reference, and Asteroids runtime object-vector rendering.

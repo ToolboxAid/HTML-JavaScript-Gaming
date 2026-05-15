@@ -2,6 +2,7 @@
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 const WORKSPACE_SESSION_SCHEMA_REF = "tools/schemas/workspace.manifest.schema.json";
+const OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH = "/tools/schemas/tools/object-vector-studio-v2.schema.json";
 const WORKSPACE_REPO_REFERENCE_SESSION_KEY = "workspace.repo.reference";
 const WORKSPACE_TOOL_SESSION_KEY_PREFIX = "workspace.tools.";
 const WORKSPACE_REPO_HANDLE_DB_NAME = "workspace-manager-v2-repo-handles";
@@ -244,6 +245,39 @@ function resolvePointer(schema, pointer) {
     .reduce((node, key) => (node && typeof node === "object" ? node[key] : undefined), schema) || null;
 }
 
+function normalizeSchemaRegistryPath(schemaPath) {
+  return String(schemaPath || "")
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\/+/, "")
+    .replace(/^\.\//u, "");
+}
+
+function registerSchemaReference(schemaRegistry, schemaPath, schema) {
+  const normalized = normalizeSchemaRegistryPath(schemaPath);
+  if (!normalized || !isPlainObject(schema)) {
+    return;
+  }
+  schemaRegistry.set(normalized, schema);
+  schemaRegistry.set(`/${normalized}`, schema);
+}
+
+function resolveSchemaReference(rootSchema, ref, schemaRegistry) {
+  const [rawPath, rawPointer = ""] = String(ref || "").split("#");
+  const pointer = rawPointer ? `#${rawPointer}` : "#";
+  if (!rawPath) {
+    const schema = resolvePointer(rootSchema, pointer);
+    return schema ? { rootSchema, schema } : null;
+  }
+
+  const normalizedPath = normalizeSchemaRegistryPath(rawPath);
+  const externalRoot = schemaRegistry?.get(rawPath)
+    || schemaRegistry?.get(normalizedPath)
+    || schemaRegistry?.get(`/${normalizedPath}`);
+  const schema = resolvePointer(externalRoot, pointer);
+  return schema ? { rootSchema: externalRoot, schema } : null;
+}
+
 function typeMatches(value, expectedType) {
   if (expectedType === "object") {
     return isPlainObject(value);
@@ -269,24 +303,24 @@ function typeMatches(value, expectedType) {
   return true;
 }
 
-function validateSchemaValue(value, schema, pointer, rootSchema = schema) {
+function validateSchemaValue(value, schema, pointer, rootSchema = schema, schemaRegistry = new Map()) {
   if (!isPlainObject(schema)) {
     return [];
   }
   if (typeof schema.$ref === "string") {
-    const referencedSchema = resolvePointer(rootSchema, schema.$ref);
+    const referencedSchema = resolveSchemaReference(rootSchema, schema.$ref, schemaRegistry);
     return referencedSchema
-      ? validateSchemaValue(value, referencedSchema, pointer, rootSchema)
+      ? validateSchemaValue(value, referencedSchema.schema, pointer, referencedSchema.rootSchema, schemaRegistry)
       : [`${pointer}: unresolved schema reference ${schema.$ref}`];
   }
 
   const errors = [];
   if (Array.isArray(schema.allOf)) {
     schema.allOf.forEach((childSchema) => {
-      errors.push(...validateSchemaValue(value, childSchema, pointer, rootSchema));
+      errors.push(...validateSchemaValue(value, childSchema, pointer, rootSchema, schemaRegistry));
     });
   }
-  if (isPlainObject(schema.not) && validateSchemaValue(value, schema.not, pointer, rootSchema).length === 0) {
+  if (isPlainObject(schema.not) && validateSchemaValue(value, schema.not, pointer, rootSchema, schemaRegistry).length === 0) {
     errors.push(`${pointer}: value matches a forbidden schema branch`);
   }
   const expectedTypes = Array.isArray(schema.type) ? schema.type : (schema.type ? [schema.type] : []);
@@ -326,7 +360,7 @@ function validateSchemaValue(value, schema, pointer, rootSchema = schema) {
     }
     if (isPlainObject(schema.items)) {
       value.forEach((item, index) => {
-        errors.push(...validateSchemaValue(item, schema.items, `${pointer}[${index}]`, rootSchema));
+        errors.push(...validateSchemaValue(item, schema.items, `${pointer}[${index}]`, rootSchema, schemaRegistry));
       });
     }
     if (schema.uniqueItems) {
@@ -348,13 +382,13 @@ function validateSchemaValue(value, schema, pointer, rootSchema = schema) {
     });
     Object.entries(value).forEach(([key, childValue]) => {
       if (isPlainObject(properties[key])) {
-        errors.push(...validateSchemaValue(childValue, properties[key], `${pointer}.${key}`, rootSchema));
+        errors.push(...validateSchemaValue(childValue, properties[key], `${pointer}.${key}`, rootSchema, schemaRegistry));
       }
       const matchedPatternSchemas = Object.entries(patternProperties)
         .filter(([pattern]) => new RegExp(pattern).test(key))
         .map(([, childSchema]) => childSchema);
       matchedPatternSchemas.forEach((childSchema) => {
-        errors.push(...validateSchemaValue(childValue, childSchema, `${pointer}.${key}`, rootSchema));
+        errors.push(...validateSchemaValue(childValue, childSchema, `${pointer}.${key}`, rootSchema, schemaRegistry));
       });
       if (schema.additionalProperties === false && !Object.prototype.hasOwnProperty.call(properties, key) && matchedPatternSchemas.length === 0) {
         errors.push(`${pointer}.${key} is not allowed`);
@@ -1109,7 +1143,19 @@ export class WorkspaceManagerV2ContextService {
       if (!isPlainObject(schema)) {
         return { ok: false, message: `${GAME_MANIFEST_SCHEMA_PATH} did not return a schema object.` };
       }
-      return { ok: true, schema };
+      const objectVectorResponse = await this.fetchRef(OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH, { cache: "no-store" });
+      if (!objectVectorResponse.ok) {
+        return { ok: false, message: `Unable to load ${OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH}: ${objectVectorResponse.status}` };
+      }
+      const objectVectorSchema = await objectVectorResponse.json();
+      if (!isPlainObject(objectVectorSchema)) {
+        return { ok: false, message: `${OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH} did not return a schema object.` };
+      }
+      const schemaRegistry = new Map();
+      registerSchemaReference(schemaRegistry, OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH, objectVectorSchema);
+      registerSchemaReference(schemaRegistry, "tools/schemas/tools/object-vector-studio-v2.schema.json", objectVectorSchema);
+      registerSchemaReference(schemaRegistry, "tools/object-vector-studio-v2.schema.json", objectVectorSchema);
+      return { ok: true, schema, schemaRegistry };
     } catch (error) {
       return { ok: false, message: `Unable to load ${GAME_MANIFEST_SCHEMA_PATH}: ${error.message}` };
     }
@@ -1120,7 +1166,7 @@ export class WorkspaceManagerV2ContextService {
     if (!schemaResult.ok) {
       return schemaResult;
     }
-    const errors = validateSchemaValue(manifest, schemaResult.schema, "root", schemaResult.schema);
+    const errors = validateSchemaValue(manifest, schemaResult.schema, "root", schemaResult.schema, schemaResult.schemaRegistry);
     const gameInfo = manifest?.game || {};
     const gameData = gameInfo.gameData || {};
     const workspace = gameInfo.workspace || {};
