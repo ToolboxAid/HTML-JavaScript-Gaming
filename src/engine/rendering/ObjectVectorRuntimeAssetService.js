@@ -57,22 +57,6 @@ function normalizeString(value) {
   return String(value || "").trim();
 }
 
-function normalizeRuntimeBindingMap(value) {
-  if (!isPlainObject(value)) {
-    return {};
-  }
-  return Object.fromEntries(
-    Object.entries(value)
-      .map(([key, objectId]) => [normalizeString(key), normalizeString(objectId)])
-      .filter(([key, objectId]) => key && objectId)
-  );
-}
-
-function normalizeManifestRuntimeBindings(manifestPayload) {
-  const manifest = isPlainObject(manifestPayload) ? manifestPayload : {};
-  return normalizeRuntimeBindingMap(manifest.game?.gameData?.objectVectorRuntime?.objectIds);
-}
-
 function normalizeTags(value) {
   return Array.isArray(value)
     ? value.map((tag) => normalizeString(tag).toLowerCase()).filter(Boolean)
@@ -323,7 +307,6 @@ export class ObjectVectorRuntimeAssetService {
         return null;
       }
       return this.loadPayload(payload, {
-        runtimeBindings: normalizeManifestRuntimeBindings(manifest),
         sourceLabel: `${sourceLabel}:tools.${OBJECT_VECTOR_TOOL_ID}`
       });
     } catch (error) {
@@ -332,7 +315,7 @@ export class ObjectVectorRuntimeAssetService {
     }
   }
 
-  async loadPayload(payload, { runtimeBindings = {}, sourceLabel = "runtime payload" } = {}) {
+  async loadPayload(payload, { sourceLabel = "runtime payload" } = {}) {
     await this.loadSchema();
     const validation = this.validatePayload(payload);
     if (!validation.ok) {
@@ -340,10 +323,8 @@ export class ObjectVectorRuntimeAssetService {
       return null;
     }
 
-    const normalizedRuntimeBindings = normalizeRuntimeBindingMap(runtimeBindings);
     const cacheKey = JSON.stringify({
-      payload: validation.payload,
-      runtimeBindings: normalizedRuntimeBindings
+      payload: validation.payload
     });
     if (this.payloadCache.has(cacheKey)) {
       this.log("OK", `Object Vector runtime cache hit for ${sourceLabel}: ${validation.payload.objects.length} objects.`);
@@ -351,8 +332,7 @@ export class ObjectVectorRuntimeAssetService {
     }
 
     const assetSet = this.buildAssetSet(validation.payload, sourceLabel, {
-      payloadCacheKey: cacheKey,
-      runtimeBindings: normalizedRuntimeBindings
+      payloadCacheKey: cacheKey
     });
     this.payloadCache.set(cacheKey, assetSet);
     this.log("OK", `Object Vector runtime cache miss for ${sourceLabel}; cached ${assetSet.objectsById.size} objects.`);
@@ -366,7 +346,6 @@ export class ObjectVectorRuntimeAssetService {
     const objectsByName = new Map();
     const objectOrderById = new Map();
     const objectsByTag = new Map();
-    const runtimeBindings = normalizeRuntimeBindingMap(options.runtimeBindings);
     payload.objects.forEach((object, index) => {
       objectsById.set(object.id, object);
       objectsByName.set(object.name.toLowerCase(), object);
@@ -387,7 +366,6 @@ export class ObjectVectorRuntimeAssetService {
       objectsByTag,
       payload,
       payloadCacheKey: normalizeString(options.payloadCacheKey),
-      runtimeBindings,
       sourceLabel
     };
   }
@@ -405,7 +383,7 @@ export class ObjectVectorRuntimeAssetService {
       return null;
     }
     const normalizedTags = normalizeTags(tags);
-    const explicitObjectId = objectId || assetId || (runtimeRole ? assetSet.runtimeBindings?.[runtimeRole] : "");
+    const explicitObjectId = objectId || assetId;
     const resolutionKey = normalizedTags.length
       ? `role:${runtimeRole || "tagged"}:${normalizedTags.join("+")}:${explicitObjectId || "none"}:${requireManifestBinding ? "manifest-required" : "tag-selected"}`
       : `id:${assetId || objectId || name || "unknown"}`;

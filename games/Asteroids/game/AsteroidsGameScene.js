@@ -17,7 +17,7 @@ import { createAsteroidGeometryProfilesFromObjectVectorAssets } from './asteroid
 import {
   ASTEROID_SIZE_RUNTIME_ROLES,
   runtimeObjectRoleOptions,
-  validateAsteroidsRuntimeObjectBindings
+  validateAsteroidsRuntimeObjectRoles
 } from './asteroidsObjectVectorRoles.js';
 import {
   ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE
@@ -118,16 +118,15 @@ export default class AsteroidsGameScene extends Scene {
     this.devConsoleIntegration = options.devConsoleIntegration || null;
     this.objectVectorAssets = options.objectVectorAssets || null;
     this.objectVectorRuntime = options.objectVectorRuntime || null;
-    this.objectVectorRuntimeBindings = this.objectVectorAssets?.runtimeBindings || {};
-    this.objectVectorRuntimeBindingValidation = this.objectVectorAssets
-      ? validateAsteroidsRuntimeObjectBindings([...this.objectVectorAssets.objectsById.values()], this.objectVectorRuntimeBindings, {
+    this.objectVectorRuntimeObjectValidation = this.objectVectorAssets
+      ? validateAsteroidsRuntimeObjectRoles([...this.objectVectorAssets.objectsById.values()], {
         logger: this.objectVectorRuntime,
       })
       : { errors: [], objectsByRole: {}, ok: false, warnings: [] };
-    if (this.objectVectorAssets && !this.objectVectorRuntimeBindingValidation.ok) {
-      const message = validationFailureMessage(this.objectVectorRuntimeBindingValidation);
+    if (this.objectVectorAssets && !this.objectVectorRuntimeObjectValidation.ok) {
+      const message = validationFailureMessage(this.objectVectorRuntimeObjectValidation);
       this.objectVectorRuntime?.log?.('FAIL', message, {
-        errors: this.objectVectorRuntimeBindingValidation.errors,
+        errors: this.objectVectorRuntimeObjectValidation.errors,
       });
       console.error(message);
       throw new Error(message);
@@ -869,7 +868,7 @@ export default class AsteroidsGameScene extends Scene {
   }
 
   objectVectorRoleOptions(roleId) {
-    return runtimeObjectRoleOptions(roleId, this.objectVectorRuntimeBindings);
+    return runtimeObjectRoleOptions(roleId);
   }
 
   drawObjectVectorAsset(renderer, renderKey, options) {
@@ -907,7 +906,7 @@ export default class AsteroidsGameScene extends Scene {
         assetCount: this.objectVectorAssets?.objectsById?.size || 0,
         loaded: Boolean(this.objectVectorAssets),
         objectCount: this.objectVectorAssets?.objectsById?.size || 0,
-        runtimeBindingsValid: Boolean(this.objectVectorRuntimeBindingValidation?.ok),
+        runtimeObjectsValid: Boolean(this.objectVectorRuntimeObjectValidation?.ok),
         renderCounts: { ...this.objectVectorRenderCounts },
       };
     } catch {

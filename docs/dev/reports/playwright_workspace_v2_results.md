@@ -1,6 +1,6 @@
-# PR_26133_043 Workspace V2 Playwright Results
+# PR_26133_044 Workspace V2 Playwright Results
 
-Task: PR_26133_043-object-transform-center-and-opacity-input-tuning
+Task: PR_26133_044-remove-duplicated-object-vector-runtime-bindings
 Date: 2026-05-15
 
 ## Result
@@ -10,17 +10,22 @@ PASS - `npm run test:workspace-v2` completed successfully.
 - Command: `npm run test:workspace-v2`
 - Playwright target: `tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list`
 - Final result: 51 passed, 0 failed.
-- Runtime/console guard: Object Vector Studio V2 tests that monitor page errors and console errors completed with no reported errors.
+- Runtime/console guard: Asteroids Object Vector runtime and Workspace Manager V2 tests completed with no reported page errors.
 
 ## PR-Specific Coverage
 
-- Verified Object Preview viewport controls now render `Center` instead of `Dot`.
-- Verified Center recenters the preview viewport to origin `0,0`, preserves current zoom, refreshes stale pointer text back to the centered origin display, and keeps the center marker visible.
-- Verified Fill Op and Stroke Op inputs use `min=0`, `max=255`, `step=1`, and width sufficient for 4 visible digits.
-- Verified opacity inputs visibly reject out-of-range values such as `-1` and `256`.
-- Verified valid 0-255 opacity inputs convert to normalized style opacity values for schema/SVG rendering.
-- Verified Fill Op and Stroke Op remain in the compact opacity row below Paint, Stroke, and Width.
+- Verified Asteroids launches Object Vector runtime assets from `game.workspace.tools.object-vector-studio-v2.objects`.
+- Verified runtime role validation resolves `object.asteroids.*` IDs directly from the loaded Object Vector object list.
+- Verified `game.gameData.objectVectorRuntime` is absent from `games/Asteroids/game.manifest.json`.
+- Verified schema validation rejects a manifest when `game.gameData.objectVectorRuntime` is re-added.
+- Verified runtime rendering counts for asteroids, ship, and UFO remain active after removing the duplicate binding map.
 
-## Manual Verification Equivalent
+## Additional Validation
 
-Targeted Object Vector Studio V2 browser automation covered the requested Center label and centering behavior, opacity input sizing/range validation, normalized opacity rendering behavior, Palette opacity row layout, and no-console-error checks.
+- `node` manifest-schema check: current Asteroids manifest returned `{ ok: true }`.
+- `node` manifest-schema check: injected `game.gameData.objectVectorRuntime` returned `{ ok: false }`.
+- Targeted node smoke checks passed for `tests/games/AsteroidsPlatformDemo.test.mjs` and `tests/games/AsteroidsAssetReferenceAdoption.test.mjs`.
+
+## Notes
+
+- `npm test` is blocked before the node suite by the existing shared-extraction guard baseline drift; this PR did not touch those unrelated guard violations.

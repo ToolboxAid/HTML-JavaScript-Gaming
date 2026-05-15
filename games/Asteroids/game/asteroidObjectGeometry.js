@@ -9,10 +9,6 @@ const ASTEROID_SIZE_LABELS = Object.freeze({
   3: 'LRG',
 });
 
-function asRecord(value) {
-  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
-}
-
 function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
@@ -88,15 +84,12 @@ function createProfilesFromObjects(objects, options = {}) {
 }
 
 export function createAsteroidGeometryProfilesFromObjectVectorPayload(payload, options = {}) {
-  return createProfilesFromObjects(asRecord(payload).objects, options);
+  return createProfilesFromObjects(payload?.objects, options);
 }
 
 export function createAsteroidGeometryProfilesFromObjectVectorAssets(assetSet, options = {}) {
   if (assetSet?.objectsById instanceof Map) {
-    return createProfilesFromObjects([...assetSet.objectsById.values()], {
-      runtimeBindings: asRecord(assetSet.runtimeBindings),
-      ...options,
-    });
+    return createProfilesFromObjects([...assetSet.objectsById.values()], options);
   }
   return createAsteroidGeometryProfilesFromObjectVectorPayload(assetSet?.payload, options);
 }

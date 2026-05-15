@@ -4637,25 +4637,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
 
       const diagnostics = await page.evaluate(() => window.__asteroidsObjectVectorRuntime);
-      const runtimeBindingValidation = await page.evaluate(() => window.__asteroidsNewEngine.scene.objectVectorRuntimeBindingValidation);
-      const taglessRuntimeBindingValidation = await page.evaluate(async () => {
-        const { validateAsteroidsRuntimeObjectBindings } = await import("/games/Asteroids/game/asteroidsObjectVectorRoles.js");
+      const runtimeObjectValidation = await page.evaluate(() => window.__asteroidsNewEngine.scene.objectVectorRuntimeObjectValidation);
+      const taglessRuntimeObjectValidation = await page.evaluate(async () => {
+        const { validateAsteroidsRuntimeObjectRoles } = await import("/games/Asteroids/game/asteroidsObjectVectorRoles.js");
         const scene = window.__asteroidsNewEngine.scene;
         const objects = scene.objectVectorAssets.payload.objects.map((object) => ({
           ...object,
           tags: []
         }));
-        return validateAsteroidsRuntimeObjectBindings(objects, scene.objectVectorRuntimeBindings);
+        return validateAsteroidsRuntimeObjectRoles(objects);
       });
       expect(diagnostics.loaded).toBe(true);
       expect(diagnostics.assetCount).toBe(7);
       expect(diagnostics.objectCount).toBe(7);
-      expect(diagnostics.runtimeBindingsValid).toBe(true);
-      expect(runtimeBindingValidation.ok).toBe(true);
-      expect(runtimeBindingValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
-      expect(runtimeBindingValidation.warnings).toEqual([]);
-      expect(taglessRuntimeBindingValidation.ok).toBe(true);
-      expect(taglessRuntimeBindingValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
+      expect(diagnostics.runtimeObjectsValid).toBe(true);
+      expect(runtimeObjectValidation.ok).toBe(true);
+      expect(runtimeObjectValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
+      expect(runtimeObjectValidation.warnings).toEqual([]);
+      expect(taglessRuntimeObjectValidation.ok).toBe(true);
+      expect(taglessRuntimeObjectValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
       expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ship).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);
@@ -6583,11 +6583,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const service = new WorkspaceManagerV2ContextService();
         const invalidRuntimeWorkspaceManifest = structuredClone(manifest);
         invalidRuntimeWorkspaceManifest.game.gameData.workspace = {};
+        const invalidObjectVectorRuntimeManifest = structuredClone(manifest);
+        invalidObjectVectorRuntimeManifest.game.gameData.objectVectorRuntime = {
+          objectIds: {
+            ship: "object.asteroids.ship"
+          }
+        };
         return {
           gameManifestValidation: await service.validateGameManifest(manifest),
           hasGameData: Boolean(manifest.game?.gameData),
           hasRootTools: Boolean(manifest.tools),
           hasWorkspace: Boolean(manifest.game?.workspace),
+          objectVectorRuntimeValidation: await service.validateGameManifest(invalidObjectVectorRuntimeManifest),
           runtimeWorkspaceValidation: await service.validateGameManifest(invalidRuntimeWorkspaceManifest),
           rootDocumentKind: manifest.documentKind || "",
           schema: manifest.schema,
@@ -6600,6 +6607,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         hasGameData: true,
         hasRootTools: false,
         hasWorkspace: true,
+        objectVectorRuntimeValidation: { ok: false },
         rootDocumentKind: "",
         schema: "html-js-gaming.game-manifest",
         workspaceDocumentKind: "workspace-manifest",
@@ -7038,15 +7046,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(asteroidsManifest.documentKind).toBeUndefined();
       expect(asteroidsManifest.tools).toBeUndefined();
       expect(asteroidsManifest.game.gameData.launch.directPath).toBe("/games/Asteroids/index.html");
-      expect(asteroidsManifest.game.gameData.objectVectorRuntime.objectIds).toEqual({
-        asteroidLarge: "object.asteroids.large-asteroid",
-        asteroidMedium: "object.asteroids.medium-asteroid",
-        asteroidSmall: "object.asteroids.small-asteroid",
-        ship: "object.asteroids.ship",
-        ufoLarge: "object.asteroids.large-ufo",
-        ufoSmall: "object.asteroids.small-ufo"
-      });
-      expect(Object.values(asteroidsManifest.game.gameData.objectVectorRuntime.objectIds).every((id) => id.startsWith("object."))).toBe(true);
+      expect(asteroidsManifest.game.gameData.objectVectorRuntime).toBeUndefined();
       const manifestWorkspace = asteroidsManifest.game.workspace;
       expect(manifestWorkspace.documentKind).toBe("workspace-manifest");
       expect(Object.keys(manifestWorkspace.tools).sort()).toEqual(expect.arrayContaining(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2"]));

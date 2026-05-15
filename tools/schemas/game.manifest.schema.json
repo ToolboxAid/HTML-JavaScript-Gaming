@@ -64,6 +64,11 @@
           "not": {
             "required": ["tools"]
           }
+        },
+        {
+          "not": {
+            "required": ["objectVectorRuntime"]
+          }
         }
       ],
       "properties": {
@@ -84,9 +89,6 @@
               "type": "boolean"
             }
           }
-        },
-        "objectVectorRuntime": {
-          "$ref": "#/$defs/objectVectorRuntime"
         }
       }
     },
@@ -94,21 +96,6 @@
       "type": "string",
       "description": "Runtime Object Vector identity. Runtime game references must use object IDs, not asset IDs or vector editor IDs.",
       "pattern": "^object\\.[a-z0-9-]+\\.[a-z0-9][a-z0-9-]*$"
-    },
-    "objectVectorRuntime": {
-      "type": "object",
-      "description": "Runtime Object Vector references keyed by game semantic role. Values are object IDs, making object identity the runtime single source of truth.",
-      "required": ["objectIds"],
-      "additionalProperties": false,
-      "properties": {
-        "objectIds": {
-          "type": "object",
-          "description": "Map of game runtime roles to Object Vector object IDs.",
-          "additionalProperties": {
-            "$ref": "#/$defs/objectIdentityId"
-          }
-        }
-      }
     },
     "gameWorkspace": {
       "type": "object",
