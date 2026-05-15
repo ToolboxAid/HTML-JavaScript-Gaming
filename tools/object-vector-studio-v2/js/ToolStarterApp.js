@@ -1647,10 +1647,11 @@ export class ToolStarterApp {
   }
 
   formatTransformSummary(transform) {
+    const rotation = this.normalizeRotationDegrees(transform.rotation);
     const scaleText = transform.scaleX === transform.scaleY
       ? String(transform.scaleX)
       : `${transform.scaleX} x ${transform.scaleY}`;
-    return `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${scaleText}`;
+    return `x ${transform.x}, y ${transform.y}, rot ${rotation}, scale ${scaleText}`;
   }
 
   createDetailGrid(entries) {
@@ -1827,8 +1828,8 @@ export class ToolStarterApp {
     label.className = "object-vector-studio-v2__transform-control-label";
     label.textContent = "Rotate";
     const input = this.createTransformNumberInput("objectVectorStudioV2RotateInput", "Rotate", "15", {
-      max: "360",
-      min: "0"
+      max: "359",
+      min: "-359"
     });
     const button = this.createTransformActionButton({
       handler: () => this.rotateSelectedShape(),
@@ -3711,24 +3712,19 @@ export class ToolStarterApp {
       this.statusLog.write(`FAIL Invalid transform rejected for shape row ${this.selectedShapeIndex}: ${input.error}`);
       return;
     }
-    const rotation = this.snapAngle(this.normalizeRotationInputValue(input.value));
-    const inputElement = this.window.document.getElementById("objectVectorStudioV2RotateInput");
-    if (inputElement) {
-      inputElement.value = String(rotation);
-      this.transformInputValues.set(inputElement.id, inputElement.value);
-    }
+    const rotation = this.snapAngle(input.value);
     this.updateSelectedShapeTransform("rotate", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
-      shape.transform.rotation = Number((shape.transform.rotation + rotation).toFixed(3));
+      shape.transform.rotation = this.normalizeRotationDegrees(shape.transform.rotation + rotation);
     }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.`);
   }
 
-  normalizeRotationInputValue(value) {
+  normalizeRotationDegrees(value) {
     if (!Number.isFinite(value)) {
       return value;
     }
     const normalized = ((value % 360) + 360) % 360;
-    return value > 0 && normalized === 0 ? 360 : Number(normalized.toFixed(3));
+    return Number(normalized.toFixed(3));
   }
 
   formatScaleInputValue(value) {

@@ -1,6 +1,6 @@
-# PR_26133_041 Playwright V8 Coverage Report
+# PR_26133_042 Playwright V8 Coverage Report
 
-Task: PR_26133_041-object-transform-summary-and-runtime-validation-cleanup
+Task: PR_26133_042-object-transform-tags-and-palette-layout-tuning
 Date: 2026-05-15
 
 ## Result
@@ -26,19 +26,16 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Changed Runtime JS Coverage
 
 ```text
-(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4733/4733; executed functions 488/517
-(82%) games/Asteroids/game/asteroidsObjectVectorRoles.js - executed lines 176/176; executed functions 14/17
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4729/4729; executed functions 488/517
 ```
 
-## Changed Test Coverage Note
+## Changed Markup/Style/Test Coverage Note
 
 ```text
-(0%) tests/games/AsteroidsAssetReferenceAdoption.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/games/AsteroidsPlatformDemo.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/WorkspaceManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
 ```
 
-CSS changes in `tools/object-vector-studio-v2/styles/toolStarter.css` and `src/engine/ui/hubCommon.css` are verified through Playwright DOM/CSS assertions rather than V8 JavaScript coverage.
+Markup and CSS changes in `tools/object-vector-studio-v2/index.html` and `tools/object-vector-studio-v2/styles/toolStarter.css` are verified through Playwright DOM/CSS assertions rather than V8 JavaScript coverage.
 
 ## Guardrail
 
@@ -48,4 +45,4 @@ CSS changes in `tools/object-vector-studio-v2/styles/toolStarter.css` and `src/e
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 Scale input styling, singular transform summary formatting, Rotate normalization, Object Geometry Delete Point(s) labeling, Asteroids runtime binding validation without object tag checks, and hub CSS spacing assertions. Coverage remains advisory only.
+The Workspace V2 run exercised Object Vector Studio V2 tag button/chip sizing, Rotate range/input-preservation and wrapped summary behavior, singular scale summary formatting, and Palette Paint/Stroke/Width plus Fill Op/Stroke Op row layout. Coverage remains advisory only.

@@ -1288,11 +1288,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           noVisibleTagLabel: element.querySelector("label[for='objectVectorStudioV2ObjectTagInput']") === null,
           tagAddText: tagButton.textContent.trim(),
           tagAriaLabel: tagInput.getAttribute("aria-label"),
+          tagButtonWidth: Math.round(tagButtonRect.width),
           tagIconMatchesAddObject: Math.round(Number.parseFloat(getComputedStyle(tagButton, "::before").fontSize)) === Math.round(Number.parseFloat(getComputedStyle(addObjectButton, "::before").fontSize)),
           tagInline: Math.abs((tagInputRect.top + tagInputRect.height / 2) - (tagButtonRect.top + tagButtonRect.height / 2)) < 4 && tagInputRect.right <= tagButtonRect.left
         };
       });
-      expect(objectPanelLayout).toMatchObject({ actionButtonLabels: ["Add", "Rename", "Dup"], actionsAfterName: true, actionsBeforeTag: true, actionsDirectlyUnderName: true, actionsSingleLine: true, nameInline: true, noVisibleTagLabel: true, tagAddText: "Add", tagAriaLabel: "Object tag", tagIconMatchesAddObject: true, tagInline: true });
+      expect(objectPanelLayout).toMatchObject({ actionButtonLabels: ["Add", "Rename", "Dup"], actionsAfterName: true, actionsBeforeTag: true, actionsDirectlyUnderName: true, actionsSingleLine: true, nameInline: true, noVisibleTagLabel: true, tagAddText: "Add", tagAriaLabel: "Object tag", tagButtonWidth: 77, tagIconMatchesAddObject: true, tagInline: true });
       expect(objectPanelLayout.actionButtonMaxHeight).toBeLessThanOrEqual(34);
       await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Blocked Object");
       await page.locator("#objectVectorStudioV2AddObjectButton").click();
@@ -1694,7 +1695,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           id: `object.asteroids.object-${index + 1}`,
           name: index === 0 ? "Asteroids Ship" : `Object ${index + 1}`,
           shapes: [],
-          tags: []
+          tags: index === 0 ? ["bubba", "player"] : []
         })),
         toolId: "object-vector-studio-v2",
         version: 1
@@ -1720,18 +1721,37 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2StrokeWidth")).toHaveValue("2");
       await expect(page.locator("label[for='objectVectorStudioV2StrokeWidth'] span")).not.toHaveText("Stroke Width");
       await expect(page.locator("label[for='objectVectorStudioV2StrokeWidth'] span")).toHaveText("Width");
-      const strokeWidthLayout = await page.locator("#objectVectorStudioV2PaletteContent").evaluate((content) => {
+      const paletteControlLayout = await page.locator("#objectVectorStudioV2PaletteContent").evaluate((content) => {
+        const primaryRow = content.querySelector(".object-vector-studio-v2__palette-primary-row");
+        const opacityRow = content.querySelector(".object-vector-studio-v2__palette-opacity-row");
         const paintButton = content.querySelector("#objectVectorStudioV2PaintModeButton").getBoundingClientRect();
         const strokeButton = content.querySelector("#objectVectorStudioV2StrokeModeButton").getBoundingClientRect();
         const widthLabel = content.querySelector("label[for='objectVectorStudioV2StrokeWidth']").getBoundingClientRect();
         const widthInput = content.querySelector("#objectVectorStudioV2StrokeWidth").getBoundingClientRect();
+        const fillOpacityLabel = content.querySelector("label[for='objectVectorStudioV2FillOpacity']").getBoundingClientRect();
+        const strokeOpacityLabel = content.querySelector("label[for='objectVectorStudioV2StrokeOpacity']").getBoundingClientRect();
+        const opacityInputs = Array.from(opacityRow.querySelectorAll("input")).map((input) => input.getBoundingClientRect());
         return {
-          inline: [strokeButton, widthLabel].every((rect) => Math.abs((paintButton.top + paintButton.height / 2) - (rect.top + rect.height / 2)) < 4),
+          opacityBelowPrimary: fillOpacityLabel.top >= Math.max(paintButton.bottom, strokeButton.bottom, widthLabel.bottom),
+          opacityInline: Math.abs((fillOpacityLabel.top + fillOpacityLabel.height / 2) - (strokeOpacityLabel.top + strokeOpacityLabel.height / 2)) < 4,
+          opacityInputCompact: opacityInputs.every((rect) => Math.round(rect.width) <= 42),
+          opacityLabels: Array.from(opacityRow.querySelectorAll("label > span")).map((label) => label.textContent.trim()),
+          primaryInline: [strokeButton, widthLabel].every((rect) => Math.abs((paintButton.top + paintButton.height / 2) - (rect.top + rect.height / 2)) < 4),
+          primaryOrder: Array.from(primaryRow.children).map((element) => element.textContent.trim()),
           widthInputCompact: Math.round(widthInput.width) <= 46,
           widthIsRightOfStroke: widthLabel.left >= strokeButton.right
         };
       });
-      expect(strokeWidthLayout).toEqual({ inline: true, widthInputCompact: true, widthIsRightOfStroke: true });
+      expect(paletteControlLayout).toEqual({
+        opacityBelowPrimary: true,
+        opacityInline: true,
+        opacityInputCompact: true,
+        opacityLabels: ["Fill Op", "Stroke Op"],
+        primaryInline: true,
+        primaryOrder: ["Paint", "Stroke", "Width"],
+        widthInputCompact: true,
+        widthIsRightOfStroke: true
+      });
       await expect(page.locator(".object-vector-studio-v2__palette-sort")).not.toContainText("Sort");
       await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue", "Sat", "Bri", "Name"]);
       const swatchState = await page.locator(".object-vector-studio-v2__palette-swatch").evaluateAll((swatches) => swatches.map((swatch) => {
@@ -1770,6 +1790,29 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(18 obj, 0 shapes)");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("No shape selected");
       await expect(page.locator("#objectVectorStudioV2ObjectPreviewFooter")).toContainText("Object ID: object.asteroids.object-1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTagList [data-object-tag]")).toHaveText(["bubba", "player"]);
+      const tagChipLayout = await page.locator("#objectVectorStudioV2ObjectContent").evaluate((element) => {
+        const tagInput = element.querySelector("#objectVectorStudioV2ObjectTagInput").getBoundingClientRect();
+        const addButton = element.querySelector("#objectVectorStudioV2AddTagButton").getBoundingClientRect();
+        const chips = Array.from(element.querySelectorAll("#objectVectorStudioV2ObjectTagList [data-object-tag]"));
+        const chipRects = chips.map((chip) => chip.getBoundingClientRect());
+        return {
+          addButtonWidth: Math.round(addButton.width),
+          chipTexts: chips.map((chip) => chip.textContent.trim()),
+          chipWidths: chipRects.map((rect) => Math.round(rect.width)),
+          chipsBelowAddRow: chipRects.every((rect) => rect.top >= addButton.bottom),
+          chipsSameRow: chipRects.every((rect) => Math.abs(rect.top - chipRects[0].top) <= 2),
+          inputAndAddInline: Math.abs((tagInput.top + tagInput.height / 2) - (addButton.top + addButton.height / 2)) < 4 && tagInput.right <= addButton.left
+        };
+      });
+      expect(tagChipLayout).toEqual({
+        addButtonWidth: 77,
+        chipTexts: ["bubba", "player"],
+        chipWidths: [77, 77],
+        chipsBelowAddRow: true,
+        chipsSameRow: true,
+        inputAndAddInline: true
+      });
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveAttribute("r", "9");
@@ -1944,6 +1987,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           rowType: "rotate"
         }
       ]);
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveAttribute("min", "-359");
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveAttribute("max", "359");
       const transformBeforeInvalid = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform);
       await page.locator("#objectVectorStudioV2MoveXInput").fill("");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
@@ -2284,16 +2329,28 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await page.locator("#objectVectorStudioV2RotateInput").fill("22");
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("22");
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 15');
-      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("15");
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("22");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 15 degrees\./);
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
-      await page.locator("#objectVectorStudioV2RotateInput").fill("725");
+      await page.locator("#objectVectorStudioV2RotateInput").fill("-30");
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 20');
-      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("5");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 5 degrees\./);
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 345');
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 345, scale 1");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by -30 degrees\./);
+      const wrappedLargeRotationSummary = await page.evaluate(() => window.__objectVectorStudioV2App.formatTransformSummary({
+        origin: { x: 0, y: 0 },
+        rotation: 2233,
+        scaleX: 0.77,
+        scaleY: 0.77,
+        x: 0,
+        y: 0
+      }));
+      expect(wrappedLargeRotationSummary).toBe("x 0, y 0, rot 73, scale 0.77");
       await page.locator("#objectVectorStudioV2OriginXInput").fill("2");
       await page.locator("#objectVectorStudioV2OriginYInput").fill("-3");
       await page.locator("#objectVectorStudioV2ApplyOriginButton").click();
@@ -2309,7 +2366,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).not.toHaveAttribute("aria-invalid", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.2 for shape row 0\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"scaleX": 1.2');
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 20, scale 1.2");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 345, scale 1.2");
       const selectionBeforeScaleStep = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
         height: Number(box.getAttribute("height")),
         width: Number(box.getAttribute("width"))
@@ -2361,7 +2418,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
       });
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 20, scale 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 345, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Resize Geometry applied scale 1\.2 to shape row 0; transform scale reset to 1\./);
 
       await page.locator("#objectVectorStudioV2BringForwardButton").click();

@@ -256,26 +256,30 @@
           </button>
           <div id="objectVectorStudioV2PaletteContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
             <div class="object-vector-studio-v2__palette-controls" aria-label="Palette paint controls">
-              <button id="objectVectorStudioV2PaintModeButton" type="button" aria-pressed="true">
-                <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="paint" aria-hidden="true"></span>
-                <span class="object-vector-studio-v2__palette-mode-label">Paint</span>
-              </button>
-              <button id="objectVectorStudioV2StrokeModeButton" type="button" aria-pressed="false">
-                <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="stroke" aria-hidden="true"></span>
-                <span class="object-vector-studio-v2__palette-mode-label">Stroke</span>
-              </button>
-              <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeWidth">
-                <span>Width</span>
-                <input id="objectVectorStudioV2StrokeWidth" type="number" min="0.1" step="0.1" value="2">
-              </label>
-              <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2FillOpacity">
-                <span>Fill Op</span>
-                <input id="objectVectorStudioV2FillOpacity" type="number" min="0" max="1" step="0.05" value="1">
-              </label>
-              <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeOpacity">
-                <span>Stroke Op</span>
-                <input id="objectVectorStudioV2StrokeOpacity" type="number" min="0" max="1" step="0.05" value="1">
-              </label>
+              <div class="object-vector-studio-v2__palette-primary-row">
+                <button id="objectVectorStudioV2PaintModeButton" type="button" aria-pressed="true">
+                  <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="paint" aria-hidden="true"></span>
+                  <span class="object-vector-studio-v2__palette-mode-label">Paint</span>
+                </button>
+                <button id="objectVectorStudioV2StrokeModeButton" type="button" aria-pressed="false">
+                  <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="stroke" aria-hidden="true"></span>
+                  <span class="object-vector-studio-v2__palette-mode-label">Stroke</span>
+                </button>
+                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeWidth">
+                  <span>Width</span>
+                  <input id="objectVectorStudioV2StrokeWidth" type="number" min="0.1" step="0.1" value="2">
+                </label>
+              </div>
+              <div class="object-vector-studio-v2__palette-opacity-row">
+                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2FillOpacity">
+                  <span>Fill Op</span>
+                  <input id="objectVectorStudioV2FillOpacity" type="number" min="0" max="1" step="0.05" value="1">
+                </label>
+                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeOpacity">
+                  <span>Stroke Op</span>
+                  <input id="objectVectorStudioV2StrokeOpacity" type="number" min="0" max="1" step="0.05" value="1">
+                </label>
+              </div>
             </div>
             <hr class="object-vector-studio-v2__separator">
             <div id="objectVectorStudioV2PaletteSummary" class="object-vector-studio-v2__palette-swatch-list" aria-label="Read-only palette swatches"></div>

@@ -1,6 +1,6 @@
-# PR_26133_041 Workspace V2 Playwright Results
+# PR_26133_042 Workspace V2 Playwright Results
 
-Task: PR_26133_041-object-transform-summary-and-runtime-validation-cleanup
+Task: PR_26133_042-object-transform-tags-and-palette-layout-tuning
 Date: 2026-05-15
 
 ## Result
@@ -14,14 +14,13 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Verified Object Transform Scale input renders with spinner-removal CSS (`appearance: textfield` and WebKit spin-button removal rule).
-- Verified transform summary renders singular same-axis scale text such as `x 0, y 0, rot 0, scale 1`.
-- Verified Rotate input constrains to `min=0` and `max=360`, normalizes out-of-range input before applying, and writes the normalized value back to the textbox.
-- Verified Object Geometry polygon action label renders `Delete Point(s)`.
-- Verified Asteroids runtime binding validation succeeds when object `tags` are removed from the runtime payload, keeping tags as Object Vector Studio V2 editor metadata rather than runtime validation data.
-- Verified hub page tool section margin resolves to `12px`.
-- Targeted Node validation also passed for `AsteroidsAssetReferenceAdoption` and `AsteroidsPlatformDemo`.
+- Verified Object tag Add button width is `77px`.
+- Verified selected object tag chips for `bubba` and `player` render as `77px` buttons below the Add tag input row.
+- Verified Rotate input exposes `min=-359` and `max=359`.
+- Verified Rotate keeps the user-entered input value while applying the normalized/wrapped transform rotation.
+- Verified transform summary wraps large/current rotation values into `0..359` and keeps singular same-axis scale text, for example `x 0, y 0, rot 73, scale 0.77`.
+- Verified Palette controls render Paint, Stroke, and Width on the first row, with compact Fill Op and Stroke Op controls on the row below.
 
 ## Manual Verification Equivalent
 
-Targeted Object Vector Studio V2 browser automation covered the requested Scale input styling, transform summary formatting, Rotate normalization, Delete Point(s) label, Asteroids runtime tag-validation cleanup, hub spacing contract, and no-console-error checks.
+Targeted Object Vector Studio V2 browser automation covered the requested tag widths/layout, Rotate range and input preservation, wrapped transform summary rotation, compact Palette row split, and no-console-error checks.

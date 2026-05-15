@@ -1200,8 +1200,9 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__palette-controls {
-  flex-wrap: nowrap;
+  display: grid;
   gap: 5px;
+  justify-items: center;
 }
 
 .object-vector-studio-v2__palette-controls button {
@@ -1210,11 +1211,29 @@ textarea:hover {
   padding: 3px 5px !important;
 }
 
+.object-vector-studio-v2__palette-primary-row,
+.object-vector-studio-v2__palette-opacity-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 5px;
+  width: 100%;
+}
+
 .object-vector-studio-v2__palette-controls .object-vector-studio-v2__inline-field {
   flex: 0 0 auto;
   gap: 3px;
   font-size: 0.78rem;
   white-space: nowrap;
+}
+
+.object-vector-studio-v2__palette-opacity-row .object-vector-studio-v2__inline-field {
+  font-size: 0.72rem;
+}
+
+.object-vector-studio-v2__palette-opacity-row .object-vector-studio-v2__inline-field input {
+  width: 42px;
 }
 
 .object-vector-studio-v2__palette-controls button[data-ovs-icon]::before {
@@ -1721,6 +1740,7 @@ textarea:hover {
 }
 
 #objectVectorStudioV2AddTagButton {
+  width: 77px;
   min-height: 28px;
   font-size: 0.78rem;
   line-height: 1;
@@ -1729,7 +1749,17 @@ textarea:hover {
 
 .object-vector-studio-v2__tag-list {
   grid-column: 1 / -1;
-  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  grid-template-columns: repeat(auto-fill, 77px);
+  justify-content: start;
+}
+
+.object-vector-studio-v2__tag-list [data-object-tag] {
+  width: 77px;
+  max-width: 77px;
+  min-width: 77px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .object-vector-studio-v2__detail-label {
