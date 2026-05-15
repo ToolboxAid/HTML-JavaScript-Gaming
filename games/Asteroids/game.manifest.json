@@ -218,96 +218,18 @@
               "name": "Asteroids Ship",
               "shapes": [
                 {
-                  "tool": "polygon",
-                  "order": 0,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "points": [
-                      {
-                        "x": 0,
-                        "y": -18
-                      },
-                      {
-                        "x": 14,
-                        "y": 16
-                      },
-                      {
-                        "x": 0,
-                        "y": 8
-                      },
-                      {
-                        "x": -14,
-                        "y": 16
-                      }
-                    ]
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#FFFFFF",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 0,
-                      "y": 0
-                    }
-                  }
-                },
-                {
                   "tool": "line",
                   "order": 1,
                   "visible": true,
                   "locked": false,
                   "geometry": {
                     "point1": {
-                      "x": -6,
-                      "y": 14
-                    },
-                    "point2": {
-                      "x": 0,
-                      "y": 6
-                    }
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#FFFFFF",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": -3,
+                      "x": 4,
                       "y": 10
-                    }
-                  }
-                },
-                {
-                  "tool": "line",
-                  "order": 2,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "point1": {
-                      "x": 6,
-                      "y": 14
                     },
                     "point2": {
                       "x": 0,
-                      "y": 6
+                      "y": 16
                     }
                   },
                   "style": {
@@ -327,6 +249,86 @@
                       "x": 3,
                       "y": 10
                     }
+                  },
+                  "groupId": "group-1"
+                },
+                {
+                  "tool": "line",
+                  "order": 2,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "point1": {
+                      "x": -4,
+                      "y": 10
+                    },
+                    "point2": {
+                      "x": 0,
+                      "y": 16
+                    }
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#FFFFFF",
+                    "strokeWidth": 2,
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "origin": {
+                      "x": -3,
+                      "y": 10
+                    }
+                  },
+                  "groupId": "group-1"
+                },
+                {
+                  "tool": "polygon",
+                  "order": 3,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "points": [
+                      {
+                        "x": -0.694,
+                        "y": -17.218
+                      },
+                      {
+                        "x": 14,
+                        "y": 16
+                      },
+                      {
+                        "x": 0,
+                        "y": 7.5
+                      },
+                      {
+                        "x": -14,
+                        "y": 16
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": "#05070D",
+                    "stroke": "#FFFFFF",
+                    "strokeWidth": 2,
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "origin": {
+                      "x": 0,
+                      "y": 0
+                    }
                   }
                 }
               ],
@@ -341,12 +343,49 @@
                       "durationFrames": 1,
                       "shapeOverrides": [
                         {
-                          "visible": false,
-                          "shapeIndex": 1
+                          "visible": true,
+                          "shapeIndex": 1,
+                          "transform": {
+                            "x": 0.002,
+                            "y": 0,
+                            "rotation": 0,
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "origin": {
+                              "x": -3,
+                              "y": 10
+                            }
+                          }
                         },
                         {
-                          "visible": false,
-                          "shapeIndex": 2
+                          "visible": true,
+                          "shapeIndex": 0,
+                          "transform": {
+                            "x": 0,
+                            "y": 0,
+                            "rotation": 0,
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "origin": {
+                              "x": 0,
+                              "y": 0
+                            }
+                          }
+                        },
+                        {
+                          "shapeIndex": 2,
+                          "transform": {
+                            "x": 0,
+                            "y": 0,
+                            "rotation": 0,
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "origin": {
+                              "x": 0,
+                              "y": 0
+                            }
+                          },
+                          "visible": true
                         }
                       ]
                     }
@@ -367,11 +406,69 @@
                         },
                         {
                           "visible": true,
-                          "shapeIndex": 2
+                          "shapeIndex": 0
                         }
                       ]
                     }
                   ]
+                },
+                {
+                  "frames": [
+                    {
+                      "durationFrames": 1,
+                      "id": "frame-1",
+                      "order": 1,
+                      "shapeOverrides": [
+                        {
+                          "shapeIndex": 2,
+                          "transform": {
+                            "x": 0,
+                            "y": 0,
+                            "rotation": 0,
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "origin": {
+                              "x": 0,
+                              "y": 0
+                            }
+                          },
+                          "visible": true
+                        },
+                        {
+                          "shapeIndex": 1,
+                          "transform": {
+                            "x": 0,
+                            "y": 0,
+                            "rotation": 0,
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "origin": {
+                              "x": -3,
+                              "y": 10
+                            }
+                          },
+                          "visible": true
+                        },
+                        {
+                          "shapeIndex": 0,
+                          "transform": {
+                            "x": 0,
+                            "y": 0,
+                            "rotation": 0,
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "origin": {
+                              "x": 3,
+                              "y": 10
+                            }
+                          },
+                          "visible": true
+                        }
+                      ]
+                    }
+                  ],
+                  "id": "destroyed",
+                  "name": "Destroyed"
                 }
               ],
               "tags": [

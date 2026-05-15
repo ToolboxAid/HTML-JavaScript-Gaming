@@ -4415,7 +4415,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 order: 3,
                 style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
                 tool: "rectangle",
-                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 30, y: 0 },
                 visible: true
               },
               {
@@ -4507,7 +4507,44 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { x: transform.x, y: transform.y };
         });
       });
-      expect(transformsAfterGroupMove).toEqual([{ x: 5, y: 5 }, { x: 0, y: 0 }, { x: 5, y: 5 }, { x: 0, y: 0 }]);
+      expect(transformsAfterGroupMove).toEqual([{ x: 5, y: 5 }, { x: 0, y: 0 }, { x: 35, y: 5 }, { x: 0, y: 0 }]);
+
+      const selectionBoundsBeforeGroupRotate = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
+        height: Number(box.getAttribute("height")),
+        width: Number(box.getAttribute("width")),
+        x: Number(box.getAttribute("x")),
+        y: Number(box.getAttribute("y"))
+      }));
+      await page.locator("#objectVectorStudioV2RotateInput").fill("90");
+      await page.locator("#objectVectorStudioV2RotateShapeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated group group-2 \(2 shapes\) by 90 degrees\./);
+      const transformsAfterGroupRotate = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { rotation: transform.rotation, x: transform.x, y: transform.y };
+        });
+      });
+      expect(transformsAfterGroupRotate).toEqual([
+        { rotation: 90, x: 5, y: 5 },
+        { rotation: 0, x: 0, y: 0 },
+        { rotation: 90, x: 5, y: 35 },
+        { rotation: 0, x: 0, y: 0 }
+      ]);
+      const groupRotateOriginDistance = Math.hypot(
+        transformsAfterGroupRotate[2].x - transformsAfterGroupRotate[0].x,
+        transformsAfterGroupRotate[2].y - transformsAfterGroupRotate[0].y
+      );
+      expect(groupRotateOriginDistance).toBeCloseTo(30, 3);
+      const selectionBoundsAfterGroupRotate = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
+        height: Number(box.getAttribute("height")),
+        width: Number(box.getAttribute("width")),
+        x: Number(box.getAttribute("x")),
+        y: Number(box.getAttribute("y"))
+      }));
+      expect(selectionBoundsAfterGroupRotate).not.toEqual(selectionBoundsBeforeGroupRotate);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-resize-handle]")).toHaveCount(4);
 
       await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(1, "single move probe"));
       await page.locator("#objectVectorStudioV2MoveXInput").fill("-2");
@@ -4522,7 +4559,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { x: transform.x, y: transform.y };
         });
       });
-      expect(transformsAfterSingleMove).toEqual([{ x: 5, y: 5 }, { x: -2, y: -3 }, { x: 5, y: 5 }, { x: 0, y: 0 }]);
+      expect(transformsAfterSingleMove).toEqual([{ x: 5, y: 5 }, { x: -2, y: -3 }, { x: 5, y: 35 }, { x: 0, y: 0 }]);
+
+      await page.locator("#objectVectorStudioV2RotateInput").fill("45");
+      await page.locator("#objectVectorStudioV2RotateShapeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 1 by 45 degrees\./);
+      const transformsAfterSingleRotate = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { rotation: transform.rotation, x: transform.x, y: transform.y };
+        });
+      });
+      expect(transformsAfterSingleRotate).toEqual([
+        { rotation: 90, x: 5, y: 5 },
+        { rotation: 45, x: -2, y: -3 },
+        { rotation: 90, x: 5, y: 35 },
+        { rotation: 0, x: 0, y: 0 }
+      ]);
 
       await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;

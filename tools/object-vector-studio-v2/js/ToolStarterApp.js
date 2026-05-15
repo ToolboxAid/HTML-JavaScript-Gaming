@@ -4562,10 +4562,111 @@ export class ToolStarterApp {
       return;
     }
     const rotation = this.snapAngle(input.value);
+    const object = this.selectedObject();
+    if (this.shapeBelongsToValidGroup(object, this.selectedShapeIndex)) {
+      const targetIndexes = this.shapeSelectionGroupIndexes(sortedShapes(object), this.selectedShapeIndex);
+      const groupId = String(sortedShapes(object)[this.selectedShapeIndex]?.groupId || "").trim();
+      this.rotateSelectedShapeGroup(targetIndexes, rotation, groupId);
+      return;
+    }
     this.updateSelectedShapeTransform("rotate", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
       shape.transform.rotation = this.normalizeRotationDegrees(shape.transform.rotation + rotation);
     }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.`);
+  }
+
+  rotateSelectedShapeGroup(shapeIndexes, rotation, groupId) {
+    const object = this.selectedObject();
+    if (!object) {
+      this.statusLog.write("WARN Transform rotate skipped: no object is selected.");
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Transform rotate")) {
+      return;
+    }
+
+    const objectShapes = sortedShapes(object);
+    const targetIndexes = Array.from(new Set(shapeIndexes
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
+      .sort((left, right) => left - right);
+    if (targetIndexes.length < 2) {
+      this.updateSelectedShapeTransform("rotate", (shape) => {
+        shape.transform = this.ensureShapeTransform(shape);
+        shape.transform.rotation = this.normalizeRotationDegrees(shape.transform.rotation + rotation);
+      }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.`);
+      return;
+    }
+
+    const lockedIndex = targetIndexes.find((shapeIndex) => objectShapes[shapeIndex]?.locked);
+    if (Number.isInteger(lockedIndex)) {
+      this.statusLog.write(`WARN Transform rotate skipped: shape row ${lockedIndex} is locked.`);
+      return;
+    }
+
+    const frame = this.activeFrame();
+    const pivotShape = this.effectiveShapeForFrame(objectShapes[this.selectedShapeIndex], frame, this.selectedShapeIndex);
+    const pivotTransform = this.ensureShapeTransform(pivotShape);
+    const pivot = this.transformedPoint(pivotTransform.origin, pivotTransform);
+    const nextTransforms = new Map(targetIndexes.map((shapeIndex) => {
+      const effectiveShape = this.effectiveShapeForFrame(objectShapes[shapeIndex], frame, shapeIndex);
+      const transform = this.ensureShapeTransform(effectiveShape);
+      const originPoint = this.transformedPoint(transform.origin, transform);
+      const rotatedOriginPoint = this.rotatePointAround(originPoint, pivot, rotation);
+      return [shapeIndex, {
+        ...transform,
+        rotation: this.normalizeRotationDegrees(transform.rotation + rotation),
+        x: Number((rotatedOriginPoint.x - transform.origin.x).toFixed(3)),
+        y: Number((rotatedOriginPoint.y - transform.origin.y).toFixed(3))
+      }];
+    }));
+
+    this.selectedShapeIndexes = new Set(targetIndexes);
+    const directShapeIndexes = this.directSelectedShapeIndexes.size
+      ? new Set(Array.from(this.directSelectedShapeIndexes).filter((shapeIndex) => targetIndexes.includes(shapeIndex)))
+      : new Set([this.selectedShapeIndex]);
+    if (!directShapeIndexes.size && this.selectedShapeIndex >= 0) {
+      directShapeIndexes.add(this.selectedShapeIndex);
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    try {
+      targetIndexes.forEach((shapeIndex) => {
+        const override = this.frameOverrideInPayload(nextPayload, shapeIndex, { create: true });
+        const shape = override
+          ? this.effectiveShapeForFrame(this.findShapeInPayload(nextPayload, shapeIndex), frame, shapeIndex)
+          : this.findShapeInPayload(nextPayload, shapeIndex);
+        if (!shape) {
+          throw new Error(`shape row ${shapeIndex} is not available.`);
+        }
+        shape.transform = this.ensureShapeTransform({ transform: nextTransforms.get(shapeIndex) });
+        const transformErrors = this.validateShapeForTransform(shape);
+        if (transformErrors.length) {
+          throw new Error(`shape row ${shapeIndex}: ${transformErrors.join(" ")}`);
+        }
+        if (override) {
+          override.transform = this.ensureShapeTransform(shape);
+        }
+      });
+    } catch (error) {
+      this.statusLog.write(`FAIL Invalid transform rejected for group ${groupId || "selected group"}: ${error.message}`);
+      return;
+    }
+
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Rotated group ${groupId || "selected group"} (${targetIndexes.length} shapes) by ${rotation} degrees.`, "Transform rotate failed schema validation", {
+      directSelectedShapeIndexes: directShapeIndexes,
+      selectedShapeIndexes: new Set(targetIndexes)
+    });
+  }
+
+  rotatePointAround(point, pivot, rotation) {
+    const radians = (rotation * Math.PI) / 180;
+    const relativeX = point.x - pivot.x;
+    const relativeY = point.y - pivot.y;
+    return {
+      x: pivot.x + relativeX * Math.cos(radians) - relativeY * Math.sin(radians),
+      y: pivot.y + relativeX * Math.sin(radians) + relativeY * Math.cos(radians)
+    };
   }
 
   normalizeRotationDegrees(value) {
