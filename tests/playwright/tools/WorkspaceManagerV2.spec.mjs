@@ -2515,12 +2515,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='0']").click();
       await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toBeDisabled();
       await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toHaveAttribute("data-disabled-reason", /Shift-click shapes/);
+      await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toBeDisabled();
+      await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toHaveAttribute("data-disabled-reason", /belongs to a group/);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='1']").click({ modifiers: ["Shift"] });
       await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toBeEnabled();
       await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toHaveAttribute("title", /Shift-click shapes to select more than one/);
       await selectedShapeActions.locator("[data-shape-list-action='group']").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"groupId": "group-1"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-1\./);
+      await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toBeEnabled();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-group-id='group-1']")).toHaveCount(2);
       const groupIconColors = await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-group-id='group-1']").evaluateAll((icons) => icons.map((icon) => getComputedStyle(icon).color));
       expect(new Set(groupIconColors).size).toBe(1);
@@ -2532,6 +2535,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await selectedShapeActions.locator("[data-shape-list-action='ungroup']").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"groupId": "group-1"');
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-group-id='group-1']")).toHaveCount(0);
+      await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toBeDisabled();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Ungrouped 2 selected shapes from group-1\./);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='0']").click();
 
@@ -4049,8 +4053,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-state-select]")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-state-help]")).toHaveCount(0);
       const selectedObjectStatePanel = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.animation.ship-template'] .object-vector-studio-v2__object-state-panel");
-      await expect(selectedObjectStatePanel.locator(".object-vector-studio-v2__object-state-controls button")).toHaveText(["Add", "Delete", "?"]);
+      await expect(selectedObjectStatePanel.locator(".object-vector-studio-v2__object-state-controls button")).toHaveText(["Add", "?"]);
+      const stateControlLayout = await selectedObjectStatePanel.locator(".object-vector-studio-v2__object-state-controls").evaluate((controls) => Array.from(controls.children).map((element) => {
+        if (element.tagName.toLowerCase() === "select") {
+          return `select:${element.dataset.objectStateSelect}`;
+        }
+        return `${element.dataset.objectStateAction || element.dataset.objectStateHelp}:${element.textContent.trim()}`;
+      }));
+      expect(stateControlLayout).toEqual(["select:object.animation.ship-template", "add:Add", "all:?"]);
       await expect(selectedObjectStatePanel.locator("[data-object-state-select='object.animation.ship-template']")).toHaveValue("idle");
+      await expect(selectedObjectStatePanel.locator("[data-object-state-action='add']")).toBeDisabled();
       await expect(selectedObjectStatePanel.locator("[data-object-state-help='all']")).toHaveAttribute("title", /idle\nDefault stationary state\.\nNo movement or action animation active\.\n\nmove\nMovement\/action state\.\nUsed for thrusting, walking, flying, or active movement visuals\./);
       await expect(selectedObjectStatePanel.locator("[data-object-state-tile]")).toHaveText(["idle", "move"]);
       await expect(selectedObjectStatePanel.locator("[data-object-state-tile='idle']")).toHaveAttribute("aria-pressed", "true");
@@ -4119,6 +4131,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await selectedObjectStatePanel.locator("[data-object-state-select='object.animation.ship-template']").selectOption("move");
       await expect(page.locator('[data-object-id="object.animation.ship-template"]')).toHaveAttribute("aria-pressed", "true");
       await expect(selectedObjectStatePanel.locator("[data-object-state-select='object.animation.ship-template']")).toHaveValue("move");
+      await expect(selectedObjectStatePanel.locator("[data-object-state-action='add']")).toBeDisabled();
       await expect(selectedObjectStatePanel.locator("[data-object-state-help='all']")).toHaveAttribute("title", /active\nObject is enabled and participating in gameplay\.\nTypically the default active runtime state\./);
       await expect(selectedObjectStatePanel.locator("[data-object-state-tile='move']")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='move']")).toHaveCount(1);
@@ -4285,9 +4298,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const statePanel = objectTile.locator(".object-vector-studio-v2__object-state-panel");
       const addStateButton = statePanel.locator("[data-object-state-action='add']");
       const stateSelect = statePanel.locator("[data-object-state-select='object.test.group-state']");
-      await expect(addStateButton).toBeEnabled();
-      await addStateButton.click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Create state skipped: Idle already exists for Group State\./);
+      const stateControlLayout = await statePanel.locator(".object-vector-studio-v2__object-state-controls").evaluate((controls) => Array.from(controls.children).map((element) => {
+        if (element.tagName.toLowerCase() === "select") {
+          return "select";
+        }
+        return element.dataset.objectStateAction || element.dataset.objectStateHelp;
+      }));
+      expect(stateControlLayout).toEqual(["select", "add", "all"]);
+      await expect(addStateButton).toBeDisabled();
       await expect(statePanel.locator("[data-object-state-tile]")).toHaveText(["idle"]);
 
       await stateSelect.selectOption("move");
@@ -4298,8 +4316,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(statePanel.locator("[data-object-state-tile='move']")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='move']")).toHaveCount(1);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Created state Move with frame frame-1\./);
-      await addStateButton.click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Create state skipped: Move already exists for Group State\./);
+      await expect(addStateButton).toBeDisabled();
       await expect(statePanel.locator("[data-object-state-tile='move']")).toHaveCount(1);
 
       await expect(objectTile.locator("[data-shape-group-id='group-1']")).toHaveCount(2);
@@ -4310,9 +4327,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         app.renderPayload();
       });
       const selectedShapeActions = objectTile.locator(".object-vector-studio-v2__shape-list-actions");
+      await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toBeEnabled();
       await selectedShapeActions.locator("[data-shape-list-action='ungroup']").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"groupId": "group-1"');
       await expect(objectTile.locator("[data-shape-group-id='group-1']")).toHaveCount(0);
+      await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toBeDisabled();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Ungrouped 1 selected shapes from group-1\./);
 
       expect(pageErrors).toEqual([]);

@@ -1312,8 +1312,8 @@ export class ToolStarterApp {
     addButton.type = "button";
     addButton.dataset.objectStateAction = "add";
     addButton.textContent = "Add";
-    addButton.title = stateExists ? "Selected state already exists; Add will report a duplicate warning." : `Add ${selectedStateId} state`;
-    addButton.disabled = isLocked || !OBJECT_STATE_IDS.includes(selectedStateId);
+    addButton.title = stateExists ? "Selected state already exists." : `Add ${selectedStateId} state`;
+    addButton.disabled = isLocked || stateExists || !OBJECT_STATE_IDS.includes(selectedStateId);
     addButton.addEventListener("click", (event) => {
       event.stopPropagation();
       this.createSelectedState(selectedStateId);
@@ -1341,17 +1341,6 @@ export class ToolStarterApp {
       this.statusLog.write(`INFO State ${select.value} is ready to add for ${object.name}.`);
     });
 
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.dataset.objectStateAction = "delete";
-    deleteButton.textContent = "Delete";
-    deleteButton.title = stateExists ? `Delete ${selectedStateId} state` : "Selected state has not been added.";
-    deleteButton.disabled = isLocked || !stateExists || this.objectStates(object).length <= 1;
-    deleteButton.addEventListener("click", (event) => {
-      event.stopPropagation();
-      this.deleteSelectedState(selectedStateId);
-    });
-
     const helpButton = document.createElement("button");
     helpButton.className = "object-vector-studio-v2__object-state-help";
     helpButton.type = "button";
@@ -1361,7 +1350,7 @@ export class ToolStarterApp {
     helpButton.dataset.objectStateHelp = "all";
     helpButton.setAttribute("aria-label", `State help for all states: ${allHelpText.replace(/\s+/gu, " ")}`);
 
-    controls.append(addButton, select, deleteButton, helpButton);
+    controls.append(select, addButton, helpButton);
     panel.append(controls, this.createObjectStateTileList(object));
     return panel;
   }
@@ -1520,7 +1509,13 @@ export class ToolStarterApp {
     actions.append(groupButton);
 
     const ungroupButton = this.createShapeActionButton("Ungroup", "ungroup", "ungroup", "Ungroup selected shapes.", () => this.ungroupSelectedShapes());
-    this.setControlDisabled(ungroupButton, !shape || isLocked, isLocked ? `Disabled because ${object.name} is locked for this runtime session.` : noShapeReason, "Ungroup selected shapes.");
+    const hasValidGroup = this.shapeBelongsToValidGroup(object, this.selectedShapeIndex);
+    this.setControlDisabled(
+      ungroupButton,
+      !shape || isLocked || !hasValidGroup,
+      isLocked ? `Disabled because ${object.name} is locked for this runtime session.` : "Disabled until the selected shape belongs to a group with at least two shapes.",
+      "Ungroup selected shapes."
+    );
     actions.append(ungroupButton);
     return actions;
   }
@@ -3033,6 +3028,16 @@ export class ToolStarterApp {
     return shapes
       .map((candidate, index) => String(candidate?.groupId || "").trim() === groupId ? index : -1)
       .filter((index) => index >= 0);
+  }
+
+  shapeBelongsToValidGroup(object, shapeIndex) {
+    const shapes = sortedShapes(object);
+    const shape = shapes[normalizeShapeIndex(shapeIndex)];
+    const groupId = String(shape?.groupId || "").trim();
+    if (!groupId) {
+      return false;
+    }
+    return shapes.filter((candidate) => String(candidate?.groupId || "").trim() === groupId).length >= 2;
   }
 
   selectState(stateId, sourceLabel) {
