@@ -2525,34 +2525,59 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-1\./);
       await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toBeEnabled();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-group-id='group-1']")).toHaveCount(2);
-      const groupIconColors = await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-group-id='group-1']").evaluateAll((icons) => icons.map((icon) => getComputedStyle(icon).color));
+      const groupIconColors = await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-group-id='group-1'] .object-vector-studio-v2__shape-group-indicator").evaluateAll((icons) => icons.map((icon) => getComputedStyle(icon).color));
       expect(new Set(groupIconColors).size).toBe(1);
       expect(groupIconColors[0]).not.toBe("");
       const groupIconLayout = await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] .object-vector-studio-v2__object-tile-shape-row").first().evaluate((row) => {
         const label = row.querySelector(".object-vector-studio-v2__shape-select-label");
+        const visibility = row.querySelector("[data-shape-visibility-index]");
         const deleteButton = row.querySelector("[data-shape-delete-index]");
-        const groupIcon = row.querySelector("[data-shape-group-id='group-1']");
+        const groupButton = row.querySelector("[data-shape-group-id='group-1']");
         const rowRect = row.getBoundingClientRect();
         const labelRect = label.getBoundingClientRect();
+        const visibilityRect = visibility.getBoundingClientRect();
         const deleteRect = deleteButton.getBoundingClientRect();
-        const groupRect = groupIcon.getBoundingClientRect();
+        const groupRect = groupButton.getBoundingClientRect();
         return {
-          groupAfterActions: groupRect.left > deleteRect.right,
-          groupAtFarRight: Math.abs(rowRect.right - groupRect.right) <= 4,
+          actionButtonOrder: Array.from(row.querySelectorAll(".object-vector-studio-v2__shape-inline-actions > button")).map((button) => {
+            if (button.matches("[data-shape-group-id]")) return "group";
+            if (button.matches("[data-shape-visibility-index]")) return "eye";
+            if (button.matches("[data-shape-delete-index]")) return "trash";
+            return "unknown";
+          }),
+          groupAfterLabel: groupRect.left > labelRect.right,
+          groupButtonTag: groupButton.tagName.toLowerCase(),
+          groupBeforeEye: groupRect.right < visibilityRect.left,
           labelStartsLeft: labelRect.left < deleteRect.left,
-          labelText: label.textContent.trim()
+          labelText: label.textContent.trim(),
+          nestedButtons: row.querySelectorAll(".object-vector-studio-v2__shape-select button").length,
+          trashAtFarRight: Math.abs(rowRect.right - deleteRect.right) <= 4
         };
       });
       expect(groupIconLayout).toEqual({
-        groupAfterActions: true,
-        groupAtFarRight: true,
+        actionButtonOrder: ["group", "eye", "trash"],
+        groupAfterLabel: true,
+        groupButtonTag: "button",
+        groupBeforeEye: true,
         labelStartsLeft: true,
-        labelText: "1. Circle"
+        labelText: "1. Circle",
+        nestedButtons: 0,
+        trashAtFarRight: true
       });
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='0']").click();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='0']")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='1']")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/Multi-select count: 2/);
+      await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] .object-vector-studio-v2__object-tile-shape-row:has([data-object-tile-shape-index='1']) [data-shape-group-id='group-1']").click();
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex)).toBe(0);
+      await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-visibility-index='1']").click();
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex)).toBe(0);
+      await expect(page.locator("#statusLog")).toHaveValue(/[Ss]hape row 1 visibility set to hidden/);
+      await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-visibility-index='1']").click();
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex)).toBe(0);
+      await expect(page.locator("#statusLog")).toHaveValue(/[Ss]hape row 1 visibility set to visible/);
+      await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='1']").click();
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex)).toBe(1);
       await selectedShapeActions.locator("[data-shape-list-action='ungroup']").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"groupId": "group-1"');
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-group-id='group-1']")).toHaveCount(0);
@@ -2656,21 +2681,45 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-16000 -11000 32000 22000");
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
-      await page.locator("#objectVectorStudioV2RenderSurface").hover();
+      const wheelAnchor = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
+        const rect = surface.getBoundingClientRect();
+        const clientX = Math.round(rect.left + rect.width * 0.75);
+        const clientY = Math.round(rect.top + rect.height * 0.35);
+        return {
+          before: window.__objectVectorStudioV2App.viewportPointFromClient(clientX, clientY),
+          clientX,
+          clientY
+        };
+      });
+      await page.mouse.move(wheelAnchor.clientX, wheelAnchor.clientY);
       await page.mouse.wheel(0, -240);
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 110%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-grid-rendered='true']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
-      const zoomedGridState = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => ({
-        backgroundImage: getComputedStyle(surface).backgroundImage,
-        gridLineCount: surface.querySelectorAll("[data-grid-rendered='true'] line").length,
-        viewBox: surface.getAttribute("viewBox")
-      }));
+      const zoomedGridState = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface, anchor) => {
+        const app = window.__objectVectorStudioV2App;
+        const after = app.viewportPointFromClient(anchor.clientX, anchor.clientY);
+        return {
+          backgroundImage: getComputedStyle(surface).backgroundImage,
+          gridLineCount: surface.querySelectorAll("[data-grid-rendered='true'] line").length,
+          pointerDelta: {
+            x: Math.abs(after.x - anchor.before.x),
+            y: Math.abs(after.y - anchor.before.y)
+          },
+          viewport: { ...app.viewport },
+          viewBox: surface.getAttribute("viewBox")
+        };
+      }, wheelAnchor);
       expect(zoomedGridState.backgroundImage).toBe("none");
       expect(zoomedGridState.gridLineCount).toBeGreaterThan(0);
-      expect(zoomedGridState.viewBox).toBe("-1454.545 -1000 2909.091 2000");
+      expect(zoomedGridState.pointerDelta.x).toBeLessThan(0.001);
+      expect(zoomedGridState.pointerDelta.y).toBeLessThan(0.001);
+      expect(Math.abs(zoomedGridState.viewport.x)).toBeGreaterThan(1);
+      expect(Math.abs(zoomedGridState.viewport.y)).toBeGreaterThan(1);
+      expect(zoomedGridState.viewBox).not.toBe("-1454.545 -1000 2909.091 2000");
       await page.mouse.wheel(0, 240);
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 100%");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.zoomViewport(0.25);
       });
@@ -3581,7 +3630,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         iconKey: "delete",
         iconName: "nf-md-trash_can_outline"
       });
+      await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(0, "trash click selection guard"));
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex)).toBe(0);
       await page.locator("[data-shape-delete-index='2']").click();
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex)).toBe(0);
       await expect(page.locator("[data-object-tile-shape-index='2']")).toHaveCount(0);
       await expect(page.locator("[data-object-tile-shape-index='1']")).toHaveCount(1);
       await expect(page.locator("[data-object-tile-shape-index='0']")).toHaveCount(1);

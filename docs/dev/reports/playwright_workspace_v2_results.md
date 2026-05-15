@@ -1,6 +1,6 @@
-# PR_26133_055 Workspace V2 Playwright Results
+# PR_26133_056 Workspace V2 Playwright Results
 
-Task: PR_26133_055-shape-tile-group-icon-and-geometry-point-handles
+Task: PR_26133_056-object-preview-pointer-zoom-and-shape-tile-actions
 Date: 2026-05-15
 
 ## Result
@@ -14,19 +14,18 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Verified grouped shape tile indicators render at the far right of shape rows while shape index/tool text stays on the left.
-- Verified rectangle corner handles expose geometry-point metadata and still resize geometry through bounding-box corner drag.
-- Verified line endpoint handles expose geometry-point metadata and still update point1/point2 geometry.
-- Verified polygon point handles render on each selected point and dragging a point updates the underlying geometry plus Object Geometry inputs.
-- Verified polygon bounding-box corner dragging adjusts geometry points.
-- Verified geometry handle drags mark Object Vector Studio V2 workspace state dirty after persisted edits.
+- Verified mouse-wheel zoom preserves the world coordinate under the pointer instead of zooming only from canvas center.
+- Verified off-center wheel zoom updates viewport origin and keeps existing zoom limits/display behavior.
+- Verified shape row layout renders as shape label, group button, eye button, and trash button.
+- Verified group/eye/trash controls are sibling buttons and are not nested inside the shape selection button.
+- Verified clicking the group button does not select the shape.
+- Verified clicking the eye action toggles the targeted shape visibility without selecting it.
+- Verified clicking the trash action deletes the targeted shape without selecting it first.
 
 ## Additional Validation
 
-- Focused preview-handle slice passed:
-  `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "preview shapes with mouse actions"` completed with 1 passed, 0 failed.
-- Focused group tile layout slice passed:
+- Focused pointer-zoom/shape-tile layout slice passed:
   `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "layout shell"` completed with 1 passed, 0 failed.
-- Focused dirty-state slice passed:
-  `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "dirty state through persisted edits"` completed with 1 passed, 0 failed.
+- Focused preview delete/action slice passed:
+  `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "preview shapes with mouse actions"` completed with 1 passed, 0 failed.
 - `git diff --check` passed.

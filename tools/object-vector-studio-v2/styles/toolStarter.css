@@ -910,7 +910,7 @@ textarea:hover {
 
 .object-vector-studio-v2__object-tile-shape-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 4px;
   font-size: 0.7rem;
@@ -938,17 +938,6 @@ textarea:hover {
   overflow-wrap: anywhere;
 }
 
-.object-vector-studio-v2__shape-group-indicators {
-  display: inline-flex;
-  align-items: center;
-  justify-self: end;
-  gap: 2px;
-}
-
-.object-vector-studio-v2__shape-group-indicator[data-ovs-icon] {
-  font-size: 0.78rem;
-}
-
 .object-vector-studio-v2__shape-inline-actions {
   display: inline-flex;
   align-items: center;
@@ -963,6 +952,10 @@ textarea:hover {
   display: inline-grid;
   place-items: center;
   padding: 0 !important;
+}
+
+.object-vector-studio-v2__shape-group-indicator[data-ovs-icon] {
+  font-size: 0.78rem;
 }
 
 .object-vector-studio-v2__object-tile-shape-row.is-selected .object-vector-studio-v2__shape-select,

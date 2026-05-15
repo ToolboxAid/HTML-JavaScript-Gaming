@@ -1,6 +1,6 @@
-# PR_26133_055 Playwright V8 Coverage Report
+# PR_26133_056 Playwright V8 Coverage Report
 
-Task: PR_26133_055-shape-tile-group-icon-and-geometry-point-handles
+Task: PR_26133_056-object-preview-pointer-zoom-and-shape-tile-actions
 Date: 2026-05-15
 
 ## Result
@@ -24,7 +24,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Relevant Runtime Coverage
 
 ```text
-(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5496/5496; executed functions 576/606
+(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5583/5583; executed functions 590/621
 ```
 
 ## Guardrail
@@ -35,4 +35,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 shape tile group indicator layout, preview geometry point handles, line endpoint handles, polygon point drag editing, bounding-box geometry resize, dirty-state tracking, schema validation, and Asteroids runtime object-vector rendering.
+The Workspace V2 run exercised Object Vector Studio V2 pointer-anchored wheel zoom, off-center viewport origin updates, shape tile group/eye/trash action event handling, targeted visibility toggles, shape delete behavior, schema validation, and Asteroids runtime object-vector rendering.

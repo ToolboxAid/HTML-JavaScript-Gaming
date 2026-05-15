@@ -807,7 +807,7 @@ export class ToolStarterApp {
     this.elements.renderSurface.addEventListener("mousemove", (event) => this.updateCoordinateDisplay(event));
     this.elements.renderSurface.addEventListener("wheel", (event) => {
       event.preventDefault();
-      this.zoomViewportByStep(event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP);
+      this.zoomViewportByStepAtPointer(event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP, event);
     }, { passive: false });
     this.window.addEventListener("pointerup", (event) => {
       this.isPaintDragging = false;
@@ -1438,6 +1438,7 @@ export class ToolStarterApp {
       });
       const actions = document.createElement("div");
       actions.className = "object-vector-studio-v2__shape-inline-actions";
+      const groupButton = this.createShapeGroupButton(shape);
       const visibilityButton = document.createElement("button");
       visibilityButton.type = "button";
       visibilityButton.className = "object-vector-studio-v2__shape-inline-button object-vector-studio-v2__shape-eye-inline";
@@ -1445,10 +1446,12 @@ export class ToolStarterApp {
       visibilityButton.setAttribute("aria-label", `${displayShape.visible ? "Hide" : "Show"} shape ${shapeDisplayLabel(shape)} in the selected state/frame`);
       visibilityButton.title = "Toggle state/frame shape visibility";
       visibilityButton.append(this.createIconSpan("eye", displayShape.visible));
+      visibilityButton.addEventListener("pointerdown", (event) => {
+        event.stopPropagation();
+      });
       visibilityButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        this.selectShape(shapeIndex, "object tile shape visibility");
-        this.toggleSelectedShapeVisibility();
+        this.toggleShapeVisibilityByIndex(shapeIndex, object.id);
       });
       const deleteButton = document.createElement("button");
       deleteButton.type = "button";
@@ -1458,12 +1461,18 @@ export class ToolStarterApp {
       deleteButton.setAttribute("aria-label", `Delete shape ${shapeDisplayLabel(shape)}`);
       deleteButton.title = "Delete this base shape from every state";
       deleteButton.append(this.createIconSpan("delete", true));
+      deleteButton.addEventListener("pointerdown", (event) => {
+        event.stopPropagation();
+      });
       deleteButton.addEventListener("click", (event) => {
         event.stopPropagation();
         this.deleteShapeByIndex(shapeIndex, "object tile shape delete", object.id);
       });
+      if (groupButton) {
+        actions.append(groupButton);
+      }
       actions.append(visibilityButton, deleteButton);
-      row.append(selectButton, actions, this.createShapeGroupIndicators(shape));
+      row.append(selectButton, actions);
       list.append(row);
     });
     if (!list.children.length) {
@@ -1476,21 +1485,29 @@ export class ToolStarterApp {
     return list;
   }
 
-  createShapeGroupIndicators(shape) {
+  createShapeGroupButton(shape) {
     const groupId = String(shape.groupId || "").trim();
-    const container = document.createElement("span");
-    container.className = "object-vector-studio-v2__shape-group-indicators";
     if (!groupId) {
-      return container;
+      return null;
     }
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "object-vector-studio-v2__shape-inline-button object-vector-studio-v2__shape-group-button";
+    button.dataset.shapeGroupId = groupId;
+    button.setAttribute("aria-label", `Shape group ${groupId}`);
+    button.title = `Shape group ${groupId}`;
+    button.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+    });
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
     const icon = document.createElement("span");
     icon.className = "object-vector-studio-v2__shape-group-indicator object-vector-studio-v2__tile-icon object-vector-studio-v2__tile-icon--group";
-    icon.dataset.shapeGroupId = groupId;
-    icon.title = `Shape group ${groupId}`;
     icon.style.setProperty("--object-vector-studio-v2-shape-group-color", this.groupColor(groupId));
     this.applyIconGlyph(icon, "group");
-    container.append(icon);
-    return container;
+    button.append(icon);
+    return button;
   }
 
   createSelectedShapeActions(object) {
@@ -2951,15 +2968,46 @@ export class ToolStarterApp {
     this.zoomViewport(nextZoom);
   }
 
+  zoomViewportByStepAtPointer(step, event) {
+    const nextZoom = Number((this.viewport.zoom + step).toFixed(3));
+    this.zoomViewportAtPointer(nextZoom, event);
+  }
+
   zoomViewport(nextZoom) {
     if (!Number.isFinite(nextZoom)) {
       this.statusLog.write("WARN Viewport zoom skipped: zoom value is invalid.");
       return;
     }
-    this.viewport.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(nextZoom.toFixed(3))));
+    this.viewport.zoom = this.clampedViewportZoom(nextZoom);
     this.updateViewport();
     this.renderWorkSurface();
     this.statusLog.write(`OK Viewport zoom set to ${this.formatZoomPercentage() * 10}%.`);
+  }
+
+  zoomViewportAtPointer(nextZoom, event) {
+    if (!Number.isFinite(nextZoom)) {
+      this.statusLog.write("WARN Viewport zoom skipped: zoom value is invalid.");
+      return;
+    }
+    const anchor = this.viewportPointFromEvent(event);
+    if (!anchor) {
+      this.zoomViewport(nextZoom);
+      return;
+    }
+    const zoom = this.clampedViewportZoom(nextZoom);
+    const viewWidth = DEFAULT_VIEWPORT.width / zoom;
+    const viewHeight = DEFAULT_VIEWPORT.height / zoom;
+    this.viewport.zoom = zoom;
+    this.viewport.x = Number((anchor.x - (anchor.ratioX - 0.5) * viewWidth).toFixed(6));
+    this.viewport.y = Number((anchor.y - (anchor.ratioY - 0.5) * viewHeight).toFixed(6));
+    this.updateViewport();
+    this.renderWorkSurface();
+    this.updateCoordinateDisplay(event);
+    this.statusLog.write(`OK Viewport zoom set to ${this.formatZoomPercentage() * 10}%.`);
+  }
+
+  clampedViewportZoom(zoom) {
+    return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(zoom.toFixed(3))));
   }
 
   panViewport(x, y) {
@@ -2984,26 +3032,42 @@ export class ToolStarterApp {
   }
 
   updateCoordinateDisplay(event) {
-    const bounds = this.elements.renderSurface.getBoundingClientRect();
-    if (!bounds.width || !bounds.height) {
+    const point = this.viewportPointFromEvent(event);
+    if (!point) {
       return;
     }
-    const viewWidth = DEFAULT_VIEWPORT.width / this.viewport.zoom;
-    const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
-    const x = this.viewport.x - viewWidth / 2 + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
-    const y = this.viewport.y - viewHeight / 2 + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
-    this.elements.coordinateDisplay.textContent = `Pointer ${this.formatLogicalPointerCoordinate(x)}, ${this.formatLogicalPointerCoordinate(y)} | ${this.canvasOriginDisplayText()} | Zoom ${this.formatZoomPercentage() * 10}%`;
+    this.elements.coordinateDisplay.textContent = `Pointer ${this.formatLogicalPointerCoordinate(point.x)}, ${this.formatLogicalPointerCoordinate(point.y)} | ${this.canvasOriginDisplayText()} | Zoom ${this.formatZoomPercentage() * 10}%`;
+  }
+
+  viewportPointFromEvent(event) {
+    return this.viewportPointFromClient(event.clientX, event.clientY);
+  }
+
+  viewportPointFromClient(clientX, clientY, zoom = this.viewport.zoom, viewport = this.viewport) {
+    const bounds = this.elements.renderSurface.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) {
+      return null;
+    }
+    const ratioX = (clientX - bounds.left) / bounds.width;
+    const ratioY = (clientY - bounds.top) / bounds.height;
+    const viewWidth = DEFAULT_VIEWPORT.width / zoom;
+    const viewHeight = DEFAULT_VIEWPORT.height / zoom;
+    return {
+      ratioX,
+      ratioY,
+      x: viewport.x - viewWidth / 2 + ratioX * viewWidth,
+      y: viewport.y - viewHeight / 2 + ratioY * viewHeight
+    };
   }
 
   pointerPreviewPoint(event) {
-    const bounds = this.elements.renderSurface.getBoundingClientRect();
-    const viewWidth = DEFAULT_VIEWPORT.width / this.viewport.zoom;
-    const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
-    const x = this.viewport.x - viewWidth / 2 + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
-    const y = this.viewport.y - viewHeight / 2 + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
+    const point = this.viewportPointFromEvent(event);
+    if (!point) {
+      return { x: 0, y: 0 };
+    }
     return {
-      x: this.formatViewportNumber(x / OBJECT_PREVIEW_DRAWING_SCALE),
-      y: this.formatViewportNumber(y / OBJECT_PREVIEW_DRAWING_SCALE)
+      x: this.formatViewportNumber(point.x / OBJECT_PREVIEW_DRAWING_SCALE),
+      y: this.formatViewportNumber(point.y / OBJECT_PREVIEW_DRAWING_SCALE)
     };
   }
 
@@ -4281,30 +4345,59 @@ export class ToolStarterApp {
   }
 
   toggleSelectedShapeVisibility() {
-    const selected = this.selectedShape();
-    if (!selected) {
+    this.toggleShapeVisibilityByIndex(this.selectedShapeIndex, this.selectedObjectId);
+  }
+
+  toggleShapeVisibilityByIndex(shapeIndex, objectId = this.selectedObjectId) {
+    const normalizedIndex = normalizeShapeIndex(shapeIndex);
+    const object = this.currentPayload?.objects.find((candidate) => candidate.id === objectId) || null;
+    const shape = sortedShapes(object)[normalizedIndex] || null;
+    if (!object || !shape) {
       this.statusLog.write("WARN Shape visibility skipped: no shape is selected.");
       return;
     }
-    if (selected.locked) {
-      this.statusLog.write(`WARN Shape visibility skipped: shape row ${this.selectedShapeIndex} is locked.`);
+    if (shape.locked) {
+      this.statusLog.write(`WARN Shape visibility skipped: shape row ${normalizedIndex} is locked.`);
       return;
     }
-    if (this.guardSelectedObjectMutation("Shape visibility")) {
+    if (this.isObjectLocked(object.id)) {
+      this.statusLog.write(`WARN Shape visibility blocked: object ${object.name} is locked for this runtime session.`);
       return;
     }
 
     const nextPayload = this.cloneCurrentPayload();
-    const override = this.frameOverrideInPayload(nextPayload, this.selectedShapeIndex, { create: true });
-    if (override) {
-      const nextVisible = !this.effectiveShape(selected).visible;
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    const targetIsSelectedObject = object.id === this.selectedObjectId;
+    const state = targetIsSelectedObject ? this.objectStates(nextObject).find((candidate) => candidate.id === this.selectedStateId) : null;
+    const frame = targetIsSelectedObject ? sortedFrames(state).find((candidate) => candidate.id === this.selectedFrameId) : null;
+    if (frame && !Array.isArray(frame.shapeOverrides)) {
+      frame.shapeOverrides = [];
+    }
+    let override = frame?.shapeOverrides.find((entry) => entry.shapeIndex === normalizedIndex) || null;
+    if (frame) {
+      const baseShape = sortedShapes(nextObject)[normalizedIndex];
+      if (!override) {
+        override = {
+          shapeIndex: normalizedIndex,
+          transform: this.shapeTransform(baseShape),
+          visible: baseShape.visible
+        };
+        frame.shapeOverrides.push(override);
+      }
+      const nextVisible = !this.effectiveShapeForFrame(shape, this.activeFrame(), normalizedIndex).visible;
       override.visible = nextVisible;
-      this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK State ${this.selectedStateId} frame ${this.selectedFrameId} shape row ${this.selectedShapeIndex} visibility set to ${nextVisible ? "visible" : "hidden"}.`, "State frame visibility failed schema validation");
+      this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK State ${this.selectedStateId} frame ${this.selectedFrameId} shape row ${normalizedIndex} visibility set to ${nextVisible ? "visible" : "hidden"}.`, "State frame visibility failed schema validation", {
+        directSelectedShapeIndexes: this.directSelectedShapeIndexes,
+        selectedShapeIndexes: this.selectedShapeIndexes
+      });
       return;
     }
-    const shape = this.findShapeInPayload(nextPayload, this.selectedShapeIndex);
-    shape.visible = !shape.visible;
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Shape row ${this.selectedShapeIndex} visibility set to ${shape.visible ? "visible" : "hidden"}.`, "Shape visibility failed schema validation");
+    const nextShape = sortedShapes(nextObject)[normalizedIndex];
+    nextShape.visible = !nextShape.visible;
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Shape row ${normalizedIndex} visibility set to ${nextShape.visible ? "visible" : "hidden"}.`, "Shape visibility failed schema validation", {
+      directSelectedShapeIndexes: this.directSelectedShapeIndexes,
+      selectedShapeIndexes: this.selectedShapeIndexes
+    });
   }
 
   toggleSelectedShapeLock() {
