@@ -1,6 +1,6 @@
-# PR_26133_058 Playwright V8 Coverage Report
+# PR_26133_059 Playwright V8 Coverage Report
 
-Task: PR_26133_058-palette-tag-sort-and-paint-stroke-mode-flow
+Task: PR_26133_059-palette-opacity-mode-and-application-flow
 Date: 2026-05-15
 
 ## Result
@@ -24,7 +24,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Relevant Runtime Coverage
 
 ```text
-(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5688/5688; executed functions 600/631
+(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5669/5669; executed functions 600/631
 ```
 
 ## Guardrail
@@ -35,4 +35,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 Palette Tag sorting, compact five-button sort layout, Paint/Stroke mode selection, swatch-only color selection, shape-click color application, schema validation, and Asteroids runtime object-vector rendering.
+The Workspace V2 run exercised Object Vector Studio V2 opacity control layout, active Fill/Stroke opacity selection without immediate shape mutation, shape-click opacity application through the existing Paint/Stroke workflow, schema validation, and Asteroids runtime object-vector rendering.

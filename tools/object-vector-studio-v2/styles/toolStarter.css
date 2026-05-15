@@ -1322,6 +1322,13 @@ textarea:hover {
   font-size: 0.72rem;
 }
 
+.object-vector-studio-v2__palette-opacity-heading {
+  flex: 0 0 auto;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .object-vector-studio-v2__palette-opacity-row .object-vector-studio-v2__inline-field input {
   width: 54px;
 }

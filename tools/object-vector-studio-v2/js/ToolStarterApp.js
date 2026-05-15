@@ -4199,26 +4199,7 @@ export class ToolStarterApp {
       this.selectedFillOpacity = opacity.value;
     }
     this.updatePaletteModeSwatches();
-    if (this.selectedShapeIndex < 0) {
-      this.statusLog.write(`OK Palette ${normalizedTarget} opacity set to ${opacity.value}.`);
-      return;
-    }
-    const selected = sortedShapes(this.selectedObject())[this.selectedShapeIndex] || null;
-    if (!selected) {
-      this.statusLog.write(`OK Palette ${normalizedTarget} opacity set to ${opacity.value}.`);
-      return;
-    }
-    if (selected.locked) {
-      this.statusLog.write(`WARN Palette ${normalizedTarget} opacity skipped: shape row ${this.selectedShapeIndex} is locked.`);
-      return;
-    }
-    if (this.guardSelectedObjectMutation("Palette opacity application")) {
-      return;
-    }
-    const nextPayload = this.cloneCurrentPayload();
-    const shape = this.findShapeInPayload(nextPayload, this.selectedShapeIndex);
-    shape.style[normalizedTarget === "stroke" ? "strokeOpacity" : "fillOpacity"] = opacity.value;
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Applied ${normalizedTarget} opacity ${opacity.value} to shape row ${this.selectedShapeIndex}.`, "Palette opacity application failed schema validation");
+    this.statusLog.write(`OK Selected ${normalizedTarget} opacity ${opacity.value}.`);
   }
 
   selectPaletteColor(color, label) {
