@@ -4214,6 +4214,114 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("cleans Object Vector Studio V2 single-member groups and adds selected object states", async ({ page }, testInfo) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "group-cleanup-palette",
+          swatches: [
+            { id: "white", value: "#ffffff" },
+            { id: "cyan", value: "#6fd3ff" }
+          ]
+        }));
+      });
+
+      const payloadPath = testInfo.outputPath("object-vector-group-state.json");
+      await writeFile(payloadPath, JSON.stringify({
+        name: "Group Cleanup Payload",
+        objects: [
+          {
+            id: "object.test.group-state",
+            name: "Group State",
+            shapes: [
+              {
+                geometry: { x: -20, y: -20, width: 16, height: 16 },
+                groupId: "group-1",
+                locked: false,
+                order: 1,
+                style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
+                tool: "rectangle",
+                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                visible: true
+              },
+              {
+                geometry: { x: 8, y: -20, width: 16, height: 16 },
+                groupId: "group-1",
+                locked: false,
+                order: 2,
+                style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
+                tool: "rectangle",
+                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                visible: true
+              }
+            ],
+            states: [
+              {
+                frames: [
+                  { durationFrames: 1, id: "frame-1", order: 1, shapeOverrides: [] }
+                ],
+                id: "idle",
+                name: "Idle"
+              }
+            ],
+            tags: []
+          }
+        ],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(payloadPath);
+
+      const objectTile = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.test.group-state']");
+      const statePanel = objectTile.locator(".object-vector-studio-v2__object-state-panel");
+      const addStateButton = statePanel.locator("[data-object-state-action='add']");
+      const stateSelect = statePanel.locator("[data-object-state-select='object.test.group-state']");
+      await expect(addStateButton).toBeEnabled();
+      await addStateButton.click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Create state skipped: Idle already exists for Group State\./);
+      await expect(statePanel.locator("[data-object-state-tile]")).toHaveText(["idle"]);
+
+      await stateSelect.selectOption("move");
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO State move is ready to add for Group State\./);
+      await expect(addStateButton).toBeEnabled();
+      await addStateButton.click();
+      await expect(statePanel.locator("[data-object-state-tile]")).toHaveText(["idle", "move"]);
+      await expect(statePanel.locator("[data-object-state-tile='move']")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='move']")).toHaveCount(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created state Move with frame frame-1\./);
+      await addStateButton.click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Create state skipped: Move already exists for Group State\./);
+      await expect(statePanel.locator("[data-object-state-tile='move']")).toHaveCount(1);
+
+      await expect(objectTile.locator("[data-shape-group-id='group-1']")).toHaveCount(2);
+      await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        app.selectedShapeIndex = 0;
+        app.selectedShapeIndexes = new Set([0]);
+        app.renderPayload();
+      });
+      const selectedShapeActions = objectTile.locator(".object-vector-studio-v2__shape-list-actions");
+      await selectedShapeActions.locator("[data-shape-list-action='ungroup']").click();
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"groupId": "group-1"');
+      await expect(objectTile.locator("[data-shape-group-id='group-1']")).toHaveCount(0);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Ungrouped 1 selected shapes from group-1\./);
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("supports Object Vector Studio V2 asset library inheritance foundation", async ({ page }, testInfo) => {
     const server = await startRepoServer();
     const pageErrors = [];
@@ -8119,6 +8227,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectObjectVectorDirtyAfter("object tag edit", async () => {
         await page.locator("#objectVectorStudioV2ObjectTagInput").fill("dirty-state");
         await page.locator("#objectVectorStudioV2AddTagButton").click();
+      });
+      await expectObjectVectorDirtyAfter("object state add edit", async () => {
+        const selectedObjectId = await page.evaluate(() => window.__objectVectorStudioV2App.selectedObjectId);
+        const stateId = await page.evaluate(() => {
+          const app = window.__objectVectorStudioV2App;
+          const existing = new Set(app.objectStates(app.selectedObject()).map((state) => state.id));
+          return ["idle", "move", "active", "inactive", "damaged", "destroyed"].find((candidate) => !existing.has(candidate)) || "";
+        });
+        expect(stateId).toBeTruthy();
+        const selectedObjectTile = page.locator(`.object-vector-studio-v2__object-tile[data-object-id="${selectedObjectId}"]`);
+        await selectedObjectTile.locator(`[data-object-state-select="${selectedObjectId}"]`).selectOption(stateId);
+        await expect(selectedObjectTile.locator("[data-object-state-action='add']")).toBeEnabled();
+        await selectedObjectTile.locator("[data-object-state-action='add']").click();
       });
       await expectObjectVectorDirtyAfter("object geometry edit", async () => {
         await page.locator("#objectVectorStudioV2ObjectDetails [data-shape-geometry-field='points'][data-polygon-point-index='0'][data-polygon-point-axis='x']").fill("11");

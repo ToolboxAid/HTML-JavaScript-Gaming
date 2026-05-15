@@ -1312,8 +1312,8 @@ export class ToolStarterApp {
     addButton.type = "button";
     addButton.dataset.objectStateAction = "add";
     addButton.textContent = "Add";
-    addButton.title = stateExists ? "Selected state already exists." : `Add ${selectedStateId} state`;
-    addButton.disabled = isLocked || stateExists;
+    addButton.title = stateExists ? "Selected state already exists; Add will report a duplicate warning." : `Add ${selectedStateId} state`;
+    addButton.disabled = isLocked || !OBJECT_STATE_IDS.includes(selectedStateId);
     addButton.addEventListener("click", (event) => {
       event.stopPropagation();
       this.createSelectedState(selectedStateId);
@@ -3099,7 +3099,6 @@ export class ToolStarterApp {
     }
     if (this.objectStates(object).some((state) => state.id === stateId)) {
       this.statusLog.write(`WARN Create state skipped: ${OBJECT_STATE_LABELS[stateId] || stateId} already exists for ${object.name}.`);
-      this.selectState(stateId, "existing state");
       return;
     }
 
@@ -4333,8 +4332,26 @@ export class ToolStarterApp {
         delete shape.groupId;
       }
     });
+    this.pruneSingleMemberShapeGroups(nextObject);
     this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Ungrouped ${selectedIndexes.size} selected shapes from ${Array.from(selectedGroupIds).join(", ")}.`, "Ungroup shapes failed schema validation", {
       selectedShapeIndexes: selectedIndexes
+    });
+  }
+
+  pruneSingleMemberShapeGroups(object) {
+    const groupCounts = new Map();
+    sortedShapes(object).forEach((shape) => {
+      const groupId = String(shape.groupId || "").trim();
+      if (!groupId) {
+        return;
+      }
+      groupCounts.set(groupId, (groupCounts.get(groupId) || 0) + 1);
+    });
+    sortedShapes(object).forEach((shape) => {
+      const groupId = String(shape.groupId || "").trim();
+      if (groupId && groupCounts.get(groupId) < 2) {
+        delete shape.groupId;
+      }
     });
   }
 
@@ -4693,6 +4710,7 @@ export class ToolStarterApp {
     const deleteIndex = this.selectedShapeIndex;
     object.shapes = sortedShapes(object).filter((shape, shapeIndex) => shapeIndex !== deleteIndex)
       .map((shape, index) => ({ ...shape, order: index + 1 }));
+    this.pruneSingleMemberShapeGroups(object);
     this.removeDeletedShapeReferences(object, deleteIndex);
     this.removeDanglingShapeOverrideReferences(nextPayload);
     const selectedShapeIndex = sortedShapes(object).length ? 0 : -1;
@@ -4720,6 +4738,7 @@ export class ToolStarterApp {
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
     nextObject.shapes = sortedShapes(nextObject).filter((candidate, index) => index !== deleteIndex)
       .map((candidate, index) => ({ ...candidate, order: index + 1 }));
+    this.pruneSingleMemberShapeGroups(nextObject);
     this.removeDeletedShapeReferences(nextObject, deleteIndex);
     this.removeDanglingShapeOverrideReferences(nextPayload);
     const selectedShapeStillExists = this.selectedShapeIndex >= 0 && this.selectedShapeIndex < sortedShapes(nextObject).length;
@@ -5107,7 +5126,9 @@ export class ToolStarterApp {
     const states = this.objectStates(object);
     const state = states.find((candidate) => candidate.id === this.selectedStateId) || states[0] || null;
     this.selectedStateId = state?.id || "";
-    this.stateControlStateId = this.selectedStateId || this.stateControlStateId;
+    if (!OBJECT_STATE_IDS.includes(this.stateControlStateId)) {
+      this.stateControlStateId = this.selectedStateId || OBJECT_STATE_IDS[0];
+    }
     if (!state) {
       this.selectedFrameId = "";
       return;
