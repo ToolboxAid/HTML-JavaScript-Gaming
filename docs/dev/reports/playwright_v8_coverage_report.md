@@ -1,6 +1,6 @@
-# PR_26133_042 Playwright V8 Coverage Report
+# PR_26133_043 Playwright V8 Coverage Report
 
-Task: PR_26133_042-object-transform-tags-and-palette-layout-tuning
+Task: PR_26133_043-object-transform-center-and-opacity-input-tuning
 Date: 2026-05-15
 
 ## Result
@@ -26,7 +26,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Changed Runtime JS Coverage
 
 ```text
-(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4729/4729; executed functions 488/517
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4751/4751; executed functions 493/522
 ```
 
 ## Changed Markup/Style/Test Coverage Note
@@ -45,4 +45,4 @@ Markup and CSS changes in `tools/object-vector-studio-v2/index.html` and `tools/
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 tag button/chip sizing, Rotate range/input-preservation and wrapped summary behavior, singular scale summary formatting, and Palette Paint/Stroke/Width plus Fill Op/Stroke Op row layout. Coverage remains advisory only.
+The Workspace V2 run exercised Object Vector Studio V2 Center button labeling and recentering behavior, 0-255 opacity input validation, byte-to-normalized opacity conversion for SVG/schema rendering, and opacity input sizing/layout assertions. Coverage remains advisory only.

@@ -1,6 +1,6 @@
-# PR_26133_042 Workspace V2 Playwright Results
+# PR_26133_043 Workspace V2 Playwright Results
 
-Task: PR_26133_042-object-transform-tags-and-palette-layout-tuning
+Task: PR_26133_043-object-transform-center-and-opacity-input-tuning
 Date: 2026-05-15
 
 ## Result
@@ -14,13 +14,13 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Verified Object tag Add button width is `77px`.
-- Verified selected object tag chips for `bubba` and `player` render as `77px` buttons below the Add tag input row.
-- Verified Rotate input exposes `min=-359` and `max=359`.
-- Verified Rotate keeps the user-entered input value while applying the normalized/wrapped transform rotation.
-- Verified transform summary wraps large/current rotation values into `0..359` and keeps singular same-axis scale text, for example `x 0, y 0, rot 73, scale 0.77`.
-- Verified Palette controls render Paint, Stroke, and Width on the first row, with compact Fill Op and Stroke Op controls on the row below.
+- Verified Object Preview viewport controls now render `Center` instead of `Dot`.
+- Verified Center recenters the preview viewport to origin `0,0`, preserves current zoom, refreshes stale pointer text back to the centered origin display, and keeps the center marker visible.
+- Verified Fill Op and Stroke Op inputs use `min=0`, `max=255`, `step=1`, and width sufficient for 4 visible digits.
+- Verified opacity inputs visibly reject out-of-range values such as `-1` and `256`.
+- Verified valid 0-255 opacity inputs convert to normalized style opacity values for schema/SVG rendering.
+- Verified Fill Op and Stroke Op remain in the compact opacity row below Paint, Stroke, and Width.
 
 ## Manual Verification Equivalent
 
-Targeted Object Vector Studio V2 browser automation covered the requested tag widths/layout, Rotate range and input preservation, wrapped transform summary rotation, compact Palette row split, and no-console-error checks.
+Targeted Object Vector Studio V2 browser automation covered the requested Center label and centering behavior, opacity input sizing/range validation, normalized opacity rendering behavior, Palette opacity row layout, and no-console-error checks.

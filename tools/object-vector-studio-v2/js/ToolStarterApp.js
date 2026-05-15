@@ -680,13 +680,7 @@ export class ToolStarterApp {
       this.renderWorkSurface();
       this.statusLog.write(`OK Grid rendering ${this.gridRenderEnabled ? "enabled" : "disabled"}.`);
     });
-    this.elements.centerDotButton.addEventListener("click", () => {
-      this.centerOriginVisible = !this.centerOriginVisible;
-      this.window.sessionStorage?.setItem(CENTER_ORIGIN_SESSION_KEY, this.centerOriginVisible ? "1" : "0");
-      this.applySnapState();
-      this.renderWorkSurface();
-      this.statusLog.write(`OK Center dot ${this.centerOriginVisible ? "shown" : "hidden"}.`);
-    });
+    this.elements.centerDotButton.addEventListener("click", () => this.centerViewport());
   }
 
   bindPaletteControls() {
@@ -701,6 +695,10 @@ export class ToolStarterApp {
       }
       this.statusLog.write(`OK Palette stroke width set to ${width}.`);
     });
+    [
+      this.elements.fillOpacity,
+      this.elements.strokeOpacity
+    ].forEach((input) => input.addEventListener("input", () => this.clearInputValidity(input)));
     this.elements.fillOpacity.addEventListener("change", () => this.changePaletteOpacity("fill"));
     this.elements.strokeOpacity.addEventListener("change", () => this.changePaletteOpacity("stroke"));
     this.elements.paletteSortButtons.forEach((button) => {
@@ -834,11 +832,11 @@ export class ToolStarterApp {
     this.gridSnapEnabled = this.window.sessionStorage?.getItem(GRID_SNAP_SESSION_KEY) === "1";
     this.angleSnapEnabled = this.window.sessionStorage?.getItem(ANGLE_SNAP_SESSION_KEY) === "1";
     this.gridRenderEnabled = this.window.sessionStorage?.getItem(GRID_RENDER_SESSION_KEY) !== "0";
-    this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
+    this.centerOriginVisible = true;
     this.elements.gridSnapButton.setAttribute("aria-pressed", String(this.gridSnapEnabled));
     this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
     this.elements.gridRenderButton.setAttribute("aria-pressed", String(this.gridRenderEnabled));
-    this.elements.centerDotButton.setAttribute("aria-pressed", String(this.centerOriginVisible));
+    this.elements.centerDotButton.removeAttribute("aria-pressed");
     this.elements.renderSurface.classList.toggle("is-grid-visible", this.gridRenderEnabled);
   }
 
@@ -2548,6 +2546,17 @@ export class ToolStarterApp {
     this.statusLog.write(`OK Viewport pan set to ${this.viewport.x}, ${this.viewport.y}.`);
   }
 
+  centerViewport() {
+    this.viewport.x = 0;
+    this.viewport.y = 0;
+    this.centerOriginVisible = true;
+    this.window.sessionStorage?.setItem(CENTER_ORIGIN_SESSION_KEY, "1");
+    this.applySnapState();
+    this.updateViewport();
+    this.renderWorkSurface();
+    this.statusLog.write(`OK Viewport centered at origin 0,0; zoom ${this.formatZoomPercentage() * 10}% preserved.`);
+  }
+
   resetViewport() {
     this.viewport = { ...DEFAULT_VIEWPORT };
     this.updateViewport();
@@ -3409,12 +3418,12 @@ export class ToolStarterApp {
     if (Number.isFinite(effectiveShape.style?.fillOpacity)) {
       changed = changed || this.selectedFillOpacity !== effectiveShape.style.fillOpacity;
       this.selectedFillOpacity = effectiveShape.style.fillOpacity;
-      this.elements.fillOpacity.value = String(effectiveShape.style.fillOpacity);
+      this.elements.fillOpacity.value = this.opacityInputDisplayValue(effectiveShape.style.fillOpacity);
     }
     if (Number.isFinite(effectiveShape.style?.strokeOpacity)) {
       changed = changed || this.selectedStrokeOpacity !== effectiveShape.style.strokeOpacity;
       this.selectedStrokeOpacity = effectiveShape.style.strokeOpacity;
-      this.elements.strokeOpacity.value = String(effectiveShape.style.strokeOpacity);
+      this.elements.strokeOpacity.value = this.opacityInputDisplayValue(effectiveShape.style.strokeOpacity);
     }
     if (changed && render) {
       this.renderPalette();
@@ -3423,11 +3432,27 @@ export class ToolStarterApp {
 
   opacityInputValue(target) {
     const element = target === "stroke" ? this.elements.strokeOpacity : this.elements.fillOpacity;
-    const value = Number(element.value);
-    if (!Number.isFinite(value) || value < 0 || value > 1) {
-      return { ok: false, error: `${target === "stroke" ? "Stroke" : "Fill"} opacity must be between 0 and 1.` };
+    const rawValue = element?.value?.trim() || "";
+    const value = Number(rawValue);
+    if (!Number.isInteger(value) || value < 0 || value > 255) {
+      const error = `${target === "stroke" ? "Stroke" : "Fill"} opacity must be a whole number between 0 and 255.`;
+      this.markInputInvalid(element, error);
+      return { ok: false, error };
     }
-    return { ok: true, value: Number(value.toFixed(3)) };
+    this.clearInputValidity(element);
+    return { ok: true, value: this.opacityFromInputByte(value) };
+  }
+
+  opacityFromInputByte(value) {
+    return Number((value / 255).toFixed(3));
+  }
+
+  opacityInputDisplayValue(value) {
+    if (!Number.isFinite(value)) {
+      return "255";
+    }
+    const clamped = Math.min(1, Math.max(0, value));
+    return String(Math.round(clamped * 255));
   }
 
   changePaletteOpacity(target) {

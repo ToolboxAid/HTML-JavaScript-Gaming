@@ -133,7 +133,7 @@
                 <button id="objectVectorStudioV2PanLeftButton" type="button" title="Pan the work surface left">Left</button>
                 <button id="objectVectorStudioV2PanRightButton" type="button" title="Pan the work surface right">Right</button>
                 <button id="objectVectorStudioV2ResetViewButton" type="button" title="Reset zoom and origin to 0,0">View</button>
-                <button id="objectVectorStudioV2CenterDotButton" type="button" aria-pressed="true" title="Hide or show the canvas center dot">Dot</button>
+                <button id="objectVectorStudioV2CenterDotButton" type="button" title="Center canvas origin in the current viewport">Center</button>
               </div>
               <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" tabindex="0" role="img" aria-label="Object shape render surface"></svg>
               <div id="objectVectorStudioV2ObjectPreviewFooter" class="object-vector-studio-v2__preview-footer">Object ID: none</div>
@@ -273,11 +273,11 @@
               <div class="object-vector-studio-v2__palette-opacity-row">
                 <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2FillOpacity">
                   <span>Fill Op</span>
-                  <input id="objectVectorStudioV2FillOpacity" type="number" min="0" max="1" step="0.05" value="1">
+                  <input id="objectVectorStudioV2FillOpacity" type="number" min="0" max="255" step="1" value="255">
                 </label>
                 <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeOpacity">
                   <span>Stroke Op</span>
-                  <input id="objectVectorStudioV2StrokeOpacity" type="number" min="0" max="1" step="0.05" value="1">
+                  <input id="objectVectorStudioV2StrokeOpacity" type="number" min="0" max="255" step="1" value="255">
                 </label>
               </div>
             </div>

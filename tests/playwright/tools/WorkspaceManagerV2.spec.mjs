@@ -1730,11 +1730,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const widthInput = content.querySelector("#objectVectorStudioV2StrokeWidth").getBoundingClientRect();
         const fillOpacityLabel = content.querySelector("label[for='objectVectorStudioV2FillOpacity']").getBoundingClientRect();
         const strokeOpacityLabel = content.querySelector("label[for='objectVectorStudioV2StrokeOpacity']").getBoundingClientRect();
-        const opacityInputs = Array.from(opacityRow.querySelectorAll("input")).map((input) => input.getBoundingClientRect());
+        const opacityInputs = Array.from(opacityRow.querySelectorAll("input"));
+        const opacityInputRects = opacityInputs.map((input) => input.getBoundingClientRect());
         return {
           opacityBelowPrimary: fillOpacityLabel.top >= Math.max(paintButton.bottom, strokeButton.bottom, widthLabel.bottom),
           opacityInline: Math.abs((fillOpacityLabel.top + fillOpacityLabel.height / 2) - (strokeOpacityLabel.top + strokeOpacityLabel.height / 2)) < 4,
-          opacityInputCompact: opacityInputs.every((rect) => Math.round(rect.width) <= 42),
+          opacityInputFitsFourDigits: opacityInputRects.every((rect) => Math.round(rect.width) >= 54),
+          opacityInputRanges: opacityInputs.map((input) => ({ max: input.max, min: input.min, step: input.step, value: input.value })),
           opacityLabels: Array.from(opacityRow.querySelectorAll("label > span")).map((label) => label.textContent.trim()),
           primaryInline: [strokeButton, widthLabel].every((rect) => Math.abs((paintButton.top + paintButton.height / 2) - (rect.top + rect.height / 2)) < 4),
           primaryOrder: Array.from(primaryRow.children).map((element) => element.textContent.trim()),
@@ -1745,7 +1747,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(paletteControlLayout).toEqual({
         opacityBelowPrimary: true,
         opacityInline: true,
-        opacityInputCompact: true,
+        opacityInputFitsFourDigits: true,
+        opacityInputRanges: [
+          { max: "255", min: "0", step: "1", value: "255" },
+          { max: "255", min: "0", step: "1", value: "255" }
+        ],
         opacityLabels: ["Fill Op", "Stroke Op"],
         primaryInline: true,
         primaryOrder: ["Paint", "Stroke", "Width"],
@@ -1816,16 +1822,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveAttribute("r", "9");
-      await expect(page.locator("#objectVectorStudioV2ViewportControls button")).toHaveText(["Out", "In", "Up", "Down", "Left", "Right", "View", "Dot"]);
-      await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2ViewportControls button")).toHaveText(["Out", "In", "Up", "Down", "Left", "Right", "View", "Center"]);
+      await expect(page.locator("#objectVectorStudioV2CenterDotButton")).not.toHaveAttribute("aria-pressed", /.*/);
+      await page.locator("#objectVectorStudioV2PanRightButton").click();
+      await page.locator("#objectVectorStudioV2PanDownButton").click();
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 2 | Canvas 0,0 centered | Zoom 100%");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1580 -1080 3200 2200");
+      await page.locator("#objectVectorStudioV2RenderSurface").hover({ position: { x: 12, y: 12 } });
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Pointer");
       await page.locator("#objectVectorStudioV2CenterDotButton").click();
-      await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "false");
-      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Center dot hidden\./);
-      await page.locator("#objectVectorStudioV2CenterDotButton").click();
-      await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Center dot shown\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport centered at origin 0,0; zoom 100% preserved\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Asteroids Ship"');
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"selectedShape": null');
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"palette"');
@@ -2451,18 +2460,34 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await clickPreviewShape(1);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"fill": "#6fd3ff"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #6fd3ff from cyan to shape row 1 by render surface click\. Target: paint opacity 1\./);
-      await page.locator("#objectVectorStudioV2FillOpacity").fill("0.5");
+      await page.locator("#objectVectorStudioV2FillOpacity").fill("-1");
       await page.locator("#objectVectorStudioV2FillOpacity").dispatchEvent("change");
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"fillOpacity": 0.5');
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied fill opacity 0\.5 to shape row 1\./);
+      await expect(page.locator("#objectVectorStudioV2FillOpacity")).toHaveAttribute("aria-invalid", "true");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"fillOpacity": 0.502');
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Palette fill opacity rejected: Fill opacity must be a whole number between 0 and 255\./);
+      await page.locator("#objectVectorStudioV2FillOpacity").fill("128");
+      await page.locator("#objectVectorStudioV2FillOpacity").dispatchEvent("change");
+      await expect(page.locator("#objectVectorStudioV2FillOpacity")).not.toHaveAttribute("aria-invalid", "true");
+      await expect(page.locator("#objectVectorStudioV2FillOpacity")).toHaveValue("128");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"fillOpacity": 0.502');
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='1']")).toHaveAttribute("fill-opacity", "0.502");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied fill opacity 0\.502 to shape row 1\./);
       await page.locator("#objectVectorStudioV2StrokeModeButton").click();
       await clickPreviewShape(1);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"stroke": "#ffffff"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #ffffff from white to shape row 1 by render surface click\. Target: stroke width 2, opacity 1\./);
-      await page.locator("#objectVectorStudioV2StrokeOpacity").fill("0.65");
+      await page.locator("#objectVectorStudioV2StrokeOpacity").fill("256");
       await page.locator("#objectVectorStudioV2StrokeOpacity").dispatchEvent("change");
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"strokeOpacity": 0.65');
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied stroke opacity 0\.65 to shape row 1\./);
+      await expect(page.locator("#objectVectorStudioV2StrokeOpacity")).toHaveAttribute("aria-invalid", "true");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"strokeOpacity": 0.651');
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Palette stroke opacity rejected: Stroke opacity must be a whole number between 0 and 255\./);
+      await page.locator("#objectVectorStudioV2StrokeOpacity").fill("166");
+      await page.locator("#objectVectorStudioV2StrokeOpacity").dispatchEvent("change");
+      await expect(page.locator("#objectVectorStudioV2StrokeOpacity")).not.toHaveAttribute("aria-invalid", "true");
+      await expect(page.locator("#objectVectorStudioV2StrokeOpacity")).toHaveValue("166");
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"strokeOpacity": 0.651');
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='1']")).toHaveAttribute("stroke-opacity", "0.651");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied stroke opacity 0\.651 to shape row 1\./);
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.selectedStrokeColor = "#123456";
         window.__objectVectorStudioV2App.selectedStrokeLabel = "manual rogue";
