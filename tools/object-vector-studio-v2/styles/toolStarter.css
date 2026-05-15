@@ -1545,6 +1545,52 @@ textarea:hover {
   line-height: 1.1;
 }
 
+.object-vector-studio-v2__transform-control-row {
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr) minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  width: 100%;
+  white-space: nowrap;
+  --object-vector-studio-v2-icon-scale: 1.05;
+}
+
+.object-vector-studio-v2__transform-control-row--rotate {
+  grid-template-columns: 50px minmax(48px, 1fr) max-content;
+}
+
+.object-vector-studio-v2__transform-control-label {
+  color: var(--tool-starter-text);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__transform-axis-field {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__transform-control-row input {
+  min-width: 0;
+  width: 100%;
+  min-height: 22px;
+  padding: 2px 3px;
+}
+
+.object-vector-studio-v2__transform-control-row button {
+  min-width: 0;
+  min-height: 22px;
+  padding: 1px 4px;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
 .object-vector-studio-v2__edit-panel--transform .object-vector-studio-v2__edit-grid {
   gap: 4px 6px;
 }
@@ -1608,9 +1654,12 @@ textarea:hover {
   font-size: 0.86rem;
   font-weight: 800;
   line-height: 1.2;
+  text-align: center;
+  width: 100%;
 }
 
 .object-vector-studio-v2__edit-field input.is-invalid,
+.object-vector-studio-v2__transform-control-row input.is-invalid,
 .object-vector-studio-v2__scale-input.is-invalid,
 .object-vector-studio-v2__polygon-point-axis input.is-invalid {
   border-color: var(--tool-starter-danger);

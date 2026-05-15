@@ -1647,7 +1647,7 @@ export class ToolStarterApp {
   }
 
   formatTransformSummary(transform) {
-    return `Transform x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`;
+    return `x ${transform.x}, y ${transform.y}, rot ${transform.rotation}, scale ${transform.scaleX} x ${transform.scaleY}`;
   }
 
   createDetailGrid(entries) {
@@ -1778,49 +1778,119 @@ export class ToolStarterApp {
     section.className = "object-vector-studio-v2__edit-panel object-vector-studio-v2__edit-panel--transform";
     const heading = document.createElement("h4");
     heading.textContent = "Transform";
-    const grid = document.createElement("div");
-    grid.className = "object-vector-studio-v2__edit-grid";
     const transform = this.shapeTransform(this.effectiveShape(shape));
-    [
-      ["objectVectorStudioV2MoveXInput", "Move X", "10"],
-      ["objectVectorStudioV2MoveYInput", "Move Y", "0"],
-      ["objectVectorStudioV2RotateInput", "Rotate", "15"],
-      ["objectVectorStudioV2OriginXInput", "Origin X", String(transform.origin.x)],
-      ["objectVectorStudioV2OriginYInput", "Origin Y", String(transform.origin.y)]
-    ].forEach(([id, labelText, value]) => {
-      const label = document.createElement("label");
-      label.className = "object-vector-studio-v2__edit-field object-vector-studio-v2__edit-field--inline";
-      const caption = document.createElement("span");
-      caption.textContent = labelText;
-      const input = document.createElement("input");
-      input.id = id;
-      input.type = "number";
-      input.step = "0.1";
-      input.value = this.transformInputValue(id, value);
-      input.addEventListener("input", () => {
-        this.transformInputValues.set(id, input.value);
-        this.clearInputValidity(input);
-      });
-      label.append(caption, input);
-      grid.append(label);
-    });
-    const actions = document.createElement("div");
-    actions.className = "object-vector-studio-v2__shape-actions";
-    [
-      ["objectVectorStudioV2MoveShapeButton", "Move", "move", () => this.moveSelectedShape()],
-      ["objectVectorStudioV2RotateShapeButton", "Rotate", "rotate", () => this.rotateSelectedShape()],
-      ["objectVectorStudioV2ApplyOriginButton", "Apply Origin", "center", () => this.applySelectedShapeOrigin()]
-    ].forEach(([id, label, iconKey, handler]) => {
-      const button = document.createElement("button");
-      button.id = id;
-      button.type = "button";
-      button.textContent = label;
-      this.applyIconGlyph(button, iconKey);
-      button.addEventListener("click", handler);
-      actions.append(button);
-    });
-    section.append(heading, grid, this.createScaleControlRow(transform), actions);
+    section.append(
+      heading,
+      this.createMoveControlRow(),
+      this.createOriginControlRow(transform),
+      this.createRotateControlRow(),
+      this.createScaleControlRow(transform)
+    );
     return section;
+  }
+
+  createMoveControlRow() {
+    return this.createTransformAxisControlRow({
+      action: () => this.moveSelectedShape(),
+      buttonId: "objectVectorStudioV2MoveShapeButton",
+      buttonLabel: "Move",
+      iconKey: "move",
+      label: "Move",
+      rowType: "move",
+      xInput: { id: "objectVectorStudioV2MoveXInput", label: "Move X", value: "10" },
+      yInput: { id: "objectVectorStudioV2MoveYInput", label: "Move Y", value: "0" }
+    });
+  }
+
+  createOriginControlRow(transform) {
+    return this.createTransformAxisControlRow({
+      action: () => this.applySelectedShapeOrigin(),
+      buttonId: "objectVectorStudioV2ApplyOriginButton",
+      buttonLabel: "Apply",
+      buttonTitle: "Apply Origin",
+      iconKey: "center",
+      label: "Origin",
+      rowType: "origin",
+      xInput: { id: "objectVectorStudioV2OriginXInput", label: "Origin X", value: String(transform.origin.x) },
+      yInput: { id: "objectVectorStudioV2OriginYInput", label: "Origin Y", value: String(transform.origin.y) }
+    });
+  }
+
+  createRotateControlRow() {
+    const row = document.createElement("div");
+    row.className = "object-vector-studio-v2__transform-control-row object-vector-studio-v2__transform-control-row--rotate";
+    row.dataset.transformControlRow = "rotate";
+    const label = document.createElement("span");
+    label.className = "object-vector-studio-v2__transform-control-label";
+    label.textContent = "Rotate";
+    const input = this.createTransformNumberInput("objectVectorStudioV2RotateInput", "Rotate", "15");
+    const button = this.createTransformActionButton({
+      handler: () => this.rotateSelectedShape(),
+      iconKey: "rotate",
+      id: "objectVectorStudioV2RotateShapeButton",
+      label: "Rotate"
+    });
+    row.append(label, input, button);
+    return row;
+  }
+
+  createTransformAxisControlRow({ action, buttonId, buttonLabel, buttonTitle, iconKey, label, rowType, xInput, yInput }) {
+    const row = document.createElement("div");
+    row.className = `object-vector-studio-v2__transform-control-row object-vector-studio-v2__transform-control-row--${rowType}`;
+    row.dataset.transformControlRow = rowType;
+    const rowLabel = document.createElement("span");
+    rowLabel.className = "object-vector-studio-v2__transform-control-label";
+    rowLabel.textContent = label;
+    row.append(
+      rowLabel,
+      this.createTransformAxisField("X", xInput),
+      this.createTransformAxisField("Y", yInput),
+      this.createTransformActionButton({
+        handler: action,
+        iconKey,
+        id: buttonId,
+        label: buttonLabel,
+        title: buttonTitle
+      })
+    );
+    return row;
+  }
+
+  createTransformAxisField(axisLabel, inputOptions) {
+    const label = document.createElement("label");
+    label.className = "object-vector-studio-v2__transform-axis-field";
+    const axis = document.createElement("span");
+    axis.textContent = axisLabel;
+    label.append(axis, this.createTransformNumberInput(inputOptions.id, inputOptions.label, inputOptions.value));
+    return label;
+  }
+
+  createTransformNumberInput(id, label, value) {
+    const input = document.createElement("input");
+    input.id = id;
+    input.type = "number";
+    input.step = "0.1";
+    input.value = this.transformInputValue(id, value);
+    input.setAttribute("aria-label", label);
+    input.addEventListener("input", () => {
+      this.transformInputValues.set(id, input.value);
+      this.clearInputValidity(input);
+    });
+    return input;
+  }
+
+  createTransformActionButton({ handler, iconKey, id, label, title }) {
+    const button = document.createElement("button");
+    button.id = id;
+    button.type = "button";
+    button.textContent = label;
+    if (title) {
+      button.title = title;
+      button.setAttribute("aria-label", title);
+    }
+    this.applyIconGlyph(button, iconKey);
+    button.addEventListener("click", handler);
+    return button;
   }
 
   createScaleControlRow(transform) {

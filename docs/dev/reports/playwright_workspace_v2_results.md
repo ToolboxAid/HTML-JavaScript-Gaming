@@ -1,6 +1,6 @@
-# PR_26133_038 Workspace V2 Playwright Results
+# PR_26133_040 Workspace V2 Playwright Results
 
-Task: PR_26133_038-object-transform-scale-resize-geometry
+Task: PR_26133_040-object-transform-one-line-control-layout
 Date: 2026-05-15
 
 ## Result
@@ -14,15 +14,13 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Verified Object Transform scale controls render on one line in the requested order:
-  `Scale [--] [-] [scale input] [+] [++] [Resize]`.
-- Verified the Resize button keeps visible text `Resize` and tooltip/title `Resize Geometry`.
-- Verified invalid scale input is visibly rejected and does not write `scaleX: 0`.
-- Verified live scale input updates the Object Preview, JSON details, and transform summary.
-- Verified `--`, `-`, `+`, and `++` buttons step scale by 0.10, 0.01, 0.01, and 0.10 respectively.
-- Verified Resize Geometry bakes current scale into rectangle geometry, resets scale to 1, and updates transformed selection bounds.
-- Added coverage for Resize Geometry across polygon, triangle, line, rectangle, circle, ellipse, arc, and text shapes.
+- Verified Object Transform Move controls render on one line as `Move X [input] Y [input] [Move]`.
+- Verified Object Transform Origin controls render on one line as `Origin X [input] Y [input] [Apply]`.
+- Verified Object Transform Rotate controls render on one line as `Rotate [input] [Rotate]`.
+- Verified existing Scale controls remain one line as `Scale [--] [-] [scale input] [+] [++] [Resize]`.
+- Verified Move, Origin Apply, and Rotate buttons continue to update the selected shape transform.
+- Verified transform summary is horizontally centered and no longer starts with `Transform`.
 
 ## Manual Verification Equivalent
 
-Targeted Object Vector Studio V2 browser automation covered the requested scale layout, live preview, geometry resize, transformed bounds refresh, invalid input rejection, and no-console-error checks.
+Targeted Object Vector Studio V2 browser automation covered the requested transform row layouts, preserved transform actions, centered summary text, retained Scale row layout, and no-console-error checks.

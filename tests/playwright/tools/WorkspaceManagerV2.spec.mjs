@@ -1812,17 +1812,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Transform");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails #objectVectorStudioV2MoveShapeButton")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ObjectTransform")).not.toContainText("Selected Shape:");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 0, y 0, rot 0, scale 1 x 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1 x 1");
       await expect(page.locator("#objectVectorStudioV2ObjectTransform #objectVectorStudioV2MoveShapeButton")).toHaveCount(1);
       const transformSummaryLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => {
-        const actions = panel.querySelector(".object-vector-studio-v2__shape-actions");
+        const scaleRow = panel.querySelector(".object-vector-studio-v2__scale-control-row");
         const summary = panel.querySelector(".object-vector-studio-v2__transform-summary");
+        const summaryStyle = getComputedStyle(summary);
         return {
-          summaryAfterActions: Boolean(actions && summary && (actions.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING)),
-          summaryTopAtBottom: summary.getBoundingClientRect().top >= actions.getBoundingClientRect().bottom
+          summaryAfterScale: Boolean(scaleRow && summary && (scaleRow.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING)),
+          summaryCentered: summaryStyle.textAlign === "center",
+          summaryStartsWithoutTransform: !summary.textContent.trim().startsWith("Transform"),
+          summaryTopAtBottom: summary.getBoundingClientRect().top >= scaleRow.getBoundingClientRect().bottom
         };
       });
-      expect(transformSummaryLayout).toEqual({ summaryAfterActions: true, summaryTopAtBottom: true });
+      expect(transformSummaryLayout).toEqual({
+        summaryAfterScale: true,
+        summaryCentered: true,
+        summaryStartsWithoutTransform: true,
+        summaryTopAtBottom: true
+      });
       const transformIconState = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => ({
         resize: {
           iconKey: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").dataset.ovsIconKey,
@@ -1872,24 +1880,57 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "Group",
         "None"
       ]);
-      const transformFieldLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => (
-        Array.from(panel.querySelectorAll(".object-vector-studio-v2__edit-field--inline")).map((field) => {
-          const label = field.querySelector("span");
-          const input = field.querySelector("input");
-          const labelRect = label.getBoundingClientRect();
-          const inputRect = input.getBoundingClientRect();
+      const transformControlLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => (
+        Array.from(panel.querySelectorAll(".object-vector-studio-v2__transform-control-row")).map((row) => {
+          const children = Array.from(row.children);
+          const centers = children.map((child) => {
+            const rect = child.getBoundingClientRect();
+            return Math.round(rect.top + rect.height / 2);
+          });
+          const button = row.querySelector("button");
           return {
-            inline: Math.abs((labelRect.top + labelRect.height / 2) - (inputRect.top + inputRect.height / 2)) < 4 && labelRect.right <= inputRect.left,
-            label: label.textContent.trim()
+            allOneLine: centers.every((center) => Math.abs(center - centers[0]) <= 2),
+            axisLabels: Array.from(row.querySelectorAll(".object-vector-studio-v2__transform-axis-field > span")).map((element) => element.textContent.trim()),
+            buttonId: button?.id || "",
+            buttonText: button?.textContent.trim() || "",
+            buttonTitle: button?.title || "",
+            inputIds: Array.from(row.querySelectorAll("input")).map((input) => input.id),
+            label: row.querySelector(".object-vector-studio-v2__transform-control-label")?.textContent.trim() || "",
+            rowType: row.dataset.transformControlRow
           };
         })
       ));
-      expect(transformFieldLayout).toEqual([
-        { inline: true, label: "Move X" },
-        { inline: true, label: "Move Y" },
-        { inline: true, label: "Rotate" },
-        { inline: true, label: "Origin X" },
-        { inline: true, label: "Origin Y" }
+      expect(transformControlLayout).toEqual([
+        {
+          allOneLine: true,
+          axisLabels: ["X", "Y"],
+          buttonId: "objectVectorStudioV2MoveShapeButton",
+          buttonText: "Move",
+          buttonTitle: "",
+          inputIds: ["objectVectorStudioV2MoveXInput", "objectVectorStudioV2MoveYInput"],
+          label: "Move",
+          rowType: "move"
+        },
+        {
+          allOneLine: true,
+          axisLabels: ["X", "Y"],
+          buttonId: "objectVectorStudioV2ApplyOriginButton",
+          buttonText: "Apply",
+          buttonTitle: "Apply Origin",
+          inputIds: ["objectVectorStudioV2OriginXInput", "objectVectorStudioV2OriginYInput"],
+          label: "Origin",
+          rowType: "origin"
+        },
+        {
+          allOneLine: true,
+          axisLabels: [],
+          buttonId: "objectVectorStudioV2RotateShapeButton",
+          buttonText: "Rotate",
+          buttonTitle: "",
+          inputIds: ["objectVectorStudioV2RotateInput"],
+          label: "Rotate",
+          rowType: "rotate"
+        }
       ]);
       const transformBeforeInvalid = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform);
       await page.locator("#objectVectorStudioV2MoveXInput").fill("");
@@ -2234,6 +2275,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 15');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 15 degrees\./);
+      await page.locator("#objectVectorStudioV2OriginXInput").fill("2");
+      await page.locator("#objectVectorStudioV2OriginYInput").fill("-3");
+      await page.locator("#objectVectorStudioV2ApplyOriginButton").click();
+      const originAfterApply = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform.origin);
+      expect(originAfterApply).toEqual({ x: 2, y: -3 });
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated shape row 0 origin\/pivot to 2, -3\./);
 
       await page.locator("#objectVectorStudioV2ScaleInput").fill("0");
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveAttribute("aria-invalid", "true");
@@ -2243,7 +2290,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).not.toHaveAttribute("aria-invalid", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.2 for shape row 0\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"scaleX": 1.2');
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 10, y 10, rot 15, scale 1.2 x 1.2");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 15, scale 1.2 x 1.2");
       const selectionBeforeScaleStep = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
         height: Number(box.getAttribute("height")),
         width: Number(box.getAttribute("width"))
@@ -2295,7 +2342,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
       });
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 10, y 10, rot 15, scale 1 x 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 15, scale 1 x 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Resize Geometry applied scale 1\.2 to shape row 0; transform scale reset to 1\./);
 
       await page.locator("#objectVectorStudioV2BringForwardButton").click();
@@ -3646,12 +3693,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by 10, 10\./);
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 10, y 10, rot 0, scale 1 x 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 0, scale 1 x 1");
       await page.locator("#objectVectorStudioV2MoveXInput").fill("-5");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by -10, -10\./);
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("Transform x 0, y 0, rot 0, scale 1 x 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1 x 1");
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.authoring-copied-json")));
