@@ -113,6 +113,32 @@
               <input id="objectVectorStudioV2SearchFilter" type="search" autocomplete="off" placeholder="Filter objects">
             </label>
             <div id="objectVectorStudioV2ObjectTiles" class="object-vector-studio-v2__object-tiles" aria-label="Object tiles"></div>
+            <div class="object-vector-studio-v2__z-order-actions is-icon-only" aria-label="Selected shape order and grouping controls">
+              <button id="objectVectorStudioV2BringForwardButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="bring-forward" aria-label="Bring selected shape forward">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--bring-forward" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Bring Forward</span>
+              </button>
+              <button id="objectVectorStudioV2SendBackwardButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="send-backward" aria-label="Send selected shape backward">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--send-backward" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Send Backward</span>
+              </button>
+              <button id="objectVectorStudioV2BringToFrontButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="bring-front" aria-label="Bring selected shape to front">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--bring-front" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Bring To Front</span>
+              </button>
+              <button id="objectVectorStudioV2SendToBackButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="send-back" aria-label="Send selected shape to back">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--send-back" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Send To Back</span>
+              </button>
+              <button id="objectVectorStudioV2GroupShapesButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="group" aria-label="Group selected shapes">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--group" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Group Selected</span>
+              </button>
+              <button id="objectVectorStudioV2UngroupButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="ungroup" aria-label="Ungroup selected shapes">
+                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--ungroup" aria-hidden="true"></span>
+                <span class="object-vector-studio-v2__z-label">Ungroup</span>
+              </button>
+            </div>
           </div>
         </section>
       </aside>
@@ -157,9 +183,12 @@
                 </label>
               </div>
               <div class="object-vector-studio-v2__animation-controls" aria-label="Frame controls">
+                <button id="objectVectorStudioV2FrameLeftButton" type="button" disabled title="Disabled until the selected frame can move left">Left</button>
                 <button id="objectVectorStudioV2FrameEarlierButton" type="button" disabled title="Disabled until the selected frame can move earlier">Frame Earlier</button>
                 <button id="objectVectorStudioV2DuplicateFrameButton" type="button" disabled title="Disabled until a state frame is selected">Duplicate Frame</button>
                 <button id="objectVectorStudioV2FrameLaterButton" type="button" disabled title="Disabled until the selected frame can move later">Frame Later</button>
+                <button id="objectVectorStudioV2FrameRightButton" type="button" disabled title="Disabled until the selected frame can move right">Right</button>
+                <button id="objectVectorStudioV2DeleteFrameButton" type="button" disabled title="Disabled until a state frame is selected">Delete Frame</button>
               </div>
               <div id="objectVectorStudioV2FrameTimeline" class="object-vector-studio-v2__frame-timeline" aria-label="Frame timeline"></div>
             </div>
@@ -210,33 +239,6 @@
               <button class="object-vector-studio-v2__tool-toggle" type="button" aria-pressed="false" data-shape-tool="text" title="Create a text shape on the selected object">
                 <span class="object-vector-studio-v2__shape-icon object-vector-studio-v2__shape-icon--text" aria-hidden="true"></span>
                 <span class="object-vector-studio-v2__tool-label">Text</span>
-              </button>
-            </div>
-            <hr class="object-vector-studio-v2__separator">
-            <div class="object-vector-studio-v2__z-order-actions" aria-label="Shape order and grouping controls">
-              <button id="objectVectorStudioV2BringForwardButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="bring-forward">
-                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--bring-forward" aria-hidden="true"></span>
-                <span class="object-vector-studio-v2__z-label">Bring Forward</span>
-              </button>
-              <button id="objectVectorStudioV2SendBackwardButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="send-backward">
-                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--send-backward" aria-hidden="true"></span>
-                <span class="object-vector-studio-v2__z-label">Send Backward</span>
-              </button>
-              <button id="objectVectorStudioV2BringToFrontButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="bring-front">
-                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--bring-front" aria-hidden="true"></span>
-                <span class="object-vector-studio-v2__z-label">Bring To Front</span>
-              </button>
-              <button id="objectVectorStudioV2SendToBackButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="send-back">
-                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--send-back" aria-hidden="true"></span>
-                <span class="object-vector-studio-v2__z-label">Send To Back</span>
-              </button>
-              <button id="objectVectorStudioV2GroupShapesButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="group">
-                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--group" aria-hidden="true"></span>
-                <span class="object-vector-studio-v2__z-label">Group Selected</span>
-              </button>
-              <button id="objectVectorStudioV2UngroupButton" class="object-vector-studio-v2__z-action" type="button" data-z-action="ungroup">
-                <span class="object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--ungroup" aria-hidden="true"></span>
-                <span class="object-vector-studio-v2__z-label">Ungroup</span>
               </button>
             </div>
             <hr class="object-vector-studio-v2__separator">

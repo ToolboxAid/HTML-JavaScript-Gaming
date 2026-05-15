@@ -1464,8 +1464,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const gridButton = document.querySelector("#objectVectorStudioV2GridRenderButton");
         const labelButton = document.querySelector("#objectVectorStudioV2ToolLabelModeButton");
         const zOrder = document.querySelector(".object-vector-studio-v2__z-order-actions");
-        const previousSeparator = zOrder.previousElementSibling;
-        const nextSeparator = zOrder.nextElementSibling;
+        const objectTiles = document.querySelector("#objectVectorStudioV2ObjectTiles");
         const shapeToolsContent = document.querySelector("#objectVectorStudioV2ShapeToolsContent").getBoundingClientRect();
         const shapeToolsAccordion = document.querySelector("#objectVectorStudioV2ShapeToolsContent").closest(".accordion-v2").getBoundingClientRect();
         const leftPanel = document.querySelector(".tool-starter__panel--left");
@@ -1473,13 +1472,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           labelBesideGrid: gridButton.getBoundingClientRect().right <= labelButton.getBoundingClientRect().left,
           leftPanelOverflowY: getComputedStyle(leftPanel).overflowY,
           textButtonWider: Math.round(rect.width) > Math.round(rect.height),
+          zActionDockIconOnly: zOrder.classList.contains("is-icon-only"),
+          zActionDockUnderObjects: zOrder.parentElement.id === "objectVectorStudioV2ObjectsContent",
+          zActionDockUnderObjectTiles: zOrder.previousElementSibling === objectTiles,
+          zActionIconOnlySquare: Math.round(zRect.width) === Math.round(zRect.height),
           shapeToolsReachesBottom: Math.abs(shapeToolsContent.bottom - shapeToolsAccordion.bottom) <= 1,
-          zActionHeightMatchesShapeButton: Math.round(zRect.height) === Math.round(rect.height),
-          zActionTextWider: Math.round(zRect.width) > Math.round(zRect.height),
-          zOrderBetweenSeparators: previousSeparator?.matches("hr.object-vector-studio-v2__separator") && nextSeparator?.matches("hr.object-vector-studio-v2__separator")
+          zOrderAbsentFromShapeTools: !document.querySelector("#objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__z-order-actions")
         };
       });
-      expect(shapeToolLayout).toEqual({ labelBesideGrid: true, leftPanelOverflowY: "auto", textButtonWider: true, shapeToolsReachesBottom: true, zActionHeightMatchesShapeButton: true, zActionTextWider: true, zOrderBetweenSeparators: true });
+      expect(shapeToolLayout).toEqual({
+        labelBesideGrid: true,
+        leftPanelOverflowY: "auto",
+        textButtonWider: true,
+        shapeToolsReachesBottom: true,
+        zActionDockIconOnly: true,
+        zActionDockUnderObjects: true,
+        zActionDockUnderObjectTiles: true,
+        zActionIconOnlySquare: true,
+        zOrderAbsentFromShapeTools: true
+      });
       await page.locator("#objectVectorStudioV2ToolLabelModeButton").click();
       await expect(page.locator("#objectVectorStudioV2ToolLabelModeButton")).toHaveText("Words");
       await expect(page.locator("#objectVectorStudioV2ToolToggleGrid")).toHaveClass(/is-icon-only/);
@@ -1489,16 +1500,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const zRect = button.getBoundingClientRect();
         const shapeRect = document.querySelector("[data-shape-tool='rectangle']").getBoundingClientRect();
         const zIcon = button.querySelector(".object-vector-studio-v2__z-icon").getBoundingClientRect();
-        const shapeIcon = document.querySelector(".object-vector-studio-v2__shape-icon--rectangle").getBoundingClientRect();
+        const label = button.querySelector(".object-vector-studio-v2__z-label").getBoundingClientRect();
         return {
-          buttonHeightMatches: Math.round(zRect.height) === Math.round(shapeRect.height),
-          buttonWidthMatches: Math.round(zRect.width) === Math.round(shapeRect.width),
+          buttonRemainsIconOnlyWhenToolLabelsToggle: button.closest(".object-vector-studio-v2__z-order-actions").classList.contains("is-icon-only"),
           iconOnlyButtonSquare: Math.round(zRect.width) === Math.round(zRect.height) && Math.round(shapeRect.width) === Math.round(shapeRect.height),
-          iconHeightMatches: Math.round(zIcon.height) === Math.round(shapeIcon.height),
-          iconWidthMatches: Math.round(zIcon.width) === Math.round(shapeIcon.width)
+          iconVisible: Math.round(zIcon.height) > 0 && Math.round(zIcon.width) > 0,
+          labelVisuallyHidden: Math.round(label.width) <= 1 && Math.round(label.height) <= 1
         };
       });
-      expect(iconModeSizeParity).toEqual({ buttonHeightMatches: true, buttonWidthMatches: true, iconOnlyButtonSquare: true, iconHeightMatches: true, iconWidthMatches: true });
+      expect(iconModeSizeParity).toEqual({ buttonRemainsIconOnlyWhenToolLabelsToggle: true, iconOnlyButtonSquare: true, iconVisible: true, labelVisuallyHidden: true });
       await expect(page.locator("#objectVectorStudioV2ResetViewButton")).not.toHaveClass(/is-icon-only/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Shape\/Tools display mode set to compact icons\./);
       await page.reload({ waitUntil: "networkidle" });
@@ -1759,7 +1769,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         widthIsRightOfStroke: true
       });
       await expect(page.locator(".object-vector-studio-v2__palette-sort")).not.toContainText("Sort");
-      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue", "Sat", "Bri", "Name"]);
+      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue◇", "Sat◇", "Bri◇", "Name▲"]);
+      await expect(page.locator("[data-palette-sort='name']")).toHaveAttribute("data-sort-direction", "asc");
       const swatchState = await page.locator(".object-vector-studio-v2__palette-swatch").evaluateAll((swatches) => swatches.map((swatch) => {
         const rect = swatch.getBoundingClientRect();
         return {
@@ -1774,6 +1785,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { ariaLabel: "Palette swatch cyan #6fd3ff", height: 32, text: "", title: "cyan\n#6fd3ff", width: 32 },
         { ariaLabel: "Palette swatch white #ffffff", height: 32, text: "", title: "white\n#ffffff", width: 32 }
       ]);
+      await page.locator("[data-palette-sort='name']").click();
+      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue◇", "Sat◇", "Bri◇", "Name▼"]);
+      await expect(page.locator(".object-vector-studio-v2__palette-swatch").first()).toHaveAttribute("data-palette-label", "white");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Palette sort set to name desc\./);
+      await page.locator("[data-palette-sort='hue']").click();
+      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue▲", "Sat◇", "Bri◇", "Name◇"]);
+      await expect(page.locator("[data-palette-sort='hue']")).toHaveAttribute("data-sort-direction", "asc");
+      await expect(page.locator(".object-vector-studio-v2__palette-swatch").first()).toHaveAttribute("data-palette-label", "white");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Palette sort set to hue asc\./);
       const compactAccordionLayout = await page.evaluate(() => {
         const previewAccordion = document.querySelector(".object-vector-studio-v2__preview-accordion");
         const previewContent = document.querySelector("#objectVectorStudioV2WorkAreaContent");
@@ -2489,7 +2509,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"fillOpacity": 0.502');
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='1']")).toHaveAttribute("fill-opacity", "0.502");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Applied fill opacity 0\.502 to shape row 1\./);
+      const shapeOneStyleBeforeStrokeMode = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
       await page.locator("#objectVectorStudioV2StrokeModeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Palette target set to Stroke\./);
+      const shapeOneStyleAfterStrokeMode = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
+      expect(shapeOneStyleAfterStrokeMode).toEqual(shapeOneStyleBeforeStrokeMode);
       await clickPreviewShape(1);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"stroke": "#ffffff"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #ffffff from white to shape row 1 by render surface click\. Target: stroke width 2, opacity 1\./);
@@ -3406,7 +3430,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             frames: [
               {
                 durationFrames: 1,
-                id: "active-frame-1",
+                id: "frame-1",
                 order: 1,
                 shapeOverrides: [
                   {
@@ -3929,7 +3953,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 frames: [
                   {
                     durationFrames: 1,
-                    id: "idle-frame-1",
+                    id: "frame-1",
                     order: 1,
                     shapeOverrides: [
                       {
@@ -3947,7 +3971,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 frames: [
                   {
                     durationFrames: 1,
-                    id: "thrust-frame-1",
+                    id: "frame-1",
                     order: 1,
                     shapeOverrides: [
                       {
@@ -3972,21 +3996,40 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await expect(page.locator('[data-object-id="object.animation.ship-template"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(1);
-      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='idle-frame-1']")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1']")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"id": "idle"');
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Selected Shape");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("ship-template-hull");
       await expect(page.locator("#objectVectorStudioV2ObjectGeometrySummary")).toHaveText("");
       await expect(page.locator("#objectVectorStudioV2ObjectGeometryName")).toHaveText("");
-      await expect(page.locator("[aria-label='Frame controls'] button")).toHaveText(["Frame Earlier", "Duplicate Frame", "Frame Later"]);
+      await expect(page.locator("[aria-label='Frame controls'] button")).toHaveText(["Left", "Frame Earlier", "Duplicate Frame", "Frame Later", "Right", "Delete Frame"]);
+      await expect(page.locator("#objectVectorStudioV2DeleteFrameButton")).toBeDisabled();
 
       await page.locator("#objectVectorStudioV2DuplicateFrameButton").click();
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(2);
-      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='idle-frame-2']")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-2']")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2DeleteFrameButton")).toBeEnabled();
+      await page.locator("#objectVectorStudioV2DeleteFrameButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id]")).toHaveCount(1);
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1']")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted frame frame-2 from Idle\./);
+      await page.locator("#objectVectorStudioV2DuplicateFrameButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-2']")).toHaveAttribute("aria-pressed", "true");
+      await page.locator("#objectVectorStudioV2FrameLeftButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id]").first()).toHaveAttribute("data-frame-id", "frame-2");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved frame frame-2 left\./);
+      await page.locator("#objectVectorStudioV2FrameRightButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id]").last()).toHaveAttribute("data-frame-id", "frame-2");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved frame frame-2 right\./);
       await page.locator("#objectVectorStudioV2FrameEarlierButton").click();
-      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id]").first()).toHaveAttribute("data-frame-id", "idle-frame-2");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved frame idle-frame-2 earlier\./);
-      await page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='idle-frame-1']").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id]").first()).toHaveAttribute("data-frame-id", "frame-2");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved frame frame-2 earlier\./);
+      await page.locator("#objectVectorStudioV2FrameLaterButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id]").last()).toHaveAttribute("data-frame-id", "frame-2");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved frame frame-2 later\./);
+      await page.locator("#objectVectorStudioV2FrameEarlierButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id]").first()).toHaveAttribute("data-frame-id", "frame-2");
+      await page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1']").click();
 
       await page.locator("#objectVectorStudioV2MoveXInput").fill("12");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("6");
@@ -3996,7 +4039,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by 12, 6\./);
 
       await page.locator("#objectVectorStudioV2OnionSkinToggle").check();
-      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-onion-skin-frame='idle-frame-2']")).toHaveCount(1);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-onion-skin-frame='frame-2']")).toHaveCount(1);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Onion-skin preview enabled\./);
 
       await page.evaluate(() => window.__objectVectorStudioV2App.selectState("thrust", "test state selection"));
@@ -4021,9 +4064,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview", "true");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview-state", "idle");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime asset load from Object Vector Studio V2 runtime preview: 1 objects\./);
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview-frame", "idle-frame-2");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime SVG preview generated for object\.animation\.ship-template state=idle frame=idle-frame-2\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime preview launched for Ship Template state idle frame idle-frame-2\. Runtime palette source object-vector-studio-v2\.runtimePalette; object JSON remains palette-free\./);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview-frame", "frame-2");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime SVG preview generated for object\.animation\.ship-template state=idle frame=frame-2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime preview launched for Ship Template state idle frame frame-2\. Runtime palette source object-vector-studio-v2\.runtimePalette; object JSON remains palette-free\./);
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.animation-copied-json")));
@@ -4104,7 +4147,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         frames: [
           {
             durationFrames: 1,
-            id: "active-frame-1",
+            id: "frame-1",
             order: 1,
             shapeOverrides: [
               {
@@ -4179,7 +4222,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("data-runtime-preview", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime cache miss for object\.library\.derived-ship; cached resolved object\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Object Vector runtime inheritance resolved for object\.library\.derived-ship from object\.library\.base-ship; cached inherited render payload\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime preview launched for Derived Ship state active frame active-frame-1\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime preview launched for Derived Ship state active frame frame-1\./);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.library.base-ship'] [data-object-control='delete']").click();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.library.base-ship']")).toHaveCount(0);
       const objectReferenceCleanup = await page.evaluate(() => {
@@ -4695,9 +4738,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 7 objects.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ship; cached resolved object object.asteroids.ship.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ufoSmall; cached resolved object object.asteroids.small-ufo.");
-      expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/idle-frame-1.");
-      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=idle-frame-1.");
-      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 2 shapes state=active frame=active-frame-1.");
+      expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/frame-1.");
+      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=frame-1.");
+      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 2 shapes state=active frame=frame-1.");
       expect(eventMessages).not.toContain("matched multiple objects by tags");
       expect(pageErrors).toEqual([]);
     } finally {

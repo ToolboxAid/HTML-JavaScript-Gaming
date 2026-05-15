@@ -336,7 +336,7 @@
                   "name": "Idle",
                   "frames": [
                     {
-                      "id": "idle-frame-1",
+                      "id": "frame-1",
                       "order": 0,
                       "durationFrames": 1,
                       "shapeOverrides": [
@@ -357,7 +357,7 @@
                   "name": "Thrust",
                   "frames": [
                     {
-                      "id": "thrust-frame-1",
+                      "id": "frame-1",
                       "order": 0,
                       "durationFrames": 1,
                       "shapeOverrides": [
@@ -466,7 +466,7 @@
                   "name": "Active",
                   "frames": [
                     {
-                      "id": "active-frame-1",
+                      "id": "frame-1",
                       "order": 0,
                       "durationFrames": 1,
                       "shapeOverrides": []
@@ -542,7 +542,7 @@
                   "name": "Active",
                   "frames": [
                     {
-                      "id": "active-frame-1",
+                      "id": "frame-1",
                       "order": 0,
                       "durationFrames": 1,
                       "shapeOverrides": []
@@ -626,7 +626,7 @@
                   "name": "Active",
                   "frames": [
                     {
-                      "id": "active-frame-1",
+                      "id": "frame-1",
                       "order": 0,
                       "durationFrames": 1,
                       "shapeOverrides": []
@@ -710,7 +710,7 @@
                   "name": "Active",
                   "frames": [
                     {
-                      "id": "active-frame-1",
+                      "id": "frame-1",
                       "order": 0,
                       "durationFrames": 1,
                       "shapeOverrides": []
@@ -790,7 +790,7 @@
                   "name": "Active",
                   "frames": [
                     {
-                      "id": "active-frame-1",
+                      "id": "frame-1",
                       "order": 0,
                       "durationFrames": 1,
                       "shapeOverrides": []
@@ -870,7 +870,7 @@
                   "name": "Active",
                   "frames": [
                     {
-                      "id": "active-frame-1",
+                      "id": "frame-1",
                       "order": 0,
                       "durationFrames": 1,
                       "shapeOverrides": []

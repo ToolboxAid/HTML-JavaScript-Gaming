@@ -552,11 +552,15 @@ textarea:hover {
   align-items: stretch;
 }
 
-#objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__z-order-actions {
+#objectVectorStudioV2ObjectsContent .object-vector-studio-v2__z-order-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 86px);
+  grid-template-columns: repeat(auto-fit, 34px);
   align-items: stretch;
   justify-content: center;
+  gap: 4px;
+  border-top: 1px solid var(--tool-starter-line);
+  margin-top: 3px;
+  padding-top: 4px;
 }
 
 .object-vector-studio-v2__z-action {
@@ -661,8 +665,8 @@ textarea:hover {
   grid-template-columns: repeat(auto-fill, 42px);
 }
 
-#objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__z-order-actions.is-icon-only {
-  grid-template-columns: repeat(auto-fill, 42px);
+#objectVectorStudioV2ObjectsContent .object-vector-studio-v2__z-order-actions.is-icon-only {
+  grid-template-columns: repeat(auto-fit, 34px);
 }
 
 .object-vector-studio-v2__z-order-actions.is-icon-only .object-vector-studio-v2__z-action {
@@ -670,6 +674,7 @@ textarea:hover {
   min-width: 0;
   min-height: 0;
   aspect-ratio: 1;
+  padding: 2px !important;
 }
 
 .object-vector-studio-v2__z-order-actions.is-icon-only .object-vector-studio-v2__z-label {
@@ -1071,6 +1076,10 @@ textarea:hover {
   min-height: 42px;
 }
 
+#objectVectorStudioV2ObjectsContent .object-vector-studio-v2__z-order-actions button {
+  min-height: 34px;
+}
+
 .object-vector-studio-v2__animation-controls {
   width: min(720px, 100%);
   display: flex;
@@ -1270,6 +1279,12 @@ textarea:hover {
 .object-vector-studio-v2__palette-sort button[aria-pressed="true"] {
   border-color: var(--tool-starter-accent) !important;
   box-shadow: 0 0 0 2px rgba(221, 214, 254, 0.25);
+}
+
+.object-vector-studio-v2__palette-sort-caret {
+  margin-left: 2px;
+  font-size: 0.7rem;
+  line-height: 1;
 }
 
 .object-vector-studio-v2__selection-metrics {

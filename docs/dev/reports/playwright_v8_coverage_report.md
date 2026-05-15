@@ -1,6 +1,6 @@
-# PR_26133_045 Playwright V8 Coverage Report
+# PR_26133_046 Playwright V8 Coverage Report
 
-Task: PR_26133_045-object-preview-pan-direction-and-strict-schema-fix
+Task: PR_26133_046-object-vector-frame-palette-and-shape-action-cleanup
 Date: 2026-05-15
 
 ## Result
@@ -24,6 +24,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Relevant Runtime Coverage
 
 ```text
+(80%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 97/97; executed functions 4/5
 (90%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 3187/3187; executed functions 331/369
 (95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 409/409; executed functions 53/56
 ```
@@ -36,4 +37,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 preview pan controls, center-dot visibility, coordinate/origin display updates, transform-origin pivot rendering, and strict schema rejection for unknown runtime/workspace fields.
+The Workspace V2 run exercised Object Vector Studio V2 frame creation/duplication/deletion/reordering, palette sort controls, Paint/Stroke mode application through canvas clicks, and icon-only shape order/group controls under Objects.

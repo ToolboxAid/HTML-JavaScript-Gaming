@@ -84,7 +84,12 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   ["#objectVectorStudioV2PanRightButton", "panRight"],
   ["#objectVectorStudioV2ResetViewButton", "reset"],
   ["#objectVectorStudioV2CenterDotButton", "center"],
+  ["#objectVectorStudioV2FrameLeftButton", "panLeft"],
+  ["#objectVectorStudioV2FrameEarlierButton", "panLeft"],
   ["#objectVectorStudioV2DuplicateFrameButton", "duplicate"],
+  ["#objectVectorStudioV2FrameLaterButton", "panRight"],
+  ["#objectVectorStudioV2FrameRightButton", "panRight"],
+  ["#objectVectorStudioV2DeleteFrameButton", "delete"],
   ["#objectVectorStudioV2GridSnapButton", "gridSnap"],
   ["#objectVectorStudioV2AngleSnapButton", "angle"],
   ["#objectVectorStudioV2GridRenderButton", "grid"],
@@ -417,6 +422,7 @@ export class ToolStarterApp {
     this.activeTool = "select";
     this.paletteTarget = "paint";
     this.paletteSortMode = "name";
+    this.paletteSortDirection = "asc";
     this.selectedFillColor = "#ffffff";
     this.selectedStrokeColor = "#000000";
     this.selectedFillLabel = "default fill";
@@ -614,9 +620,12 @@ export class ToolStarterApp {
   }
 
   bindAnimationControls() {
+    this.elements.deleteFrameButton.addEventListener("click", () => this.deleteSelectedFrame());
     this.elements.duplicateFrameButton.addEventListener("click", () => this.duplicateSelectedFrame());
-    this.elements.frameEarlierButton.addEventListener("click", () => this.moveSelectedFrame("earlier"));
-    this.elements.frameLaterButton.addEventListener("click", () => this.moveSelectedFrame("later"));
+    this.elements.frameLeftButton.addEventListener("click", () => this.moveSelectedFrame("earlier", "left"));
+    this.elements.frameEarlierButton.addEventListener("click", () => this.moveSelectedFrame("earlier", "earlier"));
+    this.elements.frameLaterButton.addEventListener("click", () => this.moveSelectedFrame("later", "later"));
+    this.elements.frameRightButton.addEventListener("click", () => this.moveSelectedFrame("later", "right"));
     this.elements.playButton.addEventListener("click", () => this.playAnimation());
     this.elements.pauseButton.addEventListener("click", () => this.pauseAnimation());
     this.elements.stopButton.addEventListener("click", () => this.stopAnimation());
@@ -703,12 +712,18 @@ export class ToolStarterApp {
     this.elements.strokeOpacity.addEventListener("change", () => this.changePaletteOpacity("stroke"));
     this.elements.paletteSortButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        this.paletteSortMode = button.dataset.paletteSort || "name";
+        const nextSortMode = button.dataset.paletteSort || "name";
+        if (this.paletteSortMode === nextSortMode) {
+          this.paletteSortDirection = this.paletteSortDirection === "asc" ? "desc" : "asc";
+        } else {
+          this.paletteSortMode = nextSortMode;
+          this.paletteSortDirection = "asc";
+        }
         this.updatePaletteSortButtons();
         if (this.runtimePalette) {
           this.renderPalette();
         }
-        this.statusLog.write(`OK Palette sort set to ${this.paletteSortMode}.`);
+        this.statusLog.write(`OK Palette sort set to ${this.paletteSortMode} ${this.paletteSortDirection}.`);
       });
     });
     this.setPaletteTarget("paint", false);
@@ -729,7 +744,6 @@ export class ToolStarterApp {
     this.elements.strokeModeButton.setAttribute("aria-pressed", String(this.paletteTarget === "stroke"));
     this.elements.paintModeButton.classList.toggle("is-active", this.paletteTarget === "paint");
     this.elements.strokeModeButton.classList.toggle("is-active", this.paletteTarget === "stroke");
-    this.syncPaletteSelectionFromCurrentShape({ logMissing: shouldLog, render: false });
     this.updatePaletteModeSwatches();
     if (this.runtimePalette) {
       this.renderPalette();
@@ -744,7 +758,21 @@ export class ToolStarterApp {
   updatePaletteSortButtons() {
     this.elements.paletteSortButtons.forEach((button) => {
       const isActive = button.dataset.paletteSort === this.paletteSortMode;
+      const baseLabel = button.dataset.paletteSortLabel || button.textContent.replace(/[▲▼]\s*$/u, "").trim() || shapeTypeLabel(button.dataset.paletteSort || "name");
+      button.dataset.paletteSortLabel = baseLabel;
+      button.dataset.sortDirection = isActive ? this.paletteSortDirection : "";
+      button.textContent = "";
+      const label = document.createElement("span");
+      label.textContent = baseLabel;
+      button.append(label);
+      const caret = document.createElement("span");
+      caret.className = "object-vector-studio-v2__palette-sort-caret";
+      caret.setAttribute("aria-hidden", "true");
+      caret.textContent = isActive ? (this.paletteSortDirection === "asc" ? "▲" : "▼") : "◇";
+      button.append(caret);
       button.setAttribute("aria-pressed", String(isActive));
+      button.setAttribute("aria-label", `${baseLabel} sort ${isActive ? this.paletteSortDirection : "inactive"}`);
+      button.title = isActive ? `Sort ${baseLabel} ${this.paletteSortDirection === "asc" ? "ascending" : "descending"}` : `Sort ${baseLabel} ascending`;
       button.classList.toggle("is-active", isActive);
     });
   }
@@ -843,7 +871,7 @@ export class ToolStarterApp {
   applyToolDisplayMode(mode, shouldLog) {
     const isCompact = mode === "icons";
     this.elements.toolToggleGrid.classList.toggle("is-icon-only", isCompact);
-    this.elements.zOrderActions.classList.toggle("is-icon-only", isCompact);
+    this.elements.zOrderActions.classList.add("is-icon-only");
     this.elements.toolLabelModeButton.setAttribute("aria-pressed", String(isCompact));
     this.elements.toolLabelModeButton.textContent = isCompact ? "Words" : "Icons";
     this.window.sessionStorage?.setItem(TOOL_DISPLAY_MODE_KEY, isCompact ? "icons" : "words");
@@ -1101,12 +1129,15 @@ export class ToolStarterApp {
     return [...this.runtimePalette.swatches].sort((left, right) => {
       const leftLabel = left?.name || left?.id || left?.symbol || "";
       const rightLabel = right?.name || right?.id || right?.symbol || "";
+      let result = 0;
       if (this.paletteSortMode === "name") {
-        return collator.compare(leftLabel, rightLabel);
+        result = collator.compare(leftLabel, rightLabel);
+      } else {
+        const leftMetrics = colorMetrics(swatchColor(left));
+        const rightMetrics = colorMetrics(swatchColor(right));
+        result = (leftMetrics[this.paletteSortMode] - rightMetrics[this.paletteSortMode]) || collator.compare(leftLabel, rightLabel);
       }
-      const leftMetrics = colorMetrics(swatchColor(left));
-      const rightMetrics = colorMetrics(swatchColor(right));
-      return (leftMetrics[this.paletteSortMode] - rightMetrics[this.paletteSortMode]) || collator.compare(leftLabel, rightLabel);
+      return this.paletteSortDirection === "desc" ? -result : result;
     });
   }
 
@@ -2837,7 +2868,7 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
     nextObject.states = this.objectStates(nextObject);
-    const frame = this.createFrameSnapshot(nextObject, stateId, `${stateId}-frame-1`, 1);
+    const frame = this.createFrameSnapshot(nextObject, stateId, "frame-1", 1);
     nextObject.states.push({
       frames: [frame],
       id: stateId,
@@ -2873,12 +2904,44 @@ export class ToolStarterApp {
     });
   }
 
-  moveSelectedFrame(direction) {
+  deleteSelectedFrame() {
     const object = this.selectedObject();
     const state = this.selectedState();
     const frame = this.activeFrame();
     if (!object || !state || !frame) {
-      this.statusLog.write(`WARN Move frame ${direction} skipped: select an object state and frame first.`);
+      this.statusLog.write("WARN Delete frame skipped: select an object state and frame first.");
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Delete frame")) {
+      return;
+    }
+    const frames = sortedFrames(state);
+    if (frames.length <= 1) {
+      this.statusLog.write(`WARN Delete frame skipped: frame ${frame.id} is the only frame in ${OBJECT_STATE_LABELS[state.id]}.`);
+      return;
+    }
+    const index = frames.findIndex((candidate) => candidate.id === frame.id);
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    const nextState = this.objectStates(nextObject).find((candidate) => candidate.id === state.id);
+    const nextFrames = sortedFrames(nextState).filter((candidate) => candidate.id !== frame.id);
+    nextFrames.forEach((candidate, frameIndex) => {
+      candidate.order = frameIndex + 1;
+    });
+    nextState.frames = nextFrames;
+    const nextSelectedFrame = nextFrames[Math.min(index, nextFrames.length - 1)] || nextFrames[0];
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Deleted frame ${frame.id} from ${OBJECT_STATE_LABELS[state.id]}.`, "Delete frame failed schema validation", {
+      selectedFrameId: nextSelectedFrame.id,
+      selectedStateId: state.id
+    });
+  }
+
+  moveSelectedFrame(direction, controlLabel = direction) {
+    const object = this.selectedObject();
+    const state = this.selectedState();
+    const frame = this.activeFrame();
+    if (!object || !state || !frame) {
+      this.statusLog.write(`WARN Move frame ${controlLabel} skipped: select an object state and frame first.`);
       return;
     }
     if (this.guardSelectedObjectMutation("Move frame")) {
@@ -2888,7 +2951,7 @@ export class ToolStarterApp {
     const index = frames.findIndex((candidate) => candidate.id === frame.id);
     const nextIndex = direction === "earlier" ? index - 1 : index + 1;
     if (nextIndex < 0 || nextIndex >= frames.length) {
-      this.statusLog.write(`WARN Move frame ${direction} skipped: frame ${frame.id} cannot move ${direction}.`);
+      this.statusLog.write(`WARN Move frame ${controlLabel} skipped: frame ${frame.id} cannot move ${controlLabel}.`);
       return;
     }
 
@@ -2902,7 +2965,7 @@ export class ToolStarterApp {
       candidate.order = frameIndex + 1;
     });
     nextState.frames = nextFrames;
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Moved frame ${frame.id} ${direction}.`, "Move frame failed schema validation", {
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Moved frame ${frame.id} ${controlLabel}.`, "Move frame failed schema validation", {
       selectedFrameId: frame.id,
       selectedStateId: state.id
     });
@@ -4906,10 +4969,10 @@ export class ToolStarterApp {
   uniqueFrameId(state) {
     const usedIds = new Set(sortedFrames(state).map((frame) => frame.id));
     let suffix = usedIds.size + 1;
-    let candidate = `${state.id}-frame-${suffix}`;
+    let candidate = `frame-${suffix}`;
     while (usedIds.has(candidate)) {
       suffix += 1;
-      candidate = `${state.id}-frame-${suffix}`;
+      candidate = `frame-${suffix}`;
     }
     return candidate;
   }
@@ -4951,8 +5014,11 @@ export class ToolStarterApp {
     const isLocked = Boolean(object && this.isObjectLocked(object.id));
     const lockedReason = object ? `Disabled because ${object.name} is locked for this runtime session.` : noFrameReason;
     this.setControlDisabled(this.elements.duplicateFrameButton, !hasFrame || isLocked, isLocked ? lockedReason : noFrameReason, "Duplicate the active animation frame.");
+    this.setControlDisabled(this.elements.deleteFrameButton, !hasFrame || isLocked || frames.length <= 1, isLocked ? lockedReason : (hasFrame ? "Disabled because the selected state needs at least one frame." : noFrameReason), "Delete the selected animation frame.");
+    this.setControlDisabled(this.elements.frameLeftButton, !hasFrame || isLocked || frameIndex <= 0, isLocked ? lockedReason : (hasFrame ? "Disabled because the selected frame is already first." : noFrameReason), "Move the selected frame left.");
     this.setControlDisabled(this.elements.frameEarlierButton, !hasFrame || isLocked || frameIndex <= 0, isLocked ? lockedReason : (hasFrame ? "Disabled because the selected frame is already first." : noFrameReason), "Move the selected frame earlier.");
     this.setControlDisabled(this.elements.frameLaterButton, !hasFrame || isLocked || frameIndex >= frames.length - 1, isLocked ? lockedReason : (hasFrame ? "Disabled because the selected frame is already last." : noFrameReason), "Move the selected frame later.");
+    this.setControlDisabled(this.elements.frameRightButton, !hasFrame || isLocked || frameIndex >= frames.length - 1, isLocked ? lockedReason : (hasFrame ? "Disabled because the selected frame is already last." : noFrameReason), "Move the selected frame right.");
     this.setControlDisabled(this.elements.playButton, !hasFrame || this.isAnimationPlaying, this.isAnimationPlaying ? "Disabled while playback is already running." : noFrameReason, "Play the selected state timeline.");
     this.setControlDisabled(this.elements.pauseButton, !this.isAnimationPlaying, "Disabled until playback starts.", "Pause animation playback.");
     this.setControlDisabled(this.elements.stopButton, !hasFrame, noFrameReason, "Stop animation playback.");
