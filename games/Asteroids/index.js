@@ -151,6 +151,9 @@ export async function bootAsteroidsNew({
       loaded: Boolean(objectVectorAssets),
       objectCount: objectVectorAssets?.objectsById?.size || 0
     });
+    if (!objectVectorAssets) {
+      throw new Error("Asteroids Object Vector runtime manifest validation failed: Object Vector Studio V2 payload could not be loaded from game.manifest.json.");
+    }
 
     stage = "create-input";
     traceBoot(stage);

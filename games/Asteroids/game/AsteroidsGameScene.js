@@ -16,7 +16,8 @@ import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
 import { createAsteroidGeometryProfilesFromObjectVectorAssets } from './asteroidObjectGeometry.js';
 import {
   ASTEROID_SIZE_RUNTIME_ROLES,
-  runtimeObjectRoleOptions
+  runtimeObjectRoleOptions,
+  validateAsteroidsRuntimeObjectBindings
 } from './asteroidsObjectVectorRoles.js';
 import {
   ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE
@@ -49,6 +50,13 @@ const ATTRACT_INPUT_CODES = [
 ];
 let hasLoggedSceneConstruction = false;
 let hasLoggedSceneEnter = false;
+
+function validationFailureMessage(validation) {
+  const details = Array.isArray(validation?.errors)
+    ? validation.errors.map((entry) => entry.message).filter(Boolean).join(' ')
+    : '';
+  return `Asteroids Object Vector runtime manifest validation failed${details ? `: ${details}` : '.'}`;
+}
 
 function logSceneBootStage(stage, details = null) {
   if (details === null) {
@@ -111,6 +119,19 @@ export default class AsteroidsGameScene extends Scene {
     this.objectVectorAssets = options.objectVectorAssets || null;
     this.objectVectorRuntime = options.objectVectorRuntime || null;
     this.objectVectorRuntimeBindings = this.objectVectorAssets?.runtimeBindings || {};
+    this.objectVectorRuntimeBindingValidation = this.objectVectorAssets
+      ? validateAsteroidsRuntimeObjectBindings([...this.objectVectorAssets.objectsById.values()], this.objectVectorRuntimeBindings, {
+        logger: this.objectVectorRuntime,
+      })
+      : { errors: [], objectsByRole: {}, ok: false, warnings: [] };
+    if (this.objectVectorAssets && !this.objectVectorRuntimeBindingValidation.ok) {
+      const message = validationFailureMessage(this.objectVectorRuntimeBindingValidation);
+      this.objectVectorRuntime?.log?.('FAIL', message, {
+        errors: this.objectVectorRuntimeBindingValidation.errors,
+      });
+      console.error(message);
+      throw new Error(message);
+    }
     this.asteroidGeometryProfiles = options.asteroidGeometryProfiles
       || createAsteroidGeometryProfilesFromObjectVectorAssets(this.objectVectorAssets, {
         logger: this.objectVectorRuntime,
@@ -886,6 +907,7 @@ export default class AsteroidsGameScene extends Scene {
         assetCount: this.objectVectorAssets?.objectsById?.size || 0,
         loaded: Boolean(this.objectVectorAssets),
         objectCount: this.objectVectorAssets?.objectsById?.size || 0,
+        runtimeBindingsValid: Boolean(this.objectVectorRuntimeBindingValidation?.ok),
         renderCounts: { ...this.objectVectorRenderCounts },
       };
     } catch {

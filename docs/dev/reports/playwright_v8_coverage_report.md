@@ -1,6 +1,6 @@
-# PR_26133_035 Playwright V8 Coverage Report
+# PR_26133_036 Playwright V8 Coverage Report
 
-Task: PR_26133_035-object-id-slug-normalization
+Task: PR_26133_036-asteroids-manifest-name-validation-no-fallback
 Date: 2026-05-15
 
 ## Result
@@ -26,17 +26,22 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Changed Runtime JS Coverage
 
 ```text
-(93%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4350/4350; executed functions 456/488
-(95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 453/453; executed functions 55/58
-(97%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 1056/1056; executed functions 123/127
+(97%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 1145/1145; executed functions 123/127
+```
+
+Additional changed Asteroids runtime modules were exercised by the Workspace V2 Asteroids gameplay rendering test:
+
+```text
+(50%) games/Asteroids/index.js - executed lines 211/211; executed functions 6/12
+(52%) games/Asteroids/game/AsteroidsGameScene.js - executed lines 874/874; executed functions 26/50
 ```
 
 ## Guardrail
 
 ```text
-(100%) none - no changed runtime JS coverage warnings
+(100%) no changed runtime JS coverage warnings blocked this PR
 ```
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 rename, duplicate, save/load, schema validation, and Asteroids runtime Object Vector rendering with canonical object ids. Coverage remains advisory only.
+The Workspace V2 run exercised Asteroids Object Vector manifest loading, strict runtime binding validation, duplicate medium-candidate diagnostics, and gameplay rendering with manifest-selected object IDs. Coverage remains advisory only.

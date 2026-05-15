@@ -10,6 +10,9 @@ import {
   loadAsteroidsManifest,
   loadAsteroidsObjectVectorPayload
 } from './asteroidsManifestObjectVectors.mjs';
+import {
+  validateAsteroidsRuntimeObjectBindings
+} from '../../games/Asteroids/game/asteroidsObjectVectorRoles.js';
 
 function createJsonResponse(payload) {
   return {
@@ -65,6 +68,7 @@ function createPayloadWithRecreatedMediumAsteroid(payload) {
 export async function run() {
   const manifest = loadAsteroidsManifest();
   const payload = loadAsteroidsObjectVectorPayload();
+  const runtimeBindings = manifest.game.gameData.objectVectorRuntime.objectIds;
   const manifestText = JSON.stringify(manifest);
 
   assert.equal(manifest.game.workspace.tools['vector-map-editor'], undefined);
@@ -81,14 +85,44 @@ export async function run() {
   assert.equal(geometryProfiles[2].points.length, 7);
   assert.equal(geometryProfiles[3].points.length, 12);
   assert.deepEqual(payload.objects.find((object) => object.id === 'object.asteroids.medium-asteroid').tags, ['asteroid', 'medium']);
+  const bindingValidation = validateAsteroidsRuntimeObjectBindings(payload.objects, runtimeBindings);
+  assert.equal(bindingValidation.ok, true);
+  assert.equal(bindingValidation.objectsByRole.asteroidMedium.id, 'object.asteroids.medium-asteroid');
+  assert.equal(bindingValidation.warnings.some((entry) => (
+    entry.message.includes('matched multiple objects by tags [asteroid, medium]')
+    && entry.details.candidates.some((candidate) => candidate.includes('object.asteroids.medium-asteroid-2'))
+  )), true);
+  const missingMediumBindings = { ...runtimeBindings };
+  delete missingMediumBindings.asteroidMedium;
+  const missingBindingValidation = validateAsteroidsRuntimeObjectBindings(payload.objects, missingMediumBindings);
+  assert.equal(missingBindingValidation.ok, false);
+  assert.equal(missingBindingValidation.errors.some((entry) => (
+    entry.message.includes('objectIds.asteroidMedium')
+    && entry.details.candidates.some((candidate) => candidate.includes('object.asteroids.medium-asteroid'))
+    && entry.details.candidates.some((candidate) => candidate.includes('object.asteroids.medium-asteroid-2'))
+  )), true);
+  const invalidBindingValidation = validateAsteroidsRuntimeObjectBindings(payload.objects, {
+    ...runtimeBindings,
+    asteroidMedium: 'object.asteroids.large-asteroid'
+  });
+  assert.equal(invalidBindingValidation.ok, false);
+  assert.equal(invalidBindingValidation.errors.some((entry) => entry.message.includes('missing required tags [asteroid, medium]')), true);
 
   const recreatedPayload = createPayloadWithRecreatedMediumAsteroid(payload);
+  const recreatedBindings = {
+    ...runtimeBindings,
+    asteroidMedium: 'object.asteroids.medium-asteroid-2'
+  };
   const recreatedProfiles = createAsteroidGeometryProfilesFromObjectVectorPayload(recreatedPayload, {
-    runtimeBindings: {
-      asteroidMedium: 'object.asteroids.medium-asteroid'
-    }
+    runtimeBindings: recreatedBindings
   });
   assert.equal(recreatedProfiles[2].objectId, 'object.asteroids.medium-asteroid-2');
+  const oldBindingValidation = validateAsteroidsRuntimeObjectBindings(recreatedPayload.objects, {
+    ...runtimeBindings,
+    asteroidMedium: 'object.asteroids.medium-asteroid'
+  });
+  assert.equal(oldBindingValidation.ok, false);
+  assert.equal(oldBindingValidation.errors.some((entry) => entry.message.includes('points to an old/legacy object')), true);
 
   const shapes = payload.objects.flatMap((object) => object.shapes);
   assert.equal(shapes.some((shape) => shape.tool === 'polygon'), true);
@@ -102,26 +136,25 @@ export async function run() {
     logger: { info() {}, warn() {}, error() {} }
   });
   const assetSet = await runtime.loadPayload(payload, {
+    runtimeBindings,
     sourceLabel: 'Asteroids game.manifest.json:tools.object-vector-studio-v2'
   });
   assert.equal(assetSet.objectsById.has('object.asteroids.small-asteroid'), true);
   assert.equal(assetSet.objectsById.has('object.asteroids.ship'), true);
 
   const recreatedAssetSet = await runtime.loadPayload(recreatedPayload, {
-    runtimeBindings: {
-      asteroidMedium: 'object.asteroids.medium-asteroid'
-    },
+    runtimeBindings: recreatedBindings,
     sourceLabel: 'Asteroids recreated medium object-vector payload'
   });
   const resolvedMedium = runtime.resolveObject(recreatedAssetSet, {
-    objectId: 'object.asteroids.medium-asteroid',
+    requireManifestBinding: true,
     runtimeRole: 'asteroidMedium',
     tags: ['asteroid', 'medium']
   });
   assert.equal(resolvedMedium.id, 'object.asteroids.medium-asteroid-2');
   assert.equal(runtime.getDiagnostics().events.some((event) => (
     event.level === 'WARN'
-    && event.message.includes('ignored explicit objectId object.asteroids.medium-asteroid')
+    && event.message.includes('using explicit manifest binding object.asteroids.medium-asteroid-2')
   )), true);
 
   const smallPreview = runtime.createSvgString(assetSet, {

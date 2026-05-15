@@ -4171,9 +4171,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
 
       const diagnostics = await page.evaluate(() => window.__asteroidsObjectVectorRuntime);
+      const runtimeBindingValidation = await page.evaluate(() => window.__asteroidsNewEngine.scene.objectVectorRuntimeBindingValidation);
       expect(diagnostics.loaded).toBe(true);
       expect(diagnostics.assetCount).toBe(7);
       expect(diagnostics.objectCount).toBe(7);
+      expect(diagnostics.runtimeBindingsValid).toBe(true);
+      expect(runtimeBindingValidation.ok).toBe(true);
+      expect(runtimeBindingValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
+      expect(runtimeBindingValidation.warnings.some((entry) => (
+        entry.message.includes("matched multiple objects by tags [asteroid, medium]")
+        && entry.details.candidates.some((candidate) => candidate.includes("object.asteroids.medium-asteroid-2"))
+      ))).toBe(true);
       expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ship).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);

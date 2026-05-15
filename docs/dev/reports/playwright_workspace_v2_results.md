@@ -1,6 +1,6 @@
-# PR_26133_035 Workspace V2 Playwright Results
+# PR_26133_036 Workspace V2 Playwright Results
 
-Task: PR_26133_035-object-id-slug-normalization
+Task: PR_26133_036-asteroids-manifest-name-validation-no-fallback
 Date: 2026-05-15
 
 ## Result
@@ -14,18 +14,16 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Object Vector Studio V2 rename preview and commit flows were verified for normalized ids such as `object.asteroids.medium-asteroid`.
-- Collision numbering was verified as `object.asteroids.medium-asteroid-2`, with no `medium-asteroid-1` generated.
-- Duplicate Large Asteroid followed by rename to Medium Asteroid was verified to regenerate `object.asteroids.medium-asteroid-3`.
-- Workspace Manager V2 manifest load/save paths validated the canonical Asteroids object ids and rejected the older mixed `asteroid.*` / `ufo.*` forms from the active data.
-- Asteroids runtime rendering still loaded and rendered Object Vector runtime assets with the canonical ids.
+- Asteroids runtime loaded Object Vector Studio V2 assets from `games/Asteroids/game.manifest.json`.
+- Runtime binding diagnostics reported `runtimeBindingsValid: true`.
+- Runtime selected `object.asteroids.medium-asteroid` from manifest binding even with duplicate medium-tag candidates.
+- Object Vector Studio V2 continued to load/save 7 Asteroids object-vector objects.
+- No `BASE_VECTOR_MAP`, `ASTEROIDS_*_SVG`, or `vector.asteroids.*` runtime fallback references remain in Asteroids/runtime shared paths.
 
 ## Additional Validation
 
-PASS - Targeted Asteroids Asset Reference Adoption test.
-
 PASS - Targeted Asteroids Platform Demo test.
 
-PASS - Targeted Asteroids collision timing/stress checks.
+PASS - Targeted Asteroids Asset Reference Adoption test.
 
-PASS - Targeted Asteroids canonical Object Vector runtime validation loaded 7 objects and resolved large, medium, small asteroid, and small UFO roles by tags.
+PASS - Targeted manifest binding validation confirmed valid bindings pass, missing `asteroidMedium` fails, and invalid `asteroidMedium` tag binding fails.

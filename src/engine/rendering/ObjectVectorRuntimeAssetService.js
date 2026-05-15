@@ -392,7 +392,14 @@ export class ObjectVectorRuntimeAssetService {
     };
   }
 
-  resolveObject(assetSet, { assetId = "", objectId = "", name = "", runtimeRole = "", tags = [] } = {}) {
+  resolveObject(assetSet, {
+    assetId = "",
+    objectId = "",
+    name = "",
+    requireManifestBinding = false,
+    runtimeRole = "",
+    tags = []
+  } = {}) {
     if (!assetSet) {
       this.log("FAIL", "Object Vector runtime object resolution failed: no validated asset set is loaded.");
       return null;
@@ -400,7 +407,7 @@ export class ObjectVectorRuntimeAssetService {
     const normalizedTags = normalizeTags(tags);
     const explicitObjectId = objectId || assetId || (runtimeRole ? assetSet.runtimeBindings?.[runtimeRole] : "");
     const resolutionKey = normalizedTags.length
-      ? `role:${runtimeRole || "tagged"}:${normalizedTags.join("+")}:${explicitObjectId || "none"}`
+      ? `role:${runtimeRole || "tagged"}:${normalizedTags.join("+")}:${explicitObjectId || "none"}:${requireManifestBinding ? "manifest-required" : "tag-selected"}`
       : `id:${assetId || objectId || name || "unknown"}`;
     const cacheNamespace = assetSet.payloadCacheKey || assetSet.sourceLabel;
     const cacheKey = `${cacheNamespace}:${resolutionKey}`;
@@ -410,15 +417,17 @@ export class ObjectVectorRuntimeAssetService {
     }
 
     let object = normalizedTags.length
-      ? this.resolveObjectByTags(assetSet, normalizedTags, { explicitObjectId, runtimeRole })
+      ? this.resolveObjectByTags(assetSet, normalizedTags, { explicitObjectId, requireManifestBinding, runtimeRole })
       : null;
     let resolvedObjectId = object ? object.id : explicitObjectId;
-    object = object || (resolvedObjectId ? assetSet.objectsById.get(resolvedObjectId) : null);
-    if (!object && name) {
-      object = assetSet.objectsByName.get(name.toLowerCase()) || null;
+    if (!object && !(normalizedTags.length && requireManifestBinding)) {
+      object = resolvedObjectId ? assetSet.objectsById.get(resolvedObjectId) : null;
+      if (!object && name) {
+        object = assetSet.objectsByName.get(name.toLowerCase()) || null;
+      }
     }
     if (!object) {
-      this.log("FAIL", `Object Vector runtime object resolution failed: role=${runtimeRole || "none"} tags=${normalizedTags.join(",") || "none"} objectId=${objectId || "none"} name=${name || "none"}.`);
+      this.log("FAIL", `Object Vector runtime object resolution failed: role=${runtimeRole || "none"} tags=${normalizedTags.join(",") || "none"} objectId=${objectId || "none"} name=${name || "none"} manifestBinding=${requireManifestBinding ? "required" : "optional"}.`);
       return null;
     }
 
@@ -434,7 +443,11 @@ export class ObjectVectorRuntimeAssetService {
     return resolvedObject;
   }
 
-  resolveObjectByTags(assetSet, tags, { explicitObjectId = "", runtimeRole = "" } = {}) {
+  resolveObjectByTags(assetSet, tags, {
+    explicitObjectId = "",
+    requireManifestBinding = false,
+    runtimeRole = ""
+  } = {}) {
     const objects = Array.isArray(assetSet?.payload?.objects) ? assetSet.payload.objects : [];
     const explicitObject = explicitObjectId ? assetSet.objectsById.get(explicitObjectId) || null : null;
     const candidates = objects
@@ -444,6 +457,83 @@ export class ObjectVectorRuntimeAssetService {
         oldSignal: objectHasOldSignal(object)
       }))
       .filter((candidate) => candidate.object && objectHasTags(candidate.object, tags));
+
+    if (requireManifestBinding) {
+      if (!explicitObjectId) {
+        this.log(
+          "FAIL",
+          `Object Vector runtime role ${runtimeRole || "tagged"} requires an explicit manifest object binding for tags [${tags.join(", ")}].`,
+          {
+            candidates: candidates.map(taggedCandidateLabel),
+            objectCount: objects.length,
+            tags
+          }
+        );
+        return null;
+      }
+      if (!explicitObject) {
+        this.log(
+          "FAIL",
+          `Object Vector runtime role ${runtimeRole || "tagged"} manifest binding ${explicitObjectId} does not match any loaded Object Vector object.`,
+          {
+            candidates: candidates.map(taggedCandidateLabel),
+            explicitObjectId,
+            objectCount: objects.length,
+            tags
+          }
+        );
+        return null;
+      }
+      if (objectHasOldSignal(explicitObject)) {
+        this.log(
+          "FAIL",
+          `Object Vector runtime role ${runtimeRole || "tagged"} manifest binding ${explicitObjectId} points to an old/legacy object; update the manifest binding to the active object.`,
+          {
+            candidates: candidates.map(taggedCandidateLabel),
+            explicitObjectId,
+            objectTags: normalizeTags(explicitObject.tags),
+            tags
+          }
+        );
+        return null;
+      }
+      if (!objectHasTags(explicitObject, tags)) {
+        this.log(
+          "FAIL",
+          `Object Vector runtime role ${runtimeRole || "tagged"} manifest binding ${explicitObjectId} is missing required tags [${tags.join(", ")}].`,
+          {
+            candidates: candidates.map(taggedCandidateLabel),
+            explicitObjectId,
+            objectTags: normalizeTags(explicitObject.tags),
+            tags
+          }
+        );
+        return null;
+      }
+      if (!candidates.some((candidate) => candidate.object.id === explicitObjectId)) {
+        this.log(
+          "FAIL",
+          `Object Vector runtime role ${runtimeRole || "tagged"} manifest binding ${explicitObjectId} was not found in tag candidates [${tags.join(", ")}].`,
+          {
+            candidates: candidates.map(taggedCandidateLabel),
+            explicitObjectId,
+            tags
+          }
+        );
+        return null;
+      }
+      if (candidates.length > 1) {
+        this.log(
+          "WARN",
+          `Object Vector runtime role ${runtimeRole || "tagged"} matched multiple objects by tags [${tags.join(", ")}]; using explicit manifest binding ${explicitObjectId}.`,
+          {
+            candidates: candidates.map(taggedCandidateLabel),
+            selectedObjectId: explicitObjectId
+          }
+        );
+      }
+      return explicitObject;
+    }
 
     if (candidates.length) {
       const selected = selectTaggedCandidate(candidates);

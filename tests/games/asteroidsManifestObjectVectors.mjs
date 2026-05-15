@@ -15,5 +15,8 @@ export function loadAsteroidsObjectVectorPayload() {
 }
 
 export function createAsteroidsTestGeometryProfiles() {
-  return createAsteroidGeometryProfilesFromObjectVectorPayload(loadAsteroidsObjectVectorPayload());
+  const manifest = loadAsteroidsManifest();
+  return createAsteroidGeometryProfilesFromObjectVectorPayload(loadAsteroidsObjectVectorPayload(), {
+    runtimeBindings: manifest.game.gameData.objectVectorRuntime.objectIds
+  });
 }
