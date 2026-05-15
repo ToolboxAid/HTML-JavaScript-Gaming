@@ -932,7 +932,20 @@ textarea:hover {
 
 .object-vector-studio-v2__shape-select-label {
   min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   overflow-wrap: anywhere;
+}
+
+.object-vector-studio-v2__shape-group-indicators {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.object-vector-studio-v2__shape-group-indicator[data-ovs-icon] {
+  font-size: 0.78rem;
 }
 
 .object-vector-studio-v2__shape-inline-actions {
@@ -1062,6 +1075,10 @@ textarea:hover {
 .object-vector-studio-v2__tile-icon[data-ovs-icon]::after {
   content: none;
   display: none;
+}
+
+#objectVectorStudioV2ObjectsContent .object-vector-studio-v2__shape-group-indicator[data-ovs-icon] {
+  color: var(--object-vector-studio-v2-shape-group-color, var(--tool-starter-accent));
 }
 
 .object-vector-studio-v2__object-tile-control--delete .object-vector-studio-v2__tile-icon[data-ovs-icon],

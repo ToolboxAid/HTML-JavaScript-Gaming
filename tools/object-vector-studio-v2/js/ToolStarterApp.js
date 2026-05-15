@@ -130,6 +130,8 @@ const OBJECT_STATE_HELP = Object.freeze({
   move: ["Movement/action state.", "Used for thrusting, walking, flying, or active movement visuals."]
 });
 
+const GROUP_COLOR_SWATCHES = Object.freeze(["#22d3ee", "#a78bfa", "#fb7185", "#34d399", "#fbbf24", "#60a5fa", "#f472b6", "#4ade80"]);
+
 const SHAPE_TYPE_DETAILS = Object.freeze({
   arc: "Arc primitive metadata with center, radius, and angle span.",
   circle: "Circle primitive metadata with center point and radius.",
@@ -936,7 +938,8 @@ export class ToolStarterApp {
   }
 
   updateObjectsHeader(objectCount, shapeCount) {
-    this.elements.objectsCount.textContent = `(${objectCount} obj, ${shapeCount} ${shapeCount === 1 ? "shape" : "shapes"})`;
+    const stateCount = this.objectStates(this.selectedObject()).length;
+    this.elements.objectsCount.textContent = `(${objectCount} obj, states ${stateCount}, ${shapeCount} ${shapeCount === 1 ? "shape" : "shapes"})`;
   }
 
   updateObjectGeometryHeader(shape) {
@@ -1353,9 +1356,10 @@ export class ToolStarterApp {
     helpButton.className = "object-vector-studio-v2__object-state-help";
     helpButton.type = "button";
     helpButton.textContent = "?";
-    helpButton.title = this.stateHelpText(selectedStateId);
-    helpButton.dataset.objectStateHelp = selectedStateId;
-    helpButton.setAttribute("aria-label", `State help for ${selectedStateId}: ${this.stateHelpText(selectedStateId).replace(/\s+/gu, " ")}`);
+    const allHelpText = this.allStateHelpText();
+    helpButton.title = allHelpText;
+    helpButton.dataset.objectStateHelp = "all";
+    helpButton.setAttribute("aria-label", `State help for all states: ${allHelpText.replace(/\s+/gu, " ")}`);
 
     controls.append(addButton, select, deleteButton, helpButton);
     panel.append(controls, this.createObjectStateTileList(object));
@@ -1407,6 +1411,7 @@ export class ToolStarterApp {
     const list = document.createElement("div");
     list.className = "object-vector-studio-v2__object-tile-shapes";
     sortedShapes(object).forEach((shape, shapeIndex) => {
+      const displayShape = object.id === this.selectedObjectId ? this.effectiveShape(shape, shapeIndex) : shape;
       const row = document.createElement("div");
       row.className = "object-vector-studio-v2__object-tile-shape-row";
       row.classList.toggle("is-selected", this.selectedShapeIndexes.has(shapeIndex));
@@ -1417,7 +1422,11 @@ export class ToolStarterApp {
       selectButton.setAttribute("aria-pressed", String(this.selectedShapeIndexes.has(shapeIndex)));
       const label = document.createElement("span");
       label.className = "object-vector-studio-v2__shape-select-label";
-      label.textContent = `${shapeIndex}. ${shapeDisplayLabel(shape)}`;
+      if (shape.groupId) {
+        label.append(this.createShapeGroupIndicators(shape), `${shapeIndex}. ${shapeDisplayLabel(shape)}`);
+      } else {
+        label.textContent = `${shapeIndex}. ${shapeDisplayLabel(shape)}`;
+      }
       selectButton.append(label);
       selectButton.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -1429,9 +1438,9 @@ export class ToolStarterApp {
       visibilityButton.type = "button";
       visibilityButton.className = "object-vector-studio-v2__shape-inline-button object-vector-studio-v2__shape-eye-inline";
       visibilityButton.dataset.shapeVisibilityIndex = String(shapeIndex);
-      visibilityButton.setAttribute("aria-label", `${shape.visible ? "Hide" : "Show"} shape ${shapeDisplayLabel(shape)}`);
-      visibilityButton.title = "Toggle shape visibility";
-      visibilityButton.append(this.createIconSpan("eye", shape.visible));
+      visibilityButton.setAttribute("aria-label", `${displayShape.visible ? "Hide" : "Show"} shape ${shapeDisplayLabel(shape)} in the selected state/frame`);
+      visibilityButton.title = "Toggle state/frame shape visibility";
+      visibilityButton.append(this.createIconSpan("eye", displayShape.visible));
       visibilityButton.addEventListener("click", (event) => {
         event.stopPropagation();
         this.selectShape(shapeIndex, "object tile shape visibility");
@@ -1443,7 +1452,7 @@ export class ToolStarterApp {
       deleteButton.dataset.shapeDeleteIndex = String(shapeIndex);
       deleteButton.dataset.shapeDeleteObjectId = object.id;
       deleteButton.setAttribute("aria-label", `Delete shape ${shapeDisplayLabel(shape)}`);
-      deleteButton.title = "Delete this shape";
+      deleteButton.title = "Delete this base shape from every state";
       deleteButton.append(this.createIconSpan("delete", true));
       deleteButton.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -1463,6 +1472,23 @@ export class ToolStarterApp {
     return list;
   }
 
+  createShapeGroupIndicators(shape) {
+    const groupId = String(shape.groupId || "").trim();
+    const container = document.createElement("span");
+    container.className = "object-vector-studio-v2__shape-group-indicators";
+    if (!groupId) {
+      return container;
+    }
+    const icon = document.createElement("span");
+    icon.className = "object-vector-studio-v2__shape-group-indicator object-vector-studio-v2__tile-icon object-vector-studio-v2__tile-icon--group";
+    icon.dataset.shapeGroupId = groupId;
+    icon.title = `Shape group ${groupId}`;
+    icon.style.setProperty("--object-vector-studio-v2-shape-group-color", this.groupColor(groupId));
+    this.applyIconGlyph(icon, "group");
+    container.append(icon);
+    return container;
+  }
+
   createSelectedShapeActions(object) {
     const actions = document.createElement("div");
     actions.className = "object-vector-studio-v2__shape-list-actions object-vector-studio-v2__z-order-actions is-icon-only";
@@ -1471,10 +1497,10 @@ export class ToolStarterApp {
     const isLocked = this.isObjectLocked(object.id);
     const noShapeReason = "Disabled until a schema-valid shape is selected.";
     [
-      { action: "forward", iconClass: "bring-forward", iconKey: "bringForward", label: "Move Up", title: "Move selected shape up one row." },
-      { action: "backward", iconClass: "send-backward", iconKey: "sendBackward", label: "Move Down", title: "Move selected shape down one row." },
-      { action: "back", iconClass: "send-back", iconKey: "panLeft", label: "Move Left", title: "Move selected shape to the back." },
-      { action: "front", iconClass: "bring-front", iconKey: "panRight", label: "Move Right", title: "Move selected shape to the front." }
+      { action: "forward", iconClass: "bring-forward", iconKey: "bringForward", label: "Bring Forward", title: "Move selected shape up one row / bring forward." },
+      { action: "backward", iconClass: "send-backward", iconKey: "sendBackward", label: "Send Backward", title: "Move selected shape down one row / send backward." },
+      { action: "front", iconClass: "bring-front", iconKey: "bringFront", label: "Bring To Front", title: "Bring selected shape to the front." },
+      { action: "back", iconClass: "send-back", iconKey: "sendBack", label: "Send To Back", title: "Send selected shape to the back." }
     ].forEach((definition) => {
       const button = this.createShapeActionButton(definition.label, definition.iconClass, definition.iconKey, definition.title, () => this.changeSelectedShapeOrder(definition.action));
       this.setControlDisabled(button, !shape || isLocked, isLocked ? `Disabled because ${object.name} is locked for this runtime session.` : noShapeReason, definition.title);
@@ -1776,6 +1802,12 @@ export class ToolStarterApp {
   stateHelpText(stateId) {
     const helpLines = OBJECT_STATE_HELP[stateId] || [`No contextual help is available for state ${stateId || "unknown"}.`];
     return helpLines.join("\n");
+  }
+
+  allStateHelpText() {
+    return OBJECT_STATE_IDS
+      .map((stateId) => `${stateId}\n${this.stateHelpText(stateId)}`)
+      .join("\n\n");
   }
 
   createFrameThumbnail(object, frame) {
@@ -2970,21 +3002,34 @@ export class ToolStarterApp {
 
     const scrollState = this.captureLeftPanelScrollState();
     this.selectedShapeIndex = normalizedIndex;
+    const groupIndexes = this.shapeSelectionGroupIndexes(shapes, normalizedIndex);
     if (options.additive) {
-      if (this.selectedShapeIndexes.has(normalizedIndex) && this.selectedShapeIndexes.size > 1) {
-        this.selectedShapeIndexes.delete(normalizedIndex);
+      const allGroupSelected = groupIndexes.every((index) => this.selectedShapeIndexes.has(index));
+      if (allGroupSelected && this.selectedShapeIndexes.size > groupIndexes.length) {
+        groupIndexes.forEach((index) => this.selectedShapeIndexes.delete(index));
         this.selectedShapeIndex = Array.from(this.selectedShapeIndexes).at(-1) ?? -1;
       } else {
-        this.selectedShapeIndexes.add(normalizedIndex);
+        groupIndexes.forEach((index) => this.selectedShapeIndexes.add(index));
       }
     } else {
-      this.selectedShapeIndexes = new Set([normalizedIndex]);
+      this.selectedShapeIndexes = new Set(groupIndexes);
     }
     this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
     this.renderPayload();
     this.restoreLeftPanelScrollState(scrollState);
     const shape = this.selectedShape();
     this.statusLog.write(`OK Selected shape from ${sourceLabel}: row ${this.selectedShapeIndex} (${shapeTool(shape)}). Multi-select count: ${this.selectedShapeIndexes.size}.`);
+  }
+
+  shapeSelectionGroupIndexes(shapes, shapeIndex) {
+    const shape = shapes[shapeIndex];
+    const groupId = String(shape?.groupId || "").trim();
+    if (!groupId) {
+      return [shapeIndex];
+    }
+    return shapes
+      .map((candidate, index) => String(candidate?.groupId || "").trim() === groupId ? index : -1)
+      .filter((index) => index >= 0);
   }
 
   selectState(stateId, sourceLabel) {
@@ -4249,12 +4294,15 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
     const groupId = this.uniqueGroupId(nextObject);
+    const selectedIndexes = new Set(this.selectedShapeIndexes);
     sortedShapes(nextObject).forEach((shape, shapeIndex) => {
-      if (this.selectedShapeIndexes.has(shapeIndex)) {
+      if (selectedIndexes.has(shapeIndex)) {
         shape.groupId = groupId;
       }
     });
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Grouped ${this.selectedShapeIndexes.size} shapes into ${groupId}.`, "Group shapes failed schema validation");
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Grouped ${selectedIndexes.size} shapes into ${groupId}.`, "Group shapes failed schema validation", {
+      selectedShapeIndexes: selectedIndexes
+    });
   }
 
   ungroupSelectedShapes() {
@@ -4267,19 +4315,24 @@ export class ToolStarterApp {
     if (this.guardSelectedObjectMutation("Ungroup shapes")) {
       return;
     }
-    const groupId = selected.groupId;
-    if (!groupId) {
-      this.statusLog.write(`WARN Ungroup skipped: shape row ${this.selectedShapeIndex} is not grouped.`);
+    const selectedIndexes = new Set(this.selectedShapeIndexes);
+    const selectedGroupIds = new Set(sortedShapes(object)
+      .filter((shape, shapeIndex) => selectedIndexes.has(shapeIndex) && shape.groupId)
+      .map((shape) => shape.groupId));
+    if (!selectedGroupIds.size) {
+      this.statusLog.write("WARN Ungroup skipped: selected shapes are not grouped.");
       return;
     }
     const nextPayload = this.cloneCurrentPayload();
     const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
-    nextObject.shapes.forEach((shape) => {
-      if (shape.groupId === groupId) {
+    sortedShapes(nextObject).forEach((shape, shapeIndex) => {
+      if (selectedIndexes.has(shapeIndex) && selectedGroupIds.has(shape.groupId)) {
         delete shape.groupId;
       }
     });
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Ungrouped shapes from ${groupId}.`, "Ungroup shapes failed schema validation");
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Ungrouped ${selectedIndexes.size} selected shapes from ${Array.from(selectedGroupIds).join(", ")}.`, "Ungroup shapes failed schema validation", {
+      selectedShapeIndexes: selectedIndexes
+    });
   }
 
   applyShapeGeometryEdits() {
@@ -4878,7 +4931,9 @@ export class ToolStarterApp {
     this.currentPayload = validation.payload;
     this.selectedObjectId = selectedObjectId;
     this.selectedShapeIndex = normalizeShapeIndex(selectedShapeIndex);
-    this.selectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
+    this.selectedShapeIndexes = options.selectedShapeIndexes
+      ? new Set(Array.from(options.selectedShapeIndexes).map((index) => normalizeShapeIndex(index)).filter((index) => index >= 0))
+      : new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
     this.selectedStateId = options.selectedStateId ?? this.selectedStateId;
     this.stateControlStateId = this.selectedStateId || this.stateControlStateId;
     this.selectedFrameId = options.selectedFrameId ?? this.selectedFrameId;
@@ -5061,6 +5116,12 @@ export class ToolStarterApp {
 
   objectStates(object) {
     return Array.isArray(object?.states) ? object.states : [];
+  }
+
+  groupColor(groupId) {
+    const text = String(groupId || "");
+    const hash = Array.from(text).reduce((total, character) => total + character.codePointAt(0), 0);
+    return GROUP_COLOR_SWATCHES[hash % GROUP_COLOR_SWATCHES.length];
   }
 
   selectedState() {

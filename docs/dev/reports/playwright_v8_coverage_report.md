@@ -1,6 +1,6 @@
-# PR_26133_049 Playwright V8 Coverage Report
+# PR_26133_050 Playwright V8 Coverage Report
 
-Task: PR_26133_049-state-selector-and-object-shape-action-placement
+Task: PR_26133_050-object-state-shape-grouping-and-order-controls
 Date: 2026-05-15
 
 ## Result
@@ -25,7 +25,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ```text
 (83%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 105/105; executed functions 5/6
-(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5014/5014; executed functions 518/548
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5070/5070; executed functions 532/563
 ```
 
 ## Guardrail
@@ -36,4 +36,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 state selection from object tiles, selected-state frame timelines, selected-shape action placement, palette Width layout, Object Vector schema validation, and Asteroids runtime object-vector rendering.
+The Workspace V2 run exercised Object Vector Studio V2 object header counts, state help text, shape grouping selection, group indicators, z-order controls, state/frame visibility overrides, base shape deletion cleanup, Object Vector schema validation, and Asteroids runtime object-vector rendering.
