@@ -490,8 +490,8 @@
               ]
             },
             {
-              "id": "object.asteroids.asteroid.medium",
-              "name": "Medium Asteroid",
+              "id": "object.asteroids.medium-asteroid-1",
+              "name": "Medium Asteroid 1",
               "shapes": [
                 {
                   "tool": "polygon",
@@ -811,6 +811,106 @@
               "tags": [
                 "ufo",
                 "small"
+              ]
+            },
+            {
+              "id": "object.asteroids.medium-asteroid",
+              "name": "Medium Asteroid",
+              "shapes": [
+                {
+                  "tool": "polygon",
+                  "order": 0,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "points": [
+                      {
+                        "x": 10,
+                        "y": 40
+                      },
+                      {
+                        "x": 50,
+                        "y": 20
+                      },
+                      {
+                        "x": 45,
+                        "y": 5
+                      },
+                      {
+                        "x": 25,
+                        "y": -10
+                      },
+                      {
+                        "x": 50,
+                        "y": -35
+                      },
+                      {
+                        "x": 30,
+                        "y": -45
+                      },
+                      {
+                        "x": 10,
+                        "y": -38
+                      },
+                      {
+                        "x": -20,
+                        "y": -45
+                      },
+                      {
+                        "x": -43,
+                        "y": -18
+                      },
+                      {
+                        "x": -43,
+                        "y": 20
+                      },
+                      {
+                        "x": -25,
+                        "y": 20
+                      },
+                      {
+                        "x": -25,
+                        "y": 40
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#CBD5E1",
+                    "strokeWidth": 2,
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "origin": {
+                      "x": -1,
+                      "y": 1
+                    }
+                  }
+                }
+              ],
+              "states": [
+                {
+                  "id": "active",
+                  "name": "Active",
+                  "frames": [
+                    {
+                      "id": "active-frame-1",
+                      "order": 0,
+                      "durationFrames": 1,
+                      "shapeOverrides": []
+                    }
+                  ]
+                }
+              ],
+              "tags": [
+                "asteroid",
+                "large"
               ]
             }
           ]

@@ -4153,8 +4153,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);
       const eventMessages = diagnostics.events.map((entry) => entry.message).join("\n");
       expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 6 objects.");
-      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.ship; cached resolved object.");
-      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.ufo.small; cached resolved object.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for ship; cached resolved object object.asteroids.ship.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for ufoSmall; cached resolved object object.asteroids.ufo.small.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=idle-frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ufo.small: 2 shapes state=active frame=active-frame-1.");

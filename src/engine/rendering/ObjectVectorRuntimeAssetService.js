@@ -53,6 +53,61 @@ function normalizeManifestPayload(manifestPayload) {
     : null;
 }
 
+function normalizeString(value) {
+  return String(value || "").trim();
+}
+
+function normalizeRuntimeBindingMap(value) {
+  if (!isPlainObject(value)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(value)
+      .map(([key, objectId]) => [normalizeString(key), normalizeString(objectId)])
+      .filter(([key, objectId]) => key && objectId)
+  );
+}
+
+function normalizeManifestRuntimeBindings(manifestPayload) {
+  const manifest = isPlainObject(manifestPayload) ? manifestPayload : {};
+  return normalizeRuntimeBindingMap(manifest.game?.gameData?.objectVectorRuntime?.objectIds);
+}
+
+function normalizeTags(value) {
+  return Array.isArray(value)
+    ? value.map((tag) => normalizeString(tag).toLowerCase()).filter(Boolean)
+    : [];
+}
+
+function objectHasTags(object, tags) {
+  const tagSet = new Set(normalizeTags(object?.tags));
+  return tags.every((tag) => tagSet.has(tag));
+}
+
+function objectHasOldSignal(object) {
+  const text = [
+    object?.id,
+    object?.name,
+    ...(Array.isArray(object?.tags) ? object.tags : []),
+  ].map((value) => normalizeString(value).toLowerCase()).join(" ");
+  return /(^|[.\s_-])(old|legacy|deprecated|archive|archived|renamed|stale)($|[.\s_-])/.test(text);
+}
+
+function taggedCandidateLabel(candidate) {
+  const tags = normalizeTags(candidate.object?.tags).join(",");
+  const oldLabel = candidate.oldSignal ? " old-signal" : "";
+  return `${candidate.object?.id || "unknown"} tags=[${tags}] index=${candidate.index}${oldLabel}`;
+}
+
+function selectTaggedCandidate(candidates) {
+  return [...candidates].sort((left, right) => {
+    if (left.oldSignal !== right.oldSignal) {
+      return left.oldSignal ? 1 : -1;
+    }
+    return right.index - left.index;
+  })[0] || null;
+}
+
 function sortedShapes(object) {
   return [...(object?.shapes || [])].sort((left, right) => left.order - right.order);
 }
@@ -267,14 +322,17 @@ export class ObjectVectorRuntimeAssetService {
         this.log("FAIL", `Object Vector runtime asset load failed from ${sourceLabel}: root.game.workspace.tools.${OBJECT_VECTOR_TOOL_ID} is missing.`);
         return null;
       }
-      return this.loadPayload(payload, { sourceLabel: `${sourceLabel}:tools.${OBJECT_VECTOR_TOOL_ID}` });
+      return this.loadPayload(payload, {
+        runtimeBindings: normalizeManifestRuntimeBindings(manifest),
+        sourceLabel: `${sourceLabel}:tools.${OBJECT_VECTOR_TOOL_ID}`
+      });
     } catch (error) {
       this.log("FAIL", `Object Vector runtime asset manifest load failed from ${sourceLabel}: ${error.message}`);
       return null;
     }
   }
 
-  async loadPayload(payload, { sourceLabel = "runtime payload" } = {}) {
+  async loadPayload(payload, { runtimeBindings = {}, sourceLabel = "runtime payload" } = {}) {
     await this.loadSchema();
     const validation = this.validatePayload(payload);
     if (!validation.ok) {
@@ -282,56 +340,85 @@ export class ObjectVectorRuntimeAssetService {
       return null;
     }
 
-    const cacheKey = JSON.stringify(validation.payload);
+    const normalizedRuntimeBindings = normalizeRuntimeBindingMap(runtimeBindings);
+    const cacheKey = JSON.stringify({
+      payload: validation.payload,
+      runtimeBindings: normalizedRuntimeBindings
+    });
     if (this.payloadCache.has(cacheKey)) {
       this.log("OK", `Object Vector runtime cache hit for ${sourceLabel}: ${validation.payload.objects.length} objects.`);
       return this.payloadCache.get(cacheKey);
     }
 
-    const assetSet = this.buildAssetSet(validation.payload, sourceLabel);
+    const assetSet = this.buildAssetSet(validation.payload, sourceLabel, {
+      payloadCacheKey: cacheKey,
+      runtimeBindings: normalizedRuntimeBindings
+    });
     this.payloadCache.set(cacheKey, assetSet);
     this.log("OK", `Object Vector runtime cache miss for ${sourceLabel}; cached ${assetSet.objectsById.size} objects.`);
     this.log("OK", `Object Vector runtime asset load from ${sourceLabel}: ${assetSet.objectsById.size} objects.`);
     return assetSet;
   }
 
-  buildAssetSet(payload, sourceLabel) {
+  buildAssetSet(payload, sourceLabel, options = {}) {
     const dependencyGraph = new Map();
     const objectsById = new Map();
     const objectsByName = new Map();
-    payload.objects.forEach((object) => {
+    const objectOrderById = new Map();
+    const objectsByTag = new Map();
+    const runtimeBindings = normalizeRuntimeBindingMap(options.runtimeBindings);
+    payload.objects.forEach((object, index) => {
       objectsById.set(object.id, object);
       objectsByName.set(object.name.toLowerCase(), object);
+      objectOrderById.set(object.id, index);
+      normalizeTags(object.tags).forEach((tag) => {
+        if (!objectsByTag.has(tag)) {
+          objectsByTag.set(tag, []);
+        }
+        objectsByTag.get(tag).push(object);
+      });
       dependencyGraph.set(object.id, object.baseObjectId ? [object.baseObjectId] : []);
     });
     return {
       dependencyGraph,
+      objectOrderById,
       objectsById,
       objectsByName,
+      objectsByTag,
       payload,
+      payloadCacheKey: normalizeString(options.payloadCacheKey),
+      runtimeBindings,
       sourceLabel
     };
   }
 
-  resolveObject(assetSet, { assetId = "", objectId = "", name = "" } = {}) {
+  resolveObject(assetSet, { assetId = "", objectId = "", name = "", runtimeRole = "", tags = [] } = {}) {
     if (!assetSet) {
       this.log("FAIL", "Object Vector runtime object resolution failed: no validated asset set is loaded.");
       return null;
     }
-    const cacheKey = `${assetSet.sourceLabel}:${assetId || objectId || name || "unknown"}`;
+    const normalizedTags = normalizeTags(tags);
+    const explicitObjectId = objectId || assetId || (runtimeRole ? assetSet.runtimeBindings?.[runtimeRole] : "");
+    const resolutionKey = normalizedTags.length
+      ? `role:${runtimeRole || "tagged"}:${normalizedTags.join("+")}:${explicitObjectId || "none"}`
+      : `id:${assetId || objectId || name || "unknown"}`;
+    const cacheNamespace = assetSet.payloadCacheKey || assetSet.sourceLabel;
+    const cacheKey = `${cacheNamespace}:${resolutionKey}`;
     if (this.assetCache.has(cacheKey)) {
-      this.logCacheOnce(cacheKey, `Object Vector runtime cache hit for ${assetId || objectId || name}.`);
+      this.logCacheOnce(cacheKey, `Object Vector runtime cache hit for ${runtimeRole || assetId || objectId || name}.`);
       return this.assetCache.get(cacheKey);
     }
 
-    const resolvedObjectId = objectId || assetId;
-
-    let object = resolvedObjectId ? assetSet.objectsById.get(resolvedObjectId) : null;
+    let object = normalizedTags.length
+      ? this.resolveObjectByTags(assetSet, normalizedTags, { explicitObjectId, runtimeRole })
+      : null;
+    let resolvedObjectId = object ? object.id : explicitObjectId;
+    object = object || (resolvedObjectId ? assetSet.objectsById.get(resolvedObjectId) : null);
     if (!object && name) {
       object = assetSet.objectsByName.get(name.toLowerCase()) || null;
     }
     if (!object) {
-      this.log("FAIL", `Object Vector runtime object resolution failed: objectId=${objectId || "none"} name=${name || "none"}.`);
+      this.log("FAIL", `Object Vector runtime object resolution failed: role=${runtimeRole || "none"} tags=${normalizedTags.join(",") || "none"} objectId=${objectId || "none"} name=${name || "none"}.`);
       return null;
     }
 
@@ -340,15 +427,80 @@ export class ObjectVectorRuntimeAssetService {
       return null;
     }
     this.assetCache.set(cacheKey, resolvedObject);
-    this.logCacheOnce(cacheKey, `Object Vector runtime cache miss for ${assetId || object.id}; cached resolved object.`);
+    this.logCacheOnce(
+      cacheKey,
+      `Object Vector runtime cache miss for ${runtimeRole || assetId || object.id}; cached resolved object${runtimeRole ? ` ${object.id}` : ""}.`
+    );
     return resolvedObject;
+  }
+
+  resolveObjectByTags(assetSet, tags, { explicitObjectId = "", runtimeRole = "" } = {}) {
+    const objects = Array.isArray(assetSet?.payload?.objects) ? assetSet.payload.objects : [];
+    const explicitObject = explicitObjectId ? assetSet.objectsById.get(explicitObjectId) || null : null;
+    const candidates = objects
+      .map((object, index) => ({
+        index,
+        object,
+        oldSignal: objectHasOldSignal(object)
+      }))
+      .filter((candidate) => candidate.object && objectHasTags(candidate.object, tags));
+
+    if (candidates.length) {
+      const selected = selectTaggedCandidate(candidates);
+      if (candidates.length > 1) {
+        this.log(
+          "WARN",
+          `Object Vector runtime role ${runtimeRole || "tagged"} matched multiple objects by tags [${tags.join(", ")}]; selected ${selected.object.id}.`,
+          {
+            candidates: candidates.map(taggedCandidateLabel),
+            selectedObjectId: selected.object.id
+          }
+        );
+      }
+      if (explicitObjectId && explicitObjectId !== selected.object.id) {
+        this.log(
+          "WARN",
+          `Object Vector runtime role ${runtimeRole || "tagged"} ignored explicit objectId ${explicitObjectId}; manifest tags selected ${selected.object.id}.`,
+          {
+            explicitObjectHasRoleTags: Boolean(explicitObject && objectHasTags(explicitObject, tags)),
+            explicitObjectId,
+            selectedObjectId: selected.object.id,
+            tags
+          }
+        );
+      }
+      return selected.object;
+    }
+
+    if (explicitObject) {
+      this.log(
+        "WARN",
+        `Object Vector runtime role ${runtimeRole || "tagged"} found no object tagged [${tags.join(", ")}]; using explicit objectId ${explicitObject.id}.`,
+        {
+          explicitObjectId: explicitObject.id,
+          tags
+        }
+      );
+      return explicitObject;
+    }
+
+    this.log(
+      "FAIL",
+      `Object Vector runtime role ${runtimeRole || "tagged"} could not resolve an object tagged [${tags.join(", ")}].`,
+      {
+        explicitObjectId,
+        objectCount: objects.length,
+        tags
+      }
+    );
+    return null;
   }
 
   resolveInheritedObject(assetSet, object) {
     if (!object?.baseObjectId) {
       return object;
     }
-    const cacheKey = `${assetSet.sourceLabel}:inherit:${object.id}`;
+    const cacheKey = `${assetSet.payloadCacheKey || assetSet.sourceLabel}:inherit:${object.id}`;
     if (this.inheritedObjectCache.has(cacheKey)) {
       this.logCacheOnce(`${cacheKey}:hit`, `Object Vector runtime inherited cache hit for ${object.id}.`);
       return this.inheritedObjectCache.get(cacheKey);

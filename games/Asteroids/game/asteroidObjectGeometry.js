@@ -1,8 +1,7 @@
-export const ASTEROID_OBJECT_VECTOR_OBJECT_IDS = Object.freeze({
-  1: 'object.asteroids.asteroid.small',
-  2: 'object.asteroids.asteroid.medium',
-  3: 'object.asteroids.asteroid.large',
-});
+import {
+  ASTEROID_SIZE_RUNTIME_ROLES,
+  resolveAsteroidsObjectVectorRole,
+} from './asteroidsObjectVectorRoles.js';
 
 const ASTEROID_SIZE_LABELS = Object.freeze({
   1: 'SML',
@@ -66,12 +65,12 @@ function extractPrimaryPolygonPoints(object) {
   return asArray(shape?.geometry?.points).map(cleanPoint);
 }
 
-function createProfilesFromObjects(objects) {
-  const objectById = new Map(asArray(objects).map((object) => [object?.id, object]));
+function createProfilesFromObjects(objects, options = {}) {
   const profiles = {};
 
-  Object.entries(ASTEROID_OBJECT_VECTOR_OBJECT_IDS).forEach(([size, objectId]) => {
-    const points = centerPoints(extractPrimaryPolygonPoints(objectById.get(objectId)));
+  Object.entries(ASTEROID_SIZE_RUNTIME_ROLES).forEach(([size, roleId]) => {
+    const object = resolveAsteroidsObjectVectorRole(objects, roleId, options);
+    const points = centerPoints(extractPrimaryPolygonPoints(object));
     if (points.length < 3) {
       return;
     }
@@ -79,7 +78,7 @@ function createProfilesFromObjects(objects) {
     profiles[sizeId] = {
       id: sizeId,
       label: ASTEROID_SIZE_LABELS[sizeId] || String(sizeId),
-      objectId,
+      objectId: object.id,
       points,
       radius: maxRadius(points),
     };
@@ -88,13 +87,16 @@ function createProfilesFromObjects(objects) {
   return profiles;
 }
 
-export function createAsteroidGeometryProfilesFromObjectVectorPayload(payload) {
-  return createProfilesFromObjects(asRecord(payload).objects);
+export function createAsteroidGeometryProfilesFromObjectVectorPayload(payload, options = {}) {
+  return createProfilesFromObjects(asRecord(payload).objects, options);
 }
 
-export function createAsteroidGeometryProfilesFromObjectVectorAssets(assetSet) {
+export function createAsteroidGeometryProfilesFromObjectVectorAssets(assetSet, options = {}) {
   if (assetSet?.objectsById instanceof Map) {
-    return createProfilesFromObjects([...assetSet.objectsById.values()]);
+    return createProfilesFromObjects([...assetSet.objectsById.values()], {
+      runtimeBindings: asRecord(assetSet.runtimeBindings),
+      ...options,
+    });
   }
-  return createAsteroidGeometryProfilesFromObjectVectorPayload(assetSet?.payload);
+  return createAsteroidGeometryProfilesFromObjectVectorPayload(assetSet?.payload, options);
 }

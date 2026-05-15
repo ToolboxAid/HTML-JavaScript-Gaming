@@ -1,6 +1,6 @@
-# PR_26133_033 Workspace V2 Playwright Results
+# PR_26133_034 Workspace V2 Playwright Results
 
-Task: PR_26133_033-asteroids-collision-and-object-vector-schema-defaults
+Task: PR_26133_034-asteroids-runtime-object-resolution-by-tags
 Date: 2026-05-14
 
 ## Result
@@ -14,16 +14,17 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Object Vector Studio V2 schema defaults are present in the game manifest schema and the standalone tool schema.
-- New rectangle creation was verified against schema-cloned geometry/style/transform defaults.
-- Workspace Manager V2 generated the Asteroids Object Vector payload without `assetLibrary` and with `objects[*].tags` present.
-- Launching Object Vector Studio V2 for Asteroids from Workspace Manager V2 loaded 6 objects and validated the payload.
-- Dirty-state and save validation still pass after the generated manifest cleanup.
+- Asteroids gameplay rendering now resolves Object Vector runtime objects through role/tag options for ship, UFO, and asteroid roles.
+- Workspace V2 runtime rendering test was updated to expect role-based cache diagnostics for ship and small UFO.
+- Object Vector Studio V2 still loads the Asteroids object payload from `games/Asteroids/game.manifest.json`.
+- Asteroids manifest runtime validation confirmed the current large, medium, and small asteroid objects expose the required tag metadata.
 
 ## Additional Validation
 
-PASS - Targeted Asteroids collision checks covered ship/asteroid, bullet/asteroid, UFO/asteroid, UFO bullet/asteroid, ship bullet/UFO bullet crossfire, and ship/UFO crash cases.
+PASS - Targeted recreated Medium Asteroid resolution tests confirmed `["asteroid", "medium"]` tags select the recreated object even when an explicit stale medium object id is present.
+
+PASS - Targeted Asteroids collision timing/stress checks still load asteroid collision profiles from Object Vector Studio V2 geometry.
 
 PASS - Targeted Asteroids validation smoke completed.
 
-PASS - Node schema validation reported `games/Asteroids/game.manifest.json` and the generated workspace manifest as schema-valid.
+PASS - Targeted Asteroids manifest Object Vector runtime validation loaded 6 objects and resolved the current medium asteroid by tags.

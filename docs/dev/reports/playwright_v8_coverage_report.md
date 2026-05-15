@@ -1,6 +1,6 @@
-# PR_26133_033 Playwright V8 Coverage Report
+# PR_26133_034 Playwright V8 Coverage Report
 
-Task: PR_26133_033-asteroids-collision-and-object-vector-schema-defaults
+Task: PR_26133_034-asteroids-runtime-object-resolution-by-tags
 Date: 2026-05-14
 
 ## Result
@@ -26,10 +26,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Changed Runtime JS Coverage
 
 ```text
-(83%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 109/109; executed functions 5/6
-(93%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4333/4333; executed functions 453/485
-(95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 453/453; executed functions 55/58
-(98%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 915/915; executed functions 107/109
+(97%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 1056/1056; executed functions 123/127
 ```
 
 ## Guardrail
@@ -40,4 +37,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 launch, schema loading, schema-driven shape creation, generated Asteroids object-vector payload validation, and Asteroids runtime object-vector loading. Coverage remains advisory only.
+The Workspace V2 run exercised Asteroids gameplay Object Vector runtime loading and rendering with role/tag cache diagnostics, plus Object Vector Studio V2 launch/save flows. Coverage remains advisory only.

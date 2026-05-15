@@ -13,10 +13,11 @@ import ShipDebrisSystem from '../systems/ShipDebrisSystem.js';
 import AsteroidsAttractAdapter from './AsteroidsAttractAdapter.js';
 import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
+import { createAsteroidGeometryProfilesFromObjectVectorAssets } from './asteroidObjectGeometry.js';
 import {
-  ASTEROID_OBJECT_VECTOR_OBJECT_IDS,
-  createAsteroidGeometryProfilesFromObjectVectorAssets
-} from './asteroidObjectGeometry.js';
+  ASTEROID_SIZE_RUNTIME_ROLES,
+  runtimeObjectRoleOptions
+} from './asteroidsObjectVectorRoles.js';
 import {
   ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE
 } from "../rules/flowRules.js";
@@ -29,11 +30,6 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
-const UFO_OBJECT_VECTOR_OBJECT_IDS = Object.freeze({
-  large: "object.asteroids.ufo.large",
-  small: "object.asteroids.ufo.small",
-});
-const SHIP_OBJECT_VECTOR_OBJECT_ID = "object.asteroids.ship";
 const LIFE_ICON_POINTS = [
   [14, 0],
   [-10, -8],
@@ -114,8 +110,11 @@ export default class AsteroidsGameScene extends Scene {
     this.devConsoleIntegration = options.devConsoleIntegration || null;
     this.objectVectorAssets = options.objectVectorAssets || null;
     this.objectVectorRuntime = options.objectVectorRuntime || null;
+    this.objectVectorRuntimeBindings = this.objectVectorAssets?.runtimeBindings || {};
     this.asteroidGeometryProfiles = options.asteroidGeometryProfiles
-      || createAsteroidGeometryProfilesFromObjectVectorAssets(this.objectVectorAssets);
+      || createAsteroidGeometryProfilesFromObjectVectorAssets(this.objectVectorAssets, {
+        logger: this.objectVectorRuntime,
+      });
     this.objectVectorPlaybackMs = 0;
     this.objectVectorRenderCounts = {
       asteroids: 0,
@@ -735,10 +734,11 @@ export default class AsteroidsGameScene extends Scene {
     }
 
     this.world.asteroids.forEach((asteroid) => {
+      const roleId = ASTEROID_SIZE_RUNTIME_ROLES[asteroid.size];
       this.drawObjectVectorAsset(renderer, "asteroids", {
+        ...this.objectVectorRoleOptions(roleId),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: ASTEROID_OBJECT_VECTOR_OBJECT_IDS[asteroid.size],
         rotation: asteroid.angle,
         stateId: "active",
         x: asteroid.x,
@@ -747,10 +747,11 @@ export default class AsteroidsGameScene extends Scene {
     });
 
     if (this.world.ufo) {
+      const roleId = this.world.ufo.type === "small" ? "ufoSmall" : "ufoLarge";
       this.drawObjectVectorAsset(renderer, "ufo", {
+        ...this.objectVectorRoleOptions(roleId),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: UFO_OBJECT_VECTOR_OBJECT_IDS[this.world.ufo.type],
         stateId: "active",
         x: this.world.ufo.x,
         y: this.world.ufo.y,
@@ -769,9 +770,9 @@ export default class AsteroidsGameScene extends Scene {
 
     if (this.world.shipActive && !this.session.isTurnIntroActive() && this.session.mode !== 'menu') {
       this.drawObjectVectorAsset(renderer, "ship", {
+        ...this.objectVectorRoleOptions("ship"),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: SHIP_OBJECT_VECTOR_OBJECT_ID,
         rotation: this.world.ship.angle + Math.PI / 2,
         stateId: this.world.ship.thrusting && this.session.mode === 'playing' ? "thrust" : "idle",
         x: this.world.ship.x,
@@ -846,14 +847,18 @@ export default class AsteroidsGameScene extends Scene {
     this.publishObjectVectorRuntimeDiagnostics();
   }
 
+  objectVectorRoleOptions(roleId) {
+    return runtimeObjectRoleOptions(roleId, this.objectVectorRuntimeBindings);
+  }
+
   drawObjectVectorAsset(renderer, renderKey, options) {
     if (!this.objectVectorRuntime || !this.objectVectorAssets) {
-      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId, "validated Object Vector runtime assets are not loaded");
+      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId || options.runtimeRole, "validated Object Vector runtime assets are not loaded");
       return false;
     }
     const result = this.objectVectorRuntime.renderObject(renderer, this.objectVectorAssets, options);
     if (!result.ok) {
-      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId, "runtime render returned failed result");
+      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId || options.runtimeRole, "runtime render returned failed result");
       return false;
     }
     this.objectVectorRenderCounts[renderKey] = (this.objectVectorRenderCounts[renderKey] || 0) + 1;
