@@ -1,7 +1,7 @@
-# PR_26133_034 Workspace V2 Playwright Results
+# PR_26133_035 Workspace V2 Playwright Results
 
-Task: PR_26133_034-asteroids-runtime-object-resolution-by-tags
-Date: 2026-05-14
+Task: PR_26133_035-object-id-slug-normalization
+Date: 2026-05-15
 
 ## Result
 
@@ -14,17 +14,18 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Asteroids gameplay rendering now resolves Object Vector runtime objects through role/tag options for ship, UFO, and asteroid roles.
-- Workspace V2 runtime rendering test was updated to expect role-based cache diagnostics for ship and small UFO.
-- Object Vector Studio V2 still loads the Asteroids object payload from `games/Asteroids/game.manifest.json`.
-- Asteroids manifest runtime validation confirmed the current large, medium, and small asteroid objects expose the required tag metadata.
+- Object Vector Studio V2 rename preview and commit flows were verified for normalized ids such as `object.asteroids.medium-asteroid`.
+- Collision numbering was verified as `object.asteroids.medium-asteroid-2`, with no `medium-asteroid-1` generated.
+- Duplicate Large Asteroid followed by rename to Medium Asteroid was verified to regenerate `object.asteroids.medium-asteroid-3`.
+- Workspace Manager V2 manifest load/save paths validated the canonical Asteroids object ids and rejected the older mixed `asteroid.*` / `ufo.*` forms from the active data.
+- Asteroids runtime rendering still loaded and rendered Object Vector runtime assets with the canonical ids.
 
 ## Additional Validation
 
-PASS - Targeted recreated Medium Asteroid resolution tests confirmed `["asteroid", "medium"]` tags select the recreated object even when an explicit stale medium object id is present.
+PASS - Targeted Asteroids Asset Reference Adoption test.
 
-PASS - Targeted Asteroids collision timing/stress checks still load asteroid collision profiles from Object Vector Studio V2 geometry.
+PASS - Targeted Asteroids Platform Demo test.
 
-PASS - Targeted Asteroids validation smoke completed.
+PASS - Targeted Asteroids collision timing/stress checks.
 
-PASS - Targeted Asteroids manifest Object Vector runtime validation loaded 6 objects and resolved the current medium asteroid by tags.
+PASS - Targeted Asteroids canonical Object Vector runtime validation loaded 7 objects and resolved large, medium, small asteroid, and small UFO roles by tags.

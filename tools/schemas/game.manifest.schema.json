@@ -93,7 +93,7 @@
     "objectIdentityId": {
       "type": "string",
       "description": "Runtime Object Vector identity. Runtime game references must use object IDs, not asset IDs or vector editor IDs.",
-      "pattern": "^object\\.[A-Za-z0-9][A-Za-z0-9._-]*$"
+      "pattern": "^object\\.[a-z0-9-]+\\.[a-z0-9][a-z0-9-]*$"
     },
     "objectVectorRuntime": {
       "type": "object",

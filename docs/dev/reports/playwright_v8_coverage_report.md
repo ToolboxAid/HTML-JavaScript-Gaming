@@ -1,7 +1,7 @@
-# PR_26133_034 Playwright V8 Coverage Report
+# PR_26133_035 Playwright V8 Coverage Report
 
-Task: PR_26133_034-asteroids-runtime-object-resolution-by-tags
-Date: 2026-05-14
+Task: PR_26133_035-object-id-slug-normalization
+Date: 2026-05-15
 
 ## Result
 
@@ -26,6 +26,8 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Changed Runtime JS Coverage
 
 ```text
+(93%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 4350/4350; executed functions 456/488
+(95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 453/453; executed functions 55/58
 (97%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 1056/1056; executed functions 123/127
 ```
 
@@ -37,4 +39,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Asteroids gameplay Object Vector runtime loading and rendering with role/tag cache diagnostics, plus Object Vector Studio V2 launch/save flows. Coverage remains advisory only.
+The Workspace V2 run exercised Object Vector Studio V2 rename, duplicate, save/load, schema validation, and Asteroids runtime Object Vector rendering with canonical object ids. Coverage remains advisory only.

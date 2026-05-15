@@ -14,26 +14,31 @@ function clone(value) {
 
 function createPayloadWithRecreatedMediumAsteroid(payload) {
   const nextPayload = clone(payload);
-  const mediumIndex = nextPayload.objects.findIndex((object) => (
-    Array.isArray(object.tags)
-    && object.tags.includes("asteroid")
-    && object.tags.includes("medium")
-  ));
-  assert.notEqual(mediumIndex, -1);
-  const mediumObject = nextPayload.objects[mediumIndex];
+  const mediumObject = nextPayload.objects.find((object) => object.id === "object.asteroids.medium-asteroid")
+    || nextPayload.objects.find((object) => (
+      Array.isArray(object.tags)
+      && object.tags.includes("asteroid")
+      && object.tags.includes("medium")
+    ));
+  assert.ok(mediumObject);
   const oldMediumObject = {
     ...clone(mediumObject),
-    id: "object.asteroids.asteroid.medium",
+    id: "object.asteroids.medium-asteroid",
     name: "Old Medium Asteroid",
     tags: ["asteroid", "medium", "old"]
   };
   const recreatedMediumObject = {
     ...clone(mediumObject),
-    id: "object.asteroids.asteroid.medium-recreated",
+    id: "object.asteroids.medium-asteroid-2",
     name: "Recreated Medium Asteroid",
     tags: ["asteroid", "medium"]
   };
-  nextPayload.objects.splice(mediumIndex, 1, oldMediumObject, recreatedMediumObject);
+  nextPayload.objects = nextPayload.objects.filter((object) => !(
+    Array.isArray(object.tags)
+    && object.tags.includes("asteroid")
+    && object.tags.includes("medium")
+  ));
+  nextPayload.objects.push(oldMediumObject, recreatedMediumObject);
   return nextPayload;
 }
 
@@ -46,19 +51,19 @@ export async function run() {
   assert.equal(manifest.game.workspace.tools["vector-map-editor"], undefined);
   assert.equal(manifestText.includes(`vector.${"asteroids"}.`), false);
   assert.equal(payload.objects.some((object) => object.id === "object.asteroids.ship"), true);
-  assert.equal(payload.objects.some((object) => object.id === "object.asteroids.asteroid.small"), true);
-  assert.equal(profiles[1].objectId, "object.asteroids.asteroid.small");
-  assert.equal(profiles[2].objectId, "object.asteroids.asteroid.medium");
-  assert.equal(profiles[3].objectId, "object.asteroids.asteroid.large");
-  assert.deepEqual(payload.objects.find((object) => object.id === "object.asteroids.asteroid.medium").tags, ["asteroid", "medium"]);
+  assert.equal(payload.objects.some((object) => object.id === "object.asteroids.small-asteroid"), true);
+  assert.equal(profiles[1].objectId, "object.asteroids.small-asteroid");
+  assert.equal(profiles[2].objectId, "object.asteroids.medium-asteroid");
+  assert.equal(profiles[3].objectId, "object.asteroids.large-asteroid");
+  assert.deepEqual(payload.objects.find((object) => object.id === "object.asteroids.medium-asteroid").tags, ["asteroid", "medium"]);
 
   const recreatedPayload = createPayloadWithRecreatedMediumAsteroid(payload);
   const recreatedProfiles = createAsteroidGeometryProfilesFromObjectVectorPayload(recreatedPayload, {
     runtimeBindings: {
-      asteroidMedium: "object.asteroids.asteroid.medium"
+      asteroidMedium: "object.asteroids.medium-asteroid"
     }
   });
-  assert.equal(recreatedProfiles[2].objectId, "object.asteroids.asteroid.medium-recreated");
+  assert.equal(recreatedProfiles[2].objectId, "object.asteroids.medium-asteroid-2");
 
   const shapes = payload.objects.flatMap((object) => object.shapes);
   assert.equal(shapes.some((shape) => shape.tool === "polygon"), true);

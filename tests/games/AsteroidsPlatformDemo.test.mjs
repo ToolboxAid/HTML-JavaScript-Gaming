@@ -34,26 +34,31 @@ function clone(value) {
 
 function createPayloadWithRecreatedMediumAsteroid(payload) {
   const nextPayload = clone(payload);
-  const mediumIndex = nextPayload.objects.findIndex((object) => (
-    Array.isArray(object.tags)
-    && object.tags.includes('asteroid')
-    && object.tags.includes('medium')
-  ));
-  assert.notEqual(mediumIndex, -1);
-  const mediumObject = nextPayload.objects[mediumIndex];
+  const mediumObject = nextPayload.objects.find((object) => object.id === 'object.asteroids.medium-asteroid')
+    || nextPayload.objects.find((object) => (
+      Array.isArray(object.tags)
+      && object.tags.includes('asteroid')
+      && object.tags.includes('medium')
+    ));
+  assert.ok(mediumObject);
   const oldMediumObject = {
     ...clone(mediumObject),
-    id: 'object.asteroids.asteroid.medium',
+    id: 'object.asteroids.medium-asteroid',
     name: 'Old Medium Asteroid',
     tags: ['asteroid', 'medium', 'old']
   };
   const recreatedMediumObject = {
     ...clone(mediumObject),
-    id: 'object.asteroids.asteroid.medium-recreated',
+    id: 'object.asteroids.medium-asteroid-2',
     name: 'Recreated Medium Asteroid',
     tags: ['asteroid', 'medium']
   };
-  nextPayload.objects.splice(mediumIndex, 1, oldMediumObject, recreatedMediumObject);
+  nextPayload.objects = nextPayload.objects.filter((object) => !(
+    Array.isArray(object.tags)
+    && object.tags.includes('asteroid')
+    && object.tags.includes('medium')
+  ));
+  nextPayload.objects.push(oldMediumObject, recreatedMediumObject);
   return nextPayload;
 }
 
@@ -66,24 +71,24 @@ export async function run() {
   assert.equal(manifestText.includes(`vector.${'asteroids'}.`), false);
   assert.equal(Array.isArray(payload.objects), true);
   assert.equal(payload.objects.some((object) => object.id === 'object.asteroids.ship'), true);
-  assert.equal(payload.objects.some((object) => object.id === 'object.asteroids.asteroid.small'), true);
+  assert.equal(payload.objects.some((object) => object.id === 'object.asteroids.small-asteroid'), true);
 
   const geometryProfiles = createAsteroidsTestGeometryProfiles();
-  assert.equal(geometryProfiles[1].objectId, 'object.asteroids.asteroid.small');
-  assert.equal(geometryProfiles[2].objectId, 'object.asteroids.asteroid.medium');
-  assert.equal(geometryProfiles[3].objectId, 'object.asteroids.asteroid.large');
+  assert.equal(geometryProfiles[1].objectId, 'object.asteroids.small-asteroid');
+  assert.equal(geometryProfiles[2].objectId, 'object.asteroids.medium-asteroid');
+  assert.equal(geometryProfiles[3].objectId, 'object.asteroids.large-asteroid');
   assert.equal(geometryProfiles[1].points.length, 6);
   assert.equal(geometryProfiles[2].points.length, 7);
   assert.equal(geometryProfiles[3].points.length, 12);
-  assert.deepEqual(payload.objects.find((object) => object.id === 'object.asteroids.asteroid.medium').tags, ['asteroid', 'medium']);
+  assert.deepEqual(payload.objects.find((object) => object.id === 'object.asteroids.medium-asteroid').tags, ['asteroid', 'medium']);
 
   const recreatedPayload = createPayloadWithRecreatedMediumAsteroid(payload);
   const recreatedProfiles = createAsteroidGeometryProfilesFromObjectVectorPayload(recreatedPayload, {
     runtimeBindings: {
-      asteroidMedium: 'object.asteroids.asteroid.medium'
+      asteroidMedium: 'object.asteroids.medium-asteroid'
     }
   });
-  assert.equal(recreatedProfiles[2].objectId, 'object.asteroids.asteroid.medium-recreated');
+  assert.equal(recreatedProfiles[2].objectId, 'object.asteroids.medium-asteroid-2');
 
   const shapes = payload.objects.flatMap((object) => object.shapes);
   assert.equal(shapes.some((shape) => shape.tool === 'polygon'), true);
@@ -99,28 +104,28 @@ export async function run() {
   const assetSet = await runtime.loadPayload(payload, {
     sourceLabel: 'Asteroids game.manifest.json:tools.object-vector-studio-v2'
   });
-  assert.equal(assetSet.objectsById.has('object.asteroids.asteroid.small'), true);
+  assert.equal(assetSet.objectsById.has('object.asteroids.small-asteroid'), true);
   assert.equal(assetSet.objectsById.has('object.asteroids.ship'), true);
 
   const recreatedAssetSet = await runtime.loadPayload(recreatedPayload, {
     runtimeBindings: {
-      asteroidMedium: 'object.asteroids.asteroid.medium'
+      asteroidMedium: 'object.asteroids.medium-asteroid'
     },
     sourceLabel: 'Asteroids recreated medium object-vector payload'
   });
   const resolvedMedium = runtime.resolveObject(recreatedAssetSet, {
-    objectId: 'object.asteroids.asteroid.medium',
+    objectId: 'object.asteroids.medium-asteroid',
     runtimeRole: 'asteroidMedium',
     tags: ['asteroid', 'medium']
   });
-  assert.equal(resolvedMedium.id, 'object.asteroids.asteroid.medium-recreated');
+  assert.equal(resolvedMedium.id, 'object.asteroids.medium-asteroid-2');
   assert.equal(runtime.getDiagnostics().events.some((event) => (
     event.level === 'WARN'
-    && event.message.includes('ignored explicit objectId object.asteroids.asteroid.medium')
+    && event.message.includes('ignored explicit objectId object.asteroids.medium-asteroid')
   )), true);
 
   const smallPreview = runtime.createSvgString(assetSet, {
-    objectId: 'object.asteroids.asteroid.small',
+    objectId: 'object.asteroids.small-asteroid',
     stateId: 'active'
   });
   assert.equal(smallPreview.ok, true);

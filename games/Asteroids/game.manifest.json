@@ -15,11 +15,11 @@
       "objectVectorRuntime": {
         "objectIds": {
           "ship": "object.asteroids.ship",
-          "asteroidLarge": "object.asteroids.asteroid.large",
-          "asteroidMedium": "object.asteroids.asteroid.medium",
-          "asteroidSmall": "object.asteroids.asteroid.small",
-          "ufoLarge": "object.asteroids.ufo.large",
-          "ufoSmall": "object.asteroids.ufo.small"
+          "asteroidLarge": "object.asteroids.large-asteroid",
+          "asteroidMedium": "object.asteroids.medium-asteroid",
+          "asteroidSmall": "object.asteroids.small-asteroid",
+          "ufoLarge": "object.asteroids.large-ufo",
+          "ufoSmall": "object.asteroids.small-ufo"
         }
       }
     },
@@ -390,7 +390,7 @@
               ]
             },
             {
-              "id": "object.asteroids.asteroid.large",
+              "id": "object.asteroids.large-asteroid",
               "name": "Large Asteroid",
               "shapes": [
                 {
@@ -490,87 +490,7 @@
               ]
             },
             {
-              "id": "object.asteroids.medium-asteroid-1",
-              "name": "Medium Asteroid 1",
-              "shapes": [
-                {
-                  "tool": "polygon",
-                  "order": 0,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "points": [
-                      {
-                        "x": -16,
-                        "y": -10
-                      },
-                      {
-                        "x": -2,
-                        "y": -18
-                      },
-                      {
-                        "x": 16,
-                        "y": -14
-                      },
-                      {
-                        "x": 20,
-                        "y": 2
-                      },
-                      {
-                        "x": 8,
-                        "y": 18
-                      },
-                      {
-                        "x": -10,
-                        "y": 16
-                      },
-                      {
-                        "x": -20,
-                        "y": 4
-                      }
-                    ]
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#CBD5E1",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 0,
-                      "y": 0
-                    }
-                  }
-                }
-              ],
-              "states": [
-                {
-                  "id": "active",
-                  "name": "Active",
-                  "frames": [
-                    {
-                      "id": "active-frame-1",
-                      "order": 0,
-                      "durationFrames": 1,
-                      "shapeOverrides": []
-                    }
-                  ]
-                }
-              ],
-              "tags": [
-                "asteroid",
-                "medium"
-              ]
-            },
-            {
-              "id": "object.asteroids.asteroid.small",
+              "id": "object.asteroids.small-asteroid",
               "name": "Small Asteroid",
               "shapes": [
                 {
@@ -646,7 +566,7 @@
               ]
             },
             {
-              "id": "object.asteroids.ufo.large",
+              "id": "object.asteroids.large-ufo",
               "name": "Large UFO",
               "shapes": [
                 {
@@ -730,7 +650,7 @@
               ]
             },
             {
-              "id": "object.asteroids.ufo.small",
+              "id": "object.asteroids.small-ufo",
               "name": "Small UFO",
               "shapes": [
                 {
@@ -815,6 +735,86 @@
             },
             {
               "id": "object.asteroids.medium-asteroid",
+              "name": "Medium Asteroid",
+              "shapes": [
+                {
+                  "tool": "polygon",
+                  "order": 0,
+                  "visible": true,
+                  "locked": false,
+                  "geometry": {
+                    "points": [
+                      {
+                        "x": -16,
+                        "y": -10
+                      },
+                      {
+                        "x": -2,
+                        "y": -18
+                      },
+                      {
+                        "x": 16,
+                        "y": -14
+                      },
+                      {
+                        "x": 20,
+                        "y": 2
+                      },
+                      {
+                        "x": 8,
+                        "y": 18
+                      },
+                      {
+                        "x": -10,
+                        "y": 16
+                      },
+                      {
+                        "x": -20,
+                        "y": 4
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": "transparent",
+                    "stroke": "#CBD5E1",
+                    "strokeWidth": 2,
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
+                  },
+                  "transform": {
+                    "x": 0,
+                    "y": 0,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "origin": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  }
+                }
+              ],
+              "states": [
+                {
+                  "id": "active",
+                  "name": "Active",
+                  "frames": [
+                    {
+                      "id": "active-frame-1",
+                      "order": 0,
+                      "durationFrames": 1,
+                      "shapeOverrides": []
+                    }
+                  ]
+                }
+              ],
+              "tags": [
+                "asteroid",
+                "medium"
+              ]
+            },
+            {
+              "id": "object.asteroids.medium-asteroid-2",
               "name": "Medium Asteroid",
               "shapes": [
                 {

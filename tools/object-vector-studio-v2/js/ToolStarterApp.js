@@ -127,6 +127,8 @@ const SHAPE_TYPE_DETAILS = Object.freeze({
 });
 
 const PRIMITIVE_TOOLS = Object.freeze(["triangle", "rectangle", "circle", "ellipse", "line", "polygon", "arc", "text"]);
+const OBJECT_ID_SIZE_WORDS = Object.freeze(new Set(["large", "medium", "small"]));
+const OBJECT_ID_ORDERED_NOUNS = Object.freeze(new Set(["asteroid", "ufo"]));
 
 function shapeTool(shape) {
   return String(shape?.tool || "").trim().toLowerCase();
@@ -176,6 +178,22 @@ function slugifyObjectName(name) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
   return slug || "object";
+}
+
+function canonicalObjectSlug(name, gameKey = "") {
+  const gameWords = slugifyObjectName(gameKey).split("-").filter(Boolean);
+  let words = slugifyObjectName(name).split("-").filter(Boolean);
+  if (gameWords.length && gameWords.every((word, index) => words[index] === word)) {
+    words = words.slice(gameWords.length);
+  }
+  words = words.filter((word, index) => index === 0 || word !== words[index - 1]);
+  if (words.length === 2 && OBJECT_ID_ORDERED_NOUNS.has(words[0]) && OBJECT_ID_SIZE_WORDS.has(words[1])) {
+    words = [words[1], words[0]];
+  }
+  if (words.length > 2 && words.at(-1) === "1" && OBJECT_ID_ORDERED_NOUNS.has(words.at(-2))) {
+    words = words.slice(0, -1);
+  }
+  return words.join("-") || "object";
 }
 
 function objectGameSegment(objectId) {
@@ -4386,7 +4404,7 @@ export class ToolStarterApp {
   }
 
   uniqueObjectId(name, objects, gameKey = this.payloadGameKey()) {
-    const baseId = `object.${gameKey}.${slugifyObjectName(name)}`;
+    const baseId = `object.${gameKey}.${canonicalObjectSlug(name, gameKey)}`;
     const usedIds = new Set(objects.map((object) => object.id));
     if (!usedIds.has(baseId)) {
       return baseId;

@@ -9,7 +9,7 @@ function clone(value) {
 }
 
 function isObjectIdentityId(value) {
-  return /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9.-]*$/.test(String(value || ""));
+  return /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9-]*$/.test(String(value || ""));
 }
 
 function typeMatches(expectedType, value) {
