@@ -910,7 +910,7 @@ textarea:hover {
 
 .object-vector-studio-v2__object-tile-shape-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 4px;
   font-size: 0.7rem;
@@ -924,7 +924,7 @@ textarea:hover {
   z-index: 3;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 6px;
   padding: 2px 5px !important;
   text-align: left;
@@ -941,6 +941,7 @@ textarea:hover {
 .object-vector-studio-v2__shape-group-indicators {
   display: inline-flex;
   align-items: center;
+  justify-self: end;
   gap: 2px;
 }
 
@@ -1474,6 +1475,10 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__line-endpoint-handle {
+  cursor: crosshair;
+}
+
+.object-vector-studio-v2__geometry-point-handle:not([data-resize-handle]) {
   cursor: crosshair;
 }
 

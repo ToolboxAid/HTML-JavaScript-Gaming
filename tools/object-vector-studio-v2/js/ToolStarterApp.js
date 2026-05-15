@@ -1430,11 +1430,7 @@ export class ToolStarterApp {
       selectButton.setAttribute("aria-pressed", String(this.selectedShapeIndexes.has(shapeIndex)));
       const label = document.createElement("span");
       label.className = "object-vector-studio-v2__shape-select-label";
-      if (shape.groupId) {
-        label.append(this.createShapeGroupIndicators(shape), `${shapeIndex}. ${shapeDisplayLabel(shape)}`);
-      } else {
-        label.textContent = `${shapeIndex}. ${shapeDisplayLabel(shape)}`;
-      }
+      label.textContent = `${shapeIndex}. ${shapeDisplayLabel(shape)}`;
       selectButton.append(label);
       selectButton.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -1467,7 +1463,7 @@ export class ToolStarterApp {
         this.deleteShapeByIndex(shapeIndex, "object tile shape delete", object.id);
       });
       actions.append(visibilityButton, deleteButton);
-      row.append(selectButton, actions);
+      row.append(selectButton, actions, this.createShapeGroupIndicators(shape));
       list.append(row);
     });
     if (!list.children.length) {
@@ -2698,6 +2694,11 @@ export class ToolStarterApp {
         point.classList.add("object-vector-studio-v2__resize-handle");
         point.dataset.resizeHandle = handle;
         point.dataset.resizeShapeIndex = String(this.selectedShapeIndex);
+        if (shapeGeometryTool(selectedShape) === "rectangle") {
+          point.classList.add("object-vector-studio-v2__geometry-point-handle");
+          point.dataset.geometryPointHandle = `rectangle-${handle}`;
+          point.dataset.geometryPointKind = "rectangle-corner";
+        }
         point.setAttribute("x", cx - 1.5);
         point.setAttribute("y", cy - 1.5);
         point.setAttribute("width", 3);
@@ -2706,25 +2707,7 @@ export class ToolStarterApp {
         this.elements.renderSurface.append(point);
       });
 
-      if (shapeGeometryTool(selectedShape) === "line") {
-        const effectiveLine = this.effectiveShape(selectedShape);
-        const transform = this.shapeTransform(effectiveLine);
-        [
-          ["start", this.transformedPoint(effectiveLine.geometry.point1, transform)],
-          ["end", this.transformedPoint(effectiveLine.geometry.point2, transform)]
-        ].forEach(([endpoint, position]) => {
-          const point = document.createElementNS(SVG_NS, "rect");
-          point.classList.add("object-vector-studio-v2__resize-handle", "object-vector-studio-v2__line-endpoint-handle");
-          point.dataset.lineEndpoint = endpoint;
-          point.dataset.resizeShapeIndex = String(this.selectedShapeIndex);
-          point.setAttribute("x", this.scaleDrawingValue(position.x, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
-          point.setAttribute("y", this.scaleDrawingValue(position.y, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
-          point.setAttribute("width", 4);
-          point.setAttribute("height", 4);
-          point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, this.selectedShapeIndex, { endpoint, mode: "line-endpoint" }));
-          this.elements.renderSurface.append(point);
-        });
-      }
+      this.renderGeometryPointHandles(selectedShape);
 
       const pivot = document.createElementNS(SVG_NS, "g");
       pivot.classList.add("object-vector-studio-v2__pivot-origin");
@@ -2744,6 +2727,173 @@ export class ToolStarterApp {
     } catch (error) {
       this.statusLog.write(`FAIL Selection overlay render failed for ${object.name}/shape-${this.selectedShapeIndex} (${shapeTool(selectedShape)}): ${error.message}`);
     }
+  }
+
+  renderGeometryPointHandles(shape) {
+    const effectiveShape = this.effectiveShape(shape);
+    const transform = this.shapeTransform(effectiveShape);
+    this.geometryPointHandleDefinitions(effectiveShape).forEach((definition) => {
+      const position = this.transformedPoint(definition.point, transform);
+      const point = document.createElementNS(SVG_NS, "rect");
+      point.classList.add("object-vector-studio-v2__resize-handle", "object-vector-studio-v2__geometry-point-handle");
+      if (definition.className) {
+        point.classList.add(definition.className);
+      }
+      point.dataset.geometryPointHandle = definition.id;
+      point.dataset.geometryPointKind = definition.kind;
+      point.dataset.resizeShapeIndex = String(this.selectedShapeIndex);
+      if (definition.endpoint) {
+        point.dataset.lineEndpoint = definition.endpoint;
+      }
+      point.setAttribute("x", this.scaleDrawingValue(position.x, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
+      point.setAttribute("y", this.scaleDrawingValue(position.y, OBJECT_PREVIEW_DRAWING_SCALE) - 2);
+      point.setAttribute("width", 4);
+      point.setAttribute("height", 4);
+      point.setAttribute("aria-label", definition.label);
+      point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, this.selectedShapeIndex, definition.editOptions));
+      this.elements.renderSurface.append(point);
+    });
+  }
+
+  geometryPointHandleDefinitions(shape) {
+    const geometryTool = shapeGeometryTool(shape);
+    const geometry = shape.geometry;
+    if (geometryTool === "polygon") {
+      return geometry.points.map((point, index) => ({
+        editOptions: {
+          mode: "geometry-point",
+          point: { ...point },
+          pointIndex: index
+        },
+        id: `polygon-${index}`,
+        kind: this.isTriangleShape(shape) ? "triangle-point" : "polygon-point",
+        label: `Move point ${index + 1}`,
+        point
+      }));
+    }
+    if (geometryTool === "line") {
+      return [
+        ["start", "point1", linePoint(geometry, "point1")],
+        ["end", "point2", linePoint(geometry, "point2")]
+      ].map(([endpoint, key, point], index) => ({
+        className: "object-vector-studio-v2__line-endpoint-handle",
+        editOptions: {
+          endpoint,
+          mode: "line-endpoint"
+        },
+        endpoint,
+        id: `line-${endpoint}`,
+        kind: key,
+        label: `Move line point ${index + 1}`,
+        point
+      }));
+    }
+    if (geometryTool === "circle") {
+      return [
+        {
+          control: "center",
+          id: "circle-center",
+          kind: "center",
+          label: "Move circle center",
+          point: { x: geometry.cx, y: geometry.cy }
+        },
+        {
+          control: "radius",
+          id: "circle-radius",
+          kind: "radius",
+          label: "Adjust circle radius",
+          point: { x: geometry.cx + geometry.r, y: geometry.cy }
+        }
+      ].map((definition) => ({
+        ...definition,
+        editOptions: {
+          control: definition.control,
+          mode: "geometry-point",
+          point: { ...definition.point }
+        }
+      }));
+    }
+    if (geometryTool === "ellipse") {
+      return [
+        {
+          control: "center",
+          id: "ellipse-center",
+          kind: "center",
+          label: "Move ellipse center",
+          point: { x: geometry.cx, y: geometry.cy }
+        },
+        {
+          control: "rx",
+          id: "ellipse-rx",
+          kind: "rx",
+          label: "Adjust ellipse rx",
+          point: { x: geometry.cx + geometry.rx, y: geometry.cy }
+        },
+        {
+          control: "ry",
+          id: "ellipse-ry",
+          kind: "ry",
+          label: "Adjust ellipse ry",
+          point: { x: geometry.cx, y: geometry.cy + geometry.ry }
+        }
+      ].map((definition) => ({
+        ...definition,
+        editOptions: {
+          control: definition.control,
+          mode: "geometry-point",
+          point: { ...definition.point }
+        }
+      }));
+    }
+    if (geometryTool === "arc") {
+      return [
+        {
+          control: "center",
+          id: "arc-center",
+          kind: "center",
+          label: "Move arc center",
+          point: { x: geometry.cx, y: geometry.cy }
+        },
+        {
+          control: "start",
+          id: "arc-start",
+          kind: "startAngle",
+          label: "Move arc start point",
+          point: this.polarPoint(geometry.cx, geometry.cy, geometry.r, geometry.startAngle)
+        },
+        {
+          control: "end",
+          id: "arc-end",
+          kind: "endAngle",
+          label: "Move arc end point",
+          point: this.polarPoint(geometry.cx, geometry.cy, geometry.r, geometry.endAngle)
+        }
+      ].map((definition) => ({
+        ...definition,
+        editOptions: {
+          control: definition.control,
+          mode: "geometry-point",
+          point: { ...definition.point }
+        }
+      }));
+    }
+    if (geometryTool === "text") {
+      const point = { x: geometry.x, y: geometry.y };
+      return [
+        {
+          editOptions: {
+            control: "anchor",
+            mode: "geometry-point",
+            point: { ...point }
+          },
+          id: "text-anchor",
+          kind: "anchor",
+          label: "Move text anchor",
+          point
+        }
+      ];
+    }
+    return [];
   }
 
   arcPath(geometry) {
@@ -2927,6 +3077,13 @@ export class ToolStarterApp {
       return;
     }
 
+    if (edit.mode === "geometry-point") {
+      this.updateSelectedShapeGeometry("preview point handle", (shape) => {
+        shape.geometry = this.previewGeometryPointGeometry(shape, edit, delta);
+      }, `OK Moved geometry point ${edit.control || edit.pointIndex + 1 || "handle"} for shape row ${edit.shapeIndex}.`);
+      return;
+    }
+
     if (edit.mode === "resize") {
       this.updateSelectedShapeGeometry("preview resize", (shape) => {
         shape.geometry = this.previewResizeGeometry(shape, edit, delta);
@@ -2980,7 +3137,142 @@ export class ToolStarterApp {
       geometry.r = Number(Math.max(1, edit.originalGeometry.r + radiusDelta * sign).toFixed(3));
       return geometry;
     }
+    if (geometryTool === "polygon") {
+      const bounds = shapeBounds({ ...shape, geometry: edit.originalGeometry });
+      const nextBounds = this.resizedGeometryBounds(bounds, edit.handle, delta);
+      geometry.points = edit.originalGeometry.points.map((point) => this.mapPointBetweenBounds(point, bounds, nextBounds));
+      return geometry;
+    }
+    if (geometryTool === "line") {
+      const bounds = shapeBounds({ ...shape, geometry: edit.originalGeometry });
+      const nextBounds = this.resizedGeometryBounds(bounds, edit.handle, delta);
+      geometry.point1 = this.mapPointBetweenBounds(edit.originalGeometry.point1, bounds, nextBounds);
+      geometry.point2 = this.mapPointBetweenBounds(edit.originalGeometry.point2, bounds, nextBounds);
+      return geometry;
+    }
+    if (geometryTool === "arc") {
+      const bounds = shapeBounds({ ...shape, geometry: edit.originalGeometry });
+      const nextBounds = this.resizedGeometryBounds(bounds, edit.handle, delta);
+      geometry.cx = Number((nextBounds.x + nextBounds.width / 2).toFixed(3));
+      geometry.cy = Number((nextBounds.y + nextBounds.height / 2).toFixed(3));
+      geometry.r = Number((Math.max(1, Math.min(nextBounds.width, nextBounds.height) / 2)).toFixed(3));
+      return geometry;
+    }
+    if (geometryTool === "text") {
+      const bounds = shapeBounds({ ...shape, geometry: edit.originalGeometry });
+      const nextBounds = this.resizedGeometryBounds(bounds, edit.handle, delta);
+      const anchor = this.mapPointBetweenBounds({ x: edit.originalGeometry.x, y: edit.originalGeometry.y }, bounds, nextBounds);
+      const scaleY = nextBounds.height / Math.max(1, bounds.height);
+      geometry.x = anchor.x;
+      geometry.y = anchor.y;
+      geometry.fontSize = Number(Math.max(1, edit.originalGeometry.fontSize * scaleY).toFixed(3));
+      return geometry;
+    }
     return geometry;
+  }
+
+  resizedGeometryBounds(bounds, handle, delta) {
+    const next = { ...bounds };
+    if (handle.includes("w")) {
+      next.x = Number((bounds.x + delta.x).toFixed(3));
+      next.width = Number((bounds.width - delta.x).toFixed(3));
+    }
+    if (handle.includes("e")) {
+      next.width = Number((bounds.width + delta.x).toFixed(3));
+    }
+    if (handle.includes("n")) {
+      next.y = Number((bounds.y + delta.y).toFixed(3));
+      next.height = Number((bounds.height - delta.y).toFixed(3));
+    }
+    if (handle.includes("s")) {
+      next.height = Number((bounds.height + delta.y).toFixed(3));
+    }
+    if (next.width <= 0 || next.height <= 0) {
+      throw new Error("resize would invert or collapse geometry bounds.");
+    }
+    return next;
+  }
+
+  mapPointBetweenBounds(point, bounds, nextBounds) {
+    const xRatio = bounds.width <= 0 ? 0 : (point.x - bounds.x) / bounds.width;
+    const yRatio = bounds.height <= 0 ? 0 : (point.y - bounds.y) / bounds.height;
+    return {
+      x: Number((nextBounds.x + xRatio * nextBounds.width).toFixed(3)),
+      y: Number((nextBounds.y + yRatio * nextBounds.height).toFixed(3))
+    };
+  }
+
+  previewGeometryPointGeometry(shape, edit, delta) {
+    const geometry = JSON.parse(JSON.stringify(edit.originalGeometry));
+    const geometryTool = shapeGeometryTool(shape);
+    const movedPoint = {
+      x: Number((edit.point.x + delta.x).toFixed(3)),
+      y: Number((edit.point.y + delta.y).toFixed(3))
+    };
+    if (geometryTool === "polygon") {
+      const pointIndex = normalizeShapeIndex(edit.pointIndex);
+      if (pointIndex >= 0 && pointIndex < geometry.points.length) {
+        geometry.points[pointIndex] = movedPoint;
+      }
+      return geometry;
+    }
+    if (geometryTool === "circle") {
+      if (edit.control === "center") {
+        geometry.cx = Number((edit.originalGeometry.cx + delta.x).toFixed(3));
+        geometry.cy = Number((edit.originalGeometry.cy + delta.y).toFixed(3));
+        return geometry;
+      }
+      if (edit.control === "radius") {
+        geometry.r = this.radiusFromControlPoint({ x: edit.originalGeometry.cx, y: edit.originalGeometry.cy }, movedPoint);
+      }
+      return geometry;
+    }
+    if (geometryTool === "ellipse") {
+      if (edit.control === "center") {
+        geometry.cx = Number((edit.originalGeometry.cx + delta.x).toFixed(3));
+        geometry.cy = Number((edit.originalGeometry.cy + delta.y).toFixed(3));
+        return geometry;
+      }
+      if (edit.control === "rx") {
+        geometry.rx = this.axisRadiusFromControlPoint(edit.originalGeometry.cx, movedPoint.x);
+      }
+      if (edit.control === "ry") {
+        geometry.ry = this.axisRadiusFromControlPoint(edit.originalGeometry.cy, movedPoint.y);
+      }
+      return geometry;
+    }
+    if (geometryTool === "arc") {
+      if (edit.control === "center") {
+        geometry.cx = Number((edit.originalGeometry.cx + delta.x).toFixed(3));
+        geometry.cy = Number((edit.originalGeometry.cy + delta.y).toFixed(3));
+        return geometry;
+      }
+      if (edit.control === "start" || edit.control === "end") {
+        const center = { x: edit.originalGeometry.cx, y: edit.originalGeometry.cy };
+        geometry.r = this.radiusFromControlPoint(center, movedPoint);
+        geometry[edit.control === "start" ? "startAngle" : "endAngle"] = this.angleFromControlPoint(center, movedPoint);
+      }
+      return geometry;
+    }
+    if (geometryTool === "text") {
+      geometry.x = movedPoint.x;
+      geometry.y = movedPoint.y;
+      return geometry;
+    }
+    return geometry;
+  }
+
+  radiusFromControlPoint(center, point) {
+    return Number(Math.max(1, Math.hypot(point.x - center.x, point.y - center.y)).toFixed(3));
+  }
+
+  axisRadiusFromControlPoint(centerValue, pointValue) {
+    return Number(Math.max(1, Math.abs(pointValue - centerValue)).toFixed(3));
+  }
+
+  angleFromControlPoint(center, point) {
+    const degrees = (Math.atan2(point.y - center.y, point.x - center.x) * 180) / Math.PI + 90;
+    return this.normalizeRotationDegrees(degrees);
   }
 
   selectObject(objectId, sourceLabel) {

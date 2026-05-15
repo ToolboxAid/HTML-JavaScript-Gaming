@@ -1,6 +1,6 @@
-# PR_26133_054 Playwright V8 Coverage Report
+# PR_26133_055 Playwright V8 Coverage Report
 
-Task: PR_26133_054-group-regroup-group-move-and-state-delete-restore
+Task: PR_26133_055-shape-tile-group-icon-and-geometry-point-handles
 Date: 2026-05-15
 
 ## Result
@@ -24,7 +24,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Relevant Runtime Coverage
 
 ```text
-(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5213/5213; executed functions 564/591
+(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5496/5496; executed functions 576/606
 ```
 
 ## Guardrail
@@ -35,4 +35,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 regroup behavior, selected-group movement, single-shape movement, state add/delete controls, final-state delete prevention, dirty-state tracking, schema validation, and Asteroids runtime object-vector rendering.
+The Workspace V2 run exercised Object Vector Studio V2 shape tile group indicator layout, preview geometry point handles, line endpoint handles, polygon point drag editing, bounding-box geometry resize, dirty-state tracking, schema validation, and Asteroids runtime object-vector rendering.
