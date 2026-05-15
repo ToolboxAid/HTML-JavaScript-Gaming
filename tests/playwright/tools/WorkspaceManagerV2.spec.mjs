@@ -1823,18 +1823,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveAttribute("r", "9");
       await expect(page.locator("#objectVectorStudioV2ViewportControls button")).toHaveText(["Out", "In", "Up", "Down", "Left", "Right", "View", "Center"]);
-      await expect(page.locator("#objectVectorStudioV2CenterDotButton")).not.toHaveAttribute("aria-pressed", /.*/);
+      await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "true");
       await page.locator("#objectVectorStudioV2PanRightButton").click();
       await page.locator("#objectVectorStudioV2PanDownButton").click();
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 2 | Canvas 0,0 centered | Zoom 100%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 2 | Canvas origin -2,-2 from center | Zoom 100%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1580 -1080 3200 2200");
       await page.locator("#objectVectorStudioV2RenderSurface").hover({ position: { x: 12, y: 12 } });
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Pointer");
       await page.locator("#objectVectorStudioV2CenterDotButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1580 -1080 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Canvas origin -2,-2 from center | Zoom 100%");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "false");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Center dot hidden\./);
+      await page.locator("#objectVectorStudioV2ResetViewButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 100%");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(0);
+      await page.locator("#objectVectorStudioV2CenterDotButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport centered at origin 0,0; zoom 100% preserved\./);
+      await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Center dot visible\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Asteroids Ship"');
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"selectedShape": null');
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"palette"');
@@ -2366,6 +2375,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const originAfterApply = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform.origin);
       expect(originAfterApply).toEqual({ x: 2, y: -3 });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated shape row 0 origin\/pivot to 2, -3\./);
+      const pivotMarkerAfterOrigin = await page.locator("#objectVectorStudioV2RenderSurface [data-pivot-origin='0']").evaluate((pivot) => {
+        const [horizontal, vertical] = Array.from(pivot.querySelectorAll("line"));
+        return {
+          x: Number(vertical.getAttribute("x1")),
+          y: Number(horizontal.getAttribute("y1"))
+        };
+      });
+      expect(pivotMarkerAfterOrigin).toEqual({ x: 120, y: 70 });
 
       await page.locator("#objectVectorStudioV2ScaleInput").fill("0");
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveAttribute("aria-invalid", "true");
@@ -2521,25 +2538,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1454.545 -1000 2909.091 2000");
       await page.locator("#objectVectorStudioV2PanRightButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1434.545 -1000 2909.091 2000");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas 0,0 centered | Zoom 110%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas origin -2,0 from center | Zoom 110%");
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 100%");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport reset to 100% at origin 0,0\./);
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.viewport.zoom = 0.095;
         window.__objectVectorStudioV2App.updateViewport();
       });
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 100%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 100%");
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.zoomViewport(2.5);
       });
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 500%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 500%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-320 -220 640 440");
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.zoomViewport(0);
       });
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 10%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 10%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-16000 -11000 32000 22000");
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
@@ -3017,18 +3034,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         viewBox: "-640 -440 1280 880"
       });
 
+      const beforePanShapeState = await page.evaluate(() => {
+        const shape = window.__objectVectorStudioV2App.selectedShape();
+        return {
+          geometry: JSON.stringify(shape.geometry),
+          transform: JSON.stringify(shape.transform || null)
+        };
+      });
       await page.locator("#objectVectorStudioV2PanRightButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-620 -440 1280 880");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas 0,0 centered | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas origin -2,0 from center | Zoom 250%");
       await page.locator("#objectVectorStudioV2PanLeftButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 250%");
       await page.locator("#objectVectorStudioV2PanUpButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -460 1280 880");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, -2 | Canvas 0,0 centered | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, -2 | Canvas origin 0,2 from center | Zoom 250%");
       await page.locator("#objectVectorStudioV2PanDownButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas 0,0 centered | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 250%");
+      const afterPanShapeState = await page.evaluate(() => {
+        const shape = window.__objectVectorStudioV2App.selectedShape();
+        return {
+          geometry: JSON.stringify(shape.geometry),
+          transform: JSON.stringify(shape.transform || null)
+        };
+      });
+      expect(afterPanShapeState).toEqual(beforePanShapeState);
       const examplePointerScreen = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
         const point = surface.createSVGPoint();
         point.x = -140;
@@ -6589,6 +6621,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             ship: "object.asteroids.ship"
           }
         };
+        const invalidUnknownGameDataManifest = structuredClone(manifest);
+        invalidUnknownGameDataManifest.game.gameData.debugUnknown = true;
+        const invalidUnknownWorkspaceManifest = structuredClone(manifest.game.workspace);
+        invalidUnknownWorkspaceManifest.debugUnknown = true;
         return {
           gameManifestValidation: await service.validateGameManifest(manifest),
           hasGameData: Boolean(manifest.game?.gameData),
@@ -6598,6 +6634,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           runtimeWorkspaceValidation: await service.validateGameManifest(invalidRuntimeWorkspaceManifest),
           rootDocumentKind: manifest.documentKind || "",
           schema: manifest.schema,
+          unknownGameDataValidation: await service.validateGameManifest(invalidUnknownGameDataManifest),
+          unknownWorkspaceValidation: await service.validateGeneratedManifest(invalidUnknownWorkspaceManifest),
           workspaceDocumentKind: manifest.game?.workspace?.documentKind,
           workspaceValidation: await service.validateGeneratedManifest(manifest.game.workspace)
         };
@@ -6610,9 +6648,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         objectVectorRuntimeValidation: { ok: false },
         rootDocumentKind: "",
         schema: "html-js-gaming.game-manifest",
+        unknownGameDataValidation: { ok: false },
+        unknownWorkspaceValidation: { ok: false },
         workspaceDocumentKind: "workspace-manifest",
         workspaceValidation: { ok: true }
       });
+      expect(asteroidsGameManifestShape.objectVectorRuntimeValidation.message).toContain("root.game.gameData.objectVectorRuntime is not allowed");
+      expect(asteroidsGameManifestShape.unknownGameDataValidation.message).toContain("root.game.gameData.debugUnknown is not allowed");
+      expect(asteroidsGameManifestShape.unknownWorkspaceValidation.message).toContain("root.debugUnknown is not allowed");
       expect(asteroidsGameManifestShape.runtimeWorkspaceValidation.ok).toBe(false);
       expect(asteroidsGameManifestShape.runtimeWorkspaceValidation.message).toContain("runtime data must not depend on editor/tool workspace state");
 

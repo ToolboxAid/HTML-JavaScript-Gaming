@@ -53,7 +53,7 @@
       "type": "object",
       "description": "Runtime-only game data. Tools may read this object; writes are limited to explicit validated apply/build/export actions.",
       "required": ["launch"],
-      "additionalProperties": true,
+      "additionalProperties": false,
       "allOf": [
         {
           "not": {
@@ -63,11 +63,6 @@
         {
           "not": {
             "required": ["tools"]
-          }
-        },
-        {
-          "not": {
-            "required": ["objectVectorRuntime"]
           }
         }
       ],

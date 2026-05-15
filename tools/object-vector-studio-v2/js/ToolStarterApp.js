@@ -432,7 +432,7 @@ export class ToolStarterApp {
     this.gridSnapEnabled = false;
     this.angleSnapEnabled = false;
     this.gridRenderEnabled = true;
-    this.centerOriginVisible = true;
+    this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
     this.schemaReady = false;
     this.viewport = { ...DEFAULT_VIEWPORT };
   }
@@ -680,7 +680,7 @@ export class ToolStarterApp {
       this.renderWorkSurface();
       this.statusLog.write(`OK Grid rendering ${this.gridRenderEnabled ? "enabled" : "disabled"}.`);
     });
-    this.elements.centerDotButton.addEventListener("click", () => this.centerViewport());
+    this.elements.centerDotButton.addEventListener("click", () => this.toggleCenterOriginMarker());
   }
 
   bindPaletteControls() {
@@ -832,11 +832,11 @@ export class ToolStarterApp {
     this.gridSnapEnabled = this.window.sessionStorage?.getItem(GRID_SNAP_SESSION_KEY) === "1";
     this.angleSnapEnabled = this.window.sessionStorage?.getItem(ANGLE_SNAP_SESSION_KEY) === "1";
     this.gridRenderEnabled = this.window.sessionStorage?.getItem(GRID_RENDER_SESSION_KEY) !== "0";
-    this.centerOriginVisible = true;
+    this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
     this.elements.gridSnapButton.setAttribute("aria-pressed", String(this.gridSnapEnabled));
     this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
     this.elements.gridRenderButton.setAttribute("aria-pressed", String(this.gridRenderEnabled));
-    this.elements.centerDotButton.removeAttribute("aria-pressed");
+    this.elements.centerDotButton.setAttribute("aria-pressed", String(this.centerOriginVisible));
     this.elements.renderSurface.classList.toggle("is-grid-visible", this.gridRenderEnabled);
   }
 
@@ -891,7 +891,7 @@ export class ToolStarterApp {
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
     this.renderFrameTimeline();
-    this.elements.coordinateDisplay.textContent = `Origin: 0, 0 | Canvas 0,0 centered | Zoom ${this.formatZoomPercentage() * 10}%`;
+    this.updateViewport();
     this.elements.renderSurface.replaceChildren();
     this.renderSvgGrid();
     this.renderCenterOriginMarker();
@@ -2503,12 +2503,21 @@ export class ToolStarterApp {
     const viewX = this.formatViewportNumber(this.viewport.x - width / 2);
     const viewY = this.formatViewportNumber(this.viewport.y - height / 2);
     this.elements.renderSurface.setAttribute("viewBox", `${viewX} ${viewY} ${this.formatViewportNumber(width)} ${this.formatViewportNumber(height)}`);
-    this.elements.coordinateDisplay.textContent = `Origin: ${this.formatLogicalCoordinate(this.viewport.x)}, ${this.formatLogicalCoordinate(this.viewport.y)} | Canvas 0,0 centered | Zoom ${this.formatZoomPercentage() * 10}%`;
+    this.elements.coordinateDisplay.textContent = `Origin: ${this.formatLogicalCoordinate(this.viewport.x)}, ${this.formatLogicalCoordinate(this.viewport.y)} | ${this.canvasOriginDisplayText()} | Zoom ${this.formatZoomPercentage() * 10}%`;
   }
 
   formatViewportNumber(value) {
     const normalized = Number(Number(value).toFixed(3));
     return Object.is(normalized, -0) ? 0 : normalized;
+  }
+
+  canvasOriginDisplayText() {
+    const x = this.formatLogicalCoordinate(-this.viewport.x);
+    const y = this.formatLogicalCoordinate(-this.viewport.y);
+    if (x === 0 && y === 0) {
+      return "Canvas origin 0,0 centered";
+    }
+    return `Canvas origin ${x},${y} from center`;
   }
 
   formatLogicalCoordinate(value) {
@@ -2546,15 +2555,12 @@ export class ToolStarterApp {
     this.statusLog.write(`OK Viewport pan set to ${this.viewport.x}, ${this.viewport.y}.`);
   }
 
-  centerViewport() {
-    this.viewport.x = 0;
-    this.viewport.y = 0;
-    this.centerOriginVisible = true;
-    this.window.sessionStorage?.setItem(CENTER_ORIGIN_SESSION_KEY, "1");
+  toggleCenterOriginMarker() {
+    this.centerOriginVisible = !this.centerOriginVisible;
+    this.window.sessionStorage?.setItem(CENTER_ORIGIN_SESSION_KEY, this.centerOriginVisible ? "1" : "0");
     this.applySnapState();
-    this.updateViewport();
     this.renderWorkSurface();
-    this.statusLog.write(`OK Viewport centered at origin 0,0; zoom ${this.formatZoomPercentage() * 10}% preserved.`);
+    this.statusLog.write(`OK Center dot ${this.centerOriginVisible ? "visible" : "hidden"}.`);
   }
 
   resetViewport() {
@@ -2572,7 +2578,7 @@ export class ToolStarterApp {
     const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
     const x = this.viewport.x - viewWidth / 2 + ((event.clientX - bounds.left) / bounds.width) * viewWidth;
     const y = this.viewport.y - viewHeight / 2 + ((event.clientY - bounds.top) / bounds.height) * viewHeight;
-    this.elements.coordinateDisplay.textContent = `Pointer ${this.formatLogicalPointerCoordinate(x)}, ${this.formatLogicalPointerCoordinate(y)} | Canvas origin 0,0 centered | Zoom ${this.formatZoomPercentage() * 10}%`;
+    this.elements.coordinateDisplay.textContent = `Pointer ${this.formatLogicalPointerCoordinate(x)}, ${this.formatLogicalPointerCoordinate(y)} | ${this.canvasOriginDisplayText()} | Zoom ${this.formatZoomPercentage() * 10}%`;
   }
 
   pointerPreviewPoint(event) {

@@ -1,6 +1,6 @@
-# PR_26133_044 Playwright V8 Coverage Report
+# PR_26133_045 Playwright V8 Coverage Report
 
-Task: PR_26133_044-remove-duplicated-object-vector-runtime-bindings
+Task: PR_26133_045-object-preview-pan-direction-and-strict-schema-fix
 Date: 2026-05-15
 
 ## Result
@@ -24,11 +24,9 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Relevant Runtime Coverage
 
 ```text
-(98%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 914/914; executed functions 106/108
-(52%) games/Asteroids/game/AsteroidsGameScene.js - executed lines 846/846; executed functions 25/48
+(90%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 3187/3187; executed functions 331/369
+(95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 409/409; executed functions 53/56
 ```
-
-The Asteroids runtime role helpers and asteroid geometry helper are exercised through the Asteroids gameplay rendering path and targeted node smoke checks; they are not surfaced as separate changed-runtime rows in the generated V8 summary.
 
 ## Guardrail
 
@@ -38,4 +36,4 @@ The Asteroids runtime role helpers and asteroid geometry helper are exercised th
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector runtime manifest loading from `game.workspace.tools.object-vector-studio-v2.objects`, direct object ID role resolution, runtime rendering for asteroids/ship/UFO, and schema rejection of the removed `game.gameData.objectVectorRuntime` branch.
+The Workspace V2 run exercised Object Vector Studio V2 preview pan controls, center-dot visibility, coordinate/origin display updates, transform-origin pivot rendering, and strict schema rejection for unknown runtime/workspace fields.
