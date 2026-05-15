@@ -57,6 +57,7 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   sendBack: objectVectorStudioIcon("nf-fa-angle_double_down", "\uf103"),
   sendBackward: objectVectorStudioIcon("nf-fa-arrow_down", "\uf063"),
   stroke: objectVectorStudioIcon("nf-fa-pencil", "\uf040"),
+  tag: objectVectorStudioIcon("nf-fa-tag", "\uf02b"),
   text: objectVectorStudioIcon("nf-fa-font", "\uf031"),
   triangle: objectVectorStudioIcon("nf-md-vector_triangle", "\u{f0563}"),
   ungroup: objectVectorStudioIcon("nf-fa-object_ungroup", "\uf248"),
@@ -76,6 +77,7 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   [".object-vector-studio-v2__palette-sort [data-palette-sort='sat']", "sat"],
   [".object-vector-studio-v2__palette-sort [data-palette-sort='bri']", "bri"],
   [".object-vector-studio-v2__palette-sort [data-palette-sort='name']", "name"],
+  [".object-vector-studio-v2__palette-sort [data-palette-sort='tag']", "tag"],
   ["#objectVectorStudioV2ZoomOutButton", "zoomOut"],
   ["#objectVectorStudioV2ZoomInButton", "zoomIn"],
   ["#objectVectorStudioV2PanUpButton", "panUp"],
@@ -1126,6 +1128,7 @@ export class ToolStarterApp {
       item.type = "button";
       item.dataset.paletteColor = color;
       item.dataset.paletteLabel = label;
+      item.dataset.paletteTags = tagList(swatch?.tags).join(", ");
       item.dataset.paletteDetails = `${label}\n${color || "value unavailable"}`;
       item.title = item.dataset.paletteDetails;
       item.setAttribute("aria-label", `Palette swatch ${label} ${color || "value unavailable"}`);
@@ -1146,6 +1149,16 @@ export class ToolStarterApp {
       let result = 0;
       if (this.paletteSortMode === "name") {
         result = collator.compare(leftLabel, rightLabel);
+      } else if (this.paletteSortMode === "tag") {
+        const leftTags = tagList(left?.tags).join(", ");
+        const rightTags = tagList(right?.tags).join(", ");
+        if (leftTags && !rightTags) {
+          return -1;
+        }
+        if (!leftTags && rightTags) {
+          return 1;
+        }
+        result = collator.compare(leftTags, rightTags) || collator.compare(leftLabel, rightLabel);
       } else {
         const leftMetrics = colorMetrics(swatchColor(left));
         const rightMetrics = colorMetrics(swatchColor(right));
@@ -4208,15 +4221,15 @@ export class ToolStarterApp {
     this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Applied ${normalizedTarget} opacity ${opacity.value} to shape row ${this.selectedShapeIndex}.`, "Palette opacity application failed schema validation");
   }
 
-  selectPaletteColor(color, label, options = {}) {
+  selectPaletteColor(color, label) {
     if (!color) {
-      this.statusLog.write(`FAIL Palette color application blocked: swatch ${label} has no usable color value.`);
-      return;
+      this.statusLog.write(`FAIL Palette color selection blocked: swatch ${label} has no usable color value.`);
+      return false;
     }
     const swatch = this.paletteSwatchForColor(color);
     if (!swatch) {
       this.statusLog.write(`FAIL Palette color selection rejected: ${color} is not in the loaded palette.`);
-      return;
+      return false;
     }
     const paletteLabel = swatch.name || swatch.id || swatch.symbol || label;
     if (this.paletteTarget === "stroke") {
@@ -4230,14 +4243,13 @@ export class ToolStarterApp {
       this.renderPalette();
     }
     this.statusLog.write(`OK Selected ${this.paletteTarget === "stroke" ? "stroke" : "paint"} color ${color} from ${paletteLabel}.`);
-    if (options.applyToSelection === false || this.selectedShapeIndex < 0) {
-      return;
-    }
-    this.applySelectedPaletteColorToShape(this.selectedShapeIndex, this.paletteTarget === "stroke" ? "stroke" : "fill", "palette swatch");
+    return true;
   }
 
   applyPaletteColor(color, label) {
-    this.selectPaletteColor(color, label);
+    if (this.selectPaletteColor(color, label) && this.selectedShapeIndex >= 0) {
+      this.applySelectedPaletteColorToShape(this.selectedShapeIndex, this.paletteTarget === "stroke" ? "stroke" : "fill", "palette action");
+    }
   }
 
   applySelectedPaletteColorToShape(shapeIndex, target, sourceLabel) {

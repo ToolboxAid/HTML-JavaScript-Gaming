@@ -1343,7 +1343,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             bri: icon("[data-palette-sort='bri']"),
             hue: icon("[data-palette-sort='hue']"),
             name: icon("[data-palette-sort='name']"),
-            sat: icon("[data-palette-sort='sat']")
+            sat: icon("[data-palette-sort='sat']"),
+            tag: icon("[data-palette-sort='tag']")
           },
           paletteSortLayout: {
             buttonFontSizes: paletteSortButtonStyles.map((style) => Number.parseFloat(style.fontSize)),
@@ -1432,7 +1433,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         bri: { iconKey: "bri", iconName: "nf-fa-sun_o" },
         hue: { iconKey: "hue", iconName: "nf-fa-eyedropper" },
         name: { iconKey: "name", iconName: "nf-fa-font" },
-        sat: { iconKey: "sat", iconName: "nf-fa-tint" }
+        sat: { iconKey: "sat", iconName: "nf-fa-tint" },
+        tag: { iconKey: "tag", iconName: "nf-fa-tag" }
       });
       expect(Object.fromEntries(Object.entries(iconStyleState.shapeIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
         arc: "arc",
@@ -1712,8 +1714,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
           id: "arcade-primary",
           swatches: [
-            { id: "white", value: "#ffffff" },
-            { id: "cyan", value: "#6fd3ff" }
+            { id: "white", tags: ["zeta"], value: "#ffffff" },
+            { id: "cyan", tags: ["alpha"], value: "#6fd3ff" }
           ]
         }));
       });
@@ -1767,7 +1769,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         widthIsRightOfStroke: true
       });
       await expect(page.locator(".object-vector-studio-v2__palette-sort")).not.toContainText("Sort");
-      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue◇", "Sat◇", "Bri◇", "Name▲"]);
+      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue◇", "Sat◇", "Bri◇", "Name▲", "Tag◇"]);
       await expect(page.locator("[data-palette-sort='name']")).toHaveAttribute("data-sort-direction", "asc");
       const swatchState = await page.locator(".object-vector-studio-v2__palette-swatch").evaluateAll((swatches) => swatches.map((swatch) => {
         const rect = swatch.getBoundingClientRect();
@@ -1784,14 +1786,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { ariaLabel: "Palette swatch white #ffffff", height: 32, text: "", title: "white\n#ffffff", width: 32 }
       ]);
       await page.locator("[data-palette-sort='name']").click();
-      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue◇", "Sat◇", "Bri◇", "Name▼"]);
+      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue◇", "Sat◇", "Bri◇", "Name▼", "Tag◇"]);
       await expect(page.locator(".object-vector-studio-v2__palette-swatch").first()).toHaveAttribute("data-palette-label", "white");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Palette sort set to name desc\./);
       await page.locator("[data-palette-sort='hue']").click();
-      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue▲", "Sat◇", "Bri◇", "Name◇"]);
+      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue▲", "Sat◇", "Bri◇", "Name◇", "Tag◇"]);
       await expect(page.locator("[data-palette-sort='hue']")).toHaveAttribute("data-sort-direction", "asc");
       await expect(page.locator(".object-vector-studio-v2__palette-swatch").first()).toHaveAttribute("data-palette-label", "white");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Palette sort set to hue asc\./);
+      await page.locator("[data-palette-sort='tag']").click();
+      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue◇", "Sat◇", "Bri◇", "Name◇", "Tag▲"]);
+      await expect(page.locator("[data-palette-sort='tag']")).toHaveAttribute("data-sort-direction", "asc");
+      await expect(page.locator(".object-vector-studio-v2__palette-swatch").first()).toHaveAttribute("data-palette-tags", "alpha");
+      await expect(page.locator(".object-vector-studio-v2__palette-swatch").first()).toHaveAttribute("data-palette-label", "cyan");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Palette sort set to tag asc\./);
+      await page.locator("[data-palette-sort='tag']").click();
+      await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue◇", "Sat◇", "Bri◇", "Name◇", "Tag▼"]);
+      await expect(page.locator(".object-vector-studio-v2__palette-swatch").first()).toHaveAttribute("data-palette-tags", "zeta");
+      await expect(page.locator(".object-vector-studio-v2__palette-swatch").first()).toHaveAttribute("data-palette-label", "white");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Palette sort set to tag desc\./);
       const compactAccordionLayout = await page.evaluate(() => {
         const previewAccordion = document.querySelector(".object-vector-studio-v2__preview-accordion");
         const previewContent = document.querySelector("#objectVectorStudioV2WorkAreaContent");
@@ -2256,6 +2269,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         delete leftPanel.dataset.scrollPersistenceMaxHeight;
         delete leftPanel.dataset.scrollPersistenceOverflowY;
       });
+      const clickPreviewShape = async (shapeIndex, eventInit = {}) => {
+        await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index='${shapeIndex}']`).dispatchEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          ...eventInit
+        });
+      };
 
       const leftPanelObjectScrollBefore = await forceLeftPanelScroll();
       expect(leftPanelObjectScrollBefore.leftPanelScrollTop).toBeGreaterThan(0);
@@ -2273,10 +2293,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected shape from object tile shape list: row 0 \(rectangle\)\./);
       await restoreLeftPanelStyle();
 
+      const shapeZeroStyleBeforePaintMode = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
+      await page.locator("#objectVectorStudioV2PaintModeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Palette target set to Paint\./);
+      const shapeZeroStyleAfterPaintMode = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
+      expect(shapeZeroStyleAfterPaintMode).toEqual(shapeZeroStyleBeforePaintMode);
       await page.locator("[data-palette-color='#6fd3ff']").click();
       await expect(page.locator("[data-palette-color='#6fd3ff']")).toHaveClass(/is-selected/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected paint color #6fd3ff from cyan\./);
+      const shapeZeroStyleAfterPaintSwatch = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
+      expect(shapeZeroStyleAfterPaintSwatch).toEqual(shapeZeroStyleBeforePaintMode);
+      await clickPreviewShape(0);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"fill": "#6fd3ff"');
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #6fd3ff from cyan to shape row 0 by palette swatch\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #6fd3ff from cyan to shape row 0 by render surface click\. Target: paint opacity 1\./);
+      await page.locator('[data-shape-tool="select"]').click();
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='1']").click();
       await expect(page.locator("[data-palette-color='#ffffff']")).toHaveClass(/is-selected/);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='0']").click();
@@ -2302,14 +2332,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(selectionChrome).toEqual({ handleHeight: 3, handleWidth: 3, selectionStrokeWidth: "0.75px" });
-
-      const clickPreviewShape = async (shapeIndex, eventInit = {}) => {
-        await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index='${shapeIndex}']`).dispatchEvent("click", {
-          bubbles: true,
-          cancelable: true,
-          ...eventInit
-        });
-      };
 
       await clickPreviewShape(1, { shiftKey: true });
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveClass(/is-selected/);
@@ -2611,9 +2633,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Palette target set to Stroke\./);
       const shapeOneStyleAfterStrokeMode = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
       expect(shapeOneStyleAfterStrokeMode).toEqual(shapeOneStyleBeforeStrokeMode);
+      await page.locator("[data-palette-color='#6fd3ff']").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected stroke color #6fd3ff from cyan\./);
+      const shapeOneStyleAfterStrokeSwatch = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
+      expect(shapeOneStyleAfterStrokeSwatch).toEqual(shapeOneStyleBeforeStrokeMode);
       await clickPreviewShape(1);
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"stroke": "#ffffff"');
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #ffffff from white to shape row 1 by render surface click\. Target: stroke width 2, opacity 1\./);
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"stroke": "#6fd3ff"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #6fd3ff from cyan to shape row 1 by render surface click\. Target: stroke width 2, opacity 1\./);
       await page.locator("#objectVectorStudioV2StrokeOpacity").fill("256");
       await page.locator("#objectVectorStudioV2StrokeOpacity").dispatchEvent("change");
       await expect(page.locator("#objectVectorStudioV2StrokeOpacity")).toHaveAttribute("aria-invalid", "true");
@@ -2637,7 +2663,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("[data-palette-color='#ffffff']").click();
       await page.keyboard.press("I");
       await clickPreviewShape(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Sampled stroke color #ffffff from shape row 1\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Sampled stroke color #6fd3ff from shape row 1\./);
       await page.keyboard.press("X");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Swapped fill and stroke colors/);
       await page.keyboard.press("D");
@@ -5226,7 +5252,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(eventMessages).toContain("Object Vector runtime cache miss for ship; cached resolved object object.asteroids.ship.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ufoSmall; cached resolved object object.asteroids.small-ufo.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/frame-1.");
-      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=frame-1.");
+      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 3 shapes state=idle frame=frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 2 shapes state=active frame=frame-1.");
       expect(eventMessages).not.toContain("matched multiple objects by tags");
       expect(pageErrors).toEqual([]);
@@ -8554,7 +8580,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await page.locator("#objectVectorStudioV2MoveShapeButton").click();
       });
       await expectObjectVectorDirtyAfter("palette color edit", async () => {
-        await page.locator("#objectVectorStudioV2PaletteSummary [data-palette-color]").first().click();
+        await page.locator("#objectVectorStudioV2PaintModeButton").click();
+        const colorToApply = await page.evaluate(() => {
+          const app = window.__objectVectorStudioV2App;
+          const selectedFill = app.selectedShape()?.style?.fill || "";
+          return app.runtimePalette.swatches
+            .map((swatch) => swatch.value || swatch.hex || swatch.color || "")
+            .find((color) => color && color !== selectedFill);
+        });
+        expect(colorToApply).toBeTruthy();
+        await page.locator(`#objectVectorStudioV2PaletteSummary [data-palette-color="${colorToApply}"]`).click();
+        const selectedShapeIndex = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex);
+        await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${selectedShapeIndex}"]`).click();
       });
       await expectObjectVectorDirtyAfter("shape add edit", async () => {
         await page.locator("[data-shape-tool='rectangle']").click();

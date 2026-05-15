@@ -1348,25 +1348,25 @@ textarea:hover {
 
 .object-vector-studio-v2__palette-sort {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   width: 100%;
   border-top: 1px solid var(--tool-starter-line);
-  padding-top: 6px;
+  padding-top: 4px;
 }
 
 .object-vector-studio-v2__palette-sort button {
   min-width: 0;
-  min-height: 28px;
-  gap: 2px;
-  padding: 2px 3px !important;
-  font-size: 0.66rem;
+  min-height: 24px;
+  gap: 1px;
+  padding: 1px 2px !important;
+  font-size: 0.61rem;
   line-height: 1;
 }
 
 .object-vector-studio-v2__palette-sort button[data-ovs-icon]::before {
-  font-size: 1.08em;
+  font-size: 1.05em;
 }
 
 .object-vector-studio-v2__palette-sort button[aria-pressed="true"] {
@@ -1375,8 +1375,8 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__palette-sort-caret {
-  margin-left: 2px;
-  font-size: 0.7rem;
+  margin-left: 1px;
+  font-size: 0.62rem;
   line-height: 1;
 }
 
