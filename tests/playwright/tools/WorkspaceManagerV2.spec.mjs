@@ -2084,8 +2084,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='1']")).toHaveClass(/is-selected/);
       await expect(page.locator("[data-palette-color='#ffffff']")).toHaveClass(/is-selected/);
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1']")).toHaveClass(/is-selected/);
-      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index]")).toHaveCount(2);
-      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index] .object-vector-studio-v2__shape-select-label")).toHaveText(["0. Rectangle", "1. Circle"]);
+      const objectOneShapeButtons = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index]");
+      await expect(objectOneShapeButtons).toHaveCount(2);
+      await expect(objectOneShapeButtons.first()).toHaveAttribute("data-object-tile-shape-index", "1");
+      await expect(objectOneShapeButtons.last()).toHaveAttribute("data-object-tile-shape-index", "0");
+      await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index] .object-vector-studio-v2__shape-select-label")).toHaveText(["1. Circle", "0. Rectangle"]);
       await expect(page.locator(".object-vector-studio-v2__object-tile-shape-row.is-selected [data-object-tile-shape-index='1']")).toHaveCount(1);
       const shapeTileActionLayout = await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] .object-vector-studio-v2__object-tile-shape-row").first().evaluate((row) => {
         const visibility = row.querySelector("[data-shape-visibility-index]");
@@ -2467,12 +2470,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       const selectedShapeActions = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] .object-vector-studio-v2__object-tile-shapes .object-vector-studio-v2__shape-list-actions");
       await expect(selectedShapeActions.locator("[data-shape-list-action]")).toHaveCount(6);
-      await expect(selectedShapeActions.locator("[data-shape-list-action] .object-vector-studio-v2__z-label")).toHaveText(["Bring Forward", "Send Backward", "Bring To Front", "Send To Back", "Group", "Ungroup"]);
+      await expect(selectedShapeActions.locator("[data-shape-list-action] .object-vector-studio-v2__z-label")).toHaveText(["Send To Back", "Move Backward", "Move Forward", "Bring To Front", "Group", "Ungroup"]);
       const selectedShapeActionLayout = await selectedShapeActions.evaluate((actions) => {
         const shapeList = actions.closest(".object-vector-studio-v2__object-tile-shapes");
         const buttons = Array.from(actions.querySelectorAll("[data-shape-list-action]"));
         const buttonRects = buttons.map((button) => button.getBoundingClientRect());
         return {
+          iconKeys: buttons.map((button) => button.querySelector("[data-ovs-icon]")?.dataset.ovsIconKey),
           iconOnly: actions.classList.contains("is-icon-only"),
           labelsHidden: buttons.every((button) => {
             const label = button.querySelector(".object-vector-studio-v2__z-label").getBoundingClientRect();
@@ -2482,14 +2486,31 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           squareButtons: buttonRects.every((rect) => Math.round(rect.width) === Math.round(rect.height))
         };
       });
-      expect(selectedShapeActionLayout).toEqual({ iconOnly: true, labelsHidden: true, parentIsShapeList: true, squareButtons: true });
+      expect(selectedShapeActionLayout).toEqual({
+        iconKeys: ["sendBack", "sendBackward", "bringForward", "bringFront", "group", "ungroup"],
+        iconOnly: true,
+        labelsHidden: true,
+        parentIsShapeList: true,
+        squareButtons: true
+      });
 
-      await selectedShapeActions.locator("[data-shape-list-action='bring-forward']").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"order": 2');
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Shape row 0 z-order forward\./);
+      await selectedShapeActions.locator("[data-shape-list-action='bring-to-front']").click();
+      await expect(objectOneShapeButtons.first()).toHaveAttribute("data-object-tile-shape-index", "1");
+      await expect(objectOneShapeButtons.first()).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Shape row 0 z-order front\./);
       await selectedShapeActions.locator("[data-shape-list-action='send-to-back']").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"order": 1');
+      await expect(objectOneShapeButtons.first()).toHaveAttribute("data-object-tile-shape-index", "1");
+      await expect(objectOneShapeButtons.last()).toHaveAttribute("data-object-tile-shape-index", "0");
+      await expect(objectOneShapeButtons.last()).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Shape row 1 z-order back\./);
+      await selectedShapeActions.locator("[data-shape-list-action='move-forward']").click();
+      await expect(objectOneShapeButtons.first()).toHaveAttribute("data-object-tile-shape-index", "1");
+      await expect(objectOneShapeButtons.first()).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Shape row 0 z-order forward\./);
+      await selectedShapeActions.locator("[data-shape-list-action='move-backward']").click();
+      await expect(objectOneShapeButtons.last()).toHaveAttribute("data-object-tile-shape-index", "0");
+      await expect(objectOneShapeButtons.last()).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Shape row 1 z-order backward\./);
 
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='0']").click();
       await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toBeDisabled();
@@ -7480,7 +7501,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await smallUfoTile.scrollIntoViewIfNeeded();
       await smallUfoTile.click();
       await expect(smallUfoTile).toContainText("object > asteroids > Small UFO");
-      await expect(smallUfoTile.locator("[data-object-tile-shape-index] .object-vector-studio-v2__shape-select-label")).toHaveText(["0. Ellipse", "1. Ellipse"]);
+      await expect(smallUfoTile.locator("[data-object-tile-shape-index] .object-vector-studio-v2__shape-select-label")).toHaveText(["1. Ellipse", "0. Ellipse"]);
       await page.locator('button[aria-controls="objectVectorStudioV2DependencyGraphContent"]').click();
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("Object tags:");
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("object.asteroids.ship: Asteroids Ship");

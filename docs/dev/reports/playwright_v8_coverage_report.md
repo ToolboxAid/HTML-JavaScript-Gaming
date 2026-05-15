@@ -1,6 +1,6 @@
-# PR_26133_050 Playwright V8 Coverage Report
+# PR_26133_051 Playwright V8 Coverage Report
 
-Task: PR_26133_050-object-state-shape-grouping-and-order-controls
+Task: PR_26133_051-shape-order-ui-reverse-sort-and-action-order
 Date: 2026-05-15
 
 ## Result
@@ -25,7 +25,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ```text
 (83%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 105/105; executed functions 5/6
-(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5070/5070; executed functions 532/563
+(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5073/5073; executed functions 533/564
 ```
 
 ## Guardrail
@@ -36,4 +36,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 object header counts, state help text, shape grouping selection, group indicators, z-order controls, state/frame visibility overrides, base shape deletion cleanup, Object Vector schema validation, and Asteroids runtime object-vector rendering.
+The Workspace V2 run exercised Object Vector Studio V2 shape-list rendering, reversed visual shape ordering, selected shape z-order actions, preserved render-order behavior, Object Vector schema validation, and Asteroids runtime object-vector rendering.

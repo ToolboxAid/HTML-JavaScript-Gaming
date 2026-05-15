@@ -1410,7 +1410,10 @@ export class ToolStarterApp {
   createObjectTileShapeList(object) {
     const list = document.createElement("div");
     list.className = "object-vector-studio-v2__object-tile-shapes";
-    sortedShapes(object).forEach((shape, shapeIndex) => {
+    const displayedShapes = sortedShapes(object)
+      .map((shape, shapeIndex) => ({ shape, shapeIndex }))
+      .reverse();
+    displayedShapes.forEach(({ shape, shapeIndex }) => {
       const displayShape = object.id === this.selectedObjectId ? this.effectiveShape(shape, shapeIndex) : shape;
       const row = document.createElement("div");
       row.className = "object-vector-studio-v2__object-tile-shape-row";
@@ -1497,10 +1500,10 @@ export class ToolStarterApp {
     const isLocked = this.isObjectLocked(object.id);
     const noShapeReason = "Disabled until a schema-valid shape is selected.";
     [
-      { action: "forward", iconClass: "bring-forward", iconKey: "bringForward", label: "Bring Forward", title: "Move selected shape up one row / bring forward." },
-      { action: "backward", iconClass: "send-backward", iconKey: "sendBackward", label: "Send Backward", title: "Move selected shape down one row / send backward." },
-      { action: "front", iconClass: "bring-front", iconKey: "bringFront", label: "Bring To Front", title: "Bring selected shape to the front." },
-      { action: "back", iconClass: "send-back", iconKey: "sendBack", label: "Send To Back", title: "Send selected shape to the back." }
+      { action: "back", iconClass: "send-back", iconKey: "sendBack", label: "Send To Back", title: "Send selected shape to the back." },
+      { action: "backward", iconClass: "send-backward", iconKey: "sendBackward", label: "Move Backward", title: "Move selected shape backward one row." },
+      { action: "forward", iconClass: "bring-forward", iconKey: "bringForward", label: "Move Forward", title: "Move selected shape forward one row." },
+      { action: "front", iconClass: "bring-front", iconKey: "bringFront", label: "Bring To Front", title: "Bring selected shape to the front." }
     ].forEach((definition) => {
       const button = this.createShapeActionButton(definition.label, definition.iconClass, definition.iconKey, definition.title, () => this.changeSelectedShapeOrder(definition.action));
       this.setControlDisabled(button, !shape || isLocked, isLocked ? `Disabled because ${object.name} is locked for this runtime session.` : noShapeReason, definition.title);
