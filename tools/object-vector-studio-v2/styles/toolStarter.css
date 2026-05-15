@@ -1089,6 +1089,21 @@ textarea:hover {
   gap: 8px;
 }
 
+.object-vector-studio-v2__state-select {
+  min-height: 30px;
+  max-width: 132px;
+  padding: 4px 7px;
+  font-size: 0.82rem;
+}
+
+.object-vector-studio-v2__state-help {
+  width: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0 !important;
+  font-weight: 900;
+}
+
 .object-vector-studio-v2__inline-field {
   display: inline-flex;
   align-items: center;

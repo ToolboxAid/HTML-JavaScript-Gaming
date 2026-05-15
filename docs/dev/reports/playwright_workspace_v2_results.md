@@ -1,6 +1,6 @@
-# PR_26133_046 Workspace V2 Playwright Results
+# PR_26133_047 Workspace V2 Playwright Results
 
-Task: PR_26133_046-object-vector-frame-palette-and-shape-action-cleanup
+Task: PR_26133_047-frame-state-help-and-frame-id-generation-fix
 Date: 2026-05-15
 
 ## Result
@@ -14,21 +14,14 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Verified Delete Frame removes a selected frame and refuses to delete the final remaining frame.
-- Verified generated and canonical Asteroids frame IDs use `frame-x` instead of state-prefixed frame IDs.
-- Verified Left/Right frame controls and Frame Earlier/Frame Later reorder frames through the same sequence-safe path.
-- Verified palette sort buttons show ascending/descending caret indicators and toggle sort direction.
-- Verified Paint/Stroke buttons switch action mode without changing selected shape style.
-- Verified canvas clicks still apply the currently selected Paint/Stroke color.
-- Verified shape order/group actions moved under Objects and render as icon-only controls with titles.
+- Verified the Object Vector Studio V2 frame state dropdown renders beside a `?` help button.
+- Verified the `idle` help text title is `Default stationary state.` and `No movement or action animation active.`
+- Verified the `move` help text title is `Movement/action state.` and `Used for thrusting, walking, flying, or active movement visuals.`
+- Verified new schema-valid state IDs include `move` while legacy `thrust` manifests still load.
+- Verified duplicate frame generation uses generic `frame-x` IDs and does not continue legacy `idle-frame-x` naming.
+- Verified a legacy `idle-frame-1` import duplicates into `frame-1`.
 
 ## Additional Validation
 
-- Targeted Playwright check passed for Object Vector Studio layout, animation frame controls, and Asteroids runtime rendering.
-- Node syntax checks passed for `tools/object-vector-studio-v2/js/ToolStarterApp.js` and `tools/object-vector-studio-v2/js/bootstrap.js`.
-- Node schema-service check passed for `games/Asteroids/game.manifest.json` and its workspace manifest.
+- Targeted Playwright check passed for `supports Object Vector Studio V2 animation states and frame timeline foundation`.
 - `git diff --check` passed.
-
-## Frame Control Note
-
-`Left` and `Right` are directional aliases for the same frame-order mutation used by `Frame Earlier` and `Frame Later`; all four controls preserve the selected state linkage and only change frame order.

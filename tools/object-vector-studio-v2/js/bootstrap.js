@@ -95,6 +95,8 @@ window.addEventListener("DOMContentLoaded", () => {
       strokeModeButton: requireElement("#objectVectorStudioV2StrokeModeButton"),
       strokeOpacity: requireElement("#objectVectorStudioV2StrokeOpacity"),
       strokeWidth: requireElement("#objectVectorStudioV2StrokeWidth"),
+      stateHelpButton: requireElement("#objectVectorStudioV2StateHelpButton"),
+      stateSelect: requireElement("#objectVectorStudioV2StateSelect"),
       tagFilter: requireElement("#objectVectorStudioV2TagFilter"),
       toolLabelModeButton: requireElement("#objectVectorStudioV2ToolLabelModeButton"),
       toolToggleGrid: requireElement("#objectVectorStudioV2ToolToggleGrid"),

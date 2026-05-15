@@ -110,7 +110,7 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   [".object-vector-studio-v2__z-icon--ungroup", "ungroup"]
 ]);
 
-const OBJECT_STATE_IDS = Object.freeze(["idle", "thrust", "damaged", "destroyed", "active", "inactive"]);
+const OBJECT_STATE_IDS = Object.freeze(["idle", "move", "active", "inactive", "damaged", "destroyed", "thrust"]);
 
 const OBJECT_STATE_LABELS = Object.freeze({
   active: "Active",
@@ -118,7 +118,18 @@ const OBJECT_STATE_LABELS = Object.freeze({
   destroyed: "Destroyed",
   idle: "Idle",
   inactive: "Inactive",
+  move: "Move",
   thrust: "Thrust"
+});
+
+const OBJECT_STATE_HELP = Object.freeze({
+  active: ["Object is enabled and participating in gameplay.", "Typically the default active runtime state."],
+  damaged: ["Object is visually damaged but still active."],
+  destroyed: ["Object destruction/death state.", "Usually final or transitional before removal."],
+  idle: ["Default stationary state.", "No movement or action animation active."],
+  inactive: ["Object is disabled, hidden, sleeping, or not participating in gameplay."],
+  move: ["Movement/action state.", "Used for thrusting, walking, flying, or active movement visuals."],
+  thrust: ["Movement/action state.", "Used for thrusting, walking, flying, or active movement visuals."]
 });
 
 const SHAPE_TYPE_DETAILS = Object.freeze({
@@ -620,6 +631,7 @@ export class ToolStarterApp {
   }
 
   bindAnimationControls() {
+    this.elements.stateSelect.addEventListener("change", () => this.selectState(this.elements.stateSelect.value, "state dropdown"));
     this.elements.deleteFrameButton.addEventListener("click", () => this.deleteSelectedFrame());
     this.elements.duplicateFrameButton.addEventListener("click", () => this.duplicateSelectedFrame());
     this.elements.frameLeftButton.addEventListener("click", () => this.moveSelectedFrame("earlier", "left"));
@@ -1560,6 +1572,7 @@ export class ToolStarterApp {
   }
 
   renderFrameTimeline() {
+    this.renderStateSelect();
     this.elements.frameTimeline.replaceChildren();
     const object = this.selectedObject();
     const state = this.selectedState();
@@ -1589,6 +1602,61 @@ export class ToolStarterApp {
       this.elements.frameTimeline.append(button);
     });
     this.updateAnimationActionState();
+  }
+
+  renderStateSelect() {
+    const object = this.selectedObject();
+    const states = this.objectStates(object);
+    this.elements.stateSelect.replaceChildren();
+    if (!object || !states.length) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No state";
+      this.elements.stateSelect.append(option);
+      this.elements.stateSelect.value = "";
+      this.elements.stateSelect.disabled = true;
+      this.updateStateHelpButton(null);
+      return;
+    }
+
+    const currentState = this.selectedState();
+    if (!currentState) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No state";
+      this.elements.stateSelect.append(option);
+    }
+    states.forEach((state) => {
+      const option = document.createElement("option");
+      option.value = state.id;
+      option.textContent = state.id;
+      this.elements.stateSelect.append(option);
+    });
+    this.elements.stateSelect.disabled = false;
+    this.elements.stateSelect.value = currentState?.id || "";
+    this.updateStateHelpButton(currentState);
+  }
+
+  updateStateHelpButton(state) {
+    const hasState = Boolean(state);
+    this.elements.stateHelpButton.disabled = !hasState;
+    this.elements.stateHelpButton.setAttribute("aria-disabled", String(!hasState));
+    if (!hasState) {
+      this.elements.stateHelpButton.title = "Disabled until a state is selected";
+      this.elements.stateHelpButton.dataset.stateHelp = "";
+      this.elements.stateHelpButton.setAttribute("aria-label", "State help");
+      return;
+    }
+
+    const helpText = this.stateHelpText(state.id);
+    this.elements.stateHelpButton.title = helpText;
+    this.elements.stateHelpButton.dataset.stateHelp = helpText;
+    this.elements.stateHelpButton.setAttribute("aria-label", `State help for ${state.id}: ${helpText.replace(/\s+/gu, " ")}`);
+  }
+
+  stateHelpText(stateId) {
+    const helpLines = OBJECT_STATE_HELP[stateId] || [`No contextual help is available for state ${stateId || "unknown"}.`];
+    return helpLines.join("\n");
   }
 
   createFrameThumbnail(object, frame) {
@@ -2826,7 +2894,7 @@ export class ToolStarterApp {
     this.selectedFrameId = sortedFrames(state)[0]?.id || "";
     this.stopPlaybackTimer();
     this.renderPayload();
-    this.statusLog.write(`OK Selected state ${OBJECT_STATE_LABELS[state.id]} from ${sourceLabel}; active object remains ${object.name}.`);
+    this.statusLog.write(`OK Selected state ${OBJECT_STATE_LABELS[state.id] || state.id} from ${sourceLabel}; active object remains ${object.name}.`);
   }
 
   selectFrame(frameId, sourceLabel) {
@@ -2856,11 +2924,11 @@ export class ToolStarterApp {
     }
     const stateId = "idle";
     if (!OBJECT_STATE_IDS.includes(stateId)) {
-      this.statusLog.write("FAIL Create state blocked: choose idle, thrust, damaged, destroyed, active, or inactive.");
+      this.statusLog.write(`FAIL Create state blocked: choose ${OBJECT_STATE_IDS.join(", ")}.`);
       return;
     }
     if (this.objectStates(object).some((state) => state.id === stateId)) {
-      this.statusLog.write(`WARN Create state skipped: ${OBJECT_STATE_LABELS[stateId]} already exists for ${object.name}.`);
+      this.statusLog.write(`WARN Create state skipped: ${OBJECT_STATE_LABELS[stateId] || stateId} already exists for ${object.name}.`);
       this.selectState(stateId, "existing state");
       return;
     }
@@ -2872,9 +2940,9 @@ export class ToolStarterApp {
     nextObject.states.push({
       frames: [frame],
       id: stateId,
-      name: OBJECT_STATE_LABELS[stateId]
+      name: OBJECT_STATE_LABELS[stateId] || stateId
     });
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Created state ${OBJECT_STATE_LABELS[stateId]} with frame ${frame.id}.`, "Create state failed schema validation", {
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Created state ${OBJECT_STATE_LABELS[stateId] || stateId} with frame ${frame.id}.`, "Create state failed schema validation", {
       selectedFrameId: frame.id,
       selectedStateId: stateId
     });
@@ -2917,7 +2985,7 @@ export class ToolStarterApp {
     }
     const frames = sortedFrames(state);
     if (frames.length <= 1) {
-      this.statusLog.write(`WARN Delete frame skipped: frame ${frame.id} is the only frame in ${OBJECT_STATE_LABELS[state.id]}.`);
+      this.statusLog.write(`WARN Delete frame skipped: frame ${frame.id} is the only frame in ${OBJECT_STATE_LABELS[state.id] || state.id}.`);
       return;
     }
     const index = frames.findIndex((candidate) => candidate.id === frame.id);
@@ -2930,7 +2998,7 @@ export class ToolStarterApp {
     });
     nextState.frames = nextFrames;
     const nextSelectedFrame = nextFrames[Math.min(index, nextFrames.length - 1)] || nextFrames[0];
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Deleted frame ${frame.id} from ${OBJECT_STATE_LABELS[state.id]}.`, "Delete frame failed schema validation", {
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Deleted frame ${frame.id} from ${OBJECT_STATE_LABELS[state.id] || state.id}.`, "Delete frame failed schema validation", {
       selectedFrameId: nextSelectedFrame.id,
       selectedStateId: state.id
     });
@@ -2987,7 +3055,7 @@ export class ToolStarterApp {
     this.isAnimationPlaying = true;
     this.updateAnimationActionState();
     this.playbackTimerId = this.window.setInterval(() => this.advancePlaybackFrame(), Math.round(1000 / fps));
-    this.statusLog.write(`OK Playback started for state ${OBJECT_STATE_LABELS[state.id]} at ${fps} FPS.`);
+    this.statusLog.write(`OK Playback started for state ${OBJECT_STATE_LABELS[state.id] || state.id} at ${fps} FPS.`);
   }
 
   pauseAnimation() {
@@ -3041,7 +3109,7 @@ export class ToolStarterApp {
       return;
     }
     this.stopPlaybackTimer();
-    this.statusLog.write(`OK Playback completed for state ${OBJECT_STATE_LABELS[state.id]}.`);
+    this.statusLog.write(`OK Playback completed for state ${OBJECT_STATE_LABELS[state.id] || state.id}.`);
   }
 
   addObject() {
@@ -4968,7 +5036,7 @@ export class ToolStarterApp {
 
   uniqueFrameId(state) {
     const usedIds = new Set(sortedFrames(state).map((frame) => frame.id));
-    let suffix = usedIds.size + 1;
+    let suffix = 1;
     let candidate = `frame-${suffix}`;
     while (usedIds.has(candidate)) {
       suffix += 1;

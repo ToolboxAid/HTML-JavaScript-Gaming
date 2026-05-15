@@ -3982,8 +3982,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                     ]
                   }
                 ],
-                id: "thrust",
-                name: "Thrust"
+                id: "move",
+                name: "Move"
               }
             ],
             tags: []
@@ -3997,6 +3997,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-object-id="object.animation.ship-template"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1']")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2StateSelect")).toHaveValue("idle");
+      await expect(page.locator("#objectVectorStudioV2StateHelpButton")).toHaveAttribute("title", "Default stationary state.\nNo movement or action animation active.");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"id": "idle"');
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Selected Shape");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("ship-template-hull");
@@ -4042,10 +4044,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-onion-skin-frame='frame-2']")).toHaveCount(1);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Onion-skin preview enabled\./);
 
-      await page.evaluate(() => window.__objectVectorStudioV2App.selectState("thrust", "test state selection"));
+      await page.evaluate(() => window.__objectVectorStudioV2App.selectState("move", "test state selection"));
       await expect(page.locator('[data-object-id="object.animation.ship-template"]')).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='thrust']")).toHaveCount(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected state Thrust from test state selection; active object remains Ship Template\./);
+      await expect(page.locator("#objectVectorStudioV2StateSelect")).toHaveValue("move");
+      await expect(page.locator("#objectVectorStudioV2StateHelpButton")).toHaveAttribute("title", "Movement/action state.\nUsed for thrusting, walking, flying, or active movement visuals.");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='move']")).toHaveCount(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected state Move from test state selection; active object remains Ship Template\./);
       await page.evaluate(() => window.__objectVectorStudioV2App.selectState("idle", "test state selection"));
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(2);
 
@@ -4070,7 +4074,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.animation-copied-json")));
-      expect(copiedPayload.objects[0].states.map((state) => state.id)).toEqual(expect.arrayContaining(["idle", "thrust"]));
+      expect(copiedPayload.objects[0].states.map((state) => state.id)).toEqual(expect.arrayContaining(["idle", "move"]));
       expect(copiedPayload.objects[0].states.find((state) => state.id === "idle").frames).toHaveLength(2);
 
       const svgDownloadPromise = page.waitForEvent("download");
@@ -4081,6 +4085,29 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const exportedSvg = await readFile(svgExportPath, "utf8");
       expect(exportedSvg).toContain('data-object-state="idle"');
       expect(exportedSvg).toContain('"frameId"');
+
+      const legacyPayloadPath = testInfo.outputPath("object-vector-legacy-frame-id.json");
+      const legacyPayload = JSON.parse(JSON.stringify(copiedPayload));
+      legacyPayload.objects[0].states.find((state) => state.id === "idle").frames = [
+        {
+          durationFrames: 1,
+          id: "idle-frame-1",
+          order: 1,
+          shapeOverrides: [
+            {
+              shapeIndex: 0,
+              transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 12, y: 6 },
+              visible: true
+            }
+          ]
+        }
+      ];
+      await writeFile(legacyPayloadPath, JSON.stringify(legacyPayload, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(legacyPayloadPath);
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='idle-frame-1']")).toHaveAttribute("aria-pressed", "true");
+      await page.locator("#objectVectorStudioV2DuplicateFrameButton").click();
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1']")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Duplicated frame idle-frame-1 as frame-1\./);
 
       const invalidPayloadPath = testInfo.outputPath("object-vector-invalid-animation.json");
       await writeFile(invalidPayloadPath, JSON.stringify({
@@ -4104,7 +4131,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         version: 1
       }, null, 2), "utf8");
       await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(invalidPayloadPath);
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid-animation\.json: root\.objects\[0\]\.states\[0\]\.id must be one of idle, thrust, damaged, destroyed, active, inactive\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-invalid-animation\.json: root\.objects\[0\]\.states\[0\]\.id must be one of idle, move, active, inactive, damaged, destroyed, thrust\./);
 
       expect(pageErrors).toEqual([]);
     } finally {

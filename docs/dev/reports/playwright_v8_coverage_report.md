@@ -1,6 +1,6 @@
-# PR_26133_046 Playwright V8 Coverage Report
+# PR_26133_047 Playwright V8 Coverage Report
 
-Task: PR_26133_046-object-vector-frame-palette-and-shape-action-cleanup
+Task: PR_26133_047-frame-state-help-and-frame-id-generation-fix
 Date: 2026-05-15
 
 ## Result
@@ -37,4 +37,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 frame creation/duplication/deletion/reordering, palette sort controls, Paint/Stroke mode application through canvas clicks, and icon-only shape order/group controls under Objects.
+The Workspace V2 run exercised Object Vector Studio V2 state selection, contextual state help text, legacy state/frame manifest loading, generic frame duplication, playback, runtime preview, and export paths.
