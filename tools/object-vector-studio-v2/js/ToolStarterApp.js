@@ -441,6 +441,7 @@ export class ToolStarterApp {
     this.isPaintDragging = false;
     this.previewPointerEdit = null;
     this.transformInputValues = new Map();
+    this.stateControlStateId = "";
     this.pendingAddObjectClick = false;
     this.hiddenObjectIds = new Set();
     this.lockedObjectIds = new Set();
@@ -603,12 +604,6 @@ export class ToolStarterApp {
     this.elements.duplicateObjectButton.addEventListener("click", () => this.duplicateSelectedObject());
     this.elements.deleteObjectButton?.addEventListener("click", () => this.deleteSelectedObject());
     this.elements.exportSvgButton.addEventListener("click", () => this.exportSelectedObjectSvg());
-    this.elements.bringForwardButton.addEventListener("click", () => this.changeSelectedShapeOrder("forward"));
-    this.elements.sendBackwardButton.addEventListener("click", () => this.changeSelectedShapeOrder("backward"));
-    this.elements.bringToFrontButton.addEventListener("click", () => this.changeSelectedShapeOrder("front"));
-    this.elements.sendToBackButton.addEventListener("click", () => this.changeSelectedShapeOrder("back"));
-    this.elements.groupShapesButton.addEventListener("click", () => this.groupSelectedShapes());
-    this.elements.ungroupButton.addEventListener("click", () => this.ungroupSelectedShapes());
   }
 
   applyNerdFontIcons() {
@@ -880,7 +875,6 @@ export class ToolStarterApp {
   applyToolDisplayMode(mode, shouldLog) {
     const isCompact = mode === "icons";
     this.elements.toolToggleGrid.classList.toggle("is-icon-only", isCompact);
-    this.elements.zOrderActions.classList.add("is-icon-only");
     this.elements.toolLabelModeButton.setAttribute("aria-pressed", String(isCompact));
     this.elements.toolLabelModeButton.textContent = isCompact ? "Words" : "Icons";
     this.window.sessionStorage?.setItem(TOOL_DISPLAY_MODE_KEY, isCompact ? "icons" : "words");
@@ -914,6 +908,7 @@ export class ToolStarterApp {
     this.selectedShapeIndex = -1;
     this.selectedShapeIndexes.clear();
     this.selectedStateId = "";
+    this.stateControlStateId = "";
     this.selectedFrameId = "";
     this.stopPlaybackTimer();
     this.updateObjectsHeader(0, 0);
@@ -1027,6 +1022,7 @@ export class ToolStarterApp {
     this.selectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
     const selectedState = this.objectStates(selectedObject)[0] || null;
     this.selectedStateId = selectedState?.id || "";
+    this.stateControlStateId = this.selectedStateId || OBJECT_STATE_IDS[0];
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.hiddenObjectIds.clear();
     this.lockedObjectIds.clear();
@@ -1081,6 +1077,7 @@ export class ToolStarterApp {
     this.selectedShapeIndex = -1;
     this.selectedShapeIndexes.clear();
     this.selectedStateId = "";
+    this.stateControlStateId = "";
     this.selectedFrameId = "";
     this.stopPlaybackTimer();
     this.updateObjectsHeader(0, 0);
@@ -1221,6 +1218,7 @@ export class ToolStarterApp {
         this.selectObject(object.id, "tile");
       });
       if (object.id === this.selectedObjectId) {
+        tile.append(this.createObjectStatePanel(object));
         tile.append(this.createObjectTileShapeList(object));
       }
       this.elements.objectTiles.append(tile);
@@ -1294,6 +1292,117 @@ export class ToolStarterApp {
     return icon;
   }
 
+  createObjectStatePanel(object) {
+    const panel = document.createElement("div");
+    panel.className = "object-vector-studio-v2__object-state-panel";
+    panel.addEventListener("click", (event) => event.stopPropagation());
+
+    const controls = document.createElement("div");
+    controls.className = "object-vector-studio-v2__object-state-controls";
+    controls.setAttribute("aria-label", "Object state controls");
+
+    const selectedStateId = this.stateControlSelectionId(object);
+    const stateExists = this.objectStates(object).some((state) => state.id === selectedStateId);
+    const isLocked = this.isObjectLocked(object.id);
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.dataset.objectStateAction = "add";
+    addButton.textContent = "Add";
+    addButton.title = stateExists ? "Selected state already exists." : `Add ${selectedStateId} state`;
+    addButton.disabled = isLocked || stateExists;
+    addButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      this.createSelectedState(selectedStateId);
+    });
+
+    const select = document.createElement("select");
+    select.dataset.objectStateSelect = object.id;
+    select.setAttribute("aria-label", "State");
+    OBJECT_STATE_IDS.forEach((stateId) => {
+      const option = document.createElement("option");
+      option.value = stateId;
+      option.textContent = stateId;
+      select.append(option);
+    });
+    select.value = selectedStateId;
+    select.addEventListener("change", (event) => {
+      event.stopPropagation();
+      this.stateControlStateId = select.value;
+      const nextState = this.objectStates(this.selectedObject()).find((state) => state.id === select.value);
+      if (nextState) {
+        this.selectState(nextState.id, "state dropdown");
+        return;
+      }
+      this.renderPayload();
+      this.statusLog.write(`INFO State ${select.value} is ready to add for ${object.name}.`);
+    });
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.dataset.objectStateAction = "delete";
+    deleteButton.textContent = "Delete";
+    deleteButton.title = stateExists ? `Delete ${selectedStateId} state` : "Selected state has not been added.";
+    deleteButton.disabled = isLocked || !stateExists || this.objectStates(object).length <= 1;
+    deleteButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      this.deleteSelectedState(selectedStateId);
+    });
+
+    const helpButton = document.createElement("button");
+    helpButton.className = "object-vector-studio-v2__object-state-help";
+    helpButton.type = "button";
+    helpButton.textContent = "?";
+    helpButton.title = this.stateHelpText(selectedStateId);
+    helpButton.dataset.objectStateHelp = selectedStateId;
+    helpButton.setAttribute("aria-label", `State help for ${selectedStateId}: ${this.stateHelpText(selectedStateId).replace(/\s+/gu, " ")}`);
+
+    controls.append(addButton, select, deleteButton, helpButton);
+    panel.append(controls, this.createObjectStateTileList(object));
+    return panel;
+  }
+
+  createObjectStateTileList(object) {
+    const states = this.objectStates(object);
+    const list = document.createElement("div");
+    list.className = "object-vector-studio-v2__object-state-tiles";
+    list.setAttribute("aria-label", "Object states");
+    if (!states.length) {
+      const empty = document.createElement("span");
+      empty.className = "object-vector-studio-v2__shape-list-empty";
+      empty.textContent = "No states.";
+      list.append(empty);
+      return list;
+    }
+
+    states.forEach((state) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.objectStateTile = state.id;
+      button.textContent = state.id;
+      button.title = `Select ${state.id} state`;
+      button.setAttribute("aria-pressed", String(state.id === this.selectedStateId));
+      button.classList.toggle("is-selected", state.id === this.selectedStateId);
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        this.selectState(state.id, "state tile");
+      });
+      list.append(button);
+    });
+    return list;
+  }
+
+  stateControlSelectionId(object) {
+    if (OBJECT_STATE_IDS.includes(this.stateControlStateId)) {
+      return this.stateControlStateId;
+    }
+    if (OBJECT_STATE_IDS.includes(this.selectedStateId)) {
+      return this.selectedStateId;
+    }
+    const firstState = this.objectStates(object).find((state) => OBJECT_STATE_IDS.includes(state.id));
+    return firstState?.id || OBJECT_STATE_IDS[0];
+  }
+
   createObjectTileShapeList(object) {
     const list = document.createElement("div");
     list.className = "object-vector-studio-v2__object-tile-shapes";
@@ -1350,7 +1459,63 @@ export class ToolStarterApp {
       empty.textContent = "No shapes.";
       list.append(empty);
     }
+    list.append(this.createSelectedShapeActions(object));
     return list;
+  }
+
+  createSelectedShapeActions(object) {
+    const actions = document.createElement("div");
+    actions.className = "object-vector-studio-v2__shape-list-actions object-vector-studio-v2__z-order-actions is-icon-only";
+    actions.setAttribute("aria-label", "Selected shape move and group controls");
+    const shape = this.selectedShape();
+    const isLocked = this.isObjectLocked(object.id);
+    const noShapeReason = "Disabled until a schema-valid shape is selected.";
+    [
+      { action: "forward", iconClass: "bring-forward", iconKey: "bringForward", label: "Move Up", title: "Move selected shape up one row." },
+      { action: "backward", iconClass: "send-backward", iconKey: "sendBackward", label: "Move Down", title: "Move selected shape down one row." },
+      { action: "back", iconClass: "send-back", iconKey: "panLeft", label: "Move Left", title: "Move selected shape to the back." },
+      { action: "front", iconClass: "bring-front", iconKey: "panRight", label: "Move Right", title: "Move selected shape to the front." }
+    ].forEach((definition) => {
+      const button = this.createShapeActionButton(definition.label, definition.iconClass, definition.iconKey, definition.title, () => this.changeSelectedShapeOrder(definition.action));
+      this.setControlDisabled(button, !shape || isLocked, isLocked ? `Disabled because ${object.name} is locked for this runtime session.` : noShapeReason, definition.title);
+      actions.append(button);
+    });
+
+    const groupButton = this.createShapeActionButton("Group", "group", "group", "Group selected shapes. Shift-click shapes to select more than one.", () => this.groupSelectedShapes());
+    this.setControlDisabled(
+      groupButton,
+      this.selectedShapeIndexes.size < 2 || isLocked,
+      isLocked ? `Disabled because ${object.name} is locked for this runtime session.` : "Disabled until two or more shapes are selected. Shift-click shapes in the preview or object shape list to build a group selection.",
+      "Group selected shapes. Shift-click shapes to select more than one."
+    );
+    actions.append(groupButton);
+
+    const ungroupButton = this.createShapeActionButton("Ungroup", "ungroup", "ungroup", "Ungroup selected shapes.", () => this.ungroupSelectedShapes());
+    this.setControlDisabled(ungroupButton, !shape || isLocked, isLocked ? `Disabled because ${object.name} is locked for this runtime session.` : noShapeReason, "Ungroup selected shapes.");
+    actions.append(ungroupButton);
+    return actions;
+  }
+
+  createShapeActionButton(labelText, iconClass, iconKey, title, onClick) {
+    const button = document.createElement("button");
+    button.className = "object-vector-studio-v2__z-action";
+    button.type = "button";
+    button.dataset.shapeListAction = labelText.toLowerCase().replace(/\s+/gu, "-");
+    button.setAttribute("aria-label", labelText);
+    button.title = title;
+    const icon = document.createElement("span");
+    icon.className = `object-vector-studio-v2__z-icon object-vector-studio-v2__z-icon--${iconClass}`;
+    icon.setAttribute("aria-hidden", "true");
+    this.applyIconGlyph(icon, iconKey);
+    const label = document.createElement("span");
+    label.className = "object-vector-studio-v2__z-label";
+    label.textContent = labelText;
+    button.append(icon, label);
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      onClick();
+    });
+    return button;
   }
 
   isObjectHidden(objectId) {
@@ -1603,47 +1768,9 @@ export class ToolStarterApp {
         event.preventDefault();
         this.selectFrame(frame.id, "timeline");
       });
-      button.append(this.createFrameStateControls(object, state, frame));
       this.elements.frameTimeline.append(button);
     });
     this.updateAnimationActionState();
-  }
-
-  createFrameStateControls(object, state, frame) {
-    const states = this.objectStates(object);
-    const row = document.createElement("div");
-    row.className = "object-vector-studio-v2__frame-state-row";
-    row.addEventListener("click", (event) => event.stopPropagation());
-    row.addEventListener("pointerdown", (event) => event.stopPropagation());
-
-    const select = document.createElement("select");
-    select.className = "object-vector-studio-v2__frame-state-select";
-    select.dataset.frameStateSelect = frame.id;
-    select.setAttribute("aria-label", `State for frame ${frame.id}`);
-    states.forEach((state) => {
-      const option = document.createElement("option");
-      option.value = state.id;
-      option.textContent = state.id;
-      select.append(option);
-    });
-    select.value = state.id;
-    select.addEventListener("change", (event) => {
-      event.stopPropagation();
-      this.selectState(select.value, `frame ${frame.id} state dropdown`);
-    });
-
-    const helpText = this.stateHelpText(state.id);
-    const helpButton = document.createElement("button");
-    helpButton.className = "object-vector-studio-v2__frame-state-help";
-    helpButton.type = "button";
-    helpButton.textContent = "?";
-    helpButton.title = helpText;
-    helpButton.dataset.frameStateHelp = frame.id;
-    helpButton.setAttribute("aria-label", `State help for ${state.id}: ${helpText.replace(/\s+/gu, " ")}`);
-    helpButton.addEventListener("click", (event) => event.stopPropagation());
-
-    row.append(select, helpButton);
-    return row;
   }
 
   stateHelpText(stateId) {
@@ -2823,6 +2950,7 @@ export class ToolStarterApp {
     this.selectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
     const selectedState = this.objectStates(selectedObject)[0] || null;
     this.selectedStateId = selectedState?.id || "";
+    this.stateControlStateId = this.selectedStateId || OBJECT_STATE_IDS[0];
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
     this.renderPayload();
@@ -2867,6 +2995,7 @@ export class ToolStarterApp {
     }
     if (!stateId) {
       this.selectedStateId = "";
+      this.stateControlStateId = "";
       this.selectedFrameId = "";
       this.stopPlaybackTimer();
       this.renderPayload();
@@ -2875,14 +3004,16 @@ export class ToolStarterApp {
     }
     const state = this.objectStates(object).find((candidate) => candidate.id === stateId);
     if (!state) {
-      this.statusLog.write(`WARN State selection pending: ${stateId} is not created for ${object.name}. Use Create State to add it.`);
+      this.statusLog.write(`WARN State selection pending: ${stateId} is not created for ${object.name}. Use Add to create it.`);
       this.selectedStateId = "";
+      this.stateControlStateId = stateId;
       this.selectedFrameId = "";
       this.renderFrameTimeline();
       this.updateAnimationActionState();
       return;
     }
     this.selectedStateId = state.id;
+    this.stateControlStateId = state.id;
     this.selectedFrameId = sortedFrames(state)[0]?.id || "";
     this.stopPlaybackTimer();
     this.renderPayload();
@@ -2905,7 +3036,7 @@ export class ToolStarterApp {
     this.statusLog.write(`OK Selected frame ${frame.id} from ${sourceLabel}.`);
   }
 
-  createSelectedState() {
+  createSelectedState(stateId = this.stateControlSelectionId(this.selectedObject())) {
     const object = this.selectedObject();
     if (!object) {
       this.statusLog.write("WARN Create state skipped: no object is selected.");
@@ -2914,7 +3045,6 @@ export class ToolStarterApp {
     if (this.guardSelectedObjectMutation("Create state")) {
       return;
     }
-    const stateId = "idle";
     if (!OBJECT_STATE_IDS.includes(stateId)) {
       this.statusLog.write(`FAIL Create state blocked: choose ${OBJECT_STATE_IDS.join(", ")}.`);
       return;
@@ -2937,6 +3067,37 @@ export class ToolStarterApp {
     this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Created state ${OBJECT_STATE_LABELS[stateId] || stateId} with frame ${frame.id}.`, "Create state failed schema validation", {
       selectedFrameId: frame.id,
       selectedStateId: stateId
+    });
+  }
+
+  deleteSelectedState(stateId = this.selectedStateId) {
+    const object = this.selectedObject();
+    if (!object) {
+      this.statusLog.write("WARN Delete state skipped: no object is selected.");
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Delete state")) {
+      return;
+    }
+    const states = this.objectStates(object);
+    const stateIndex = states.findIndex((state) => state.id === stateId);
+    if (stateIndex < 0) {
+      this.statusLog.write(`WARN Delete state skipped: ${stateId || "unknown"} is not created for ${object.name}.`);
+      return;
+    }
+    if (states.length <= 1) {
+      this.statusLog.write(`WARN Delete state skipped: ${stateId} is the only state for ${object.name}.`);
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    nextObject.states = this.objectStates(nextObject).filter((state) => state.id !== stateId);
+    const nextState = nextObject.states[Math.min(stateIndex, nextObject.states.length - 1)] || nextObject.states[0] || null;
+    const nextFrame = sortedFrames(nextState)[0] || null;
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK Deleted state ${stateId} from ${object.name}.`, "Delete state failed schema validation", {
+      selectedFrameId: nextFrame?.id || "",
+      selectedStateId: nextState?.id || ""
     });
   }
 
@@ -4719,6 +4880,7 @@ export class ToolStarterApp {
     this.selectedShapeIndex = normalizeShapeIndex(selectedShapeIndex);
     this.selectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
     this.selectedStateId = options.selectedStateId ?? this.selectedStateId;
+    this.stateControlStateId = this.selectedStateId || this.stateControlStateId;
     this.selectedFrameId = options.selectedFrameId ?? this.selectedFrameId;
     this.ensureSelectedFrame();
     this.actionNav.setJsonPayloadActionsEnabled(true);
@@ -4887,6 +5049,7 @@ export class ToolStarterApp {
     const states = this.objectStates(object);
     const state = states.find((candidate) => candidate.id === this.selectedStateId) || states[0] || null;
     this.selectedStateId = state?.id || "";
+    this.stateControlStateId = this.selectedStateId || this.stateControlStateId;
     if (!state) {
       this.selectedFrameId = "";
       return;
@@ -5050,17 +5213,6 @@ export class ToolStarterApp {
     }
     this.setControlDisabled(this.elements.exportSvgButton, !hasSelectedObject, noObjectReason, "Export the selected object as SVG.");
     this.setControlDisabled(this.elements.runtimePreviewButton, !hasSelectedObject, noObjectReason, "Preview the selected object through the runtime asset renderer.");
-    const hasSelectedShape = Boolean(this.selectedShape());
-    const noShapeReason = "Disabled until a schema-valid shape is selected.";
-    [this.elements.bringForwardButton, this.elements.sendBackwardButton, this.elements.bringToFrontButton, this.elements.sendToBackButton, this.elements.ungroupButton].forEach((button) => {
-      this.setControlDisabled(button, !hasSelectedShape || isLocked, isLocked ? lockedReason : noShapeReason, "Adjust selected shape ordering or grouping.");
-    });
-    this.setControlDisabled(
-      this.elements.groupShapesButton,
-      this.selectedShapeIndexes.size < 2 || isLocked,
-      isLocked ? lockedReason : "Disabled until two or more shapes are selected. Shift-click shapes in the preview or object shape list to build a group selection.",
-      "Group selected shapes. Shift-click shapes to select more than one."
-    );
     this.updateAnimationActionState();
   }
 

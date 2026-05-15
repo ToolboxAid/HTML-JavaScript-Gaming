@@ -1,6 +1,6 @@
-# PR_26133_048 Playwright V8 Coverage Report
+# PR_26133_049 Playwright V8 Coverage Report
 
-Task: PR_26133_048-frame-state-schema-ssot-and-palette-filter-layout
+Task: PR_26133_049-state-selector-and-object-shape-action-placement
 Date: 2026-05-15
 
 ## Result
@@ -10,7 +10,7 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 - Coverage source: Playwright/Chromium built-in V8 coverage.
 - Thresholds: none enforced.
 - Coverage is advisory for this PR.
-- Source report: `docs/dev/reports/playwright_v8_coverage.txt`.
+- Source report: `docs/dev/reports/playwright_v8_coverage_report.txt`.
 
 ## Exercised Tool Entry Points
 
@@ -24,10 +24,8 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 ## Relevant Runtime Coverage
 
 ```text
-(80%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 97/97; executed functions 4/5
-(90%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 3187/3187; executed functions 331/369
-(95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 409/409; executed functions 53/56
-(91%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1598/1598; executed functions 145/159
+(83%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 105/105; executed functions 5/6
+(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 5014/5014; executed functions 518/548
 ```
 
 ## Guardrail
@@ -38,4 +36,4 @@ PASS - Coverage reporting was generated during `npm run test:workspace-v2`.
 
 ## PR-Specific Note
 
-The Workspace V2 run exercised Object Vector Studio V2 palette sort layout, frame-tile state dropdown/help controls, Object Vector state schema validation, Workspace Manager game-manifest validation with an external Object Vector schema reference, and Asteroids runtime object-vector rendering.
+The Workspace V2 run exercised Object Vector Studio V2 state selection from object tiles, selected-state frame timelines, selected-shape action placement, palette Width layout, Object Vector schema validation, and Asteroids runtime object-vector rendering.

@@ -1393,10 +1393,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             up: icon("#objectVectorStudioV2PanUpButton"),
             zoomIn: icon("#objectVectorStudioV2ZoomInButton"),
             zoomOut: icon("#objectVectorStudioV2ZoomOutButton")
-          },
-          zIcons: {
-            group: icon(".object-vector-studio-v2__z-icon--group"),
-            ungroup: icon(".object-vector-studio-v2__z-icon--ungroup")
           }
         };
       });
@@ -1406,8 +1402,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ...Object.values(iconStyleState.actionIcons),
         ...Object.values(iconStyleState.gridIcons),
         ...Object.values(iconStyleState.shapeIcons),
-        ...Object.values(iconStyleState.viewportIcons),
-        ...Object.values(iconStyleState.zIcons)
+        ...Object.values(iconStyleState.viewportIcons)
       ].forEach((icon) => {
         expect(icon.glyphPresent).toBe(true);
         expect(icon.fontFamily).toContain("0xProto Nerd Font");
@@ -1486,11 +1481,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Create rectangle blocked: select a schema-valid object first\./);
       const shapeToolLayout = await page.locator('[data-shape-tool="rectangle"]').evaluate((button) => {
         const rect = button.getBoundingClientRect();
-        const zRect = document.querySelector("#objectVectorStudioV2BringForwardButton").getBoundingClientRect();
         const gridButton = document.querySelector("#objectVectorStudioV2GridRenderButton");
         const labelButton = document.querySelector("#objectVectorStudioV2ToolLabelModeButton");
-        const zOrder = document.querySelector(".object-vector-studio-v2__z-order-actions");
-        const objectTiles = document.querySelector("#objectVectorStudioV2ObjectTiles");
         const shapeToolsContent = document.querySelector("#objectVectorStudioV2ShapeToolsContent").getBoundingClientRect();
         const shapeToolsAccordion = document.querySelector("#objectVectorStudioV2ShapeToolsContent").closest(".accordion-v2").getBoundingClientRect();
         const leftPanel = document.querySelector(".tool-starter__panel--left");
@@ -1498,11 +1490,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           labelBesideGrid: gridButton.getBoundingClientRect().right <= labelButton.getBoundingClientRect().left,
           leftPanelOverflowY: getComputedStyle(leftPanel).overflowY,
           textButtonWider: Math.round(rect.width) > Math.round(rect.height),
-          zActionDockIconOnly: zOrder.classList.contains("is-icon-only"),
-          zActionDockUnderObjects: zOrder.parentElement.id === "objectVectorStudioV2ObjectsContent",
-          zActionDockUnderObjectTiles: zOrder.previousElementSibling === objectTiles,
-          zActionIconOnlySquare: Math.round(zRect.width) === Math.round(zRect.height),
           shapeToolsReachesBottom: Math.abs(shapeToolsContent.bottom - shapeToolsAccordion.bottom) <= 1,
+          zOrderAbsentBeforeObjectSelection: !document.querySelector(".object-vector-studio-v2__z-order-actions"),
           zOrderAbsentFromShapeTools: !document.querySelector("#objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__z-order-actions")
         };
       });
@@ -1511,35 +1500,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         leftPanelOverflowY: "auto",
         textButtonWider: true,
         shapeToolsReachesBottom: true,
-        zActionDockIconOnly: true,
-        zActionDockUnderObjects: true,
-        zActionDockUnderObjectTiles: true,
-        zActionIconOnlySquare: true,
+        zOrderAbsentBeforeObjectSelection: true,
         zOrderAbsentFromShapeTools: true
       });
       await page.locator("#objectVectorStudioV2ToolLabelModeButton").click();
       await expect(page.locator("#objectVectorStudioV2ToolLabelModeButton")).toHaveText("Words");
       await expect(page.locator("#objectVectorStudioV2ToolToggleGrid")).toHaveClass(/is-icon-only/);
-      await expect(page.locator(".object-vector-studio-v2__z-order-actions")).toHaveClass(/is-icon-only/);
-      await expect(page.locator(".object-vector-studio-v2__z-action .object-vector-studio-v2__z-icon")).toHaveCount(6);
-      const iconModeSizeParity = await page.locator("#objectVectorStudioV2BringForwardButton").evaluate((button) => {
-        const zRect = button.getBoundingClientRect();
-        const shapeRect = document.querySelector("[data-shape-tool='rectangle']").getBoundingClientRect();
-        const zIcon = button.querySelector(".object-vector-studio-v2__z-icon").getBoundingClientRect();
-        const label = button.querySelector(".object-vector-studio-v2__z-label").getBoundingClientRect();
-        return {
-          buttonRemainsIconOnlyWhenToolLabelsToggle: button.closest(".object-vector-studio-v2__z-order-actions").classList.contains("is-icon-only"),
-          iconOnlyButtonSquare: Math.round(zRect.width) === Math.round(zRect.height) && Math.round(shapeRect.width) === Math.round(shapeRect.height),
-          iconVisible: Math.round(zIcon.height) > 0 && Math.round(zIcon.width) > 0,
-          labelVisuallyHidden: Math.round(label.width) <= 1 && Math.round(label.height) <= 1
-        };
-      });
-      expect(iconModeSizeParity).toEqual({ buttonRemainsIconOnlyWhenToolLabelsToggle: true, iconOnlyButtonSquare: true, iconVisible: true, labelVisuallyHidden: true });
+      await expect(page.locator(".object-vector-studio-v2__z-order-actions")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ResetViewButton")).not.toHaveClass(/is-icon-only/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Shape\/Tools display mode set to compact icons\./);
       await page.reload({ waitUntil: "networkidle" });
       await expect(page.locator("#objectVectorStudioV2ToolToggleGrid")).toHaveClass(/is-icon-only/);
-      await expect(page.locator(".object-vector-studio-v2__z-order-actions")).toHaveClass(/is-icon-only/);
+      await expect(page.locator(".object-vector-studio-v2__z-order-actions")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ToolLabelModeButton")).toHaveText("Words");
 
       const invalidPayloadPath = testInfo.outputPath("object-vector-invalid.json");
@@ -1776,7 +1748,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           opacityLabels: Array.from(opacityRow.querySelectorAll("label > span")).map((label) => label.textContent.trim()),
           primaryInline: [strokeButton, widthLabel].every((rect) => Math.abs((paintButton.top + paintButton.height / 2) - (rect.top + rect.height / 2)) < 4),
           primaryOrder: Array.from(primaryRow.children).map((element) => element.textContent.trim()),
-          widthInputCompact: Math.round(widthInput.width) <= 46,
+          widthInputFitsXxDotX: Math.round(widthInput.width) >= 58,
           widthIsRightOfStroke: widthLabel.left >= strokeButton.right
         };
       });
@@ -1791,7 +1763,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         opacityLabels: ["Fill Op", "Stroke Op"],
         primaryInline: true,
         primaryOrder: ["Paint", "Stroke", "Width"],
-        widthInputCompact: true,
+        widthInputFitsXxDotX: true,
         widthIsRightOfStroke: true
       });
       await expect(page.locator(".object-vector-studio-v2__palette-sort")).not.toContainText("Sort");
@@ -2493,23 +2465,42 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 345, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Resize Geometry applied scale 1\.2 to shape row 0; transform scale reset to 1\./);
 
-      await page.locator("#objectVectorStudioV2BringForwardButton").click();
+      const selectedShapeActions = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] .object-vector-studio-v2__object-tile-shapes .object-vector-studio-v2__shape-list-actions");
+      await expect(selectedShapeActions.locator("[data-shape-list-action]")).toHaveCount(6);
+      await expect(selectedShapeActions.locator("[data-shape-list-action] .object-vector-studio-v2__z-label")).toHaveText(["Move Up", "Move Down", "Move Left", "Move Right", "Group", "Ungroup"]);
+      const selectedShapeActionLayout = await selectedShapeActions.evaluate((actions) => {
+        const shapeList = actions.closest(".object-vector-studio-v2__object-tile-shapes");
+        const buttons = Array.from(actions.querySelectorAll("[data-shape-list-action]"));
+        const buttonRects = buttons.map((button) => button.getBoundingClientRect());
+        return {
+          iconOnly: actions.classList.contains("is-icon-only"),
+          labelsHidden: buttons.every((button) => {
+            const label = button.querySelector(".object-vector-studio-v2__z-label").getBoundingClientRect();
+            return Math.round(label.width) <= 1 && Math.round(label.height) <= 1;
+          }),
+          parentIsShapeList: actions.parentElement === shapeList,
+          squareButtons: buttonRects.every((rect) => Math.round(rect.width) === Math.round(rect.height))
+        };
+      });
+      expect(selectedShapeActionLayout).toEqual({ iconOnly: true, labelsHidden: true, parentIsShapeList: true, squareButtons: true });
+
+      await selectedShapeActions.locator("[data-shape-list-action='move-up']").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"order": 2');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Shape row 0 z-order forward\./);
-      await page.locator("#objectVectorStudioV2SendToBackButton").click();
+      await selectedShapeActions.locator("[data-shape-list-action='move-left']").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"order": 1');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Shape row 1 z-order back\./);
 
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='0']").click();
-      await expect(page.locator("#objectVectorStudioV2GroupShapesButton")).toBeDisabled();
-      await expect(page.locator("#objectVectorStudioV2GroupShapesButton")).toHaveAttribute("data-disabled-reason", /Shift-click shapes/);
+      await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toBeDisabled();
+      await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toHaveAttribute("data-disabled-reason", /Shift-click shapes/);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='1']").click({ modifiers: ["Shift"] });
-      await expect(page.locator("#objectVectorStudioV2GroupShapesButton")).toBeEnabled();
-      await expect(page.locator("#objectVectorStudioV2GroupShapesButton")).toHaveAttribute("title", /Shift-click shapes to select more than one/);
-      await page.locator("#objectVectorStudioV2GroupShapesButton").click();
+      await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toBeEnabled();
+      await expect(selectedShapeActions.locator("[data-shape-list-action='group']")).toHaveAttribute("title", /Shift-click shapes to select more than one/);
+      await selectedShapeActions.locator("[data-shape-list-action='group']").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"groupId": "group-1"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-1\./);
-      await page.locator("#objectVectorStudioV2UngroupButton").click();
+      await selectedShapeActions.locator("[data-shape-list-action='ungroup']").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"groupId": "group-1"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Ungrouped shapes from group-1\./);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-tile-shape-index='0']").click();
@@ -3867,7 +3858,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-grid-rendered='true']")).toHaveCount(0);
 
       await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(0, "test shape list", { additive: true }));
-      await page.locator("#objectVectorStudioV2GroupShapesButton").click();
+      await page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__shape-list-actions [data-shape-list-action='group']").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"groupId": "group-1"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-1\./);
 
@@ -4023,8 +4014,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-object-id="object.animation.ship-template"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1']")).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-select='frame-1']")).toHaveValue("idle");
-      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-help='frame-1']")).toHaveAttribute("title", "Default stationary state.\nNo movement or action animation active.");
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-state-select]")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-state-help]")).toHaveCount(0);
+      const selectedObjectStatePanel = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.animation.ship-template'] .object-vector-studio-v2__object-state-panel");
+      await expect(selectedObjectStatePanel.locator(".object-vector-studio-v2__object-state-controls button")).toHaveText(["Add", "Delete", "?"]);
+      await expect(selectedObjectStatePanel.locator("[data-object-state-select='object.animation.ship-template']")).toHaveValue("idle");
+      await expect(selectedObjectStatePanel.locator("[data-object-state-help='idle']")).toHaveAttribute("title", "Default stationary state.\nNo movement or action animation active.");
+      await expect(selectedObjectStatePanel.locator("[data-object-state-tile]")).toHaveText(["idle", "move"]);
+      await expect(selectedObjectStatePanel.locator("[data-object-state-tile='idle']")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"id": "idle"');
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("Selected Shape");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).not.toContainText("ship-template-hull");
@@ -4070,14 +4067,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-onion-skin-frame='frame-2']")).toHaveCount(1);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Onion-skin preview enabled\./);
 
-      await page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-select='frame-1']").selectOption("move");
+      await selectedObjectStatePanel.locator("[data-object-state-select='object.animation.ship-template']").selectOption("move");
       await expect(page.locator('[data-object-id="object.animation.ship-template"]')).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-select='frame-1']")).toHaveValue("move");
-      await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1'] [data-frame-state-help='frame-1']")).toHaveAttribute("title", "Movement/action state.\nUsed for thrusting, walking, flying, or active movement visuals.");
+      await expect(selectedObjectStatePanel.locator("[data-object-state-select='object.animation.ship-template']")).toHaveValue("move");
+      await expect(selectedObjectStatePanel.locator("[data-object-state-help='move']")).toHaveAttribute("title", "Movement/action state.\nUsed for thrusting, walking, flying, or active movement visuals.");
+      await expect(selectedObjectStatePanel.locator("[data-object-state-tile='move']")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='move']")).toHaveCount(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected state Move from frame frame-1 state dropdown; active object remains Ship Template\./);
-      await page.evaluate(() => window.__objectVectorStudioV2App.selectState("idle", "test state selection"));
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected state Move from state dropdown; active object remains Ship Template\./);
+      await selectedObjectStatePanel.locator("[data-object-state-tile='idle']").click();
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(2);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected state Idle from state tile; active object remains Ship Template\./);
 
       await page.locator("#objectVectorStudioV2LoopToggle").check();
       await page.locator("#objectVectorStudioV2FpsInput").fill("24");
