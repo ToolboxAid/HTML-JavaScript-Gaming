@@ -75,6 +75,112 @@ function displayAbsoluteOutputPath(server, relativePath) {
   return `${displayRepoRootPath(server)}\\${relativePath.replaceAll("/", "\\")}`;
 }
 
+async function objectVectorLogicalClientPoint(page, x, y) {
+  return page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface, point) => {
+    const app = window.__objectVectorStudioV2App;
+    const bounds = surface.getBoundingClientRect();
+    const viewWidth = 320 / app.viewport.zoom;
+    const viewHeight = 220 / app.viewport.zoom;
+    const drawingX = point.x * 10;
+    const drawingY = point.y * 10;
+    return {
+      x: bounds.left + ((drawingX - app.viewport.x + viewWidth / 2) / viewWidth) * bounds.width,
+      y: bounds.top + ((drawingY - app.viewport.y + viewHeight / 2) / viewHeight) * bounds.height
+    };
+  }, { x, y });
+}
+
+async function clickObjectVectorLogicalPoint(page, x, y, options = {}) {
+  const point = await objectVectorLogicalClientPoint(page, x, y);
+  await page.evaluate(({ eventOptions, point }) => {
+    const surface = document.querySelector("#objectVectorStudioV2RenderSurface");
+    const pointerInit = {
+      bubbles: true,
+      button: eventOptions.button ?? 0,
+      buttons: 1,
+      cancelable: true,
+      clientX: point.x,
+      clientY: point.y,
+      pointerId: 1,
+      pointerType: "mouse"
+    };
+    surface.dispatchEvent(new PointerEvent("pointerdown", pointerInit));
+    surface.dispatchEvent(new PointerEvent("pointerup", { ...pointerInit, buttons: 0 }));
+  }, { eventOptions: options, point });
+}
+
+async function dragObjectVectorLogicalPoints(page, start, end) {
+  const startPoint = await objectVectorLogicalClientPoint(page, start.x, start.y);
+  const endPoint = await objectVectorLogicalClientPoint(page, end.x, end.y);
+  await page.evaluate(({ endPoint, startPoint }) => {
+    const surface = document.querySelector("#objectVectorStudioV2RenderSurface");
+    const pointerInit = {
+      bubbles: true,
+      button: 0,
+      buttons: 1,
+      cancelable: true,
+      pointerId: 1,
+      pointerType: "mouse"
+    };
+    surface.dispatchEvent(new PointerEvent("pointerdown", { ...pointerInit, clientX: startPoint.x, clientY: startPoint.y }));
+    window.dispatchEvent(new PointerEvent("pointermove", { ...pointerInit, clientX: endPoint.x, clientY: endPoint.y }));
+    window.dispatchEvent(new PointerEvent("pointerup", { ...pointerInit, buttons: 0, clientX: endPoint.x, clientY: endPoint.y }));
+  }, { endPoint, startPoint });
+}
+
+async function drawObjectVectorShape(page, tool, points) {
+  await page.locator(`[data-shape-tool="${tool}"]`).click();
+  if (["rectangle", "square", "circle", "ellipse", "arc", "triangle"].includes(tool)) {
+    await dragObjectVectorLogicalPoints(page, points[0], points[1]);
+    return;
+  }
+  if (tool === "line") {
+    await clickObjectVectorLogicalPoint(page, points[0].x, points[0].y);
+    const endPoint = await objectVectorLogicalClientPoint(page, points[1].x, points[1].y);
+    await page.evaluate((point) => {
+      const pointerInit = {
+        bubbles: true,
+        button: 0,
+        buttons: 1,
+        cancelable: true,
+        clientX: point.x,
+        clientY: point.y,
+        pointerId: 1,
+        pointerType: "mouse"
+      };
+      window.dispatchEvent(new PointerEvent("pointermove", pointerInit));
+    }, endPoint);
+    await clickObjectVectorLogicalPoint(page, points[1].x, points[1].y);
+    return;
+  }
+  if (tool === "polygon" || tool === "polyline") {
+    for (const point of points) {
+      await clickObjectVectorLogicalPoint(page, point.x, point.y);
+    }
+    await page.keyboard.press("Enter");
+    return;
+  }
+  if (tool === "text") {
+    await clickObjectVectorLogicalPoint(page, points[0].x, points[0].y);
+  }
+}
+
+async function drawDefaultObjectVectorShape(page, tool) {
+  const defaults = {
+    arc: [{ x: 0, y: 70 }, { x: 40, y: 70 }],
+    circle: [{ x: 70, y: -10 }, { x: 100, y: -10 }],
+    ellipse: [{ x: 20, y: 40 }, { x: 120, y: 100 }],
+    line: [{ x: -100, y: 80 }, { x: 0, y: 30 }],
+    polygon: [{ x: 0, y: -80 }, { x: 76, y: -25 }, { x: 47, y: 65 }, { x: -47, y: 65 }, { x: -76, y: -25 }],
+    polyline: [{ x: -40, y: 0 }, { x: 0, y: -30 }, { x: 40, y: 0 }],
+    rectangle: [{ x: -80, y: -30 }, { x: 0, y: 30 }],
+    square: [{ x: -80, y: -30 }, { x: -20, y: 30 }],
+    text: [{ x: -30, y: 40 }],
+    triangle: [{ x: -40, y: -80 }, { x: 40, y: -10 }]
+  };
+  await drawObjectVectorShape(page, tool, defaults[tool]);
+}
+
 const MOCK_TEXT2SPEECH_LANGUAGE_VALUES = [
   "de-DE",
   "en-GB",
@@ -1218,11 +1324,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           gameHasLocalObjectStateDefinition: Object.prototype.hasOwnProperty.call(gameSchema.$defs, "objectVectorStudioState"),
           gameObjectDefaultTags: gameSchema.$defs.objectVectorStudioObject.default.tags,
           gamePolygonDefaultPointCount: gameSchema.$defs.objectVectorStudioPolygonGeometry.default.points.length,
+          gamePolylineDefaultPointCount: gameSchema.$defs.objectVectorStudioPolylineGeometry.default.points.length,
           gameShapeCommonDefaultTool: gameSchema.$defs.objectVectorStudioShapeCommon.default.tool,
           gameStateSchemaRef: gameSchema.$defs.objectVectorStudioObject.properties.states.items.$ref,
           gameStateThrustMentionRemoved: !JSON.stringify(gameSchema).includes('"thrust"'),
           gameTransformDefaultOrigin: gameSchema.$defs.objectVectorStudioTransform.default.origin,
           toolPolygonDefaultPointCount: toolSchema.$defs.polygonGeometry.default.points.length,
+          toolPolylineDefaultPointCount: toolSchema.$defs.polylineGeometry.default.points.length,
           toolShapeCommonDefaultTool: toolSchema.$defs.shapeCommon.default.tool,
           toolStateEnum: toolSchema.$defs.objectState.properties.id.enum,
           toolStateThrustRemoved: !toolSchema.$defs.objectState.properties.id.enum.includes("thrust"),
@@ -1234,11 +1342,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         gameHasLocalObjectStateDefinition: false,
         gameObjectDefaultTags: [],
         gamePolygonDefaultPointCount: 5,
+        gamePolylineDefaultPointCount: 3,
         gameShapeCommonDefaultTool: "polygon",
         gameStateSchemaRef: "tools/object-vector-studio-v2.schema.json#/$defs/objectState",
         gameStateThrustMentionRemoved: true,
         gameTransformDefaultOrigin: { x: 0, y: 0 },
         toolPolygonDefaultPointCount: 5,
+        toolPolylineDefaultPointCount: 3,
         toolShapeCommonDefaultTool: "polygon",
         toolStateEnum: ["idle", "move", "active", "inactive", "damaged", "destroyed"],
         toolStateThrustRemoved: true,
@@ -1252,9 +1362,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeDisabled();
       await expect(page.locator("#objectVectorStudioV2ExportSvgButton")).toBeDisabled();
 
-      await expect(page.locator(".tool-starter__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Object", "Object Geometry", "Object Transform", "Objects (0 obj, states 0, 0 shapes)"]);
-      await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Shape/Tools", "Palette (0 swatches)", "JSON Details", "Dependency Graph", "Status Log"]);
-      await expect(page.locator(".tool-starter__panel--right > .accordion-v2").first().locator(".accordion-v2__header > span:first-child")).toHaveText("Shape/Tools");
+      await expect(page.locator(".tool-starter__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Object", "Object Geometry", "Objects (0 obj, states 0, 0 shapes)"]);
+      await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Palette (0 swatches)", "Shape/Tools", "Object Transform", "JSON Details", "Dependency Graph", "Status Log"]);
+      await expect(page.locator(".tool-starter__panel--right > .accordion-v2").first().locator(".accordion-v2__header > span:first-child")).toHaveText("Palette (0 swatches)");
       await expect(page.locator("#objectVectorStudioV2JsonDetailsContent")).toBeHidden();
       await expect(page.locator("#objectVectorStudioV2DependencyGraphContent")).toBeHidden();
       await expect(page.locator("#statusLogContent")).toBeHidden();
@@ -1308,7 +1418,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Blocked Object");
       await page.locator("#objectVectorStudioV2AddObjectButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Add object blocked: load a schema-valid Object Vector Studio V2 payload before adding objects\./);
-      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Arc", "Circle", "Ellipse", "Line", "Polygon", "Rectangle", "Square", "Triangle", "Text"]);
+      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Arc", "Circle", "Ellipse", "Line", "Polygon", "Polyline", "Rectangle", "Square", "Triangle", "Text"]);
       const futureNotes = await readFile("tools/object-vector-studio-v2/possible.future.adds.txt", "utf8");
       expect(futureNotes).toContain("Object Vector Studio V2 should stay focused on reusable atomic vector objects.");
       expect(futureNotes).toContain("Future World Vector or Scene layers should instance Object Vector objects");
@@ -1363,7 +1473,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           gridIcons: {
             angle: icon("#objectVectorStudioV2AngleSnapButton"),
             render: icon("#objectVectorStudioV2GridRenderButton"),
-            snap: icon("#objectVectorStudioV2GridSnapButton")
+            snapGrid: icon("#objectVectorStudioV2SnapGridButton"),
+            snapNone: icon("#objectVectorStudioV2SnapNoneButton"),
+            snapPoint: icon("#objectVectorStudioV2SnapPointButton")
           },
           modeButtons: {
             paint: {
@@ -1385,6 +1497,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             ellipse: icon(".object-vector-studio-v2__shape-icon--ellipse"),
             line: icon(".object-vector-studio-v2__shape-icon--line"),
             polygon: icon(".object-vector-studio-v2__shape-icon--polygon"),
+            polyline: icon(".object-vector-studio-v2__shape-icon--polyline"),
             rectangle: icon(".object-vector-studio-v2__shape-icon--rectangle"),
             select: icon(".object-vector-studio-v2__shape-icon--select"),
             square: icon(".object-vector-studio-v2__shape-icon--square"),
@@ -1438,7 +1551,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.gridIcons).toMatchObject({
         angle: { iconKey: "angle", iconName: "nf-md-angle_acute" },
         render: { iconKey: "grid", iconName: "nf-md-grid_off" },
-        snap: { iconKey: "gridSnap", iconName: "nf-md-vector_point" }
+        snapGrid: { iconKey: "snapGrid", iconName: "nf-md-grid_large" },
+        snapNone: { iconKey: "snapNone", iconName: "nf-fa-not_equal" },
+        snapPoint: { iconKey: "snapPoint", iconName: "nf-md-vector_point" }
       });
       expect(iconStyleState.paletteSortIcons).toMatchObject({
         bri: { iconKey: "bri", iconName: "nf-fa-sun_o" },
@@ -1453,6 +1568,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ellipse: "ellipse",
         line: "line",
         polygon: "polygon",
+        polyline: "polyline",
         rectangle: "rectangle",
         select: "select",
         square: "square",
@@ -1463,6 +1579,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.shapeIcons.circle.iconName).toBe("nf-md-vector_circle_variant");
       expect(iconStyleState.shapeIcons.ellipse.iconName).toBe("nf-md-vector_ellipse");
       expect(iconStyleState.shapeIcons.polygon.iconName).toBe("nf-md-vector_polygon");
+      expect(iconStyleState.shapeIcons.polyline.iconName).toBe("nf-md-vector_polyline");
       expect(iconStyleState.shapeIcons.square.iconName).toBe("nf-fa-vector_square");
       expect(iconStyleState.shapeIcons.triangle.iconName).toBe("nf-md-vector_triangle");
       expect(iconStyleState.shapeIcons.select.iconName).toBe("nf-md-select");
@@ -1477,6 +1594,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ellipse: "none",
         line: "none",
         polygon: "none",
+        polyline: "none",
         rectangle: "none",
         select: "none",
         square: "none",
@@ -1507,9 +1625,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveAttribute("aria-pressed", "false");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Angle snap disabled: Rotate action uses raw entered rotation delta\./);
 
-      await page.locator('[data-shape-tool="rectangle"]').click();
+      await drawDefaultObjectVectorShape(page, "rectangle");
       await expect(page.locator('[data-shape-tool="rectangle"]')).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Create rectangle blocked: select a schema-valid object first\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Rectangle\. Use canvas pointer input to create geometry\. Select a schema-valid object before committing geometry\./);
       const shapeToolLayout = await page.locator('[data-shape-tool="rectangle"]').evaluate((button) => {
         const rect = button.getBoundingClientRect();
         const gridButton = document.querySelector("#objectVectorStudioV2GridRenderButton");
@@ -1535,7 +1653,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(shapeToolLayout).toEqual({
-        buttonCount: 10,
+        buttonCount: 11,
         labelBesideGrid: true,
         leftPanelOverflowY: "auto",
         textButtonWider: true,
@@ -1946,7 +2064,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from import:object-vector-valid\.json: 18 objects\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Render mode svg-work-surface: rendered Asteroids Ship with 0 visible shapes; capture mode none\./);
 
-      await page.locator('[data-shape-tool="rectangle"]').click();
+      await drawDefaultObjectVectorShape(page, "rectangle");
       await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(18 obj, states \d+, 1 shape\)/);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveClass(/is-selected/);
       await expect(page.locator("[data-palette-color='#ffffff']")).toHaveClass(/is-selected/);
@@ -2113,7 +2231,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ShapeLockButton")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2DuplicateShapeButton")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2DeleteShapeButton")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape on Asteroids Ship\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape on Asteroids Ship from canvas drag\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Render mode svg-work-surface: rendered Asteroids Ship with 1 visible shapes; capture mode none\./);
       const createdRectangleSchemaDefaults = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
@@ -2154,7 +2272,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         visible: createdRectangleSchemaDefaults.schemaShapeCommon.visible
       });
 
-      await page.locator('[data-shape-tool="circle"]').click();
+      await drawDefaultObjectVectorShape(page, "circle");
       await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(18 obj, states \d+, 2 shapes\)/);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='1']")).toHaveClass(/is-selected/);
       await expect(page.locator("[data-palette-color='#ffffff']")).toHaveClass(/is-selected/);
@@ -2287,7 +2405,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock'] [data-ovs-icon-key='lock']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeDisabled();
       await expect(page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='delete']")).toBeDisabled();
-      await page.locator('[data-shape-tool="line"]').click();
+      await drawDefaultObjectVectorShape(page, "line");
       await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(18 obj, states \d+, 2 shapes\)/);
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Create line blocked: object Asteroids Ship is locked for this runtime session\./);
       await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-object-control='lock']").click();
@@ -2439,16 +2557,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveClass(/is-grid-visible/);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-grid-rendered='true']")).toHaveCount(1);
 
-      await page.locator("#objectVectorStudioV2GridSnapButton").click();
-      await expect(page.locator("#objectVectorStudioV2GridSnapButton")).toHaveAttribute("aria-pressed", "true");
+      await page.locator("#objectVectorStudioV2SnapGridButton").click();
+      await expect(page.locator("#objectVectorStudioV2SnapGridButton")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2SnapNoneButton")).toHaveAttribute("aria-pressed", "false");
       await page.locator("#objectVectorStudioV2MoveXInput").fill("13");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"x": 10');
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"y": 10');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"x": 13');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"y": 7');
       await expect(page.locator("#objectVectorStudioV2MoveXInput")).toHaveValue("13");
       await expect(page.locator("#objectVectorStudioV2MoveYInput")).toHaveValue("7");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by 10, 10\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by 13, 7\./);
 
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await page.locator("#objectVectorStudioV2RotateInput").fill("22");
@@ -2463,7 +2582,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 345');
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 345, scale 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 345, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by -30 degrees\./);
       const wrappedLargeRotationSummary = await page.evaluate(() => window.__objectVectorStudioV2App.formatTransformSummary({
         origin: { x: 0, y: 0 },
@@ -2487,7 +2606,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           y: Number(horizontal.getAttribute("y1"))
         };
       });
-      expect(pivotMarkerAfterOrigin).toEqual({ x: 120, y: 70 });
+      expect(pivotMarkerAfterOrigin).toEqual({ x: 150, y: 40 });
 
       await page.locator("#objectVectorStudioV2ScaleInput").fill("0");
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveAttribute("aria-invalid", "true");
@@ -2497,7 +2616,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).not.toHaveAttribute("aria-invalid", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.2 for shape row 0\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"scaleX": 1.2');
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 345, scale 1.2");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 345, scale 1.2");
       const selectionBeforeScaleStep = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
         height: Number(box.getAttribute("height")),
         width: Number(box.getAttribute("width"))
@@ -2549,7 +2668,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
       });
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 345, scale 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 345, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Resize Geometry applied scale 1\.2 to shape row 0; transform scale reset to 1\./);
 
       const selectedShapeActions = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] .object-vector-studio-v2__object-tile-shapes .object-vector-studio-v2__shape-list-actions");
@@ -2956,9 +3075,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       ));
       expect(leftAccordionLayout[1].title.startsWith("Object Geometry")).toBe(true);
       const leftAccordionTitles = leftAccordionLayout.map((entry, index) => index === 1 ? "Object Geometry" : entry.title);
-      expect(leftAccordionTitles.slice(0, 3)).toEqual(["Object", "Object Geometry", "Object Transform"]);
-      expect(leftAccordionTitles[3]).toMatch(/^Objects \(18 obj, states \d+, 2 shapes\)$/);
-      expect(leftAccordionLayout.slice(0, 3).every((entry) => entry.isOpen && entry.contentReachesSectionBottom && entry.flexGrow === "0")).toBe(true);
+      expect(leftAccordionTitles.slice(0, 2)).toEqual(["Object", "Object Geometry"]);
+      expect(leftAccordionTitles[2]).toMatch(/^Objects \(18 obj, states \d+, 2 shapes\)$/);
+      expect(leftAccordionLayout.slice(0, 2).every((entry) => entry.isOpen && entry.contentReachesSectionBottom && entry.flexGrow === "0")).toBe(true);
       const objectAccordionSpacing = await page.locator(".tool-starter__panel--left").evaluate((panel) => {
         const header = panel.querySelector(".accordion-v2__header");
         const content = panel.querySelector(".accordion-v2__content");
@@ -3120,8 +3239,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         name: "square-tool-check.object-vector.json"
       });
 
-      await page.locator('[data-shape-tool="square"]').click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Created square shape on Square Tool Check\./);
+      await drawDefaultObjectVectorShape(page, "square");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created square shape on Square Tool Check from canvas drag\./);
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Square Geometry");
       await expect(page.locator(".object-vector-studio-v2__shape-select-label")).toHaveText("0. Square");
       const createdSquare = await page.evaluate(() => {
@@ -3166,6 +3285,104 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         geometry: { height: 42, width: 42, x: -80, y: -30 },
         schemaOk: true
       });
+
+      expect(pageErrors).toEqual([]);
+      expect(consoleErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("creates Object Vector Studio V2 shapes with canvas drawing and snap modes", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    const consoleErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "drawing-flow-palette",
+          swatches: [
+            { id: "white", value: "#ffffff" },
+            { id: "cyan", value: "#6fd3ff" }
+          ]
+        }));
+      });
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles({
+        buffer: Buffer.from(JSON.stringify({
+          name: "Drawing Flow Check",
+          objects: [
+            {
+              id: "object.drawing.flow",
+              name: "Drawing Flow",
+              shapes: [],
+              tags: []
+            }
+          ],
+          toolId: "object-vector-studio-v2",
+          version: 1
+        }, null, 2)),
+        mimeType: "application/json",
+        name: "drawing-flow-check.object-vector.json"
+      });
+
+      await page.locator('[data-shape-tool="rectangle"]').click();
+      await expect(page.locator('[data-shape-tool="rectangle"]')).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveClass(/is-drawing-mode/);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index]")).toHaveCount(0);
+      await page.keyboard.press("Escape");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).not.toHaveClass(/is-drawing-mode/);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index]")).toHaveCount(0);
+
+      await drawObjectVectorShape(page, "line", [{ x: -10, y: 0 }, { x: 10, y: 0 }]);
+      await drawObjectVectorShape(page, "polygon", [{ x: -10, y: -10 }, { x: 10, y: -10 }, { x: 10, y: 10 }, { x: -10, y: 10 }]);
+      await drawObjectVectorShape(page, "polyline", [{ x: -20, y: 20 }, { x: 0, y: 0 }, { x: 20, y: 20 }]);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface polyline[data-shape-index='2']")).toHaveCount(1);
+      const pointDrawnShapes = await page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.map((shape) => ({
+        geometry: shape.geometry,
+        tool: shape.tool
+      })));
+      expect(pointDrawnShapes).toMatchObject([
+        { geometry: { point1: { x: -10, y: 0 }, point2: { x: 10, y: 0 } }, tool: "line" },
+        { geometry: { points: [{ x: -10, y: -10 }, { x: 10, y: -10 }, { x: 10, y: 10 }, { x: -10, y: 10 }] }, tool: "polygon" },
+        { geometry: { points: [{ x: -20, y: 20 }, { x: 0, y: 0 }, { x: 20, y: 20 }] }, tool: "polyline" }
+      ]);
+
+      await page.locator('[data-shape-tool="polygon"]').click();
+      await clickObjectVectorLogicalPoint(page, 30, 30);
+      await clickObjectVectorLogicalPoint(page, 35, 30);
+      await page.keyboard.press("Escape");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index]")).toHaveCount(3);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Canceled Polygon drawing from Escape; no invalid geometry was committed\./);
+
+      await page.locator("#objectVectorStudioV2SnapGridButton").click();
+      await drawObjectVectorShape(page, "line", [{ x: 1.2, y: 1.6 }, { x: 3.7, y: 4.2 }]);
+      const gridSnappedLine = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry);
+      expect(gridSnappedLine).toEqual({ point1: { x: 1, y: 2 }, point2: { x: 4, y: 4 } });
+
+      await page.locator("#objectVectorStudioV2SnapPointButton").click();
+      await expect(page.locator("#objectVectorStudioV2SnapPointButton")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__snap-target")).not.toHaveCount(0);
+      await drawObjectVectorShape(page, "line", [{ x: 1.3, y: 2.2 }, { x: 4.2, y: 4.1 }]);
+      const pointSnappedLine = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry);
+      expect(pointSnappedLine).toEqual({ point1: { x: 1, y: 2 }, point2: { x: 4, y: 4 } });
+
+      await page.locator("#objectVectorStudioV2SnapNoneButton").click();
+      await drawObjectVectorShape(page, "line", [{ x: 5.25, y: 6.5 }, { x: 7.75, y: 8.25 }]);
+      const unsnappedLine = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry);
+      expect(unsnappedLine).toEqual({ point1: { x: 5.25, y: 6.5 }, point2: { x: 7.75, y: 8.25 } });
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
@@ -3435,7 +3652,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectDetails .object-vector-studio-v2__polygon-point-field")).toHaveCount(4);
       await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-side-action='delete']")).toHaveAttribute("aria-invalid", "true");
       await expect.poll(() => page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-select='true']").evaluateAll((checkboxes) => checkboxes.every((checkbox) => !checkbox.checked))).toBe(true);
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Delete polygon point rejected for shape row 0: polygon must keep at least four sides\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Delete point rejected for shape row 0: polygon must keep at least 4 points\./);
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
@@ -3616,7 +3833,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         wideFields: ["fontSize", "text"]
       });
 
-      await page.locator('[data-shape-tool="triangle"]').click();
+      await drawDefaultObjectVectorShape(page, "triangle");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails h4")).toHaveText("Triangle Geometry");
       await expect(page.locator("#objectVectorStudioV2ObjectDetails h4")).not.toHaveText("Polygon Geometry");
       await expect(page.locator("#objectVectorStudioV2ObjectGeometrySummary")).toHaveText("");
@@ -4161,14 +4378,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectTagList [data-object-tag]")).toHaveText(["enemy", "enemy-2"]);
       await expect(page.locator("#objectVectorStudioV2ObjectTagList")).not.toContainText("enemy x");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Added tag enemy-2 to UFO Template\./);
-      await page.locator('[data-shape-tool="ellipse"]').click();
-      await page.locator('[data-shape-tool="ellipse"]').click();
+      await drawDefaultObjectVectorShape(page, "ellipse");
+      await drawObjectVectorShape(page, "ellipse", [{ x: -60, y: -20 }, { x: 20, y: 40 }]);
       await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(1 obj, states \d+, 2 shapes\)/);
       await expect(page.locator('[data-object-id="object.authoring.ufo-template"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator('[data-object-thumbnail="object.authoring.ufo-template"] .object-vector-studio-v2__object-thumbnail-shape')).toHaveCount(2);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-object-bounds='object.authoring.ufo-template']")).toHaveCount(1);
       await expect(page.locator('[data-object-id="object.authoring.ufo-template"] [data-object-tile-shape-index]')).toHaveCount(2);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Created ellipse shape on UFO Template\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created ellipse shape on UFO Template from canvas drag\./);
       const ellipseGeometryLayout = await page.locator("#objectVectorStudioV2ObjectDetails .object-vector-studio-v2__edit-grid--ellipse").evaluate((grid) => {
         const fields = Array.from(grid.querySelectorAll(".object-vector-studio-v2__edit-field"));
         const fieldRects = fields.map((field) => field.getBoundingClientRect());
@@ -4210,12 +4427,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"groupId": "group-1"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-1\./);
 
-      await page.locator("#objectVectorStudioV2GridSnapButton").click();
+      await page.locator("#objectVectorStudioV2SnapGridButton").click();
       await page.locator("#objectVectorStudioV2MoveXInput").fill("13");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-1 \(2 shapes\) by 10, 10\./);
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 10, y 10, rot 0, scale 1");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-1 \(2 shapes\) by 13, 7\./);
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 0, scale 1");
       const groupedMoveForwardTransforms = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -4224,12 +4441,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { x: transform.x, y: transform.y };
         });
       });
-      expect(groupedMoveForwardTransforms).toEqual([{ x: 10, y: 10 }, { x: 10, y: 10 }]);
+      expect(groupedMoveForwardTransforms).toEqual([{ x: 13, y: 7 }, { x: 13, y: 7 }]);
       await page.locator("#objectVectorStudioV2MoveXInput").fill("-5");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-1 \(2 shapes\) by -10, -10\./);
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-1 \(2 shapes\) by -5, -5\./);
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 8, y 2, rot 0, scale 1");
       const groupedMoveBackTransforms = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -4238,7 +4455,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { x: transform.x, y: transform.y };
         });
       });
-      expect(groupedMoveBackTransforms).toEqual([{ x: 0, y: 0 }, { x: 0, y: 0 }]);
+      expect(groupedMoveBackTransforms).toEqual([{ x: 8, y: 2 }, { x: 8, y: 2 }]);
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.authoring-copied-json")));
@@ -8786,7 +9003,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${selectedShapeIndex}"]`).click();
       });
       await expectObjectVectorDirtyAfter("shape add edit", async () => {
-        await page.locator("[data-shape-tool='rectangle']").click();
+        await drawDefaultObjectVectorShape(page, "rectangle");
       });
       await expectObjectVectorDirtyAfter("shape visibility edit", async () => {
         const selectedShapeIndex = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex);

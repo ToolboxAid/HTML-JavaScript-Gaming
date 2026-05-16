@@ -138,6 +138,7 @@ export class ObjectVectorStudioV2SchemaService {
       "lineGeometry",
       "triangleGeometry",
       "polygonGeometry",
+      "polylineGeometry",
       "arcGeometry",
       "textGeometry"
     ].forEach((definitionName) => {

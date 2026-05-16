@@ -250,6 +250,9 @@
           "$ref": "#/$defs/objectVectorStudioPolygonShape"
         },
         {
+          "$ref": "#/$defs/objectVectorStudioPolylineShape"
+        },
+        {
           "$ref": "#/$defs/objectVectorStudioArcShape"
         },
         {
@@ -286,7 +289,7 @@
       "properties": {
         "tool": {
           "type": "string",
-          "enum": ["triangle", "rectangle", "square", "circle", "ellipse", "line", "polygon", "arc", "text"]
+          "enum": ["triangle", "rectangle", "square", "circle", "ellipse", "line", "polygon", "polyline", "arc", "text"]
         },
         "order": {
           "type": "integer",
@@ -394,6 +397,18 @@
           "properties": {
             "tool": { "const": "polygon" },
             "geometry": { "$ref": "#/$defs/objectVectorStudioPolygonGeometry" }
+          }
+        }
+      ]
+    },
+    "objectVectorStudioPolylineShape": {
+      "allOf": [
+        { "$ref": "#/$defs/objectVectorStudioShapeCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "tool": { "const": "polyline" },
+            "geometry": { "$ref": "#/$defs/objectVectorStudioPolylineGeometry" }
           }
         }
       ]
@@ -574,6 +589,30 @@
             { "x": 47, "y": 65 },
             { "x": -47, "y": 65 },
             { "x": -76, "y": -25 }
+          ],
+          "items": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
+        }
+      }
+    },
+    "objectVectorStudioPolylineGeometry": {
+      "type": "object",
+      "required": ["points"],
+      "additionalProperties": false,
+      "default": {
+        "points": [
+          { "x": -40, "y": 0 },
+          { "x": 0, "y": -30 },
+          { "x": 40, "y": 0 }
+        ]
+      },
+      "properties": {
+        "points": {
+          "type": "array",
+          "minItems": 2,
+          "default": [
+            { "x": -40, "y": 0 },
+            { "x": 0, "y": -30 },
+            { "x": 40, "y": 0 }
           ],
           "items": { "$ref": "#/$defs/objectVectorStudioPoint2d" }
         }

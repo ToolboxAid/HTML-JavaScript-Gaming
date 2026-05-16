@@ -1,27 +1,27 @@
-# PR_26133_062 Workspace V2 Playwright Results
+# Playwright Workspace V2 Results
 
-Task: PR_26133_062-object-vector-future-notes-tool-sort-and-live-point-edit
-Date: 2026-05-15
+PR: PR_26133_063-click-drag-shape-creation-and-snap-modes
 
-## Result
+## Commands
 
-PASS - `npm run test:workspace-v2` completed successfully.
+- `node --check tools/object-vector-studio-v2/js/ToolStarterApp.js` - PASS
+- `node --check tools/object-vector-studio-v2/js/bootstrap.js` - PASS
+- `node --check src/engine/rendering/ObjectVectorRuntimeAssetService.js` - PASS
+- `node --check tests/helpers/playwrightV8CoverageReporter.mjs` - PASS
+- `node -e "JSON.parse(require('fs').readFileSync('tools/schemas/tools/object-vector-studio-v2.schema.json','utf8')); JSON.parse(require('fs').readFileSync('tools/schemas/game.manifest.schema.json','utf8')); console.log('schema json ok')"` - PASS
+- `npm run test:workspace-v2` - PASS, 54 passed
 
-- Command: `npm run test:workspace-v2`
-- Playwright target: `tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list`
-- Final result: 53 passed, 0 failed.
-- Runtime/console guard: Workspace Manager V2, Object Vector Studio V2, and Asteroids runtime scenarios completed with no reported page errors.
+## Object Vector Studio V2 Verification
 
-## PR-Specific Coverage
+- Selecting Shape/Tools enters drawing mode instead of dropping preset defaults.
+- Line creation uses first click, live preview, and second click commit.
+- Polygon and Polyline creation use clicked points with Enter/double-click finish once valid.
+- Esc cancels active drawing without committing invalid geometry.
+- Rectangle, Square, Circle, Ellipse, Arc, Triangle, and Text creation use canvas pointer flows.
+- Snap Grid, Snap Point, and Snap None are covered during drawing and point dragging; Snap Point renders visible point targets.
+- Palette renders at the top of the right column, and Object Transform renders under Shape/Tools.
+- No console/runtime errors were reported by the successful Playwright workspace-v2 run.
 
-- Verified `possible.future.adds.txt` contains the Object Vector atomic-object, future World Vector/Scene instancing, Object/World separation, and future 3D point3d/camera/projection/mesh notes.
-- Verified Shape/Tools order is Select first, alphabetical middle, and Text last.
-- Verified Angle Snap UI documents current behavior: enabled Angle Snap rounds the Rotate action's entered delta to 15 degree increments; disabled uses the raw entered delta.
-- Verified point-handle dragging updates geometry, Object Geometry inputs, preview geometry, selection handle position, and workspace dirty state before mouseup.
-- Verified Object Vector Studio V2 and Asteroids runtime scenarios completed without page or console errors.
+## Notes
 
-## Additional Validation
-
-- Focused Shape/Tools, Square creation, and dirty-state live edit slices passed:
-  `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "layout shell|square shapes|dirty state"` completed with 3 passed, 0 failed.
-- `git diff --check` passed. The command reported existing Windows LF-to-CRLF warnings for touched files and no whitespace errors.
+- A small V8 coverage reporter optimization keeps the required coverage write inside the Playwright afterAll timeout without changing coverage semantics.

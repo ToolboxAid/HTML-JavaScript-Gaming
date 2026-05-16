@@ -179,7 +179,7 @@ function shapeBounds(shape) {
       y
     };
   }
-  if (geometryTool === "polygon") {
+  if (geometryTool === "polygon" || geometryTool === "polyline") {
     const xValues = shape.geometry.points.map((point) => point.x);
     const yValues = shape.geometry.points.map((point) => point.y);
     const minX = Math.min(...xValues);
@@ -766,7 +766,7 @@ export class ObjectVectorRuntimeAssetService {
       context.lineTo(shape.geometry.point2.x, shape.geometry.point2.y);
       return;
     }
-    if (geometryTool === "polygon") {
+    if (geometryTool === "polygon" || geometryTool === "polyline") {
       shape.geometry.points.forEach((point, index) => {
         if (index === 0) {
           context.moveTo(point.x, point.y);
@@ -774,7 +774,9 @@ export class ObjectVectorRuntimeAssetService {
           context.lineTo(point.x, point.y);
         }
       });
-      context.closePath();
+      if (geometryTool === "polygon") {
+        context.closePath();
+      }
       return;
     }
     if (geometryTool === "arc") {
@@ -836,9 +838,11 @@ export class ObjectVectorRuntimeAssetService {
     if (geometryTool === "line") {
       return `<line x1="${shape.geometry.point1.x}" y1="${shape.geometry.point1.y}" x2="${shape.geometry.point2.x}" y2="${shape.geometry.point2.y}"${style}/>`;
     }
-    if (geometryTool === "polygon") {
+    if (geometryTool === "polygon" || geometryTool === "polyline") {
       const points = shape.geometry.points.map((point) => `${point.x},${point.y}`).join(" ");
-      return `<polygon points="${points}"${style}/>`;
+      return geometryTool === "polygon"
+        ? `<polygon points="${points}"${style}/>`
+        : `<polyline points="${points}"${style}/>`;
     }
     if (geometryTool === "arc") {
       const start = {

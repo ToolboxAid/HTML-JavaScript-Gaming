@@ -4,7 +4,7 @@ const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";
 const WORKSPACE_PALETTE_SESSION_KEY = "workspace.tools.palette-manager-v2";
 const RUNTIME_PALETTE_SESSION_KEY = "object-vector-studio-v2.runtimePalette";
 const TOOL_DISPLAY_MODE_KEY = "object-vector-studio-v2.toolDisplayMode";
-const GRID_SNAP_SESSION_KEY = "object-vector-studio-v2.gridSnap";
+const SNAP_MODE_SESSION_KEY = "object-vector-studio-v2.snapMode";
 const ANGLE_SNAP_SESSION_KEY = "object-vector-studio-v2.angleSnap";
 const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
 const CENTER_ORIGIN_SESSION_KEY = "object-vector-studio-v2.centerOrigin";
@@ -15,6 +15,8 @@ const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;
 const MAX_ZOOM = 0.5;
 const MIN_ZOOM = 0.01;
 const ZOOM_STEP = 0.01;
+const SNAP_MODES = Object.freeze(["grid", "point", "none"]);
+const POINT_SNAP_RADIUS = 1.5;
 
 const objectVectorStudioIcon = (name, glyph) => Object.freeze({ glyph, name });
 
@@ -34,7 +36,10 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   eye: objectVectorStudioIcon("nf-fa-eye", "\uf06e"),
   eyeOff: objectVectorStudioIcon("nf-fa-eye_slash", "\uf070"),
   grid: objectVectorStudioIcon("nf-md-grid_off", "\u{f02c2}"),
-  gridSnap: objectVectorStudioIcon("nf-md-vector_point", "\u{f055f}"),
+  polyline: objectVectorStudioIcon("nf-md-vector_polyline", "\u{f0561}"),
+  snapGrid: objectVectorStudioIcon("nf-md-grid_large", "\u{f0758}"),
+  snapNone: objectVectorStudioIcon("nf-fa-not_equal", "\u{efcb}"),
+  snapPoint: objectVectorStudioIcon("nf-md-vector_point", "\u{f055f}"),
   group: objectVectorStudioIcon("nf-fa-object_group", "\uf247"),
   hue: objectVectorStudioIcon("nf-fa-eyedropper", "\uf1fb"),
   line: objectVectorStudioIcon("nf-md-vector_line", "\u{f055e}"),
@@ -93,7 +98,9 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   ["#objectVectorStudioV2FrameLaterButton", "panRight"],
   ["#objectVectorStudioV2FrameRightButton", "panRight"],
   ["#objectVectorStudioV2DeleteFrameButton", "delete"],
-  ["#objectVectorStudioV2GridSnapButton", "gridSnap"],
+  ["#objectVectorStudioV2SnapGridButton", "snapGrid"],
+  ["#objectVectorStudioV2SnapPointButton", "snapPoint"],
+  ["#objectVectorStudioV2SnapNoneButton", "snapNone"],
   ["#objectVectorStudioV2AngleSnapButton", "angle"],
   ["#objectVectorStudioV2GridRenderButton", "grid"],
   [".object-vector-studio-v2__shape-icon--select", "select"],
@@ -104,6 +111,7 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   [".object-vector-studio-v2__shape-icon--ellipse", "ellipse"],
   [".object-vector-studio-v2__shape-icon--line", "line"],
   [".object-vector-studio-v2__shape-icon--polygon", "polygon"],
+  [".object-vector-studio-v2__shape-icon--polyline", "polyline"],
   [".object-vector-studio-v2__shape-icon--arc", "arc"],
   [".object-vector-studio-v2__shape-icon--text", "text"],
   [".object-vector-studio-v2__z-icon--bring-forward", "bringForward"],
@@ -142,12 +150,13 @@ const SHAPE_TYPE_DETAILS = Object.freeze({
   ellipse: "Ellipse primitive metadata with center point and radius pair.",
   line: "Line primitive metadata with start and end points.",
   polygon: "Polygon primitive metadata with ordered point ownership.",
+  polyline: "Polyline primitive metadata with ordered open point ownership.",
   rectangle: "Rectangle primitive metadata with position and dimensions.",
   square: "Square tool metadata backed by rectangle geometry with equal width and height.",
   text: "Text primitive metadata with position, font size, and content."
 });
 
-const PRIMITIVE_TOOLS = Object.freeze(["triangle", "rectangle", "square", "circle", "ellipse", "line", "polygon", "arc", "text"]);
+const PRIMITIVE_TOOLS = Object.freeze(["triangle", "rectangle", "square", "circle", "ellipse", "line", "polygon", "polyline", "arc", "text"]);
 const OBJECT_ID_SIZE_WORDS = Object.freeze(new Set(["large", "medium", "small"]));
 const OBJECT_ID_ORDERED_NOUNS = Object.freeze(new Set(["asteroid", "ufo"]));
 
@@ -320,7 +329,7 @@ function shapeBounds(shape) {
       y
     };
   }
-  if (geometryTool === "polygon") {
+  if (geometryTool === "polygon" || geometryTool === "polyline") {
     const xValues = shape.geometry.points.map((point) => point.x);
     const yValues = shape.geometry.points.map((point) => point.y);
     const minX = Math.min(...xValues);
@@ -391,7 +400,7 @@ function shapeBoundsPoints(shape) {
   if (geometryTool === "line") {
     return [linePoint(shape.geometry, "point1"), linePoint(shape.geometry, "point2")].filter(Boolean);
   }
-  if (geometryTool === "polygon") {
+  if (geometryTool === "polygon" || geometryTool === "polyline") {
     return Array.isArray(shape.geometry.points) ? shape.geometry.points : [];
   }
   if (geometryTool === "circle") {
@@ -453,13 +462,15 @@ export class ToolStarterApp {
     this.selectedFillOpacity = 1;
     this.selectedStrokeOpacity = 1;
     this.isPaintDragging = false;
+    this.activeDrawing = null;
+    this.drawingPreviewPoint = null;
     this.previewPointerEdit = null;
     this.transformInputValues = new Map();
     this.stateControlStateId = "";
     this.pendingAddObjectClick = false;
     this.hiddenObjectIds = new Set();
     this.lockedObjectIds = new Set();
-    this.gridSnapEnabled = false;
+    this.snapMode = this.readSnapMode();
     this.angleSnapEnabled = false;
     this.gridRenderEnabled = true;
     this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
@@ -501,7 +512,7 @@ export class ToolStarterApp {
     this.renderEmptyState("Object Vector Studio V2 schema contract is loading.");
     this.statusLog.write("OK Object Vector Studio V2 layout shell ready.");
     this.statusLog.write("INFO Schema-only loading is idle. Import JSON or launch with workspace toolState data. Runtime palette is required before rendering.");
-    this.statusLog.write("INFO Shape/Tools primitive buttons create schema-valid shapes on the selected object.");
+    this.statusLog.write("INFO Shape/Tools primitive buttons enter drawing mode; use the canvas to commit schema-valid geometry.");
     this.statusLog.write("INFO Disabled controls stay inactive until a schema-valid payload, runtime palette, selected object, or active frame is available.");
     this.statusLog.write("INFO Object identity uses object.game.name ids.");
     this.statusLog.write("INFO Paint and stroke selection is structured to scale later into shaders, gradients, patterns, neon, SVG export, and runtime rendering.");
@@ -666,11 +677,12 @@ export class ToolStarterApp {
       button.addEventListener("click", () => {
         const tool = button.dataset.shapeTool || "unknown";
         this.setActiveToolButton(button);
-        this.activeTool = tool;
         if (PRIMITIVE_TOOLS.includes(tool)) {
-          this.createShape(tool);
+          this.startDrawingMode(tool);
           return;
         }
+        this.cancelActiveDrawing("tool switch", { log: false });
+        this.activeTool = tool;
         if (tool === "select" && this.selectedShapeIndex >= 0) {
           const clearedShape = this.selectedShapeIndex;
           this.selectedShapeIndex = -1;
@@ -689,11 +701,12 @@ export class ToolStarterApp {
   }
 
   bindSnapControls() {
-    this.elements.gridSnapButton.addEventListener("click", () => {
-      this.gridSnapEnabled = !this.gridSnapEnabled;
-      this.window.sessionStorage?.setItem(GRID_SNAP_SESSION_KEY, this.gridSnapEnabled ? "1" : "0");
-      this.applySnapState();
-      this.statusLog.write(`OK Grid snap ${this.gridSnapEnabled ? "enabled" : "disabled"}.`);
+    [
+      [this.elements.snapGridButton, "grid", "Snap Grid"],
+      [this.elements.snapPointButton, "point", "Snap Point"],
+      [this.elements.snapNoneButton, "none", "Snap None"]
+    ].forEach(([button, mode, label]) => {
+      button.addEventListener("click", () => this.setSnapMode(mode, label));
     });
     this.elements.angleSnapButton.addEventListener("click", () => {
       this.angleSnapEnabled = !this.angleSnapEnabled;
@@ -768,6 +781,7 @@ export class ToolStarterApp {
       this.renderPalette();
     }
     if (shouldLog) {
+      this.cancelActiveDrawing("palette mode change", { log: false });
       this.activeTool = this.paletteTarget === "stroke" ? "stroke" : "paint";
       this.setActiveToolButton(null);
       this.statusLog.write(`OK Palette target set to ${this.paletteTarget === "stroke" ? "Stroke" : "Paint"}.`);
@@ -816,13 +830,17 @@ export class ToolStarterApp {
     this.elements.panRightButton.addEventListener("click", () => this.panViewport(20, 0));
     this.elements.resetViewButton.addEventListener("click", () => this.resetViewport());
     this.elements.renderSurface.addEventListener("mousemove", (event) => this.updateCoordinateDisplay(event));
+    this.elements.renderSurface.addEventListener("pointerdown", (event) => this.handleDrawingPointerDown(event));
+    this.elements.renderSurface.addEventListener("dblclick", (event) => this.finishMultiPointDrawing("double-click", event));
     this.window.addEventListener("pointermove", (event) => this.updatePreviewPointerEdit(event));
+    this.window.addEventListener("pointermove", (event) => this.updateDrawingPreview(event));
     this.elements.renderSurface.addEventListener("wheel", (event) => {
       event.preventDefault();
       this.zoomViewportByStepAtPointer(event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP, event);
     }, { passive: false });
     this.window.addEventListener("pointerup", (event) => {
       this.isPaintDragging = false;
+      this.finishDrawingDrag(event);
       this.finishPreviewPointerEdit(event);
     });
   }
@@ -840,6 +858,16 @@ export class ToolStarterApp {
   bindKeyboardShortcuts() {
     const handleShortcut = (event) => {
       if (event.defaultPrevented) {
+        return;
+      }
+      if (event.key === "Escape" && this.activeDrawing) {
+        event.preventDefault();
+        this.cancelActiveDrawing("Escape");
+        return;
+      }
+      if (event.key === "Enter" && this.activeDrawing) {
+        event.preventDefault();
+        this.finishMultiPointDrawing("Enter", event);
         return;
       }
       const tagName = event.target?.tagName || "";
@@ -877,15 +905,35 @@ export class ToolStarterApp {
   }
 
   applySnapState() {
-    this.gridSnapEnabled = this.window.sessionStorage?.getItem(GRID_SNAP_SESSION_KEY) === "1";
+    this.snapMode = this.readSnapMode();
     this.angleSnapEnabled = this.window.sessionStorage?.getItem(ANGLE_SNAP_SESSION_KEY) === "1";
     this.gridRenderEnabled = this.window.sessionStorage?.getItem(GRID_RENDER_SESSION_KEY) !== "0";
     this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
-    this.elements.gridSnapButton.setAttribute("aria-pressed", String(this.gridSnapEnabled));
+    this.elements.snapGridButton.setAttribute("aria-pressed", String(this.snapMode === "grid"));
+    this.elements.snapPointButton.setAttribute("aria-pressed", String(this.snapMode === "point"));
+    this.elements.snapNoneButton.setAttribute("aria-pressed", String(this.snapMode === "none"));
+    this.elements.renderSurface.classList.toggle("is-snap-point-mode", this.snapMode === "point");
     this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
     this.elements.gridRenderButton.setAttribute("aria-pressed", String(this.gridRenderEnabled));
     this.elements.centerDotButton.setAttribute("aria-pressed", String(this.centerOriginVisible));
     this.elements.renderSurface.classList.toggle("is-grid-visible", this.gridRenderEnabled);
+  }
+
+  readSnapMode() {
+    const storedMode = this.window.sessionStorage?.getItem(SNAP_MODE_SESSION_KEY) || "none";
+    return SNAP_MODES.includes(storedMode) ? storedMode : "none";
+  }
+
+  setSnapMode(mode, label = "") {
+    if (!SNAP_MODES.includes(mode)) {
+      this.statusLog.write(`WARN Snap mode skipped: ${mode || "unknown"} is not supported.`);
+      return;
+    }
+    this.snapMode = mode;
+    this.window.sessionStorage?.setItem(SNAP_MODE_SESSION_KEY, mode);
+    this.applySnapState();
+    this.renderWorkSurface();
+    this.statusLog.write(`OK ${label || shapeTypeLabel(mode)} mode selected for drawing and point dragging.`);
   }
 
   applyToolDisplayMode(mode, shouldLog) {
@@ -907,6 +955,9 @@ export class ToolStarterApp {
   }
 
   activateToolMode(tool, sourceLabel) {
+    if (!PRIMITIVE_TOOLS.includes(tool)) {
+      this.cancelActiveDrawing("tool mode change", { log: false });
+    }
     this.activeTool = tool;
     const button = this.elements.toolToggles.find((candidate) => candidate.dataset.shapeTool === tool) || null;
     this.setActiveToolButton(button);
@@ -924,6 +975,10 @@ export class ToolStarterApp {
     this.selectedShapeIndex = -1;
     this.selectedShapeIndexes.clear();
     this.directSelectedShapeIndexes.clear();
+    this.activeDrawing = null;
+    this.drawingPreviewPoint = null;
+    this.activeDrawing = null;
+    this.drawingPreviewPoint = null;
     this.selectedStateId = "";
     this.stateControlStateId = "";
     this.selectedFrameId = "";
@@ -1045,6 +1100,8 @@ export class ToolStarterApp {
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.hiddenObjectIds.clear();
     this.lockedObjectIds.clear();
+    this.activeDrawing = null;
+    this.drawingPreviewPoint = null;
     this.viewport = { ...DEFAULT_VIEWPORT };
     this.updateViewport();
     if (sourceLabel) {
@@ -1916,7 +1973,8 @@ export class ToolStarterApp {
   }
 
   isEditablePolygonShape(shape) {
-    return shapeGeometryTool(shape) === "polygon" && !this.isTriangleShape(shape);
+    const geometryTool = shapeGeometryTool(shape);
+    return (geometryTool === "polygon" && !this.isTriangleShape(shape)) || geometryTool === "polyline";
   }
 
   shapeGeometryHeadingLabel(shape) {
@@ -1971,17 +2029,17 @@ export class ToolStarterApp {
     const section = document.createElement("section");
     const geometryTool = shapeGeometryTool(shape);
     section.className = `object-vector-studio-v2__edit-panel object-vector-studio-v2__edit-panel--geometry object-vector-studio-v2__edit-panel--${geometryTool}`;
-    if (geometryTool === "polygon") {
+    if (geometryTool === "polygon" || geometryTool === "polyline") {
       section.classList.add("object-vector-studio-v2__edit-panel--polygon");
     }
     const heading = document.createElement("h4");
     heading.textContent = `${this.shapeGeometryHeadingLabel(shape)} Geometry`;
     const grid = document.createElement("div");
-    grid.className = geometryTool === "polygon"
+    grid.className = geometryTool === "polygon" || geometryTool === "polyline"
       ? "object-vector-studio-v2__polygon-point-list"
       : `object-vector-studio-v2__edit-grid object-vector-studio-v2__edit-grid--${geometryTool}${geometryTool === "ellipse" ? " object-vector-studio-v2__edit-grid--ellipse" : ""}`;
     const editablePolygon = this.isEditablePolygonShape(shape);
-    if (geometryTool === "polygon") {
+    if (geometryTool === "polygon" || geometryTool === "polyline") {
       shape.geometry.points.forEach((point, index) => {
         grid.append(this.createPolygonPointRow(point, index, { selectable: editablePolygon }));
       });
@@ -2329,6 +2387,7 @@ export class ToolStarterApp {
 
   renderWorkSurface() {
     const object = this.selectedObject();
+    this.elements.renderSurface.classList.toggle("is-drawing-mode", Boolean(this.activeDrawing));
     this.elements.renderSurface.replaceChildren();
     this.renderSvgGrid();
     if (!object) {
@@ -2359,6 +2418,10 @@ export class ToolStarterApp {
         element.setAttribute("tabindex", "0");
         element.addEventListener("pointerdown", (event) => {
           event.stopPropagation();
+          if (this.activeDrawing) {
+            this.handleDrawingPointerDown(event);
+            return;
+          }
           if (this.activeTool === "paint" || this.activeTool === "stroke") {
             this.isPaintDragging = true;
             return;
@@ -2367,6 +2430,9 @@ export class ToolStarterApp {
         });
         element.addEventListener("click", (event) => {
           event.stopPropagation();
+          if (this.activeDrawing) {
+            return;
+          }
           this.handleShapePointer(event, shape, shapeIndex, { source: "render surface click" });
         });
         element.addEventListener("pointerenter", (event) => {
@@ -2382,6 +2448,8 @@ export class ToolStarterApp {
       }
     });
     this.renderObjectBounds(object);
+    this.renderSnapPointTargets(object);
+    this.renderDrawingPreview();
     this.renderSelectionOverlay(object);
     this.renderCenterOriginMarker();
 
@@ -2492,6 +2560,100 @@ export class ToolStarterApp {
     this.elements.renderSurface.append(marker);
   }
 
+  renderSnapPointTargets(object) {
+    if (this.snapMode !== "point") {
+      return;
+    }
+    const points = this.visibleSnapPoints(object);
+    if (!points.length) {
+      return;
+    }
+    const group = document.createElementNS(SVG_NS, "g");
+    group.classList.add("object-vector-studio-v2__snap-targets");
+    points.forEach((point, index) => {
+      const target = document.createElementNS(SVG_NS, "circle");
+      target.classList.add("object-vector-studio-v2__snap-target");
+      target.dataset.snapTargetIndex = String(index);
+      target.setAttribute("cx", this.scaleDrawingValue(point.x, OBJECT_PREVIEW_DRAWING_SCALE));
+      target.setAttribute("cy", this.scaleDrawingValue(point.y, OBJECT_PREVIEW_DRAWING_SCALE));
+      target.setAttribute("r", 4);
+      group.append(target);
+    });
+    this.elements.renderSurface.append(group);
+  }
+
+  renderDrawingPreview() {
+    if (!this.activeDrawing) {
+      return;
+    }
+    const previewShape = this.previewShapeFromDrawing();
+    if (!previewShape) {
+      return;
+    }
+    try {
+      const element = this.createSvgShape(previewShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
+      element.classList.add("object-vector-studio-v2__drawing-preview");
+      element.dataset.drawingPreviewTool = this.activeDrawing.tool;
+      this.elements.renderSurface.append(element);
+    } catch (error) {
+      this.statusLog.write(`FAIL Drawing preview failed for ${this.activeDrawing.tool}: ${error.message}`);
+    }
+  }
+
+  visibleSnapPoints(object = this.selectedObject(), options = {}) {
+    if (!object) {
+      return [];
+    }
+    const points = [];
+    sortedShapes(object).forEach((shape, shapeIndex) => {
+      if (normalizeShapeIndex(options.excludeShapeIndex) === shapeIndex) {
+        return;
+      }
+      const effective = this.effectiveShape(shape, shapeIndex);
+      if (!effective.visible) {
+        return;
+      }
+      const transform = this.shapeTransform(effective);
+      const definitions = this.geometryPointHandleDefinitions(effective);
+      const shapePoints = definitions.length
+        ? definitions.map((definition) => definition.point)
+        : boundsCornerPoints(shapeBounds(effective));
+      shapePoints.forEach((point) => points.push(this.transformedPoint(point, transform)));
+    });
+    return points;
+  }
+
+  nearestVisibleSnapPoint(point, options = {}) {
+    const candidates = this.visibleSnapPoints(this.selectedObject(), options);
+    let nearest = null;
+    candidates.forEach((candidate) => {
+      const distance = Math.hypot(candidate.x - point.x, candidate.y - point.y);
+      if (distance <= POINT_SNAP_RADIUS && (!nearest || distance < nearest.distance)) {
+        nearest = { distance, point: candidate };
+      }
+    });
+    return nearest?.point || null;
+  }
+
+  snapCanvasPoint(point, options = {}) {
+    if (this.snapMode === "grid") {
+      return {
+        x: Math.round(point.x),
+        y: Math.round(point.y)
+      };
+    }
+    if (this.snapMode === "point") {
+      const target = this.nearestVisibleSnapPoint(point, options);
+      if (target) {
+        return {
+          x: this.formatViewportNumber(target.x),
+          y: this.formatViewportNumber(target.y)
+        };
+      }
+    }
+    return point;
+  }
+
   createSvgShape(shape, { drawingScale = 1 } = {}) {
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
@@ -2531,6 +2693,12 @@ export class ToolStarterApp {
     }
     if (geometryTool === "polygon") {
       const element = document.createElementNS(SVG_NS, "polygon");
+      element.setAttribute("points", shape.geometry.points.map((point) => `${this.scaleDrawingValue(point.x, drawingScale)},${this.scaleDrawingValue(point.y, drawingScale)}`).join(" "));
+      this.applySvgStyle(element, shape, { drawingScale });
+      return element;
+    }
+    if (geometryTool === "polyline") {
+      const element = document.createElementNS(SVG_NS, "polyline");
       element.setAttribute("points", shape.geometry.points.map((point) => `${this.scaleDrawingValue(point.x, drawingScale)},${this.scaleDrawingValue(point.y, drawingScale)}`).join(" "));
       this.applySvgStyle(element, shape, { drawingScale });
       return element;
@@ -2805,15 +2973,15 @@ export class ToolStarterApp {
   geometryPointHandleDefinitions(shape) {
     const geometryTool = shapeGeometryTool(shape);
     const geometry = shape.geometry;
-    if (geometryTool === "polygon") {
+    if (geometryTool === "polygon" || geometryTool === "polyline") {
       return geometry.points.map((point, index) => ({
         editOptions: {
           mode: "geometry-point",
           point: { ...point },
           pointIndex: index
         },
-        id: `polygon-${index}`,
-        kind: this.isTriangleShape(shape) ? "triangle-point" : "polygon-point",
+        id: `${geometryTool}-${index}`,
+        kind: this.isTriangleShape(shape) ? "triangle-point" : `${geometryTool}-point`,
         label: `Move point ${index + 1}`,
         point
       }));
@@ -3101,6 +3269,321 @@ export class ToolStarterApp {
     };
   }
 
+  startDrawingMode(tool) {
+    if (!PRIMITIVE_TOOLS.includes(tool)) {
+      this.statusLog.write(`WARN Drawing mode skipped: ${tool || "unknown"} is not a drawable shape tool.`);
+      return;
+    }
+    this.activeTool = tool;
+    this.previewPointerEdit = null;
+    this.activeDrawing = this.createDrawingState(tool);
+    this.drawingPreviewPoint = null;
+    this.renderWorkSurface();
+    const objectHint = this.selectedObject() ? "" : " Select a schema-valid object before committing geometry.";
+    this.statusLog.write(`OK Drawing mode selected: ${shapeTypeLabel(tool)}. Use canvas pointer input to create geometry.${objectHint}`);
+  }
+
+  createDrawingState(tool) {
+    const flow = ["line", "polygon", "polyline"].includes(tool)
+      ? "points"
+      : tool === "text"
+        ? "point"
+        : "drag";
+    return {
+      flow,
+      points: [],
+      preview: null,
+      start: null,
+      tool
+    };
+  }
+
+  cancelActiveDrawing(sourceLabel = "cancel", { log = true } = {}) {
+    if (!this.activeDrawing) {
+      return;
+    }
+    const tool = this.activeDrawing.tool;
+    this.activeDrawing = null;
+    this.drawingPreviewPoint = null;
+    this.activeTool = "select";
+    const selectButton = this.elements.toolToggles.find((candidate) => candidate.dataset.shapeTool === "select") || null;
+    this.setActiveToolButton(selectButton);
+    this.renderWorkSurface();
+    if (log) {
+      this.statusLog.write(`OK Canceled ${shapeTypeLabel(tool)} drawing from ${sourceLabel}; no invalid geometry was committed.`);
+    }
+  }
+
+  handleDrawingPointerDown(event) {
+    const drawing = this.activeDrawing;
+    if (!drawing || event.button !== 0) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
+    this.drawingPreviewPoint = point;
+    if (drawing.flow === "point") {
+      this.commitDrawnShape(drawing.tool, this.geometryFromDrawingPoints(drawing.tool, [point], point), "canvas click");
+      return;
+    }
+    if (drawing.flow === "points") {
+      drawing.points.push(point);
+      drawing.preview = point;
+      if (drawing.tool === "line" && drawing.points.length === 2) {
+        this.commitDrawnShape("line", this.geometryFromDrawingPoints("line", drawing.points, point), "two-point line");
+        return;
+      }
+      this.renderWorkSurface();
+      this.statusLog.write(`OK Added ${shapeTypeLabel(drawing.tool)} point ${drawing.points.length}.`);
+      return;
+    }
+    drawing.start = point;
+    drawing.preview = point;
+    this.renderWorkSurface();
+  }
+
+  updateDrawingPreview(event) {
+    const drawing = this.activeDrawing;
+    if (!drawing) {
+      return;
+    }
+    if (drawing.flow === "drag" && !drawing.start) {
+      return;
+    }
+    if (drawing.flow === "drag" && event.buttons !== 1) {
+      return;
+    }
+    const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
+    if (drawing.preview && Math.abs(point.x - drawing.preview.x) < 0.001 && Math.abs(point.y - drawing.preview.y) < 0.001) {
+      return;
+    }
+    drawing.preview = point;
+    this.drawingPreviewPoint = point;
+    this.renderWorkSurface();
+  }
+
+  finishDrawingDrag(event) {
+    const drawing = this.activeDrawing;
+    if (!drawing || drawing.flow !== "drag" || !drawing.start || !drawing.preview) {
+      return;
+    }
+    const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
+    drawing.preview = point;
+    const geometry = this.geometryFromDrawingPoints(drawing.tool, [drawing.start, point], point);
+    this.commitDrawnShape(drawing.tool, geometry, "canvas drag");
+  }
+
+  finishMultiPointDrawing(sourceLabel = "finish", event = null) {
+    const drawing = this.activeDrawing;
+    if (!drawing || drawing.flow !== "points" || !["polygon", "polyline"].includes(drawing.tool)) {
+      return;
+    }
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const geometry = this.geometryFromDrawingPoints(drawing.tool, drawing.points, drawing.preview || drawing.points.at(-1));
+    this.commitDrawnShape(drawing.tool, geometry, sourceLabel);
+  }
+
+  previewShapeFromDrawing() {
+    const drawing = this.activeDrawing;
+    if (!drawing) {
+      return null;
+    }
+    const points = [...drawing.points];
+    if (drawing.flow === "points" && drawing.preview && points.length) {
+      points.push(drawing.preview);
+    }
+    if (drawing.flow === "drag" && drawing.start && drawing.preview) {
+      points.push(drawing.start, drawing.preview);
+    }
+    if (drawing.flow === "point" && drawing.preview) {
+      points.push(drawing.preview);
+    }
+    if (!points.length) {
+      return null;
+    }
+    const geometry = this.geometryFromDrawingPoints(drawing.tool === "polygon" && points.length < 4 ? "polyline" : drawing.tool, points, drawing.preview);
+    if (!geometry) {
+      return null;
+    }
+    const tool = drawing.tool === "polygon" && points.length < 4 ? "polyline" : drawing.tool;
+    const shape = {
+      geometry,
+      locked: false,
+      order: 0,
+      style: {
+        fill: ["arc", "line", "polyline"].includes(tool) ? "none" : (this.currentTargetColor() || "#ffffff"),
+        fillOpacity: this.selectedFillOpacity,
+        stroke: this.selectedStrokeColor || this.currentTargetColor() || "#ffffff",
+        strokeOpacity: this.selectedStrokeOpacity,
+        strokeWidth: Number(this.elements.strokeWidth?.value) || 2
+      },
+      tool,
+      transform: {
+        origin: { x: 0, y: 0 },
+        rotation: 0,
+        scaleX: 1,
+        scaleY: 1,
+        x: 0,
+        y: 0
+      },
+      visible: true
+    };
+    shape.transform = defaultShapeTransform(shape);
+    return shape;
+  }
+
+  geometryFromDrawingPoints(tool, points, previewPoint = null) {
+    const cleanPoints = points
+      .filter(Boolean)
+      .map((point) => ({
+        x: this.formatViewportNumber(point.x),
+        y: this.formatViewportNumber(point.y)
+      }));
+    if (tool === "line") {
+      if (cleanPoints.length < 2) {
+        return null;
+      }
+      return { point1: cleanPoints[0], point2: cleanPoints[1] };
+    }
+    if (tool === "polygon" || tool === "polyline") {
+      return { points: cleanPoints };
+    }
+    if (tool === "rectangle" || tool === "square") {
+      if (cleanPoints.length < 2) {
+        return null;
+      }
+      const [start, end] = cleanPoints;
+      const width = Math.abs(end.x - start.x);
+      const height = Math.abs(end.y - start.y);
+      if (tool === "square") {
+        const size = Math.max(width, height);
+        return {
+          height: size,
+          width: size,
+          x: end.x < start.x ? start.x - size : start.x,
+          y: end.y < start.y ? start.y - size : start.y
+        };
+      }
+      return {
+        height,
+        width,
+        x: Math.min(start.x, end.x),
+        y: Math.min(start.y, end.y)
+      };
+    }
+    if (tool === "triangle") {
+      if (cleanPoints.length < 2) {
+        return null;
+      }
+      const [start, end] = cleanPoints;
+      const minX = Math.min(start.x, end.x);
+      const maxX = Math.max(start.x, end.x);
+      const minY = Math.min(start.y, end.y);
+      const maxY = Math.max(start.y, end.y);
+      return {
+        points: [
+          { x: Number(((minX + maxX) / 2).toFixed(3)), y: minY },
+          { x: maxX, y: maxY },
+          { x: minX, y: maxY }
+        ]
+      };
+    }
+    if (tool === "circle") {
+      if (cleanPoints.length < 2) {
+        return null;
+      }
+      const [center, edge] = cleanPoints;
+      return {
+        cx: center.x,
+        cy: center.y,
+        r: this.radiusFromControlPoint(center, edge)
+      };
+    }
+    if (tool === "ellipse") {
+      if (cleanPoints.length < 2) {
+        return null;
+      }
+      const [start, end] = cleanPoints;
+      return {
+        cx: Number(((start.x + end.x) / 2).toFixed(3)),
+        cy: Number(((start.y + end.y) / 2).toFixed(3)),
+        rx: Number((Math.max(0, Math.abs(end.x - start.x)) / 2).toFixed(3)),
+        ry: Number((Math.max(0, Math.abs(end.y - start.y)) / 2).toFixed(3))
+      };
+    }
+    if (tool === "arc") {
+      if (cleanPoints.length < 2) {
+        return null;
+      }
+      const [center, edge] = cleanPoints;
+      return {
+        cx: center.x,
+        cy: center.y,
+        endAngle: 135,
+        r: this.radiusFromControlPoint(center, edge),
+        startAngle: -135
+      };
+    }
+    if (tool === "text") {
+      const point = cleanPoints[0] || previewPoint;
+      if (!point) {
+        return null;
+      }
+      return {
+        fontSize: 20,
+        text: "Text",
+        x: point.x,
+        y: point.y
+      };
+    }
+    return null;
+  }
+
+  validateDrawnGeometry(tool, geometry) {
+    if (!geometry) {
+      return `${shapeTypeLabel(tool)} drawing has no geometry.`;
+    }
+    if (tool === "line") {
+      const distance = Math.hypot(geometry.point2.x - geometry.point1.x, geometry.point2.y - geometry.point1.y);
+      return distance > 0 ? "" : "line requires two distinct points.";
+    }
+    if (tool === "polyline") {
+      return geometry.points.length >= 2 ? "" : "polyline requires at least two points.";
+    }
+    if (tool === "polygon") {
+      return geometry.points.length >= 4 ? "" : "polygon requires at least four points.";
+    }
+    if (tool === "triangle") {
+      return geometry.points.length === 3 ? "" : "triangle requires exactly three points.";
+    }
+    if (tool === "rectangle" || tool === "square") {
+      return geometry.width > 0 && geometry.height > 0 ? "" : `${shapeTypeLabel(tool)} requires non-zero width and height.`;
+    }
+    if (tool === "circle" || tool === "arc") {
+      return geometry.r > 0 ? "" : `${shapeTypeLabel(tool)} requires a non-zero radius.`;
+    }
+    if (tool === "ellipse") {
+      return geometry.rx > 0 && geometry.ry > 0 ? "" : "ellipse requires non-zero rx and ry.";
+    }
+    if (tool === "text") {
+      return geometry.text && geometry.fontSize > 0 ? "" : "text requires content and a positive font size.";
+    }
+    return "";
+  }
+
+  commitDrawnShape(type, geometry, sourceLabel) {
+    const geometryError = this.validateDrawnGeometry(type, geometry);
+    if (geometryError) {
+      this.statusLog.write(`FAIL Create ${type} blocked: ${geometryError}`);
+      return;
+    }
+    this.createShape(type, { geometry, sourceLabel });
+  }
+
   startPreviewShapeMove(event, shapeIndex) {
     const normalizedIndex = normalizeShapeIndex(shapeIndex);
     if (event.button !== 0 || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey || !this.selectedShapeIndexes.has(normalizedIndex)) {
@@ -3143,10 +3626,11 @@ export class ToolStarterApp {
   }
 
   previewPointerEditDelta(edit, event) {
-    const end = this.pointerPreviewPoint(event);
+    const rawEnd = this.pointerPreviewPoint(event);
+    const end = edit.mode === "move" ? rawEnd : this.snapCanvasPoint(rawEnd, { excludeShapeIndex: edit.shapeIndex });
     return {
-      x: this.snapDistance(this.formatViewportNumber(end.x - edit.start.x)),
-      y: this.snapDistance(this.formatViewportNumber(end.y - edit.start.y))
+      x: this.formatViewportNumber(end.x - edit.start.x),
+      y: this.formatViewportNumber(end.y - edit.start.y)
     };
   }
 
@@ -3253,7 +3737,7 @@ export class ToolStarterApp {
       geometry.r = Number(Math.max(1, edit.originalGeometry.r + radiusDelta * sign).toFixed(3));
       return geometry;
     }
-    if (geometryTool === "polygon") {
+    if (geometryTool === "polygon" || geometryTool === "polyline") {
       const bounds = shapeBounds({ ...shape, geometry: edit.originalGeometry });
       const nextBounds = this.resizedGeometryBounds(bounds, edit.handle, delta);
       geometry.points = edit.originalGeometry.points.map((point) => this.mapPointBetweenBounds(point, bounds, nextBounds));
@@ -3325,7 +3809,7 @@ export class ToolStarterApp {
       x: Number((edit.point.x + delta.x).toFixed(3)),
       y: Number((edit.point.y + delta.y).toFixed(3))
     };
-    if (geometryTool === "polygon") {
+    if (geometryTool === "polygon" || geometryTool === "polyline") {
       const pointIndex = normalizeShapeIndex(edit.pointIndex);
       if (pointIndex >= 0 && pointIndex < geometry.points.length) {
         geometry.points[pointIndex] = movedPoint;
@@ -4024,7 +4508,7 @@ export class ToolStarterApp {
     const style = this.schemaDefault("style");
     return {
       ...style,
-      fill: ["arc", "line"].includes(type) ? "none" : color,
+      fill: ["arc", "line", "polyline"].includes(type) ? "none" : color,
       fillOpacity: this.selectedFillOpacity,
       stroke: color,
       strokeOpacity: this.selectedStrokeOpacity
@@ -4040,7 +4524,7 @@ export class ToolStarterApp {
     };
   }
 
-  createShape(type) {
+  createShape(type, options = {}) {
     const object = this.selectedObject();
     if (!object) {
       this.statusLog.write(`FAIL Create ${type} blocked: select a schema-valid object first.`);
@@ -4061,16 +4545,18 @@ export class ToolStarterApp {
     const order = nextObject.shapes.length ? Math.max(...nextObject.shapes.map((shape) => shape.order)) + 1 : 1;
     let shape;
     try {
-      shape = this.createPrimitiveShape(type, order, color);
+      shape = this.createPrimitiveShape(type, order, color, options.geometry);
     } catch (error) {
       this.statusLog.write(`FAIL Create ${type} blocked: ${error.message}`);
       return;
     }
     nextObject.shapes.push(shape);
-    this.commitPayloadUpdate(nextPayload, nextObject.id, sortedShapes(nextObject).length - 1, `OK Created ${type} shape on ${nextObject.name}.`, `Create ${type} failed schema validation`);
+    this.activeDrawing = PRIMITIVE_TOOLS.includes(type) ? this.createDrawingState(type) : null;
+    this.drawingPreviewPoint = null;
+    this.commitPayloadUpdate(nextPayload, nextObject.id, sortedShapes(nextObject).length - 1, `OK Created ${type} shape on ${nextObject.name} from ${options.sourceLabel || "canvas drawing"}.`, `Create ${type} failed schema validation`);
   }
 
-  createPrimitiveShape(type, order, color) {
+  createPrimitiveShape(type, order, color, geometry = null) {
     if (!PRIMITIVE_TOOLS.includes(type)) {
       throw new Error(`unsupported shape tool ${type}.`);
     }
@@ -4079,7 +4565,7 @@ export class ToolStarterApp {
     const geometryDefinition = type === "square" ? "rectangleGeometry" : `${type}Geometry`;
     const shape = {
       ...base,
-      geometry: this.schemaDefault(geometryDefinition),
+      geometry: geometry ? JSON.parse(JSON.stringify(geometry)) : this.schemaDefault(geometryDefinition),
       order,
       style: this.createShapeStyleDefault(type, color),
       tool: type,
@@ -4119,7 +4605,7 @@ export class ToolStarterApp {
       nextShape.geometry.point1.y = applyY(nextShape.geometry.point1.y);
       nextShape.geometry.point2.x = applyX(nextShape.geometry.point2.x);
       nextShape.geometry.point2.y = applyY(nextShape.geometry.point2.y);
-    } else if (geometryTool === "polygon") {
+    } else if (geometryTool === "polygon" || geometryTool === "polyline") {
       nextShape.geometry.points = nextShape.geometry.points.map((point) => ({
         x: applyX(point.x),
         y: applyY(point.y)
@@ -4296,7 +4782,7 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const shape = this.findShapeInPayload(nextPayload, selectedIndex);
     const strokeWidth = Number(this.elements.strokeWidth.value);
-    const shouldApplyStroke = target === "stroke" || ["arc", "line"].includes(shapeGeometryTool(shape));
+    const shouldApplyStroke = target === "stroke" || ["arc", "line", "polyline"].includes(shapeGeometryTool(shape));
     const color = shouldApplyStroke ? this.selectedStrokeColor : this.selectedFillColor;
     const label = shouldApplyStroke ? this.selectedStrokeLabel : this.selectedFillLabel;
     if (!color) {
@@ -5016,17 +5502,17 @@ export class ToolStarterApp {
 
   addPolygonSideRow() {
     const selected = this.selectedShape();
-    if (!selected || shapeGeometryTool(selected) !== "polygon") {
-      this.statusLog.write("WARN Add polygon point skipped: no polygon shape is selected.");
+    if (!selected || !["polygon", "polyline"].includes(shapeGeometryTool(selected))) {
+      this.statusLog.write("WARN Add point skipped: no editable point-list shape is selected.");
       return;
     }
     if (!this.isEditablePolygonShape(selected)) {
-      this.statusLog.write(`WARN Add polygon point skipped for shape row ${this.selectedShapeIndex}: triangle point count is fixed.`);
+      this.statusLog.write(`WARN Add point skipped for shape row ${this.selectedShapeIndex}: triangle point count is fixed.`);
       return;
     }
     const geometry = this.readCurrentPolygonGeometry(selected);
     if (!geometry.ok) {
-      this.statusLog.write(`FAIL Add polygon point rejected for shape row ${this.selectedShapeIndex}: ${geometry.error}`);
+      this.statusLog.write(`FAIL Add point rejected for shape row ${this.selectedShapeIndex}: ${geometry.error}`);
       return;
     }
     const points = geometry.value.points;
@@ -5037,22 +5523,22 @@ export class ToolStarterApp {
     this.rebuildPolygonPointList(points);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
-    this.statusLog.write(`OK Added polygon point to shape row ${this.selectedShapeIndex}.`);
+    this.statusLog.write(`OK Added point to shape row ${this.selectedShapeIndex}.`);
   }
 
   deletePolygonPointRows() {
     const selected = this.selectedShape();
-    if (!selected || shapeGeometryTool(selected) !== "polygon") {
-      this.statusLog.write("WARN Delete polygon point skipped: no polygon shape is selected.");
+    if (!selected || !["polygon", "polyline"].includes(shapeGeometryTool(selected))) {
+      this.statusLog.write("WARN Delete point skipped: no editable point-list shape is selected.");
       return;
     }
     if (!this.isEditablePolygonShape(selected)) {
-      this.statusLog.write(`WARN Delete polygon point skipped for shape row ${this.selectedShapeIndex}: triangle point count is fixed.`);
+      this.statusLog.write(`WARN Delete point skipped for shape row ${this.selectedShapeIndex}: triangle point count is fixed.`);
       return;
     }
     const geometry = this.readCurrentPolygonGeometry(selected);
     if (!geometry.ok) {
-      this.statusLog.write(`FAIL Delete polygon point rejected for shape row ${this.selectedShapeIndex}: ${geometry.error}`);
+      this.statusLog.write(`FAIL Delete point rejected for shape row ${this.selectedShapeIndex}: ${geometry.error}`);
       return;
     }
     const checkedIndexes = this.checkedPolygonPointIndexes();
@@ -5060,22 +5546,23 @@ export class ToolStarterApp {
       const message = "select at least one polygon point to delete.";
       this.markPolygonSideActionInvalid("delete", message);
       this.clearPolygonPointSelections();
-      this.statusLog.write(`FAIL Delete polygon point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
+      this.statusLog.write(`FAIL Delete point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
       return;
     }
     const checkedSet = new Set(checkedIndexes);
     const nextPoints = geometry.value.points.filter((_, index) => !checkedSet.has(index));
-    if (nextPoints.length < 4) {
-      const message = "polygon must keep at least four sides.";
+    const minPointCount = shapeGeometryTool(selected) === "polyline" ? 2 : 4;
+    if (nextPoints.length < minPointCount) {
+      const message = `${shapeGeometryTool(selected)} must keep at least ${minPointCount} points.`;
       this.markPolygonSideActionInvalid("delete", message);
       this.clearPolygonPointSelections();
-      this.statusLog.write(`FAIL Delete polygon point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
+      this.statusLog.write(`FAIL Delete point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
       return;
     }
     this.rebuildPolygonPointList(nextPoints);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
-    this.statusLog.write(`OK Deleted ${checkedIndexes.length} polygon point${checkedIndexes.length === 1 ? "" : "s"} from shape row ${this.selectedShapeIndex}.`);
+    this.statusLog.write(`OK Deleted ${checkedIndexes.length} point${checkedIndexes.length === 1 ? "" : "s"} from shape row ${this.selectedShapeIndex}.`);
   }
 
   readCurrentPolygonGeometry(shape) {
@@ -5167,11 +5654,13 @@ export class ToolStarterApp {
 
   readShapeGeometryFields(shape, fields) {
     try {
-      if (shapeGeometryTool(shape) === "polygon") {
+      if (shapeGeometryTool(shape) === "polygon" || shapeGeometryTool(shape) === "polyline") {
         const pointInputs = fields.filter((input) => input.dataset.shapeGeometryField === "points");
-        const requiredPointCount = this.isTriangleShape(shape) ? 3 : 4;
+        const geometryTool = shapeGeometryTool(shape);
+        const requiredPointCount = this.isTriangleShape(shape) ? 3 : geometryTool === "polyline" ? 2 : 4;
+        const shapeLabel = this.isTriangleShape(shape) ? "triangle" : geometryTool;
         if (pointInputs.length < requiredPointCount) {
-          throw new Error(`${this.isTriangleShape(shape) ? "triangle" : "polygon"} points must contain at least ${requiredPointCount} point rows.`);
+          throw new Error(`${shapeLabel} points must contain at least ${requiredPointCount} point rows.`);
         }
         const pointRows = new Map();
         pointInputs.forEach((input) => {
@@ -5183,7 +5672,7 @@ export class ToolStarterApp {
           pointRows.get(index)[axis] = input;
         });
         if (pointRows.size < requiredPointCount) {
-          throw new Error(`${this.isTriangleShape(shape) ? "triangle" : "polygon"} points must contain at least ${requiredPointCount} point rows.`);
+          throw new Error(`${shapeLabel} points must contain at least ${requiredPointCount} point rows.`);
         }
         if (this.isTriangleShape(shape) && pointRows.size !== 3) {
           throw new Error("triangle points must contain exactly three point rows.");
@@ -5472,11 +5961,7 @@ export class ToolStarterApp {
   }
 
   snapDistance(value) {
-    if (!this.gridSnapEnabled) {
-      return value;
-    }
-    const snapped = Math.round(Math.abs(value) / GRID_STEP) * GRID_STEP;
-    return value < 0 ? -snapped : snapped;
+    return value;
   }
 
   snapAngle(value) {

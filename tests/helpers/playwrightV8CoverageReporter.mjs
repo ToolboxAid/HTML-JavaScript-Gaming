@@ -135,11 +135,12 @@ export class PlaywrightV8CoverageReporter {
       return;
     }
     const lineStarts = this.lineStartOffsets(source);
+    const sourceLines = source.split(/\r?\n/);
     for (const range of this.executedRanges(entry)) {
       const startLine = this.lineNumberForOffset(lineStarts, range.startOffset);
       const endLine = this.lineNumberForOffset(lineStarts, Math.max(range.startOffset, range.endOffset - 1));
       for (let line = startLine; line <= endLine; line += 1) {
-        if (this.isCountableLine(source, line)) {
+        if (this.isCountableLine(sourceLines, line)) {
           record.executedLines.add(line);
         }
       }
@@ -206,7 +207,8 @@ export class PlaywrightV8CoverageReporter {
   }
 
   isCountableLine(source, oneBasedLineNumber) {
-    const line = source.split(/\r?\n/)[oneBasedLineNumber - 1] || "";
+    const sourceLines = Array.isArray(source) ? source : source.split(/\r?\n/);
+    const line = sourceLines[oneBasedLineNumber - 1] || "";
     return this.isCountableText(line);
   }
 

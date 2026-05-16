@@ -548,7 +548,7 @@ textarea:hover {
 
 #objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__snap-actions {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
 }
 
@@ -1419,6 +1419,28 @@ textarea:hover {
 .object-vector-studio-v2__shape {
   cursor: pointer;
   transition: filter 120ms ease, opacity 120ms ease;
+}
+
+.object-vector-studio-v2__render-surface.is-drawing-mode {
+  cursor: crosshair;
+}
+
+.object-vector-studio-v2__drawing-preview {
+  opacity: 0.78;
+  stroke-dasharray: 5 4;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.object-vector-studio-v2__snap-targets {
+  pointer-events: none;
+}
+
+.object-vector-studio-v2__snap-target {
+  fill: none;
+  stroke: #fbbf24;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
 }
 
 .object-vector-studio-v2__shape:hover,
