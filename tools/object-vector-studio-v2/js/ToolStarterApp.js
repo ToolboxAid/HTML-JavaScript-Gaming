@@ -17,6 +17,23 @@ const MIN_ZOOM = 0.01;
 const ZOOM_STEP = 0.01;
 const SNAP_MODES = Object.freeze(["grid", "point", "none"]);
 const POINT_SNAP_RADIUS = 1.5;
+const SNAP_MODE_DETAILS = Object.freeze({
+  grid: {
+    iconKey: "snapGrid",
+    label: "Snap Grid",
+    title: "Snap drawing and point dragging to grid intersections"
+  },
+  none: {
+    iconKey: "snapNone",
+    label: "Snap None",
+    title: "Disable drawing and point-drag snapping"
+  },
+  point: {
+    iconKey: "snapPoint",
+    label: "Snap Point",
+    title: "Snap drawing and point dragging to visible shape points"
+  }
+});
 
 const objectVectorStudioIcon = (name, glyph) => Object.freeze({ glyph, name });
 
@@ -29,6 +46,7 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   bringFront: objectVectorStudioIcon("nf-fa-angle_double_up", "\uf102"),
   center: objectVectorStudioIcon("nf-fa-dot_circle_o", "\uf192"),
   circle: objectVectorStudioIcon("nf-md-vector_circle_variant", "\u{f0557}"),
+  copy: objectVectorStudioIcon("nf-cod-copy", "\uea35"),
   delete: objectVectorStudioIcon("nf-md-trash_can_outline", "\u{f0a7a}"),
   duplicate: objectVectorStudioIcon("nf-fa-copy", "\uf0c5"),
   edit: objectVectorStudioIcon("nf-fa-pencil_square_o", "\uf044"),
@@ -51,8 +69,10 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   panLeft: objectVectorStudioIcon("nf-fa-arrow_left", "\uf060"),
   panRight: objectVectorStudioIcon("nf-fa-arrow_right", "\uf061"),
   panUp: objectVectorStudioIcon("nf-fa-arrow_up", "\uf062"),
+  paste: objectVectorStudioIcon("nf-oct-paste", "\uf0ea"),
   polygon: objectVectorStudioIcon("nf-md-vector_polygon", "\u{f0560}"),
   rectangle: objectVectorStudioIcon("nf-md-vector_rectangle", "\u{f05c6}"),
+  redo: objectVectorStudioIcon("nf-md-redo", "\u{f044e}"),
   reset: objectVectorStudioIcon("nf-fa-undo", "\uf0e2"),
   resize: objectVectorStudioIcon("nf-md-resize", "\u{f0a68}"),
   rotate: objectVectorStudioIcon("nf-fa-repeat", "\uf01e"),
@@ -67,6 +87,7 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   text: objectVectorStudioIcon("nf-fa-font", "\uf031"),
   triangle: objectVectorStudioIcon("nf-md-vector_triangle", "\u{f0563}"),
   ungroup: objectVectorStudioIcon("nf-fa-object_ungroup", "\uf248"),
+  undo: objectVectorStudioIcon("nf-md-undo", "\u{f054c}"),
   unlock: objectVectorStudioIcon("nf-fa-unlock", "\uf09c"),
   zoomIn: objectVectorStudioIcon("nf-oct-zoom_in", "\u{f531}"),
   zoomOut: objectVectorStudioIcon("nf-oct-zoom_out", "\u{f532}")
@@ -98,9 +119,10 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   ["#objectVectorStudioV2FrameLaterButton", "panRight"],
   ["#objectVectorStudioV2FrameRightButton", "panRight"],
   ["#objectVectorStudioV2DeleteFrameButton", "delete"],
-  ["#objectVectorStudioV2SnapGridButton", "snapGrid"],
-  ["#objectVectorStudioV2SnapPointButton", "snapPoint"],
-  ["#objectVectorStudioV2SnapNoneButton", "snapNone"],
+  ["#objectVectorStudioV2PreviewUndoButton", "undo"],
+  ["#objectVectorStudioV2PreviewRedoButton", "redo"],
+  ["#objectVectorStudioV2PreviewCopyButton", "copy"],
+  ["#objectVectorStudioV2PreviewPasteButton", "paste"],
   ["#objectVectorStudioV2AngleSnapButton", "angle"],
   ["#objectVectorStudioV2GridRenderButton", "grid"],
   [".object-vector-studio-v2__shape-icon--select", "select"],
@@ -701,13 +723,7 @@ export class ToolStarterApp {
   }
 
   bindSnapControls() {
-    [
-      [this.elements.snapGridButton, "grid", "Snap Grid"],
-      [this.elements.snapPointButton, "point", "Snap Point"],
-      [this.elements.snapNoneButton, "none", "Snap None"]
-    ].forEach(([button, mode, label]) => {
-      button.addEventListener("click", () => this.setSnapMode(mode, label));
-    });
+    this.elements.snapModeButton.addEventListener("click", () => this.cycleSnapMode());
     this.elements.angleSnapButton.addEventListener("click", () => {
       this.angleSnapEnabled = !this.angleSnapEnabled;
       this.window.sessionStorage?.setItem(ANGLE_SNAP_SESSION_KEY, this.angleSnapEnabled ? "1" : "0");
@@ -909,9 +925,13 @@ export class ToolStarterApp {
     this.angleSnapEnabled = this.window.sessionStorage?.getItem(ANGLE_SNAP_SESSION_KEY) === "1";
     this.gridRenderEnabled = this.window.sessionStorage?.getItem(GRID_RENDER_SESSION_KEY) !== "0";
     this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
-    this.elements.snapGridButton.setAttribute("aria-pressed", String(this.snapMode === "grid"));
-    this.elements.snapPointButton.setAttribute("aria-pressed", String(this.snapMode === "point"));
-    this.elements.snapNoneButton.setAttribute("aria-pressed", String(this.snapMode === "none"));
+    const snapDetails = SNAP_MODE_DETAILS[this.snapMode] || SNAP_MODE_DETAILS.grid;
+    this.elements.snapModeButton.textContent = snapDetails.label;
+    this.elements.snapModeButton.dataset.snapMode = this.snapMode;
+    this.elements.snapModeButton.setAttribute("aria-label", snapDetails.label);
+    this.elements.snapModeButton.setAttribute("aria-pressed", String(this.snapMode !== "none"));
+    this.elements.snapModeButton.title = snapDetails.title;
+    this.applyIconGlyph(this.elements.snapModeButton, snapDetails.iconKey);
     this.elements.renderSurface.classList.toggle("is-snap-point-mode", this.snapMode === "point");
     this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
     this.elements.gridRenderButton.setAttribute("aria-pressed", String(this.gridRenderEnabled));
@@ -920,8 +940,8 @@ export class ToolStarterApp {
   }
 
   readSnapMode() {
-    const storedMode = this.window.sessionStorage?.getItem(SNAP_MODE_SESSION_KEY) || "none";
-    return SNAP_MODES.includes(storedMode) ? storedMode : "none";
+    const storedMode = this.window.sessionStorage?.getItem(SNAP_MODE_SESSION_KEY) || "grid";
+    return SNAP_MODES.includes(storedMode) ? storedMode : "grid";
   }
 
   setSnapMode(mode, label = "") {
@@ -934,6 +954,12 @@ export class ToolStarterApp {
     this.applySnapState();
     this.renderWorkSurface();
     this.statusLog.write(`OK ${label || shapeTypeLabel(mode)} mode selected for drawing and point dragging.`);
+  }
+
+  cycleSnapMode() {
+    const currentIndex = SNAP_MODES.indexOf(this.snapMode);
+    const nextMode = SNAP_MODES[(currentIndex + 1) % SNAP_MODES.length] || "grid";
+    this.setSnapMode(nextMode, SNAP_MODE_DETAILS[nextMode]?.label);
   }
 
   applyToolDisplayMode(mode, shouldLog) {
@@ -2404,6 +2430,9 @@ export class ToolStarterApp {
       this.renderOnionSkin(object);
     }
     let renderedCount = 0;
+    const hitLayer = document.createElementNS(SVG_NS, "g");
+    hitLayer.classList.add("object-vector-studio-v2__shape-hit-layer");
+    this.elements.renderSurface.append(hitLayer);
     sortedShapes(object).forEach((shape, shapeIndex) => {
       const renderShape = this.effectiveShape(shape, shapeIndex);
       if (!renderShape.visible) {
@@ -2416,37 +2445,17 @@ export class ToolStarterApp {
         element.classList.add("object-vector-studio-v2__shape");
         element.classList.toggle("is-selected", this.selectedShapeIndexes.has(shapeIndex));
         element.setAttribute("tabindex", "0");
-        element.addEventListener("pointerdown", (event) => {
-          event.stopPropagation();
-          if (this.activeDrawing) {
-            this.handleDrawingPointerDown(event);
-            return;
-          }
-          if (this.activeTool === "paint" || this.activeTool === "stroke") {
-            this.isPaintDragging = true;
-            return;
-          }
-          this.startPreviewShapeMove(event, shapeIndex);
-        });
-        element.addEventListener("click", (event) => {
-          event.stopPropagation();
-          if (this.activeDrawing) {
-            return;
-          }
-          this.handleShapePointer(event, shape, shapeIndex, { source: "render surface click" });
-        });
-        element.addEventListener("pointerenter", (event) => {
-          if (this.isPaintDragging) {
-            event.stopPropagation();
-            this.handleShapePointer(event, shape, shapeIndex, { source: "render surface drag" });
-          }
-        });
+        this.bindRenderedShapePointerEvents(element, shape, shapeIndex);
         this.elements.renderSurface.append(element);
+        hitLayer.append(this.createShapeHitArea(renderShape, shape, shapeIndex));
         renderedCount += 1;
       } catch (error) {
         this.statusLog.write(`FAIL Render mode svg-work-surface failed for shape-${shapeIndex} (${shapeTool(shape)}): ${error.message}`);
       }
     });
+    if (!hitLayer.childNodes.length) {
+      hitLayer.remove();
+    }
     this.renderObjectBounds(object);
     this.renderSnapPointTargets(object);
     this.renderDrawingPreview();
@@ -2456,6 +2465,50 @@ export class ToolStarterApp {
     const frame = this.activeFrame();
     const message = `Render mode svg-work-surface: rendered ${object.name} with ${renderedCount} visible shapes${frame ? ` for ${this.selectedStateId}/${frame.id}` : ""}; capture mode none.`;
     this.statusLog.write(`OK ${message}`);
+  }
+
+  bindRenderedShapePointerEvents(element, shape, shapeIndex) {
+    element.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+      if (this.activeDrawing) {
+        this.handleDrawingPointerDown(event);
+        return;
+      }
+      if (this.activeTool === "paint" || this.activeTool === "stroke") {
+        this.isPaintDragging = true;
+        return;
+      }
+      this.startPreviewShapeMove(event, shapeIndex);
+    });
+    element.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (this.activeDrawing) {
+        return;
+      }
+      this.handleShapePointer(event, shape, shapeIndex, { source: "render surface click" });
+    });
+    element.addEventListener("pointerenter", (event) => {
+      if (this.isPaintDragging) {
+        event.stopPropagation();
+        this.handleShapePointer(event, shape, shapeIndex, { source: "render surface drag" });
+      }
+    });
+  }
+
+  createShapeHitArea(renderShape, sourceShape, shapeIndex) {
+    const hitArea = this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
+    const geometryTool = shapeGeometryTool(sourceShape);
+    hitArea.classList.add("object-vector-studio-v2__shape-hit-area");
+    hitArea.dataset.shapeHitIndex = String(shapeIndex);
+    hitArea.dataset.shapeHitTool = shapeTool(sourceShape);
+    hitArea.removeAttribute("tabindex");
+    hitArea.setAttribute("fill", ["arc", "line", "polyline"].includes(geometryTool) ? "none" : "transparent");
+    hitArea.setAttribute("stroke", "transparent");
+    hitArea.setAttribute("stroke-width", String(Math.max(12, Number(renderShape.style?.strokeWidth) || 1)));
+    hitArea.setAttribute("pointer-events", "all");
+    hitArea.setAttribute("aria-hidden", "true");
+    this.bindRenderedShapePointerEvents(hitArea, sourceShape, shapeIndex);
+    return hitArea;
   }
 
   renderSvgGrid() {
@@ -3892,6 +3945,7 @@ export class ToolStarterApp {
     this.stateControlStateId = this.selectedStateId || OBJECT_STATE_IDS[0];
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
+    this.setPaletteTarget("stroke", false);
     this.renderPayload();
     this.restoreLeftPanelScrollState(scrollState);
     const selected = this.selectedObject();
@@ -3925,6 +3979,7 @@ export class ToolStarterApp {
       this.directSelectedShapeIndexes = new Set([normalizedIndex]);
     }
     this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
+    this.setPaletteTarget("stroke", false);
     this.renderPayload();
     this.restoreLeftPanelScrollState(scrollState);
     const shape = this.selectedShape();

@@ -528,6 +528,7 @@ textarea:hover {
 .object-vector-studio-v2__snap-actions,
 .object-vector-studio-v2__z-order-actions,
 .object-vector-studio-v2__viewport-controls,
+.object-vector-studio-v2__preview-edit-toolbar,
 .object-vector-studio-v2__palette-controls,
 .object-vector-studio-v2__json-actions {
   display: flex;
@@ -548,7 +549,7 @@ textarea:hover {
 
 #objectVectorStudioV2ShapeToolsContent .object-vector-studio-v2__snap-actions {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
 }
 
@@ -1421,6 +1422,17 @@ textarea:hover {
   transition: filter 120ms ease, opacity 120ms ease;
 }
 
+.object-vector-studio-v2__shape-hit-layer {
+  pointer-events: auto;
+}
+
+.object-vector-studio-v2__shape-hit-area {
+  cursor: pointer;
+  fill-opacity: 0;
+  stroke-opacity: 0;
+  pointer-events: all;
+}
+
 .object-vector-studio-v2__render-surface.is-drawing-mode {
   cursor: crosshair;
 }
@@ -1851,6 +1863,15 @@ textarea:hover {
   color: var(--tool-starter-muted);
   font-size: 0.88rem;
   overflow-wrap: anywhere;
+}
+
+.object-vector-studio-v2__preview-edit-toolbar {
+  width: min(720px, 100%);
+  justify-content: center;
+}
+
+.object-vector-studio-v2__preview-edit-toolbar button {
+  min-width: 72px;
 }
 
 .object-vector-studio-v2__tag-editor,

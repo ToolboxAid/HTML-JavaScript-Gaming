@@ -74,15 +74,12 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectDetailsContent">
-            <span class="object-vector-studio-v2__geometry-header-title">
-              <span class="object-vector-studio-v2__geometry-header-line">Object Geometry <span id="objectVectorStudioV2ObjectGeometrySummary" class="object-vector-studio-v2__header-count"></span></span>
-              <span id="objectVectorStudioV2ObjectGeometryName" class="object-vector-studio-v2__geometry-header-name"></span>
-            </span>
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectTransformContent">
+            <span>Object Transform</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="objectVectorStudioV2ObjectDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <div id="objectVectorStudioV2ObjectDetails" class="object-vector-studio-v2__details">No object selected.</div>
+          <div id="objectVectorStudioV2ObjectTransformContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2ObjectTransform" class="object-vector-studio-v2__details">No shape selected.</div>
           </div>
         </section>
 
@@ -127,6 +124,13 @@
               </div>
               <svg id="objectVectorStudioV2RenderSurface" class="object-vector-studio-v2__render-surface" viewBox="0 0 320 220" tabindex="0" role="img" aria-label="Object shape render surface"></svg>
               <div id="objectVectorStudioV2ObjectPreviewFooter" class="object-vector-studio-v2__preview-footer">Object ID: none</div>
+              <hr class="object-vector-studio-v2__separator">
+              <div class="object-vector-studio-v2__preview-edit-toolbar" aria-label="Object preview edit actions">
+                <button id="objectVectorStudioV2PreviewUndoButton" type="button" disabled title="Undo is not wired for Object Preview edits yet" aria-label="Undo">Undo</button>
+                <button id="objectVectorStudioV2PreviewRedoButton" type="button" disabled title="Redo is not wired for Object Preview edits yet" aria-label="Redo">Redo</button>
+                <button id="objectVectorStudioV2PreviewCopyButton" type="button" disabled title="Copy is not wired for Object Preview edits yet" aria-label="Copy">Copy</button>
+                <button id="objectVectorStudioV2PreviewPasteButton" type="button" disabled title="Paste is not wired for Object Preview edits yet" aria-label="Paste">Paste</button>
+              </div>
               <hr class="object-vector-studio-v2__separator">
               <div class="object-vector-studio-v2__animation-controls" aria-label="Animation controls">
                 <button id="objectVectorStudioV2PlayButton" type="button" disabled title="Disabled until a state frame is selected">Play</button>
@@ -260,9 +264,7 @@
             </div>
             <hr class="object-vector-studio-v2__separator">
             <div class="object-vector-studio-v2__snap-actions" aria-label="Snap controls">
-              <button id="objectVectorStudioV2SnapGridButton" type="button" aria-pressed="false" title="Snap drawing and point dragging to grid intersections">Snap Grid</button>
-              <button id="objectVectorStudioV2SnapPointButton" type="button" aria-pressed="false" title="Snap drawing and point dragging to visible shape points">Snap Point</button>
-              <button id="objectVectorStudioV2SnapNoneButton" type="button" aria-pressed="true" title="Disable drawing and point-drag snapping">Snap None</button>
+              <button id="objectVectorStudioV2SnapModeButton" type="button" aria-pressed="true" title="Snap drawing and point dragging to grid intersections">Snap Grid</button>
               <button id="objectVectorStudioV2AngleSnapButton" type="button" aria-pressed="false" title="When enabled, the Rotate action rounds the entered rotation delta to 15 degree increments.">Angle Snap</button>
               <button id="objectVectorStudioV2GridRenderButton" type="button" aria-pressed="false" title="Show or hide the preview grid">Grid</button>
               <button id="objectVectorStudioV2ToolLabelModeButton" type="button" aria-pressed="false" title="Toggle shape tool labels between icon-only and icon plus text">Icon/Text</button>
@@ -271,12 +273,15 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectTransformContent">
-            <span>Object Transform</span>
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectDetailsContent">
+            <span class="object-vector-studio-v2__geometry-header-title">
+              <span class="object-vector-studio-v2__geometry-header-line">Object Geometry <span id="objectVectorStudioV2ObjectGeometrySummary" class="object-vector-studio-v2__header-count"></span></span>
+              <span id="objectVectorStudioV2ObjectGeometryName" class="object-vector-studio-v2__geometry-header-name"></span>
+            </span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="objectVectorStudioV2ObjectTransformContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <div id="objectVectorStudioV2ObjectTransform" class="object-vector-studio-v2__details">No shape selected.</div>
+          <div id="objectVectorStudioV2ObjectDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2ObjectDetails" class="object-vector-studio-v2__details">No object selected.</div>
           </div>
         </section>
 
