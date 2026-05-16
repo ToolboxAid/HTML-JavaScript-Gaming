@@ -1,24 +1,22 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_065-object-preview-editing-selection-and-style-fixes
+PR: PR_26133_066-paint-stroke-picker-and-transparent-right-click
 
 ## Validation
 
 - PASS: npm run test:workspace-v2
 - Result: 54 passed
-- Runtime: 4.3m
+- Runtime: 5.0m
 - Browser project: playwright
 - Workers: 1
 
 ## Targeted Checks Covered
 
-- Empty canvas click deselects the current shape and clicking another shape selects it/show Object Geometry.
-- Escape no longer cancels Object Vector Studio V2 drawing mode; switching tools cancels without committing invalid geometry.
-- Object Geometry has no Apply Geometry button; input change events auto-apply valid geometry and visibly reject invalid geometry.
-- Shape body drag, point/handle drag, polygon/polyline editing, and circle selector-corner resize update preview geometry and dirty state.
-- Snap Grid drawing and handle movement snap to whole-number logical grid coordinates.
-- New drawn shapes preserve the selected stroke color after deselect.
-- Paint and Stroke mode application paths remain independent and do not mutate the opposite opacity.
+- Picker tool renders with the Nerd Font eye-dropper icon and samples fill/stroke colors, opacities, and stroke width into palette controls without recoloring shapes.
+- Paint and Stroke remain independent modes; selecting Shape/Tools activates Stroke mode and drawing keeps Stroke active.
+- Right-click inside Object Preview suppresses the browser context menu and applies transparent fill/stroke only to the clicked shape based on the active palette mode.
+- Fill and Stroke opacity values stay unchanged unless directly edited; applying Stroke does not mutate Fill opacity and applying Paint does not mutate Stroke opacity.
+- Selected circle resize handles render larger while existing non-circle selection chrome remains unchanged.
 
 ## Console/Runtime Errors
 

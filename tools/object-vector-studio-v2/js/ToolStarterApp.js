@@ -15,6 +15,7 @@ const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;
 const MAX_ZOOM = 0.5;
 const MIN_ZOOM = 0.01;
 const ZOOM_STEP = 0.01;
+const TRANSPARENT_STYLE_COLOR = "#00000000";
 const SNAP_MODES = Object.freeze(["grid", "point", "none"]);
 const POINT_SNAP_RADIUS = 1.5;
 const SNAP_MODE_DETAILS = Object.freeze({
@@ -70,6 +71,7 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   panRight: objectVectorStudioIcon("nf-fa-arrow_right", "\uf061"),
   panUp: objectVectorStudioIcon("nf-fa-arrow_up", "\uf062"),
   paste: objectVectorStudioIcon("nf-oct-paste", "\uf0ea"),
+  picker: objectVectorStudioIcon("nf-fa-eye_dropper", "\uf1fb"),
   polygon: objectVectorStudioIcon("nf-md-vector_polygon", "\u{f0560}"),
   rectangle: objectVectorStudioIcon("nf-md-vector_rectangle", "\u{f05c6}"),
   redo: objectVectorStudioIcon("nf-md-redo", "\u{f044e}"),
@@ -132,6 +134,7 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   [".object-vector-studio-v2__shape-icon--circle", "circle"],
   [".object-vector-studio-v2__shape-icon--ellipse", "ellipse"],
   [".object-vector-studio-v2__shape-icon--line", "line"],
+  [".object-vector-studio-v2__shape-icon--picker", "picker"],
   [".object-vector-studio-v2__shape-icon--polygon", "polygon"],
   [".object-vector-studio-v2__shape-icon--polyline", "polyline"],
   [".object-vector-studio-v2__shape-icon--arc", "arc"],
@@ -699,6 +702,7 @@ export class ToolStarterApp {
       button.addEventListener("click", () => {
         const tool = button.dataset.shapeTool || "unknown";
         this.setActiveToolButton(button);
+        this.setPaletteTarget("stroke", false);
         if (PRIMITIVE_TOOLS.includes(tool)) {
           this.startDrawingMode(tool);
           return;
@@ -847,6 +851,7 @@ export class ToolStarterApp {
     this.elements.resetViewButton.addEventListener("click", () => this.resetViewport());
     this.elements.renderSurface.addEventListener("mousemove", (event) => this.updateCoordinateDisplay(event));
     this.elements.renderSurface.addEventListener("pointerdown", (event) => this.handleRenderSurfacePointerDown(event));
+    this.elements.renderSurface.addEventListener("contextmenu", (event) => event.preventDefault());
     this.elements.renderSurface.addEventListener("dblclick", (event) => this.finishMultiPointDrawing("double-click", event));
     this.window.addEventListener("pointermove", (event) => this.updatePreviewPointerEdit(event));
     this.window.addEventListener("pointermove", (event) => this.updateDrawingPreview(event));
@@ -902,7 +907,7 @@ export class ToolStarterApp {
         this.setPaletteTarget("stroke");
       } else if (key === "i") {
         event.preventDefault();
-        this.activateToolMode("eyedropper", "keyboard");
+        this.activateToolMode("picker", "keyboard");
       } else if (key === "x") {
         event.preventDefault();
         this.swapFillStrokeColors();
@@ -985,6 +990,8 @@ export class ToolStarterApp {
     if (tool === "paint") {
       this.setPaletteTarget("paint", false);
     } else if (tool === "stroke") {
+      this.setPaletteTarget("stroke", false);
+    } else {
       this.setPaletteTarget("stroke", false);
     }
     this.statusLog.write(`OK Shape/Tools mode selected from ${sourceLabel}: ${tool}.`);
@@ -2491,6 +2498,10 @@ export class ToolStarterApp {
   bindRenderedShapePointerEvents(element, shape, shapeIndex) {
     element.addEventListener("pointerdown", (event) => {
       event.stopPropagation();
+      if (event.button === 2) {
+        event.preventDefault();
+        return;
+      }
       if (this.activeDrawing) {
         this.handleDrawingPointerDown(event);
         return;
@@ -2508,6 +2519,7 @@ export class ToolStarterApp {
       }
       this.handleShapePointer(event, shape, shapeIndex, { source: "render surface click" });
     });
+    element.addEventListener("contextmenu", (event) => this.handleShapeContextMenu(event, shape, shapeIndex));
     element.addEventListener("pointerenter", (event) => {
       if (this.isPaintDragging) {
         event.stopPropagation();
@@ -2565,9 +2577,8 @@ export class ToolStarterApp {
   }
 
   handleShapePointer(event, shape, shapeIndex, options = {}) {
-    if (event.altKey || this.activeTool === "eyedropper") {
-      const target = this.paletteTarget === "stroke" ? "stroke" : "fill";
-      this.sampleShapeColor(shapeIndex, target);
+    if (event.altKey || this.activeTool === "picker") {
+      this.sampleShapeStyle(shapeIndex);
       return;
     }
     if (event.shiftKey) {
@@ -2584,6 +2595,15 @@ export class ToolStarterApp {
       return;
     }
     this.selectShape(shapeIndex, "render surface");
+  }
+
+  handleShapeContextMenu(event, shape, shapeIndex) {
+    event.preventDefault();
+    if (this.activeDrawing || this.previewPointerEdit) {
+      return;
+    }
+    const target = this.paletteTarget === "stroke" ? "stroke" : "fill";
+    this.applyTransparentStyleToShape(shapeIndex, target, "right-click");
   }
 
   renderOnionSkin(object) {
@@ -2988,10 +3008,11 @@ export class ToolStarterApp {
           point.dataset.geometryPointHandle = `rectangle-${handle}`;
           point.dataset.geometryPointKind = "rectangle-corner";
         }
-        point.setAttribute("x", cx - 1.5);
-        point.setAttribute("y", cy - 1.5);
-        point.setAttribute("width", 3);
-        point.setAttribute("height", 3);
+        const handleSize = shapeGeometryTool(selectedShape) === "circle" ? 5 : 3;
+        point.setAttribute("x", cx - handleSize / 2);
+        point.setAttribute("y", cy - handleSize / 2);
+        point.setAttribute("width", handleSize);
+        point.setAttribute("height", handleSize);
         point.addEventListener("pointerdown", (event) => this.startPreviewHandleEdit(event, this.selectedShapeIndex, { handle, mode: "resize" }));
         this.elements.renderSurface.append(point);
       });
@@ -4743,9 +4764,20 @@ export class ToolStarterApp {
     return this.runtimePalette.swatches.find((swatch) => String(swatchColor(swatch)).trim().toLowerCase() === normalized) || null;
   }
 
+  directStyleColorLabel(color) {
+    const normalized = String(color || "").trim().toLowerCase();
+    if (normalized === TRANSPARENT_STYLE_COLOR || normalized === "transparent") {
+      return "transparent";
+    }
+    if (normalized === "none") {
+      return "none";
+    }
+    return "";
+  }
+
   paletteLabelForColor(color, fallbackLabel) {
     const swatch = this.paletteSwatchForColor(color);
-    return swatch?.name || swatch?.id || swatch?.symbol || fallbackLabel;
+    return swatch?.name || swatch?.id || swatch?.symbol || this.directStyleColorLabel(color) || fallbackLabel;
   }
 
   syncPaletteSelectionFromCurrentShape(options = {}) {
@@ -4761,7 +4793,7 @@ export class ToolStarterApp {
     let changed = false;
     const syncTarget = (target, color) => {
       const normalizedColor = String(color || "").trim();
-      if (!normalizedColor || normalizedColor === "none") {
+      if (!normalizedColor || normalizedColor === "none" || this.directStyleColorLabel(normalizedColor)) {
         return;
       }
       const swatch = this.paletteSwatchForColor(normalizedColor);
@@ -4785,16 +4817,6 @@ export class ToolStarterApp {
     };
     syncTarget("paint", effectiveShape.style?.fill);
     syncTarget("stroke", effectiveShape.style?.stroke);
-    if (Number.isFinite(effectiveShape.style?.fillOpacity)) {
-      changed = changed || this.selectedFillOpacity !== effectiveShape.style.fillOpacity;
-      this.selectedFillOpacity = effectiveShape.style.fillOpacity;
-      this.elements.fillOpacity.value = this.opacityInputDisplayValue(effectiveShape.style.fillOpacity);
-    }
-    if (Number.isFinite(effectiveShape.style?.strokeOpacity)) {
-      changed = changed || this.selectedStrokeOpacity !== effectiveShape.style.strokeOpacity;
-      this.selectedStrokeOpacity = effectiveShape.style.strokeOpacity;
-      this.elements.strokeOpacity.value = this.opacityInputDisplayValue(effectiveShape.style.strokeOpacity);
-    }
     if (changed && render) {
       this.renderPalette();
     }
@@ -4896,11 +4918,12 @@ export class ToolStarterApp {
       return;
     }
     const swatch = this.paletteSwatchForColor(color);
-    if (!swatch) {
+    const directLabel = this.directStyleColorLabel(color);
+    if (!swatch && !directLabel) {
       this.statusLog.write(`FAIL Palette color application rejected: ${color} is not in the loaded palette.`);
       return;
     }
-    const paletteLabel = swatch.name || swatch.id || swatch.symbol || label;
+    const paletteLabel = swatch?.name || swatch?.id || swatch?.symbol || directLabel || label;
     if (shouldApplyStroke) {
       shape.style.stroke = color;
       shape.style.strokeWidth = Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : 2;
@@ -4915,37 +4938,69 @@ export class ToolStarterApp {
     });
   }
 
-  sampleShapeColor(shapeIndex, target) {
+  applyTransparentStyleToShape(shapeIndex, target, sourceLabel) {
     const selectedIndex = normalizeShapeIndex(shapeIndex);
     const selected = sortedShapes(this.selectedObject())[selectedIndex] || null;
     if (!selected) {
-      this.statusLog.write(`WARN Eyedropper skipped: shape row ${shapeIndex ?? "unknown"} is not available.`);
+      this.statusLog.write(`WARN Transparent style skipped: shape row ${shapeIndex ?? "unknown"} is not available.`);
       return;
     }
-    const color = target === "stroke" ? selected.style.stroke : selected.style.fill;
-    if (!color || color === "none") {
-      this.statusLog.write(`WARN Eyedropper skipped: shape row ${selectedIndex} has no ${target} color.`);
+    if (selected.locked) {
+      this.statusLog.write(`WARN Transparent style skipped: shape row ${selectedIndex} is locked.`);
       return;
     }
-    const swatch = this.paletteSwatchForColor(color);
-    if (!swatch) {
-      this.statusLog.write(`FAIL Eyedropper rejected ${target} color ${color} from shape row ${selectedIndex}: color is not in the loaded palette.`);
+    if (this.guardSelectedObjectMutation("Transparent style application")) {
       return;
     }
-    const label = swatch.name || swatch.id || swatch.symbol || shapeDisplayLabel(selected);
-    if (target === "stroke") {
-      this.selectedStrokeColor = color;
-      this.selectedStrokeLabel = label;
-      this.setPaletteTarget("stroke", false);
+
+    const nextPayload = this.cloneCurrentPayload();
+    const shape = this.findShapeInPayload(nextPayload, selectedIndex);
+    const shouldApplyStroke = target === "stroke";
+    if (shouldApplyStroke) {
+      shape.style.stroke = TRANSPARENT_STYLE_COLOR;
     } else {
-      this.selectedFillColor = color;
-      this.selectedFillLabel = label;
-      this.setPaletteTarget("paint", false);
+      shape.style.fill = TRANSPARENT_STYLE_COLOR;
     }
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Applied transparent ${shouldApplyStroke ? "stroke" : "fill"} to shape row ${selectedIndex} by ${sourceLabel}.`, "Transparent style application failed schema validation", {
+      syncPaletteSelection: false
+    });
+  }
+
+  sampleShapeStyle(shapeIndex) {
+    const selectedIndex = normalizeShapeIndex(shapeIndex);
+    const selected = sortedShapes(this.selectedObject())[selectedIndex] || null;
+    if (!selected) {
+      this.statusLog.write(`WARN Picker skipped: shape row ${shapeIndex ?? "unknown"} is not available.`);
+      return;
+    }
+    const effectiveShape = this.effectiveShape(selected, selectedIndex);
+    const style = effectiveShape.style || {};
+    if (style.fill) {
+      this.selectedFillColor = style.fill;
+      this.selectedFillLabel = this.paletteLabelForColor(style.fill, shapeDisplayLabel(selected));
+    }
+    if (style.stroke) {
+      this.selectedStrokeColor = style.stroke;
+      this.selectedStrokeLabel = this.paletteLabelForColor(style.stroke, shapeDisplayLabel(selected));
+    }
+    if (Number.isFinite(style.fillOpacity)) {
+      this.selectedFillOpacity = style.fillOpacity;
+      this.elements.fillOpacity.value = this.opacityInputDisplayValue(style.fillOpacity);
+      this.clearInputValidity(this.elements.fillOpacity);
+    }
+    if (Number.isFinite(style.strokeOpacity)) {
+      this.selectedStrokeOpacity = style.strokeOpacity;
+      this.elements.strokeOpacity.value = this.opacityInputDisplayValue(style.strokeOpacity);
+      this.clearInputValidity(this.elements.strokeOpacity);
+    }
+    if (Number.isFinite(style.strokeWidth) && style.strokeWidth > 0) {
+      this.elements.strokeWidth.value = String(style.strokeWidth);
+    }
+    this.updatePaletteModeSwatches();
     if (this.runtimePalette) {
       this.renderPalette();
     }
-    this.statusLog.write(`OK Sampled ${target} color ${color} from shape row ${selectedIndex}.`);
+    this.statusLog.write(`OK Picker sampled shape row ${selectedIndex}: fill ${style.fill || "none"}, stroke ${style.stroke || "none"}, fill opacity ${Number.isFinite(style.fillOpacity) ? style.fillOpacity : "n/a"}, stroke opacity ${Number.isFinite(style.strokeOpacity) ? style.strokeOpacity : "n/a"}, stroke width ${Number.isFinite(style.strokeWidth) ? style.strokeWidth : "n/a"}.`);
   }
 
   swapFillStrokeColors() {

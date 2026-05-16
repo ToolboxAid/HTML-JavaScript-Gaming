@@ -1423,7 +1423,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Blocked Object");
       await page.locator("#objectVectorStudioV2AddObjectButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Add object blocked: load a schema-valid Object Vector Studio V2 payload before adding objects\./);
-      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Arc", "Circle", "Ellipse", "Line", "Polygon", "Polyline", "Rectangle", "Square", "Triangle", "Text"]);
+      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Arc", "Circle", "Ellipse", "Line", "Picker", "Polygon", "Polyline", "Rectangle", "Square", "Triangle", "Text"]);
       const futureNotes = await readFile("tools/object-vector-studio-v2/possible.future.adds.txt", "utf8");
       expect(futureNotes).toContain("Object Vector Studio V2 should stay focused on reusable atomic vector objects.");
       expect(futureNotes).toContain("Future World Vector or Scene layers should instance Object Vector objects");
@@ -1511,6 +1511,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             circle: icon(".object-vector-studio-v2__shape-icon--circle"),
             ellipse: icon(".object-vector-studio-v2__shape-icon--ellipse"),
             line: icon(".object-vector-studio-v2__shape-icon--line"),
+            picker: icon(".object-vector-studio-v2__shape-icon--picker"),
             polygon: icon(".object-vector-studio-v2__shape-icon--polygon"),
             polyline: icon(".object-vector-studio-v2__shape-icon--polyline"),
             rectangle: icon(".object-vector-studio-v2__shape-icon--rectangle"),
@@ -1593,6 +1594,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         circle: "circle",
         ellipse: "ellipse",
         line: "line",
+        picker: "picker",
         polygon: "polygon",
         polyline: "polyline",
         rectangle: "rectangle",
@@ -1604,6 +1606,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.shapeIcons.arc.iconName).toBe("nf-md-vector_radius");
       expect(iconStyleState.shapeIcons.circle.iconName).toBe("nf-md-vector_circle_variant");
       expect(iconStyleState.shapeIcons.ellipse.iconName).toBe("nf-md-vector_ellipse");
+      expect(iconStyleState.shapeIcons.picker.iconName).toBe("nf-fa-eye_dropper");
       expect(iconStyleState.shapeIcons.polygon.iconName).toBe("nf-md-vector_polygon");
       expect(iconStyleState.shapeIcons.polyline.iconName).toBe("nf-md-vector_polyline");
       expect(iconStyleState.shapeIcons.square.iconName).toBe("nf-fa-vector_square");
@@ -1619,6 +1622,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         circle: "none",
         ellipse: "none",
         line: "none",
+        picker: "none",
         polygon: "none",
         polyline: "none",
         rectangle: "none",
@@ -1679,7 +1683,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(shapeToolLayout).toEqual({
-        buttonCount: 11,
+        buttonCount: 12,
         labelBesideGrid: true,
         leftPanelOverflowY: "auto",
         textButtonWider: true,
@@ -2479,6 +2483,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           ...eventInit
         });
       };
+      const rightClickPreviewShape = async (shapeIndex) => {
+        const locator = page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index='${shapeIndex}']`);
+        const box = await locator.boundingBox();
+        expect(box).not.toBeNull();
+        await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: "right" });
+      };
 
       const leftPanelObjectScrollBefore = await forceLeftPanelScroll();
       expect(leftPanelObjectScrollBefore.leftPanelScrollTop).toBeGreaterThan(0);
@@ -2889,6 +2899,93 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"strokeOpacity": 0.651');
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='1']")).toHaveAttribute("stroke-opacity", "0.651");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Applied palette color #6fd3ff from cyan to shape row 1 by render surface click\. Target: stroke width 2, opacity 0\.651\./);
+      const shapeOneStyleAfterStrokeApply = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
+      expect(shapeOneStyleAfterStrokeApply.fillOpacity).toBe(0.502);
+      expect(shapeOneStyleAfterStrokeApply.strokeOpacity).toBe(0.651);
+      await expect(page.locator("#objectVectorStudioV2FillOpacity")).toHaveValue("128");
+      await expect(page.locator("#objectVectorStudioV2StrokeOpacity")).toHaveValue("166");
+
+      await page.evaluate(() => {
+        window.__objectVectorStudioV2ContextMenuPrevented = false;
+        document.querySelector("#objectVectorStudioV2RenderSurface").addEventListener("contextmenu", (event) => {
+          window.__objectVectorStudioV2ContextMenuPrevented = event.defaultPrevented;
+        }, { once: true });
+      });
+      await page.locator("#objectVectorStudioV2PaintModeButton").click();
+      await rightClickPreviewShape(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied transparent fill to shape row 1 by right-click\./);
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"fill": "#00000000"');
+      const shapeOneStyleAfterTransparentFill = await page.evaluate(() => ({
+        contextMenuPrevented: window.__objectVectorStudioV2ContextMenuPrevented,
+        style: { ...window.__objectVectorStudioV2App.selectedShape().style }
+      }));
+      expect(shapeOneStyleAfterTransparentFill).toEqual({
+        contextMenuPrevented: true,
+        style: {
+          ...shapeOneStyleAfterStrokeApply,
+          fill: "#00000000"
+        }
+      });
+      await expect(page.locator("#objectVectorStudioV2FillOpacity")).toHaveValue("128");
+      await expect(page.locator("#objectVectorStudioV2StrokeOpacity")).toHaveValue("166");
+
+      await page.evaluate(() => {
+        window.__objectVectorStudioV2ContextMenuPrevented = false;
+        document.querySelector("#objectVectorStudioV2RenderSurface").addEventListener("contextmenu", (event) => {
+          window.__objectVectorStudioV2ContextMenuPrevented = event.defaultPrevented;
+        }, { once: true });
+      });
+      await page.locator("#objectVectorStudioV2StrokeModeButton").click();
+      await rightClickPreviewShape(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied transparent stroke to shape row 1 by right-click\./);
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"stroke": "#00000000"');
+      const shapeOneStyleAfterTransparentStroke = await page.evaluate(() => ({
+        contextMenuPrevented: window.__objectVectorStudioV2ContextMenuPrevented,
+        style: { ...window.__objectVectorStudioV2App.selectedShape().style }
+      }));
+      expect(shapeOneStyleAfterTransparentStroke).toEqual({
+        contextMenuPrevented: true,
+        style: {
+          ...shapeOneStyleAfterTransparentFill.style,
+          stroke: "#00000000"
+        }
+      });
+      await expect(page.locator("#objectVectorStudioV2FillOpacity")).toHaveValue("128");
+      await expect(page.locator("#objectVectorStudioV2StrokeOpacity")).toHaveValue("166");
+
+      const shapeOneStyleBeforePicker = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
+      await page.keyboard.press("I");
+      await expect(page.locator('[data-shape-tool="picker"]')).toHaveAttribute("aria-pressed", "true");
+      await clickPreviewShape(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Picker sampled shape row 1: fill #00000000, stroke #00000000, fill opacity 0\.502, stroke opacity 0\.651, stroke width 2\./);
+      const pickerState = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        return {
+          activeTool: app.activeTool,
+          fillInput: app.elements.fillOpacity.value,
+          paletteTarget: app.paletteTarget,
+          selectedFillColor: app.selectedFillColor,
+          selectedFillOpacity: app.selectedFillOpacity,
+          selectedStrokeColor: app.selectedStrokeColor,
+          selectedStrokeOpacity: app.selectedStrokeOpacity,
+          shapeStyle: { ...app.selectedShape().style },
+          strokeInput: app.elements.strokeOpacity.value,
+          strokeWidth: app.elements.strokeWidth.value
+        };
+      });
+      expect(pickerState).toEqual({
+        activeTool: "picker",
+        fillInput: "128",
+        paletteTarget: "stroke",
+        selectedFillColor: "#00000000",
+        selectedFillOpacity: 0.502,
+        selectedStrokeColor: "#00000000",
+        selectedStrokeOpacity: 0.651,
+        shapeStyle: shapeOneStyleBeforePicker,
+        strokeInput: "166",
+        strokeWidth: "2"
+      });
+
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.selectedStrokeColor = "#123456";
         window.__objectVectorStudioV2App.selectedStrokeLabel = "manual rogue";
@@ -2897,10 +2994,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await clickPreviewShape(1);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Palette color application rejected: #123456 is not in the loaded palette\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText("#123456");
-      await page.locator("[data-palette-color='#ffffff']").click();
-      await page.keyboard.press("I");
-      await clickPreviewShape(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Sampled stroke color #6fd3ff from shape row 1\./);
       await page.keyboard.press("X");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Swapped fill and stroke colors/);
       await page.keyboard.press("D");
@@ -4098,6 +4191,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(polygonAfterBoundsDrag.geometry.points[2].y).toBeGreaterThan(polygonBeforeBoundsDrag.geometry.points[2].y);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Resized shape row 2 with se handle\./);
       await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='3']").click();
+      const circleHandleSize = await page.locator("#objectVectorStudioV2RenderSurface [data-resize-handle='se']").evaluate((handle) => ({
+        height: Number(handle.getAttribute("height")),
+        width: Number(handle.getAttribute("width"))
+      }));
+      expect(circleHandleSize).toEqual({ height: 5, width: 5 });
       const circleBeforeResize = await shapeSnapshot(3);
       await dragLocator("#objectVectorStudioV2RenderSurface [data-resize-handle='se']", 28, 28);
       const circleAfterResize = await shapeSnapshot(3);
