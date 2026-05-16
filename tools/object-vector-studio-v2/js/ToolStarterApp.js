@@ -3540,7 +3540,7 @@ export class ToolStarterApp {
       locked: false,
       order: 0,
       style: {
-        fill: ["arc", "line", "polyline"].includes(tool) ? "none" : (this.currentTargetColor() || "#ffffff"),
+        fill: TRANSPARENT_STYLE_COLOR,
         fillOpacity: this.selectedFillOpacity,
         stroke: this.selectedStrokeColor || this.currentTargetColor() || "#ffffff",
         strokeOpacity: this.selectedStrokeOpacity,
@@ -4637,10 +4637,9 @@ export class ToolStarterApp {
   createShapeStyleDefault(type, color) {
     const style = this.schemaDefault("style");
     const strokeColor = this.selectedStrokeColor || color;
-    const fillColor = this.selectedFillColor || color;
     return {
       ...style,
-      fill: ["arc", "line", "polyline"].includes(type) ? "none" : fillColor,
+      fill: TRANSPARENT_STYLE_COLOR,
       fillOpacity: this.selectedFillOpacity,
       stroke: strokeColor,
       strokeOpacity: this.selectedStrokeOpacity

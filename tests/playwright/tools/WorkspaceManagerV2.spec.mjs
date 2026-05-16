@@ -2285,7 +2285,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         geometry: createdRectangleSchemaDefaults.schemaGeometry,
         locked: createdRectangleSchemaDefaults.schemaShapeCommon.locked,
         style: {
-          fill: "#ffffff",
+          fill: "#00000000",
           fillOpacity: createdRectangleSchemaDefaults.schemaStyle.fillOpacity,
           stroke: "#ffffff",
           strokeOpacity: createdRectangleSchemaDefaults.schemaStyle.strokeOpacity,
@@ -3397,6 +3397,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           fields,
           geometry: shape.geometry,
           schemaOk: app.schemaService.validatePayload(app.currentPayload).ok,
+          style: shape.style,
           tool: shape.tool
         };
       });
@@ -3408,6 +3409,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ],
         geometry: { height: 60, width: 60, x: -80, y: -30 },
         schemaOk: true,
+        style: { fill: "#00000000", fillOpacity: 1, stroke: "#ffffff", strokeOpacity: 1, strokeWidth: 3 },
         tool: "square"
       });
 
@@ -3502,14 +3504,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await drawObjectVectorShape(page, "polyline", [{ x: -20, y: 20 }, { x: 0, y: 0 }, { x: 20, y: 20 }]);
       await expect(page.locator("#objectVectorStudioV2RenderSurface polyline[data-shape-index='2']")).toHaveCount(1);
       const pointDrawnShapes = await page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.map((shape) => ({
+        fill: shape.style.fill,
         geometry: shape.geometry,
         stroke: shape.style.stroke,
         tool: shape.tool
       })));
       expect(pointDrawnShapes).toMatchObject([
-        { geometry: { point1: { x: -10, y: 0 }, point2: { x: 10, y: 0 } }, stroke: "#6fd3ff", tool: "line" },
-        { geometry: { points: [{ x: -10, y: -10 }, { x: 10, y: -10 }, { x: 10, y: 10 }, { x: -10, y: 10 }] }, stroke: "#6fd3ff", tool: "polygon" },
-        { geometry: { points: [{ x: -20, y: 20 }, { x: 0, y: 0 }, { x: 20, y: 20 }] }, stroke: "#6fd3ff", tool: "polyline" }
+        { fill: "#00000000", geometry: { point1: { x: -10, y: 0 }, point2: { x: 10, y: 0 } }, stroke: "#6fd3ff", tool: "line" },
+        { fill: "#00000000", geometry: { points: [{ x: -10, y: -10 }, { x: 10, y: -10 }, { x: 10, y: 10 }, { x: -10, y: 10 }] }, stroke: "#6fd3ff", tool: "polygon" },
+        { fill: "#00000000", geometry: { points: [{ x: -20, y: 20 }, { x: 0, y: 0 }, { x: 20, y: 20 }] }, stroke: "#6fd3ff", tool: "polyline" }
       ]);
       const strokeOnlyPolygonBeforeSelection = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
@@ -3585,6 +3588,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2SnapModeButton").click();
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveText("Snap Grid");
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveAttribute("data-snap-mode", "grid");
+
+      await drawObjectVectorShape(page, "rectangle", [{ x: -80, y: -30 }, { x: -20, y: 30 }]);
+      await drawObjectVectorShape(page, "square", [{ x: -60, y: -30 }, { x: -10, y: 20 }]);
+      await drawObjectVectorShape(page, "circle", [{ x: 20, y: -20 }, { x: 45, y: -20 }]);
+      await drawObjectVectorShape(page, "ellipse", [{ x: 60, y: -30 }, { x: 95, y: -5 }]);
+      await drawObjectVectorShape(page, "triangle", [{ x: -30, y: 50 }, { x: 10, y: 80 }]);
+      await drawObjectVectorShape(page, "text", [{ x: 50, y: 50 }]);
+      const strokeOnlyCreatedShapes = await page.evaluate(() => {
+        const createdTools = ["rectangle", "square", "circle", "ellipse", "triangle", "text"];
+        return window.__objectVectorStudioV2App.selectedObject().shapes
+          .filter((shape) => createdTools.includes(shape.tool))
+          .map((shape) => ({
+            fill: shape.style.fill,
+            fillOpacity: shape.style.fillOpacity,
+            stroke: shape.style.stroke,
+            strokeOpacity: shape.style.strokeOpacity,
+            tool: shape.tool
+          }));
+      });
+      expect(strokeOnlyCreatedShapes).toEqual([
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "rectangle" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "square" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "circle" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "ellipse" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "triangle" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "text" }
+      ]);
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
