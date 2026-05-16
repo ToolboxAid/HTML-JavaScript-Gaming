@@ -16,6 +16,7 @@ const MAX_ZOOM = 0.5;
 const MIN_ZOOM = 0.01;
 const ZOOM_STEP = 0.01;
 const TRANSPARENT_STYLE_COLOR = "#00000000";
+const PREVIEW_HISTORY_LIMIT = 50;
 const SNAP_MODES = Object.freeze(["grid", "point", "none"]);
 const POINT_SNAP_RADIUS = 1.5;
 const SNAP_MODE_DETAILS = Object.freeze({
@@ -490,6 +491,9 @@ export class ToolStarterApp {
     this.activeDrawing = null;
     this.drawingPreviewPoint = null;
     this.drawingHintClientPoint = null;
+    this.previewClipboardShape = null;
+    this.previewUndoStack = [];
+    this.previewRedoStack = [];
     this.previewPointerEdit = null;
     this.transformInputValues = new Map();
     this.stateControlStateId = "";
@@ -527,6 +531,7 @@ export class ToolStarterApp {
     this.bindSnapControls();
     this.bindPaletteControls();
     this.bindViewportControls();
+    this.bindPreviewEditActions();
     this.bindObjectFilters();
     this.bindAnimationControls();
     this.bindJsonDetailsActions();
@@ -866,6 +871,13 @@ export class ToolStarterApp {
     });
   }
 
+  bindPreviewEditActions() {
+    this.elements.previewUndoButton.addEventListener("click", () => this.undoPreviewEdit());
+    this.elements.previewRedoButton.addEventListener("click", () => this.redoPreviewEdit());
+    this.elements.previewCopyButton.addEventListener("click", () => this.copyPreviewSelection());
+    this.elements.previewPasteButton.addEventListener("click", () => this.pastePreviewClipboard());
+  }
+
   bindObjectFilters() {
     this.elements.tagFilter.addEventListener("change", () => {
       this.renderObjectTiles();
@@ -1007,6 +1019,7 @@ export class ToolStarterApp {
     this.drawingPreviewPoint = null;
     this.activeDrawing = null;
     this.drawingPreviewPoint = null;
+    this.clearPreviewEditState({ clipboard: true });
     this.selectedStateId = "";
     this.stateControlStateId = "";
     this.selectedFrameId = "";
@@ -1128,6 +1141,7 @@ export class ToolStarterApp {
     this.selectedFrameId = selectedState ? sortedFrames(selectedState)[0]?.id || "" : "";
     this.hiddenObjectIds.clear();
     this.lockedObjectIds.clear();
+    this.clearPreviewEditState({ clipboard: true });
     this.activeDrawing = null;
     this.drawingPreviewPoint = null;
     this.viewport = { ...DEFAULT_VIEWPORT };
@@ -2604,8 +2618,7 @@ export class ToolStarterApp {
     if (this.activeDrawing || this.previewPointerEdit) {
       return;
     }
-    const target = this.paletteTarget === "stroke" ? "stroke" : "fill";
-    this.applyTransparentStyleToShape(shapeIndex, target, "right-click");
+    this.applyTransparentStyleToShape(shapeIndex, "fill", "right-click");
   }
 
   renderOnionSkin(object) {
@@ -3733,15 +3746,21 @@ export class ToolStarterApp {
       };
     }
     if (tool === "text") {
-      const point = cleanPoints.at(-1) || previewPoint;
-      if (!point) {
+      if (cleanPoints.length < 2) {
         return null;
       }
+      const [start, end] = cleanPoints;
+      const width = Math.abs(end.x - start.x);
+      const height = Math.abs(end.y - start.y);
+      if (width <= 0 && height <= 0) {
+        return null;
+      }
+      const fontSize = Number(Math.max(1, height || width * 0.5).toFixed(3));
       return {
-        fontSize: 20,
+        fontSize,
         text: "Text",
-        x: point.x,
-        y: point.y
+        x: Math.min(start.x, end.x),
+        y: Number((Math.min(start.y, end.y) + fontSize).toFixed(3))
       };
     }
     return null;
@@ -3774,7 +3793,7 @@ export class ToolStarterApp {
       return geometry.rx > 0 && geometry.ry > 0 ? "" : "ellipse requires non-zero rx and ry.";
     }
     if (tool === "text") {
-      return geometry.text && geometry.fontSize > 0 ? "" : "text requires content and a positive font size.";
+      return geometry.text && geometry.fontSize > 0 ? "" : "text requires two distinct points, content, and a positive font size.";
     }
     return "";
   }
@@ -5539,6 +5558,7 @@ export class ToolStarterApp {
       this.statusLog.write(`FAIL Transform scale failed schema validation: ${validation.errors.join(" ")}`);
       return false;
     }
+    const hasPayloadChange = this.hasPayloadChanged(validation.payload);
     const workspaceSync = this.syncWorkspaceToolSessionPayload(validation.payload, {
       changedKeys: ["data.objects"],
       reason: "object-vector-transform-scale"
@@ -5548,6 +5568,7 @@ export class ToolStarterApp {
       return false;
     }
 
+    this.recordPreviewHistorySnapshot(hasPayloadChange);
     this.currentPayload = validation.payload;
     this.actionNav.setJsonPayloadActionsEnabled(true);
     this.ensureSelectedFrame();
@@ -6332,6 +6353,7 @@ export class ToolStarterApp {
       this.statusLog.write(`FAIL ${failPrefix}: ${validation.errors.join(" ")}`);
       return false;
     }
+    const hasPayloadChange = this.hasPayloadChanged(validation.payload);
 
     const workspaceSync = this.syncWorkspaceToolSessionPayload(validation.payload, {
       changedKeys: options.changedKeys,
@@ -6342,6 +6364,7 @@ export class ToolStarterApp {
       return false;
     }
 
+    this.recordPreviewHistorySnapshot(hasPayloadChange, options);
     this.currentPayload = validation.payload;
     this.selectedObjectId = selectedObjectId;
     this.selectedShapeIndex = normalizeShapeIndex(selectedShapeIndex);
@@ -6432,11 +6455,30 @@ export class ToolStarterApp {
     return normalized.length ? normalized : ["data.objects"];
   }
 
-  cloneCurrentPayload() {
-    if (typeof this.window.structuredClone === "function") {
-      return this.window.structuredClone(this.currentPayload);
+  hasPayloadChanged(nextPayload) {
+    return Boolean(this.currentPayload) && JSON.stringify(this.currentPayload) !== JSON.stringify(nextPayload);
+  }
+
+  recordPreviewHistorySnapshot(hasPayloadChange, options = {}) {
+    if (!hasPayloadChange || options.skipPreviewHistory || !this.currentPayload) {
+      return;
     }
-    return JSON.parse(JSON.stringify(this.currentPayload));
+    this.previewUndoStack.push(this.cloneCurrentPayload());
+    if (this.previewUndoStack.length > PREVIEW_HISTORY_LIMIT) {
+      this.previewUndoStack.shift();
+    }
+    this.previewRedoStack = [];
+  }
+
+  cloneCurrentPayload() {
+    return this.clonePayloadValue(this.currentPayload);
+  }
+
+  clonePayloadValue(payload) {
+    if (typeof this.window.structuredClone === "function") {
+      return this.window.structuredClone(payload);
+    }
+    return JSON.parse(JSON.stringify(payload));
   }
 
   selectedObject() {
@@ -6691,6 +6733,137 @@ export class ToolStarterApp {
     return candidate;
   }
 
+  clearPreviewEditState({ clipboard = false } = {}) {
+    this.previewUndoStack = [];
+    this.previewRedoStack = [];
+    if (clipboard) {
+      this.previewClipboardShape = null;
+    }
+  }
+
+  copyPreviewSelection() {
+    const shape = this.selectedShape();
+    if (!shape) {
+      this.statusLog.write("WARN Copy skipped: no Object Preview shape is selected.");
+      this.updatePreviewEditActionState();
+      return;
+    }
+    this.previewClipboardShape = this.clonePayloadValue(shape);
+    this.updatePreviewEditActionState();
+    this.statusLog.write(`OK Copied shape row ${this.selectedShapeIndex} to Object Preview clipboard.`);
+  }
+
+  pastePreviewClipboard() {
+    const object = this.selectedObject();
+    if (!object) {
+      this.statusLog.write("WARN Paste skipped: no object is selected.");
+      this.updatePreviewEditActionState();
+      return;
+    }
+    if (!this.previewClipboardShape) {
+      this.statusLog.write("WARN Paste skipped: Object Preview clipboard is empty.");
+      this.updatePreviewEditActionState();
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Paste shape")) {
+      this.updatePreviewEditActionState();
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects.find((candidate) => candidate.id === object.id);
+    const shape = this.clonePayloadValue(this.previewClipboardShape);
+    shape.order = nextObject.shapes.length ? Math.max(...nextObject.shapes.map((candidate) => candidate.order)) + 1 : 1;
+    shape.transform = this.ensureShapeTransform(shape);
+    shape.transform.x = Number((shape.transform.x + 10).toFixed(3));
+    shape.transform.y = Number((shape.transform.y + 10).toFixed(3));
+    nextObject.shapes.push(shape);
+    this.commitPayloadUpdate(nextPayload, nextObject.id, sortedShapes(nextObject).length - 1, `OK Pasted copied shape into ${nextObject.name}.`, "Paste shape failed schema validation");
+  }
+
+  undoPreviewEdit() {
+    if (!this.previewUndoStack.length) {
+      this.statusLog.write("WARN Undo skipped: no Object Preview edit history is available.");
+      this.updatePreviewEditActionState();
+      return;
+    }
+    const targetPayload = this.previewUndoStack.at(-1);
+    const currentPayload = this.cloneCurrentPayload();
+    if (!this.applyPreviewHistoryPayload(targetPayload, "Undo")) {
+      this.updatePreviewEditActionState();
+      return;
+    }
+    this.previewUndoStack.pop();
+    this.previewRedoStack.push(currentPayload);
+    if (this.previewRedoStack.length > PREVIEW_HISTORY_LIMIT) {
+      this.previewRedoStack.shift();
+    }
+    this.updatePreviewEditActionState();
+  }
+
+  redoPreviewEdit() {
+    if (!this.previewRedoStack.length) {
+      this.statusLog.write("WARN Redo skipped: no Object Preview redo history is available.");
+      this.updatePreviewEditActionState();
+      return;
+    }
+    const targetPayload = this.previewRedoStack.at(-1);
+    const currentPayload = this.cloneCurrentPayload();
+    if (!this.applyPreviewHistoryPayload(targetPayload, "Redo")) {
+      this.updatePreviewEditActionState();
+      return;
+    }
+    this.previewRedoStack.pop();
+    this.previewUndoStack.push(currentPayload);
+    if (this.previewUndoStack.length > PREVIEW_HISTORY_LIMIT) {
+      this.previewUndoStack.shift();
+    }
+    this.updatePreviewEditActionState();
+  }
+
+  applyPreviewHistoryPayload(payload, actionLabel) {
+    const validation = this.schemaService.validatePayload(payload);
+    if (!validation.ok) {
+      this.statusLog.write(`FAIL ${actionLabel} failed schema validation: ${validation.errors.join(" ")}`);
+      return false;
+    }
+    const workspaceSync = this.syncWorkspaceToolSessionPayload(validation.payload, {
+      changedKeys: ["data.objects"],
+      reason: `object-vector-preview-${actionLabel.toLowerCase()}`
+    });
+    if (!workspaceSync.ok) {
+      this.statusLog.write(`FAIL ${actionLabel} failed schema validation: ${workspaceSync.message}`);
+      return false;
+    }
+    this.currentPayload = validation.payload;
+    if (!this.currentPayload.objects.some((object) => object.id === this.selectedObjectId)) {
+      this.selectedObjectId = this.currentPayload.objects[0]?.id || "";
+      this.selectedShapeIndex = -1;
+      this.selectedShapeIndexes.clear();
+      this.directSelectedShapeIndexes.clear();
+    }
+    this.actionNav.setJsonPayloadActionsEnabled(true);
+    this.renderPayload({ syncPaletteSelection: false });
+    if (workspaceSync.changed) {
+      this.statusLog.write(`OK Object Vector Studio V2 workspace dirty state: true; reason=${workspaceSync.reason}; changedKeys=${workspaceSync.changedKeys.join(", ")}.`);
+    }
+    this.statusLog.write(`OK ${actionLabel} applied to Object Preview edits.`);
+    return true;
+  }
+
+  updatePreviewEditActionState() {
+    const object = this.selectedObject();
+    const shape = this.selectedShape();
+    const noShapeReason = "Disabled until a schema-valid shape is selected.";
+    const noObjectReason = "Disabled until a schema-valid object is selected.";
+    const lockedReason = object ? `Disabled because ${object.name} is locked for this runtime session.` : noObjectReason;
+    const isLocked = Boolean(object && this.isObjectLocked(object.id));
+    this.setControlDisabled(this.elements.previewUndoButton, !this.previewUndoStack.length, "Disabled until an Object Preview edit can be undone.", "Undo the last Object Preview edit.");
+    this.setControlDisabled(this.elements.previewRedoButton, !this.previewRedoStack.length, "Disabled until an Object Preview edit can be redone.", "Redo the last undone Object Preview edit.");
+    this.setControlDisabled(this.elements.previewCopyButton, !shape, noShapeReason, "Copy the selected shape.");
+    this.setControlDisabled(this.elements.previewPasteButton, !object || !this.previewClipboardShape || isLocked, !object ? noObjectReason : (isLocked ? lockedReason : "Disabled until a shape has been copied."), "Paste the copied shape into the selected object.");
+  }
+
   updateObjectActionState() {
     const hasSelectedObject = Boolean(this.selectedObject());
     const selectedObject = this.selectedObject();
@@ -6704,6 +6877,7 @@ export class ToolStarterApp {
     }
     this.setControlDisabled(this.elements.exportSvgButton, !hasSelectedObject, noObjectReason, "Export the selected object as SVG.");
     this.setControlDisabled(this.elements.runtimePreviewButton, !hasSelectedObject, noObjectReason, "Preview the selected object through the runtime asset renderer.");
+    this.updatePreviewEditActionState();
     this.updateAnimationActionState();
   }
 

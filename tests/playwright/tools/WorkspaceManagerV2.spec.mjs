@@ -2953,18 +2953,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await page.locator("#objectVectorStudioV2StrokeModeButton").click();
       await rightClickPreviewShape(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied transparent stroke to shape row 1 by right-click\./);
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"stroke": "#00000000"');
-      const shapeOneStyleAfterTransparentStroke = await page.evaluate(() => ({
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Applied transparent fill to shape row 1 by right-click\./);
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"stroke": "#00000000"');
+      const shapeOneStyleAfterSecondRightClick = await page.evaluate(() => ({
         contextMenuPrevented: window.__objectVectorStudioV2ContextMenuPrevented,
         style: { ...window.__objectVectorStudioV2App.selectedShape().style }
       }));
-      expect(shapeOneStyleAfterTransparentStroke).toEqual({
+      expect(shapeOneStyleAfterSecondRightClick).toEqual({
         contextMenuPrevented: true,
-        style: {
-          ...shapeOneStyleAfterTransparentFill.style,
-          stroke: "#00000000"
-        }
+        style: shapeOneStyleAfterTransparentFill.style
       });
       await expect(page.locator("#objectVectorStudioV2FillOpacity")).toHaveValue("128");
       await expect(page.locator("#objectVectorStudioV2StrokeOpacity")).toHaveValue("166");
@@ -2973,7 +2970,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.keyboard.press("I");
       await expect(page.locator('[data-shape-tool="picker"]')).toHaveAttribute("aria-pressed", "true");
       await clickPreviewShape(1);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Picker sampled shape row 1: fill #00000000, stroke #00000000, fill opacity 0\.502, stroke opacity 0\.651, stroke width 2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Picker sampled shape row 1: fill #00000000, stroke #6fd3ff, fill opacity 0\.502, stroke opacity 0\.651, stroke width 2\./);
       const pickerState = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         return {
@@ -2995,7 +2992,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         paletteTarget: "stroke",
         selectedFillColor: "#00000000",
         selectedFillOpacity: 0.502,
-        selectedStrokeColor: "#00000000",
+        selectedStrokeColor: "#6fd3ff",
         selectedStrokeOpacity: 0.651,
         shapeStyle: shapeOneStyleBeforePicker,
         strokeInput: "166",
@@ -3661,7 +3658,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await drawObjectVectorShape(page, "circle", [{ x: 20, y: -20 }, { x: 45, y: -20 }]);
       await drawObjectVectorShape(page, "ellipse", [{ x: 60, y: -30 }, { x: 95, y: -5 }]);
       await drawObjectVectorShape(page, "triangle", [{ x: -30, y: 50 }, { x: 10, y: 80 }]);
-      await drawObjectVectorShape(page, "text", [{ x: 50, y: 50 }]);
+      await drawObjectVectorShape(page, "text", [{ x: 50, y: 50 }, { x: 60, y: 62 }]);
       const strokeOnlyCreatedShapes = await page.evaluate(() => {
         const createdTools = ["rectangle", "square", "circle", "ellipse", "triangle", "text"];
         return window.__objectVectorStudioV2App.selectedObject().shapes
@@ -3726,6 +3723,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const textPreview = await page.locator("#objectVectorStudioV2RenderSurface text.object-vector-studio-v2__drawing-preview").evaluate((preview) => ({
         dash: preview.style.strokeDasharray,
         fill: preview.getAttribute("fill"),
+        fontSize: Number(preview.getAttribute("font-size")),
         stroke: preview.getAttribute("stroke"),
         strokeWidth: Number(preview.getAttribute("stroke-width")),
         text: preview.textContent.trim(),
@@ -3734,19 +3732,49 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(textPreview).toEqual({
         dash: "none",
         fill: "#00000000",
+        fontSize: 60,
         stroke: "#6fd3ff",
         strokeWidth: 20,
         text: "Text",
         tool: "text"
       });
       await clickObjectVectorLogicalPoint(page, 76, 66);
-      const committedTextStyle = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
-      expect(committedTextStyle).toMatchObject({
+      const committedText = await page.evaluate(() => ({
+        geometry: { ...window.__objectVectorStudioV2App.selectedShape().geometry },
+        shapeCount: window.__objectVectorStudioV2App.selectedObject().shapes.length,
+        style: { ...window.__objectVectorStudioV2App.selectedShape().style }
+      }));
+      expect(committedText.geometry).toEqual({ fontSize: 6, text: "Text", x: 70, y: 66 });
+      expect(committedText.style).toMatchObject({
         fill: "#00000000",
         stroke: "#6fd3ff",
         strokeOpacity: 1,
         strokeWidth: 20
       });
+      const previewToolbarAfterText = await page.evaluate(() => Array.from(document.querySelectorAll(".object-vector-studio-v2__preview-edit-toolbar button")).map((button) => ({
+        disabled: button.disabled,
+        label: button.textContent.trim()
+      })));
+      expect(previewToolbarAfterText).toEqual([
+        { disabled: false, label: "Undo" },
+        { disabled: true, label: "Redo" },
+        { disabled: false, label: "Copy" },
+        { disabled: true, label: "Paste" }
+      ]);
+      await page.locator("#objectVectorStudioV2PreviewCopyButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Copied shape row \d+ to Object Preview clipboard\./);
+      await expect(page.locator("#objectVectorStudioV2PreviewPasteButton")).toBeEnabled();
+      await page.locator("#objectVectorStudioV2PreviewPasteButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Pasted copied shape into Drawing Flow\./);
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.length)).toBe(committedText.shapeCount + 1);
+      await expect(page.locator("#objectVectorStudioV2PreviewUndoButton")).toBeEnabled();
+      await page.locator("#objectVectorStudioV2PreviewUndoButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Undo applied to Object Preview edits\./);
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.length)).toBe(committedText.shapeCount);
+      await expect(page.locator("#objectVectorStudioV2PreviewRedoButton")).toBeEnabled();
+      await page.locator("#objectVectorStudioV2PreviewRedoButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Redo applied to Object Preview edits\./);
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.length)).toBe(committedText.shapeCount + 1);
 
       const shapeCountBeforeDoubleClick = await page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.length);
       await page.locator('[data-shape-tool="polygon"]').click();
