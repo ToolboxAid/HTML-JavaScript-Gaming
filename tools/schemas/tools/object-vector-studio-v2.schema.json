@@ -187,6 +187,7 @@
           "fill": "#ffffff",
           "stroke": "#ffffff",
           "strokeWidth": 3,
+          "strokeLinecap": "round",
           "fillOpacity": 1,
           "strokeOpacity": 1
         },
@@ -418,6 +419,7 @@
         "fill": "#ffffff",
         "stroke": "#ffffff",
         "strokeWidth": 3,
+        "strokeLinecap": "round",
         "fillOpacity": 1,
         "strokeOpacity": 1
       },
@@ -433,6 +435,10 @@
         "strokeWidth": {
           "type": "number",
           "minimum": 0
+        },
+        "strokeLinecap": {
+          "type": "string",
+          "enum": ["round", "square"]
         },
         "fillOpacity": {
           "type": "number",
@@ -499,7 +505,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["x", "y", "width", "height"],
-      "default": { "x": -80, "y": -30, "width": 80, "height": 60 },
       "properties": {
         "x": {
           "type": "number"
@@ -521,7 +526,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["cx", "cy", "r"],
-      "default": { "cx": 70, "cy": -10, "r": 30 },
       "properties": {
         "cx": {
           "type": "number"
@@ -539,7 +543,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["cx", "cy", "rx", "ry"],
-      "default": { "cx": 70, "cy": 70, "rx": 50, "ry": 30 },
       "properties": {
         "cx": {
           "type": "number"
@@ -561,10 +564,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["point1", "point2"],
-      "default": {
-        "point1": { "x": -100, "y": 80 },
-        "point2": { "x": 0, "y": 30 }
-      },
       "properties": {
         "point1": {
           "$ref": "#/$defs/point2d"
@@ -578,26 +577,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["points"],
-      "default": {
-        "points": [
-          { "x": 0, "y": -80 },
-          { "x": 76, "y": -25 },
-          { "x": 47, "y": 65 },
-          { "x": -47, "y": 65 },
-          { "x": -76, "y": -25 }
-        ]
-      },
       "properties": {
         "points": {
           "type": "array",
           "minItems": 4,
-          "default": [
-            { "x": 0, "y": -80 },
-            { "x": 76, "y": -25 },
-            { "x": 47, "y": 65 },
-            { "x": -47, "y": 65 },
-            { "x": -76, "y": -25 }
-          ],
           "items": {
             "$ref": "#/$defs/point2d"
           }
@@ -608,22 +591,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["points"],
-      "default": {
-        "points": [
-          { "x": -40, "y": 0 },
-          { "x": 0, "y": -30 },
-          { "x": 40, "y": 0 }
-        ]
-      },
       "properties": {
         "points": {
           "type": "array",
           "minItems": 2,
-          "default": [
-            { "x": -40, "y": 0 },
-            { "x": 0, "y": -30 },
-            { "x": 40, "y": 0 }
-          ],
           "items": {
             "$ref": "#/$defs/point2d"
           }
@@ -634,13 +605,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["points"],
-      "default": {
-        "points": [
-          { "x": 0, "y": -80 },
-          { "x": 40, "y": -10 },
-          { "x": -40, "y": -10 }
-        ]
-      },
       "properties": {
         "points": {
           "type": "array",
@@ -656,7 +620,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["cx", "cy", "r", "startAngle", "endAngle"],
-      "default": { "cx": 0, "cy": 70, "r": 40, "startAngle": -135, "endAngle": 135 },
       "properties": {
         "cx": {
           "type": "number"
@@ -680,7 +643,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["x", "y", "fontSize", "text"],
-      "default": { "x": -30, "y": 40, "fontSize": 20, "text": "Text" },
       "properties": {
         "x": {
           "type": "number"

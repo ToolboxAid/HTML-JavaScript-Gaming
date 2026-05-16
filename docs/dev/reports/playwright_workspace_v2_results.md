@@ -1,6 +1,6 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_073-text-placement-edit-toolbar-and-right-click-paint-clear
+PR: PR_26133_074-geometry-defaults-angle-snap-undo-and-stroke-cap-fixes
 
 ## Validation
 
@@ -12,11 +12,12 @@ PR: PR_26133_073-text-placement-edit-toolbar-and-right-click-paint-clear
 
 ## Targeted Checks Covered
 
-- Text tool uses first click, live preview, and second click commit for schema-valid text placement.
-- Text preview and committed text preserve active stroke color, stroke opacity, stroke width, and transparent fill.
-- Object Preview toolbar enables Undo, Copy, and Paste when valid; Paste uses copied shape data; Undo/Redo restore shape count.
-- Right-click on a shape applies transparent Paint/fill only to the clicked shape and suppresses the browser context menu.
-- Stroke-mode right-click no longer clears stroke.
+- Angle Snap help states that it applies to Object Transform Rotate and rounds the applied rotation delta to 15 degree increments.
+- Object Vector Studio V2 schema geometry definitions no longer carry pre-positioned defaults for click/move/click shape creation.
+- Stroke ending control is present in Palette and renders line/polyline/polygon/arc stroke caps and joins as round or square.
+- Object Preview pivot marker is smaller and labeled as the Origin/Pivot marker for rotation and scale.
+- Undo after a preview drag reverts the completed drag in one step rather than stepping through mousemove positions.
+- Polygon/Polyline Enter completion, Copy icon mapping, and Object Geometry group marker color remain covered by the workspace suite.
 
 ## Console/Runtime Errors
 

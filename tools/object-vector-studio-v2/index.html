@@ -185,6 +185,13 @@
                   <span>Width</span>
                   <input id="objectVectorStudioV2StrokeWidth" type="number" min="0.1" step="0.1" value="2">
                 </label>
+                <label class="object-vector-studio-v2__inline-field object-vector-studio-v2__stroke-cap-field" for="objectVectorStudioV2StrokeLinecap">
+                  <span>End</span>
+                  <select id="objectVectorStudioV2StrokeLinecap" title="Stroke endings and joins for lines, polylines, polygons, and arcs">
+                    <option value="round">Round</option>
+                    <option value="square">Square</option>
+                  </select>
+                </label>
               </div>
               <div class="object-vector-studio-v2__palette-opacity-row">
                 <span class="object-vector-studio-v2__palette-opacity-heading">Opacity</span>
@@ -269,7 +276,7 @@
             <hr class="object-vector-studio-v2__separator">
             <div class="object-vector-studio-v2__snap-actions" aria-label="Snap controls">
               <button id="objectVectorStudioV2SnapModeButton" type="button" aria-pressed="true" title="Snap drawing and point dragging to grid intersections">Snap Grid</button>
-              <button id="objectVectorStudioV2AngleSnapButton" type="button" aria-pressed="false" title="When enabled, the Rotate action rounds the entered rotation delta to 15 degree increments.">Angle Snap</button>
+              <button id="objectVectorStudioV2AngleSnapButton" type="button" aria-pressed="false" title="Angle Snap is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.">Angle Snap</button>
               <button id="objectVectorStudioV2GridRenderButton" type="button" aria-pressed="false" title="Show or hide the preview grid">Grid</button>
               <button id="objectVectorStudioV2ToolLabelModeButton" type="button" aria-pressed="false" title="Toggle shape tool labels between icon-only and icon plus text">Icon/Text</button>
             </div>

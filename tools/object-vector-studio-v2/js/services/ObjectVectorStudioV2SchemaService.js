@@ -131,7 +131,13 @@ export class ObjectVectorStudioV2SchemaService {
       "object",
       "shapeCommon",
       "style",
-      "transform",
+      "transform"
+    ].forEach((definitionName) => {
+      if (!Object.prototype.hasOwnProperty.call(schema.$defs?.[definitionName] || {}, "default")) {
+        errors.push(`Object Vector Studio V2 schema must define $defs.${definitionName}.default.`);
+      }
+    });
+    [
       "rectangleGeometry",
       "circleGeometry",
       "ellipseGeometry",
@@ -142,18 +148,10 @@ export class ObjectVectorStudioV2SchemaService {
       "arcGeometry",
       "textGeometry"
     ].forEach((definitionName) => {
-      if (!Object.prototype.hasOwnProperty.call(schema.$defs?.[definitionName] || {}, "default")) {
-        errors.push(`Object Vector Studio V2 schema must define $defs.${definitionName}.default.`);
+      if (Object.prototype.hasOwnProperty.call(schema.$defs?.[definitionName] || {}, "default")) {
+        errors.push(`Object Vector Studio V2 schema must not define pre-positioned $defs.${definitionName}.default geometry.`);
       }
     });
-    const polygonDefaultPoints = schema.$defs?.polygonGeometry?.default?.points;
-    if (!Array.isArray(polygonDefaultPoints) || polygonDefaultPoints.length !== 5) {
-      errors.push("Object Vector Studio V2 schema polygonGeometry.default must provide five default points.");
-    }
-    const triangleDefaultPoints = schema.$defs?.triangleGeometry?.default?.points;
-    if (!Array.isArray(triangleDefaultPoints) || triangleDefaultPoints.length !== 3) {
-      errors.push("Object Vector Studio V2 schema triangleGeometry.default must provide exactly three default points.");
-    }
   }
 
   validatePayload(payload) {

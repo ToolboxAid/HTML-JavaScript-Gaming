@@ -1061,6 +1061,7 @@ textarea:hover {
   display: none;
 }
 
+.object-vector-studio-v2__shape-group-indicator.object-vector-studio-v2__tile-icon[data-ovs-icon],
 #objectVectorStudioV2ObjectsContent .object-vector-studio-v2__shape-group-indicator[data-ovs-icon] {
   color: var(--object-vector-studio-v2-shape-group-color, var(--tool-starter-accent));
 }
@@ -1278,6 +1279,11 @@ textarea:hover {
 
 #objectVectorStudioV2StrokeWidth {
   width: 58px;
+}
+
+#objectVectorStudioV2StrokeLinecap {
+  width: 74px;
+  padding-inline: 4px;
 }
 
 .object-vector-studio-v2__palette-controls {
@@ -1531,9 +1537,10 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__pivot-origin line {
-  stroke: #ffffff;
-  stroke-width: 1.5;
+  stroke: #f8fafc;
+  stroke-width: 1.2;
   pointer-events: none;
+  vector-effect: non-scaling-stroke;
 }
 
 .object-vector-studio-v2__object-detail-grid {

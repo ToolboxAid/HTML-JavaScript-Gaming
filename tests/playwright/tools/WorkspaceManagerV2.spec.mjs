@@ -1339,36 +1339,56 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const gameSchema = await fetch("/tools/schemas/game.manifest.schema.json", { cache: "no-store" }).then((response) => response.json());
         return {
           gameHasLocalObjectStateDefinition: Object.prototype.hasOwnProperty.call(gameSchema.$defs, "objectVectorStudioState"),
+          gameGeometryDefaultsRemoved: [
+            "objectVectorStudioRectangleGeometry",
+            "objectVectorStudioCircleGeometry",
+            "objectVectorStudioEllipseGeometry",
+            "objectVectorStudioLineGeometry",
+            "objectVectorStudioTriangleGeometry",
+            "objectVectorStudioPolygonGeometry",
+            "objectVectorStudioPolylineGeometry",
+            "objectVectorStudioArcGeometry",
+            "objectVectorStudioTextGeometry"
+          ].every((definitionName) => !Object.prototype.hasOwnProperty.call(gameSchema.$defs[definitionName], "default")),
           gameObjectDefaultTags: gameSchema.$defs.objectVectorStudioObject.default.tags,
-          gamePolygonDefaultPointCount: gameSchema.$defs.objectVectorStudioPolygonGeometry.default.points.length,
-          gamePolylineDefaultPointCount: gameSchema.$defs.objectVectorStudioPolylineGeometry.default.points.length,
           gameShapeCommonDefaultTool: gameSchema.$defs.objectVectorStudioShapeCommon.default.tool,
           gameStateSchemaRef: gameSchema.$defs.objectVectorStudioObject.properties.states.items.$ref,
           gameStateThrustMentionRemoved: !JSON.stringify(gameSchema).includes('"thrust"'),
+          gameStyleDefaultStrokeLinecap: gameSchema.$defs.objectVectorStudioStyle.default.strokeLinecap,
           gameTransformDefaultOrigin: gameSchema.$defs.objectVectorStudioTransform.default.origin,
-          toolPolygonDefaultPointCount: toolSchema.$defs.polygonGeometry.default.points.length,
-          toolPolylineDefaultPointCount: toolSchema.$defs.polylineGeometry.default.points.length,
+          toolGeometryDefaultsRemoved: [
+            "rectangleGeometry",
+            "circleGeometry",
+            "ellipseGeometry",
+            "lineGeometry",
+            "triangleGeometry",
+            "polygonGeometry",
+            "polylineGeometry",
+            "arcGeometry",
+            "textGeometry"
+          ].every((definitionName) => !Object.prototype.hasOwnProperty.call(toolSchema.$defs[definitionName], "default")),
           toolShapeCommonDefaultTool: toolSchema.$defs.shapeCommon.default.tool,
           toolStateEnum: toolSchema.$defs.objectState.properties.id.enum,
           toolStateThrustRemoved: !toolSchema.$defs.objectState.properties.id.enum.includes("thrust"),
+          toolStyleDefaultStrokeLinecap: toolSchema.$defs.style.default.strokeLinecap,
           toolStyleDefaultStrokeWidth: toolSchema.$defs.style.default.strokeWidth,
           toolTransformDefaultOrigin: toolSchema.$defs.transform.default.origin
         };
       });
       expect(objectVectorSchemaDefaults).toEqual({
         gameHasLocalObjectStateDefinition: false,
+        gameGeometryDefaultsRemoved: true,
         gameObjectDefaultTags: [],
-        gamePolygonDefaultPointCount: 5,
-        gamePolylineDefaultPointCount: 3,
         gameShapeCommonDefaultTool: "polygon",
         gameStateSchemaRef: "tools/object-vector-studio-v2.schema.json#/$defs/objectState",
         gameStateThrustMentionRemoved: true,
+        gameStyleDefaultStrokeLinecap: "round",
         gameTransformDefaultOrigin: { x: 0, y: 0 },
-        toolPolygonDefaultPointCount: 5,
-        toolPolylineDefaultPointCount: 3,
+        toolGeometryDefaultsRemoved: true,
         toolShapeCommonDefaultTool: "polygon",
         toolStateEnum: ["idle", "move", "active", "inactive", "damaged", "destroyed"],
         toolStateThrustRemoved: true,
+        toolStyleDefaultStrokeLinecap: "round",
         toolStyleDefaultStrokeWidth: 3,
         toolTransformDefaultOrigin: { x: 0, y: 0 }
       });
@@ -1656,7 +1676,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.viewportIcons.zoomOut.iconName).toBe("nf-oct-zoom_out");
       expect(iconStyleState.titles).toEqual({
         add: "Add a schema-valid object to the loaded payload",
-        angle: "When enabled, the Rotate action rounds the entered rotation delta to 15 degree increments.",
+        angle: "Angle Snap is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.",
         grid: "Show or hide the preview grid",
         polygon: "Create a polygon shape on the selected object. Click to add points.\n\nDouble-click to finish.",
         polyline: "Create a polyline shape on the selected object. Click to add points.\n\nDouble-click to finish.",
@@ -1950,8 +1970,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Runtime palette is read-only session\/workspace data; Object Vector JSON remains palette-free\./);
       await expect(page.locator("#objectVectorStudioV2PaletteSummary")).not.toContainText(/^Palette/);
       await expect(page.locator("#objectVectorStudioV2StrokeWidth")).toHaveValue("2");
+      await expect(page.locator("#objectVectorStudioV2StrokeLinecap")).toHaveValue("round");
       await expect(page.locator("label[for='objectVectorStudioV2StrokeWidth'] span")).not.toHaveText("Stroke Width");
       await expect(page.locator("label[for='objectVectorStudioV2StrokeWidth'] span")).toHaveText("Width");
+      await expect(page.locator("label[for='objectVectorStudioV2StrokeLinecap'] span")).toHaveText("End");
       const paletteControlLayout = await page.locator("#objectVectorStudioV2PaletteContent").evaluate((content) => {
         const primaryRow = content.querySelector(".object-vector-studio-v2__palette-primary-row");
         const opacityRow = content.querySelector(".object-vector-studio-v2__palette-opacity-row");
@@ -1959,26 +1981,30 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const strokeButton = content.querySelector("#objectVectorStudioV2StrokeModeButton").getBoundingClientRect();
         const widthLabel = content.querySelector("label[for='objectVectorStudioV2StrokeWidth']").getBoundingClientRect();
         const widthInput = content.querySelector("#objectVectorStudioV2StrokeWidth").getBoundingClientRect();
+        const capLabel = content.querySelector("label[for='objectVectorStudioV2StrokeLinecap']").getBoundingClientRect();
         const fillOpacityLabel = content.querySelector("label[for='objectVectorStudioV2FillOpacity']").getBoundingClientRect();
         const strokeOpacityLabel = content.querySelector("label[for='objectVectorStudioV2StrokeOpacity']").getBoundingClientRect();
         const opacityHeading = content.querySelector(".object-vector-studio-v2__palette-opacity-heading").getBoundingClientRect();
         const opacityInputs = Array.from(opacityRow.querySelectorAll("input"));
         const opacityInputRects = opacityInputs.map((input) => input.getBoundingClientRect());
         return {
-          opacityBelowPrimary: fillOpacityLabel.top >= Math.max(paintButton.bottom, strokeButton.bottom, widthLabel.bottom),
+          capInputValue: content.querySelector("#objectVectorStudioV2StrokeLinecap").value,
+          opacityBelowPrimary: fillOpacityLabel.top >= Math.max(paintButton.bottom, strokeButton.bottom, widthLabel.bottom, capLabel.bottom),
           opacityHeading: content.querySelector(".object-vector-studio-v2__palette-opacity-heading").textContent.trim(),
           opacityInline: [fillOpacityLabel, strokeOpacityLabel].every((rect) => Math.abs((opacityHeading.top + opacityHeading.height / 2) - (rect.top + rect.height / 2)) < 4),
           opacityInputFitsFourDigits: opacityInputRects.every((rect) => Math.round(rect.width) >= 54),
           opacityInputRanges: opacityInputs.map((input) => ({ max: input.max, min: input.min, step: input.step, value: input.value })),
           opacityLabels: Array.from(opacityRow.querySelectorAll("label > span")).map((label) => label.textContent.trim()),
           opacityOrder: Array.from(opacityRow.children).map((element) => element.textContent.trim().replace(/\s+/g, " ")),
-          primaryInline: [strokeButton, widthLabel].every((rect) => Math.abs((paintButton.top + paintButton.height / 2) - (rect.top + rect.height / 2)) < 4),
-          primaryOrder: Array.from(primaryRow.children).map((element) => element.textContent.trim()),
+          primaryInline: [strokeButton, widthLabel, capLabel].every((rect) => Math.abs((paintButton.top + paintButton.height / 2) - (rect.top + rect.height / 2)) < 4),
+          primaryOrder: Array.from(primaryRow.children).map((element) => element.matches("label") ? element.querySelector("span").textContent.trim() : element.textContent.trim()),
           widthInputFitsXxDotX: Math.round(widthInput.width) >= 58,
-          widthIsRightOfStroke: widthLabel.left >= strokeButton.right
+          widthIsRightOfStroke: widthLabel.left >= strokeButton.right,
+          capIsRightOfWidth: capLabel.left >= widthLabel.right
         };
       });
       expect(paletteControlLayout).toEqual({
+        capInputValue: "round",
         opacityBelowPrimary: true,
         opacityHeading: "Opacity",
         opacityInline: true,
@@ -1990,9 +2016,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         opacityLabels: ["Fill", "Stroke"],
         opacityOrder: ["Opacity", "Fill", "Stroke"],
         primaryInline: true,
-        primaryOrder: ["Paint", "Stroke", "Width"],
+        primaryOrder: ["Paint", "Stroke", "Width", "End"],
         widthInputFitsXxDotX: true,
-        widthIsRightOfStroke: true
+        widthIsRightOfStroke: true,
+        capIsRightOfWidth: true
       });
       await expect(page.locator(".object-vector-studio-v2__palette-sort")).not.toContainText("Sort");
       await expect(page.locator(".object-vector-studio-v2__palette-sort button")).toHaveText(["Hue◇", "Sat◇", "Bri◇", "Name▲", "Tag◇"]);
@@ -2294,12 +2321,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(createdRectangleSchemaDefaults).toMatchObject({
-        geometry: createdRectangleSchemaDefaults.schemaGeometry,
+        geometry: { height: 60, width: 80, x: -80, y: -30 },
         locked: createdRectangleSchemaDefaults.schemaShapeCommon.locked,
+        schemaGeometry: undefined,
         style: {
           fill: "#00000000",
           fillOpacity: createdRectangleSchemaDefaults.schemaStyle.fillOpacity,
           stroke: "#ffffff",
+          strokeLinecap: "round",
           strokeOpacity: createdRectangleSchemaDefaults.schemaStyle.strokeOpacity,
           strokeWidth: 2
         },
@@ -2801,6 +2830,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const groupIconColors = await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] [data-shape-group-id='group-1'] .object-vector-studio-v2__shape-group-indicator").evaluateAll((icons) => icons.map((icon) => getComputedStyle(icon).color));
       expect(new Set(groupIconColors).size).toBe(1);
       expect(groupIconColors[0]).not.toBe("");
+      const geometryGroupIconColor = await page.locator("#objectVectorStudioV2ObjectDetails .object-vector-studio-v2__shape-group-summary .object-vector-studio-v2__shape-group-indicator").evaluate((icon) => getComputedStyle(icon).color);
+      expect(geometryGroupIconColor).toBe(groupIconColors[0]);
       const groupIconLayout = await page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] .object-vector-studio-v2__object-tile-shape-row").first().evaluate((row) => {
         const label = row.querySelector(".object-vector-studio-v2__shape-select-label");
         const visibility = row.querySelector("[data-shape-visibility-index]");
@@ -3418,7 +3449,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ],
         geometry: { height: 60, width: 60, x: -80, y: -30 },
         schemaOk: true,
-        style: { fill: "#00000000", fillOpacity: 1, stroke: "#ffffff", strokeOpacity: 1, strokeWidth: 2 },
+        style: { fill: "#00000000", fillOpacity: 1, stroke: "#ffffff", strokeLinecap: "round", strokeOpacity: 1, strokeWidth: 2 },
         tool: "square"
       });
 
@@ -3683,16 +3714,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#objectVectorStudioV2StrokeWidth").fill("20");
       await page.locator("#objectVectorStudioV2StrokeWidth").dispatchEvent("change");
+      await page.locator("#objectVectorStudioV2StrokeLinecap").selectOption("square");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Palette stroke endings set to square\./);
       await page.locator('[data-shape-tool="line"]').click();
       await clickObjectVectorLogicalPoint(page, -40, -50);
       await moveObjectVectorLogicalPoint(page, { x: -10, y: -50 });
       const wideStrokePreview = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-preview").evaluate((preview) => ({
         dash: preview.style.strokeDasharray,
+        strokeLinecap: preview.style.strokeLinecap,
+        strokeLinejoin: preview.style.strokeLinejoin,
         strokeWidth: Number(preview.getAttribute("stroke-width")),
         tool: preview.dataset.drawingPreviewTool
       }));
       const wideStrokeDash = wideStrokePreview.dash.match(/[\d.]+/g).map(Number);
-      expect(wideStrokePreview).toMatchObject({ strokeWidth: 20, tool: "line" });
+      expect(wideStrokePreview).toMatchObject({ strokeLinecap: "square", strokeLinejoin: "miter", strokeWidth: 20, tool: "line" });
       expect(wideStrokeDash[0]).toBeGreaterThan(5);
       expect(wideStrokeDash[0]).toBeLessThan(220);
       expect(wideStrokeDash[1]).toBeGreaterThan(4);
@@ -3707,15 +3742,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(wideStrokeLine.style).toMatchObject({
         fill: "#00000000",
         stroke: "#6fd3ff",
+        strokeLinecap: "square",
         strokeOpacity: 1,
         strokeWidth: 20
       });
       const committedWideLine = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${wideStrokeLine.index}"]`).evaluate((shape) => ({
         dash: getComputedStyle(shape).strokeDasharray,
         isPreview: shape.classList.contains("object-vector-studio-v2__drawing-preview"),
+        strokeLinecap: shape.getAttribute("stroke-linecap"),
+        strokeLinejoin: shape.getAttribute("stroke-linejoin"),
         strokeWidth: Number(shape.getAttribute("stroke-width"))
       }));
-      expect(committedWideLine).toEqual({ dash: "none", isPreview: false, strokeWidth: 20 });
+      expect(committedWideLine).toEqual({ dash: "none", isPreview: false, strokeLinecap: "square", strokeLinejoin: "miter", strokeWidth: 20 });
 
       await page.locator('[data-shape-tool="text"]').click();
       await clickObjectVectorLogicalPoint(page, 70, 60);
@@ -3750,6 +3788,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         stroke: "#6fd3ff",
         strokeOpacity: 1,
         strokeWidth: 20
+      });
+      const pivotMarkerState = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__pivot-origin").evaluate((pivot) => {
+        const [horizontal, vertical] = Array.from(pivot.querySelectorAll("line"));
+        return {
+          ariaLabel: pivot.getAttribute("aria-label"),
+          horizontalSpan: Math.abs(Number(horizontal.getAttribute("x2")) - Number(horizontal.getAttribute("x1"))),
+          title: pivot.querySelector("title")?.textContent || "",
+          verticalSpan: Math.abs(Number(vertical.getAttribute("y2")) - Number(vertical.getAttribute("y1")))
+        };
+      });
+      expect(pivotMarkerState).toEqual({
+        ariaLabel: "Origin/Pivot marker for selected shape rotation and scale",
+        horizontalSpan: 8,
+        title: "Origin/Pivot: rotate and scale pivot for the selected shape.",
+        verticalSpan: 8
       });
       const previewToolbarAfterText = await page.evaluate(() => Array.from(document.querySelectorAll(".object-vector-studio-v2__preview-edit-toolbar button")).map((button) => ({
         disabled: button.disabled,
@@ -4353,11 +4406,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-geometry-point-kind='rectangle-corner']")).toHaveCount(4);
 
       const rectangleBeforeDrag = await shapeSnapshot(0);
+      const undoStackBeforeDrag = await page.evaluate(() => window.__objectVectorStudioV2App.previewUndoStack.length);
       await dragLocator("#objectVectorStudioV2RenderSurface [data-shape-index='0']", 44, 24);
       const rectangleAfterDrag = await shapeSnapshot(0);
       expect(rectangleAfterDrag.transform.x).not.toBe(rectangleBeforeDrag.transform.x);
       expect(rectangleAfterDrag.transform.y).not.toBe(rectangleBeforeDrag.transform.y);
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.previewUndoStack.length)).toBe(undoStackBeforeDrag + 1);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Dragged shape row 0 by/);
+      await page.locator("#objectVectorStudioV2PreviewUndoButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Undo applied to Object Preview edits\./);
+      await expect.poll(async () => shapeSnapshot(0)).toEqual(rectangleBeforeDrag);
+      await page.locator("#objectVectorStudioV2PreviewRedoButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Redo applied to Object Preview edits\./);
+      await expect.poll(async () => shapeSnapshot(0)).toEqual(rectangleAfterDrag);
 
       const rectangleBeforeNegativeDrag = await shapeSnapshot(0);
       await dragLocator("#objectVectorStudioV2RenderSurface [data-shape-index='0']", -36, -24);

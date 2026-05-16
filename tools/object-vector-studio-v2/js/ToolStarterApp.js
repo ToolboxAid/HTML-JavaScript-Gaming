@@ -762,6 +762,10 @@ export class ToolStarterApp {
       }
       this.statusLog.write(`OK Palette stroke width set to ${width}.`);
     });
+    this.elements.strokeLinecap.addEventListener("change", () => {
+      this.elements.strokeLinecap.value = this.strokeLinecapValue();
+      this.statusLog.write(`OK Palette stroke endings set to ${this.elements.strokeLinecap.value}.`);
+    });
     [
       this.elements.fillOpacity,
       this.elements.strokeOpacity
@@ -845,6 +849,14 @@ export class ToolStarterApp {
     this.elements.paintModeButton.dataset.paletteModeOpacity = String(this.selectedFillOpacity);
     this.elements.strokeModeButton.dataset.paletteModeColor = this.selectedStrokeColor;
     this.elements.strokeModeButton.dataset.paletteModeOpacity = String(this.selectedStrokeOpacity);
+  }
+
+  strokeLinecapValue(value = this.elements.strokeLinecap?.value) {
+    return value === "square" ? "square" : "round";
+  }
+
+  strokeLinejoinValue(value = this.strokeLinecapValue()) {
+    return value === "square" ? "miter" : "round";
   }
 
   bindViewportControls() {
@@ -946,6 +958,8 @@ export class ToolStarterApp {
     this.applyIconGlyph(this.elements.snapModeButton, snapDetails.iconKey);
     this.elements.renderSurface.classList.toggle("is-snap-point-mode", this.snapMode === "point");
     this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
+    this.elements.angleSnapButton.setAttribute("aria-label", "Angle Snap for Object Transform Rotate");
+    this.elements.angleSnapButton.title = "Angle Snap is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.";
     this.elements.gridRenderButton.setAttribute("aria-pressed", String(this.gridRenderEnabled));
     this.elements.centerDotButton.setAttribute("aria-pressed", String(this.centerOriginVisible));
     this.elements.renderSurface.classList.toggle("is-grid-visible", this.gridRenderEnabled);
@@ -2762,8 +2776,8 @@ export class ToolStarterApp {
       return;
     }
     element.style.strokeDasharray = this.drawingPreviewDashArray(previewShape.style.strokeWidth);
-    element.style.strokeLinecap = "round";
-    element.style.strokeLinejoin = "round";
+    element.style.strokeLinecap = this.strokeLinecapValue(previewShape.style.strokeLinecap);
+    element.style.strokeLinejoin = this.strokeLinejoinValue(previewShape.style.strokeLinecap);
   }
 
   drawingPreviewDashArray(strokeWidth) {
@@ -2911,11 +2925,17 @@ export class ToolStarterApp {
   }
 
   applySvgStyle(element, shape, { drawingScale = 1 } = {}) {
+    const geometryTool = shapeGeometryTool(shape);
     element.setAttribute("fill", shape.style.fill);
     element.setAttribute("stroke", shape.style.stroke);
     element.setAttribute("stroke-width", shape.style.strokeWidth);
     element.setAttribute("fill-opacity", shape.style.fillOpacity);
     element.setAttribute("stroke-opacity", shape.style.strokeOpacity);
+    if (["line", "polyline", "polygon", "arc"].includes(geometryTool)) {
+      const lineCap = this.strokeLinecapValue(shape.style.strokeLinecap);
+      element.setAttribute("stroke-linecap", lineCap);
+      element.setAttribute("stroke-linejoin", this.strokeLinejoinValue(lineCap));
+    }
     const transform = this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale);
     element.setAttribute("transform", this.svgTransformAttribute(transform));
   }
@@ -3112,17 +3132,21 @@ export class ToolStarterApp {
       const pivot = document.createElementNS(SVG_NS, "g");
       pivot.classList.add("object-vector-studio-v2__pivot-origin");
       pivot.dataset.pivotOrigin = String(this.selectedShapeIndex);
+      pivot.setAttribute("role", "img");
+      pivot.setAttribute("aria-label", "Origin/Pivot marker for selected shape rotation and scale");
+      const pivotTitle = document.createElementNS(SVG_NS, "title");
+      pivotTitle.textContent = "Origin/Pivot: rotate and scale pivot for the selected shape.";
       const horizontal = document.createElementNS(SVG_NS, "line");
-      horizontal.setAttribute("x1", bounds.originX - 7);
-      horizontal.setAttribute("x2", bounds.originX + 7);
+      horizontal.setAttribute("x1", bounds.originX - 4);
+      horizontal.setAttribute("x2", bounds.originX + 4);
       horizontal.setAttribute("y1", bounds.originY);
       horizontal.setAttribute("y2", bounds.originY);
       const vertical = document.createElementNS(SVG_NS, "line");
       vertical.setAttribute("x1", bounds.originX);
       vertical.setAttribute("x2", bounds.originX);
-      vertical.setAttribute("y1", bounds.originY - 7);
-      vertical.setAttribute("y2", bounds.originY + 7);
-      pivot.append(horizontal, vertical);
+      vertical.setAttribute("y1", bounds.originY - 4);
+      vertical.setAttribute("y2", bounds.originY + 4);
+      pivot.append(pivotTitle, horizontal, vertical);
       this.elements.renderSurface.append(pivot);
     } catch (error) {
       this.statusLog.write(`FAIL Selection overlay render failed for ${object.name}/shape-${this.selectedShapeIndex} (${shapeTool(selectedShape)}): ${error.message}`);
@@ -3494,6 +3518,7 @@ export class ToolStarterApp {
       fill: TRANSPARENT_STYLE_COLOR,
       fillOpacity: this.selectedFillOpacity,
       stroke: this.selectedStrokeColor || this.currentTargetColor() || "#ffffff",
+      strokeLinecap: this.strokeLinecapValue(),
       strokeOpacity: this.selectedStrokeOpacity,
       strokeWidth: Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : styleDefault.strokeWidth
     };
@@ -3819,6 +3844,8 @@ export class ToolStarterApp {
     event.preventDefault();
     this.previewPointerEdit = {
       mode: "move",
+      historyRecorded: false,
+      historySnapshot: this.cloneCurrentPayload(),
       lastDelta: { x: 0, y: 0 },
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
@@ -3840,6 +3867,8 @@ export class ToolStarterApp {
     event.stopPropagation();
     this.previewPointerEdit = {
       ...options,
+      historyRecorded: false,
+      historySnapshot: this.cloneCurrentPayload(),
       lastDelta: { x: 0, y: 0 },
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
@@ -3866,6 +3895,7 @@ export class ToolStarterApp {
     if (Math.abs(delta.x - edit.lastDelta.x) < 0.001 && Math.abs(delta.y - edit.lastDelta.y) < 0.001) {
       return;
     }
+    this.recordPreviewPointerEditStart(edit);
     edit.lastDelta = delta;
     this.applyPreviewPointerEdit(edit, delta, { live: true });
   }
@@ -3880,7 +3910,21 @@ export class ToolStarterApp {
     if (Math.abs(delta.x) < 0.001 && Math.abs(delta.y) < 0.001) {
       return;
     }
+    this.recordPreviewPointerEditStart(edit);
     this.applyPreviewPointerEdit(edit, delta, { live: false });
+  }
+
+  recordPreviewPointerEditStart(edit) {
+    if (edit.historyRecorded || !edit.historySnapshot) {
+      return;
+    }
+    this.previewUndoStack.push(this.clonePayloadValue(edit.historySnapshot));
+    if (this.previewUndoStack.length > PREVIEW_HISTORY_LIMIT) {
+      this.previewUndoStack.shift();
+    }
+    this.previewRedoStack = [];
+    edit.historyRecorded = true;
+    this.updatePreviewEditActionState();
   }
 
   applyPreviewPointerEdit(edit, delta, { live = false } = {}) {
@@ -3889,28 +3933,28 @@ export class ToolStarterApp {
         shape.transform = this.ensureShapeTransform(shape);
         shape.transform.x = Number((edit.originalTransform.x + delta.x).toFixed(3));
         shape.transform.y = Number((edit.originalTransform.y + delta.y).toFixed(3));
-      }, `OK ${live ? "Live " : ""}Dragged shape row ${edit.shapeIndex} by ${delta.x}, ${delta.y}.`);
+      }, `OK ${live ? "Live " : ""}Dragged shape row ${edit.shapeIndex} by ${delta.x}, ${delta.y}.`, { skipPreviewHistory: true });
       return;
     }
 
     if (edit.mode === "line-endpoint") {
       this.updateSelectedShapeGeometry("preview line endpoint", (shape) => {
         shape.geometry = this.previewLineEndpointGeometry(shape, edit, delta);
-      }, `OK ${live ? "Live " : ""}Moved line ${edit.endpoint} for shape row ${edit.shapeIndex}.`);
+      }, `OK ${live ? "Live " : ""}Moved line ${edit.endpoint} for shape row ${edit.shapeIndex}.`, { skipPreviewHistory: true });
       return;
     }
 
     if (edit.mode === "geometry-point") {
       this.updateSelectedShapeGeometry("preview point handle", (shape) => {
         shape.geometry = this.previewGeometryPointGeometry(shape, edit, delta);
-      }, `OK ${live ? "Live " : ""}Moved geometry point ${edit.control || edit.pointIndex + 1 || "handle"} for shape row ${edit.shapeIndex}.`);
+      }, `OK ${live ? "Live " : ""}Moved geometry point ${edit.control || edit.pointIndex + 1 || "handle"} for shape row ${edit.shapeIndex}.`, { skipPreviewHistory: true });
       return;
     }
 
     if (edit.mode === "resize") {
       this.updateSelectedShapeGeometry("preview resize", (shape) => {
         shape.geometry = this.previewResizeGeometry(shape, edit, delta);
-      }, `OK ${live ? "Live " : ""}Resized shape row ${edit.shapeIndex} with ${edit.handle} handle.`);
+      }, `OK ${live ? "Live " : ""}Resized shape row ${edit.shapeIndex} with ${edit.handle} handle.`, { skipPreviewHistory: true });
     }
   }
 
@@ -4741,6 +4785,7 @@ export class ToolStarterApp {
       fill: TRANSPARENT_STYLE_COLOR,
       fillOpacity: styleOverride?.fillOpacity ?? this.selectedFillOpacity,
       stroke: strokeColor,
+      strokeLinecap: styleOverride?.strokeLinecap ?? this.strokeLinecapValue(style.strokeLinecap),
       strokeOpacity: styleOverride?.strokeOpacity ?? this.selectedStrokeOpacity,
       strokeWidth: styleOverride?.strokeWidth ?? style.strokeWidth
     };
@@ -4791,12 +4836,14 @@ export class ToolStarterApp {
     if (!PRIMITIVE_TOOLS.includes(type)) {
       throw new Error(`unsupported shape tool ${type}.`);
     }
+    if (!geometry) {
+      throw new Error(`${shapeTypeLabel(type)} requires committed canvas placement geometry.`);
+    }
 
     const base = this.schemaDefault("shapeCommon");
-    const geometryDefinition = type === "square" ? "rectangleGeometry" : `${type}Geometry`;
     const shape = {
       ...base,
-      geometry: geometry ? JSON.parse(JSON.stringify(geometry)) : this.schemaDefault(geometryDefinition),
+      geometry: JSON.parse(JSON.stringify(geometry)),
       order,
       style: this.createShapeStyleDefault(type, color, styleOverride),
       tool: type,
@@ -4919,6 +4966,9 @@ export class ToolStarterApp {
     };
     syncTarget("paint", effectiveShape.style?.fill);
     syncTarget("stroke", effectiveShape.style?.stroke);
+    if (effectiveShape.style?.strokeLinecap) {
+      this.elements.strokeLinecap.value = this.strokeLinecapValue(effectiveShape.style.strokeLinecap);
+    }
     if (changed && render) {
       this.renderPalette();
     }
@@ -5028,6 +5078,7 @@ export class ToolStarterApp {
     const paletteLabel = swatch?.name || swatch?.id || swatch?.symbol || directLabel || label;
     if (shouldApplyStroke) {
       shape.style.stroke = color;
+      shape.style.strokeLinecap = this.strokeLinecapValue();
       shape.style.strokeWidth = Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : 2;
       shape.style.strokeOpacity = this.selectedStrokeOpacity;
     } else {
@@ -5097,6 +5148,9 @@ export class ToolStarterApp {
     }
     if (Number.isFinite(style.strokeWidth) && style.strokeWidth > 0) {
       this.elements.strokeWidth.value = String(style.strokeWidth);
+    }
+    if (style.strokeLinecap) {
+      this.elements.strokeLinecap.value = this.strokeLinecapValue(style.strokeLinecap);
     }
     this.updatePaletteModeSwatches();
     if (this.runtimePalette) {
@@ -6020,7 +6074,7 @@ export class ToolStarterApp {
     };
   }
 
-  updateSelectedShapeGeometry(operation, updater, okMessage) {
+  updateSelectedShapeGeometry(operation, updater, okMessage, options = {}) {
     const selected = this.selectedShape();
     if (!selected) {
       this.statusLog.write(`WARN Geometry ${operation} skipped: no shape is selected.`);
@@ -6048,10 +6102,10 @@ export class ToolStarterApp {
       this.statusLog.write(`FAIL Invalid geometry rejected for shape row ${this.selectedShapeIndex}: ${error.message}`);
       return false;
     }
-    return this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, okMessage, `Geometry ${operation} failed schema validation`);
+    return this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, okMessage, `Geometry ${operation} failed schema validation`, options);
   }
 
-  updateSelectedShapeTransform(operation, updater, okMessage) {
+  updateSelectedShapeTransform(operation, updater, okMessage, options = {}) {
     const selected = this.selectedShape();
     if (!selected) {
       this.statusLog.write(`WARN Transform ${operation} skipped: no shape is selected.`);
@@ -6084,7 +6138,7 @@ export class ToolStarterApp {
     if (override) {
       override.transform = this.ensureShapeTransform(shape);
     }
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, okMessage, `Transform ${operation} failed schema validation`);
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, okMessage, `Transform ${operation} failed schema validation`, options);
   }
 
   duplicateSelectedShape() {

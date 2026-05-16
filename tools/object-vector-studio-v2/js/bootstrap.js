@@ -92,6 +92,7 @@ window.addEventListener("DOMContentLoaded", () => {
       snapModeButton: requireElement("#objectVectorStudioV2SnapModeButton"),
       stopButton: requireElement("#objectVectorStudioV2StopButton"),
       strokeModeButton: requireElement("#objectVectorStudioV2StrokeModeButton"),
+      strokeLinecap: requireElement("#objectVectorStudioV2StrokeLinecap"),
       strokeOpacity: requireElement("#objectVectorStudioV2StrokeOpacity"),
       strokeWidth: requireElement("#objectVectorStudioV2StrokeWidth"),
       tagFilter: requireElement("#objectVectorStudioV2TagFilter"),
