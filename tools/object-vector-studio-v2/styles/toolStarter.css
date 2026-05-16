@@ -1107,6 +1107,7 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__work-area {
+  position: relative;
   min-height: 0;
   flex: 0 0 auto;
   display: grid;
@@ -1445,18 +1446,19 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__drawing-hint {
-  pointer-events: none;
-}
-
-.object-vector-studio-v2__drawing-hint-text {
-  fill: var(--tool-starter-text);
+  position: absolute;
+  z-index: 6;
+  max-width: min(260px, calc(100% - 24px));
+  border: 1px solid rgba(221, 214, 254, 0.45);
+  border-radius: 6px;
+  background: rgba(2, 6, 23, 0.92);
+  color: var(--tool-starter-text);
   font-family: "0xProto Nerd Font", "Cascadia Mono", monospace;
   font-size: 12px;
-  paint-order: stroke;
-  stroke: rgba(2, 6, 23, 0.95);
-  stroke-linejoin: round;
-  stroke-width: 4px;
-  vector-effect: non-scaling-stroke;
+  line-height: 1.2;
+  padding: 4px 7px;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .object-vector-studio-v2__snap-targets {

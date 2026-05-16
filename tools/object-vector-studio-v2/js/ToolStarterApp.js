@@ -489,6 +489,7 @@ export class ToolStarterApp {
     this.isPaintDragging = false;
     this.activeDrawing = null;
     this.drawingPreviewPoint = null;
+    this.drawingHintClientPoint = null;
     this.previewPointerEdit = null;
     this.transformInputValues = new Map();
     this.stateControlStateId = "";
@@ -2441,6 +2442,7 @@ export class ToolStarterApp {
   renderWorkSurface() {
     const object = this.selectedObject();
     this.elements.renderSurface.classList.toggle("is-drawing-mode", Boolean(this.activeDrawing));
+    this.removeDrawingHint();
     this.elements.renderSurface.replaceChildren();
     this.renderSvgGrid();
     if (!object) {
@@ -2698,34 +2700,52 @@ export class ToolStarterApp {
   renderDrawingHint() {
     const drawing = this.activeDrawing;
     if (!drawing || !["polygon", "polyline"].includes(drawing.tool) || !this.drawingPreviewPoint) {
+      this.removeDrawingHint();
       return;
     }
-    const point = {
-      x: Number(this.scaleDrawingValue(this.drawingPreviewPoint.x, OBJECT_PREVIEW_DRAWING_SCALE)),
-      y: Number(this.scaleDrawingValue(this.drawingPreviewPoint.y, OBJECT_PREVIEW_DRAWING_SCALE))
+    const workArea = this.elements.renderSurface.closest(".object-vector-studio-v2__work-area");
+    if (!workArea) {
+      return;
+    }
+    const clientPoint = this.drawingHintClientPoint || this.clientPointFromDrawingPoint(this.drawingPreviewPoint);
+    if (!clientPoint) {
+      this.removeDrawingHint();
+      return;
+    }
+    const workAreaBounds = workArea.getBoundingClientRect();
+    const hint = document.createElement("div");
+    hint.className = "object-vector-studio-v2__drawing-hint";
+    hint.dataset.drawingHintTool = drawing.tool;
+    hint.textContent = "Double-click / Enter to complete";
+    hint.style.left = `${Math.round(clientPoint.x - workAreaBounds.left + 12)}px`;
+    hint.style.top = `${Math.round(clientPoint.y - workAreaBounds.top + 16)}px`;
+    workArea.append(hint);
+  }
+
+  removeDrawingHint() {
+    this.elements.renderSurface.closest(".object-vector-studio-v2__work-area")
+      ?.querySelector(".object-vector-studio-v2__drawing-hint")
+      ?.remove();
+  }
+
+  clientPointFromDrawingPoint(point) {
+    const bounds = this.elements.renderSurface.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) {
+      return null;
+    }
+    const viewWidth = DEFAULT_VIEWPORT.width / this.viewport.zoom;
+    const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
+    const drawingX = point.x * OBJECT_PREVIEW_DRAWING_SCALE;
+    const drawingY = point.y * OBJECT_PREVIEW_DRAWING_SCALE;
+    return {
+      x: bounds.left + ((drawingX - this.viewport.x + viewWidth / 2) / viewWidth) * bounds.width,
+      y: bounds.top + ((drawingY - this.viewport.y + viewHeight / 2) / viewHeight) * bounds.height
     };
-    const unitsPerPixel = this.svgUnitsPerCssPixel();
-    const group = document.createElementNS(SVG_NS, "g");
-    const text = document.createElementNS(SVG_NS, "text");
-    group.classList.add("object-vector-studio-v2__drawing-hint");
-    group.dataset.drawingHintTool = drawing.tool;
-    group.setAttribute("pointer-events", "none");
-    text.classList.add("object-vector-studio-v2__drawing-hint-text");
-    text.setAttribute("x", this.formatViewportNumber(point.x + 12 * unitsPerPixel));
-    text.setAttribute("y", this.formatViewportNumber(point.y + 16 * unitsPerPixel));
-    text.textContent = "Double-click / Enter to complete";
-    group.append(text);
-    this.elements.renderSurface.append(group);
   }
 
   applyDrawingPreviewPresentation(element, previewShape) {
     if (shapeGeometryTool(previewShape) === "text") {
-      element.style.fill = previewShape.style.stroke || "#ffffff";
-      element.style.fillOpacity = String(previewShape.style.strokeOpacity ?? 1);
-      element.style.stroke = "none";
       element.style.strokeDasharray = "none";
-      element.style.strokeWidth = "0";
-      element.style.paintOrder = "normal";
       return;
     }
     element.style.strokeDasharray = this.drawingPreviewDashArray(previewShape.style.strokeWidth);
@@ -3430,6 +3450,7 @@ export class ToolStarterApp {
     this.previewPointerEdit = null;
     this.activeDrawing = this.createDrawingState(tool);
     this.drawingPreviewPoint = null;
+    this.drawingHintClientPoint = null;
     this.renderWorkSurface();
     const objectHint = this.selectedObject() ? "" : " Select a schema-valid object before committing geometry.";
     const drawingHelp = ["polygon", "polyline"].includes(tool)
@@ -3472,6 +3493,7 @@ export class ToolStarterApp {
     const tool = this.activeDrawing.tool;
     this.activeDrawing = null;
     this.drawingPreviewPoint = null;
+    this.drawingHintClientPoint = null;
     this.activeTool = "select";
     const selectButton = this.elements.toolToggles.find((candidate) => candidate.dataset.shapeTool === "select") || null;
     this.setActiveToolButton(selectButton);
@@ -3517,6 +3539,7 @@ export class ToolStarterApp {
     event.stopPropagation();
     const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
     this.drawingPreviewPoint = point;
+    this.drawingHintClientPoint = { x: event.clientX, y: event.clientY };
     if (drawing.flow === "points") {
       if (!drawing.points.length) {
         drawing.style = this.drawingStyleFromActivePalette();
@@ -3558,6 +3581,7 @@ export class ToolStarterApp {
     }
     drawing.preview = point;
     this.drawingPreviewPoint = point;
+    this.drawingHintClientPoint = { x: event.clientX, y: event.clientY };
     this.renderWorkSurface();
   }
 

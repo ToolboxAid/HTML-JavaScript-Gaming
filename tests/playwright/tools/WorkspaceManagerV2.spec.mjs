@@ -114,6 +114,20 @@ async function mouseClickObjectVectorLogicalPoint(page, x, y, options = {}) {
   await page.mouse.click(point.x, point.y, options);
 }
 
+async function doubleClickObjectVectorLogicalPoint(page, x, y) {
+  const point = await objectVectorLogicalClientPoint(page, x, y);
+  await page.evaluate((clientPoint) => {
+    const surface = document.querySelector("#objectVectorStudioV2RenderSurface");
+    surface.dispatchEvent(new MouseEvent("dblclick", {
+      bubbles: true,
+      button: 0,
+      cancelable: true,
+      clientX: clientPoint.x,
+      clientY: clientPoint.y
+    }));
+  }, point);
+}
+
 async function dragObjectVectorLogicalPoints(page, start, end) {
   const startPoint = await objectVectorLogicalClientPoint(page, start.x, start.y);
   const endPoint = await objectVectorLogicalClientPoint(page, end.x, end.y);
@@ -3487,30 +3501,52 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator('[data-shape-tool="polygon"]').click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Polygon\. Click to add points\.\n\nDouble-click to finish\./);
       await moveObjectVectorLogicalPoint(page, { x: -30, y: -20 });
-      await expect(page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-hint")).toHaveText("Double-click / Enter to complete");
-      const polygonHintState = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-hint").evaluate((hint) => {
-        const text = hint.querySelector("text");
+      await expect(page.locator("#objectVectorStudioV2WorkArea .object-vector-studio-v2__drawing-hint")).toHaveText("Double-click / Enter to complete");
+      const polygonHintState = await page.locator("#objectVectorStudioV2WorkArea .object-vector-studio-v2__drawing-hint").evaluate((hint) => {
         const app = window.__objectVectorStudioV2App;
+        const rect = hint.getBoundingClientRect();
         return {
-          hintX: Number(text.getAttribute("x")),
-          hintY: Number(text.getAttribute("y")),
+          fontSize: getComputedStyle(hint).fontSize,
+          height: Math.round(rect.height),
+          hintX: Math.round(rect.left),
+          hintY: Math.round(rect.top),
           pointerEvents: getComputedStyle(hint).pointerEvents,
-          pointerX: app.drawingPreviewPoint.x * 10,
-          pointerY: app.drawingPreviewPoint.y * 10,
-          textPointerEvents: getComputedStyle(text).pointerEvents
+          pointerX: Math.round(app.drawingHintClientPoint.x),
+          pointerY: Math.round(app.drawingHintClientPoint.y)
         };
       });
       expect(polygonHintState.pointerEvents).toBe("none");
-      expect(polygonHintState.textPointerEvents).toBe("none");
       expect(polygonHintState.hintX).toBeGreaterThan(polygonHintState.pointerX);
       expect(polygonHintState.hintY).toBeGreaterThan(polygonHintState.pointerY);
       await moveObjectVectorLogicalPoint(page, { x: -25, y: -15 });
-      const movedPolygonHint = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-hint text").evaluate((text) => ({
-        x: Number(text.getAttribute("x")),
-        y: Number(text.getAttribute("y"))
+      const movedPolygonHint = await page.locator("#objectVectorStudioV2WorkArea .object-vector-studio-v2__drawing-hint").evaluate((hint) => ({
+        x: Math.round(hint.getBoundingClientRect().left),
+        y: Math.round(hint.getBoundingClientRect().top)
       }));
       expect(movedPolygonHint.x).toBeGreaterThan(polygonHintState.hintX);
       expect(movedPolygonHint.y).toBeGreaterThan(polygonHintState.hintY);
+      const zoomHintStates = await page.locator("#objectVectorStudioV2WorkArea .object-vector-studio-v2__drawing-hint").evaluate((hint) => {
+        const app = window.__objectVectorStudioV2App;
+        const collect = (zoom) => {
+          app.viewport.zoom = zoom;
+          app.updateViewport();
+          app.renderWorkSurface();
+          const nextHint = document.querySelector("#objectVectorStudioV2WorkArea .object-vector-studio-v2__drawing-hint");
+          const rect = nextHint.getBoundingClientRect();
+          return {
+            fontSize: getComputedStyle(nextHint).fontSize,
+            height: Math.round(rect.height),
+            zoom
+          };
+        };
+        const states = [collect(0.1), collect(0.3), collect(0.05)];
+        app.viewport.zoom = 0.1;
+        app.updateViewport();
+        app.renderWorkSurface();
+        return states;
+      });
+      expect(zoomHintStates.map((state) => state.fontSize)).toEqual(["12px", "12px", "12px"]);
+      expect(new Set(zoomHintStates.map((state) => state.height)).size).toBe(1);
       await page.locator('[data-shape-tool="polyline"]').click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Polyline\. Click to add points\.\n\nDouble-click to finish\./);
       await page.locator('[data-shape-tool="rectangle"]').click();
@@ -3688,19 +3724,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await clickObjectVectorLogicalPoint(page, 70, 60);
       await moveObjectVectorLogicalPoint(page, { x: 76, y: 66 });
       const textPreview = await page.locator("#objectVectorStudioV2RenderSurface text.object-vector-studio-v2__drawing-preview").evaluate((preview) => ({
-        fill: preview.style.fill || preview.getAttribute("fill"),
-        stroke: preview.style.stroke,
-        strokeWidth: preview.style.strokeWidth,
+        dash: preview.style.strokeDasharray,
+        fill: preview.getAttribute("fill"),
+        stroke: preview.getAttribute("stroke"),
+        strokeWidth: Number(preview.getAttribute("stroke-width")),
         text: preview.textContent.trim(),
         tool: preview.dataset.drawingPreviewTool
       }));
-      expect(textPreview.fill).toMatch(/#6fd3ff|rgb\(111, 211, 255\)/);
-      expect(textPreview).toMatchObject({
-        stroke: "none",
+      expect(textPreview).toEqual({
+        dash: "none",
+        fill: "#00000000",
+        stroke: "#6fd3ff",
+        strokeWidth: 20,
         text: "Text",
         tool: "text"
       });
-      expect(["0", "0px"]).toContain(textPreview.strokeWidth);
       await clickObjectVectorLogicalPoint(page, 76, 66);
       const committedTextStyle = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
       expect(committedTextStyle).toMatchObject({
@@ -3709,6 +3747,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         strokeOpacity: 1,
         strokeWidth: 20
       });
+
+      const shapeCountBeforeDoubleClick = await page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.length);
+      await page.locator('[data-shape-tool="polygon"]').click();
+      await clickObjectVectorLogicalPoint(page, 80, -40);
+      await clickObjectVectorLogicalPoint(page, 95, -40);
+      await clickObjectVectorLogicalPoint(page, 95, -25);
+      await clickObjectVectorLogicalPoint(page, 80, -25);
+      await doubleClickObjectVectorLogicalPoint(page, 80, -25);
+      await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.length)).toBe(shapeCountBeforeDoubleClick + 1);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created polygon shape on Drawing Flow from double-click\./);
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
