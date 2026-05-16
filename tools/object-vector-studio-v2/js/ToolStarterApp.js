@@ -3375,7 +3375,10 @@ export class ToolStarterApp {
     this.drawingPreviewPoint = null;
     this.renderWorkSurface();
     const objectHint = this.selectedObject() ? "" : " Select a schema-valid object before committing geometry.";
-    this.statusLog.write(`OK Drawing mode selected: ${shapeTypeLabel(tool)}. Use canvas pointer input to create geometry.${objectHint}`);
+    const drawingHelp = ["polygon", "polyline"].includes(tool)
+      ? "Click to add points.\n\nDouble-click to finish."
+      : "Use canvas pointer input to create geometry.";
+    this.statusLog.write(`OK Drawing mode selected: ${shapeTypeLabel(tool)}. ${drawingHelp}${objectHint}`);
   }
 
   createDrawingState(tool) {

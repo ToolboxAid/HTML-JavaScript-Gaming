@@ -1524,6 +1524,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             add: title("#objectVectorStudioV2AddObjectButton"),
             angle: title("#objectVectorStudioV2AngleSnapButton"),
             grid: title("#objectVectorStudioV2GridRenderButton"),
+            polygon: title("[data-shape-tool='polygon']"),
+            polyline: title("[data-shape-tool='polyline']"),
             rename: title("#objectVectorStudioV2RenameObjectButton"),
             shape: title("[data-shape-tool='rectangle']"),
             zoomIn: title("#objectVectorStudioV2ZoomInButton")
@@ -1644,6 +1646,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         add: "Add a schema-valid object to the loaded payload",
         angle: "When enabled, the Rotate action rounds the entered rotation delta to 15 degree increments.",
         grid: "Show or hide the preview grid",
+        polygon: "Create a polygon shape on the selected object. Click to add points.\n\nDouble-click to finish.",
+        polyline: "Create a polyline shape on the selected object. Click to add points.\n\nDouble-click to finish.",
         rename: "Disabled until a schema-valid object is selected.",
         shape: "Create a rectangle shape on the selected object",
         zoomIn: "Zoom the work surface in"
@@ -3478,6 +3482,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2StrokeModeButton").click();
       await page.locator("[data-palette-color='#6fd3ff']").click();
 
+      await page.locator('[data-shape-tool="polygon"]').click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Polygon\. Click to add points\.\n\nDouble-click to finish\./);
+      await page.locator('[data-shape-tool="polyline"]').click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Polyline\. Click to add points\.\n\nDouble-click to finish\./);
       await page.locator('[data-shape-tool="rectangle"]').click();
       await expect(page.locator('[data-shape-tool="rectangle"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveClass(/is-drawing-mode/);
