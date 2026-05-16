@@ -1,24 +1,25 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_064-snap-cycle-selection-and-preview-edit-actions
+PR: PR_26133_065-object-preview-editing-selection-and-style-fixes
 
 ## Validation
 
 - PASS: npm run test:workspace-v2
 - Result: 54 passed
-- Runtime: 4.4m
+- Runtime: 4.3m
 - Browser project: playwright
 - Workers: 1
 
 ## Targeted Checks Covered
 
-- Snap button cycles Snap Grid -> Snap Point -> Snap None -> Snap Grid, with mode labels/icons updated.
-- Shape selection sets Stroke as the active Paint/Stroke mode without applying color.
-- Object Geometry and Object Transform locations are swapped.
-- Object Preview edit toolbar renders under Object ID with an HR separator; Undo/Redo/Copy/Paste are visibly disabled because backing behavior is not wired.
-- Canvas geometry hit testing selects filled and stroke-only shapes, including transformed geometry.
-- Existing mouse edit, transform-bounds, dirty-state, and Object Vector Studio V2 authoring tests remain green.
+- Empty canvas click deselects the current shape and clicking another shape selects it/show Object Geometry.
+- Escape no longer cancels Object Vector Studio V2 drawing mode; switching tools cancels without committing invalid geometry.
+- Object Geometry has no Apply Geometry button; input change events auto-apply valid geometry and visibly reject invalid geometry.
+- Shape body drag, point/handle drag, polygon/polyline editing, and circle selector-corner resize update preview geometry and dirty state.
+- Snap Grid drawing and handle movement snap to whole-number logical grid coordinates.
+- New drawn shapes preserve the selected stroke color after deselect.
+- Paint and Stroke mode application paths remain independent and do not mutate the opposite opacity.
 
 ## Console/Runtime Errors
 
-- PASS: Object Vector Studio V2 Playwright coverage keeps page error and console error collections empty in the exercised flows.
+- PASS: Object Vector Studio V2 Playwright coverage collected no page errors or console errors in the exercised flows.

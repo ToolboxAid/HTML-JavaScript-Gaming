@@ -846,7 +846,7 @@ export class ToolStarterApp {
     this.elements.panRightButton.addEventListener("click", () => this.panViewport(20, 0));
     this.elements.resetViewButton.addEventListener("click", () => this.resetViewport());
     this.elements.renderSurface.addEventListener("mousemove", (event) => this.updateCoordinateDisplay(event));
-    this.elements.renderSurface.addEventListener("pointerdown", (event) => this.handleDrawingPointerDown(event));
+    this.elements.renderSurface.addEventListener("pointerdown", (event) => this.handleRenderSurfacePointerDown(event));
     this.elements.renderSurface.addEventListener("dblclick", (event) => this.finishMultiPointDrawing("double-click", event));
     this.window.addEventListener("pointermove", (event) => this.updatePreviewPointerEdit(event));
     this.window.addEventListener("pointermove", (event) => this.updateDrawingPreview(event));
@@ -874,11 +874,6 @@ export class ToolStarterApp {
   bindKeyboardShortcuts() {
     const handleShortcut = (event) => {
       if (event.defaultPrevented) {
-        return;
-      }
-      if (event.key === "Escape" && this.activeDrawing) {
-        event.preventDefault();
-        this.cancelActiveDrawing("Escape");
         return;
       }
       if (event.key === "Enter" && this.activeDrawing) {
@@ -1135,7 +1130,7 @@ export class ToolStarterApp {
     }
   }
 
-  renderPayload() {
+  renderPayload(options = {}) {
     if (!this.currentPayload) {
       return;
     }
@@ -1162,7 +1157,9 @@ export class ToolStarterApp {
     this.runtimePalette = paletteValidation.palette;
     this.ensureSelectedShape();
     this.ensureSelectedFrame();
-    this.syncPaletteSelectionFromCurrentShape({ render: false });
+    if (options.syncPaletteSelection !== false) {
+      this.syncPaletteSelectionFromCurrentShape({ render: false });
+    }
     if (this.runtimePalette) {
       this.renderPalette();
     }
@@ -1608,12 +1605,16 @@ export class ToolStarterApp {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
     });
+    button.append(this.createGroupIndicator(groupId));
+    return button;
+  }
+
+  createGroupIndicator(groupId) {
     const icon = document.createElement("span");
     icon.className = "object-vector-studio-v2__shape-group-indicator object-vector-studio-v2__tile-icon object-vector-studio-v2__tile-icon--group";
     icon.style.setProperty("--object-vector-studio-v2-shape-group-color", this.groupColor(groupId));
     this.applyIconGlyph(icon, "group");
-    button.append(icon);
-    return button;
+    return icon;
   }
 
   createSelectedShapeActions(object) {
@@ -1984,9 +1985,20 @@ export class ToolStarterApp {
   createSelectedShapeSummary(shape) {
     const shapePanel = document.createElement("section");
     shapePanel.className = "object-vector-studio-v2__shape-panel";
-    shapePanel.append(this.createDetailGrid([
-      ["Group", shape.groupId || "None"]
-    ]));
+    const groupRow = document.createElement("div");
+    groupRow.className = "object-vector-studio-v2__shape-group-summary";
+    const label = document.createElement("span");
+    label.className = "object-vector-studio-v2__detail-label";
+    label.textContent = "Group";
+    const value = document.createElement("span");
+    value.className = "object-vector-studio-v2__detail-value object-vector-studio-v2__shape-group-summary-value";
+    if (shape.groupId) {
+      value.append(this.createGroupIndicator(shape.groupId), document.createTextNode(shape.groupId));
+    } else {
+      value.textContent = "None";
+    }
+    groupRow.append(label, value);
+    shapePanel.append(groupRow);
     return shapePanel;
   }
 
@@ -2082,23 +2094,32 @@ export class ToolStarterApp {
         input.dataset.shapeGeometryField = field.key;
         input.type = field.kind;
         input.value = String(field.value);
-        input.addEventListener("input", () => this.clearInputValidity(input));
+        this.bindGeometryAutoApplyInput(input);
         label.append(caption, input);
         grid.append(label);
       });
     }
-    const applyButton = document.createElement("button");
-    applyButton.id = "objectVectorStudioV2ApplyGeometryButton";
-    applyButton.type = "button";
-    applyButton.textContent = "Apply Geometry";
-    this.applyIconGlyph(applyButton, "edit");
-    applyButton.addEventListener("click", () => this.applyShapeGeometryEdits());
     if (editablePolygon) {
-      section.append(heading, grid, this.createPolygonSideActions(), applyButton);
+      section.append(heading, grid, this.createPolygonSideActions());
     } else {
-      section.append(heading, grid, applyButton);
+      section.append(heading, grid);
     }
     return section;
+  }
+
+  bindGeometryAutoApplyInput(input) {
+    input.addEventListener("input", () => this.clearInputValidity(input));
+    input.addEventListener("change", () => {
+      const shapeIndex = this.selectedShapeIndex;
+      this.window.setTimeout(() => {
+        if (this.selectedShapeIndex !== shapeIndex) {
+          return;
+        }
+        this.applyShapeGeometryEdits({
+          okMessage: `OK Auto-applied geometry edits to shape row ${this.selectedShapeIndex}.`
+        });
+      }, 0);
+    });
   }
 
   createPolygonPointRow(point, index, { selectable = true } = {}) {
@@ -2123,7 +2144,7 @@ export class ToolStarterApp {
       input.inputMode = "decimal";
       input.type = "text";
       input.value = String(value);
-      input.addEventListener("input", () => this.clearInputValidity(input));
+      this.bindGeometryAutoApplyInput(input);
       label.append(axisLabel, input);
       row.append(label);
     });
@@ -3367,6 +3388,33 @@ export class ToolStarterApp {
     }
   }
 
+  handleRenderSurfacePointerDown(event) {
+    if (this.activeDrawing) {
+      this.handleDrawingPointerDown(event);
+      return;
+    }
+    if (event.button !== 0 || this.previewPointerEdit) {
+      return;
+    }
+    if (event.target === this.elements.renderSurface || event.target?.classList?.contains("object-vector-studio-v2__svg-grid") || event.target?.classList?.contains("object-vector-studio-v2__center-origin-dot")) {
+      this.deselectShape("empty canvas");
+    }
+  }
+
+  deselectShape(sourceLabel = "selection") {
+    if (this.selectedShapeIndex < 0 && !this.selectedShapeIndexes.size && !this.directSelectedShapeIndexes.size) {
+      return;
+    }
+    this.selectedShapeIndex = -1;
+    this.selectedShapeIndexes.clear();
+    this.directSelectedShapeIndexes.clear();
+    this.renderObjectTiles();
+    this.renderSelectedObject();
+    this.renderWorkSurface();
+    this.updateObjectActionState();
+    this.statusLog.write(`OK Deselected shape from ${sourceLabel}.`);
+  }
+
   handleDrawingPointerDown(event) {
     const drawing = this.activeDrawing;
     if (!drawing || event.button !== 0) {
@@ -3653,7 +3701,7 @@ export class ToolStarterApp {
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
       shapeIndex: normalizedIndex,
-      start: this.pointerPreviewPoint(event)
+      start: this.snapCanvasPoint(this.pointerPreviewPoint(event), { excludeShapeIndex: normalizedIndex })
     };
   }
 
@@ -3674,13 +3722,13 @@ export class ToolStarterApp {
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
       shapeIndex: normalizedIndex,
-      start: this.pointerPreviewPoint(event)
+      start: this.snapCanvasPoint(this.pointerPreviewPoint(event), { excludeShapeIndex: normalizedIndex })
     };
   }
 
   previewPointerEditDelta(edit, event) {
     const rawEnd = this.pointerPreviewPoint(event);
-    const end = edit.mode === "move" ? rawEnd : this.snapCanvasPoint(rawEnd, { excludeShapeIndex: edit.shapeIndex });
+    const end = this.snapCanvasPoint(rawEnd, { excludeShapeIndex: edit.shapeIndex });
     return {
       x: this.formatViewportNumber(end.x - edit.start.x),
       y: this.formatViewportNumber(end.y - edit.start.y)
@@ -3785,9 +3833,12 @@ export class ToolStarterApp {
       return geometry;
     }
     if (geometryTool === "circle") {
-      const radiusDelta = Math.max(Math.abs(delta.x), Math.abs(delta.y));
-      const sign = edit.handle.includes("n") || edit.handle.includes("w") ? -1 : 1;
-      geometry.r = Number(Math.max(1, edit.originalGeometry.r + radiusDelta * sign).toFixed(3));
+      const bounds = shapeBounds({ ...shape, geometry: edit.originalGeometry });
+      const nextBounds = this.resizedGeometryBounds(bounds, edit.handle, delta);
+      const diameter = Math.max(1, Math.min(Math.abs(nextBounds.width), Math.abs(nextBounds.height)));
+      geometry.cx = Number((nextBounds.x + nextBounds.width / 2).toFixed(3));
+      geometry.cy = Number((nextBounds.y + nextBounds.height / 2).toFixed(3));
+      geometry.r = Number((diameter / 2).toFixed(3));
       return geometry;
     }
     if (geometryTool === "polygon" || geometryTool === "polyline") {
@@ -4561,11 +4612,13 @@ export class ToolStarterApp {
 
   createShapeStyleDefault(type, color) {
     const style = this.schemaDefault("style");
+    const strokeColor = this.selectedStrokeColor || color;
+    const fillColor = this.selectedFillColor || color;
     return {
       ...style,
-      fill: ["arc", "line", "polyline"].includes(type) ? "none" : color,
+      fill: ["arc", "line", "polyline"].includes(type) ? "none" : fillColor,
       fillOpacity: this.selectedFillOpacity,
-      stroke: color,
+      stroke: strokeColor,
       strokeOpacity: this.selectedStrokeOpacity
     };
   }
@@ -4814,9 +4867,7 @@ export class ToolStarterApp {
   }
 
   applyPaletteColor(color, label) {
-    if (this.selectPaletteColor(color, label) && this.selectedShapeIndex >= 0) {
-      this.applySelectedPaletteColorToShape(this.selectedShapeIndex, this.paletteTarget === "stroke" ? "stroke" : "fill", "palette action");
-    }
+    this.selectPaletteColor(color, label);
   }
 
   applySelectedPaletteColorToShape(shapeIndex, target, sourceLabel) {
@@ -4837,7 +4888,7 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const shape = this.findShapeInPayload(nextPayload, selectedIndex);
     const strokeWidth = Number(this.elements.strokeWidth.value);
-    const shouldApplyStroke = target === "stroke" || ["arc", "line", "polyline"].includes(shapeGeometryTool(shape));
+    const shouldApplyStroke = target === "stroke";
     const color = shouldApplyStroke ? this.selectedStrokeColor : this.selectedFillColor;
     const label = shouldApplyStroke ? this.selectedStrokeLabel : this.selectedFillLabel;
     if (!color) {
@@ -4859,7 +4910,9 @@ export class ToolStarterApp {
       shape.style.fillOpacity = this.selectedFillOpacity;
     }
     const targetLabel = shouldApplyStroke ? `Target: stroke width ${shape.style.strokeWidth}, opacity ${shape.style.strokeOpacity}.` : `Target: paint opacity ${shape.style.fillOpacity}.`;
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selectedIndex, `OK Applied palette color ${color} from ${paletteLabel} to shape row ${selectedIndex} by ${sourceLabel}. ${targetLabel}`, "Palette color application failed schema validation");
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, selectedIndex, `OK Applied palette color ${color} from ${paletteLabel} to shape row ${selectedIndex} by ${sourceLabel}. ${targetLabel}`, "Palette color application failed schema validation", {
+      syncPaletteSelection: false
+    });
   }
 
   sampleShapeColor(shapeIndex, target) {
@@ -5534,25 +5587,25 @@ export class ToolStarterApp {
     });
   }
 
-  applyShapeGeometryEdits() {
+  applyShapeGeometryEdits(options = {}) {
     const selected = this.selectedShape();
     if (!selected) {
       this.statusLog.write("WARN Geometry edit skipped: no shape is selected.");
-      return;
+      return false;
     }
     if (this.guardSelectedObjectMutation("Geometry edit")) {
-      return;
+      return false;
     }
     const fields = Array.from(this.elements.objectDetails.querySelectorAll("[data-shape-geometry-field]"));
     const geometry = this.readShapeGeometryFields(selected, fields);
     if (!geometry.ok) {
       this.statusLog.write(`FAIL Invalid geometry rejected for shape row ${this.selectedShapeIndex}: ${geometry.error}`);
-      return;
+      return false;
     }
-    this.updateSelectedShapeGeometry("geometry edit", (shape) => {
+    return this.updateSelectedShapeGeometry("geometry edit", (shape) => {
       shape.geometry = geometry.value;
       shape.transform = this.ensureShapeTransform(shape);
-    }, `OK Applied geometry edits to shape row ${this.selectedShapeIndex}.`);
+    }, options.okMessage || `OK Auto-applied geometry edits to shape row ${this.selectedShapeIndex}.`);
   }
 
   addPolygonSideRow() {
@@ -5578,7 +5631,9 @@ export class ToolStarterApp {
     this.rebuildPolygonPointList(points);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
-    this.statusLog.write(`OK Added point to shape row ${this.selectedShapeIndex}.`);
+    this.applyShapeGeometryEdits({
+      okMessage: `OK Added point to shape row ${this.selectedShapeIndex}.`
+    });
   }
 
   deletePolygonPointRows() {
@@ -5617,7 +5672,9 @@ export class ToolStarterApp {
     this.rebuildPolygonPointList(nextPoints);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
-    this.statusLog.write(`OK Deleted ${checkedIndexes.length} point${checkedIndexes.length === 1 ? "" : "s"} from shape row ${this.selectedShapeIndex}.`);
+    this.applyShapeGeometryEdits({
+      okMessage: `OK Deleted ${checkedIndexes.length} point${checkedIndexes.length === 1 ? "" : "s"} from shape row ${this.selectedShapeIndex}.`
+    });
   }
 
   readCurrentPolygonGeometry(shape) {
@@ -5808,14 +5865,14 @@ export class ToolStarterApp {
     const selected = this.selectedShape();
     if (!selected) {
       this.statusLog.write(`WARN Geometry ${operation} skipped: no shape is selected.`);
-      return;
+      return false;
     }
     if (selected.locked) {
       this.statusLog.write(`WARN Geometry ${operation} skipped: shape row ${this.selectedShapeIndex} is locked.`);
-      return;
+      return false;
     }
     if (this.guardSelectedObjectMutation(`Geometry ${operation}`)) {
-      return;
+      return false;
     }
 
     const nextPayload = this.cloneCurrentPayload();
@@ -5826,13 +5883,13 @@ export class ToolStarterApp {
       const transformErrors = this.validateShapeForTransform(shape);
       if (transformErrors.length) {
         this.statusLog.write(`FAIL Invalid geometry rejected for shape row ${this.selectedShapeIndex}: ${transformErrors.join(" ")}`);
-        return;
+        return false;
       }
     } catch (error) {
       this.statusLog.write(`FAIL Invalid geometry rejected for shape row ${this.selectedShapeIndex}: ${error.message}`);
-      return;
+      return false;
     }
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, okMessage, `Geometry ${operation} failed schema validation`);
+    return this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, okMessage, `Geometry ${operation} failed schema validation`);
   }
 
   updateSelectedShapeTransform(operation, updater, okMessage) {
@@ -6135,7 +6192,7 @@ export class ToolStarterApp {
     const validation = this.schemaService.validatePayload(nextPayload);
     if (!validation.ok) {
       this.statusLog.write(`FAIL ${failPrefix}: ${validation.errors.join(" ")}`);
-      return;
+      return false;
     }
 
     const workspaceSync = this.syncWorkspaceToolSessionPayload(validation.payload, {
@@ -6144,7 +6201,7 @@ export class ToolStarterApp {
     });
     if (!workspaceSync.ok) {
       this.statusLog.write(`FAIL ${failPrefix}: ${workspaceSync.message}`);
-      return;
+      return false;
     }
 
     this.currentPayload = validation.payload;
@@ -6163,11 +6220,12 @@ export class ToolStarterApp {
     this.selectedFrameId = options.selectedFrameId ?? this.selectedFrameId;
     this.ensureSelectedFrame();
     this.actionNav.setJsonPayloadActionsEnabled(true);
-    this.renderPayload();
+    this.renderPayload({ syncPaletteSelection: options.syncPaletteSelection !== false });
     if (workspaceSync.changed) {
       this.statusLog.write(`OK Object Vector Studio V2 workspace dirty state: true; reason=${workspaceSync.reason}; changedKeys=${workspaceSync.changedKeys.join(", ")}.`);
     }
     this.statusLog.write(okMessage);
+    return true;
   }
 
   syncWorkspaceToolSessionPayload(payload, { changedKeys = ["data.objects"], reason = "object-vector-updated" } = {}) {

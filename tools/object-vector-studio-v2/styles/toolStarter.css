@@ -1525,6 +1525,20 @@ textarea:hover {
   gap: 8px 10px;
 }
 
+.object-vector-studio-v2__shape-group-summary {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 8px 10px;
+}
+
+.object-vector-studio-v2__shape-group-summary-value {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  min-width: 0;
+}
+
 .object-vector-studio-v2__object-detail-stack,
 .object-vector-studio-v2__shape-panel,
 .object-vector-studio-v2__edit-panel {
@@ -1603,12 +1617,6 @@ textarea:hover {
   align-items: center;
   gap: 4px;
   font-size: 0.78rem;
-}
-
-.object-vector-studio-v2__edit-panel--geometry #objectVectorStudioV2ApplyGeometryButton {
-  margin-top: 0;
-  min-height: 24px;
-  padding: 2px 6px;
 }
 
 .object-vector-studio-v2__edit-field--wide {
