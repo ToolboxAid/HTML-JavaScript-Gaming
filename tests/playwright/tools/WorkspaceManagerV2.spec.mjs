@@ -1308,7 +1308,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Blocked Object");
       await page.locator("#objectVectorStudioV2AddObjectButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Add object blocked: load a schema-valid Object Vector Studio V2 payload before adding objects\./);
-      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Triangle", "Rectangle", "Square", "Circle", "Ellipse", "Line", "Polygon", "Arc", "Text"]);
+      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Arc", "Circle", "Ellipse", "Line", "Polygon", "Rectangle", "Square", "Triangle", "Text"]);
+      const futureNotes = await readFile("tools/object-vector-studio-v2/possible.future.adds.txt", "utf8");
+      expect(futureNotes).toContain("Object Vector Studio V2 should stay focused on reusable atomic vector objects.");
+      expect(futureNotes).toContain("Future World Vector or Scene layers should instance Object Vector objects");
+      expect(futureNotes).toContain("Keep Object Vector and World Vector separate");
+      expect(futureNotes).toContain("Future 3D vector workflows can build from Object Vector concepts");
+      expect(futureNotes).toContain("point3d");
+      expect(futureNotes).toContain("camera");
+      expect(futureNotes).toContain("projection");
+      expect(futureNotes).toContain("mesh");
       await expect(page.locator(".object-vector-studio-v2__shape-icon--triangle")).toBeVisible();
       await expect(page.locator(".object-vector-studio-v2__shape-icon--arc")).toBeVisible();
       const iconStyleState = await page.evaluate(async () => {
@@ -1384,6 +1393,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           },
           titles: {
             add: title("#objectVectorStudioV2AddObjectButton"),
+            angle: title("#objectVectorStudioV2AngleSnapButton"),
             grid: title("#objectVectorStudioV2GridRenderButton"),
             rename: title("#objectVectorStudioV2RenameObjectButton"),
             shape: title("[data-shape-tool='rectangle']"),
@@ -1484,11 +1494,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.viewportIcons.zoomOut.iconName).toBe("nf-oct-zoom_out");
       expect(iconStyleState.titles).toEqual({
         add: "Add a schema-valid object to the loaded payload",
+        angle: "When enabled, the Rotate action rounds the entered rotation delta to 15 degree increments.",
         grid: "Show or hide the preview grid",
         rename: "Disabled until a schema-valid object is selected.",
         shape: "Create a rectangle shape on the selected object",
         zoomIn: "Zoom the work surface in"
       });
+      await page.locator("#objectVectorStudioV2AngleSnapButton").click();
+      await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Angle snap enabled: Rotate action rounds entered rotation delta to 15 degree increments\./);
+      await page.locator("#objectVectorStudioV2AngleSnapButton").click();
+      await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveAttribute("aria-pressed", "false");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Angle snap disabled: Rotate action uses raw entered rotation delta\./);
 
       await page.locator('[data-shape-tool="rectangle"]').click();
       await expect(page.locator('[data-shape-tool="rectangle"]')).toHaveAttribute("aria-pressed", "true");
@@ -8723,9 +8740,29 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await page.locator("#objectVectorStudioV2ApplyGeometryButton").click();
       });
       await expectObjectVectorDirtyAfter("object geometry point handle drag edit", async () => {
-        await expect(page.locator("#objectVectorStudioV2RenderSurface [data-geometry-point-handle='polygon-0']")).toHaveCount(1);
+        const handle = page.locator("#objectVectorStudioV2RenderSurface [data-geometry-point-handle='polygon-0']");
+        await expect(handle).toHaveCount(1);
         const pointBefore = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().geometry.points[0] }));
-        await dragPreviewLocator("#objectVectorStudioV2RenderSurface [data-geometry-point-handle='polygon-0']", 18, 12);
+        const pointsBefore = await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']").getAttribute("points");
+        const handleBoxBefore = await handle.boundingBox();
+        expect(handleBoxBefore).not.toBeNull();
+        const x = handleBoxBefore.x + handleBoxBefore.width / 2;
+        const y = handleBoxBefore.y + handleBoxBefore.height / 2;
+        await page.mouse.move(x, y);
+        await page.mouse.down();
+        await page.mouse.move(x + 18, y + 12, { steps: 4 });
+        await expect.poll(async () => page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().geometry.points[0] }))).not.toEqual(pointBefore);
+        const livePoint = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().geometry.points[0] }));
+        await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='0'][data-polygon-point-axis='x']")).toHaveValue(String(livePoint.x));
+        await expect(page.locator("#objectVectorStudioV2ObjectDetails [data-polygon-point-index='0'][data-polygon-point-axis='y']")).toHaveValue(String(livePoint.y));
+        await expect.poll(async () => page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']").getAttribute("points")).not.toBe(pointsBefore);
+        await expect.poll(async () => {
+          const box = await handle.boundingBox();
+          return box ? { x: Math.round(box.x), y: Math.round(box.y) } : null;
+        }).not.toEqual({ x: Math.round(handleBoxBefore.x), y: Math.round(handleBoxBefore.y) });
+        const dirtyWhileDragging = await readObjectVectorWorkspaceSession(page);
+        expect(dirtyWhileDragging.dirty.isDirty).toBe(true);
+        await page.mouse.up();
         const pointAfter = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().geometry.points[0] }));
         expect(pointAfter).not.toEqual(pointBefore);
       });

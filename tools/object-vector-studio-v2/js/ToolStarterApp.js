@@ -699,7 +699,7 @@ export class ToolStarterApp {
       this.angleSnapEnabled = !this.angleSnapEnabled;
       this.window.sessionStorage?.setItem(ANGLE_SNAP_SESSION_KEY, this.angleSnapEnabled ? "1" : "0");
       this.applySnapState();
-      this.statusLog.write(`OK Angle snap ${this.angleSnapEnabled ? "enabled" : "disabled"}.`);
+      this.statusLog.write(`OK Angle snap ${this.angleSnapEnabled ? "enabled" : "disabled"}: Rotate action ${this.angleSnapEnabled ? "rounds" : "uses raw"} entered rotation delta${this.angleSnapEnabled ? " to 15 degree increments" : ""}.`);
     });
     this.elements.gridRenderButton.addEventListener("click", () => {
       this.gridRenderEnabled = !this.gridRenderEnabled;
@@ -816,6 +816,7 @@ export class ToolStarterApp {
     this.elements.panRightButton.addEventListener("click", () => this.panViewport(20, 0));
     this.elements.resetViewButton.addEventListener("click", () => this.resetViewport());
     this.elements.renderSurface.addEventListener("mousemove", (event) => this.updateCoordinateDisplay(event));
+    this.window.addEventListener("pointermove", (event) => this.updatePreviewPointerEdit(event));
     this.elements.renderSurface.addEventListener("wheel", (event) => {
       event.preventDefault();
       this.zoomViewportByStepAtPointer(event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP, event);
@@ -3112,6 +3113,7 @@ export class ToolStarterApp {
     event.preventDefault();
     this.previewPointerEdit = {
       mode: "move",
+      lastDelta: { x: 0, y: 0 },
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
       shapeIndex: normalizedIndex,
@@ -3132,11 +3134,33 @@ export class ToolStarterApp {
     event.stopPropagation();
     this.previewPointerEdit = {
       ...options,
+      lastDelta: { x: 0, y: 0 },
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
       shapeIndex: normalizedIndex,
       start: this.pointerPreviewPoint(event)
     };
+  }
+
+  previewPointerEditDelta(edit, event) {
+    const end = this.pointerPreviewPoint(event);
+    return {
+      x: this.snapDistance(this.formatViewportNumber(end.x - edit.start.x)),
+      y: this.snapDistance(this.formatViewportNumber(end.y - edit.start.y))
+    };
+  }
+
+  updatePreviewPointerEdit(event) {
+    const edit = this.previewPointerEdit;
+    if (!edit || event.buttons !== 1) {
+      return;
+    }
+    const delta = this.previewPointerEditDelta(edit, event);
+    if (Math.abs(delta.x - edit.lastDelta.x) < 0.001 && Math.abs(delta.y - edit.lastDelta.y) < 0.001) {
+      return;
+    }
+    edit.lastDelta = delta;
+    this.applyPreviewPointerEdit(edit, delta, { live: true });
   }
 
   finishPreviewPointerEdit(event) {
@@ -3145,42 +3169,41 @@ export class ToolStarterApp {
       return;
     }
     this.previewPointerEdit = null;
-    const end = this.pointerPreviewPoint(event);
-    const delta = {
-      x: this.snapDistance(this.formatViewportNumber(end.x - edit.start.x)),
-      y: this.snapDistance(this.formatViewportNumber(end.y - edit.start.y))
-    };
+    const delta = this.previewPointerEditDelta(edit, event);
     if (Math.abs(delta.x) < 0.001 && Math.abs(delta.y) < 0.001) {
       return;
     }
+    this.applyPreviewPointerEdit(edit, delta, { live: false });
+  }
 
+  applyPreviewPointerEdit(edit, delta, { live = false } = {}) {
     if (edit.mode === "move") {
       this.updateSelectedShapeTransform("preview move", (shape) => {
         shape.transform = this.ensureShapeTransform(shape);
         shape.transform.x = Number((edit.originalTransform.x + delta.x).toFixed(3));
         shape.transform.y = Number((edit.originalTransform.y + delta.y).toFixed(3));
-      }, `OK Dragged shape row ${edit.shapeIndex} by ${delta.x}, ${delta.y}.`);
+      }, `OK ${live ? "Live " : ""}Dragged shape row ${edit.shapeIndex} by ${delta.x}, ${delta.y}.`);
       return;
     }
 
     if (edit.mode === "line-endpoint") {
       this.updateSelectedShapeGeometry("preview line endpoint", (shape) => {
         shape.geometry = this.previewLineEndpointGeometry(shape, edit, delta);
-      }, `OK Moved line ${edit.endpoint} for shape row ${edit.shapeIndex}.`);
+      }, `OK ${live ? "Live " : ""}Moved line ${edit.endpoint} for shape row ${edit.shapeIndex}.`);
       return;
     }
 
     if (edit.mode === "geometry-point") {
       this.updateSelectedShapeGeometry("preview point handle", (shape) => {
         shape.geometry = this.previewGeometryPointGeometry(shape, edit, delta);
-      }, `OK Moved geometry point ${edit.control || edit.pointIndex + 1 || "handle"} for shape row ${edit.shapeIndex}.`);
+      }, `OK ${live ? "Live " : ""}Moved geometry point ${edit.control || edit.pointIndex + 1 || "handle"} for shape row ${edit.shapeIndex}.`);
       return;
     }
 
     if (edit.mode === "resize") {
       this.updateSelectedShapeGeometry("preview resize", (shape) => {
         shape.geometry = this.previewResizeGeometry(shape, edit, delta);
-      }, `OK Resized shape row ${edit.shapeIndex} with ${edit.handle} handle.`);
+      }, `OK ${live ? "Live " : ""}Resized shape row ${edit.shapeIndex} with ${edit.handle} handle.`);
     }
   }
 

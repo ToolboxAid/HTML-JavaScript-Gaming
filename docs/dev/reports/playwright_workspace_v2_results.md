@@ -1,6 +1,6 @@
-# PR_26133_061 Workspace V2 Playwright Results
+# PR_26133_062 Workspace V2 Playwright Results
 
-Task: PR_26133_061-shape-tools-square-and-icon-alignment
+Task: PR_26133_062-object-vector-future-notes-tool-sort-and-live-point-edit
 Date: 2026-05-15
 
 ## Result
@@ -14,14 +14,14 @@ PASS - `npm run test:workspace-v2` completed successfully.
 
 ## PR-Specific Coverage
 
-- Verified the new Square tool renders in Shape/Tools and creates a schema-valid `tool: "square"` shape backed by rectangle geometry.
-- Verified Square geometry uses one `Size` input and applies equal width/height values.
-- Verified Oval/Ellipse, Circle, Arc, and Square use the requested Nerd Font icon names.
-- Verified Shape/Tools icon spacing stays aligned with text labels visible and in icon-only mode.
+- Verified `possible.future.adds.txt` contains the Object Vector atomic-object, future World Vector/Scene instancing, Object/World separation, and future 3D point3d/camera/projection/mesh notes.
+- Verified Shape/Tools order is Select first, alphabetical middle, and Text last.
+- Verified Angle Snap UI documents current behavior: enabled Angle Snap rounds the Rotate action's entered delta to 15 degree increments; disabled uses the raw entered delta.
+- Verified point-handle dragging updates geometry, Object Geometry inputs, preview geometry, selection handle position, and workspace dirty state before mouseup.
 - Verified Object Vector Studio V2 and Asteroids runtime scenarios completed without page or console errors.
 
 ## Additional Validation
 
-- Focused Shape/Tools layout and Square creation slice passed:
-  `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "layout shell|square shapes"` completed with 2 passed, 0 failed.
+- Focused Shape/Tools, Square creation, and dirty-state live edit slices passed:
+  `npx playwright test tests/playwright/tools/WorkspaceManagerV2.spec.mjs --project=playwright --workers=1 --reporter=list --grep "layout shell|square shapes|dirty state"` completed with 3 passed, 0 failed.
 - `git diff --check` passed. The command reported existing Windows LF-to-CRLF warnings for touched files and no whitespace errors.
