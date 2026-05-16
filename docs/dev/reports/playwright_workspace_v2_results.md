@@ -1,6 +1,6 @@
-﻿# Playwright Workspace V2 Results
+# Playwright Workspace V2 Results
 
-PR: PR_26133_069-object-preview-selection-style-and-snap-fixes
+PR: PR_26133_070-unified-click-preview-click-shape-creation
 
 ## Validation
 
@@ -12,13 +12,12 @@ PR: PR_26133_069-object-preview-selection-style-and-snap-fixes
 
 ## Targeted Checks Covered
 
-- New Object Vector Studio V2 shapes are committed stroke-only with transparent fill for line, polygon, polyline, rectangle, square, circle, ellipse, triangle, and text drawing flows.
-- Empty canvas click deselects the current shape and clicking inside another shape selects it.
-- Selected shape click-hold-drag movement updates live through the preview surface.
-- Circle selection handle resize updates circle geometry.
-- Snap Grid stores whole logical coordinates and Snap None preserves fractional coordinates.
-- Paint and Stroke stay independent; applying Stroke does not mutate Fill opacity and applying Paint does not mutate Stroke opacity.
-- Selecting Shape/Tools activates Stroke mode.
+- Simple/bounded Object Vector Studio V2 tools use click -> live preview -> click commit for line, rectangle, square, circle, ellipse, arc, text, and triangle.
+- Polygon and Polyline keep multi-point click behavior and still finish through Enter/double-click completion paths.
+- Drawing preview remains visible after first click and mouse move; Escape does not cancel Object Vector Studio V2 drawing.
+- Committed shapes capture active Stroke color, Stroke opacity, and Stroke Width consistently from drawing start through commit.
+- Newly committed shapes keep transparent fill unless Paint is applied later.
+- Snap Grid, Snap Point, and Snap None behaviors remain covered during drawing flows.
 
 ## Console/Runtime Errors
 

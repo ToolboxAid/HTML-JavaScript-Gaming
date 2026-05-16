@@ -133,29 +133,30 @@ async function dragObjectVectorLogicalPoints(page, start, end) {
   }, { endPoint, startPoint });
 }
 
+async function moveObjectVectorLogicalPoint(page, point) {
+  const clientPoint = await objectVectorLogicalClientPoint(page, point.x, point.y);
+  await page.evaluate((targetPoint) => {
+    const pointerInit = {
+      bubbles: true,
+      button: 0,
+      buttons: 0,
+      cancelable: true,
+      clientX: targetPoint.x,
+      clientY: targetPoint.y,
+      pointerId: 1,
+      pointerType: "mouse"
+    };
+    window.dispatchEvent(new PointerEvent("pointermove", pointerInit));
+  }, clientPoint);
+}
+
 async function drawObjectVectorShape(page, tool, points) {
   await page.locator(`[data-shape-tool="${tool}"]`).click();
-  if (["rectangle", "square", "circle", "ellipse", "arc", "triangle"].includes(tool)) {
-    await dragObjectVectorLogicalPoints(page, points[0], points[1]);
-    return;
-  }
-  if (tool === "line") {
+  if (["line", "rectangle", "square", "circle", "ellipse", "arc", "text", "triangle"].includes(tool)) {
+    const endPoint = points[1] || points[0];
     await clickObjectVectorLogicalPoint(page, points[0].x, points[0].y);
-    const endPoint = await objectVectorLogicalClientPoint(page, points[1].x, points[1].y);
-    await page.evaluate((point) => {
-      const pointerInit = {
-        bubbles: true,
-        button: 0,
-        buttons: 1,
-        cancelable: true,
-        clientX: point.x,
-        clientY: point.y,
-        pointerId: 1,
-        pointerType: "mouse"
-      };
-      window.dispatchEvent(new PointerEvent("pointermove", pointerInit));
-    }, endPoint);
-    await clickObjectVectorLogicalPoint(page, points[1].x, points[1].y);
+    await moveObjectVectorLogicalPoint(page, endPoint);
+    await clickObjectVectorLogicalPoint(page, endPoint.x, endPoint.y);
     return;
   }
   if (tool === "polygon" || tool === "polyline") {
@@ -164,9 +165,6 @@ async function drawObjectVectorShape(page, tool, points) {
     }
     await page.keyboard.press("Enter");
     return;
-  }
-  if (tool === "text") {
-    await clickObjectVectorLogicalPoint(page, points[0].x, points[0].y);
   }
 }
 
@@ -180,7 +178,7 @@ async function drawDefaultObjectVectorShape(page, tool) {
     polyline: [{ x: -40, y: 0 }, { x: 0, y: -30 }, { x: 40, y: 0 }],
     rectangle: [{ x: -80, y: -30 }, { x: 0, y: 30 }],
     square: [{ x: -80, y: -30 }, { x: -20, y: 30 }],
-    text: [{ x: -30, y: 40 }],
+    text: [{ x: -35, y: 35 }, { x: -30, y: 40 }],
     triangle: [{ x: -40, y: -80 }, { x: 40, y: -10 }]
   };
   await drawObjectVectorShape(page, tool, defaults[tool]);
@@ -1661,7 +1659,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await drawDefaultObjectVectorShape(page, "rectangle");
       await expect(page.locator('[data-shape-tool="rectangle"]')).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Rectangle\. Use canvas pointer input to create geometry\. Select a schema-valid object before committing geometry\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Rectangle\. Click once to start, move to preview, then click again to finish\. Select a schema-valid object before committing geometry\./);
       const shapeToolLayout = await page.locator('[data-shape-tool="rectangle"]').evaluate((button) => {
         const rect = button.getBoundingClientRect();
         const gridButton = document.querySelector("#objectVectorStudioV2GridRenderButton");
@@ -2262,7 +2260,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ShapeLockButton")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2DuplicateShapeButton")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2DeleteShapeButton")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape on Asteroids Ship from canvas drag\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape on Asteroids Ship from canvas click\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Render mode svg-work-surface: rendered Asteroids Ship with 1 visible shapes; capture mode none\./);
       const createdRectangleSchemaDefaults = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
@@ -2289,7 +2287,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           fillOpacity: createdRectangleSchemaDefaults.schemaStyle.fillOpacity,
           stroke: "#ffffff",
           strokeOpacity: createdRectangleSchemaDefaults.schemaStyle.strokeOpacity,
-          strokeWidth: createdRectangleSchemaDefaults.schemaStyle.strokeWidth
+          strokeWidth: 2
         },
         tool: "rectangle",
         transform: {
@@ -3382,7 +3380,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
 
       await drawDefaultObjectVectorShape(page, "square");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Created square shape on Square Tool Check from canvas drag\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created square shape on Square Tool Check from canvas click\./);
       await expect(page.locator("#objectVectorStudioV2ObjectDetails")).toContainText("Square Geometry");
       await expect(page.locator(".object-vector-studio-v2__shape-select-label")).toHaveText("0. Square");
       const createdSquare = await page.evaluate(() => {
@@ -3409,7 +3407,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ],
         geometry: { height: 60, width: 60, x: -80, y: -30 },
         schemaOk: true,
-        style: { fill: "#00000000", fillOpacity: 1, stroke: "#ffffff", strokeOpacity: 1, strokeWidth: 3 },
+        style: { fill: "#00000000", fillOpacity: 1, stroke: "#ffffff", strokeOpacity: 1, strokeWidth: 2 },
         tool: "square"
       });
 
@@ -3483,6 +3481,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await page.locator("#objectVectorStudioV2StrokeModeButton").click();
       await page.locator("[data-palette-color='#6fd3ff']").click();
+      await page.locator("#objectVectorStudioV2StrokeWidth").fill("4.5");
+      await page.locator("#objectVectorStudioV2StrokeWidth").dispatchEvent("change");
 
       await page.locator('[data-shape-tool="polygon"]').click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Polygon\. Click to add points\.\n\nDouble-click to finish\./);
@@ -3492,9 +3492,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-shape-tool="rectangle"]')).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveClass(/is-drawing-mode/);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index]")).toHaveCount(0);
+      await clickObjectVectorLogicalPoint(page, -80, -30);
+      await moveObjectVectorLogicalPoint(page, { x: -20, y: 30 });
+      await expect(page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-preview")).toHaveCount(1);
       await page.keyboard.press("Escape");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveClass(/is-drawing-mode/);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index]")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-preview")).toHaveCount(1);
       await page.locator('[data-shape-tool="select"]').click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).not.toHaveClass(/is-drawing-mode/);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index]")).toHaveCount(0);
@@ -3507,12 +3511,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         fill: shape.style.fill,
         geometry: shape.geometry,
         stroke: shape.style.stroke,
+        strokeOpacity: shape.style.strokeOpacity,
+        strokeWidth: shape.style.strokeWidth,
         tool: shape.tool
       })));
       expect(pointDrawnShapes).toMatchObject([
-        { fill: "#00000000", geometry: { point1: { x: -10, y: 0 }, point2: { x: 10, y: 0 } }, stroke: "#6fd3ff", tool: "line" },
-        { fill: "#00000000", geometry: { points: [{ x: -10, y: -10 }, { x: 10, y: -10 }, { x: 10, y: 10 }, { x: -10, y: 10 }] }, stroke: "#6fd3ff", tool: "polygon" },
-        { fill: "#00000000", geometry: { points: [{ x: -20, y: 20 }, { x: 0, y: 0 }, { x: 20, y: 20 }] }, stroke: "#6fd3ff", tool: "polyline" }
+        { fill: "#00000000", geometry: { point1: { x: -10, y: 0 }, point2: { x: 10, y: 0 } }, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "line" },
+        { fill: "#00000000", geometry: { points: [{ x: -10, y: -10 }, { x: 10, y: -10 }, { x: 10, y: 10 }, { x: -10, y: 10 }] }, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "polygon" },
+        { fill: "#00000000", geometry: { points: [{ x: -20, y: 20 }, { x: 0, y: 0 }, { x: 20, y: 20 }] }, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "polyline" }
       ]);
       const strokeOnlyPolygonBeforeSelection = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
@@ -3604,16 +3610,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             fillOpacity: shape.style.fillOpacity,
             stroke: shape.style.stroke,
             strokeOpacity: shape.style.strokeOpacity,
+            strokeWidth: shape.style.strokeWidth,
             tool: shape.tool
           }));
       });
       expect(strokeOnlyCreatedShapes).toEqual([
-        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "rectangle" },
-        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "square" },
-        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "circle" },
-        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "ellipse" },
-        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "triangle" },
-        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, tool: "text" }
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "rectangle" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "square" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "circle" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "ellipse" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "triangle" },
+        { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "text" }
       ]);
 
       expect(pageErrors).toEqual([]);
@@ -4631,7 +4638,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-object-thumbnail="object.authoring.ufo-template"] .object-vector-studio-v2__object-thumbnail-shape')).toHaveCount(2);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-object-bounds='object.authoring.ufo-template']")).toHaveCount(1);
       await expect(page.locator('[data-object-id="object.authoring.ufo-template"] [data-object-tile-shape-index]')).toHaveCount(2);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Created ellipse shape on UFO Template from canvas drag\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Created ellipse shape on UFO Template from canvas click\./);
       const ellipseGeometryLayout = await page.locator("#objectVectorStudioV2ObjectDetails .object-vector-studio-v2__edit-grid--ellipse").evaluate((grid) => {
         const fields = Array.from(grid.querySelectorAll(".object-vector-studio-v2__edit-field"));
         const fieldRects = fields.map((field) => field.getBoundingClientRect());

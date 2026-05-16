@@ -861,7 +861,6 @@ export class ToolStarterApp {
     }, { passive: false });
     this.window.addEventListener("pointerup", (event) => {
       this.isPaintDragging = false;
-      this.finishDrawingDrag(event);
       this.finishPreviewPointerEdit(event);
     });
   }
@@ -3377,22 +3376,34 @@ export class ToolStarterApp {
     const objectHint = this.selectedObject() ? "" : " Select a schema-valid object before committing geometry.";
     const drawingHelp = ["polygon", "polyline"].includes(tool)
       ? "Click to add points.\n\nDouble-click to finish."
-      : "Use canvas pointer input to create geometry.";
+      : "Click once to start, move to preview, then click again to finish.";
     this.statusLog.write(`OK Drawing mode selected: ${shapeTypeLabel(tool)}. ${drawingHelp}${objectHint}`);
   }
 
   createDrawingState(tool) {
-    const flow = ["line", "polygon", "polyline"].includes(tool)
+    const flow = ["polygon", "polyline"].includes(tool)
       ? "points"
-      : tool === "text"
-        ? "point"
-        : "drag";
+      : "two-click";
     return {
       flow,
       points: [],
       preview: null,
       start: null,
+      style: this.drawingStyleFromActivePalette(),
       tool
+    };
+  }
+
+  drawingStyleFromActivePalette() {
+    const styleDefault = this.schemaDefault("style");
+    const strokeWidth = Number(this.elements.strokeWidth?.value);
+    return {
+      ...styleDefault,
+      fill: TRANSPARENT_STYLE_COLOR,
+      fillOpacity: this.selectedFillOpacity,
+      stroke: this.selectedStrokeColor || this.currentTargetColor() || "#ffffff",
+      strokeOpacity: this.selectedStrokeOpacity,
+      strokeWidth: Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : styleDefault.strokeWidth
     };
   }
 
@@ -3448,23 +3459,26 @@ export class ToolStarterApp {
     event.stopPropagation();
     const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
     this.drawingPreviewPoint = point;
-    if (drawing.flow === "point") {
-      this.commitDrawnShape(drawing.tool, this.geometryFromDrawingPoints(drawing.tool, [point], point), "canvas click");
-      return;
-    }
     if (drawing.flow === "points") {
       drawing.points.push(point);
       drawing.preview = point;
-      if (drawing.tool === "line" && drawing.points.length === 2) {
-        this.commitDrawnShape("line", this.geometryFromDrawingPoints("line", drawing.points, point), "two-point line");
-        return;
-      }
       this.renderWorkSurface();
       this.statusLog.write(`OK Added ${shapeTypeLabel(drawing.tool)} point ${drawing.points.length}.`);
       return;
     }
-    drawing.start = point;
-    drawing.preview = point;
+    if (drawing.flow === "two-click") {
+      if (!drawing.start) {
+        drawing.start = point;
+        drawing.preview = null;
+        this.renderWorkSurface();
+        this.statusLog.write(`OK Started ${shapeTypeLabel(drawing.tool)} drawing.`);
+        return;
+      }
+      drawing.preview = point;
+      const geometry = this.geometryFromDrawingPoints(drawing.tool, [drawing.start, point], point);
+      this.commitDrawnShape(drawing.tool, geometry, "canvas click");
+      return;
+    }
     this.renderWorkSurface();
   }
 
@@ -3473,10 +3487,7 @@ export class ToolStarterApp {
     if (!drawing) {
       return;
     }
-    if (drawing.flow === "drag" && !drawing.start) {
-      return;
-    }
-    if (drawing.flow === "drag" && event.buttons !== 1) {
+    if (drawing.flow === "two-click" && !drawing.start) {
       return;
     }
     const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
@@ -3486,17 +3497,6 @@ export class ToolStarterApp {
     drawing.preview = point;
     this.drawingPreviewPoint = point;
     this.renderWorkSurface();
-  }
-
-  finishDrawingDrag(event) {
-    const drawing = this.activeDrawing;
-    if (!drawing || drawing.flow !== "drag" || !drawing.start || !drawing.preview) {
-      return;
-    }
-    const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
-    drawing.preview = point;
-    const geometry = this.geometryFromDrawingPoints(drawing.tool, [drawing.start, point], point);
-    this.commitDrawnShape(drawing.tool, geometry, "canvas drag");
   }
 
   finishMultiPointDrawing(sourceLabel = "finish", event = null) {
@@ -3521,11 +3521,8 @@ export class ToolStarterApp {
     if (drawing.flow === "points" && drawing.preview && points.length) {
       points.push(drawing.preview);
     }
-    if (drawing.flow === "drag" && drawing.start && drawing.preview) {
+    if (drawing.flow === "two-click" && drawing.start && drawing.preview) {
       points.push(drawing.start, drawing.preview);
-    }
-    if (drawing.flow === "point" && drawing.preview) {
-      points.push(drawing.preview);
     }
     if (!points.length) {
       return null;
@@ -3540,11 +3537,7 @@ export class ToolStarterApp {
       locked: false,
       order: 0,
       style: {
-        fill: TRANSPARENT_STYLE_COLOR,
-        fillOpacity: this.selectedFillOpacity,
-        stroke: this.selectedStrokeColor || this.currentTargetColor() || "#ffffff",
-        strokeOpacity: this.selectedStrokeOpacity,
-        strokeWidth: Number(this.elements.strokeWidth?.value) || 2
+        ...drawing.style
       },
       tool,
       transform: {
@@ -3654,7 +3647,7 @@ export class ToolStarterApp {
       };
     }
     if (tool === "text") {
-      const point = cleanPoints[0] || previewPoint;
+      const point = cleanPoints.at(-1) || previewPoint;
       if (!point) {
         return null;
       }
@@ -3706,7 +3699,7 @@ export class ToolStarterApp {
       this.statusLog.write(`FAIL Create ${type} blocked: ${geometryError}`);
       return;
     }
-    this.createShape(type, { geometry, sourceLabel });
+    this.createShape(type, { geometry, sourceLabel, style: this.activeDrawing?.style || null });
   }
 
   startPreviewShapeMove(event, shapeIndex) {
@@ -4634,15 +4627,17 @@ export class ToolStarterApp {
     return this.schemaService.getDefinitionDefault(definitionName);
   }
 
-  createShapeStyleDefault(type, color) {
+  createShapeStyleDefault(type, color, styleOverride = null) {
     const style = this.schemaDefault("style");
-    const strokeColor = this.selectedStrokeColor || color;
+    const strokeColor = styleOverride?.stroke || this.selectedStrokeColor || color;
     return {
       ...style,
+      ...(styleOverride || {}),
       fill: TRANSPARENT_STYLE_COLOR,
-      fillOpacity: this.selectedFillOpacity,
+      fillOpacity: styleOverride?.fillOpacity ?? this.selectedFillOpacity,
       stroke: strokeColor,
-      strokeOpacity: this.selectedStrokeOpacity
+      strokeOpacity: styleOverride?.strokeOpacity ?? this.selectedStrokeOpacity,
+      strokeWidth: styleOverride?.strokeWidth ?? style.strokeWidth
     };
   }
 
@@ -4676,7 +4671,7 @@ export class ToolStarterApp {
     const order = nextObject.shapes.length ? Math.max(...nextObject.shapes.map((shape) => shape.order)) + 1 : 1;
     let shape;
     try {
-      shape = this.createPrimitiveShape(type, order, color, options.geometry);
+      shape = this.createPrimitiveShape(type, order, color, options.geometry, options.style);
     } catch (error) {
       this.statusLog.write(`FAIL Create ${type} blocked: ${error.message}`);
       return;
@@ -4687,7 +4682,7 @@ export class ToolStarterApp {
     this.commitPayloadUpdate(nextPayload, nextObject.id, sortedShapes(nextObject).length - 1, `OK Created ${type} shape on ${nextObject.name} from ${options.sourceLabel || "canvas drawing"}.`, `Create ${type} failed schema validation`);
   }
 
-  createPrimitiveShape(type, order, color, geometry = null) {
+  createPrimitiveShape(type, order, color, geometry = null, styleOverride = null) {
     if (!PRIMITIVE_TOOLS.includes(type)) {
       throw new Error(`unsupported shape tool ${type}.`);
     }
@@ -4698,7 +4693,7 @@ export class ToolStarterApp {
       ...base,
       geometry: geometry ? JSON.parse(JSON.stringify(geometry)) : this.schemaDefault(geometryDefinition),
       order,
-      style: this.createShapeStyleDefault(type, color),
+      style: this.createShapeStyleDefault(type, color, styleOverride),
       tool: type,
       visible: base.visible
     };
