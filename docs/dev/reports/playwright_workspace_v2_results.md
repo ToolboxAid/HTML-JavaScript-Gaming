@@ -1,23 +1,23 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_070-unified-click-preview-click-shape-creation
+PR: PR_26133_071-preview-hint-stroke-width-and-text-placement-fixes
 
 ## Validation
 
 - PASS: npm run test:workspace-v2
 - Result: 54 passed
-- Runtime: 4.9m
+- Runtime: 5.2m
 - Browser project: playwright
 - Workers: 1
 
 ## Targeted Checks Covered
 
-- Simple/bounded Object Vector Studio V2 tools use click -> live preview -> click commit for line, rectangle, square, circle, ellipse, arc, text, and triangle.
-- Polygon and Polyline keep multi-point click behavior and still finish through Enter/double-click completion paths.
-- Drawing preview remains visible after first click and mouse move; Escape does not cancel Object Vector Studio V2 drawing.
-- Committed shapes capture active Stroke color, Stroke opacity, and Stroke Width consistently from drawing start through commit.
-- Newly committed shapes keep transparent fill unless Paint is applied later.
-- Snap Grid, Snap Point, and Snap None behaviors remain covered during drawing flows.
+- Polygon drawing shows a cursor-following "Double-click / Enter to complete" hint with pointer-events disabled.
+- Polygon and Polyline keep existing multi-point completion behavior.
+- Stroke width 20 drawing previews use proportional dash spacing instead of the small default dash pattern.
+- Completed wide-stroke shapes render solid and immediately keep the active Stroke Width.
+- Text placement preview renders readable text instead of a wide stroked blob.
+- Committed text keeps transparent fill plus active stroke color, opacity, and width under current style rules.
 
 ## Console/Runtime Errors
 

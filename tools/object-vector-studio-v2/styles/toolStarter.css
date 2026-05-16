@@ -1444,6 +1444,21 @@ textarea:hover {
   pointer-events: none;
 }
 
+.object-vector-studio-v2__drawing-hint {
+  pointer-events: none;
+}
+
+.object-vector-studio-v2__drawing-hint-text {
+  fill: var(--tool-starter-text);
+  font-family: "0xProto Nerd Font", "Cascadia Mono", monospace;
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: rgba(2, 6, 23, 0.95);
+  stroke-linejoin: round;
+  stroke-width: 4px;
+  vector-effect: non-scaling-stroke;
+}
+
 .object-vector-studio-v2__snap-targets {
   pointer-events: none;
 }

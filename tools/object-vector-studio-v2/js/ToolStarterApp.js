@@ -2486,6 +2486,7 @@ export class ToolStarterApp {
     this.renderObjectBounds(object);
     this.renderSnapPointTargets(object);
     this.renderDrawingPreview();
+    this.renderDrawingHint();
     this.renderSelectionOverlay(object);
     this.renderCenterOriginMarker();
 
@@ -2687,10 +2688,67 @@ export class ToolStarterApp {
       const element = this.createSvgShape(previewShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
       element.classList.add("object-vector-studio-v2__drawing-preview");
       element.dataset.drawingPreviewTool = this.activeDrawing.tool;
+      this.applyDrawingPreviewPresentation(element, previewShape);
       this.elements.renderSurface.append(element);
     } catch (error) {
       this.statusLog.write(`FAIL Drawing preview failed for ${this.activeDrawing.tool}: ${error.message}`);
     }
+  }
+
+  renderDrawingHint() {
+    const drawing = this.activeDrawing;
+    if (!drawing || !["polygon", "polyline"].includes(drawing.tool) || !this.drawingPreviewPoint) {
+      return;
+    }
+    const point = {
+      x: Number(this.scaleDrawingValue(this.drawingPreviewPoint.x, OBJECT_PREVIEW_DRAWING_SCALE)),
+      y: Number(this.scaleDrawingValue(this.drawingPreviewPoint.y, OBJECT_PREVIEW_DRAWING_SCALE))
+    };
+    const unitsPerPixel = this.svgUnitsPerCssPixel();
+    const group = document.createElementNS(SVG_NS, "g");
+    const text = document.createElementNS(SVG_NS, "text");
+    group.classList.add("object-vector-studio-v2__drawing-hint");
+    group.dataset.drawingHintTool = drawing.tool;
+    group.setAttribute("pointer-events", "none");
+    text.classList.add("object-vector-studio-v2__drawing-hint-text");
+    text.setAttribute("x", this.formatViewportNumber(point.x + 12 * unitsPerPixel));
+    text.setAttribute("y", this.formatViewportNumber(point.y + 16 * unitsPerPixel));
+    text.textContent = "Double-click / Enter to complete";
+    group.append(text);
+    this.elements.renderSurface.append(group);
+  }
+
+  applyDrawingPreviewPresentation(element, previewShape) {
+    if (shapeGeometryTool(previewShape) === "text") {
+      element.style.fill = previewShape.style.stroke || "#ffffff";
+      element.style.fillOpacity = String(previewShape.style.strokeOpacity ?? 1);
+      element.style.stroke = "none";
+      element.style.strokeDasharray = "none";
+      element.style.strokeWidth = "0";
+      element.style.paintOrder = "normal";
+      return;
+    }
+    element.style.strokeDasharray = this.drawingPreviewDashArray(previewShape.style.strokeWidth);
+    element.style.strokeLinecap = "round";
+    element.style.strokeLinejoin = "round";
+  }
+
+  drawingPreviewDashArray(strokeWidth) {
+    const normalizedWidth = Number(strokeWidth);
+    const width = Number.isFinite(normalizedWidth) && normalizedWidth > 0 ? normalizedWidth : 2;
+    const unitsPerPixel = this.svgUnitsPerCssPixel();
+    const dashPixels = Math.max(12, Math.min(24, width * 1.1));
+    const gapPixels = Math.max(8, Math.min(18, width * 0.75));
+    return `${this.formatViewportNumber(dashPixels * unitsPerPixel)} ${this.formatViewportNumber(gapPixels * unitsPerPixel)}`;
+  }
+
+  svgUnitsPerCssPixel() {
+    const bounds = this.elements.renderSurface.getBoundingClientRect();
+    const viewBox = this.elements.renderSurface.viewBox?.baseVal;
+    if (!bounds.width || !viewBox?.width) {
+      return 1;
+    }
+    return viewBox.width / bounds.width;
   }
 
   visibleSnapPoints(object = this.selectedObject(), options = {}) {
@@ -3460,6 +3518,9 @@ export class ToolStarterApp {
     const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
     this.drawingPreviewPoint = point;
     if (drawing.flow === "points") {
+      if (!drawing.points.length) {
+        drawing.style = this.drawingStyleFromActivePalette();
+      }
       drawing.points.push(point);
       drawing.preview = point;
       this.renderWorkSurface();
@@ -3468,6 +3529,7 @@ export class ToolStarterApp {
     }
     if (drawing.flow === "two-click") {
       if (!drawing.start) {
+        drawing.style = this.drawingStyleFromActivePalette();
         drawing.start = point;
         drawing.preview = null;
         this.renderWorkSurface();

@@ -3486,6 +3486,31 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator('[data-shape-tool="polygon"]').click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Polygon\. Click to add points\.\n\nDouble-click to finish\./);
+      await moveObjectVectorLogicalPoint(page, { x: -30, y: -20 });
+      await expect(page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-hint")).toHaveText("Double-click / Enter to complete");
+      const polygonHintState = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-hint").evaluate((hint) => {
+        const text = hint.querySelector("text");
+        const app = window.__objectVectorStudioV2App;
+        return {
+          hintX: Number(text.getAttribute("x")),
+          hintY: Number(text.getAttribute("y")),
+          pointerEvents: getComputedStyle(hint).pointerEvents,
+          pointerX: app.drawingPreviewPoint.x * 10,
+          pointerY: app.drawingPreviewPoint.y * 10,
+          textPointerEvents: getComputedStyle(text).pointerEvents
+        };
+      });
+      expect(polygonHintState.pointerEvents).toBe("none");
+      expect(polygonHintState.textPointerEvents).toBe("none");
+      expect(polygonHintState.hintX).toBeGreaterThan(polygonHintState.pointerX);
+      expect(polygonHintState.hintY).toBeGreaterThan(polygonHintState.pointerY);
+      await moveObjectVectorLogicalPoint(page, { x: -25, y: -15 });
+      const movedPolygonHint = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-hint text").evaluate((text) => ({
+        x: Number(text.getAttribute("x")),
+        y: Number(text.getAttribute("y"))
+      }));
+      expect(movedPolygonHint.x).toBeGreaterThan(polygonHintState.hintX);
+      expect(movedPolygonHint.y).toBeGreaterThan(polygonHintState.hintY);
       await page.locator('[data-shape-tool="polyline"]').click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Drawing mode selected: Polyline\. Click to add points\.\n\nDouble-click to finish\./);
       await page.locator('[data-shape-tool="rectangle"]').click();
@@ -3622,6 +3647,68 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "triangle" },
         { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "text" }
       ]);
+
+      await page.locator("#objectVectorStudioV2StrokeWidth").fill("20");
+      await page.locator("#objectVectorStudioV2StrokeWidth").dispatchEvent("change");
+      await page.locator('[data-shape-tool="line"]').click();
+      await clickObjectVectorLogicalPoint(page, -40, -50);
+      await moveObjectVectorLogicalPoint(page, { x: -10, y: -50 });
+      const wideStrokePreview = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-preview").evaluate((preview) => ({
+        dash: preview.style.strokeDasharray,
+        strokeWidth: Number(preview.getAttribute("stroke-width")),
+        tool: preview.dataset.drawingPreviewTool
+      }));
+      const wideStrokeDash = wideStrokePreview.dash.match(/[\d.]+/g).map(Number);
+      expect(wideStrokePreview).toMatchObject({ strokeWidth: 20, tool: "line" });
+      expect(wideStrokeDash[0]).toBeGreaterThan(5);
+      expect(wideStrokeDash[0]).toBeLessThan(220);
+      expect(wideStrokeDash[1]).toBeGreaterThan(4);
+      await clickObjectVectorLogicalPoint(page, -10, -50);
+      const wideStrokeLine = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        return {
+          index: app.selectedShapeIndex,
+          style: JSON.parse(JSON.stringify(app.selectedShape().style))
+        };
+      });
+      expect(wideStrokeLine.style).toMatchObject({
+        fill: "#00000000",
+        stroke: "#6fd3ff",
+        strokeOpacity: 1,
+        strokeWidth: 20
+      });
+      const committedWideLine = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${wideStrokeLine.index}"]`).evaluate((shape) => ({
+        dash: getComputedStyle(shape).strokeDasharray,
+        isPreview: shape.classList.contains("object-vector-studio-v2__drawing-preview"),
+        strokeWidth: Number(shape.getAttribute("stroke-width"))
+      }));
+      expect(committedWideLine).toEqual({ dash: "none", isPreview: false, strokeWidth: 20 });
+
+      await page.locator('[data-shape-tool="text"]').click();
+      await clickObjectVectorLogicalPoint(page, 70, 60);
+      await moveObjectVectorLogicalPoint(page, { x: 76, y: 66 });
+      const textPreview = await page.locator("#objectVectorStudioV2RenderSurface text.object-vector-studio-v2__drawing-preview").evaluate((preview) => ({
+        fill: preview.style.fill || preview.getAttribute("fill"),
+        stroke: preview.style.stroke,
+        strokeWidth: preview.style.strokeWidth,
+        text: preview.textContent.trim(),
+        tool: preview.dataset.drawingPreviewTool
+      }));
+      expect(textPreview.fill).toMatch(/#6fd3ff|rgb\(111, 211, 255\)/);
+      expect(textPreview).toMatchObject({
+        stroke: "none",
+        text: "Text",
+        tool: "text"
+      });
+      expect(["0", "0px"]).toContain(textPreview.strokeWidth);
+      await clickObjectVectorLogicalPoint(page, 76, 66);
+      const committedTextStyle = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().style }));
+      expect(committedTextStyle).toMatchObject({
+        fill: "#00000000",
+        stroke: "#6fd3ff",
+        strokeOpacity: 1,
+        strokeWidth: 20
+      });
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
