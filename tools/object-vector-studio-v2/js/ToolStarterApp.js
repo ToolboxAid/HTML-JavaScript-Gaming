@@ -6,6 +6,7 @@ const RUNTIME_PALETTE_SESSION_KEY = "object-vector-studio-v2.runtimePalette";
 const TOOL_DISPLAY_MODE_KEY = "object-vector-studio-v2.toolDisplayMode";
 const SNAP_MODE_SESSION_KEY = "object-vector-studio-v2.snapMode";
 const ANGLE_SNAP_SESSION_KEY = "object-vector-studio-v2.angleSnap";
+const ANGLE_SNAP_STEP_SESSION_KEY = "object-vector-studio-v2.angleSnapStep";
 const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
 const CENTER_ORIGIN_SESSION_KEY = "object-vector-studio-v2.centerOrigin";
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -18,6 +19,7 @@ const ZOOM_STEP = 0.01;
 const TRANSPARENT_STYLE_COLOR = "#00000000";
 const PREVIEW_HISTORY_LIMIT = 50;
 const SNAP_MODES = Object.freeze(["grid", "point", "none"]);
+const ANGLE_SNAP_STEPS = Object.freeze([15, 30, 45, 90]);
 const POINT_SNAP_RADIUS = 1.5;
 const SNAP_MODE_DETAILS = Object.freeze({
   grid: {
@@ -505,6 +507,7 @@ export class ToolStarterApp {
     this.lockedObjectIds = new Set();
     this.snapMode = this.readSnapMode();
     this.angleSnapEnabled = false;
+    this.angleSnapStep = 15;
     this.gridRenderEnabled = true;
     this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
     this.schemaReady = false;
@@ -741,7 +744,7 @@ export class ToolStarterApp {
       this.angleSnapEnabled = !this.angleSnapEnabled;
       this.window.sessionStorage?.setItem(ANGLE_SNAP_SESSION_KEY, this.angleSnapEnabled ? "1" : "0");
       this.applySnapState();
-      this.statusLog.write(`OK Snap angle ${this.angleSnapEnabled ? "enabled" : "disabled"}: Rotate action ${this.angleSnapEnabled ? "rounds" : "uses raw"} entered rotation delta${this.angleSnapEnabled ? " to 15 degree increments" : ""}.`);
+      this.statusLog.write(`OK Snap angle ${this.angleSnapEnabled ? "enabled" : "disabled"}: Rotate action ${this.angleSnapEnabled ? `uses dropdown values in ${this.angleSnapStep} degree increments` : "uses raw numeric textbox values"}.`);
     });
     this.elements.gridRenderButton.addEventListener("click", () => {
       this.gridRenderEnabled = !this.gridRenderEnabled;
@@ -1068,6 +1071,7 @@ export class ToolStarterApp {
   applySnapState() {
     this.snapMode = this.readSnapMode();
     this.angleSnapEnabled = this.window.sessionStorage?.getItem(ANGLE_SNAP_SESSION_KEY) === "1";
+    this.angleSnapStep = this.readAngleSnapStep();
     this.gridRenderEnabled = this.window.sessionStorage?.getItem(GRID_RENDER_SESSION_KEY) !== "0";
     this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
     const snapDetails = SNAP_MODE_DETAILS[this.snapMode] || SNAP_MODE_DETAILS.grid;
@@ -1081,15 +1085,62 @@ export class ToolStarterApp {
     this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
     this.elements.angleSnapButton.textContent = "Snap Angle";
     this.elements.angleSnapButton.setAttribute("aria-label", "Snap Angle for Object Transform Rotate");
-    this.elements.angleSnapButton.title = "Snap Angle is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.";
+    this.elements.angleSnapButton.title = "Snap Angle switches Rotate to a constrained dropdown using the selected 15, 30, 45, or 90 degree step.";
     this.elements.gridRenderButton.setAttribute("aria-pressed", String(this.gridRenderEnabled));
     this.elements.centerDotButton.setAttribute("aria-pressed", String(this.centerOriginVisible));
     this.elements.renderSurface.classList.toggle("is-grid-visible", this.gridRenderEnabled);
+    this.updateRotateSnapControls();
+  }
+
+  updateRotateSnapControls(scope = this.window.document) {
+    const root = scope || this.window.document;
+    const numericInput = root.querySelector?.("#objectVectorStudioV2RotateInput") || this.window.document.getElementById("objectVectorStudioV2RotateInput");
+    const snapSelect = root.querySelector?.("#objectVectorStudioV2RotateSnapSelect") || this.window.document.getElementById("objectVectorStudioV2RotateSnapSelect");
+    const stepSelect = root.querySelector?.("#objectVectorStudioV2SnapAngleStepSelect") || this.window.document.getElementById("objectVectorStudioV2SnapAngleStepSelect");
+    if (stepSelect) {
+      stepSelect.value = String(this.angleSnapStep);
+      stepSelect.disabled = !this.angleSnapEnabled;
+    }
+    if (snapSelect) {
+      const preferred = snapSelect.value || numericInput?.value || this.transformInputValue(snapSelect.id, "15");
+      this.populateRotateSnapSelect(snapSelect, this.angleSnapStep, preferred);
+      snapSelect.disabled = !this.angleSnapEnabled;
+    }
+    if (numericInput) {
+      numericInput.disabled = this.angleSnapEnabled;
+    }
+  }
+
+  populateRotateSnapSelect(select, step, preferredValue = "15") {
+    if (!select) {
+      return;
+    }
+    const normalizedStep = ANGLE_SNAP_STEPS.includes(Number(step)) ? Number(step) : 15;
+    const previous = Number(preferredValue);
+    const normalizedPreferred = Number.isFinite(previous)
+      ? this.normalizeRotationDegrees(Math.round(previous / normalizedStep) * normalizedStep)
+      : normalizedStep;
+    select.replaceChildren();
+    for (let value = 0; value < 360; value += normalizedStep) {
+      const option = document.createElement("option");
+      option.value = String(value);
+      option.textContent = String(value);
+      select.append(option);
+    }
+    select.value = Array.from(select.options).some((option) => option.value === String(normalizedPreferred))
+      ? String(normalizedPreferred)
+      : "0";
+    this.transformInputValues.set(select.id, select.value);
   }
 
   readSnapMode() {
     const storedMode = this.window.sessionStorage?.getItem(SNAP_MODE_SESSION_KEY) || "grid";
     return SNAP_MODES.includes(storedMode) ? storedMode : "grid";
+  }
+
+  readAngleSnapStep() {
+    const storedStep = Number(this.window.sessionStorage?.getItem(ANGLE_SNAP_STEP_SESSION_KEY) || 15);
+    return ANGLE_SNAP_STEPS.includes(storedStep) ? storedStep : 15;
   }
 
   setSnapMode(mode, label = "") {
@@ -2570,14 +2621,57 @@ export class ToolStarterApp {
       max: "359",
       min: "-359"
     });
+    const snapSelect = this.createRotateSnapSelect();
+    const stepField = this.createAngleSnapStepField();
     const button = this.createTransformActionButton({
       handler: () => this.rotateSelectedShape(),
       iconKey: "rotate",
       id: "objectVectorStudioV2RotateShapeButton",
       label: "Rotate"
     });
-    row.append(label, input, button);
+    row.append(label, input, snapSelect, stepField, button);
+    this.updateRotateSnapControls(row);
     return row;
+  }
+
+  createRotateSnapSelect() {
+    const select = document.createElement("select");
+    select.id = "objectVectorStudioV2RotateSnapSelect";
+    select.className = "object-vector-studio-v2__rotate-snap-select";
+    select.setAttribute("aria-label", "Rotate Snap Angle");
+    select.title = "Valid Rotate values generated by the selected Snap Angle step.";
+    this.populateRotateSnapSelect(select, this.angleSnapStep, this.transformInputValue(select.id, "15"));
+    select.addEventListener("change", () => {
+      this.transformInputValues.set(select.id, select.value);
+    });
+    return select;
+  }
+
+  createAngleSnapStepField() {
+    const label = document.createElement("label");
+    label.className = "object-vector-studio-v2__snap-angle-step-field";
+    const text = document.createElement("span");
+    text.textContent = "Step";
+    const select = document.createElement("select");
+    select.id = "objectVectorStudioV2SnapAngleStepSelect";
+    select.setAttribute("aria-label", "Snap Angle Step");
+    select.title = "Choose the angle increment used to generate Rotate dropdown values.";
+    ANGLE_SNAP_STEPS.forEach((step) => {
+      const option = document.createElement("option");
+      option.value = String(step);
+      option.textContent = String(step);
+      select.append(option);
+    });
+    select.value = String(this.angleSnapStep);
+    select.addEventListener("change", () => {
+      const nextStep = Number(select.value);
+      this.angleSnapStep = ANGLE_SNAP_STEPS.includes(nextStep) ? nextStep : 15;
+      this.window.sessionStorage?.setItem(ANGLE_SNAP_STEP_SESSION_KEY, String(this.angleSnapStep));
+      this.updateRotateSnapControls();
+      this.statusLog.write(`OK Snap angle step set to ${this.angleSnapStep} degrees.`);
+    });
+    label.append(text, select);
+    return label;
   }
 
   createTransformAxisControlRow({ action, buttonId, buttonLabel, buttonTitle, iconKey, label, rowType, xInput, yInput }) {
@@ -3197,14 +3291,26 @@ export class ToolStarterApp {
       return element;
     }
     if (geometryTool === "polygon") {
-      const element = document.createElementNS(SVG_NS, "polygon");
-      element.setAttribute("points", shape.geometry.points.map((point) => `${this.scaleDrawingValue(point.x, drawingScale)},${this.scaleDrawingValue(point.y, drawingScale)}`).join(" "));
+      const roundedPath = this.roundedPointPath(shape, { closed: true, drawingScale });
+      const element = document.createElementNS(SVG_NS, roundedPath ? "path" : "polygon");
+      const points = this.svgPointList(shape.geometry.points, drawingScale);
+      if (roundedPath) {
+        element.setAttribute("d", roundedPath);
+        element.dataset.roundedPointRender = "path";
+      }
+      element.setAttribute("points", points);
       this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
     if (geometryTool === "polyline") {
-      const element = document.createElementNS(SVG_NS, "polyline");
-      element.setAttribute("points", shape.geometry.points.map((point) => `${this.scaleDrawingValue(point.x, drawingScale)},${this.scaleDrawingValue(point.y, drawingScale)}`).join(" "));
+      const roundedPath = this.roundedPointPath(shape, { closed: false, drawingScale });
+      const element = document.createElementNS(SVG_NS, roundedPath ? "path" : "polyline");
+      const points = this.svgPointList(shape.geometry.points, drawingScale);
+      if (roundedPath) {
+        element.setAttribute("d", roundedPath);
+        element.dataset.roundedPointRender = "path";
+      }
+      element.setAttribute("points", points);
       this.applySvgStyle(element, shape, { drawingScale });
       return element;
     }
@@ -3229,6 +3335,92 @@ export class ToolStarterApp {
       return element;
     }
     throw new Error(`unsupported shape tool ${shapeTool(shape)}`);
+  }
+
+  svgPointList(points, drawingScale = 1) {
+    return points.map((point) => `${this.scaleDrawingValue(point.x, drawingScale)},${this.scaleDrawingValue(point.y, drawingScale)}`).join(" ");
+  }
+
+  roundedPointPath(shape, { closed, drawingScale = 1 } = {}) {
+    const geometryTool = shapeGeometryTool(shape);
+    if (!["polygon", "polyline"].includes(geometryTool) || !Array.isArray(shape.geometry?.points)) {
+      return "";
+    }
+    const sourcePoints = shape.geometry.points;
+    const pointCount = sourcePoints.length;
+    if (pointCount < (closed ? 3 : 3)) {
+      return "";
+    }
+    const pointRounding = this.shapePointRoundingValues(shape);
+    const roundedIndexes = pointRounding
+      .map((isRounded, index) => isRounded === true ? index : -1)
+      .filter((index) => index >= 0 && (closed || (index > 0 && index < pointCount - 1)));
+    if (!roundedIndexes.length) {
+      return "";
+    }
+    const points = sourcePoints.map((point) => ({
+      x: Number(this.scaleDrawingValue(point.x, drawingScale)),
+      y: Number(this.scaleDrawingValue(point.y, drawingScale))
+    }));
+    const strokeWidth = Math.max(1, Number(shape.style?.strokeWidth) || 1);
+    const preferredRadius = Math.max(2, strokeWidth * 2) * drawingScale;
+    const roundedVertex = (index) => {
+      if (pointRounding[index] !== true || (!closed && (index === 0 || index === pointCount - 1))) {
+        return null;
+      }
+      const previous = points[index === 0 ? pointCount - 1 : index - 1];
+      const current = points[index];
+      const next = points[index === pointCount - 1 ? 0 : index + 1];
+      if (!previous || !current || !next) {
+        return null;
+      }
+      const previousDistance = Math.hypot(previous.x - current.x, previous.y - current.y);
+      const nextDistance = Math.hypot(next.x - current.x, next.y - current.y);
+      if (previousDistance <= 0 || nextDistance <= 0) {
+        return null;
+      }
+      const radius = Math.min(preferredRadius, previousDistance / 2, nextDistance / 2);
+      if (radius <= 0) {
+        return null;
+      }
+      return {
+        after: {
+          x: current.x + (next.x - current.x) / nextDistance * radius,
+          y: current.y + (next.y - current.y) / nextDistance * radius
+        },
+        before: {
+          x: current.x + (previous.x - current.x) / previousDistance * radius,
+          y: current.y + (previous.y - current.y) / previousDistance * radius
+        },
+        current
+      };
+    };
+    const commandPoint = (point) => `${this.formatViewportNumber(point.x)} ${this.formatViewportNumber(point.y)}`;
+    const appendVertex = (commands, index) => {
+      const rounded = roundedVertex(index);
+      if (!rounded) {
+        commands.push(`L ${commandPoint(points[index])}`);
+        return;
+      }
+      commands.push(`L ${commandPoint(rounded.before)}`);
+      commands.push(`Q ${commandPoint(rounded.current)} ${commandPoint(rounded.after)}`);
+    };
+    if (closed) {
+      const start = roundedVertex(0)?.after || points[0];
+      const commands = [`M ${commandPoint(start)}`];
+      for (let index = 1; index < pointCount; index += 1) {
+        appendVertex(commands, index);
+      }
+      appendVertex(commands, 0);
+      commands.push("Z");
+      return commands.join(" ");
+    }
+    const commands = [`M ${commandPoint(points[0])}`];
+    for (let index = 1; index < pointCount - 1; index += 1) {
+      appendVertex(commands, index);
+    }
+    commands.push(`L ${commandPoint(points[pointCount - 1])}`);
+    return commands.join(" ");
   }
 
   applySvgStyle(element, shape, { drawingScale = 1 } = {}) {
@@ -5813,7 +6005,7 @@ export class ToolStarterApp {
   }
 
   rotateSelectedShape() {
-    const input = this.numberInputValue("objectVectorStudioV2RotateInput", "Rotate");
+    const input = this.rotateInputValue();
     if (!input.ok) {
       this.statusLog.write(`FAIL Invalid transform rejected for shape row ${this.selectedShapeIndex}: ${input.error}`);
       return;
@@ -5922,6 +6114,23 @@ export class ToolStarterApp {
       return ` Snap Angle active: ${rawRotation} -> ${appliedRotation}.`;
     }
     return " Snap Angle disabled: raw rotation applied.";
+  }
+
+  rotateInputValue() {
+    if (!this.angleSnapEnabled) {
+      const input = this.numberInputValue("objectVectorStudioV2RotateInput", "Rotate");
+      return { ...input, rawValue: String(input.value) };
+    }
+    const select = this.window.document.getElementById("objectVectorStudioV2RotateSnapSelect");
+    const rawValue = select?.value?.trim() || "";
+    const value = Number(rawValue);
+    if (!select || rawValue === "" || !Number.isFinite(value)) {
+      const error = "Rotate Snap Angle must be a valid dropdown value.";
+      this.markInputInvalid(select, error);
+      return { error, ok: false, rawValue, value: 0 };
+    }
+    this.clearInputValidity(select);
+    return { error: "", ok: true, rawValue, value };
   }
 
   rotatePointAround(point, pivot, rotation) {
@@ -6764,7 +6973,8 @@ export class ToolStarterApp {
     if (!this.angleSnapEnabled) {
       return value;
     }
-    return Math.round(value / 15) * 15;
+    const step = ANGLE_SNAP_STEPS.includes(this.angleSnapStep) ? this.angleSnapStep : 15;
+    return Math.round(value / step) * step;
   }
 
   ensureShapeTransform(shape) {

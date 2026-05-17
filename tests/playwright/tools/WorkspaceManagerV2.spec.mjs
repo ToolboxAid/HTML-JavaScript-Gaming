@@ -1690,7 +1690,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.viewportIcons.zoomOut.iconName).toBe("nf-oct-zoom_out");
       expect(iconStyleState.titles).toEqual({
         add: "Add a schema-valid object to the loaded payload",
-        angle: "Snap Angle is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.",
+        angle: "Snap Angle switches Rotate to a constrained dropdown using the selected 15, 30, 45, or 90 degree step.",
         grid: "Show or hide the preview grid",
         polygon: "Create a polygon shape on the selected object. Click to add points.\n\nDouble-click to finish.",
         polyline: "Create a polyline shape on the selected object. Click to add points.\n\nDouble-click to finish.",
@@ -1703,10 +1703,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveText("Snap Angle");
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Snap angle enabled: Rotate action rounds entered rotation delta to 15 degree increments\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Snap angle enabled: Rotate action uses dropdown values in 15 degree increments\./);
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveAttribute("aria-pressed", "false");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Snap angle disabled: Rotate action uses raw entered rotation delta\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Snap angle disabled: Rotate action uses raw numeric textbox values\./);
 
       await drawDefaultObjectVectorShape(page, "rectangle");
       await expect(page.locator('[data-shape-tool="rectangle"]')).toHaveAttribute("aria-pressed", "true");
@@ -2270,7 +2270,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             buttonTitle: button?.title || "",
             inputIds: Array.from(row.querySelectorAll("input")).map((input) => input.id),
             label: row.querySelector(".object-vector-studio-v2__transform-control-label")?.textContent.trim() || "",
-            rowType: row.dataset.transformControlRow
+            rowType: row.dataset.transformControlRow,
+            selectIds: Array.from(row.querySelectorAll("select")).map((select) => select.id)
           };
         })
       ));
@@ -2283,7 +2284,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           buttonTitle: "",
           inputIds: ["objectVectorStudioV2MoveXInput", "objectVectorStudioV2MoveYInput"],
           label: "Move",
-          rowType: "move"
+          rowType: "move",
+          selectIds: []
         },
         {
           allOneLine: true,
@@ -2293,7 +2295,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           buttonTitle: "Apply Origin",
           inputIds: ["objectVectorStudioV2OriginXInput", "objectVectorStudioV2OriginYInput"],
           label: "Origin",
-          rowType: "origin"
+          rowType: "origin",
+          selectIds: []
         },
         {
           allOneLine: true,
@@ -2303,11 +2306,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           buttonTitle: "",
           inputIds: ["objectVectorStudioV2RotateInput"],
           label: "Rotate",
-          rowType: "rotate"
+          rowType: "rotate",
+          selectIds: ["objectVectorStudioV2RotateSnapSelect", "objectVectorStudioV2SnapAngleStepSelect"]
         }
       ]);
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveAttribute("min", "-359");
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveAttribute("max", "359");
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toBeDisabled();
       const transformBeforeInvalid = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform);
       await page.locator("#objectVectorStudioV2MoveXInput").fill("");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
@@ -2688,35 +2695,55 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved shape row 0 by 13, 7\./);
 
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
-      await page.locator("#objectVectorStudioV2RotateInput").fill("22");
-      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("22");
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toHaveValue("15");
+      await expect.poll(() => page.locator("#objectVectorStudioV2RotateSnapSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual([
+        "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345"
+      ]);
+      await page.locator("#objectVectorStudioV2SnapAngleStepSelect").selectOption("45");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Snap angle step set to 45 degrees\./);
+      await expect.poll(() => page.locator("#objectVectorStudioV2RotateSnapSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual([
+        "0", "45", "90", "135", "180", "225", "270", "315"
+      ]);
+      await page.locator("#objectVectorStudioV2RotateSnapSelect").selectOption("45");
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 15');
-      await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("22");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 15 degrees\. Snap Angle active: 22 -> 15\./);
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 45');
+      await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toHaveValue("45");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 45 degrees\. Snap Angle active: 45 -> 45\./);
       const snapAngleRotateVerification = await page.evaluate(() => {
         const shape = window.__objectVectorStudioV2App.selectedShape();
         const statusLines = document.querySelector("#statusLog").value.trim().split("\n");
         return {
           angleSnapEnabled: window.__objectVectorStudioV2App.angleSnapEnabled,
-          inputValue: document.querySelector("#objectVectorStudioV2RotateInput").value,
+          numericDisabled: document.querySelector("#objectVectorStudioV2RotateInput").disabled,
           rotation: shape.transform.rotation,
+          snapSelectDisabled: document.querySelector("#objectVectorStudioV2RotateSnapSelect").disabled,
+          snapSelectValue: document.querySelector("#objectVectorStudioV2RotateSnapSelect").value,
+          step: document.querySelector("#objectVectorStudioV2SnapAngleStepSelect").value,
           status: statusLines[statusLines.length - 1].replace(/^\[[^\]]+\]\s*/, "")
         };
       });
       expect(snapAngleRotateVerification).toEqual({
         angleSnapEnabled: true,
-        inputValue: "22",
-        rotation: 15,
-        status: "OK Rotated shape row 0 by 15 degrees. Snap Angle active: 22 -> 15."
+        numericDisabled: true,
+        rotation: 45,
+        snapSelectDisabled: false,
+        snapSelectValue: "45",
+        step: "45",
+        status: "OK Rotated shape row 0 by 45 degrees. Snap Angle active: 45 -> 45."
       });
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toBeDisabled();
       await page.locator("#objectVectorStudioV2RotateInput").fill("-30");
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 345');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 15');
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 345, scale 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by -30 degrees\. Snap Angle disabled: raw rotation applied\./);
       const wrappedLargeRotationSummary = await page.evaluate(() => window.__objectVectorStudioV2App.formatTransformSummary({
         origin: { x: 0, y: 0 },
@@ -2750,7 +2777,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).not.toHaveAttribute("aria-invalid", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.2 for shape row 0\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"scaleX": 1.2');
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 345, scale 1.2");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1.2");
       const selectionBeforeScaleStep = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
         height: Number(box.getAttribute("height")),
         width: Number(box.getAttribute("width"))
@@ -2802,7 +2829,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
       });
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 345, scale 1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Resize Geometry applied scale 1\.2 to shape row 0; transform scale reset to 1\./);
 
       const selectedShapeActions = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] .object-vector-studio-v2__object-tile-shapes .object-vector-studio-v2__shape-list-actions");
@@ -3824,51 +3851,69 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           tag: marker.tagName.toLowerCase()
         }));
         return {
+          d: shape.getAttribute("d"),
           jointStyle: shape.dataset.pointStyle || "",
           markers,
           pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
-          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+          roundedPointRender: shape.dataset.roundedPointRender,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin"),
+          tag: shape.tagName.toLowerCase()
         };
       });
       expect(polylineJoinStyle).toEqual({
+        d: expect.stringContaining("Q"),
         jointStyle: "square",
         markers: [{ id: "point-1", pointStyle: "round", tag: "circle" }],
         pointRounding: [false, true, false, false],
-        strokeLinejoin: "miter"
+        roundedPointRender: "path",
+        strokeLinejoin: "miter",
+        tag: "path"
       });
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='2']").check();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 3 rounding to round for shape row \d+\./);
       const polylineTwoRoundedJoints = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${polylineIndex}"]`).evaluate((shape) => {
         const markers = Array.from(document.querySelectorAll("#objectVectorStudioV2RenderSurface [data-point-style-caps='polyline'] [data-point-style-cap]")).map((marker) => marker.dataset.pointStyleCap);
         return {
+          d: shape.getAttribute("d"),
           jointStyle: shape.dataset.pointStyle || "",
           markers,
           pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
-          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+          roundedPointRender: shape.dataset.roundedPointRender,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin"),
+          tag: shape.tagName.toLowerCase()
         };
       });
       expect(polylineTwoRoundedJoints).toEqual({
+        d: expect.stringMatching(/Q .* Q /),
         jointStyle: "square",
         markers: ["point-1", "point-2"],
         pointRounding: [false, true, true, false],
-        strokeLinejoin: "miter"
+        roundedPointRender: "path",
+        strokeLinejoin: "miter",
+        tag: "path"
       });
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").uncheck();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to square for shape row \d+\./);
       const polylineIndependentJoint = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${polylineIndex}"]`).evaluate((shape) => {
         const markers = Array.from(document.querySelectorAll("#objectVectorStudioV2RenderSurface [data-point-style-caps='polyline'] [data-point-style-cap]")).map((marker) => marker.dataset.pointStyleCap);
         return {
+          d: shape.getAttribute("d"),
           jointStyle: shape.dataset.pointStyle || "",
           markers,
           pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
-          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+          roundedPointRender: shape.dataset.roundedPointRender,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin"),
+          tag: shape.tagName.toLowerCase()
         };
       });
       expect(polylineIndependentJoint).toEqual({
+        d: expect.stringContaining("Q"),
         jointStyle: "square",
         markers: ["point-2"],
         pointRounding: [false, false, true, false],
-        strokeLinejoin: "miter"
+        roundedPointRender: "path",
+        strokeLinejoin: "miter",
+        tag: "path"
       });
 
       await page.locator('[data-shape-tool="text"]').click();
@@ -4079,17 +4124,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const shape = surface.querySelector("[data-shape-index='0']");
         const marker = surface.querySelector("[data-point-style-caps='polygon'] [data-point-style-cap='point-1']");
         return {
+          d: shape.getAttribute("d"),
           pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
           markerStyle: marker?.dataset.pointStyle || "",
           markerTag: marker?.tagName.toLowerCase() || "",
-          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+          roundedPointRender: shape.dataset.roundedPointRender,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin"),
+          tag: shape.tagName.toLowerCase()
         };
       });
       expect(roundedPointRender).toEqual({
+        d: expect.stringContaining("Q"),
         markerStyle: "round",
         markerTag: "circle",
         pointRounding: [false, true, false, false],
-        strokeLinejoin: "miter"
+        roundedPointRender: "path",
+        strokeLinejoin: "miter",
+        tag: "path"
       });
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='2']").check();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 3 rounding to round for shape row 0\./);
@@ -4097,15 +4148,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const shape = surface.querySelector("[data-shape-index='0']");
         const markers = Array.from(surface.querySelectorAll("[data-point-style-caps='polygon'] [data-point-style-cap]")).map((marker) => marker.dataset.pointStyleCap);
         return {
+          d: shape.getAttribute("d"),
           markers,
           pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
-          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+          roundedPointRender: shape.dataset.roundedPointRender,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin"),
+          tag: shape.tagName.toLowerCase()
         };
       });
       expect(twoInteriorPointsRounded).toEqual({
+        d: expect.stringMatching(/Q .* Q /),
         markers: ["point-1", "point-2"],
         pointRounding: [false, true, true, false],
-        strokeLinejoin: "miter"
+        roundedPointRender: "path",
+        strokeLinejoin: "miter",
+        tag: "path"
       });
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").uncheck();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to square for shape row 0\./);
@@ -4113,15 +4170,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const shape = surface.querySelector("[data-shape-index='0']");
         const markers = Array.from(surface.querySelectorAll("[data-point-style-caps='polygon'] [data-point-style-cap]")).map((marker) => marker.dataset.pointStyleCap);
         return {
+          d: shape.getAttribute("d"),
           markers,
           pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
-          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+          roundedPointRender: shape.dataset.roundedPointRender,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin"),
+          tag: shape.tagName.toLowerCase()
         };
       });
       expect(independentInteriorPoint).toEqual({
+        d: expect.stringContaining("Q"),
         markers: ["point-2"],
         pointRounding: [false, false, true, false],
-        strokeLinejoin: "miter"
+        roundedPointRender: "path",
+        strokeLinejoin: "miter",
+        tag: "path"
       });
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").check();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to round for shape row 0\./);

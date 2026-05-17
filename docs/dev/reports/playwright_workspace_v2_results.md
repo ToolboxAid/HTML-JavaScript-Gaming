@@ -1,6 +1,6 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_083-fix-middle-point-rounding-and-verify-snap-angle
+PR: PR_26133_084-fix-actual-middle-rounding-and-snap-angle-rotate-ui
 
 ## Validation
 
@@ -15,11 +15,12 @@ PR: PR_26133_083-fix-middle-point-rounding-and-verify-snap-angle
 - Shape Geometry point rows still render exactly one Round checkbox per point row.
 - Row-local plus buttons still insert a copied point directly after the current row.
 - Row-local trash buttons still delete only their row and reject invalid minimum-count deletion.
-- Polygon interior point rounding now verifies two rounded middle/corner points, then unrounds one and confirms the other stays rounded.
-- Polyline middle point rounding still verifies independent middle-joint round/unround behavior.
-- Arc start/end rounding still verifies independent endpoint controls.
-- Snap Angle Rotate is explicitly verified with Snap Angle enabled: Rotate input 22 applies 15 degrees using the current 15 degree snap increment.
-- Snap Angle disabled still applies the raw entered rotation delta.
+- Polygon and polyline middle/interior rounding now verifies actual rendered SVG geometry changes to a path with quadratic `Q` corner curves.
+- Checking two middle/interior points, then unchecking one, keeps the other rendered as the only rounded joint.
+- Start/end rounding still passes through the existing arc endpoint coverage.
+- Snap Angle enabled disables the free numeric Rotate textbox and enables the Rotate dropdown plus Step selector.
+- Snap Angle disabled re-enables the numeric Rotate textbox and disables the constrained dropdown controls.
+- Default 15 degree dropdown values and 45 degree Step-generated dropdown values were verified.
 
 ## Console/Runtime Errors
 

@@ -1817,7 +1817,7 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__transform-control-row--rotate {
-  grid-template-columns: 50px minmax(48px, 1fr) max-content;
+  grid-template-columns: 50px minmax(42px, 1fr) minmax(54px, 1fr) minmax(54px, max-content) max-content;
 }
 
 .object-vector-studio-v2__transform-control-label {
@@ -1841,6 +1841,24 @@ textarea:hover {
   width: 100%;
   min-height: 22px;
   padding: 2px 3px;
+}
+
+.object-vector-studio-v2__transform-control-row select {
+  min-width: 0;
+  width: 100%;
+  min-height: 22px;
+  padding: 1px 2px;
+  font-size: 0.72rem;
+}
+
+.object-vector-studio-v2__snap-angle-step-field {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 2px;
+  font-size: 0.7rem;
+  font-weight: 800;
 }
 
 .object-vector-studio-v2__transform-control-row button {
