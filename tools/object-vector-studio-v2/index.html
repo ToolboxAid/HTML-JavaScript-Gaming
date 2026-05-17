@@ -185,13 +185,6 @@
                   <span>Width</span>
                   <input id="objectVectorStudioV2StrokeWidth" type="number" min="0.1" step="0.1" value="2">
                 </label>
-                <label class="object-vector-studio-v2__inline-field object-vector-studio-v2__stroke-cap-field" for="objectVectorStudioV2StrokeLinecap">
-                  <span>End</span>
-                  <select id="objectVectorStudioV2StrokeLinecap" title="Stroke endings and joins for lines, polylines, polygons, and arcs">
-                    <option value="round">Round</option>
-                    <option value="square">Square</option>
-                  </select>
-                </label>
               </div>
               <div class="object-vector-studio-v2__palette-opacity-row">
                 <span class="object-vector-studio-v2__palette-opacity-heading">Opacity</span>
@@ -284,15 +277,15 @@
         </section>
 
         <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ObjectDetailsContent">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ShapeGeometryContent">
             <span class="object-vector-studio-v2__geometry-header-title">
-              <span class="object-vector-studio-v2__geometry-header-line">Object Geometry <span id="objectVectorStudioV2ObjectGeometrySummary" class="object-vector-studio-v2__header-count"></span></span>
-              <span id="objectVectorStudioV2ObjectGeometryName" class="object-vector-studio-v2__geometry-header-name"></span>
+              <span class="object-vector-studio-v2__geometry-header-line">Shape Geometry <span id="objectVectorStudioV2ShapeGeometrySummary" class="object-vector-studio-v2__header-count"></span></span>
+              <span id="objectVectorStudioV2ShapeGeometryName" class="object-vector-studio-v2__geometry-header-name"></span>
             </span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="objectVectorStudioV2ObjectDetailsContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <div id="objectVectorStudioV2ObjectDetails" class="object-vector-studio-v2__details">No object selected.</div>
+          <div id="objectVectorStudioV2ShapeGeometryContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2ShapeGeometryDetails" class="object-vector-studio-v2__details">No object selected.</div>
           </div>
         </section>
 

@@ -274,7 +274,9 @@
           "fill": "#ffffff",
           "stroke": "#ffffff",
           "strokeWidth": 3,
-          "strokeLinecap": "round",
+          "pointStyle": "round",
+          "startPointStyle": "round",
+          "endPointStyle": "round",
           "fillOpacity": 1,
           "strokeOpacity": 1
         },
@@ -446,7 +448,9 @@
         "fill": "#ffffff",
         "stroke": "#ffffff",
         "strokeWidth": 3,
-        "strokeLinecap": "round",
+        "pointStyle": "round",
+        "startPointStyle": "round",
+        "endPointStyle": "round",
         "fillOpacity": 1,
         "strokeOpacity": 1
       },
@@ -462,6 +466,18 @@
           "minimum": 0
         },
         "strokeLinecap": {
+          "type": "string",
+          "enum": ["round", "square"]
+        },
+        "pointStyle": {
+          "type": "string",
+          "enum": ["round", "square"]
+        },
+        "startPointStyle": {
+          "type": "string",
+          "enum": ["round", "square"]
+        },
+        "endPointStyle": {
           "type": "string",
           "enum": ["round", "square"]
         },

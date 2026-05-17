@@ -183,6 +183,9 @@ const SHAPE_TYPE_DETAILS = Object.freeze({
 });
 
 const PRIMITIVE_TOOLS = Object.freeze(["triangle", "rectangle", "square", "circle", "ellipse", "line", "polygon", "polyline", "arc", "text"]);
+const POINT_STYLE_VALUES = Object.freeze(["round", "square"]);
+const OPEN_POINT_STYLE_TOOLS = Object.freeze(new Set(["line", "polyline", "arc"]));
+const CLOSED_POINT_STYLE_TOOLS = Object.freeze(new Set(["polygon", "rectangle"]));
 const OBJECT_ID_SIZE_WORDS = Object.freeze(new Set(["large", "medium", "small"]));
 const OBJECT_ID_ORDERED_NOUNS = Object.freeze(new Set(["asteroid", "ufo"]));
 
@@ -762,10 +765,6 @@ export class ToolStarterApp {
       }
       this.statusLog.write(`OK Palette stroke width set to ${width}.`);
     });
-    this.elements.strokeLinecap.addEventListener("change", () => {
-      this.elements.strokeLinecap.value = this.strokeLinecapValue();
-      this.statusLog.write(`OK Palette stroke endings set to ${this.elements.strokeLinecap.value}.`);
-    });
     [
       this.elements.fillOpacity,
       this.elements.strokeOpacity
@@ -851,12 +850,36 @@ export class ToolStarterApp {
     this.elements.strokeModeButton.dataset.paletteModeOpacity = String(this.selectedStrokeOpacity);
   }
 
-  strokeLinecapValue(value = this.elements.strokeLinecap?.value) {
-    return value === "square" ? "square" : "round";
+  pointStyleValue(value) {
+    return POINT_STYLE_VALUES.includes(value) ? value : "round";
   }
 
-  strokeLinejoinValue(value = this.strokeLinecapValue()) {
-    return value === "square" ? "miter" : "round";
+  strokeLinejoinValue(value = "round") {
+    return this.pointStyleValue(value) === "square" ? "miter" : "round";
+  }
+
+  supportsOpenPointStyle(shape) {
+    return OPEN_POINT_STYLE_TOOLS.has(shapeGeometryTool(shape));
+  }
+
+  supportsClosedPointStyle(shape) {
+    return CLOSED_POINT_STYLE_TOOLS.has(shapeGeometryTool(shape));
+  }
+
+  shapeUnifiedPointStyle(shape) {
+    return this.pointStyleValue(shape?.style?.pointStyle ?? shape?.style?.strokeLinecap);
+  }
+
+  shapeStartPointStyle(shape) {
+    return this.pointStyleValue(shape?.style?.startPointStyle ?? shape?.style?.strokeLinecap ?? shape?.style?.pointStyle);
+  }
+
+  shapeEndPointStyle(shape) {
+    return this.pointStyleValue(shape?.style?.endPointStyle ?? shape?.style?.strokeLinecap ?? shape?.style?.pointStyle);
+  }
+
+  openShapeUsesSplitPointStyles(shape) {
+    return this.supportsOpenPointStyle(shape) && this.shapeStartPointStyle(shape) !== this.shapeEndPointStyle(shape);
   }
 
   bindViewportControls() {
@@ -1044,8 +1067,8 @@ export class ToolStarterApp {
     this.elements.objectTagInput.value = "";
     this.renderObjectTagList(null);
     this.elements.paletteSummary.textContent = this.runtimePalette ? "" : "Palette required before render.";
-    this.elements.objectDetails.textContent = "No object selected.";
-    this.updateObjectGeometryHeader(null);
+    this.elements.shapeGeometryDetails.textContent = "No object selected.";
+    this.updateShapeGeometryHeader(null);
     this.elements.objectTransform.textContent = "No shape selected.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
@@ -1067,10 +1090,10 @@ export class ToolStarterApp {
     this.elements.objectsCount.textContent = `(${objectCount} obj, states ${stateCount}, ${shapeCount} ${shapeCount === 1 ? "shape" : "shapes"})`;
   }
 
-  updateObjectGeometryHeader(shape) {
-    this.elements.objectGeometrySummary.textContent = "";
-    if (this.elements.objectGeometryName) {
-      this.elements.objectGeometryName.textContent = "";
+  updateShapeGeometryHeader(shape) {
+    this.elements.shapeGeometrySummary.textContent = "";
+    if (this.elements.shapeGeometryName) {
+      this.elements.shapeGeometryName.textContent = "";
     }
   }
 
@@ -1221,8 +1244,8 @@ export class ToolStarterApp {
     this.elements.objectNameInput.value = "";
     this.elements.objectTagInput.value = "";
     this.renderObjectTagList(null);
-    this.elements.objectDetails.textContent = "Runtime palette required before object render.";
-    this.updateObjectGeometryHeader(null);
+    this.elements.shapeGeometryDetails.textContent = "Runtime palette required before object render.";
+    this.updateShapeGeometryHeader(null);
     this.elements.objectTransform.textContent = "Runtime palette required before object transform.";
     this.elements.objectPreviewFooter.textContent = "Object ID: none";
     this.elements.jsonDetails.textContent = "{}";
@@ -1813,6 +1836,7 @@ export class ToolStarterApp {
         const element = this.createSvgShape(shape);
         element.classList.add("object-vector-studio-v2__object-thumbnail-shape");
         svg.append(element);
+        this.appendShapePointStyleCaps(svg, shape);
       } catch (error) {
         this.statusLog.write(`FAIL Thumbnail render failed for ${object.id}/shape-${shapeIndex} (${shapeTool(shape)}): ${error.message}`);
       }
@@ -1836,9 +1860,9 @@ export class ToolStarterApp {
       this.elements.objectTagInput.value = "";
       this.renderObjectTagList(null);
       this.updateObjectsHeader(this.currentPayload?.objects.length || 0, 0);
-      this.elements.objectDetails.textContent = "No object selected.";
+      this.elements.shapeGeometryDetails.textContent = "No object selected.";
       this.elements.objectTransform.textContent = "No shape selected.";
-      this.updateObjectGeometryHeader(null);
+      this.updateShapeGeometryHeader(null);
       this.elements.objectPreviewFooter.textContent = "Object ID: none";
       this.elements.jsonDetails.textContent = "{}";
       this.renderFrameTimeline();
@@ -1849,9 +1873,9 @@ export class ToolStarterApp {
     this.elements.objectNameInput.value = selected.name;
     this.renderObjectTagList(selected);
     this.updateObjectsHeader(this.currentPayload.objects.length, selected.shapes.length);
-    this.elements.objectDetails.replaceChildren(this.createObjectDetails(selected, shape));
+    this.elements.shapeGeometryDetails.replaceChildren(this.createShapeGeometryDetails(selected, shape));
     this.elements.objectTransform.replaceChildren(this.createObjectTransformDetails(shape));
-    this.updateObjectGeometryHeader(shape);
+    this.updateShapeGeometryHeader(shape);
     this.elements.objectPreviewFooter.textContent = `Object ID: ${selected.id}`;
     this.updateSelectedObjectJsonDetails();
     this.renderFrameTimeline();
@@ -1993,6 +2017,7 @@ export class ToolStarterApp {
       }
       try {
         svg.append(this.createSvgShape(renderShape));
+        this.appendShapePointStyleCaps(svg, renderShape);
       } catch (error) {
         this.statusLog.write(`FAIL Frame thumbnail render failed for ${object.id}/${frame.id}/shape-${shapeIndex}: ${error.message}`);
       }
@@ -2000,7 +2025,7 @@ export class ToolStarterApp {
     return svg;
   }
 
-  createObjectDetails(object, shape) {
+  createShapeGeometryDetails(object, shape) {
     const wrapper = document.createElement("div");
     wrapper.className = "object-vector-studio-v2__object-detail-stack";
     if (!shape) {
@@ -2134,12 +2159,101 @@ export class ToolStarterApp {
         grid.append(label);
       });
     }
+    const pointStyleControls = this.createShapePointStyleControls(shape);
+    section.append(heading);
+    if (pointStyleControls) {
+      section.append(pointStyleControls);
+    }
+    section.append(grid);
     if (editablePolygon) {
-      section.append(heading, grid, this.createPolygonSideActions());
-    } else {
-      section.append(heading, grid);
+      section.append(this.createPolygonSideActions());
     }
     return section;
+  }
+
+  createShapePointStyleControls(shape) {
+    if (!this.supportsOpenPointStyle(shape) && !this.supportsClosedPointStyle(shape)) {
+      return null;
+    }
+    const controls = document.createElement("div");
+    controls.className = "object-vector-studio-v2__point-style-controls";
+    controls.dataset.pointStyleControls = shapeGeometryTool(shape);
+    if (this.supportsOpenPointStyle(shape)) {
+      controls.classList.add("object-vector-studio-v2__point-style-controls--open");
+      controls.append(
+        this.createShapePointStyleField("Start Point Style", "startPointStyle", this.shapeStartPointStyle(shape)),
+        this.createShapePointStyleField("End Point Style", "endPointStyle", this.shapeEndPointStyle(shape))
+      );
+      return controls;
+    }
+    controls.append(this.createShapePointStyleField("Point Style", "pointStyle", this.shapeUnifiedPointStyle(shape)));
+    return controls;
+  }
+
+  createShapePointStyleField(labelText, styleKey, value) {
+    const label = document.createElement("label");
+    label.className = "object-vector-studio-v2__point-style-field";
+    const caption = document.createElement("span");
+    caption.textContent = labelText;
+    const select = document.createElement("select");
+    select.dataset.shapePointStyleField = styleKey;
+    select.title = `${labelText}: square or round stroke point/corner rendering`;
+    POINT_STYLE_VALUES.forEach((pointStyle) => {
+      const option = document.createElement("option");
+      option.value = pointStyle;
+      option.textContent = shapeTypeLabel(pointStyle);
+      select.append(option);
+    });
+    select.value = this.pointStyleValue(value);
+    select.addEventListener("change", () => this.updateSelectedShapePointStyle(styleKey, select.value, labelText));
+    label.append(caption, select);
+    return label;
+  }
+
+  updateSelectedShapePointStyle(styleKey, value, labelText) {
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write(`WARN ${labelText} update skipped: no shape is selected.`);
+      return;
+    }
+    const pointStyle = this.pointStyleValue(value);
+    if (this.guardSelectedObjectMutation(`${labelText} update`)) {
+      return;
+    }
+    const objectIndex = this.currentPayload.objects.findIndex((object) => object.id === this.selectedObjectId);
+    const nextPayload = this.cloneCurrentPayload();
+    const nextObject = nextPayload.objects[objectIndex];
+    const nextShape = sortedShapes(nextObject)[this.selectedShapeIndex];
+    if (!nextShape) {
+      this.statusLog.write(`WARN ${labelText} update skipped: selected shape row ${this.selectedShapeIndex} was not found.`);
+      return;
+    }
+    const supportsOpen = this.supportsOpenPointStyle(nextShape);
+    const supportsClosed = this.supportsClosedPointStyle(nextShape);
+    if ((styleKey === "startPointStyle" || styleKey === "endPointStyle") && !supportsOpen) {
+      this.statusLog.write(`WARN ${labelText} update skipped: ${shapeTypeLabel(nextShape)} does not use open-ended point styles.`);
+      return;
+    }
+    if (styleKey === "pointStyle" && !supportsClosed) {
+      this.statusLog.write(`WARN ${labelText} update skipped: ${shapeTypeLabel(nextShape)} does not use a unified point style.`);
+      return;
+    }
+    nextShape.style = { ...nextShape.style, [styleKey]: pointStyle };
+    delete nextShape.style.strokeLinecap;
+    if (supportsOpen) {
+      if (!nextShape.style.startPointStyle) {
+        nextShape.style.startPointStyle = this.shapeStartPointStyle(selected);
+      }
+      if (!nextShape.style.endPointStyle) {
+        nextShape.style.endPointStyle = this.shapeEndPointStyle(selected);
+      }
+      delete nextShape.style.pointStyle;
+    }
+    if (supportsClosed) {
+      delete nextShape.style.startPointStyle;
+      delete nextShape.style.endPointStyle;
+    }
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Updated ${labelText} to ${pointStyle} for shape row ${this.selectedShapeIndex}.`, `${labelText} update failed schema validation`);
   }
 
   bindGeometryAutoApplyInput(input) {
@@ -2504,6 +2618,7 @@ export class ToolStarterApp {
         element.setAttribute("tabindex", "0");
         this.bindRenderedShapePointerEvents(element, shape, shapeIndex);
         this.elements.renderSurface.append(element);
+        this.appendShapePointStyleCaps(this.elements.renderSurface, renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
         hitLayer.append(this.createShapeHitArea(renderShape, shape, shapeIndex));
         renderedCount += 1;
       } catch (error) {
@@ -2650,6 +2765,7 @@ export class ToolStarterApp {
       }
       try {
         group.append(this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE }));
+        this.appendShapePointStyleCaps(group, renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
       } catch (error) {
         this.statusLog.write(`FAIL Onion-skin render failed for ${object.name}/shape-${shapeIndex}: ${error.message}`);
       }
@@ -2719,6 +2835,7 @@ export class ToolStarterApp {
       element.dataset.drawingPreviewTool = this.activeDrawing.tool;
       this.applyDrawingPreviewPresentation(element, previewShape);
       this.elements.renderSurface.append(element);
+      this.appendShapePointStyleCaps(this.elements.renderSurface, previewShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
     } catch (error) {
       this.statusLog.write(`FAIL Drawing preview failed for ${this.activeDrawing.tool}: ${error.message}`);
     }
@@ -2776,8 +2893,11 @@ export class ToolStarterApp {
       return;
     }
     element.style.strokeDasharray = this.drawingPreviewDashArray(previewShape.style.strokeWidth);
-    element.style.strokeLinecap = this.strokeLinecapValue(previewShape.style.strokeLinecap);
-    element.style.strokeLinejoin = this.strokeLinejoinValue(previewShape.style.strokeLinecap);
+    const previewPointStyle = this.supportsOpenPointStyle(previewShape)
+      ? (this.openShapeUsesSplitPointStyles(previewShape) ? "butt" : this.shapeStartPointStyle(previewShape))
+      : this.shapeUnifiedPointStyle(previewShape);
+    element.style.strokeLinecap = previewPointStyle;
+    element.style.strokeLinejoin = this.strokeLinejoinValue(this.shapeUnifiedPointStyle(previewShape));
   }
 
   drawingPreviewDashArray(strokeWidth) {
@@ -2931,13 +3051,93 @@ export class ToolStarterApp {
     element.setAttribute("stroke-width", shape.style.strokeWidth);
     element.setAttribute("fill-opacity", shape.style.fillOpacity);
     element.setAttribute("stroke-opacity", shape.style.strokeOpacity);
-    if (["line", "polyline", "polygon", "arc"].includes(geometryTool)) {
-      const lineCap = this.strokeLinecapValue(shape.style.strokeLinecap);
+    if (OPEN_POINT_STYLE_TOOLS.has(geometryTool)) {
+      const lineCap = this.openShapeUsesSplitPointStyles(shape) ? "butt" : this.shapeStartPointStyle(shape);
       element.setAttribute("stroke-linecap", lineCap);
-      element.setAttribute("stroke-linejoin", this.strokeLinejoinValue(lineCap));
+      element.setAttribute("stroke-linejoin", this.strokeLinejoinValue(this.shapeUnifiedPointStyle(shape)));
+      element.dataset.startPointStyle = this.shapeStartPointStyle(shape);
+      element.dataset.endPointStyle = this.shapeEndPointStyle(shape);
+    } else if (CLOSED_POINT_STYLE_TOOLS.has(geometryTool)) {
+      const pointStyle = this.shapeUnifiedPointStyle(shape);
+      element.setAttribute("stroke-linecap", pointStyle);
+      element.setAttribute("stroke-linejoin", this.strokeLinejoinValue(pointStyle));
+      element.dataset.pointStyle = pointStyle;
     }
     const transform = this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale);
     element.setAttribute("transform", this.svgTransformAttribute(transform));
+  }
+
+  appendShapePointStyleCaps(parent, shape, { drawingScale = 1 } = {}) {
+    if (!this.openShapeUsesSplitPointStyles(shape)) {
+      return;
+    }
+    const endpoints = this.openShapeEndpointPoints(shape);
+    if (!endpoints) {
+      return;
+    }
+    const group = document.createElementNS(SVG_NS, "g");
+    group.classList.add("object-vector-studio-v2__point-style-caps");
+    group.dataset.pointStyleCaps = shapeTool(shape);
+    group.setAttribute("aria-hidden", "true");
+    group.setAttribute("pointer-events", "none");
+    group.setAttribute("transform", this.svgTransformAttribute(this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale)));
+    [
+      ["start", endpoints.start, this.shapeStartPointStyle(shape)],
+      ["end", endpoints.end, this.shapeEndPointStyle(shape)]
+    ].forEach(([endpoint, point, pointStyle]) => {
+      group.append(this.createPointStyleCapMarker(point, pointStyle, shape, endpoint, drawingScale));
+    });
+    parent.append(group);
+  }
+
+  createPointStyleCapMarker(point, pointStyle, shape, endpoint, drawingScale) {
+    const strokeWidth = Math.max(1, Number(shape.style?.strokeWidth) || 1);
+    const size = strokeWidth;
+    const x = this.scaleDrawingValue(point.x, drawingScale);
+    const y = this.scaleDrawingValue(point.y, drawingScale);
+    const marker = pointStyle === "square"
+      ? document.createElementNS(SVG_NS, "rect")
+      : document.createElementNS(SVG_NS, "circle");
+    marker.classList.add("object-vector-studio-v2__point-style-cap");
+    marker.dataset.pointStyleCap = endpoint;
+    marker.dataset.pointStyle = pointStyle;
+    marker.setAttribute("fill", shape.style.stroke);
+    marker.setAttribute("fill-opacity", shape.style.strokeOpacity);
+    marker.setAttribute("stroke", "none");
+    if (pointStyle === "square") {
+      marker.setAttribute("x", x - size / 2);
+      marker.setAttribute("y", y - size / 2);
+      marker.setAttribute("width", size);
+      marker.setAttribute("height", size);
+      return marker;
+    }
+    marker.setAttribute("cx", x);
+    marker.setAttribute("cy", y);
+    marker.setAttribute("r", size / 2);
+    return marker;
+  }
+
+  openShapeEndpointPoints(shape) {
+    const geometryTool = shapeGeometryTool(shape);
+    if (geometryTool === "line") {
+      return {
+        end: linePoint(shape.geometry, "point2"),
+        start: linePoint(shape.geometry, "point1")
+      };
+    }
+    if (geometryTool === "polyline" && Array.isArray(shape.geometry?.points) && shape.geometry.points.length >= 2) {
+      return {
+        end: shape.geometry.points.at(-1),
+        start: shape.geometry.points[0]
+      };
+    }
+    if (geometryTool === "arc") {
+      return {
+        end: this.polarPoint(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, shape.geometry.endAngle),
+        start: this.polarPoint(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, shape.geometry.startAngle)
+      };
+    }
+    return null;
   }
 
   shapeTransform(shape) {
@@ -3511,14 +3711,13 @@ export class ToolStarterApp {
   }
 
   drawingStyleFromActivePalette() {
-    const styleDefault = this.schemaDefault("style");
+    const { pointStyle, startPointStyle, endPointStyle, strokeLinecap, ...styleDefault } = this.schemaDefault("style");
     const strokeWidth = Number(this.elements.strokeWidth?.value);
     return {
       ...styleDefault,
       fill: TRANSPARENT_STYLE_COLOR,
       fillOpacity: this.selectedFillOpacity,
       stroke: this.selectedStrokeColor || this.currentTargetColor() || "#ffffff",
-      strokeLinecap: this.strokeLinecapValue(),
       strokeOpacity: this.selectedStrokeOpacity,
       strokeWidth: Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : styleDefault.strokeWidth
     };
@@ -4777,7 +4976,7 @@ export class ToolStarterApp {
   }
 
   createShapeStyleDefault(type, color, styleOverride = null) {
-    const style = this.schemaDefault("style");
+    const { pointStyle, startPointStyle, endPointStyle, strokeLinecap, ...style } = this.schemaDefault("style");
     const strokeColor = styleOverride?.stroke || this.selectedStrokeColor || color;
     return {
       ...style,
@@ -4785,7 +4984,6 @@ export class ToolStarterApp {
       fill: TRANSPARENT_STYLE_COLOR,
       fillOpacity: styleOverride?.fillOpacity ?? this.selectedFillOpacity,
       stroke: strokeColor,
-      strokeLinecap: styleOverride?.strokeLinecap ?? this.strokeLinecapValue(style.strokeLinecap),
       strokeOpacity: styleOverride?.strokeOpacity ?? this.selectedStrokeOpacity,
       strokeWidth: styleOverride?.strokeWidth ?? style.strokeWidth
     };
@@ -4966,9 +5164,6 @@ export class ToolStarterApp {
     };
     syncTarget("paint", effectiveShape.style?.fill);
     syncTarget("stroke", effectiveShape.style?.stroke);
-    if (effectiveShape.style?.strokeLinecap) {
-      this.elements.strokeLinecap.value = this.strokeLinecapValue(effectiveShape.style.strokeLinecap);
-    }
     if (changed && render) {
       this.renderPalette();
     }
@@ -5078,7 +5273,6 @@ export class ToolStarterApp {
     const paletteLabel = swatch?.name || swatch?.id || swatch?.symbol || directLabel || label;
     if (shouldApplyStroke) {
       shape.style.stroke = color;
-      shape.style.strokeLinecap = this.strokeLinecapValue();
       shape.style.strokeWidth = Number.isFinite(strokeWidth) && strokeWidth > 0 ? strokeWidth : 2;
       shape.style.strokeOpacity = this.selectedStrokeOpacity;
     } else {
@@ -5148,9 +5342,6 @@ export class ToolStarterApp {
     }
     if (Number.isFinite(style.strokeWidth) && style.strokeWidth > 0) {
       this.elements.strokeWidth.value = String(style.strokeWidth);
-    }
-    if (style.strokeLinecap) {
-      this.elements.strokeLinecap.value = this.strokeLinecapValue(style.strokeLinecap);
     }
     this.updatePaletteModeSwatches();
     if (this.runtimePalette) {
@@ -5809,7 +6000,7 @@ export class ToolStarterApp {
     if (this.guardSelectedObjectMutation("Geometry edit")) {
       return false;
     }
-    const fields = Array.from(this.elements.objectDetails.querySelectorAll("[data-shape-geometry-field]"));
+    const fields = Array.from(this.elements.shapeGeometryDetails.querySelectorAll("[data-shape-geometry-field]"));
     const geometry = this.readShapeGeometryFields(selected, fields);
     if (!geometry.ok) {
       this.statusLog.write(`FAIL Invalid geometry rejected for shape row ${this.selectedShapeIndex}: ${geometry.error}`);
@@ -5891,24 +6082,24 @@ export class ToolStarterApp {
   }
 
   readCurrentPolygonGeometry(shape) {
-    const fields = Array.from(this.elements.objectDetails.querySelectorAll("[data-shape-geometry-field='points']"));
+    const fields = Array.from(this.elements.shapeGeometryDetails.querySelectorAll("[data-shape-geometry-field='points']"));
     return this.readShapeGeometryFields(shape, fields);
   }
 
   checkedPolygonPointIndexes() {
-    return Array.from(this.elements.objectDetails.querySelectorAll("[data-polygon-point-select='true']"))
+    return Array.from(this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-select='true']"))
       .map((checkbox) => checkbox.checked ? Number(checkbox.dataset.polygonPointIndex) : null)
       .filter((index) => Number.isInteger(index));
   }
 
   clearPolygonPointSelections() {
-    this.elements.objectDetails.querySelectorAll("[data-polygon-point-select='true']").forEach((checkbox) => {
+    this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-select='true']").forEach((checkbox) => {
       checkbox.checked = false;
     });
   }
 
   rebuildPolygonPointList(points) {
-    const list = this.elements.objectDetails.querySelector(".object-vector-studio-v2__polygon-point-list");
+    const list = this.elements.shapeGeometryDetails.querySelector(".object-vector-studio-v2__polygon-point-list");
     if (!list) {
       return;
     }
@@ -5944,7 +6135,7 @@ export class ToolStarterApp {
   }
 
   reindexPolygonPointRows() {
-    this.elements.objectDetails.querySelectorAll(".object-vector-studio-v2__polygon-point-field").forEach((row, index) => {
+    this.elements.shapeGeometryDetails.querySelectorAll(".object-vector-studio-v2__polygon-point-field").forEach((row, index) => {
       const caption = row.querySelector(".object-vector-studio-v2__polygon-point-label");
       if (caption) {
         caption.textContent = `Point ${index + 1}`;
@@ -5960,7 +6151,7 @@ export class ToolStarterApp {
   }
 
   markPolygonSideActionInvalid(action, message) {
-    const button = this.elements.objectDetails.querySelector(`[data-polygon-side-action='${action}']`);
+    const button = this.elements.shapeGeometryDetails.querySelector(`[data-polygon-side-action='${action}']`);
     if (!button) {
       return;
     }
@@ -5970,7 +6161,7 @@ export class ToolStarterApp {
   }
 
   clearPolygonSideActionValidity() {
-    this.elements.objectDetails.querySelectorAll("[data-polygon-side-action]").forEach((button) => {
+    this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-side-action]").forEach((button) => {
       delete button.dataset.validationState;
       button.removeAttribute("aria-invalid");
       button.title = "";
@@ -7099,6 +7290,7 @@ export class ToolStarterApp {
       element.removeAttribute("tabindex");
       element.removeAttribute("class");
       svg.append(element);
+      this.appendShapePointStyleCaps(svg, this.effectiveShape(shape));
     });
     return new this.window.XMLSerializer().serializeToString(svg);
   }
