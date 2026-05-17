@@ -1,26 +1,25 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_084-fix-actual-middle-rounding-and-snap-angle-rotate-ui
+PR: PR_26133_085-rounding-radius-rectangle-square-and-palette-picker-placement
 
 ## Validation
 
 - PASS: npm run test:workspace-v2
 - Result: 54 passed
-- Runtime: 5.3m
+- Runtime: 4.3m
 - Browser project: playwright
 - Workers: 1
 
 ## Targeted Checks Covered
 
-- Shape Geometry point rows still render exactly one Round checkbox per point row.
-- Row-local plus buttons still insert a copied point directly after the current row.
-- Row-local trash buttons still delete only their row and reject invalid minimum-count deletion.
-- Polygon and polyline middle/interior rounding now verifies actual rendered SVG geometry changes to a path with quadratic `Q` corner curves.
-- Checking two middle/interior points, then unchecking one, keeps the other rendered as the only rounded joint.
-- Start/end rounding still passes through the existing arc endpoint coverage.
-- Snap Angle enabled disables the free numeric Rotate textbox and enables the Rotate dropdown plus Step selector.
-- Snap Angle disabled re-enables the numeric Rotate textbox and disables the constrained dropdown controls.
-- Default 15 degree dropdown values and 45 degree Step-generated dropdown values were verified.
+- Rectangle point rounding now renders through a rounded SVG path and updates when Rounding Radius changes.
+- Square point rounding now renders through the same rounded rectangle path behavior while preserving equal width and height.
+- Invalid negative Rounding Radius values are visibly rejected and do not mutate the selected shape style.
+- Existing arc endpoint rounding and polygon/polyline/triangle point rounding coverage remained green.
+- Snap Angle disabled shows the Rotate numeric textbox while the dropdown and Step selector are hidden.
+- Snap Angle enabled hides the Rotate numeric textbox while showing the constrained dropdown and Step selector.
+- Palette primary row now contains Paint, Stroke, Width, and an icon-only Picker button to the right of Stroke controls.
+- Picker behavior still samples fill, stroke, opacities, and stroke width from a clicked shape without recoloring it.
 
 ## Console/Runtime Errors
 

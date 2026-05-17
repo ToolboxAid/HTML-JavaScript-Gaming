@@ -187,6 +187,7 @@
           "fill": "#ffffff",
           "stroke": "#ffffff",
           "strokeWidth": 3,
+          "roundingRadius": 4,
           "pointStyle": "square",
           "startPointStyle": "square",
           "endPointStyle": "square",
@@ -443,6 +444,10 @@
         "strokeLinecap": {
           "type": "string",
           "enum": ["round", "square"]
+        },
+        "roundingRadius": {
+          "type": "number",
+          "minimum": 0
         },
         "pointStyle": {
           "type": "string",

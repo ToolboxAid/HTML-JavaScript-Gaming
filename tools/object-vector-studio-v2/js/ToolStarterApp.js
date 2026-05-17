@@ -874,6 +874,18 @@ export class ToolStarterApp {
     return !["circle", "ellipse", "text"].includes(geometryTool) && this.shapeGeometryPointCount(shape) > 0;
   }
 
+  shapeSupportsRoundingRadiusControl(shape) {
+    return ["polygon", "polyline", "rectangle"].includes(shapeGeometryTool(shape)) && this.shapeGeometryPointCount(shape) > 0;
+  }
+
+  shapeRoundingRadius(shape) {
+    const value = Number(shape?.style?.roundingRadius);
+    if (Number.isFinite(value) && value >= 0) {
+      return value;
+    }
+    return 4;
+  }
+
   shapeUnifiedPointStyle(shape) {
     const pointStyles = this.shapePointStyleValues(shape);
     if (pointStyles.length) {
@@ -1097,17 +1109,26 @@ export class ToolStarterApp {
     const numericInput = root.querySelector?.("#objectVectorStudioV2RotateInput") || this.window.document.getElementById("objectVectorStudioV2RotateInput");
     const snapSelect = root.querySelector?.("#objectVectorStudioV2RotateSnapSelect") || this.window.document.getElementById("objectVectorStudioV2RotateSnapSelect");
     const stepSelect = root.querySelector?.("#objectVectorStudioV2SnapAngleStepSelect") || this.window.document.getElementById("objectVectorStudioV2SnapAngleStepSelect");
+    const row = (numericInput || snapSelect || stepSelect)?.closest?.(".object-vector-studio-v2__transform-control-row--rotate") || null;
+    row?.classList.toggle("is-angle-snap-enabled", this.angleSnapEnabled);
     if (stepSelect) {
       stepSelect.value = String(this.angleSnapStep);
       stepSelect.disabled = !this.angleSnapEnabled;
+      stepSelect.hidden = !this.angleSnapEnabled;
+      const stepField = stepSelect.closest(".object-vector-studio-v2__snap-angle-step-field");
+      if (stepField) {
+        stepField.hidden = !this.angleSnapEnabled;
+      }
     }
     if (snapSelect) {
       const preferred = snapSelect.value || numericInput?.value || this.transformInputValue(snapSelect.id, "15");
       this.populateRotateSnapSelect(snapSelect, this.angleSnapStep, preferred);
       snapSelect.disabled = !this.angleSnapEnabled;
+      snapSelect.hidden = !this.angleSnapEnabled;
     }
     if (numericInput) {
       numericInput.disabled = this.angleSnapEnabled;
+      numericInput.hidden = this.angleSnapEnabled;
     }
   }
 
@@ -2317,11 +2338,80 @@ export class ToolStarterApp {
       });
     }
     section.append(heading);
+    const roundingRadiusControl = this.createRoundingRadiusControl(shape);
+    if (roundingRadiusControl) {
+      section.append(roundingRadiusControl);
+    }
     section.append(grid);
     if (geometryTool !== "polygon" && geometryTool !== "polyline" && this.shapeSupportsPointRoundingControls(shape)) {
       section.append(this.createShapePointRoundingControls(shape));
     }
     return section;
+  }
+
+  createRoundingRadiusControl(shape) {
+    if (!this.shapeSupportsRoundingRadiusControl(shape)) {
+      return null;
+    }
+    const label = document.createElement("label");
+    label.className = "object-vector-studio-v2__rounding-radius-field";
+    const caption = document.createElement("span");
+    caption.textContent = "Rounding Radius";
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.step = "0.1";
+    input.value = String(this.shapeRoundingRadius(shape));
+    input.dataset.shapeRoundingRadius = "true";
+    input.setAttribute("aria-label", "Rounding radius");
+    input.addEventListener("input", () => this.clearInputValidity(input));
+    input.addEventListener("change", () => {
+      const shapeIndex = this.selectedShapeIndex;
+      this.window.setTimeout(() => {
+        if (this.selectedShapeIndex !== shapeIndex) {
+          return;
+        }
+        this.updateSelectedShapeRoundingRadius(input);
+      }, 0);
+    });
+    label.append(caption, input);
+    return label;
+  }
+
+  updateSelectedShapeRoundingRadius(input) {
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write("WARN Rounding radius update skipped: no shape is selected.");
+      return;
+    }
+    if (!this.shapeSupportsPointRoundingControls(selected)) {
+      this.statusLog.write(`WARN Rounding radius update skipped: ${shapeTypeLabel(selected)} does not use rounded points.`);
+      return;
+    }
+    const rawValue = String(input?.value ?? "").trim();
+    const value = Number(rawValue);
+    if (rawValue === "" || !Number.isFinite(value) || value < 0) {
+      const error = "Rounding Radius must be a finite number greater than or equal to 0.";
+      this.markInputInvalid(input, error);
+      this.statusLog.write(`FAIL Invalid rounding radius rejected for shape row ${this.selectedShapeIndex}: ${error}`);
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Rounding radius update")) {
+      return;
+    }
+    this.clearInputValidity(input);
+    const roundedValue = Number(value.toFixed(3));
+    const nextPayload = this.cloneCurrentPayload();
+    const nextShape = this.findShapeInPayload(nextPayload, this.selectedShapeIndex);
+    if (!nextShape) {
+      this.statusLog.write(`WARN Rounding radius update skipped: selected shape row ${this.selectedShapeIndex} was not found.`);
+      return;
+    }
+    nextShape.style = {
+      ...nextShape.style,
+      roundingRadius: roundedValue
+    };
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Updated rounding radius to ${roundedValue} for shape row ${this.selectedShapeIndex}.`, "Rounding radius update failed schema validation");
   }
 
   updateSelectedShapePointRounding(pointIndex, isRounded) {
@@ -3256,7 +3346,13 @@ export class ToolStarterApp {
   createSvgShape(shape, { drawingScale = 1 } = {}) {
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
-      const element = document.createElementNS(SVG_NS, "rect");
+      const roundedPath = this.roundedPointPath(shape, { closed: true, drawingScale });
+      const element = document.createElementNS(SVG_NS, roundedPath ? "path" : "rect");
+      if (roundedPath) {
+        element.setAttribute("d", roundedPath);
+        element.dataset.roundedPointRender = "path";
+        element.setAttribute("points", this.svgPointList(this.shapeGeometryPoints(shape), drawingScale));
+      }
       element.setAttribute("x", this.scaleDrawingValue(shape.geometry.x, drawingScale));
       element.setAttribute("y", this.scaleDrawingValue(shape.geometry.y, drawingScale));
       element.setAttribute("width", this.scaleDrawingValue(shape.geometry.width, drawingScale));
@@ -3343,10 +3439,13 @@ export class ToolStarterApp {
 
   roundedPointPath(shape, { closed, drawingScale = 1 } = {}) {
     const geometryTool = shapeGeometryTool(shape);
-    if (!["polygon", "polyline"].includes(geometryTool) || !Array.isArray(shape.geometry?.points)) {
+    if (!["polygon", "polyline", "rectangle"].includes(geometryTool)) {
       return "";
     }
-    const sourcePoints = shape.geometry.points;
+    const sourcePoints = geometryTool === "rectangle" ? this.shapeGeometryPoints(shape) : shape.geometry.points;
+    if (!Array.isArray(sourcePoints)) {
+      return "";
+    }
     const pointCount = sourcePoints.length;
     if (pointCount < (closed ? 3 : 3)) {
       return "";
@@ -3362,8 +3461,10 @@ export class ToolStarterApp {
       x: Number(this.scaleDrawingValue(point.x, drawingScale)),
       y: Number(this.scaleDrawingValue(point.y, drawingScale))
     }));
-    const strokeWidth = Math.max(1, Number(shape.style?.strokeWidth) || 1);
-    const preferredRadius = Math.max(2, strokeWidth * 2) * drawingScale;
+    const preferredRadius = this.shapeRoundingRadius(shape) * drawingScale;
+    if (preferredRadius <= 0) {
+      return "";
+    }
     const roundedVertex = (index) => {
       if (pointRounding[index] !== true || (!closed && (index === 0 || index === pointCount - 1))) {
         return null;

@@ -1463,7 +1463,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Blocked Object");
       await page.locator("#objectVectorStudioV2AddObjectButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Add object blocked: load a schema-valid Object Vector Studio V2 payload before adding objects\./);
-      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Arc", "Circle", "Ellipse", "Line", "Picker", "Polygon", "Polyline", "Rectangle", "Square", "Triangle", "Text"]);
+      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Arc", "Circle", "Ellipse", "Line", "Polygon", "Polyline", "Rectangle", "Square", "Triangle", "Text"]);
       const futureNotes = await readFile("tools/object-vector-studio-v2/possible.future.adds.txt", "utf8");
       expect(futureNotes).toContain("Object Vector Studio V2 should stay focused on reusable atomic vector objects.");
       expect(futureNotes).toContain("Future World Vector or Scene layers should instance Object Vector objects");
@@ -1515,6 +1515,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             buttonFontSizes: paletteSortButtonStyles.map((style) => Number.parseFloat(style.fontSize)),
             iconFontSizes: paletteSortButtons.map((button) => Number.parseFloat(getComputedStyle(button, "::before").fontSize)),
             singleLine: paletteSortRects.every((rect) => Math.abs(rect.top - paletteSortRects[0].top) < 2)
+          },
+          palettePicker: {
+            inPalette: Boolean(document.querySelector(".object-vector-studio-v2__palette-primary-row #objectVectorStudioV2PalettePickerButton")),
+            inShapeTools: Boolean(document.querySelector("#objectVectorStudioV2ToolToggleGrid [data-shape-tool='picker']")),
+            text: document.querySelector("#objectVectorStudioV2PalettePickerButton")?.textContent.trim() || "",
+            title: document.querySelector("#objectVectorStudioV2PalettePickerButton")?.title || ""
           },
           gridIcons: {
             angle: icon("#objectVectorStudioV2AngleSnapButton"),
@@ -1607,6 +1613,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.paletteSortLayout.singleLine).toBe(true);
       expect(Math.max(...iconStyleState.paletteSortLayout.buttonFontSizes)).toBeLessThanOrEqual(12);
       expect(Math.max(...iconStyleState.paletteSortLayout.iconFontSizes)).toBeLessThanOrEqual(16);
+      expect(iconStyleState.palettePicker).toEqual({
+        inPalette: true,
+        inShapeTools: false,
+        text: "",
+        title: "Sample a shape style into Palette controls"
+      });
       expect(iconStyleState.actionIcons.paint.iconName).toBe("nf-fa-paint_brush");
       expect(iconStyleState.actionIcons.stroke.iconName).toBe("nf-fa-pencil");
       expect(iconStyleState.modeButtons).toEqual({
@@ -1736,7 +1748,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(shapeToolLayout).toEqual({
-        buttonCount: 12,
+        buttonCount: 11,
         labelBesideGrid: true,
         leftPanelOverflowY: "auto",
         textButtonWider: true,
@@ -1996,6 +2008,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const strokeButton = content.querySelector("#objectVectorStudioV2StrokeModeButton").getBoundingClientRect();
         const widthLabel = content.querySelector("label[for='objectVectorStudioV2StrokeWidth']").getBoundingClientRect();
         const widthInput = content.querySelector("#objectVectorStudioV2StrokeWidth").getBoundingClientRect();
+        const pickerButton = content.querySelector("#objectVectorStudioV2PalettePickerButton").getBoundingClientRect();
         const fillOpacityLabel = content.querySelector("label[for='objectVectorStudioV2FillOpacity']").getBoundingClientRect();
         const strokeOpacityLabel = content.querySelector("label[for='objectVectorStudioV2StrokeOpacity']").getBoundingClientRect();
         const opacityHeading = content.querySelector(".object-vector-studio-v2__palette-opacity-heading").getBoundingClientRect();
@@ -2009,8 +2022,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           opacityInputRanges: opacityInputs.map((input) => ({ max: input.max, min: input.min, step: input.step, value: input.value })),
           opacityLabels: Array.from(opacityRow.querySelectorAll("label > span")).map((label) => label.textContent.trim()),
           opacityOrder: Array.from(opacityRow.children).map((element) => element.textContent.trim().replace(/\s+/g, " ")),
-          primaryInline: [strokeButton, widthLabel].every((rect) => Math.abs((paintButton.top + paintButton.height / 2) - (rect.top + rect.height / 2)) < 4),
-          primaryOrder: Array.from(primaryRow.children).map((element) => element.matches("label") ? element.querySelector("span").textContent.trim() : element.textContent.trim()),
+          pickerIconOnly: content.querySelector("#objectVectorStudioV2PalettePickerButton").textContent.trim() === "",
+          pickerRightOfStrokeControls: pickerButton.left >= strokeButton.right && pickerButton.left >= widthLabel.right,
+          primaryInline: [strokeButton, widthLabel, pickerButton].every((rect) => Math.abs((paintButton.top + paintButton.height / 2) - (rect.top + rect.height / 2)) < 4),
+          primaryOrder: Array.from(primaryRow.children).map((element) => element.matches("label") ? element.querySelector("span").textContent.trim() : (element.getAttribute("aria-label") || element.textContent).trim()),
           widthInputFitsXxDotX: Math.round(widthInput.width) >= 58,
           widthIsRightOfStroke: widthLabel.left >= strokeButton.right
         };
@@ -2026,8 +2041,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ],
         opacityLabels: ["Fill", "Stroke"],
         opacityOrder: ["Opacity", "Fill", "Stroke"],
+        pickerIconOnly: true,
+        pickerRightOfStrokeControls: true,
         primaryInline: true,
-        primaryOrder: ["Paint", "Stroke", "Width"],
+        primaryOrder: ["Paint", "Stroke", "Width", "Picker"],
         widthInputFitsXxDotX: true,
         widthIsRightOfStroke: true
       });
@@ -2254,16 +2271,50 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         strokeLinejoin: shape.getAttribute("stroke-linejoin")
       }));
       expect(rectanglePointStyleRender).toEqual({ pointStyle: "square", strokeLinejoin: "miter" });
+      const roundingRadiusInput = page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-rounding-radius='true']");
+      await expect(roundingRadiusInput).toBeVisible();
+      await expect(roundingRadiusInput).toHaveValue("4");
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__point-rounding-list [data-polygon-point-round='true'][data-polygon-point-index='0']").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 1 rounding to round for shape row 0\./);
+      const roundedRectangleBeforeRadius = await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']").evaluate((shape) => ({
+        d: shape.getAttribute("d"),
+        pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
+        roundedPointRender: shape.dataset.roundedPointRender,
+        tag: shape.tagName.toLowerCase()
+      }));
+      expect(roundedRectangleBeforeRadius).toEqual({
+        d: expect.stringContaining("Q"),
+        pointRounding: [true, false, false, false],
+        roundedPointRender: "path",
+        tag: "path"
+      });
+      await roundingRadiusInput.fill("8");
+      await roundingRadiusInput.dispatchEvent("change");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated rounding radius to 8 for shape row 0\./);
+      const roundedRectangleAfterRadius = await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']").evaluate((shape) => ({
+        d: shape.getAttribute("d"),
+        roundingRadius: window.__objectVectorStudioV2App.selectedShape().style.roundingRadius
+      }));
+      expect(roundedRectangleAfterRadius.roundingRadius).toBe(8);
+      expect(roundedRectangleAfterRadius.d).not.toBe(roundedRectangleBeforeRadius.d);
+      await roundingRadiusInput.fill("-1");
+      await roundingRadiusInput.dispatchEvent("change");
+      await expect(roundingRadiusInput).toHaveAttribute("aria-invalid", "true");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Invalid rounding radius rejected for shape row 0: Rounding Radius must be a finite number greater than or equal to 0\./);
+      await expect.poll(() => page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().style.roundingRadius)).toBe(8);
+      await roundingRadiusInput.fill("8");
+      await roundingRadiusInput.dispatchEvent("change");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated rounding radius to 8 for shape row 0\./);
       const transformControlLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => (
         Array.from(panel.querySelectorAll(".object-vector-studio-v2__transform-control-row")).map((row) => {
-          const children = Array.from(row.children);
-          const centers = children.map((child) => {
-            const rect = child.getBoundingClientRect();
-            return Math.round(rect.top + rect.height / 2);
-          });
+          const children = Array.from(row.children).filter((child) => child.getClientRects().length > 0);
+          const rects = children.map((child) => child.getBoundingClientRect());
+          const rowHeight = Math.max(...rects.map((rect) => rect.bottom)) - Math.min(...rects.map((rect) => rect.top));
+          const maxChildHeight = Math.max(...rects.map((rect) => rect.height));
           const button = row.querySelector("button");
+          const visible = (element) => element.getClientRects().length > 0;
           return {
-            allOneLine: centers.every((center) => Math.abs(center - centers[0]) <= 2),
+            allOneLine: rowHeight <= maxChildHeight + 4,
             axisLabels: Array.from(row.querySelectorAll(".object-vector-studio-v2__transform-axis-field > span")).map((element) => element.textContent.trim()),
             buttonId: button?.id || "",
             buttonText: button?.textContent.trim() || "",
@@ -2271,7 +2322,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             inputIds: Array.from(row.querySelectorAll("input")).map((input) => input.id),
             label: row.querySelector(".object-vector-studio-v2__transform-control-label")?.textContent.trim() || "",
             rowType: row.dataset.transformControlRow,
-            selectIds: Array.from(row.querySelectorAll("select")).map((select) => select.id)
+            selectIds: Array.from(row.querySelectorAll("select")).map((select) => select.id),
+            visibleInputIds: Array.from(row.querySelectorAll("input")).filter(visible).map((input) => input.id),
+            visibleSelectIds: Array.from(row.querySelectorAll("select")).filter(visible).map((select) => select.id)
           };
         })
       ));
@@ -2285,7 +2338,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           inputIds: ["objectVectorStudioV2MoveXInput", "objectVectorStudioV2MoveYInput"],
           label: "Move",
           rowType: "move",
-          selectIds: []
+          selectIds: [],
+          visibleInputIds: ["objectVectorStudioV2MoveXInput", "objectVectorStudioV2MoveYInput"],
+          visibleSelectIds: []
         },
         {
           allOneLine: true,
@@ -2296,7 +2351,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           inputIds: ["objectVectorStudioV2OriginXInput", "objectVectorStudioV2OriginYInput"],
           label: "Origin",
           rowType: "origin",
-          selectIds: []
+          selectIds: [],
+          visibleInputIds: ["objectVectorStudioV2OriginXInput", "objectVectorStudioV2OriginYInput"],
+          visibleSelectIds: []
         },
         {
           allOneLine: true,
@@ -2307,14 +2364,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           inputIds: ["objectVectorStudioV2RotateInput"],
           label: "Rotate",
           rowType: "rotate",
-          selectIds: ["objectVectorStudioV2RotateSnapSelect", "objectVectorStudioV2SnapAngleStepSelect"]
+          selectIds: ["objectVectorStudioV2RotateSnapSelect", "objectVectorStudioV2SnapAngleStepSelect"],
+          visibleInputIds: ["objectVectorStudioV2RotateInput"],
+          visibleSelectIds: []
         }
       ]);
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveAttribute("min", "-359");
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveAttribute("max", "359");
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeVisible();
       await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toBeHidden();
       await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toBeHidden();
       const transformBeforeInvalid = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform);
       await page.locator("#objectVectorStudioV2MoveXInput").fill("");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
@@ -2696,8 +2758,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeHidden();
       await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toBeVisible();
       await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toBeVisible();
       await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toHaveValue("15");
       await expect.poll(() => page.locator("#objectVectorStudioV2RotateSnapSelect option").evaluateAll((options) => options.map((option) => option.value))).toEqual([
         "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345"
@@ -2718,8 +2783,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return {
           angleSnapEnabled: window.__objectVectorStudioV2App.angleSnapEnabled,
           numericDisabled: document.querySelector("#objectVectorStudioV2RotateInput").disabled,
+          numericVisible: document.querySelector("#objectVectorStudioV2RotateInput").getClientRects().length > 0,
           rotation: shape.transform.rotation,
           snapSelectDisabled: document.querySelector("#objectVectorStudioV2RotateSnapSelect").disabled,
+          snapSelectVisible: document.querySelector("#objectVectorStudioV2RotateSnapSelect").getClientRects().length > 0,
           snapSelectValue: document.querySelector("#objectVectorStudioV2RotateSnapSelect").value,
           step: document.querySelector("#objectVectorStudioV2SnapAngleStepSelect").value,
           status: statusLines[statusLines.length - 1].replace(/^\[[^\]]+\]\s*/, "")
@@ -2728,16 +2795,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(snapAngleRotateVerification).toEqual({
         angleSnapEnabled: true,
         numericDisabled: true,
+        numericVisible: false,
         rotation: 45,
         snapSelectDisabled: false,
+        snapSelectVisible: true,
         snapSelectValue: "45",
         step: "45",
         status: "OK Rotated shape row 0 by 45 degrees. Snap Angle active: 45 -> 45."
       });
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeEnabled();
+      await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeVisible();
       await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toBeHidden();
       await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toBeDisabled();
+      await expect(page.locator("#objectVectorStudioV2SnapAngleStepSelect")).toBeHidden();
       await page.locator("#objectVectorStudioV2RotateInput").fill("-30");
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
@@ -3309,6 +3381,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const contentRect = content?.getBoundingClientRect();
           const style = getComputedStyle(section);
           return {
+            bottomGap: content ? Math.round(sectionRect.bottom - contentRect.bottom) : 0,
             contentReachesSectionBottom: !content || content.hidden || Math.abs(contentRect.bottom - sectionRect.bottom) <= 2,
             flexGrow: style.flexGrow,
             isOpen: section.classList.contains("is-open"),
@@ -3378,7 +3451,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const collapsedHeight = collapsedLayout.find((entry) => !entry.isOpen)?.height || 0;
       expect(collapsedHeight).toBeLessThan(64);
       const remainingOpenSections = collapsedLayout.filter((entry) => entry.isOpen);
-      expect(remainingOpenSections.every((entry) => entry.contentReachesSectionBottom)).toBe(true);
+      expect(remainingOpenSections.filter((entry) => !entry.title.startsWith("Palette")).every((entry) => entry.contentReachesSectionBottom)).toBe(true);
       expect(remainingOpenSections.every((entry) => entry.height >= 44)).toBe(true);
       expect(collapsedLayout.find((entry) => entry.title.startsWith("Palette"))?.height).toBeLessThanOrEqual(320);
       await expect(page.locator(".tool-starter__panel--right")).toHaveCSS("overflow-y", "auto");
@@ -3787,6 +3860,46 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "triangle" },
         { fill: "#00000000", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 4.5, tool: "text" }
       ]);
+      await page.locator('[data-shape-tool="select"]').click();
+      const squareShapeIndex = await page.evaluate(() => window.__objectVectorStudioV2App.selectedObject().shapes.findIndex((shape) => shape.tool === "square"));
+      expect(squareShapeIndex).toBeGreaterThanOrEqual(0);
+      await page.evaluate((shapeIndex) => window.__objectVectorStudioV2App.selectShape(shapeIndex, "square rounding test"), squareShapeIndex);
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails h4").first()).toHaveText("Square Geometry");
+      const squareRadiusInput = page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-rounding-radius='true']");
+      await expect(squareRadiusInput).toBeVisible();
+      await page.evaluate((shapeIndex) => {
+        const app = window.__objectVectorStudioV2App;
+        const nextPayload = app.cloneCurrentPayload();
+        const shape = app.findShapeInPayload(nextPayload, shapeIndex);
+        shape.style = {
+          ...shape.style,
+          pointRounding: [false, true, false, false],
+          roundingRadius: 9
+        };
+        app.commitPayloadUpdate(nextPayload, app.selectedObjectId, shapeIndex, `OK Updated square rounding test style for shape row ${shapeIndex}.`, "Square rounding test failed schema validation");
+      }, squareShapeIndex);
+      await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Updated square rounding test style for shape row ${squareShapeIndex}\\.`));
+      const roundedSquareState = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index='${squareShapeIndex}']`).evaluate((shape) => {
+        const selected = window.__objectVectorStudioV2App.selectedShape();
+        return {
+          d: shape.getAttribute("d"),
+          geometry: selected.geometry,
+          pointRounding: selected.style.pointRounding,
+          roundedPointRender: shape.dataset.roundedPointRender,
+          roundingRadius: selected.style.roundingRadius,
+          tag: shape.tagName.toLowerCase(),
+          tool: selected.tool
+        };
+      });
+      expect(roundedSquareState).toMatchObject({
+        d: expect.stringContaining("Q"),
+        geometry: { height: 50, width: 50 },
+        pointRounding: [false, true, false, false],
+        roundedPointRender: "path",
+        roundingRadius: 9,
+        tag: "path",
+        tool: "square"
+      });
 
       await page.locator("#objectVectorStudioV2StrokeWidth").fill("20");
       await page.locator("#objectVectorStudioV2StrokeWidth").dispatchEvent("change");

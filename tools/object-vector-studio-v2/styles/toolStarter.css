@@ -1313,6 +1313,18 @@ textarea:hover {
   padding: 3px 5px !important;
 }
 
+.object-vector-studio-v2__palette-picker-button {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 !important;
+}
+
+.object-vector-studio-v2__palette-picker-button .object-vector-studio-v2__shape-icon {
+  width: 20px;
+  height: 20px;
+}
+
 .object-vector-studio-v2__palette-primary-row,
 .object-vector-studio-v2__palette-opacity-row {
   display: flex;
@@ -1734,6 +1746,25 @@ textarea:hover {
   padding: 5px 7px;
 }
 
+.object-vector-studio-v2__rounding-radius-field {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 74px);
+  align-items: center;
+  justify-content: start;
+  gap: 6px;
+  width: 100%;
+  color: var(--tool-starter-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__rounding-radius-field input {
+  min-width: 0;
+  width: 100%;
+  min-height: 22px;
+  padding: 2px 5px;
+}
+
 .object-vector-studio-v2__polygon-point-axis--readonly {
   grid-template-columns: auto minmax(0, 1fr);
 }
@@ -1817,7 +1848,31 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__transform-control-row--rotate {
-  grid-template-columns: 50px minmax(42px, 1fr) minmax(54px, 1fr) minmax(54px, max-content) max-content;
+  grid-template-columns: 50px minmax(42px, 1fr) max-content;
+}
+
+.object-vector-studio-v2__transform-control-row--rotate.is-angle-snap-enabled {
+  grid-template-columns: 50px minmax(54px, 1fr) minmax(54px, max-content) max-content;
+}
+
+.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateInput,
+.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateSnapSelect {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.object-vector-studio-v2__transform-control-row--rotate .object-vector-studio-v2__snap-angle-step-field {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateShapeButton {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.object-vector-studio-v2__transform-control-row--rotate.is-angle-snap-enabled #objectVectorStudioV2RotateShapeButton {
+  grid-column: 4;
 }
 
 .object-vector-studio-v2__transform-control-label {
