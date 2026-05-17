@@ -549,7 +549,7 @@ export class ToolStarterApp {
     this.renderEmptyState("Object Vector Studio V2 schema contract is loading.");
     this.statusLog.write("OK Object Vector Studio V2 layout shell ready.");
     this.statusLog.write("INFO Schema-only loading is idle. Import JSON or launch with workspace toolState data. Runtime palette is required before rendering.");
-    this.statusLog.write("INFO Shape/Tools primitive buttons enter drawing mode; use the canvas to commit schema-valid geometry.");
+    this.statusLog.write("INFO Tools primitive buttons enter drawing mode; use the canvas to commit schema-valid geometry.");
     this.statusLog.write("INFO Disabled controls stay inactive until a schema-valid payload, runtime palette, selected object, or active frame is available.");
     this.statusLog.write("INFO Object identity uses object.game.name ids.");
     this.statusLog.write("INFO Paint and stroke selection is structured to scale later into shaders, gradients, patterns, neon, SVG export, and runtime rendering.");
@@ -727,13 +727,14 @@ export class ToolStarterApp {
           this.selectedShapeIndexes.clear();
           this.directSelectedShapeIndexes.clear();
           this.renderObjectTiles();
+          this.renderShapeTiles();
           this.renderSelectedObject();
           this.renderWorkSurface();
           this.updateObjectActionState();
           this.statusLog.write(`OK Select tool cleared selected shape row ${clearedShape}.`);
           return;
         }
-        this.statusLog.write(`OK Shape/Tools mode selected: ${tool}.`);
+        this.statusLog.write(`OK Tools mode selected: ${tool}.`);
       });
     });
   }
@@ -1106,31 +1107,47 @@ export class ToolStarterApp {
 
   updateRotateSnapControls(scope = this.window.document) {
     const root = scope || this.window.document;
-    const numericInput = root.querySelector?.("#objectVectorStudioV2RotateInput") || this.window.document.getElementById("objectVectorStudioV2RotateInput");
-    const snapSelect = root.querySelector?.("#objectVectorStudioV2RotateSnapSelect") || this.window.document.getElementById("objectVectorStudioV2RotateSnapSelect");
-    const stepSelect = root.querySelector?.("#objectVectorStudioV2SnapAngleStepSelect") || this.window.document.getElementById("objectVectorStudioV2SnapAngleStepSelect");
-    const row = (numericInput || snapSelect || stepSelect)?.closest?.(".object-vector-studio-v2__transform-control-row--rotate") || null;
-    const panelDisabled = row?.closest?.(".object-vector-studio-v2__shape-panel")?.classList.contains("is-disabled") === true;
-    row?.classList.toggle("is-angle-snap-enabled", this.angleSnapEnabled);
-    if (stepSelect) {
-      stepSelect.value = String(this.angleSnapStep);
-      stepSelect.disabled = panelDisabled || !this.angleSnapEnabled;
-      stepSelect.hidden = !this.angleSnapEnabled;
-      const stepField = stepSelect.closest(".object-vector-studio-v2__snap-angle-step-field");
-      if (stepField) {
-        stepField.hidden = !this.angleSnapEnabled;
+    [
+      {
+        inputId: "objectVectorStudioV2RotateInput",
+        selectId: "objectVectorStudioV2RotateSnapSelect",
+        stepId: "objectVectorStudioV2SnapAngleStepSelect"
+      },
+      {
+        inputId: "objectVectorStudioV2ObjectRotateInput",
+        selectId: "objectVectorStudioV2ObjectRotateSnapSelect",
+        stepId: "objectVectorStudioV2ObjectSnapAngleStepSelect"
       }
-    }
-    if (snapSelect) {
-      const preferred = snapSelect.value || numericInput?.value || this.transformInputValue(snapSelect.id, "15");
-      this.populateRotateSnapSelect(snapSelect, this.angleSnapStep, preferred);
-      snapSelect.disabled = panelDisabled || !this.angleSnapEnabled;
-      snapSelect.hidden = !this.angleSnapEnabled;
-    }
-    if (numericInput) {
-      numericInput.disabled = panelDisabled || this.angleSnapEnabled;
-      numericInput.hidden = this.angleSnapEnabled;
-    }
+    ].forEach(({ inputId, selectId, stepId }) => {
+      const numericInput = root.querySelector?.(`#${inputId}`) || this.window.document.getElementById(inputId);
+      const snapSelect = root.querySelector?.(`#${selectId}`) || this.window.document.getElementById(selectId);
+      const stepSelect = root.querySelector?.(`#${stepId}`) || this.window.document.getElementById(stepId);
+      if (!numericInput && !snapSelect && !stepSelect) {
+        return;
+      }
+      const row = (numericInput || snapSelect || stepSelect)?.closest?.(".object-vector-studio-v2__transform-control-row--rotate") || null;
+      const panelDisabled = row?.closest?.(".object-vector-studio-v2__shape-panel")?.classList.contains("is-disabled") === true;
+      row?.classList.toggle("is-angle-snap-enabled", this.angleSnapEnabled);
+      if (stepSelect) {
+        stepSelect.value = String(this.angleSnapStep);
+        stepSelect.disabled = panelDisabled || !this.angleSnapEnabled;
+        stepSelect.hidden = !this.angleSnapEnabled;
+        const stepField = stepSelect.closest(".object-vector-studio-v2__snap-angle-step-field");
+        if (stepField) {
+          stepField.hidden = !this.angleSnapEnabled;
+        }
+      }
+      if (snapSelect) {
+        const preferred = snapSelect.value || numericInput?.value || this.transformInputValue(snapSelect.id, "15");
+        this.populateRotateSnapSelect(snapSelect, this.angleSnapStep, preferred);
+        snapSelect.disabled = panelDisabled || !this.angleSnapEnabled;
+        snapSelect.hidden = !this.angleSnapEnabled;
+      }
+      if (numericInput) {
+        numericInput.disabled = panelDisabled || this.angleSnapEnabled;
+        numericInput.hidden = this.angleSnapEnabled;
+      }
+    });
   }
 
   populateRotateSnapSelect(select, step, preferredValue = "15") {
@@ -1190,7 +1207,7 @@ export class ToolStarterApp {
     this.elements.toolLabelModeButton.textContent = isCompact ? "Words" : "Icons";
     this.window.sessionStorage?.setItem(TOOL_DISPLAY_MODE_KEY, isCompact ? "icons" : "words");
     if (shouldLog) {
-      this.statusLog.write(`OK Shape/Tools display mode set to ${isCompact ? "compact icons" : "words and icons"}.`);
+      this.statusLog.write(`OK Tools display mode set to ${isCompact ? "compact icons" : "words and icons"}.`);
     }
   }
 
@@ -1215,7 +1232,7 @@ export class ToolStarterApp {
     } else {
       this.setPaletteTarget("stroke", false);
     }
-    this.statusLog.write(`OK Shape/Tools mode selected from ${sourceLabel}: ${tool}.`);
+    this.statusLog.write(`OK Tools mode selected from ${sourceLabel}: ${tool}.`);
   }
 
   renderEmptyState(message) {
@@ -1240,6 +1257,7 @@ export class ToolStarterApp {
     this.renderObjectTagList(null);
     this.elements.paletteSummary.textContent = this.runtimePalette ? "" : "Palette required before render.";
     this.elements.shapeGeometryDetails.textContent = "No object selected.";
+    this.elements.shapeTiles.textContent = "No object selected.";
     this.updateShapeGeometryHeader(null);
     this.elements.objectTransform.textContent = "No object selected.";
     this.elements.shapeTransform.textContent = "No shape selected.";
@@ -1396,6 +1414,7 @@ export class ToolStarterApp {
     }
     this.renderTagFilter();
     this.renderObjectTiles();
+    this.renderShapeTiles();
     this.renderDependencyGraph();
     this.renderSelectedObject();
     this.renderWorkSurface();
@@ -1418,6 +1437,7 @@ export class ToolStarterApp {
     this.elements.objectTagInput.value = "";
     this.renderObjectTagList(null);
     this.elements.shapeGeometryDetails.textContent = "Runtime palette required before object render.";
+    this.elements.shapeTiles.textContent = "Runtime palette required before shape rows.";
     this.updateShapeGeometryHeader(null);
     this.elements.objectTransform.textContent = "Runtime palette required before object transform.";
     this.elements.shapeTransform.textContent = "Runtime palette required before shape transform.";
@@ -1562,11 +1582,19 @@ export class ToolStarterApp {
       });
       if (object.id === this.selectedObjectId) {
         tile.append(this.createObjectStatePanel(object));
-        tile.append(this.createObjectTileShapeList(object));
       }
       this.elements.objectTiles.append(tile);
     });
     this.restoreObjectsScroll(previousScrollTop);
+  }
+
+  renderShapeTiles(object = this.selectedObject()) {
+    this.elements.shapeTiles.replaceChildren();
+    if (!object) {
+      this.elements.shapeTiles.textContent = "No object selected.";
+      return;
+    }
+    this.elements.shapeTiles.append(this.createObjectTileShapeList(object));
   }
 
   restoreObjectsScroll(scrollTop) {
@@ -1773,7 +1801,7 @@ export class ToolStarterApp {
       });
       const actions = document.createElement("div");
       actions.className = "object-vector-studio-v2__shape-inline-actions";
-      const groupButton = this.createShapeGroupButton(shape);
+      const groupButton = this.createShapeGroupButton(shape, shapeIndex);
       const visibilityButton = document.createElement("button");
       visibilityButton.type = "button";
       visibilityButton.className = "object-vector-studio-v2__shape-inline-button object-vector-studio-v2__shape-eye-inline";
@@ -1820,7 +1848,7 @@ export class ToolStarterApp {
     return list;
   }
 
-  createShapeGroupButton(shape) {
+  createShapeGroupButton(shape, shapeIndex) {
     const groupId = String(shape.groupId || "").trim();
     if (!groupId) {
       return null;
@@ -1836,6 +1864,7 @@ export class ToolStarterApp {
     });
     button.addEventListener("click", (event) => {
       event.stopPropagation();
+      this.selectShapeGroup(groupId, shapeIndex, "shape group icon");
     });
     button.append(this.createGroupIndicator(groupId));
     return button;
@@ -1987,7 +2016,7 @@ export class ToolStarterApp {
     const graphLines = this.currentPayload.objects
       .map((object) => `${object.id}${object.baseObjectId ? ` inherits ${object.baseObjectId}` : " has no base object"}`);
     this.elements.dependencyGraph.textContent = [
-      "Dependency graph:",
+      "Dependency details:",
       graphLines.join("\n") || "No objects loaded.",
       "",
       "Object tags:",
@@ -2208,13 +2237,16 @@ export class ToolStarterApp {
       const shapePanel = document.createElement("section");
       shapePanel.className = "object-vector-studio-v2__shape-panel";
       const empty = document.createElement("p");
-      empty.textContent = "No shape selected. Create a primitive from Shape/Tools.";
+      empty.textContent = "No shape selected. Create a primitive from Tools.";
       shapePanel.append(empty);
       wrapper.append(shapePanel);
       return wrapper;
     }
 
     wrapper.append(this.createShapeGeometryControls(shape), this.createSelectedShapeSummary(shape));
+    if (!this.canUseShapeGeometry()) {
+      this.setGeometryPanelDisabled(wrapper, "Shape Geometry is disabled until exactly one shape is selected.");
+    }
     return wrapper;
   }
 
@@ -2281,7 +2313,7 @@ export class ToolStarterApp {
     wrapper.className = "object-vector-studio-v2__object-detail-stack";
     if (!shape) {
       const empty = document.createElement("p");
-      empty.textContent = "No shape selected. Create a primitive from Shape/Tools.";
+      empty.textContent = "No shape selected. Create a primitive from Tools.";
       wrapper.append(empty);
       return wrapper;
     }
@@ -2303,6 +2335,19 @@ export class ToolStarterApp {
 
   canUseShapeTransform() {
     return this.selectedShapeIndex >= 0 && this.selectedShapeIndexes.size === 1;
+  }
+
+  canUseShapeGeometry() {
+    return this.selectedShapeIndex >= 0 && this.selectedShapeIndexes.size === 1;
+  }
+
+  setGeometryPanelDisabled(panel, reason) {
+    panel.classList.add("is-disabled");
+    panel.querySelectorAll("input, select, button").forEach((control) => {
+      control.disabled = true;
+      control.dataset.disabledReason = reason;
+      control.title = reason;
+    });
   }
 
   setTransformPanelDisabled(panel, reason) {
@@ -2393,7 +2438,7 @@ export class ToolStarterApp {
         const input = document.createElement("input");
         input.dataset.shapeGeometryField = field.key;
         input.type = field.kind;
-        input.value = String(field.value);
+        input.value = field.kind === "number" ? String(this.formatViewportNumber(field.value)) : String(field.value);
         this.bindGeometryAutoApplyInput(input);
         label.append(caption, input);
         grid.append(label);
@@ -2423,7 +2468,7 @@ export class ToolStarterApp {
     input.type = "number";
     input.min = "0";
     input.step = "0.1";
-    input.value = String(this.shapeRoundingRadius(shape));
+    input.value = String(this.formatViewportNumber(this.shapeRoundingRadius(shape)));
     input.dataset.shapeRoundingRadius = "true";
     input.setAttribute("aria-label", "Rounding radius");
     input.addEventListener("input", () => this.clearInputValidity(input));
@@ -2444,6 +2489,10 @@ export class ToolStarterApp {
     const selected = this.selectedShape();
     if (!selected) {
       this.statusLog.write("WARN Rounding radius update skipped: no shape is selected.");
+      return;
+    }
+    if (!this.canUseShapeGeometry()) {
+      this.statusLog.write("WARN Rounding radius update skipped: select exactly one shape.");
       return;
     }
     if (!this.shapeSupportsPointRoundingControls(selected)) {
@@ -2480,6 +2529,10 @@ export class ToolStarterApp {
     const selected = this.selectedShape();
     if (!selected) {
       this.statusLog.write("WARN Point rounding update skipped: no shape is selected.");
+      return;
+    }
+    if (!this.canUseShapeGeometry()) {
+      this.statusLog.write("WARN Point rounding update skipped: select exactly one shape.");
       return;
     }
     if (!this.shapeSupportsPointRoundingControls(selected)) {
@@ -2572,7 +2625,7 @@ export class ToolStarterApp {
       input.dataset.polygonPointIndex = String(index);
       input.inputMode = "decimal";
       input.type = "text";
-      input.value = String(value);
+      input.value = String(this.formatViewportNumber(value));
       this.bindGeometryAutoApplyInput(input);
       label.append(axisLabel, input);
       row.append(label);
@@ -2666,7 +2719,7 @@ export class ToolStarterApp {
       axisLabel.textContent = axis;
       const valueElement = document.createElement("span");
       valueElement.className = "object-vector-studio-v2__polygon-point-value";
-      valueElement.textContent = String(value);
+      valueElement.textContent = String(this.formatViewportNumber(value));
       field.append(axisLabel, valueElement);
       row.append(field);
     });
@@ -2729,7 +2782,6 @@ export class ToolStarterApp {
       heading,
       this.createMoveControlRow(),
       this.createOriginControlRow(transform),
-      this.createAutoOriginControlRow(),
       this.createRotateControlRow(),
       this.createScaleControlRow(transform)
     );
@@ -2744,9 +2796,7 @@ export class ToolStarterApp {
     const origin = this.objectTransformOrigin(object);
     section.append(
       heading,
-      this.createObjectMoveControlRow(),
       this.createObjectOriginControlRow(origin),
-      this.createObjectAutoOriginControlRow(),
       this.createObjectRotateControlRow(),
       this.createScaleControlRow({ scaleX: 1, scaleY: 1 }, {
         downLargeId: "objectVectorStudioV2ObjectScaleDownLargeButton",
@@ -2777,19 +2827,6 @@ export class ToolStarterApp {
     });
   }
 
-  createObjectMoveControlRow() {
-    return this.createTransformAxisControlRow({
-      action: () => this.moveSelectedObject(),
-      buttonId: "objectVectorStudioV2ObjectMoveButton",
-      buttonLabel: "Move",
-      iconKey: "move",
-      label: "Move",
-      rowType: "move",
-      xInput: { id: "objectVectorStudioV2ObjectMoveXInput", label: "Object Move X", value: "10" },
-      yInput: { id: "objectVectorStudioV2ObjectMoveYInput", label: "Object Move Y", value: "0" }
-    });
-  }
-
   createOriginControlRow(transform) {
     return this.createTransformAxisControlRow({
       action: () => this.applySelectedShapeOrigin(),
@@ -2799,8 +2836,17 @@ export class ToolStarterApp {
       iconKey: "center",
       label: "Origin",
       rowType: "origin",
-      xInput: { id: "objectVectorStudioV2OriginXInput", label: "Origin X", value: String(transform.origin.x) },
-      yInput: { id: "objectVectorStudioV2OriginYInput", label: "Origin Y", value: String(transform.origin.y) }
+      extraButtons: [
+        this.createTransformActionButton({
+          handler: () => this.autoOriginSelectedShapePivot(),
+          iconKey: "center",
+          id: "objectVectorStudioV2AutoOriginButton",
+          label: "Auto",
+          title: "Auto Origin"
+        })
+      ],
+      xInput: { id: "objectVectorStudioV2OriginXInput", label: "Origin X", value: String(this.formatViewportNumber(transform.origin.x)) },
+      yInput: { id: "objectVectorStudioV2OriginYInput", label: "Origin Y", value: String(this.formatViewportNumber(transform.origin.y)) }
     });
   }
 
@@ -2813,8 +2859,17 @@ export class ToolStarterApp {
       iconKey: "center",
       label: "Origin",
       rowType: "origin",
-      xInput: { id: "objectVectorStudioV2ObjectOriginXInput", label: "Object Origin X", value: String(origin.x) },
-      yInput: { id: "objectVectorStudioV2ObjectOriginYInput", label: "Object Origin Y", value: String(origin.y) }
+      extraButtons: [
+        this.createTransformActionButton({
+          handler: () => this.autoOriginSelectedObjectPivot(),
+          iconKey: "center",
+          id: "objectVectorStudioV2ObjectAutoOriginButton",
+          label: "Auto",
+          title: "Auto Origin"
+        })
+      ],
+      xInput: { id: "objectVectorStudioV2ObjectOriginXInput", label: "Object Origin X", value: String(this.formatViewportNumber(origin.x)) },
+      yInput: { id: "objectVectorStudioV2ObjectOriginYInput", label: "Object Origin Y", value: String(this.formatViewportNumber(origin.y)) }
     });
   }
 
@@ -2853,21 +2908,34 @@ export class ToolStarterApp {
       max: "359",
       min: "-359"
     });
+    const snapSelect = this.createRotateSnapSelect({
+      id: "objectVectorStudioV2ObjectRotateSnapSelect",
+      label: "Object Rotate Snap Angle"
+    });
+    const stepField = this.createAngleSnapStepField({
+      id: "objectVectorStudioV2ObjectSnapAngleStepSelect",
+      label: "Object Snap Angle Step"
+    });
     const button = this.createTransformActionButton({
       handler: () => this.rotateSelectedObject(),
       iconKey: "rotate",
       id: "objectVectorStudioV2ObjectRotateButton",
       label: "Rotate"
     });
-    row.append(label, input, button);
+    row.append(label, input, snapSelect, stepField, button);
+    this.updateRotateSnapControls(row);
     return row;
   }
 
-  createRotateSnapSelect() {
+  createRotateSnapSelect(options = {}) {
+    const {
+      id = "objectVectorStudioV2RotateSnapSelect",
+      label = "Rotate Snap Angle"
+    } = options;
     const select = document.createElement("select");
-    select.id = "objectVectorStudioV2RotateSnapSelect";
+    select.id = id;
     select.className = "object-vector-studio-v2__rotate-snap-select";
-    select.setAttribute("aria-label", "Rotate Snap Angle");
+    select.setAttribute("aria-label", label);
     select.title = "Valid Rotate values generated by the selected Snap Angle step.";
     this.populateRotateSnapSelect(select, this.angleSnapStep, this.transformInputValue(select.id, "15"));
     select.addEventListener("change", () => {
@@ -2876,14 +2944,18 @@ export class ToolStarterApp {
     return select;
   }
 
-  createAngleSnapStepField() {
-    const label = document.createElement("label");
-    label.className = "object-vector-studio-v2__snap-angle-step-field";
+  createAngleSnapStepField(options = {}) {
+    const {
+      id = "objectVectorStudioV2SnapAngleStepSelect",
+      label: labelText = "Snap Angle Step"
+    } = options;
+    const labelElement = document.createElement("label");
+    labelElement.className = "object-vector-studio-v2__snap-angle-step-field";
     const text = document.createElement("span");
     text.textContent = "Step";
     const select = document.createElement("select");
-    select.id = "objectVectorStudioV2SnapAngleStepSelect";
-    select.setAttribute("aria-label", "Snap Angle Step");
+    select.id = id;
+    select.setAttribute("aria-label", labelText);
     select.title = "Choose the angle increment used to generate Rotate dropdown values.";
     ANGLE_SNAP_STEPS.forEach((step) => {
       const option = document.createElement("option");
@@ -2899,28 +2971,30 @@ export class ToolStarterApp {
       this.updateRotateSnapControls();
       this.statusLog.write(`OK Snap angle step set to ${this.angleSnapStep} degrees.`);
     });
-    label.append(text, select);
-    return label;
+    labelElement.append(text, select);
+    return labelElement;
   }
 
-  createTransformAxisControlRow({ action, buttonId, buttonLabel, buttonTitle, iconKey, label, rowType, xInput, yInput }) {
+  createTransformAxisControlRow({ action, buttonId, buttonLabel, buttonTitle, extraButtons = [], iconKey, label, rowType, xInput, yInput }) {
     const row = document.createElement("div");
     row.className = `object-vector-studio-v2__transform-control-row object-vector-studio-v2__transform-control-row--${rowType}`;
     row.dataset.transformControlRow = rowType;
     const rowLabel = document.createElement("span");
     rowLabel.className = "object-vector-studio-v2__transform-control-label";
     rowLabel.textContent = label;
-    row.append(
-      rowLabel,
-      this.createTransformAxisField("X", xInput),
-      this.createTransformAxisField("Y", yInput),
-      this.createTransformActionButton({
+    const actionButton = this.createTransformActionButton({
         handler: action,
         iconKey,
         id: buttonId,
         label: buttonLabel,
         title: buttonTitle
-      })
+      });
+    row.append(
+      rowLabel,
+      this.createTransformAxisField("X", xInput),
+      this.createTransformAxisField("Y", yInput),
+      actionButton,
+      ...extraButtons
     );
     return row;
   }
@@ -2939,7 +3013,11 @@ export class ToolStarterApp {
     input.id = id;
     input.type = "number";
     input.step = "0.1";
-    input.value = this.transformInputValue(id, value);
+    const initialValue = this.transformInputValue(id, value);
+    const numericInitialValue = Number(initialValue);
+    input.value = String(initialValue).trim() !== "" && Number.isFinite(numericInitialValue)
+      ? String(this.formatViewportNumber(numericInitialValue))
+      : initialValue;
     input.setAttribute("aria-label", label);
     if (options.min !== undefined) {
       input.min = options.min;
@@ -4578,6 +4656,7 @@ export class ToolStarterApp {
     this.selectedShapeIndexes.clear();
     this.directSelectedShapeIndexes.clear();
     this.renderObjectTiles();
+    this.renderShapeTiles();
     this.renderSelectedObject();
     this.renderWorkSurface();
     this.updateObjectActionState();
@@ -5196,19 +5275,17 @@ export class ToolStarterApp {
 
     const scrollState = this.captureLeftPanelScrollState();
     this.selectedShapeIndex = normalizedIndex;
-    const groupIndexes = this.shapeSelectionGroupIndexes(shapes, normalizedIndex);
     if (options.additive) {
-      const allGroupSelected = groupIndexes.every((index) => this.selectedShapeIndexes.has(index));
-      if (allGroupSelected && this.selectedShapeIndexes.size > groupIndexes.length) {
-        groupIndexes.forEach((index) => this.selectedShapeIndexes.delete(index));
-        this.directSelectedShapeIndexes.delete(normalizedIndex);
+      if (this.selectedShapeIndexes.has(normalizedIndex) && this.selectedShapeIndexes.size > 1) {
+        this.selectedShapeIndexes.delete(normalizedIndex);
+        this.directSelectedShapeIndexes = new Set(this.selectedShapeIndexes);
         this.selectedShapeIndex = Array.from(this.selectedShapeIndexes).at(-1) ?? -1;
       } else {
-        this.directSelectedShapeIndexes.add(normalizedIndex);
-        groupIndexes.forEach((index) => this.selectedShapeIndexes.add(index));
+        this.selectedShapeIndexes.add(normalizedIndex);
+        this.directSelectedShapeIndexes = new Set(this.selectedShapeIndexes);
       }
     } else {
-      this.selectedShapeIndexes = new Set(groupIndexes);
+      this.selectedShapeIndexes = new Set([normalizedIndex]);
       this.directSelectedShapeIndexes = new Set([normalizedIndex]);
     }
     this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
@@ -5217,6 +5294,35 @@ export class ToolStarterApp {
     this.restoreLeftPanelScrollState(scrollState);
     const shape = this.selectedShape();
     this.statusLog.write(`OK Selected shape from ${sourceLabel}: row ${this.selectedShapeIndex} (${shapeTool(shape)}). Multi-select count: ${this.selectedShapeIndexes.size}.`);
+  }
+
+  selectShapeGroup(groupId, shapeIndex, sourceLabel = "shape group") {
+    const object = this.selectedObject();
+    const shapes = sortedShapes(object);
+    const normalizedGroupId = String(groupId || "").trim();
+    if (!normalizedGroupId) {
+      this.statusLog.write("WARN Select group skipped: shape group id is not available.");
+      return;
+    }
+    const groupIndexes = shapes
+      .map((shape, index) => String(shape?.groupId || "").trim() === normalizedGroupId ? index : -1)
+      .filter((index) => index >= 0);
+    if (groupIndexes.length < 2) {
+      this.statusLog.write(`WARN Select group skipped: group ${normalizedGroupId} has fewer than two shapes.`);
+      return;
+    }
+
+    const normalizedIndex = normalizeShapeIndex(shapeIndex);
+    const nextSelectedIndex = groupIndexes.includes(normalizedIndex) ? normalizedIndex : groupIndexes[0];
+    const scrollState = this.captureLeftPanelScrollState();
+    this.selectedShapeIndex = nextSelectedIndex;
+    this.selectedShapeIndexes = new Set(groupIndexes);
+    this.directSelectedShapeIndexes = new Set(groupIndexes);
+    this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
+    this.setPaletteTarget("stroke", false);
+    this.renderPayload();
+    this.restoreLeftPanelScrollState(scrollState);
+    this.statusLog.write(`OK Selected group ${normalizedGroupId} from ${sourceLabel}: ${groupIndexes.length} shapes.`);
   }
 
   shapeSelectionGroupIndexes(shapes, shapeIndex) {
@@ -6400,25 +6506,8 @@ export class ToolStarterApp {
     });
   }
 
-  moveSelectedObject() {
-    const x = this.numberInputValue("objectVectorStudioV2ObjectMoveXInput", "Object Move X");
-    const y = this.numberInputValue("objectVectorStudioV2ObjectMoveYInput", "Object Move Y");
-    if (!x.ok || !y.ok) {
-      this.statusLog.write(`FAIL Invalid object transform rejected: ${x.error || y.error}`);
-      return;
-    }
-    const moveX = this.snapDistance(x.value);
-    const moveY = this.snapDistance(y.value);
-    const object = this.selectedObject();
-    this.updateSelectedObjectTransforms("move", (shape) => {
-      shape.transform = this.ensureShapeTransform(shape);
-      shape.transform.x = Number((shape.transform.x + moveX).toFixed(3));
-      shape.transform.y = Number((shape.transform.y + moveY).toFixed(3));
-    }, `OK Moved object ${object?.name || "selected object"} (${this.selectedObjectShapeIndexes(object).length} shapes) by ${moveX}, ${moveY}.`);
-  }
-
   rotateSelectedObject() {
-    const input = this.numberInputValue("objectVectorStudioV2ObjectRotateInput", "Object Rotate");
+    const input = this.objectRotateInputValue();
     if (!input.ok) {
       this.statusLog.write(`FAIL Invalid object transform rejected: ${input.error}`);
       return;
@@ -6747,6 +6836,23 @@ export class ToolStarterApp {
     return { error: "", ok: true, rawValue, value };
   }
 
+  objectRotateInputValue() {
+    if (!this.angleSnapEnabled) {
+      const input = this.numberInputValue("objectVectorStudioV2ObjectRotateInput", "Object Rotate");
+      return { ...input, rawValue: String(input.value) };
+    }
+    const select = this.window.document.getElementById("objectVectorStudioV2ObjectRotateSnapSelect");
+    const rawValue = select?.value?.trim() || "";
+    const value = Number(rawValue);
+    if (!select || rawValue === "" || !Number.isFinite(value)) {
+      const error = "Object Rotate Snap Angle must be a valid dropdown value.";
+      this.markInputInvalid(select, error);
+      return { error, ok: false, rawValue, value: 0 };
+    }
+    this.clearInputValidity(select);
+    return { error: "", ok: true, rawValue, value };
+  }
+
   rotatePointAround(point, pivot, rotation) {
     const radians = (rotation * Math.PI) / 180;
     const relativeX = point.x - pivot.x;
@@ -6879,6 +6985,7 @@ export class ToolStarterApp {
       this.renderPayload();
     } else {
       this.renderObjectTiles();
+      this.renderShapeTiles();
       this.renderWorkSurface();
       this.updateTransformSummaryText();
       this.updateSelectedObjectJsonDetails();
@@ -7216,6 +7323,10 @@ export class ToolStarterApp {
       this.statusLog.write("WARN Geometry edit skipped: no shape is selected.");
       return false;
     }
+    if (!this.canUseShapeGeometry()) {
+      this.statusLog.write("WARN Geometry edit skipped: select exactly one shape.");
+      return false;
+    }
     if (this.guardSelectedObjectMutation("Geometry edit")) {
       return false;
     }
@@ -7239,6 +7350,10 @@ export class ToolStarterApp {
     const selected = this.selectedShape();
     if (!selected || !["polygon", "polyline"].includes(shapeGeometryTool(selected))) {
       this.statusLog.write("WARN Add point skipped: no editable point-list shape is selected.");
+      return;
+    }
+    if (!this.canUseShapeGeometry()) {
+      this.statusLog.write("WARN Add point skipped: select exactly one shape.");
       return;
     }
     if (!this.isEditablePolygonShape(selected)) {
@@ -7280,6 +7395,10 @@ export class ToolStarterApp {
     const selected = this.selectedShape();
     if (!selected || !["polygon", "polyline"].includes(shapeGeometryTool(selected))) {
       this.statusLog.write("WARN Delete point skipped: no editable point-list shape is selected.");
+      return;
+    }
+    if (!this.canUseShapeGeometry()) {
+      this.statusLog.write("WARN Delete point skipped: select exactly one shape.");
       return;
     }
     if (!this.isEditablePolygonShape(selected)) {
@@ -7722,7 +7841,9 @@ export class ToolStarterApp {
       return { error, ok: false, value: 0 };
     }
     this.clearInputValidity(element);
-    return { error: "", ok: true, value };
+    const normalizedValue = this.formatViewportNumber(value);
+    element.value = String(normalizedValue);
+    return { error: "", ok: true, value: normalizedValue };
   }
 
   markInputInvalid(element, message) {

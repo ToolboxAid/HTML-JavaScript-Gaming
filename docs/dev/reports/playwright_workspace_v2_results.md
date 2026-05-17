@@ -1,6 +1,6 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_090-object-transform-accordion-and-layout-reorganization
+PR: PR_26133_091-transform-origin-grouping-and-layout-polish
 
 Command: `npm run test:workspace-v2`
 
@@ -8,14 +8,14 @@ Result: PASS
 
 Summary:
 - 54/54 Playwright tests passed.
-- Final run completed in 5.2 minutes.
-- Object Transform now owns object-level Move, Rotate, Scale, Origin/Apply, Auto Origin, and Resize controls in the left column after Object.
-- Shape Transform is a separate right-column accordion directly under Shape/Tools and contains the existing single-shape transform workflow.
-- Shape Transform controls are disabled when multiple shapes are selected; Object Transform does not require Select All and can affect every shape in the selected object.
-- Right-column order now starts with Shape/Tools, Shape Transform, then Palette and Shape Geometry.
+- Final full run completed in 5.5 minutes.
+- Origin controls now render as `Origin X [input] Y [input] [Apply] [Auto]` for Object Transform and Shape Transform.
+- Object Transform is focused on origin, rotate, scale, and resize; object-level Move was removed from the panel.
+- Tools and Shapes are split into separate right-column accordions, with Palette, Tools, Shapes, Shape Geometry, Shape Transform, JSON Details, Dependency Details, and Status Log in the requested order.
+- Grouped shape body selection remains single-shape; clicking the group icon selects the full group and updates the preview/list selection state.
+- Shape Geometry and Shape Transform disable during multi-select.
 - Existing console/page error assertions remained clean in the covered flows.
 
-Manual/targeted verification notes:
-- Targeted layout, dirty-state, object authoring, and grouping/transform Playwright checks passed before the final full run.
-- Object-level move/rotate behavior was verified through updated Object Vector Studio V2 coverage.
-- Shape-level move/rotate/scale/resize behavior remains covered through the existing Shape Transform IDs.
+Targeted verification notes:
+- Updated Playwright assertions cover origin row button ordering, Object/Shape Transform Snap Angle rotate controls, grouped-shape icon selection, multi-select disabled states, right-column accordion order, and Dependency Details wording.
+- Numeric display normalization is covered through the Object Vector Studio V2 field rendering paths and transform/geometry input helpers.

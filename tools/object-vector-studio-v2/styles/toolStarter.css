@@ -1839,7 +1839,7 @@ textarea:hover {
 
 .object-vector-studio-v2__transform-control-row {
   display: grid;
-  grid-template-columns: 50px minmax(0, 1fr) minmax(0, 1fr) max-content;
+  grid-template-columns: 50px minmax(0, 1fr) minmax(0, 1fr) max-content max-content;
   align-items: center;
   gap: 3px;
   min-width: 0;
@@ -1861,7 +1861,9 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateInput,
-.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateSnapSelect {
+.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateSnapSelect,
+.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2ObjectRotateInput,
+.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2ObjectRotateSnapSelect {
   grid-column: 2;
   grid-row: 1;
 }
@@ -1871,12 +1873,14 @@ textarea:hover {
   grid-row: 1;
 }
 
-.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateShapeButton {
+.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateShapeButton,
+.object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2ObjectRotateButton {
   grid-column: 3;
   grid-row: 1;
 }
 
-.object-vector-studio-v2__transform-control-row--rotate.is-angle-snap-enabled #objectVectorStudioV2RotateShapeButton {
+.object-vector-studio-v2__transform-control-row--rotate.is-angle-snap-enabled #objectVectorStudioV2RotateShapeButton,
+.object-vector-studio-v2__transform-control-row--rotate.is-angle-snap-enabled #objectVectorStudioV2ObjectRotateButton {
   grid-column: 4;
 }
 
@@ -2004,10 +2008,14 @@ textarea:hover {
   width: 100%;
 }
 
+.object-vector-studio-v2__object-detail-stack.is-disabled,
 .object-vector-studio-v2__shape-panel.is-disabled {
   opacity: 0.58;
 }
 
+.object-vector-studio-v2__object-detail-stack.is-disabled input,
+.object-vector-studio-v2__object-detail-stack.is-disabled select,
+.object-vector-studio-v2__object-detail-stack.is-disabled button,
 .object-vector-studio-v2__shape-panel.is-disabled input,
 .object-vector-studio-v2__shape-panel.is-disabled select,
 .object-vector-studio-v2__shape-panel.is-disabled button {
