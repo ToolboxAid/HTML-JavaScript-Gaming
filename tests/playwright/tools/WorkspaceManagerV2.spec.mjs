@@ -2694,6 +2694,22 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 15');
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("22");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 15 degrees\. Snap Angle active: 22 -> 15\./);
+      const snapAngleRotateVerification = await page.evaluate(() => {
+        const shape = window.__objectVectorStudioV2App.selectedShape();
+        const statusLines = document.querySelector("#statusLog").value.trim().split("\n");
+        return {
+          angleSnapEnabled: window.__objectVectorStudioV2App.angleSnapEnabled,
+          inputValue: document.querySelector("#objectVectorStudioV2RotateInput").value,
+          rotation: shape.transform.rotation,
+          status: statusLines[statusLines.length - 1].replace(/^\[[^\]]+\]\s*/, "")
+        };
+      });
+      expect(snapAngleRotateVerification).toEqual({
+        angleSnapEnabled: true,
+        inputValue: "22",
+        rotation: 15,
+        status: "OK Rotated shape row 0 by 15 degrees. Snap Angle active: 22 -> 15."
+      });
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await page.locator("#objectVectorStudioV2RotateInput").fill("-30");
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
@@ -4075,6 +4091,42 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         pointRounding: [false, true, false, false],
         strokeLinejoin: "miter"
       });
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='2']").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 3 rounding to round for shape row 0\./);
+      const twoInteriorPointsRounded = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
+        const shape = surface.querySelector("[data-shape-index='0']");
+        const markers = Array.from(surface.querySelectorAll("[data-point-style-caps='polygon'] [data-point-style-cap]")).map((marker) => marker.dataset.pointStyleCap);
+        return {
+          markers,
+          pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+        };
+      });
+      expect(twoInteriorPointsRounded).toEqual({
+        markers: ["point-1", "point-2"],
+        pointRounding: [false, true, true, false],
+        strokeLinejoin: "miter"
+      });
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").uncheck();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to square for shape row 0\./);
+      const independentInteriorPoint = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
+        const shape = surface.querySelector("[data-shape-index='0']");
+        const markers = Array.from(surface.querySelectorAll("[data-point-style-caps='polygon'] [data-point-style-cap]")).map((marker) => marker.dataset.pointStyleCap);
+        return {
+          markers,
+          pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+        };
+      });
+      expect(independentInteriorPoint).toEqual({
+        markers: ["point-2"],
+        pointRounding: [false, false, true, false],
+        strokeLinejoin: "miter"
+      });
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to round for shape row 0\./);
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='2']").uncheck();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 3 rounding to square for shape row 0\./);
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-add='true'][data-polygon-point-index='1']").click();
       await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.map((row) => ({
         label: row.querySelector(".object-vector-studio-v2__polygon-point-label").textContent.trim(),

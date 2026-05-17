@@ -1,23 +1,25 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_081-point-row-layout-and-independent-rounding-fix
+PR: PR_26133_083-fix-middle-point-rounding-and-verify-snap-angle
 
 ## Validation
 
 - PASS: npm run test:workspace-v2
 - Result: 54 passed
-- Runtime: 5.5m
+- Runtime: 5.3m
 - Browser project: playwright
 - Workers: 1
 
 ## Targeted Checks Covered
 
-- Shape Geometry point rows still render exactly one Round checkbox per row.
-- Point rows now use one right-aligned action cell containing Round and the row trash button.
-- Editable point row layout keeps Point, X, Y, and actions in four stable columns.
-- Polygon/polyline point-list shapes no longer inherit shared middle/corner rounding from legacy pointStyle fallback.
-- Checking two middle polyline points and then unchecking one leaves the other middle point rounded.
-- Row trash deletion and invalid delete rejection coverage remain green.
+- Shape Geometry point rows still render exactly one Round checkbox per point row.
+- Row-local plus buttons still insert a copied point directly after the current row.
+- Row-local trash buttons still delete only their row and reject invalid minimum-count deletion.
+- Polygon interior point rounding now verifies two rounded middle/corner points, then unrounds one and confirms the other stays rounded.
+- Polyline middle point rounding still verifies independent middle-joint round/unround behavior.
+- Arc start/end rounding still verifies independent endpoint controls.
+- Snap Angle Rotate is explicitly verified with Snap Angle enabled: Rotate input 22 applies 15 degrees using the current 15 degree snap increment.
+- Snap Angle disabled still applies the raw entered rotation delta.
 
 ## Console/Runtime Errors
 
