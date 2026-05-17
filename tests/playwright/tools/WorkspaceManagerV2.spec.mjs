@@ -1575,7 +1575,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           titles: {
             add: title("#objectVectorStudioV2AddObjectButton"),
             angle: title("#objectVectorStudioV2AngleSnapButton"),
-            autoCenter: title("#objectVectorStudioV2AutoCenterButton"),
             grid: title("#objectVectorStudioV2GridRenderButton"),
             polygon: title("[data-shape-tool='polygon']"),
             polyline: title("[data-shape-tool='polyline']"),
@@ -1584,7 +1583,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             zoomIn: title("#objectVectorStudioV2ZoomInButton")
           },
           viewportIcons: {
-            autoCenter: icon("#objectVectorStudioV2AutoCenterButton"),
             down: icon("#objectVectorStudioV2PanDownButton"),
             reset: icon("#objectVectorStudioV2ResetViewButton"),
             up: icon("#objectVectorStudioV2PanUpButton"),
@@ -1633,7 +1631,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         snap: { iconKey: "snapGrid", iconName: "nf-md-grid_large" }
       });
       expect(iconStyleState.previewEditIcons).toMatchObject({
-        copy: { iconKey: "copy", iconName: "nf-cod-copy" },
+        copy: { iconKey: "copy", iconName: "nf-fa-copy" },
         paste: { iconKey: "paste", iconName: "nf-oct-paste" },
         redo: { iconKey: "redo", iconName: "nf-md-redo" },
         undo: { iconKey: "undo", iconName: "nf-md-undo" }
@@ -1694,7 +1692,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         triangle: "none"
       });
       expect(Object.fromEntries(Object.entries(iconStyleState.viewportIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
-        autoCenter: "center",
         down: "panDown",
         reset: "reset",
         up: "panUp",
@@ -1706,7 +1703,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.titles).toEqual({
         add: "Add a schema-valid object to the loaded payload",
         angle: "Snap Angle switches Rotate to a constrained dropdown using the selected 15, 30, 45, or 90 degree step.",
-        autoCenter: "Disabled until a schema-valid object is selected.",
         grid: "Show or hide the preview grid",
         polygon: "Create a polygon shape on the selected object. Click to add points.\n\nDouble-click to finish.",
         polyline: "Create a polyline shape on the selected object. Click to add points.\n\nDouble-click to finish.",
@@ -2137,7 +2133,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveAttribute("r", "9");
-      await expect(page.locator("#objectVectorStudioV2ViewportControls button")).toHaveText(["Out", "In", "Up", "Down", "Left", "Right", "View", "Center", "Auto Center"]);
+      await expect(page.locator("#objectVectorStudioV2ViewportControls button")).toHaveText(["Out", "In", "Up", "Down", "Left", "Right", "View", "Center"]);
       await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "true");
       await page.locator("#objectVectorStudioV2PanRightButton").click();
       await page.locator("#objectVectorStudioV2PanDownButton").click();
@@ -2192,22 +2188,37 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectTransform #objectVectorStudioV2MoveShapeButton")).toHaveCount(1);
       const transformSummaryLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => {
         const scaleRow = panel.querySelector(".object-vector-studio-v2__scale-control-row");
+        const autoCenterRow = panel.querySelector(".object-vector-studio-v2__transform-control-row--auto-center");
+        const autoCenterButton = panel.querySelector("#objectVectorStudioV2AutoCenterButton");
         const summary = panel.querySelector(".object-vector-studio-v2__transform-summary");
         const summaryStyle = getComputedStyle(summary);
         return {
+          autoCenterAfterScale: Boolean(scaleRow && autoCenterRow && (scaleRow.compareDocumentPosition(autoCenterRow) & Node.DOCUMENT_POSITION_FOLLOWING)),
+          autoCenterButtonText: autoCenterButton?.textContent.trim() || "",
+          autoCenterTitle: autoCenterButton?.title || "",
+          summaryAfterAutoCenter: Boolean(autoCenterRow && summary && (autoCenterRow.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING)),
           summaryAfterScale: Boolean(scaleRow && summary && (scaleRow.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING)),
           summaryCentered: summaryStyle.textAlign === "center",
           summaryStartsWithoutTransform: !summary.textContent.trim().startsWith("Transform"),
-          summaryTopAtBottom: summary.getBoundingClientRect().top >= scaleRow.getBoundingClientRect().bottom
+          summaryTopAtBottom: summary.getBoundingClientRect().top >= autoCenterRow.getBoundingClientRect().bottom
         };
       });
       expect(transformSummaryLayout).toEqual({
+        autoCenterAfterScale: true,
+        autoCenterButtonText: "Auto Center",
+        autoCenterTitle: "Balance Center",
+        summaryAfterAutoCenter: true,
         summaryAfterScale: true,
         summaryCentered: true,
         summaryStartsWithoutTransform: true,
         summaryTopAtBottom: true
       });
       const transformIconState = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => ({
+        autoCenter: {
+          iconKey: panel.querySelector("#objectVectorStudioV2AutoCenterButton").dataset.ovsIconKey,
+          iconName: panel.querySelector("#objectVectorStudioV2AutoCenterButton").dataset.ovsIconName,
+          title: panel.querySelector("#objectVectorStudioV2AutoCenterButton").title
+        },
         resize: {
           iconKey: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").dataset.ovsIconKey,
           iconName: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").dataset.ovsIconName,
@@ -2216,6 +2227,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         scaleActionRemoved: panel.querySelector("#objectVectorStudioV2ScaleShapeButton") === null
       }));
       expect(transformIconState).toEqual({
+        autoCenter: { iconKey: "center", iconName: "nf-fa-dot_circle_o", title: "Balance Center" },
         resize: { iconKey: "resize", iconName: "nf-md-resize", title: "Resize Geometry" },
         scaleActionRemoved: true
       });
@@ -2370,6 +2382,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           rowType: "rotate",
           selectIds: ["objectVectorStudioV2RotateSnapSelect", "objectVectorStudioV2SnapAngleStepSelect"],
           visibleInputIds: ["objectVectorStudioV2RotateInput"],
+          visibleSelectIds: []
+        },
+        {
+          allOneLine: true,
+          axisLabels: [],
+          buttonId: "objectVectorStudioV2AutoCenterButton",
+          buttonText: "Auto Center",
+          buttonTitle: "Balance Center",
+          inputIds: [],
+          label: "Center",
+          rowType: "auto-center",
+          selectIds: [],
+          visibleInputIds: [],
           visibleSelectIds: []
         }
       ]);
@@ -5982,6 +6007,78 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { rotation: 90, x: 5, y: 35 },
         { rotation: 0, x: 0, y: 0 }
       ]);
+
+      const selectedSetRotateBefore = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const indexes = app.selectedObject().shapes.map((shape, shapeIndex) => shapeIndex);
+        app.selectedShapeIndex = 0;
+        app.selectedShapeIndexes = new Set(indexes);
+        app.directSelectedShapeIndexes = new Set(indexes);
+        app.renderPayload();
+        const frame = app.activeFrame();
+        const bounds = app.shapeSetBounds(app.selectedObject(), indexes, { includeInvisible: false });
+        return {
+          bounds,
+          origins: indexes.map((shapeIndex) => {
+            const shape = app.effectiveShapeForFrame(app.selectedObject().shapes[shapeIndex], frame, shapeIndex);
+            const transform = app.ensureShapeTransform(shape);
+            return {
+              index: shapeIndex,
+              point: app.transformedPoint(transform.origin, transform),
+              rotation: transform.rotation
+            };
+          }),
+          pivot: {
+            x: Number((bounds.x + bounds.width / 2).toFixed(3)),
+            y: Number((bounds.y + bounds.height / 2).toFixed(3))
+          }
+        };
+      });
+      const selectionBoundsBeforeSelectedSetRotate = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
+        height: Number(box.getAttribute("height")),
+        width: Number(box.getAttribute("width")),
+        x: Number(box.getAttribute("x")),
+        y: Number(box.getAttribute("y"))
+      }));
+      await page.locator("#objectVectorStudioV2RotateInput").fill("90");
+      await page.locator("#objectVectorStudioV2RotateShapeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated selected set \(4 shapes\) by 90 degrees\./);
+      const selectedSetRotateAfter = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const effectiveShape = app.effectiveShapeForFrame(shape, frame, shapeIndex);
+          const transform = app.ensureShapeTransform(effectiveShape);
+          return {
+            index: shapeIndex,
+            point: app.transformedPoint(transform.origin, transform),
+            rotation: transform.rotation
+          };
+        });
+      });
+      const rotatePointAround = (point, pivot, degrees) => {
+        const radians = (degrees * Math.PI) / 180;
+        const relativeX = point.x - pivot.x;
+        const relativeY = point.y - pivot.y;
+        return {
+          x: pivot.x + relativeX * Math.cos(radians) - relativeY * Math.sin(radians),
+          y: pivot.y + relativeX * Math.sin(radians) + relativeY * Math.cos(radians)
+        };
+      };
+      selectedSetRotateBefore.origins.forEach((before) => {
+        const after = selectedSetRotateAfter.find((entry) => entry.index === before.index);
+        const expectedPoint = rotatePointAround(before.point, selectedSetRotateBefore.pivot, 90);
+        expect(after.point.x).toBeCloseTo(expectedPoint.x, 3);
+        expect(after.point.y).toBeCloseTo(expectedPoint.y, 3);
+        expect(after.rotation).toBe((before.rotation + 90) % 360);
+      });
+      const selectionBoundsAfterSelectedSetRotate = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
+        height: Number(box.getAttribute("height")),
+        width: Number(box.getAttribute("width")),
+        x: Number(box.getAttribute("x")),
+        y: Number(box.getAttribute("y"))
+      }));
+      expect(selectionBoundsAfterSelectedSetRotate).not.toEqual(selectionBoundsBeforeSelectedSetRotate);
 
       await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;

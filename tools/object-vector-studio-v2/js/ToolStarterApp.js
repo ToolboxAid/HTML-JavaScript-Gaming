@@ -50,7 +50,7 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   bringFront: objectVectorStudioIcon("nf-fa-angle_double_up", "\uf102"),
   center: objectVectorStudioIcon("nf-fa-dot_circle_o", "\uf192"),
   circle: objectVectorStudioIcon("nf-md-vector_circle_variant", "\u{f0557}"),
-  copy: objectVectorStudioIcon("nf-cod-copy", "\uea35"),
+  copy: objectVectorStudioIcon("nf-fa-copy", "\uf0c5"),
   delete: objectVectorStudioIcon("nf-md-trash_can_outline", "\u{f0a7a}"),
   duplicate: objectVectorStudioIcon("nf-fa-copy", "\uf0c5"),
   edit: objectVectorStudioIcon("nf-fa-pencil_square_o", "\uf044"),
@@ -118,7 +118,6 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   ["#objectVectorStudioV2PanRightButton", "panRight"],
   ["#objectVectorStudioV2ResetViewButton", "reset"],
   ["#objectVectorStudioV2CenterDotButton", "center"],
-  ["#objectVectorStudioV2AutoCenterButton", "center"],
   ["#objectVectorStudioV2FrameLeftButton", "panLeft"],
   ["#objectVectorStudioV2FrameEarlierButton", "panLeft"],
   ["#objectVectorStudioV2DuplicateFrameButton", "duplicate"],
@@ -755,7 +754,6 @@ export class ToolStarterApp {
       this.statusLog.write(`OK Grid rendering ${this.gridRenderEnabled ? "enabled" : "disabled"}.`);
     });
     this.elements.centerDotButton.addEventListener("click", () => this.toggleCenterOriginMarker());
-    this.elements.autoCenterButton.addEventListener("click", () => this.autoCenterSelectedShapePivot());
   }
 
   bindPaletteControls() {
@@ -2670,7 +2668,8 @@ export class ToolStarterApp {
       this.createMoveControlRow(),
       this.createOriginControlRow(transform),
       this.createRotateControlRow(),
-      this.createScaleControlRow(transform)
+      this.createScaleControlRow(transform),
+      this.createAutoCenterControlRow()
     );
     return section;
   }
@@ -2876,6 +2875,26 @@ export class ToolStarterApp {
     this.applyIconGlyph(resizeButton, "resize");
     resizeButton.addEventListener("click", () => this.resizeSelectedShape());
     row.append(resizeButton);
+    return row;
+  }
+
+  createAutoCenterControlRow() {
+    const row = document.createElement("div");
+    row.className = "object-vector-studio-v2__transform-control-row object-vector-studio-v2__transform-control-row--auto-center";
+    row.dataset.transformControlRow = "auto-center";
+    const label = document.createElement("span");
+    label.className = "object-vector-studio-v2__transform-control-label";
+    label.textContent = "Center";
+    row.append(
+      label,
+      this.createTransformActionButton({
+        handler: () => this.autoCenterSelectedShapePivot(),
+        iconKey: "center",
+        id: "objectVectorStudioV2AutoCenterButton",
+        label: "Auto Center",
+        title: "Balance Center"
+      })
+    );
     return row;
   }
 
@@ -3876,6 +3895,32 @@ export class ToolStarterApp {
       };
     }
     const bounds = shapes.map((shape) => this.transformedBounds(shape));
+    const minX = Math.min(...bounds.map((entry) => entry.x));
+    const minY = Math.min(...bounds.map((entry) => entry.y));
+    const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
+    const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
+    return {
+      height: Number((maxY - minY).toFixed(3)),
+      width: Number((maxX - minX).toFixed(3)),
+      x: Number(minX.toFixed(3)),
+      y: Number(minY.toFixed(3))
+    };
+  }
+
+  shapeSetBounds(object, shapeIndexes, { drawingScale = 1, includeInvisible = false } = {}) {
+    const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
+    const objectShapes = sortedShapes(object);
+    const targetIndexes = Array.from(new Set(Array.from(shapeIndexes || [])
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
+      .sort((left, right) => left - right);
+    const shapes = targetIndexes
+      .map((shapeIndex) => this.effectiveShapeForFrame(objectShapes[shapeIndex], activeFrame, shapeIndex))
+      .filter((shape) => includeInvisible || shape.visible !== false);
+    if (!shapes.length) {
+      return null;
+    }
+    const bounds = shapes.map((shape) => this.transformedBounds(shape, { drawingScale }));
     const minX = Math.min(...bounds.map((entry) => entry.x));
     const minY = Math.min(...bounds.map((entry) => entry.y));
     const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
@@ -6199,6 +6244,35 @@ export class ToolStarterApp {
     const rotation = this.snapAngle(input.value);
     const snapAngleStatus = this.formatSnapAngleRotateStatus(input.value, rotation);
     const object = this.selectedObject();
+    const objectShapes = sortedShapes(object);
+    const selectedSetIndexes = Array.from(new Set(Array.from(this.selectedShapeIndexes)
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
+      .sort((left, right) => left - right);
+    const directSelectedSetIndexes = Array.from(new Set(Array.from(this.directSelectedShapeIndexes)
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
+      .sort((left, right) => left - right);
+    const isSelectedSetRotate = selectedSetIndexes.length > 1
+      && (directSelectedSetIndexes.length > 1 || selectedSetIndexes.length === objectShapes.length);
+    if (isSelectedSetRotate) {
+      const bounds = this.shapeSetBounds(object, selectedSetIndexes, { includeInvisible: false });
+      if (!bounds) {
+        this.statusLog.write("FAIL Transform rotate blocked: selected set has no visible geometry.");
+        return;
+      }
+      const pivot = {
+        x: this.formatViewportNumber(bounds.x + bounds.width / 2),
+        y: this.formatViewportNumber(bounds.y + bounds.height / 2)
+      };
+      this.rotateSelectedShapeGroup(selectedSetIndexes, rotation, "", snapAngleStatus, {
+        directSelectedShapeIndexes: new Set(directSelectedSetIndexes.length ? directSelectedSetIndexes : selectedSetIndexes),
+        failSubject: "selected set",
+        logSubject: "selected set",
+        pivot
+      });
+      return;
+    }
     if (this.shapeBelongsToValidGroup(object, this.selectedShapeIndex)) {
       const targetIndexes = this.shapeSelectionGroupIndexes(sortedShapes(object), this.selectedShapeIndex);
       const groupId = String(sortedShapes(object)[this.selectedShapeIndex]?.groupId || "").trim();
@@ -6211,7 +6285,7 @@ export class ToolStarterApp {
     }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.${snapAngleStatus}`);
   }
 
-  rotateSelectedShapeGroup(shapeIndexes, rotation, groupId, snapAngleStatus = "") {
+  rotateSelectedShapeGroup(shapeIndexes, rotation, groupId, snapAngleStatus = "", options = {}) {
     const object = this.selectedObject();
     if (!object) {
       this.statusLog.write("WARN Transform rotate skipped: no object is selected.");
@@ -6241,9 +6315,11 @@ export class ToolStarterApp {
     }
 
     const frame = this.activeFrame();
-    const pivotShape = this.effectiveShapeForFrame(objectShapes[this.selectedShapeIndex], frame, this.selectedShapeIndex);
-    const pivotTransform = this.ensureShapeTransform(pivotShape);
-    const pivot = this.transformedPoint(pivotTransform.origin, pivotTransform);
+    const pivot = options.pivot || (() => {
+      const pivotShape = this.effectiveShapeForFrame(objectShapes[this.selectedShapeIndex], frame, this.selectedShapeIndex);
+      const pivotTransform = this.ensureShapeTransform(pivotShape);
+      return this.transformedPoint(pivotTransform.origin, pivotTransform);
+    })();
     const nextTransforms = new Map(targetIndexes.map((shapeIndex) => {
       const effectiveShape = this.effectiveShapeForFrame(objectShapes[shapeIndex], frame, shapeIndex);
       const transform = this.ensureShapeTransform(effectiveShape);
@@ -6258,9 +6334,11 @@ export class ToolStarterApp {
     }));
 
     this.selectedShapeIndexes = new Set(targetIndexes);
-    const directShapeIndexes = this.directSelectedShapeIndexes.size
+    const directShapeIndexes = options.directSelectedShapeIndexes
+      ? new Set(Array.from(options.directSelectedShapeIndexes).filter((shapeIndex) => targetIndexes.includes(shapeIndex)))
+      : (this.directSelectedShapeIndexes.size
       ? new Set(Array.from(this.directSelectedShapeIndexes).filter((shapeIndex) => targetIndexes.includes(shapeIndex)))
-      : new Set([this.selectedShapeIndex]);
+      : new Set([this.selectedShapeIndex]));
     if (!directShapeIndexes.size && this.selectedShapeIndex >= 0) {
       directShapeIndexes.add(this.selectedShapeIndex);
     }
@@ -6285,11 +6363,12 @@ export class ToolStarterApp {
         }
       });
     } catch (error) {
-      this.statusLog.write(`FAIL Invalid transform rejected for group ${groupId || "selected group"}: ${error.message}`);
+      this.statusLog.write(`FAIL Invalid transform rejected for ${options.failSubject || `group ${groupId || "selected group"}`}: ${error.message}`);
       return;
     }
 
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Rotated group ${groupId || "selected group"} (${targetIndexes.length} shapes) by ${rotation} degrees.${snapAngleStatus}`, "Transform rotate failed schema validation", {
+    const logSubject = options.logSubject || `group ${groupId || "selected group"}`;
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Rotated ${logSubject} (${targetIndexes.length} shapes) by ${rotation} degrees.${snapAngleStatus}`, "Transform rotate failed schema validation", {
       directSelectedShapeIndexes: directShapeIndexes,
       selectedShapeIndexes: new Set(targetIndexes)
     });
@@ -7812,7 +7891,6 @@ export class ToolStarterApp {
     this.setControlDisabled(this.elements.previewRedoButton, !this.previewRedoStack.length, "Disabled until an Object Preview edit can be redone.", "Redo the last undone Object Preview edit.");
     this.setControlDisabled(this.elements.previewCopyButton, !shape, noShapeReason, "Copy the selected shape.");
     this.setControlDisabled(this.elements.previewPasteButton, !object || !this.previewClipboardShape || isLocked, !object ? noObjectReason : (isLocked ? lockedReason : "Disabled until a shape has been copied."), "Paste the copied shape into the selected object.");
-    this.setControlDisabled(this.elements.autoCenterButton, !object || !shape || isLocked, !object ? noObjectReason : (isLocked ? lockedReason : noShapeReason), "Balance selected shape origin/pivot to the visible object center.");
   }
 
   updateObjectActionState() {

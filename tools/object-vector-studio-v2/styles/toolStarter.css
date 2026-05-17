@@ -1856,6 +1856,10 @@ textarea:hover {
   grid-template-columns: 50px minmax(54px, 1fr) minmax(54px, max-content) max-content;
 }
 
+.object-vector-studio-v2__transform-control-row--auto-center {
+  grid-template-columns: 50px minmax(0, 1fr);
+}
+
 .object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateInput,
 .object-vector-studio-v2__transform-control-row--rotate #objectVectorStudioV2RotateSnapSelect {
   grid-column: 2;
