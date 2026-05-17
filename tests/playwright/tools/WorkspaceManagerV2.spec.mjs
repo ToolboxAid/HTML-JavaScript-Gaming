@@ -2187,37 +2187,41 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1");
       await expect(page.locator("#objectVectorStudioV2ObjectTransform #objectVectorStudioV2MoveShapeButton")).toHaveCount(1);
       const transformSummaryLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => {
+        const originRow = panel.querySelector(".object-vector-studio-v2__transform-control-row--origin");
+        const rotateRow = panel.querySelector(".object-vector-studio-v2__transform-control-row--rotate");
         const scaleRow = panel.querySelector(".object-vector-studio-v2__scale-control-row");
-        const autoCenterRow = panel.querySelector(".object-vector-studio-v2__transform-control-row--auto-center");
-        const autoCenterButton = panel.querySelector("#objectVectorStudioV2AutoCenterButton");
+        const autoOriginRow = panel.querySelector(".object-vector-studio-v2__transform-control-row--auto-origin");
+        const autoOriginButton = panel.querySelector("#objectVectorStudioV2AutoOriginButton");
         const summary = panel.querySelector(".object-vector-studio-v2__transform-summary");
         const summaryStyle = getComputedStyle(summary);
         return {
-          autoCenterAfterScale: Boolean(scaleRow && autoCenterRow && (scaleRow.compareDocumentPosition(autoCenterRow) & Node.DOCUMENT_POSITION_FOLLOWING)),
-          autoCenterButtonText: autoCenterButton?.textContent.trim() || "",
-          autoCenterTitle: autoCenterButton?.title || "",
-          summaryAfterAutoCenter: Boolean(autoCenterRow && summary && (autoCenterRow.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING)),
+          autoOriginAfterOrigin: Boolean(originRow && autoOriginRow && (originRow.compareDocumentPosition(autoOriginRow) & Node.DOCUMENT_POSITION_FOLLOWING)),
+          autoOriginBeforeRotate: Boolean(autoOriginRow && rotateRow && (autoOriginRow.compareDocumentPosition(rotateRow) & Node.DOCUMENT_POSITION_FOLLOWING)),
+          autoOriginButtonText: autoOriginButton?.textContent.trim() || "",
+          autoOriginTitle: autoOriginButton?.title || "",
+          autoOriginUsesCenterWord: Boolean(autoOriginRow?.textContent.includes("Center") || autoOriginButton?.title.includes("Center")),
           summaryAfterScale: Boolean(scaleRow && summary && (scaleRow.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING)),
           summaryCentered: summaryStyle.textAlign === "center",
           summaryStartsWithoutTransform: !summary.textContent.trim().startsWith("Transform"),
-          summaryTopAtBottom: summary.getBoundingClientRect().top >= autoCenterRow.getBoundingClientRect().bottom
+          summaryTopAtBottom: summary.getBoundingClientRect().top >= scaleRow.getBoundingClientRect().bottom
         };
       });
       expect(transformSummaryLayout).toEqual({
-        autoCenterAfterScale: true,
-        autoCenterButtonText: "Auto Center",
-        autoCenterTitle: "Balance Center",
-        summaryAfterAutoCenter: true,
+        autoOriginAfterOrigin: true,
+        autoOriginBeforeRotate: true,
+        autoOriginButtonText: "Auto Origin",
+        autoOriginTitle: "Auto Origin",
+        autoOriginUsesCenterWord: false,
         summaryAfterScale: true,
         summaryCentered: true,
         summaryStartsWithoutTransform: true,
         summaryTopAtBottom: true
       });
       const transformIconState = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => ({
-        autoCenter: {
-          iconKey: panel.querySelector("#objectVectorStudioV2AutoCenterButton").dataset.ovsIconKey,
-          iconName: panel.querySelector("#objectVectorStudioV2AutoCenterButton").dataset.ovsIconName,
-          title: panel.querySelector("#objectVectorStudioV2AutoCenterButton").title
+        autoOrigin: {
+          iconKey: panel.querySelector("#objectVectorStudioV2AutoOriginButton").dataset.ovsIconKey,
+          iconName: panel.querySelector("#objectVectorStudioV2AutoOriginButton").dataset.ovsIconName,
+          title: panel.querySelector("#objectVectorStudioV2AutoOriginButton").title
         },
         resize: {
           iconKey: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").dataset.ovsIconKey,
@@ -2227,7 +2231,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         scaleActionRemoved: panel.querySelector("#objectVectorStudioV2ScaleShapeButton") === null
       }));
       expect(transformIconState).toEqual({
-        autoCenter: { iconKey: "center", iconName: "nf-fa-dot_circle_o", title: "Balance Center" },
+        autoOrigin: { iconKey: "center", iconName: "nf-fa-dot_circle_o", title: "Auto Origin" },
         resize: { iconKey: "resize", iconName: "nf-md-resize", title: "Resize Geometry" },
         scaleActionRemoved: true
       });
@@ -2374,6 +2378,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         {
           allOneLine: true,
           axisLabels: [],
+          buttonId: "objectVectorStudioV2AutoOriginButton",
+          buttonText: "Auto Origin",
+          buttonTitle: "Auto Origin",
+          inputIds: [],
+          label: "Origin",
+          rowType: "auto-origin",
+          selectIds: [],
+          visibleInputIds: [],
+          visibleSelectIds: []
+        },
+        {
+          allOneLine: true,
+          axisLabels: [],
           buttonId: "objectVectorStudioV2RotateShapeButton",
           buttonText: "Rotate",
           buttonTitle: "",
@@ -2382,19 +2399,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           rowType: "rotate",
           selectIds: ["objectVectorStudioV2RotateSnapSelect", "objectVectorStudioV2SnapAngleStepSelect"],
           visibleInputIds: ["objectVectorStudioV2RotateInput"],
-          visibleSelectIds: []
-        },
-        {
-          allOneLine: true,
-          axisLabels: [],
-          buttonId: "objectVectorStudioV2AutoCenterButton",
-          buttonText: "Auto Center",
-          buttonTitle: "Balance Center",
-          inputIds: [],
-          label: "Center",
-          rowType: "auto-center",
-          selectIds: [],
-          visibleInputIds: [],
           visibleSelectIds: []
         }
       ]);
@@ -10074,11 +10078,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
         await page.locator("#objectVectorStudioV2MoveShapeButton").click();
       });
-      await expectObjectVectorDirtyAfter("object auto center edit", async () => {
+      await expectObjectVectorDirtyAfter("object auto origin edit", async () => {
         await page.evaluate(() => {
           const app = window.__objectVectorStudioV2App;
-          app.selectObject("object.asteroids.ship", "auto center dirty test");
-          app.selectShape(0, "auto center dirty test");
+          app.selectObject("object.asteroids.ship", "auto origin dirty test");
+          app.selectShape(0, "auto origin dirty test");
           const shape = app.selectedShape();
           const frame = app.activeFrame();
           const override = frame?.shapeOverrides?.find((entry) => entry.shapeIndex === app.selectedShapeIndex) || null;
@@ -10087,7 +10091,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           target.transform.origin = { x: 123, y: -45 };
           app.renderPayload({ syncPaletteSelection: false });
         });
-        const autoCenterBefore = await page.evaluate(() => {
+        const autoOriginBefore = await page.evaluate(() => {
           const app = window.__objectVectorStudioV2App;
           const shape = app.selectedShape();
           const effectiveShape = app.effectiveShape(shape);
@@ -10103,9 +10107,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             pivot: app.transformedPoint(transform.origin, transform)
           };
         });
-        await page.locator("#objectVectorStudioV2AutoCenterButton").click();
-        await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Center balanced shape row \d+ origin\/pivot to visible object center/);
-        const autoCenterAfter = await page.evaluate(() => {
+        await page.locator("#objectVectorStudioV2AutoOriginButton").click();
+        await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Origin updated shape row \d+ origin\/pivot from visible object bounds/);
+        const autoOriginAfter = await page.evaluate(() => {
           const app = window.__objectVectorStudioV2App;
           const shape = app.selectedShape();
           const effectiveShape = app.effectiveShape(shape);
@@ -10116,13 +10120,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             pivot: app.transformedPoint(transform.origin, transform)
           };
         });
-        expect(autoCenterAfter.geometryText).toBe(autoCenterBefore.geometryText);
+        expect(autoOriginAfter.geometryText).toBe(autoOriginBefore.geometryText);
         ["x", "y", "width", "height"].forEach((key) => {
-          expect(autoCenterAfter.bounds[key]).toBeCloseTo(autoCenterBefore.bounds[key], 3);
+          expect(autoOriginAfter.bounds[key]).toBeCloseTo(autoOriginBefore.bounds[key], 3);
         });
-        expect(autoCenterAfter.pivot.x).toBeCloseTo(autoCenterBefore.center.x, 3);
-        expect(autoCenterAfter.pivot.y).toBeCloseTo(autoCenterBefore.center.y, 3);
-        expect(autoCenterAfter.pivot.x).not.toBeCloseTo(autoCenterBefore.pivot.x, 3);
+        expect(autoOriginAfter.pivot.x).toBeCloseTo(autoOriginBefore.center.x, 3);
+        expect(autoOriginAfter.pivot.y).toBeCloseTo(autoOriginBefore.center.y, 3);
+        expect(autoOriginAfter.pivot.x).not.toBeCloseTo(autoOriginBefore.pivot.x, 3);
       });
       await expectObjectVectorDirtyAfter("palette color edit", async () => {
         await page.locator("#objectVectorStudioV2PaintModeButton").click();

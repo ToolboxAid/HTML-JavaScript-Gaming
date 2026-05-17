@@ -2667,9 +2667,9 @@ export class ToolStarterApp {
       heading,
       this.createMoveControlRow(),
       this.createOriginControlRow(transform),
+      this.createAutoOriginControlRow(),
       this.createRotateControlRow(),
-      this.createScaleControlRow(transform),
-      this.createAutoCenterControlRow()
+      this.createScaleControlRow(transform)
     );
     return section;
   }
@@ -2878,21 +2878,21 @@ export class ToolStarterApp {
     return row;
   }
 
-  createAutoCenterControlRow() {
+  createAutoOriginControlRow() {
     const row = document.createElement("div");
-    row.className = "object-vector-studio-v2__transform-control-row object-vector-studio-v2__transform-control-row--auto-center";
-    row.dataset.transformControlRow = "auto-center";
+    row.className = "object-vector-studio-v2__transform-control-row object-vector-studio-v2__transform-control-row--auto-origin";
+    row.dataset.transformControlRow = "auto-origin";
     const label = document.createElement("span");
     label.className = "object-vector-studio-v2__transform-control-label";
-    label.textContent = "Center";
+    label.textContent = "Origin";
     row.append(
       label,
       this.createTransformActionButton({
-        handler: () => this.autoCenterSelectedShapePivot(),
+        handler: () => this.autoOriginSelectedShapePivot(),
         iconKey: "center",
-        id: "objectVectorStudioV2AutoCenterButton",
-        label: "Auto Center",
-        title: "Balance Center"
+        id: "objectVectorStudioV2AutoOriginButton",
+        label: "Auto Origin",
+        title: "Auto Origin"
       })
     );
     return row;
@@ -6613,15 +6613,15 @@ export class ToolStarterApp {
     }, `OK Updated shape row ${this.selectedShapeIndex} origin/pivot to ${originX.value}, ${originY.value}.`);
   }
 
-  autoCenterSelectedShapePivot() {
+  autoOriginSelectedShapePivot() {
     const object = this.selectedObject();
     if (!object) {
-      this.statusLog.write("WARN Auto Center skipped: no object is selected.");
+      this.statusLog.write("WARN Auto Origin skipped: no object is selected.");
       return;
     }
     const selected = this.selectedShape();
     if (!selected) {
-      this.statusLog.write("WARN Auto Center skipped: no shape is selected.");
+      this.statusLog.write("WARN Auto Origin skipped: no shape is selected.");
       return;
     }
     const activeFrame = this.activeFrame();
@@ -6629,7 +6629,7 @@ export class ToolStarterApp {
       .map((shape, shapeIndex) => this.effectiveShapeForFrame(shape, activeFrame, shapeIndex))
       .filter((shape) => shape.visible !== false);
     if (!visibleShapes.length) {
-      this.statusLog.write(`FAIL Auto Center blocked: object ${object.name} has no visible geometry.`);
+      this.statusLog.write(`FAIL Auto Origin blocked: object ${object.name} has no visible geometry.`);
       return;
     }
     const bounds = this.objectBounds(object, { includeInvisible: false });
@@ -6637,9 +6637,9 @@ export class ToolStarterApp {
       x: this.formatViewportNumber(bounds.x + bounds.width / 2),
       y: this.formatViewportNumber(bounds.y + bounds.height / 2)
     };
-    this.updateSelectedShapeTransform("auto center", (shape) => {
+    this.updateSelectedShapeTransform("auto origin", (shape) => {
       shape.transform = this.transformWithBalancedOrigin(this.ensureShapeTransform(shape), center);
-    }, `OK Auto Center balanced shape row ${this.selectedShapeIndex} origin/pivot to visible object center ${center.x}, ${center.y}.`);
+    }, `OK Auto Origin updated shape row ${this.selectedShapeIndex} origin/pivot from visible object bounds ${center.x}, ${center.y}.`);
   }
 
   groupSelectedShapes() {
