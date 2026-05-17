@@ -56,6 +56,8 @@ button {
 
 .object-vector-studio-v2 {
   --object-vector-studio-v2-icon-scale: 1.75;
+  --object-vector-studio-v2-disabled-icon-color: #64748b;
+  --object-vector-studio-v2-snap-point-color: #fbbf24;
 }
 
 button:disabled {
@@ -63,6 +65,11 @@ button:disabled {
   opacity: 0.62;
   filter: saturate(0.72);
   box-shadow: none;
+}
+
+button:disabled[data-ovs-icon],
+button:disabled [data-ovs-icon] {
+  color: var(--object-vector-studio-v2-disabled-icon-color) !important;
 }
 
 button:focus-visible,
@@ -421,6 +428,11 @@ textarea:hover {
 #objectVectorStudioV2PaletteContent {
   flex: 0 1 auto;
   max-height: 260px;
+}
+
+#objectVectorStudioV2PaletteContent {
+  flex: 0 0 auto;
+  max-height: none;
 }
 
 #objectVectorStudioV2ShapeToolsContent {
@@ -1010,6 +1022,19 @@ textarea:hover {
   transform: none;
 }
 
+.object-vector-studio-v2__tool-toggle:not(.is-active):not([aria-pressed="true"]) .object-vector-studio-v2__shape-icon[data-ovs-icon],
+.object-vector-studio-v2__snap-actions button[aria-pressed="false"][data-ovs-icon] {
+  color: var(--object-vector-studio-v2-disabled-icon-color);
+}
+
+#objectVectorStudioV2SnapModeButton[data-snap-mode="point"][data-ovs-icon] {
+  color: var(--object-vector-studio-v2-snap-point-color);
+}
+
+#objectVectorStudioV2SnapModeButton[data-snap-mode="none"][data-ovs-icon] {
+  color: var(--object-vector-studio-v2-disabled-icon-color);
+}
+
 .object-vector-studio-v2__shape-icon[data-ovs-icon] {
   width: 24px;
   height: 24px;
@@ -1468,7 +1493,7 @@ textarea:hover {
 
 .object-vector-studio-v2__snap-target {
   fill: none;
-  stroke: #fbbf24;
+  stroke: var(--object-vector-studio-v2-snap-point-color);
   stroke-width: 1.25;
   vector-effect: non-scaling-stroke;
 }
@@ -1628,18 +1653,31 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__point-style-controls {
-  display: grid;
+  display: flex;
+  align-items: center;
   gap: 4px;
-  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
 }
 
-.object-vector-studio-v2__point-style-controls--open {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.object-vector-studio-v2__point-style-heading {
+  flex: 0 0 auto;
+  color: var(--tool-starter-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.object-vector-studio-v2__point-style-fields {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: nowrap;
 }
 
 .object-vector-studio-v2__point-style-field {
-  display: grid;
-  grid-template-columns: minmax(70px, max-content) minmax(0, 1fr);
+  display: inline-grid;
+  grid-template-columns: max-content minmax(58px, 1fr);
   align-items: center;
   gap: 4px;
   color: var(--tool-starter-muted);
@@ -1649,9 +1687,13 @@ textarea:hover {
 
 .object-vector-studio-v2__point-style-field select {
   min-width: 0;
-  width: 100%;
+  width: 72px;
   min-height: 24px;
   padding: 2px 4px;
+}
+
+.object-vector-studio-v2__point-style-field select:disabled {
+  color: var(--object-vector-studio-v2-disabled-icon-color);
 }
 
 .object-vector-studio-v2__edit-panel--geometry .object-vector-studio-v2__edit-grid {

@@ -1,23 +1,23 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_075-shape-geometry-rounding-and-terminology-normalization
+PR: PR_26133_076-snap-angle-disabled-colors-and-point-style-refinement
 
 ## Validation
 
 - PASS: npm run test:workspace-v2
 - Result: 54 passed
-- Runtime: 5.3m
+- Runtime: 4.6m
 - Browser project: playwright
 - Workers: 1
 
 ## Targeted Checks Covered
 
-- Object Vector Studio V2 UI and tests use Shape Geometry terminology instead of Object Geometry.
-- Palette no longer exposes the old End stroke control; stroke width remains in Palette.
-- Shape Geometry renders Point Style for closed cornered shapes and Start/End Point Style for open-ended shapes.
-- Closed shape point style changes update rendered joins, and open-ended line styles render separate start/end point cap markers.
-- Group summary remains below the point-style controls in Shape Geometry.
-- Existing polygon/polyline creation, Enter completion, and runtime error coverage remain green.
+- Snap control naming uses Snap Angle, including title, button text, aria label, and status log output.
+- Inactive Shape/Tools and Snap Angle icons share one disabled/inactive color; Snap None uses the same color.
+- Snap Point button color matches visible point snap target circles.
+- Shape Geometry Point Style UI renders Start, Joints, and End controls, with line/arc joints disabled and polyline joints wired.
+- Angled square line caps render as rotated markers aligned to the line angle instead of detached axis-aligned rectangles.
+- Palette accordion/content sizing collapses to the control content without the old empty bottom space.
 
 ## Console/Runtime Errors
 

@@ -741,7 +741,7 @@ export class ToolStarterApp {
       this.angleSnapEnabled = !this.angleSnapEnabled;
       this.window.sessionStorage?.setItem(ANGLE_SNAP_SESSION_KEY, this.angleSnapEnabled ? "1" : "0");
       this.applySnapState();
-      this.statusLog.write(`OK Angle snap ${this.angleSnapEnabled ? "enabled" : "disabled"}: Rotate action ${this.angleSnapEnabled ? "rounds" : "uses raw"} entered rotation delta${this.angleSnapEnabled ? " to 15 degree increments" : ""}.`);
+      this.statusLog.write(`OK Snap angle ${this.angleSnapEnabled ? "enabled" : "disabled"}: Rotate action ${this.angleSnapEnabled ? "rounds" : "uses raw"} entered rotation delta${this.angleSnapEnabled ? " to 15 degree increments" : ""}.`);
     });
     this.elements.gridRenderButton.addEventListener("click", () => {
       this.gridRenderEnabled = !this.gridRenderEnabled;
@@ -981,8 +981,9 @@ export class ToolStarterApp {
     this.applyIconGlyph(this.elements.snapModeButton, snapDetails.iconKey);
     this.elements.renderSurface.classList.toggle("is-snap-point-mode", this.snapMode === "point");
     this.elements.angleSnapButton.setAttribute("aria-pressed", String(this.angleSnapEnabled));
-    this.elements.angleSnapButton.setAttribute("aria-label", "Angle Snap for Object Transform Rotate");
-    this.elements.angleSnapButton.title = "Angle Snap is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.";
+    this.elements.angleSnapButton.textContent = "Snap Angle";
+    this.elements.angleSnapButton.setAttribute("aria-label", "Snap Angle for Object Transform Rotate");
+    this.elements.angleSnapButton.title = "Snap Angle is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.";
     this.elements.gridRenderButton.setAttribute("aria-pressed", String(this.gridRenderEnabled));
     this.elements.centerDotButton.setAttribute("aria-pressed", String(this.centerOriginVisible));
     this.elements.renderSurface.classList.toggle("is-grid-visible", this.gridRenderEnabled);
@@ -2178,19 +2179,30 @@ export class ToolStarterApp {
     const controls = document.createElement("div");
     controls.className = "object-vector-studio-v2__point-style-controls";
     controls.dataset.pointStyleControls = shapeGeometryTool(shape);
+    const heading = document.createElement("span");
+    heading.className = "object-vector-studio-v2__point-style-heading";
+    heading.textContent = "Point Style:";
+    const fields = document.createElement("div");
+    fields.className = "object-vector-studio-v2__point-style-fields";
     if (this.supportsOpenPointStyle(shape)) {
       controls.classList.add("object-vector-studio-v2__point-style-controls--open");
-      controls.append(
-        this.createShapePointStyleField("Start Point Style", "startPointStyle", this.shapeStartPointStyle(shape)),
-        this.createShapePointStyleField("End Point Style", "endPointStyle", this.shapeEndPointStyle(shape))
+      fields.append(
+        this.createShapePointStyleField("Start", "startPointStyle", this.shapeStartPointStyle(shape)),
+        this.createShapePointStyleField("Joints", "pointStyle", this.shapeUnifiedPointStyle(shape), {
+          disabled: shapeGeometryTool(shape) === "line" || shapeGeometryTool(shape) === "arc",
+          disabledTitle: `${shapeTypeLabel(shape)} has no intermediate joints.`
+        }),
+        this.createShapePointStyleField("End", "endPointStyle", this.shapeEndPointStyle(shape))
       );
+      controls.append(heading, fields);
       return controls;
     }
-    controls.append(this.createShapePointStyleField("Point Style", "pointStyle", this.shapeUnifiedPointStyle(shape)));
+    fields.append(this.createShapePointStyleField("Joints", "pointStyle", this.shapeUnifiedPointStyle(shape)));
+    controls.append(heading, fields);
     return controls;
   }
 
-  createShapePointStyleField(labelText, styleKey, value) {
+  createShapePointStyleField(labelText, styleKey, value, options = {}) {
     const label = document.createElement("label");
     label.className = "object-vector-studio-v2__point-style-field";
     const caption = document.createElement("span");
@@ -2205,6 +2217,11 @@ export class ToolStarterApp {
       select.append(option);
     });
     select.value = this.pointStyleValue(value);
+    if (options.disabled) {
+      select.disabled = true;
+      select.title = options.disabledTitle || select.title;
+      select.setAttribute("aria-disabled", "true");
+    }
     select.addEventListener("change", () => this.updateSelectedShapePointStyle(styleKey, select.value, labelText));
     label.append(caption, select);
     return label;
@@ -2234,7 +2251,7 @@ export class ToolStarterApp {
       this.statusLog.write(`WARN ${labelText} update skipped: ${shapeTypeLabel(nextShape)} does not use open-ended point styles.`);
       return;
     }
-    if (styleKey === "pointStyle" && !supportsClosed) {
+    if (styleKey === "pointStyle" && !supportsClosed && !supportsOpen) {
       this.statusLog.write(`WARN ${labelText} update skipped: ${shapeTypeLabel(nextShape)} does not use a unified point style.`);
       return;
     }
@@ -2247,7 +2264,6 @@ export class ToolStarterApp {
       if (!nextShape.style.endPointStyle) {
         nextShape.style.endPointStyle = this.shapeEndPointStyle(selected);
       }
-      delete nextShape.style.pointStyle;
     }
     if (supportsClosed) {
       delete nextShape.style.startPointStyle;
@@ -3055,6 +3071,7 @@ export class ToolStarterApp {
       const lineCap = this.openShapeUsesSplitPointStyles(shape) ? "butt" : this.shapeStartPointStyle(shape);
       element.setAttribute("stroke-linecap", lineCap);
       element.setAttribute("stroke-linejoin", this.strokeLinejoinValue(this.shapeUnifiedPointStyle(shape)));
+      element.dataset.pointStyle = this.shapeUnifiedPointStyle(shape);
       element.dataset.startPointStyle = this.shapeStartPointStyle(shape);
       element.dataset.endPointStyle = this.shapeEndPointStyle(shape);
     } else if (CLOSED_POINT_STYLE_TOOLS.has(geometryTool)) {
@@ -3082,15 +3099,15 @@ export class ToolStarterApp {
     group.setAttribute("pointer-events", "none");
     group.setAttribute("transform", this.svgTransformAttribute(this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale)));
     [
-      ["start", endpoints.start, this.shapeStartPointStyle(shape)],
-      ["end", endpoints.end, this.shapeEndPointStyle(shape)]
-    ].forEach(([endpoint, point, pointStyle]) => {
-      group.append(this.createPointStyleCapMarker(point, pointStyle, shape, endpoint, drawingScale));
+      ["start", endpoints.start.point, this.shapeStartPointStyle(shape), endpoints.start.angle],
+      ["end", endpoints.end.point, this.shapeEndPointStyle(shape), endpoints.end.angle]
+    ].forEach(([endpoint, point, pointStyle, angle]) => {
+      group.append(this.createPointStyleCapMarker(point, pointStyle, shape, endpoint, drawingScale, angle));
     });
     parent.append(group);
   }
 
-  createPointStyleCapMarker(point, pointStyle, shape, endpoint, drawingScale) {
+  createPointStyleCapMarker(point, pointStyle, shape, endpoint, drawingScale, angle = 0) {
     const strokeWidth = Math.max(1, Number(shape.style?.strokeWidth) || 1);
     const size = strokeWidth;
     const x = this.scaleDrawingValue(point.x, drawingScale);
@@ -3109,6 +3126,7 @@ export class ToolStarterApp {
       marker.setAttribute("y", y - size / 2);
       marker.setAttribute("width", size);
       marker.setAttribute("height", size);
+      marker.setAttribute("transform", `rotate(${this.formatViewportNumber(angle)} ${this.formatViewportNumber(x)} ${this.formatViewportNumber(y)})`);
       return marker;
     }
     marker.setAttribute("cx", x);
@@ -3120,24 +3138,37 @@ export class ToolStarterApp {
   openShapeEndpointPoints(shape) {
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "line") {
+      const start = linePoint(shape.geometry, "point1");
+      const end = linePoint(shape.geometry, "point2");
+      const angle = this.angleBetweenPoints(start, end);
       return {
-        end: linePoint(shape.geometry, "point2"),
-        start: linePoint(shape.geometry, "point1")
+        end: { angle, point: end },
+        start: { angle, point: start }
       };
     }
     if (geometryTool === "polyline" && Array.isArray(shape.geometry?.points) && shape.geometry.points.length >= 2) {
+      const points = shape.geometry.points;
       return {
-        end: shape.geometry.points.at(-1),
-        start: shape.geometry.points[0]
+        end: { angle: this.angleBetweenPoints(points.at(-2), points.at(-1)), point: points.at(-1) },
+        start: { angle: this.angleBetweenPoints(points[0], points[1]), point: points[0] }
       };
     }
     if (geometryTool === "arc") {
+      const start = this.polarPoint(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, shape.geometry.startAngle);
+      const end = this.polarPoint(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, shape.geometry.endAngle);
       return {
-        end: this.polarPoint(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, shape.geometry.endAngle),
-        start: this.polarPoint(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, shape.geometry.startAngle)
+        end: { angle: Number(shape.geometry.endAngle) + 90, point: end },
+        start: { angle: Number(shape.geometry.startAngle) + 90, point: start }
       };
     }
     return null;
+  }
+
+  angleBetweenPoints(start, end) {
+    if (!start || !end) {
+      return 0;
+    }
+    return Math.atan2(Number(end.y) - Number(start.y), Number(end.x) - Number(start.x)) * 180 / Math.PI;
   }
 
   shapeTransform(shape) {

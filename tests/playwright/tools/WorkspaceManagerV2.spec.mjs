@@ -1520,6 +1520,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             render: icon("#objectVectorStudioV2GridRenderButton"),
             snap: icon("#objectVectorStudioV2SnapModeButton")
           },
+          inactiveIconColors: {
+            inactiveRectangle: getComputedStyle(document.querySelector("[data-shape-tool='rectangle'] .object-vector-studio-v2__shape-icon")).color,
+            snapAngle: getComputedStyle(document.querySelector("#objectVectorStudioV2AngleSnapButton")).color
+          },
           modeButtons: {
             paint: {
               iconOrder: getComputedStyle(document.querySelector("#objectVectorStudioV2PaintModeButton"), "::before").order,
@@ -1684,7 +1688,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.viewportIcons.zoomOut.iconName).toBe("nf-oct-zoom_out");
       expect(iconStyleState.titles).toEqual({
         add: "Add a schema-valid object to the loaded payload",
-        angle: "Angle Snap is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.",
+        angle: "Snap Angle is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.",
         grid: "Show or hide the preview grid",
         polygon: "Create a polygon shape on the selected object. Click to add points.\n\nDouble-click to finish.",
         polyline: "Create a polyline shape on the selected object. Click to add points.\n\nDouble-click to finish.",
@@ -1692,12 +1696,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         shape: "Create a rectangle shape on the selected object",
         zoomIn: "Zoom the work surface in"
       });
+      expect(new Set(Object.values(iconStyleState.inactiveIconColors)).size).toBe(1);
+      await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveText("Snap Angle");
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Angle snap enabled: Rotate action rounds entered rotation delta to 15 degree increments\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Snap angle enabled: Rotate action rounds entered rotation delta to 15 degree increments\./);
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveAttribute("aria-pressed", "false");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Angle snap disabled: Rotate action uses raw entered rotation delta\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Snap angle disabled: Rotate action uses raw entered rotation delta\./);
 
       await drawDefaultObjectVectorShape(page, "rectangle");
       await expect(page.locator('[data-shape-tool="rectangle"]')).toHaveAttribute("aria-pressed", "true");
@@ -2225,8 +2231,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           noApplyButton: !details.querySelector("#objectVectorStudioV2ApplyGeometryButton"),
           noHelperText: !details.textContent.includes("Editable fields below"),
           noSelectedShapeText: !details.textContent.includes("Selected Shape"),
+          pointStyleHeading: details.querySelector(".object-vector-studio-v2__point-style-heading")?.textContent.trim() || "",
           pointStyleBeforeGroup: Boolean(pointStyleControls && groupSummary && (pointStyleControls.compareDocumentPosition(groupSummary) & Node.DOCUMENT_POSITION_FOLLOWING)),
           pointStyleControls: Array.from(details.querySelectorAll("[data-shape-point-style-field]")).map((control) => ({
+            disabled: control.disabled,
             label: control.closest("label").querySelector("span").textContent.trim(),
             value: control.value
           })),
@@ -2237,15 +2245,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(shapeGeometryOrder.noApplyButton).toBe(true);
       expect(shapeGeometryOrder.noHelperText).toBe(true);
       expect(shapeGeometryOrder.noSelectedShapeText).toBe(true);
+      expect(shapeGeometryOrder.pointStyleHeading).toBe("Point Style:");
       expect(shapeGeometryOrder.pointStyleBeforeGroup).toBe(true);
-      expect(shapeGeometryOrder.pointStyleControls).toEqual([{ label: "Point Style", value: "round" }]);
+      expect(shapeGeometryOrder.pointStyleControls).toEqual([{ disabled: false, label: "Joints", value: "round" }]);
       expect(shapeGeometryOrder.summaryItems).toEqual([
         "Rectangle Geometry",
         "Group",
         "None"
       ]);
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-point-style-field='pointStyle']").selectOption("square");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated Point Style to square for shape row 0\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated Joints to square for shape row 0\./);
       const rectanglePointStyleRender = await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']").evaluate((shape) => ({
         pointStyle: shape.dataset.pointStyle,
         strokeLinejoin: shape.getAttribute("stroke-linejoin")
@@ -3685,6 +3694,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveAttribute("data-snap-mode", "point");
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__snap-target")).not.toHaveCount(0);
+      const snapPointColorState = await page.evaluate(() => ({
+        buttonColor: getComputedStyle(document.querySelector("#objectVectorStudioV2SnapModeButton")).color,
+        targetStroke: getComputedStyle(document.querySelector("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__snap-target")).stroke
+      }));
+      expect(snapPointColorState.buttonColor).toBe(snapPointColorState.targetStroke);
       await drawObjectVectorShape(page, "line", [{ x: 1.3, y: 2.2 }, { x: 4.2, y: 4.1 }]);
       const pointSnappedLine = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry);
       expect(pointSnappedLine).toEqual({ point1: { x: 1, y: 2 }, point2: { x: 4, y: 4 } });
@@ -3693,6 +3707,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveText("Snap None");
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveAttribute("data-snap-mode", "none");
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveAttribute("aria-pressed", "false");
+      const snapNoneColorState = await page.evaluate(() => ({
+        disabledIconColor: getComputedStyle(document.querySelector("#objectVectorStudioV2AngleSnapButton")).color,
+        snapNoneColor: getComputedStyle(document.querySelector("#objectVectorStudioV2SnapModeButton")).color
+      }));
+      expect(snapNoneColorState.snapNoneColor).toBe(snapNoneColorState.disabledIconColor);
       await drawObjectVectorShape(page, "line", [{ x: 5.25, y: 6.5 }, { x: 7.75, y: 8.25 }]);
       const unsnappedLine = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry);
       expect(unsnappedLine).toEqual({ point1: { x: 5.25, y: 6.5 }, point2: { x: 7.75, y: 8.25 } });
@@ -3732,7 +3751,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2StrokeWidth").dispatchEvent("change");
       await page.locator('[data-shape-tool="line"]').click();
       await clickObjectVectorLogicalPoint(page, -40, -50);
-      await moveObjectVectorLogicalPoint(page, { x: -10, y: -50 });
+      await moveObjectVectorLogicalPoint(page, { x: -10, y: -30 });
       const wideStrokePreview = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__drawing-preview").evaluate((preview) => ({
         dash: preview.style.strokeDasharray,
         strokeLinecap: preview.style.strokeLinecap,
@@ -3745,7 +3764,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(wideStrokeDash[0]).toBeGreaterThan(5);
       expect(wideStrokeDash[0]).toBeLessThan(220);
       expect(wideStrokeDash[1]).toBeGreaterThan(4);
-      await clickObjectVectorLogicalPoint(page, -10, -50);
+      await clickObjectVectorLogicalPoint(page, -10, -30);
       const wideStrokeLine = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         return {
@@ -3760,15 +3779,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         strokeWidth: 20
       });
       const openPointStyleControls = await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-point-style-field]").evaluateAll((controls) => controls.map((control) => ({
+        disabled: control.disabled,
         label: control.closest("label").querySelector("span").textContent.trim(),
         value: control.value
       })));
       expect(openPointStyleControls).toEqual([
-        { label: "Start Point Style", value: "round" },
-        { label: "End Point Style", value: "round" }
+        { disabled: false, label: "Start", value: "round" },
+        { disabled: true, label: "Joints", value: "round" },
+        { disabled: false, label: "End", value: "round" }
       ]);
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-point-style-field='endPointStyle']").selectOption("square");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated End Point Style to square for shape row \d+\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated End to square for shape row \d+\./);
       const wideStrokeLineAfterPointStyle = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         return JSON.parse(JSON.stringify(app.selectedShape().style));
@@ -3790,12 +3811,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const splitPointCaps = await page.locator(`#objectVectorStudioV2RenderSurface [data-point-style-caps='line'] [data-point-style-cap]`).evaluateAll((caps) => caps.map((cap) => ({
         endpoint: cap.dataset.pointStyleCap,
         pointStyle: cap.dataset.pointStyle,
-        tag: cap.tagName.toLowerCase()
+        tag: cap.tagName.toLowerCase(),
+        transform: cap.getAttribute("transform") || ""
       })));
-      expect(splitPointCaps).toEqual([
-        { endpoint: "start", pointStyle: "round", tag: "circle" },
-        { endpoint: "end", pointStyle: "square", tag: "rect" }
-      ]);
+      expect(splitPointCaps[0]).toMatchObject({ endpoint: "start", pointStyle: "round", tag: "circle", transform: "" });
+      expect(splitPointCaps[1]).toMatchObject({ endpoint: "end", pointStyle: "square", tag: "rect" });
+      expect(splitPointCaps[1].transform).toMatch(/^rotate\((?!0(?:\\.0+)? )/);
+
+      await page.locator('[data-shape-tool="polyline"]').click();
+      await clickObjectVectorLogicalPoint(page, 10, -40);
+      await clickObjectVectorLogicalPoint(page, 20, -20);
+      await clickObjectVectorLogicalPoint(page, 40, -40);
+      await page.keyboard.press("Enter");
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-point-style-field]")).toHaveCount(3);
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-point-style-field='pointStyle']").selectOption("square");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated Joints to square for shape row \d+\./);
+      const polylineJoinStyle = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${await page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex)}"]`).evaluate((shape) => ({
+        jointStyle: shape.dataset.pointStyle || "",
+        strokeLinejoin: shape.getAttribute("stroke-linejoin")
+      }));
+      expect(polylineJoinStyle).toEqual({ jointStyle: "square", strokeLinejoin: "miter" });
 
       await page.locator('[data-shape-tool="text"]').click();
       await clickObjectVectorLogicalPoint(page, 70, 60);
