@@ -3324,6 +3324,13 @@ export class ToolStarterApp {
     return nearest?.point || null;
   }
 
+  normalizeDrawingPoint(point) {
+    return {
+      x: this.formatViewportNumber(point?.x || 0),
+      y: this.formatViewportNumber(point?.y || 0)
+    };
+  }
+
   snapCanvasPoint(point, options = {}) {
     if (this.snapMode === "grid") {
       return {
@@ -3340,7 +3347,54 @@ export class ToolStarterApp {
         };
       }
     }
-    return point;
+    return this.normalizeDrawingPoint(point);
+  }
+
+  supportsDrawingAngleSnap(tool) {
+    return ["line", "polygon", "polyline"].includes(tool);
+  }
+
+  drawingAngleSnapAnchor(drawing) {
+    if (!drawing || !this.supportsDrawingAngleSnap(drawing.tool)) {
+      return null;
+    }
+    if (drawing.flow === "two-click") {
+      return drawing.start || null;
+    }
+    if (drawing.flow === "points") {
+      return drawing.points.at(-1) || null;
+    }
+    return null;
+  }
+
+  snapPointToDrawingAngle(anchor, point) {
+    const normalizedAnchor = this.normalizeDrawingPoint(anchor);
+    const normalizedPoint = this.normalizeDrawingPoint(point);
+    const dx = normalizedPoint.x - normalizedAnchor.x;
+    const dy = normalizedPoint.y - normalizedAnchor.y;
+    const distance = Math.hypot(dx, dy);
+    if (!distance) {
+      return normalizedPoint;
+    }
+    const degrees = Math.atan2(dy, dx) * 180 / Math.PI;
+    const snappedDegrees = this.snapAngle(degrees);
+    const radians = snappedDegrees * Math.PI / 180;
+    return {
+      x: this.formatViewportNumber(normalizedAnchor.x + Math.cos(radians) * distance),
+      y: this.formatViewportNumber(normalizedAnchor.y + Math.sin(radians) * distance)
+    };
+  }
+
+  snapDrawingPoint(point, drawing, options = {}) {
+    const snappedPoint = this.snapCanvasPoint(point, options);
+    if (!this.angleSnapEnabled) {
+      return this.normalizeDrawingPoint(snappedPoint);
+    }
+    const anchor = this.drawingAngleSnapAnchor(drawing);
+    if (!anchor) {
+      return this.normalizeDrawingPoint(snappedPoint);
+    }
+    return this.snapPointToDrawingAngle(anchor, snappedPoint);
   }
 
   createSvgShape(shape, { drawingScale = 1 } = {}) {
@@ -4290,7 +4344,7 @@ export class ToolStarterApp {
     }
     event.preventDefault();
     event.stopPropagation();
-    const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
+    const point = this.snapDrawingPoint(this.pointerPreviewPoint(event), drawing);
     this.drawingPreviewPoint = point;
     this.drawingHintClientPoint = { x: event.clientX, y: event.clientY };
     if (drawing.flow === "points") {
@@ -4328,7 +4382,7 @@ export class ToolStarterApp {
     if (drawing.flow === "two-click" && !drawing.start) {
       return;
     }
-    const point = this.snapCanvasPoint(this.pointerPreviewPoint(event));
+    const point = this.snapDrawingPoint(this.pointerPreviewPoint(event), drawing);
     if (drawing.preview && Math.abs(point.x - drawing.preview.x) < 0.001 && Math.abs(point.y - drawing.preview.y) < 0.001) {
       return;
     }

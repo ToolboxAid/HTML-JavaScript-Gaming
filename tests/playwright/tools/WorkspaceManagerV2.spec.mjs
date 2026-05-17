@@ -2023,7 +2023,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           opacityLabels: Array.from(opacityRow.querySelectorAll("label > span")).map((label) => label.textContent.trim()),
           opacityOrder: Array.from(opacityRow.children).map((element) => element.textContent.trim().replace(/\s+/g, " ")),
           pickerIconOnly: content.querySelector("#objectVectorStudioV2PalettePickerButton").textContent.trim() === "",
-          pickerRightOfStrokeControls: pickerButton.left >= strokeButton.right && pickerButton.left >= widthLabel.right,
+          pickerBetweenPaintAndStroke: pickerButton.left >= paintButton.right && pickerButton.right <= strokeButton.left,
           primaryInline: [strokeButton, widthLabel, pickerButton].every((rect) => Math.abs((paintButton.top + paintButton.height / 2) - (rect.top + rect.height / 2)) < 4),
           primaryOrder: Array.from(primaryRow.children).map((element) => element.matches("label") ? element.querySelector("span").textContent.trim() : (element.getAttribute("aria-label") || element.textContent).trim()),
           widthInputFitsXxDotX: Math.round(widthInput.width) >= 58,
@@ -2042,9 +2042,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         opacityLabels: ["Fill", "Stroke"],
         opacityOrder: ["Opacity", "Fill", "Stroke"],
         pickerIconOnly: true,
-        pickerRightOfStrokeControls: true,
+        pickerBetweenPaintAndStroke: true,
         primaryInline: true,
-        primaryOrder: ["Paint", "Stroke", "Width", "Picker"],
+        primaryOrder: ["Paint", "Picker", "Stroke", "Width"],
         widthInputFitsXxDotX: true,
         widthIsRightOfStroke: true
       });
@@ -3829,6 +3829,78 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await drawObjectVectorShape(page, "line", [{ x: 5.25, y: 6.5 }, { x: 7.75, y: 8.25 }]);
       const unsnappedLine = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry);
       expect(unsnappedLine).toEqual({ point1: { x: 5.25, y: 6.5 }, point2: { x: 7.75, y: 8.25 } });
+      await drawObjectVectorShape(page, "line", [{ x: 5.1234, y: 6.5678 }, { x: 7.9876, y: 8.5432 }]);
+      const snapNoneFormattedLine = await page.evaluate(() => {
+        const geometry = window.__objectVectorStudioV2App.selectedShape().geometry;
+        const decimalLength = (value) => {
+          const [, decimals = ""] = String(value).split(".");
+          return decimals.length;
+        };
+        return {
+          geometry,
+          maxDecimals: Math.max(
+            decimalLength(geometry.point1.x),
+            decimalLength(geometry.point1.y),
+            decimalLength(geometry.point2.x),
+            decimalLength(geometry.point2.y)
+          )
+        };
+      });
+      expect(snapNoneFormattedLine.geometry.point1.x).toBeCloseTo(5.123, 3);
+      expect(snapNoneFormattedLine.geometry.point1.y).toBeCloseTo(6.568, 3);
+      expect(snapNoneFormattedLine.geometry.point2.x).toBeCloseTo(7.988, 3);
+      expect(snapNoneFormattedLine.geometry.point2.y).toBeCloseTo(8.543, 3);
+      expect(snapNoneFormattedLine.maxDecimals).toBeLessThanOrEqual(3);
+
+      await page.locator("#objectVectorStudioV2AngleSnapButton").click();
+      await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveAttribute("aria-pressed", "true");
+      await page.locator("#objectVectorStudioV2SnapAngleStepSelect").selectOption("45");
+      await drawObjectVectorShape(page, "line", [{ x: 0, y: 0 }, { x: 10, y: 3 }]);
+      await drawObjectVectorShape(page, "polyline", [{ x: 20, y: 0 }, { x: 30, y: 3 }, { x: 38, y: 10 }]);
+      await drawObjectVectorShape(page, "polygon", [{ x: -30, y: 0 }, { x: -20, y: 3 }, { x: -12, y: 11 }, { x: -30, y: 14 }]);
+      const angleSnappedDrawing = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const shapeByTool = (tool) => [...app.selectedObject().shapes].reverse().find((shape) => shape.tool === tool);
+        const pointsForShape = (shape) => shape.tool === "line" ? [shape.geometry.point1, shape.geometry.point2] : shape.geometry.points;
+        const decimalLength = (value) => {
+          const [, decimals = ""] = String(value).split(".");
+          return decimals.length;
+        };
+        const segmentSnapsToStep = (start, end, step) => {
+          const dx = end.x - start.x;
+          const dy = end.y - start.y;
+          const degrees = ((Math.atan2(dy, dx) * 180 / Math.PI) % 360 + 360) % 360;
+          const nearest = Math.round(degrees / step) * step;
+          const wrappedDelta = Math.abs(((degrees - nearest + 540) % 360) - 180);
+          return wrappedDelta < 0.05;
+        };
+        const collect = (tool) => {
+          const shape = shapeByTool(tool);
+          const points = pointsForShape(shape);
+          const coordinates = points.flatMap((point) => [point.x, point.y]);
+          return {
+            geometry: shape.geometry,
+            maxDecimals: Math.max(...coordinates.map(decimalLength)),
+            segmentAnglesSnapped: points.slice(1).map((point, index) => segmentSnapsToStep(points[index], point, 45))
+          };
+        };
+        return {
+          angleStep: app.angleSnapStep,
+          line: collect("line"),
+          polygon: collect("polygon"),
+          polyline: collect("polyline")
+        };
+      });
+      expect(angleSnappedDrawing.angleStep).toBe(45);
+      expect(angleSnappedDrawing.line.segmentAnglesSnapped).toEqual([true]);
+      expect(angleSnappedDrawing.polyline.segmentAnglesSnapped).toEqual([true, true]);
+      expect(angleSnappedDrawing.polygon.segmentAnglesSnapped).toEqual([true, true, true]);
+      expect(angleSnappedDrawing.line.maxDecimals).toBeLessThanOrEqual(3);
+      expect(angleSnappedDrawing.polyline.maxDecimals).toBeLessThanOrEqual(3);
+      expect(angleSnappedDrawing.polygon.maxDecimals).toBeLessThanOrEqual(3);
+      await page.locator("#objectVectorStudioV2AngleSnapButton").click();
+      await expect(page.locator("#objectVectorStudioV2AngleSnapButton")).toHaveAttribute("aria-pressed", "false");
+
       await page.locator("#objectVectorStudioV2SnapModeButton").click();
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveText("Snap Grid");
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveAttribute("data-snap-mode", "grid");
