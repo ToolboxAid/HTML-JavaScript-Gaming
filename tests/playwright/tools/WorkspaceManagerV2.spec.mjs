@@ -2245,6 +2245,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(shapeGeometryOrder.noPointStyleHeading).toBe(true);
       expect(shapeGeometryOrder.summaryItems).toEqual([
         "Rectangle Geometry",
+        "Point Rounding",
         "Group",
         "None"
       ]);
@@ -4028,27 +4029,31 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         sectionGap: Number.parseFloat(getComputedStyle(list.closest(".object-vector-studio-v2__edit-panel--polygon")).gap)
       }));
       expect(polygonPointListLayout).toEqual({ headingMarginBottom: 0, headingMarginTop: 0, listGap: 5, maxHeight: "none", overflowY: "visible", sectionGap: 5 });
-      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action]")).toHaveText(["Add Point"]);
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action]")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails")).not.toContainText("Delete Point(s)");
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true']")).toHaveCount(4);
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-add='true']")).toHaveCount(4);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-delete='true']")).toHaveCount(4);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true']")).toHaveCount(0);
       await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.map((row) => row.querySelectorAll("input[type='checkbox']").length))).toEqual([1, 1, 1, 1]);
       const polygonPointRowLayoutState = await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").first().evaluate((row) => {
-        const actions = row.querySelector(".object-vector-studio-v2__polygon-point-actions");
+        const header = row.parentElement.querySelector(".object-vector-studio-v2__polygon-point-header");
+        const headerCells = Array.from(header.children, (cell) => cell.textContent.trim());
         return {
-          actionCellLast: row.lastElementChild === actions,
-          actionJustify: getComputedStyle(actions).justifyContent,
+          addAfterRound: row.children[4]?.matches("[data-polygon-point-add='true']") === true,
           columnCount: getComputedStyle(row).gridTemplateColumns.split(" ").length,
-          deleteAfterRound: actions?.lastElementChild?.matches("[data-polygon-point-delete='true']") === true,
-          roundCheckboxes: actions?.querySelectorAll("[data-polygon-point-round='true']").length || 0
+          deleteAfterAdd: row.children[5]?.matches("[data-polygon-point-delete='true']") === true,
+          headerCells,
+          roundCheckboxColumn: row.children[3]?.querySelector("[data-polygon-point-round='true']") !== null,
+          roundCheckboxes: row.querySelectorAll("[data-polygon-point-round='true']").length
         };
       });
       expect(polygonPointRowLayoutState).toEqual({
-        actionCellLast: true,
-        actionJustify: "flex-end",
-        columnCount: 4,
-        deleteAfterRound: true,
+        addAfterRound: true,
+        columnCount: 6,
+        deleteAfterAdd: true,
+        headerCells: ["", "", "", "Round", "+", "Trash"],
+        roundCheckboxColumn: true,
         roundCheckboxes: 1
       });
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").check();
@@ -4070,8 +4075,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         pointRounding: [false, true, false, false],
         strokeLinejoin: "miter"
       });
-      await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-label").nth(1).click();
-      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action='add']").click();
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-add='true'][data-polygon-point-index='1']").click();
       await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.map((row) => ({
         label: row.querySelector(".object-vector-studio-v2__polygon-point-label").textContent.trim(),
         rounded: row.querySelector("[data-polygon-point-round='true']").checked,
@@ -4081,12 +4085,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       })))).toEqual([
         { label: "Point 1", rounded: false, x: "0", y: "-18", selected: false },
         { label: "Point 2", rounded: true, x: "14", y: "16", selected: false },
-        { label: "Point 3", rounded: false, x: "7", y: "12", selected: false },
+        { label: "Point 3", rounded: true, x: "14", y: "16", selected: false },
         { label: "Point 4", rounded: false, x: "0", y: "8", selected: false },
         { label: "Point 5", rounded: false, x: "-14", y: "16", selected: false }
       ]);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Added point to shape row 0\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Added copied point after point 2 for shape row 0\./);
       await expect.poll(() => page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry.points.length)).toBe(5);
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-add='true']")).toHaveCount(5);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-delete='true']")).toHaveCount(5);
       await expect.poll(() => page.evaluate(() => window.__objectVectorStudioV2App.schemaService.validatePayload(window.__objectVectorStudioV2App.currentPayload).ok)).toBe(true);
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-delete='true'][data-polygon-point-index='2']").click();
@@ -4424,6 +4429,49 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         pairs: [["cx", "cy"], ["startAngle", "endAngle"]],
         shapeIndex: 4,
         wideFields: ["r"]
+      });
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__point-rounding-list [data-polygon-point-round='true']")).toHaveCount(2);
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__point-rounding-list [data-polygon-point-add='true']")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__point-rounding-list [data-polygon-point-delete='true']")).toHaveCount(0);
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__point-rounding-list [data-polygon-point-round='true'][data-polygon-point-index='0']").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 1 rounding to round for shape row 4\./);
+      const arcStartRoundedState = await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='4']").evaluate((shape) => {
+        const markers = Array.from(document.querySelectorAll("#objectVectorStudioV2RenderSurface [data-point-style-caps='arc'] [data-point-style-cap]")).map((marker) => ({
+          id: marker.dataset.pointStyleCap,
+          style: marker.dataset.pointStyle
+        }));
+        return {
+          end: shape.dataset.endPointStyle,
+          markers,
+          pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
+          start: shape.dataset.startPointStyle,
+          strokeLinecap: shape.getAttribute("stroke-linecap")
+        };
+      });
+      expect(arcStartRoundedState).toEqual({
+        end: "square",
+        markers: [
+          { id: "start", style: "round" },
+          { id: "end", style: "square" }
+        ],
+        pointRounding: [true, false],
+        start: "round",
+        strokeLinecap: "butt"
+      });
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__point-rounding-list [data-polygon-point-round='true'][data-polygon-point-index='1']").check();
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__point-rounding-list [data-polygon-point-round='true'][data-polygon-point-index='0']").uncheck();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 1 rounding to square for shape row 4\./);
+      const arcEndRoundedState = await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='4']").evaluate((shape) => ({
+        end: shape.dataset.endPointStyle,
+        pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
+        start: shape.dataset.startPointStyle,
+        strokeLinecap: shape.getAttribute("stroke-linecap")
+      }));
+      expect(arcEndRoundedState).toEqual({
+        end: "round",
+        pointRounding: [false, true],
+        start: "square",
+        strokeLinecap: "butt"
       });
       await expectGeometryLayout({
         heading: "Text Geometry",

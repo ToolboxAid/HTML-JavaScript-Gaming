@@ -866,11 +866,16 @@ export class ToolStarterApp {
     return CLOSED_POINT_STYLE_TOOLS.has(shapeGeometryTool(shape));
   }
 
+  shapeSupportsPointRoundingControls(shape) {
+    const geometryTool = shapeGeometryTool(shape);
+    return !["circle", "ellipse", "text"].includes(geometryTool) && this.shapeGeometryPointCount(shape) > 0;
+  }
+
   shapeUnifiedPointStyle(shape) {
     const pointStyles = this.shapePointStyleValues(shape);
     if (pointStyles.length) {
       const geometryTool = shapeGeometryTool(shape);
-      if (geometryTool === "polygon" || geometryTool === "polyline") {
+      if (geometryTool === "polygon" || geometryTool === "polyline" || geometryTool === "rectangle") {
         return "square";
       }
       return this.pointStyleValue(shape?.style?.pointStyle ?? shape?.style?.strokeLinecap);
@@ -907,6 +912,24 @@ export class ToolStarterApp {
     if (geometryTool === "line") {
       return [linePoint(shape.geometry, "point1"), linePoint(shape.geometry, "point2")];
     }
+    if (geometryTool === "arc") {
+      return [
+        this.polarPoint(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, shape.geometry.startAngle),
+        this.polarPoint(shape.geometry.cx, shape.geometry.cy, shape.geometry.r, shape.geometry.endAngle)
+      ];
+    }
+    if (geometryTool === "rectangle") {
+      const x = Number(shape.geometry.x) || 0;
+      const y = Number(shape.geometry.y) || 0;
+      const width = Number(shape.geometry.width) || 0;
+      const height = Number(shape.geometry.height) || 0;
+      return [
+        { x, y },
+        { x: x + width, y },
+        { x: x + width, y: y + height },
+        { x, y: y + height }
+      ];
+    }
     if ((geometryTool === "polygon" || geometryTool === "polyline") && Array.isArray(shape?.geometry?.points)) {
       return shape.geometry.points;
     }
@@ -923,7 +946,7 @@ export class ToolStarterApp {
       return Array.from({ length: pointCount }, (_, index) => explicit[index] === true);
     }
     const geometryTool = shapeGeometryTool(shape);
-    if (geometryTool === "polygon") {
+    if (geometryTool === "polygon" || geometryTool === "rectangle") {
       return Array.from({ length: pointCount }, () => false);
     }
     return Array.from({ length: pointCount }, (_, index) => {
@@ -2215,11 +2238,13 @@ export class ToolStarterApp {
     const editablePolygon = this.isEditablePolygonShape(shape);
     if (geometryTool === "polygon" || geometryTool === "polyline") {
       const pointRounding = this.shapePointRoundingValues(shape);
+      grid.append(this.createPointRowHeader({ addable: editablePolygon, deletable: editablePolygon }));
       shape.geometry.points.forEach((point, index) => {
         grid.append(this.createPolygonPointRow(point, index, {
+          addable: editablePolygon,
           deletable: editablePolygon,
           rounded: pointRounding[index] === true,
-          selectable: editablePolygon
+          selectable: false
         }));
       });
     } else {
@@ -2242,8 +2267,8 @@ export class ToolStarterApp {
     }
     section.append(heading);
     section.append(grid);
-    if (editablePolygon) {
-      section.append(this.createPolygonSideActions());
+    if (geometryTool !== "polygon" && geometryTool !== "polyline" && this.shapeSupportsPointRoundingControls(shape)) {
+      section.append(this.createShapePointRoundingControls(shape));
     }
     return section;
   }
@@ -2254,7 +2279,7 @@ export class ToolStarterApp {
       this.statusLog.write("WARN Point rounding update skipped: no shape is selected.");
       return;
     }
-    if (!["polygon", "polyline"].includes(shapeGeometryTool(selected))) {
+    if (!this.shapeSupportsPointRoundingControls(selected)) {
       this.statusLog.write(`WARN Point rounding update skipped: ${shapeTypeLabel(selected)} does not use editable point rows.`);
       return;
     }
@@ -2296,7 +2321,19 @@ export class ToolStarterApp {
     });
   }
 
-  createPolygonPointRow(point, index, { deletable = true, rounded = false, selectable = true } = {}) {
+  createPointRowHeader({ addable = false, deletable = false } = {}) {
+    const header = document.createElement("div");
+    header.className = "object-vector-studio-v2__polygon-point-header";
+    header.setAttribute("aria-hidden", "true");
+    ["", "", "", "Round", addable ? "+" : "", deletable ? "Trash" : ""].forEach((label) => {
+      const cell = document.createElement("span");
+      cell.textContent = label;
+      header.append(cell);
+    });
+    return header;
+  }
+
+  createPolygonPointRow(point, index, { addable = true, deletable = true, rounded = false, selectable = true } = {}) {
     const row = document.createElement("div");
     row.className = "object-vector-studio-v2__polygon-point-field";
     row.dataset.polygonPointIndex = String(index);
@@ -2350,9 +2387,24 @@ export class ToolStarterApp {
     roundCheckbox.addEventListener("click", (event) => event.stopPropagation());
     roundCheckbox.addEventListener("change", () => this.updateSelectedShapePointRounding(index, roundCheckbox.checked));
     roundLabel.append(roundCaption, roundCheckbox);
-    const actions = document.createElement("div");
-    actions.className = "object-vector-studio-v2__polygon-point-actions";
-    actions.append(roundLabel);
+    row.append(roundLabel);
+    if (addable) {
+      const addButton = document.createElement("button");
+      addButton.type = "button";
+      addButton.className = "object-vector-studio-v2__polygon-point-add";
+      addButton.dataset.polygonPointAdd = "true";
+      addButton.dataset.polygonPointIndex = String(index);
+      addButton.setAttribute("aria-label", `Add point after point ${index + 1}`);
+      addButton.title = `Add point after point ${index + 1}`;
+      this.applyIconGlyph(addButton, "add");
+      addButton.addEventListener("pointerdown", (event) => event.stopPropagation());
+      addButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.addPolygonPointAfterRow(index, addButton);
+      });
+      row.append(addButton);
+    }
     if (deletable) {
       const deleteButton = document.createElement("button");
       deleteButton.type = "button";
@@ -2368,23 +2420,67 @@ export class ToolStarterApp {
         event.stopPropagation();
         this.deletePolygonPointRow(index, deleteButton);
       });
-      actions.append(deleteButton);
+      row.append(deleteButton);
     }
-    row.append(actions);
     return row;
   }
 
-  createPolygonSideActions() {
-    const actions = document.createElement("div");
-    actions.className = "object-vector-studio-v2__polygon-side-actions";
-    const button = document.createElement("button");
-    button.type = "button";
-    button.dataset.polygonSideAction = "add";
-    button.textContent = "Add Point";
-    this.applyIconGlyph(button, "add");
-    button.addEventListener("click", () => this.addPolygonSideRow());
-    actions.append(button);
-    return actions;
+  createShapePointRoundingControls(shape) {
+    const panel = document.createElement("div");
+    panel.className = "object-vector-studio-v2__point-rounding-panel";
+    const heading = document.createElement("h4");
+    heading.textContent = "Point Rounding";
+    const list = document.createElement("div");
+    list.className = "object-vector-studio-v2__polygon-point-list object-vector-studio-v2__point-rounding-list";
+    const points = this.shapeGeometryPoints(shape);
+    const pointRounding = this.shapePointRoundingValues(shape);
+    list.append(this.createPointRowHeader());
+    points.forEach((point, index) => {
+      list.append(this.createReadonlyPointRoundingRow(shape, point, index, pointRounding[index] === true));
+    });
+    panel.append(heading, list);
+    return panel;
+  }
+
+  createReadonlyPointRoundingRow(shape, point, index, rounded = false) {
+    const row = document.createElement("div");
+    row.className = "object-vector-studio-v2__polygon-point-field object-vector-studio-v2__polygon-point-field--rounding-only";
+    row.dataset.polygonPointIndex = String(index);
+    const label = document.createElement("span");
+    label.className = "object-vector-studio-v2__polygon-point-label";
+    const geometryTool = shapeGeometryTool(shape);
+    label.textContent = OPEN_POINT_STYLE_TOOLS.has(geometryTool)
+      ? (index === 0 ? "Start" : "End")
+      : `Point ${index + 1}`;
+    row.append(label);
+    [
+      ["X", point.x],
+      ["Y", point.y]
+    ].forEach(([axis, value]) => {
+      const field = document.createElement("span");
+      field.className = "object-vector-studio-v2__polygon-point-axis object-vector-studio-v2__polygon-point-axis--readonly";
+      const axisLabel = document.createElement("span");
+      axisLabel.textContent = axis;
+      const valueElement = document.createElement("span");
+      valueElement.className = "object-vector-studio-v2__polygon-point-value";
+      valueElement.textContent = String(value);
+      field.append(axisLabel, valueElement);
+      row.append(field);
+    });
+    const roundLabel = document.createElement("label");
+    roundLabel.className = "object-vector-studio-v2__polygon-point-rounding";
+    const roundCaption = document.createElement("span");
+    roundCaption.textContent = "Round";
+    const roundCheckbox = document.createElement("input");
+    roundCheckbox.type = "checkbox";
+    roundCheckbox.checked = rounded === true;
+    roundCheckbox.dataset.polygonPointRound = "true";
+    roundCheckbox.dataset.polygonPointIndex = String(index);
+    roundCheckbox.setAttribute("aria-label", `Round ${label.textContent.toLowerCase()} point`);
+    roundCheckbox.addEventListener("change", () => this.updateSelectedShapePointRounding(index, roundCheckbox.checked));
+    roundLabel.append(roundCaption, roundCheckbox);
+    row.append(roundLabel);
+    return row;
   }
 
   handlePolygonPointRowSelection(event, row) {
@@ -3187,7 +3283,7 @@ export class ToolStarterApp {
 
   shapePointStyleMarkers(shape) {
     const geometryTool = shapeGeometryTool(shape);
-    if (geometryTool !== "polygon" && geometryTool !== "polyline") {
+    if (!["polygon", "polyline", "rectangle"].includes(geometryTool)) {
       return [];
     }
     const points = this.shapeGeometryPoints(shape);
@@ -6151,7 +6247,7 @@ export class ToolStarterApp {
     }, options.okMessage || `OK Auto-applied geometry edits to shape row ${this.selectedShapeIndex}.`);
   }
 
-  addPolygonSideRow() {
+  addPolygonPointAfterRow(pointIndex, sourceButton = null) {
     const selected = this.selectedShape();
     if (!selected || !["polygon", "polyline"].includes(shapeGeometryTool(selected))) {
       this.statusLog.write("WARN Add point skipped: no editable point-list shape is selected.");
@@ -6163,21 +6259,32 @@ export class ToolStarterApp {
     }
     const geometry = this.readCurrentPolygonGeometry(selected);
     if (!geometry.ok) {
+      this.markPolygonPointAddInvalid(sourceButton, geometry.error);
       this.statusLog.write(`FAIL Add point rejected for shape row ${this.selectedShapeIndex}: ${geometry.error}`);
       return;
     }
     const points = geometry.value.points;
     const pointRounding = this.currentPointRoundingRows(points.length);
-    const checkedIndexes = this.checkedPolygonPointIndexes();
-    const insertAfterIndex = checkedIndexes.length ? checkedIndexes.at(-1) : points.length - 1;
-    const nextPoint = this.insertedPolygonSidePoint(points, insertAfterIndex);
+    const insertAfterIndex = Number(pointIndex);
+    if (!Number.isInteger(insertAfterIndex) || insertAfterIndex < 0 || insertAfterIndex >= points.length) {
+      const message = `point ${insertAfterIndex + 1} is not available.`;
+      this.markPolygonPointAddInvalid(sourceButton, message);
+      this.statusLog.write(`FAIL Add point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
+      return;
+    }
+    const currentPoint = points[insertAfterIndex];
+    const nextPoint = {
+      x: Number(currentPoint.x),
+      y: Number(currentPoint.y)
+    };
     points.splice(insertAfterIndex + 1, 0, nextPoint);
-    pointRounding.splice(insertAfterIndex + 1, 0, false);
+    pointRounding.splice(insertAfterIndex + 1, 0, pointRounding[insertAfterIndex] === true);
     this.rebuildPolygonPointList(points, pointRounding);
     this.clearPolygonPointSelections();
-    this.clearPolygonSideActionValidity();
+    this.clearPolygonPointAddValidity();
+    this.clearPolygonPointDeleteValidity();
     this.applyShapeGeometryEdits({
-      okMessage: `OK Added point to shape row ${this.selectedShapeIndex}.`
+      okMessage: `OK Added copied point after point ${insertAfterIndex + 1} for shape row ${this.selectedShapeIndex}.`
     });
   }
 
@@ -6221,7 +6328,7 @@ export class ToolStarterApp {
     }
     this.rebuildPolygonPointList(nextPoints, nextPointRounding);
     this.clearPolygonPointSelections();
-    this.clearPolygonSideActionValidity();
+    this.clearPolygonPointAddValidity();
     this.clearPolygonPointDeleteValidity();
     this.applyShapeGeometryEdits({
       okMessage: `OK Deleted point ${normalizedIndex + 1} from shape row ${this.selectedShapeIndex}.`
@@ -6233,17 +6340,28 @@ export class ToolStarterApp {
     return this.readShapeGeometryFields(shape, fields);
   }
 
-  checkedPolygonPointIndexes() {
-    return Array.from(this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-action-selected='true']"))
-      .map((row) => Number(row.dataset.polygonPointIndex))
-      .filter((index) => Number.isInteger(index));
-  }
-
   clearPolygonPointSelections() {
     this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-action-selected='true']").forEach((row) => {
       delete row.dataset.polygonPointActionSelected;
       row.classList.remove("is-action-selected");
       row.setAttribute("aria-pressed", "false");
+    });
+  }
+
+  markPolygonPointAddInvalid(sourceButton, message) {
+    if (!sourceButton) {
+      return;
+    }
+    sourceButton.dataset.validationState = "invalid";
+    sourceButton.setAttribute("aria-invalid", "true");
+    sourceButton.title = message;
+  }
+
+  clearPolygonPointAddValidity() {
+    this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-add='true']").forEach((button) => {
+      delete button.dataset.validationState;
+      button.removeAttribute("aria-invalid");
+      button.title = `Add point after point ${Number(button.dataset.polygonPointIndex) + 1}`;
     });
   }
 
@@ -6295,36 +6413,12 @@ export class ToolStarterApp {
     const selected = this.selectedShape();
     const selectable = this.isEditablePolygonShape(selected);
     const rounding = pointRounding || this.normalizedPointRounding(selected, points.length);
-    list.replaceChildren(...points.map((point, index) => this.createPolygonPointRow(point, index, {
+    list.replaceChildren(this.createPointRowHeader({ addable: selectable, deletable: selectable }), ...points.map((point, index) => this.createPolygonPointRow(point, index, {
+      addable: selectable,
+      deletable: selectable,
       rounded: rounding[index] === true,
-      selectable
+      selectable: false
     })));
-  }
-
-  nextPolygonSidePoint(points) {
-    const previous = points.at(-2) || { x: 0, y: 0 };
-    const last = points.at(-1) || { x: 0, y: 0 };
-    const deltaX = last.x - previous.x;
-    const deltaY = last.y - previous.y;
-    return {
-      x: Number((last.x + (deltaX || 10)).toFixed(3)),
-      y: Number((last.y + (deltaY || 10)).toFixed(3))
-    };
-  }
-
-  insertedPolygonSidePoint(points, insertAfterIndex) {
-    const current = points[insertAfterIndex];
-    const next = points[insertAfterIndex + 1];
-    if (!current) {
-      return this.nextPolygonSidePoint(points);
-    }
-    if (!next) {
-      return this.nextPolygonSidePoint(points);
-    }
-    return {
-      x: Number(((current.x + next.x) / 2).toFixed(3)),
-      y: Number(((current.y + next.y) / 2).toFixed(3))
-    };
   }
 
   reindexPolygonPointRows() {
@@ -6341,29 +6435,16 @@ export class ToolStarterApp {
       if (roundCheckbox) {
         roundCheckbox.setAttribute("aria-label", `Round point ${index + 1}`);
       }
+      const addButton = row.querySelector("[data-polygon-point-add='true']");
+      if (addButton) {
+        addButton.setAttribute("aria-label", `Add point after point ${index + 1}`);
+        addButton.title = `Add point after point ${index + 1}`;
+      }
       const deleteButton = row.querySelector("[data-polygon-point-delete='true']");
       if (deleteButton) {
         deleteButton.setAttribute("aria-label", `Delete point ${index + 1}`);
         deleteButton.title = `Delete point ${index + 1}`;
       }
-    });
-  }
-
-  markPolygonSideActionInvalid(action, message) {
-    const button = this.elements.shapeGeometryDetails.querySelector(`[data-polygon-side-action='${action}']`);
-    if (!button) {
-      return;
-    }
-    button.dataset.validationState = "invalid";
-    button.setAttribute("aria-invalid", "true");
-    button.title = message;
-  }
-
-  clearPolygonSideActionValidity() {
-    this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-side-action]").forEach((button) => {
-      delete button.dataset.validationState;
-      button.removeAttribute("aria-invalid");
-      button.title = "";
     });
   }
 
