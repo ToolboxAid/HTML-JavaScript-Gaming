@@ -5,91 +5,76 @@
   "game": {
     "id": "Pong",
     "name": "Pong",
-    "folder": "Pong",
-    "gameData": {
-      "launch": {
-        "directPath": "/games/Pong/index.html",
-        "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?gameId=Pong",
-        "workspaceManagerOptional": true
-      }
-    },
-    "workspace": {
-      "$schema": "tools/schemas/workspace.manifest.schema.json",
-      "documentKind": "workspace-manifest",
-      "schema": "html-js-gaming.project",
+    "folder": "Pong"
+  },
+  "launch": {
+    "directPath": "/games/Pong/index.html",
+    "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?gameId=Pong",
+    "workspaceManagerOptional": true
+  },
+  "tools": {
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
       "version": 1,
-      "id": "workspace-manager-v2-Pong",
-      "name": "Pong Workspace Manager V2 Context",
-      "gameId": "Pong",
-      "gameRoot": "games/Pong/",
-      "assetsPath": "games/Pong/assets",
-      "repoRoot": "HTML-JavaScript-Gaming",
-      "repoPath": "C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming",
-      "tools": {
-        "palette-manager-v2": {
-          "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Pong Classic Palette",
-          "source": "manifest",
-          "swatches": [
-            {
-              "symbol": "!",
-              "hex": "#05070A",
-              "name": "Background"
-            },
-            {
-              "symbol": "#",
-              "hex": "#F4F7FB",
-              "name": "Ink / Paddles"
-            },
-            {
-              "symbol": "$",
-              "hex": "#A6B0BF",
-              "name": "Muted HUD"
-            },
-            {
-              "symbol": "%",
-              "hex": "#7DE2FF",
-              "name": "Accent"
-            },
-            {
-              "symbol": "&",
-              "hex": "#8BF0C8",
-              "name": "Positive"
-            },
-            {
-              "symbol": "(",
-              "hex": "#FFD37D",
-              "name": "Warning"
-            },
-            {
-              "symbol": ")",
-              "hex": "#FF9A9A",
-              "name": "Danger"
-            },
-            {
-              "symbol": "*",
-              "hex": "#6A7482",
-              "name": "Center Divider"
-            }
-          ]
+      "name": "Pong Classic Palette",
+      "source": "manifest",
+      "swatches": [
+        {
+          "symbol": "!",
+          "hex": "#05070A",
+          "name": "Background"
         },
-        "asset-manager-v2": {
-          "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
-          "schema": "html-js-gaming.asset-manager-v2",
-          "version": 1,
-          "name": "Pong Asset Manager V2 Registry",
-          "source": "manifest",
-          "assets": {
-            "assets.image.preview.preview": {
-              "path": "assets/images/preview.svg",
-              "type": "image",
-              "kind": "svg",
-              "role": "preview",
-              "source": "manifest"
-            }
-          }
+        {
+          "symbol": "#",
+          "hex": "#F4F7FB",
+          "name": "Ink / Paddles"
+        },
+        {
+          "symbol": "$",
+          "hex": "#A6B0BF",
+          "name": "Muted HUD"
+        },
+        {
+          "symbol": "%",
+          "hex": "#7DE2FF",
+          "name": "Accent"
+        },
+        {
+          "symbol": "&",
+          "hex": "#8BF0C8",
+          "name": "Positive"
+        },
+        {
+          "symbol": "(",
+          "hex": "#FFD37D",
+          "name": "Warning"
+        },
+        {
+          "symbol": ")",
+          "hex": "#FF9A9A",
+          "name": "Danger"
+        },
+        {
+          "symbol": "*",
+          "hex": "#6A7482",
+          "name": "Center Divider"
+        }
+      ]
+    },
+    "asset-manager-v2": {
+      "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+      "schema": "html-js-gaming.asset-manager-v2",
+      "version": 1,
+      "name": "Pong Asset Manager V2 Registry",
+      "source": "manifest",
+      "assets": {
+        "assets.image.preview.preview": {
+          "path": "assets/images/preview.svg",
+          "type": "image",
+          "kind": "svg",
+          "role": "preview",
+          "source": "manifest"
         }
       }
     }

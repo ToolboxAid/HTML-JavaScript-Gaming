@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/game.manifest.schema.json",
   "title": "Game Manifest",
-  "description": "Schema for games/**/game.manifest.json as the single source of truth. game.gameData is the runtime contract. game.workspace is the editor/tool contract. Runtime code must ignore game.workspace. Tools may read game.gameData, may write game.workspace, and may update game.gameData only through explicit validated apply/build/export actions.",
+  "description": "Schema for games/**/game.manifest.json as the single source of truth. Game manifests are game-only runtime/editor data documents; standalone workspace manifests remain separate Workspace Manager documents.",
   "type": "object",
-  "required": ["schema", "version", "game"],
+  "required": ["schema", "version", "game", "launch", "tools"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -21,7 +21,7 @@
     },
     "game": {
       "type": "object",
-      "required": ["id", "name", "folder", "gameData", "workspace"],
+      "required": ["id", "name", "folder"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -36,54 +36,47 @@
           "type": "string",
           "minLength": 1,
           "pattern": "^[^/\\\\]+$"
-        },
-        "gameData": {
-          "description": "Runtime contract for data the game needs to run. Editor/tool workspace state must not be required from this object.",
-          "$ref": "#/$defs/gameData"
-        },
-        "workspace": {
-          "description": "Editor/tool contract for workspace state needed to edit and build the game. Runtime code must ignore this object.",
-          "$ref": "#/$defs/gameWorkspace"
         }
       }
+    },
+    "launch": {
+      "$ref": "#/$defs/gameLaunch"
+    },
+    "tools": {
+      "$ref": "#/$defs/gameTools"
     }
   },
   "$defs": {
-    "gameData": {
+    "gameLaunch": {
       "type": "object",
-      "description": "Runtime-only game data. Tools may read this object; writes are limited to explicit validated apply/build/export actions.",
-      "required": ["launch"],
+      "required": ["directPath"],
       "additionalProperties": false,
-      "allOf": [
-        {
-          "not": {
-            "required": ["workspace"]
-          }
-        },
-        {
-          "not": {
-            "required": ["tools"]
-          }
-        }
-      ],
       "properties": {
-        "launch": {
-          "type": "object",
-          "required": ["directPath"],
-          "additionalProperties": false,
-          "properties": {
-            "directPath": {
-              "type": "string",
-              "minLength": 1
-            },
-            "workspaceManagerPath": {
-              "type": "string",
-              "minLength": 1
-            },
-            "workspaceManagerOptional": {
-              "type": "boolean"
-            }
-          }
+        "directPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspaceManagerPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspaceManagerOptional": {
+          "type": "boolean"
+        }
+      }
+    },
+    "gameTools": {
+      "type": "object",
+      "description": "Game-owned tool data keyed by canonical tool id. Workspace Manager may synthesize a standalone workspace context from this map, but game manifests do not embed game.workspace.",
+      "additionalProperties": {
+        "type": "object"
+      },
+      "properties": {
+        "object-vector-studio-v2": {
+          "$ref": "#/$defs/objectVectorStudioV2Payload"
+        },
+        "text2speech-V2": {
+          "$ref": "tools/text2speech-V2.schema.json"
         }
       }
     },
@@ -91,70 +84,6 @@
       "type": "string",
       "description": "Runtime Object Vector identity. Runtime game references must use object IDs, not asset IDs or vector editor IDs.",
       "pattern": "^object\\.[a-z0-9-]+\\.[a-z0-9][a-z0-9-]*$"
-    },
-    "gameWorkspace": {
-      "type": "object",
-      "description": "Editor/tool workspace state. Tools may write this object; runtime data belongs in game.gameData.",
-      "required": ["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"],
-      "additionalProperties": false,
-      "properties": {
-        "$schema": {
-          "type": "string",
-          "minLength": 1
-        },
-        "documentKind": {
-          "type": "string",
-          "const": "workspace-manifest"
-        },
-        "schema": {
-          "type": "string",
-          "minLength": 1
-        },
-        "version": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "gameId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "gameRoot": {
-          "type": "string",
-          "pattern": "^games/[^/]+/$"
-        },
-        "assetsPath": {
-          "type": "string",
-          "pattern": "^games/[^/]+/assets$"
-        },
-        "repoRoot": {
-          "type": "string",
-          "minLength": 1
-        },
-        "repoPath": {
-          "type": "string",
-          "minLength": 1
-        },
-        "tools": {
-          "type": "object",
-          "required": ["palette-manager-v2", "asset-manager-v2"],
-          "properties": {
-            "object-vector-studio-v2": {
-              "$ref": "#/$defs/objectVectorStudioV2Payload"
-            }
-          },
-          "additionalProperties": {
-            "type": "object"
-          }
-        }
-      }
     },
     "objectVectorStudioV2Payload": {
       "type": "object",
@@ -188,7 +117,7 @@
       "default": {
         "id": "object.game.object",
         "name": "Object",
-        "origin": { "x": 0, "y": 0 },
+        "objectOrigin": { "x": 0, "y": 0 },
         "tags": [],
         "shapes": []
       },
@@ -203,7 +132,7 @@
         "tags": {
           "$ref": "#/$defs/objectVectorStudioTags"
         },
-        "origin": {
+        "objectOrigin": {
           "$ref": "#/$defs/point2d"
         },
         "baseObjectId": {
@@ -303,7 +232,7 @@
           "rotation": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "origin": { "x": 0, "y": 0 }
+          "shapeOrigin": { "x": 0, "y": 0 }
         }
       },
       "properties": {
@@ -523,7 +452,7 @@
     },
     "objectVectorStudioTransform": {
       "type": "object",
-      "required": ["x", "y", "rotation", "scaleX", "scaleY", "origin"],
+      "required": ["x", "y", "rotation", "scaleX", "scaleY", "shapeOrigin"],
       "additionalProperties": false,
       "default": {
         "x": 0,
@@ -531,7 +460,7 @@
         "rotation": 0,
         "scaleX": 1,
         "scaleY": 1,
-        "origin": { "x": 0, "y": 0 }
+        "shapeOrigin": { "x": 0, "y": 0 }
       },
       "properties": {
         "x": {
@@ -549,7 +478,7 @@
         "scaleY": {
           "type": "number"
         },
-        "origin": {
+        "shapeOrigin": {
           "$ref": "#/$defs/objectVectorStudioPoint2d"
         }
       }

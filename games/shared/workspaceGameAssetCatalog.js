@@ -222,11 +222,13 @@ function normalizeManifestCatalogPayload(payload) {
   const source = toObject(payload);
   const schema = typeof source.schema === "string" ? source.schema.trim() : "";
   const version = Number(source.version);
-  const workspace = toObject(source.game?.workspace || source.workspace || source);
+  const workspace = toObject(source.game?.workspace || source.workspace || {});
   const tools = toObject(workspace.tools || source.tools);
+  const gameFolder = typeof source.game?.folder === "string" ? source.game.folder.trim() : "";
+  const assetsPath = normalizeAssetsPath(workspace.assetsPath || source.assetsPath || (gameFolder ? `games/${gameFolder}/assets` : ""));
   const assetManagerEntries = normalizeAssetManagerEntries(
     tools?.["asset-manager-v2"]?.assets,
-    workspace.assetsPath
+    assetsPath
   );
   const toolAssetEntries = normalizeCatalogEntries(tools?.["asset-browser"]?.assets);
   const entries = {

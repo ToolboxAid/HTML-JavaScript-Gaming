@@ -1688,9 +1688,9 @@ textarea:hover {
 .object-vector-studio-v2__polygon-point-header,
 .object-vector-studio-v2__polygon-point-field {
   display: grid;
-  grid-template-columns: 62px minmax(54px, 1fr) minmax(54px, 1fr) 40px 24px 24px;
+  grid-template-columns: 50px minmax(72px, 1fr) minmax(72px, 1fr) 32px 21px 21px;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .object-vector-studio-v2__polygon-point-header {
@@ -1715,7 +1715,7 @@ textarea:hover {
 
 .object-vector-studio-v2__polygon-point-label {
   color: var(--tool-starter-muted);
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 800;
 }
 
@@ -1724,9 +1724,9 @@ textarea:hover {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   color: var(--tool-starter-muted);
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 800;
 }
 
@@ -1742,9 +1742,17 @@ textarea:hover {
 }
 
 .object-vector-studio-v2__polygon-point-axis input {
+  appearance: textfield;
+  -moz-appearance: textfield;
   min-width: 0;
   width: 100%;
-  padding: 5px 7px;
+  padding: 3px 4px;
+}
+
+.object-vector-studio-v2__polygon-point-axis input::-webkit-inner-spin-button,
+.object-vector-studio-v2__polygon-point-axis input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 
 .object-vector-studio-v2__rounding-radius-field {
@@ -1805,9 +1813,9 @@ textarea:hover {
 
 .object-vector-studio-v2__polygon-point-add,
 .object-vector-studio-v2__polygon-point-delete {
-  width: 24px;
-  height: 24px;
-  min-height: 24px;
+  width: 21px;
+  height: 22px;
+  min-height: 22px;
   padding: 0 !important;
   color: var(--tool-starter-danger);
 }
@@ -1954,7 +1962,7 @@ textarea:hover {
 
 .object-vector-studio-v2__scale-control-row {
   display: grid;
-  grid-template-columns: max-content 24px 22px minmax(38px, 48px) 22px 24px minmax(62px, max-content);
+  grid-template-columns: max-content 22px 21px minmax(58px, 64px) 21px 22px minmax(58px, max-content);
   align-items: center;
   gap: 2px;
   min-width: 0;
@@ -1972,7 +1980,7 @@ textarea:hover {
 .object-vector-studio-v2__scale-control-row button {
   min-width: 0;
   min-height: 22px;
-  padding: 1px 3px;
+  padding: 1px 2px;
   font-size: 0.72rem;
   line-height: 1;
 }

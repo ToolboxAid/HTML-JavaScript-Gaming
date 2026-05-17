@@ -5,101 +5,86 @@
   "game": {
     "id": "GravityWell",
     "name": "Gravity Well",
-    "folder": "GravityWell",
-    "gameData": {
-      "launch": {
-        "directPath": "/games/GravityWell/index.html",
-        "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?gameId=GravityWell",
-        "workspaceManagerOptional": true
-      }
-    },
-    "workspace": {
-      "$schema": "tools/schemas/workspace.manifest.schema.json",
-      "documentKind": "workspace-manifest",
-      "schema": "html-js-gaming.project",
+    "folder": "GravityWell"
+  },
+  "launch": {
+    "directPath": "/games/GravityWell/index.html",
+    "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?gameId=GravityWell",
+    "workspaceManagerOptional": true
+  },
+  "tools": {
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
       "version": 1,
-      "id": "workspace-manager-v2-GravityWell",
-      "name": "Gravity Well Workspace Manager V2 Context",
-      "gameId": "GravityWell",
-      "gameRoot": "games/GravityWell/",
-      "assetsPath": "games/GravityWell/assets",
-      "repoRoot": "HTML-JavaScript-Gaming",
-      "repoPath": "C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming",
-      "tools": {
-        "palette-manager-v2": {
-          "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Gravity Well Palette",
-          "source": "manifest",
-          "swatches": [
-            {
-              "symbol": "!",
-              "hex": "#081121",
-              "name": "Background"
-            },
-            {
-              "symbol": "#",
-              "hex": "#1D4ED8",
-              "name": "Gravity Blue"
-            },
-            {
-              "symbol": "$",
-              "hex": "#1E293B",
-              "name": "Planet Shadow"
-            },
-            {
-              "symbol": "%",
-              "hex": "#244266",
-              "name": "Arena Border"
-            },
-            {
-              "symbol": "&",
-              "hex": "#F8FAFC",
-              "name": "Ship White"
-            },
-            {
-              "symbol": "(",
-              "hex": "#FBBF24",
-              "name": "Thrust Amber"
-            },
-            {
-              "symbol": ")",
-              "hex": "#60A5FA",
-              "name": "HUD Blue"
-            },
-            {
-              "symbol": "*",
-              "hex": "#CBD5E1",
-              "name": "HUD Muted"
-            },
-            {
-              "symbol": "+",
-              "hex": "#38BDF8",
-              "name": "Gravity Cyan"
-            },
-            {
-              "symbol": "0",
-              "hex": "#FB7185",
-              "name": "Gravity Rose"
-            }
-          ]
+      "name": "Gravity Well Palette",
+      "source": "manifest",
+      "swatches": [
+        {
+          "symbol": "!",
+          "hex": "#081121",
+          "name": "Background"
         },
-        "asset-manager-v2": {
-          "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
-          "schema": "html-js-gaming.asset-manager-v2",
-          "version": 1,
-          "name": "Gravity Well Asset Manager V2 Registry",
-          "source": "manifest",
-          "assets": {
-            "assets.image.preview.preview": {
-              "path": "assets/images/preview.svg",
-              "type": "image",
-              "kind": "svg",
-              "role": "preview",
-              "source": "manifest"
-            }
-          }
+        {
+          "symbol": "#",
+          "hex": "#1D4ED8",
+          "name": "Gravity Blue"
+        },
+        {
+          "symbol": "$",
+          "hex": "#1E293B",
+          "name": "Planet Shadow"
+        },
+        {
+          "symbol": "%",
+          "hex": "#244266",
+          "name": "Arena Border"
+        },
+        {
+          "symbol": "&",
+          "hex": "#F8FAFC",
+          "name": "Ship White"
+        },
+        {
+          "symbol": "(",
+          "hex": "#FBBF24",
+          "name": "Thrust Amber"
+        },
+        {
+          "symbol": ")",
+          "hex": "#60A5FA",
+          "name": "HUD Blue"
+        },
+        {
+          "symbol": "*",
+          "hex": "#CBD5E1",
+          "name": "HUD Muted"
+        },
+        {
+          "symbol": "+",
+          "hex": "#38BDF8",
+          "name": "Gravity Cyan"
+        },
+        {
+          "symbol": "0",
+          "hex": "#FB7185",
+          "name": "Gravity Rose"
+        }
+      ]
+    },
+    "asset-manager-v2": {
+      "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+      "schema": "html-js-gaming.asset-manager-v2",
+      "version": 1,
+      "name": "Gravity Well Asset Manager V2 Registry",
+      "source": "manifest",
+      "assets": {
+        "assets.image.preview.preview": {
+          "path": "assets/images/preview.svg",
+          "type": "image",
+          "kind": "svg",
+          "role": "preview",
+          "source": "manifest"
         }
       }
     }

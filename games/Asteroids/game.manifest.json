@@ -5,1013 +5,998 @@
   "game": {
     "id": "Asteroids",
     "name": "Asteroids",
-    "folder": "Asteroids",
-    "gameData": {
-      "launch": {
-        "directPath": "/games/Asteroids/index.html",
-        "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?gameId=Asteroids",
-        "workspaceManagerOptional": true
-      }
-    },
-    "workspace": {
-      "$schema": "tools/schemas/workspace.manifest.schema.json",
-      "documentKind": "workspace-manifest",
-      "schema": "html-js-gaming.project",
+    "folder": "Asteroids"
+  },
+  "launch": {
+    "directPath": "/games/Asteroids/index.html",
+    "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?gameId=Asteroids",
+    "workspaceManagerOptional": true
+  },
+  "tools": {
+    "palette-manager-v2": {
+      "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
+      "schema": "html-js-gaming.palette",
       "version": 1,
-      "id": "workspace-manager-v2-Asteroids",
-      "name": "Asteroids Workspace Manager V2 Context",
-      "gameId": "Asteroids",
-      "gameRoot": "games/Asteroids/",
-      "assetsPath": "games/Asteroids/assets",
-      "repoRoot": "HTML-JavaScript-Gaming",
-      "repoPath": "C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming",
-      "tools": {
-        "palette-manager-v2": {
-          "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Asteroids Palette",
-          "source": "manifest",
-          "swatches": [
-            {
-              "symbol": "!",
-              "hex": "#020617",
-              "name": "Space Black",
-              "source": "manifest"
-            },
-            {
-              "symbol": "#",
-              "hex": "#FFFFFF",
-              "name": "Vector White",
-              "source": "manifest"
-            },
-            {
-              "symbol": "$",
-              "hex": "#CBD5E1",
-              "name": "Asteroid Gray",
-              "source": "manifest"
-            },
-            {
-              "symbol": "%",
-              "hex": "#DBEAFE",
-              "name": "Saucer Glow",
-              "source": "manifest"
-            },
-            {
-              "symbol": "&",
-              "hex": "#94A3B8",
-              "name": "HUD Muted",
-              "source": "manifest"
-            },
-            {
-              "symbol": ")",
-              "hex": "#F87171",
-              "name": "Warning Red",
-              "source": "manifest"
-            },
-            {
-              "symbol": "*",
-              "hex": "#78B7FF",
-              "name": "HUD Blue",
-              "source": "manifest"
-            },
-            {
-              "symbol": "+",
-              "hex": "#FFBE64",
-              "name": "HUD Gold",
-              "source": "manifest"
-            },
-            {
-              "symbol": "0",
-              "hex": "#05070D",
-              "name": "HUD Color 1",
-              "source": "manifest"
-            },
-            {
-              "symbol": "1",
-              "hex": "#DCE8FF",
-              "name": "HUD Color 2",
-              "source": "manifest"
-            }
-          ]
+      "name": "Asteroids Palette",
+      "source": "manifest",
+      "swatches": [
+        {
+          "symbol": "!",
+          "hex": "#020617",
+          "name": "Space Black",
+          "source": "manifest"
         },
-        "asset-manager-v2": {
-          "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
-          "schema": "html-js-gaming.asset-manager-v2",
-          "version": 1,
-          "name": "Asteroids Asset Manager V2 Registry",
+        {
+          "symbol": "#",
+          "hex": "#FFFFFF",
+          "name": "Vector White",
+          "source": "manifest"
+        },
+        {
+          "symbol": "$",
+          "hex": "#CBD5E1",
+          "name": "Asteroid Gray",
+          "source": "manifest"
+        },
+        {
+          "symbol": "%",
+          "hex": "#DBEAFE",
+          "name": "Saucer Glow",
+          "source": "manifest"
+        },
+        {
+          "symbol": "&",
+          "hex": "#94A3B8",
+          "name": "HUD Muted",
+          "source": "manifest"
+        },
+        {
+          "symbol": ")",
+          "hex": "#F87171",
+          "name": "Warning Red",
+          "source": "manifest"
+        },
+        {
+          "symbol": "*",
+          "hex": "#78B7FF",
+          "name": "HUD Blue",
+          "source": "manifest"
+        },
+        {
+          "symbol": "+",
+          "hex": "#FFBE64",
+          "name": "HUD Gold",
+          "source": "manifest"
+        },
+        {
+          "symbol": "0",
+          "hex": "#05070D",
+          "name": "HUD Color 1",
+          "source": "manifest"
+        },
+        {
+          "symbol": "1",
+          "hex": "#DCE8FF",
+          "name": "HUD Color 2",
+          "source": "manifest"
+        }
+      ]
+    },
+    "asset-manager-v2": {
+      "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+      "schema": "html-js-gaming.asset-manager-v2",
+      "version": 1,
+      "name": "Asteroids Asset Manager V2 Registry",
+      "source": "manifest",
+      "assets": {
+        "assets.audio.music.beat-1": {
+          "path": "assets/audio/beat1.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "music",
+          "source": "manifest"
+        },
+        "assets.audio.music.beat-2": {
+          "path": "assets/audio/beat2.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "music",
+          "source": "manifest"
+        },
+        "assets.audio.sound.bang-large": {
+          "path": "assets/audio/bangLarge.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
+        },
+        "assets.audio.sound.bang-medium": {
+          "path": "assets/audio/bangMedium.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
+        },
+        "assets.audio.sound.bang-small": {
+          "path": "assets/audio/bangSmall.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
+        },
+        "assets.audio.sound.extra-ship": {
+          "path": "assets/audio/extraShip.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
+        },
+        "assets.audio.sound.fire": {
+          "path": "assets/audio/fire.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
+        },
+        "assets.audio.sound.saucer-large": {
+          "path": "assets/audio/saucerBig.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
+        },
+        "assets.audio.sound.saucer-small": {
+          "path": "assets/audio/saucerSmall.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
+        },
+        "assets.audio.sound.thrust": {
+          "path": "assets/audio/thrust.wav",
+          "type": "audio",
+          "kind": "wav",
+          "role": "sound",
+          "source": "manifest"
+        },
+        "assets.font.ui.vector-battle": {
+          "path": "src/assets/fonts/vector_battle/vector_battle.ttf",
+          "type": "font",
+          "kind": "ttf",
+          "role": "ui",
+          "source": "manifest"
+        },
+        "assets.image.background.deluxe": {
+          "path": "assets/images/deluxe.png",
+          "type": "image",
+          "kind": "png",
+          "role": "background",
           "source": "manifest",
-          "assets": {
-            "assets.audio.music.beat-1": {
-              "path": "assets/audio/beat1.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "music",
-              "source": "manifest"
-            },
-            "assets.audio.music.beat-2": {
-              "path": "assets/audio/beat2.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "music",
-              "source": "manifest"
-            },
-            "assets.audio.sound.bang-large": {
-              "path": "assets/audio/bangLarge.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "sound",
-              "source": "manifest"
-            },
-            "assets.audio.sound.bang-medium": {
-              "path": "assets/audio/bangMedium.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "sound",
-              "source": "manifest"
-            },
-            "assets.audio.sound.bang-small": {
-              "path": "assets/audio/bangSmall.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "sound",
-              "source": "manifest"
-            },
-            "assets.audio.sound.extra-ship": {
-              "path": "assets/audio/extraShip.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "sound",
-              "source": "manifest"
-            },
-            "assets.audio.sound.fire": {
-              "path": "assets/audio/fire.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "sound",
-              "source": "manifest"
-            },
-            "assets.audio.sound.saucer-large": {
-              "path": "assets/audio/saucerBig.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "sound",
-              "source": "manifest"
-            },
-            "assets.audio.sound.saucer-small": {
-              "path": "assets/audio/saucerSmall.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "sound",
-              "source": "manifest"
-            },
-            "assets.audio.sound.thrust": {
-              "path": "assets/audio/thrust.wav",
-              "type": "audio",
-              "kind": "wav",
-              "role": "sound",
-              "source": "manifest"
-            },
-            "assets.font.ui.vector-battle": {
-              "path": "src/assets/fonts/vector_battle/vector_battle.ttf",
-              "type": "font",
-              "kind": "ttf",
-              "role": "ui",
-              "source": "manifest"
-            },
-            "assets.image.background.deluxe": {
-              "path": "assets/images/deluxe.png",
-              "type": "image",
-              "kind": "png",
-              "role": "background",
-              "source": "manifest",
-              "stretchOverride": {
-                "uniformEdgeStretchPx": 0
-              }
-            },
-            "assets.image.bezel.bezel": {
-              "path": "assets/images/bezel.png",
-              "type": "image",
-              "kind": "png",
-              "role": "bezel",
-              "source": "manifest",
-              "stretchOverride": {
-                "uniformEdgeStretchPx": 10
-              }
-            },
-            "assets.image.preview.preview": {
-              "path": "assets/images/preview.png",
-              "type": "image",
-              "kind": "png",
-              "role": "preview",
-              "source": "manifest"
-            }
+          "stretchOverride": {
+            "uniformEdgeStretchPx": 0
           }
         },
-        "object-vector-studio-v2": {
-          "version": 1,
-          "toolId": "object-vector-studio-v2",
-          "name": "Asteroids Object Vector Assets",
-          "objects": [
+        "assets.image.bezel.bezel": {
+          "path": "assets/images/bezel.png",
+          "type": "image",
+          "kind": "png",
+          "role": "bezel",
+          "source": "manifest",
+          "stretchOverride": {
+            "uniformEdgeStretchPx": 10
+          }
+        },
+        "assets.image.preview.preview": {
+          "path": "assets/images/preview.png",
+          "type": "image",
+          "kind": "png",
+          "role": "preview",
+          "source": "manifest"
+        }
+      }
+    },
+    "object-vector-studio-v2": {
+      "version": 1,
+      "toolId": "object-vector-studio-v2",
+      "name": "Asteroids Object Vector Assets",
+      "objects": [
+        {
+          "id": "object.asteroids.ship",
+          "name": "Asteroids Ship",
+          "shapes": [
             {
-              "id": "object.asteroids.ship",
-              "name": "Asteroids Ship",
-              "shapes": [
-                {
-                  "tool": "line",
-                  "order": 1,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "point1": {
-                      "x": 4,
-                      "y": 10
-                    },
-                    "point2": {
-                      "x": 0,
-                      "y": 16
-                    }
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#FFFFFF",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 3,
-                      "y": 10
-                    }
-                  },
-                  "groupId": "group-1"
+              "tool": "line",
+              "order": 1,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "point1": {
+                  "x": 4,
+                  "y": 10
                 },
-                {
-                  "tool": "line",
-                  "order": 2,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "point1": {
-                      "x": -4,
-                      "y": 10
-                    },
-                    "point2": {
-                      "x": 0,
-                      "y": 16
-                    }
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#FFFFFF",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": -3,
-                      "y": 10
-                    }
-                  },
-                  "groupId": "group-1"
-                },
-                {
-                  "tool": "polygon",
-                  "order": 3,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "points": [
-                      {
-                        "x": -0.694,
-                        "y": -17.218
-                      },
-                      {
-                        "x": 14,
-                        "y": 16
-                      },
-                      {
-                        "x": 0,
-                        "y": 7.5
-                      },
-                      {
-                        "x": -14,
-                        "y": 16
-                      }
-                    ]
-                  },
-                  "style": {
-                    "fill": "#05070D",
-                    "stroke": "#FFFFFF",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 0,
-                      "y": 0
-                    }
-                  }
+                "point2": {
+                  "x": 0,
+                  "y": 16
                 }
-              ],
-              "states": [
-                {
-                  "id": "idle",
-                  "name": "Idle",
-                  "frames": [
-                    {
-                      "id": "frame-1",
-                      "order": 0,
-                      "durationFrames": 1,
-                      "shapeOverrides": [
-                        {
-                          "visible": true,
-                          "shapeIndex": 1,
-                          "transform": {
-                            "x": 0.002,
-                            "y": 0,
-                            "rotation": 0,
-                            "scaleX": 1,
-                            "scaleY": 1,
-                            "origin": {
-                              "x": -3,
-                              "y": 10
-                            }
-                          }
-                        },
-                        {
-                          "visible": true,
-                          "shapeIndex": 0,
-                          "transform": {
-                            "x": 0,
-                            "y": 0,
-                            "rotation": 0,
-                            "scaleX": 1,
-                            "scaleY": 1,
-                            "origin": {
-                              "x": 0,
-                              "y": 0
-                            }
-                          }
-                        },
-                        {
-                          "shapeIndex": 2,
-                          "transform": {
-                            "x": 0,
-                            "y": 0,
-                            "rotation": 0,
-                            "scaleX": 1,
-                            "scaleY": 1,
-                            "origin": {
-                              "x": 0,
-                              "y": 0
-                            }
-                          },
-                          "visible": true
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "id": "move",
-                  "name": "Move",
-                  "frames": [
-                    {
-                      "id": "frame-1",
-                      "order": 0,
-                      "durationFrames": 1,
-                      "shapeOverrides": [
-                        {
-                          "visible": true,
-                          "shapeIndex": 1
-                        },
-                        {
-                          "visible": true,
-                          "shapeIndex": 0
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "frames": [
-                    {
-                      "durationFrames": 1,
-                      "id": "frame-1",
-                      "order": 1,
-                      "shapeOverrides": [
-                        {
-                          "shapeIndex": 2,
-                          "transform": {
-                            "x": 0,
-                            "y": 0,
-                            "rotation": 0,
-                            "scaleX": 1,
-                            "scaleY": 1,
-                            "origin": {
-                              "x": 0,
-                              "y": 0
-                            }
-                          },
-                          "visible": true
-                        },
-                        {
-                          "shapeIndex": 1,
-                          "transform": {
-                            "x": 0,
-                            "y": 0,
-                            "rotation": 0,
-                            "scaleX": 1,
-                            "scaleY": 1,
-                            "origin": {
-                              "x": -3,
-                              "y": 10
-                            }
-                          },
-                          "visible": true
-                        },
-                        {
-                          "shapeIndex": 0,
-                          "transform": {
-                            "x": 0,
-                            "y": 0,
-                            "rotation": 0,
-                            "scaleX": 1,
-                            "scaleY": 1,
-                            "origin": {
-                              "x": 3,
-                              "y": 10
-                            }
-                          },
-                          "visible": true
-                        }
-                      ]
-                    }
-                  ],
-                  "id": "destroyed",
-                  "name": "Destroyed"
-                }
-              ],
-              "tags": [
-                "player",
-                "ship"
-              ],
-              "origin": {
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
                 "x": 0,
-                "y": 0
-              }
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": 3,
+                  "y": 10
+                }
+              },
+              "groupId": "group-1"
             },
             {
-              "id": "object.asteroids.large-asteroid",
-              "name": "Large Asteroid",
-              "shapes": [
-                {
-                  "tool": "polygon",
-                  "order": 0,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "points": [
-                      {
-                        "x": 10,
-                        "y": 40
-                      },
-                      {
-                        "x": 50,
-                        "y": 20
-                      },
-                      {
-                        "x": 45,
-                        "y": 5
-                      },
-                      {
-                        "x": 25,
-                        "y": -10
-                      },
-                      {
-                        "x": 50,
-                        "y": -35
-                      },
-                      {
-                        "x": 30,
-                        "y": -45
-                      },
-                      {
-                        "x": 10,
-                        "y": -38
-                      },
-                      {
-                        "x": -20,
-                        "y": -45
-                      },
-                      {
-                        "x": -43,
-                        "y": -18
-                      },
-                      {
-                        "x": -43,
-                        "y": 20
-                      },
-                      {
-                        "x": -25,
-                        "y": 20
-                      },
-                      {
-                        "x": -25,
-                        "y": 40
-                      }
-                    ]
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#CBD5E1",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": -1,
-                      "y": 1
-                    }
-                  }
-                }
-              ],
-              "states": [
-                {
-                  "id": "active",
-                  "name": "Active",
-                  "frames": [
-                    {
-                      "id": "frame-1",
-                      "order": 0,
-                      "durationFrames": 1,
-                      "shapeOverrides": []
-                    }
-                  ]
-                }
-              ],
-              "tags": [
-                "asteroid",
-                "large"
-              ],
-              "origin": {
-                "x": 0,
-                "y": 0
-              }
-            },
-            {
-              "id": "object.asteroids.small-asteroid",
-              "name": "Small Asteroid",
-              "shapes": [
-                {
-                  "tool": "polygon",
-                  "order": 0,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "points": [
-                      {
-                        "x": -10,
-                        "y": -6
-                      },
-                      {
-                        "x": 0,
-                        "y": -12
-                      },
-                      {
-                        "x": 10,
-                        "y": -6
-                      },
-                      {
-                        "x": 8,
-                        "y": 8
-                      },
-                      {
-                        "x": -6,
-                        "y": 10
-                      },
-                      {
-                        "x": -12,
-                        "y": 0
-                      }
-                    ]
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#CBD5E1",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": -1,
-                      "y": -1
-                    }
-                  }
-                }
-              ],
-              "states": [
-                {
-                  "id": "active",
-                  "name": "Active",
-                  "frames": [
-                    {
-                      "id": "frame-1",
-                      "order": 0,
-                      "durationFrames": 1,
-                      "shapeOverrides": []
-                    }
-                  ]
-                }
-              ],
-              "tags": [
-                "asteroid",
-                "small"
-              ],
-              "origin": {
-                "x": 0,
-                "y": 0
-              }
-            },
-            {
-              "id": "object.asteroids.large-ufo",
-              "name": "Large UFO",
-              "shapes": [
-                {
-                  "tool": "ellipse",
-                  "order": 0,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "cx": 0,
-                    "cy": 6,
-                    "rx": 24,
-                    "ry": 9
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#DBEAFE",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 0,
-                      "y": 6
-                    }
-                  }
+              "tool": "line",
+              "order": 2,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "point1": {
+                  "x": -4,
+                  "y": 10
                 },
-                {
-                  "tool": "ellipse",
-                  "order": 1,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "cx": 0,
-                    "cy": -2,
-                    "rx": 12,
-                    "ry": 7
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#DBEAFE",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 0,
-                      "y": -2
-                    }
-                  }
+                "point2": {
+                  "x": 0,
+                  "y": 16
                 }
-              ],
-              "states": [
-                {
-                  "id": "active",
-                  "name": "Active",
-                  "frames": [
-                    {
-                      "id": "frame-1",
-                      "order": 0,
-                      "durationFrames": 1,
-                      "shapeOverrides": []
-                    }
-                  ]
-                }
-              ],
-              "tags": [
-                "ufo",
-                "large"
-              ],
-              "origin": {
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
                 "x": 0,
-                "y": 0
-              }
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": -3,
+                  "y": 10
+                }
+              },
+              "groupId": "group-1"
             },
             {
-              "id": "object.asteroids.small-ufo",
-              "name": "Small UFO",
-              "shapes": [
-                {
-                  "tool": "ellipse",
-                  "order": 0,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "cx": 0,
-                    "cy": 4,
-                    "rx": 16,
-                    "ry": 6
+              "tool": "polygon",
+              "order": 3,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": -0.694,
+                    "y": -17.218
                   },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#DBEAFE",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
+                  {
+                    "x": 14,
+                    "y": 16
                   },
-                  "transform": {
+                  {
                     "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 0,
-                      "y": 4
-                    }
-                  }
-                },
-                {
-                  "tool": "ellipse",
-                  "order": 1,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "cx": 0,
-                    "cy": -2,
-                    "rx": 8,
-                    "ry": 5
+                    "y": 7.5
                   },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#DBEAFE",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 0,
-                      "y": -2
-                    }
+                  {
+                    "x": -14,
+                    "y": 16
                   }
-                }
-              ],
-              "states": [
-                {
-                  "id": "active",
-                  "name": "Active",
-                  "frames": [
-                    {
-                      "id": "frame-1",
-                      "order": 0,
-                      "durationFrames": 1,
-                      "shapeOverrides": []
-                    }
-                  ]
-                }
-              ],
-              "tags": [
-                "ufo",
-                "small"
-              ],
-              "origin": {
+                ]
+              },
+              "style": {
+                "fill": "#05070D",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
                 "x": 0,
-                "y": 0
-              }
-            },
-            {
-              "id": "object.asteroids.medium-asteroid",
-              "name": "Medium Asteroid",
-              "shapes": [
-                {
-                  "tool": "polygon",
-                  "order": 0,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "points": [
-                      {
-                        "x": -16,
-                        "y": -10
-                      },
-                      {
-                        "x": -2,
-                        "y": -18
-                      },
-                      {
-                        "x": 16,
-                        "y": -14
-                      },
-                      {
-                        "x": 20,
-                        "y": 2
-                      },
-                      {
-                        "x": 8,
-                        "y": 18
-                      },
-                      {
-                        "x": -10,
-                        "y": 16
-                      },
-                      {
-                        "x": -20,
-                        "y": 4
-                      }
-                    ]
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#CBD5E1",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 0,
-                      "y": 0
-                    }
-                  }
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": 0,
+                  "y": 0
                 }
-              ],
-              "states": [
-                {
-                  "id": "active",
-                  "name": "Active",
-                  "frames": [
-                    {
-                      "id": "frame-1",
-                      "order": 0,
-                      "durationFrames": 1,
-                      "shapeOverrides": []
-                    }
-                  ]
-                }
-              ],
-              "tags": [
-                "asteroid",
-                "medium"
-              ],
-              "origin": {
-                "x": 0,
-                "y": 0
-              }
-            },
-            {
-              "id": "object.asteroids.medium-asteroid-2",
-              "name": "Medium Asteroid 2",
-              "shapes": [
-                {
-                  "tool": "polygon",
-                  "order": 0,
-                  "visible": true,
-                  "locked": false,
-                  "geometry": {
-                    "points": [
-                      {
-                        "x": -16,
-                        "y": -10
-                      },
-                      {
-                        "x": -2,
-                        "y": -18
-                      },
-                      {
-                        "x": 16,
-                        "y": -14
-                      },
-                      {
-                        "x": 20,
-                        "y": 2
-                      },
-                      {
-                        "x": 8,
-                        "y": 18
-                      },
-                      {
-                        "x": -10,
-                        "y": 16
-                      },
-                      {
-                        "x": -20,
-                        "y": 4
-                      }
-                    ]
-                  },
-                  "style": {
-                    "fill": "transparent",
-                    "stroke": "#CBD5E1",
-                    "strokeWidth": 2,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                  },
-                  "transform": {
-                    "x": 0,
-                    "y": 0,
-                    "rotation": 0,
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "origin": {
-                      "x": 0,
-                      "y": 0
-                    }
-                  }
-                }
-              ],
-              "states": [
-                {
-                  "id": "active",
-                  "name": "Active",
-                  "frames": [
-                    {
-                      "id": "frame-1",
-                      "order": 0,
-                      "durationFrames": 1,
-                      "shapeOverrides": []
-                    }
-                  ]
-                }
-              ],
-              "tags": [
-                "asteroid",
-                "medium"
-              ],
-              "origin": {
-                "x": 0,
-                "y": 0
               }
             }
-          ]
+          ],
+          "states": [
+            {
+              "id": "idle",
+              "name": "Idle",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": [
+                    {
+                      "visible": true,
+                      "shapeIndex": 1,
+                      "transform": {
+                        "x": 0.002,
+                        "y": 0,
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "shapeOrigin": {
+                          "x": -3,
+                          "y": 10
+                        }
+                      }
+                    },
+                    {
+                      "visible": true,
+                      "shapeIndex": 0,
+                      "transform": {
+                        "x": 0,
+                        "y": 0,
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "shapeOrigin": {
+                          "x": 0,
+                          "y": 0
+                        }
+                      }
+                    },
+                    {
+                      "shapeIndex": 2,
+                      "transform": {
+                        "x": 0,
+                        "y": 0,
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "shapeOrigin": {
+                          "x": 0,
+                          "y": 0
+                        }
+                      },
+                      "visible": true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "move",
+              "name": "Move",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": [
+                    {
+                      "visible": true,
+                      "shapeIndex": 1
+                    },
+                    {
+                      "visible": true,
+                      "shapeIndex": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "frames": [
+                {
+                  "durationFrames": 1,
+                  "id": "frame-1",
+                  "order": 1,
+                  "shapeOverrides": [
+                    {
+                      "shapeIndex": 2,
+                      "transform": {
+                        "x": 0,
+                        "y": 0,
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "shapeOrigin": {
+                          "x": 0,
+                          "y": 0
+                        }
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 1,
+                      "transform": {
+                        "x": 0,
+                        "y": 0,
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "shapeOrigin": {
+                          "x": -3,
+                          "y": 10
+                        }
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 0,
+                      "transform": {
+                        "x": 0,
+                        "y": 0,
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "shapeOrigin": {
+                          "x": 3,
+                          "y": 10
+                        }
+                      },
+                      "visible": true
+                    }
+                  ]
+                }
+              ],
+              "id": "destroyed",
+              "name": "Destroyed"
+            }
+          ],
+          "tags": [
+            "player",
+            "ship"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
         },
-        "text2speech-V2": []
-      }
-    }
+        {
+          "id": "object.asteroids.large-asteroid",
+          "name": "Large Asteroid",
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": 10,
+                    "y": 40
+                  },
+                  {
+                    "x": 50,
+                    "y": 20
+                  },
+                  {
+                    "x": 45,
+                    "y": 5
+                  },
+                  {
+                    "x": 25,
+                    "y": -10
+                  },
+                  {
+                    "x": 50,
+                    "y": -35
+                  },
+                  {
+                    "x": 30,
+                    "y": -45
+                  },
+                  {
+                    "x": 10,
+                    "y": -38
+                  },
+                  {
+                    "x": -20,
+                    "y": -45
+                  },
+                  {
+                    "x": -43,
+                    "y": -18
+                  },
+                  {
+                    "x": -43,
+                    "y": 20
+                  },
+                  {
+                    "x": -25,
+                    "y": 20
+                  },
+                  {
+                    "x": -25,
+                    "y": 40
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#CBD5E1",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": -1,
+                  "y": 1
+                }
+              }
+            }
+          ],
+          "states": [
+            {
+              "id": "active",
+              "name": "Active",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": []
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "asteroid",
+            "large"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "id": "object.asteroids.small-asteroid",
+          "name": "Small Asteroid",
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": -10,
+                    "y": -6
+                  },
+                  {
+                    "x": 0,
+                    "y": -12
+                  },
+                  {
+                    "x": 10,
+                    "y": -6
+                  },
+                  {
+                    "x": 8,
+                    "y": 8
+                  },
+                  {
+                    "x": -6,
+                    "y": 10
+                  },
+                  {
+                    "x": -12,
+                    "y": 0
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#CBD5E1",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": -1,
+                  "y": -1
+                }
+              }
+            }
+          ],
+          "states": [
+            {
+              "id": "active",
+              "name": "Active",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": []
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "asteroid",
+            "small"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "id": "object.asteroids.large-ufo",
+          "name": "Large UFO",
+          "shapes": [
+            {
+              "tool": "ellipse",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "cx": 0,
+                "cy": 6,
+                "rx": 24,
+                "ry": 9
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#DBEAFE",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": 0,
+                  "y": 6
+                }
+              }
+            },
+            {
+              "tool": "ellipse",
+              "order": 1,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "cx": 0,
+                "cy": -2,
+                "rx": 12,
+                "ry": 7
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#DBEAFE",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": 0,
+                  "y": -2
+                }
+              }
+            }
+          ],
+          "states": [
+            {
+              "id": "active",
+              "name": "Active",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": []
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "ufo",
+            "large"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "id": "object.asteroids.small-ufo",
+          "name": "Small UFO",
+          "shapes": [
+            {
+              "tool": "ellipse",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "cx": 0,
+                "cy": 4,
+                "rx": 16,
+                "ry": 6
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#DBEAFE",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": 0,
+                  "y": 4
+                }
+              }
+            },
+            {
+              "tool": "ellipse",
+              "order": 1,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "cx": 0,
+                "cy": -2,
+                "rx": 8,
+                "ry": 5
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#DBEAFE",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": 0,
+                  "y": -2
+                }
+              }
+            }
+          ],
+          "states": [
+            {
+              "id": "active",
+              "name": "Active",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": []
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "ufo",
+            "small"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "id": "object.asteroids.medium-asteroid",
+          "name": "Medium Asteroid",
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": -16,
+                    "y": -10
+                  },
+                  {
+                    "x": -2,
+                    "y": -18
+                  },
+                  {
+                    "x": 16,
+                    "y": -14
+                  },
+                  {
+                    "x": 20,
+                    "y": 2
+                  },
+                  {
+                    "x": 8,
+                    "y": 18
+                  },
+                  {
+                    "x": -10,
+                    "y": 16
+                  },
+                  {
+                    "x": -20,
+                    "y": 4
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#CBD5E1",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            }
+          ],
+          "states": [
+            {
+              "id": "active",
+              "name": "Active",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": []
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "asteroid",
+            "medium"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "id": "object.asteroids.medium-asteroid-2",
+          "name": "Medium Asteroid 2",
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": -16,
+                    "y": -10
+                  },
+                  {
+                    "x": -2,
+                    "y": -18
+                  },
+                  {
+                    "x": 16,
+                    "y": -14
+                  },
+                  {
+                    "x": 20,
+                    "y": 2
+                  },
+                  {
+                    "x": 8,
+                    "y": 18
+                  },
+                  {
+                    "x": -10,
+                    "y": 16
+                  },
+                  {
+                    "x": -20,
+                    "y": 4
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#CBD5E1",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "shapeOrigin": {
+                  "x": 0,
+                  "y": 0
+                }
+              }
+            }
+          ],
+          "states": [
+            {
+              "id": "active",
+              "name": "Active",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": []
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "asteroid",
+            "medium"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    "text2speech-V2": []
   }
 }

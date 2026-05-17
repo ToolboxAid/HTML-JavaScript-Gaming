@@ -33,7 +33,7 @@
       "default": {
         "id": "object.game.object",
         "name": "Object",
-        "origin": { "x": 0, "y": 0 },
+        "objectOrigin": { "x": 0, "y": 0 },
         "tags": [],
         "shapes": []
       },
@@ -50,7 +50,7 @@
         "tags": {
           "$ref": "#/$defs/tags"
         },
-        "origin": {
+        "objectOrigin": {
           "$ref": "#/$defs/point2d"
         },
         "baseObjectId": {
@@ -204,7 +204,7 @@
           "rotation": 0,
           "scaleX": 1,
           "scaleY": 1,
-          "origin": { "x": 0, "y": 0 }
+          "shapeOrigin": { "x": 0, "y": 0 }
         }
       },
       "properties": {
@@ -486,14 +486,14 @@
     "transform": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["x", "y", "rotation", "scaleX", "scaleY", "origin"],
+      "required": ["x", "y", "rotation", "scaleX", "scaleY", "shapeOrigin"],
       "default": {
         "x": 0,
         "y": 0,
         "rotation": 0,
         "scaleX": 1,
         "scaleY": 1,
-        "origin": { "x": 0, "y": 0 }
+        "shapeOrigin": { "x": 0, "y": 0 }
       },
       "properties": {
         "x": {
@@ -513,7 +513,7 @@
           "type": "number",
           "exclusiveMinimum": 0
         },
-        "origin": {
+        "shapeOrigin": {
           "$ref": "#/$defs/point2d"
         }
       }

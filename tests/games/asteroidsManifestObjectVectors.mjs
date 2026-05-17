@@ -11,7 +11,7 @@ export function loadAsteroidsManifest() {
 }
 
 export function loadAsteroidsObjectVectorPayload() {
-  return loadAsteroidsManifest().game.workspace.tools['object-vector-studio-v2'];
+  return loadAsteroidsManifest().tools['object-vector-studio-v2'];
 }
 
 export function createAsteroidsTestGeometryProfiles() {

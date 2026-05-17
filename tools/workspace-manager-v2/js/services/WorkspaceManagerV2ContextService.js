@@ -188,32 +188,35 @@ function gameFromWorkspaceManifest(workspaceManifest, manifestPath = "") {
   };
 }
 
-function gameFromGameManifest(gameManifest, manifestPath = "", repoRoot = "") {
+function gameFromGameManifest(gameManifest, manifestPath = "", repoRoot = "", repoPath = "") {
   const gameInfo = gameManifest?.game;
-  if (!gameInfo?.id || !gameInfo?.name || !gameInfo?.folder || !isPlainObject(gameInfo.workspace)) {
+  if (!gameInfo?.id || !gameInfo?.name || !gameInfo?.folder) {
     return null;
   }
+  const gameRoot = `games/${gameInfo.folder}/`;
   return {
     folder: gameInfo.folder,
-    gameData: clone(gameInfo.gameData || {}),
+    gameRoot,
+    assetsPath: `${gameRoot}assets`,
+    launch: clone(gameManifest.launch || {}),
+    tools: clone(gameManifest.tools || {}),
     id: gameInfo.id,
     manifest: clone(gameManifest),
     manifestKind: "game-manifest",
     manifestPath,
     name: gameInfo.name,
+    repoPath,
     repoRoot
   };
 }
 
 function isGameManifest(value) {
   return value?.schema === "html-js-gaming.game-manifest"
-    && isPlainObject(value.game)
-    && isPlainObject(value.game.gameData)
-    && isPlainObject(value.game.workspace);
+    && isPlainObject(value.game);
 }
 
 function gameManifestBoundaryContractMessage() {
-  return "Boundary contract: game.gameData is runtime data; game.workspace is editor/tool state. Runtime ignores game.workspace; tools may read game.gameData, write game.workspace, and update game.gameData only through explicit validated apply/build/export actions.";
+  return "Boundary contract: game.manifest.json is game-only data. Workspace Manager uses root.tools to create standalone workspace sessions and saves validated tool data back to root.tools.";
 }
 
 function schemaProperties(schema) {
@@ -1085,7 +1088,7 @@ export class WorkspaceManagerV2ContextService {
     const palettePayload = workspaceManifest.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
     const assetPayload = workspaceManifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
     const paletteSwatches = Array.isArray(palettePayload?.swatches) ? clone(palettePayload.swatches) : [];
-    const assetCount = Object.keys(assetPayload.assets || {}).length;
+    const assetCount = Object.keys(assetPayload?.assets || {}).length;
     const assetWarning = game.id === "Asteroids" && assetCount === 0
       ? `${sourceLabel} has no Asteroids Asset Manager V2 assets; Workspace Manager V2 did not inject hardcoded assets.`
       : "";
@@ -1155,6 +1158,18 @@ export class WorkspaceManagerV2ContextService {
       registerSchemaReference(schemaRegistry, OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH, objectVectorSchema);
       registerSchemaReference(schemaRegistry, "tools/schemas/tools/object-vector-studio-v2.schema.json", objectVectorSchema);
       registerSchemaReference(schemaRegistry, "tools/object-vector-studio-v2.schema.json", objectVectorSchema);
+      const text2SpeechSchemaPath = `/${TOOL_PAYLOAD_SCHEMA_REFS[TEXT2SPEECH_V2_TOOL_KEY]}`;
+      const text2SpeechResponse = await this.fetchRef(text2SpeechSchemaPath, { cache: "no-store" });
+      if (!text2SpeechResponse.ok) {
+        return { ok: false, message: `Unable to load ${text2SpeechSchemaPath}: ${text2SpeechResponse.status}` };
+      }
+      const text2SpeechSchema = await text2SpeechResponse.json();
+      if (!isPlainObject(text2SpeechSchema)) {
+        return { ok: false, message: `${text2SpeechSchemaPath} did not return a schema object.` };
+      }
+      registerSchemaReference(schemaRegistry, text2SpeechSchemaPath, text2SpeechSchema);
+      registerSchemaReference(schemaRegistry, TOOL_PAYLOAD_SCHEMA_REFS[TEXT2SPEECH_V2_TOOL_KEY], text2SpeechSchema);
+      registerSchemaReference(schemaRegistry, "tools/text2speech-V2.schema.json", text2SpeechSchema);
       return { ok: true, schema, schemaRegistry };
     } catch (error) {
       return { ok: false, message: `Unable to load ${GAME_MANIFEST_SCHEMA_PATH}: ${error.message}` };
@@ -1168,28 +1183,11 @@ export class WorkspaceManagerV2ContextService {
     }
     const errors = validateSchemaValue(manifest, schemaResult.schema, "root", schemaResult.schema, schemaResult.schemaRegistry);
     const gameInfo = manifest?.game || {};
-    const gameData = gameInfo.gameData || {};
-    const workspace = gameInfo.workspace || {};
-    if (isPlainObject(gameData)) {
-      if (Object.prototype.hasOwnProperty.call(gameData, "workspace")) {
-        errors.push("root.game.gameData.workspace is not allowed; runtime data must not depend on editor/tool workspace state");
-      }
-      if (Object.prototype.hasOwnProperty.call(gameData, "tools")) {
-        errors.push("root.game.gameData.tools is not allowed; tool/editor state belongs in root.game.workspace");
-      }
+    if (isPlainObject(gameInfo) && Object.prototype.hasOwnProperty.call(gameInfo, "workspace")) {
+      errors.push("root.game.workspace is not allowed; game manifests must use root.tools and standalone workspace manifests.");
     }
-    if (isPlainObject(gameInfo) && isPlainObject(workspace)) {
-      const expectedGameRoot = `games/${gameInfo.folder}/`;
-      const expectedAssetsPath = `games/${gameInfo.folder}/assets`;
-      if (workspace.gameId !== gameInfo.id) {
-        errors.push("root.game.workspace.gameId must match root.game.id");
-      }
-      if (workspace.gameRoot !== expectedGameRoot) {
-        errors.push(`root.game.workspace.gameRoot must be ${expectedGameRoot}`);
-      }
-      if (workspace.assetsPath !== expectedAssetsPath) {
-        errors.push(`root.game.workspace.assetsPath must be ${expectedAssetsPath}`);
-      }
+    if (isPlainObject(gameInfo) && Object.prototype.hasOwnProperty.call(gameInfo, "gameData")) {
+      errors.push("root.game.gameData is not allowed; game manifests must use root.launch and root.tools.");
     }
     return errors.length
       ? { ok: false, message: `Game manifest failed schema validation: ${errors.join(" | ")}` }
@@ -1323,6 +1321,7 @@ export class WorkspaceManagerV2ContextService {
 
     const discoveredGames = [];
     const repoRootName = String(repoHandle.name || "selected").trim() || "selected";
+    const repoPath = String(repoHandle.repoPath || "").trim();
     const skips = [];
     const seenGameIds = new Set();
     await this.discoverGameManifestsInDirectory({
@@ -1331,6 +1330,7 @@ export class WorkspaceManagerV2ContextService {
       dirHandle: gamesDir,
       dirPath: "games",
       repoRootName,
+      repoPath,
       seenGameIds,
       skips
     });
@@ -1338,7 +1338,7 @@ export class WorkspaceManagerV2ContextService {
     return { ok: true, games: discoveredGames, skips };
   }
 
-  async discoverGameManifestsInDirectory({ depth, discoveredGames, dirHandle, dirPath, repoRootName, seenGameIds, skips }) {
+  async discoverGameManifestsInDirectory({ depth, discoveredGames, dirHandle, dirPath, repoRootName, repoPath = "", seenGameIds, skips }) {
     let manifestFound = false;
     if (typeof dirHandle.getFileHandle === "function") {
       try {
@@ -1355,12 +1355,12 @@ export class WorkspaceManagerV2ContextService {
           } else if (seenGameIds.has(manifestResult.manifest.game.id)) {
             skips.push({ path: manifestPath, reason: `duplicate game id ${manifestResult.manifest.game.id}` });
           } else {
-            const game = gameFromGameManifest(manifestResult.manifest, `/${manifestPath}`, repoRootName);
+            const game = gameFromGameManifest(manifestResult.manifest, `/${manifestPath}`, repoRootName, repoPath);
             if (game) {
               seenGameIds.add(game.id);
               discoveredGames.push(game);
             } else {
-              skips.push({ path: manifestPath, reason: "manifest is missing game.id, game.name, game.folder, or game.workspace" });
+              skips.push({ path: manifestPath, reason: "manifest is missing game.id, game.name, or game.folder" });
             }
           }
         }
@@ -1388,6 +1388,7 @@ export class WorkspaceManagerV2ContextService {
         dirHandle: childHandle,
         dirPath: `${dirPath}/${name}`,
         repoRootName,
+        repoPath,
         seenGameIds,
         skips
       });
@@ -1540,7 +1541,7 @@ export class WorkspaceManagerV2ContextService {
     }
     const boundGame = gameFromGameManifest(manifestResult.manifest, `/${fileHandleResult.path}`, String(repoHandle.name || ""));
     if (!boundGame) {
-      return this.saveSourceBindingFailure(`${fileHandleResult.path} is missing game.id, game.name, game.folder, or game.workspace`, { context, game });
+      return this.saveSourceBindingFailure(`${fileHandleResult.path} is missing game.id, game.name, or game.folder`, { context, game });
     }
     return { ok: true, game: boundGame, source: fileHandleResult.path };
   }
@@ -1601,7 +1602,9 @@ export class WorkspaceManagerV2ContextService {
     }
 
     const nextManifest = clone(boundGame.manifest);
-    nextManifest.game.workspace = clone(context);
+    delete nextManifest.game.gameData;
+    delete nextManifest.game.workspace;
+    nextManifest.tools = clone(context.tools || {});
     const gameValidation = await this.validateGameManifest(nextManifest);
     if (!gameValidation.ok) {
       return gameValidation;
@@ -1635,21 +1638,24 @@ export class WorkspaceManagerV2ContextService {
     if (!isPlainObject(readBackManifest)) {
       return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: JSON root is not an object.` };
     }
-    if (!isPlainObject(readBackManifest.game?.workspace)) {
-      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: root game.workspace toolState is missing.` };
+    if (!isPlainObject(readBackManifest.tools)) {
+      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: root.tools toolState is missing.` };
     }
     const readBackGameValidation = await this.validateGameManifest(readBackManifest);
     if (!readBackGameValidation.ok) {
       return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: ${readBackGameValidation.message}` };
     }
-    const readBackWorkspaceValidation = await this.validateGeneratedManifest(readBackManifest.game.workspace);
+    const readBackWorkspaceValidation = await this.validateGeneratedManifest(this.workspaceManifestFromGameManifest({
+      ...boundGame,
+      manifest: readBackManifest
+    }));
     if (!readBackWorkspaceValidation.ok) {
       return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: ${readBackWorkspaceValidation.message}` };
     }
-    if (JSON.stringify(readBackManifest.game.workspace) !== JSON.stringify(context)) {
-      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: re-read game.workspace toolState does not match the saved context.` };
+    if (JSON.stringify(readBackManifest.tools) !== JSON.stringify(context.tools || {})) {
+      return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: re-read root.tools toolState does not match the saved context.` };
     }
-    const toolStateDetails = this.toolStateItemDetails(readBackManifest.game.workspace);
+    const toolStateDetails = this.toolStateItemDetails({ tools: readBackManifest.tools });
     return {
       ok: true,
       changeValidation: contentChanged ? "file content changed" : "modified timestamp changed",
@@ -1663,7 +1669,7 @@ export class WorkspaceManagerV2ContextService {
       source: sourceBinding.source,
       toolStateDetails,
       toolStateItemCount: toolStateDetails.length,
-      validationResult: "game manifest valid; root game.workspace toolState valid; saved context matched re-read file"
+      validationResult: "game manifest valid; root.tools toolState valid; saved context matched re-read file"
     };
   }
 
@@ -1685,9 +1691,26 @@ export class WorkspaceManagerV2ContextService {
   }
 
   workspaceManifestFromGameManifest(game) {
-    const workspaceManifest = clone(game.manifest?.game?.workspace || {});
+    const gameInfo = game?.manifest?.game || {};
+    const folder = gameInfo.folder || game?.folder || game?.id || "";
+    const gameRoot = `games/${folder}/`;
+    const workspaceManifest = clone(game.manifest?.game?.workspace || {
+      $schema: "tools/schemas/workspace.manifest.schema.json",
+      documentKind: "workspace-manifest",
+      schema: "html-js-gaming.project",
+      version: 1,
+      id: `workspace-manager-v2-${gameInfo.id || game?.id || "game"}`,
+      name: `${gameInfo.name || game?.name || "Game"} Workspace Manager V2 Context`,
+      gameId: gameInfo.id || game?.id || "",
+      gameRoot,
+      assetsPath: `${gameRoot}assets`,
+      tools: clone(game.manifest?.tools || game?.tools || {})
+    });
     if (!workspaceManifest.repoRoot && game.repoRoot) {
       workspaceManifest.repoRoot = game.repoRoot;
+    }
+    if (!workspaceManifest.repoPath && game.repoPath) {
+      workspaceManifest.repoPath = game.repoPath;
     }
     return workspaceManifest;
   }

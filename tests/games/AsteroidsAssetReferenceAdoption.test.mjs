@@ -48,8 +48,10 @@ export async function run() {
   const profiles = createAsteroidsTestGeometryProfiles();
   const manifestText = JSON.stringify(manifest);
 
-  assert.equal(manifest.game.workspace.tools["vector-map-editor"], undefined);
-  assert.equal(manifest.game.gameData.objectVectorRuntime, undefined);
+  assert.equal(manifest.tools["vector-map-editor"], undefined);
+  assert.equal(manifest.game.workspace, undefined);
+  assert.equal(manifest.game.gameData, undefined);
+  assert.equal(manifest.objectVectorRuntime, undefined);
   assert.equal(manifestText.includes(`vector.${"asteroids"}.`), false);
   assert.equal(payload.objects.some((object) => object.id === "object.asteroids.ship"), true);
   assert.equal(payload.objects.some((object) => object.id === "object.asteroids.small-asteroid"), true);

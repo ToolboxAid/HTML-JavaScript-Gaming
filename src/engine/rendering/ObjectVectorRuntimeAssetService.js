@@ -45,11 +45,12 @@ function resolveSchemaRef(schemaRoot, ref) {
 
 function normalizeManifestPayload(manifestPayload) {
   const manifest = isPlainObject(manifestPayload) ? manifestPayload : {};
-  const workspace = isPlainObject(manifest.game?.workspace)
-    ? manifest.game.workspace
-    : (isPlainObject(manifest.workspace) ? manifest.workspace : manifest);
-  return isPlainObject(workspace?.tools?.[OBJECT_VECTOR_TOOL_ID])
-    ? workspace.tools[OBJECT_VECTOR_TOOL_ID]
+  const workspace = isPlainObject(manifest.workspace) ? manifest.workspace : manifest;
+  const tools = isPlainObject(manifest.tools)
+    ? manifest.tools
+    : workspace?.tools;
+  return isPlainObject(tools?.[OBJECT_VECTOR_TOOL_ID])
+    ? tools[OBJECT_VECTOR_TOOL_ID]
     : null;
 }
 
@@ -117,7 +118,7 @@ function shapeGeometryTool(shape) {
 
 function shapeTransform(shape) {
   const transform = shape.transform || {
-    origin: { x: 0, y: 0 },
+    shapeOrigin: { x: 0, y: 0 },
     rotation: 0,
     scaleX: 1,
     scaleY: 1,
@@ -254,10 +255,10 @@ function effectiveShapeForFrame(shape, frame, shapeIndex) {
 function svgTransformAttribute(transform) {
   return [
     `translate(${transform.x} ${transform.y})`,
-    `translate(${transform.origin.x} ${transform.origin.y})`,
+    `translate(${transform.shapeOrigin.x} ${transform.shapeOrigin.y})`,
     `rotate(${transform.rotation})`,
     `scale(${transform.scaleX} ${transform.scaleY})`,
-    `translate(${-transform.origin.x} ${-transform.origin.y})`
+    `translate(${-transform.shapeOrigin.x} ${-transform.shapeOrigin.y})`
   ].join(" ");
 }
 
@@ -309,7 +310,7 @@ export class ObjectVectorRuntimeAssetService {
       const manifest = await response.json();
       const payload = normalizeManifestPayload(manifest);
       if (!payload) {
-        this.log("FAIL", `Object Vector runtime asset load failed from ${sourceLabel}: root.game.workspace.tools.${OBJECT_VECTOR_TOOL_ID} is missing.`);
+        this.log("FAIL", `Object Vector runtime asset load failed from ${sourceLabel}: root.tools.${OBJECT_VECTOR_TOOL_ID} is missing.`);
         return null;
       }
       return this.loadPayload(payload, {
@@ -723,10 +724,10 @@ export class ObjectVectorRuntimeAssetService {
     context.save();
     try {
       context.translate(transform.x, transform.y);
-      context.translate(transform.origin.x, transform.origin.y);
+      context.translate(transform.shapeOrigin.x, transform.shapeOrigin.y);
       context.rotate((transform.rotation * Math.PI) / 180);
       context.scale(transform.scaleX, transform.scaleY);
-      context.translate(-transform.origin.x, -transform.origin.y);
+      context.translate(-transform.shapeOrigin.x, -transform.shapeOrigin.y);
       context.lineWidth = shape.style.strokeWidth;
       context.fillStyle = normalizeFill(shape.style.fill) || "transparent";
       context.strokeStyle = normalizeStroke(shape.style.stroke) || "transparent";

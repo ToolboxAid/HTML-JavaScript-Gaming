@@ -128,7 +128,7 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
     logResolution(
       logger,
       'FAIL',
-      `Asteroids Object Vector runtime role ${roleId} requires object ${targetObjectId} in game.workspace.tools.object-vector-studio-v2.objects.`,
+      `Asteroids Object Vector runtime role ${roleId} requires object ${targetObjectId} in root.tools.object-vector-studio-v2.objects.`,
       {
         candidates: candidates.map(candidateLabel),
         objectCount: objectList.length,

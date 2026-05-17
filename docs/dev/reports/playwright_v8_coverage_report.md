@@ -1,19 +1,21 @@
-# Playwright V8 Coverage Report
+﻿# Playwright V8 Coverage Report
 
-PR: PR_26133_092-object-vector-layout-transform-and-origin-schema-fixes
+PR: PR_26133_093-game-only-manifest-origin-and-transform-fixes
 
 Command: `npm run test:workspace-v2`
 
 Result: PASS
 
-Coverage source: Playwright/Chromium built-in V8 coverage from the final passing workspace-v2 run.
+Coverage source: Playwright/Chromium built-in V8 coverage from the passing workspace-v2 run.
 
-Changed runtime JS coverage:
-- (83%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 110/110; executed functions 5/6
-- (94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8140/8140; executed functions 789/843
-- (95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 458/458; executed functions 56/59
+Changed runtime JavaScript exercised by V8 coverage:
+- `tools/object-vector-studio-v2/js/ToolStarterApp.js`
+- `tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js`
+- `tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js`
+- `src/engine/rendering/ObjectVectorRuntimeAssetService.js`
+- `games/shared/workspaceGameAssetCatalog.js`
 
 Notes:
-- The generated detailed text artifact remains at `docs/dev/reports/playwright_v8_coverage_report.txt`.
+- The detailed generated artifact remains at `docs/dev/reports/playwright_v8_coverage.txt`.
+- The run reported no low-coverage changed runtime JS files.
 - Coverage is advisory for this PR; no new thresholds were introduced.
-- Changed runtime JavaScript was collected during the passing Playwright run.

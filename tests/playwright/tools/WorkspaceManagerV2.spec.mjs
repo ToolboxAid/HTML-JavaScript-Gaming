@@ -333,6 +333,7 @@ async function installMockRepoPicker(page) {
         kind: "directory",
         name,
         path,
+        repoPath: options.repoPath || "",
         async getDirectoryHandle(childName, handleOptions = {}) {
           const child = children[childName];
           if (child?.kind === "directory") {
@@ -415,7 +416,8 @@ async function installMockRepoPicker(page) {
         const config = window.__workspaceManagerV2MockRepoConfig || {};
         window.sessionStorage.setItem("workspace-manager-v2-mock-repo-handle-cache", JSON.stringify({
           failPreviewRead: Boolean(config.failPreviewRead),
-          repoName: reference?.displayName || repoHandle?.name || "HTML-JavaScript-Gaming"
+          repoName: reference?.displayName || repoHandle?.name || "HTML-JavaScript-Gaming",
+          repoPath: repoHandle?.repoPath || config.repoPath || ""
         }));
       },
       async restore({ reference }) {
@@ -423,6 +425,7 @@ async function installMockRepoPicker(page) {
         const cachedConfig = rawValue ? JSON.parse(rawValue) : {};
         return await makeMockRepoHandle({
           failPreviewRead: Boolean(cachedConfig.failPreviewRead),
+          repoPath: cachedConfig.repoPath || "",
           repoName: cachedConfig.repoName || reference?.displayName || "HTML-JavaScript-Gaming"
         });
       }
@@ -542,7 +545,7 @@ async function installMockSpeechSynthesis(page, { includeAgeVoice = false, inclu
 async function selectMockRepo(page, { repoName = "HTML-JavaScript-Gaming", ...config } = {}) {
   await page.evaluate(({ nextConfig, nextRepoName }) => {
     window.__workspaceManagerV2MockRepoConfig = { ...nextConfig, repoName: nextRepoName };
-  }, { nextConfig: config, nextRepoName: repoName });
+  }, { nextConfig: { repoPath: process.cwd().replaceAll("\\", "/"), ...config }, nextRepoName: repoName });
   await page.locator("#pickRepoBtn").click();
   await expect(page.locator("#repoSelectedValue")).toHaveText(repoName);
   await expect(page.locator("#activeGameSelect")).toBeEnabled();
@@ -595,9 +598,9 @@ async function expectWorkspaceRestoreRequiresRepoRebind(page, { dirty = false, g
 }
 
 async function rebindRestoredWorkspace(page, { dirty = false, gameId = "Asteroids", repoName = "HTML-JavaScript-Gaming" } = {}) {
-  await page.evaluate((nextRepoName) => {
-    window.__workspaceManagerV2MockRepoConfig = { repoName: nextRepoName };
-  }, repoName);
+  await page.evaluate(({ nextRepoName, repoPath }) => {
+    window.__workspaceManagerV2MockRepoConfig = { repoName: nextRepoName, repoPath };
+  }, { nextRepoName: repoName, repoPath: process.cwd().replaceAll("\\", "/") });
   await page.locator("#pickRepoBtn").click();
   await expectWorkspaceReturnRehydrated(page, { gameId, repoName });
   await expect(page.locator("#saveWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
@@ -668,6 +671,34 @@ function expectRuntimeBindingMetadata(metadata, {
   expect(metadata.handle).toBeUndefined();
   expect(metadata.repoHandle).toBeUndefined();
   expect(metadata.fileSystemHandle).toBeUndefined();
+}
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function workspaceContextFromGameManifest(gameManifest, { repoPath = "", repoRoot = "" } = {}) {
+  const game = gameManifest.game || {};
+  const gameRoot = `games/${game.folder}/`;
+  const context = {
+    $schema: "tools/schemas/workspace.manifest.schema.json",
+    documentKind: "workspace-manifest",
+    schema: "html-js-gaming.project",
+    version: 1,
+    id: `workspace-manager-v2-${game.id}`,
+    name: `${game.name} Workspace Manager V2 Context`,
+    gameId: game.id,
+    gameRoot,
+    assetsPath: `${gameRoot}assets`,
+    tools: cloneJson(gameManifest.tools || {})
+  };
+  if (repoRoot) {
+    context.repoRoot = repoRoot;
+  }
+  if (repoPath) {
+    context.repoPath = repoPath;
+  }
+  return context;
 }
 
 async function dirtyPaletteToolState(page, swatch) {
@@ -1350,8 +1381,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             "objectVectorStudioArcGeometry",
             "objectVectorStudioTextGeometry"
           ].every((definitionName) => !Object.prototype.hasOwnProperty.call(gameSchema.$defs[definitionName], "default")),
-          gameObjectDefaultOrigin: gameSchema.$defs.objectVectorStudioObject.default.origin,
-          gameObjectOriginRef: gameSchema.$defs.objectVectorStudioObject.properties.origin.$ref,
+          gameObjectDefaultOrigin: gameSchema.$defs.objectVectorStudioObject.default.objectOrigin,
+          gameObjectOriginRef: gameSchema.$defs.objectVectorStudioObject.properties.objectOrigin.$ref,
           gameObjectDefaultTags: gameSchema.$defs.objectVectorStudioObject.default.tags,
           gameShapeCommonDefaultTool: gameSchema.$defs.objectVectorStudioShapeCommon.default.tool,
           gameStateSchemaRef: gameSchema.$defs.objectVectorStudioObject.properties.states.items.$ref,
@@ -1361,7 +1392,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             point: gameSchema.$defs.objectVectorStudioStyle.default.pointStyle,
             start: gameSchema.$defs.objectVectorStudioStyle.default.startPointStyle
           },
-          gameTransformDefaultOrigin: gameSchema.$defs.objectVectorStudioTransform.default.origin,
+          gameTransformDefaultOrigin: gameSchema.$defs.objectVectorStudioTransform.default.shapeOrigin,
           toolGeometryDefaultsRemoved: [
             "rectangleGeometry",
             "circleGeometry",
@@ -1373,8 +1404,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             "arcGeometry",
             "textGeometry"
           ].every((definitionName) => !Object.prototype.hasOwnProperty.call(toolSchema.$defs[definitionName], "default")),
-          toolObjectDefaultOrigin: toolSchema.$defs.object.default.origin,
-          toolObjectOriginRef: toolSchema.$defs.object.properties.origin.$ref,
+          toolObjectDefaultOrigin: toolSchema.$defs.object.default.objectOrigin,
+          toolObjectOriginRef: toolSchema.$defs.object.properties.objectOrigin.$ref,
           toolShapeCommonDefaultTool: toolSchema.$defs.shapeCommon.default.tool,
           toolStateEnum: toolSchema.$defs.objectState.properties.id.enum,
           toolStateThrustRemoved: !toolSchema.$defs.objectState.properties.id.enum.includes("thrust"),
@@ -1384,7 +1415,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             start: toolSchema.$defs.style.default.startPointStyle
           },
           toolStyleDefaultStrokeWidth: toolSchema.$defs.style.default.strokeWidth,
-          toolTransformDefaultOrigin: toolSchema.$defs.transform.default.origin
+          toolTransformDefaultOrigin: toolSchema.$defs.transform.default.shapeOrigin
         };
       });
       expect(objectVectorSchemaDefaults).toEqual({
@@ -1974,7 +2005,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 locked: false,
                 order: 1,
                 style: { fill: "#ffffff", fillOpacity: 1, stroke: "#ffffff", strokeOpacity: 1, strokeWidth: 3 },
-                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                 visible: true
               }
             ],
@@ -2276,6 +2307,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           allOneLine: centers.every((center) => Math.abs(center - centers[0]) <= 2),
           appearance: scaleInputStyle.appearance,
           order: children.map((child) => child.tagName === "INPUT" ? child.value : child.textContent.trim()),
+          scaleInputFitsNegativeThreeDecimals: (() => {
+            const priorValue = scaleInput.value;
+            scaleInput.value = "-12.345";
+            const fits = scaleInput.scrollWidth <= scaleInput.clientWidth + 1;
+            scaleInput.value = priorValue;
+            return fits;
+          })(),
           resizeTitle: row.querySelector("#objectVectorStudioV2ResizeShapeButton").title,
           spinnerCssRuleExists
         };
@@ -2284,6 +2322,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         allOneLine: true,
         appearance: "textfield",
         order: ["Scale", "--", "-", "1", "+", "++", "Resize"],
+        scaleInputFitsNegativeThreeDecimals: true,
         resizeTitle: "Resize Geometry",
         spinnerCssRuleExists: true
       });
@@ -2477,8 +2516,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           strokeWidth: 2
         },
         tool: "rectangle",
-        transform: {
-          origin: { x: -40, y: 0 },
+        transform: { shapeOrigin: { x: -40, y: 0 },
           rotation: createdRectangleSchemaDefaults.schemaTransform.rotation,
           scaleX: createdRectangleSchemaDefaults.schemaTransform.scaleX,
           scaleY: createdRectangleSchemaDefaults.schemaTransform.scaleY,
@@ -2874,7 +2912,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by -30 degrees\. Snap Angle disabled: raw rotation applied\./);
       const wrappedLargeRotationSummary = await page.evaluate(() => window.__objectVectorStudioV2App.formatTransformSummary({
-        origin: { x: 0, y: 0 },
+        shapeOrigin: { x: 0, y: 0 },
         rotation: 2233,
         scaleX: 0.77,
         scaleY: 0.77,
@@ -2885,7 +2923,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2OriginXInput").fill("2");
       await page.locator("#objectVectorStudioV2OriginYInput").fill("-3");
       await page.locator("#objectVectorStudioV2ApplyOriginButton").click();
-      const originAfterApply = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform.origin);
+      const originAfterApply = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform.shapeOrigin);
       expect(originAfterApply).toEqual({ x: 2, y: -3 });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated shape row 0 origin\/pivot to 2, -3\./);
       const pivotMarkerAfterOrigin = await page.locator("#objectVectorStudioV2RenderSurface [data-pivot-origin='0']").evaluate((pivot) => {
@@ -2928,7 +2966,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const shape = window.__objectVectorStudioV2App.selectedShape();
         return {
           geometry: { ...shape.geometry },
-          transform: { ...shape.transform, origin: { ...shape.transform.origin } }
+          transform: { ...shape.transform, shapeOrigin: { ...shape.transform.shapeOrigin } }
         };
       });
       await page.locator("#objectVectorStudioV2ResizeShapeButton").click();
@@ -2937,15 +2975,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return {
           geometry: { ...shape.geometry },
           schemaOk: window.__objectVectorStudioV2App.schemaService.validatePayload(window.__objectVectorStudioV2App.currentPayload).ok,
-          transform: { ...shape.transform, origin: { ...shape.transform.origin } }
+          transform: { ...shape.transform, shapeOrigin: { ...shape.transform.shapeOrigin } }
         };
       });
       expect(rectangleAfterResizeGeometry).toMatchObject({
         geometry: {
           height: Number((rectangleBeforeResizeGeometry.geometry.height * 1.2).toFixed(3)),
           width: Number((rectangleBeforeResizeGeometry.geometry.width * 1.2).toFixed(3)),
-          x: Number((rectangleBeforeResizeGeometry.transform.origin.x + (rectangleBeforeResizeGeometry.geometry.x - rectangleBeforeResizeGeometry.transform.origin.x) * 1.2).toFixed(3)),
-          y: Number((rectangleBeforeResizeGeometry.transform.origin.y + (rectangleBeforeResizeGeometry.geometry.y - rectangleBeforeResizeGeometry.transform.origin.y) * 1.2).toFixed(3))
+          x: Number((rectangleBeforeResizeGeometry.transform.shapeOrigin.x + (rectangleBeforeResizeGeometry.geometry.x - rectangleBeforeResizeGeometry.transform.shapeOrigin.x) * 1.2).toFixed(3)),
+          y: Number((rectangleBeforeResizeGeometry.transform.shapeOrigin.y + (rectangleBeforeResizeGeometry.geometry.y - rectangleBeforeResizeGeometry.transform.shapeOrigin.y) * 1.2).toFixed(3))
         },
         schemaOk: true,
         transform: {
@@ -4305,7 +4343,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                   locked: false,
                   order: 1,
                   style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 1 },
-                  transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                  transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                   visible: true
                 }
               ],
@@ -4350,22 +4388,35 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const polygonPointRowLayoutState = await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").first().evaluate((row) => {
         const header = row.parentElement.querySelector(".object-vector-studio-v2__polygon-point-header");
         const headerCells = Array.from(header.children, (cell) => cell.textContent.trim());
+        const children = Array.from(row.children).filter((child) => child.getClientRects().length > 0);
+        const rects = children.map((child) => child.getBoundingClientRect());
+        const rowHeight = Math.max(...rects.map((rect) => rect.bottom)) - Math.min(...rects.map((rect) => rect.top));
+        const maxChildHeight = Math.max(...rects.map((rect) => rect.height));
+        const xInput = row.querySelector("[data-polygon-point-axis='x']");
+        const priorXValue = xInput.value;
+        xInput.value = "-12.345";
+        const xInputFitsThreeDecimals = xInput.scrollWidth <= xInput.clientWidth + 1;
+        xInput.value = priorXValue;
         return {
           addAfterRound: row.children[4]?.matches("[data-polygon-point-add='true']") === true,
+          allOneLine: rowHeight <= maxChildHeight + 4,
           columnCount: getComputedStyle(row).gridTemplateColumns.split(" ").length,
           deleteAfterAdd: row.children[5]?.matches("[data-polygon-point-delete='true']") === true,
           headerCells,
           roundCheckboxColumn: row.children[3]?.querySelector("[data-polygon-point-round='true']") !== null,
-          roundCheckboxes: row.querySelectorAll("[data-polygon-point-round='true']").length
+          roundCheckboxes: row.querySelectorAll("[data-polygon-point-round='true']").length,
+          xInputFitsThreeDecimals
         };
       });
       expect(polygonPointRowLayoutState).toEqual({
         addAfterRound: true,
+        allOneLine: true,
         columnCount: 6,
         deleteAfterAdd: true,
-        headerCells: ["", "", "", "Round", "+", "Trash"],
+        headerCells: ["", "", "", "Round", "", ""],
         roundCheckboxColumn: true,
-        roundCheckboxes: 1
+        roundCheckboxes: 1,
+        xInputFitsThreeDecimals: true
       });
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").check();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to round for shape row 0\./);
@@ -4656,7 +4707,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       locked: false,
       order,
       style,
-      transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+      transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
       tool,
       visible: true
     });
@@ -4921,7 +4972,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                   locked: false,
                   order: 1,
                   style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 1 },
-                  transform: { origin: { x: -20, y: -5 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                  transform: { shapeOrigin: { x: -20, y: -5 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                   visible: true
                 },
                 {
@@ -4930,7 +4981,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                   locked: false,
                   order: 2,
                   style: { fill: "none", fillOpacity: 1, stroke: "#ffffff", strokeOpacity: 1, strokeWidth: 1 },
-                  transform: { origin: { x: -35, y: 40 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                  transform: { shapeOrigin: { x: -35, y: 40 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                   visible: true
                 },
                 {
@@ -4946,7 +4997,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                   locked: false,
                   order: 3,
                   style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 1 },
-                  transform: { origin: { x: 25, y: 25 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                  transform: { shapeOrigin: { x: 25, y: 25 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                   visible: true
                 },
                 {
@@ -4955,7 +5006,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                   locked: false,
                   order: 4,
                   style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 1 },
-                  transform: { origin: { x: 80, y: 20 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                  transform: { shapeOrigin: { x: 80, y: 20 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                   visible: true
                 }
               ],
@@ -5158,7 +5209,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                   order: 1,
                   style: { fill: "#ffffff", fillOpacity: 1, stroke: "#60a5fa", strokeOpacity: 1, strokeWidth: 1 },
                   tool: "rectangle",
-                  transform: { origin: { x: -10, y: 5 }, rotation: 30, scaleX: 0.5, scaleY: 0.5, x: 60, y: 10 },
+                  transform: { shapeOrigin: { x: -10, y: 5 }, rotation: 30, scaleX: 0.5, scaleY: 0.5, x: 60, y: 10 },
                   visible: true
                 }
               ],
@@ -5181,13 +5232,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const geometry = shape.geometry;
         const transformPoint = (point) => {
           const radians = transform.rotation * Math.PI / 180;
-          const relativeX = (point.x - transform.origin.x) * transform.scaleX;
-          const relativeY = (point.y - transform.origin.y) * transform.scaleY;
+          const relativeX = (point.x - transform.shapeOrigin.x) * transform.scaleX;
+          const relativeY = (point.y - transform.shapeOrigin.y) * transform.scaleY;
           const rotatedX = relativeX * Math.cos(radians) - relativeY * Math.sin(radians);
           const rotatedY = relativeX * Math.sin(radians) + relativeY * Math.cos(radians);
           return {
-            x: (transform.x + transform.origin.x + rotatedX) * drawingScale,
-            y: (transform.y + transform.origin.y + rotatedY) * drawingScale
+            x: (transform.x + transform.shapeOrigin.x + rotatedX) * drawingScale,
+            y: (transform.y + transform.shapeOrigin.y + rotatedY) * drawingScale
           };
         };
         const corners = [
@@ -5285,7 +5336,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const server = await startRepoServer();
     const pageErrors = [];
     const consoleErrors = [];
-    const scaledTransform = { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1.5, scaleY: 1.5, x: 0, y: 0 };
+    const scaledTransform = { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1.5, scaleY: 1.5, x: 0, y: 0 };
     const style = { fill: "#ffffff", fillOpacity: 1, stroke: "#60a5fa", strokeOpacity: 1, strokeWidth: 1 };
 
     page.on("pageerror", (error) => {
@@ -5481,6 +5532,50 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"groupId": "group-1"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-1\./);
 
+      await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        app.activateToolMode("select", "group drag verification");
+        app.selectShape(0, "group drag verification");
+      });
+      const groupedDragBefore = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { x: transform.x, y: transform.y };
+        });
+      });
+      const groupedShapeBox = await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']").boundingBox();
+      expect(groupedShapeBox).toBeTruthy();
+      const groupedShapeDragStart = {
+        x: groupedShapeBox.x + groupedShapeBox.width * 0.62,
+        y: groupedShapeBox.y + groupedShapeBox.height * 0.58
+      };
+      await page.mouse.move(groupedShapeDragStart.x, groupedShapeDragStart.y);
+      await page.mouse.down();
+      await page.mouse.move(groupedShapeDragStart.x + 42, groupedShapeDragStart.y + 18, { steps: 4 });
+      await page.mouse.up();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Dragged group group-1 \(2 shapes\) by/);
+      const groupedDragAfter = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return {
+          selectedCount: app.selectedShapeIndexes.size,
+          transforms: app.selectedObject().shapes.map((shape, shapeIndex) => {
+            const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+            return { x: transform.x, y: transform.y };
+          })
+        };
+      });
+      expect(groupedDragAfter.selectedCount).toBe(2);
+      const groupDragDelta = {
+        x: Number((groupedDragAfter.transforms[0].x - groupedDragBefore[0].x).toFixed(3)),
+        y: Number((groupedDragAfter.transforms[0].y - groupedDragBefore[0].y).toFixed(3))
+      };
+      expect(Math.abs(groupDragDelta.x) + Math.abs(groupDragDelta.y)).toBeGreaterThan(0);
+      expect(Number((groupedDragAfter.transforms[1].x - groupedDragBefore[1].x).toFixed(3))).toBeCloseTo(groupDragDelta.x, 3);
+      expect(Number((groupedDragAfter.transforms[1].y - groupedDragBefore[1].y).toFixed(3))).toBeCloseTo(groupDragDelta.y, 3);
+
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveText("Snap Grid");
       await expect(page.locator("#objectVectorStudioV2ObjectMoveButton")).toHaveCount(0);
       await page.locator("#objectVectorStudioV2ObjectRotateInput").fill("30");
@@ -5509,6 +5604,43 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         });
       });
       expect(groupedRotateBackTransforms).toEqual([{ rotation: 15 }, { rotation: 15 }]);
+
+      await page.locator("#objectVectorStudioV2ObjectScaleUpLargeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object scale preview set to 1\.1 for UFO Template\./);
+      const objectScaleAfterLargeStep = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { scaleX: transform.scaleX, scaleY: transform.scaleY };
+        });
+      });
+      expect(objectScaleAfterLargeStep).toEqual([{ scaleX: 1.1, scaleY: 1.1 }, { scaleX: 1.1, scaleY: 1.1 }]);
+      await page.locator("#objectVectorStudioV2ObjectScaleDownSmallButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object scale preview set to 1\.09 for UFO Template\./);
+      const objectScaleAfterSmallStep = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { scaleX: transform.scaleX, scaleY: transform.scaleY };
+        });
+      });
+      expect(objectScaleAfterSmallStep).toEqual([{ scaleX: 1.09, scaleY: 1.09 }, { scaleX: 1.09, scaleY: 1.09 }]);
+
+      await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(0, "shape transform single-shape verification"));
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform #objectVectorStudioV2ScaleDownSmallButton")).toBeEnabled();
+      await page.locator("#objectVectorStudioV2ScaleDownSmallButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.08 for shape row 0\./);
+      const shapeScaleAfterSingleStep = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { scaleX: transform.scaleX, scaleY: transform.scaleY };
+        });
+      });
+      expect(shapeScaleAfterSingleStep).toEqual([{ scaleX: 1.08, scaleY: 1.08 }, { scaleX: 1.09, scaleY: 1.09 }]);
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.authoring-copied-json")));
@@ -5597,7 +5729,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 locked: false,
                 order: 1,
                 style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 3 },
-                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                 visible: true
               }
             ],
@@ -5611,7 +5743,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                     shapeOverrides: [
                       {
                         shapeIndex: 0,
-                        transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                        transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                         visible: true
                       }
                     ]
@@ -5629,7 +5761,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                     shapeOverrides: [
                       {
                         shapeIndex: 0,
-                        transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                        transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                         visible: true
                       }
                     ]
@@ -5784,7 +5916,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           shapeOverrides: [
             {
               shapeIndex: 0,
-              transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 12, y: 6 },
+              transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 12, y: 6 },
               visible: true
             }
           ]
@@ -5864,7 +5996,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 order: 1,
                 style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
                 tool: "rectangle",
-                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                 visible: true
               },
               {
@@ -5874,7 +6006,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 order: 2,
                 style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
                 tool: "rectangle",
-                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                 visible: true
               },
               {
@@ -5883,7 +6015,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 order: 3,
                 style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
                 tool: "rectangle",
-                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 30, y: 0 },
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 30, y: 0 },
                 visible: true
               },
               {
@@ -5892,7 +6024,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                 order: 4,
                 style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
                 tool: "rectangle",
-                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                 visible: true
               }
             ],
@@ -6067,7 +6199,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             const transform = app.ensureShapeTransform(shape);
             return {
               index: shapeIndex,
-              point: app.transformedPoint(transform.origin, transform),
+              point: app.transformedPoint(transform.shapeOrigin, transform),
               rotation: transform.rotation
             };
           }),
@@ -6095,7 +6227,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const transform = app.ensureShapeTransform(effectiveShape);
           return {
             index: shapeIndex,
-            point: app.transformedPoint(transform.origin, transform),
+            point: app.transformedPoint(transform.shapeOrigin, transform),
             rotation: transform.rotation
           };
         });
@@ -6172,7 +6304,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         locked: false,
         order: 1,
         style: { fill: "transparent", fillOpacity: 1, stroke: "#ffffff", strokeOpacity: 1, strokeWidth: 3 },
-        transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+        transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
         visible: true
       };
       const activeState = {
@@ -6184,7 +6316,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             shapeOverrides: [
               {
                 shapeIndex: 0,
-                transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                 visible: true
               }
             ]
@@ -6223,7 +6355,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                     shapeOverrides: [
                       {
                         shapeIndex: 0,
-                        transform: { origin: { x: 0, y: 0 }, rotation: 8, scaleX: 1.1, scaleY: 1.1, x: 4, y: 0 },
+                        transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 8, scaleX: 1.1, scaleY: 1.1, x: 4, y: 0 },
                         visible: true
                       }
                     ]
@@ -6715,7 +6847,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
                   locked: false,
                   order: 0,
                   style: { fill: "#ffffff", fillOpacity: 1, stroke: "#ffffff", strokeOpacity: 1, strokeWidth: 1 },
-                  transform: { origin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                  transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
                   visible: true
                 }
               ],
@@ -8607,6 +8739,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
   test("starts with no active game even when stale session hydration exists", async ({ page }) => {
     const staleGameManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
+    const staleWorkspaceContext = workspaceContextFromGameManifest(staleGameManifest, {
+      repoPath: process.cwd().replaceAll("\\", "/"),
+      repoRoot: "HTML-JavaScript-Gaming"
+    });
     const pageErrors = [];
     await page.addInitScript((manifest) => {
       window.sessionStorage.setItem("workspace-manager-v2-stale-context", JSON.stringify(manifest));
@@ -8623,7 +8759,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           changedKeys: []
         }
       }));
-    }, staleGameManifest.game.workspace);
+    }, staleWorkspaceContext);
     const server = await openWorkspaceManagerV2(page);
 
     page.on("pageerror", (error) => {
@@ -8689,16 +8825,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const { WorkspaceManagerV2ContextService } = await import("/tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
         const service = new WorkspaceManagerV2ContextService();
         const invalidRuntimeWorkspaceManifest = structuredClone(manifest);
-        invalidRuntimeWorkspaceManifest.game.gameData.workspace = {};
+        invalidRuntimeWorkspaceManifest.game.gameData = { workspace: {} };
         const invalidObjectVectorRuntimeManifest = structuredClone(manifest);
-        invalidObjectVectorRuntimeManifest.game.gameData.objectVectorRuntime = {
+        invalidObjectVectorRuntimeManifest.objectVectorRuntime = {
           objectIds: {
             ship: "object.asteroids.ship"
           }
         };
         const invalidUnknownGameDataManifest = structuredClone(manifest);
-        invalidUnknownGameDataManifest.game.gameData.debugUnknown = true;
-        const invalidUnknownWorkspaceManifest = structuredClone(manifest.game.workspace);
+        invalidUnknownGameDataManifest.game.gameData = { debugUnknown: true };
+        const workspaceManifest = service.workspaceManifestFromGameManifest({
+          id: manifest.game.id,
+          manifest,
+          manifestKind: "game-manifest",
+          manifestPath: "/games/Asteroids/game.manifest.json",
+          name: manifest.game.name,
+          repoRoot: "HTML-JavaScript-Gaming"
+        });
+        const invalidUnknownWorkspaceManifest = structuredClone(workspaceManifest);
         invalidUnknownWorkspaceManifest.debugUnknown = true;
         return {
           gameManifestValidation: await service.validateGameManifest(manifest),
@@ -8712,27 +8856,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           unknownGameDataValidation: await service.validateGameManifest(invalidUnknownGameDataManifest),
           unknownWorkspaceValidation: await service.validateGeneratedManifest(invalidUnknownWorkspaceManifest),
           workspaceDocumentKind: manifest.game?.workspace?.documentKind,
-          workspaceValidation: await service.validateGeneratedManifest(manifest.game.workspace)
+          workspaceValidation: await service.validateGeneratedManifest(workspaceManifest)
         };
       });
       expect(asteroidsGameManifestShape).toMatchObject({
         gameManifestValidation: { ok: true },
-        hasGameData: true,
-        hasRootTools: false,
-        hasWorkspace: true,
+        hasGameData: false,
+        hasRootTools: true,
+        hasWorkspace: false,
         objectVectorRuntimeValidation: { ok: false },
         rootDocumentKind: "",
         schema: "html-js-gaming.game-manifest",
         unknownGameDataValidation: { ok: false },
         unknownWorkspaceValidation: { ok: false },
-        workspaceDocumentKind: "workspace-manifest",
+        workspaceDocumentKind: undefined,
         workspaceValidation: { ok: true }
       });
-      expect(asteroidsGameManifestShape.objectVectorRuntimeValidation.message).toContain("root.game.gameData.objectVectorRuntime is not allowed");
-      expect(asteroidsGameManifestShape.unknownGameDataValidation.message).toContain("root.game.gameData.debugUnknown is not allowed");
+      expect(asteroidsGameManifestShape.objectVectorRuntimeValidation.message).toContain("root.objectVectorRuntime is not allowed");
+      expect(asteroidsGameManifestShape.unknownGameDataValidation.message).toContain("root.game.gameData is not allowed");
       expect(asteroidsGameManifestShape.unknownWorkspaceValidation.message).toContain("root.debugUnknown is not allowed");
       expect(asteroidsGameManifestShape.runtimeWorkspaceValidation.ok).toBe(false);
-      expect(asteroidsGameManifestShape.runtimeWorkspaceValidation.message).toContain("runtime data must not depend on editor/tool workspace state");
+      expect(asteroidsGameManifestShape.runtimeWorkspaceValidation.message).toContain("root.game.gameData is not allowed");
 
       await page.evaluate(() => {
         window.__workspaceManagerV2MockRepoConfig = {
@@ -9128,7 +9272,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect([...new Set(tileActionLayout.map((entry) => entry.actionBottomGap))]).toHaveLength(1);
       expect(tileActionLayout.every((entry) => entry.actionHeight === 24)).toBe(true);
       expect(tileActionLayout.every((entry) => entry.chipHeights.every((height) => height === 22))).toBe(true);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.gameData is runtime data; game\.workspace is editor\/tool state\. Runtime ignores game\.workspace; tools may read game\.gameData, write game\.workspace, and update game\.gameData only through explicit validated apply\/build\/export actions\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.manifest\.json is game-only data\. Workspace Manager uses root\.tools to create standalone workspace sessions and saves validated tool data back to root\.tools\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, preview-generator-v2, text2speech-V2, session-inspector-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for templates-v2: starter\/dev-only tool is not enabled by the selected game workspace config\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 10 active palette colors and 14 managed assets\./);
@@ -9162,18 +9306,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectWorkspaceReturnedFromTool(page);
       const asteroidsManifest = await page.evaluate(async () => await fetch("/games/Asteroids/game.manifest.json", { cache: "no-store" }).then((response) => response.json()));
       expect(asteroidsManifest.documentKind).toBeUndefined();
-      expect(asteroidsManifest.tools).toBeUndefined();
-      expect(asteroidsManifest.game.gameData.launch.directPath).toBe("/games/Asteroids/index.html");
-      expect(asteroidsManifest.game.gameData.objectVectorRuntime).toBeUndefined();
-      const manifestWorkspace = asteroidsManifest.game.workspace;
-      expect(manifestWorkspace.documentKind).toBe("workspace-manifest");
-      expect(Object.keys(manifestWorkspace.tools).sort()).toEqual(expect.arrayContaining(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2"]));
-      expect(manifestWorkspace.tools["vector-map-editor"]).toBeUndefined();
-      expect(manifestWorkspace.repoRoot).toBe("HTML-JavaScript-Gaming");
-      expect(manifestWorkspace.repoPath).toBe(manifestRepoPath(server));
-      expect(manifestWorkspace.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
-      expect(manifestWorkspace.tools["object-vector-studio-v2"].palette).toBeUndefined();
-      expect(manifestWorkspace.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
+      expect(asteroidsManifest.game.workspace).toBeUndefined();
+      expect(asteroidsManifest.game.gameData).toBeUndefined();
+      expect(asteroidsManifest.launch.directPath).toBe("/games/Asteroids/index.html");
+      expect(asteroidsManifest.objectVectorRuntime).toBeUndefined();
+      expect(Object.keys(asteroidsManifest.tools).sort()).toEqual(expect.arrayContaining(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2"]));
+      expect(asteroidsManifest.tools["vector-map-editor"]).toBeUndefined();
+      expect(asteroidsManifest.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
+      expect(asteroidsManifest.tools["object-vector-studio-v2"].palette).toBeUndefined();
+      expect(asteroidsManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
         "object.asteroids.ship",
         "object.asteroids.large-asteroid",
         "object.asteroids.medium-asteroid",
@@ -9182,7 +9323,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object.asteroids.large-ufo",
         "object.asteroids.small-ufo"
       ]));
-      expect(manifestWorkspace.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
+      expect(asteroidsManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
         "object.asteroids.ship",
         "object.asteroids.large-asteroid",
         "object.asteroids.medium-asteroid",
@@ -9191,10 +9332,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object.asteroids.large-ufo",
         "object.asteroids.small-ufo"
       ]));
-      expect(manifestWorkspace.tools["object-vector-studio-v2"].assetLibrary).toBeUndefined();
-      expect(manifestWorkspace.tools["object-vector-studio-v2"].objects.every((object) => object.id.startsWith("object.") && !Object.hasOwn(object, "objectId"))).toBe(true);
-      expect(manifestWorkspace.tools["object-vector-studio-v2"].objects.every((object) => /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9-]*$/.test(object.id))).toBe(true);
-      expect(manifestWorkspace.tools["object-vector-studio-v2"].objects.map((object) => object.id)).not.toEqual(expect.arrayContaining([
+      expect(asteroidsManifest.tools["object-vector-studio-v2"].assetLibrary).toBeUndefined();
+      expect(asteroidsManifest.tools["object-vector-studio-v2"].objects.every((object) => object.id.startsWith("object.") && !Object.hasOwn(object, "objectId"))).toBe(true);
+      expect(asteroidsManifest.tools["object-vector-studio-v2"].objects.every((object) => /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9-]*$/.test(object.id))).toBe(true);
+      expect(asteroidsManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).not.toEqual(expect.arrayContaining([
         "object.asteroids.asteroid.large",
         "object.asteroids.asteroid.medium",
         "object.asteroids.asteroid.small",
@@ -9202,12 +9343,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object.asteroids.ufo.large",
         "object.asteroids.ufo.small"
       ]));
-      if (Object.hasOwn(manifestWorkspace.tools, "text2speech-V2")) {
-        expect(manifestWorkspace.tools["text2speech-V2"]).toEqual(expect.any(Array));
+      if (Object.hasOwn(asteroidsManifest.tools, "text2speech-V2")) {
+        expect(asteroidsManifest.tools["text2speech-V2"]).toEqual(expect.any(Array));
       }
-      expect(Object.keys(manifestWorkspace.tools["asset-manager-v2"].assets)).toHaveLength(14);
-      expect(manifestWorkspace.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
-      expect(manifestWorkspace.tools["asset-manager-v2"].assets["assets.image.background.deluxe"]).toEqual({
+      expect(Object.keys(asteroidsManifest.tools["asset-manager-v2"].assets)).toHaveLength(14);
+      expect(asteroidsManifest.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
+      expect(asteroidsManifest.tools["asset-manager-v2"].assets["assets.image.background.deluxe"]).toEqual({
         path: "assets/images/deluxe.png",
         type: "image",
         kind: "png",
@@ -9217,7 +9358,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           uniformEdgeStretchPx: 0
         }
       });
-      expect(manifestWorkspace.tools["asset-manager-v2"].assets["assets.image.bezel.bezel"]).toEqual({
+      expect(asteroidsManifest.tools["asset-manager-v2"].assets["assets.image.bezel.bezel"]).toEqual({
         path: "assets/images/bezel.png",
         type: "image",
         kind: "png",
@@ -9227,15 +9368,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           uniformEdgeStretchPx: 10
         }
       });
-      expect(manifestWorkspace.tools["asset-manager-v2"].assets["assets.image.preview.preview"]).toEqual({
+      expect(asteroidsManifest.tools["asset-manager-v2"].assets["assets.image.preview.preview"]).toEqual({
         path: "assets/images/preview.png",
         type: "image",
         kind: "png",
         role: "preview",
         source: "manifest"
       });
-      expect(manifestWorkspace.tools["asset-manager-v2"].source).toBe("manifest");
-      expect(manifestWorkspace.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
+      expect(asteroidsManifest.tools["asset-manager-v2"].source).toBe("manifest");
+      expect(asteroidsManifest.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
 
       await assetTile.click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
@@ -9833,7 +9974,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved and marked clean: workspace\.tools\.text2speech-V2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved Text to Speech V2 payload count: 0\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 4 \(asset-manager-v2 assets=14; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=10; text2speech-V2 queue=0\)\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root game\.workspace toolState valid; saved context matched re-read file\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       const savedState = await page.evaluate((hostContextId) => {
         const writes = JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]");
         return {
@@ -9854,7 +9995,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         changedAt: null,
         changedKeys: []
       });
-      expect(savedState.manifest.game.workspace.tools["text2speech-V2"]).toEqual([]);
+      expect(savedState.manifest.tools["text2speech-V2"]).toEqual([]);
 
       await page.locator('[data-workspace-tool-id="text2speech-V2"]').click();
       await expect(page).toHaveURL(/text2speech-V2\/index\.html.*launch=workspace/);
@@ -10128,8 +10269,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const override = frame?.shapeOverrides?.find((entry) => entry.shapeIndex === app.selectedShapeIndex) || null;
           const target = override || shape;
           target.transform = app.ensureShapeTransform(app.effectiveShape(shape));
-          target.transform.origin = { x: 123, y: -45 };
-          app.selectedObject().origin = { x: 999, y: 999 };
+          target.transform.shapeOrigin = { x: 123, y: -45 };
+          app.selectedObject().objectOrigin = { x: 999, y: 999 };
           app.renderPayload({ syncPaletteSelection: false });
         });
         const autoOriginBefore = await page.evaluate(() => {
@@ -10146,8 +10287,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
               y: Number((bounds.y + bounds.height / 2).toFixed(3))
             },
             geometryText: JSON.stringify(shape.geometry),
-            objectOrigin: { ...object.origin },
-            pivot: app.transformedPoint(transform.origin, transform)
+            objectOrigin: { ...object.objectOrigin },
+            pivot: app.transformedPoint(transform.shapeOrigin, transform)
           };
         });
         await page.locator("#objectVectorStudioV2ObjectAutoOriginButton").click();
@@ -10161,8 +10302,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return {
             bounds: app.objectBounds(app.selectedObject(), { includeInvisible: false }),
             geometryText: JSON.stringify(shape.geometry),
-            objectOrigin: { ...object.origin },
-            pivot: app.transformedPoint(transform.origin, transform)
+            objectOrigin: { ...object.objectOrigin },
+            pivot: app.transformedPoint(transform.shapeOrigin, transform)
           };
         });
         expect(autoOriginAfter.geometryText).toBe(autoOriginBefore.geometryText);
@@ -10275,8 +10416,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         changedKeys: []
       });
       const writtenManifest = JSON.parse(savedState.writes.at(-1).contents);
-      expect(writtenManifest.game.workspace.tools["object-vector-studio-v2"].objects.some((object) => object.name === "Dirty Probe Renamed")).toBe(true);
-      expect(writtenManifest.game.workspace.tools["object-vector-studio-v2"].objects.find((object) => object.id === "object.asteroids.large-asteroid").tags).toContain("dirty-state");
+      expect(writtenManifest.tools["object-vector-studio-v2"].objects.some((object) => object.name === "Dirty Probe Renamed")).toBe(true);
+      expect(writtenManifest.tools["object-vector-studio-v2"].objects.find((object) => object.id === "object.asteroids.large-asteroid").tags).toContain("dirty-state");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -10327,7 +10468,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved file size: \d+ bytes\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: (?:3 \(asset-manager-v2 assets=14; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11\)|4 \(asset-manager-v2 assets=14; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11; text2speech-V2 queue=(?:0|1)\))\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root game\.workspace toolState valid; saved context matched re-read file\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 toolState context workspace-manager-v2-Asteroids\./);
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "false");
@@ -10350,16 +10491,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const manifestWrites = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]"));
       expect(manifestWrites.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Asteroids/game.manifest.json");
       const writtenGameManifest = JSON.parse(manifestWrites.at(-1).contents);
-      expect(writtenGameManifest.game.workspace).toBeTruthy();
-      expect(writtenGameManifest.game.workspace.tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
+      expect(writtenGameManifest.game.workspace).toBeUndefined();
+      expect(writtenGameManifest.game.gameData).toBeUndefined();
+      expect(writtenGameManifest.tools).toBeTruthy();
+      expect(writtenGameManifest.tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
         hex: "#654321",
         name: "Close Guard Copper",
         source: "User Added",
         symbol: "@"
       });
-      expect(Object.keys(writtenGameManifest.game.workspace.tools["asset-manager-v2"].assets)).toHaveLength(14);
-      if (Object.hasOwn(writtenGameManifest.game.workspace.tools, "text2speech-V2")) {
-        expect(writtenGameManifest.game.workspace.tools["text2speech-V2"]).toEqual(expect.any(Array));
+      expect(Object.keys(writtenGameManifest.tools["asset-manager-v2"].assets)).toHaveLength(14);
+      if (Object.hasOwn(writtenGameManifest.tools, "text2speech-V2")) {
+        expect(writtenGameManifest.tools["text2speech-V2"]).toEqual(expect.any(Array));
       }
 
       await page.locator("#closeWorkspaceButton").click();
@@ -10458,7 +10601,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save source binding: \/games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved path: games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root game\.workspace toolState valid; saved context matched re-read file\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       const saveState = await page.evaluate((contextId) => ({
         paletteSession: JSON.parse(sessionStorage.getItem("workspace.tools.palette-manager-v2")),
@@ -10481,7 +10624,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         symbol: "&"
       });
       expect(saveState.writes.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Asteroids/game.manifest.json");
-      expect(JSON.parse(saveState.writes.at(-1).contents).game.workspace.tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
+      expect(JSON.parse(saveState.writes.at(-1).contents).tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
         hex: "#2468ac",
         name: "Read Only Restore Blue",
         source: "User Added",
@@ -10526,7 +10669,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`INFO Save source rebound to /games/Asteroids/game\\.manifest\\.json for Asteroids\\.`));
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save source binding: \/games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root game\.workspace toolState valid; saved context matched re-read file\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       const sourceBindingState = await page.evaluate((contextId) => ({
         activeGameManifestKind: window.__workspaceManagerV2App.activeGame.manifestKind,
@@ -10543,7 +10686,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         symbol: "%"
       });
       expect(sourceBindingState.writes.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Asteroids/game.manifest.json");
-      expect(JSON.parse(sourceBindingState.writes.at(-1).contents).game.workspace.tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
+      expect(JSON.parse(sourceBindingState.writes.at(-1).contents).tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
         hex: "#987654",
         name: "Restored Binding Bronze",
         source: "User Added",
@@ -10656,7 +10799,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const pageErrors = [];
     const hostContextId = "workspace-manager-v2-missing-return-repo-reference";
     const gameManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
-    const manifest = gameManifest.game.workspace;
+    const manifest = workspaceContextFromGameManifest(gameManifest, {
+      repoPath: process.cwd().replaceAll("\\", "/"),
+      repoRoot: "HTML-JavaScript-Gaming"
+    });
     await page.addInitScript(({ contextId, workspaceManifest }) => {
       window.sessionStorage.setItem(contextId, JSON.stringify(workspaceManifest));
     }, { contextId: hostContextId, workspaceManifest: manifest });
@@ -10704,9 +10850,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const pageErrors = [];
     const hostContextId = "workspace-manager-v2-display-root-context";
     const displayRootGameManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
-    const displayRootManifest = displayRootGameManifest.game.workspace;
-    displayRootManifest.repoRoot = "HTML-JavaScript-Gaming";
-    delete displayRootManifest.repoPath;
+    const displayRootManifest = workspaceContextFromGameManifest(displayRootGameManifest, {
+      repoRoot: "HTML-JavaScript-Gaming"
+    });
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);
@@ -10745,8 +10891,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const pageErrors = [];
     const hostContextId = "workspace-manager-v2-invalid-repo-reference-context";
     const gameManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
-    const manifest = gameManifest.game.workspace;
-    manifest.repoRoot = "HTML-JavaScript-Gaming";
+    const manifest = workspaceContextFromGameManifest(gameManifest, {
+      repoRoot: "HTML-JavaScript-Gaming"
+    });
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);
@@ -10857,13 +11004,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           GravityWell: await fetch("/games/GravityWell/game.manifest.json", { cache: "no-store" }).then((response) => response.json()),
           Pong: await fetch("/games/Pong/game.manifest.json", { cache: "no-store" }).then((response) => response.json())
         };
-        return Object.fromEntries(await Promise.all(Object.entries(manifests).map(async ([gameId, manifest]) => [
-          gameId,
-          {
-            gameManifest: await service.validateGameManifest(manifest),
-            workspace: await service.validateGeneratedManifest(manifest.game.workspace)
-          }
-        ])));
+        return Object.fromEntries(await Promise.all(Object.entries(manifests).map(async ([gameId, manifest]) => {
+          const workspaceManifest = service.workspaceManifestFromGameManifest({
+            id: manifest.game.id,
+            manifest,
+            manifestKind: "game-manifest",
+            manifestPath: `/games/${manifest.game.folder}/game.manifest.json`,
+            name: manifest.game.name,
+            repoRoot: "HTML-JavaScript-Gaming"
+          });
+          return [
+            gameId,
+            {
+              gameManifest: await service.validateGameManifest(manifest),
+              workspace: await service.validateGeneratedManifest(workspaceManifest)
+            }
+          ];
+        })));
       });
       expect(schemaValidation).toEqual({
         GravityWell: {
@@ -11030,7 +11187,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     const server = await startRepoServer();
     const pageErrors = [];
     const asteroidsManifest = JSON.parse(await readFile("games/Asteroids/game.manifest.json", "utf8"));
-    asteroidsManifest.game.workspace.tools["asset-manager-v2"].assets = {};
+    asteroidsManifest.tools["asset-manager-v2"].assets = {};
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);

@@ -1,22 +1,20 @@
-# Playwright Workspace V2 Results
+﻿# Workspace V2 Playwright Results
 
-PR: PR_26133_092-object-vector-layout-transform-and-origin-schema-fixes
+PR: PR_26133_093-game-only-manifest-origin-and-transform-fixes
 
 Command: `npm run test:workspace-v2`
 
 Result: PASS
 
 Summary:
-- 54/54 Playwright tests passed.
-- Final full run completed in 6.7 minutes.
-- Duplicate inner Object Transform and Shape Transform panel titles are removed.
-- Tools now contains only Snap Grid, Snap Angle, Grid, and Words; Shapes contains only select/creation tools.
-- Selected object shape lists and shape ordering/group controls render back under Objects > selected Object > shapes.
-- Object-level origin persists through schema, manifest, loader normalization, Object Transform Apply, and Auto controls while shape-level origin remains separate.
-- Grid on/off icons use nf-md-grid and nf-md-grid_off, with the off icon using the disabled red icon color only.
-- Object Transform summary no longer shows mixed x/y move values when object Move is not supported.
-- Existing console/page error assertions remained clean in the covered flows.
+- 54 tests passed.
+- Duration: about 5.2 minutes.
+- No test failures were reported.
+- Workspace Manager V2 and Object Vector Studio V2 coverage ran as part of the passing suite.
 
-Targeted verification notes:
-- Updated Playwright assertions cover Tools/Shapes accordion membership, shape list placement under selected object tiles, restored shape action controls, object-level origin schema/default support, grid icon state, Object Transform summary wording, and Object/Shape Transform duplicate-title removal.
-- Focused reruns were used while repairing stale selectors, then the full workspace-v2 suite passed.
+Additional validation:
+- PASS: all `games/**/game.manifest.json` files validate against `tools/schemas/game.manifest.schema.json`.
+- PASS: no validated game manifest requires or contains `game.workspace`.
+- PASS: game-only root `tools` payloads load through Workspace Manager V2 and Asteroids object vector runtime paths.
+- PASS: schema rejects legacy in-game workspace/gameData payloads in updated Workspace Manager validation.
+- PASS: no console/runtime errors were observed by the passing workspace-v2 suite.
