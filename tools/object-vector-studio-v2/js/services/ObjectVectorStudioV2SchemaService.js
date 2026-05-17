@@ -451,6 +451,9 @@ export class ObjectVectorStudioV2SchemaService {
       baseObjectId: typeof object.baseObjectId === "string" ? object.baseObjectId.trim() : undefined,
       id: object.id.trim(),
       name: object.name.trim(),
+      origin: isPlainObject(object.origin)
+        ? { x: Number(object.origin.x), y: Number(object.origin.y) }
+        : undefined,
       tags: Array.isArray(object.tags) ? object.tags.map((tag) => tag.trim()).filter(Boolean) : undefined,
       states: Array.isArray(object.states)
         ? object.states.map((state) => ({
@@ -478,6 +481,9 @@ export class ObjectVectorStudioV2SchemaService {
       }
       if (object.baseObjectId === undefined) {
         delete object.baseObjectId;
+      }
+      if (object.origin === undefined) {
+        delete object.origin;
       }
       if (object.tags === undefined) {
         delete object.tags;

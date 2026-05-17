@@ -474,7 +474,11 @@
               "tags": [
                 "player",
                 "ship"
-              ]
+              ],
+              "origin": {
+                "x": 0,
+                "y": 0
+              }
             },
             {
               "id": "object.asteroids.large-asteroid",
@@ -574,7 +578,11 @@
               "tags": [
                 "asteroid",
                 "large"
-              ]
+              ],
+              "origin": {
+                "x": 0,
+                "y": 0
+              }
             },
             {
               "id": "object.asteroids.small-asteroid",
@@ -650,7 +658,11 @@
               "tags": [
                 "asteroid",
                 "small"
-              ]
+              ],
+              "origin": {
+                "x": 0,
+                "y": 0
+              }
             },
             {
               "id": "object.asteroids.large-ufo",
@@ -734,7 +746,11 @@
               "tags": [
                 "ufo",
                 "large"
-              ]
+              ],
+              "origin": {
+                "x": 0,
+                "y": 0
+              }
             },
             {
               "id": "object.asteroids.small-ufo",
@@ -818,7 +834,11 @@
               "tags": [
                 "ufo",
                 "small"
-              ]
+              ],
+              "origin": {
+                "x": 0,
+                "y": 0
+              }
             },
             {
               "id": "object.asteroids.medium-asteroid",
@@ -898,7 +918,11 @@
               "tags": [
                 "asteroid",
                 "medium"
-              ]
+              ],
+              "origin": {
+                "x": 0,
+                "y": 0
+              }
             },
             {
               "id": "object.asteroids.medium-asteroid-2",
@@ -978,7 +1002,11 @@
               "tags": [
                 "asteroid",
                 "medium"
-              ]
+              ],
+              "origin": {
+                "x": 0,
+                "y": 0
+              }
             }
           ]
         },

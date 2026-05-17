@@ -33,6 +33,7 @@
       "default": {
         "id": "object.game.object",
         "name": "Object",
+        "origin": { "x": 0, "y": 0 },
         "tags": [],
         "shapes": []
       },
@@ -48,6 +49,9 @@
         },
         "tags": {
           "$ref": "#/$defs/tags"
+        },
+        "origin": {
+          "$ref": "#/$defs/point2d"
         },
         "baseObjectId": {
           "type": "string",

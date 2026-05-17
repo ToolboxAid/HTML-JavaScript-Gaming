@@ -188,6 +188,7 @@
       "default": {
         "id": "object.game.object",
         "name": "Object",
+        "origin": { "x": 0, "y": 0 },
         "tags": [],
         "shapes": []
       },
@@ -201,6 +202,9 @@
         },
         "tags": {
           "$ref": "#/$defs/objectVectorStudioTags"
+        },
+        "origin": {
+          "$ref": "#/$defs/point2d"
         },
         "baseObjectId": {
           "$ref": "#/$defs/objectIdentityId"
@@ -224,6 +228,19 @@
       "items": {
         "type": "string",
         "minLength": 1
+      }
+    },
+    "point2d": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
       }
     },
     "objectVectorStudioShape": {
