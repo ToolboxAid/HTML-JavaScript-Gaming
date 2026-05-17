@@ -1,23 +1,23 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_080-point-rounding-and-point-delete-ui-fix
+PR: PR_26133_081-point-row-layout-and-independent-rounding-fix
 
 ## Validation
 
 - PASS: npm run test:workspace-v2
 - Result: 54 passed
-- Runtime: 5.4m
+- Runtime: 5.5m
 - Browser project: playwright
 - Workers: 1
 
 ## Targeted Checks Covered
 
 - Shape Geometry point rows still render exactly one Round checkbox per row.
-- The global Delete Point(s) action no longer renders.
-- Editable point rows render a row-end trash button for deleting only that point.
-- Rounding checkboxes update only point rounding and do not delete rows.
-- Row trash deletion preserves independent rounding state for remaining points.
-- Deleting a point that would violate minimum geometry count is visibly rejected.
+- Point rows now use one right-aligned action cell containing Round and the row trash button.
+- Editable point row layout keeps Point, X, Y, and actions in four stable columns.
+- Polygon/polyline point-list shapes no longer inherit shared middle/corner rounding from legacy pointStyle fallback.
+- Checking two middle polyline points and then unchecking one leaves the other middle point rounded.
+- Row trash deletion and invalid delete rejection coverage remain green.
 
 ## Console/Runtime Errors
 

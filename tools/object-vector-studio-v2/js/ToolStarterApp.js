@@ -923,6 +923,9 @@ export class ToolStarterApp {
       return Array.from({ length: pointCount }, (_, index) => explicit[index] === true);
     }
     const geometryTool = shapeGeometryTool(shape);
+    if (geometryTool === "polygon") {
+      return Array.from({ length: pointCount }, () => false);
+    }
     return Array.from({ length: pointCount }, (_, index) => {
       if (geometryTool === "line" || geometryTool === "polyline") {
         if (index === 0) {
@@ -930,6 +933,9 @@ export class ToolStarterApp {
         }
         if (index === pointCount - 1) {
           return this.pointStyleValue(shape?.style?.endPointStyle ?? shape?.style?.strokeLinecap ?? shape?.style?.pointStyle) === "round";
+        }
+        if (geometryTool === "polyline") {
+          return false;
         }
       }
       return this.pointStyleValue(shape?.style?.pointStyle ?? shape?.style?.strokeLinecap) === "round";
@@ -2344,7 +2350,9 @@ export class ToolStarterApp {
     roundCheckbox.addEventListener("click", (event) => event.stopPropagation());
     roundCheckbox.addEventListener("change", () => this.updateSelectedShapePointRounding(index, roundCheckbox.checked));
     roundLabel.append(roundCaption, roundCheckbox);
-    row.append(roundLabel);
+    const actions = document.createElement("div");
+    actions.className = "object-vector-studio-v2__polygon-point-actions";
+    actions.append(roundLabel);
     if (deletable) {
       const deleteButton = document.createElement("button");
       deleteButton.type = "button";
@@ -2360,8 +2368,9 @@ export class ToolStarterApp {
         event.stopPropagation();
         this.deletePolygonPointRow(index, deleteButton);
       });
-      row.append(deleteButton);
+      actions.append(deleteButton);
     }
+    row.append(actions);
     return row;
   }
 

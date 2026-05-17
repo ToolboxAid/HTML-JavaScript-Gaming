@@ -3819,6 +3819,40 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         pointRounding: [false, true, false, false],
         strokeLinejoin: "miter"
       });
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='2']").check();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 3 rounding to round for shape row \d+\./);
+      const polylineTwoRoundedJoints = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${polylineIndex}"]`).evaluate((shape) => {
+        const markers = Array.from(document.querySelectorAll("#objectVectorStudioV2RenderSurface [data-point-style-caps='polyline'] [data-point-style-cap]")).map((marker) => marker.dataset.pointStyleCap);
+        return {
+          jointStyle: shape.dataset.pointStyle || "",
+          markers,
+          pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+        };
+      });
+      expect(polylineTwoRoundedJoints).toEqual({
+        jointStyle: "square",
+        markers: ["point-1", "point-2"],
+        pointRounding: [false, true, true, false],
+        strokeLinejoin: "miter"
+      });
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").uncheck();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to square for shape row \d+\./);
+      const polylineIndependentJoint = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${polylineIndex}"]`).evaluate((shape) => {
+        const markers = Array.from(document.querySelectorAll("#objectVectorStudioV2RenderSurface [data-point-style-caps='polyline'] [data-point-style-cap]")).map((marker) => marker.dataset.pointStyleCap);
+        return {
+          jointStyle: shape.dataset.pointStyle || "",
+          markers,
+          pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+        };
+      });
+      expect(polylineIndependentJoint).toEqual({
+        jointStyle: "square",
+        markers: ["point-2"],
+        pointRounding: [false, false, true, false],
+        strokeLinejoin: "miter"
+      });
 
       await page.locator('[data-shape-tool="text"]').click();
       await clickObjectVectorLogicalPoint(page, 70, 60);
@@ -4000,6 +4034,23 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-delete='true']")).toHaveCount(4);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true']")).toHaveCount(0);
       await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.map((row) => row.querySelectorAll("input[type='checkbox']").length))).toEqual([1, 1, 1, 1]);
+      const polygonPointRowLayoutState = await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").first().evaluate((row) => {
+        const actions = row.querySelector(".object-vector-studio-v2__polygon-point-actions");
+        return {
+          actionCellLast: row.lastElementChild === actions,
+          actionJustify: getComputedStyle(actions).justifyContent,
+          columnCount: getComputedStyle(row).gridTemplateColumns.split(" ").length,
+          deleteAfterRound: actions?.lastElementChild?.matches("[data-polygon-point-delete='true']") === true,
+          roundCheckboxes: actions?.querySelectorAll("[data-polygon-point-round='true']").length || 0
+        };
+      });
+      expect(polygonPointRowLayoutState).toEqual({
+        actionCellLast: true,
+        actionJustify: "flex-end",
+        columnCount: 4,
+        deleteAfterRound: true,
+        roundCheckboxes: 1
+      });
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").check();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to round for shape row 0\./);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field")).toHaveCount(4);
