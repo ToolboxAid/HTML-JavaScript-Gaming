@@ -1973,7 +1973,7 @@ textarea:hover {
   line-height: 1;
 }
 
-.object-vector-studio-v2__scale-control-row #objectVectorStudioV2ResizeShapeButton {
+.object-vector-studio-v2__scale-control-row .object-vector-studio-v2__scale-resize-button {
   gap: 2px;
   padding-inline: 4px;
 }
@@ -2002,6 +2002,16 @@ textarea:hover {
   line-height: 1.2;
   text-align: center;
   width: 100%;
+}
+
+.object-vector-studio-v2__shape-panel.is-disabled {
+  opacity: 0.58;
+}
+
+.object-vector-studio-v2__shape-panel.is-disabled input,
+.object-vector-studio-v2__shape-panel.is-disabled select,
+.object-vector-studio-v2__shape-panel.is-disabled button {
+  cursor: not-allowed;
 }
 
 .object-vector-studio-v2__edit-field input.is-invalid,

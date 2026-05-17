@@ -1408,15 +1408,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ExportSvgButton")).toBeDisabled();
 
       await expect(page.locator(".tool-starter__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Object", "Object Transform", "Objects (0 obj, states 0, 0 shapes)"]);
-      await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Palette (0 swatches)", "Shape/Tools", "Shape Geometry", "JSON Details", "Dependency Graph", "Status Log"]);
-      await expect(page.locator(".tool-starter__panel--right > .accordion-v2").first().locator(".accordion-v2__header > span:first-child")).toHaveText("Palette (0 swatches)");
+      await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child")).toHaveText(["Shape/Tools", "Shape Transform", "Palette (0 swatches)", "Shape Geometry", "JSON Details", "Dependency Graph", "Status Log"]);
+      await expect(page.locator(".tool-starter__panel--right > .accordion-v2").first().locator(".accordion-v2__header > span:first-child")).toHaveText("Shape/Tools");
+      await expect(page.locator(".tool-starter__panel--right > .accordion-v2").nth(2).locator(".accordion-v2__header > span:first-child")).toHaveText("Palette (0 swatches)");
       await expect(page.locator("#objectVectorStudioV2JsonDetailsContent")).toBeHidden();
       await expect(page.locator("#objectVectorStudioV2DependencyGraphContent")).toBeHidden();
       await expect(page.locator("#statusLogContent")).toBeHidden();
       await expect(page.locator("#objectVectorStudioV2PaletteSwatchCount")).toHaveText("(0 swatches)");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
       await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(0 obj, states 0, 0 shapes)");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toHaveText("No shape selected.");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toHaveText("No object selected.");
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform")).toHaveText("No shape selected.");
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeDisabled();
       await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toHaveAttribute("data-disabled-reason", "Disabled until a schema-valid object is selected.");
       await expect(page.locator("#objectVectorStudioV2DeleteObjectButton")).toHaveCount(0);
@@ -2184,9 +2186,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails")).not.toContainText("Transform");
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails #objectVectorStudioV2MoveShapeButton")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ObjectTransform")).not.toContainText("Selected Shape:");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform #objectVectorStudioV2MoveShapeButton")).toHaveCount(1);
-      const transformSummaryLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => {
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform #objectVectorStudioV2ObjectMoveButton")).toHaveCount(1);
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform #objectVectorStudioV2MoveShapeButton")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 0, y 0, rot 0, scale 1");
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform #objectVectorStudioV2MoveShapeButton")).toHaveCount(1);
+      const transformSummaryLayout = await page.locator("#objectVectorStudioV2ShapeTransform").evaluate((panel) => {
         const originRow = panel.querySelector(".object-vector-studio-v2__transform-control-row--origin");
         const rotateRow = panel.querySelector(".object-vector-studio-v2__transform-control-row--rotate");
         const scaleRow = panel.querySelector(".object-vector-studio-v2__scale-control-row");
@@ -2217,7 +2221,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         summaryStartsWithoutTransform: true,
         summaryTopAtBottom: true
       });
-      const transformIconState = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => ({
+      const transformIconState = await page.locator("#objectVectorStudioV2ShapeTransform").evaluate((panel) => ({
         autoOrigin: {
           iconKey: panel.querySelector("#objectVectorStudioV2AutoOriginButton").dataset.ovsIconKey,
           iconName: panel.querySelector("#objectVectorStudioV2AutoOriginButton").dataset.ovsIconName,
@@ -2235,7 +2239,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         resize: { iconKey: "resize", iconName: "nf-md-resize", title: "Resize Geometry" },
         scaleActionRemoved: true
       });
-      const scaleControlLayout = await page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__scale-control-row").evaluate((row) => {
+      const scaleControlLayout = await page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__scale-control-row").evaluate((row) => {
         const children = Array.from(row.children);
         const centers = children.map((child) => {
           const rect = child.getBoundingClientRect();
@@ -2325,7 +2329,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await roundingRadiusInput.fill("8");
       await roundingRadiusInput.dispatchEvent("change");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated rounding radius to 8 for shape row 0\./);
-      const transformControlLayout = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => (
+      const transformControlLayout = await page.locator("#objectVectorStudioV2ShapeTransform").evaluate((panel) => (
         Array.from(panel.querySelectorAll(".object-vector-studio-v2__transform-control-row")).map((row) => {
           const children = Array.from(row.children).filter((child) => child.getClientRects().length > 0);
           const rects = children.map((child) => child.getBoundingClientRect());
@@ -2742,7 +2746,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2PaintModeButton")).toHaveAttribute("aria-pressed", "false");
       await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().style.fill)).toBe("#6fd3ff");
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails")).toContainText("Rectangle Geometry");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toContainText("Transform");
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform")).toContainText("Shape Transform");
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-geometry-field='x']").fill("-70");
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-geometry-field='x']").dispatchEvent("change");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"x": -70');
@@ -2848,7 +2852,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 15');
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1");
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by -30 degrees\. Snap Angle disabled: raw rotation applied\./);
       const wrappedLargeRotationSummary = await page.evaluate(() => window.__objectVectorStudioV2App.formatTransformSummary({
         origin: { x: 0, y: 0 },
@@ -2882,7 +2886,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).not.toHaveAttribute("aria-invalid", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.2 for shape row 0\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"scaleX": 1.2');
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1.2");
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1.2");
       const selectionBeforeScaleStep = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
         height: Number(box.getAttribute("height")),
         width: Number(box.getAttribute("width"))
@@ -2934,7 +2938,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
       });
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1");
-      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1");
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Resize Geometry applied scale 1\.2 to shape row 0; transform scale reset to 1\./);
 
       const selectedShapeActions = page.locator(".object-vector-studio-v2__object-tile[data-object-id='object.asteroids.object-1'] .object-vector-studio-v2__object-tile-shapes .object-vector-studio-v2__shape-list-actions");
@@ -3427,7 +3431,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(leftAccordionTitles.slice(0, 2)).toEqual(["Object", "Object Transform"]);
       expect(leftAccordionTitles[2]).toMatch(/^Objects \(18 obj, states \d+, 2 shapes\)$/);
       expect(leftAccordionLayout.slice(0, 2).every((entry) => entry.isOpen && entry.contentReachesSectionBottom && entry.flexGrow === "0")).toBe(true);
-      await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child").nth(2)).toHaveText("Shape Geometry");
+      await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child").nth(1)).toHaveText("Shape Transform");
+      await expect(page.locator(".tool-starter__panel--right > .accordion-v2 > .accordion-v2__header > span:first-child").nth(3)).toHaveText("Shape Geometry");
       const objectAccordionSpacing = await page.locator(".tool-starter__panel--left").evaluate((panel) => {
         const header = panel.querySelector(".accordion-v2__header");
         const content = panel.querySelector(".accordion-v2__content");
@@ -5446,10 +5451,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-1\./);
 
       await expect(page.locator("#objectVectorStudioV2SnapModeButton")).toHaveText("Snap Grid");
-      await page.locator("#objectVectorStudioV2MoveXInput").fill("13");
-      await page.locator("#objectVectorStudioV2MoveYInput").fill("7");
-      await page.locator("#objectVectorStudioV2MoveShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-1 \(2 shapes\) by 13, 7\./);
+      await page.locator("#objectVectorStudioV2ObjectMoveXInput").fill("13");
+      await page.locator("#objectVectorStudioV2ObjectMoveYInput").fill("7");
+      await page.locator("#objectVectorStudioV2ObjectMoveButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved object .* \(2 shapes\) by 13, 7\./);
       await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 0, scale 1");
       const groupedMoveForwardTransforms = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
@@ -5460,10 +5465,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         });
       });
       expect(groupedMoveForwardTransforms).toEqual([{ x: 13, y: 7 }, { x: 13, y: 7 }]);
-      await page.locator("#objectVectorStudioV2MoveXInput").fill("-5");
-      await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
-      await page.locator("#objectVectorStudioV2MoveShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-1 \(2 shapes\) by -5, -5\./);
+      await page.locator("#objectVectorStudioV2ObjectMoveXInput").fill("-5");
+      await page.locator("#objectVectorStudioV2ObjectMoveYInput").fill("-5");
+      await page.locator("#objectVectorStudioV2ObjectMoveButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved object .* \(2 shapes\) by -5, -5\./);
       await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 8, y 2, rot 0, scale 1");
       const groupedMoveBackTransforms = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
@@ -5928,11 +5933,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(objectTile.locator("[data-shape-group-id='group-2']")).toHaveCount(2);
 
       await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(0, "group move probe"));
-      await page.locator("#objectVectorStudioV2MoveXInput").fill("5");
-      await page.locator("#objectVectorStudioV2MoveYInput").fill("5");
-      await page.locator("#objectVectorStudioV2MoveShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved group group-2 \(2 shapes\) by 5, 5\./);
-      const transformsAfterGroupMove = await page.evaluate(() => {
+      await page.locator("#objectVectorStudioV2ObjectMoveXInput").fill("5");
+      await page.locator("#objectVectorStudioV2ObjectMoveYInput").fill("5");
+      await page.locator("#objectVectorStudioV2ObjectMoveButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Moved object Group State \(4 shapes\) by 5, 5\./);
+      const transformsAfterObjectMove = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
         return app.selectedObject().shapes.map((shape, shapeIndex) => {
@@ -5940,7 +5945,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { x: transform.x, y: transform.y };
         });
       });
-      expect(transformsAfterGroupMove).toEqual([{ x: 5, y: 5 }, { x: 0, y: 0 }, { x: 35, y: 5 }, { x: 0, y: 0 }]);
+      expect(transformsAfterObjectMove).toEqual([{ x: 5, y: 5 }, { x: 5, y: 5 }, { x: 35, y: 5 }, { x: 5, y: 5 }]);
 
       const selectionBoundsBeforeGroupRotate = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
         height: Number(box.getAttribute("height")),
@@ -5948,10 +5953,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         x: Number(box.getAttribute("x")),
         y: Number(box.getAttribute("y"))
       }));
-      await page.locator("#objectVectorStudioV2RotateInput").fill("90");
-      await page.locator("#objectVectorStudioV2RotateShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated group group-2 \(2 shapes\) by 90 degrees\./);
-      const transformsAfterGroupRotate = await page.evaluate(() => {
+      await page.locator("#objectVectorStudioV2ObjectRotateInput").fill("90");
+      await page.locator("#objectVectorStudioV2ObjectRotateButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated object Group State \(4 shapes\) by 90 degrees/);
+      const transformsAfterObjectRotate = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
         return app.selectedObject().shapes.map((shape, shapeIndex) => {
@@ -5959,17 +5964,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { rotation: transform.rotation, x: transform.x, y: transform.y };
         });
       });
-      expect(transformsAfterGroupRotate).toEqual([
-        { rotation: 90, x: 5, y: 5 },
-        { rotation: 0, x: 0, y: 0 },
-        { rotation: 90, x: 5, y: 35 },
-        { rotation: 0, x: 0, y: 0 }
-      ]);
-      const groupRotateOriginDistance = Math.hypot(
-        transformsAfterGroupRotate[2].x - transformsAfterGroupRotate[0].x,
-        transformsAfterGroupRotate[2].y - transformsAfterGroupRotate[0].y
+      expect(transformsAfterObjectRotate.every((transform) => transform.rotation === 90)).toBe(true);
+      const objectRotateOriginDistance = Math.hypot(
+        transformsAfterObjectRotate[2].x - transformsAfterObjectRotate[0].x,
+        transformsAfterObjectRotate[2].y - transformsAfterObjectRotate[0].y
       );
-      expect(groupRotateOriginDistance).toBeCloseTo(30, 3);
+      expect(objectRotateOriginDistance).toBeCloseTo(30, 3);
       const selectionBoundsAfterGroupRotate = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
         height: Number(box.getAttribute("height")),
         width: Number(box.getAttribute("width")),
@@ -5980,6 +5980,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-resize-handle]")).toHaveCount(4);
 
       await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(1, "single move probe"));
+      const transformBeforeSingleMove = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const transform = app.effectiveShapeForFrame(app.selectedObject().shapes[1], app.activeFrame(), 1).transform;
+        return { rotation: transform.rotation, x: transform.x, y: transform.y };
+      });
       await page.locator("#objectVectorStudioV2MoveXInput").fill("-2");
       await page.locator("#objectVectorStudioV2MoveYInput").fill("-3");
       await page.locator("#objectVectorStudioV2MoveShapeButton").click();
@@ -5992,7 +5997,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { x: transform.x, y: transform.y };
         });
       });
-      expect(transformsAfterSingleMove).toEqual([{ x: 5, y: 5 }, { x: -2, y: -3 }, { x: 5, y: 35 }, { x: 0, y: 0 }]);
+      expect(transformsAfterSingleMove[1]).toEqual({
+        x: Number((transformBeforeSingleMove.x - 2).toFixed(3)),
+        y: Number((transformBeforeSingleMove.y - 3).toFixed(3))
+      });
 
       await page.locator("#objectVectorStudioV2RotateInput").fill("45");
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
@@ -6005,12 +6013,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { rotation: transform.rotation, x: transform.x, y: transform.y };
         });
       });
-      expect(transformsAfterSingleRotate).toEqual([
-        { rotation: 90, x: 5, y: 5 },
-        { rotation: 45, x: -2, y: -3 },
-        { rotation: 90, x: 5, y: 35 },
-        { rotation: 0, x: 0, y: 0 }
-      ]);
+      expect(transformsAfterSingleRotate[1]).toEqual({
+        rotation: (transformBeforeSingleMove.rotation + 45) % 360,
+        x: Number((transformBeforeSingleMove.x - 2).toFixed(3)),
+        y: Number((transformBeforeSingleMove.y - 3).toFixed(3))
+      });
 
       const selectedSetRotateBefore = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
@@ -6044,9 +6051,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         x: Number(box.getAttribute("x")),
         y: Number(box.getAttribute("y"))
       }));
-      await page.locator("#objectVectorStudioV2RotateInput").fill("90");
-      await page.locator("#objectVectorStudioV2RotateShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated selected set \(4 shapes\) by 90 degrees\./);
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform #objectVectorStudioV2RotateShapeButton")).toBeDisabled();
+      await page.locator("#objectVectorStudioV2ObjectRotateInput").fill("90");
+      await page.locator("#objectVectorStudioV2ObjectRotateButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated object Group State \(4 shapes\) by 90 degrees/);
       const selectedSetRotateAfter = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -10107,8 +10115,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             pivot: app.transformedPoint(transform.origin, transform)
           };
         });
-        await page.locator("#objectVectorStudioV2AutoOriginButton").click();
-        await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Origin updated shape row \d+ origin\/pivot from visible object bounds/);
+        await page.locator("#objectVectorStudioV2ObjectAutoOriginButton").click();
+        await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Origin updated object Asteroids Ship origin\/pivot from visible object bounds/);
         const autoOriginAfter = await page.evaluate(() => {
           const app = window.__objectVectorStudioV2App;
           const shape = app.selectedShape();

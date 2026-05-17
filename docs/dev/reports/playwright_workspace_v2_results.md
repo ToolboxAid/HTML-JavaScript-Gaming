@@ -1,6 +1,6 @@
-﻿# Playwright Workspace V2 Results
+# Playwright Workspace V2 Results
 
-PR: PR_26133_089-auto-origin-terminology-final-polish
+PR: PR_26133_090-object-transform-accordion-and-layout-reorganization
 
 Command: `npm run test:workspace-v2`
 
@@ -8,15 +8,14 @@ Result: PASS
 
 Summary:
 - 54/54 Playwright tests passed.
-- Final run completed in 5.5 minutes.
-- Object Transform now shows `Auto Origin` directly under the Origin X/Y/Apply row.
-- The origin-balancing action no longer uses Auto Center or Balance Center wording.
-- Auto Origin coverage verifies origin/pivot recalculation from visible object bounds without changing geometry or moving visible bounds, and dirty state is set through the existing transform update path.
-- Select All rotation behavior from PR088 remains covered and passing.
-- Copy icon remains `nf-fa-copy`.
+- Final run completed in 5.2 minutes.
+- Object Transform now owns object-level Move, Rotate, Scale, Origin/Apply, Auto Origin, and Resize controls in the left column after Object.
+- Shape Transform is a separate right-column accordion directly under Shape/Tools and contains the existing single-shape transform workflow.
+- Shape Transform controls are disabled when multiple shapes are selected; Object Transform does not require Select All and can affect every shape in the selected object.
+- Right-column order now starts with Shape/Tools, Shape Transform, then Palette and Shape Geometry.
 - Existing console/page error assertions remained clean in the covered flows.
 
 Manual/targeted verification notes:
-- Origin controls remain grouped together: Origin row followed immediately by Auto Origin.
-- Preview Center dot control remains separate and unchanged.
-- Auto Origin logs an OK status after successful origin/pivot update.
+- Targeted layout, dirty-state, object authoring, and grouping/transform Playwright checks passed before the final full run.
+- Object-level move/rotate behavior was verified through updated Object Vector Studio V2 coverage.
+- Shape-level move/rotate/scale/resize behavior remains covered through the existing Shape Transform IDs.

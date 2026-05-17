@@ -60,6 +60,7 @@ window.addEventListener("DOMContentLoaded", () => {
       shapeGeometryDetails: requireElement("#objectVectorStudioV2ShapeGeometryDetails"),
       shapeGeometryName: requireElement("#objectVectorStudioV2ShapeGeometryName"),
       shapeGeometrySummary: requireElement("#objectVectorStudioV2ShapeGeometrySummary"),
+      shapeTransform: requireElement("#objectVectorStudioV2ShapeTransform"),
       objectNameInput: requireElement("#objectVectorStudioV2ObjectNameInput"),
       objectPreviewFooter: requireElement("#objectVectorStudioV2ObjectPreviewFooter"),
       objectTagInput: requireElement("#objectVectorStudioV2ObjectTagInput"),

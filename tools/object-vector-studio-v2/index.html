@@ -79,7 +79,7 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="objectVectorStudioV2ObjectTransformContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <div id="objectVectorStudioV2ObjectTransform" class="object-vector-studio-v2__details">No shape selected.</div>
+            <div id="objectVectorStudioV2ObjectTransform" class="object-vector-studio-v2__details">No object selected.</div>
           </div>
         </section>
 
@@ -165,54 +165,6 @@
       </section>
 
       <aside class="tool-starter__panel tool-starter__panel--right" aria-label="Tool output">
-        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact object-vector-studio-v2__palette-accordion is-open" data-accordion-v2-open="true">
-          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2PaletteContent">
-            <span>Palette <span id="objectVectorStudioV2PaletteSwatchCount" class="object-vector-studio-v2__header-count">(0 swatches)</span></span>
-            <span class="accordion-v2__icon" aria-hidden="true">+</span>
-          </button>
-          <div id="objectVectorStudioV2PaletteContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
-            <div class="object-vector-studio-v2__palette-controls" aria-label="Palette paint controls">
-              <div class="object-vector-studio-v2__palette-primary-row">
-                <button id="objectVectorStudioV2PaintModeButton" type="button" aria-pressed="true">
-                  <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="paint" aria-hidden="true"></span>
-                  <span class="object-vector-studio-v2__palette-mode-label">Paint</span>
-                </button>
-                <button id="objectVectorStudioV2PalettePickerButton" class="object-vector-studio-v2__palette-picker-button" type="button" aria-pressed="false" data-shape-tool="picker" title="Sample a shape style into Palette controls" aria-label="Picker">
-                  <span class="object-vector-studio-v2__shape-icon object-vector-studio-v2__shape-icon--picker" aria-hidden="true"></span>
-                </button>
-                <button id="objectVectorStudioV2StrokeModeButton" type="button" aria-pressed="false">
-                  <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="stroke" aria-hidden="true"></span>
-                  <span class="object-vector-studio-v2__palette-mode-label">Stroke</span>
-                </button>
-                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeWidth">
-                  <span>Width</span>
-                  <input id="objectVectorStudioV2StrokeWidth" type="number" min="0.1" step="0.1" value="2">
-                </label>
-              </div>
-              <div class="object-vector-studio-v2__palette-opacity-row">
-                <span class="object-vector-studio-v2__palette-opacity-heading">Opacity</span>
-                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2FillOpacity">
-                  <span>Fill</span>
-                  <input id="objectVectorStudioV2FillOpacity" type="number" min="0" max="255" step="1" value="255">
-                </label>
-                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeOpacity">
-                  <span>Stroke</span>
-                  <input id="objectVectorStudioV2StrokeOpacity" type="number" min="0" max="255" step="1" value="255">
-                </label>
-              </div>
-            </div>
-            <hr class="object-vector-studio-v2__separator">
-            <div id="objectVectorStudioV2PaletteSummary" class="object-vector-studio-v2__palette-swatch-list" aria-label="Read-only palette swatches"></div>
-            <div class="object-vector-studio-v2__palette-sort" aria-label="Palette sorting">
-              <button type="button" data-palette-sort="hue" aria-pressed="false">Hue</button>
-              <button type="button" data-palette-sort="sat" aria-pressed="false">Sat</button>
-              <button type="button" data-palette-sort="bri" aria-pressed="false">Bri</button>
-              <button type="button" data-palette-sort="name" aria-pressed="true">Name</button>
-              <button type="button" data-palette-sort="tag" aria-pressed="false">Tag</button>
-            </div>
-          </div>
-        </section>
-
         <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ShapeToolsContent">
             <span>Shape/Tools</span>
@@ -271,6 +223,64 @@
               <button id="objectVectorStudioV2AngleSnapButton" type="button" aria-pressed="false" title="Snap Angle is wired to Object Transform Rotate. Enable it before pressing Rotate to round the entered rotation delta to 15 degree increments.">Snap Angle</button>
               <button id="objectVectorStudioV2GridRenderButton" type="button" aria-pressed="false" title="Show or hide the preview grid">Grid</button>
               <button id="objectVectorStudioV2ToolLabelModeButton" type="button" aria-pressed="false" title="Toggle shape tool labels between icon-only and icon plus text">Icon/Text</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2ShapeTransformContent">
+            <span>Shape Transform</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="objectVectorStudioV2ShapeTransformContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div id="objectVectorStudioV2ShapeTransform" class="object-vector-studio-v2__details">No shape selected.</div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--compact object-vector-studio-v2__palette-accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="objectVectorStudioV2PaletteContent">
+            <span>Palette <span id="objectVectorStudioV2PaletteSwatchCount" class="object-vector-studio-v2__header-count">(0 swatches)</span></span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="objectVectorStudioV2PaletteContent" class="accordion-v2__content object-vector-studio-v2__scroll-content">
+            <div class="object-vector-studio-v2__palette-controls" aria-label="Palette paint controls">
+              <div class="object-vector-studio-v2__palette-primary-row">
+                <button id="objectVectorStudioV2PaintModeButton" type="button" aria-pressed="true">
+                  <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="paint" aria-hidden="true"></span>
+                  <span class="object-vector-studio-v2__palette-mode-label">Paint</span>
+                </button>
+                <button id="objectVectorStudioV2PalettePickerButton" class="object-vector-studio-v2__palette-picker-button" type="button" aria-pressed="false" data-shape-tool="picker" title="Sample a shape style into Palette controls" aria-label="Picker">
+                  <span class="object-vector-studio-v2__shape-icon object-vector-studio-v2__shape-icon--picker" aria-hidden="true"></span>
+                </button>
+                <button id="objectVectorStudioV2StrokeModeButton" type="button" aria-pressed="false">
+                  <span class="object-vector-studio-v2__palette-mode-swatch" data-palette-mode-swatch="stroke" aria-hidden="true"></span>
+                  <span class="object-vector-studio-v2__palette-mode-label">Stroke</span>
+                </button>
+                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeWidth">
+                  <span>Width</span>
+                  <input id="objectVectorStudioV2StrokeWidth" type="number" min="0.1" step="0.1" value="2">
+                </label>
+              </div>
+              <div class="object-vector-studio-v2__palette-opacity-row">
+                <span class="object-vector-studio-v2__palette-opacity-heading">Opacity</span>
+                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2FillOpacity">
+                  <span>Fill</span>
+                  <input id="objectVectorStudioV2FillOpacity" type="number" min="0" max="255" step="1" value="255">
+                </label>
+                <label class="object-vector-studio-v2__inline-field" for="objectVectorStudioV2StrokeOpacity">
+                  <span>Stroke</span>
+                  <input id="objectVectorStudioV2StrokeOpacity" type="number" min="0" max="255" step="1" value="255">
+                </label>
+              </div>
+            </div>
+            <hr class="object-vector-studio-v2__separator">
+            <div id="objectVectorStudioV2PaletteSummary" class="object-vector-studio-v2__palette-swatch-list" aria-label="Read-only palette swatches"></div>
+            <div class="object-vector-studio-v2__palette-sort" aria-label="Palette sorting">
+              <button type="button" data-palette-sort="hue" aria-pressed="false">Hue</button>
+              <button type="button" data-palette-sort="sat" aria-pressed="false">Sat</button>
+              <button type="button" data-palette-sort="bri" aria-pressed="false">Bri</button>
+              <button type="button" data-palette-sort="name" aria-pressed="true">Name</button>
+              <button type="button" data-palette-sort="tag" aria-pressed="false">Tag</button>
             </div>
           </div>
         </section>
