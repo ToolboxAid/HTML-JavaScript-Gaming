@@ -118,6 +118,7 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   ["#objectVectorStudioV2PanRightButton", "panRight"],
   ["#objectVectorStudioV2ResetViewButton", "reset"],
   ["#objectVectorStudioV2CenterDotButton", "center"],
+  ["#objectVectorStudioV2AutoCenterButton", "center"],
   ["#objectVectorStudioV2FrameLeftButton", "panLeft"],
   ["#objectVectorStudioV2FrameEarlierButton", "panLeft"],
   ["#objectVectorStudioV2DuplicateFrameButton", "duplicate"],
@@ -754,6 +755,7 @@ export class ToolStarterApp {
       this.statusLog.write(`OK Grid rendering ${this.gridRenderEnabled ? "enabled" : "disabled"}.`);
     });
     this.elements.centerDotButton.addEventListener("click", () => this.toggleCenterOriginMarker());
+    this.elements.autoCenterButton.addEventListener("click", () => this.autoCenterSelectedShapePivot());
   }
 
   bindPaletteControls() {
@@ -3786,6 +3788,31 @@ export class ToolStarterApp {
     };
   }
 
+  localPointFromTransformedPoint(point, transform) {
+    const radians = (transform.rotation * Math.PI) / 180;
+    const cos = Math.cos(radians);
+    const sin = Math.sin(radians);
+    const dx = Number(point.x) - transform.x - transform.origin.x;
+    const dy = Number(point.y) - transform.y - transform.origin.y;
+    const unrotatedX = dx * cos + dy * sin;
+    const unrotatedY = -dx * sin + dy * cos;
+    return {
+      x: this.formatViewportNumber(transform.origin.x + unrotatedX / transform.scaleX),
+      y: this.formatViewportNumber(transform.origin.y + unrotatedY / transform.scaleY)
+    };
+  }
+
+  transformWithBalancedOrigin(transform, worldCenter) {
+    const normalized = this.ensureShapeTransform({ transform });
+    const origin = this.localPointFromTransformedPoint(worldCenter, normalized);
+    return {
+      ...normalized,
+      origin,
+      x: this.formatViewportNumber(worldCenter.x - origin.x),
+      y: this.formatViewportNumber(worldCenter.y - origin.y)
+    };
+  }
+
   transformedBounds(shape, { drawingScale = 1 } = {}) {
     const transform = this.shapeTransform(shape);
     const points = shapeBoundsPoints(shape).map((point) => this.transformedPoint(point, transform));
@@ -3806,9 +3833,14 @@ export class ToolStarterApp {
   }
 
   objectBounds(object, { drawingScale = 1, includeInvisible = true } = {}) {
+    const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
     const shapes = sortedShapes(object)
       .map((shape, shapeIndex) => ({ shape, shapeIndex }))
-      .filter((entry) => includeInvisible || entry.shape.visible);
+      .map(({ shape, shapeIndex }) => ({
+        shape: this.effectiveShapeForFrame(shape, activeFrame, shapeIndex),
+        shapeIndex
+      }))
+      .filter((entry) => includeInvisible || entry.shape.visible !== false);
     if (!shapes.length) {
       return {
         height: 80,
@@ -3818,8 +3850,7 @@ export class ToolStarterApp {
       };
     }
 
-    const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
-    const bounds = shapes.map(({ shape, shapeIndex }) => this.transformedBounds(this.effectiveShapeForFrame(shape, activeFrame, shapeIndex), { drawingScale }));
+    const bounds = shapes.map(({ shape }) => this.transformedBounds(shape, { drawingScale }));
     const minX = Math.min(...bounds.map((entry) => entry.x));
     const minY = Math.min(...bounds.map((entry) => entry.y));
     const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
@@ -6503,6 +6534,35 @@ export class ToolStarterApp {
     }, `OK Updated shape row ${this.selectedShapeIndex} origin/pivot to ${originX.value}, ${originY.value}.`);
   }
 
+  autoCenterSelectedShapePivot() {
+    const object = this.selectedObject();
+    if (!object) {
+      this.statusLog.write("WARN Auto Center skipped: no object is selected.");
+      return;
+    }
+    const selected = this.selectedShape();
+    if (!selected) {
+      this.statusLog.write("WARN Auto Center skipped: no shape is selected.");
+      return;
+    }
+    const activeFrame = this.activeFrame();
+    const visibleShapes = sortedShapes(object)
+      .map((shape, shapeIndex) => this.effectiveShapeForFrame(shape, activeFrame, shapeIndex))
+      .filter((shape) => shape.visible !== false);
+    if (!visibleShapes.length) {
+      this.statusLog.write(`FAIL Auto Center blocked: object ${object.name} has no visible geometry.`);
+      return;
+    }
+    const bounds = this.objectBounds(object, { includeInvisible: false });
+    const center = {
+      x: this.formatViewportNumber(bounds.x + bounds.width / 2),
+      y: this.formatViewportNumber(bounds.y + bounds.height / 2)
+    };
+    this.updateSelectedShapeTransform("auto center", (shape) => {
+      shape.transform = this.transformWithBalancedOrigin(this.ensureShapeTransform(shape), center);
+    }, `OK Auto Center balanced shape row ${this.selectedShapeIndex} origin/pivot to visible object center ${center.x}, ${center.y}.`);
+  }
+
   groupSelectedShapes() {
     const object = this.selectedObject();
     if (!object || this.selectedShapeIndexes.size < 2) {
@@ -7752,6 +7812,7 @@ export class ToolStarterApp {
     this.setControlDisabled(this.elements.previewRedoButton, !this.previewRedoStack.length, "Disabled until an Object Preview edit can be redone.", "Redo the last undone Object Preview edit.");
     this.setControlDisabled(this.elements.previewCopyButton, !shape, noShapeReason, "Copy the selected shape.");
     this.setControlDisabled(this.elements.previewPasteButton, !object || !this.previewClipboardShape || isLocked, !object ? noObjectReason : (isLocked ? lockedReason : "Disabled until a shape has been copied."), "Paste the copied shape into the selected object.");
+    this.setControlDisabled(this.elements.autoCenterButton, !object || !shape || isLocked, !object ? noObjectReason : (isLocked ? lockedReason : noShapeReason), "Balance selected shape origin/pivot to the visible object center.");
   }
 
   updateObjectActionState() {

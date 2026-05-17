@@ -38,6 +38,7 @@ window.addEventListener("DOMContentLoaded", () => {
       addObjectButton: requireElement("#objectVectorStudioV2AddObjectButton"),
       addTagButton: requireElement("#objectVectorStudioV2AddTagButton"),
       angleSnapButton: requireElement("#objectVectorStudioV2AngleSnapButton"),
+      autoCenterButton: requireElement("#objectVectorStudioV2AutoCenterButton"),
       centerDotButton: requireElement("#objectVectorStudioV2CenterDotButton"),
       coordinateDisplay: requireElement("#objectVectorStudioV2CoordinateDisplay"),
       deleteFrameButton: requireElement("#objectVectorStudioV2DeleteFrameButton"),

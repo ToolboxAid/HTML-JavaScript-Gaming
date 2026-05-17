@@ -1575,6 +1575,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           titles: {
             add: title("#objectVectorStudioV2AddObjectButton"),
             angle: title("#objectVectorStudioV2AngleSnapButton"),
+            autoCenter: title("#objectVectorStudioV2AutoCenterButton"),
             grid: title("#objectVectorStudioV2GridRenderButton"),
             polygon: title("[data-shape-tool='polygon']"),
             polyline: title("[data-shape-tool='polyline']"),
@@ -1583,6 +1584,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             zoomIn: title("#objectVectorStudioV2ZoomInButton")
           },
           viewportIcons: {
+            autoCenter: icon("#objectVectorStudioV2AutoCenterButton"),
             down: icon("#objectVectorStudioV2PanDownButton"),
             reset: icon("#objectVectorStudioV2ResetViewButton"),
             up: icon("#objectVectorStudioV2PanUpButton"),
@@ -1692,6 +1694,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         triangle: "none"
       });
       expect(Object.fromEntries(Object.entries(iconStyleState.viewportIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
+        autoCenter: "center",
         down: "panDown",
         reset: "reset",
         up: "panUp",
@@ -1703,6 +1706,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.titles).toEqual({
         add: "Add a schema-valid object to the loaded payload",
         angle: "Snap Angle switches Rotate to a constrained dropdown using the selected 15, 30, 45, or 90 degree step.",
+        autoCenter: "Disabled until a schema-valid object is selected.",
         grid: "Show or hide the preview grid",
         polygon: "Create a polygon shape on the selected object. Click to add points.\n\nDouble-click to finish.",
         polyline: "Create a polyline shape on the selected object. Click to add points.\n\nDouble-click to finish.",
@@ -2133,7 +2137,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveAttribute("r", "9");
-      await expect(page.locator("#objectVectorStudioV2ViewportControls button")).toHaveText(["Out", "In", "Up", "Down", "Left", "Right", "View", "Center"]);
+      await expect(page.locator("#objectVectorStudioV2ViewportControls button")).toHaveText(["Out", "In", "Up", "Down", "Left", "Right", "View", "Center", "Auto Center"]);
       await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "true");
       await page.locator("#objectVectorStudioV2PanRightButton").click();
       await page.locator("#objectVectorStudioV2PanDownButton").click();
@@ -5399,6 +5403,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2GridRenderButton")).toHaveAttribute("aria-pressed", "false");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).not.toHaveClass(/is-grid-visible/);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-grid-rendered='true']")).toHaveCount(0);
+      const gridOffIconColorState = await page.evaluate(() => ({
+        gridIcon: getComputedStyle(document.querySelector("#objectVectorStudioV2GridRenderButton"), "::before").color,
+        gridText: getComputedStyle(document.querySelector("#objectVectorStudioV2GridRenderButton")).color,
+        snapAngleDisabledIcon: getComputedStyle(document.querySelector("#objectVectorStudioV2AngleSnapButton"), "::before").color
+      }));
+      expect(gridOffIconColorState.gridIcon).toBe(gridOffIconColorState.snapAngleDisabledIcon);
+      expect(gridOffIconColorState.gridText).not.toBe(gridOffIconColorState.snapAngleDisabledIcon);
 
       await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(0, "test shape list", { additive: true }));
       await page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__shape-list-actions [data-shape-list-action='group']").click();
@@ -9965,6 +9976,56 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await page.locator("#objectVectorStudioV2MoveXInput").fill("5");
         await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
         await page.locator("#objectVectorStudioV2MoveShapeButton").click();
+      });
+      await expectObjectVectorDirtyAfter("object auto center edit", async () => {
+        await page.evaluate(() => {
+          const app = window.__objectVectorStudioV2App;
+          app.selectObject("object.asteroids.ship", "auto center dirty test");
+          app.selectShape(0, "auto center dirty test");
+          const shape = app.selectedShape();
+          const frame = app.activeFrame();
+          const override = frame?.shapeOverrides?.find((entry) => entry.shapeIndex === app.selectedShapeIndex) || null;
+          const target = override || shape;
+          target.transform = app.ensureShapeTransform(app.effectiveShape(shape));
+          target.transform.origin = { x: 123, y: -45 };
+          app.renderPayload({ syncPaletteSelection: false });
+        });
+        const autoCenterBefore = await page.evaluate(() => {
+          const app = window.__objectVectorStudioV2App;
+          const shape = app.selectedShape();
+          const effectiveShape = app.effectiveShape(shape);
+          const transform = app.shapeTransform(effectiveShape);
+          const bounds = app.objectBounds(app.selectedObject(), { includeInvisible: false });
+          return {
+            bounds,
+            center: {
+              x: Number((bounds.x + bounds.width / 2).toFixed(3)),
+              y: Number((bounds.y + bounds.height / 2).toFixed(3))
+            },
+            geometryText: JSON.stringify(shape.geometry),
+            pivot: app.transformedPoint(transform.origin, transform)
+          };
+        });
+        await page.locator("#objectVectorStudioV2AutoCenterButton").click();
+        await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Center balanced shape row \d+ origin\/pivot to visible object center/);
+        const autoCenterAfter = await page.evaluate(() => {
+          const app = window.__objectVectorStudioV2App;
+          const shape = app.selectedShape();
+          const effectiveShape = app.effectiveShape(shape);
+          const transform = app.shapeTransform(effectiveShape);
+          return {
+            bounds: app.objectBounds(app.selectedObject(), { includeInvisible: false }),
+            geometryText: JSON.stringify(shape.geometry),
+            pivot: app.transformedPoint(transform.origin, transform)
+          };
+        });
+        expect(autoCenterAfter.geometryText).toBe(autoCenterBefore.geometryText);
+        ["x", "y", "width", "height"].forEach((key) => {
+          expect(autoCenterAfter.bounds[key]).toBeCloseTo(autoCenterBefore.bounds[key], 3);
+        });
+        expect(autoCenterAfter.pivot.x).toBeCloseTo(autoCenterBefore.center.x, 3);
+        expect(autoCenterAfter.pivot.y).toBeCloseTo(autoCenterBefore.center.y, 3);
+        expect(autoCenterAfter.pivot.x).not.toBeCloseTo(autoCenterBefore.pivot.x, 3);
       });
       await expectObjectVectorDirtyAfter("palette color edit", async () => {
         await page.locator("#objectVectorStudioV2PaintModeButton").click();

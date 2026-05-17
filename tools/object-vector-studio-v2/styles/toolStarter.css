@@ -1026,7 +1026,8 @@ textarea:hover {
 }
 
 #objectVectorStudioV2SnapModeButton[data-snap-mode="none"][data-ovs-icon]::before,
-#objectVectorStudioV2AngleSnapButton[aria-pressed="false"][data-ovs-icon]::before {
+#objectVectorStudioV2AngleSnapButton[aria-pressed="false"][data-ovs-icon]::before,
+#objectVectorStudioV2GridRenderButton[aria-pressed="false"][data-ovs-icon]::before {
   color: var(--object-vector-studio-v2-snap-disabled-icon-color);
 }
 
