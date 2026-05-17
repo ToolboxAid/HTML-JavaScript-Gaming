@@ -56,7 +56,7 @@ button {
 
 .object-vector-studio-v2 {
   --object-vector-studio-v2-icon-scale: 1.75;
-  --object-vector-studio-v2-disabled-icon-color: #64748b;
+  --object-vector-studio-v2-snap-disabled-icon-color: #ef4444;
   --object-vector-studio-v2-snap-point-color: #fbbf24;
 }
 
@@ -65,11 +65,6 @@ button:disabled {
   opacity: 0.62;
   filter: saturate(0.72);
   box-shadow: none;
-}
-
-button:disabled[data-ovs-icon],
-button:disabled [data-ovs-icon] {
-  color: var(--object-vector-studio-v2-disabled-icon-color) !important;
 }
 
 button:focus-visible,
@@ -1022,17 +1017,17 @@ textarea:hover {
   transform: none;
 }
 
-.object-vector-studio-v2__tool-toggle:not(.is-active):not([aria-pressed="true"]) .object-vector-studio-v2__shape-icon[data-ovs-icon],
-.object-vector-studio-v2__snap-actions button[aria-pressed="false"][data-ovs-icon] {
-  color: var(--object-vector-studio-v2-disabled-icon-color);
+.object-vector-studio-v2__snap-actions button[data-ovs-icon]::before {
+  color: inherit;
 }
 
-#objectVectorStudioV2SnapModeButton[data-snap-mode="point"][data-ovs-icon] {
+#objectVectorStudioV2SnapModeButton[data-snap-mode="point"][data-ovs-icon]::before {
   color: var(--object-vector-studio-v2-snap-point-color);
 }
 
-#objectVectorStudioV2SnapModeButton[data-snap-mode="none"][data-ovs-icon] {
-  color: var(--object-vector-studio-v2-disabled-icon-color);
+#objectVectorStudioV2SnapModeButton[data-snap-mode="none"][data-ovs-icon]::before,
+#objectVectorStudioV2AngleSnapButton[aria-pressed="false"][data-ovs-icon]::before {
+  color: var(--object-vector-studio-v2-snap-disabled-icon-color);
 }
 
 .object-vector-studio-v2__shape-icon[data-ovs-icon] {
@@ -1621,9 +1616,9 @@ textarea:hover {
 .object-vector-studio-v2__polygon-point-list {
   display: grid;
   gap: 5px;
-  max-height: 138px;
-  overflow-y: auto;
-  padding-right: 2px;
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
 }
 
 .object-vector-studio-v2__edit-panel--polygon {
@@ -1650,50 +1645,6 @@ textarea:hover {
   margin: 0;
   font-size: 0.86rem;
   line-height: 1.1;
-}
-
-.object-vector-studio-v2__point-style-controls {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  min-width: 0;
-}
-
-.object-vector-studio-v2__point-style-heading {
-  flex: 0 0 auto;
-  color: var(--tool-starter-muted);
-  font-size: 0.76rem;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.object-vector-studio-v2__point-style-fields {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-wrap: nowrap;
-}
-
-.object-vector-studio-v2__point-style-field {
-  display: inline-grid;
-  grid-template-columns: max-content minmax(58px, 1fr);
-  align-items: center;
-  gap: 4px;
-  color: var(--tool-starter-muted);
-  font-size: 0.72rem;
-  font-weight: 800;
-}
-
-.object-vector-studio-v2__point-style-field select {
-  min-width: 0;
-  width: 72px;
-  min-height: 24px;
-  padding: 2px 4px;
-}
-
-.object-vector-studio-v2__point-style-field select:disabled {
-  color: var(--object-vector-studio-v2-disabled-icon-color);
 }
 
 .object-vector-studio-v2__edit-panel--geometry .object-vector-studio-v2__edit-grid {
@@ -1723,7 +1674,7 @@ textarea:hover {
 
 .object-vector-studio-v2__polygon-point-field {
   display: grid;
-  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 1fr) 22px;
+  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 1fr) max-content 22px;
   align-items: center;
   gap: 6px;
 }
@@ -1768,6 +1719,17 @@ textarea:hover {
   min-width: 0;
 }
 
+.object-vector-studio-v2__polygon-point-rounding {
+  display: inline-grid;
+  grid-template-columns: max-content 14px;
+  align-items: center;
+  gap: 3px;
+  color: var(--tool-starter-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.object-vector-studio-v2__polygon-point-rounding input,
 .object-vector-studio-v2__polygon-point-toggle input {
   width: 14px;
   height: 14px;

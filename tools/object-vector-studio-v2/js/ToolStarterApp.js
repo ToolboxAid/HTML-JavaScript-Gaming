@@ -851,7 +851,7 @@ export class ToolStarterApp {
   }
 
   pointStyleValue(value) {
-    return POINT_STYLE_VALUES.includes(value) ? value : "round";
+    return POINT_STYLE_VALUES.includes(value) ? value : "square";
   }
 
   strokeLinejoinValue(value = "round") {
@@ -867,19 +867,88 @@ export class ToolStarterApp {
   }
 
   shapeUnifiedPointStyle(shape) {
+    const pointStyles = this.shapePointStyleValues(shape);
+    if (pointStyles.length) {
+      const joinIndexes = this.shapeJoinPointIndexes(shape, pointStyles.length);
+      if (!joinIndexes.length) {
+        return this.pointStyleValue(shape?.style?.pointStyle ?? shape?.style?.strokeLinecap);
+      }
+      return joinIndexes.every((index) => pointStyles[index] === "round") ? "round" : "square";
+    }
     return this.pointStyleValue(shape?.style?.pointStyle ?? shape?.style?.strokeLinecap);
   }
 
   shapeStartPointStyle(shape) {
+    const pointStyles = this.shapePointStyleValues(shape);
+    if (pointStyles.length) {
+      return pointStyles[0];
+    }
     return this.pointStyleValue(shape?.style?.startPointStyle ?? shape?.style?.strokeLinecap ?? shape?.style?.pointStyle);
   }
 
   shapeEndPointStyle(shape) {
+    const pointStyles = this.shapePointStyleValues(shape);
+    if (pointStyles.length) {
+      return pointStyles.at(-1);
+    }
     return this.pointStyleValue(shape?.style?.endPointStyle ?? shape?.style?.strokeLinecap ?? shape?.style?.pointStyle);
   }
 
   openShapeUsesSplitPointStyles(shape) {
     return this.supportsOpenPointStyle(shape) && this.shapeStartPointStyle(shape) !== this.shapeEndPointStyle(shape);
+  }
+
+  shapeGeometryPointCount(shape) {
+    return this.shapeGeometryPoints(shape).length;
+  }
+
+  shapeGeometryPoints(shape) {
+    const geometryTool = shapeGeometryTool(shape);
+    if (geometryTool === "line") {
+      return [linePoint(shape.geometry, "point1"), linePoint(shape.geometry, "point2")];
+    }
+    if ((geometryTool === "polygon" || geometryTool === "polyline") && Array.isArray(shape?.geometry?.points)) {
+      return shape.geometry.points;
+    }
+    return [];
+  }
+
+  shapePointRoundingValues(shape) {
+    const pointCount = this.shapeGeometryPointCount(shape);
+    if (!pointCount) {
+      return [];
+    }
+    const explicit = Array.isArray(shape?.style?.pointRounding) ? shape.style.pointRounding : null;
+    if (explicit) {
+      return Array.from({ length: pointCount }, (_, index) => explicit[index] === true);
+    }
+    const geometryTool = shapeGeometryTool(shape);
+    return Array.from({ length: pointCount }, (_, index) => {
+      if (geometryTool === "line" || geometryTool === "polyline") {
+        if (index === 0) {
+          return this.pointStyleValue(shape?.style?.startPointStyle ?? shape?.style?.strokeLinecap ?? shape?.style?.pointStyle) === "round";
+        }
+        if (index === pointCount - 1) {
+          return this.pointStyleValue(shape?.style?.endPointStyle ?? shape?.style?.strokeLinecap ?? shape?.style?.pointStyle) === "round";
+        }
+      }
+      return this.pointStyleValue(shape?.style?.pointStyle ?? shape?.style?.strokeLinecap) === "round";
+    });
+  }
+
+  shapePointStyleValues(shape) {
+    return this.shapePointRoundingValues(shape).map((isRounded) => isRounded ? "round" : "square");
+  }
+
+  shapeJoinPointIndexes(shape, pointCount = this.shapeGeometryPointCount(shape)) {
+    const geometryTool = shapeGeometryTool(shape);
+    if (geometryTool === "polyline") {
+      return Array.from({ length: Math.max(0, pointCount - 2) }, (_, index) => index + 1);
+    }
+    if (geometryTool === "polygon") {
+      return Array.from({ length: pointCount }, (_, index) => index);
+    }
+    return [];
   }
 
   bindViewportControls() {
@@ -2139,8 +2208,12 @@ export class ToolStarterApp {
       : `object-vector-studio-v2__edit-grid object-vector-studio-v2__edit-grid--${geometryTool}${geometryTool === "ellipse" ? " object-vector-studio-v2__edit-grid--ellipse" : ""}`;
     const editablePolygon = this.isEditablePolygonShape(shape);
     if (geometryTool === "polygon" || geometryTool === "polyline") {
+      const pointRounding = this.shapePointRoundingValues(shape);
       shape.geometry.points.forEach((point, index) => {
-        grid.append(this.createPolygonPointRow(point, index, { selectable: editablePolygon }));
+        grid.append(this.createPolygonPointRow(point, index, {
+          rounded: pointRounding[index] === true,
+          selectable: editablePolygon
+        }));
       });
     } else {
       this.shapeGeometryFields(shape).forEach((field) => {
@@ -2160,11 +2233,7 @@ export class ToolStarterApp {
         grid.append(label);
       });
     }
-    const pointStyleControls = this.createShapePointStyleControls(shape);
     section.append(heading);
-    if (pointStyleControls) {
-      section.append(pointStyleControls);
-    }
     section.append(grid);
     if (editablePolygon) {
       section.append(this.createPolygonSideActions());
@@ -2172,69 +2241,17 @@ export class ToolStarterApp {
     return section;
   }
 
-  createShapePointStyleControls(shape) {
-    if (!this.supportsOpenPointStyle(shape) && !this.supportsClosedPointStyle(shape)) {
-      return null;
-    }
-    const controls = document.createElement("div");
-    controls.className = "object-vector-studio-v2__point-style-controls";
-    controls.dataset.pointStyleControls = shapeGeometryTool(shape);
-    const heading = document.createElement("span");
-    heading.className = "object-vector-studio-v2__point-style-heading";
-    heading.textContent = "Point Style:";
-    const fields = document.createElement("div");
-    fields.className = "object-vector-studio-v2__point-style-fields";
-    if (this.supportsOpenPointStyle(shape)) {
-      controls.classList.add("object-vector-studio-v2__point-style-controls--open");
-      fields.append(
-        this.createShapePointStyleField("Start", "startPointStyle", this.shapeStartPointStyle(shape)),
-        this.createShapePointStyleField("Joints", "pointStyle", this.shapeUnifiedPointStyle(shape), {
-          disabled: shapeGeometryTool(shape) === "line" || shapeGeometryTool(shape) === "arc",
-          disabledTitle: `${shapeTypeLabel(shape)} has no intermediate joints.`
-        }),
-        this.createShapePointStyleField("End", "endPointStyle", this.shapeEndPointStyle(shape))
-      );
-      controls.append(heading, fields);
-      return controls;
-    }
-    fields.append(this.createShapePointStyleField("Joints", "pointStyle", this.shapeUnifiedPointStyle(shape)));
-    controls.append(heading, fields);
-    return controls;
-  }
-
-  createShapePointStyleField(labelText, styleKey, value, options = {}) {
-    const label = document.createElement("label");
-    label.className = "object-vector-studio-v2__point-style-field";
-    const caption = document.createElement("span");
-    caption.textContent = labelText;
-    const select = document.createElement("select");
-    select.dataset.shapePointStyleField = styleKey;
-    select.title = `${labelText}: square or round stroke point/corner rendering`;
-    POINT_STYLE_VALUES.forEach((pointStyle) => {
-      const option = document.createElement("option");
-      option.value = pointStyle;
-      option.textContent = shapeTypeLabel(pointStyle);
-      select.append(option);
-    });
-    select.value = this.pointStyleValue(value);
-    if (options.disabled) {
-      select.disabled = true;
-      select.title = options.disabledTitle || select.title;
-      select.setAttribute("aria-disabled", "true");
-    }
-    select.addEventListener("change", () => this.updateSelectedShapePointStyle(styleKey, select.value, labelText));
-    label.append(caption, select);
-    return label;
-  }
-
-  updateSelectedShapePointStyle(styleKey, value, labelText) {
+  updateSelectedShapePointRounding(pointIndex, isRounded) {
     const selected = this.selectedShape();
     if (!selected) {
-      this.statusLog.write(`WARN ${labelText} update skipped: no shape is selected.`);
+      this.statusLog.write("WARN Point rounding update skipped: no shape is selected.");
       return;
     }
-    const pointStyle = this.pointStyleValue(value);
-    if (this.guardSelectedObjectMutation(`${labelText} update`)) {
+    if (!["polygon", "polyline"].includes(shapeGeometryTool(selected))) {
+      this.statusLog.write(`WARN Point rounding update skipped: ${shapeTypeLabel(selected)} does not use editable point rows.`);
+      return;
+    }
+    if (this.guardSelectedObjectMutation("Point rounding update")) {
       return;
     }
     const objectIndex = this.currentPayload.objects.findIndex((object) => object.id === this.selectedObjectId);
@@ -2242,34 +2259,19 @@ export class ToolStarterApp {
     const nextObject = nextPayload.objects[objectIndex];
     const nextShape = sortedShapes(nextObject)[this.selectedShapeIndex];
     if (!nextShape) {
-      this.statusLog.write(`WARN ${labelText} update skipped: selected shape row ${this.selectedShapeIndex} was not found.`);
+      this.statusLog.write(`WARN Point rounding update skipped: selected shape row ${this.selectedShapeIndex} was not found.`);
       return;
     }
-    const supportsOpen = this.supportsOpenPointStyle(nextShape);
-    const supportsClosed = this.supportsClosedPointStyle(nextShape);
-    if ((styleKey === "startPointStyle" || styleKey === "endPointStyle") && !supportsOpen) {
-      this.statusLog.write(`WARN ${labelText} update skipped: ${shapeTypeLabel(nextShape)} does not use open-ended point styles.`);
+    const pointCount = this.shapeGeometryPointCount(nextShape);
+    if (!Number.isInteger(pointIndex) || pointIndex < 0 || pointIndex >= pointCount) {
+      this.statusLog.write(`WARN Point rounding update skipped: point ${pointIndex + 1} is not available.`);
       return;
     }
-    if (styleKey === "pointStyle" && !supportsClosed && !supportsOpen) {
-      this.statusLog.write(`WARN ${labelText} update skipped: ${shapeTypeLabel(nextShape)} does not use a unified point style.`);
-      return;
-    }
-    nextShape.style = { ...nextShape.style, [styleKey]: pointStyle };
-    delete nextShape.style.strokeLinecap;
-    if (supportsOpen) {
-      if (!nextShape.style.startPointStyle) {
-        nextShape.style.startPointStyle = this.shapeStartPointStyle(selected);
-      }
-      if (!nextShape.style.endPointStyle) {
-        nextShape.style.endPointStyle = this.shapeEndPointStyle(selected);
-      }
-    }
-    if (supportsClosed) {
-      delete nextShape.style.startPointStyle;
-      delete nextShape.style.endPointStyle;
-    }
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Updated ${labelText} to ${pointStyle} for shape row ${this.selectedShapeIndex}.`, `${labelText} update failed schema validation`);
+    const pointRounding = this.normalizedPointRounding(nextShape, pointCount);
+    pointRounding[pointIndex] = isRounded === true;
+    this.applyPointRoundingToShape(nextShape, pointRounding);
+    const pointStyle = isRounded ? "round" : "square";
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Updated point ${pointIndex + 1} rounding to ${pointStyle} for shape row ${this.selectedShapeIndex}.`, "Point rounding update failed schema validation");
   }
 
   bindGeometryAutoApplyInput(input) {
@@ -2287,7 +2289,7 @@ export class ToolStarterApp {
     });
   }
 
-  createPolygonPointRow(point, index, { selectable = true } = {}) {
+  createPolygonPointRow(point, index, { rounded = false, selectable = true } = {}) {
     const row = document.createElement("div");
     row.className = "object-vector-studio-v2__polygon-point-field";
     const caption = document.createElement("span");
@@ -2313,6 +2315,19 @@ export class ToolStarterApp {
       label.append(axisLabel, input);
       row.append(label);
     });
+    const roundLabel = document.createElement("label");
+    roundLabel.className = "object-vector-studio-v2__polygon-point-rounding";
+    const roundCaption = document.createElement("span");
+    roundCaption.textContent = "Round";
+    const roundCheckbox = document.createElement("input");
+    roundCheckbox.type = "checkbox";
+    roundCheckbox.checked = rounded === true;
+    roundCheckbox.dataset.polygonPointRound = "true";
+    roundCheckbox.dataset.polygonPointIndex = String(index);
+    roundCheckbox.setAttribute("aria-label", `Round point ${index + 1}`);
+    roundCheckbox.addEventListener("change", () => this.updateSelectedShapePointRounding(index, roundCheckbox.checked));
+    roundLabel.append(roundCaption, roundCheckbox);
+    row.append(roundLabel);
     if (selectable) {
       const selectLabel = document.createElement("label");
       selectLabel.className = "object-vector-studio-v2__polygon-point-toggle";
@@ -3085,11 +3100,9 @@ export class ToolStarterApp {
   }
 
   appendShapePointStyleCaps(parent, shape, { drawingScale = 1 } = {}) {
-    if (!this.openShapeUsesSplitPointStyles(shape)) {
-      return;
-    }
     const endpoints = this.openShapeEndpointPoints(shape);
-    if (!endpoints) {
+    const pointMarkers = this.shapePointStyleMarkers(shape);
+    if (!this.openShapeUsesSplitPointStyles(shape) && !pointMarkers.length) {
       return;
     }
     const group = document.createElementNS(SVG_NS, "g");
@@ -3098,13 +3111,39 @@ export class ToolStarterApp {
     group.setAttribute("aria-hidden", "true");
     group.setAttribute("pointer-events", "none");
     group.setAttribute("transform", this.svgTransformAttribute(this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale)));
-    [
-      ["start", endpoints.start.point, this.shapeStartPointStyle(shape), endpoints.start.angle],
-      ["end", endpoints.end.point, this.shapeEndPointStyle(shape), endpoints.end.angle]
-    ].forEach(([endpoint, point, pointStyle, angle]) => {
-      group.append(this.createPointStyleCapMarker(point, pointStyle, shape, endpoint, drawingScale, angle));
+    if (this.openShapeUsesSplitPointStyles(shape) && endpoints) {
+      [
+        ["start", endpoints.start.point, this.shapeStartPointStyle(shape), endpoints.start.angle],
+        ["end", endpoints.end.point, this.shapeEndPointStyle(shape), endpoints.end.angle]
+      ].forEach(([endpoint, point, pointStyle, angle]) => {
+        group.append(this.createPointStyleCapMarker(point, pointStyle, shape, endpoint, drawingScale, angle));
+      });
+    }
+    pointMarkers.forEach(({ angle = 0, markerId, point, pointStyle }) => {
+      group.append(this.createPointStyleCapMarker(point, pointStyle, shape, markerId, drawingScale, angle));
     });
     parent.append(group);
+  }
+
+  shapePointStyleMarkers(shape) {
+    const geometryTool = shapeGeometryTool(shape);
+    if (geometryTool !== "polygon" && geometryTool !== "polyline") {
+      return [];
+    }
+    const points = this.shapeGeometryPoints(shape);
+    const styles = this.shapePointStyleValues(shape);
+    const joinIndexes = this.shapeJoinPointIndexes(shape, points.length);
+    const allJoinsRound = joinIndexes.length && joinIndexes.every((index) => styles[index] === "round");
+    return points
+      .map((point, index) => ({ index, point, pointStyle: styles[index] }))
+      .filter(({ index, pointStyle }) => pointStyle === "round"
+        && !(geometryTool === "polyline" && (index === 0 || index === points.length - 1))
+        && !(allJoinsRound && joinIndexes.includes(index)))
+      .map(({ index, point, pointStyle }) => ({
+        markerId: `point-${index}`,
+        point,
+        pointStyle
+      }));
   }
 
   createPointStyleCapMarker(point, pointStyle, shape, endpoint, drawingScale, angle = 0) {
@@ -5627,20 +5666,21 @@ export class ToolStarterApp {
       return;
     }
     const rotation = this.snapAngle(input.value);
+    const snapAngleStatus = this.formatSnapAngleRotateStatus(input.value, rotation);
     const object = this.selectedObject();
     if (this.shapeBelongsToValidGroup(object, this.selectedShapeIndex)) {
       const targetIndexes = this.shapeSelectionGroupIndexes(sortedShapes(object), this.selectedShapeIndex);
       const groupId = String(sortedShapes(object)[this.selectedShapeIndex]?.groupId || "").trim();
-      this.rotateSelectedShapeGroup(targetIndexes, rotation, groupId);
+      this.rotateSelectedShapeGroup(targetIndexes, rotation, groupId, snapAngleStatus);
       return;
     }
     this.updateSelectedShapeTransform("rotate", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
       shape.transform.rotation = this.normalizeRotationDegrees(shape.transform.rotation + rotation);
-    }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.`);
+    }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.${snapAngleStatus}`);
   }
 
-  rotateSelectedShapeGroup(shapeIndexes, rotation, groupId) {
+  rotateSelectedShapeGroup(shapeIndexes, rotation, groupId, snapAngleStatus = "") {
     const object = this.selectedObject();
     if (!object) {
       this.statusLog.write("WARN Transform rotate skipped: no object is selected.");
@@ -5659,7 +5699,7 @@ export class ToolStarterApp {
       this.updateSelectedShapeTransform("rotate", (shape) => {
         shape.transform = this.ensureShapeTransform(shape);
         shape.transform.rotation = this.normalizeRotationDegrees(shape.transform.rotation + rotation);
-      }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.`);
+      }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.${snapAngleStatus}`);
       return;
     }
 
@@ -5718,10 +5758,17 @@ export class ToolStarterApp {
       return;
     }
 
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Rotated group ${groupId || "selected group"} (${targetIndexes.length} shapes) by ${rotation} degrees.`, "Transform rotate failed schema validation", {
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Rotated group ${groupId || "selected group"} (${targetIndexes.length} shapes) by ${rotation} degrees.${snapAngleStatus}`, "Transform rotate failed schema validation", {
       directSelectedShapeIndexes: directShapeIndexes,
       selectedShapeIndexes: new Set(targetIndexes)
     });
+  }
+
+  formatSnapAngleRotateStatus(rawRotation, appliedRotation) {
+    if (this.angleSnapEnabled) {
+      return ` Snap Angle active: ${rawRotation} -> ${appliedRotation}.`;
+    }
+    return " Snap Angle disabled: raw rotation applied.";
   }
 
   rotatePointAround(point, pivot, rotation) {
@@ -6039,6 +6086,10 @@ export class ToolStarterApp {
     }
     return this.updateSelectedShapeGeometry("geometry edit", (shape) => {
       shape.geometry = geometry.value;
+      if (shapeGeometryTool(shape) === "polygon" || shapeGeometryTool(shape) === "polyline") {
+        const pointRounding = this.currentPointRoundingRows(geometry.value.points.length);
+        this.applyPointRoundingToShape(shape, pointRounding);
+      }
       shape.transform = this.ensureShapeTransform(shape);
     }, options.okMessage || `OK Auto-applied geometry edits to shape row ${this.selectedShapeIndex}.`);
   }
@@ -6059,11 +6110,13 @@ export class ToolStarterApp {
       return;
     }
     const points = geometry.value.points;
+    const pointRounding = this.currentPointRoundingRows(points.length);
     const checkedIndexes = this.checkedPolygonPointIndexes();
     const insertAfterIndex = checkedIndexes.length ? checkedIndexes.at(-1) : points.length - 1;
     const nextPoint = this.insertedPolygonSidePoint(points, insertAfterIndex);
     points.splice(insertAfterIndex + 1, 0, nextPoint);
-    this.rebuildPolygonPointList(points);
+    pointRounding.splice(insertAfterIndex + 1, 0, false);
+    this.rebuildPolygonPointList(points, pointRounding);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
     this.applyShapeGeometryEdits({
@@ -6096,6 +6149,7 @@ export class ToolStarterApp {
     }
     const checkedSet = new Set(checkedIndexes);
     const nextPoints = geometry.value.points.filter((_, index) => !checkedSet.has(index));
+    const nextPointRounding = this.currentPointRoundingRows(geometry.value.points.length).filter((_, index) => !checkedSet.has(index));
     const minPointCount = shapeGeometryTool(selected) === "polyline" ? 2 : 4;
     if (nextPoints.length < minPointCount) {
       const message = `${shapeGeometryTool(selected)} must keep at least ${minPointCount} points.`;
@@ -6104,7 +6158,7 @@ export class ToolStarterApp {
       this.statusLog.write(`FAIL Delete point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
       return;
     }
-    this.rebuildPolygonPointList(nextPoints);
+    this.rebuildPolygonPointList(nextPoints, nextPointRounding);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
     this.applyShapeGeometryEdits({
@@ -6129,14 +6183,42 @@ export class ToolStarterApp {
     });
   }
 
-  rebuildPolygonPointList(points) {
+  currentPointRoundingRows(expectedCount = null) {
+    const checkboxes = Array.from(this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-round='true']"));
+    const pointRounding = checkboxes
+      .sort((left, right) => Number(left.dataset.polygonPointIndex) - Number(right.dataset.polygonPointIndex))
+      .map((checkbox) => checkbox.checked === true);
+    const count = Number.isInteger(expectedCount) ? expectedCount : pointRounding.length;
+    return Array.from({ length: count }, (_, index) => pointRounding[index] === true);
+  }
+
+  normalizedPointRounding(shape, pointCount = this.shapeGeometryPointCount(shape)) {
+    const values = this.shapePointRoundingValues(shape);
+    return Array.from({ length: pointCount }, (_, index) => values[index] === true);
+  }
+
+  applyPointRoundingToShape(shape, pointRounding) {
+    const normalized = Array.from({ length: this.shapeGeometryPointCount(shape) || pointRounding.length }, (_, index) => pointRounding[index] === true);
+    shape.style = { ...shape.style, pointRounding: normalized };
+    delete shape.style.strokeLinecap;
+    shape.style.startPointStyle = normalized[0] ? "round" : "square";
+    shape.style.endPointStyle = normalized.at(-1) ? "round" : "square";
+    const joinIndexes = this.shapeJoinPointIndexes(shape, normalized.length);
+    shape.style.pointStyle = joinIndexes.length && joinIndexes.every((index) => normalized[index]) ? "round" : "square";
+  }
+
+  rebuildPolygonPointList(points, pointRounding = null) {
     const list = this.elements.shapeGeometryDetails.querySelector(".object-vector-studio-v2__polygon-point-list");
     if (!list) {
       return;
     }
     const selected = this.selectedShape();
     const selectable = this.isEditablePolygonShape(selected);
-    list.replaceChildren(...points.map((point, index) => this.createPolygonPointRow(point, index, { selectable })));
+    const rounding = pointRounding || this.normalizedPointRounding(selected, points.length);
+    list.replaceChildren(...points.map((point, index) => this.createPolygonPointRow(point, index, {
+      rounded: rounding[index] === true,
+      selectable
+    })));
   }
 
   nextPolygonSidePoint(points) {
@@ -6174,6 +6256,10 @@ export class ToolStarterApp {
       row.querySelectorAll("[data-polygon-point-index]").forEach((input) => {
         input.dataset.polygonPointIndex = String(index);
       });
+      const roundCheckbox = row.querySelector("[data-polygon-point-round='true']");
+      if (roundCheckbox) {
+        roundCheckbox.setAttribute("aria-label", `Round point ${index + 1}`);
+      }
       const checkbox = row.querySelector("[data-polygon-point-select='true']");
       if (checkbox) {
         checkbox.setAttribute("aria-label", `Select point ${index + 1}`);

@@ -16,6 +16,10 @@ Architecture notes from recent discussion:
   - Most likely next geometry addition.
   - Would support connected open point sequences without requiring polygon closure.
 
+- spline
+  - Possible future addition for smooth point-driven curves.
+  - Would need explicit control-point, interpolation, and runtime tessellation contracts before implementation.
+
 - path
   - Possible future addition for richer vector authoring.
   - Would require a stricter schema/editor contract before implementation.

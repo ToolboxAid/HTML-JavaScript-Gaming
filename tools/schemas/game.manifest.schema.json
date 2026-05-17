@@ -274,9 +274,9 @@
           "fill": "#ffffff",
           "stroke": "#ffffff",
           "strokeWidth": 3,
-          "pointStyle": "round",
-          "startPointStyle": "round",
-          "endPointStyle": "round",
+          "pointStyle": "square",
+          "startPointStyle": "square",
+          "endPointStyle": "square",
           "fillOpacity": 1,
           "strokeOpacity": 1
         },
@@ -448,9 +448,9 @@
         "fill": "#ffffff",
         "stroke": "#ffffff",
         "strokeWidth": 3,
-        "pointStyle": "round",
-        "startPointStyle": "round",
-        "endPointStyle": "round",
+        "pointStyle": "square",
+        "startPointStyle": "square",
+        "endPointStyle": "square",
         "fillOpacity": 1,
         "strokeOpacity": 1
       },
@@ -480,6 +480,12 @@
         "endPointStyle": {
           "type": "string",
           "enum": ["round", "square"]
+        },
+        "pointRounding": {
+          "type": "array",
+          "items": {
+            "type": "boolean"
+          }
         },
         "fillOpacity": {
           "type": "number",
