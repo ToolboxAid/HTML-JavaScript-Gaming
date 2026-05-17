@@ -56,10 +56,10 @@ async function openToolsIndex(page) {
   return server;
 }
 
-async function openSessionInspectorV2(page, query = "") {
+async function openStorageInspectorV2(page, query = "") {
   const server = await startRepoServer();
   await coverageReporter.start(page);
-  await page.goto(`${server.baseUrl}/tools/session-inspector-v2/index.html${query}`, { waitUntil: "networkidle" });
+  await page.goto(`${server.baseUrl}/tools/storage-inspector-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
@@ -573,7 +573,7 @@ async function expectWorkspaceReturnRehydrated(page, { gameId = "Asteroids", rep
   await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]'))[gameId === "Asteroids" ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toBeEnabled();
   await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toBeEnabled();
-  await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).toBeEnabled();
+  await expect(page.locator('[data-workspace-tool-id="storage-inspector-v2"]')).toBeEnabled();
   await expect(page.locator('[data-workspace-tool-id="text2speech-V2"]')).toBeEnabled();
 }
 
@@ -589,7 +589,7 @@ async function expectWorkspaceRestoreRequiresRepoRebind(page, { dirty = false, g
   await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toBeDisabled();
-  await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).toBeDisabled();
+  await expect(page.locator('[data-workspace-tool-id="storage-inspector-v2"]')).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="text2speech-V2"]')).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Repo folder required");
   await expect(page.locator("#activeGameSummary")).toHaveCount(0);
@@ -808,7 +808,7 @@ async function installMissingGamePreviewRepoPicker(page) {
   });
 }
 
-async function expectSessionInspectorV2AccordionToggles(page, contentId) {
+async function expectStorageInspectorV2AccordionToggles(page, contentId) {
   const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
   const content = page.locator(`#${contentId}`);
   const label = header.locator("span").first();
@@ -824,12 +824,12 @@ async function expectSessionInspectorV2AccordionToggles(page, contentId) {
   await expect(header).toHaveAttribute("aria-expanded", "true");
 }
 
-async function expectSessionInspectorV2DetailAccordionsIndependent(page) {
+async function expectStorageInspectorV2DetailAccordionsIndependent(page) {
   const contentIds = [
-    "sessionInspectorV2JsonContent",
-    "sessionInspectorV2DataContent",
-    "sessionInspectorV2DirtyContent",
-    "sessionInspectorV2StatusContent"
+    "storageInspectorV2JsonContent",
+    "storageInspectorV2DataContent",
+    "storageInspectorV2DirtyContent",
+    "storageInspectorV2StatusContent"
   ];
   for (const contentId of contentIds) {
     const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
@@ -849,28 +849,28 @@ async function expectSessionInspectorV2DetailAccordionsIndependent(page) {
   }
 }
 
-const SESSION_INSPECTOR_V2_DETAIL_SECTIONS = [
+const STORAGE_INSPECTOR_V2_DETAIL_SECTIONS = [
   {
-    contentId: "sessionInspectorV2JsonContent",
-    outputSelector: "#sessionInspectorV2JsonOutput"
+    contentId: "storageInspectorV2JsonContent",
+    outputSelector: "#storageInspectorV2JsonOutput"
   },
   {
-    contentId: "sessionInspectorV2DataContent",
-    outputSelector: "#sessionInspectorV2DataOutput"
+    contentId: "storageInspectorV2DataContent",
+    outputSelector: "#storageInspectorV2DataOutput"
   },
   {
-    contentId: "sessionInspectorV2DirtyContent",
-    outputSelector: "#sessionInspectorV2DirtyOutput"
+    contentId: "storageInspectorV2DirtyContent",
+    outputSelector: "#storageInspectorV2DirtyOutput"
   },
   {
-    contentId: "sessionInspectorV2StatusContent",
+    contentId: "storageInspectorV2StatusContent",
     outputSelector: "#statusLog"
   }
 ];
 
-async function setSessionInspectorV2DetailSectionsOpen(page, openContentIds) {
+async function setStorageInspectorV2DetailSectionsOpen(page, openContentIds) {
   const openSet = new Set(openContentIds);
-  for (const { contentId } of SESSION_INSPECTOR_V2_DETAIL_SECTIONS) {
+  for (const { contentId } of STORAGE_INSPECTOR_V2_DETAIL_SECTIONS) {
     const header = page.locator(`.accordion-v2__header[aria-controls="${contentId}"]`);
     const content = page.locator(`#${contentId}`);
     const isOpen = await content.evaluate((element) => !element.hidden);
@@ -887,15 +887,15 @@ async function setSessionInspectorV2DetailSectionsOpen(page, openContentIds) {
   }
 }
 
-async function expectSessionInspectorV2SharedDetailSpace(page, openContentIds) {
-  await setSessionInspectorV2DetailSectionsOpen(page, openContentIds);
+async function expectStorageInspectorV2SharedDetailSpace(page, openContentIds) {
+  await setStorageInspectorV2DetailSectionsOpen(page, openContentIds);
   const state = await page.evaluate((sections) => {
-    const rightPanel = document.querySelector(".session-inspector-v2__panel--right");
+    const rightPanel = document.querySelector(".storage-inspector-v2__panel--right");
     const rightRect = rightPanel.getBoundingClientRect();
     const details = sections.map((sectionInfo) => {
       const content = document.querySelector(`#${sectionInfo.contentId}`);
-      const section = content.closest(".session-inspector-v2__accordion");
-      const header = section.querySelector(".session-inspector-v2__accordion-header-row") || section.querySelector(".accordion-v2__header");
+      const section = content.closest(".storage-inspector-v2__accordion");
+      const header = section.querySelector(".storage-inspector-v2__accordion-header-row") || section.querySelector(".accordion-v2__header");
       const output = document.querySelector(sectionInfo.outputSelector);
       const outputStyle = getComputedStyle(output);
       const sectionRect = section.getBoundingClientRect();
@@ -927,7 +927,7 @@ async function expectSessionInspectorV2SharedDetailSpace(page, openContentIds) {
       outputsHaveNoHorizontalScrollbars: openDetails.every((detail) => detail.noHorizontalScrollbar),
       outputsWrapLongLines: openDetails.every((detail) => detail.wrapsLongLines)
     };
-  }, SESSION_INSPECTOR_V2_DETAIL_SECTIONS);
+  }, STORAGE_INSPECTOR_V2_DETAIL_SECTIONS);
 
   expect(state.openContentIds).toEqual(openContentIds);
   expect(state.openCount).toBe(openContentIds.length);
@@ -940,8 +940,8 @@ async function expectSessionInspectorV2SharedDetailSpace(page, openContentIds) {
   return state.openOutputHeight;
 }
 
-async function expectSessionInspectorV2FullscreenShell(page) {
-  const summary = page.locator("[data-session-inspector-v2-summary]");
+async function expectStorageInspectorV2FullscreenShell(page) {
+  const summary = page.locator("[data-storage-inspector-v2-summary]");
   await summary.click();
   const enteredFullscreen = await page.waitForFunction(() => document.body.classList.contains("tools-platform-fullscreen-active"), null, { timeout: 2500 })
     .then(() => true)
@@ -949,8 +949,8 @@ async function expectSessionInspectorV2FullscreenShell(page) {
   if (!enteredFullscreen) {
     await page.evaluate(() => {
       document.querySelector(".is-collapsible").open = false;
-      window.__sessionInspectorV2App.applyFullscreenState(true);
-      window.__sessionInspectorV2App.updateSummary();
+      window.__storageInspectorV2App.applyFullscreenState(true);
+      window.__storageInspectorV2App.updateSummary();
     });
   }
   await expect(page.locator("body")).toHaveClass(/tools-platform-fullscreen-active/);
@@ -989,9 +989,9 @@ async function expectSessionInspectorV2FullscreenShell(page) {
     await expect(page.locator("body")).not.toHaveClass(/tools-platform-fullscreen-active/);
   } else {
     await page.evaluate(() => {
-      window.__sessionInspectorV2App.applyFullscreenState(false);
+      window.__storageInspectorV2App.applyFullscreenState(false);
       document.querySelector(".is-collapsible").open = true;
-      window.__sessionInspectorV2App.updateSummary();
+      window.__storageInspectorV2App.updateSummary();
     });
     await expect(page.locator("body")).not.toHaveClass(/tools-platform-fullscreen-active/);
   }
@@ -1229,7 +1229,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           sampleLabels: Array.from(firstClassToolsSection?.querySelectorAll(".tools-platform-card__action") || [])
             .map((action) => action.textContent.trim())
             .filter((label) => label.startsWith("Samples")),
-          sessionInspectorActionClasses: actionClassesForCard("Session Inspector V2"),
+          storageInspectorActionClasses: actionClassesForCard("Storage Inspector V2"),
           sharedActionLabelKeys: Object.keys(assetUsageModule.SHARED_ACTION_LABELS),
           sharedActionLabels: Object.values(assetUsageModule.SHARED_ACTION_LABELS),
           sharedShellActions: assetUsageModule.getSharedShellActions("sprite-editor", "tool")
@@ -1277,8 +1277,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "Browser Speech Backend (speechSynthesis)",
         "eSpeak NG WASM Backend"
       ]));
-      expect(toolsIndexState.viewersCards).toContain("Session Inspector V2");
-      expect(toolsIndexState.viewersCards).not.toContain("Session Inspector");
+      expect(toolsIndexState.viewersCards).toContain("Storage Inspector V2");
       expect(toolsIndexState.workspaceActionLabels).toEqual(["How To Use", "Read Me"]);
       expect(toolsIndexState.sharedActionLabelKeys).toEqual(["paletteManager"]);
       expect(toolsIndexState.sharedActionLabels).toEqual(["Palette Manager"]);
@@ -1288,9 +1287,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         label: "Palette Manager"
       }]);
       expect(toolsIndexState.sharedActionLabels).not.toContain("Browse Palettes");
-      expect(toolsIndexState.sessionInspectorActionClasses["How To Use"]).toBe(toolsIndexState.paletteManagerActionClasses["How To Use"]);
-      expect(toolsIndexState.sessionInspectorActionClasses["Read Me"]).toBe(toolsIndexState.paletteManagerActionClasses["Read Me"]);
-      expect(toolsIndexState.sessionInspectorActionClasses["How To Use"]).toBe("tools-platform-card__action tools-platform-card__action--secondary");
+      expect(toolsIndexState.storageInspectorActionClasses["How To Use"]).toBe(toolsIndexState.paletteManagerActionClasses["How To Use"]);
+      expect(toolsIndexState.storageInspectorActionClasses["Read Me"]).toBe(toolsIndexState.paletteManagerActionClasses["Read Me"]);
+      expect(toolsIndexState.storageInspectorActionClasses["How To Use"]).toBe("tools-platform-card__action tools-platform-card__action--secondary");
       expect(toolsIndexState.actionLabels).not.toContain("README");
       expect(toolsIndexState.sampleLabels.every((label) => /^Samples \(\d+\)$/.test(label))).toBe(true);
       expect(pageErrors).toEqual([]);
@@ -2272,7 +2271,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         summaryTopAtBottom: true
       });
       const transformIconState = await page.locator("#objectVectorStudioV2ShapeTransform").evaluate((panel) => ({
+        applyOrigin: {
+          hasIcon: panel.querySelector("#objectVectorStudioV2ApplyOriginButton").classList.contains("object-vector-studio-v2__nerd-icon"),
+          iconKey: panel.querySelector("#objectVectorStudioV2ApplyOriginButton").dataset.ovsIconKey,
+          iconName: panel.querySelector("#objectVectorStudioV2ApplyOriginButton").dataset.ovsIconName,
+          title: panel.querySelector("#objectVectorStudioV2ApplyOriginButton").title
+        },
         autoOrigin: {
+          hasIcon: panel.querySelector("#objectVectorStudioV2AutoOriginButton").classList.contains("object-vector-studio-v2__nerd-icon"),
           iconKey: panel.querySelector("#objectVectorStudioV2AutoOriginButton").dataset.ovsIconKey,
           iconName: panel.querySelector("#objectVectorStudioV2AutoOriginButton").dataset.ovsIconName,
           title: panel.querySelector("#objectVectorStudioV2AutoOriginButton").title
@@ -2285,9 +2291,28 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         scaleActionRemoved: panel.querySelector("#objectVectorStudioV2ScaleShapeButton") === null
       }));
       expect(transformIconState).toEqual({
-        autoOrigin: { iconKey: "center", iconName: "nf-fa-dot_circle_o", title: "Auto Origin" },
+        applyOrigin: { hasIcon: false, iconKey: undefined, iconName: undefined, title: "Apply Origin" },
+        autoOrigin: { hasIcon: false, iconKey: undefined, iconName: undefined, title: "Auto Origin" },
         resize: { iconKey: "resize", iconName: "nf-md-resize", title: "Resize Geometry" },
         scaleActionRemoved: true
+      });
+      const objectOriginIconState = await page.locator("#objectVectorStudioV2ObjectTransform").evaluate((panel) => ({
+        applyOrigin: {
+          hasIcon: panel.querySelector("#objectVectorStudioV2ObjectApplyOriginButton").classList.contains("object-vector-studio-v2__nerd-icon"),
+          iconKey: panel.querySelector("#objectVectorStudioV2ObjectApplyOriginButton").dataset.ovsIconKey,
+          iconName: panel.querySelector("#objectVectorStudioV2ObjectApplyOriginButton").dataset.ovsIconName,
+          title: panel.querySelector("#objectVectorStudioV2ObjectApplyOriginButton").title
+        },
+        autoOrigin: {
+          hasIcon: panel.querySelector("#objectVectorStudioV2ObjectAutoOriginButton").classList.contains("object-vector-studio-v2__nerd-icon"),
+          iconKey: panel.querySelector("#objectVectorStudioV2ObjectAutoOriginButton").dataset.ovsIconKey,
+          iconName: panel.querySelector("#objectVectorStudioV2ObjectAutoOriginButton").dataset.ovsIconName,
+          title: panel.querySelector("#objectVectorStudioV2ObjectAutoOriginButton").title
+        }
+      }));
+      expect(objectOriginIconState).toEqual({
+        applyOrigin: { hasIcon: false, iconKey: undefined, iconName: undefined, title: "Apply Object Origin" },
+        autoOrigin: { hasIcon: false, iconKey: undefined, iconName: undefined, title: "Auto Origin" }
       });
       const scaleControlLayout = await page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__scale-control-row").evaluate((row) => {
         const children = Array.from(row.children);
@@ -2934,6 +2959,35 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(pivotMarkerAfterOrigin).toEqual({ x: 150, y: 40 });
+      const shapeAutoOriginBefore = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const shape = app.selectedShape();
+        const geometry = { ...shape.geometry };
+        return {
+          expectedShapeCenter: {
+            x: Number((geometry.x + geometry.width / 2).toFixed(3)),
+            y: Number((geometry.y + geometry.height / 2).toFixed(3))
+          },
+          geometryText: JSON.stringify(shape.geometry),
+          objectOrigin: { ...app.selectedObject().objectOrigin },
+          shapeOrigin: { ...shape.transform.shapeOrigin }
+        };
+      });
+      await page.locator("#objectVectorStudioV2AutoOriginButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Origin updated shape row 0 origin\/pivot from selected shape bounds/);
+      const shapeAutoOriginAfter = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const shape = app.selectedShape();
+        return {
+          geometryText: JSON.stringify(shape.geometry),
+          objectOrigin: { ...app.selectedObject().objectOrigin },
+          shapeOrigin: { ...shape.transform.shapeOrigin }
+        };
+      });
+      expect(shapeAutoOriginAfter.geometryText).toBe(shapeAutoOriginBefore.geometryText);
+      expect(shapeAutoOriginAfter.objectOrigin).toEqual(shapeAutoOriginBefore.objectOrigin);
+      expect(shapeAutoOriginAfter.shapeOrigin).toEqual(shapeAutoOriginBefore.expectedShapeCenter);
+      expect(shapeAutoOriginAfter.shapeOrigin).not.toEqual(shapeAutoOriginBefore.shapeOrigin);
 
       await page.locator("#objectVectorStudioV2ScaleInput").fill("0");
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveAttribute("aria-invalid", "true");
@@ -6466,26 +6520,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await route.fulfill({
         body: JSON.stringify({
           game: {
-            workspace: {
-              assetsPath: "games/Synthetic/assets",
-              tools: {
-                "asset-manager-v2": {
-                  assets: {
-                    "assets.audio.music.theme": {
-                      kind: "mp3",
-                      path: "assets/audio/theme.mp3",
-                      role: "music",
-                      source: "manifest",
-                      type: "audio"
-                    },
-                    "assets.audio.sound.click": {
-                      kind: "wav",
-                      path: "assets/audio/click.wav",
-                      role: "sound",
-                      source: "manifest",
-                      type: "audio"
-                    }
-                  }
+            folder: "Synthetic"
+          },
+          tools: {
+            "asset-manager-v2": {
+              assets: {
+                "assets.audio.music.theme": {
+                  kind: "mp3",
+                  path: "assets/audio/theme.mp3",
+                  role: "music",
+                  source: "manifest",
+                  type: "audio"
+                },
+                "assets.audio.sound.click": {
+                  kind: "wav",
+                  path: "assets/audio/click.wav",
+                  role: "sound",
+                  source: "manifest",
+                  type: "audio"
                 }
               }
             }
@@ -8169,7 +8221,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("launches Session Inspector V2 with V2 labels, accordions, theme, and delete controls", async ({ page }) => {
+  test("launches Storage Inspector V2 with V2 labels, accordions, theme, and delete controls", async ({ page }) => {
     const pageErrors = [];
     await page.setViewportSize({ height: 900, width: 1440 });
     await page.addInitScript(() => {
@@ -8177,69 +8229,71 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         configurable: true,
         value: {
           async writeText(value) {
-            window.__sessionInspectorV2ClipboardText = value;
+            window.__storageInspectorV2ClipboardText = value;
           }
         }
       });
-      window.sessionStorage.setItem("session-inspector-v2-alpha", "true");
-      window.sessionStorage.setItem("session-inspector-v2-beta", "plain beta value");
-      window.sessionStorage.setItem("session-inspector-v2-gamma", JSON.stringify({ index: 3, wraps: true }));
-      window.sessionStorage.setItem("session-inspector-v2-delta", "delta value that is long enough to prove tile text clips inside a fixed tile");
-      window.sessionStorage.setItem("session-inspector-v2-super-long-storage-key-name-that-must-wrap-inside-the-fixed-session-tile", "epsilon value");
-      window.localStorage.setItem("session-inspector-v2-local", "local value");
+      window.sessionStorage.setItem("storage-inspector-v2-alpha", "true");
+      window.sessionStorage.setItem("storage-inspector-v2-beta", "plain beta value");
+      window.sessionStorage.setItem("storage-inspector-v2-gamma", JSON.stringify({ index: 3, wraps: true }));
+      window.sessionStorage.setItem("storage-inspector-v2-delta", "delta value that is long enough to prove tile text clips inside a fixed tile");
+      window.sessionStorage.setItem("storage-inspector-v2-super-long-storage-key-name-that-must-wrap-inside-the-fixed-session-tile", "epsilon value");
+      window.localStorage.setItem("storage-inspector-v2-local", "local value");
     });
-    const server = await openSessionInspectorV2(page, "?launch=workspace&fromTool=workspace-manager-v2&hostContextId=session-inspector-v2-test-context&workspaceMode=uat");
+    const server = await openStorageInspectorV2(page, "?launch=workspace&fromTool=workspace-manager-v2&hostContextId=storage-inspector-v2-test-context&workspaceMode=uat");
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);
     });
 
     try {
-      await expect(page.locator("body[data-tool-id='session-inspector-v2']")).toBeVisible();
-      await expect(page.locator("h1")).toHaveText("Session Inspector V2");
-      await expect(page.locator("h1")).not.toHaveText("Session Inspector");
-      await expect(page.locator('link[href="./styles/sessionInspectorV2.css"]')).toHaveCount(1);
-      await expect(page.locator('link[href="./styles/sessionInspector.css"]')).toHaveCount(0);
+      await expect(page.locator("body[data-tool-id='storage-inspector-v2']")).toBeVisible();
+      await expect(page.locator("h1")).toHaveText("Storage Inspector V2");
+      await expect(page.locator('link[href="./styles/storageInspectorV2.css"]')).toHaveCount(1);
       await expect(page.locator('link[href="../common/toolShellCommon.css"]')).toHaveCount(1);
-      await expect(page.locator(".session-inspector-v2__menu")).toHaveCount(0);
+      await expect(page.locator(".storage-inspector-v2__menu")).toHaveCount(0);
       await expect(page.locator("#returnToWorkspaceButton")).toHaveCount(1);
-      await expect(page.locator(".session-inspector-v2__workspace-menu")).toBeVisible();
-      await expect(page.locator(".session-inspector-v2__workspace-menu")).toHaveAttribute("aria-label", "Workspace actions");
-      await expect(page.locator(".session-inspector-v2__workspace-menu")).toHaveAttribute("data-launch-mode-nav", "workspace");
-      await expect(page.locator(".session-inspector-v2__workspace-menu #returnToWorkspaceButton")).toHaveText("Return to Workspace");
-      await expect(page.locator(".session-inspector-v2__local-shell-frame #returnToWorkspaceButton")).toHaveCount(0);
-      await expect(page.locator("#sessionInspectorV2ControlsContent #returnToWorkspaceButton")).toHaveCount(0);
-      await expect(page.locator("#refreshSessionInspectorV2Button")).toHaveText("Refresh");
-      await expect(page.locator("#deleteAllSessionInspectorV2Button")).toHaveText("Delete All");
-      await expect(page.locator("#clearSessionInspectorV2StatusButton")).toHaveText("Clear Status");
-      await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Refresh");
-      await expect(page.locator("#sessionInspectorV2ControlsContent")).toContainText("Delete All");
-      await expect(page.locator("#sessionInspectorV2ControlsContent")).not.toContainText("Clear Status");
-      await expect(page.locator(".session-inspector-v2__status-accordion-header")).toContainText("Status");
-      await expect(page.locator(".session-inspector-v2__status-accordion-header #clearSessionInspectorV2StatusButton")).toHaveText("Clear Status");
-      await expect(page.locator(".session-inspector-v2__json-accordion-header")).toContainText("JSON");
-      await expect(page.locator(".session-inspector-v2__json-accordion-header")).not.toContainText("Details");
-      await expect(page.locator(".session-inspector-v2__json-accordion-header #copySessionInspectorV2AllButton")).toHaveText("Copy All");
-      await expect(page.locator(".session-inspector-v2__data-accordion-header")).toContainText("Data");
-      await expect(page.locator(".session-inspector-v2__dirty-accordion-header")).toContainText("Dirty");
-      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: unknown");
-      await expect(page.locator(".session-inspector-v2__state-accordion-header")).toHaveCount(0);
-      await expect(page.locator(".session-inspector-v2__schema-accordion-header")).toHaveCount(0);
-      await expect(page.locator("#sessionInspectorV2StateOutput")).toHaveCount(0);
-      await expect(page.locator("#sessionInspectorV2SchemaOutput")).toHaveCount(0);
-      await expect(page.locator("body")).not.toContainText("State");
-      await expect(page.locator("body")).not.toContainText("Schema");
-      expect(await page.locator(".session-inspector-v2__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child").evaluateAll((labels) => labels.map((label) => label.textContent.trim()))).toEqual([
+      await expect(page.locator(".storage-inspector-v2__workspace-menu")).toBeVisible();
+      await expect(page.locator(".storage-inspector-v2__workspace-menu")).toHaveAttribute("aria-label", "Workspace actions");
+      await expect(page.locator(".storage-inspector-v2__workspace-menu")).toHaveAttribute("data-launch-mode-nav", "workspace");
+      await expect(page.locator(".storage-inspector-v2__workspace-menu #returnToWorkspaceButton")).toHaveText("Return to Workspace");
+      await expect(page.locator(".storage-inspector-v2__local-shell-frame #returnToWorkspaceButton")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2ControlsContent #returnToWorkspaceButton")).toHaveCount(0);
+      await expect(page.locator("#refreshStorageInspectorV2Button")).toHaveText("Refresh");
+      await expect(page.locator("#clearSessionStorageInspectorV2Button")).toHaveText("Clear Session");
+      await expect(page.locator("#clearLocalStorageInspectorV2Button")).toHaveText("Clear Local");
+      await expect(page.locator("#clearToolStateStorageInspectorV2Button")).toHaveText("Clear Tool State");
+      await expect(page.locator("#clearAllStorageInspectorV2Button")).toHaveText("Clear All");
+      await expect(page.locator("#clearStorageInspectorV2StatusButton")).toHaveText("Clear Status");
+      await expect(page.locator("#storageInspectorV2ControlsContent")).toContainText("Refresh");
+      await expect(page.locator("#storageInspectorV2ControlsContent")).toContainText("Clear Session");
+      await expect(page.locator("#storageInspectorV2ControlsContent")).toContainText("Clear Local");
+      await expect(page.locator("#storageInspectorV2ControlsContent")).toContainText("Clear Tool State");
+      await expect(page.locator("#storageInspectorV2ControlsContent")).toContainText("Clear All");
+      await expect(page.locator("#storageInspectorV2ControlsContent")).not.toContainText("Clear Status");
+      await expect(page.locator(".storage-inspector-v2__status-accordion-header")).toContainText("Status");
+      await expect(page.locator(".storage-inspector-v2__status-accordion-header #clearStorageInspectorV2StatusButton")).toHaveText("Clear Status");
+      await expect(page.locator(".storage-inspector-v2__json-accordion-header")).toContainText("JSON");
+      await expect(page.locator(".storage-inspector-v2__json-accordion-header")).not.toContainText("Details");
+      await expect(page.locator(".storage-inspector-v2__json-accordion-header #copyStorageInspectorV2AllButton")).toHaveText("Copy All");
+      await expect(page.locator(".storage-inspector-v2__data-accordion-header")).toContainText("Data");
+      await expect(page.locator(".storage-inspector-v2__dirty-accordion-header")).toContainText("Dirty");
+      await expect(page.locator("#storageInspectorV2DirtyHeaderValue")).toHaveText("Dirty: unknown");
+      await expect(page.locator(".storage-inspector-v2__state-accordion-header")).toHaveCount(0);
+      await expect(page.locator(".storage-inspector-v2__schema-accordion-header")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2StateOutput")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2SchemaOutput")).toHaveCount(0);
+      expect(await page.locator(".storage-inspector-v2__panel--left > .accordion-v2 > .accordion-v2__header > span:first-child").evaluateAll((labels) => labels.map((label) => label.textContent.trim()))).toEqual([
         "Controls",
         "Filters"
       ]);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(5);
-      await expect(page.locator("#sessionInspectorV2Summary > span")).toHaveText([
-        "(5) Entries shown.",
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(6);
+      await expect(page.locator("#storageInspectorV2Summary > span")).toHaveText([
+        "(6) Entries shown.",
         "(5) SessionStorage.",
-        "(0) LocalStorage."
+        "(1) LocalStorage."
       ]);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Session Inspector V2 ready\. Storage is read\/delete\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Storage Inspector V2 ready\. Storage is read\/delete\./);
       const controlsLayout = await page.evaluate(() => {
         const rectFor = (selector) => {
           const element = document.querySelector(selector);
@@ -8254,49 +8308,48 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             top: Math.round(rect.top)
           };
         };
-        const refresh = rectFor("#refreshSessionInspectorV2Button");
-        const deleteAll = rectFor("#deleteAllSessionInspectorV2Button");
-        const clearStatus = rectFor("#clearSessionInspectorV2StatusButton");
+        const refresh = rectFor("#refreshStorageInspectorV2Button");
+        const clearSession = rectFor("#clearSessionStorageInspectorV2Button");
+        const clearLocal = rectFor("#clearLocalStorageInspectorV2Button");
+        const clearToolState = rectFor("#clearToolStateStorageInspectorV2Button");
+        const clearAll = rectFor("#clearAllStorageInspectorV2Button");
+        const clearStatus = rectFor("#clearStorageInspectorV2StatusButton");
         const storageLabel = rectFor('label[for="storageScopeSelect"] span');
         const storageSelect = rectFor("#storageScopeSelect");
-        const filterLabel = rectFor('label[for="sessionInspectorV2FilterInput"] span');
-        const filterInput = rectFor("#sessionInspectorV2FilterInput");
-        const jsonIcon = rectFor(".session-inspector-v2__json-accordion-header .accordion-v2__icon");
-        const copyButton = rectFor("#copySessionInspectorV2AllButton");
+        const filterLabel = rectFor('label[for="storageInspectorV2FilterInput"] span');
+        const filterInput = rectFor("#storageInspectorV2FilterInput");
+        const jsonIcon = rectFor(".storage-inspector-v2__json-accordion-header .accordion-v2__icon");
+        const copyButton = rectFor("#copyStorageInspectorV2AllButton");
         return {
-          buttonsFit: [refresh, deleteAll, clearStatus].every((rect) => rect.scrollWidth <= rect.clientWidth + 1),
+          buttonsFit: [refresh, clearSession, clearLocal, clearToolState, clearAll, clearStatus].every((rect) => rect.scrollWidth <= rect.clientWidth + 1),
           clearStatusCompact: clearStatus.height <= 34,
           copyAfterCollapseIcon: copyButton.left >= jsonIcon.right,
-          deleteAllRightOfRefresh: deleteAll.left > refresh.right,
           filterSameLine: filterInput.top <= filterLabel.bottom && filterInput.bottom >= filterLabel.top,
-          refreshDeleteSameLine: refresh.top === deleteAll.top,
           storageSameLine: storageSelect.top <= storageLabel.bottom && storageSelect.bottom >= storageLabel.top
         };
       });
       expect(controlsLayout.buttonsFit).toBe(true);
       expect(controlsLayout.clearStatusCompact).toBe(true);
-      expect(controlsLayout.refreshDeleteSameLine).toBe(true);
-      expect(controlsLayout.deleteAllRightOfRefresh).toBe(true);
       expect(controlsLayout.storageSameLine).toBe(true);
       expect(controlsLayout.filterSameLine).toBe(true);
       expect(controlsLayout.copyAfterCollapseIcon).toBe(true);
-      const tileText = (await page.locator(".session-inspector-v2__entry-card").allTextContents()).join("\n");
+      const tileText = (await page.locator(".storage-inspector-v2__entry-card").allTextContents()).join("\n");
       expect(tileText).not.toContain("plain beta value");
       expect(tileText).not.toContain("delta value that is long enough");
       expect(tileText).not.toContain("epsilon value");
       expect(tileText).not.toContain("wraps");
 
       const themeState = await page.evaluate(async () => {
-        const css = await fetch("/tools/session-inspector-v2/styles/sessionInspectorV2.css", { cache: "no-store" }).then((response) => response.text());
+        const css = await fetch("/tools/storage-inspector-v2/styles/storageInspectorV2.css", { cache: "no-store" }).then((response) => response.text());
         const stylesheetPaths = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
           .map((link) => new URL(link.href).pathname);
         const bodyStyle = getComputedStyle(document.body);
-        const shellStyle = getComputedStyle(document.querySelector(".session-inspector-v2.app-shell"));
-        const layoutStyle = getComputedStyle(document.querySelector(".session-inspector-v2__layout"));
-        const headerFrameStyle = getComputedStyle(document.querySelector(".session-inspector-v2__local-shell-frame"));
-        const headerSummaryStyle = getComputedStyle(document.querySelector(".session-inspector-v2__local-shell-frame .tools-platform-frame__accordion-summary"));
-        const panelStyle = getComputedStyle(document.querySelector(".session-inspector-v2__panel"));
-        const inputStyle = getComputedStyle(document.querySelector("#sessionInspectorV2FilterInput"));
+        const shellStyle = getComputedStyle(document.querySelector(".storage-inspector-v2.app-shell"));
+        const layoutStyle = getComputedStyle(document.querySelector(".storage-inspector-v2__layout"));
+        const headerFrameStyle = getComputedStyle(document.querySelector(".storage-inspector-v2__local-shell-frame"));
+        const headerSummaryStyle = getComputedStyle(document.querySelector(".storage-inspector-v2__local-shell-frame .tools-platform-frame__accordion-summary"));
+        const panelStyle = getComputedStyle(document.querySelector(".storage-inspector-v2__panel"));
+        const inputStyle = getComputedStyle(document.querySelector("#storageInspectorV2FilterInput"));
         const probeStyle = (property, value) => {
           const probe = document.createElement("div");
           probe.style[property] = value;
@@ -8309,13 +8362,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           bodyBackground: bodyStyle.backgroundImage,
           cssHasHardcodedColors: /#[0-9a-f]{3,8}|rgba?\(|linear-gradient/i.test(css),
           cssUsesThemeTokens: [
-            "--session-inspector-v2-bg: var(--bg-gradient);",
-            "--session-inspector-v2-panel: var(--panel);",
-            "--session-inspector-v2-surface: var(--surface-inline);",
-            "--session-inspector-v2-line: var(--line);",
-            "--session-inspector-v2-text: var(--text);",
-            "--session-inspector-v2-muted: var(--muted);",
-            "--session-inspector-v2-accent: var(--accent);"
+            "--storage-inspector-v2-bg: var(--bg-gradient);",
+            "--storage-inspector-v2-panel: var(--panel);",
+            "--storage-inspector-v2-surface: var(--surface-inline);",
+            "--storage-inspector-v2-line: var(--line);",
+            "--storage-inspector-v2-text: var(--text);",
+            "--storage-inspector-v2-muted: var(--muted);",
+            "--storage-inspector-v2-accent: var(--accent);"
           ].every((snippet) => css.includes(snippet)),
           expectedBackground: probeStyle("backgroundImage", "var(--bg-gradient)"),
           expectedLine: probeStyle("borderColor", "var(--line)"),
@@ -8338,7 +8391,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "/src/engine/ui/hubCommon.css",
         "/src/engine/theme/accordionV2/accordionV2.css",
         "/tools/common/toolShellCommon.css",
-        "/tools/session-inspector-v2/styles/sessionInspectorV2.css"
+        "/tools/storage-inspector-v2/styles/storageInspectorV2.css"
       ]);
       expect(themeState.cssHasHardcodedColors).toBe(false);
       expect(themeState.cssUsesThemeTokens).toBe(true);
@@ -8353,25 +8406,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(themeState.panelBackground).toBe(themeState.expectedPanel);
       expect(themeState.inputBackground).toBe(themeState.expectedSurface);
 
-      await expectSessionInspectorV2FullscreenShell(page);
+      await expectStorageInspectorV2FullscreenShell(page);
 
       for (const contentId of [
-        "sessionInspectorV2ControlsContent",
-        "sessionInspectorV2FiltersContent",
-        "sessionInspectorV2EntriesContent",
-        "sessionInspectorV2JsonContent",
-        "sessionInspectorV2DataContent",
-        "sessionInspectorV2DirtyContent",
-        "sessionInspectorV2StatusContent"
+        "storageInspectorV2ControlsContent",
+        "storageInspectorV2FiltersContent",
+        "storageInspectorV2EntriesContent",
+        "storageInspectorV2JsonContent",
+        "storageInspectorV2DataContent",
+        "storageInspectorV2DirtyContent",
+        "storageInspectorV2StatusContent"
       ]) {
-        await expectSessionInspectorV2AccordionToggles(page, contentId);
+        await expectStorageInspectorV2AccordionToggles(page, contentId);
       }
-      await expectSessionInspectorV2DetailAccordionsIndependent(page);
+      await expectStorageInspectorV2DetailAccordionsIndependent(page);
 
-      const tileState = await page.locator(".session-inspector-v2__entry-card").evaluateAll((cards) => {
+      const tileState = await page.locator(".storage-inspector-v2__entry-card").evaluateAll((cards) => {
         const rects = cards.map((card) => {
           const rect = card.getBoundingClientRect();
-          const deleteButton = card.querySelector("[data-session-inspector-v2-delete-entry-id]");
+          const deleteButton = card.querySelector("[data-storage-inspector-v2-delete-entry-id]");
           return {
             deleteInside: Boolean(deleteButton && card.contains(deleteButton)),
             height: Math.round(rect.height),
@@ -8384,14 +8437,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           deleteButtonsInside: rects.every((rect) => rect.deleteInside),
           firstRowMovesLeftToRight: rects[1].top === rects[0].top && rects[1].left > rects[0].left,
           hasWrappedRows: new Set(rects.map((rect) => rect.top)).size > 1,
-          metadataGap: Math.round(cards[0].querySelector(".session-inspector-v2__entry-value-size").getBoundingClientRect().top
-            - cards[0].querySelector(".session-inspector-v2__entry-storage-type").getBoundingClientRect().bottom),
+          metadataGap: Math.round(cards[0].querySelector(".storage-inspector-v2__entry-value-size").getBoundingClientRect().top
+            - cards[0].querySelector(".storage-inspector-v2__entry-storage-type").getBoundingClientRect().bottom),
           sizes: rects.map(({ height, width }) => ({ height, width })),
-          storageTypeText: cards[0].querySelector(".session-inspector-v2__entry-storage-type").textContent.trim(),
-          valueSizeText: cards[0].querySelector(".session-inspector-v2__entry-value-size").textContent.trim()
+          storageTypeText: cards[0].querySelector(".storage-inspector-v2__entry-storage-type").textContent.trim(),
+          valueSizeText: cards[0].querySelector(".storage-inspector-v2__entry-value-size").textContent.trim()
         };
       });
       expect(tileState.sizes).toEqual([
+        { height: 198, width: 234 },
         { height: 198, width: 234 },
         { height: 198, width: 234 },
         { height: 198, width: 234 },
@@ -8404,9 +8458,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(tileState.storageTypeText).toBe("sessionStorage");
       expect(tileState.valueSizeText).toBe("boolean | 4 bytes");
       expect(tileState.metadataGap).toBeGreaterThanOrEqual(8);
-      const longKeyWrapState = await page.locator(".session-inspector-v2__entry-card", { hasText: "session-inspector-v2-super-long-storage-key-name-that-must-wrap-inside-the-fixed-session-tile" }).locator(".session-inspector-v2__entry-key").evaluate((keyNode) => {
+      const longKeyWrapState = await page.locator(".storage-inspector-v2__entry-card", { hasText: "storage-inspector-v2-super-long-storage-key-name-that-must-wrap-inside-the-fixed-session-tile" }).locator(".storage-inspector-v2__entry-key").evaluate((keyNode) => {
         const keyRect = keyNode.getBoundingClientRect();
-        const cardRect = keyNode.closest(".session-inspector-v2__entry-card").getBoundingClientRect();
+        const cardRect = keyNode.closest(".storage-inspector-v2__entry-card").getBoundingClientRect();
         const lineHeight = Number.parseFloat(getComputedStyle(keyNode).lineHeight);
         return {
           height: keyRect.height,
@@ -8417,67 +8471,85 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(longKeyWrapState.height).toBeGreaterThan(longKeyWrapState.lineHeight * 1.5);
       expect(longKeyWrapState.withinTile).toBe(true);
 
-      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toHaveText("true");
-      await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:session-inspector-v2-alpha.");
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText("No dirty section is present for sessionStorage:session-inspector-v2-alpha.");
-      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: unknown");
-      await page.locator("#copySessionInspectorV2AllButton").click();
+      await page.locator('[data-storage-inspector-v2-entry-id="sessionStorage:storage-inspector-v2-alpha"]').click();
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toHaveText("true");
+      await expect(page.locator("#storageInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:storage-inspector-v2-alpha.");
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).toContainText("No dirty section is present for sessionStorage:storage-inspector-v2-alpha.");
+      await expect(page.locator("#storageInspectorV2DirtyHeaderValue")).toHaveText("Dirty: unknown");
+      await page.locator("#copyStorageInspectorV2AllButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/WARN Copied JSON, Data, and Dirty sections with empty-state text for missing Data and Dirty\./);
-      const copiedValidationText = await page.evaluate(() => window.__sessionInspectorV2ClipboardText);
-      expect(copiedValidationText).toContain("=== JSON ===\nSession: sessionStorage:session-inspector-v2-alpha\ntrue");
-      expect(copiedValidationText).toContain("=== Data ===\nSession: sessionStorage:session-inspector-v2-alpha\nNo data section is present for sessionStorage:session-inspector-v2-alpha.");
-      expect(copiedValidationText).toContain("=== Dirty ===\nSession: sessionStorage:session-inspector-v2-alpha\nNo dirty section is present for sessionStorage:session-inspector-v2-alpha.");
-      await page.locator("#clearSessionInspectorV2StatusButton").click();
+      const copiedValidationText = await page.evaluate(() => window.__storageInspectorV2ClipboardText);
+      expect(copiedValidationText).toContain("=== JSON ===\nStorage: sessionStorage:storage-inspector-v2-alpha\ntrue");
+      expect(copiedValidationText).toContain("=== Data ===\nStorage: sessionStorage:storage-inspector-v2-alpha\nNo data section is present for sessionStorage:storage-inspector-v2-alpha.");
+      expect(copiedValidationText).toContain("=== Dirty ===\nStorage: sessionStorage:storage-inspector-v2-alpha\nNo dirty section is present for sessionStorage:storage-inspector-v2-alpha.");
+      await page.locator("#clearStorageInspectorV2StatusButton").click();
       await expect(page.locator("#statusLog")).toHaveValue("");
-      await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-alpha"]').click();
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toHaveText('"plain beta value"');
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:session-inspector-v2-alpha\./);
-      expect(await page.evaluate(() => window.sessionStorage.getItem("session-inspector-v2-alpha"))).toBeNull();
+      await page.locator('[data-storage-inspector-v2-delete-entry-id="sessionStorage:storage-inspector-v2-alpha"]').click();
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(5);
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toHaveText('"plain beta value"');
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:storage-inspector-v2-alpha\./);
+      expect(await page.evaluate(() => window.sessionStorage.getItem("storage-inspector-v2-alpha"))).toBeNull();
 
       await page.evaluate(() => {
-        window.__sessionInspectorV2OriginalRemoveItem = Storage.prototype.removeItem;
+        window.__storageInspectorV2OriginalRemoveItem = Storage.prototype.removeItem;
         Storage.prototype.removeItem = function removeItemWithTestFailure(key) {
-          if (key === "session-inspector-v2-beta") {
+          if (key === "storage-inspector-v2-beta") {
             throw new Error("blocked delete");
           }
-          return window.__sessionInspectorV2OriginalRemoveItem.call(this, key);
+          return window.__storageInspectorV2OriginalRemoveItem.call(this, key);
         };
       });
-      await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:session-inspector-v2-beta"]').click();
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Delete failed for sessionStorage:session-inspector-v2-beta: blocked delete/);
+      await page.locator('[data-storage-inspector-v2-delete-entry-id="sessionStorage:storage-inspector-v2-beta"]').click();
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(5);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Delete failed for sessionStorage:storage-inspector-v2-beta: blocked delete/);
 
       await page.evaluate(() => {
-        Storage.prototype.removeItem = window.__sessionInspectorV2OriginalRemoveItem;
+        Storage.prototype.removeItem = window.__storageInspectorV2OriginalRemoveItem;
       });
-      await page.locator("#deleteAllSessionInspectorV2Button").click();
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(0);
-      await expect(page.locator("#sessionInspectorV2EntryList")).toContainText("No matching storage entries.");
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toHaveText("{}");
-      await expect(page.locator("#sessionInspectorV2DataOutput")).toHaveText("Select a normalized tool entry with a top-level data section.");
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toHaveText("Select a normalized tool entry with a top-level dirty section.");
-      await expect(page.locator("#sessionInspectorV2Summary > span")).toHaveText([
+      await page.locator("#clearLocalStorageInspectorV2Button").click();
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(4);
+      await expect(page.locator("#storageInspectorV2Summary > span")).toHaveText([
+        "(4) Entries shown.",
+        "(4) SessionStorage.",
+        "(0) LocalStorage."
+      ]);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Cleared 1 local storage entry\./);
+      expect(await page.evaluate(() => window.localStorage.getItem("storage-inspector-v2-local"))).toBeNull();
+
+      await page.locator("#clearSessionStorageInspectorV2Button").click();
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2EntryList")).toContainText("No matching storage entries.");
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toHaveText("{}");
+      await expect(page.locator("#storageInspectorV2DataOutput")).toHaveText("Select a normalized tool entry with a top-level data section.");
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).toHaveText("Select a normalized tool entry with a top-level dirty section.");
+      await expect(page.locator("#storageInspectorV2Summary > span")).toHaveText([
         "(0) Entries shown.",
         "(0) SessionStorage.",
         "(0) LocalStorage."
       ]);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 4 shown storage entries\./);
-      await page.locator("#copySessionInspectorV2AllButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Cleared 4 session storage entries\./);
+      await page.locator("#copyStorageInspectorV2AllButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Copy All failed: select a storage entry before copying JSON, Data, and Dirty\./);
-      await page.locator("#deleteAllSessionInspectorV2Button").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/WARN Delete All skipped: no matching storage entries are shown\./);
-      expect(await page.evaluate(() => window.localStorage.getItem("session-inspector-v2-local"))).toBe("local value");
+      await page.evaluate(() => {
+        window.sessionStorage.setItem("storage-inspector-v2-clear-all-session", "session");
+        window.localStorage.setItem("storage-inspector-v2-clear-all-local", "local");
+      });
+      await page.locator("#refreshStorageInspectorV2Button").click();
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(2);
+      await page.locator("#clearAllStorageInspectorV2Button").click();
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(0);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Cleared 2 all storage entries\./);
+      await page.locator("#clearAllStorageInspectorV2Button").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/WARN Clear all skipped: no matching storage entries were found\./);
       expect(pageErrors).toEqual([]);
       await page.locator("#returnToWorkspaceButton").click();
-      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=session-inspector-v2-test-context&workspace=uat/);
-      await page.goto(`${server.baseUrl}/tools/session-inspector-v2/index.html`, { waitUntil: "networkidle" });
-      await expect(page.locator(".session-inspector-v2__workspace-menu")).toBeHidden();
+      await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=storage-inspector-v2-test-context&workspace=uat/);
+      await page.goto(`${server.baseUrl}/tools/storage-inspector-v2/index.html`, { waitUntil: "networkidle" });
+      await expect(page.locator(".storage-inspector-v2__workspace-menu")).toBeHidden();
       await expect(page.locator("#returnToWorkspaceButton")).toBeHidden();
       await expect(page.locator("#returnToWorkspaceButton")).toHaveCount(1);
-      await expect(page.locator(".session-inspector-v2__local-shell-frame #returnToWorkspaceButton")).toHaveCount(0);
-      await expect(page.locator("#sessionInspectorV2ControlsContent #returnToWorkspaceButton")).toHaveCount(0);
+      await expect(page.locator(".storage-inspector-v2__local-shell-frame #returnToWorkspaceButton")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2ControlsContent #returnToWorkspaceButton")).toHaveCount(0);
     } finally {
       await coverageReporter.stop(page);
       await server.close();
@@ -8491,7 +8563,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         configurable: true,
         value: {
           async writeText(value) {
-            window.__sessionInspectorV2ClipboardText = value;
+            window.__storageInspectorV2ClipboardText = value;
           }
         }
       });
@@ -8505,7 +8577,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           source: "test-fixture"
         }];
       }));
-      const longHorizontalToken = "session-inspector-v2-horizontal-scroll-probe".repeat(8);
+      const longHorizontalToken = "storage-inspector-v2-horizontal-scroll-probe".repeat(8);
       window.sessionStorage.setItem("workspace.tools.preview-generator-v2", JSON.stringify({
         schema: {
           source: "workspace-manager-v2",
@@ -8612,58 +8684,56 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
       }));
     });
-    const server = await openSessionInspectorV2(page);
+    const server = await openStorageInspectorV2(page);
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);
     });
 
     try {
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(5);
-      await expect(page.locator(".session-inspector-v2__json-accordion-header")).toContainText("JSON");
-      await expect(page.locator(".session-inspector-v2__data-accordion-header")).toContainText("Data");
-      await expect(page.locator(".session-inspector-v2__dirty-accordion-header")).toContainText("Dirty");
-      await expect(page.locator(".session-inspector-v2__state-accordion-header")).toHaveCount(0);
-      await expect(page.locator(".session-inspector-v2__schema-accordion-header")).toHaveCount(0);
-      await expect(page.locator("#sessionInspectorV2StateOutput")).toHaveCount(0);
-      await expect(page.locator("#sessionInspectorV2SchemaOutput")).toHaveCount(0);
-      await expect(page.locator("body")).not.toContainText("State");
-      await expect(page.locator("body")).not.toContainText("Schema");
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2']")).toHaveCount(1);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2.schema']")).toHaveCount(0);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2.state']")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(5);
+      await expect(page.locator(".storage-inspector-v2__json-accordion-header")).toContainText("JSON");
+      await expect(page.locator(".storage-inspector-v2__data-accordion-header")).toContainText("Data");
+      await expect(page.locator(".storage-inspector-v2__dirty-accordion-header")).toContainText("Dirty");
+      await expect(page.locator(".storage-inspector-v2__state-accordion-header")).toHaveCount(0);
+      await expect(page.locator(".storage-inspector-v2__schema-accordion-header")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2StateOutput")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2SchemaOutput")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2']")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2.schema']")).toHaveCount(0);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2.state']")).toHaveCount(0);
 
-      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.asset-manager-v2"]').click();
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"schema"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"workspace"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"data"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"dirty"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"repoReferenceKey": "workspace.repo.reference"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).not.toContainText('"state"');
-      await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText('"assets.image.preview.preview"');
-      await expect(page.locator("#sessionInspectorV2DataOutput")).not.toContainText('"schema"');
-      await expect(page.locator("#sessionInspectorV2DataOutput")).not.toContainText('"workspace"');
-      await expect(page.locator("#sessionInspectorV2DataOutput")).not.toContainText('"dirty"');
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"isDirty": false');
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"reason": null');
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"changedAt": null');
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"changedKeys": []');
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"data"');
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"workspace"');
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).not.toContainText('"schema"');
-      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: false");
-      const allDetailContentIds = SESSION_INSPECTOR_V2_DETAIL_SECTIONS.map((section) => section.contentId);
-      const fourOpenOutputHeight = await expectSessionInspectorV2SharedDetailSpace(page, allDetailContentIds);
-      const threeOpenOutputHeight = await expectSessionInspectorV2SharedDetailSpace(page, allDetailContentIds.slice(0, 3));
-      const twoOpenOutputHeight = await expectSessionInspectorV2SharedDetailSpace(page, allDetailContentIds.slice(0, 2));
-      const oneOpenOutputHeight = await expectSessionInspectorV2SharedDetailSpace(page, allDetailContentIds.slice(0, 1));
+      await page.locator('[data-storage-inspector-v2-entry-id="sessionStorage:workspace.tools.asset-manager-v2"]').click();
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"schema"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"workspace"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"data"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"dirty"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"repoReferenceKey": "workspace.repo.reference"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).not.toContainText('"state"');
+      await expect(page.locator("#storageInspectorV2DataOutput")).toContainText('"assets.image.preview.preview"');
+      await expect(page.locator("#storageInspectorV2DataOutput")).not.toContainText('"schema"');
+      await expect(page.locator("#storageInspectorV2DataOutput")).not.toContainText('"workspace"');
+      await expect(page.locator("#storageInspectorV2DataOutput")).not.toContainText('"dirty"');
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).toContainText('"isDirty": false');
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).toContainText('"reason": null');
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).toContainText('"changedAt": null');
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).toContainText('"changedKeys": []');
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).not.toContainText('"data"');
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).not.toContainText('"workspace"');
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).not.toContainText('"schema"');
+      await expect(page.locator("#storageInspectorV2DirtyHeaderValue")).toHaveText("Dirty: false");
+      const allDetailContentIds = STORAGE_INSPECTOR_V2_DETAIL_SECTIONS.map((section) => section.contentId);
+      const fourOpenOutputHeight = await expectStorageInspectorV2SharedDetailSpace(page, allDetailContentIds);
+      const threeOpenOutputHeight = await expectStorageInspectorV2SharedDetailSpace(page, allDetailContentIds.slice(0, 3));
+      const twoOpenOutputHeight = await expectStorageInspectorV2SharedDetailSpace(page, allDetailContentIds.slice(0, 2));
+      const oneOpenOutputHeight = await expectStorageInspectorV2SharedDetailSpace(page, allDetailContentIds.slice(0, 1));
       expect(oneOpenOutputHeight).toBeGreaterThan(twoOpenOutputHeight);
       expect(twoOpenOutputHeight).toBeGreaterThan(threeOpenOutputHeight);
       expect(threeOpenOutputHeight).toBeGreaterThan(fourOpenOutputHeight);
-      await setSessionInspectorV2DetailSectionsOpen(page, allDetailContentIds);
+      await setStorageInspectorV2DetailSectionsOpen(page, allDetailContentIds);
       const detailPanelState = await page.evaluate(() => {
-        const jsonOutput = document.querySelector("#sessionInspectorV2JsonOutput");
-        const dataOutput = document.querySelector("#sessionInspectorV2DataOutput");
+        const jsonOutput = document.querySelector("#storageInspectorV2JsonOutput");
+        const dataOutput = document.querySelector("#storageInspectorV2DataOutput");
         return {
           dataOutputScrollsVertically: dataOutput.scrollHeight > dataOutput.clientHeight + 1,
           jsonOutputScrollsVertically: jsonOutput.scrollHeight > jsonOutput.clientHeight + 1
@@ -8673,27 +8743,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         dataOutputScrollsVertically: true,
         jsonOutputScrollsVertically: true
       });
-      await page.locator("#copySessionInspectorV2AllButton").click();
+      await page.locator("#copyStorageInspectorV2AllButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Copied JSON, Data, and Dirty sections to clipboard\./);
-      const copiedToolPayload = await page.evaluate(() => window.__sessionInspectorV2ClipboardText);
+      const copiedToolPayload = await page.evaluate(() => window.__storageInspectorV2ClipboardText);
       expect(copiedToolPayload).toContain("=== JSON ===");
-      expect(copiedToolPayload).toContain("=== JSON ===\nSession: sessionStorage:workspace.tools.asset-manager-v2\n");
+      expect(copiedToolPayload).toContain("=== JSON ===\nStorage: sessionStorage:workspace.tools.asset-manager-v2\n");
       expect(copiedToolPayload).toContain("=== Data ===");
-      expect(copiedToolPayload).toContain("=== Data ===\nSession: sessionStorage:workspace.tools.asset-manager-v2\n");
+      expect(copiedToolPayload).toContain("=== Data ===\nStorage: sessionStorage:workspace.tools.asset-manager-v2\n");
       expect(copiedToolPayload).toContain("=== Dirty ===");
-      expect(copiedToolPayload).toContain("=== Dirty ===\nSession: sessionStorage:workspace.tools.asset-manager-v2\n");
+      expect(copiedToolPayload).toContain("=== Dirty ===\nStorage: sessionStorage:workspace.tools.asset-manager-v2\n");
       expect(copiedToolPayload).toContain('"workspace"');
       expect(copiedToolPayload).toContain('"data"');
       expect(copiedToolPayload).toContain('"dirty"');
       expect(copiedToolPayload).toContain('"assets.image.preview.preview"');
       expect(copiedToolPayload).toContain('"isDirty": false');
 
-      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.dirty-test"]').click();
-      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: true");
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText('"isDirty": true');
+      await page.locator('[data-storage-inspector-v2-entry-id="sessionStorage:workspace.tools.dirty-test"]').click();
+      await expect(page.locator("#storageInspectorV2DirtyHeaderValue")).toHaveText("Dirty: true");
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).toContainText('"isDirty": true');
       const dirtyOutputScrollState = await page.evaluate(() => {
-        const dirtyContent = document.querySelector("#sessionInspectorV2DirtyContent");
-        const dirtyOutput = document.querySelector("#sessionInspectorV2DirtyOutput");
+        const dirtyContent = document.querySelector("#storageInspectorV2DirtyContent");
+        const dirtyOutput = document.querySelector("#storageInspectorV2DirtyOutput");
         const statusOutput = document.querySelector("#statusLog");
         const dirtyContentStyle = getComputedStyle(dirtyContent);
         const dirtyOutputStyle = getComputedStyle(dirtyOutput);
@@ -8714,22 +8784,22 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         dirtyOutputHeightMatchesStatus: true,
         dirtyOutputWrapsLongLines: true
       });
-      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-data-test"]').click();
-      await expect(page.locator("#sessionInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:workspace.tools.no-data-test.");
-      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.no-dirty-test"]').click();
-      await expect(page.locator("#sessionInspectorV2DirtyHeaderValue")).toHaveText("Dirty: unknown");
-      await expect(page.locator("#sessionInspectorV2DirtyOutput")).toContainText("No dirty section is present for sessionStorage:workspace.tools.no-dirty-test.");
+      await page.locator('[data-storage-inspector-v2-entry-id="sessionStorage:workspace.tools.no-data-test"]').click();
+      await expect(page.locator("#storageInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:workspace.tools.no-data-test.");
+      await page.locator('[data-storage-inspector-v2-entry-id="sessionStorage:workspace.tools.no-dirty-test"]').click();
+      await expect(page.locator("#storageInspectorV2DirtyHeaderValue")).toHaveText("Dirty: unknown");
+      await expect(page.locator("#storageInspectorV2DirtyOutput")).toContainText("No dirty section is present for sessionStorage:workspace.tools.no-dirty-test.");
 
-      await page.locator('[data-session-inspector-v2-delete-entry-id="sessionStorage:workspace.tools.preview-generator-v2"]').click();
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(4);
+      await page.locator('[data-storage-inspector-v2-delete-entry-id="sessionStorage:workspace.tools.preview-generator-v2"]').click();
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(4);
       expect(await page.evaluate(() => window.sessionStorage.getItem("workspace.tools.preview-generator-v2"))).toBeNull();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:workspace\.tools\.preview-generator-v2\./);
 
-      await page.locator("#deleteAllSessionInspectorV2Button").click();
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id]")).toHaveCount(0);
+      await page.locator("#clearToolStateStorageInspectorV2Button").click();
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(0);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:workspace\.tools\.asset-manager-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:workspace\.tools\.dirty-test\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 4 shown storage entries\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Cleared 4 workspace tool state storage entries\./);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -8982,7 +9052,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".workspace-manager-v2__tool-group-title")).toHaveText(["Editors", "Utilities", "Viewers"]);
       await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(7);
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
-      await expect(page.locator('[data-workspace-tool-id="session-inspector"]')).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-browser"]')).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="tile-model-converter"]')).toHaveCount(0);
       const toolGroupMembership = await page.locator(".workspace-manager-v2__tool-group").evaluateAll((groups) => Object.fromEntries(groups.map((group) => [
@@ -8992,7 +9061,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolGroupMembership).toEqual({
         Editors: ["Asset Manager V2", "Palette Manager V2", "Object Vector Studio V2"],
         Utilities: ["Preview Generator V2", "Text to Speech V2"],
-        Viewers: ["Tool Starter V2", "Session Inspector V2"]
+        Viewers: ["Tool Starter V2", "Storage Inspector V2"]
       });
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => (
@@ -9087,7 +9156,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "workspace.tools.object-vector-studio-v2",
         "workspace.tools.palette-manager-v2",
         "workspace.tools.preview-generator-v2",
-        "workspace.tools.session-inspector-v2",
+        "workspace.tools.storage-inspector-v2",
         "workspace.tools.text2speech-V2"
       ]);
       expect(selectedGameHydration.toolKeys).not.toContain("workspace.tools.templates-v2");
@@ -9097,7 +9166,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object-vector-studio-v2",
         "palette-manager-v2",
         "preview-generator-v2",
-        "session-inspector-v2",
+        "storage-inspector-v2",
         "text2speech-V2"
       ]);
       const selectedGameHydrationReport = await page.evaluate(() => window.__workspaceManagerV2App.activeToolStateHydration.report);
@@ -9107,11 +9176,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object-vector-studio-v2",
         "preview-generator-v2",
         "text2speech-V2",
-        "session-inspector-v2"
+        "storage-inspector-v2"
       ]);
       expect(selectedGameHydrationReport.skippedTools).toEqual([
         {
-          reason: "starter/dev-only tool is not enabled by the selected game workspace config",
+          reason: "starter/dev-only tool is not enabled by the selected game manifest",
           toolId: "templates-v2",
           toolName: "Tool Starter V2"
         }
@@ -9145,7 +9214,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["object-vector-studio-v2"]);
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["palette-manager-v2"]);
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["preview-generator-v2"]);
-      expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["session-inspector-v2"]);
+      expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["storage-inspector-v2"]);
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["text2speech-V2"]);
       expect(selectedGameHydration.toolSessions["asset-manager-v2"].state).toBeUndefined();
       expect(JSON.stringify(selectedGameHydration.toolSessions)).not.toMatch(/getDirectoryHandle|createWritable|FileSystemDirectoryHandle/);
@@ -9222,7 +9291,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const paletteTile = page.locator('[data-workspace-tool-id="palette-manager-v2"]');
       const previewTile = page.locator('[data-workspace-tool-id="preview-generator-v2"]');
       const textToSpeechToolTile = page.locator('[data-workspace-tool-id="text2speech-V2"]');
-      const sessionInspectorTile = page.locator('[data-workspace-tool-id="session-inspector-v2"]');
+      const storageInspectorTile = page.locator('[data-workspace-tool-id="storage-inspector-v2"]');
       await expect(templateTile).toBeDisabled();
       await expect(templateTile).toContainText("Tool Starter V2");
       await expect(templateTile).toContainText("Not enabled for game");
@@ -9243,9 +9312,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(textToSpeechToolTile).toContainText("Ready to launch");
       await expect(textToSpeechToolTile).toContainText("0 text to speech");
       await expect(textToSpeechToolTile).not.toContainText("Speech synthesis ready");
-      await expect(sessionInspectorTile).toBeEnabled();
-      await expect(sessionInspectorTile).toContainText("Session Inspector V2");
-      await expect(sessionInspectorTile).not.toContainText("Session storage inspector");
+      await expect(storageInspectorTile).toBeEnabled();
+      await expect(storageInspectorTile).toContainText("Storage Inspector V2");
       const tileLayout = await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.map((tile) => ({
         height: Math.round(tile.getBoundingClientRect().height),
         width: Math.round(tile.getBoundingClientRect().width)
@@ -9273,33 +9341,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(tileActionLayout.every((entry) => entry.actionHeight === 24)).toBe(true);
       expect(tileActionLayout.every((entry) => entry.chipHeights.every((height) => height === 22))).toBe(true);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.manifest\.json is game-only data\. Workspace Manager uses root\.tools to create standalone workspace sessions and saves validated tool data back to root\.tools\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, preview-generator-v2, text2speech-V2, session-inspector-v2\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for templates-v2: starter\/dev-only tool is not enabled by the selected game workspace config\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, preview-generator-v2, text2speech-V2, storage-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for templates-v2: starter\/dev-only tool is not enabled by the selected game manifest\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 10 active palette colors and 14 managed assets\./);
 
-      await page.locator('[data-workspace-tool-id="session-inspector-v2"]').click();
-      await expect(page).toHaveURL(/session-inspector-v2\/index\.html.*launch=workspace/);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.asset-manager-v2']")).toHaveCount(1);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.object-vector-studio-v2']")).toHaveCount(1);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.palette-manager-v2']")).toHaveCount(1);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2']")).toHaveCount(1);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.text2speech-V2']")).toHaveCount(1);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.session-inspector-v2']")).toHaveCount(1);
-      await expect(page.locator("#sessionInspectorV2EntryList [data-session-inspector-v2-entry-id='sessionStorage:workspace.tools.templates-v2']")).toHaveCount(0);
-      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.tools.asset-manager-v2"]').click();
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"hasLiveRepoHandle": true');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"sourceBindingState": "bound"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"boundManifestPath": "/games/Asteroids/game.manifest.json"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"bindingSource": "game.manifest.json"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).not.toContainText('"handle":');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).not.toContainText('"repoHandle":');
+      await page.locator('[data-workspace-tool-id="storage-inspector-v2"]').click();
+      await expect(page).toHaveURL(/storage-inspector-v2\/index\.html.*launch=workspace/);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.asset-manager-v2']")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.object-vector-studio-v2']")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.palette-manager-v2']")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2']")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.text2speech-V2']")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.storage-inspector-v2']")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.templates-v2']")).toHaveCount(0);
+      await page.locator('[data-storage-inspector-v2-entry-id="sessionStorage:workspace.tools.asset-manager-v2"]').click();
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"hasLiveRepoHandle": true');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"sourceBindingState": "bound"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"boundManifestPath": "/games/Asteroids/game.manifest.json"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"bindingSource": "game.manifest.json"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).not.toContainText('"handle":');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).not.toContainText('"repoHandle":');
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Runtime binding status for sessionStorage:workspace\.tools\.asset-manager-v2: hasLiveRepoHandle=true; sourceBindingState=bound; boundManifestPath=\/games\/Asteroids\/game\.manifest\.json; bindingSource=game\.manifest\.json\./);
-      await page.locator('[data-session-inspector-v2-entry-id="sessionStorage:workspace.repo.reference"]').click();
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"hasLiveRepoHandle": true');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"sourceBindingState": "bound"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"boundManifestPath": "/games/Asteroids/game.manifest.json"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).toContainText('"bindingSource": "game.manifest.json"');
-      await expect(page.locator("#sessionInspectorV2JsonOutput")).not.toContainText('"handle":');
+      await page.locator('[data-storage-inspector-v2-entry-id="sessionStorage:workspace.repo.reference"]').click();
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"hasLiveRepoHandle": true');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"sourceBindingState": "bound"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"boundManifestPath": "/games/Asteroids/game.manifest.json"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).toContainText('"bindingSource": "game.manifest.json"');
+      await expect(page.locator("#storageInspectorV2JsonOutput")).not.toContainText('"handle":');
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Runtime binding status for sessionStorage:workspace\.repo\.reference: hasLiveRepoHandle=true; sourceBindingState=bound; boundManifestPath=\/games\/Asteroids\/game\.manifest\.json; bindingSource=game\.manifest\.json\./);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
@@ -9827,7 +9895,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(textToSpeechToolTile).toContainText("Ready to launch");
       await expect(textToSpeechToolTile).toContainText("0 text to speech");
       await expect(textToSpeechToolTile).not.toContainText("Speech synthesis ready");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, preview-generator-v2, text2speech-V2, session-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, preview-generator-v2, text2speech-V2, storage-inspector-v2\./);
       const textToSpeechSessionData = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2")).data);
       const activeContextHasTextToSpeechPayload = await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speech-V2"));
       expect(textToSpeechSessionData === null || Array.isArray(textToSpeechSessionData)).toBe(true);
@@ -10509,7 +10577,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.asset-manager-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.palette-manager-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.preview-generator-v2\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.session-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.storage-inspector-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.repo\.reference\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Closed Workspace Manager V2 toolState\. Removed \d+ workspace toolState keys\./);
       await expect(page.locator("#repoSelectedValue")).toHaveText("not selected");
@@ -11248,8 +11316,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("3 palette swatches");
       await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Preview Not Found");
-      await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).toContainText("Session Inspector V2");
-      await expect(page.locator('[data-workspace-tool-id="session-inspector-v2"]')).not.toContainText("Session storage inspector");
+      await expect(page.locator('[data-workspace-tool-id="storage-inspector-v2"]')).toContainText("Storage Inspector V2");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"id": "workspace-manager-v2-UAT-template"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/_template\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/_template\/assets"/);

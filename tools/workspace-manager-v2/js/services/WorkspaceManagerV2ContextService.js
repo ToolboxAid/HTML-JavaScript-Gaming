@@ -21,7 +21,7 @@ const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
 });
 const SELECTED_GAME_PURPOSE_TOOL_IDS = Object.freeze(new Set([
   "preview-generator-v2",
-  "session-inspector-v2",
+  "storage-inspector-v2",
   TEXT2SPEECH_V2_TOOL_KEY
 ]));
 const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
@@ -70,9 +70,9 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
     group: "Viewers",
-    id: "session-inspector-v2",
-    name: "Session Inspector V2",
-    path: "../session-inspector-v2/index.html"
+    id: "storage-inspector-v2",
+    name: "Storage Inspector V2",
+    path: "../storage-inspector-v2/index.html"
   })
 ]);
 
@@ -144,13 +144,13 @@ function hydrationDecisionForTool(tool, context) {
     return { hydrate: false, reason: "tool is missing a registry id" };
   }
   if (hasToolPayload(tool, context)) {
-    return { hydrate: true, reason: "tool data is present in selected game workspace config" };
+    return { hydrate: true, reason: "tool data is present in selected game manifest" };
   }
   if (SELECTED_GAME_PURPOSE_TOOL_IDS.has(tool.id)) {
     return { hydrate: true, reason: "tool has a selected-game workspace launch purpose" };
   }
   if (tool.id === "templates-v2") {
-    return { hydrate: false, reason: "starter/dev-only tool is not enabled by the selected game workspace config" };
+    return { hydrate: false, reason: "starter/dev-only tool is not enabled by the selected game manifest" };
   }
   return { hydrate: false, reason: "tool has no game data and no selected-game purpose" };
 }
@@ -582,7 +582,7 @@ export class WorkspaceManagerV2ContextService {
     return {
       ok: true,
       skipped: true,
-      message: "Workspace toolState deletion is restricted to Session Inspector V2 or Workspace Manager V2 Close Workspace."
+      message: "Workspace toolState deletion is restricted to Storage Inspector V2 or Workspace Manager V2 Close Workspace."
     };
   }
 
@@ -590,7 +590,7 @@ export class WorkspaceManagerV2ContextService {
     return {
       ok: true,
       skipped: true,
-      message: "Workspace toolState deletion is restricted to Session Inspector V2 or Workspace Manager V2 Close Workspace."
+      message: "Workspace toolState deletion is restricted to Storage Inspector V2 or Workspace Manager V2 Close Workspace."
     };
   }
 
@@ -994,7 +994,7 @@ export class WorkspaceManagerV2ContextService {
   async buildContextForGame(gameId) {
     const game = this.games().find((entry) => entry.id === gameId);
     if (!game) {
-      return { ok: false, message: "Select a valid game workspace." };
+      return { ok: false, message: "Select a valid game manifest." };
     }
     if (game.manifestKind === "game-manifest") {
       return this.contextResultFromManifest(game, this.workspaceManifestFromGameManifest(game), game.manifestPath);
@@ -1018,7 +1018,7 @@ export class WorkspaceManagerV2ContextService {
       const game = gameFromGameManifest(importedManifest, sourceLabel)
         || this.games().find((entry) => entry.id === importedManifest?.game?.id);
       if (!game) {
-        return { ok: false, message: `${sourceLabel} does not match a known game workspace.` };
+        return { ok: false, message: `${sourceLabel} does not match a known game manifest.` };
       }
       return this.contextResultFromManifest(game, this.workspaceManifestFromGameManifest(game), sourceLabel);
     }
@@ -1028,7 +1028,7 @@ export class WorkspaceManagerV2ContextService {
       || (this.isUatMode() ? temporaryUatGameFromManifest(workspaceManifest) : null)
       || gameFromWorkspaceManifest(workspaceManifest, sourceLabel);
     if (!game) {
-      return { ok: false, message: `${sourceLabel} does not match a known game workspace.` };
+      return { ok: false, message: `${sourceLabel} does not match a known game manifest.` };
     }
     return this.contextResultFromManifest(game, workspaceManifest, sourceLabel);
   }
@@ -1069,7 +1069,7 @@ export class WorkspaceManagerV2ContextService {
       || (this.isUatMode() ? temporaryUatGameFromManifest(manifest) : null)
       || gameFromWorkspaceManifest(manifest, `sessionStorage:${hostContextId}`);
     if (!game) {
-      return { ok: false, hasContext: true, message: "Stored Workspace Manager V2 session context does not match a known game workspace." };
+      return { ok: false, hasContext: true, message: "Stored Workspace Manager V2 session context does not match a known game manifest." };
     }
     const result = await this.contextResultFromManifest(game, manifest, `sessionStorage:${hostContextId}`);
     return result.ok
@@ -1453,8 +1453,7 @@ export class WorkspaceManagerV2ContextService {
   }
 
   previewAssetPathForGame(game) {
-    const manifestWorkspace = game?.manifest?.game?.workspace;
-    const gameRoot = String(game?.gameRoot || manifestWorkspace?.gameRoot || "").replaceAll("\\", "/").replace(/^\/+/, "");
+    const gameRoot = String(game?.gameRoot || "").replaceAll("\\", "/").replace(/^\/+/, "");
     if (gameRoot) {
       return `${gameRoot.replace(/\/?$/, "/")}assets/images/preview.svg`;
     }
@@ -1694,7 +1693,7 @@ export class WorkspaceManagerV2ContextService {
     const gameInfo = game?.manifest?.game || {};
     const folder = gameInfo.folder || game?.folder || game?.id || "";
     const gameRoot = `games/${folder}/`;
-    const workspaceManifest = clone(game.manifest?.game?.workspace || {
+    const workspaceManifest = {
       $schema: "tools/schemas/workspace.manifest.schema.json",
       documentKind: "workspace-manifest",
       schema: "html-js-gaming.project",
@@ -1705,7 +1704,7 @@ export class WorkspaceManagerV2ContextService {
       gameRoot,
       assetsPath: `${gameRoot}assets`,
       tools: clone(game.manifest?.tools || game?.tools || {})
-    });
+    };
     if (!workspaceManifest.repoRoot && game.repoRoot) {
       workspaceManifest.repoRoot = game.repoRoot;
     }

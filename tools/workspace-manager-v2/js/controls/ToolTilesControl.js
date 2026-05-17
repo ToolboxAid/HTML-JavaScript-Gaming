@@ -64,7 +64,7 @@ export class ToolTilesControl {
     if (tool.id === "object-vector-studio-v2") {
       return `${objectVectorCount} object vector assets`;
     }
-    if (tool.id === "session-inspector-v2") {
+    if (tool.id === "storage-inspector-v2") {
       return "";
     }
     if (tool.id === "preview-generator-v2") {

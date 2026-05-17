@@ -17,7 +17,7 @@ export class EntryListControl {
     this.selectedId = selectedId;
     if (!this.entries.length) {
       const empty = document.createElement("p");
-      empty.className = "session-inspector-v2__empty";
+      empty.className = "storage-inspector-v2__empty";
       empty.textContent = "No matching storage entries.";
       this.container.replaceChildren(empty);
       return;
@@ -27,24 +27,24 @@ export class EntryListControl {
 
   entryCard(entry) {
     const card = document.createElement("article");
-    card.className = "session-inspector-v2__entry-card";
+    card.className = "storage-inspector-v2__entry-card";
 
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "session-inspector-v2__entry-button";
+    button.className = "storage-inspector-v2__entry-button";
     button.classList.toggle("is-selected", entry.id === this.selectedId);
-    button.dataset.sessionInspectorV2EntryId = entry.id;
+    button.dataset.storageInspectorV2EntryId = entry.id;
 
     const key = document.createElement("span");
-    key.className = "session-inspector-v2__entry-key";
+    key.className = "storage-inspector-v2__entry-key";
     key.textContent = entry.key;
 
     const storageType = document.createElement("span");
-    storageType.className = "session-inspector-v2__entry-storage-type";
+    storageType.className = "storage-inspector-v2__entry-storage-type";
     storageType.textContent = entry.storageType;
 
     const valueSize = document.createElement("span");
-    valueSize.className = "session-inspector-v2__entry-value-size";
+    valueSize.className = "storage-inspector-v2__entry-value-size";
     valueSize.textContent = `${entry.valueType} | ${entry.sizeBytes} bytes`;
 
     button.append(key, storageType, valueSize);
@@ -55,10 +55,10 @@ export class EntryListControl {
 
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
-    deleteButton.className = "session-inspector-v2__entry-delete-button";
-    deleteButton.dataset.sessionInspectorV2DeleteEntryId = entry.id;
-    deleteButton.textContent = "Delete";
-    deleteButton.setAttribute("aria-label", `Delete ${entry.storageType} entry ${entry.key}`);
+    deleteButton.className = "storage-inspector-v2__entry-delete-button";
+    deleteButton.dataset.storageInspectorV2DeleteEntryId = entry.id;
+    deleteButton.textContent = "Delete Key";
+    deleteButton.setAttribute("aria-label", `Delete ${entry.storageType} key ${entry.key}`);
     deleteButton.addEventListener("click", () => {
       this.onDelete(entry.id);
     });

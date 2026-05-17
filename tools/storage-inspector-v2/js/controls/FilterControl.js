@@ -19,7 +19,7 @@ export class FilterControl {
   }
 
   scope() {
-    return String(this.scopeSelect.value || "sessionStorage");
+    return String(this.scopeSelect.value || "all");
   }
 
   setSummary({ localCount = 0, sessionCount = 0, totalCount = 0 } = {}) {

@@ -2822,13 +2822,11 @@ export class ToolStarterApp {
       buttonId: "objectVectorStudioV2ApplyOriginButton",
       buttonLabel: "Apply",
       buttonTitle: "Apply Origin",
-      iconKey: "center",
       label: "Origin",
       rowType: "origin",
       extraButtons: [
         this.createTransformActionButton({
           handler: () => this.autoOriginSelectedShapePivot(),
-          iconKey: "center",
           id: "objectVectorStudioV2AutoOriginButton",
           label: "Auto",
           title: "Auto Origin"
@@ -2845,13 +2843,11 @@ export class ToolStarterApp {
       buttonId: "objectVectorStudioV2ObjectApplyOriginButton",
       buttonLabel: "Apply",
       buttonTitle: "Apply Object Origin",
-      iconKey: "center",
       label: "Origin",
       rowType: "origin",
       extraButtons: [
         this.createTransformActionButton({
           handler: () => this.autoOriginSelectedObjectPivot(),
-          iconKey: "center",
           id: "objectVectorStudioV2ObjectAutoOriginButton",
           label: "Auto",
           title: "Auto Origin"
@@ -6770,42 +6766,6 @@ export class ToolStarterApp {
     }
     const rotation = this.snapAngle(input.value);
     const snapAngleStatus = this.formatSnapAngleRotateStatus(input.value, rotation);
-    const object = this.selectedObject();
-    const objectShapes = sortedShapes(object);
-    const selectedSetIndexes = Array.from(new Set(Array.from(this.selectedShapeIndexes)
-      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
-      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
-      .sort((left, right) => left - right);
-    const directSelectedSetIndexes = Array.from(new Set(Array.from(this.directSelectedShapeIndexes)
-      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
-      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
-      .sort((left, right) => left - right);
-    const isSelectedSetRotate = selectedSetIndexes.length > 1
-      && (directSelectedSetIndexes.length > 1 || selectedSetIndexes.length === objectShapes.length);
-    if (isSelectedSetRotate) {
-      const bounds = this.shapeSetBounds(object, selectedSetIndexes, { includeInvisible: false });
-      if (!bounds) {
-        this.statusLog.write("FAIL Transform rotate blocked: selected set has no visible geometry.");
-        return;
-      }
-      const pivot = {
-        x: this.formatViewportNumber(bounds.x + bounds.width / 2),
-        y: this.formatViewportNumber(bounds.y + bounds.height / 2)
-      };
-      this.rotateSelectedShapeGroup(selectedSetIndexes, rotation, "", snapAngleStatus, {
-        directSelectedShapeIndexes: new Set(directSelectedSetIndexes.length ? directSelectedSetIndexes : selectedSetIndexes),
-        failSubject: "selected set",
-        logSubject: "selected set",
-        pivot
-      });
-      return;
-    }
-    if (this.shapeBelongsToValidGroup(object, this.selectedShapeIndex)) {
-      const targetIndexes = this.shapeSelectionGroupIndexes(sortedShapes(object), this.selectedShapeIndex);
-      const groupId = String(sortedShapes(object)[this.selectedShapeIndex]?.groupId || "").trim();
-      this.rotateSelectedShapeGroup(targetIndexes, rotation, groupId, snapAngleStatus);
-      return;
-    }
     this.updateSelectedShapeTransform("rotate", (shape) => {
       shape.transform = this.ensureShapeTransform(shape);
       shape.transform.rotation = this.normalizeRotationDegrees(shape.transform.rotation + rotation);
@@ -7301,22 +7261,20 @@ export class ToolStarterApp {
       this.statusLog.write("WARN Auto Origin skipped: no shape is selected.");
       return;
     }
-    const activeFrame = this.activeFrame();
-    const visibleShapes = sortedShapes(object)
-      .map((shape, shapeIndex) => this.effectiveShapeForFrame(shape, activeFrame, shapeIndex))
-      .filter((shape) => shape.visible !== false);
-    if (!visibleShapes.length) {
-      this.statusLog.write(`FAIL Auto Origin blocked: object ${object.name} has no visible geometry.`);
+    const effectiveSelected = this.effectiveShape(selected, this.selectedShapeIndex);
+    if (effectiveSelected.visible === false) {
+      this.statusLog.write(`FAIL Auto Origin blocked: shape row ${this.selectedShapeIndex} is hidden.`);
       return;
     }
-    const bounds = this.objectBounds(object, { includeInvisible: false });
+    const bounds = shapeBounds(effectiveSelected);
     const center = {
       x: this.formatViewportNumber(bounds.x + bounds.width / 2),
       y: this.formatViewportNumber(bounds.y + bounds.height / 2)
     };
     this.updateSelectedShapeTransform("auto origin", (shape) => {
-      shape.transform = this.transformWithBalancedOrigin(this.ensureShapeTransform(shape), center);
-    }, `OK Auto Origin updated shape row ${this.selectedShapeIndex} origin/pivot from visible object bounds ${center.x}, ${center.y}.`);
+      shape.transform = this.ensureShapeTransform(shape);
+      shape.transform.shapeOrigin = center;
+    }, `OK Auto Origin updated shape row ${this.selectedShapeIndex} origin/pivot from selected shape bounds ${center.x}, ${center.y}.`);
   }
 
   groupSelectedShapes() {

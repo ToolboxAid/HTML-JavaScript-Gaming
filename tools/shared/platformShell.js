@@ -43,7 +43,7 @@ const STANDARDIZED_TOOL_HEADER_IDS = new Set([
   "vector-map-editor",
   "svg-asset-studio",
   "sprite-editor",
-  "session-inspector-v2",
+  "storage-inspector-v2",
   "state-inspector"
 ]);
 const PRESERVED_TOOL_STATE_KEYS = new Set([
@@ -1546,7 +1546,7 @@ function renderToolAssetBadge(toolId = "") {
 function classifyToolGroup(toolId) {
   const viewerToolIds = new Set([
     "3d-asset-viewer",
-    "session-inspector-v2",
+    "storage-inspector-v2",
     "state-inspector",
     "replay-visualizer",
     "performance-profiler"

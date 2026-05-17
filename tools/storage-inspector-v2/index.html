@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Storage Inspector V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css">
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+    <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="../common/toolShellCommon.css">
+    <link rel="stylesheet" href="./styles/storageInspectorV2.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="storage-inspector-v2">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-storage-inspector-v2-summary>Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <div class="storage-inspector-v2__header-frame" data-storage-inspector-v2-header>
+          <section class="tools-platform-frame storage-inspector-v2__local-shell-frame">
+            <div class="tools-platform-frame__accordion-content">
+              <div class="tools-platform-frame__accordion-summary">
+                <div class="tools-platform-frame__summary-copy">
+                  <h1 class="tools-platform-frame__title" data-tool-id="storage-inspector-v2">Storage Inspector V2</h1>
+                  <h2 class="tools-platform-frame__eyebrow">Browser storage visibility</h2>
+                </div>
+                <div class="tools-platform-frame__summary-meta">
+                  <div class="tools-platform-frame__meta">Inspect and clear current-origin storage values without cross-tool handoff writes.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </details>
+
+    <nav class="storage-inspector-v2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <div class="storage-inspector-v2__workspace-actions">
+        <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
+      </div>
+    </nav>
+
+    <main class="storage-inspector-v2 app-shell tool-shell-common__fullscreen-root" data-tool-id="storage-inspector-v2">
+      <div class="storage-inspector-v2__layout tool-shell-common__fullscreen-layout">
+      <aside class="storage-inspector-v2__panel storage-inspector-v2__panel--left tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-left" aria-label="Storage filters">
+        <section class="accordion-v2 storage-inspector-v2__accordion storage-inspector-v2__accordion--controls is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="storageInspectorV2ControlsContent">
+            <span>Controls</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="storageInspectorV2ControlsContent" class="accordion-v2__content">
+            <div class="storage-inspector-v2__actions" aria-label="Storage Inspector V2 controls">
+              <button id="refreshStorageInspectorV2Button" type="button">Refresh</button>
+              <button id="clearSessionStorageInspectorV2Button" type="button">Clear Session</button>
+              <button id="clearLocalStorageInspectorV2Button" type="button">Clear Local</button>
+              <button id="clearToolStateStorageInspectorV2Button" type="button">Clear Tool State</button>
+              <button id="clearAllStorageInspectorV2Button" type="button">Clear All</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 storage-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="storageInspectorV2FiltersContent">
+            <span>Filters</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="storageInspectorV2FiltersContent" class="accordion-v2__content">
+            <label class="storage-inspector-v2__field" for="storageScopeSelect">
+              <span>Storage</span>
+              <select id="storageScopeSelect">
+                <option value="all">All storage</option>
+                <option value="sessionStorage">sessionStorage</option>
+                <option value="localStorage">localStorage</option>
+              </select>
+            </label>
+            <label class="storage-inspector-v2__field" for="storageInspectorV2FilterInput">
+              <span>Filter</span>
+              <input id="storageInspectorV2FilterInput" type="search" autocomplete="off" placeholder="Key or value text">
+            </label>
+            <div id="storageInspectorV2Summary" class="storage-inspector-v2__summary-counts" aria-live="polite">
+              <span>(0) Entries shown.</span>
+              <span>(0) SessionStorage.</span>
+              <span>(0) LocalStorage.</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="storage-inspector-v2__panel storage-inspector-v2__panel--center tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-center-panel" aria-label="Storage entries">
+        <section class="accordion-v2 storage-inspector-v2__accordion storage-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="storageInspectorV2EntriesContent">
+            <span>Entries</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="storageInspectorV2EntriesContent" class="accordion-v2__content">
+            <div id="storageInspectorV2EntryList" class="storage-inspector-v2__entry-list" aria-label="Storage entries"></div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="storage-inspector-v2__panel storage-inspector-v2__panel--right tool-shell-common__fullscreen-panel tool-shell-common__fullscreen-side-panel tool-shell-common__fullscreen-panel-right" aria-label="Storage JSON, data, and dirty tracking">
+        <section class="accordion-v2 storage-inspector-v2__accordion storage-inspector-v2__accordion--detail storage-inspector-v2__accordion--detail-scroll is-open" data-accordion-v2-open="true">
+          <div class="storage-inspector-v2__accordion-header-row storage-inspector-v2__json-accordion-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="storageInspectorV2JsonContent">
+              <span>JSON</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
+            <div class="storage-inspector-v2__json-header-actions">
+              <button id="copyStorageInspectorV2AllButton" type="button">Copy All</button>
+            </div>
+          </div>
+          <div id="storageInspectorV2JsonContent" class="accordion-v2__content storage-inspector-v2__detail-scroll-content">
+            <pre id="storageInspectorV2JsonOutput" class="storage-inspector-v2__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 storage-inspector-v2__accordion storage-inspector-v2__accordion--detail storage-inspector-v2__accordion--detail-scroll is-open" data-accordion-v2-open="true">
+          <div class="storage-inspector-v2__accordion-header-row storage-inspector-v2__data-accordion-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="storageInspectorV2DataContent">
+              <span>Data</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
+          </div>
+          <div id="storageInspectorV2DataContent" class="accordion-v2__content storage-inspector-v2__detail-scroll-content">
+            <pre id="storageInspectorV2DataOutput" class="storage-inspector-v2__output">Select a normalized tool entry with a top-level data section.</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 storage-inspector-v2__accordion storage-inspector-v2__accordion--detail is-open" data-accordion-v2-open="true">
+          <div class="storage-inspector-v2__accordion-header-row storage-inspector-v2__dirty-accordion-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="storageInspectorV2DirtyContent">
+              <span id="storageInspectorV2DirtyHeaderValue">Dirty: unknown</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
+          </div>
+          <div id="storageInspectorV2DirtyContent" class="accordion-v2__content">
+            <pre id="storageInspectorV2DirtyOutput" class="storage-inspector-v2__output">Select a normalized tool entry with a top-level dirty section.</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 storage-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+          <div class="storage-inspector-v2__accordion-header-row storage-inspector-v2__status-accordion-header">
+            <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="storageInspectorV2StatusContent">
+              <span>Status</span>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </button>
+            <div class="storage-inspector-v2__status-header-actions">
+              <button id="clearStorageInspectorV2StatusButton" type="button">Clear Status</button>
+            </div>
+          </div>
+          <div id="storageInspectorV2StatusContent" class="accordion-v2__content">
+            <textarea id="statusLog" readonly rows="10" aria-label="Storage Inspector V2 status log"></textarea>
+          </div>
+        </section>
+      </aside>
+      </div>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  </body>
+</html>

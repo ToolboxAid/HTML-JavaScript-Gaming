@@ -1,11 +1,14 @@
 const WORKSPACE_RETURN_HISTORY_CONTEXT_KEY = "workspace-manager-v2-return-history-context-id";
 
-export class SessionInspectorV2App {
+export class StorageInspectorV2App {
   constructor({
     accordions,
+    clearAllButton,
+    clearLocalButton,
+    clearSessionButton,
+    clearToolStateButton,
     copyAllButton,
     data,
-    deleteAllButton,
     dirty,
     entryList,
     filters,
@@ -18,9 +21,12 @@ export class SessionInspectorV2App {
     windowRef = window
   }) {
     this.accordions = accordions;
+    this.clearAllButton = clearAllButton;
+    this.clearLocalButton = clearLocalButton;
+    this.clearSessionButton = clearSessionButton;
+    this.clearToolStateButton = clearToolStateButton;
     this.copyAllButton = copyAllButton;
     this.data = data;
-    this.deleteAllButton = deleteAllButton;
     this.dirty = dirty;
     this.entries = [];
     this.entryList = entryList;
@@ -53,10 +59,13 @@ export class SessionInspectorV2App {
     this.copyAllButton.addEventListener("click", () => {
       void this.copyAll();
     });
-    this.deleteAllButton.addEventListener("click", () => this.deleteAllShownEntries());
+    this.clearSessionButton.addEventListener("click", () => this.clearStorageAction("session", () => this.storageService.clearSessionStorage()));
+    this.clearLocalButton.addEventListener("click", () => this.clearStorageAction("local", () => this.storageService.clearLocalStorage()));
+    this.clearToolStateButton.addEventListener("click", () => this.clearStorageAction("workspace tool state", () => this.storageService.clearToolState()));
+    this.clearAllButton.addEventListener("click", () => this.clearStorageAction("all", () => this.storageService.clearAllStorage()));
     this.returnToWorkspaceButton.addEventListener("click", () => this.returnToWorkspace());
     this.refresh({ silent: true });
-    this.statusLog.ok(`Session Inspector V2 ready. Storage is ${this.runtimeContract.storageAccess}.`);
+    this.statusLog.ok(`Storage Inspector V2 ready. Storage is ${this.runtimeContract.storageAccess}.`);
   }
 
   refresh({ silent = false } = {}) {
@@ -142,12 +151,13 @@ export class SessionInspectorV2App {
     this.refresh({ silent: true });
   }
 
-  deleteAllShownEntries() {
-    if (!this.entries.length) {
-      this.statusLog.warn("Delete All skipped: no matching storage entries are shown.");
+  clearStorageAction(label, action) {
+    const result = action();
+    if (!result.deleted.length && !result.failed.length) {
+      this.statusLog.warn(`Clear ${label} skipped: no matching storage entries were found.`);
+      this.refresh({ silent: true });
       return;
     }
-    const result = this.storageService.deleteEntries(this.entries);
     result.deleted.forEach((entry) => {
       this.statusLog.ok(`Deleted ${entry.storageType}:${entry.key}.`);
     });
@@ -156,28 +166,28 @@ export class SessionInspectorV2App {
         this.statusLog.fail(`Delete failed for ${entry.storageType}:${entry.key}: ${message}`);
       });
     }
-    this.statusLog.ok(`Deleted ${result.deleted.length} shown storage entr${result.deleted.length === 1 ? "y" : "ies"}.`);
+    this.statusLog.ok(`Cleared ${result.deleted.length} ${label} storage entr${result.deleted.length === 1 ? "y" : "ies"}.`);
     this.selectedId = "";
     this.refresh({ silent: true });
   }
 
-  selectedSessionLabel(entry) {
+  selectedStorageLabel(entry) {
     return entry ? `${entry.storageType}:${entry.key}` : "(none)";
   }
 
   copyAllPayload(entry) {
-    const sessionLine = `Session: ${this.selectedSessionLabel(entry)}`;
+    const storageLine = `Storage: ${this.selectedStorageLabel(entry)}`;
     return [
       "=== JSON ===",
-      sessionLine,
+      storageLine,
       this.json.text().trim(),
       "",
       "=== Data ===",
-      sessionLine,
+      storageLine,
       this.data.text().trim(),
       "",
       "=== Dirty ===",
-      sessionLine,
+      storageLine,
       this.dirty.text().trim()
     ].join("\n");
   }
@@ -259,7 +269,7 @@ export class SessionInspectorV2App {
   }
 
   mountShell() {
-    this.document.body.classList.add("tools-platform-surface", "session-inspector-v2-local-shell");
+    this.document.body.classList.add("tools-platform-surface", "storage-inspector-v2-local-shell");
     this.applyFullscreenState(Boolean(this.document.fullscreenElement));
     this.bindHeaderDetails();
     this.updateSummary();
@@ -270,7 +280,7 @@ export class SessionInspectorV2App {
   }
 
   getSummaryElement() {
-    return this.document.querySelector("[data-session-inspector-v2-summary]");
+    return this.document.querySelector("[data-storage-inspector-v2-summary]");
   }
 
   applyFullscreenState(isActive) {
@@ -293,7 +303,7 @@ export class SessionInspectorV2App {
     }
     const isFullscreen = Boolean(this.document.fullscreenElement);
     const isExpanded = details.open === true;
-    const headerText = "Session Inspector V2 - Session storage visibility";
+    const headerText = "Storage Inspector V2 - Browser storage visibility";
     summary.textContent = isExpanded
       ? "Hide Header and Details"
       : (isFullscreen ? headerText : "Show Header and Details");
@@ -301,7 +311,7 @@ export class SessionInspectorV2App {
     summary.setAttribute("data-tools-platform-summary-error", "0");
     summary.setAttribute("data-tools-platform-summary-state", isExpanded ? "expanded" : "collapsed");
     summary.setAttribute("data-tools-platform-summary-mode", isFullscreen ? "fullscreen" : "normal");
-    summary.setAttribute("data-tool-id", "session-inspector-v2");
+    summary.setAttribute("data-tool-id", "storage-inspector-v2");
     summary.setAttribute("title", `${headerText}\nInspect and clear current-origin storage values without cross-tool handoff writes.`);
   }
 
@@ -332,10 +342,10 @@ export class SessionInspectorV2App {
 
   bindHeaderDetails() {
     const details = this.getHeaderDetails();
-    if (!(details instanceof HTMLDetailsElement) || details.dataset.sessionInspectorV2ShellBound === "true") {
+    if (!(details instanceof HTMLDetailsElement) || details.dataset.storageInspectorV2ShellBound === "true") {
       return;
     }
-    details.dataset.sessionInspectorV2ShellBound = "true";
+    details.dataset.storageInspectorV2ShellBound = "true";
     details.addEventListener("toggle", () => {
       this.updateSummary();
       if (this.suppressFullscreenSync) {

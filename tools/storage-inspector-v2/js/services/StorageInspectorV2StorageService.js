@@ -69,7 +69,7 @@ function previewText(rawValue) {
   return normalized.length > 140 ? `${normalized.slice(0, 137)}...` : normalized;
 }
 
-export class SessionInspectorV2StorageService {
+export class StorageInspectorV2StorageService {
   constructor({
     localStorageRef = window.localStorage,
     sessionStorageRef = window.sessionStorage
@@ -78,8 +78,8 @@ export class SessionInspectorV2StorageService {
     this.sessionStorage = sessionStorageRef;
   }
 
-  readEntries({ scope = "sessionStorage", filterText = "" } = {}) {
-    const normalizedScope = String(scope || "sessionStorage");
+  readEntries({ scope = "all", filterText = "" } = {}) {
+    const normalizedScope = String(scope || "all");
     const storages = [
       { storageType: "sessionStorage", storage: this.sessionStorage },
       { storageType: "localStorage", storage: this.localStorage }
@@ -89,8 +89,9 @@ export class SessionInspectorV2StorageService {
     const filteredEntries = filter
       ? entries.filter((entry) => `${entry.storageType}\n${entry.key}\n${entry.rawValue}`.toLowerCase().includes(filter))
       : entries;
+    const storageOrder = { sessionStorage: 0, localStorage: 1 };
     return filteredEntries.sort((left, right) => (
-      left.storageType.localeCompare(right.storageType)
+      (storageOrder[left.storageType] ?? 99) - (storageOrder[right.storageType] ?? 99)
       || left.key.localeCompare(right.key)
     ));
   }
@@ -150,5 +151,26 @@ export class SessionInspectorV2StorageService {
       }
     });
     return { deleted, failed };
+  }
+
+  clearStorageType(storageType) {
+    return this.deleteEntries(this.readEntries({ scope: storageType }));
+  }
+
+  clearSessionStorage() {
+    return this.clearStorageType("sessionStorage");
+  }
+
+  clearLocalStorage() {
+    return this.clearStorageType("localStorage");
+  }
+
+  clearToolState() {
+    return this.deleteEntries(this.readEntries({ scope: "all" })
+      .filter((entry) => entry.key.startsWith("workspace.tools.")));
+  }
+
+  clearAllStorage() {
+    return this.deleteEntries(this.readEntries({ scope: "all" }));
   }
 }
