@@ -2292,6 +2292,21 @@ export class ToolStarterApp {
   createPolygonPointRow(point, index, { rounded = false, selectable = true } = {}) {
     const row = document.createElement("div");
     row.className = "object-vector-studio-v2__polygon-point-field";
+    row.dataset.polygonPointIndex = String(index);
+    if (selectable) {
+      row.dataset.polygonPointSelectable = "true";
+      row.setAttribute("role", "button");
+      row.setAttribute("tabindex", "0");
+      row.setAttribute("aria-pressed", "false");
+      row.title = "Select this point row for Add Point or Delete Point(s).";
+      row.addEventListener("click", (event) => this.handlePolygonPointRowSelection(event, row));
+      row.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          this.togglePolygonPointRowSelection(row, event);
+        }
+      });
+    }
     const caption = document.createElement("span");
     caption.className = "object-vector-studio-v2__polygon-point-label";
     caption.textContent = `Point ${index + 1}`;
@@ -2325,20 +2340,10 @@ export class ToolStarterApp {
     roundCheckbox.dataset.polygonPointRound = "true";
     roundCheckbox.dataset.polygonPointIndex = String(index);
     roundCheckbox.setAttribute("aria-label", `Round point ${index + 1}`);
+    roundCheckbox.addEventListener("click", (event) => event.stopPropagation());
     roundCheckbox.addEventListener("change", () => this.updateSelectedShapePointRounding(index, roundCheckbox.checked));
     roundLabel.append(roundCaption, roundCheckbox);
     row.append(roundLabel);
-    if (selectable) {
-      const selectLabel = document.createElement("label");
-      selectLabel.className = "object-vector-studio-v2__polygon-point-toggle";
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.dataset.polygonPointSelect = "true";
-      checkbox.dataset.polygonPointIndex = String(index);
-      checkbox.setAttribute("aria-label", `Select point ${index + 1}`);
-      selectLabel.append(checkbox);
-      row.append(selectLabel);
-    }
     return row;
   }
 
@@ -2358,6 +2363,39 @@ export class ToolStarterApp {
       actions.append(button);
     });
     return actions;
+  }
+
+  handlePolygonPointRowSelection(event, row) {
+    if (event.target.closest("input, button, select, textarea, label")) {
+      return;
+    }
+    this.togglePolygonPointRowSelection(row, event);
+  }
+
+  togglePolygonPointRowSelection(row, event = null) {
+    if (!row?.dataset || row.dataset.polygonPointSelectable !== "true") {
+      return;
+    }
+    const shouldExtend = Boolean(event?.ctrlKey || event?.metaKey || event?.shiftKey);
+    if (!shouldExtend) {
+      this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-action-selected='true']").forEach((candidate) => {
+        if (candidate !== row) {
+          delete candidate.dataset.polygonPointActionSelected;
+          candidate.classList.remove("is-action-selected");
+          candidate.setAttribute("aria-pressed", "false");
+        }
+      });
+    }
+    const isSelected = row.dataset.polygonPointActionSelected === "true";
+    if (isSelected) {
+      delete row.dataset.polygonPointActionSelected;
+      row.classList.remove("is-action-selected");
+      row.setAttribute("aria-pressed", "false");
+      return;
+    }
+    row.dataset.polygonPointActionSelected = "true";
+    row.classList.add("is-action-selected");
+    row.setAttribute("aria-pressed", "true");
   }
 
   createShapeTransformControls(shape) {
@@ -6172,14 +6210,16 @@ export class ToolStarterApp {
   }
 
   checkedPolygonPointIndexes() {
-    return Array.from(this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-select='true']"))
-      .map((checkbox) => checkbox.checked ? Number(checkbox.dataset.polygonPointIndex) : null)
+    return Array.from(this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-action-selected='true']"))
+      .map((row) => Number(row.dataset.polygonPointIndex))
       .filter((index) => Number.isInteger(index));
   }
 
   clearPolygonPointSelections() {
-    this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-select='true']").forEach((checkbox) => {
-      checkbox.checked = false;
+    this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-action-selected='true']").forEach((row) => {
+      delete row.dataset.polygonPointActionSelected;
+      row.classList.remove("is-action-selected");
+      row.setAttribute("aria-pressed", "false");
     });
   }
 
@@ -6256,13 +6296,10 @@ export class ToolStarterApp {
       row.querySelectorAll("[data-polygon-point-index]").forEach((input) => {
         input.dataset.polygonPointIndex = String(index);
       });
+      row.dataset.polygonPointIndex = String(index);
       const roundCheckbox = row.querySelector("[data-polygon-point-round='true']");
       if (roundCheckbox) {
         roundCheckbox.setAttribute("aria-label", `Round point ${index + 1}`);
-      }
-      const checkbox = row.querySelector("[data-polygon-point-select='true']");
-      if (checkbox) {
-        checkbox.setAttribute("aria-label", `Select point ${index + 1}`);
       }
     });
   }

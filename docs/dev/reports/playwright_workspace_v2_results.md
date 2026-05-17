@@ -1,6 +1,6 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_077-point-rounding-snap-icon-color-and-snap-angle-wiring
+PR: PR_26133_078-point-rounding-checkbox-correction
 
 ## Validation
 
@@ -12,12 +12,12 @@ PR: PR_26133_077-point-rounding-snap-icon-color-and-snap-angle-wiring
 
 ## Targeted Checks Covered
 
-- Shape Geometry point rows render Round checkboxes and no longer render the prior Start/Joints/End dropdown model.
-- Point rows default square; checked point rows persist `style.pointRounding` and render round joins/markers.
-- Polygon/polyline point lists size naturally without an internal scrollbar.
-- Snap color behavior is scoped to Snap button glyphs: Snap None uses the red disabled tone, Snap Point matches point snap circles, and non-Snap icons keep default colors.
-- Future notes include spline as a tracked possible geometry addition.
-- Snap Angle rotate application is logged visibly as active or disabled, and enabled Snap Angle constrains Rotate to the snap increment.
+- Shape Geometry point rows now render exactly one checkbox per row.
+- The remaining checkbox is the Round control; unchecked rows render square and checked rows render round.
+- The old second point-selection checkbox was removed from polygon/polyline/triangle point rows.
+- Add/Delete point row targeting now uses row selection state instead of an extra checkbox.
+- No global Start/Joints/End or Joints point-style controls remain.
+- Independent per-point rounding coverage remains in place for open and closed multi-point geometry.
 
 ## Console/Runtime Errors
 

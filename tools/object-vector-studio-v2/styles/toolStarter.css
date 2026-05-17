@@ -1674,9 +1674,20 @@ textarea:hover {
 
 .object-vector-studio-v2__polygon-point-field {
   display: grid;
-  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 1fr) max-content 22px;
+  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 1fr) max-content;
   align-items: center;
   gap: 6px;
+}
+
+.object-vector-studio-v2__polygon-point-field[data-polygon-point-selectable="true"] {
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.object-vector-studio-v2__polygon-point-field.is-action-selected {
+  background: color-mix(in srgb, var(--tool-starter-accent) 16%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--tool-starter-accent) 48%, transparent);
+  outline-offset: 2px;
 }
 
 .object-vector-studio-v2__polygon-point-label {
@@ -1713,12 +1724,6 @@ textarea:hover {
   padding: 5px 7px;
 }
 
-.object-vector-studio-v2__polygon-point-toggle {
-  display: inline-grid;
-  place-items: center;
-  min-width: 0;
-}
-
 .object-vector-studio-v2__polygon-point-rounding {
   display: inline-grid;
   grid-template-columns: max-content 14px;
@@ -1729,8 +1734,7 @@ textarea:hover {
   font-weight: 800;
 }
 
-.object-vector-studio-v2__polygon-point-rounding input,
-.object-vector-studio-v2__polygon-point-toggle input {
+.object-vector-studio-v2__polygon-point-rounding input {
   width: 14px;
   height: 14px;
   margin: 0;

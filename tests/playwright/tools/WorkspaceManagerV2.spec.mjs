@@ -3982,7 +3982,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(polygonPointListLayout).toEqual({ headingMarginBottom: 0, headingMarginTop: 0, listGap: 5, maxHeight: "none", overflowY: "visible", sectionGap: 5 });
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action]")).toHaveText(["Add Point", "Delete Point(s)"]);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true']")).toHaveCount(4);
-      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true']")).toHaveCount(4);
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true']")).toHaveCount(0);
+      await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.map((row) => row.querySelectorAll("input[type='checkbox']").length))).toEqual([1, 1, 1, 1]);
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").check();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to round for shape row 0\./);
       const roundedPointRender = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
@@ -4001,14 +4002,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         pointRounding: [false, true, false, false],
         strokeLinejoin: "miter"
       });
-      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true'][data-polygon-point-index='1']").check();
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-label").nth(1).click();
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action='add']").click();
       await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.map((row) => ({
         label: row.querySelector(".object-vector-studio-v2__polygon-point-label").textContent.trim(),
         rounded: row.querySelector("[data-polygon-point-round='true']").checked,
         x: row.querySelector("[data-polygon-point-axis='x']").value,
         y: row.querySelector("[data-polygon-point-axis='y']").value,
-        selected: row.querySelector("[data-polygon-point-select='true']").checked
+        selected: row.dataset.polygonPointActionSelected === "true"
       })))).toEqual([
         { label: "Point 1", rounded: false, x: "0", y: "-18", selected: false },
         { label: "Point 2", rounded: true, x: "14", y: "16", selected: false },
@@ -4019,10 +4020,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Added point to shape row 0\./);
       await expect.poll(() => page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry.points.length)).toBe(5);
       await expect.poll(() => page.evaluate(() => window.__objectVectorStudioV2App.schemaService.validatePayload(window.__objectVectorStudioV2App.currentPayload).ok)).toBe(true);
-      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true'][data-polygon-point-index='2']").check();
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-label").nth(2).click();
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action='delete']").click();
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field")).toHaveCount(4);
-      await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true']").evaluateAll((checkboxes) => checkboxes.every((checkbox) => !checkbox.checked))).toBe(true);
+      await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.every((row) => row.dataset.polygonPointActionSelected !== "true"))).toBe(true);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted 1 point from shape row 0\./);
       await expect.poll(() => page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry.points.length)).toBe(4);
       await expect.poll(() => page.evaluate(() => window.__objectVectorStudioV2App.schemaService.validatePayload(window.__objectVectorStudioV2App.currentPayload).ok)).toBe(true);
@@ -4171,12 +4172,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(resizedPreviewScale.pointsOnVisibleGridLines).toBe(true);
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
-      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true'][data-polygon-point-index='0']").check();
-      await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true'][data-polygon-point-index='1']").check();
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-label").nth(0).click({ modifiers: ["Control"] });
+      await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-label").nth(1).click({ modifiers: ["Control"] });
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action='delete']").click();
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field")).toHaveCount(4);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action='delete']")).toHaveAttribute("aria-invalid", "true");
-      await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true']").evaluateAll((checkboxes) => checkboxes.every((checkbox) => !checkbox.checked))).toBe(true);
+      await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.every((row) => row.dataset.polygonPointActionSelected !== "true"))).toBe(true);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Delete point rejected for shape row 0: polygon must keep at least 4 points\./);
 
       expect(pageErrors).toEqual([]);
@@ -4361,6 +4362,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails")).not.toContainText(/Shape\s*polygon-\d+ \(triangle\)/);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action]")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true']")).toHaveCount(0);
+      await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.map((row) => row.querySelectorAll("input[type='checkbox']").length))).toEqual([1, 1, 1]);
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
