@@ -869,11 +869,11 @@ export class ToolStarterApp {
   shapeUnifiedPointStyle(shape) {
     const pointStyles = this.shapePointStyleValues(shape);
     if (pointStyles.length) {
-      const joinIndexes = this.shapeJoinPointIndexes(shape, pointStyles.length);
-      if (!joinIndexes.length) {
-        return this.pointStyleValue(shape?.style?.pointStyle ?? shape?.style?.strokeLinecap);
+      const geometryTool = shapeGeometryTool(shape);
+      if (geometryTool === "polygon" || geometryTool === "polyline") {
+        return "square";
       }
-      return joinIndexes.every((index) => pointStyles[index] === "round") ? "round" : "square";
+      return this.pointStyleValue(shape?.style?.pointStyle ?? shape?.style?.strokeLinecap);
     }
     return this.pointStyleValue(shape?.style?.pointStyle ?? shape?.style?.strokeLinecap);
   }
@@ -3170,13 +3170,10 @@ export class ToolStarterApp {
     }
     const points = this.shapeGeometryPoints(shape);
     const styles = this.shapePointStyleValues(shape);
-    const joinIndexes = this.shapeJoinPointIndexes(shape, points.length);
-    const allJoinsRound = joinIndexes.length && joinIndexes.every((index) => styles[index] === "round");
     return points
       .map((point, index) => ({ index, point, pointStyle: styles[index] }))
       .filter(({ index, pointStyle }) => pointStyle === "round"
-        && !(geometryTool === "polyline" && (index === 0 || index === points.length - 1))
-        && !(allJoinsRound && joinIndexes.includes(index)))
+        && !(geometryTool === "polyline" && (index === 0 || index === points.length - 1)))
       .map(({ index, point, pointStyle }) => ({
         markerId: `point-${index}`,
         point,
@@ -6243,8 +6240,7 @@ export class ToolStarterApp {
     delete shape.style.strokeLinecap;
     shape.style.startPointStyle = normalized[0] ? "round" : "square";
     shape.style.endPointStyle = normalized.at(-1) ? "round" : "square";
-    const joinIndexes = this.shapeJoinPointIndexes(shape, normalized.length);
-    shape.style.pointStyle = joinIndexes.length && joinIndexes.every((index) => normalized[index]) ? "round" : "square";
+    shape.style.pointStyle = "square";
   }
 
   rebuildPolygonPointList(points, pointRounding = null) {

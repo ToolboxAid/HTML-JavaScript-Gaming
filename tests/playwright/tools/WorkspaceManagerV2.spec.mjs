@@ -3792,19 +3792,33 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await clickObjectVectorLogicalPoint(page, 10, -40);
       await clickObjectVectorLogicalPoint(page, 20, -20);
       await clickObjectVectorLogicalPoint(page, 40, -40);
+      await clickObjectVectorLogicalPoint(page, 55, -20);
       await page.keyboard.press("Enter");
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-shape-point-style-field]")).toHaveCount(0);
-      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true']")).toHaveCount(3);
-      await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true']").evaluateAll((checkboxes) => checkboxes.map((checkbox) => checkbox.checked))).toEqual([false, false, false]);
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true']")).toHaveCount(4);
+      await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true']").evaluateAll((checkboxes) => checkboxes.map((checkbox) => checkbox.checked))).toEqual([false, false, false, false]);
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-round='true'][data-polygon-point-index='1']").check();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated point 2 rounding to round for shape row \d+\./);
       const polylineIndex = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShapeIndex);
-      const polylineJoinStyle = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${polylineIndex}"]`).evaluate((shape) => ({
-        jointStyle: shape.dataset.pointStyle || "",
-        pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
-        strokeLinejoin: shape.getAttribute("stroke-linejoin")
-      }));
-      expect(polylineJoinStyle).toEqual({ jointStyle: "round", pointRounding: [false, true, false], strokeLinejoin: "round" });
+      const polylineJoinStyle = await page.locator(`#objectVectorStudioV2RenderSurface [data-shape-index="${polylineIndex}"]`).evaluate((shape) => {
+        const markers = Array.from(document.querySelectorAll("#objectVectorStudioV2RenderSurface [data-point-style-caps='polyline'] [data-point-style-cap]")).map((marker) => ({
+          id: marker.dataset.pointStyleCap,
+          pointStyle: marker.dataset.pointStyle,
+          tag: marker.tagName.toLowerCase()
+        }));
+        return {
+          jointStyle: shape.dataset.pointStyle || "",
+          markers,
+          pointRounding: window.__objectVectorStudioV2App.selectedShape().style.pointRounding,
+          strokeLinejoin: shape.getAttribute("stroke-linejoin")
+        };
+      });
+      expect(polylineJoinStyle).toEqual({
+        jointStyle: "square",
+        markers: [{ id: "point-1", pointStyle: "round", tag: "circle" }],
+        pointRounding: [false, true, false, false],
+        strokeLinejoin: "miter"
+      });
 
       await page.locator('[data-shape-tool="text"]').click();
       await clickObjectVectorLogicalPoint(page, 70, 60);

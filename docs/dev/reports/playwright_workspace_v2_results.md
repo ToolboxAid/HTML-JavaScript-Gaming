@@ -1,23 +1,22 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_078-point-rounding-checkbox-correction
+PR: PR_26133_079-independent-middle-joint-rounding
 
 ## Validation
 
 - PASS: npm run test:workspace-v2
 - Result: 54 passed
-- Runtime: 5.2m
+- Runtime: 5.8m
 - Browser project: playwright
 - Workers: 1
 
 ## Targeted Checks Covered
 
-- Shape Geometry point rows now render exactly one checkbox per row.
-- The remaining checkbox is the Round control; unchecked rows render square and checked rows render round.
-- The old second point-selection checkbox was removed from polygon/polyline/triangle point rows.
-- Add/Delete point row targeting now uses row selection state instead of an extra checkbox.
-- No global Start/Joints/End or Joints point-style controls remain.
-- Independent per-point rounding coverage remains in place for open and closed multi-point geometry.
+- Shape Geometry point rows still render exactly one Round checkbox per row.
+- Checking one middle polyline point now renders only that point's round marker.
+- Other middle joints remain square/miter and are not globally rounded.
+- Start and end point rounding behavior remains independent.
+- No global Start/Joints/End or Joints point-style controls are used for point rounding.
 
 ## Console/Runtime Errors
 
