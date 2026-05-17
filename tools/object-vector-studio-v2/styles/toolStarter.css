@@ -1674,7 +1674,7 @@ textarea:hover {
 
 .object-vector-studio-v2__polygon-point-field {
   display: grid;
-  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 1fr) max-content;
+  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 1fr) max-content 24px;
   align-items: center;
   gap: 6px;
 }
@@ -1739,6 +1739,18 @@ textarea:hover {
   height: 14px;
   margin: 0;
   accent-color: var(--tool-starter-accent);
+}
+
+.object-vector-studio-v2__polygon-point-delete {
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+  padding: 0 !important;
+  color: var(--tool-starter-danger);
+}
+
+.object-vector-studio-v2__polygon-point-delete[data-ovs-icon]::before {
+  font-size: 0.92rem;
 }
 
 .object-vector-studio-v2__polygon-side-actions {

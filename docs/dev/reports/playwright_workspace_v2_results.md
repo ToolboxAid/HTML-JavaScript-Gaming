@@ -1,22 +1,23 @@
 # Playwright Workspace V2 Results
 
-PR: PR_26133_079-independent-middle-joint-rounding
+PR: PR_26133_080-point-rounding-and-point-delete-ui-fix
 
 ## Validation
 
 - PASS: npm run test:workspace-v2
 - Result: 54 passed
-- Runtime: 5.8m
+- Runtime: 5.4m
 - Browser project: playwright
 - Workers: 1
 
 ## Targeted Checks Covered
 
 - Shape Geometry point rows still render exactly one Round checkbox per row.
-- Checking one middle polyline point now renders only that point's round marker.
-- Other middle joints remain square/miter and are not globally rounded.
-- Start and end point rounding behavior remains independent.
-- No global Start/Joints/End or Joints point-style controls are used for point rounding.
+- The global Delete Point(s) action no longer renders.
+- Editable point rows render a row-end trash button for deleting only that point.
+- Rounding checkboxes update only point rounding and do not delete rows.
+- Row trash deletion preserves independent rounding state for remaining points.
+- Deleting a point that would violate minimum geometry count is visibly rejected.
 
 ## Console/Runtime Errors
 

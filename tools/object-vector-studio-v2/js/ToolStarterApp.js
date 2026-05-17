@@ -2211,6 +2211,7 @@ export class ToolStarterApp {
       const pointRounding = this.shapePointRoundingValues(shape);
       shape.geometry.points.forEach((point, index) => {
         grid.append(this.createPolygonPointRow(point, index, {
+          deletable: editablePolygon,
           rounded: pointRounding[index] === true,
           selectable: editablePolygon
         }));
@@ -2289,7 +2290,7 @@ export class ToolStarterApp {
     });
   }
 
-  createPolygonPointRow(point, index, { rounded = false, selectable = true } = {}) {
+  createPolygonPointRow(point, index, { deletable = true, rounded = false, selectable = true } = {}) {
     const row = document.createElement("div");
     row.className = "object-vector-studio-v2__polygon-point-field";
     row.dataset.polygonPointIndex = String(index);
@@ -2298,7 +2299,7 @@ export class ToolStarterApp {
       row.setAttribute("role", "button");
       row.setAttribute("tabindex", "0");
       row.setAttribute("aria-pressed", "false");
-      row.title = "Select this point row for Add Point or Delete Point(s).";
+      row.title = "Select this point row for Add Point.";
       row.addEventListener("click", (event) => this.handlePolygonPointRowSelection(event, row));
       row.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -2344,24 +2345,36 @@ export class ToolStarterApp {
     roundCheckbox.addEventListener("change", () => this.updateSelectedShapePointRounding(index, roundCheckbox.checked));
     roundLabel.append(roundCaption, roundCheckbox);
     row.append(roundLabel);
+    if (deletable) {
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "object-vector-studio-v2__polygon-point-delete";
+      deleteButton.dataset.polygonPointDelete = "true";
+      deleteButton.dataset.polygonPointIndex = String(index);
+      deleteButton.setAttribute("aria-label", `Delete point ${index + 1}`);
+      deleteButton.title = `Delete point ${index + 1}`;
+      this.applyIconGlyph(deleteButton, "delete");
+      deleteButton.addEventListener("pointerdown", (event) => event.stopPropagation());
+      deleteButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.deletePolygonPointRow(index, deleteButton);
+      });
+      row.append(deleteButton);
+    }
     return row;
   }
 
   createPolygonSideActions() {
     const actions = document.createElement("div");
     actions.className = "object-vector-studio-v2__polygon-side-actions";
-    [
-      ["add", "Add Point", "add", () => this.addPolygonSideRow()],
-      ["delete", "Delete Point(s)", "delete", () => this.deletePolygonPointRows()]
-    ].forEach(([action, label, iconKey, handler]) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.dataset.polygonSideAction = action;
-      button.textContent = label;
-      this.applyIconGlyph(button, iconKey);
-      button.addEventListener("click", handler);
-      actions.append(button);
-    });
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.polygonSideAction = "add";
+    button.textContent = "Add Point";
+    this.applyIconGlyph(button, "add");
+    button.addEventListener("click", () => this.addPolygonSideRow());
+    actions.append(button);
     return actions;
   }
 
@@ -6159,7 +6172,7 @@ export class ToolStarterApp {
     });
   }
 
-  deletePolygonPointRows() {
+  deletePolygonPointRow(pointIndex, sourceButton = null) {
     const selected = this.selectedShape();
     if (!selected || !["polygon", "polyline"].includes(shapeGeometryTool(selected))) {
       this.statusLog.write("WARN Delete point skipped: no editable point-list shape is selected.");
@@ -6171,33 +6184,38 @@ export class ToolStarterApp {
     }
     const geometry = this.readCurrentPolygonGeometry(selected);
     if (!geometry.ok) {
+      this.markPolygonPointDeleteInvalid(sourceButton, geometry.error);
       this.statusLog.write(`FAIL Delete point rejected for shape row ${this.selectedShapeIndex}: ${geometry.error}`);
       return;
     }
-    const checkedIndexes = this.checkedPolygonPointIndexes();
-    if (!checkedIndexes.length) {
-      const message = "select at least one polygon point to delete.";
-      this.markPolygonSideActionInvalid("delete", message);
-      this.clearPolygonPointSelections();
+    const normalizedIndex = Number(pointIndex);
+    if (!Number.isInteger(normalizedIndex) || normalizedIndex < 0 || normalizedIndex >= geometry.value.points.length) {
+      const message = `point ${normalizedIndex + 1} is not available.`;
+      this.markPolygonPointDeleteInvalid(sourceButton, message);
       this.statusLog.write(`FAIL Delete point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
       return;
     }
-    const checkedSet = new Set(checkedIndexes);
-    const nextPoints = geometry.value.points.filter((_, index) => !checkedSet.has(index));
-    const nextPointRounding = this.currentPointRoundingRows(geometry.value.points.length).filter((_, index) => !checkedSet.has(index));
     const minPointCount = shapeGeometryTool(selected) === "polyline" ? 2 : 4;
+    if (geometry.value.points.length - 1 < minPointCount) {
+      const message = `${shapeGeometryTool(selected)} must keep at least ${minPointCount} points.`;
+      this.markPolygonPointDeleteInvalid(sourceButton, message);
+      this.statusLog.write(`FAIL Delete point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
+      return;
+    }
+    const nextPoints = geometry.value.points.filter((_, index) => index !== normalizedIndex);
+    const nextPointRounding = this.currentPointRoundingRows(geometry.value.points.length).filter((_, index) => index !== normalizedIndex);
     if (nextPoints.length < minPointCount) {
       const message = `${shapeGeometryTool(selected)} must keep at least ${minPointCount} points.`;
-      this.markPolygonSideActionInvalid("delete", message);
-      this.clearPolygonPointSelections();
+      this.markPolygonPointDeleteInvalid(sourceButton, message);
       this.statusLog.write(`FAIL Delete point rejected for shape row ${this.selectedShapeIndex}: ${message}`);
       return;
     }
     this.rebuildPolygonPointList(nextPoints, nextPointRounding);
     this.clearPolygonPointSelections();
     this.clearPolygonSideActionValidity();
+    this.clearPolygonPointDeleteValidity();
     this.applyShapeGeometryEdits({
-      okMessage: `OK Deleted ${checkedIndexes.length} point${checkedIndexes.length === 1 ? "" : "s"} from shape row ${this.selectedShapeIndex}.`
+      okMessage: `OK Deleted point ${normalizedIndex + 1} from shape row ${this.selectedShapeIndex}.`
     });
   }
 
@@ -6217,6 +6235,23 @@ export class ToolStarterApp {
       delete row.dataset.polygonPointActionSelected;
       row.classList.remove("is-action-selected");
       row.setAttribute("aria-pressed", "false");
+    });
+  }
+
+  markPolygonPointDeleteInvalid(sourceButton, message) {
+    if (!sourceButton) {
+      return;
+    }
+    sourceButton.dataset.validationState = "invalid";
+    sourceButton.setAttribute("aria-invalid", "true");
+    sourceButton.title = message;
+  }
+
+  clearPolygonPointDeleteValidity() {
+    this.elements.shapeGeometryDetails.querySelectorAll("[data-polygon-point-delete='true']").forEach((button) => {
+      delete button.dataset.validationState;
+      button.removeAttribute("aria-invalid");
+      button.title = `Delete point ${Number(button.dataset.polygonPointIndex) + 1}`;
     });
   }
 
@@ -6296,6 +6331,11 @@ export class ToolStarterApp {
       const roundCheckbox = row.querySelector("[data-polygon-point-round='true']");
       if (roundCheckbox) {
         roundCheckbox.setAttribute("aria-label", `Round point ${index + 1}`);
+      }
+      const deleteButton = row.querySelector("[data-polygon-point-delete='true']");
+      if (deleteButton) {
+        deleteButton.setAttribute("aria-label", `Delete point ${index + 1}`);
+        deleteButton.title = `Delete point ${index + 1}`;
       }
     });
   }
