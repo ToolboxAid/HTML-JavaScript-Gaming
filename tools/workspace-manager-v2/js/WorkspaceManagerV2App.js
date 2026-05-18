@@ -306,7 +306,7 @@
     this.gameSelector.setValue(gameId || "");
 
     if (!gameId) {
-      this.gameSelector.setSummary("Select a game workspace.");
+      this.gameSelector.setSummary("Select a game manifest.");
       this.statusLog.info("Game selection cleared.");
       return;
     }

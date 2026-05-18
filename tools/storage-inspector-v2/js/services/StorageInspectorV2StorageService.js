@@ -69,6 +69,34 @@ function previewText(rawValue) {
   return normalized.length > 140 ? `${normalized.slice(0, 137)}...` : normalized;
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[\\^$+?.()|[\]{}]/g, "\\$&");
+}
+
+function wildcardPatternForFilter(filter) {
+  return [...String(filter || "")].map((character) => {
+    if (character === "*") {
+      return ".*";
+    }
+    if (character === "?") {
+      return ".";
+    }
+    return escapeRegExp(character);
+  }).join("");
+}
+
+function filterMatchesEntry(entry, filter) {
+  const normalizedFilter = String(filter || "").trim().toLowerCase();
+  if (!normalizedFilter) {
+    return true;
+  }
+  const haystack = `${entry.storageType}\n${entry.key}\n${entry.rawValue}`.toLowerCase();
+  if (!/[*?]/.test(normalizedFilter)) {
+    return haystack.includes(normalizedFilter);
+  }
+  return new RegExp(wildcardPatternForFilter(normalizedFilter)).test(haystack);
+}
+
 export class StorageInspectorV2StorageService {
   constructor({
     localStorageRef = window.localStorage,
@@ -84,10 +112,10 @@ export class StorageInspectorV2StorageService {
       { storageType: "sessionStorage", storage: this.sessionStorage },
       { storageType: "localStorage", storage: this.localStorage }
     ].filter((entry) => normalizedScope === "all" || entry.storageType === normalizedScope);
-    const filter = String(filterText || "").trim().toLowerCase();
+    const filter = String(filterText || "").trim();
     const entries = storages.flatMap(({ storage, storageType }) => this.readStorageEntries(storage, storageType));
     const filteredEntries = filter
-      ? entries.filter((entry) => `${entry.storageType}\n${entry.key}\n${entry.rawValue}`.toLowerCase().includes(filter))
+      ? entries.filter((entry) => filterMatchesEntry(entry, filter))
       : entries;
     const storageOrder = { sessionStorage: 0, localStorage: 1 };
     return filteredEntries.sort((left, right) => (

@@ -3114,6 +3114,32 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(groupIconColors[0]).not.toBe("");
       const geometryGroupIconColor = await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__shape-group-summary .object-vector-studio-v2__shape-group-indicator").evaluate((icon) => getComputedStyle(icon).color);
       expect(geometryGroupIconColor).toBe(groupIconColors[0]);
+      await page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes [data-object-tile-shape-index='0']").click();
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__shape-panel")).not.toHaveClass(/is-disabled/);
+      if (await page.locator("#objectVectorStudioV2AngleSnapButton").getAttribute("aria-pressed") === "true") {
+        await page.locator("#objectVectorStudioV2AngleSnapButton").click();
+      }
+      const groupedSingleRotateBefore = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        return {
+          rotations: app.selectedObject().shapes.map((shape) => shape.transform.rotation),
+          selectedCount: app.selectedShapeIndexes.size
+        };
+      });
+      expect(groupedSingleRotateBefore.selectedCount).toBe(1);
+      await page.locator("#objectVectorStudioV2RotateInput").fill("10");
+      await page.locator("#objectVectorStudioV2RotateShapeButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 10 degrees\. Snap Angle disabled: raw rotation applied\./);
+      const groupedSingleRotateAfter = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        return {
+          rotations: app.selectedObject().shapes.map((shape) => shape.transform.rotation),
+          selectedCount: app.selectedShapeIndexes.size
+        };
+      });
+      expect(groupedSingleRotateAfter.selectedCount).toBe(1);
+      expect(groupedSingleRotateAfter.rotations[0]).toBe((groupedSingleRotateBefore.rotations[0] + 10) % 360);
+      expect(groupedSingleRotateAfter.rotations[1]).toBe(groupedSingleRotateBefore.rotations[1]);
       const groupIconLayout = await page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes .object-vector-studio-v2__object-tile-shape-row").first().evaluate((row) => {
         const label = row.querySelector(".object-vector-studio-v2__shape-select-label");
         const visibility = row.querySelector("[data-shape-visibility-index]");
@@ -8471,6 +8497,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(longKeyWrapState.height).toBeGreaterThan(longKeyWrapState.lineHeight * 1.5);
       expect(longKeyWrapState.withinTile).toBe(true);
 
+      await page.locator("#storageInspectorV2FilterInput").fill("storage-inspector-v2-*local");
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='localStorage:storage-inspector-v2-local']")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2Summary > span")).toHaveText([
+        "(1) Entries shown.",
+        "(0) SessionStorage.",
+        "(1) LocalStorage."
+      ]);
+      await page.locator("#storageInspectorV2FilterInput").fill("*gamma");
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:storage-inspector-v2-gamma']")).toHaveCount(1);
+      await page.locator("#storageInspectorV2FilterInput").fill("");
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(6);
+
       await page.locator('[data-storage-inspector-v2-entry-id="sessionStorage:storage-inspector-v2-alpha"]').click();
       await expect(page.locator("#storageInspectorV2JsonOutput")).toHaveText("true");
       await expect(page.locator("#storageInspectorV2DataOutput")).toContainText("No data section is present for sessionStorage:storage-inspector-v2-alpha.");
@@ -8896,6 +8936,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const service = new WorkspaceManagerV2ContextService();
         const invalidRuntimeWorkspaceManifest = structuredClone(manifest);
         invalidRuntimeWorkspaceManifest.game.gameData = { workspace: {} };
+        const invalidEmbeddedWorkspaceManifest = structuredClone(manifest);
+        invalidEmbeddedWorkspaceManifest.game["workspace"] = { documentKind: "workspace-manifest" };
         const invalidObjectVectorRuntimeManifest = structuredClone(manifest);
         invalidObjectVectorRuntimeManifest.objectVectorRuntime = {
           objectIds: {
@@ -8918,18 +8960,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           gameManifestValidation: await service.validateGameManifest(manifest),
           hasGameData: Boolean(manifest.game?.gameData),
           hasRootTools: Boolean(manifest.tools),
-          hasWorkspace: Boolean(manifest.game?.workspace),
+          hasWorkspace: Boolean(manifest.game?.["workspace"]),
+          embeddedWorkspaceValidation: await service.validateGameManifest(invalidEmbeddedWorkspaceManifest),
           objectVectorRuntimeValidation: await service.validateGameManifest(invalidObjectVectorRuntimeManifest),
           runtimeWorkspaceValidation: await service.validateGameManifest(invalidRuntimeWorkspaceManifest),
           rootDocumentKind: manifest.documentKind || "",
           schema: manifest.schema,
           unknownGameDataValidation: await service.validateGameManifest(invalidUnknownGameDataManifest),
           unknownWorkspaceValidation: await service.validateGeneratedManifest(invalidUnknownWorkspaceManifest),
-          workspaceDocumentKind: manifest.game?.workspace?.documentKind,
+          workspaceDocumentKind: manifest.game?.["workspace"]?.documentKind,
           workspaceValidation: await service.validateGeneratedManifest(workspaceManifest)
         };
       });
       expect(asteroidsGameManifestShape).toMatchObject({
+        embeddedWorkspaceValidation: { ok: false },
         gameManifestValidation: { ok: true },
         hasGameData: false,
         hasRootTools: true,
@@ -8942,6 +8986,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         workspaceDocumentKind: undefined,
         workspaceValidation: { ok: true }
       });
+      expect(asteroidsGameManifestShape.embeddedWorkspaceValidation.message).toContain("Embedded workspace data under root.game is not allowed");
       expect(asteroidsGameManifestShape.objectVectorRuntimeValidation.message).toContain("root.objectVectorRuntime is not allowed");
       expect(asteroidsGameManifestShape.unknownGameDataValidation.message).toContain("root.game.gameData is not allowed");
       expect(asteroidsGameManifestShape.unknownWorkspaceValidation.message).toContain("root.debugUnknown is not allowed");
@@ -9374,7 +9419,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectWorkspaceReturnedFromTool(page);
       const asteroidsManifest = await page.evaluate(async () => await fetch("/games/Asteroids/game.manifest.json", { cache: "no-store" }).then((response) => response.json()));
       expect(asteroidsManifest.documentKind).toBeUndefined();
-      expect(asteroidsManifest.game.workspace).toBeUndefined();
+      expect(asteroidsManifest.game["workspace"]).toBeUndefined();
       expect(asteroidsManifest.game.gameData).toBeUndefined();
       expect(asteroidsManifest.launch.directPath).toBe("/games/Asteroids/index.html");
       expect(asteroidsManifest.objectVectorRuntime).toBeUndefined();
@@ -10559,7 +10604,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const manifestWrites = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]"));
       expect(manifestWrites.at(-1).path).toBe("HTML-JavaScript-Gaming/games/Asteroids/game.manifest.json");
       const writtenGameManifest = JSON.parse(manifestWrites.at(-1).contents);
-      expect(writtenGameManifest.game.workspace).toBeUndefined();
+      expect(writtenGameManifest.game["workspace"]).toBeUndefined();
       expect(writtenGameManifest.game.gameData).toBeUndefined();
       expect(writtenGameManifest.tools).toBeTruthy();
       expect(writtenGameManifest.tools["palette-manager-v2"].swatches.at(-1)).toMatchObject({
@@ -11353,7 +11398,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
     try {
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
-      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.");
       await expect(page.locator("#assetLaunchGuardReason")).toContainText("Temporary workspace query launches are no longer supported; launch through Workspace Manager V2.");
       await expect(page.locator("#assetLaunchGuardReturnToToolsButton")).toHaveText("Return to Tools");
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);

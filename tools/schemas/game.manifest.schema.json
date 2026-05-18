@@ -67,7 +67,7 @@
     },
     "gameTools": {
       "type": "object",
-      "description": "Game-owned tool data keyed by canonical tool id. Workspace Manager may synthesize a standalone workspace context from this map, but game manifests do not embed game.workspace.",
+      "description": "Game-owned tool data keyed by canonical tool id. Workspace Manager may synthesize a standalone workspace context from this map, but game manifests do not embed workspace data under root.game.",
       "additionalProperties": {
         "type": "object"
       },

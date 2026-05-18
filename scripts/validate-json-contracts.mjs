@@ -704,15 +704,15 @@ function validateGames() {
       }
 
       if (rel === "games/Asteroids/game.manifest.json") {
-        const astAssets = manifest?.tools?.["asset-browser"]?.assets || {};
-        if (astAssets?.["image.asteroids.bezel"]?.path !== "/games/Asteroids/assets/images/bezel.png") {
-          errors.push("Asteroids bezel path must be /games/Asteroids/assets/images/bezel.png");
+        const astAssets = manifest?.tools?.["asset-manager-v2"]?.assets || {};
+        if (astAssets?.["assets.image.bezel.bezel"]?.path !== "assets/images/bezel.png") {
+          errors.push("Asteroids bezel path must be assets/images/bezel.png");
         }
-        if (astAssets?.["image.asteroids.background"]?.path !== "/games/Asteroids/assets/images/deluxe.png") {
-          errors.push("Asteroids background path must be /games/Asteroids/assets/images/deluxe.png");
+        if (astAssets?.["assets.image.background.deluxe"]?.path !== "assets/images/deluxe.png") {
+          errors.push("Asteroids background path must be assets/images/deluxe.png");
         }
-        if (!astAssets?.["font.asteroids.vector-battle"]) {
-          errors.push("Asteroids font.asteroids.vector-battle must be present");
+        if (astAssets?.["assets.font.ui.vector-battle"]?.path !== "src/assets/fonts/vector_battle/vector_battle.ttf") {
+          errors.push("Asteroids assets.font.ui.vector-battle must point to src/assets/fonts/vector_battle/vector_battle.ttf");
         }
       }
     }

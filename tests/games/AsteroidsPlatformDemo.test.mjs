@@ -68,7 +68,7 @@ export async function run() {
   const manifestText = JSON.stringify(manifest);
 
   assert.equal(manifest.tools['vector-map-editor'], undefined);
-  assert.equal(manifest.game.workspace, undefined);
+  assert.equal(manifest.game["workspace"], undefined);
   assert.equal(manifest.game.gameData, undefined);
   assert.equal(manifest.objectVectorRuntime, undefined);
   assert.equal(manifestText.includes(`vector.${'asteroids'}.`), false);

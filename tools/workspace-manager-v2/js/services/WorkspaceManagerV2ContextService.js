@@ -147,7 +147,7 @@ function hydrationDecisionForTool(tool, context) {
     return { hydrate: true, reason: "tool data is present in selected game manifest" };
   }
   if (SELECTED_GAME_PURPOSE_TOOL_IDS.has(tool.id)) {
-    return { hydrate: true, reason: "tool has a selected-game workspace launch purpose" };
+    return { hydrate: true, reason: "tool has a selected-game manifest launch purpose" };
   }
   if (tool.id === "templates-v2") {
     return { hydrate: false, reason: "starter/dev-only tool is not enabled by the selected game manifest" };
@@ -1184,7 +1184,7 @@ export class WorkspaceManagerV2ContextService {
     const errors = validateSchemaValue(manifest, schemaResult.schema, "root", schemaResult.schema, schemaResult.schemaRegistry);
     const gameInfo = manifest?.game || {};
     if (isPlainObject(gameInfo) && Object.prototype.hasOwnProperty.call(gameInfo, "workspace")) {
-      errors.push("root.game.workspace is not allowed; game manifests must use root.tools and standalone workspace manifests.");
+      errors.push("Embedded workspace data under root.game is not allowed; game manifests must use root.tools and standalone workspace manifests.");
     }
     if (isPlainObject(gameInfo) && Object.prototype.hasOwnProperty.call(gameInfo, "gameData")) {
       errors.push("root.game.gameData is not allowed; game manifests must use root.launch and root.tools.");
@@ -1602,7 +1602,7 @@ export class WorkspaceManagerV2ContextService {
 
     const nextManifest = clone(boundGame.manifest);
     delete nextManifest.game.gameData;
-    delete nextManifest.game.workspace;
+    delete nextManifest.game["workspace"];
     nextManifest.tools = clone(context.tools || {});
     const gameValidation = await this.validateGameManifest(nextManifest);
     if (!gameValidation.ok) {

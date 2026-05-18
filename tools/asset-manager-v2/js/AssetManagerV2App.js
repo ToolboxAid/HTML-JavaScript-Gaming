@@ -1,5 +1,5 @@
 import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
-const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.";
+const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.";
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));

@@ -141,7 +141,7 @@ test.describe("Asset Manager V2", () => {
 
     try {
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
-      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.");
       await expect(page.locator("#assetLaunchGuardReason")).toContainText("Launch context is missing.");
       await expect(page.locator("#assetLaunchGuardReturnToToolsButton")).toHaveText("Return to Tools");
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
@@ -164,7 +164,7 @@ test.describe("Asset Manager V2", () => {
 
     try {
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
-      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.");
       await expect(page.locator("#assetLaunchGuardReason")).toContainText("Temporary workspace query launches are no longer supported; launch through Workspace Manager V2.");
       await expect(page.locator(".asset-manager-v2.app-shell")).toHaveCount(1);
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
@@ -185,7 +185,7 @@ test.describe("Asset Manager V2", () => {
 
     try {
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
-      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.");
       await expect(page.locator("#assetLaunchGuardReason")).toContainText("Temporary workspace query launches are no longer supported; launch through Workspace Manager V2.");
       await expect(page.locator(".asset-manager-v2.app-shell")).toHaveCount(1);
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
@@ -1171,7 +1171,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
       await expect(page).toHaveURL(/fromTool=workspace-manager-v2/);
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
-      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.");
       await expect(page.locator("#assetLaunchGuardReason")).toContainText("Workspace Manager V2 manifest is missing active palette swatches.");
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
 
@@ -1217,7 +1217,7 @@ test.describe("Asset Manager V2", () => {
 
     try {
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
-      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game workspace and palette.");
+      await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.");
       await expect(page.locator("#assetLaunchGuardReason")).toContainText("Workspace Manager V2 launch requires a schema-valid workspace manifest.");
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
       expect(pageErrors).toEqual([]);
