@@ -81,6 +81,24 @@ function normalizeAssetEntry(rawEntry, fallbackId = "", manifestPath = "") {
   };
 }
 
+function normalizeColorEntry(rawEntry, fallbackId = "") {
+  const entry = toObject(rawEntry);
+  const color = toObject(entry.color);
+  const hex = safeText(color.hex, "");
+  if (!hex) {
+    return null;
+  }
+  return {
+    id: safeText(entry.id, "") || safeText(fallbackId, ""),
+    hex,
+    kind: safeText(entry.kind, "").toLowerCase(),
+    name: safeText(color.name, ""),
+    path: safeText(entry.path || entry.runtimePath || entry.href, ""),
+    role: safeText(entry.role, "").toLowerCase(),
+    type: safeText(entry.type, "").toLowerCase()
+  };
+}
+
 function collectImageEntriesFromManifest(manifestPayload, { manifestPath = "" } = {}) {
   const payload = toObject(manifestPayload);
   const entries = [];
@@ -115,6 +133,19 @@ function collectImageEntriesFromManifest(manifestPayload, { manifestPath = "" } 
   return entries;
 }
 
+function collectColorEntriesFromManifest(manifestPayload) {
+  const payload = toObject(manifestPayload);
+  const entries = [];
+  const assetManagerAssets = toObject(payload?.tools?.["asset-manager-v2"]?.assets);
+  Object.entries(assetManagerAssets).forEach(([assetId, rawEntry]) => {
+    const entry = normalizeColorEntry(rawEntry, assetId);
+    if (entry?.type === "color") {
+      entries.push(entry);
+    }
+  });
+  return entries;
+}
+
 function chooseSemanticImagePath(entries, semanticToken) {
   const token = safeText(semanticToken, "").toLowerCase();
   if (!token) {
@@ -141,6 +172,13 @@ function chooseSemanticImagePath(entries, semanticToken) {
   }
 
   return "";
+}
+
+function chooseGameBackgroundColor(entries) {
+  const normalizedEntries = Array.isArray(entries) ? entries : [];
+  return normalizedEntries.find((entry) => entry.id === "assets.color.background.game")
+    || normalizedEntries.find((entry) => entry.role === "background" && entry.id.includes(".background.game"))
+    || null;
 }
 
 const manifestCache = new Map();
@@ -214,8 +252,12 @@ export function resolveGameImageConventionPaths(options = {}) {
   return {
     gameId,
     manifestPath,
-    backgroundPath: "",
-    bezelPath: ""
+    backgroundColorAssetId: "",
+    backgroundColorHex: "",
+    backgroundColorName: "",
+    backgroundColorPath: "",
+    backgroundPath: gameId ? `games/${gameId}/assets/images/background.png` : "",
+    bezelPath: gameId ? `games/${gameId}/assets/images/bezel.png` : ""
   };
 }
 
@@ -228,16 +270,19 @@ export async function resolveManifestChromeAssetPaths(options = {}) {
   if (!manifestPayload) {
     return {
       ...base,
-      backgroundPath: "",
-      bezelPath: "",
       manifestPayload: null
     };
   }
 
   const imageEntries = collectImageEntriesFromManifest(manifestPayload, { manifestPath: base.manifestPath });
+  const backgroundColor = chooseGameBackgroundColor(collectColorEntriesFromManifest(manifestPayload));
   return {
     ...base,
     manifestPayload,
+    backgroundColorAssetId: backgroundColor?.id || "",
+    backgroundColorHex: backgroundColor?.hex || "",
+    backgroundColorName: backgroundColor?.name || "",
+    backgroundColorPath: backgroundColor?.path || "",
     backgroundPath: chooseSemanticImagePath(imageEntries, "background"),
     bezelPath: chooseSemanticImagePath(imageEntries, "bezel")
   };

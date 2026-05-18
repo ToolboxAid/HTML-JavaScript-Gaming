@@ -240,7 +240,13 @@ export function assetIdForColor(type, role, usage, colorName) {
   const normalizedRole = dotPathIdSegment(role);
   const normalizedUsage = dotPathIdSegment(usage);
   const normalizedColorName = dotPathIdSegment(colorName);
-  if (!normalizedType || !normalizedRole || !normalizedUsage || !normalizedColorName) {
+  if (!normalizedType || !normalizedRole || !normalizedUsage) {
+    return "";
+  }
+  if (normalizedType === "color" && normalizedRole === "background" && normalizedUsage === "game") {
+    return "assets.color.background.game";
+  }
+  if (!normalizedColorName) {
     return "";
   }
   return `assets.${normalizedType}.${normalizedRole}.${normalizedUsage}.${normalizedColorName}`;

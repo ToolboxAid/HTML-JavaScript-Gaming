@@ -1103,6 +1103,11 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/signal-violet");
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected color validation failed: Color usage is required for color assets\./);
       await expect(page.locator("#addAssetButton")).toBeDisabled();
+      await page.locator("#assetRoleSelect").selectOption("background");
+      await page.locator("#assetUsageInput").fill("game");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.background.game");
+      await expect(page.locator("#assetUsageField")).toHaveCount(1);
+      await page.locator("#assetRoleSelect").selectOption("hud");
       await page.locator("#assetUsageInput").fill("Menu Highlight");
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.menu-highlight.signal-violet");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/signal-violet");
@@ -1257,7 +1262,7 @@ test.describe("Asset Manager V2", () => {
     });
 
     try {
-      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(4);
+      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(7);
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/Asteroids\/"/);
@@ -1278,14 +1283,14 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#returnToWorkspaceButton")).toBeEnabled();
       await expect(page.locator("#workspaceInsertAssetsButton")).toHaveCount(0);
       await expect(page.locator("#workspaceCopyManifestButton")).toHaveCount(0);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 14 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from tools\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
       const hostContextId = await page.evaluate(() => new URL(window.location.href).searchParams.get("hostContextId"));
       const initialAssetCount = await page.evaluate((id) => {
         const context = JSON.parse(sessionStorage.getItem(id));
         return Object.keys(context.tools["asset-manager-v2"].assets).length;
       }, hostContextId);
-      expect(initialAssetCount).toBe(14);
+      expect(initialAssetCount).toBe(15);
       const workspacePreviewContext = await page.evaluate(async () => {
         const { WorkspaceBridge } = await import("/tools/asset-manager-v2/js/services/WorkspaceBridge.js");
         return new WorkspaceBridge({ windowRef: window }).readWorkspacePreviewContext();
@@ -1478,18 +1483,25 @@ test.describe("Asset Manager V2", () => {
       const assetManagerCard = page.locator(".tools-platform-card").filter({
         has: page.locator("h3 a", { hasText: "Asset Manager V2" })
       });
+      const collisionInspectorLink = page.locator(".tools-platform-card h3 a", { hasText: "Collision Inspector V2" });
+      const collisionInspectorCard = page.locator(".tools-platform-card").filter({
+        has: page.locator("h3 a", { hasText: "Collision Inspector V2" })
+      });
       await expect(assetManagerLink).toBeVisible();
       await expect(assetManagerLink).toHaveAttribute("href", "/tools/asset-manager-v2/index.html");
       await expect(assetManagerCard).toContainText("Schema Validated");
+      await expect(collisionInspectorLink).toBeVisible();
+      await expect(collisionInspectorLink).toHaveAttribute("href", "/tools/collision-inspector-v2/index.html");
+      await expect(collisionInspectorCard).toContainText("Manifest-driven collision QA");
       const plannedToolNames = await page.locator("[data-planned-tools-grid] h3").allTextContents();
       for (const plannedToolName of [
         "Asset Manager V2",
         "Animation / Flipbook Editor",
-        "Audio / SFX Playground",
-        "Collision / Hitbox Editor"
+        "Audio / SFX Playground"
       ]) {
         expect(plannedToolNames).toContain(plannedToolName);
       }
+      expect(plannedToolNames).not.toContain("Collision / Hitbox Editor");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

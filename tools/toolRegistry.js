@@ -326,6 +326,29 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "collision-inspector-v2",
+    name: "Collision Inspector V2",
+    displayName: "Collision Inspector V2",
+    shortDescription: "Manifest-driven collision visualization for vector, sprite, bounds, pixel, and hybrid checks.",
+    shortLabel: "Collision",
+    path: "collision-inspector-v2",
+    folderName: "collision-inspector-v2",
+    entryPoint: "collision-inspector-v2/index.html",
+    description: "Manifest-driven collision visualization for Object Vector V2 game objects with live vector, sprite, bounds, pixel, and hybrid checks.",
+    showcaseTag: "Debug",
+    showcaseStatus: "Manifest Driven",
+    active: true,
+    legacy: false,
+    order: 7.7,
+    sampleEntryPoints: [
+      {
+        label: "README",
+        path: "collision-inspector-v2/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
     id: "storage-inspector-v2",
     name: "Storage Inspector V2",
     displayName: "Storage Inspector V2",

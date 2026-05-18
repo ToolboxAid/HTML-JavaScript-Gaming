@@ -1,6 +1,7 @@
 import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 
 const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;
+const GAME_BACKGROUND_COLOR_ASSET_ID = "assets.color.background.game";
 const BACKGROUND_ASSET_ID_PATTERN = /^assets\.image\.background\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
 const BEZEL_ASSET_ID_PATTERN = /^assets\.image\.bezel\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
 const PREVIEW_ASSET_ID_PATTERN = /^assets\.image\.preview\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
@@ -37,6 +38,12 @@ function stretchDefaultForRole(role) {
 
 function assetIdAllowsStretchOverride(assetId) {
   return BACKGROUND_ASSET_ID_PATTERN.test(assetId) || BEZEL_ASSET_ID_PATTERN.test(assetId);
+}
+
+function isGameBackgroundColorAsset(assetId, entry) {
+  return assetId === GAME_BACKGROUND_COLOR_ASSET_ID
+    && entry?.type === "color"
+    && entry?.role === "background";
 }
 
 export class AssetSchemaValidator {
@@ -278,8 +285,10 @@ export class AssetSchemaValidator {
       }
     }
     if (entry.type === "color") {
-      if (assetIdParts && assetIdParts.filenamePart.split(".").filter(Boolean).length < 2) {
-        errors.push(`${pointer}: color ids must use assets.<type>.<role>.<usage>.<colorName>.`);
+      if (assetIdParts
+        && assetIdParts.filenamePart.split(".").filter(Boolean).length < 2
+        && !isGameBackgroundColorAsset(assetId, entry)) {
+        errors.push(`${pointer}: color ids must use assets.color.background.game or assets.<type>.<role>.<usage>.<colorName>.`);
       }
       errors.push(...this.validateColorEntry(entry.color, `${pointer}.color`).errors);
     } else if (Object.prototype.hasOwnProperty.call(entry, "color")) {

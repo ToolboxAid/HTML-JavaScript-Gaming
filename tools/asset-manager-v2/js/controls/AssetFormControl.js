@@ -594,7 +594,7 @@ export class AssetFormControl {
 
   usageFromAssetId(assetId) {
     const parts = String(assetId || "").split(".");
-    return parts[0] === "assets" && parts[1] === "color" && parts.length >= 5
+    return parts[0] === "assets" && parts[1] === "color" && parts.length >= 4
       ? parts[3]
       : "";
   }

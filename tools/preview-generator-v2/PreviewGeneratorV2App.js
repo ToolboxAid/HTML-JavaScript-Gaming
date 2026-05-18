@@ -326,6 +326,24 @@ function workspacePaletteBackgroundColor(manifest) {
   )) || null;
 }
 
+function workspaceBackgroundColorAsset(manifest) {
+  const assets = manifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY]?.assets;
+  if (!assets || typeof assets !== "object" || Array.isArray(assets)) {
+    return null;
+  }
+  const entry = assets["assets.color.background.game"];
+  const hex = normalizeHexColor(entry?.color?.hex);
+  const name = String(entry?.color?.name || "").trim();
+  if (!entry || entry.type !== "color" || entry.role !== BACKGROUND_ROLE || !hex || !name) {
+    return null;
+  }
+  return {
+    assetId: "assets.color.background.game",
+    hex,
+    name
+  };
+}
+
 function workspaceGameAssetPath(manifest, assetPath) {
   const gameRoot = normalizeWorkspacePath(manifest.gameRoot);
   const normalizedAssetPath = normalizeWorkspacePath(assetPath);
@@ -341,13 +359,16 @@ function workspaceGameAssetPath(manifest, assetPath) {
 
 function workspaceBackgroundContext(manifest) {
   const backgroundAsset = workspaceImageAssetByRole(manifest, BACKGROUND_ROLE);
-  const color = workspacePaletteBackgroundColor(manifest);
+  const colorAsset = workspaceBackgroundColorAsset(manifest);
+  const color = colorAsset || workspacePaletteBackgroundColor(manifest);
   if (!backgroundAsset) {
     return {
       ok: true,
       backgroundAssetMissing: true,
+      colorAssetId: colorAsset?.assetId || "",
       colorHex: color?.hex || "",
-      colorName: color?.name || ""
+      colorName: color?.name || "",
+      colorSource: colorAsset ? "asset-manager-v2" : "palette-manager-v2"
     };
   }
   const assetFolder = workspaceAssetFolder(manifest);
@@ -362,8 +383,10 @@ function workspaceBackgroundContext(manifest) {
     ok: true,
     backgroundAssetId: backgroundAsset.id,
     backgroundPath: backgroundPath.absolutePath,
+    colorAssetId: colorAsset?.assetId || "",
     colorHex: color?.hex || "",
-    colorName: color?.name || ""
+    colorName: color?.name || "",
+    colorSource: colorAsset ? "asset-manager-v2" : "palette-manager-v2"
   };
 }
 
@@ -1544,7 +1567,7 @@ class PreviewGeneratorV2App {
       if (backgroundContext.backgroundAssetMissing) {
         if (backgroundContext.colorHex) {
           capture.setCaptureBackgroundColor(backgroundContext.colorHex);
-          logger.log(`WARN Workspace background image role is missing; using manifest palette background color ${backgroundContext.colorName} ${backgroundContext.colorHex}.`);
+          logger.log(`WARN Workspace background image role is missing; using ${backgroundContext.colorAssetId || "manifest palette background color"} ${backgroundContext.colorName} ${backgroundContext.colorHex}.`);
         } else {
           logger.log("WARN Workspace background image role is missing and no manifest palette background or black swatch is available; preview generation remains enabled without an explicit workspace background color.");
         }
@@ -1557,7 +1580,10 @@ class PreviewGeneratorV2App {
         }
         if (backgroundContext.colorHex) {
           capture.setCaptureBackgroundColor(backgroundContext.colorHex);
-          logger.log(`Workspace background color: ${backgroundContext.colorName} ${backgroundContext.colorHex} from palette-manager-v2 swatch.`);
+          const colorSourceLabel = backgroundContext.colorAssetId
+            ? `${backgroundContext.colorAssetId} asset`
+            : `${backgroundContext.colorSource || "palette-manager-v2"} swatch`;
+          logger.log(`Workspace background color: ${backgroundContext.colorName} ${backgroundContext.colorHex} from ${colorSourceLabel}.`);
         } else {
           logger.log("WARN Workspace background color is not available from a manifest palette background or black swatch; preview generation remains enabled without an explicit workspace background color.");
         }

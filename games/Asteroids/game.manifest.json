@@ -89,6 +89,19 @@
       "name": "Asteroids Asset Manager V2 Registry",
       "source": "manifest",
       "assets": {
+        "assets.color.background.game": {
+          "path": "palette://workspace/space-black",
+          "type": "color",
+          "kind": "hex",
+          "role": "background",
+          "source": "manifest",
+          "color": {
+            "hex": "#020617",
+            "name": "Space Black",
+            "symbol": "!",
+            "source": "manifest"
+          }
+        },
         "assets.audio.music.beat-1": {
           "path": "assets/audio/beat1.wav",
           "type": "audio",
@@ -174,6 +187,16 @@
           "source": "manifest",
           "stretchOverride": {
             "uniformEdgeStretchPx": 10
+          }
+        },
+        "assets.image.background.deluxe": {
+          "path": "assets/images/deluxe.png",
+          "type": "image",
+          "kind": "png",
+          "role": "background",
+          "source": "manifest",
+          "stretchOverride": {
+            "uniformEdgeStretchPx": 0
           }
         },
         "assets.image.preview.preview": {

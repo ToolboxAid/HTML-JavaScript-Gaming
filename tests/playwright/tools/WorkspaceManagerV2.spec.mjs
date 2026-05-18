@@ -1278,10 +1278,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.headings.slice(0, 4)).toEqual(["Workflow", "Editors", "Utilities", "Viewers"]);
       expect(toolsIndexState.workflowCards).toEqual(["Workspace Manager V2"]);
       expect(toolsIndexState.utilitiesCards).not.toContain("Workspace Manager V2");
+      expect(toolsIndexState.utilitiesCards).toContain("Collision Inspector V2");
       expect(toolsIndexState.utilitiesCards).toContain("Text to Speech V2");
-      expect(toolsIndexState.allCards).toEqual(expect.arrayContaining(["World Vector Studio V2", "Object Vector Studio V2"]));
-      expect(toolsIndexState.registryIds).toEqual(expect.arrayContaining(["world-vector-studio-v2", "object-vector-studio-v2"]));
-      expect(toolsIndexState.launchIds).toEqual(expect.arrayContaining(["tool.world-vector-studio-v2", "tool.object-vector-studio-v2"]));
+      expect(toolsIndexState.allCards).toEqual(expect.arrayContaining(["World Vector Studio V2", "Object Vector Studio V2", "Collision Inspector V2"]));
+      expect(toolsIndexState.registryIds).toEqual(expect.arrayContaining(["world-vector-studio-v2", "object-vector-studio-v2", "collision-inspector-v2"]));
+      expect(toolsIndexState.launchIds).toEqual(expect.arrayContaining(["tool.world-vector-studio-v2", "tool.object-vector-studio-v2", "tool.collision-inspector-v2"]));
       expect(toolsIndexState.studioLaunchDefinitions.world.launchDefinition.targetPath).toBe("/tools/world-vector-studio-v2/index.html");
       expect(toolsIndexState.studioLaunchDefinitions.object.launchDefinition.targetPath).toBe("/tools/object-vector-studio-v2/index.html");
       expect(toolsIndexState.allCards).not.toContain("Asset Browser / Import Hub");
@@ -1299,6 +1300,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.removedToolPathStatuses).toEqual([404, 404]);
       expect(toolsIndexState.plannedCards).toContain("Piper WASM Backend");
       expect(toolsIndexState.plannedCards).toContain("Optional SSML Processing Layer");
+      expect(toolsIndexState.plannedCards).not.toContain("Collision / Hitbox Editor");
       expect(toolsIndexState.plannedCards).not.toContain("Character Voice Presets");
       expect(toolsIndexState.plannedCards).not.toContain("Game Character Voice / Event Integration");
       expect(toolsIndexState.plannedCards).not.toEqual(expect.arrayContaining([
@@ -7427,21 +7429,61 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.waitForFunction(() => window.__asteroidsObjectVectorRuntime?.loaded === true);
       await page.waitForFunction(() => {
         const engine = window.__asteroidsNewEngine;
-        return engine?.backgroundImageLayer?.getState?.().manifestResolved === true
+        return engine?.backgroundColorLayer?.getState?.().manifestResolved === true
+          && engine?.backgroundImageLayer?.getState?.().manifestResolved === true
           && engine?.fullscreenBezelLayer?.getState?.().manifestResolved === true
           && engine?.fullscreenBezelLayer?.getState?.().canvasLayoutMode === "normal";
       });
       const chromeAssetState = await page.evaluate(() => {
         const engine = window.__asteroidsNewEngine;
         return {
+          backgroundColor: engine.backgroundColorLayer.getState(),
           background: engine.backgroundImageLayer.getState(),
           bezel: engine.fullscreenBezelLayer.getState()
         };
+      });
+      expect(chromeAssetState.backgroundColor).toMatchObject({
+        assetId: "assets.color.background.game",
+        hex: "#020617",
+        name: "Space Black",
+        status: "ready"
       });
       expect(chromeAssetState.background).toMatchObject({
         path: "/games/Asteroids/assets/images/deluxe.png"
       });
       expect(["idle", "loading", "ready"]).toContain(chromeAssetState.background.status);
+      const backgroundRenderOrder = await page.evaluate(() => {
+        const engine = window.__asteroidsNewEngine;
+        const scene = engine.scene;
+        const order = [];
+        const renderer = {
+          getCanvasSize() {
+            return { width: 960, height: 720 };
+          },
+          drawRect(_x, _y, _width, _height, color) {
+            if (color === "#020617") {
+              order.push("background-color");
+            } else if (color === "#94a3b8" && !order.includes("starfield")) {
+              order.push("starfield");
+            }
+          },
+          drawImageFrame() {
+            order.push("background-image");
+          }
+        };
+        const originalLayer = { ...engine.backgroundImageLayer.layer };
+        engine.backgroundColorLayer.render(renderer, { scene, engine });
+        scene.renderBackgroundEffects(renderer, engine);
+        engine.backgroundImageLayer.layer = {
+          ...engine.backgroundImageLayer.layer,
+          image: { width: 960, height: 720 },
+          status: "ready"
+        };
+        engine.backgroundImageLayer.render(renderer, { scene: { session: { mode: "playing" } }, engine });
+        engine.backgroundImageLayer.layer = originalLayer;
+        return order;
+      });
+      expect(backgroundRenderOrder).toEqual(["background-color", "starfield", "background-image"]);
       expect(chromeAssetState.bezel).toMatchObject({
         canvasLayoutMode: "normal",
         path: "/games/Asteroids/assets/images/bezel.png",
@@ -9909,7 +9951,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["text2speech-V2"]);
       expect(selectedGameHydration.toolSessions["asset-manager-v2"].state).toBeUndefined();
       expect(JSON.stringify(selectedGameHydration.toolSessions)).not.toMatch(/getDirectoryHandle|createWritable|FileSystemDirectoryHandle/);
-      expect(Object.keys(selectedGameHydration.dataByTool["asset-manager-v2"].assets)).toHaveLength(14);
+      expect(Object.keys(selectedGameHydration.dataByTool["asset-manager-v2"].assets)).toHaveLength(15);
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
         "object.asteroids.ship",
         "object.asteroids.large-asteroid",
@@ -9990,7 +10032,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(assetTile).toBeEnabled();
       await expect(assetTile).toContainText("Asset Manager V2");
       await expect(assetTile).toContainText("Ready to launch");
-      await expect(assetTile).toContainText("14 managed assets");
+      await expect(assetTile).toContainText("15 managed assets");
       await expect(paletteTile).toContainText("10 palette swatches");
       await expect(objectVectorTile).toBeEnabled();
       await expect(objectVectorTile).toContainText("Object Vector Studio V2");
@@ -10034,7 +10076,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.manifest\.json is game-only data\. Workspace Manager uses root\.tools to create standalone workspace sessions and saves validated tool data back to root\.tools\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, preview-generator-v2, text2speech-V2, storage-inspector-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for templates-v2: starter\/dev-only tool is not enabled by the selected game manifest\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 10 active palette colors and 14 managed assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 10 active palette colors and 15 managed assets\./);
 
       await page.locator('[data-workspace-tool-id="storage-inspector-v2"]').click();
       await expect(page).toHaveURL(/storage-inspector-v2\/index\.html.*launch=workspace/);
@@ -10105,8 +10147,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       if (Object.hasOwn(asteroidsManifest.tools, "text2speech-V2")) {
         expect(asteroidsManifest.tools["text2speech-V2"]).toEqual(expect.any(Array));
       }
-      expect(Object.keys(asteroidsManifest.tools["asset-manager-v2"].assets)).toHaveLength(14);
+      expect(Object.keys(asteroidsManifest.tools["asset-manager-v2"].assets)).toHaveLength(15);
       expect(asteroidsManifest.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
+      expect(asteroidsManifest.tools["asset-manager-v2"].assets["assets.color.background.game"]).toEqual({
+        path: "palette://workspace/space-black",
+        type: "color",
+        kind: "hex",
+        role: "background",
+        source: "manifest",
+        color: {
+          hex: "#020617",
+          name: "Space Black",
+          symbol: "!",
+          source: "manifest"
+        }
+      });
       expect(asteroidsManifest.tools["asset-manager-v2"].assets["assets.image.background.deluxe"]).toEqual({
         path: "assets/images/deluxe.png",
         type: "image",
@@ -10148,7 +10203,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".asset-manager-v2__tool__menu")).toBeHidden();
       await expect(page.locator(".asset-manager-v2__workspace__menu")).toBeVisible();
       await expect(page.locator(".asset-manager-v2__workspace__menu button")).toHaveText(["Return to Workspace"]);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 14 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from tools\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded \d+ palette colors from active palette context/);
       const assetStatusHeaderOrder = await page.locator(".asset-manager-v2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
       expect(assetStatusHeaderOrder).toEqual(["Status", "+", "Clear"]);
@@ -10191,8 +10246,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "Large UFO",
         "Small UFO"
       ]));
-      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(14);
+      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(15);
       expect(storedContext.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.color.background.game"]).toEqual({
+        path: "palette://workspace/space-black",
+        type: "color",
+        kind: "hex",
+        role: "background",
+        source: "manifest",
+        color: {
+          hex: "#020617",
+          name: "Space Black",
+          symbol: "!",
+          source: "manifest"
+        }
+      });
       expect(storedContext.tools["asset-manager-v2"].assets["assets.image.background.deluxe"]).toEqual({
         path: "assets/images/deluxe.png",
         type: "image",
@@ -10410,7 +10478,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await assetTile.click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 14 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from tools\.asset-manager-v2\.assets/);
       await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 11 palette colors from active palette context/);
       await page.locator("#assetKindColor").check();
       const sessionPurpleSwatch = page.locator('#assetColorSwatchList button[aria-label*="Workspace Session Purple"]');
@@ -10420,9 +10488,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.session.workspace-session-purple");
       await page.locator("#addAssetButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Added assets\.color\.hud\.session\.workspace-session-purple\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK workspace\.tools\.asset-manager-v2 now has 15 validated assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK workspace\.tools\.asset-manager-v2 now has 16 validated assets\./);
       const editedAssetSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.asset-manager-v2")));
-      expect(Object.keys(editedAssetSession.data.assets)).toHaveLength(15);
+      expect(Object.keys(editedAssetSession.data.assets)).toHaveLength(16);
       expect(editedAssetSession.data.assets["assets.color.hud.session.workspace-session-purple"]).toMatchObject({
         color: {
           hex: "#123456",
@@ -10447,11 +10515,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expectWorkspaceReturnedFromTool(page, { dirty: true });
-      await expect(assetTile).toContainText("15 managed assets");
+      await expect(assetTile).toContainText("16 managed assets");
       await expect(assetTile).toHaveAttribute("data-workspace-tool-dirty", "true");
       await expect(paletteTile).toContainText("11 palette swatches");
       await expect(paletteTile).toHaveAttribute("data-workspace-tool-dirty", "true");
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Refreshed asset-manager-v2 from workspace\.tools\.asset-manager-v2\.data: 15 managed assets; Dirty: true\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Refreshed asset-manager-v2 from workspace\.tools\.asset-manager-v2\.data: 16 managed assets; Dirty: true\./);
       await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
       await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
@@ -10497,7 +10565,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Generated preview target: games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#log")).toContainText("Preview target: games/Asteroids/assets/images/preview.svg");
       await expect(page.locator("#log")).toContainText("Workspace background source: assets.image.background.deluxe -> games/Asteroids/assets/images/deluxe.png");
-      await expect(page.locator("#log")).toContainText("Workspace background color: Space Black #020617 from palette-manager-v2 swatch.");
+      await expect(page.locator("#log")).toContainText("Workspace background color: Space Black #020617 from assets.color.background.game asset.");
       await expect(page.locator("#log")).not.toContainText("FAIL Workspace background hydration");
       await expect(page.locator("#log")).toContainText("OK Workspace manifest preview source is valid at games/Asteroids/assets/images/preview.png.");
       const previewStatusHeaderOrder = await page.locator(".preview-generator-v2__status-accordion-header").evaluate((header) => Array.from(header.querySelectorAll(":scope > span, :scope > div > span, :scope > div > button"), (element) => element.textContent.trim()));
@@ -10732,7 +10800,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#saveWorkspaceButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved and marked clean: workspace\.tools\.text2speech-V2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved Text to Speech V2 payload count: 0\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 4 \(asset-manager-v2 assets=14; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=10; text2speech-V2 queue=0\)\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 4 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=10; text2speech-V2 queue=0\)\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       const savedState = await page.evaluate((hostContextId) => {
         const writes = JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]");
@@ -10785,12 +10853,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectWorkspaceReturnRehydrated(page);
       await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
-      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 14 validated assets from tools\.asset-manager-v2\.assets/);
+      await expect(page.locator("#statusLog")).toHaveValue(/Workspace Manager V2 loaded 15 validated assets from tools\.asset-manager-v2\.assets/);
       await page.locator('[data-delete-asset-id="assets.image.preview.preview"]').click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted assets\.image\.preview\.preview\./);
       const editedAssetSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.asset-manager-v2")));
       expect(editedAssetSession.data.assets["assets.image.preview.preview"]).toBeUndefined();
-      expect(Object.keys(editedAssetSession.data.assets)).toHaveLength(13);
+      expect(Object.keys(editedAssetSession.data.assets)).toHaveLength(14);
       expect(editedAssetSession.dirty).toMatchObject({
         isDirty: true,
         reason: "asset-updated"
@@ -10804,9 +10872,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expectWorkspaceReturnedFromTool(page, { dirty: true });
-      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("13 managed assets");
+      await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toContainText("14 managed assets");
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "true");
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Refreshed asset-manager-v2 from workspace\.tools\.asset-manager-v2\.data: 13 managed assets; Dirty: true\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Refreshed asset-manager-v2 from workspace\.tools\.asset-manager-v2\.data: 14 managed assets; Dirty: true\./);
       await page.locator('[data-workspace-tool-id="preview-generator-v2"]').click();
       await expect(page).toHaveURL(/preview-generator-v2\/index\.html.*launch=workspace/);
       await expect(page.locator("#repoDestinationSection")).toBeHidden();
@@ -11244,7 +11312,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved path: games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved file size: \d+ bytes\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: (?:3 \(asset-manager-v2 assets=14; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11\)|4 \(asset-manager-v2 assets=14; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11; text2speech-V2 queue=(?:0|1)\))\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: (?:3 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11\)|4 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11; text2speech-V2 queue=(?:0|1)\))\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 toolState context workspace-manager-v2-Asteroids\./);
@@ -11277,7 +11345,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         source: "User Added",
         symbol: "@"
       });
-      expect(Object.keys(writtenGameManifest.tools["asset-manager-v2"].assets)).toHaveLength(14);
+      expect(Object.keys(writtenGameManifest.tools["asset-manager-v2"].assets)).toHaveLength(15);
       if (Object.hasOwn(writtenGameManifest.tools, "text2speech-V2")) {
         expect(writtenGameManifest.tools["text2speech-V2"]).toEqual(expect.any(Array));
       }

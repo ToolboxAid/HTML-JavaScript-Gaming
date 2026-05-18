@@ -11,6 +11,7 @@ import FixedTicker from './FixedTicker.js';
 import EventBus from '../events/EventBus.js';
 import { Camera3D } from '../camera/index.js';
 import {
+  backgroundColor,
   backgroundImage,
   fullscreenBezel,
   FullscreenService,
@@ -33,6 +34,7 @@ export default class Engine {
     frameClock = null,
     fixedTicker = null,
     fullscreen = null,
+    backgroundColorLayer = null,
     backgroundImageLayer = null,
     fullscreenBezelLayer = null,
     audio = null,
@@ -67,6 +69,9 @@ export default class Engine {
     this.fullscreen = fullscreen || FullscreenService.fromBrowser({
       documentRef: this.documentRef,
       target: this.fullscreenTarget,
+    });
+    this.backgroundColorLayer = backgroundColorLayer || new backgroundColor({
+      documentRef: this.documentRef
     });
     this.backgroundImageLayer = backgroundImageLayer || new backgroundImage({
       documentRef: this.documentRef
@@ -321,6 +326,15 @@ export default class Engine {
 
     const renderStart = performance.now();
     this.renderer.clear();
+    this.backgroundColorLayer?.render?.(this.renderer, { scene: this.scene, engine: this });
+    if (this.scene && typeof this.scene.renderBackgroundEffects === 'function') {
+      try {
+        this.scene.renderBackgroundEffects(this.renderer, this);
+      } catch (error) {
+        this.trackRuntimeError('scene.renderBackgroundEffects', error, { severity: 'error' });
+        throw error;
+      }
+    }
     this.backgroundImageLayer?.render?.(this.renderer, { scene: this.scene, engine: this });
     if (this.scene && typeof this.scene.render === 'function') {
       try {

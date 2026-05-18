@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Collision Inspector V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css">
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css">
+    <link rel="stylesheet" href="../../src/engine/theme/accordionV2/accordionV2.css">
+    <link rel="stylesheet" href="./styles/collisionInspectorV2.css">
+    <script type="module" src="./js/bootstrap.js"></script>
+  </head>
+  <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="collision-inspector-v2">
+    <details class="is-collapsible" open>
+      <summary class="is-collapsible__summary" data-collision-inspector-summary>Hide Header and Details</summary>
+      <div class="is-collapsible__content">
+        <div id="shared-theme-header"></div>
+        <div class="collision-inspector-v2__header" data-collision-inspector-header>
+          <section class="tools-platform-frame collision-inspector-v2__local-shell-frame">
+            <div class="tools-platform-frame__accordion-content">
+              <div class="tools-platform-frame__accordion-summary">
+                <div class="tools-platform-frame__summary-copy">
+                  <h1 class="tools-platform-frame__title" data-tool-id="collision-inspector-v2">Collision Inspector V2</h1>
+                  <h2 class="tools-platform-frame__eyebrow">Manifest Driven Collision Tool</h2>
+                </div>
+                <div class="tools-platform-frame__summary-meta">
+                  <div class="tools-platform-frame__meta">Vector, sprite, bounds, pixel, and hybrid collision inspection for game manifests.</div>
+                </div>
+              </div>
+              <div class="tools-platform-frame__topline">
+                <p class="tools-platform-frame__description">Load a game manifest, select two Object Vector V2 objects, and drag them through live collision checks.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </details>
+
+    <nav class="collision-inspector-v2__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+      <button id="copyCollisionReportButton" type="button">Copy Report</button>
+      <button id="resetSimulationButton" type="button">Reset</button>
+    </nav>
+
+    <nav class="collision-inspector-v2__menu collision-inspector-v2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
+    </nav>
+
+    <main class="collision-inspector-v2 app-shell" data-tool-id="collision-inspector-v2">
+      <aside class="collision-inspector-v2__panel collision-inspector-v2__panel--left" aria-label="Collision inputs">
+        <section class="accordion-v2 collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="manifestContent">
+            <span>Manifest</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="manifestContent" class="accordion-v2__content">
+            <label class="collision-inspector-v2__field" for="collisionManifestInput">
+              <span>Game Manifest JSON</span>
+              <input id="collisionManifestInput" type="file" accept=".json,application/json">
+            </label>
+            <div id="manifestSummary" class="collision-inspector-v2__summary">No manifest loaded.</div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="collisionControlsContent">
+            <span>Collision Pair</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="collisionControlsContent" class="accordion-v2__content">
+            <label class="collision-inspector-v2__field" for="collisionModeSelect">
+              <span>Collision Mode</span>
+              <select id="collisionModeSelect">
+                <option value="vector">Vector</option>
+                <option value="sprite">Sprite</option>
+                <option value="bounds">Bounds</option>
+                <option value="pixel">Pixel</option>
+                <option value="hybrid">Hybrid</option>
+              </select>
+            </label>
+            <label class="collision-inspector-v2__field" for="objectASelect">
+              <span>Object A</span>
+              <select id="objectASelect"></select>
+            </label>
+            <label class="collision-inspector-v2__field" for="objectBSelect">
+              <span>Object B</span>
+              <select id="objectBSelect"></select>
+            </label>
+          </div>
+        </section>
+      </aside>
+
+      <section class="collision-inspector-v2__panel collision-inspector-v2__panel--center" aria-label="Collision simulation">
+        <section class="accordion-v2 collision-inspector-v2__accordion collision-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="simulationContent">
+            <span>Simulation</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="simulationContent" class="accordion-v2__content collision-inspector-v2__canvas-wrap">
+            <canvas id="collisionCanvas" width="960" height="640" aria-label="Collision movement simulation"></canvas>
+            <div class="collision-inspector-v2__legend" aria-label="Collision overlay legend">
+              <span>Object A</span>
+              <span>Object B</span>
+              <span>Overlap</span>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="collision-inspector-v2__panel collision-inspector-v2__panel--right" aria-label="Collision output">
+        <section class="accordion-v2 collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="resultContent">
+            <span>Live Result</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="resultContent" class="accordion-v2__content">
+            <div id="collisionResultBadge" class="collision-inspector-v2__result" data-collision-state="idle">No Collision</div>
+            <dl class="collision-inspector-v2__metrics">
+              <div>
+                <dt>Overlap</dt>
+                <dd id="overlapState">false</dd>
+              </div>
+              <div>
+                <dt>Mode</dt>
+                <dd id="modeState">Vector</dd>
+              </div>
+              <div>
+                <dt>Bounds</dt>
+                <dd id="boundsState">waiting</dd>
+              </div>
+            </dl>
+            <pre id="collisionSummary" class="collision-inspector-v2__output">{}</pre>
+          </div>
+        </section>
+
+        <section class="accordion-v2 collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+          <div class="accordion-v2__header collision-inspector-v2__status-header" aria-expanded="true" aria-controls="collisionLogContent">
+            <span>Collision Logs</span>
+            <div class="collision-inspector-v2__status-actions">
+              <button id="clearCollisionLogButton" type="button">Clear</button>
+              <span class="accordion-v2__icon" aria-hidden="true">+</span>
+            </div>
+          </div>
+          <div id="collisionLogContent" class="accordion-v2__content">
+            <textarea id="collisionLog" readonly rows="12" aria-label="Collision logs"></textarea>
+          </div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  </body>
+</html>
