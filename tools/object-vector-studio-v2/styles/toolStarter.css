@@ -448,6 +448,25 @@ textarea:hover {
   max-height: 260px;
 }
 
+.tool-starter__panel--right > .object-vector-studio-v2__shape-geometry-accordion.is-open {
+  flex: 1 1 320px;
+  min-height: 220px;
+}
+
+.tool-starter__panel--right > .accordion-v2.object-vector-studio-v2__shape-geometry-accordion.is-open > .accordion-v2__content#objectVectorStudioV2ShapeGeometryContent {
+  flex: 1 1 auto;
+  max-height: none;
+}
+
+#objectVectorStudioV2ShapeGeometryDetails {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+#objectVectorStudioV2ShapeGeometryDetails > .object-vector-studio-v2__object-detail-stack {
+  min-height: 100%;
+}
+
 .object-vector-studio-v2__palette-swatch-list {
   display: grid;
   flex: 0 0 auto;

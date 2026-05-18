@@ -4899,9 +4899,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         expect(Math.abs(layout.tops[left] - layout.tops[right])).toBeLessThanOrEqual(3);
       });
     };
+    const setRightAccordionOpen = async (contentId, open) => {
+      const header = page.locator(`.tool-starter__panel--right [aria-controls="${contentId}"]`).first();
+      const expanded = await header.getAttribute("aria-expanded");
+      if ((expanded === "true") !== open) {
+        await header.click();
+      }
+      await expect(header).toHaveAttribute("aria-expanded", String(open));
+    };
 
     await coverageReporter.start(page);
     try {
+      await page.setViewportSize({ width: 1366, height: 1000 });
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
         sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
@@ -5043,6 +5052,42 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-side-action]")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-select='true']")).toHaveCount(0);
       await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.map((row) => row.querySelectorAll("input[type='checkbox']").length))).toEqual([1, 1, 1]);
+      await setRightAccordionOpen("objectVectorStudioV2PaletteContent", false);
+      await setRightAccordionOpen("objectVectorStudioV2ShapeToolsContent", false);
+      await setRightAccordionOpen("objectVectorStudioV2ShapesContent", false);
+      await setRightAccordionOpen("objectVectorStudioV2ShapeTransformContent", false);
+      const expandedShapeGeometryLayout = await page.locator("#objectVectorStudioV2ShapeGeometryDetails").evaluate((details) => {
+        const content = document.querySelector("#objectVectorStudioV2ShapeGeometryContent");
+        const accordion = document.querySelector(".object-vector-studio-v2__shape-geometry-accordion");
+        const contentRect = content.getBoundingClientRect();
+        const detailsRect = details.getBoundingClientRect();
+        const contentStyle = getComputedStyle(content);
+        const accordionStyle = getComputedStyle(accordion);
+        return {
+          accordionFlexGrow: Number.parseFloat(accordionStyle.flexGrow),
+          accordionHasLayoutClass: accordion.classList.contains("object-vector-studio-v2__shape-geometry-accordion"),
+          contentFlexGrow: Number.parseFloat(contentStyle.flexGrow),
+          contentHeight: Math.round(contentRect.height),
+          contentMaxHeight: contentStyle.maxHeight,
+          detailsHeight: Math.round(detailsRect.height),
+          paletteExpanded: document.querySelector('[aria-controls="objectVectorStudioV2PaletteContent"]').getAttribute("aria-expanded"),
+          shapeToolOptionsExpanded: document.querySelector('[aria-controls="objectVectorStudioV2ShapeToolsContent"]').getAttribute("aria-expanded"),
+          shapeToolsExpanded: document.querySelector('[aria-controls="objectVectorStudioV2ShapesContent"]').getAttribute("aria-expanded"),
+          transformExpanded: document.querySelector('[aria-controls="objectVectorStudioV2ShapeTransformContent"]').getAttribute("aria-expanded")
+        };
+      });
+      expect(expandedShapeGeometryLayout).toMatchObject({
+        accordionHasLayoutClass: true,
+        contentMaxHeight: "none",
+        paletteExpanded: "false",
+        shapeToolOptionsExpanded: "false",
+        shapeToolsExpanded: "false",
+        transformExpanded: "false"
+      });
+      expect(expandedShapeGeometryLayout.accordionFlexGrow).toBeGreaterThanOrEqual(1);
+      expect(expandedShapeGeometryLayout.contentFlexGrow).toBeGreaterThanOrEqual(1);
+      expect(expandedShapeGeometryLayout.contentHeight).toBeGreaterThan(260);
+      expect(expandedShapeGeometryLayout.detailsHeight).toBeGreaterThan(240);
 
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
