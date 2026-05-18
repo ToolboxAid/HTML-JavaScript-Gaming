@@ -12,7 +12,10 @@ import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';
 import { bootAsteroidsNew as bootAsteroids } from '../../games/Asteroids/index.js';
 import {
   createAsteroidsTestGeometryProfiles,
-  loadAsteroidsObjectVectorPayload
+  createAsteroidsTestSceneOptions,
+  loadAsteroidsManifest,
+  loadAsteroidsObjectVectorPayload,
+  loadAsteroidsVectorMaps
 } from './asteroidsManifestObjectVectors.mjs';
 
 function createCanvas() {
@@ -143,6 +146,9 @@ function withBlockedLocalStorage(run) {
 
 export async function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
+  const vectorMaps = loadAsteroidsVectorMaps();
+  const worldOptions = { asteroidGeometryProfiles, vectorMaps };
+  const manifestPayload = loadAsteroidsManifest();
   const createdDocumentShim = typeof globalThis.document === 'undefined';
   const createdWindowShim = typeof globalThis.window === 'undefined';
   const shimCanvas = createCanvas();
@@ -198,6 +204,7 @@ export async function run() {
           throw new Error('Input should not initialize without a canvas.');
         }
       },
+      manifestPayload,
     });
   } finally {
     console.error = originalConsoleError;
@@ -268,6 +275,7 @@ export async function run() {
           this.kind = 'scene';
         }
       },
+      manifestPayload,
     });
 
     assert.equal(bootedEngine.canvas, bootCanvas);
@@ -323,6 +331,7 @@ export async function run() {
         this.options = options;
       }
     },
+    manifestPayload,
   });
   assert.equal(capturedShowcaseOptions.debugConfig.debugMode, 'qa');
   assert.equal(capturedShowcaseOptions.debugConfig.debugEnabled, true);
@@ -367,6 +376,7 @@ export async function run() {
         this.options = options;
       }
     },
+    manifestPayload,
   });
   assert.equal(capturedProductionOptions.debugConfig.debugMode, 'prod');
   assert.equal(capturedProductionOptions.debugConfig.debugEnabled, false);
@@ -410,6 +420,7 @@ export async function run() {
         this.options = options;
       }
     },
+    manifestPayload,
   });
   assert.equal(capturedLocalOptions.debugConfig.debugMode, 'dev');
   assert.equal(capturedLocalOptions.debugConfig.debugEnabled, true);
@@ -417,7 +428,7 @@ export async function run() {
   assert.equal(capturedLocalOptions.devConsoleIntegration.getState().overlayVisible, false);
 
   withBlockedLocalStorage(() => {
-    const scene = new AsteroidsGameScene({ asteroidGeometryProfiles });
+    const scene = new AsteroidsGameScene(createAsteroidsTestSceneOptions());
     assert.equal(scene.session.highScore >= 0, true);
   });
 
@@ -433,7 +444,7 @@ export async function run() {
       },
     },
   });
-  const scene = new AsteroidsGameScene({ asteroidGeometryProfiles });
+  const scene = new AsteroidsGameScene(createAsteroidsTestSceneOptions());
   let stopAllCount = 0;
   scene.audio = {
     stopAll() {
@@ -453,7 +464,7 @@ export async function run() {
   assert.equal(stopAllCount, 1);
   assert.equal(lifecycleCanvas.style.cursor, 'default');
 
-  const world = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25, asteroidGeometryProfiles });
+  const world = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25, ...worldOptions });
   const session = new AsteroidsSession(world, {
     load: () => 0,
     save: (score) => score,

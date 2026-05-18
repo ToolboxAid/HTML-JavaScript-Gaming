@@ -26,25 +26,22 @@ const UFO_PROFILES = {
   },
 };
 
-const VECTOR_MAPS = {
-  small: [
-    { x: -14, y: 3 }, { x: 14, y: 3 }, { x: 9, y: 9 }, { x: -9, y: 9 }, { x: -14, y: 3 }, { x: -9, y: -3 },
-    { x: -5, y: -3 }, { x: -5, y: -6 }, { x: -2, y: -9 }, { x: 2, y: -9 }, { x: 5, y: -6 }, { x: 5, y: -3 }, { x: -5, y: -3 },
-    { x: 9, y: -3 }, { x: 14, y: 3 },
-  ],
-  large: [
-    { x: -21, y: 4.5 }, { x: 21, y: 4.5 }, { x: 13.5, y: 13.5 }, { x: -13.5, y: 13.5 }, { x: -21, y: 4.5 }, { x: -13.5, y: -4.5 },
-    { x: -7.5, y: -4.5 }, { x: -7.5, y: -9 }, { x: -3, y: -13.5 }, { x: 3, y: -13.5 }, { x: 7.5, y: -9 }, { x: 7.5, y: -4.5 }, { x: -7.5, y: -4.5 },
-    { x: 13.5, y: -4.5 }, { x: 21, y: 4.5 },
-  ],
-};
+function normalizePoints(points) {
+  return Array.isArray(points)
+    ? points.map((point) => ({
+      x: Number(point?.x ?? 0),
+      y: Number(point?.y ?? 0),
+    })).filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y))
+    : [];
+}
 
 export default class Ufo {
-  constructor(bounds, type = 'large', level = 1, rng = Math.random) {
+  constructor(bounds, type = 'large', level = 1, rng = Math.random, { collisionPoints = [] } = {}) {
     this.bounds = bounds;
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.type = UFO_PROFILES[type] ? type : 'large';
     this.profile = UFO_PROFILES[this.type];
+    this.collisionPoints = normalizePoints(collisionPoints);
     this.direction = this.rng() > 0.5 ? 1 : -1;
     this.x = this.direction > 0 ? -48 : bounds.width + 48;
     this.y = randomRange(120, bounds.height - 140, this.rng);
@@ -108,7 +105,7 @@ export default class Ufo {
   }
 
   getCollisionPolygon() {
-    return transformPoints(VECTOR_MAPS[this.type], {
+    return transformPoints(this.collisionPoints, {
       x: this.x,
       y: this.y,
     });

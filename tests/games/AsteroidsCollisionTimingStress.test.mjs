@@ -6,7 +6,10 @@
 */
 import assert from 'node:assert/strict';
 import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';
-import { createAsteroidsTestGeometryProfiles } from './asteroidsManifestObjectVectors.mjs';
+import {
+  createAsteroidsTestGeometryProfiles,
+  loadAsteroidsVectorMaps
+} from './asteroidsManifestObjectVectors.mjs';
 
 function createInput(keys = {}) {
   return {
@@ -61,11 +64,15 @@ function assertClose(actual, expected, message) {
 
 export function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
+  const worldOptions = {
+    asteroidGeometryProfiles,
+    vectorMaps: loadAsteroidsVectorMaps(),
+  };
   Object.entries(asteroidGeometryProfiles).forEach(([size, profile]) => {
     assert.equal(profile.points.length >= 4, true, `Asteroid size ${size} should load polygon collision points from object-vector-studio-v2 tool geometry.`);
   });
 
-  const collisionWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  const collisionWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   collisionWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   collisionWorld.asteroids = [createStationaryAsteroid(collisionWorld, { x: 480, y: 400, size: 3 })];
   collisionWorld.bullets = [collisionWorld.createBulletFromState(createBulletState({
@@ -79,7 +86,7 @@ export function run() {
   assert.equal(collisionWorld.bullets.length, 0);
   assert.equal(collisionWorld.asteroids.length, 2);
 
-  const bulletConcaveGapWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  const bulletConcaveGapWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   bulletConcaveGapWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   bulletConcaveGapWorld.asteroids = [createStationaryAsteroid(bulletConcaveGapWorld, { x: 480, y: 360, size: 3 })];
   bulletConcaveGapWorld.bullets = [bulletConcaveGapWorld.createBulletFromState(createBulletState({
@@ -93,7 +100,7 @@ export function run() {
   assert.equal(bulletConcaveGapWorld.bullets.length, 1);
   assert.equal(bulletConcaveGapWorld.asteroids.length, 1);
 
-  const shipImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  const shipImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   shipImpactWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   shipImpactWorld.ship.invulnerable = 0;
   shipImpactWorld.asteroids = [createStationaryAsteroid(shipImpactWorld, {
@@ -105,7 +112,7 @@ export function run() {
   assert.equal(shipImpactEvents.shipDestroyed, true);
   assert.equal(shipImpactWorld.shipActive, false);
 
-  const shipConcaveEdgeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  const shipConcaveEdgeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   shipConcaveEdgeWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   shipConcaveEdgeWorld.ship.invulnerable = 0;
   shipConcaveEdgeWorld.ship.x = 430;
@@ -122,7 +129,7 @@ export function run() {
   assert.equal(shipConcaveEdgeEvents.shipDestroyed, true);
   assert.equal(shipConcaveEdgeWorld.shipActive, false);
 
-  const ufoImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  const ufoImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   ufoImpactWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   ufoImpactWorld.asteroids = [createStationaryAsteroid(ufoImpactWorld, { x: 480, y: 360, size: 3 })];
   ufoImpactWorld.ufo = ufoImpactWorld.createUfoEntity('large', 1);
@@ -136,7 +143,7 @@ export function run() {
   assert.equal(ufoImpactWorld.ufo, null);
   assert.equal(ufoImpactEvents.explosions.some((explosion) => explosion.source === 'ufo'), true);
 
-  const ufoConcaveGapWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  const ufoConcaveGapWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   ufoConcaveGapWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   ufoConcaveGapWorld.asteroids = [createStationaryAsteroid(ufoConcaveGapWorld, { x: 480, y: 360, size: 3 })];
   ufoConcaveGapWorld.ufo = ufoConcaveGapWorld.createUfoEntity('large', 1);
@@ -151,7 +158,7 @@ export function run() {
   assert.equal(ufoConcaveGapWorld.asteroids.length, 1);
   assert.equal(ufoConcaveGapEvents.explosions.some((explosion) => explosion.source === 'ufo'), false);
 
-  const ufoBulletImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  const ufoBulletImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   ufoBulletImpactWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   ufoBulletImpactWorld.asteroids = [createStationaryAsteroid(ufoBulletImpactWorld, { x: 480, y: 360, size: 3 })];
   ufoBulletImpactWorld.ufo = ufoBulletImpactWorld.createUfoEntity('large', 1);
@@ -172,7 +179,7 @@ export function run() {
   assert.equal(ufoBulletImpactWorld.asteroids.length, 2);
   assert.equal(ufoBulletImpactEvents.explosions.length > 0, true);
 
-  const bulletCrossfireWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  const bulletCrossfireWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   bulletCrossfireWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   bulletCrossfireWorld.asteroids = [];
   bulletCrossfireWorld.ufo = null;
@@ -193,7 +200,7 @@ export function run() {
   assert.equal(bulletCrossfireWorld.ufoBullets.length, 0);
   assert.equal(bulletCrossfireEvents.explosions.some((explosion) => explosion.source === 'bullet-crossfire'), true);
 
-  const shipUfoCrashWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  const shipUfoCrashWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   shipUfoCrashWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   shipUfoCrashWorld.asteroids = [];
   shipUfoCrashWorld.ship.invulnerable = 0;
@@ -208,7 +215,7 @@ export function run() {
   assert.equal(shipUfoCrashEvents.shipDestroyed, true);
   assert.equal(shipUfoCrashWorld.ufo, null);
 
-  const waveWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25, asteroidGeometryProfiles });
+  const waveWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.25, ...worldOptions });
   waveWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   waveWorld.asteroids = [createStationaryAsteroid(waveWorld, { x: 480, y: 400, size: 1 })];
   waveWorld.bullets = [waveWorld.createBulletFromState(createBulletState({
@@ -222,7 +229,7 @@ export function run() {
   assert.equal(waveWorld.wave, 2);
   assert.equal(waveWorld.asteroids.length > 0, true);
 
-  const respawnLargeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.35, asteroidGeometryProfiles });
+  const respawnLargeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.35, ...worldOptions });
   respawnLargeWorld.asteroids = [createStationaryAsteroid(respawnLargeWorld, {
     x: respawnLargeWorld.ship.spawnX,
     y: respawnLargeWorld.ship.spawnY,
@@ -237,7 +244,7 @@ export function run() {
   respawnLargeWorld.ufoBullets = [];
   const respawnLargeEvents = respawnLargeWorld.update(1, createInput());
 
-  const respawnSteppedWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.35, asteroidGeometryProfiles });
+  const respawnSteppedWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.35, ...worldOptions });
   respawnSteppedWorld.asteroids = [createStationaryAsteroid(respawnSteppedWorld, {
     x: respawnSteppedWorld.ship.spawnX,
     y: respawnSteppedWorld.ship.spawnY,
@@ -256,7 +263,7 @@ export function run() {
   assert.equal(respawnLargeWorld.shipActive, respawnSteppedWorld.shipActive);
   assert.equal(respawnLargeWorld.status, respawnSteppedWorld.status);
 
-  const timingLargeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.45, asteroidGeometryProfiles });
+  const timingLargeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.45, ...worldOptions });
   timingLargeWorld.asteroids = [];
   timingLargeWorld.ufo = null;
   timingLargeWorld.ufoBullets = [];
@@ -264,7 +271,7 @@ export function run() {
   timingLargeWorld.ship.invulnerable = 0;
   timingLargeWorld.update(0.5, createInput({ ArrowUp: true }));
 
-  const timingSteppedWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.45, asteroidGeometryProfiles });
+  const timingSteppedWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.45, ...worldOptions });
   timingSteppedWorld.asteroids = [];
   timingSteppedWorld.ufo = null;
   timingSteppedWorld.ufoBullets = [];

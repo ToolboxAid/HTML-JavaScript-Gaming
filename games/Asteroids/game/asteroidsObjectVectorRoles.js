@@ -1,30 +1,24 @@
 export const ASTEROIDS_RUNTIME_OBJECT_ROLES = Object.freeze({
   ship: Object.freeze({
     label: 'Ship',
-    objectId: 'object.asteroids.ship',
   }),
   asteroidLarge: Object.freeze({
     label: 'Large Asteroid',
-    objectId: 'object.asteroids.large-asteroid',
     size: 3,
   }),
   asteroidMedium: Object.freeze({
     label: 'Medium Asteroid',
-    objectId: 'object.asteroids.medium-asteroid',
     size: 2,
   }),
   asteroidSmall: Object.freeze({
     label: 'Small Asteroid',
-    objectId: 'object.asteroids.small-asteroid',
     size: 1,
   }),
   ufoLarge: Object.freeze({
     label: 'Large UFO',
-    objectId: 'object.asteroids.large-ufo',
   }),
   ufoSmall: Object.freeze({
     label: 'Small UFO',
-    objectId: 'object.asteroids.small-ufo',
   }),
 });
 
@@ -46,6 +40,15 @@ function normalizeString(value) {
   return String(value || '').trim();
 }
 
+function normalizeTags(value) {
+  return asArray(value).map((tag) => normalizeSearchText(tag)).filter(Boolean);
+}
+
+function objectHasTags(object, tags) {
+  const tagSet = new Set(normalizeTags(object?.tags));
+  return normalizeTags(tags).every((tag) => tagSet.has(tag));
+}
+
 function normalizeSearchText(value) {
   return normalizeString(value).toLowerCase();
 }
@@ -54,13 +57,15 @@ function oldObjectSignal(object) {
   const text = [
     object?.id,
     object?.name,
+    ...asArray(object?.tags),
   ].map(normalizeSearchText).join(' ');
   return /(^|[.\s_-])(old|legacy|deprecated|archive|archived|renamed|stale)($|[.\s_-])/.test(text);
 }
 
 function candidateLabel(candidate) {
+  const tags = normalizeTags(candidate.object?.tags).join(',');
   const oldLabel = candidate.oldSignal ? ' old-signal' : '';
-  return `${candidate.object?.id || 'unknown'} name="${candidate.object?.name || 'unknown'}" index=${candidate.index}${oldLabel}`;
+  return `${candidate.object?.id || 'unknown'} tags=[${tags}] index=${candidate.index}${oldLabel}`;
 }
 
 function logResolution(logger, level, message, details = {}) {
@@ -75,21 +80,33 @@ function logResolution(logger, level, message, details = {}) {
   logger[method]?.(message, details);
 }
 
-export function runtimeObjectRoleOptions(roleId) {
+function roleBindingFor(roleBindings, roleId) {
+  return roleBindings && typeof roleBindings === 'object' && !Array.isArray(roleBindings)
+    ? roleBindings[roleId] || null
+    : null;
+}
+
+export function runtimeObjectRoleOptions(roleId, roleBindings = {}) {
   const role = ASTEROIDS_RUNTIME_OBJECT_ROLES[roleId] || null;
+  const binding = roleBindingFor(roleBindings, roleId);
   if (!role) {
     return {
       objectId: '',
+      requireManifestBinding: true,
       runtimeRole: roleId,
+      tags: [],
     };
   }
   return {
-    objectId: normalizeString(role.objectId),
+    objectId: normalizeString(binding?.objectId),
+    requireManifestBinding: true,
     runtimeRole: roleId,
+    tags: normalizeTags(binding?.tags),
   };
 }
 
 export function resolveAsteroidsObjectVectorRole(objects, roleId, {
+  roleBindings = {},
   logger = null,
 } = {}) {
   const role = ASTEROIDS_RUNTIME_OBJECT_ROLES[roleId] || null;
@@ -99,7 +116,9 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
     return null;
   }
 
-  const targetObjectId = normalizeString(role.objectId);
+  const binding = roleBindingFor(roleBindings, roleId);
+  const targetObjectId = normalizeString(binding?.objectId);
+  const targetTags = normalizeTags(binding?.tags);
   const targetObject = targetObjectId
     ? objectList.find((object) => object?.id === targetObjectId) || null
     : null;
@@ -109,13 +128,26 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
       object,
       oldSignal: oldObjectSignal(object),
     }))
-    .filter((candidate) => candidate.object);
+    .filter((candidate) => candidate.object && (!targetTags.length || objectHasTags(candidate.object, targetTags)));
+
+  if (!binding) {
+    logResolution(
+      logger,
+      'FAIL',
+      `Asteroids Object Vector runtime role ${roleId} requires a manifest objectVectorRoles.${roleId} binding.`,
+      {
+        candidates: candidates.map(candidateLabel),
+        objectCount: objectList.length,
+      }
+    );
+    return null;
+  }
 
   if (!targetObjectId) {
     logResolution(
       logger,
       'FAIL',
-      `Asteroids Object Vector runtime role ${roleId} is missing its required object ID contract.`,
+      `Asteroids Object Vector runtime role ${roleId} manifest binding is missing objectId.`,
       {
         candidates: candidates.map(candidateLabel),
         objectCount: objectList.length,
@@ -128,7 +160,7 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
     logResolution(
       logger,
       'FAIL',
-      `Asteroids Object Vector runtime role ${roleId} requires object ${targetObjectId} in root.tools.object-vector-studio-v2.objects.`,
+      `Asteroids Object Vector runtime role ${roleId} manifest binding requires object ${targetObjectId} in root.tools.object-vector-studio-v2.objects.`,
       {
         candidates: candidates.map(candidateLabel),
         objectCount: objectList.length,
@@ -138,11 +170,26 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
     return null;
   }
 
+  if (targetTags.length && !objectHasTags(targetObject, targetTags)) {
+    logResolution(
+      logger,
+      'FAIL',
+      `Asteroids Object Vector runtime role ${roleId} manifest binding ${targetObjectId} is missing required tags [${targetTags.join(', ')}].`,
+      {
+        candidates: candidates.map(candidateLabel),
+        objectTags: normalizeTags(targetObject.tags),
+        targetObjectId,
+        targetTags,
+      }
+    );
+    return null;
+  }
+
   if (oldObjectSignal(targetObject)) {
     logResolution(
       logger,
       'FAIL',
-      `Asteroids Object Vector runtime role ${roleId} object ${targetObjectId} is marked old/legacy; keep runtime object IDs on active Object Vector objects.`,
+      `Asteroids Object Vector runtime role ${roleId} manifest binding ${targetObjectId} is marked old/legacy; keep runtime object IDs on active Object Vector objects.`,
       {
         candidates: candidates.map(candidateLabel),
         targetObjectId,
@@ -155,6 +202,7 @@ export function resolveAsteroidsObjectVectorRole(objects, roleId, {
 }
 
 export function validateAsteroidsRuntimeObjectRoles(objects, {
+  roleBindings = {},
   logger = null,
 } = {}) {
   const errors = [];
@@ -174,6 +222,7 @@ export function validateAsteroidsRuntimeObjectRoles(objects, {
 
   ASTEROIDS_REQUIRED_RUNTIME_OBJECT_ROLE_IDS.forEach((roleId) => {
     const object = resolveAsteroidsObjectVectorRole(objects, roleId, {
+      roleBindings,
       logger: collectingLogger,
     });
     if (object) {

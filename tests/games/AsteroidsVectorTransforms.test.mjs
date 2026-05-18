@@ -8,7 +8,14 @@ import assert from 'node:assert/strict';
 import Asteroid from '../../games/Asteroids/entities/Asteroid.js';
 import Ship from '../../games/Asteroids/entities/Ship.js';
 import Ufo from '../../games/Asteroids/entities/Ufo.js';
-import { createAsteroidsTestGeometryProfiles } from './asteroidsManifestObjectVectors.mjs';
+import {
+  createAsteroidsTestGeometryProfiles,
+  loadAsteroidsVectorMaps
+} from './asteroidsManifestObjectVectors.mjs';
+import {
+  ASTEROIDS_VECTOR_MAP_IDS,
+  getAsteroidsVectorPoints
+} from '../../games/Asteroids/game/asteroidsVectorMaps.js';
 
 function assertPointClose(actual, expected) {
   assert.equal(Math.abs(actual.x - expected.x) < 1e-9, true);
@@ -17,7 +24,10 @@ function assertPointClose(actual, expected) {
 
 export function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
-  const ship = new Ship(100, 200);
+  const vectorMaps = loadAsteroidsVectorMaps();
+  const ship = new Ship(100, 200, {
+    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.shipCollision),
+  });
   ship.angle = Math.PI / 2;
   const shipPoints = ship.getPoints();
   assert.equal(shipPoints.length, 6);
@@ -33,7 +43,9 @@ export function run() {
   assertPointClose(asteroidPoints[0], { x: 326.5, y: 282.5 });
   assertPointClose(asteroidPoints[5], { x: 346.5, y: 197.5 });
 
-  const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5);
+  const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5, {
+    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoSmallCollision),
+  });
   ufo.x = 400;
   ufo.y = 220;
   const ufoPolygon = ufo.getCollisionPolygon();

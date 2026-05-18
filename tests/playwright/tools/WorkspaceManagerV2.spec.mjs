@@ -7641,12 +7641,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.evaluate(() => {
         const scene = window.__asteroidsNewEngine.scene;
+        scene.session.mode = "menu";
+        scene.attractController.active = true;
+        scene.attractAdapter.enter();
+        scene.attractAdapter.setPhase("title");
+      });
+      await page.waitForFunction(() => {
+        const counts = window.__asteroidsObjectVectorRuntime?.vectorMapRenderCounts || {};
+        return counts["vector.asteroids.attract.ship"] > 0
+          && counts["vector.asteroids.attract.asteroid"] > 0;
+      });
+
+      await page.evaluate(() => {
+        const scene = window.__asteroidsNewEngine.scene;
         scene.session.start(1);
         scene.world.ufo = scene.world.createUfoEntity("small", scene.world.wave);
       });
       await page.waitForFunction(() => {
         const counts = window.__asteroidsObjectVectorRuntime?.renderCounts || {};
-        return counts.asteroids > 0 && counts.ship > 0 && counts.ufo > 0;
+        const vectorCounts = window.__asteroidsObjectVectorRuntime?.vectorMapRenderCounts || {};
+        return counts.asteroids > 0 && counts.ship > 0 && counts.ufo > 0
+          && vectorCounts["vector.asteroids.ship.life"] > 0;
       });
 
       const diagnostics = await page.evaluate(() => window.__asteroidsObjectVectorRuntime);
@@ -7658,7 +7673,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           ...object,
           tags: []
         }));
-        return validateAsteroidsRuntimeObjectRoles(objects);
+        return validateAsteroidsRuntimeObjectRoles(objects, {
+          roleBindings: scene.vectorMaps.objectVectorRoles
+        });
       });
       expect(diagnostics.loaded).toBe(true);
       expect(diagnostics.assetCount).toBe(7);
@@ -7723,11 +7740,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(runtimeRounding.renderResult.ok).toBe(true);
       expect(runtimeRounding.roundedCanvasCommandCount).toBe(0);
-      expect(taglessRuntimeObjectValidation.ok).toBe(true);
-      expect(taglessRuntimeObjectValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
+      expect(taglessRuntimeObjectValidation.ok).toBe(false);
+      expect(taglessRuntimeObjectValidation.errors.some((entry) => entry.message.includes("manifest binding object.asteroids.medium-asteroid is missing required tags"))).toBe(true);
       expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ship).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);
+      expect(diagnostics.vectorMapsLoaded).toBe(true);
+      expect(diagnostics.vectorMapIds).toEqual(expect.arrayContaining([
+        "vector.asteroids.attract.ship",
+        "vector.asteroids.ship.collision",
+        "vector.asteroids.ui.title",
+        "vector.asteroids.ufo.small.collision"
+      ]));
+      expect(diagnostics.vectorMapUsageCounts).toMatchObject({
+        attract: 4,
+        collision: 3,
+        gameplay: 4,
+        splash: 1,
+        ui: 2
+      });
       const eventMessages = diagnostics.events.map((entry) => entry.message).join("\n");
       expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 7 objects.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ship; cached resolved object object.asteroids.ship.");
@@ -9946,12 +9977,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"asset-manager-v2"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"palette-manager-v2"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"object-vector-studio-v2"/);
-      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"vector-map-editor"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector-map-editor"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector\.asteroids\.ship\.collision"/);
       const activeWorkspaceOutput = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
       if (Object.hasOwn(activeWorkspaceOutput.tools, "text2speech-V2")) {
         expect(activeWorkspaceOutput.tools["text2speech-V2"]).toEqual(expect.any(Array));
       }
-      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(new RegExp('"vector' + "\\.asteroids"));
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(new RegExp('"vector' + "\\.asteroids"));
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"palette-browser"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"asset-browser"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"activePalette"/);
@@ -10197,7 +10229,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(asteroidsManifest.launch.directPath).toBe("/games/Asteroids/index.html");
       expect(asteroidsManifest.objectVectorRuntime).toBeUndefined();
       expect(Object.keys(asteroidsManifest.tools).sort()).toEqual(expect.arrayContaining(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2"]));
-      expect(asteroidsManifest.tools["vector-map-editor"]).toBeUndefined();
+      expect(asteroidsManifest.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toEqual(expect.arrayContaining([
+        "vector.asteroids.attract.ship",
+        "vector.asteroids.ship.collision",
+        "vector.asteroids.ui.title",
+        "vector.asteroids.ufo.small.collision"
+      ]));
       expect(asteroidsManifest.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(asteroidsManifest.tools["object-vector-studio-v2"].palette).toBeUndefined();
       expect(asteroidsManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
@@ -10373,7 +10410,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         role: "preview",
         source: "manifest"
       });
-      expect(storedContext.tools["vector-map-editor"]).toBeUndefined();
+      expect(storedContext.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toEqual(expect.arrayContaining([
+        "vector.asteroids.attract.ship",
+        "vector.asteroids.ship.collision",
+        "vector.asteroids.ui.title",
+        "vector.asteroids.ufo.small.collision"
+      ]));
       expect(storedContext.tools["asset-manager-v2"].assets["assets.font.ui.vector-battle"]).toEqual({
         path: "src/assets/fonts/vector_battle/vector_battle.ttf",
         type: "font",
@@ -10451,8 +10493,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(schemaValidation.objectVectorPalette).toBeUndefined();
       expect(schemaValidation.objectVectorObjectTags).not.toContain("asteroids");
-      expect(schemaValidation.toolKeys).toEqual(expect.arrayContaining(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2"]));
-      expect(schemaValidation.toolKeys).not.toContain("vector-map-editor");
+      expect(schemaValidation.toolKeys).toEqual(expect.arrayContaining(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2", "vector-map-editor"]));
       if (schemaValidation.textToSpeechPayload !== undefined) {
         expect(schemaValidation.textToSpeechPayload).toEqual(expect.any(Array));
       }
@@ -10885,7 +10926,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#saveWorkspaceButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved and marked clean: workspace\.tools\.text2speech-V2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved Text to Speech V2 payload count: 0\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 4 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=10; text2speech-V2 queue=0\)\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: 5 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=10; text2speech-V2 queue=0; vector-map-editor vectors=8\)\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       const savedState = await page.evaluate((hostContextId) => {
         const writes = JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]");
@@ -11397,7 +11438,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved path: games\/Asteroids\/game\.manifest\.json\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save write validation: file content changed\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved file size: \d+ bytes\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: (?:3 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11\)|4 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11; text2speech-V2 queue=(?:0|1)\))\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Saved toolState items: (?:4 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11; vector-map-editor vectors=8\)|5 \(asset-manager-v2 assets=15; object-vector-studio-v2 objects=7; palette-manager-v2 swatches=11; text2speech-V2 queue=(?:0|1); vector-map-editor vectors=8\))\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Save dirty\/clean validation: 1 dirty toolState payload persisted; 1 toolState key marked clean\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Saved Workspace Manager V2 toolState context workspace-manager-v2-Asteroids\./);
@@ -12173,7 +12214,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets": \{\}/);
-      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"vector-map-editor"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector-map-editor"/);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Warning: \/games\/Asteroids\/game\.manifest\.json has no Asteroids Asset Manager V2 assets; Workspace Manager V2 did not inject hardcoded assets\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 10 active palette colors and 0 managed assets\./);
       expect(pageErrors).toEqual([]);

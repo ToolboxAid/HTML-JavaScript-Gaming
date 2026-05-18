@@ -208,6 +208,370 @@
         }
       }
     },
+    "vector-map-editor": {
+      "vectorMapDocument": {
+        "schema": "html-js-gaming.asteroids-vector-map",
+        "version": 1,
+        "name": "Asteroids Manifest Vector Maps",
+        "source": "manifest",
+        "objectVectorRoles": {
+          "ship": {
+            "objectId": "object.asteroids.ship",
+            "tags": [
+              "player",
+              "ship"
+            ]
+          },
+          "asteroidLarge": {
+            "objectId": "object.asteroids.large-asteroid",
+            "tags": [
+              "asteroid",
+              "large"
+            ]
+          },
+          "asteroidMedium": {
+            "objectId": "object.asteroids.medium-asteroid",
+            "tags": [
+              "asteroid",
+              "medium"
+            ]
+          },
+          "asteroidSmall": {
+            "objectId": "object.asteroids.small-asteroid",
+            "tags": [
+              "asteroid",
+              "small"
+            ]
+          },
+          "ufoLarge": {
+            "objectId": "object.asteroids.large-ufo",
+            "tags": [
+              "ufo",
+              "large"
+            ]
+          },
+          "ufoSmall": {
+            "objectId": "object.asteroids.small-ufo",
+            "tags": [
+              "ufo",
+              "small"
+            ]
+          }
+        },
+        "vectors": [
+          {
+            "id": "vector.asteroids.ship.collision",
+            "label": "Ship Collision",
+            "kind": "polygon",
+            "usage": [
+              "gameplay",
+              "collision"
+            ],
+            "points": [
+              {
+                "x": 14,
+                "y": 0
+              },
+              {
+                "x": -10,
+                "y": -8
+              },
+              {
+                "x": -6,
+                "y": -3
+              },
+              {
+                "x": -6,
+                "y": 3
+              },
+              {
+                "x": -10,
+                "y": 8
+              },
+              {
+                "x": 14,
+                "y": 0
+              }
+            ]
+          },
+          {
+            "id": "vector.asteroids.ship.life",
+            "label": "Ship Life Icon",
+            "kind": "polygon",
+            "usage": [
+              "gameplay",
+              "ui"
+            ],
+            "points": [
+              {
+                "x": 14,
+                "y": 0
+              },
+              {
+                "x": -10,
+                "y": -8
+              },
+              {
+                "x": -6,
+                "y": -3
+              },
+              {
+                "x": -6,
+                "y": 3
+              },
+              {
+                "x": -10,
+                "y": 8
+              }
+            ]
+          },
+          {
+            "id": "vector.asteroids.ufo.small.collision",
+            "label": "Small UFO Collision",
+            "kind": "polyline",
+            "usage": [
+              "gameplay",
+              "collision"
+            ],
+            "points": [
+              {
+                "x": -14,
+                "y": 3
+              },
+              {
+                "x": 14,
+                "y": 3
+              },
+              {
+                "x": 9,
+                "y": 9
+              },
+              {
+                "x": -9,
+                "y": 9
+              },
+              {
+                "x": -14,
+                "y": 3
+              },
+              {
+                "x": -9,
+                "y": -3
+              },
+              {
+                "x": -5,
+                "y": -3
+              },
+              {
+                "x": -5,
+                "y": -6
+              },
+              {
+                "x": -2,
+                "y": -9
+              },
+              {
+                "x": 2,
+                "y": -9
+              },
+              {
+                "x": 5,
+                "y": -6
+              },
+              {
+                "x": 5,
+                "y": -3
+              },
+              {
+                "x": -5,
+                "y": -3
+              },
+              {
+                "x": 9,
+                "y": -3
+              },
+              {
+                "x": 14,
+                "y": 3
+              }
+            ]
+          },
+          {
+            "id": "vector.asteroids.ufo.large.collision",
+            "label": "Large UFO Collision",
+            "kind": "polyline",
+            "usage": [
+              "gameplay",
+              "collision"
+            ],
+            "points": [
+              {
+                "x": -21,
+                "y": 4.5
+              },
+              {
+                "x": 21,
+                "y": 4.5
+              },
+              {
+                "x": 13.5,
+                "y": 13.5
+              },
+              {
+                "x": -13.5,
+                "y": 13.5
+              },
+              {
+                "x": -21,
+                "y": 4.5
+              },
+              {
+                "x": -13.5,
+                "y": -4.5
+              },
+              {
+                "x": -7.5,
+                "y": -4.5
+              },
+              {
+                "x": -7.5,
+                "y": -9
+              },
+              {
+                "x": -3,
+                "y": -13.5
+              },
+              {
+                "x": 3,
+                "y": -13.5
+              },
+              {
+                "x": 7.5,
+                "y": -9
+              },
+              {
+                "x": 7.5,
+                "y": -4.5
+              },
+              {
+                "x": -7.5,
+                "y": -4.5
+              },
+              {
+                "x": 13.5,
+                "y": -4.5
+              },
+              {
+                "x": 21,
+                "y": 4.5
+              }
+            ]
+          },
+          {
+            "id": "vector.asteroids.attract.ship",
+            "label": "Attract Ship",
+            "kind": "polygon",
+            "usage": [
+              "attract"
+            ],
+            "points": [
+              {
+                "x": 16,
+                "y": 0
+              },
+              {
+                "x": -10,
+                "y": 9
+              },
+              {
+                "x": -5,
+                "y": 0
+              },
+              {
+                "x": -10,
+                "y": -9
+              }
+            ]
+          },
+          {
+            "id": "vector.asteroids.attract.asteroid",
+            "label": "Attract Asteroid",
+            "kind": "polyline",
+            "usage": [
+              "attract"
+            ],
+            "points": [
+              {
+                "x": -16,
+                "y": -5
+              },
+              {
+                "x": -7,
+                "y": 14
+              },
+              {
+                "x": 11,
+                "y": 12
+              },
+              {
+                "x": 15,
+                "y": -6
+              },
+              {
+                "x": 2,
+                "y": -16
+              },
+              {
+                "x": -16,
+                "y": -5
+              }
+            ]
+          },
+          {
+            "id": "vector.asteroids.attract.ufo",
+            "label": "Attract UFO",
+            "kind": "polygon",
+            "usage": [
+              "attract"
+            ],
+            "points": [
+              {
+                "x": -20,
+                "y": 5
+              },
+              {
+                "x": 20,
+                "y": 5
+              },
+              {
+                "x": 14,
+                "y": -4
+              },
+              {
+                "x": -14,
+                "y": -4
+              }
+            ]
+          },
+          {
+            "id": "vector.asteroids.ui.title",
+            "label": "Asteroids Title",
+            "kind": "path",
+            "usage": [
+              "splash",
+              "attract",
+              "ui"
+            ],
+            "viewBox": "0 0 220 48",
+            "paths": [
+              "M 6 40 L 24 6 L 42 40 Z",
+              "M 58 40 L 58 8 L 88 8 L 88 18 L 70 18 L 70 22 L 86 22 L 86 32 L 70 32 L 70 40 Z"
+            ],
+            "points": []
+          }
+        ]
+      }
+    },
     "object-vector-studio-v2": {
       "version": 1,
       "toolId": "object-vector-studio-v2",
@@ -234,7 +598,7 @@
               },
               "style": {
                 "fill": "transparent",
-                "stroke": "#FFFFFF",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -264,7 +628,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#FFFFFF",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -304,7 +668,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#FFFFFF",
+                "stroke": "#F87171",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1,
@@ -343,7 +707,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#FFFFFF",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -373,7 +737,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#FFFFFF",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -686,8 +1050,8 @@
                 ]
               },
               "style": {
-                "fill": "transparent",
-                "stroke": "#CBD5E1",
+                "fill": "#00000000",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -763,7 +1127,7 @@
               },
               "style": {
                 "fill": "transparent",
-                "stroke": "#CBD5E1",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -817,7 +1181,7 @@
               },
               "style": {
                 "fill": "transparent",
-                "stroke": "#DBEAFE",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -843,7 +1207,7 @@
               },
               "style": {
                 "fill": "transparent",
-                "stroke": "#DBEAFE",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -897,7 +1261,7 @@
               },
               "style": {
                 "fill": "transparent",
-                "stroke": "#DBEAFE",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -923,7 +1287,7 @@
               },
               "style": {
                 "fill": "transparent",
-                "stroke": "#DBEAFE",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -1003,87 +1367,7 @@
               },
               "style": {
                 "fill": "transparent",
-                "stroke": "#CBD5E1",
-                "strokeWidth": 2,
-                "fillOpacity": 1,
-                "strokeOpacity": 1
-              },
-              "transform": {
-                "x": 0,
-                "y": 0,
-                "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
-              }
-            }
-          ],
-          "states": [
-            {
-              "id": "active",
-              "name": "Active",
-              "frames": [
-                {
-                  "id": "frame-1",
-                  "order": 0,
-                  "durationFrames": 1,
-                  "shapeOverrides": []
-                }
-              ]
-            }
-          ],
-          "tags": [
-            "asteroid",
-            "medium"
-          ],
-          "objectOrigin": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        {
-          "id": "object.asteroids.medium-asteroid-2",
-          "name": "Medium Asteroid 2",
-          "shapes": [
-            {
-              "tool": "polygon",
-              "order": 0,
-              "visible": true,
-              "locked": false,
-              "geometry": {
-                "points": [
-                  {
-                    "x": -16,
-                    "y": -10
-                  },
-                  {
-                    "x": -2,
-                    "y": -18
-                  },
-                  {
-                    "x": 16,
-                    "y": -14
-                  },
-                  {
-                    "x": 20,
-                    "y": 2
-                  },
-                  {
-                    "x": 8,
-                    "y": 18
-                  },
-                  {
-                    "x": -10,
-                    "y": 16
-                  },
-                  {
-                    "x": -20,
-                    "y": 4
-                  }
-                ]
-              },
-              "style": {
-                "fill": "transparent",
-                "stroke": "#CBD5E1",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1

@@ -7,19 +7,20 @@ Ship.js
 import { wrap } from '../utils/math.js';
 import { transformPoints } from '../../../src/engine/rendering/index.js';
 
-const SMALL_VECTOR_MAP = [
-  { x: 14, y: 0 },
-  { x: -10, y: -8 },
-  { x: -6, y: -3 },
-  { x: -6, y: 3 },
-  { x: -10, y: 8 },
-  { x: 14, y: 0 },
-];
+function normalizePoints(points) {
+  return Array.isArray(points)
+    ? points.map((point) => ({
+      x: Number(point?.x ?? 0),
+      y: Number(point?.y ?? 0),
+    })).filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y))
+    : [];
+}
 
 export default class Ship {
-  constructor(x, y) {
+  constructor(x, y, { collisionPoints = [] } = {}) {
     this.spawnX = x;
     this.spawnY = y;
+    this.collisionPoints = normalizePoints(collisionPoints);
     this.reset();
   }
 
@@ -55,21 +56,10 @@ export default class Ship {
   }
 
   getPoints() {
-    return transformPoints(SMALL_VECTOR_MAP, {
+    return transformPoints(this.collisionPoints, {
       x: this.x,
       y: this.y,
       rotation: this.angle,
     });
-  }
-
-  getFlamePoints(pulse = 1) {
-    const rear = this.angle + Math.PI;
-    const flameReach = (18 + pulse * 9) * 0.5;
-    const wingSpread = (8 + pulse * 2) * 0.5;
-    return [
-      { x: this.x + Math.cos(rear) * flameReach, y: this.y + Math.sin(rear) * flameReach },
-      { x: this.x + Math.cos(this.angle + 2.7) * wingSpread, y: this.y + Math.sin(this.angle + 2.7) * wingSpread },
-      { x: this.x + Math.cos(this.angle - 2.7) * wingSpread, y: this.y + Math.sin(this.angle - 2.7) * wingSpread },
-    ];
   }
 }

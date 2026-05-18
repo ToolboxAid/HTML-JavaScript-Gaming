@@ -12,6 +12,10 @@ import { arePolygonsColliding } from '../../../src/engine/collision/index.js';
 import { distance } from '../../../src/shared/utils/mathUtils.js';
 import { randomRange } from '../utils/math.js';
 import { sanitizeFiniteNumber, sanitizePositiveNumber } from '../../../src/shared/math/numberNormalization.js';
+import {
+  ASTEROIDS_VECTOR_MAP_IDS,
+  getAsteroidsVectorPoints
+} from './asteroidsVectorMaps.js';
 
 const WAVE_ASTEROID_COUNTS = [4, 6, 8];
 const RESPAWN_SAFE_DISTANCE = 100;
@@ -136,12 +140,16 @@ function getRectOverlapDepth(x, y, radius, rect) {
 }
 
 export default class AsteroidsWorld {
-  constructor(bounds, { rng = Math.random, asteroidGeometryProfiles = null } = {}) {
+  constructor(bounds, { rng = Math.random, asteroidGeometryProfiles = null, vectorMaps = null } = {}) {
     if (!hasLoggedWorldConstruction) {
       hasLoggedWorldConstruction = true;
       logWorldBootStage('constructed', bounds);
     }
     this.asteroidGeometryProfiles = asteroidGeometryProfiles;
+    this.vectorMaps = vectorMaps;
+    if (!this.vectorMaps?.vectorsById) {
+      throw new Error('AsteroidsWorld requires manifest-loaded vector maps for ship and UFO gameplay geometry.');
+    }
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.bounds = sanitizeBounds(bounds);
     this.starfield = Array.from({ length: 70 }, () => ({
@@ -149,7 +157,9 @@ export default class AsteroidsWorld {
       y: randomRange(0, this.bounds.height, this.rng),
       size: this.rng() > 0.7 ? 2 : 1,
     }));
-    this.ship = new Ship(this.bounds.width / 2, this.bounds.height / 2);
+    this.ship = new Ship(this.bounds.width / 2, this.bounds.height / 2, {
+      collisionPoints: getAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.shipCollision),
+    });
     this.startGame();
   }
 
@@ -158,7 +168,14 @@ export default class AsteroidsWorld {
   }
 
   createUfoEntity(type = 'large', level = 1) {
-    return new Ufo(this.bounds, type, level, this.rng);
+    return new Ufo(this.bounds, type, level, this.rng, {
+      collisionPoints: getAsteroidsVectorPoints(
+        this.vectorMaps,
+        type === 'small'
+          ? ASTEROIDS_VECTOR_MAP_IDS.ufoSmallCollision
+          : ASTEROIDS_VECTOR_MAP_IDS.ufoLargeCollision
+      ),
+    });
   }
 
   createRandomAsteroid(size = 3, minX = WAVE_SPAWN_MARGIN_X, maxX = this.bounds.width - WAVE_SPAWN_MARGIN_X, minY = WAVE_SPAWN_MARGIN_Y, maxY = this.bounds.height - WAVE_SPAWN_MARGIN_X) {

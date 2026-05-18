@@ -5,6 +5,7 @@ David Quesenberry
 AsteroidsAttractAdapter.js
 */
 import { clamp } from '../../../src/shared/utils/mathUtils.js';
+import { ASTEROIDS_VECTOR_MAP_IDS } from './asteroidsVectorMaps.js';
 
 function estimateTextWidth(text, fontPx) {
   return String(text ?? '').length * (fontPx * 0.62);
@@ -20,40 +21,6 @@ function drawTextPanel(renderer, {
   const safeAlpha = clamp(alpha ?? 0.28, 0, 1);
   const x = cx - (width / 2);
   renderer.drawRect(x, top, width, height, `rgba(2, 6, 23, ${safeAlpha.toFixed(3)})`);
-}
-
-function drawShipSilhouette(renderer, x, y, angle = 0, color = '#ffffff') {
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  const toWorld = (lx, ly) => ({
-    x: x + (lx * cos) - (ly * sin),
-    y: y + (lx * sin) + (ly * cos),
-  });
-  const a = toWorld(16, 0);
-  const b = toWorld(-10, 9);
-  const c = toWorld(-5, 0);
-  const d = toWorld(-10, -9);
-  renderer.drawLine(a.x, a.y, b.x, b.y, color, 2);
-  renderer.drawLine(b.x, b.y, c.x, c.y, color, 2);
-  renderer.drawLine(c.x, c.y, d.x, d.y, color, 2);
-  renderer.drawLine(d.x, d.y, a.x, a.y, color, 2);
-}
-
-function drawSaucerSilhouette(renderer, x, y, color = '#dbeafe') {
-  renderer.drawLine(x - 20, y + 5, x + 20, y + 5, color, 2);
-  renderer.drawLine(x - 14, y - 4, x + 14, y - 4, color, 2);
-  renderer.drawLine(x - 20, y + 5, x - 14, y - 4, color, 2);
-  renderer.drawLine(x + 20, y + 5, x + 14, y - 4, color, 2);
-}
-
-function drawAsteroidSilhouette(renderer, x, y, color = '#cbd5e1') {
-  const pts = [
-    [x - 16, y - 5], [x - 7, y + 14], [x + 11, y + 12],
-    [x + 15, y - 6], [x + 2, y - 16], [x - 16, y - 5],
-  ];
-  for (let i = 0; i < pts.length - 1; i += 1) {
-    renderer.drawLine(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], color, 2);
-  }
 }
 
 export default class AsteroidsAttractAdapter {
@@ -153,8 +120,19 @@ export default class AsteroidsAttractAdapter {
       });
     }
 
-    drawShipSilhouette(renderer, 328, 348, -0.28, `rgba(248,250,252,${alpha})`);
-    drawAsteroidSilhouette(renderer, 632, 352, `rgba(203,213,225,${alpha})`);
+    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractShip, {
+      color: `rgba(248,250,252,${alpha})`,
+      lineWidth: 2,
+      rotation: -0.28,
+      x: 328,
+      y: 348,
+    });
+    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid, {
+      color: `rgba(203,213,225,${alpha})`,
+      lineWidth: 2,
+      x: 632,
+      y: 352,
+    });
   }
 
   renderHighScores(renderer, alpha) {
@@ -223,12 +201,28 @@ export default class AsteroidsAttractAdapter {
 
     const x = 480 + Math.cos(this.demoTime * 0.7) * 220;
     const y = 340 + Math.sin(this.demoTime * 1.1) * 130;
-    drawShipSilhouette(renderer, x, y, Math.sin(this.demoTime * 0.9) * 1.2, '#ffffff');
+    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractShip, {
+      color: '#ffffff',
+      lineWidth: 2,
+      rotation: Math.sin(this.demoTime * 0.9) * 1.2,
+      x,
+      y,
+    });
 
     const rockX = 480 + Math.sin(this.demoTime * 0.5) * 250;
     const rockY = 330 + Math.cos(this.demoTime * 0.9) * 120;
-    drawAsteroidSilhouette(renderer, rockX, rockY, '#cbd5e1');
-    drawSaucerSilhouette(renderer, 480 + Math.cos(this.demoTime * 0.43) * 280, 284, '#dbeafe');
+    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid, {
+      color: '#cbd5e1',
+      lineWidth: 2,
+      x: rockX,
+      y: rockY,
+    });
+    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractUfo, {
+      color: '#dbeafe',
+      lineWidth: 2,
+      x: 480 + Math.cos(this.demoTime * 0.43) * 280,
+      y: 284,
+    });
 
     renderer.drawText('PRESS ANY GAME INPUT TO EXIT ATTRACT', 480, 520, {
       color: `rgba(148,163,184,${alpha})`,

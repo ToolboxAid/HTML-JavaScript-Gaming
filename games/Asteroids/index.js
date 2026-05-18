@@ -9,6 +9,7 @@ import { Theme, ThemeTokens } from "../../src/engine/theme/index.js";
 import { resolveDebugConfig } from "../../src/shared/utils/debugConfigUtils.js";
 import { createNoopDevConsoleIntegration } from "../../src/shared/utils/createNoopDevConsoleIntegration.js";
 import AsteroidsGameScene from "./game/AsteroidsGameScene.js";
+import { loadAsteroidsVectorMapsFromManifest } from "./game/asteroidsVectorMaps.js";
 import { preloadWorkspaceGameAssetCatalog } from "../shared/workspaceGameAssetCatalog.js";
 
 export const asteroidFlow = Object.freeze({
@@ -55,6 +56,20 @@ function publishObjectVectorRuntimeDiagnostics(runtime, extra = {}) {
   } catch {
     // Ignore diagnostics assignment in restricted runtimes.
   }
+}
+
+async function loadAsteroidsManifestPayload(manifestPath, manifestPayload = null) {
+  if (manifestPayload && typeof manifestPayload === "object" && !Array.isArray(manifestPayload)) {
+    return manifestPayload;
+  }
+  if (typeof fetch !== "function") {
+    throw new Error("Fetch API is unavailable for Asteroids game.manifest.json.");
+  }
+  const response = await fetch(manifestPath, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`${manifestPath} returned ${response.status}.`);
+  }
+  return response.json();
 }
 
 export function loadAsteroidsWorldModule() {
@@ -107,7 +122,8 @@ export async function bootAsteroidsNew({
   InputServiceClass = InputService,
   ObjectVectorRuntimeClass = ObjectVectorRuntimeAssetService,
   SceneClass = AsteroidsGameScene,
-  createDevConsoleIntegration = createNoopDevConsoleIntegration
+  createDevConsoleIntegration = createNoopDevConsoleIntegration,
+  manifestPayload = null
 } = {}) {
   let stage = "entered";
   traceBoot(stage);
@@ -139,6 +155,16 @@ export async function bootAsteroidsNew({
     await preloadWorkspaceGameAssetCatalog("Asteroids", {
       catalogPath: ASTEROIDS_MANIFEST_PATH
     });
+
+    stage = "load-game-manifest";
+    traceBoot(stage);
+    const asteroidsManifest = await loadAsteroidsManifestPayload(ASTEROIDS_MANIFEST_PATH, manifestPayload);
+    const vectorMapValidation = loadAsteroidsVectorMapsFromManifest(asteroidsManifest, {
+      sourceLabel: "Asteroids game.manifest.json"
+    });
+    if (!vectorMapValidation.ok) {
+      throw new Error(`Asteroids vector map manifest validation failed: ${vectorMapValidation.errors.join(" ")}`);
+    }
 
     stage = "preload-object-vector-runtime";
     traceBoot(stage);
@@ -198,7 +224,8 @@ export async function bootAsteroidsNew({
       devConsoleIntegration,
       debugConfig,
       objectVectorAssets,
-      objectVectorRuntime
+      objectVectorRuntime,
+      vectorMaps: vectorMapValidation.vectorMaps
     }));
 
     stage = "start-engine";

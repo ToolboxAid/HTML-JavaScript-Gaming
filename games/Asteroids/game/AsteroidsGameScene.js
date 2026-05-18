@@ -6,6 +6,7 @@ AsteroidsGameScene.js
 */
 import { AttractModeController, Scene } from '../../../src/engine/scene/index.js';
 import { ParticleSystem } from '../../../src/engine/fx/index.js';
+import { transformPoints } from '../../../src/engine/rendering/index.js';
 import AsteroidsSession from './AsteroidsSession.js';
 import AsteroidsWorld from './AsteroidsWorld.js';
 import AsteroidsAudio from '../systems/AsteroidsAudio.js';
@@ -20,6 +21,10 @@ import {
   validateAsteroidsRuntimeObjectRoles
 } from './asteroidsObjectVectorRoles.js';
 import {
+  ASTEROIDS_VECTOR_MAP_IDS,
+  getAsteroidsVectorMap
+} from './asteroidsVectorMaps.js';
+import {
   ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE
 } from "../rules/flowRules.js";
 import { ASTEROIDS_GAME_OVER_RETURN_STATUS } from "../rules/flowContent.js";
@@ -31,13 +36,6 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
-const LIFE_ICON_POINTS = [
-  [14, 0],
-  [-10, -8],
-  [-6, -3],
-  [-6, 3],
-  [-10, 8],
-];
 const ATTRACT_INPUT_CODES = [
   'Digit1',
   'Digit2',
@@ -85,29 +83,6 @@ function getBeatInterval(asteroidCount) {
   return 0.98;
 }
 
-function drawShipLifeIcon(renderer, x, y) {
-  const points = LIFE_ICON_POINTS.map(([offsetX, offsetY]) => ({
-    x: x + offsetY * 1.05,
-    y: y - offsetX * 1.05,
-  }));
-  renderer.drawPolygon(points, {
-    fillColor: null,
-    strokeColor: '#ffffff',
-    lineWidth: 1,
-  });
-}
-
-function drawLives(renderer, centerX, y, lives) {
-  if (!lives) {
-    return;
-  }
-
-  const startX = centerX - ((lives - 1) * LIFE_SPACING) / 2;
-  Array.from({ length: lives }).forEach((_, index) => {
-    drawShipLifeIcon(renderer, startX + index * LIFE_SPACING, y);
-  });
-}
-
 export default class AsteroidsGameScene extends Scene {
   constructor(options = {}) {
     super();
@@ -118,8 +93,17 @@ export default class AsteroidsGameScene extends Scene {
     this.devConsoleIntegration = options.devConsoleIntegration || null;
     this.objectVectorAssets = options.objectVectorAssets || null;
     this.objectVectorRuntime = options.objectVectorRuntime || null;
+    this.vectorMaps = options.vectorMaps || null;
+    this.vectorMapRenderCounts = {};
+    this.vectorMapRenderFailures = new Set();
+    if (!this.vectorMaps?.vectorsById || !this.vectorMaps?.objectVectorRoles) {
+      const message = 'Asteroids vector map manifest validation failed: vector maps were not loaded from game.manifest.json.';
+      console.error(message);
+      throw new Error(message);
+    }
     this.objectVectorRuntimeObjectValidation = this.objectVectorAssets
       ? validateAsteroidsRuntimeObjectRoles([...this.objectVectorAssets.objectsById.values()], {
+        roleBindings: this.vectorMaps.objectVectorRoles,
         logger: this.objectVectorRuntime,
       })
       : { errors: [], objectsByRole: {}, ok: false, warnings: [] };
@@ -133,6 +117,7 @@ export default class AsteroidsGameScene extends Scene {
     }
     this.asteroidGeometryProfiles = options.asteroidGeometryProfiles
       || createAsteroidGeometryProfilesFromObjectVectorAssets(this.objectVectorAssets, {
+        roleBindings: this.vectorMaps.objectVectorRoles,
         logger: this.objectVectorRuntime,
       });
     this.objectVectorPlaybackMs = 0;
@@ -147,7 +132,8 @@ export default class AsteroidsGameScene extends Scene {
       debugEnabled: Boolean(this.devConsoleIntegration),
     };
     this.world = new AsteroidsWorld({ width: 960, height: 720 }, {
-      asteroidGeometryProfiles: this.asteroidGeometryProfiles
+      asteroidGeometryProfiles: this.asteroidGeometryProfiles,
+      vectorMaps: this.vectorMaps,
     });
     this.highScoreService = new AsteroidsHighScoreService();
     this.highScoreRows = this.highScoreService.loadTable();
@@ -751,8 +737,8 @@ export default class AsteroidsGameScene extends Scene {
       renderer.drawText('SCORE 2', SCORE_TWO_X, 34, { color: '#ffffff', font: `18px ${HUD_FONT}`, textAlign: 'center' });
       renderer.drawText(`${this.session.players[1]?.score || 0}`.padStart(4, '0'), SCORE_TWO_X, 62, { color: scoreTwoColor, font: `24px ${HUD_FONT}`, textAlign: 'center' });
 
-      drawLives(renderer, SCORE_ONE_X, 92, this.session.players[0]?.lives || 0);
-      drawLives(renderer, SCORE_TWO_X, 92, this.session.players[1]?.lives || 0);
+      this.drawLives(renderer, SCORE_ONE_X, 92, this.session.players[0]?.lives || 0);
+      this.drawLives(renderer, SCORE_TWO_X, 92, this.session.players[1]?.lives || 0);
     }
 
     this.world.asteroids.forEach((asteroid) => {
@@ -870,7 +856,72 @@ export default class AsteroidsGameScene extends Scene {
   }
 
   objectVectorRoleOptions(roleId) {
-    return runtimeObjectRoleOptions(roleId);
+    return runtimeObjectRoleOptions(roleId, this.vectorMaps.objectVectorRoles);
+  }
+
+  drawLives(renderer, centerX, y, lives) {
+    if (!lives) {
+      return;
+    }
+
+    const startX = centerX - ((lives - 1) * LIFE_SPACING) / 2;
+    Array.from({ length: lives }).forEach((_, index) => {
+      this.drawManifestVectorMap(renderer, ASTEROIDS_VECTOR_MAP_IDS.shipLife, {
+        color: '#ffffff',
+        lineWidth: 1,
+        rotation: -Math.PI / 2,
+        scale: 1.05,
+        x: startX + index * LIFE_SPACING,
+        y,
+      });
+    });
+  }
+
+  drawManifestVectorMap(renderer, vectorMapId, {
+    color = '#ffffff',
+    lineWidth = 2,
+    rotation = 0,
+    scale = 1,
+    x = 0,
+    y = 0,
+  } = {}) {
+    const vectorMap = getAsteroidsVectorMap(this.vectorMaps, vectorMapId);
+    if (!vectorMap || !Array.isArray(vectorMap.points) || vectorMap.points.length < 2) {
+      this.recordVectorMapRenderFailure(vectorMapId, 'manifest vector map points are unavailable');
+      return false;
+    }
+    const points = transformPoints(vectorMap.points, {
+      rotation,
+      scale,
+      x,
+      y,
+    });
+    if (vectorMap.kind === 'polygon' && typeof renderer.drawPolygon === 'function') {
+      renderer.drawPolygon(points, {
+        fillColor: null,
+        lineWidth,
+        strokeColor: color,
+      });
+    } else {
+      for (let index = 0; index < points.length - 1; index += 1) {
+        renderer.drawLine(points[index].x, points[index].y, points[index + 1].x, points[index + 1].y, color, lineWidth);
+      }
+    }
+    this.vectorMapRenderCounts[vectorMapId] = (this.vectorMapRenderCounts[vectorMapId] || 0) + 1;
+    return true;
+  }
+
+  recordVectorMapRenderFailure(vectorMapId, reason) {
+    const failureKey = `${vectorMapId || 'unknown'}:${reason}`;
+    if (this.vectorMapRenderFailures.has(failureKey)) {
+      return;
+    }
+    this.vectorMapRenderFailures.add(failureKey);
+    this.pushDebugEvent('ASTEROIDS_VECTOR_MAP_RENDER_FAIL', {
+      reason,
+      vectorMapId: vectorMapId || 'unknown',
+    });
+    console.error(`FAIL Asteroids manifest vector map render blocked for ${vectorMapId || 'unknown'}: ${reason}.`);
   }
 
   drawObjectVectorAsset(renderer, renderKey, options) {
@@ -910,6 +961,16 @@ export default class AsteroidsGameScene extends Scene {
         objectCount: this.objectVectorAssets?.objectsById?.size || 0,
         runtimeObjectsValid: Boolean(this.objectVectorRuntimeObjectValidation?.ok),
         renderCounts: { ...this.objectVectorRenderCounts },
+        vectorMapIds: this.vectorMaps?.vectors?.map((vector) => vector.id) || [],
+        vectorMapRenderCounts: { ...this.vectorMapRenderCounts },
+        vectorMapUsageCounts: { ...(this.vectorMaps?.usageCounts || {}) },
+        vectorMapsLoaded: Boolean(this.vectorMaps?.vectorsById),
+      };
+      globalThis.__asteroidsVectorMaps = {
+        ids: this.vectorMaps?.vectors?.map((vector) => vector.id) || [],
+        loaded: Boolean(this.vectorMaps?.vectorsById),
+        renderCounts: { ...this.vectorMapRenderCounts },
+        usageCounts: { ...(this.vectorMaps?.usageCounts || {}) },
       };
     } catch {
       // Ignore diagnostics assignment in restricted runtimes.
