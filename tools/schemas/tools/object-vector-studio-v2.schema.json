@@ -203,8 +203,7 @@
           "y": 0,
           "rotation": 0,
           "scaleX": 1,
-          "scaleY": 1,
-          "shapeOrigin": { "x": 0, "y": 0 }
+          "scaleY": 1
         }
       },
       "properties": {
@@ -486,14 +485,13 @@
     "transform": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["x", "y", "rotation", "scaleX", "scaleY", "shapeOrigin"],
+      "required": ["x", "y", "rotation", "scaleX", "scaleY"],
       "default": {
         "x": 0,
         "y": 0,
         "rotation": 0,
         "scaleX": 1,
-        "scaleY": 1,
-        "shapeOrigin": { "x": 0, "y": 0 }
+        "scaleY": 1
       },
       "properties": {
         "x": {
@@ -512,9 +510,6 @@
         "scaleY": {
           "type": "number",
           "exclusiveMinimum": 0
-        },
-        "shapeOrigin": {
-          "$ref": "#/$defs/point2d"
         }
       }
     },

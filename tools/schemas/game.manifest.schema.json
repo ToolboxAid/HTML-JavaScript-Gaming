@@ -231,8 +231,7 @@
           "y": 0,
           "rotation": 0,
           "scaleX": 1,
-          "scaleY": 1,
-          "shapeOrigin": { "x": 0, "y": 0 }
+          "scaleY": 1
         }
       },
       "properties": {
@@ -452,15 +451,14 @@
     },
     "objectVectorStudioTransform": {
       "type": "object",
-      "required": ["x", "y", "rotation", "scaleX", "scaleY", "shapeOrigin"],
+      "required": ["x", "y", "rotation", "scaleX", "scaleY"],
       "additionalProperties": false,
       "default": {
         "x": 0,
         "y": 0,
         "rotation": 0,
         "scaleX": 1,
-        "scaleY": 1,
-        "shapeOrigin": { "x": 0, "y": 0 }
+        "scaleY": 1
       },
       "properties": {
         "x": {
@@ -477,9 +475,6 @@
         },
         "scaleY": {
           "type": "number"
-        },
-        "shapeOrigin": {
-          "$ref": "#/$defs/objectVectorStudioPoint2d"
         }
       }
     },

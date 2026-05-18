@@ -12,6 +12,14 @@ function isObjectIdentityId(value) {
   return /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9-]*$/.test(String(value || ""));
 }
 
+function withoutShapeOrigin(transform) {
+  if (!isPlainObject(transform)) {
+    return transform;
+  }
+  const { shapeOrigin, ...nextTransform } = transform;
+  return nextTransform;
+}
+
 function typeMatches(expectedType, value) {
   if (expectedType === "array") {
     return Array.isArray(value);
@@ -163,10 +171,11 @@ export class ObjectVectorStudioV2SchemaService {
       };
     }
 
+    const payloadForValidation = this.stripLegacyShapeOrigins(payload);
     const errors = [];
-    this.validateValue(this.schema, payload, "root", errors);
+    this.validateValue(this.schema, payloadForValidation, "root", errors);
     if (!errors.length) {
-      this.validatePayloadReferences(payload, errors);
+      this.validatePayloadReferences(payloadForValidation, errors);
     }
     if (errors.length) {
       return { errors, ok: false, payload: null };
@@ -175,7 +184,7 @@ export class ObjectVectorStudioV2SchemaService {
     return {
       errors: [],
       ok: true,
-      payload: this.normalizePayload(payload)
+      payload: this.normalizePayload(payloadForValidation)
     };
   }
 
@@ -296,6 +305,35 @@ export class ObjectVectorStudioV2SchemaService {
       ok: true,
       palette: clone(palette)
     };
+  }
+
+  stripLegacyShapeOrigins(payload) {
+    if (!isPlainObject(payload)) {
+      return payload;
+    }
+    const normalized = clone(payload);
+    if (!Array.isArray(normalized?.objects)) {
+      return normalized;
+    }
+    normalized.objects.forEach((object) => {
+      if (Array.isArray(object.shapes)) {
+        object.shapes.forEach((shape) => {
+          shape.transform = withoutShapeOrigin(shape.transform);
+        });
+      }
+      if (Array.isArray(object.states)) {
+        object.states.forEach((state) => {
+          (state.frames || []).forEach((frame) => {
+            (frame.shapeOverrides || []).forEach((override) => {
+              if (isPlainObject(override.transform)) {
+                override.transform = withoutShapeOrigin(override.transform);
+              }
+            });
+          });
+        });
+      }
+    });
+    return normalized;
   }
 
   validateValue(schemaNode, value, path, errors) {

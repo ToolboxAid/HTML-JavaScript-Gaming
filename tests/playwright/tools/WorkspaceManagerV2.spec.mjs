@@ -1422,7 +1422,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             point: gameSchema.$defs.objectVectorStudioStyle.default.pointStyle,
             start: gameSchema.$defs.objectVectorStudioStyle.default.startPointStyle
           },
-          gameTransformDefaultOrigin: gameSchema.$defs.objectVectorStudioTransform.default.shapeOrigin,
+          gameTransformDefaultHasShapeOrigin: Object.prototype.hasOwnProperty.call(gameSchema.$defs.objectVectorStudioTransform.default, "shapeOrigin"),
           toolGeometryDefaultsRemoved: [
             "rectangleGeometry",
             "circleGeometry",
@@ -1445,7 +1445,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             start: toolSchema.$defs.style.default.startPointStyle
           },
           toolStyleDefaultStrokeWidth: toolSchema.$defs.style.default.strokeWidth,
-          toolTransformDefaultOrigin: toolSchema.$defs.transform.default.shapeOrigin
+          toolTransformDefaultHasShapeOrigin: Object.prototype.hasOwnProperty.call(toolSchema.$defs.transform.default, "shapeOrigin")
         };
       });
       expect(objectVectorSchemaDefaults).toEqual({
@@ -1458,7 +1458,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         gameStateSchemaRef: "tools/object-vector-studio-v2.schema.json#/$defs/objectState",
         gameStateThrustMentionRemoved: true,
         gameStyleDefaultPointStyles: { end: "square", point: "square", start: "square" },
-        gameTransformDefaultOrigin: { x: 0, y: 0 },
+        gameTransformDefaultHasShapeOrigin: false,
         toolGeometryDefaultsRemoved: true,
         toolObjectDefaultOrigin: { x: 0, y: 0 },
         toolObjectOriginRef: "#/$defs/point2d",
@@ -1467,7 +1467,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         toolStateThrustRemoved: true,
         toolStyleDefaultPointStyles: { end: "square", point: "square", start: "square" },
         toolStyleDefaultStrokeWidth: 3,
-        toolTransformDefaultOrigin: { x: 0, y: 0 }
+        toolTransformDefaultHasShapeOrigin: false
       });
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeVisible();
       await expect(page.locator('[data-launch-mode-nav="tool"] button')).toHaveText(["Import", "Copy JSON", "Export", "Export SVG"]);
@@ -2323,16 +2323,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const originRow = panel.querySelector(".object-vector-studio-v2__transform-control-row--origin");
         const rotateRow = panel.querySelector(".object-vector-studio-v2__transform-control-row--rotate");
         const scaleRow = panel.querySelector(".object-vector-studio-v2__scale-control-row");
-        const autoOriginButton = panel.querySelector("#objectVectorStudioV2AutoOriginButton");
         const summary = panel.querySelector(".object-vector-studio-v2__transform-summary");
         const summaryStyle = getComputedStyle(summary);
         return {
-          autoOriginInOriginRow: Boolean(originRow?.contains(autoOriginButton)),
-          autoOriginButtonText: autoOriginButton?.textContent.trim() || "",
-          autoOriginTitle: autoOriginButton?.title || "",
-          autoOriginUsesCenterWord: Boolean(originRow?.textContent.includes("Center") || autoOriginButton?.title.includes("Center")),
-          originButtonTexts: Array.from(originRow?.querySelectorAll("button") || []).map((button) => button.textContent.trim()),
-          originBeforeRotate: Boolean(originRow && rotateRow && (originRow.compareDocumentPosition(rotateRow) & Node.DOCUMENT_POSITION_FOLLOWING)),
+          hasShapeOriginControls: Boolean(originRow || panel.querySelector("#objectVectorStudioV2ApplyOriginButton") || panel.querySelector("#objectVectorStudioV2AutoOriginButton")),
+          rotateBeforeScale: Boolean(rotateRow && scaleRow && (rotateRow.compareDocumentPosition(scaleRow) & Node.DOCUMENT_POSITION_FOLLOWING)),
           summaryAfterScale: Boolean(scaleRow && summary && (scaleRow.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING)),
           summaryCentered: summaryStyle.textAlign === "center",
           summaryStartsWithoutTransform: !summary.textContent.trim().startsWith("Transform"),
@@ -2340,30 +2335,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(transformSummaryLayout).toEqual({
-        autoOriginInOriginRow: true,
-        autoOriginButtonText: "Auto",
-        autoOriginTitle: "Auto Origin",
-        autoOriginUsesCenterWord: false,
-        originButtonTexts: ["Apply", "Auto"],
-        originBeforeRotate: true,
+        hasShapeOriginControls: false,
+        rotateBeforeScale: true,
         summaryAfterScale: true,
         summaryCentered: true,
         summaryStartsWithoutTransform: true,
         summaryTopAtBottom: true
       });
       const transformIconState = await page.locator("#objectVectorStudioV2ShapeTransform").evaluate((panel) => ({
-        applyOrigin: {
-          hasIcon: panel.querySelector("#objectVectorStudioV2ApplyOriginButton").classList.contains("object-vector-studio-v2__nerd-icon"),
-          iconKey: panel.querySelector("#objectVectorStudioV2ApplyOriginButton").dataset.ovsIconKey,
-          iconName: panel.querySelector("#objectVectorStudioV2ApplyOriginButton").dataset.ovsIconName,
-          title: panel.querySelector("#objectVectorStudioV2ApplyOriginButton").title
-        },
-        autoOrigin: {
-          hasIcon: panel.querySelector("#objectVectorStudioV2AutoOriginButton").classList.contains("object-vector-studio-v2__nerd-icon"),
-          iconKey: panel.querySelector("#objectVectorStudioV2AutoOriginButton").dataset.ovsIconKey,
-          iconName: panel.querySelector("#objectVectorStudioV2AutoOriginButton").dataset.ovsIconName,
-          title: panel.querySelector("#objectVectorStudioV2AutoOriginButton").title
-        },
+        shapeOriginControlsRemoved: panel.querySelector("#objectVectorStudioV2ApplyOriginButton") === null
+          && panel.querySelector("#objectVectorStudioV2AutoOriginButton") === null,
         resize: {
           iconKey: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").dataset.ovsIconKey,
           iconName: panel.querySelector("#objectVectorStudioV2ResizeShapeButton").dataset.ovsIconName,
@@ -2372,8 +2353,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         scaleActionRemoved: panel.querySelector("#objectVectorStudioV2ScaleShapeButton") === null
       }));
       expect(transformIconState).toEqual({
-        applyOrigin: { hasIcon: false, iconKey: undefined, iconName: undefined, title: "Apply Origin" },
-        autoOrigin: { hasIcon: false, iconKey: undefined, iconName: undefined, title: "Auto Origin" },
+        shapeOriginControlsRemoved: true,
         resize: { iconKey: "resize", iconName: "nf-md-resize", title: "Resize Geometry" },
         scaleActionRemoved: true
       });
@@ -2539,22 +2519,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         },
         {
           allOneLine: true,
-          axisLabels: ["X", "Y"],
-          buttonId: "objectVectorStudioV2ApplyOriginButton",
-          buttonIds: ["objectVectorStudioV2ApplyOriginButton", "objectVectorStudioV2AutoOriginButton"],
-          buttonText: "Apply",
-          buttonTexts: ["Apply", "Auto"],
-          buttonTitle: "Apply Origin",
-          buttonTitles: ["Apply Origin", "Auto Origin"],
-          inputIds: ["objectVectorStudioV2OriginXInput", "objectVectorStudioV2OriginYInput"],
-          label: "Origin",
-          rowType: "origin",
-          selectIds: [],
-          visibleInputIds: ["objectVectorStudioV2OriginXInput", "objectVectorStudioV2OriginYInput"],
-          visibleSelectIds: []
-        },
-        {
-          allOneLine: true,
           axisLabels: [],
           buttonId: "objectVectorStudioV2RotateShapeButton",
           buttonIds: ["objectVectorStudioV2RotateShapeButton"],
@@ -2622,7 +2586,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           strokeWidth: 2
         },
         tool: "rectangle",
-        transform: { shapeOrigin: { x: -40, y: 0 },
+        transform: {
           rotation: createdRectangleSchemaDefaults.schemaTransform.rotation,
           scaleX: createdRectangleSchemaDefaults.schemaTransform.scaleX,
           scaleY: createdRectangleSchemaDefaults.schemaTransform.scaleY,
@@ -2988,15 +2952,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "0", "45", "90", "135", "180", "225", "270", "315"
       ]);
       await page.locator("#objectVectorStudioV2RotateSnapSelect").selectOption("45");
+      const shapeGeometryBeforeSnapRotate = await page.evaluate(() => JSON.stringify(window.__objectVectorStudioV2App.selectedShape().geometry));
+      await page.evaluate((geometryText) => {
+        window.__shapeGeometryBeforeSnapRotate = geometryText;
+      }, shapeGeometryBeforeSnapRotate);
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 45');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"rotation": 45');
       await expect(page.locator("#objectVectorStudioV2RotateSnapSelect")).toHaveValue("45");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 45 degrees\. Snap Angle active: 45 -> 45\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 geometry by 45 degrees around object origin .* Snap Angle active: 45 -> 45\./);
       const snapAngleRotateVerification = await page.evaluate(() => {
         const shape = window.__objectVectorStudioV2App.selectedShape();
         const statusLines = document.querySelector("#statusLog").value.trim().split("\n");
         return {
           angleSnapEnabled: window.__objectVectorStudioV2App.angleSnapEnabled,
+          geometryChanged: JSON.stringify(shape.geometry) !== window.__shapeGeometryBeforeSnapRotate,
           numericDisabled: document.querySelector("#objectVectorStudioV2RotateInput").disabled,
           numericVisible: document.querySelector("#objectVectorStudioV2RotateInput").getClientRects().length > 0,
           rotation: shape.transform.rotation,
@@ -3009,14 +2978,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(snapAngleRotateVerification).toEqual({
         angleSnapEnabled: true,
+        geometryChanged: true,
         numericDisabled: true,
         numericVisible: false,
-        rotation: 45,
+        rotation: 0,
         snapSelectDisabled: false,
         snapSelectVisible: true,
         snapSelectValue: "45",
         step: "45",
-        status: "OK Rotated shape row 0 by 45 degrees. Snap Angle active: 45 -> 45."
+        status: expect.stringMatching(/^OK Rotated shape row 0 geometry by 45 degrees around object origin .* Snap Angle active: 45 -> 45\.$/)
       });
       await page.locator("#objectVectorStudioV2AngleSnapButton").click();
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toBeEnabled();
@@ -3028,12 +2998,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2RotateInput").fill("-30");
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
-      await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"rotation": 15');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"rotation": 15');
       await expect(page.locator("#objectVectorStudioV2RotateInput")).toHaveValue("-30");
-      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by -30 degrees\. Snap Angle disabled: raw rotation applied\./);
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 0, scale 1");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 geometry by -30 degrees around object origin .* Snap Angle disabled: raw rotation applied\./);
       const wrappedLargeRotationSummary = await page.evaluate(() => window.__objectVectorStudioV2App.formatTransformSummary({
-        shapeOrigin: { x: 0, y: 0 },
         rotation: 2233,
         scaleX: 0.77,
         scaleY: 0.77,
@@ -3041,49 +3010,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         y: 0
       }));
       expect(wrappedLargeRotationSummary).toBe("x 0, y 0, rot 73, scale 0.77");
-      await page.locator("#objectVectorStudioV2OriginXInput").fill("2");
-      await page.locator("#objectVectorStudioV2OriginYInput").fill("-3");
-      await page.locator("#objectVectorStudioV2ApplyOriginButton").click();
-      const originAfterApply = await page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().transform.shapeOrigin);
-      expect(originAfterApply).toEqual({ x: 2, y: -3 });
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Updated shape row 0 origin\/pivot to 2, -3\./);
-      const pivotMarkerAfterOrigin = await page.locator("#objectVectorStudioV2RenderSurface [data-pivot-origin='0']").evaluate((pivot) => {
-        const [diagonal] = Array.from(pivot.querySelectorAll("line"));
-        return {
-          x: Number(((Number(diagonal.getAttribute("x1")) + Number(diagonal.getAttribute("x2"))) / 2).toFixed(3)),
-          y: Number(((Number(diagonal.getAttribute("y1")) + Number(diagonal.getAttribute("y2"))) / 2).toFixed(3))
-        };
-      });
-      expect(pivotMarkerAfterOrigin).toEqual({ x: 150, y: 40 });
-      const shapeAutoOriginBefore = await page.evaluate(() => {
-        const app = window.__objectVectorStudioV2App;
-        const shape = app.selectedShape();
-        const geometry = { ...shape.geometry };
-        return {
-          expectedShapeCenter: {
-            x: Number((geometry.x + geometry.width / 2).toFixed(3)),
-            y: Number((geometry.y + geometry.height / 2).toFixed(3))
-          },
-          geometryText: JSON.stringify(shape.geometry),
-          objectOrigin: { ...app.selectedObject().objectOrigin },
-          shapeOrigin: { ...shape.transform.shapeOrigin }
-        };
-      });
-      await page.locator("#objectVectorStudioV2AutoOriginButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Origin updated shape row 0 origin\/pivot from selected shape bounds/);
-      const shapeAutoOriginAfter = await page.evaluate(() => {
-        const app = window.__objectVectorStudioV2App;
-        const shape = app.selectedShape();
-        return {
-          geometryText: JSON.stringify(shape.geometry),
-          objectOrigin: { ...app.selectedObject().objectOrigin },
-          shapeOrigin: { ...shape.transform.shapeOrigin }
-        };
-      });
-      expect(shapeAutoOriginAfter.geometryText).toBe(shapeAutoOriginBefore.geometryText);
-      expect(shapeAutoOriginAfter.objectOrigin).toEqual(shapeAutoOriginBefore.objectOrigin);
-      expect(shapeAutoOriginAfter.shapeOrigin).toEqual(shapeAutoOriginBefore.expectedShapeCenter);
-      expect(shapeAutoOriginAfter.shapeOrigin).not.toEqual(shapeAutoOriginBefore.shapeOrigin);
+      await expect(page.locator("#objectVectorStudioV2OriginXInput")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2OriginYInput")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2ApplyOriginButton")).toHaveCount(0);
+      await expect(page.locator("#objectVectorStudioV2AutoOriginButton")).toHaveCount(0);
 
       await page.locator("#objectVectorStudioV2ScaleInput").fill("0");
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveAttribute("aria-invalid", "true");
@@ -3093,7 +3023,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).not.toHaveAttribute("aria-invalid", "true");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.2 for shape row 0\./);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"scaleX": 1.2');
-      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1.2");
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 0, scale 1.2");
       const selectionBeforeScaleStep = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
         height: Number(box.getAttribute("height")),
         width: Number(box.getAttribute("width"))
@@ -3113,10 +3043,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(selectionAfterScaleStep.width).toBeCloseTo(selectionBeforeScaleStep.width, 1);
       expect(selectionAfterScaleStep.height).toBeCloseTo(selectionBeforeScaleStep.height, 1);
       const rectangleBeforeResizeGeometry = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
         const shape = window.__objectVectorStudioV2App.selectedShape();
         return {
           geometry: { ...shape.geometry },
-          transform: { ...shape.transform, shapeOrigin: { ...shape.transform.shapeOrigin } }
+          objectOrigin: app.objectTransformOrigin(app.selectedObject()),
+          transform: { ...shape.transform }
         };
       });
       await page.locator("#objectVectorStudioV2ResizeShapeButton").click();
@@ -3125,15 +3057,15 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return {
           geometry: { ...shape.geometry },
           schemaOk: window.__objectVectorStudioV2App.schemaService.validatePayload(window.__objectVectorStudioV2App.currentPayload).ok,
-          transform: { ...shape.transform, shapeOrigin: { ...shape.transform.shapeOrigin } }
+          transform: { ...shape.transform }
         };
       });
       expect(rectangleAfterResizeGeometry).toMatchObject({
         geometry: {
           height: Number((rectangleBeforeResizeGeometry.geometry.height * 1.2).toFixed(3)),
           width: Number((rectangleBeforeResizeGeometry.geometry.width * 1.2).toFixed(3)),
-          x: Number((rectangleBeforeResizeGeometry.transform.shapeOrigin.x + (rectangleBeforeResizeGeometry.geometry.x - rectangleBeforeResizeGeometry.transform.shapeOrigin.x) * 1.2).toFixed(3)),
-          y: Number((rectangleBeforeResizeGeometry.transform.shapeOrigin.y + (rectangleBeforeResizeGeometry.geometry.y - rectangleBeforeResizeGeometry.transform.shapeOrigin.y) * 1.2).toFixed(3))
+          x: Number((rectangleBeforeResizeGeometry.objectOrigin.x + (rectangleBeforeResizeGeometry.geometry.x - rectangleBeforeResizeGeometry.objectOrigin.x) * 1.2).toFixed(3)),
+          y: Number((rectangleBeforeResizeGeometry.objectOrigin.y + (rectangleBeforeResizeGeometry.geometry.y - rectangleBeforeResizeGeometry.objectOrigin.y) * 1.2).toFixed(3))
         },
         schemaOk: true,
         transform: {
@@ -3145,7 +3077,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
       });
       await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1");
-      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 15, scale 1");
+      await expect(page.locator("#objectVectorStudioV2ShapeTransform .object-vector-studio-v2__transform-summary")).toHaveText("x 13, y 7, rot 0, scale 1");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Resize Geometry applied scale 1\.2 to shape row 0; transform scale reset to 1\./);
 
       const selectedShapeActions = page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes .object-vector-studio-v2__shape-list-actions");
@@ -3218,6 +3150,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const groupedSingleRotateBefore = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         return {
+          geometryText: JSON.stringify(app.selectedShape().geometry),
           rotations: app.selectedObject().shapes.map((shape) => shape.transform.rotation),
           selectedCount: app.selectedShapeIndexes.size
         };
@@ -3225,16 +3158,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(groupedSingleRotateBefore.selectedCount).toBe(1);
       await page.locator("#objectVectorStudioV2RotateInput").fill("10");
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 by 10 degrees\. Snap Angle disabled: raw rotation applied\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 0 geometry by 10 degrees around object origin .* Snap Angle disabled: raw rotation applied\./);
       const groupedSingleRotateAfter = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         return {
+          geometryText: JSON.stringify(app.selectedShape().geometry),
           rotations: app.selectedObject().shapes.map((shape) => shape.transform.rotation),
           selectedCount: app.selectedShapeIndexes.size
         };
       });
       expect(groupedSingleRotateAfter.selectedCount).toBe(1);
-      expect(groupedSingleRotateAfter.rotations[0]).toBe((groupedSingleRotateBefore.rotations[0] + 10) % 360);
+      expect(groupedSingleRotateAfter.geometryText).not.toBe(groupedSingleRotateBefore.geometryText);
+      expect(groupedSingleRotateAfter.rotations[0]).toBe(groupedSingleRotateBefore.rotations[0]);
       expect(groupedSingleRotateAfter.rotations[1]).toBe(groupedSingleRotateBefore.rotations[1]);
       const groupIconLayout = await page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes .object-vector-studio-v2__object-tile-shape-row").first().evaluate((row) => {
         const label = row.querySelector(".object-vector-studio-v2__shape-select-label");
@@ -3460,7 +3395,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(zoomSource).toContain("const MAX_ZOOM = 1.0;");
       expect(zoomSource).toContain("const MIN_ZOOM = 0.01;");
       expect(zoomSource).toContain("const ZOOM_STEP = 0.01;");
-      expect(zoomSource).toContain("transformWithObjectScaleAroundPivot");
+      expect(zoomSource).not.toContain("transformWithObjectScaleAroundPivot");
       expect(zoomSource).not.toContain("objectScalePreviewValues");
       expect(zoomSource).not.toContain("transformWithRelativeScaleAroundPivot");
       expect(zoomSource).toMatch(/formatZoomPercentage\(\) \{\s+return Math\.round\(this\.viewport\.zoom \* 100\);\s+\}/);
@@ -4449,10 +4384,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(pivotMarkerState).toEqual({
-        ariaLabel: "Origin/Pivot marker for selected shape rotation and scale",
+        ariaLabel: "Selected shape center marker",
         diagonalBackSpan: 16,
         diagonalForwardSpan: 16,
-        title: "Origin/Pivot: rotate and scale pivot for the selected shape.",
+        title: "Selected shape center marker. Shape Transform rotate uses the object origin marker.",
         xMarker: true
       });
       const previewToolbarAfterText = await page.evaluate(() => Array.from(document.querySelectorAll(".object-vector-studio-v2__preview-edit-toolbar button")).map((button) => ({
@@ -5439,6 +5374,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             {
               id: "object.bounds.transformed-rectangle",
               name: "Transformed Rectangle",
+              objectOrigin: { x: -10, y: 5 },
               shapes: [
                 {
                   geometry: { height: 40, width: 80, x: -40, y: -20 },
@@ -5467,15 +5403,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const shape = app.selectedShape();
         const transform = shape.transform;
         const geometry = shape.geometry;
+        const origin = app.objectTransformOrigin(app.selectedObject());
         const transformPoint = (point) => {
           const radians = transform.rotation * Math.PI / 180;
-          const relativeX = (point.x - transform.shapeOrigin.x) * transform.scaleX;
-          const relativeY = (point.y - transform.shapeOrigin.y) * transform.scaleY;
+          const relativeX = (point.x - origin.x) * transform.scaleX;
+          const relativeY = (point.y - origin.y) * transform.scaleY;
           const rotatedX = relativeX * Math.cos(radians) - relativeY * Math.sin(radians);
           const rotatedY = relativeX * Math.sin(radians) + relativeY * Math.cos(radians);
           return {
-            x: (transform.x + transform.shapeOrigin.x + rotatedX) * drawingScale,
-            y: (transform.y + transform.shapeOrigin.y + rotatedY) * drawingScale
+            x: (transform.x + origin.x + rotatedX) * drawingScale,
+            y: (transform.y + origin.y + rotatedY) * drawingScale
           };
         };
         const corners = [
@@ -5847,23 +5784,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(groupedRotateBackTransforms).toEqual([{ rotation: 15 }, { rotation: 15 }]);
 
-      const objectScaleOriginOffsetsBefore = await page.evaluate(() => {
+      const objectScaleTransformsBefore = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
-        const object = app.selectedObject();
-        const origin = app.objectTransformOrigin(object);
         const frame = app.activeFrame();
-        return object.shapes.map((shape, shapeIndex) => {
-          const effective = app.effectiveShapeForFrame(shape, frame, shapeIndex);
-          const transform = app.ensureShapeTransform(effective);
-          const originWorld = app.transformedPoint(transform.shapeOrigin, transform);
-          return {
-            x: Number((originWorld.x - origin.x).toFixed(3)),
-            y: Number((originWorld.y - origin.y).toFixed(3))
-          };
+        return app.selectedObject().shapes.map((shape, shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+          return { scaleX: transform.scaleX, scaleY: transform.scaleY };
         });
       });
       await page.locator("#objectVectorStudioV2ObjectScaleUpLargeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Object scale preview set to 1\.1 for UFO Template\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object resize scale set to 1\.1 for UFO Template; object transform scale remains 1 until Resize rewrites geometry\./);
       const objectScaleAfterLargeStep = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -5872,9 +5802,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { scaleX: transform.scaleX, scaleY: transform.scaleY };
         });
       });
-      expect(objectScaleAfterLargeStep).toEqual([{ scaleX: 1.1, scaleY: 1.1 }, { scaleX: 1.1, scaleY: 1.1 }]);
+      expect(objectScaleAfterLargeStep).toEqual(objectScaleTransformsBefore);
       await page.locator("#objectVectorStudioV2ObjectScaleDownSmallButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Object scale preview set to 1\.09 for UFO Template\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object resize scale set to 1\.09 for UFO Template; object transform scale remains 1 until Resize rewrites geometry\./);
       const objectScaleAfterSmallStep = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -5883,31 +5813,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { scaleX: transform.scaleX, scaleY: transform.scaleY };
         });
       });
-      expect(objectScaleAfterSmallStep).toEqual([{ scaleX: 1.09, scaleY: 1.09 }, { scaleX: 1.09, scaleY: 1.09 }]);
-      const objectScaleOriginOffsetsAfterSmallStep = await page.evaluate(() => {
-        const app = window.__objectVectorStudioV2App;
-        const object = app.selectedObject();
-        const origin = app.objectTransformOrigin(object);
-        const frame = app.activeFrame();
-        return object.shapes.map((shape, shapeIndex) => {
-          const effective = app.effectiveShapeForFrame(shape, frame, shapeIndex);
-          const transform = app.ensureShapeTransform(effective);
-          const originWorld = app.transformedPoint(transform.shapeOrigin, transform);
-          return {
-            x: Number((originWorld.x - origin.x).toFixed(3)),
-            y: Number((originWorld.y - origin.y).toFixed(3))
-          };
-        });
-      });
-      objectScaleOriginOffsetsAfterSmallStep.forEach((offset, index) => {
-        expect(offset.x).toBeCloseTo(Number((objectScaleOriginOffsetsBefore[index].x * 1.09).toFixed(3)), 2);
-        expect(offset.y).toBeCloseTo(Number((objectScaleOriginOffsetsBefore[index].y * 1.09).toFixed(3)), 2);
-      });
+      expect(objectScaleAfterSmallStep).toEqual(objectScaleTransformsBefore);
 
       await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(0, "shape transform single-shape verification"));
       await expect(page.locator("#objectVectorStudioV2ShapeTransform #objectVectorStudioV2ScaleDownSmallButton")).toBeEnabled();
       await page.locator("#objectVectorStudioV2ScaleDownSmallButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 1\.08 for shape row 0\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Scale preview set to 0\.99 for shape row 0\./);
       const shapeScaleAfterSingleStep = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -5916,7 +5827,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { scaleX: transform.scaleX, scaleY: transform.scaleY };
         });
       });
-      expect(shapeScaleAfterSingleStep).toEqual([{ scaleX: 1.08, scaleY: 1.08 }, { scaleX: 1.09, scaleY: 1.09 }]);
+      expect(shapeScaleAfterSingleStep).toEqual([{ scaleX: 0.99, scaleY: 0.99 }, objectScaleTransformsBefore[1]]);
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.authoring-copied-json")));
@@ -6443,8 +6354,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
 
       await page.locator("#objectVectorStudioV2RotateInput").fill("45");
+      const shapeGeometryBeforeSingleRotate = await page.evaluate(() => JSON.stringify(window.__objectVectorStudioV2App.selectedShape().geometry));
       await page.locator("#objectVectorStudioV2RotateShapeButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 1 by 45 degrees\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Rotated shape row 1 geometry by 45 degrees around object origin/);
       const transformsAfterSingleRotate = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -6453,8 +6365,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { rotation: transform.rotation, x: transform.x, y: transform.y };
         });
       });
+      const shapeGeometryAfterSingleRotate = await page.evaluate(() => JSON.stringify(window.__objectVectorStudioV2App.selectedShape().geometry));
+      expect(shapeGeometryAfterSingleRotate).not.toBe(shapeGeometryBeforeSingleRotate);
       expect(transformsAfterSingleRotate[1]).toEqual({
-        rotation: (transformBeforeSingleMove.rotation + 45) % 360,
+        rotation: transformBeforeSingleMove.rotation,
         x: Number((transformBeforeSingleMove.x - 2).toFixed(3)),
         y: Number((transformBeforeSingleMove.y - 3).toFixed(3))
       });
@@ -6468,6 +6382,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         app.renderPayload();
         const frame = app.activeFrame();
         const bounds = app.shapeSetBounds(app.selectedObject(), indexes, { includeInvisible: false });
+        const origin = app.objectTransformOrigin(app.selectedObject());
         return {
           bounds,
           origins: indexes.map((shapeIndex) => {
@@ -6475,14 +6390,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             const transform = app.ensureShapeTransform(shape);
             return {
               index: shapeIndex,
-              point: app.transformedPoint(transform.shapeOrigin, transform),
+              point: {
+                x: Number((origin.x + transform.x).toFixed(3)),
+                y: Number((origin.y + transform.y).toFixed(3))
+              },
               rotation: transform.rotation
             };
           }),
-          pivot: {
-            x: Number((bounds.x + bounds.width / 2).toFixed(3)),
-            y: Number((bounds.y + bounds.height / 2).toFixed(3))
-          }
+          pivot: origin
         };
       });
       const selectionBoundsBeforeSelectedSetRotate = await page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']").evaluate((box) => ({
@@ -6498,12 +6413,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const selectedSetRotateAfter = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
+        const origin = app.objectTransformOrigin(app.selectedObject());
         return app.selectedObject().shapes.map((shape, shapeIndex) => {
           const effectiveShape = app.effectiveShapeForFrame(shape, frame, shapeIndex);
           const transform = app.ensureShapeTransform(effectiveShape);
           return {
             index: shapeIndex,
-            point: app.transformedPoint(transform.shapeOrigin, transform),
+            point: {
+              x: Number((origin.x + transform.x).toFixed(3)),
+              y: Number((origin.y + transform.y).toFixed(3))
+            },
             rotation: transform.rotation
           };
         });
@@ -10921,7 +10840,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const override = frame?.shapeOverrides?.find((entry) => entry.shapeIndex === app.selectedShapeIndex) || null;
           const target = override || shape;
           target.transform = app.ensureShapeTransform(app.effectiveShape(shape));
-          target.transform.shapeOrigin = { x: 123, y: -45 };
           app.selectedObject().objectOrigin = { x: 999, y: 999 };
           app.renderPayload({ syncPaletteSelection: false });
         });
@@ -10929,8 +10847,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const app = window.__objectVectorStudioV2App;
           const object = app.selectedObject();
           const shape = app.selectedShape();
-          const effectiveShape = app.effectiveShape(shape);
-          const transform = app.shapeTransform(effectiveShape);
           const bounds = app.rawVisibleObjectGeometryBounds(app.selectedObject());
           return {
             bounds,
@@ -10939,8 +10855,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
               y: Number((bounds.y + bounds.height / 2).toFixed(3))
             },
             geometryText: JSON.stringify(shape.geometry),
-            objectOrigin: { ...object.objectOrigin },
-            pivot: app.transformedPoint(transform.shapeOrigin, transform)
+            objectOrigin: { ...object.objectOrigin }
           };
         });
         await page.locator("#objectVectorStudioV2ObjectAutoOriginButton").click();
@@ -10949,24 +10864,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const app = window.__objectVectorStudioV2App;
           const object = app.selectedObject();
           const shape = app.selectedShape();
-          const effectiveShape = app.effectiveShape(shape);
-          const transform = app.shapeTransform(effectiveShape);
           return {
             bounds: app.objectBounds(app.selectedObject(), { includeInvisible: false }),
             geometryText: JSON.stringify(shape.geometry),
-            objectOrigin: { ...object.objectOrigin },
-            pivot: app.transformedPoint(transform.shapeOrigin, transform)
+            objectOrigin: { ...object.objectOrigin }
           };
         });
         expect(autoOriginAfter.geometryText).toBe(autoOriginBefore.geometryText);
         ["x", "y", "width", "height"].forEach((key) => {
-          expect(autoOriginAfter.bounds[key]).toBeCloseTo(autoOriginBefore.bounds[key], 3);
-        });
-        expect(autoOriginAfter.objectOrigin.x).toBeCloseTo(autoOriginBefore.center.x, 3);
-        expect(autoOriginAfter.objectOrigin.y).toBeCloseTo(autoOriginBefore.center.y, 3);
-        expect(autoOriginAfter.objectOrigin.x).not.toBeCloseTo(autoOriginBefore.objectOrigin.x, 3);
-        expect(autoOriginAfter.pivot.x).toBeCloseTo(autoOriginBefore.pivot.x, 3);
-        expect(autoOriginAfter.pivot.y).toBeCloseTo(autoOriginBefore.pivot.y, 3);
+        expect(autoOriginAfter.bounds[key]).toBeCloseTo(autoOriginBefore.bounds[key], 3);
+      });
+      expect(autoOriginAfter.objectOrigin.x).toBeCloseTo(autoOriginBefore.center.x, 3);
+      expect(autoOriginAfter.objectOrigin.y).toBeCloseTo(autoOriginBefore.center.y, 3);
+      expect(autoOriginAfter.objectOrigin.x).not.toBeCloseTo(autoOriginBefore.objectOrigin.x, 3);
       });
       await expectObjectVectorDirtyAfter("palette color edit", async () => {
         await page.locator("#objectVectorStudioV2PaintModeButton").click();

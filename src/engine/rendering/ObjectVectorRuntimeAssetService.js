@@ -118,14 +118,29 @@ function shapeGeometryTool(shape) {
 
 function shapeTransform(shape) {
   const transform = shape.transform || {
-    shapeOrigin: { x: 0, y: 0 },
     rotation: 0,
     scaleX: 1,
     scaleY: 1,
     x: 0,
     y: 0
   };
-  return transform;
+  return {
+    rotation: Number(transform.rotation ?? 0),
+    scaleX: Number(transform.scaleX ?? 1),
+    scaleY: Number(transform.scaleY ?? 1),
+    x: Number(transform.x ?? 0),
+    y: Number(transform.y ?? 0)
+  };
+}
+
+function objectTransformOrigin(object) {
+  if (isPlainObject(object?.objectOrigin) && Number.isFinite(Number(object.objectOrigin.x)) && Number.isFinite(Number(object.objectOrigin.y))) {
+    return {
+      x: Number(object.objectOrigin.x),
+      y: Number(object.objectOrigin.y)
+    };
+  }
+  return { x: 0, y: 0 };
 }
 
 function normalizeFill(value) {
@@ -252,13 +267,13 @@ function effectiveShapeForFrame(shape, frame, shapeIndex) {
   return effective;
 }
 
-function svgTransformAttribute(transform) {
+function svgTransformAttribute(transform, origin = { x: 0, y: 0 }) {
   return [
     `translate(${transform.x} ${transform.y})`,
-    `translate(${transform.shapeOrigin.x} ${transform.shapeOrigin.y})`,
+    `translate(${origin.x} ${origin.y})`,
     `rotate(${transform.rotation})`,
     `scale(${transform.scaleX} ${transform.scaleY})`,
-    `translate(${-transform.shapeOrigin.x} ${-transform.shapeOrigin.y})`
+    `translate(${-origin.x} ${-origin.y})`
   ].join(" ");
 }
 
@@ -702,12 +717,13 @@ export class ObjectVectorRuntimeAssetService {
       const scale = Number.isFinite(options.scale) ? options.scale : 1;
       context.scale(scale, scale);
       let renderedShapes = 0;
+      const transformOrigin = objectTransformOrigin(object);
       sortedShapes(object).forEach((shape, shapeIndex) => {
         const effective = effectiveShapeForFrame(shape, frame, shapeIndex);
         if (!effective.visible) {
           return;
         }
-        this.drawShape(context, effective);
+        this.drawShape(context, effective, transformOrigin);
         renderedShapes += 1;
       });
       context.restore();
@@ -719,15 +735,15 @@ export class ObjectVectorRuntimeAssetService {
     }
   }
 
-  drawShape(context, shape) {
+  drawShape(context, shape, transformOrigin = { x: 0, y: 0 }) {
     const transform = shapeTransform(shape);
     context.save();
     try {
       context.translate(transform.x, transform.y);
-      context.translate(transform.shapeOrigin.x, transform.shapeOrigin.y);
+      context.translate(transformOrigin.x, transformOrigin.y);
       context.rotate((transform.rotation * Math.PI) / 180);
       context.scale(transform.scaleX, transform.scaleY);
-      context.translate(-transform.shapeOrigin.x, -transform.shapeOrigin.y);
+      context.translate(-transformOrigin.x, -transformOrigin.y);
       context.lineWidth = shape.style.strokeWidth;
       context.fillStyle = normalizeFill(shape.style.fill) || "transparent";
       context.strokeStyle = normalizeStroke(shape.style.stroke) || "transparent";
@@ -818,14 +834,15 @@ export class ObjectVectorRuntimeAssetService {
       stateId: state?.id || null,
       toolId: OBJECT_VECTOR_TOOL_ID
     });
-    const shapes = visibleShapes.map((shape) => this.shapeToSvg(shape)).join("");
+    const transformOrigin = objectTransformOrigin(object);
+    const shapes = visibleShapes.map((shape) => this.shapeToSvg(shape, transformOrigin)).join("");
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${escapeXml(object.name)} Object Vector runtime preview" data-runtime-object-vector="true" viewBox="${viewBox}"><metadata>${escapeXml(metadata)}</metadata>${shapes}</svg>`;
     this.log("OK", `Object Vector runtime SVG preview generated for ${object.id}${state ? ` state=${state.id}` : ""}${frame ? ` frame=${frame.id}` : ""}.`);
     return { ok: true, svg };
   }
 
-  shapeToSvg(shape) {
-    const style = ` fill="${escapeXml(shape.style.fill)}" fill-opacity="${shape.style.fillOpacity}" stroke="${escapeXml(shape.style.stroke)}" stroke-opacity="${shape.style.strokeOpacity}" stroke-width="${shape.style.strokeWidth}" transform="${svgTransformAttribute(shapeTransform(shape))}"`;
+  shapeToSvg(shape, transformOrigin = { x: 0, y: 0 }) {
+    const style = ` fill="${escapeXml(shape.style.fill)}" fill-opacity="${shape.style.fillOpacity}" stroke="${escapeXml(shape.style.stroke)}" stroke-opacity="${shape.style.strokeOpacity}" stroke-width="${shape.style.strokeWidth}" transform="${svgTransformAttribute(shapeTransform(shape), transformOrigin)}"`;
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
       return `<rect x="${shape.geometry.x}" y="${shape.geometry.y}" width="${shape.geometry.width}" height="${shape.geometry.height}"${style}/>`;

@@ -470,13 +470,8 @@ function shapeBoundsPoints(shape) {
   return boundsCornerPoints(shapeBounds(shape));
 }
 
-function defaultShapeTransform(shape) {
-  const bounds = shapeBounds(shape);
+function defaultShapeTransform() {
   return {
-    shapeOrigin: {
-      x: Number((bounds.x + bounds.width / 2).toFixed(3)),
-      y: Number((bounds.y + bounds.height / 2).toFixed(3))
-    },
     rotation: 0,
     scaleX: 1,
     scaleY: 1,
@@ -2048,14 +2043,15 @@ export class ToolStarterApp {
     svg.setAttribute("role", "img");
 
     const bounds = this.objectBounds(object, { includeInvisible: false });
+    const transformOrigin = this.objectTransformOrigin(object);
     const padding = 12;
     svg.setAttribute("viewBox", `${bounds.x - padding} ${bounds.y - padding} ${bounds.width + padding * 2} ${bounds.height + padding * 2}`);
     sortedShapes(object).filter((shape) => shape.visible).forEach((shape, shapeIndex) => {
       try {
-        const element = this.createSvgShape(shape);
+        const element = this.createSvgShape(shape, { transformOrigin });
         element.classList.add("object-vector-studio-v2__object-thumbnail-shape");
         svg.append(element);
-        this.appendShapePointStyleCaps(svg, shape);
+        this.appendShapePointStyleCaps(svg, shape, { transformOrigin });
       } catch (error) {
         this.statusLog.write(`FAIL Thumbnail render failed for ${object.id}/shape-${shapeIndex} (${shapeTool(shape)}): ${error.message}`);
       }
@@ -2229,6 +2225,7 @@ export class ToolStarterApp {
     svg.classList.add("object-vector-studio-v2__frame-thumbnail");
     svg.dataset.frameThumbnail = frame.id;
     const bounds = this.objectBoundsForFrame(object, frame);
+    const transformOrigin = this.objectTransformOrigin(object);
     const padding = 12;
     svg.setAttribute("viewBox", `${bounds.x - padding} ${bounds.y - padding} ${bounds.width + padding * 2} ${bounds.height + padding * 2}`);
     sortedShapes(object).forEach((shape, shapeIndex) => {
@@ -2237,8 +2234,8 @@ export class ToolStarterApp {
         return;
       }
       try {
-        svg.append(this.createSvgShape(renderShape));
-        this.appendShapePointStyleCaps(svg, renderShape);
+        svg.append(this.createSvgShape(renderShape, { transformOrigin }));
+        this.appendShapePointStyleCaps(svg, renderShape, { transformOrigin });
       } catch (error) {
         this.statusLog.write(`FAIL Frame thumbnail render failed for ${object.id}/${frame.id}/shape-${shapeIndex}: ${error.message}`);
       }
@@ -2796,7 +2793,6 @@ export class ToolStarterApp {
     const transform = this.shapeTransform(this.effectiveShape(shape));
     section.append(
       this.createMoveControlRow(),
-      this.createOriginControlRow(transform),
       this.createRotateControlRow(),
       this.createScaleControlRow(transform)
     );
@@ -2828,15 +2824,7 @@ export class ToolStarterApp {
   }
 
   objectScaleControlValue(object) {
-    const frame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
-    const transforms = sortedShapes(object)
-      .map((shape, shapeIndex) => this.ensureShapeTransform(this.effectiveShapeForFrame(shape, frame, shapeIndex)));
-    if (!transforms.length) {
-      return 1;
-    }
-    const firstScale = transforms[0].scaleX;
-    const sameScale = transforms.every((transform) => Math.abs(transform.scaleX - transform.scaleY) < 0.001 && Math.abs(transform.scaleX - firstScale) < 0.001);
-    return sameScale && firstScale > 0 ? this.formatViewportNumber(firstScale) : 1;
+    return 1;
   }
 
   createMoveControlRow() {
@@ -2849,27 +2837,6 @@ export class ToolStarterApp {
       rowType: "move",
       xInput: { id: "objectVectorStudioV2MoveXInput", label: "Move X", value: "10" },
       yInput: { id: "objectVectorStudioV2MoveYInput", label: "Move Y", value: "0" }
-    });
-  }
-
-  createOriginControlRow(transform) {
-    return this.createTransformAxisControlRow({
-      action: () => this.applySelectedShapeOrigin(),
-      buttonId: "objectVectorStudioV2ApplyOriginButton",
-      buttonLabel: "Apply",
-      buttonTitle: "Apply Origin",
-      label: "Origin",
-      rowType: "origin",
-      extraButtons: [
-        this.createTransformActionButton({
-          handler: () => this.autoOriginSelectedShapePivot(),
-          id: "objectVectorStudioV2AutoOriginButton",
-          label: "Auto",
-          title: "Auto Origin"
-        })
-      ],
-      xInput: { id: "objectVectorStudioV2OriginXInput", label: "Origin X", value: String(this.formatViewportNumber(transform.shapeOrigin.x)) },
-      yInput: { id: "objectVectorStudioV2OriginYInput", label: "Origin Y", value: String(this.formatViewportNumber(transform.shapeOrigin.y)) }
     });
   }
 
@@ -3222,6 +3189,7 @@ export class ToolStarterApp {
     if (this.elements.onionSkinToggle.checked) {
       this.renderOnionSkin(object);
     }
+    const transformOrigin = this.objectTransformOrigin(object);
     let renderedCount = 0;
     const hitLayer = document.createElementNS(SVG_NS, "g");
     hitLayer.classList.add("object-vector-studio-v2__shape-hit-layer");
@@ -3232,7 +3200,7 @@ export class ToolStarterApp {
         return;
       }
       try {
-        const element = this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
+        const element = this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE, transformOrigin });
         element.dataset.shapeIndex = String(shapeIndex);
         element.dataset.renderShapeTool = shapeTool(shape);
         element.classList.add("object-vector-studio-v2__shape");
@@ -3240,8 +3208,8 @@ export class ToolStarterApp {
         element.setAttribute("tabindex", "0");
         this.bindRenderedShapePointerEvents(element, shape, shapeIndex);
         this.elements.renderSurface.append(element);
-        this.appendShapePointStyleCaps(this.elements.renderSurface, renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
-        hitLayer.append(this.createShapeHitArea(renderShape, shape, shapeIndex));
+        this.appendShapePointStyleCaps(this.elements.renderSurface, renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE, transformOrigin });
+        hitLayer.append(this.createShapeHitArea(renderShape, shape, shapeIndex, transformOrigin));
         renderedCount += 1;
       } catch (error) {
         this.statusLog.write(`FAIL Render mode svg-work-surface failed for shape-${shapeIndex} (${shapeTool(shape)}): ${error.message}`);
@@ -3296,8 +3264,8 @@ export class ToolStarterApp {
     });
   }
 
-  createShapeHitArea(renderShape, sourceShape, shapeIndex) {
-    const hitArea = this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
+  createShapeHitArea(renderShape, sourceShape, shapeIndex, transformOrigin = { x: 0, y: 0 }) {
+    const hitArea = this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE, transformOrigin });
     const geometryTool = shapeGeometryTool(sourceShape);
     hitArea.classList.add("object-vector-studio-v2__shape-hit-area");
     hitArea.dataset.shapeHitIndex = String(shapeIndex);
@@ -3403,14 +3371,15 @@ export class ToolStarterApp {
     const group = document.createElementNS(SVG_NS, "g");
     group.classList.add("object-vector-studio-v2__onion-skin");
     group.dataset.onionSkinFrame = previousFrame.id;
+    const transformOrigin = this.objectTransformOrigin(object);
     sortedShapes(object).forEach((shape, shapeIndex) => {
       const renderShape = this.effectiveShapeForFrame(shape, previousFrame, shapeIndex);
       if (!renderShape.visible) {
         return;
       }
       try {
-        group.append(this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE }));
-        this.appendShapePointStyleCaps(group, renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
+        group.append(this.createSvgShape(renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE, transformOrigin }));
+        this.appendShapePointStyleCaps(group, renderShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE, transformOrigin });
       } catch (error) {
         this.statusLog.write(`FAIL Onion-skin render failed for ${object.name}/shape-${shapeIndex}: ${error.message}`);
       }
@@ -3596,6 +3565,7 @@ export class ToolStarterApp {
       return [];
     }
     const points = [];
+    const transformOrigin = this.objectTransformOrigin(object);
     sortedShapes(object).forEach((shape, shapeIndex) => {
       if (normalizeShapeIndex(options.excludeShapeIndex) === shapeIndex) {
         return;
@@ -3609,7 +3579,7 @@ export class ToolStarterApp {
       const shapePoints = definitions.length
         ? definitions.map((definition) => definition.point)
         : boundsCornerPoints(shapeBounds(effective));
-      shapePoints.forEach((point) => points.push(this.transformedPoint(point, transform)));
+      shapePoints.forEach((point) => points.push(this.transformedPoint(point, transform, transformOrigin)));
     });
     return points;
   }
@@ -3699,7 +3669,7 @@ export class ToolStarterApp {
     return this.snapPointToDrawingAngle(anchor, snappedPoint);
   }
 
-  createSvgShape(shape, { drawingScale = 1 } = {}) {
+  createSvgShape(shape, { drawingScale = 1, transformOrigin = { x: 0, y: 0 } } = {}) {
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
       const roundedPath = this.roundedPointPath(shape, { closed: true, drawingScale });
@@ -3713,7 +3683,7 @@ export class ToolStarterApp {
       element.setAttribute("y", this.scaleDrawingValue(shape.geometry.y, drawingScale));
       element.setAttribute("width", this.scaleDrawingValue(shape.geometry.width, drawingScale));
       element.setAttribute("height", this.scaleDrawingValue(shape.geometry.height, drawingScale));
-      this.applySvgStyle(element, shape, { drawingScale });
+      this.applySvgStyle(element, shape, { drawingScale, transformOrigin });
       return element;
     }
     if (geometryTool === "circle") {
@@ -3721,7 +3691,7 @@ export class ToolStarterApp {
       element.setAttribute("cx", this.scaleDrawingValue(shape.geometry.cx, drawingScale));
       element.setAttribute("cy", this.scaleDrawingValue(shape.geometry.cy, drawingScale));
       element.setAttribute("r", this.scaleDrawingValue(shape.geometry.r, drawingScale));
-      this.applySvgStyle(element, shape, { drawingScale });
+      this.applySvgStyle(element, shape, { drawingScale, transformOrigin });
       return element;
     }
     if (geometryTool === "ellipse") {
@@ -3730,7 +3700,7 @@ export class ToolStarterApp {
       element.setAttribute("cy", this.scaleDrawingValue(shape.geometry.cy, drawingScale));
       element.setAttribute("rx", this.scaleDrawingValue(shape.geometry.rx, drawingScale));
       element.setAttribute("ry", this.scaleDrawingValue(shape.geometry.ry, drawingScale));
-      this.applySvgStyle(element, shape, { drawingScale });
+      this.applySvgStyle(element, shape, { drawingScale, transformOrigin });
       return element;
     }
     if (geometryTool === "line") {
@@ -3739,7 +3709,7 @@ export class ToolStarterApp {
       element.setAttribute("y1", this.scaleDrawingValue(shape.geometry.point1.y, drawingScale));
       element.setAttribute("x2", this.scaleDrawingValue(shape.geometry.point2.x, drawingScale));
       element.setAttribute("y2", this.scaleDrawingValue(shape.geometry.point2.y, drawingScale));
-      this.applySvgStyle(element, shape, { drawingScale });
+      this.applySvgStyle(element, shape, { drawingScale, transformOrigin });
       return element;
     }
     if (geometryTool === "polygon") {
@@ -3751,7 +3721,7 @@ export class ToolStarterApp {
         element.dataset.roundedPointRender = "path";
       }
       element.setAttribute("points", points);
-      this.applySvgStyle(element, shape, { drawingScale });
+      this.applySvgStyle(element, shape, { drawingScale, transformOrigin });
       return element;
     }
     if (geometryTool === "polyline") {
@@ -3763,7 +3733,7 @@ export class ToolStarterApp {
         element.dataset.roundedPointRender = "path";
       }
       element.setAttribute("points", points);
-      this.applySvgStyle(element, shape, { drawingScale });
+      this.applySvgStyle(element, shape, { drawingScale, transformOrigin });
       return element;
     }
     if (geometryTool === "arc") {
@@ -3774,7 +3744,7 @@ export class ToolStarterApp {
         cy: this.scaleDrawingValue(shape.geometry.cy, drawingScale),
         r: this.scaleDrawingValue(shape.geometry.r, drawingScale)
       }));
-      this.applySvgStyle(element, shape, { drawingScale });
+      this.applySvgStyle(element, shape, { drawingScale, transformOrigin });
       return element;
     }
     if (geometryTool === "text") {
@@ -3783,9 +3753,9 @@ export class ToolStarterApp {
       element.setAttribute("y", this.scaleDrawingValue(shape.geometry.y, drawingScale));
       element.setAttribute("font-size", this.scaleDrawingValue(shape.geometry.fontSize, drawingScale));
       element.textContent = shape.geometry.text;
-      this.applySvgStyle(element, shape, { drawingScale });
-      return element;
-    }
+    this.applySvgStyle(element, shape, { drawingScale, transformOrigin });
+    return element;
+  }
     throw new Error(`unsupported shape tool ${shapeTool(shape)}`);
   }
 
@@ -3880,7 +3850,7 @@ export class ToolStarterApp {
     return commands.join(" ");
   }
 
-  applySvgStyle(element, shape, { drawingScale = 1 } = {}) {
+  applySvgStyle(element, shape, { drawingScale = 1, transformOrigin = { x: 0, y: 0 } } = {}) {
     const geometryTool = shapeGeometryTool(shape);
     element.setAttribute("fill", shape.style.fill);
     element.setAttribute("stroke", shape.style.stroke);
@@ -3901,10 +3871,10 @@ export class ToolStarterApp {
       element.dataset.pointStyle = pointStyle;
     }
     const transform = this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale);
-    element.setAttribute("transform", this.svgTransformAttribute(transform));
+    element.setAttribute("transform", this.svgTransformAttribute(transform, this.scaledDrawingPoint(transformOrigin, drawingScale)));
   }
 
-  appendShapePointStyleCaps(parent, shape, { drawingScale = 1 } = {}) {
+  appendShapePointStyleCaps(parent, shape, { drawingScale = 1, transformOrigin = { x: 0, y: 0 } } = {}) {
     const endpoints = this.openShapeEndpointPoints(shape);
     const pointMarkers = this.shapePointStyleMarkers(shape);
     if (!this.openShapeUsesSplitPointStyles(shape) && !pointMarkers.length) {
@@ -3915,7 +3885,10 @@ export class ToolStarterApp {
     group.dataset.pointStyleCaps = shapeTool(shape);
     group.setAttribute("aria-hidden", "true");
     group.setAttribute("pointer-events", "none");
-    group.setAttribute("transform", this.svgTransformAttribute(this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale)));
+    group.setAttribute("transform", this.svgTransformAttribute(
+      this.scaledDrawingTransform(this.shapeTransform(shape), drawingScale),
+      this.scaledDrawingPoint(transformOrigin, drawingScale)
+    ));
     if (this.openShapeUsesSplitPointStyles(shape) && endpoints) {
       [
         ["start", endpoints.start.point, this.shapeStartPointStyle(shape), endpoints.start.angle],
@@ -4013,7 +3986,7 @@ export class ToolStarterApp {
   }
 
   shapeTransform(shape) {
-    return shape.transform || defaultShapeTransform(shape);
+    return this.ensureShapeTransform(shape || {});
   }
 
   effectiveShape(shape, shapeIndex = this.selectedShapeIndex) {
@@ -4032,13 +4005,13 @@ export class ToolStarterApp {
     return effective;
   }
 
-  svgTransformAttribute(transform) {
+  svgTransformAttribute(transform, origin = { x: 0, y: 0 }) {
     return [
       `translate(${transform.x} ${transform.y})`,
-      `translate(${transform.shapeOrigin.x} ${transform.shapeOrigin.y})`,
+      `translate(${origin.x} ${origin.y})`,
       `rotate(${transform.rotation})`,
       `scale(${transform.scaleX} ${transform.scaleY})`,
-      `translate(${-transform.shapeOrigin.x} ${-transform.shapeOrigin.y})`
+      `translate(${-origin.x} ${-origin.y})`
     ].join(" ");
   }
 
@@ -4052,12 +4025,18 @@ export class ToolStarterApp {
     }
     return {
       ...transform,
-      shapeOrigin: {
-        x: this.scaleDrawingValue(transform.shapeOrigin.x, drawingScale),
-        y: this.scaleDrawingValue(transform.shapeOrigin.y, drawingScale)
-      },
       x: this.scaleDrawingValue(transform.x, drawingScale),
       y: this.scaleDrawingValue(transform.y, drawingScale)
+    };
+  }
+
+  scaledDrawingPoint(point, drawingScale = 1) {
+    if (drawingScale === 1) {
+      return point;
+    }
+    return {
+      x: this.scaleDrawingValue(point.x, drawingScale),
+      y: this.scaleDrawingValue(point.y, drawingScale)
     };
   }
 
@@ -4075,81 +4054,45 @@ export class ToolStarterApp {
     };
   }
 
-  transformedPoint(point, transform) {
+  transformedPoint(point, transform, origin = { x: 0, y: 0 }) {
     const radians = (transform.rotation * Math.PI) / 180;
-    const relativeX = (point.x - transform.shapeOrigin.x) * transform.scaleX;
-    const relativeY = (point.y - transform.shapeOrigin.y) * transform.scaleY;
+    const relativeX = (point.x - origin.x) * transform.scaleX;
+    const relativeY = (point.y - origin.y) * transform.scaleY;
     const rotatedX = relativeX * Math.cos(radians) - relativeY * Math.sin(radians);
     const rotatedY = relativeX * Math.sin(radians) + relativeY * Math.cos(radians);
 
     return {
-      x: transform.x + transform.shapeOrigin.x + rotatedX,
-      y: transform.y + transform.shapeOrigin.y + rotatedY
+      x: transform.x + origin.x + rotatedX,
+      y: transform.y + origin.y + rotatedY
     };
   }
 
-  localPointFromTransformedPoint(point, transform) {
+  localPointFromTransformedPoint(point, transform, origin = { x: 0, y: 0 }) {
     const radians = (transform.rotation * Math.PI) / 180;
     const cos = Math.cos(radians);
     const sin = Math.sin(radians);
-    const dx = Number(point.x) - transform.x - transform.shapeOrigin.x;
-    const dy = Number(point.y) - transform.y - transform.shapeOrigin.y;
+    const dx = Number(point.x) - transform.x - origin.x;
+    const dy = Number(point.y) - transform.y - origin.y;
     const unrotatedX = dx * cos + dy * sin;
     const unrotatedY = -dx * sin + dy * cos;
     return {
-      x: this.formatViewportNumber(transform.shapeOrigin.x + unrotatedX / transform.scaleX),
-      y: this.formatViewportNumber(transform.shapeOrigin.y + unrotatedY / transform.scaleY)
+      x: this.formatViewportNumber(origin.x + unrotatedX / transform.scaleX),
+      y: this.formatViewportNumber(origin.y + unrotatedY / transform.scaleY)
     };
   }
 
-  transformWithBalancedOrigin(transform, worldCenter) {
-    const normalized = this.ensureShapeTransform({ transform });
-    const origin = this.localPointFromTransformedPoint(worldCenter, normalized);
-    return {
-      ...normalized,
-      shapeOrigin: origin,
-      x: this.formatViewportNumber(worldCenter.x - origin.x),
-      y: this.formatViewportNumber(worldCenter.y - origin.y)
-    };
-  }
-
-  transformWithObjectScaleAroundPivot(transform, pivot, scale) {
-    const normalized = this.ensureShapeTransform({ transform });
-    if (Math.abs(normalized.scaleX - normalized.scaleY) >= 0.001) {
-      throw new Error("shape transform scale must be uniform for Object Scale.");
-    }
-    const currentScale = normalized.scaleX;
-    const scaleRatio = scale / currentScale;
-    if (!Number.isFinite(scaleRatio) || scaleRatio <= 0) {
-      throw new Error("scale ratio must be greater than 0.");
-    }
-    const originWorld = this.transformedPoint(normalized.shapeOrigin, normalized);
-    const nextOriginWorld = {
-      x: this.formatViewportNumber(pivot.x + (originWorld.x - pivot.x) * scaleRatio),
-      y: this.formatViewportNumber(pivot.y + (originWorld.y - pivot.y) * scaleRatio)
-    };
-    return {
-      ...normalized,
-      scaleX: this.formatViewportNumber(scale),
-      scaleY: this.formatViewportNumber(scale),
-      x: this.formatViewportNumber(nextOriginWorld.x - normalized.shapeOrigin.x),
-      y: this.formatViewportNumber(nextOriginWorld.y - normalized.shapeOrigin.y)
-    };
-  }
-
-  transformedBounds(shape, { drawingScale = 1 } = {}) {
+  transformedBounds(shape, { drawingScale = 1, transformOrigin = { x: 0, y: 0 } } = {}) {
     const transform = this.shapeTransform(shape);
-    const points = shapeBoundsPoints(shape).map((point) => this.transformedPoint(point, transform));
+    const points = shapeBoundsPoints(shape).map((point) => this.transformedPoint(point, transform, transformOrigin));
     const xValues = points.map((point) => point.x);
     const yValues = points.map((point) => point.y);
     const minX = Math.min(...xValues);
     const minY = Math.min(...yValues);
-    const origin = this.transformedPoint(transform.shapeOrigin, transform);
 
     return this.scaledDrawingBounds({
       height: Math.max(1, Math.max(...yValues) - minY),
-      originX: origin.x,
-      originY: origin.y,
+      originX: minX + (Math.max(...xValues) - minX) / 2,
+      originY: minY + (Math.max(...yValues) - minY) / 2,
       width: Math.max(1, Math.max(...xValues) - minX),
       x: minX,
       y: minY
@@ -4158,6 +4101,7 @@ export class ToolStarterApp {
 
   objectBounds(object, { drawingScale = 1, includeInvisible = true } = {}) {
     const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
+    const transformOrigin = this.objectTransformOrigin(object);
     const shapes = sortedShapes(object)
       .map((shape, shapeIndex) => ({ shape, shapeIndex }))
       .map(({ shape, shapeIndex }) => ({
@@ -4174,7 +4118,7 @@ export class ToolStarterApp {
       };
     }
 
-    const bounds = shapes.map(({ shape }) => this.transformedBounds(shape, { drawingScale }));
+    const bounds = shapes.map(({ shape }) => this.transformedBounds(shape, { drawingScale, transformOrigin }));
     const minX = Math.min(...bounds.map((entry) => entry.x));
     const minY = Math.min(...bounds.map((entry) => entry.y));
     const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
@@ -4209,6 +4153,7 @@ export class ToolStarterApp {
   }
 
   objectBoundsForFrame(object, frame) {
+    const transformOrigin = this.objectTransformOrigin(object);
     const shapes = sortedShapes(object)
       .map((shape, shapeIndex) => this.effectiveShapeForFrame(shape, frame, shapeIndex))
       .filter((shape) => shape.visible);
@@ -4220,7 +4165,7 @@ export class ToolStarterApp {
         y: -40
       };
     }
-    const bounds = shapes.map((shape) => this.transformedBounds(shape));
+    const bounds = shapes.map((shape) => this.transformedBounds(shape, { transformOrigin }));
     const minX = Math.min(...bounds.map((entry) => entry.x));
     const minY = Math.min(...bounds.map((entry) => entry.y));
     const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
@@ -4236,6 +4181,7 @@ export class ToolStarterApp {
   shapeSetBounds(object, shapeIndexes, { drawingScale = 1, includeInvisible = false } = {}) {
     const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
     const objectShapes = sortedShapes(object);
+    const transformOrigin = this.objectTransformOrigin(object);
     const targetIndexes = Array.from(new Set(Array.from(shapeIndexes || [])
       .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
       .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
@@ -4246,7 +4192,7 @@ export class ToolStarterApp {
     if (!shapes.length) {
       return null;
     }
-    const bounds = shapes.map((shape) => this.transformedBounds(shape, { drawingScale }));
+    const bounds = shapes.map((shape) => this.transformedBounds(shape, { drawingScale, transformOrigin }));
     const minX = Math.min(...bounds.map((entry) => entry.x));
     const minY = Math.min(...bounds.map((entry) => entry.y));
     const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
@@ -4266,9 +4212,10 @@ export class ToolStarterApp {
     }
     try {
       const selectedIndexes = this.selectedPreviewDragIndexes(object, this.selectedShapeIndex);
+      const transformOrigin = this.objectTransformOrigin(object);
       const bounds = selectedIndexes.length > 1
         ? this.shapeSetBounds(object, selectedIndexes, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE })
-        : this.transformedBounds(this.effectiveShape(selectedShape), { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
+        : this.transformedBounds(this.effectiveShape(selectedShape), { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE, transformOrigin });
       if (!bounds) {
         return;
       }
@@ -4323,9 +4270,9 @@ export class ToolStarterApp {
       pivot.classList.add("object-vector-studio-v2__pivot-origin");
       pivot.dataset.pivotOrigin = String(this.selectedShapeIndex);
       pivot.setAttribute("role", "img");
-      pivot.setAttribute("aria-label", "Origin/Pivot marker for selected shape rotation and scale");
+      pivot.setAttribute("aria-label", "Selected shape center marker");
       const pivotTitle = document.createElementNS(SVG_NS, "title");
-      pivotTitle.textContent = "Origin/Pivot: rotate and scale pivot for the selected shape.";
+      pivotTitle.textContent = "Selected shape center marker. Shape Transform rotate uses the object origin marker.";
       const diagonalForward = document.createElementNS(SVG_NS, "line");
       diagonalForward.setAttribute("x1", bounds.originX - 8);
       diagonalForward.setAttribute("x2", bounds.originX + 8);
@@ -4371,6 +4318,7 @@ export class ToolStarterApp {
   selectedPreviewHitShapeIndex(object, shapeIndexes, point) {
     const objectShapes = sortedShapes(object);
     const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
+    const transformOrigin = this.objectTransformOrigin(object);
     return Array.from(shapeIndexes || [])
       .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
       .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)
@@ -4380,7 +4328,7 @@ export class ToolStarterApp {
         if (!effectiveShape || effectiveShape.visible === false) {
           return false;
         }
-        const bounds = this.transformedBounds(effectiveShape);
+        const bounds = this.transformedBounds(effectiveShape, { transformOrigin });
         return point.x >= bounds.x - 4
           && point.x <= bounds.x + bounds.width + 4
           && point.y >= bounds.y - 4
@@ -4417,8 +4365,9 @@ export class ToolStarterApp {
   renderGeometryPointHandles(shape) {
     const effectiveShape = this.effectiveShape(shape);
     const transform = this.shapeTransform(effectiveShape);
+    const transformOrigin = this.objectTransformOrigin(this.selectedObject());
     this.geometryPointHandleDefinitions(effectiveShape).forEach((definition) => {
-      const position = this.transformedPoint(definition.point, transform);
+      const position = this.transformedPoint(definition.point, transform, transformOrigin);
       const point = document.createElementNS(SVG_NS, "rect");
       point.classList.add("object-vector-studio-v2__resize-handle", "object-vector-studio-v2__geometry-point-handle");
       if (definition.className) {
@@ -4929,17 +4878,9 @@ export class ToolStarterApp {
         ...drawing.style
       },
       tool,
-      transform: {
-        shapeOrigin: { x: 0, y: 0 },
-        rotation: 0,
-        scaleX: 1,
-        scaleY: 1,
-        x: 0,
-        y: 0
-      },
+      transform: defaultShapeTransform(),
       visible: true
     };
-    shape.transform = defaultShapeTransform(shape);
     return shape;
   }
 
@@ -5173,15 +5114,17 @@ export class ToolStarterApp {
     event.stopPropagation();
     const effectiveSelected = this.effectiveShape(selected, normalizedIndex);
     const originalTransform = { ...this.shapeTransform(effectiveSelected) };
+    const transformOrigin = this.objectTransformOrigin(this.selectedObject());
     const rawPointer = this.pointerPreviewPoint(event);
     const transformedPoint = options?.point
-      ? this.transformedPoint(options.point, originalTransform)
+      ? this.transformedPoint(options.point, originalTransform, transformOrigin)
       : null;
     this.previewPointerEdit = {
       ...this.previewPointerEditStartMetadata(event),
       ...options,
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform,
+      transformOrigin,
       pointerOffset: transformedPoint
         ? {
           x: this.formatViewportNumber(rawPointer.x - transformedPoint.x),
@@ -5247,7 +5190,7 @@ export class ToolStarterApp {
     if (!edit.originalTransform) {
       return this.normalizeDrawingPoint(target);
     }
-    return this.localPointFromTransformedPoint(target, edit.originalTransform);
+    return this.localPointFromTransformedPoint(target, edit.originalTransform, edit.transformOrigin || { x: 0, y: 0 });
   }
 
   updatePreviewPointerEdit(event) {
@@ -6215,8 +6158,9 @@ export class ToolStarterApp {
       return;
     }
     let flattenedCount = 0;
+    const origin = this.objectTransformOrigin(nextObject);
     nextObject.shapes = sortedShapes(nextObject).map((shape, index) => {
-      const flattened = this.flattenShapeTransform(shape);
+      const flattened = this.flattenShapeTransform(shape, origin);
       flattened.order = index + 1;
       flattenedCount += 1;
       return flattened;
@@ -6246,12 +6190,11 @@ export class ToolStarterApp {
     };
   }
 
-  createShapeTransformDefault(shape) {
+  createShapeTransformDefault() {
     const transform = this.schemaDefault("transform");
-    const centeredTransform = defaultShapeTransform(shape);
     return {
-      ...transform,
-      shapeOrigin: centeredTransform.shapeOrigin
+      ...defaultShapeTransform(),
+      ...transform
     };
   }
 
@@ -6309,15 +6252,15 @@ export class ToolStarterApp {
       shape.geometry.width = size;
       shape.geometry.height = size;
     }
-    shape.transform = this.createShapeTransformDefault(shape);
+    shape.transform = this.createShapeTransformDefault();
     return shape;
   }
 
-  flattenShapeTransform(shape) {
+  flattenShapeTransform(shape, origin = { x: 0, y: 0 }) {
     const nextShape = JSON.parse(JSON.stringify(shape));
     const transform = this.shapeTransform(nextShape);
-    const applyX = (value) => Number((transform.x + transform.shapeOrigin.x + (value - transform.shapeOrigin.x) * transform.scaleX).toFixed(3));
-    const applyY = (value) => Number((transform.y + transform.shapeOrigin.y + (value - transform.shapeOrigin.y) * transform.scaleY).toFixed(3));
+    const applyX = (value) => Number((transform.x + origin.x + (value - origin.x) * transform.scaleX).toFixed(3));
+    const applyY = (value) => Number((transform.y + origin.y + (value - origin.y) * transform.scaleY).toFixed(3));
     const geometryTool = shapeGeometryTool(nextShape);
     if (geometryTool === "rectangle") {
       nextShape.geometry.x = applyX(nextShape.geometry.x);
@@ -6352,7 +6295,7 @@ export class ToolStarterApp {
       nextShape.geometry.y = applyY(nextShape.geometry.y);
       nextShape.geometry.fontSize = Number((nextShape.geometry.fontSize * Math.max(transform.scaleX, transform.scaleY)).toFixed(3));
     }
-    nextShape.transform = defaultShapeTransform(nextShape);
+    nextShape.transform = defaultShapeTransform();
     return nextShape;
   }
 
@@ -6827,11 +6770,7 @@ export class ToolStarterApp {
         y: this.formatViewportNumber(Number(object.objectOrigin.y))
       };
     }
-    const bounds = this.objectBounds(object, { includeInvisible: false });
-    return {
-      x: this.formatViewportNumber(bounds.x + bounds.width / 2),
-      y: this.formatViewportNumber(bounds.y + bounds.height / 2)
-    };
+    return { x: 0, y: 0 };
   }
 
   updateSelectedObjectOrigin(origin, okMessage) {
@@ -6960,13 +6899,16 @@ export class ToolStarterApp {
     const nextTransforms = new Map(targetIndexes.map((shapeIndex) => {
       const effectiveShape = this.effectiveShapeForFrame(sortedShapes(object)[shapeIndex], activeFrame, shapeIndex);
       const transform = this.ensureShapeTransform(effectiveShape);
-      const originPoint = this.transformedPoint(transform.shapeOrigin, transform);
-      const rotatedOriginPoint = this.rotatePointAround(originPoint, origin.value, rotation);
+      const translatedOrigin = {
+        x: this.formatViewportNumber(origin.value.x + transform.x),
+        y: this.formatViewportNumber(origin.value.y + transform.y)
+      };
+      const rotatedTranslatedOrigin = this.rotatePointAround(translatedOrigin, origin.value, rotation);
       return [shapeIndex, {
         ...transform,
         rotation: this.normalizeRotationDegrees(transform.rotation + rotation),
-        x: Number((rotatedOriginPoint.x - transform.shapeOrigin.x).toFixed(3)),
-        y: Number((rotatedOriginPoint.y - transform.shapeOrigin.y).toFixed(3))
+        x: this.formatViewportNumber(rotatedTranslatedOrigin.x - origin.value.x),
+        y: this.formatViewportNumber(rotatedTranslatedOrigin.y - origin.value.y)
       }];
     }));
     this.updateSelectedObjectTransforms("rotate", (shape, shapeIndex) => {
@@ -7120,99 +7062,15 @@ export class ToolStarterApp {
     }
     const rotation = this.snapAngle(input.value);
     const snapAngleStatus = this.formatSnapAngleRotateStatus(input.value, rotation);
-    this.updateSelectedShapeTransform("rotate", (shape) => {
-      shape.transform = this.ensureShapeTransform(shape);
-      shape.transform.rotation = this.normalizeRotationDegrees(shape.transform.rotation + rotation);
-    }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.${snapAngleStatus}`);
-  }
-
-  rotateSelectedShapeGroup(shapeIndexes, rotation, groupId, snapAngleStatus = "", options = {}) {
     const object = this.selectedObject();
-    if (!object) {
-      this.statusLog.write("WARN Transform rotate skipped: no object is selected.");
-      return;
-    }
-    if (this.guardSelectedObjectMutation("Transform rotate")) {
-      return;
-    }
-
-    const objectShapes = sortedShapes(object);
-    const targetIndexes = Array.from(new Set(shapeIndexes
-      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
-      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
-      .sort((left, right) => left - right);
-    if (targetIndexes.length < 2) {
-      this.updateSelectedShapeTransform("rotate", (shape) => {
-        shape.transform = this.ensureShapeTransform(shape);
-        shape.transform.rotation = this.normalizeRotationDegrees(shape.transform.rotation + rotation);
-      }, `OK Rotated shape row ${this.selectedShapeIndex} by ${rotation} degrees.${snapAngleStatus}`);
-      return;
-    }
-
-    const lockedIndex = targetIndexes.find((shapeIndex) => objectShapes[shapeIndex]?.locked);
-    if (Number.isInteger(lockedIndex)) {
-      this.statusLog.write(`WARN Transform rotate skipped: shape row ${lockedIndex} is locked.`);
-      return;
-    }
-
-    const frame = this.activeFrame();
-    const pivot = options.pivot || (() => {
-      const pivotShape = this.effectiveShapeForFrame(objectShapes[this.selectedShapeIndex], frame, this.selectedShapeIndex);
-      const pivotTransform = this.ensureShapeTransform(pivotShape);
-      return this.transformedPoint(pivotTransform.shapeOrigin, pivotTransform);
-    })();
-    const nextTransforms = new Map(targetIndexes.map((shapeIndex) => {
-      const effectiveShape = this.effectiveShapeForFrame(objectShapes[shapeIndex], frame, shapeIndex);
-      const transform = this.ensureShapeTransform(effectiveShape);
-      const originPoint = this.transformedPoint(transform.shapeOrigin, transform);
-      const rotatedOriginPoint = this.rotatePointAround(originPoint, pivot, rotation);
-      return [shapeIndex, {
-        ...transform,
-        rotation: this.normalizeRotationDegrees(transform.rotation + rotation),
-        x: Number((rotatedOriginPoint.x - transform.shapeOrigin.x).toFixed(3)),
-        y: Number((rotatedOriginPoint.y - transform.shapeOrigin.y).toFixed(3))
-      }];
-    }));
-
-    this.selectedShapeIndexes = new Set(targetIndexes);
-    const directShapeIndexes = options.directSelectedShapeIndexes
-      ? new Set(Array.from(options.directSelectedShapeIndexes).filter((shapeIndex) => targetIndexes.includes(shapeIndex)))
-      : (this.directSelectedShapeIndexes.size
-      ? new Set(Array.from(this.directSelectedShapeIndexes).filter((shapeIndex) => targetIndexes.includes(shapeIndex)))
-      : new Set([this.selectedShapeIndex]));
-    if (!directShapeIndexes.size && this.selectedShapeIndex >= 0) {
-      directShapeIndexes.add(this.selectedShapeIndex);
-    }
-
-    const nextPayload = this.cloneCurrentPayload();
-    try {
-      targetIndexes.forEach((shapeIndex) => {
-        const override = this.frameOverrideInPayload(nextPayload, shapeIndex, { create: true });
-        const shape = override
-          ? this.effectiveShapeForFrame(this.findShapeInPayload(nextPayload, shapeIndex), frame, shapeIndex)
-          : this.findShapeInPayload(nextPayload, shapeIndex);
-        if (!shape) {
-          throw new Error(`shape row ${shapeIndex} is not available.`);
-        }
-        shape.transform = this.ensureShapeTransform({ transform: nextTransforms.get(shapeIndex) });
-        const transformErrors = this.validateShapeForTransform(shape);
-        if (transformErrors.length) {
-          throw new Error(`shape row ${shapeIndex}: ${transformErrors.join(" ")}`);
-        }
-        if (override) {
-          override.transform = this.ensureShapeTransform(shape);
-        }
-      });
-    } catch (error) {
-      this.statusLog.write(`FAIL Invalid transform rejected for ${options.failSubject || `group ${groupId || "selected group"}`}: ${error.message}`);
-      return;
-    }
-
-    const logSubject = options.logSubject || `group ${groupId || "selected group"}`;
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, this.selectedShapeIndex, `OK Rotated ${logSubject} (${targetIndexes.length} shapes) by ${rotation} degrees.${snapAngleStatus}`, "Transform rotate failed schema validation", {
-      directSelectedShapeIndexes: directShapeIndexes,
-      selectedShapeIndexes: new Set(targetIndexes)
-    });
+    const origin = this.objectTransformOrigin(object);
+    this.updateSelectedShapeGeometry("rotate", (shape) => {
+      this.rotateShapeGeometryAroundOrigin(shape, origin, rotation);
+      shape.transform = {
+        ...this.ensureShapeTransform(shape),
+        rotation: 0
+      };
+    }, `OK Rotated shape row ${this.selectedShapeIndex} geometry by ${rotation} degrees around object origin ${origin.x}, ${origin.y}.${snapAngleStatus}`);
   }
 
   formatSnapAngleRotateStatus(rawRotation, appliedRotation) {
@@ -7264,6 +7122,61 @@ export class ToolStarterApp {
       x: pivot.x + relativeX * Math.cos(radians) - relativeY * Math.sin(radians),
       y: pivot.y + relativeX * Math.sin(radians) + relativeY * Math.cos(radians)
     };
+  }
+
+  rotateGeometryPoint(point, origin, rotation) {
+    const rotated = this.rotatePointAround(point, origin, rotation);
+    return {
+      x: this.formatViewportNumber(rotated.x),
+      y: this.formatViewportNumber(rotated.y)
+    };
+  }
+
+  rotateShapeGeometryAroundOrigin(shape, origin, rotation) {
+    const geometryTool = shapeGeometryTool(shape);
+    if (geometryTool === "polygon" || geometryTool === "polyline") {
+      shape.geometry.points = shape.geometry.points.map((point) => this.rotateGeometryPoint(point, origin, rotation));
+      return;
+    }
+    if (geometryTool === "line") {
+      shape.geometry.point1 = this.rotateGeometryPoint(shape.geometry.point1, origin, rotation);
+      shape.geometry.point2 = this.rotateGeometryPoint(shape.geometry.point2, origin, rotation);
+      return;
+    }
+    if (geometryTool === "rectangle") {
+      const center = this.rotateGeometryPoint({
+        x: shape.geometry.x + shape.geometry.width / 2,
+        y: shape.geometry.y + shape.geometry.height / 2
+      }, origin, rotation);
+      shape.geometry.x = this.formatViewportNumber(center.x - shape.geometry.width / 2);
+      shape.geometry.y = this.formatViewportNumber(center.y - shape.geometry.height / 2);
+      return;
+    }
+    if (geometryTool === "circle") {
+      const center = this.rotateGeometryPoint({ x: shape.geometry.cx, y: shape.geometry.cy }, origin, rotation);
+      shape.geometry.cx = center.x;
+      shape.geometry.cy = center.y;
+      return;
+    }
+    if (geometryTool === "ellipse") {
+      const center = this.rotateGeometryPoint({ x: shape.geometry.cx, y: shape.geometry.cy }, origin, rotation);
+      shape.geometry.cx = center.x;
+      shape.geometry.cy = center.y;
+      return;
+    }
+    if (geometryTool === "arc") {
+      const center = this.rotateGeometryPoint({ x: shape.geometry.cx, y: shape.geometry.cy }, origin, rotation);
+      shape.geometry.cx = center.x;
+      shape.geometry.cy = center.y;
+      shape.geometry.startAngle = this.normalizeRotationDegrees(shape.geometry.startAngle + rotation);
+      shape.geometry.endAngle = this.normalizeRotationDegrees(shape.geometry.endAngle + rotation);
+      return;
+    }
+    if (geometryTool === "text") {
+      const anchor = this.rotateGeometryPoint({ x: shape.geometry.x, y: shape.geometry.y }, origin, rotation);
+      shape.geometry.x = anchor.x;
+      shape.geometry.y = anchor.y;
+    }
   }
 
   normalizeRotationDegrees(value) {
@@ -7415,7 +7328,7 @@ export class ToolStarterApp {
       return;
     }
     this.applySelectedObjectScaleValue(input.value, {
-      okMessage: `OK Object scale preview set to ${this.formatScaleInputValue(input.value)} for ${this.selectedObject()?.name || "selected object"}.`
+      okMessage: `OK Object resize scale set to ${this.formatScaleInputValue(input.value)} for ${this.selectedObject()?.name || "selected object"}; object transform scale remains 1 until Resize rewrites geometry.`
     });
   }
 
@@ -7437,20 +7350,22 @@ export class ToolStarterApp {
       this.transformInputValues.set(inputElement.id, inputElement.value);
     }
     this.applySelectedObjectScaleValue(nextScale, {
-      okMessage: `OK Object scale preview set to ${this.formatScaleInputValue(nextScale)} for ${this.selectedObject()?.name || "selected object"}.`
+      okMessage: `OK Object resize scale set to ${this.formatScaleInputValue(nextScale)} for ${this.selectedObject()?.name || "selected object"}; object transform scale remains 1 until Resize rewrites geometry.`
     });
   }
 
   applySelectedObjectScaleValue(scale, { okMessage } = {}) {
-    const origin = this.readObjectOriginInputs();
-    if (!origin.ok) {
-      this.statusLog.write(`FAIL Invalid object transform rejected: ${origin.error}`);
+    const object = this.selectedObject();
+    if (!object) {
+      this.statusLog.write("WARN Object scale skipped: no object is selected.");
       return false;
     }
-    const object = this.selectedObject();
-    return this.updateSelectedObjectTransforms("scale", (shape) => {
-      shape.transform = this.transformWithObjectScaleAroundPivot(this.ensureShapeTransform(shape), origin.value, scale);
-    }, okMessage || `OK Object scale preview set to ${this.formatScaleInputValue(scale)} for ${object?.name || "selected object"}.`, "Object Transform scale failed schema validation");
+    if (okMessage) {
+      this.statusLog.write(okMessage);
+    } else {
+      this.statusLog.write(`OK Object resize scale set to ${this.formatScaleInputValue(scale)} for ${object.name}; object transform scale remains 1 until Resize rewrites geometry.`);
+    }
+    return true;
   }
 
   resizeSelectedObject() {
@@ -7486,8 +7401,10 @@ export class ToolStarterApp {
         const baseShape = this.findShapeInPayload(nextPayload, shapeIndex);
         const override = this.frameOverrideInPayload(nextPayload, shapeIndex, { create: false });
         const transformTarget = override?.transform ? { transform: override.transform, geometry: baseShape.geometry } : baseShape;
-        const transform = this.transformWithObjectScaleAroundPivot(this.ensureShapeTransform(transformTarget), origin.value, input.value);
-        this.resizeShapeGeometryByTransformScale(baseShape, transform);
+        const transform = this.ensureShapeTransform(transformTarget);
+        transform.scaleX = input.value;
+        transform.scaleY = input.value;
+        this.resizeShapeGeometryByTransformScale(baseShape, transform, origin.value);
         transform.scaleX = 1;
         transform.scaleY = 1;
         if (override?.transform) {
@@ -7552,7 +7469,7 @@ export class ToolStarterApp {
     transform.scaleY = input.value;
 
     try {
-      this.resizeShapeGeometryByTransformScale(baseShape, transform);
+      this.resizeShapeGeometryByTransformScale(baseShape, transform, this.objectTransformOrigin(this.selectedObject()));
       transform.scaleX = 1;
       transform.scaleY = 1;
       if (override?.transform) {
@@ -7578,57 +7495,6 @@ export class ToolStarterApp {
       `OK Resize Geometry applied scale ${this.formatScaleInputValue(input.value)} to shape row ${this.selectedShapeIndex}; transform scale reset to 1.`,
       "Resize Geometry failed schema validation"
     );
-  }
-
-  applySelectedShapeOrigin() {
-    if (!this.canUseShapeTransform()) {
-      this.statusLog.write("WARN Transform origin skipped: select exactly one shape.");
-      return;
-    }
-    const originX = this.numberInputValue("objectVectorStudioV2OriginXInput", "Origin X");
-    const originY = this.numberInputValue("objectVectorStudioV2OriginYInput", "Origin Y");
-    if (!originX.ok || !originY.ok) {
-      this.statusLog.write(`FAIL Invalid transform rejected for shape row ${this.selectedShapeIndex}: ${originX.error || originY.error}`);
-      return;
-    }
-    this.updateSelectedShapeTransform("origin", (shape) => {
-      shape.transform = this.ensureShapeTransform(shape);
-      shape.transform.shapeOrigin = {
-        x: Number(originX.value.toFixed(3)),
-        y: Number(originY.value.toFixed(3))
-      };
-    }, `OK Updated shape row ${this.selectedShapeIndex} origin/pivot to ${originX.value}, ${originY.value}.`);
-  }
-
-  autoOriginSelectedShapePivot() {
-    if (!this.canUseShapeTransform()) {
-      this.statusLog.write("WARN Auto Origin skipped: select exactly one shape.");
-      return;
-    }
-    const object = this.selectedObject();
-    if (!object) {
-      this.statusLog.write("WARN Auto Origin skipped: no object is selected.");
-      return;
-    }
-    const selected = this.selectedShape();
-    if (!selected) {
-      this.statusLog.write("WARN Auto Origin skipped: no shape is selected.");
-      return;
-    }
-    const effectiveSelected = this.effectiveShape(selected, this.selectedShapeIndex);
-    if (effectiveSelected.visible === false) {
-      this.statusLog.write(`FAIL Auto Origin blocked: shape row ${this.selectedShapeIndex} is hidden.`);
-      return;
-    }
-    const bounds = shapeBounds(effectiveSelected);
-    const center = {
-      x: this.formatViewportNumber(bounds.x + bounds.width / 2),
-      y: this.formatViewportNumber(bounds.y + bounds.height / 2)
-    };
-    this.updateSelectedShapeTransform("auto origin", (shape) => {
-      shape.transform = this.ensureShapeTransform(shape);
-      shape.transform.shapeOrigin = center;
-    }, `OK Auto Origin updated shape row ${this.selectedShapeIndex} origin/pivot from selected shape bounds ${center.x}, ${center.y}.`);
   }
 
   groupSelectedShapes() {
@@ -8276,15 +8142,19 @@ export class ToolStarterApp {
 
   ensureShapeTransform(shape) {
     if (!shape.transform) {
-      return defaultShapeTransform(shape);
+      return defaultShapeTransform();
     }
+    const transform = shape.transform;
     return {
-      ...shape.transform,
-      shapeOrigin: { ...shape.transform.shapeOrigin }
+      rotation: this.formatViewportNumber(Number(transform.rotation ?? 0)),
+      scaleX: this.formatViewportNumber(Number(transform.scaleX ?? 1)),
+      scaleY: this.formatViewportNumber(Number(transform.scaleY ?? 1)),
+      x: this.formatViewportNumber(Number(transform.x ?? 0)),
+      y: this.formatViewportNumber(Number(transform.y ?? 0))
     };
   }
 
-  resizeShapeGeometryByTransformScale(shape, transform) {
+  resizeShapeGeometryByTransformScale(shape, transform, origin = { x: 0, y: 0 }) {
     if (!Number.isFinite(transform.scaleX) || !Number.isFinite(transform.scaleY) || transform.scaleX <= 0 || transform.scaleY <= 0) {
       throw new Error("scale must be greater than 0.");
     }
@@ -8297,8 +8167,8 @@ export class ToolStarterApp {
       }
       return uniformScale;
     };
-    const applyX = (value) => Number((transform.shapeOrigin.x + (value - transform.shapeOrigin.x) * scaleX).toFixed(3));
-    const applyY = (value) => Number((transform.shapeOrigin.y + (value - transform.shapeOrigin.y) * scaleY).toFixed(3));
+    const applyX = (value) => Number((origin.x + (value - origin.x) * scaleX).toFixed(3));
+    const applyY = (value) => Number((origin.y + (value - origin.y) * scaleY).toFixed(3));
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
       shape.geometry.x = applyX(shape.geometry.x);
@@ -8367,9 +8237,6 @@ export class ToolStarterApp {
         errors.push(`transform.${key} must be a finite number.`);
       }
     });
-    if (!transform.shapeOrigin || !Number.isFinite(transform.shapeOrigin.x) || !Number.isFinite(transform.shapeOrigin.y)) {
-      errors.push("transform.shapeOrigin.x and transform.shapeOrigin.y must be finite numbers.");
-    }
     if (Number.isFinite(transform.scaleX) && transform.scaleX <= 0) {
       errors.push("scaleX must be greater than 0.");
     }
@@ -9063,6 +8930,7 @@ export class ToolStarterApp {
       svg.dataset.objectFrame = this.selectedFrameId;
     }
     svg.setAttribute("viewBox", `${bounds.x - padding} ${bounds.y - padding} ${bounds.width + padding * 2} ${bounds.height + padding * 2}`);
+    const transformOrigin = this.objectTransformOrigin(object);
     if (this.selectedStateId || this.selectedFrameId) {
       const metadata = this.window.document.createElementNS(SVG_NS, "metadata");
       metadata.textContent = JSON.stringify({
@@ -9073,11 +8941,11 @@ export class ToolStarterApp {
       svg.append(metadata);
     }
     visibleShapes.forEach((shape) => {
-      const element = this.createSvgShape(this.effectiveShape(shape));
+      const element = this.createSvgShape(this.effectiveShape(shape), { transformOrigin });
       element.removeAttribute("tabindex");
       element.removeAttribute("class");
       svg.append(element);
-      this.appendShapePointStyleCaps(svg, this.effectiveShape(shape));
+      this.appendShapePointStyleCaps(svg, this.effectiveShape(shape), { transformOrigin });
     });
     return new this.window.XMLSerializer().serializeToString(svg);
   }
