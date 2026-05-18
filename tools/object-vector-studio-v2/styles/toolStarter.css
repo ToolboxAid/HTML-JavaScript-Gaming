@@ -1520,6 +1520,13 @@ textarea:hover {
   pointer-events: none;
 }
 
+.object-vector-studio-v2__selection-drag-area {
+  cursor: move;
+  fill: transparent;
+  pointer-events: all;
+  stroke: none;
+}
+
 .object-vector-studio-v2__object-bounds {
   fill: none;
   stroke: #67e8f9;

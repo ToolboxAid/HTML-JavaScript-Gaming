@@ -1,4 +1,4 @@
-﻿# Playwright V8 Coverage Report
+# Playwright V8 Coverage Report
 
 ```text
 Playwright V8 Coverage Report
@@ -23,24 +23,10 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(32%) tools/shared/platformShell.js - executed lines 2159/2159; executed functions 38/120
 (63%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 643/643; executed functions 36/57
-(82%) tools/storage-inspector-v2/js/controls/EntryListControl.js - executed lines 59/59; executed functions 9/11
-(83%) tools/storage-inspector-v2/js/controls/AccordionSection.js - executed lines 41/41; executed functions 5/6
 (86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 963/963; executed functions 42/49
-(89%) tools/storage-inspector-v2/js/controls/FilterControl.js - executed lines 34/34; executed functions 8/9
-(91%) tools/toolRegistry.js - executed lines 526/526; executed functions 10/11
 (92%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1662/1662; executed functions 149/162
-(93%) tools/workspace-manager-v2/js/controls/ToolTilesControl.js - executed lines 137/137; executed functions 14/15
-(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8187/8187; executed functions 800/846
-(98%) tools/storage-inspector-v2/js/StorageInspectorV2App.js - executed lines 347/347; executed functions 51/52
-(100%) tools/renderToolsIndex.js - executed lines 175/175; executed functions 27/27
-(100%) tools/storage-inspector-v2/js/bootstrap.js - executed lines 55/55; executed functions 4/4
-(100%) tools/storage-inspector-v2/js/controls/DataControl.js - executed lines 23/23; executed functions 5/5
-(100%) tools/storage-inspector-v2/js/controls/DirtyControl.js - executed lines 30/30; executed functions 6/6
-(100%) tools/storage-inspector-v2/js/controls/JsonControl.js - executed lines 19/19; executed functions 5/5
-(100%) tools/storage-inspector-v2/js/controls/StatusLogControl.js - executed lines 32/32; executed functions 10/10
-(100%) tools/storage-inspector-v2/js/services/StorageInspectorV2RuntimeContract.js - executed lines 10/10; executed functions 2/2
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8286/8286; executed functions 809/860
 (100%) tools/storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - executed lines 184/184; executed functions 29/29
 
 Files with executed line/function counts where available:
@@ -230,8 +216,8 @@ Files with executed line/function counts where available:
 (94%) games/shared/workspaceGameMetadataHydrator.js - executed lines 106/106; executed functions 16/17
 (94%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 1136/1136; executed functions 111/118
 (94%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 17/18
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8286/8286; executed functions 809/860
 (95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 458/458; executed functions 56/59
-(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8187/8187; executed functions 800/846
 (98%) tools/storage-inspector-v2/js/StorageInspectorV2App.js - executed lines 347/347; executed functions 51/52
 (100%) games/Asteroids/flow/attract.js - executed lines 17/17; executed functions 1/1
 (100%) games/Asteroids/flow/highscore.js - executed lines 16/16; executed functions 1/1
@@ -311,7 +297,7 @@ Files with executed line/function counts where available:
 (100%) tools/world-vector-studio-v2/js/services/ToolStateSerializer.js - executed lines 13/13; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(32%) tools/shared/platformShell.js - WARNING: advisory low coverage; executed lines 2159/2159
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
 (0%) scripts/validate-json-contracts.mjs - changed JS file not collected as browser runtime coverage
@@ -319,24 +305,9 @@ Changed JS files considered:
 (0%) tests/games/AsteroidsPlatformDemo.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AssetManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/WorkspaceManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
-(32%) tools/shared/platformShell.js - changed JS file with browser V8 coverage
 (63%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
-(82%) tools/storage-inspector-v2/js/controls/EntryListControl.js - changed JS file with browser V8 coverage
-(83%) tools/storage-inspector-v2/js/controls/AccordionSection.js - changed JS file with browser V8 coverage
 (86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - changed JS file with browser V8 coverage
-(88%) games/shared/workspaceGameAssetCatalog.js - changed JS file with browser V8 coverage
-(89%) tools/storage-inspector-v2/js/controls/FilterControl.js - changed JS file with browser V8 coverage
-(91%) tools/toolRegistry.js - changed JS file with browser V8 coverage
 (92%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - changed JS file with browser V8 coverage
-(93%) tools/workspace-manager-v2/js/controls/ToolTilesControl.js - changed JS file with browser V8 coverage
-(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage
-(98%) tools/storage-inspector-v2/js/StorageInspectorV2App.js - changed JS file with browser V8 coverage
-(100%) tools/renderToolsIndex.js - changed JS file with browser V8 coverage
-(100%) tools/storage-inspector-v2/js/bootstrap.js - changed JS file with browser V8 coverage
-(100%) tools/storage-inspector-v2/js/controls/DataControl.js - changed JS file with browser V8 coverage
-(100%) tools/storage-inspector-v2/js/controls/DirtyControl.js - changed JS file with browser V8 coverage
-(100%) tools/storage-inspector-v2/js/controls/JsonControl.js - changed JS file with browser V8 coverage
-(100%) tools/storage-inspector-v2/js/controls/StatusLogControl.js - changed JS file with browser V8 coverage
-(100%) tools/storage-inspector-v2/js/services/StorageInspectorV2RuntimeContract.js - changed JS file with browser V8 coverage
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage
 (100%) tools/storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - changed JS file with browser V8 coverage
 ```

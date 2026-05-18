@@ -4149,7 +4149,25 @@ export class ToolStarterApp {
       return;
     }
     try {
-      const bounds = this.transformedBounds(this.effectiveShape(selectedShape), { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
+      const selectedIndexes = this.selectedPreviewDragIndexes(object, this.selectedShapeIndex);
+      const bounds = selectedIndexes.length > 1
+        ? this.shapeSetBounds(object, selectedIndexes, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE })
+        : this.transformedBounds(this.effectiveShape(selectedShape), { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
+      if (!bounds) {
+        return;
+      }
+      const dragArea = document.createElementNS(SVG_NS, "rect");
+      dragArea.classList.add("object-vector-studio-v2__selection-drag-area");
+      dragArea.dataset.selectionDragBounds = selectedIndexes.join(",");
+      dragArea.setAttribute("x", bounds.x - 4);
+      dragArea.setAttribute("y", bounds.y - 4);
+      dragArea.setAttribute("width", bounds.width + 8);
+      dragArea.setAttribute("height", bounds.height + 8);
+      dragArea.addEventListener("pointerdown", (event) => this.startPreviewSelectionBoundsMove(event));
+      dragArea.addEventListener("click", (event) => this.handleSelectionDragAreaClick(event));
+      dragArea.addEventListener("contextmenu", (event) => this.handleSelectionDragAreaContextMenu(event));
+      this.elements.renderSurface.insertBefore(dragArea, this.elements.renderSurface.querySelector(".object-vector-studio-v2__shape"));
+
       const box = document.createElementNS(SVG_NS, "rect");
       box.classList.add("object-vector-studio-v2__selection-box");
       box.dataset.selectionBounds = String(this.selectedShapeIndex);
@@ -4207,6 +4225,77 @@ export class ToolStarterApp {
     } catch (error) {
       this.statusLog.write(`FAIL Selection overlay render failed for ${object.name}/shape-${this.selectedShapeIndex} (${shapeTool(selectedShape)}): ${error.message}`);
     }
+  }
+
+  selectedPreviewDragIndexes(object, preferredShapeIndex = this.selectedShapeIndex) {
+    const objectShapes = sortedShapes(object);
+    const preferredIndex = normalizeShapeIndex(preferredShapeIndex);
+    const selectedIndexes = Array.from(this.selectedShapeIndexes || [])
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length && objectShapes[shapeIndex]?.visible !== false);
+    if (selectedIndexes.length) {
+      return Array.from(new Set(selectedIndexes)).sort((left, right) => left - right);
+    }
+    if (preferredIndex >= 0 && preferredIndex < objectShapes.length && objectShapes[preferredIndex]?.visible !== false) {
+      return [preferredIndex];
+    }
+    return [];
+  }
+
+  selectedPreviewDragGroupId(objectShapes, targetIndexes) {
+    if (!Array.isArray(targetIndexes) || targetIndexes.length < 2) {
+      return "";
+    }
+    const groupIds = new Set(targetIndexes
+      .map((shapeIndex) => String(objectShapes[shapeIndex]?.groupId || "").trim())
+      .filter(Boolean));
+    return groupIds.size === 1 ? Array.from(groupIds)[0] : "";
+  }
+
+  selectedPreviewHitShapeIndex(object, shapeIndexes, point) {
+    const objectShapes = sortedShapes(object);
+    const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
+    return Array.from(shapeIndexes || [])
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)
+      .reverse()
+      .find((shapeIndex) => {
+        const effectiveShape = this.effectiveShapeForFrame(objectShapes[shapeIndex], activeFrame, shapeIndex);
+        if (!effectiveShape || effectiveShape.visible === false) {
+          return false;
+        }
+        const bounds = this.transformedBounds(effectiveShape);
+        return point.x >= bounds.x - 4
+          && point.x <= bounds.x + bounds.width + 4
+          && point.y >= bounds.y - 4
+          && point.y <= bounds.y + bounds.height + 4;
+      });
+  }
+
+  handleSelectionDragAreaContextMenu(event) {
+    const object = this.selectedObject();
+    const targetIndexes = this.selectedPreviewDragIndexes(object, this.selectedShapeIndex);
+    const shapeIndex = this.selectedPreviewHitShapeIndex(object, targetIndexes, this.pointerPreviewPoint(event));
+    if (!Number.isInteger(shapeIndex)) {
+      event.preventDefault();
+      return;
+    }
+    this.handleShapeContextMenu(event, sortedShapes(object)[shapeIndex], shapeIndex);
+  }
+
+  handleSelectionDragAreaClick(event) {
+    event.stopPropagation();
+    if (Date.now() < (this.previewClickSuppressedUntil || 0)) {
+      event.preventDefault();
+      return;
+    }
+    const object = this.selectedObject();
+    const targetIndexes = this.selectedPreviewDragIndexes(object, this.selectedShapeIndex);
+    const shapeIndex = this.selectedPreviewHitShapeIndex(object, targetIndexes, this.pointerPreviewPoint(event));
+    if (!Number.isInteger(shapeIndex)) {
+      return;
+    }
+    this.handleShapePointer(event, sortedShapes(object)[shapeIndex], shapeIndex, { source: "selection bounds click" });
   }
 
   renderGeometryPointHandles(shape) {
@@ -4887,34 +4976,45 @@ export class ToolStarterApp {
     this.createShape(type, { geometry, sourceLabel, style: this.activeDrawing?.style || null });
   }
 
-  startPreviewShapeMove(event, shapeIndex) {
+  startPreviewSelectionBoundsMove(event) {
+    this.startPreviewShapeMove(event, this.selectedShapeIndex, { fromSelectionBounds: true });
+  }
+
+  startPreviewShapeMove(event, shapeIndex, options = {}) {
     const normalizedIndex = normalizeShapeIndex(shapeIndex);
-    if (event.button !== 0 || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey || !this.selectedShapeIndexes.has(normalizedIndex)) {
+    if (event.button !== 0 || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) {
       return;
     }
-    const selected = this.selectedShape();
-    if (!selected || this.selectedShapeIndex !== normalizedIndex) {
+    const object = this.selectedObject();
+    const objectShapes = sortedShapes(object);
+    const targetIndexes = this.selectedPreviewDragIndexes(object, normalizedIndex);
+    const dragAnchorIndex = options.fromSelectionBounds ? this.selectedShapeIndex : normalizedIndex;
+    if (!targetIndexes.includes(dragAnchorIndex)) {
+      return;
+    }
+    const selected = objectShapes[dragAnchorIndex] || null;
+    if (!selected || selected.visible === false) {
       return;
     }
     event.preventDefault();
-    const object = this.selectedObject();
-    const objectShapes = sortedShapes(object);
-    const groupId = String(objectShapes[normalizedIndex]?.groupId || "").trim();
-    const targetIndexes = this.shapeBelongsToValidGroup(object, normalizedIndex)
-      ? this.shapeSelectionGroupIndexes(objectShapes, normalizedIndex)
-      : [normalizedIndex];
+    event.stopPropagation();
+    const groupId = this.selectedPreviewDragGroupId(objectShapes, targetIndexes);
     if (targetIndexes.length > 1) {
       const lockedIndex = targetIndexes.find((targetIndex) => objectShapes[targetIndex]?.locked);
       if (Number.isInteger(lockedIndex)) {
-        this.statusLog.write(`WARN Drag group skipped: shape row ${lockedIndex} is locked.`);
+        this.statusLog.write(`WARN Drag selection skipped: shape row ${lockedIndex} is locked.`);
         return;
       }
       const activeFrame = this.activeFrame();
+      const directSelectedShapeIndexes = this.directSelectedShapeIndexes.size
+        ? new Set(Array.from(this.directSelectedShapeIndexes).filter((targetIndex) => targetIndexes.includes(targetIndex)))
+        : new Set(targetIndexes);
       this.selectedShapeIndexes = new Set(targetIndexes);
-      this.directSelectedShapeIndexes = new Set([normalizedIndex]);
+      this.directSelectedShapeIndexes = directSelectedShapeIndexes.size ? directSelectedShapeIndexes : new Set(targetIndexes);
       this.previewPointerEdit = {
         mode: "move-group",
         groupId,
+        directSelectedShapeIndexes: new Set(this.directSelectedShapeIndexes),
         historyRecorded: false,
         historySnapshot: this.cloneCurrentPayload(),
         lastDelta: { x: 0, y: 0 },
@@ -4922,10 +5022,13 @@ export class ToolStarterApp {
           const effectiveShape = this.effectiveShapeForFrame(objectShapes[targetIndex], activeFrame, targetIndex);
           return [targetIndex, this.ensureShapeTransform(effectiveShape)];
         })),
-        shapeIndex: normalizedIndex,
-        start: this.snapCanvasPoint(this.pointerPreviewPoint(event), { excludeShapeIndex: normalizedIndex }),
+        shapeIndex: dragAnchorIndex,
+        start: this.snapCanvasPoint(this.pointerPreviewPoint(event), { excludeShapeIndex: dragAnchorIndex }),
         targetIndexes
       };
+      return;
+    }
+    if (this.selectedShapeIndex !== dragAnchorIndex) {
       return;
     }
     this.previewPointerEdit = {
@@ -4983,6 +5086,7 @@ export class ToolStarterApp {
     }
     this.recordPreviewPointerEditStart(edit);
     edit.lastDelta = delta;
+    edit.didMove = true;
     this.applyPreviewPointerEdit(edit, delta, { live: true });
   }
 
@@ -4996,6 +5100,7 @@ export class ToolStarterApp {
     if (Math.abs(delta.x) < 0.001 && Math.abs(delta.y) < 0.001) {
       return;
     }
+    this.previewClickSuppressedUntil = Date.now() + 500;
     this.recordPreviewPointerEditStart(edit);
     this.applyPreviewPointerEdit(edit, delta, { live: false });
   }
@@ -5057,7 +5162,7 @@ export class ToolStarterApp {
       .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
       .sort((left, right) => left - right);
     if (!object || targetIndexes.length < 2) {
-      this.statusLog.write("WARN Drag group skipped: selected group is not available.");
+      this.statusLog.write("WARN Drag selection skipped: selected shape set is not available.");
       return;
     }
 
@@ -5093,12 +5198,13 @@ export class ToolStarterApp {
         }
       });
     } catch (error) {
-      this.statusLog.write(`FAIL Invalid drag rejected for group ${edit.groupId || "selected group"}: ${error.message}`);
+      this.statusLog.write(`FAIL Invalid drag rejected for ${edit.groupId ? `group ${edit.groupId}` : "selected shapes"}: ${error.message}`);
       return;
     }
 
-    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK ${live ? "Live " : ""}Dragged group ${edit.groupId || "selected group"} (${targetIndexes.length} shapes) by ${delta.x}, ${delta.y}.`, "Drag group failed schema validation", {
-      directSelectedShapeIndexes: new Set([edit.shapeIndex]),
+    const dragSubject = edit.groupId ? `group ${edit.groupId}` : "selected shapes";
+    this.commitPayloadUpdate(nextPayload, object.id, this.selectedShapeIndex, `OK ${live ? "Live " : ""}Dragged ${dragSubject} (${targetIndexes.length} shapes) by ${delta.x}, ${delta.y}.`, "Drag selection failed schema validation", {
+      directSelectedShapeIndexes: edit.directSelectedShapeIndexes || new Set([edit.shapeIndex]),
       selectedShapeIndexes: new Set(targetIndexes),
       skipPreviewHistory: true
     });

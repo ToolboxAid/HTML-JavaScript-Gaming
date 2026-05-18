@@ -147,6 +147,15 @@ async function dragObjectVectorLogicalPoints(page, start, end) {
   }, { endPoint, startPoint });
 }
 
+async function mouseDragObjectVectorLogicalPoints(page, start, end) {
+  const startPoint = await objectVectorLogicalClientPoint(page, start.x, start.y);
+  const endPoint = await objectVectorLogicalClientPoint(page, end.x, end.y);
+  await page.mouse.move(startPoint.x, startPoint.y);
+  await page.mouse.down();
+  await page.mouse.move(endPoint.x, endPoint.y, { steps: 4 });
+  await page.mouse.up();
+}
+
 async function moveObjectVectorLogicalPoint(page, point) {
   const clientPoint = await objectVectorLogicalClientPoint(page, point.x, point.y);
   await page.evaluate((targetPoint) => {
@@ -5354,7 +5363,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         svgPoint.x = expected.center.x;
         svgPoint.y = expected.center.y;
         const screenCenter = svgPoint.matrixTransform(surface.getScreenCTM());
+        const topHit = document.elementFromPoint(screenCenter.x, screenCenter.y);
+        if (topHit?.classList?.contains("object-vector-studio-v2__selection-drag-area")) {
+          topHit.style.pointerEvents = "none";
+        }
         const hitShape = document.elementFromPoint(screenCenter.x, screenCenter.y)?.closest("[data-shape-index]");
+        if (topHit?.classList?.contains("object-vector-studio-v2__selection-drag-area")) {
+          topHit.style.pointerEvents = "";
+        }
 
         return {
           expected,
@@ -5612,11 +5628,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"groupId": "group-1"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Grouped 2 shapes into group-1\./);
 
-      await page.evaluate(() => {
-        const app = window.__objectVectorStudioV2App;
-        app.activateToolMode("select", "group drag verification");
-        app.selectShape(0, "group drag verification");
-      });
+      await page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes [data-shape-group-id='group-1']").first().click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected group group-1 from shape group icon: 2 shapes\./);
+      await page.evaluate(() => window.__objectVectorStudioV2App.activateToolMode("select", "group drag verification"));
       const groupedDragBefore = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -6349,6 +6363,197 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(shapePanel.locator("[data-shape-group-id='group-2']")).toHaveCount(0);
       await expect(selectedShapeActions.locator("[data-shape-list-action='ungroup']")).toBeDisabled();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Ungrouped 1 selected shapes from group-2\./);
+
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("drags selected Object Vector Studio V2 shapes from preview selection bounds", async ({ page }, testInfo) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await page.evaluate(() => {
+        sessionStorage.setItem("object-vector-studio-v2.runtimePalette", JSON.stringify({
+          id: "drag-selection-palette",
+          swatches: [
+            { id: "white", value: "#ffffff" },
+            { id: "cyan", value: "#6fd3ff" }
+          ]
+        }));
+      });
+
+      const payloadPath = testInfo.outputPath("object-vector-preview-drag-selection.json");
+      await writeFile(payloadPath, JSON.stringify({
+        name: "Preview Drag Selection Payload",
+        objects: [
+          {
+            id: "object.test.preview-drag-selection",
+            name: "Preview Drag Selection",
+            shapes: [
+              {
+                geometry: { x: -20, y: -20, width: 16, height: 16 },
+                groupId: "group-1",
+                locked: false,
+                order: 1,
+                style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
+                tool: "rectangle",
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                visible: true
+              },
+              {
+                geometry: { x: 8, y: 24, width: 16, height: 16 },
+                locked: false,
+                order: 2,
+                style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
+                tool: "rectangle",
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                visible: true
+              },
+              {
+                geometry: { x: 36, y: -20, width: 16, height: 16 },
+                groupId: "group-1",
+                locked: false,
+                order: 3,
+                style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
+                tool: "rectangle",
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                visible: true
+              },
+              {
+                geometry: { x: 64, y: 24, width: 16, height: 16 },
+                locked: false,
+                order: 4,
+                style: { fill: "#ffffff", fillOpacity: 1, stroke: "#6fd3ff", strokeOpacity: 1, strokeWidth: 2 },
+                tool: "rectangle",
+                transform: { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+                visible: true
+              }
+            ],
+            states: [
+              {
+                frames: [
+                  { durationFrames: 1, id: "frame-1", order: 1, shapeOverrides: [] }
+                ],
+                id: "idle",
+                name: "Idle"
+              }
+            ],
+            tags: []
+          }
+        ],
+        toolId: "object-vector-studio-v2",
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(payloadPath);
+
+      const shapePanel = page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes");
+      await shapePanel.locator("[data-object-tile-shape-index='1']").click();
+      await shapePanel.locator("[data-object-tile-shape-index='3']").click({ modifiers: ["Shift"] });
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-selection-drag-bounds='1,3']")).toHaveCount(1);
+
+      const selectedSetBefore = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const indexes = Array.from(app.selectedShapeIndexes).sort((left, right) => left - right);
+        const frame = app.activeFrame();
+        const transforms = indexes.map((shapeIndex) => {
+          const transform = app.effectiveShapeForFrame(app.selectedObject().shapes[shapeIndex], frame, shapeIndex).transform;
+          return { index: shapeIndex, x: transform.x, y: transform.y };
+        });
+        return {
+          bounds: app.shapeSetBounds(app.selectedObject(), indexes, { includeInvisible: false }),
+          indexes,
+          transforms
+        };
+      });
+      expect(selectedSetBefore.indexes).toEqual([1, 3]);
+      await mouseDragObjectVectorLogicalPoints(page, {
+        x: selectedSetBefore.bounds.x + selectedSetBefore.bounds.width / 2,
+        y: selectedSetBefore.bounds.y + selectedSetBefore.bounds.height / 2
+      }, {
+        x: selectedSetBefore.bounds.x + selectedSetBefore.bounds.width / 2 + 6,
+        y: selectedSetBefore.bounds.y + selectedSetBefore.bounds.height / 2 - 4
+      });
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Dragged selected shapes \(2 shapes\) by 6, -4\./);
+      const selectedSetAfter = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return {
+          indexes: Array.from(app.selectedShapeIndexes).sort((left, right) => left - right),
+          transforms: app.selectedObject().shapes.map((shape, shapeIndex) => {
+            const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+            return { x: transform.x, y: transform.y };
+          })
+        };
+      });
+      expect(selectedSetAfter.indexes).toEqual([1, 3]);
+      expect(selectedSetAfter.transforms[1]).toEqual({ x: 6, y: -4 });
+      expect(selectedSetAfter.transforms[3]).toEqual({ x: 6, y: -4 });
+      expect(selectedSetAfter.transforms[0]).toEqual({ x: 0, y: 0 });
+      expect(selectedSetAfter.transforms[2]).toEqual({ x: 0, y: 0 });
+
+      await shapePanel.locator("[data-shape-group-id='group-1']").first().click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-selection-drag-bounds='0,2']")).toHaveCount(1);
+      const groupSetBefore = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const indexes = Array.from(app.selectedShapeIndexes).sort((left, right) => left - right);
+        return {
+          bounds: app.shapeSetBounds(app.selectedObject(), indexes, { includeInvisible: false }),
+          indexes
+        };
+      });
+      expect(groupSetBefore.indexes).toEqual([0, 2]);
+      await mouseDragObjectVectorLogicalPoints(page, {
+        x: groupSetBefore.bounds.x + groupSetBefore.bounds.width / 2,
+        y: groupSetBefore.bounds.y + groupSetBefore.bounds.height / 2
+      }, {
+        x: groupSetBefore.bounds.x + groupSetBefore.bounds.width / 2 - 4,
+        y: groupSetBefore.bounds.y + groupSetBefore.bounds.height / 2 + 5
+      });
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Dragged group group-1 \(2 shapes\) by -4, 5\./);
+      const groupSetAfter = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return {
+          indexes: Array.from(app.selectedShapeIndexes).sort((left, right) => left - right),
+          transforms: app.selectedObject().shapes.map((shape, shapeIndex) => {
+            const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+            return { x: transform.x, y: transform.y };
+          })
+        };
+      });
+      expect(groupSetAfter.indexes).toEqual([0, 2]);
+      expect(groupSetAfter.transforms[0]).toEqual({ x: -4, y: 5 });
+      expect(groupSetAfter.transforms[2]).toEqual({ x: -4, y: 5 });
+      expect(groupSetAfter.transforms[1]).toEqual({ x: 6, y: -4 });
+      expect(groupSetAfter.transforms[3]).toEqual({ x: 6, y: -4 });
+
+      const transformsBeforeOutsideDrag = groupSetAfter.transforms;
+      await mouseDragObjectVectorLogicalPoints(page, { x: -80, y: 60 }, { x: -60, y: 70 });
+      const outsideDragResult = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return {
+          selectedCount: app.selectedShapeIndexes.size,
+          selectedShapeIndex: app.selectedShapeIndex,
+          transforms: app.selectedObject().shapes.map((shape, shapeIndex) => {
+            const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+            return { x: transform.x, y: transform.y };
+          })
+        };
+      });
+      expect(outsideDragResult.transforms).toEqual(transformsBeforeOutsideDrag);
+      expect(outsideDragResult.selectedCount).toBe(0);
+      expect(outsideDragResult.selectedShapeIndex).toBe(-1);
 
       expect(pageErrors).toEqual([]);
     } finally {
