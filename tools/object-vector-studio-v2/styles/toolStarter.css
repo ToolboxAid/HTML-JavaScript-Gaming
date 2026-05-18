@@ -1585,11 +1585,17 @@ textarea:hover {
   pointer-events: none;
 }
 
+.object-vector-studio-v2__object-origin line,
 .object-vector-studio-v2__pivot-origin line {
   stroke: #f8fafc;
   stroke-width: 1.2;
   pointer-events: none;
   vector-effect: non-scaling-stroke;
+}
+
+.object-vector-studio-v2__object-origin line {
+  stroke: var(--tool-starter-accent-strong, #fbbf24);
+  stroke-width: 1.5;
 }
 
 .object-vector-studio-v2__object-detail-grid {

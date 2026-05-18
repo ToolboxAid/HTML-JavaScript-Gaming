@@ -3238,6 +3238,7 @@ export class ToolStarterApp {
       hitLayer.remove();
     }
     this.renderObjectBounds(object);
+    this.renderObjectOriginMarker(object);
     this.renderSnapPointTargets(object);
     this.renderDrawingPreview();
     this.renderDrawingHint();
@@ -3414,6 +3415,34 @@ export class ToolStarterApp {
     box.setAttribute("width", bounds.width + 12);
     box.setAttribute("height", bounds.height + 12);
     this.elements.renderSurface.append(box);
+  }
+
+  renderObjectOriginMarker(object) {
+    if (!object) {
+      return;
+    }
+    const origin = this.objectTransformOrigin(object);
+    const x = this.scaleDrawingValue(origin.x, OBJECT_PREVIEW_DRAWING_SCALE);
+    const y = this.scaleDrawingValue(origin.y, OBJECT_PREVIEW_DRAWING_SCALE);
+    const marker = document.createElementNS(SVG_NS, "g");
+    marker.classList.add("object-vector-studio-v2__object-origin");
+    marker.dataset.objectOrigin = object.id;
+    marker.setAttribute("role", "img");
+    marker.setAttribute("aria-label", "Object origin/pivot marker for object rotation and scale");
+    const markerTitle = document.createElementNS(SVG_NS, "title");
+    markerTitle.textContent = "Object Origin/Pivot: rotate and scale pivot for the selected object.";
+    const horizontal = document.createElementNS(SVG_NS, "line");
+    horizontal.setAttribute("x1", x - 8);
+    horizontal.setAttribute("x2", x + 8);
+    horizontal.setAttribute("y1", y);
+    horizontal.setAttribute("y2", y);
+    const vertical = document.createElementNS(SVG_NS, "line");
+    vertical.setAttribute("x1", x);
+    vertical.setAttribute("x2", x);
+    vertical.setAttribute("y1", y - 8);
+    vertical.setAttribute("y2", y + 8);
+    marker.append(markerTitle, horizontal, vertical);
+    this.elements.renderSurface.append(marker);
   }
 
   renderCenterOriginMarker() {
@@ -4276,17 +4305,17 @@ export class ToolStarterApp {
       pivot.setAttribute("aria-label", "Origin/Pivot marker for selected shape rotation and scale");
       const pivotTitle = document.createElementNS(SVG_NS, "title");
       pivotTitle.textContent = "Origin/Pivot: rotate and scale pivot for the selected shape.";
-      const horizontal = document.createElementNS(SVG_NS, "line");
-      horizontal.setAttribute("x1", bounds.originX - 4);
-      horizontal.setAttribute("x2", bounds.originX + 4);
-      horizontal.setAttribute("y1", bounds.originY);
-      horizontal.setAttribute("y2", bounds.originY);
-      const vertical = document.createElementNS(SVG_NS, "line");
-      vertical.setAttribute("x1", bounds.originX);
-      vertical.setAttribute("x2", bounds.originX);
-      vertical.setAttribute("y1", bounds.originY - 4);
-      vertical.setAttribute("y2", bounds.originY + 4);
-      pivot.append(pivotTitle, horizontal, vertical);
+      const diagonalForward = document.createElementNS(SVG_NS, "line");
+      diagonalForward.setAttribute("x1", bounds.originX - 8);
+      diagonalForward.setAttribute("x2", bounds.originX + 8);
+      diagonalForward.setAttribute("y1", bounds.originY - 8);
+      diagonalForward.setAttribute("y2", bounds.originY + 8);
+      const diagonalBack = document.createElementNS(SVG_NS, "line");
+      diagonalBack.setAttribute("x1", bounds.originX - 8);
+      diagonalBack.setAttribute("x2", bounds.originX + 8);
+      diagonalBack.setAttribute("y1", bounds.originY + 8);
+      diagonalBack.setAttribute("y2", bounds.originY - 8);
+      pivot.append(pivotTitle, diagonalForward, diagonalBack);
       this.elements.renderSurface.append(pivot);
     } catch (error) {
       this.statusLog.write(`FAIL Selection overlay render failed for ${object.name}/shape-${this.selectedShapeIndex} (${shapeTool(selectedShape)}): ${error.message}`);
@@ -6631,10 +6660,6 @@ export class ToolStarterApp {
       this.statusLog.write("WARN Shape order skipped: no shape is selected.");
       return;
     }
-    if (selected.locked) {
-      this.statusLog.write(`WARN Shape order skipped: shape row ${this.selectedShapeIndex} is locked.`);
-      return;
-    }
     if (this.guardSelectedObjectMutation("Shape order")) {
       return;
     }
@@ -6642,33 +6667,104 @@ export class ToolStarterApp {
     const nextPayload = this.cloneCurrentPayload();
     const object = nextPayload.objects.find((candidate) => candidate.id === this.selectedObjectId);
     const shapes = sortedShapes(object);
-    const index = this.selectedShapeIndex;
+    const selectedIndexes = Array.from(new Set(Array.from(this.selectedShapeIndexes || [])
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < shapes.length)))
+      .sort((left, right) => left - right);
+    if (!selectedIndexes.length && this.selectedShapeIndex >= 0 && this.selectedShapeIndex < shapes.length) {
+      selectedIndexes.push(this.selectedShapeIndex);
+    }
+    const lockedIndex = selectedIndexes.find((shapeIndex) => shapes[shapeIndex]?.locked);
+    if (Number.isInteger(lockedIndex)) {
+      this.statusLog.write(`WARN Shape order skipped: shape row ${lockedIndex} is locked.`);
+      return;
+    }
     if (shapes.length < 2) {
-      this.statusLog.write(`WARN Shape order skipped: shape row ${index} is the only shape in ${object.name}.`);
+      this.statusLog.write(`WARN Shape order skipped: shape row ${this.selectedShapeIndex} is the only shape in ${object.name}.`);
       return;
     }
 
-    const nextIndexByAction = {
-      back: 0,
-      backward: index - 1,
-      forward: index + 1,
-      front: shapes.length - 1
-    };
-    const nextIndex = nextIndexByAction[action];
-    if (!Number.isInteger(nextIndex) || nextIndex < 0 || nextIndex >= shapes.length || nextIndex === index) {
-      this.statusLog.write(`WARN Shape z-order skipped: shape row ${index} cannot move ${action}.`);
+    const selectedIndexSet = new Set(selectedIndexes);
+    const oldIndexByShape = new Map(shapes.map((shape, shapeIndex) => [shape, shapeIndex]));
+    const reorderedShapes = shapes.slice();
+    if (action === "back") {
+      reorderedShapes.sort((left, right) => {
+        const leftIndex = oldIndexByShape.get(left);
+        const rightIndex = oldIndexByShape.get(right);
+        const leftSelected = selectedIndexSet.has(leftIndex);
+        const rightSelected = selectedIndexSet.has(rightIndex);
+        if (leftSelected === rightSelected) {
+          return leftIndex - rightIndex;
+        }
+        return leftSelected ? -1 : 1;
+      });
+    } else if (action === "front") {
+      reorderedShapes.sort((left, right) => {
+        const leftIndex = oldIndexByShape.get(left);
+        const rightIndex = oldIndexByShape.get(right);
+        const leftSelected = selectedIndexSet.has(leftIndex);
+        const rightSelected = selectedIndexSet.has(rightIndex);
+        if (leftSelected === rightSelected) {
+          return leftIndex - rightIndex;
+        }
+        return leftSelected ? 1 : -1;
+      });
+    } else if (action === "backward") {
+      for (let index = 1; index < reorderedShapes.length; index += 1) {
+        const currentOldIndex = oldIndexByShape.get(reorderedShapes[index]);
+        const previousOldIndex = oldIndexByShape.get(reorderedShapes[index - 1]);
+        if (selectedIndexSet.has(currentOldIndex) && !selectedIndexSet.has(previousOldIndex)) {
+          [reorderedShapes[index - 1], reorderedShapes[index]] = [reorderedShapes[index], reorderedShapes[index - 1]];
+        }
+      }
+    } else if (action === "forward") {
+      for (let index = reorderedShapes.length - 2; index >= 0; index -= 1) {
+        const currentOldIndex = oldIndexByShape.get(reorderedShapes[index]);
+        const nextOldIndex = oldIndexByShape.get(reorderedShapes[index + 1]);
+        if (selectedIndexSet.has(currentOldIndex) && !selectedIndexSet.has(nextOldIndex)) {
+          [reorderedShapes[index], reorderedShapes[index + 1]] = [reorderedShapes[index + 1], reorderedShapes[index]];
+        }
+      }
+    } else {
+      this.statusLog.write(`WARN Shape z-order skipped: unsupported action ${action}.`);
       return;
     }
 
     const oldShapes = shapes.slice();
-    const [movedShape] = shapes.splice(index, 1);
-    shapes.splice(nextIndex, 0, movedShape);
-    shapes.forEach((shape, shapeIndex) => {
+    if (oldShapes.every((shape, shapeIndex) => reorderedShapes[shapeIndex] === shape)) {
+      const subject = selectedIndexes.length > 1 ? `selected shape rows ${selectedIndexes.join(", ")}` : `shape row ${this.selectedShapeIndex}`;
+      this.statusLog.write(`WARN Shape z-order skipped: ${subject} cannot move ${action}.`);
+      return;
+    }
+    const oldIndexToNextIndex = new Map();
+    oldShapes.forEach((shape, oldIndex) => {
+      oldIndexToNextIndex.set(oldIndex, reorderedShapes.indexOf(shape));
+    });
+    reorderedShapes.forEach((shape, shapeIndex) => {
       shape.order = shapeIndex + 1;
     });
-    object.shapes = shapes;
-    this.remapShapeOverrideIndexes(object, oldShapes, shapes);
-    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, nextIndex, `OK Shape row ${index} z-order ${action}.`, "Shape z-order failed schema validation");
+    object.shapes = reorderedShapes;
+    this.remapShapeOverrideIndexes(object, oldShapes, reorderedShapes);
+    const selectedShapeIndexes = new Set(selectedIndexes
+      .map((shapeIndex) => oldIndexToNextIndex.get(shapeIndex))
+      .filter((shapeIndex) => Number.isInteger(shapeIndex) && shapeIndex >= 0));
+    const directSelectedShapeIndexes = new Set(Array.from(this.directSelectedShapeIndexes || [])
+      .map((shapeIndex) => oldIndexToNextIndex.get(normalizeShapeIndex(shapeIndex)))
+      .filter((shapeIndex) => Number.isInteger(shapeIndex) && shapeIndex >= 0));
+    if (!directSelectedShapeIndexes.size) {
+      selectedShapeIndexes.forEach((shapeIndex) => directSelectedShapeIndexes.add(shapeIndex));
+    }
+    const nextSelectedShapeIndex = oldIndexToNextIndex.get(this.selectedShapeIndex);
+    const primaryShapeIndex = Number.isInteger(nextSelectedShapeIndex) && nextSelectedShapeIndex >= 0
+      ? nextSelectedShapeIndex
+      : Math.min(...selectedShapeIndexes);
+    const okMessage = selectedIndexes.length > 1
+      ? `OK Shape rows ${selectedIndexes.join(", ")} z-order ${action}.`
+      : `OK Shape row ${this.selectedShapeIndex} z-order ${action}.`;
+    this.commitPayloadUpdate(nextPayload, this.selectedObjectId, primaryShapeIndex, okMessage, "Shape z-order failed schema validation", {
+      directSelectedShapeIndexes,
+      selectedShapeIndexes
+    });
   }
 
   objectTransformOrigin(object) {

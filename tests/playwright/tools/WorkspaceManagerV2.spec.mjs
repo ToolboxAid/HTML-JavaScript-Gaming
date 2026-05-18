@@ -2861,16 +2861,31 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-resize-handle]")).toHaveCount(4);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-pivot-origin='0']")).toHaveCount(1);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-object-origin='object.asteroids.object-1']")).toHaveCount(1);
       const selectionChrome = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
         const selectionBox = surface.querySelector("[data-selection-bounds='0']");
         const handle = surface.querySelector("[data-resize-handle]");
+        const [shapeDiagonalA, shapeDiagonalB] = Array.from(surface.querySelector("[data-pivot-origin='0']").querySelectorAll("line"));
+        const [objectHorizontal, objectVertical] = Array.from(surface.querySelector("[data-object-origin='object.asteroids.object-1']").querySelectorAll("line"));
         return {
           handleHeight: Number(handle.getAttribute("height")),
           handleWidth: Number(handle.getAttribute("width")),
-          selectionStrokeWidth: getComputedStyle(selectionBox).strokeWidth
+          objectHorizontalSpan: Math.abs(Number(objectHorizontal.getAttribute("x2")) - Number(objectHorizontal.getAttribute("x1"))),
+          objectVerticalSpan: Math.abs(Number(objectVertical.getAttribute("y2")) - Number(objectVertical.getAttribute("y1"))),
+          selectionStrokeWidth: getComputedStyle(selectionBox).strokeWidth,
+          shapeDiagonalASpan: Math.abs(Number(shapeDiagonalA.getAttribute("x2")) - Number(shapeDiagonalA.getAttribute("x1"))),
+          shapeDiagonalBSpan: Math.abs(Number(shapeDiagonalB.getAttribute("y2")) - Number(shapeDiagonalB.getAttribute("y1")))
         };
       });
-      expect(selectionChrome).toEqual({ handleHeight: 3, handleWidth: 3, selectionStrokeWidth: "0.75px" });
+      expect(selectionChrome).toEqual({
+        handleHeight: 3,
+        handleWidth: 3,
+        objectHorizontalSpan: 16,
+        objectVerticalSpan: 16,
+        selectionStrokeWidth: "0.75px",
+        shapeDiagonalASpan: 16,
+        shapeDiagonalBSpan: 16
+      });
 
       await clickPreviewShape(1, { shiftKey: true });
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveClass(/is-selected/);
@@ -3007,10 +3022,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(originAfterApply).toEqual({ x: 2, y: -3 });
       await expect(page.locator("#statusLog")).toHaveValue(/OK Updated shape row 0 origin\/pivot to 2, -3\./);
       const pivotMarkerAfterOrigin = await page.locator("#objectVectorStudioV2RenderSurface [data-pivot-origin='0']").evaluate((pivot) => {
-        const [horizontal, vertical] = Array.from(pivot.querySelectorAll("line"));
+        const [diagonal] = Array.from(pivot.querySelectorAll("line"));
         return {
-          x: Number(vertical.getAttribute("x1")),
-          y: Number(horizontal.getAttribute("y1"))
+          x: Number(((Number(diagonal.getAttribute("x1")) + Number(diagonal.getAttribute("x2"))) / 2).toFixed(3)),
+          y: Number(((Number(diagonal.getAttribute("y1")) + Number(diagonal.getAttribute("y2"))) / 2).toFixed(3))
         };
       });
       expect(pivotMarkerAfterOrigin).toEqual({ x: 150, y: 40 });
@@ -4374,19 +4389,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         strokeWidth: 20
       });
       const pivotMarkerState = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__pivot-origin").evaluate((pivot) => {
-        const [horizontal, vertical] = Array.from(pivot.querySelectorAll("line"));
+        const [diagonalForward, diagonalBack] = Array.from(pivot.querySelectorAll("line"));
         return {
           ariaLabel: pivot.getAttribute("aria-label"),
-          horizontalSpan: Math.abs(Number(horizontal.getAttribute("x2")) - Number(horizontal.getAttribute("x1"))),
+          diagonalBackSpan: Math.abs(Number(diagonalBack.getAttribute("y2")) - Number(diagonalBack.getAttribute("y1"))),
+          diagonalForwardSpan: Math.abs(Number(diagonalForward.getAttribute("x2")) - Number(diagonalForward.getAttribute("x1"))),
           title: pivot.querySelector("title")?.textContent || "",
-          verticalSpan: Math.abs(Number(vertical.getAttribute("y2")) - Number(vertical.getAttribute("y1")))
+          xMarker: diagonalForward.getAttribute("x1") === diagonalBack.getAttribute("x1")
+            && diagonalForward.getAttribute("x2") === diagonalBack.getAttribute("x2")
+            && diagonalForward.getAttribute("y1") === diagonalBack.getAttribute("y2")
+            && diagonalForward.getAttribute("y2") === diagonalBack.getAttribute("y1")
         };
       });
       expect(pivotMarkerState).toEqual({
         ariaLabel: "Origin/Pivot marker for selected shape rotation and scale",
-        horizontalSpan: 8,
+        diagonalBackSpan: 16,
+        diagonalForwardSpan: 16,
         title: "Origin/Pivot: rotate and scale pivot for the selected shape.",
-        verticalSpan: 8
+        xMarker: true
       });
       const previewToolbarAfterText = await page.evaluate(() => Array.from(document.querySelectorAll(".object-vector-studio-v2__preview-edit-toolbar button")).map((button) => ({
         disabled: button.disabled,
