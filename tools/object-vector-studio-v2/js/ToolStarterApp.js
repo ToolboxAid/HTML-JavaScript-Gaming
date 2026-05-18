@@ -1422,7 +1422,14 @@ export class ToolStarterApp {
       return;
     }
     this.runtimePalette = paletteValidation.palette;
-    this.ensureSelectedShape();
+    const preserveEmptyShapeSelection = options.preserveEmptyShapeSelection === true
+      && this.selectedObject()
+      && this.selectedShapeIndex < 0
+      && !this.selectedShapeIndexes.size
+      && !this.directSelectedShapeIndexes.size;
+    if (!preserveEmptyShapeSelection) {
+      this.ensureSelectedShape();
+    }
     this.ensureSelectedFrame();
     if (options.syncPaletteSelection !== false) {
       this.syncPaletteSelectionFromCurrentShape({ render: false });
@@ -3222,6 +3229,7 @@ export class ToolStarterApp {
   renderWorkSurface() {
     const object = this.selectedObject();
     this.elements.renderSurface.classList.toggle("is-drawing-mode", Boolean(this.activeDrawing));
+    this.updateRenderSurfaceCursorState();
     this.removeDrawingHint();
     this.elements.renderSurface.replaceChildren();
     this.renderSvgGrid();
@@ -4815,9 +4823,42 @@ export class ToolStarterApp {
     if (event.button !== 0 || this.previewPointerEdit) {
       return;
     }
-    if (event.target === this.elements.renderSurface || event.target?.classList?.contains("object-vector-studio-v2__svg-grid") || event.target?.classList?.contains("object-vector-studio-v2__center-origin-dot")) {
+    if (this.isEmptyCanvasPointerTarget(event.target)) {
+      if (this.startPreviewObjectMove(event)) {
+        return;
+      }
       this.deselectShape("empty canvas");
     }
+  }
+
+  isEmptyCanvasPointerTarget(target) {
+    if (target === this.elements.renderSurface) {
+      return true;
+    }
+    return Boolean(target?.classList?.contains("object-vector-studio-v2__svg-grid")
+      || target?.closest?.(".object-vector-studio-v2__svg-grid")
+      || target?.classList?.contains("object-vector-studio-v2__center-origin-dot"));
+  }
+
+  canDragSelectedObjectFromEmptyCanvas() {
+    const object = this.selectedObject();
+    if (!object || this.activeDrawing || this.activeTool !== "select") {
+      return false;
+    }
+    if (this.selectedShapeIndex >= 0 || this.selectedShapeIndexes.size || this.directSelectedShapeIndexes.size) {
+      return false;
+    }
+    const targetIndexes = this.selectedObjectShapeIndexes(object);
+    if (!targetIndexes.length || this.isObjectLocked(object.id)) {
+      return false;
+    }
+    return !targetIndexes.some((shapeIndex) => sortedShapes(object)[shapeIndex]?.locked);
+  }
+
+  updateRenderSurfaceCursorState() {
+    const draggingObject = this.previewPointerEdit?.mode === "move-object";
+    this.elements.renderSurface.classList.toggle("is-empty-canvas-object-drag-ready", this.canDragSelectedObjectFromEmptyCanvas());
+    this.elements.renderSurface.classList.toggle("is-empty-canvas-object-dragging", draggingObject);
   }
 
   deselectShape(sourceLabel = "selection") {
@@ -5090,6 +5131,33 @@ export class ToolStarterApp {
     this.createShape(type, { geometry, sourceLabel, style: this.activeDrawing?.style || null });
   }
 
+  startPreviewObjectMove(event) {
+    if (event.button !== 0 || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey || !this.canDragSelectedObjectFromEmptyCanvas()) {
+      return false;
+    }
+    const object = this.selectedObject();
+    const objectShapes = sortedShapes(object);
+    const targetIndexes = this.selectedObjectShapeIndexes(object);
+    const activeFrame = this.activeFrame();
+    event.preventDefault();
+    event.stopPropagation();
+    this.previewPointerEdit = {
+      ...this.previewPointerEditStartMetadata(event),
+      mode: "move-object",
+      objectId: object.id,
+      objectName: object.name,
+      originalTransforms: Object.fromEntries(targetIndexes.map((shapeIndex) => {
+        const effectiveShape = this.effectiveShapeForFrame(objectShapes[shapeIndex], activeFrame, shapeIndex);
+        return [shapeIndex, this.ensureShapeTransform(effectiveShape)];
+      })),
+      shapeIndex: -1,
+      start: this.snapCanvasPoint(this.pointerPreviewPoint(event), { excludeShapeIndex: -1 }),
+      targetIndexes
+    };
+    this.updateRenderSurfaceCursorState();
+    return true;
+  }
+
   startPreviewSelectionBoundsMove(event) {
     this.startPreviewShapeMove(event, this.selectedShapeIndex, { fromSelectionBounds: true });
   }
@@ -5269,6 +5337,7 @@ export class ToolStarterApp {
       return;
     }
     this.previewPointerEdit = null;
+    this.updateRenderSurfaceCursorState();
     if (!edit.dragThresholdMet && !this.previewPointerEditPastDragThreshold(edit, event)) {
       return;
     }
@@ -5295,6 +5364,11 @@ export class ToolStarterApp {
   }
 
   applyPreviewPointerEdit(edit, delta, { live = false } = {}) {
+    if (edit.mode === "move-object") {
+      this.applyPreviewObjectMove(edit, delta, { live });
+      return;
+    }
+
     if (edit.mode === "move") {
       this.updateSelectedShapeTransform("preview move", (shape) => {
         shape.transform = this.ensureShapeTransform(shape);
@@ -5328,6 +5402,62 @@ export class ToolStarterApp {
         shape.geometry = this.previewResizeGeometry(shape, edit, delta);
       }, `OK ${live ? "Live " : ""}Resized shape row ${edit.shapeIndex} with ${edit.handle} handle.`, { skipPreviewHistory: true });
     }
+  }
+
+  applyPreviewObjectMove(edit, delta, { live = false } = {}) {
+    const object = this.selectedObject();
+    const objectShapes = sortedShapes(object);
+    const targetIndexes = Array.from(new Set((edit.targetIndexes || [])
+      .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
+      .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
+      .sort((left, right) => left - right);
+    if (!object || object.id !== edit.objectId || !targetIndexes.length) {
+      this.statusLog.write("WARN Drag object skipped: selected object is not available.");
+      return;
+    }
+
+    const nextPayload = this.cloneCurrentPayload();
+    const activeFrame = this.activeFrame();
+    try {
+      targetIndexes.forEach((shapeIndex) => {
+        const originalTransform = edit.originalTransforms?.[shapeIndex];
+        if (!originalTransform) {
+          throw new Error(`shape row ${shapeIndex} original transform is not available.`);
+        }
+        const override = this.frameOverrideInPayload(nextPayload, shapeIndex, { create: true });
+        const baseShape = this.findShapeInPayload(nextPayload, shapeIndex);
+        const shape = override
+          ? this.effectiveShapeForFrame(baseShape, activeFrame, shapeIndex)
+          : baseShape;
+        if (!shape) {
+          throw new Error(`shape row ${shapeIndex} is not available.`);
+        }
+        shape.transform = this.ensureShapeTransform({
+          transform: {
+            ...originalTransform,
+            x: Number((originalTransform.x + delta.x).toFixed(3)),
+            y: Number((originalTransform.y + delta.y).toFixed(3))
+          }
+        });
+        const transformErrors = this.validateShapeForTransform(shape);
+        if (transformErrors.length) {
+          throw new Error(`shape row ${shapeIndex}: ${transformErrors.join(" ")}`);
+        }
+        if (override) {
+          override.transform = this.ensureShapeTransform(shape);
+        }
+      });
+    } catch (error) {
+      this.statusLog.write(`FAIL Invalid object drag rejected for ${object.name}: ${error.message}`);
+      return;
+    }
+
+    this.commitPayloadUpdate(nextPayload, object.id, -1, `OK ${live ? "Live " : ""}Dragged object ${object.name} by ${delta.x}, ${delta.y}.`, "Drag object failed schema validation", {
+      directSelectedShapeIndexes: new Set(),
+      preserveEmptyShapeSelection: true,
+      selectedShapeIndexes: new Set(),
+      skipPreviewHistory: true
+    });
   }
 
   applyPreviewGroupMove(edit, delta, { live = false } = {}) {
@@ -8362,7 +8492,10 @@ export class ToolStarterApp {
     this.selectedFrameId = options.selectedFrameId ?? this.selectedFrameId;
     this.ensureSelectedFrame();
     this.actionNav.setJsonPayloadActionsEnabled(true);
-    this.renderPayload({ syncPaletteSelection: options.syncPaletteSelection !== false });
+    this.renderPayload({
+      preserveEmptyShapeSelection: options.preserveEmptyShapeSelection === true,
+      syncPaletteSelection: options.syncPaletteSelection !== false
+    });
     if (workspaceSync.changed) {
       this.statusLog.write(`OK Object Vector Studio V2 workspace dirty state: true; reason=${workspaceSync.reason}; changedKeys=${workspaceSync.changedKeys.join(", ")}.`);
     }

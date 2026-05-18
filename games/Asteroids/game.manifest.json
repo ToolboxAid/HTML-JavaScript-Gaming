@@ -166,16 +166,6 @@
           "role": "ui",
           "source": "manifest"
         },
-        "assets.image.background.deluxe": {
-          "path": "assets/images/deluxe.png",
-          "type": "image",
-          "kind": "png",
-          "role": "background",
-          "source": "manifest",
-          "stretchOverride": {
-            "uniformEdgeStretchPx": 0
-          }
-        },
         "assets.image.bezel.bezel": {
           "path": "assets/images/bezel.png",
           "type": "image",
@@ -280,8 +270,12 @@
                     "y": 24
                   },
                   {
-                    "x": 0,
-                    "y": 12
+                    "x": 7,
+                    "y": 16
+                  },
+                  {
+                    "x": -7,
+                    "y": 16
                   },
                   {
                     "x": -21,
@@ -298,7 +292,8 @@
                 "pointRounding": [
                   false,
                   false,
-                  true,
+                  false,
+                  false,
                   false
                 ],
                 "startPointStyle": "square",

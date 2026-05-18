@@ -1155,10 +1155,11 @@ export default class fullscreenBezel {
     }
 
     const shouldShow = this.ready && !this.missing;
-    this.element.style.display = toDisplayValue(shouldShow);
-    this.element.style.visibility = toVisibilityValue(shouldShow);
-    this.element.style.opacity = toOpacityValue(shouldShow);
-    if (shouldShow && fullscreenActive) {
+    const visible = shouldShow && fullscreenActive;
+    this.element.style.display = toDisplayValue(visible);
+    this.element.style.visibility = toVisibilityValue(visible);
+    this.element.style.opacity = toOpacityValue(visible);
+    if (visible) {
       const fitted = this.applyCanvasWindowFitLayout();
       if (!fitted) {
         this.applyCanvasFullscreenFitLayout() || this.applyCanvasFallbackLayout();
@@ -1169,8 +1170,8 @@ export default class fullscreenBezel {
       this.applyCanvasNormalLayout();
     }
     return {
-      visible: shouldShow,
-      reason: shouldShow ? "visible" : (fullscreenActive ? "asset-unavailable" : "fullscreen-inactive"),
+      visible,
+      reason: visible ? "visible" : (fullscreenActive ? "asset-unavailable" : "fullscreen-inactive"),
       path: this.path,
       hostTagName: this.host?.tagName || "",
       canvasLayoutMode: this.canvasLayoutMode

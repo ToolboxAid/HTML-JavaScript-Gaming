@@ -6019,10 +6019,51 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("[aria-label='Frame controls'] button")).toHaveText(["Left", "Frame Earlier", "Duplicate Frame", "Frame Later", "Right", "Delete Frame"]);
       await expect(page.locator("#objectVectorStudioV2DeleteFrameButton")).toBeDisabled();
 
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.evaluate(() => {
+        document.querySelector(".is-collapsible").open = false;
+        window.__objectVectorStudioV2App.shell.applyFullscreenState(true);
+        window.__objectVectorStudioV2App.shell.updateSummary();
+      });
+      await expect(page.locator("body")).toHaveClass(/tools-platform-fullscreen-active/);
+      const fullscreenFrameControls = await page.evaluate(() => {
+        const center = document.querySelector(".tool-starter__panel--center");
+        const frameControls = document.querySelector('[aria-label="Frame controls"]');
+        const timeline = document.querySelector("#objectVectorStudioV2FrameTimeline");
+        const duplicateButton = document.querySelector("#objectVectorStudioV2DuplicateFrameButton");
+        const centerRect = center.getBoundingClientRect();
+        const controlsRect = frameControls.getBoundingClientRect();
+        const timelineRect = timeline.getBoundingClientRect();
+        const duplicateRect = duplicateButton.getBoundingClientRect();
+        return {
+          centerOverflowY: getComputedStyle(center).overflowY,
+          controlsVisible: controlsRect.width > 0 && controlsRect.height > 0,
+          controlsWithinViewport: controlsRect.top >= 0 && controlsRect.bottom <= window.innerHeight + 1,
+          duplicateButtonEnabled: !duplicateButton.disabled,
+          duplicateButtonVisible: duplicateRect.width > 0 && duplicateRect.height > 0,
+          timelineVisible: timelineRect.width > 0 && timelineRect.height > 0,
+          timelineWithinCenter: timelineRect.top >= centerRect.top - 1 && timelineRect.bottom <= centerRect.bottom + 1
+        };
+      });
+      expect(fullscreenFrameControls).toEqual({
+        centerOverflowY: "auto",
+        controlsVisible: true,
+        controlsWithinViewport: true,
+        duplicateButtonEnabled: true,
+        duplicateButtonVisible: true,
+        timelineVisible: true,
+        timelineWithinCenter: true
+      });
       await page.locator("#objectVectorStudioV2DuplicateFrameButton").click();
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-state-id='idle']")).toHaveCount(2);
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-2']")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2DeleteFrameButton")).toBeEnabled();
+      await page.evaluate(() => {
+        window.__objectVectorStudioV2App.shell.applyFullscreenState(false);
+        document.querySelector(".is-collapsible").open = true;
+        window.__objectVectorStudioV2App.shell.updateSummary();
+      });
+      await expect(page.locator("body")).not.toHaveClass(/tools-platform-fullscreen-active/);
       await page.locator("#objectVectorStudioV2DeleteFrameButton").click();
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id]")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2FrameTimeline [data-frame-id='frame-1']")).toHaveAttribute("aria-pressed", "true");
@@ -6713,6 +6754,35 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(outsideDragResult.selectedCount).toBe(0);
       expect(outsideDragResult.selectedShapeIndex).toBe(-1);
 
+      const emptyCanvasCursor = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => ({
+        classList: Array.from(surface.classList),
+        cursor: getComputedStyle(surface).cursor
+      }));
+      expect(emptyCanvasCursor.classList).toContain("is-empty-canvas-object-drag-ready");
+      expect(emptyCanvasCursor.cursor).toBe("grab");
+      await mouseDragObjectVectorLogicalPoints(page, { x: -80, y: 60 }, { x: -60, y: 70 });
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Dragged object Preview Drag Selection by 20, 10\./);
+      const objectDragResult = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        return {
+          cursorReady: app.elements.renderSurface.classList.contains("is-empty-canvas-object-drag-ready"),
+          selectedCount: app.selectedShapeIndexes.size,
+          selectedShapeIndex: app.selectedShapeIndex,
+          transforms: app.selectedObject().shapes.map((shape, shapeIndex) => {
+            const transform = app.effectiveShapeForFrame(shape, frame, shapeIndex).transform;
+            return { x: transform.x, y: transform.y };
+          })
+        };
+      });
+      expect(objectDragResult.cursorReady).toBe(true);
+      expect(objectDragResult.selectedCount).toBe(0);
+      expect(objectDragResult.selectedShapeIndex).toBe(-1);
+      expect(objectDragResult.transforms).toEqual(transformsBeforeOutsideDrag.map((transform) => ({
+        x: Number((transform.x + 20).toFixed(3)),
+        y: Number((transform.y + 10).toFixed(3))
+      })));
+
       await shapePanel.locator("[data-object-tile-shape-index='1']").click();
       const liveDragStart = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
@@ -7196,7 +7266,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const engine = window.__asteroidsNewEngine;
         const bezelState = engine?.fullscreenBezelLayer?.getState?.();
         return !document.fullscreenElement
-          && bezelState?.visible === true
+          && bezelState?.visible === false
           && bezelState?.canvasLayoutMode === "normal";
       });
       const normalLayout = await page.evaluate(() => {
@@ -7226,12 +7296,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(normalLayout.bezelState).toMatchObject({
         canvasLayoutMode: "normal",
         path: "/games/Asteroids/assets/images/bezel.png",
-        visible: true
+        visible: false
       });
-      expect(normalLayout.bezelDisplay).toBe("block");
+      expect(normalLayout.bezelDisplay).toBe("none");
       expect(normalLayout.bezelInHost).toBe(true);
-      expect(normalLayout.bezelRectWidth).toBeGreaterThan(900);
-      expect(normalLayout.bezelRectHeight).toBeGreaterThan(600);
+      expect(normalLayout.bezelRectWidth).toBe(0);
+      expect(normalLayout.bezelRectHeight).toBe(0);
       expect(normalLayout.hostKind).toBe("canvas");
       expect(normalLayout.canvasInlineHeight).toBe("");
       expect(normalLayout.canvasInlinePosition).toBe("");
@@ -7359,7 +7429,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const engine = window.__asteroidsNewEngine;
         return engine?.backgroundImageLayer?.getState?.().manifestResolved === true
           && engine?.fullscreenBezelLayer?.getState?.().manifestResolved === true
-          && engine?.fullscreenBezelLayer?.getState?.().visible === true;
+          && engine?.fullscreenBezelLayer?.getState?.().canvasLayoutMode === "normal";
       });
       const chromeAssetState = await page.evaluate(() => {
         const engine = window.__asteroidsNewEngine;
@@ -7375,7 +7445,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(chromeAssetState.bezel).toMatchObject({
         canvasLayoutMode: "normal",
         path: "/games/Asteroids/assets/images/bezel.png",
-        visible: true,
+        visible: false,
         uniformEdgeStretchPx: 10
       });
       expect(chromeAssetState.bezel.stretchConfigPath).toContain("games/Asteroids/game.manifest.json");

@@ -1486,6 +1486,14 @@ textarea:hover {
   cursor: crosshair;
 }
 
+.object-vector-studio-v2__render-surface.is-empty-canvas-object-drag-ready {
+  cursor: grab;
+}
+
+.object-vector-studio-v2__render-surface.is-empty-canvas-object-dragging {
+  cursor: grabbing;
+}
+
 .object-vector-studio-v2__drawing-preview {
   opacity: 0.78;
   stroke-dasharray: 5 4;
@@ -2314,7 +2322,44 @@ html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v
   height: 100%;
   max-height: none;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__render-surface,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__render-surface {
+  width: min(100%, calc(34vh * 16 / 11));
+  justify-self: center;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__work-area,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__work-area {
+  gap: 6px;
+  padding: 8px;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__animation-controls,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__animation-controls {
+  gap: 6px;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__frame-timeline,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__frame-timeline {
+  min-height: 48px;
+  padding: 6px;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__frame-tile,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__frame-tile {
+  min-width: 96px;
+  gap: 2px;
+  padding: 4px;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__frame-thumbnail,
+html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v2"] .object-vector-studio-v2__frame-thumbnail {
+  width: 72px;
+  height: 34px;
 }
 
 body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .accordion-v2.is-open,
