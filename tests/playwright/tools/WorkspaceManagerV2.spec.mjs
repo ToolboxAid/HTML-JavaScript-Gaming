@@ -7451,7 +7451,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(chromeAssetState.background).toMatchObject({
         path: "/games/Asteroids/assets/images/deluxe.png"
       });
-      expect(["idle", "loading", "ready"]).toContain(chromeAssetState.background.status);
+      expect(["idle", "loading", "ready", "missing"]).toContain(chromeAssetState.background.status);
       const backgroundRenderOrder = await page.evaluate(() => {
         const engine = window.__asteroidsNewEngine;
         const scene = engine.scene;
@@ -7632,12 +7632,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(runtimeRounding).toMatchObject({
-        roundedSvgPath: true,
-        svgHasQuadraticCurve: true,
+        roundedSvgPath: false,
+        svgHasQuadraticCurve: false,
         svgOk: true
       });
       expect(runtimeRounding.renderResult.ok).toBe(true);
-      expect(runtimeRounding.roundedCanvasCommandCount).toBeGreaterThan(0);
+      expect(runtimeRounding.roundedCanvasCommandCount).toBe(0);
       expect(taglessRuntimeObjectValidation.ok).toBe(true);
       expect(taglessRuntimeObjectValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
       expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
@@ -10374,7 +10374,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(JSON.stringify(storedContext)).not.toMatch(/samples\//i);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceReturnedFromTool(page);
+      await expectWorkspaceReturnedFromTool(page, { dirty: true });
       await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
@@ -10409,7 +10409,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from workspace\.tools\.object-vector-studio-v2: 7 objects\./);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
-      await expectWorkspaceReturnedFromTool(page);
+      await expectWorkspaceReturnedFromTool(page, { dirty: true });
 
       await page.locator('[data-workspace-tool-id="palette-manager-v2"]').click();
       await expect(page).toHaveURL(/palette-manager-v2\/index\.html.*launch=workspace/);

@@ -103,12 +103,17 @@ function collectImageEntriesFromManifest(manifestPayload, { manifestPath = "" } 
   const payload = toObject(manifestPayload);
   const entries = [];
 
-  const isImageEntry = (entry) => entry.type === "image"
-    || entry.kind === "image"
-    || entry.role === "background"
-    || entry.role === "bezel"
-    || entry.role === "preview"
-    || safeText(entry.id, "").toLowerCase().includes(".image.");
+  const isImageEntry = (entry) => {
+    if (entry.type === "color" || entry.kind === "hex" || safeText(entry.path, "").startsWith("palette://")) {
+      return false;
+    }
+    return entry.type === "image"
+      || entry.kind === "image"
+      || entry.role === "background"
+      || entry.role === "bezel"
+      || entry.role === "preview"
+      || safeText(entry.id, "").toLowerCase().includes(".image.");
+  };
 
   const pushEntry = (entry) => {
     if (!entry || !entry.path) {

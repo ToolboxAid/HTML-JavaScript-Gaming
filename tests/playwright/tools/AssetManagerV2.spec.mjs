@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import { readFile } from "node:fs/promises";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
@@ -33,6 +32,135 @@ async function installFakeAssetFilePicker(page, files = []) {
   }, files);
 }
 
+async function installFakeWorkspaceRepoPicker(page) {
+  await page.addInitScript(() => {
+    const defaultManifestPaths = [
+      "/games/Asteroids/game.manifest.json",
+      "/games/GravityWell/game.manifest.json",
+      "/games/Pong/game.manifest.json"
+    ];
+
+    function appendManifestWrite(path, contents) {
+      const writes = JSON.parse(window.sessionStorage.getItem("workspace.repo.manifestWrites") || "[]");
+      writes.push({ path, contents });
+      window.sessionStorage.setItem("workspace.repo.manifestWrites", JSON.stringify(writes));
+    }
+
+    function makeFileHandle(name, text, path = name) {
+      let contents = text;
+      let lastModified = Date.now();
+      return {
+        kind: "file",
+        name,
+        path,
+        async createWritable() {
+          let draft = "";
+          return {
+            async write(value) {
+              draft += value instanceof Blob
+                ? await value.text()
+                : String(value ?? "");
+            },
+            async close() {
+              contents = draft;
+              lastModified += 1000;
+              if (path.endsWith("/game.manifest.json")) {
+                appendManifestWrite(path, contents);
+              }
+            }
+          };
+        },
+        async getFile() {
+          const type = path.endsWith(".svg") ? "image/svg+xml" : "application/json";
+          return new File([contents], name, { lastModified, type });
+        }
+      };
+    }
+
+    function makeDirectoryHandle(name, children = {}, path = name, options = {}) {
+      return {
+        kind: "directory",
+        name,
+        path,
+        repoPath: options.repoPath || "",
+        async getDirectoryHandle(childName) {
+          const child = children[childName];
+          if (child?.kind === "directory") {
+            return child;
+          }
+          throw new DOMException(`${childName} was not found.`, "NotFoundError");
+        },
+        async getFileHandle(childName) {
+          const child = children[childName];
+          if (child?.kind === "file") {
+            return child;
+          }
+          throw new DOMException(`${childName} was not found.`, "NotFoundError");
+        },
+        async *entries() {
+          for (const entry of Object.entries(children)) {
+            yield entry;
+          }
+        }
+      };
+    }
+
+    async function fetchManifestText(path) {
+      const response = await fetch(path, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`${path} returned ${response.status}`);
+      }
+      return await response.text();
+    }
+
+    async function makeMockRepoHandle(config = {}) {
+      const repoName = config.repoName || "HTML-JavaScript-Gaming";
+      const games = {};
+      for (const manifestPath of defaultManifestPaths) {
+        const parts = manifestPath.replace(/^\/+/, "").split("/");
+        const gameFolder = parts[1];
+        const gamePath = `${repoName}/games/${gameFolder}`;
+        games[gameFolder] = makeDirectoryHandle(gameFolder, {
+          "game.manifest.json": makeFileHandle("game.manifest.json", await fetchManifestText(manifestPath), `${gamePath}/game.manifest.json`)
+        }, gamePath, config);
+      }
+      return makeDirectoryHandle(repoName, {
+        games: makeDirectoryHandle("games", games, `${repoName}/games`, config),
+        tools: makeDirectoryHandle("tools", {}, `${repoName}/tools`, config)
+      }, repoName, config);
+    }
+
+    window.__workspaceManagerV2MockRepoConfig = {};
+    window.__workspaceManagerV2RepoHandleCache = {
+      async save({ reference, repoHandle }) {
+        const config = window.__workspaceManagerV2MockRepoConfig || {};
+        window.sessionStorage.setItem("workspace-manager-v2-mock-repo-handle-cache", JSON.stringify({
+          repoName: reference?.displayName || repoHandle?.name || config.repoName || "HTML-JavaScript-Gaming",
+          repoPath: repoHandle?.repoPath || config.repoPath || ""
+        }));
+      },
+      async restore({ reference }) {
+        const rawValue = window.sessionStorage.getItem("workspace-manager-v2-mock-repo-handle-cache");
+        const cachedConfig = rawValue ? JSON.parse(rawValue) : {};
+        return await makeMockRepoHandle({
+          repoName: cachedConfig.repoName || reference?.displayName || "HTML-JavaScript-Gaming",
+          repoPath: cachedConfig.repoPath || ""
+        });
+      }
+    };
+    window.showDirectoryPicker = async () => await makeMockRepoHandle(window.__workspaceManagerV2MockRepoConfig || {});
+  });
+}
+
+async function selectFakeWorkspaceRepo(page, { repoName = "HTML-JavaScript-Gaming" } = {}) {
+  await page.evaluate((nextRepoName) => {
+    window.__workspaceManagerV2MockRepoConfig = { repoName: nextRepoName };
+  }, repoName);
+  await page.locator("#pickRepoBtn").click();
+  await expect(page.locator("#repoSelectedValue")).toHaveText(repoName);
+  await expect(page.locator("#activeGameSelect")).toBeEnabled();
+}
+
 async function queueAssetFile(page, descriptor) {
   await page.evaluate((queuedFile) => {
     window.__assetManagerV2FilePickerQueue.push(queuedFile);
@@ -49,8 +177,11 @@ async function openAssetManagerV2(page, query = "", { assetFiles = [] } = {}) {
   return server;
 }
 
-async function openWorkspaceManagerV2(page, { assetFiles = [], query = "" } = {}) {
+async function openWorkspaceManagerV2(page, { assetFiles = [], query = "", repoPicker = false } = {}) {
   const server = await startRepoServer();
+  if (repoPicker) {
+    await installFakeWorkspaceRepoPicker(page);
+  }
   if (assetFiles.length) {
     await installFakeAssetFilePicker(page, assetFiles);
   }
@@ -1253,7 +1384,8 @@ test.describe("Asset Manager V2", () => {
           contents: "png",
           path: "HTML-JavaScript-Gaming/assets/images/title-preview.png"
         }
-      ]
+      ],
+      repoPicker: true
     });
     const pageErrors = [];
 
@@ -1264,12 +1396,14 @@ test.describe("Asset Manager V2", () => {
     try {
       await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(7);
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
+      await selectFakeWorkspaceRepo(page);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/Asteroids\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/Asteroids\/assets"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"asset-manager-v2"/);
-      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector-map-editor"/);
-      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector.asteroids.ship"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assets\.color\.background\.game"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"object-vector-studio-v2"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"object\.asteroids\.ship"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"activePalette"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"workspaceManifest"/);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
@@ -1390,7 +1524,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"color\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"kind\": \"hex\"");
       await expect(page.locator("#inspectorOutput")).toContainText("\"name\": \"HUD Blue\"");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Workspace Manager V2 session manifest now has 18 validated assets\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK workspace\.tools\.asset-manager-v2 now has 19 validated assets\./);
 
       const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
       expect(storedContext.documentKind).toBe("workspace-manifest");
@@ -1399,8 +1533,21 @@ test.describe("Asset Manager V2", () => {
       expect(storedContext.workspaceManifest).toBeUndefined();
       expect(storedContext.tools["asset-browser"]).toBeUndefined();
       expect(storedContext.tools["palette-browser"]).toBeUndefined();
-      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(18);
+      expect(Object.keys(storedContext.tools["asset-manager-v2"].assets)).toHaveLength(15);
       expect(storedContext.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
+      expect(storedContext.tools["asset-manager-v2"].assets["assets.color.background.game"]).toEqual({
+        path: "palette://workspace/space-black",
+        type: "color",
+        kind: "hex",
+        role: "background",
+        source: "manifest",
+        color: {
+          hex: "#020617",
+          name: "Space Black",
+          symbol: "!",
+          source: "manifest"
+        }
+      });
       expect(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.fire"]).toEqual({
         path: "assets/audio/fire.wav",
         type: "audio",
@@ -1408,28 +1555,31 @@ test.describe("Asset Manager V2", () => {
         role: "sound",
         source: "manifest"
       });
-      expect(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]).toEqual({
+      const storedAssetSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.asset-manager-v2")));
+      expect(storedAssetSession.dirty.isDirty).toBe(true);
+      expect(Object.keys(storedAssetSession.data.assets)).toHaveLength(19);
+      expect(storedAssetSession.data.assets["assets.audio.sound.laser"]).toEqual({
         path: "assets/audio/laser.wav",
         type: "audio",
         kind: "wav",
         role: "sound",
         source: "asset-manager-v2"
       });
-      expect(storedContext.tools["asset-manager-v2"].assets["assets.font.ui.score"]).toEqual({
+      expect(storedAssetSession.data.assets["assets.font.ui.score"]).toEqual({
         path: "assets/fonts/score.ttf",
         type: "font",
         kind: "ttf",
         role: "ui",
         source: "asset-manager-v2"
       });
-      expect(storedContext.tools["asset-manager-v2"].assets["assets.image.preview.title-preview"]).toEqual({
+      expect(storedAssetSession.data.assets["assets.image.preview.title-preview"]).toEqual({
         path: "assets/images/title-preview.png",
         type: "image",
         kind: "png",
         role: "preview",
         source: "asset-manager-v2"
       });
-      expect(storedContext.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]).toEqual({
+      expect(storedAssetSession.data.assets["assets.color.hud.primary-hud.hud-blue"]).toEqual({
         path: "palette://workspace/hud-blue",
         type: "color",
         kind: "hex",
@@ -1438,30 +1588,34 @@ test.describe("Asset Manager V2", () => {
         color: {
           hex: "#78B7FF",
           name: "HUD Blue",
-          symbol: "*"
+          symbol: "*",
+          source: "manifest"
         }
       });
       expect(storedContext.tools["palette-manager-v2"].source).toBe("manifest");
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
-      expect(storedContext.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toContain("vector.asteroids.ship");
+      expect(storedContext.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toContain("object.asteroids.ship");
       expect(storedContext.tools["workspace-v2"]).toBeUndefined();
-      expect(Object.keys(storedContext.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2", "vector-map-editor"]);
+      expect(Object.keys(storedContext.tools).sort()).toEqual(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2", "text2speech-V2"]);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
-      await expect(page.locator("#exportManifestButton")).toBeEnabled();
-      const downloadPromise = page.waitForEvent("download");
-      await page.locator("#exportManifestButton").click();
-      const download = await downloadPromise;
-      expect(download.suggestedFilename()).toBe("workspace-manager-v2-Asteroids.workspace.manifest.json");
-      const savedManifest = JSON.parse(await readFile(await download.path(), "utf8"));
-      expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(18);
+      await expect(page.locator("#saveWorkspaceButton")).toBeEnabled();
+      await page.locator("#saveWorkspaceButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Saved and marked clean: workspace\.tools\.asset-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Save validation result: game manifest valid; root\.tools toolState valid; saved context matched re-read file\./);
+      const manifestWrites = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]"));
+      expect(manifestWrites).toHaveLength(1);
+      expect(manifestWrites[0].path).toBe("HTML-JavaScript-Gaming/games/Asteroids/game.manifest.json");
+      const savedManifest = JSON.parse(manifestWrites[0].contents);
+      expect(Object.keys(savedManifest.tools["asset-manager-v2"].assets)).toHaveLength(19);
       expect(savedManifest.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
-      expect(savedManifest.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]).toEqual(storedContext.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]);
-      expect(savedManifest.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]).toEqual(storedContext.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]);
-      expect(savedManifest.tools["vector-map-editor"].vectorMapDocument.vectors.map((vector) => vector.id)).toContain("vector.asteroids.ship");
+      expect(savedManifest.tools["asset-manager-v2"].assets["assets.color.background.game"]).toEqual(storedContext.tools["asset-manager-v2"].assets["assets.color.background.game"]);
+      expect(savedManifest.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]).toEqual(storedAssetSession.data.assets["assets.audio.sound.laser"]);
+      expect(savedManifest.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]).toEqual(storedAssetSession.data.assets["assets.color.hud.primary-hud.hud-blue"]);
+      expect(savedManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toContain("object.asteroids.ship");
 
       expect(pageErrors).toEqual([]);
     } finally {
@@ -1492,7 +1646,7 @@ test.describe("Asset Manager V2", () => {
       await expect(assetManagerCard).toContainText("Schema Validated");
       await expect(collisionInspectorLink).toBeVisible();
       await expect(collisionInspectorLink).toHaveAttribute("href", "/tools/collision-inspector-v2/index.html");
-      await expect(collisionInspectorCard).toContainText("Manifest-driven collision QA");
+      await expect(collisionInspectorCard).toContainText("Manifest-driven collision visualization");
       const plannedToolNames = await page.locator("[data-planned-tools-grid] h3").allTextContents();
       for (const plannedToolName of [
         "Asset Manager V2",
