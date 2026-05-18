@@ -36,6 +36,7 @@ export default class Engine {
     fullscreen = null,
     backgroundColorLayer = null,
     backgroundImageLayer = null,
+    customBackgroundCallback = null,
     fullscreenBezelLayer = null,
     audio = null,
     logger = null,
@@ -76,6 +77,9 @@ export default class Engine {
     this.backgroundImageLayer = backgroundImageLayer || new backgroundImage({
       documentRef: this.documentRef
     });
+    this.customBackgroundCallback = typeof customBackgroundCallback === 'function'
+      ? customBackgroundCallback
+      : null;
     this.fullscreenBezelLayer = fullscreenBezelLayer || new fullscreenBezel({
       canvas,
       host: this.fullscreenTarget,
@@ -274,6 +278,60 @@ export default class Engine {
     }
   }
 
+  setCustomBackgroundCallback(callback) {
+    this.customBackgroundCallback = typeof callback === 'function' ? callback : null;
+  }
+
+  renderCustomBackground() {
+    if (typeof this.customBackgroundCallback === 'function') {
+      try {
+        return this.customBackgroundCallback(this.renderer, { scene: this.scene, engine: this });
+      } catch (error) {
+        this.trackRuntimeError('engine.customBackgroundCallback', error, { severity: 'error' });
+        throw error;
+      }
+    }
+
+    if (this.scene && typeof this.scene.customBackgroundCallback === 'function') {
+      try {
+        return this.scene.customBackgroundCallback(this.renderer, { scene: this.scene, engine: this });
+      } catch (error) {
+        this.trackRuntimeError('scene.customBackgroundCallback', error, { severity: 'error' });
+        throw error;
+      }
+    }
+
+    return null;
+  }
+
+  syncRuntimeOverlay() {
+    const fullscreenActive = this.fullscreen?.getState?.().active === true;
+    const fullscreenElement = this.fullscreen?.documentRef?.fullscreenElement
+      || this.documentRef?.fullscreenElement
+      || null;
+    return this.fullscreenBezelLayer?.sync?.({ fullscreenActive, fullscreenElement }) || null;
+  }
+
+  renderBackgroundPipeline() {
+    this.renderer.clear();
+    this.backgroundColorLayer?.render?.(this.renderer, { scene: this.scene, engine: this });
+    this.renderCustomBackground();
+    this.syncRuntimeOverlay();
+    this.backgroundImageLayer?.render?.(this.renderer, { scene: this.scene, engine: this });
+  }
+
+  renderFrame() {
+    this.renderBackgroundPipeline();
+    if (this.scene && typeof this.scene.render === 'function') {
+      try {
+        this.scene.render(this.renderer, this);
+      } catch (error) {
+        this.trackRuntimeError('scene.render', error, { severity: 'error' });
+        throw error;
+      }
+    }
+  }
+
   tick(now) {
     const { deltaMs, deltaSeconds } = this.frameClock.tick(now);
     const frameStart = performance.now();
@@ -325,30 +383,7 @@ export default class Engine {
     updateDurationMs = performance.now() - updateStart;
 
     const renderStart = performance.now();
-    this.renderer.clear();
-    this.backgroundColorLayer?.render?.(this.renderer, { scene: this.scene, engine: this });
-    if (this.scene && typeof this.scene.renderBackgroundEffects === 'function') {
-      try {
-        this.scene.renderBackgroundEffects(this.renderer, this);
-      } catch (error) {
-        this.trackRuntimeError('scene.renderBackgroundEffects', error, { severity: 'error' });
-        throw error;
-      }
-    }
-    this.backgroundImageLayer?.render?.(this.renderer, { scene: this.scene, engine: this });
-    if (this.scene && typeof this.scene.render === 'function') {
-      try {
-        this.scene.render(this.renderer, this);
-      } catch (error) {
-        this.trackRuntimeError('scene.render', error, { severity: 'error' });
-        throw error;
-      }
-    }
-    const fullscreenActive = this.fullscreen?.getState?.().active === true;
-    const fullscreenElement = this.fullscreen?.documentRef?.fullscreenElement
-      || this.documentRef?.fullscreenElement
-      || null;
-    this.fullscreenBezelLayer?.sync?.({ fullscreenActive, fullscreenElement });
+    this.renderFrame();
     renderDurationMs = performance.now() - renderStart;
 
     const frameData = {

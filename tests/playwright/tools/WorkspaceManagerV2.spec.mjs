@@ -7456,34 +7456,74 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const engine = window.__asteroidsNewEngine;
         const scene = engine.scene;
         const order = [];
+        let starfieldDraws = 0;
         const renderer = {
+          clear() {
+            order.push("clear");
+          },
           getCanvasSize() {
             return { width: 960, height: 720 };
           },
           drawRect(_x, _y, _width, _height, color) {
-            if (color === "#020617") {
+            if (color === "#020617" && !order.includes("background-color")) {
               order.push("background-color");
-            } else if (color === "#94a3b8" && !order.includes("starfield")) {
-              order.push("starfield");
+            } else if (color === "#94a3b8") {
+              starfieldDraws += 1;
+              if (!order.includes("custom-background")) {
+                order.push("custom-background");
+              }
             }
           },
           drawImageFrame() {
             order.push("background-image");
           }
         };
+        const originalRenderer = engine.renderer;
         const originalLayer = { ...engine.backgroundImageLayer.layer };
-        engine.backgroundColorLayer.render(renderer, { scene, engine });
-        scene.renderBackgroundEffects(renderer, engine);
-        engine.backgroundImageLayer.layer = {
-          ...engine.backgroundImageLayer.layer,
-          image: { width: 960, height: 720 },
-          status: "ready"
+        const originalMode = scene.session.mode;
+        const originalRender = scene.render;
+        const originalFullscreenBezelLayer = engine.fullscreenBezelLayer;
+        engine.renderer = renderer;
+        engine.fullscreenBezelLayer = {
+          sync() {
+            order.push("overlay");
+            return { visible: false };
+          }
         };
-        engine.backgroundImageLayer.render(renderer, { scene: { session: { mode: "playing" } }, engine });
-        engine.backgroundImageLayer.layer = originalLayer;
-        return order;
+        scene.session.mode = "playing";
+        scene.render = () => {
+          order.push("game-objects");
+        };
+        try {
+          engine.backgroundImageLayer.layer = {
+            ...engine.backgroundImageLayer.layer,
+            image: { width: 960, height: 720 },
+            status: "ready"
+          };
+          engine.renderFrame();
+        } finally {
+          engine.renderer = originalRenderer;
+          engine.fullscreenBezelLayer = originalFullscreenBezelLayer;
+          engine.backgroundImageLayer.layer = originalLayer;
+          scene.session.mode = originalMode;
+          scene.render = originalRender;
+        }
+        return {
+          callbackType: typeof scene.customBackgroundCallback,
+          order,
+          starfieldDraws
+        };
       });
-      expect(backgroundRenderOrder).toEqual(["background-color", "starfield", "background-image"]);
+      expect(backgroundRenderOrder.callbackType).toBe("function");
+      expect(backgroundRenderOrder.starfieldDraws).toBeGreaterThan(0);
+      expect(backgroundRenderOrder.order).toEqual([
+        "clear",
+        "background-color",
+        "custom-background",
+        "overlay",
+        "background-image",
+        "game-objects"
+      ]);
       expect(chromeAssetState.bezel).toMatchObject({
         canvasLayoutMode: "normal",
         path: "/games/Asteroids/assets/images/bezel.png",

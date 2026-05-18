@@ -224,12 +224,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -7,
-                  "y": 16
+                  "x": -3,
+                  "y": 7
                 },
                 "point2": {
-                  "x": -0.079,
-                  "y": 19.96
+                  "x": 0,
+                  "y": 9
                 }
               },
               "style": {
@@ -254,12 +254,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": 7,
-                  "y": 16
+                  "x": 3,
+                  "y": 7
                 },
                 "point2": {
-                  "x": -0.079,
-                  "y": 19.96
+                  "x": 0,
+                  "y": 9
                 }
               },
               "style": {
@@ -286,23 +286,19 @@
                 "points": [
                   {
                     "x": 0,
-                    "y": -24
+                    "y": -16
                   },
                   {
-                    "x": 21,
-                    "y": 24
+                    "x": 9,
+                    "y": 10
                   },
                   {
-                    "x": 7,
-                    "y": 16
+                    "x": 0,
+                    "y": 5
                   },
                   {
-                    "x": -7,
-                    "y": 16
-                  },
-                  {
-                    "x": -21,
-                    "y": 24
+                    "x": -9,
+                    "y": 10
                   }
                 ]
               },
@@ -313,7 +309,6 @@
                 "fillOpacity": 1,
                 "strokeOpacity": 1,
                 "pointRounding": [
-                  false,
                   false,
                   false,
                   false,
@@ -339,11 +334,11 @@
               "geometry": {
                 "point1": {
                   "x": 0,
-                  "y": 24
+                  "y": 10
                 },
                 "point2": {
-                  "x": -7,
-                  "y": 16
+                  "x": -3,
+                  "y": 7
                 }
               },
               "style": {
@@ -368,12 +363,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": 7,
-                  "y": 16
+                  "x": 3,
+                  "y": 7
                 },
                 "point2": {
                   "x": 0,
-                  "y": 24
+                  "y": 10
                 }
               },
               "style": {
@@ -472,7 +467,14 @@
                   "shapeOverrides": [
                     {
                       "visible": true,
-                      "shapeIndex": 0
+                      "shapeIndex": 0,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      }
                     },
                     {
                       "shapeIndex": 4,
@@ -495,6 +497,28 @@
                         "y": 0
                       },
                       "visible": false
+                    },
+                    {
+                      "shapeIndex": 1,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 2,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
                     }
                   ]
                 },
@@ -597,7 +621,7 @@
           ],
           "objectOrigin": {
             "x": 0,
-            "y": 0
+            "y": -3
           }
         },
         {

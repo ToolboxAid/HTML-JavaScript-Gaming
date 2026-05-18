@@ -181,6 +181,11 @@ export default class AsteroidsGameScene extends Scene {
     this.debugFrame = 0;
     this.debugEventLimit = 40;
     this.debugEvents = [];
+    this.customBackgroundCallback = (renderer) => {
+      this.world.starfield.forEach((star) => {
+        renderer.drawRect(star.x, star.y, star.size, star.size, '#94a3b8');
+      });
+    };
     this.lastThrusting = false;
     this.lastRotateDirection = 0;
     this.lastMode = this.session.mode;
@@ -727,12 +732,6 @@ export default class AsteroidsGameScene extends Scene {
     this.lastOnePressed = onePressed;
     this.lastTwoPressed = twoPressed;
     this.lastPPressed = pPressed;
-  }
-
-  renderBackgroundEffects(renderer) {
-    this.world.starfield.forEach((star) => {
-      renderer.drawRect(star.x, star.y, star.size, star.size, '#94a3b8');
-    });
   }
 
   render(renderer, engine) {
