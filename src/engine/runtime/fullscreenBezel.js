@@ -1150,11 +1150,11 @@ export default class fullscreenBezel {
       };
     }
 
-    const shouldShow = fullscreenActive && this.ready && !this.missing;
+    const shouldShow = this.ready && !this.missing;
     this.element.style.display = toDisplayValue(shouldShow);
     this.element.style.visibility = toVisibilityValue(shouldShow);
     this.element.style.opacity = toOpacityValue(shouldShow);
-    if (shouldShow) {
+    if (shouldShow && fullscreenActive) {
       const fitted = this.applyCanvasWindowFitLayout();
       if (!fitted) {
         this.applyCanvasFullscreenFitLayout() || this.applyCanvasFallbackLayout();

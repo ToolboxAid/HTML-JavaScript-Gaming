@@ -143,6 +143,160 @@ function objectTransformOrigin(object) {
   return { x: 0, y: 0 };
 }
 
+function pointStyleValue(value) {
+  return value === "round" ? "round" : "square";
+}
+
+function strokeLineJoinValue(value) {
+  return pointStyleValue(value) === "round" ? "round" : "miter";
+}
+
+function shapeRoundingRadius(shape) {
+  const value = Number(shape?.style?.roundingRadius);
+  return Number.isFinite(value) && value >= 0 ? value : 4;
+}
+
+function shapeGeometryPoints(shape) {
+  const geometryTool = shapeGeometryTool(shape);
+  if (geometryTool === "rectangle") {
+    const x = Number(shape.geometry.x) || 0;
+    const y = Number(shape.geometry.y) || 0;
+    const width = Number(shape.geometry.width) || 0;
+    const height = Number(shape.geometry.height) || 0;
+    return [
+      { x, y },
+      { x: x + width, y },
+      { x: x + width, y: y + height },
+      { x, y: y + height }
+    ];
+  }
+  if (geometryTool === "polygon" || geometryTool === "polyline") {
+    return Array.isArray(shape?.geometry?.points) ? shape.geometry.points : [];
+  }
+  return [];
+}
+
+function shapePointRoundingValues(shape) {
+  const points = shapeGeometryPoints(shape);
+  if (!points.length) {
+    return [];
+  }
+  const explicit = Array.isArray(shape?.style?.pointRounding) ? shape.style.pointRounding : null;
+  if (explicit) {
+    return Array.from({ length: points.length }, (_, index) => explicit[index] === true);
+  }
+  return Array.from({ length: points.length }, () => false);
+}
+
+function roundedPointPathCommands(shape, { closed } = {}) {
+  const geometryTool = shapeGeometryTool(shape);
+  if (!["polygon", "polyline", "rectangle"].includes(geometryTool)) {
+    return [];
+  }
+  const sourcePoints = shapeGeometryPoints(shape);
+  const pointCount = sourcePoints.length;
+  if (pointCount < 3) {
+    return [];
+  }
+  const pointRounding = shapePointRoundingValues(shape);
+  const hasRoundedPoint = pointRounding.some((isRounded, index) => isRounded === true && (closed || (index > 0 && index < pointCount - 1)));
+  const radius = shapeRoundingRadius(shape);
+  if (!hasRoundedPoint || radius <= 0) {
+    return [];
+  }
+  const points = sourcePoints.map((point) => ({
+    x: Number(point.x) || 0,
+    y: Number(point.y) || 0
+  }));
+  const roundedVertex = (index) => {
+    if (pointRounding[index] !== true || (!closed && (index === 0 || index === pointCount - 1))) {
+      return null;
+    }
+    const previous = points[index === 0 ? pointCount - 1 : index - 1];
+    const current = points[index];
+    const next = points[index === pointCount - 1 ? 0 : index + 1];
+    const previousDistance = Math.hypot(previous.x - current.x, previous.y - current.y);
+    const nextDistance = Math.hypot(next.x - current.x, next.y - current.y);
+    if (previousDistance <= 0 || nextDistance <= 0) {
+      return null;
+    }
+    const vertexRadius = Math.min(radius, previousDistance / 2, nextDistance / 2);
+    if (vertexRadius <= 0) {
+      return null;
+    }
+    return {
+      after: {
+        x: current.x + ((next.x - current.x) / nextDistance) * vertexRadius,
+        y: current.y + ((next.y - current.y) / nextDistance) * vertexRadius
+      },
+      before: {
+        x: current.x + ((previous.x - current.x) / previousDistance) * vertexRadius,
+        y: current.y + ((previous.y - current.y) / previousDistance) * vertexRadius
+      },
+      current
+    };
+  };
+  const commands = [];
+  const appendVertex = (index) => {
+    const rounded = roundedVertex(index);
+    if (!rounded) {
+      commands.push({ point: points[index], type: "line" });
+      return;
+    }
+    commands.push({ point: rounded.before, type: "line" });
+    commands.push({ control: rounded.current, point: rounded.after, type: "quadratic" });
+  };
+  if (closed) {
+    commands.push({ point: roundedVertex(0)?.after || points[0], type: "move" });
+    for (let index = 1; index < pointCount; index += 1) {
+      appendVertex(index);
+    }
+    appendVertex(0);
+    commands.push({ type: "close" });
+    return commands;
+  }
+  commands.push({ point: points[0], type: "move" });
+  for (let index = 1; index < pointCount - 1; index += 1) {
+    appendVertex(index);
+  }
+  commands.push({ point: points[pointCount - 1], type: "line" });
+  return commands;
+}
+
+function applyRuntimePathCommands(context, commands) {
+  commands.forEach((command) => {
+    if (command.type === "move") {
+      context.moveTo(command.point.x, command.point.y);
+    } else if (command.type === "line") {
+      context.lineTo(command.point.x, command.point.y);
+    } else if (command.type === "quadratic") {
+      context.quadraticCurveTo(command.control.x, command.control.y, command.point.x, command.point.y);
+    } else if (command.type === "close") {
+      context.closePath();
+    }
+  });
+}
+
+function formatSvgNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? String(Math.round(parsed * 1000) / 1000) : "0";
+}
+
+function runtimePathCommandsToSvgPath(commands) {
+  return commands.map((command) => {
+    if (command.type === "move") {
+      return `M ${formatSvgNumber(command.point.x)} ${formatSvgNumber(command.point.y)}`;
+    }
+    if (command.type === "line") {
+      return `L ${formatSvgNumber(command.point.x)} ${formatSvgNumber(command.point.y)}`;
+    }
+    if (command.type === "quadratic") {
+      return `Q ${formatSvgNumber(command.control.x)} ${formatSvgNumber(command.control.y)} ${formatSvgNumber(command.point.x)} ${formatSvgNumber(command.point.y)}`;
+    }
+    return "Z";
+  }).join(" ");
+}
+
 function normalizeFill(value) {
   return value && value !== "transparent" ? value : null;
 }
@@ -745,6 +899,8 @@ export class ObjectVectorRuntimeAssetService {
       context.scale(transform.scaleX, transform.scaleY);
       context.translate(-transformOrigin.x, -transformOrigin.y);
       context.lineWidth = shape.style.strokeWidth;
+      context.lineCap = pointStyleValue(shape.style.strokeLinecap ?? shape.style.startPointStyle ?? shape.style.pointStyle);
+      context.lineJoin = strokeLineJoinValue(shape.style.pointStyle ?? shape.style.strokeLinecap);
       context.fillStyle = normalizeFill(shape.style.fill) || "transparent";
       context.strokeStyle = normalizeStroke(shape.style.stroke) || "transparent";
       this.buildPath(context, shape);
@@ -767,6 +923,11 @@ export class ObjectVectorRuntimeAssetService {
     context.beginPath();
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
+      const roundedPath = roundedPointPathCommands(shape, { closed: true });
+      if (roundedPath.length) {
+        applyRuntimePathCommands(context, roundedPath);
+        return;
+      }
       context.rect(shape.geometry.x, shape.geometry.y, shape.geometry.width, shape.geometry.height);
       return;
     }
@@ -784,6 +945,11 @@ export class ObjectVectorRuntimeAssetService {
       return;
     }
     if (geometryTool === "polygon" || geometryTool === "polyline") {
+      const roundedPath = roundedPointPathCommands(shape, { closed: geometryTool === "polygon" });
+      if (roundedPath.length) {
+        applyRuntimePathCommands(context, roundedPath);
+        return;
+      }
       shape.geometry.points.forEach((point, index) => {
         if (index === 0) {
           context.moveTo(point.x, point.y);
@@ -842,9 +1008,17 @@ export class ObjectVectorRuntimeAssetService {
   }
 
   shapeToSvg(shape, transformOrigin = { x: 0, y: 0 }) {
-    const style = ` fill="${escapeXml(shape.style.fill)}" fill-opacity="${shape.style.fillOpacity}" stroke="${escapeXml(shape.style.stroke)}" stroke-opacity="${shape.style.strokeOpacity}" stroke-width="${shape.style.strokeWidth}" transform="${svgTransformAttribute(shapeTransform(shape), transformOrigin)}"`;
+    const lineCap = pointStyleValue(shape.style.strokeLinecap ?? shape.style.startPointStyle ?? shape.style.pointStyle);
+    const lineJoin = strokeLineJoinValue(shape.style.pointStyle ?? shape.style.strokeLinecap);
+    const style = ` fill="${escapeXml(shape.style.fill)}" fill-opacity="${shape.style.fillOpacity}" stroke="${escapeXml(shape.style.stroke)}" stroke-opacity="${shape.style.strokeOpacity}" stroke-width="${shape.style.strokeWidth}" stroke-linecap="${lineCap}" stroke-linejoin="${lineJoin}" transform="${svgTransformAttribute(shapeTransform(shape), transformOrigin)}"`;
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
+      const roundedPath = roundedPointPathCommands(shape, { closed: true });
+      if (roundedPath.length) {
+        const d = runtimePathCommandsToSvgPath(roundedPath);
+        const points = shapeGeometryPoints(shape).map((point) => `${point.x},${point.y}`).join(" ");
+        return `<path d="${d}" points="${points}" data-runtime-rounded-point-render="path"${style}/>`;
+      }
       return `<rect x="${shape.geometry.x}" y="${shape.geometry.y}" width="${shape.geometry.width}" height="${shape.geometry.height}"${style}/>`;
     }
     if (geometryTool === "circle") {
@@ -858,6 +1032,11 @@ export class ObjectVectorRuntimeAssetService {
     }
     if (geometryTool === "polygon" || geometryTool === "polyline") {
       const points = shape.geometry.points.map((point) => `${point.x},${point.y}`).join(" ");
+      const roundedPath = roundedPointPathCommands(shape, { closed: geometryTool === "polygon" });
+      if (roundedPath.length) {
+        const d = runtimePathCommandsToSvgPath(roundedPath);
+        return `<path d="${d}" points="${points}" data-runtime-rounded-point-render="path"${style}/>`;
+      }
       return geometryTool === "polygon"
         ? `<polygon points="${points}"${style}/>`
         : `<polyline points="${points}"${style}/>`;

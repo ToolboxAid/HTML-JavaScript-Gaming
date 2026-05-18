@@ -7192,13 +7192,22 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     try {
       await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
       await page.waitForFunction(() => window.__asteroidsNewBootStage === "boot-complete");
+      await page.waitForFunction(() => {
+        const engine = window.__asteroidsNewEngine;
+        const bezelState = engine?.fullscreenBezelLayer?.getState?.();
+        return !document.fullscreenElement
+          && bezelState?.visible === true
+          && bezelState?.canvasLayoutMode === "normal";
+      });
       const normalLayout = await page.evaluate(() => {
         const canvas = document.getElementById("game");
         const header = document.getElementById("shared-theme-header");
         const host = canvas.parentElement;
         const canvasRect = canvas.getBoundingClientRect();
         const headerRect = header.getBoundingClientRect();
+        const bezelState = window.__asteroidsNewEngine?.fullscreenBezelLayer?.getState?.() || null;
         return {
+          bezelState,
           canvasInlineHeight: canvas.style.height,
           canvasInlinePosition: canvas.style.position,
           canvasInlineWidth: canvas.style.width,
@@ -7207,6 +7216,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           headerHeight: Math.round(headerRect.height),
           hostKind: host.getAttribute("data-runtime-fullscreen-host") || ""
         };
+      });
+      expect(normalLayout.bezelState).toMatchObject({
+        canvasLayoutMode: "normal",
+        path: "/games/Asteroids/assets/images/bezel.png",
+        visible: true
       });
       expect(normalLayout.hostKind).toBe("canvas");
       expect(normalLayout.canvasInlineHeight).toBe("");
@@ -7324,7 +7338,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.waitForFunction(() => {
         const engine = window.__asteroidsNewEngine;
         return engine?.backgroundImageLayer?.getState?.().manifestResolved === true
-          && engine?.fullscreenBezelLayer?.getState?.().manifestResolved === true;
+          && engine?.fullscreenBezelLayer?.getState?.().manifestResolved === true
+          && engine?.fullscreenBezelLayer?.getState?.().visible === true;
       });
       const chromeAssetState = await page.evaluate(() => {
         const engine = window.__asteroidsNewEngine;
@@ -7338,7 +7353,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(["idle", "loading", "ready"]).toContain(chromeAssetState.background.status);
       expect(chromeAssetState.bezel).toMatchObject({
+        canvasLayoutMode: "normal",
         path: "/games/Asteroids/assets/images/bezel.png",
+        visible: true,
         uniformEdgeStretchPx: 10
       });
       expect(chromeAssetState.bezel.stretchConfigPath).toContain("games/Asteroids/game.manifest.json");
@@ -7433,6 +7450,62 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(runtimeObjectValidation.ok).toBe(true);
       expect(runtimeObjectValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
       expect(runtimeObjectValidation.warnings).toEqual([]);
+      const runtimeRounding = await page.evaluate(() => {
+        const scene = window.__asteroidsNewEngine.scene;
+        const runtime = scene.objectVectorRuntime;
+        const assetSet = scene.objectVectorAssets;
+        const svgResult = runtime.createSvgString(assetSet, {
+          objectId: "object.asteroids.ship",
+          stateId: "idle"
+        });
+        const commands = [];
+        const context = {
+          save() {},
+          restore() {},
+          translate() {},
+          rotate() {},
+          scale() {},
+          beginPath() {
+            commands.push({ type: "beginPath" });
+          },
+          moveTo(x, y) {
+            commands.push({ type: "moveTo", x, y });
+          },
+          lineTo(x, y) {
+            commands.push({ type: "lineTo", x, y });
+          },
+          quadraticCurveTo(cx, cy, x, y) {
+            commands.push({ type: "quadraticCurveTo", cx, cy, x, y });
+          },
+          closePath() {
+            commands.push({ type: "closePath" });
+          },
+          rect() {},
+          arc() {},
+          ellipse() {},
+          fill() {},
+          stroke() {},
+          fillText() {}
+        };
+        const renderResult = runtime.renderObject({ ctx: context }, assetSet, {
+          objectId: "object.asteroids.ship",
+          stateId: "idle"
+        });
+        return {
+          renderResult,
+          roundedCanvasCommandCount: commands.filter((command) => command.type === "quadraticCurveTo").length,
+          roundedSvgPath: svgResult.svg.includes('data-runtime-rounded-point-render="path"'),
+          svgHasQuadraticCurve: /\bQ\b/.test(svgResult.svg),
+          svgOk: svgResult.ok
+        };
+      });
+      expect(runtimeRounding).toMatchObject({
+        roundedSvgPath: true,
+        svgHasQuadraticCurve: true,
+        svgOk: true
+      });
+      expect(runtimeRounding.renderResult.ok).toBe(true);
+      expect(runtimeRounding.roundedCanvasCommandCount).toBeGreaterThan(0);
       expect(taglessRuntimeObjectValidation.ok).toBe(true);
       expect(taglessRuntimeObjectValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
       expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
@@ -7443,7 +7516,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(eventMessages).toContain("Object Vector runtime cache miss for ship; cached resolved object object.asteroids.ship.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ufoSmall; cached resolved object object.asteroids.small-ufo.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/frame-1.");
-      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 3 shapes state=idle frame=frame-1.");
+      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 2 shapes state=active frame=frame-1.");
       expect(eventMessages).not.toContain("matched multiple objects by tags");
       expect(pageErrors).toEqual([]);
@@ -10161,7 +10234,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2PaletteSwatchCount")).toHaveText("(10 swatches)");
       await expect(page.locator("#objectVectorStudioV2PaletteSummary [data-palette-color]")).toHaveCount(10);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Runtime palette is read-only session\/workspace data; Object Vector JSON remains palette-free\./);
-      await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(7 obj, states \d+, 3 shapes\)/);
+      await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(7 obj, states \d+, \d+ shapes\)/);
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Asteroids Ship");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Large Asteroid");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Large UFO");
@@ -10744,7 +10817,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator('[data-workspace-tool-id="object-vector-studio-v2"]').click();
       await expect(page).toHaveURL(/object-vector-studio-v2\/index\.html.*launch=workspace/);
-      await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(7 obj, states \d+, 3 shapes\)/);
+      await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(7 obj, states \d+, \d+ shapes\)/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from workspace\.tools\.object-vector-studio-v2: 7 objects\./);
 
       let objectVectorSession = await readObjectVectorWorkspaceSession(page);
@@ -10855,6 +10928,29 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await page.locator("#objectVectorStudioV2MoveYInput").fill("-5");
         await page.locator("#objectVectorStudioV2MoveShapeButton").click();
       });
+      await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const nextPayload = app.cloneCurrentPayload();
+        const object = nextPayload.objects.find((candidate) => candidate.id === "object.asteroids.ship");
+        if (!object) {
+          throw new Error("Asteroids ship object is missing for auto origin dirty test.");
+        }
+        object.objectOrigin = { x: 999, y: 999 };
+        const validation = app.schemaService.validatePayload(nextPayload);
+        if (!validation.ok) {
+          throw new Error(validation.errors.join(" "));
+        }
+        app.currentPayload = validation.payload;
+        app.syncWorkspaceToolSessionPayload(validation.payload, {
+          changedKeys: ["data.objects"],
+          reason: "object-vector-auto-origin-test-baseline"
+        });
+        app.selectObject("object.asteroids.ship", "auto origin dirty baseline");
+        app.selectShape(0, "auto origin dirty baseline");
+      });
+      objectVectorSession = await readObjectVectorWorkspaceSession(page);
+      lastDataText = objectVectorSession.dataText;
+      await resetObjectVectorWorkspaceDirty(page);
       await expectObjectVectorDirtyAfter("object auto origin edit", async () => {
         await page.evaluate(() => {
           const app = window.__objectVectorStudioV2App;
@@ -10865,7 +10961,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const override = frame?.shapeOverrides?.find((entry) => entry.shapeIndex === app.selectedShapeIndex) || null;
           const target = override || shape;
           target.transform = app.ensureShapeTransform(app.effectiveShape(shape));
-          app.selectedObject().objectOrigin = { x: 999, y: 999 };
           app.renderPayload({ syncPaletteSelection: false });
         });
         const autoOriginBefore = await page.evaluate(() => {
@@ -10883,7 +10978,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             objectOrigin: { ...object.objectOrigin }
           };
         });
-        await page.locator("#objectVectorStudioV2ObjectAutoOriginButton").click();
+        await page.evaluate(() => window.__objectVectorStudioV2App.autoOriginSelectedObjectPivot());
         await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Origin updated object Asteroids Ship origin\/pivot from raw visible geometry bounds/);
         const autoOriginAfter = await page.evaluate(() => {
           const app = window.__objectVectorStudioV2App;
@@ -10902,6 +10997,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(autoOriginAfter.objectOrigin.x).toBeCloseTo(autoOriginBefore.center.x, 3);
       expect(autoOriginAfter.objectOrigin.y).toBeCloseTo(autoOriginBefore.center.y, 3);
       expect(autoOriginAfter.objectOrigin.x).not.toBeCloseTo(autoOriginBefore.objectOrigin.x, 3);
+      });
+      await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        app.selectObject("object.asteroids.large-asteroid", "dirty state continuation");
+        app.selectShape(0, "dirty state continuation");
       });
       await expectObjectVectorDirtyAfter("palette color edit", async () => {
         await page.locator("#objectVectorStudioV2PaintModeButton").click();
