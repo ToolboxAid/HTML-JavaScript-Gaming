@@ -7203,10 +7203,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const canvas = document.getElementById("game");
         const header = document.getElementById("shared-theme-header");
         const host = canvas.parentElement;
+        const bezel = document.querySelector('[data-runtime-overlay="fullscreenBezel"]');
         const canvasRect = canvas.getBoundingClientRect();
+        const bezelRect = bezel?.getBoundingClientRect();
         const headerRect = header.getBoundingClientRect();
         const bezelState = window.__asteroidsNewEngine?.fullscreenBezelLayer?.getState?.() || null;
         return {
+          bezelDisplay: bezel ? getComputedStyle(bezel).display : "",
+          bezelInHost: bezel?.parentElement === host,
+          bezelRectHeight: Math.round(bezelRect?.height || 0),
+          bezelRectWidth: Math.round(bezelRect?.width || 0),
           bezelState,
           canvasInlineHeight: canvas.style.height,
           canvasInlinePosition: canvas.style.position,
@@ -7222,6 +7228,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         path: "/games/Asteroids/assets/images/bezel.png",
         visible: true
       });
+      expect(normalLayout.bezelDisplay).toBe("block");
+      expect(normalLayout.bezelInHost).toBe(true);
+      expect(normalLayout.bezelRectWidth).toBeGreaterThan(900);
+      expect(normalLayout.bezelRectHeight).toBeGreaterThan(600);
       expect(normalLayout.hostKind).toBe("canvas");
       expect(normalLayout.canvasInlineHeight).toBe("");
       expect(normalLayout.canvasInlinePosition).toBe("");
@@ -7245,10 +7255,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const fullscreenLayout = await page.evaluate(() => {
         const canvas = document.getElementById("game");
         const fullscreenElement = document.fullscreenElement;
+        const bezel = document.querySelector('[data-runtime-overlay="fullscreenBezel"]');
         const canvasRect = canvas.getBoundingClientRect();
+        const bezelRect = bezel?.getBoundingClientRect();
         const hostRect = fullscreenElement.getBoundingClientRect();
         const bezelState = window.__asteroidsNewEngine?.fullscreenBezelLayer?.getState?.() || null;
         return {
+          bezelDisplay: bezel ? getComputedStyle(bezel).display : "",
+          bezelInHost: bezel?.parentElement === fullscreenElement,
+          bezelRectHeight: Math.round(bezelRect?.height || 0),
+          bezelRectWidth: Math.round(bezelRect?.width || 0),
           canvasHeight: Math.round(canvasRect.height),
           canvasInsideHost: canvasRect.left >= hostRect.left
             && canvasRect.top >= hostRect.top
@@ -7285,6 +7301,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         path: "/games/Asteroids/assets/images/bezel.png",
         visible: true
       });
+      expect(fullscreenLayout.bezelDisplay).toBe("block");
+      expect(fullscreenLayout.bezelInHost).toBe(true);
+      expect(fullscreenLayout.bezelRectWidth).toBe(fullscreenLayout.hostWidth);
+      expect(fullscreenLayout.bezelRectHeight).toBe(fullscreenLayout.hostHeight);
       expect(fullscreenLayout.requests).toEqual([
         { containsCanvas: true, hostKind: "canvas", tagName: "DIV" }
       ]);

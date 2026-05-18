@@ -30,6 +30,40 @@ export function run() {
   assert.equal(isPointInPolygon({ x: 10, y: 10 }, polyA), true);
   assert.equal(isPointInPolygon({ x: 30, y: 10 }, polyA), false);
 
+  const concaveVectorPolygon = [
+    { x: 0, y: 0 },
+    { x: 40, y: 0 },
+    { x: 40, y: 40 },
+    { x: 25, y: 40 },
+    { x: 25, y: 15 },
+    { x: 15, y: 15 },
+    { x: 15, y: 40 },
+    { x: 0, y: 40 },
+  ];
+  const concaveEdgeOverlap = [
+    { x: 13, y: 22 },
+    { x: 17, y: 22 },
+    { x: 17, y: 28 },
+    { x: 13, y: 28 },
+  ];
+  const concaveNotchMiss = [
+    { x: 17, y: 22 },
+    { x: 23, y: 22 },
+    { x: 23, y: 28 },
+    { x: 17, y: 28 },
+  ];
+  const concaveContainedOverlap = [
+    { x: 18, y: 5 },
+    { x: 22, y: 5 },
+    { x: 22, y: 10 },
+    { x: 18, y: 10 },
+  ];
+  assert.equal(arePolygonsColliding(concaveVectorPolygon, concaveEdgeOverlap), true);
+  assert.equal(arePolygonsColliding(concaveVectorPolygon, concaveNotchMiss), false);
+  assert.equal(arePolygonsColliding(concaveVectorPolygon, concaveContainedOverlap), true);
+  assert.equal(isPointInPolygon({ x: 15, y: 22 }, concaveVectorPolygon), true);
+  assert.equal(isPointInPolygon({ x: 20, y: 22 }, concaveVectorPolygon), false);
+
   const maskA = createRasterMask([
     [0, 1, 0],
     [1, 1, 1],

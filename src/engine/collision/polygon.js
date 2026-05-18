@@ -4,41 +4,65 @@ David Quesenberry
 03/22/2026
 polygon.js
 */
-function projectPolygon(points, axis) {
-  let min = Infinity;
-  let max = -Infinity;
+const POLYGON_COLLISION_EPSILON = 0.000001;
 
-  for (const point of points) {
-    const projection = (point.x * axis.x) + (point.y * axis.y);
-    min = Math.min(min, projection);
-    max = Math.max(max, projection);
-  }
-
-  return { min, max };
+function isFinitePolygonPoint(point) {
+  return Number.isFinite(point?.x) && Number.isFinite(point?.y);
 }
 
-function getAxes(points) {
-  const axes = [];
+function arePolygonPointsEqual(left, right) {
+  return Math.abs(left.x - right.x) <= POLYGON_COLLISION_EPSILON
+    && Math.abs(left.y - right.y) <= POLYGON_COLLISION_EPSILON;
+}
 
-  for (let index = 0; index < points.length; index += 1) {
-    const current = points[index];
-    const next = points[(index + 1) % points.length];
-    const edge = {
-      x: next.x - current.x,
-      y: next.y - current.y,
-    };
-    const normal = {
-      x: -edge.y,
-      y: edge.x,
-    };
-    const length = Math.hypot(normal.x, normal.y) || 1;
-    axes.push({
-      x: normal.x / length,
-      y: normal.y / length,
-    });
+function normalizePolygon(points) {
+  if (!Array.isArray(points)) {
+    return [];
   }
 
-  return axes;
+  const polygon = points
+    .filter(isFinitePolygonPoint)
+    .map((point) => ({ x: point.x, y: point.y }));
+
+  if (polygon.length > 1 && arePolygonPointsEqual(polygon[0], polygon[polygon.length - 1])) {
+    polygon.pop();
+  }
+
+  return polygon;
+}
+
+function polygonCross(start, end, point) {
+  return ((end.x - start.x) * (point.y - start.y)) - ((end.y - start.y) * (point.x - start.x));
+}
+
+function isPointOnPolygonSegment(point, start, end) {
+  if (Math.abs(polygonCross(start, end, point)) > POLYGON_COLLISION_EPSILON) {
+    return false;
+  }
+
+  return point.x >= Math.min(start.x, end.x) - POLYGON_COLLISION_EPSILON
+    && point.x <= Math.max(start.x, end.x) + POLYGON_COLLISION_EPSILON
+    && point.y >= Math.min(start.y, end.y) - POLYGON_COLLISION_EPSILON
+    && point.y <= Math.max(start.y, end.y) + POLYGON_COLLISION_EPSILON;
+}
+
+function arePolygonSegmentsIntersecting(leftStart, leftEnd, rightStart, rightEnd) {
+  const leftStartToRightStart = polygonCross(leftStart, leftEnd, rightStart);
+  const leftStartToRightEnd = polygonCross(leftStart, leftEnd, rightEnd);
+  const rightStartToLeftStart = polygonCross(rightStart, rightEnd, leftStart);
+  const rightStartToLeftEnd = polygonCross(rightStart, rightEnd, leftEnd);
+
+  if (isPointOnPolygonSegment(rightStart, leftStart, leftEnd)
+    || isPointOnPolygonSegment(rightEnd, leftStart, leftEnd)
+    || isPointOnPolygonSegment(leftStart, rightStart, rightEnd)
+    || isPointOnPolygonSegment(leftEnd, rightStart, rightEnd)) {
+    return true;
+  }
+
+  return ((leftStartToRightStart > POLYGON_COLLISION_EPSILON && leftStartToRightEnd < -POLYGON_COLLISION_EPSILON)
+      || (leftStartToRightStart < -POLYGON_COLLISION_EPSILON && leftStartToRightEnd > POLYGON_COLLISION_EPSILON))
+    && ((rightStartToLeftStart > POLYGON_COLLISION_EPSILON && rightStartToLeftEnd < -POLYGON_COLLISION_EPSILON)
+      || (rightStartToLeftStart < -POLYGON_COLLISION_EPSILON && rightStartToLeftEnd > POLYGON_COLLISION_EPSILON));
 }
 
 export function getPolygonBounds(points) {
@@ -53,33 +77,72 @@ export function getPolygonBounds(points) {
 }
 
 export function isPointInPolygon(point, polygon) {
+  if (!isFinitePolygonPoint(point)) {
+    return false;
+  }
+
+  const normalizedPolygon = normalizePolygon(polygon);
+  if (normalizedPolygon.length < 3) {
+    return false;
+  }
+
   let inside = false;
 
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
-    const intersects = ((yi > point.y) !== (yj > point.y))
-      && (point.x < ((xj - xi) * (point.y - yi)) / ((yj - yi) || 0.00001) + xi);
-    if (intersects) {
-      inside = !inside;
+  for (let index = 0, previousIndex = normalizedPolygon.length - 1; index < normalizedPolygon.length; previousIndex = index, index += 1) {
+    const current = normalizedPolygon[index];
+    const previous = normalizedPolygon[previousIndex];
+
+    if (isPointOnPolygonSegment(point, previous, current)) {
+      return true;
+    }
+
+    const crossesRay = (current.y > point.y) !== (previous.y > point.y);
+    if (crossesRay) {
+      const rayX = ((previous.x - current.x) * (point.y - current.y)) / (previous.y - current.y) + current.x;
+      if (point.x < rayX) {
+        inside = !inside;
+      }
     }
   }
 
   return inside;
 }
 
-export function arePolygonsColliding(a, b) {
-  const axes = [...getAxes(a), ...getAxes(b)];
+export function arePolygonsColliding(leftPoints, rightPoints) {
+  const leftPolygon = normalizePolygon(leftPoints);
+  const rightPolygon = normalizePolygon(rightPoints);
 
-  for (const axis of axes) {
-    const projectionA = projectPolygon(a, axis);
-    const projectionB = projectPolygon(b, axis);
-    if (projectionA.max < projectionB.min || projectionB.max < projectionA.min) {
-      return false;
+  if (leftPolygon.length < 3 || rightPolygon.length < 3) {
+    return false;
+  }
+
+  for (let leftIndex = 0; leftIndex < leftPolygon.length; leftIndex += 1) {
+    const leftStart = leftPolygon[leftIndex];
+    const leftEnd = leftPolygon[(leftIndex + 1) % leftPolygon.length];
+
+    for (let rightIndex = 0; rightIndex < rightPolygon.length; rightIndex += 1) {
+      if (arePolygonSegmentsIntersecting(
+        leftStart,
+        leftEnd,
+        rightPolygon[rightIndex],
+        rightPolygon[(rightIndex + 1) % rightPolygon.length]
+      )) {
+        return true;
+      }
     }
   }
 
-  return true;
+  for (const point of leftPolygon) {
+    if (isPointInPolygon(point, rightPolygon)) {
+      return true;
+    }
+  }
+
+  for (const point of rightPolygon) {
+    if (isPointInPolygon(point, leftPolygon)) {
+      return true;
+    }
+  }
+
+  return false;
 }

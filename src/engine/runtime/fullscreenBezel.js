@@ -928,6 +928,11 @@ export default class fullscreenBezel {
       this.refreshStretchConfig();
       this.ready = true;
       this.missing = false;
+      const fullscreenElement = this.documentRef?.fullscreenElement || null;
+      this.sync({
+        fullscreenActive: !!fullscreenElement,
+        fullscreenElement
+      });
     };
     element.onerror = () => {
       this.ready = false;
@@ -937,10 +942,9 @@ export default class fullscreenBezel {
       this.imageSize = null;
       this.applyCanvasNormalLayout();
     };
-    element.src = resolveRuntimeAssetUrl(this.path, this.documentRef);
-
-    this.host.appendChild?.(element);
     this.element = element;
+    this.host.appendChild?.(element);
+    element.src = resolveRuntimeAssetUrl(this.path, this.documentRef);
   }
 
   detach() {

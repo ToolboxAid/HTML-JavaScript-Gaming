@@ -79,6 +79,20 @@ export function run() {
   assert.equal(collisionWorld.bullets.length, 0);
   assert.equal(collisionWorld.asteroids.length, 2);
 
+  const bulletConcaveGapWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  bulletConcaveGapWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
+  bulletConcaveGapWorld.asteroids = [createStationaryAsteroid(bulletConcaveGapWorld, { x: 480, y: 360, size: 3 })];
+  bulletConcaveGapWorld.bullets = [bulletConcaveGapWorld.createBulletFromState(createBulletState({
+    x: 461,
+    y: 316,
+    vx: 0,
+    vy: 0,
+  }))];
+  const bulletConcaveGapEvents = bulletConcaveGapWorld.update(0, createInput());
+  assert.deepEqual(bulletConcaveGapEvents.scoreEvents, []);
+  assert.equal(bulletConcaveGapWorld.bullets.length, 1);
+  assert.equal(bulletConcaveGapWorld.asteroids.length, 1);
+
   const shipImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
   shipImpactWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   shipImpactWorld.ship.invulnerable = 0;
@@ -121,6 +135,21 @@ export function run() {
   const ufoImpactEvents = ufoImpactWorld.update(0, createInput());
   assert.equal(ufoImpactWorld.ufo, null);
   assert.equal(ufoImpactEvents.explosions.some((explosion) => explosion.source === 'ufo'), true);
+
+  const ufoConcaveGapWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  ufoConcaveGapWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
+  ufoConcaveGapWorld.asteroids = [createStationaryAsteroid(ufoConcaveGapWorld, { x: 480, y: 360, size: 3 })];
+  ufoConcaveGapWorld.ufo = ufoConcaveGapWorld.createUfoEntity('large', 1);
+  ufoConcaveGapWorld.ufo.x = 471;
+  ufoConcaveGapWorld.ufo.y = 304;
+  ufoConcaveGapWorld.ufo.vx = 0;
+  ufoConcaveGapWorld.ufo.vy = 0;
+  ufoConcaveGapWorld.ufo.turnTimer = Number.POSITIVE_INFINITY;
+  ufoConcaveGapWorld.ufo.fireTimer = Number.POSITIVE_INFINITY;
+  const ufoConcaveGapEvents = ufoConcaveGapWorld.update(0, createInput());
+  assert.notEqual(ufoConcaveGapWorld.ufo, null);
+  assert.equal(ufoConcaveGapWorld.asteroids.length, 1);
+  assert.equal(ufoConcaveGapEvents.explosions.some((explosion) => explosion.source === 'ufo'), false);
 
   const ufoBulletImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
   ufoBulletImpactWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
