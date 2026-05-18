@@ -18,6 +18,7 @@ const MIN_ZOOM = 0.01;
 const ZOOM_STEP = 0.01;
 const TRANSPARENT_STYLE_COLOR = "#00000000";
 const PREVIEW_HISTORY_LIMIT = 50;
+const PREVIEW_DRAG_START_THRESHOLD_PX = 5;
 const SNAP_MODES = Object.freeze(["grid", "point", "none"]);
 const ANGLE_SNAP_STEPS = Object.freeze([15, 30, 45, 90]);
 const POINT_SNAP_RADIUS = 1.5;
@@ -3325,7 +3326,29 @@ export class ToolStarterApp {
       this.applySelectedPaletteColorToShape(shapeIndex, isStrokeMode ? "stroke" : "fill", options.source || (options.dragStart ? "render surface click" : "render surface drag"));
       return;
     }
+    if (this.preserveSelectedShapeClick(shapeIndex, options.source || "render surface")) {
+      return;
+    }
     this.selectShape(shapeIndex, "render surface");
+  }
+
+  preserveSelectedShapeClick(shapeIndex, sourceLabel) {
+    const object = this.selectedObject();
+    const normalizedIndex = normalizeShapeIndex(shapeIndex);
+    const shapes = sortedShapes(object);
+    if (normalizedIndex < 0 || normalizedIndex >= shapes.length || !this.selectedShapeIndexes.has(normalizedIndex)) {
+      return false;
+    }
+
+    const scrollState = this.captureLeftPanelScrollState();
+    this.selectedShapeIndex = normalizedIndex;
+    this.syncPaletteSelectionFromCurrentShape({ logMissing: true });
+    this.setPaletteTarget("stroke", false);
+    this.renderPayload();
+    this.restoreLeftPanelScrollState(scrollState);
+    const shape = this.selectedShape();
+    this.statusLog.write(`OK Preserved selected shape from ${sourceLabel}: row ${this.selectedShapeIndex} (${shapeTool(shape)}). Multi-select count: ${this.selectedShapeIndexes.size}.`);
+    return true;
   }
 
   handleShapeContextMenu(event, shape, shapeIndex) {
@@ -5012,12 +5035,10 @@ export class ToolStarterApp {
       this.selectedShapeIndexes = new Set(targetIndexes);
       this.directSelectedShapeIndexes = directSelectedShapeIndexes.size ? directSelectedShapeIndexes : new Set(targetIndexes);
       this.previewPointerEdit = {
+        ...this.previewPointerEditStartMetadata(event),
         mode: "move-group",
         groupId,
         directSelectedShapeIndexes: new Set(this.directSelectedShapeIndexes),
-        historyRecorded: false,
-        historySnapshot: this.cloneCurrentPayload(),
-        lastDelta: { x: 0, y: 0 },
         originalTransforms: Object.fromEntries(targetIndexes.map((targetIndex) => {
           const effectiveShape = this.effectiveShapeForFrame(objectShapes[targetIndex], activeFrame, targetIndex);
           return [targetIndex, this.ensureShapeTransform(effectiveShape)];
@@ -5032,10 +5053,8 @@ export class ToolStarterApp {
       return;
     }
     this.previewPointerEdit = {
+      ...this.previewPointerEditStartMetadata(event),
       mode: "move",
-      historyRecorded: false,
-      historySnapshot: this.cloneCurrentPayload(),
-      lastDelta: { x: 0, y: 0 },
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
       shapeIndex: normalizedIndex,
@@ -5055,15 +5074,42 @@ export class ToolStarterApp {
     event.preventDefault();
     event.stopPropagation();
     this.previewPointerEdit = {
+      ...this.previewPointerEditStartMetadata(event),
       ...options,
-      historyRecorded: false,
-      historySnapshot: this.cloneCurrentPayload(),
-      lastDelta: { x: 0, y: 0 },
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
       originalTransform: { ...this.shapeTransform(selected) },
       shapeIndex: normalizedIndex,
       start: this.snapCanvasPoint(this.pointerPreviewPoint(event), { excludeShapeIndex: normalizedIndex })
     };
+  }
+
+  previewPointerEditStartMetadata(event) {
+    return {
+      dragThresholdMet: false,
+      historyRecorded: false,
+      historySnapshot: this.cloneCurrentPayload(),
+      lastDelta: { x: 0, y: 0 },
+      startClient: {
+        x: Number(event.clientX) || 0,
+        y: Number(event.clientY) || 0
+      }
+    };
+  }
+
+  previewPointerEditPastDragThreshold(edit, event) {
+    if (edit.dragThresholdMet) {
+      return true;
+    }
+    if (!edit.startClient) {
+      edit.dragThresholdMet = true;
+      return true;
+    }
+    const distance = Math.hypot((Number(event.clientX) || 0) - edit.startClient.x, (Number(event.clientY) || 0) - edit.startClient.y);
+    if (distance < PREVIEW_DRAG_START_THRESHOLD_PX) {
+      return false;
+    }
+    edit.dragThresholdMet = true;
+    return true;
   }
 
   previewPointerEditDelta(edit, event) {
@@ -5078,6 +5124,9 @@ export class ToolStarterApp {
   updatePreviewPointerEdit(event) {
     const edit = this.previewPointerEdit;
     if (!edit || event.buttons !== 1) {
+      return;
+    }
+    if (!this.previewPointerEditPastDragThreshold(edit, event)) {
       return;
     }
     const delta = this.previewPointerEditDelta(edit, event);
@@ -5096,6 +5145,9 @@ export class ToolStarterApp {
       return;
     }
     this.previewPointerEdit = null;
+    if (!edit.dragThresholdMet && !this.previewPointerEditPastDragThreshold(edit, event)) {
+      return;
+    }
     const delta = this.previewPointerEditDelta(edit, event);
     if (Math.abs(delta.x) < 0.001 && Math.abs(delta.y) < 0.001) {
       return;

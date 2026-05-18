@@ -2832,7 +2832,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("[data-palette-color='#ffffff']")).toHaveClass(/is-selected/);
       await expect(page.locator("#statusLog")).toHaveValue(/Multi-select count: 2/);
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"selectedShapeIndexes"');
-      await clickPreviewShape(0);
+      await page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes [data-object-tile-shape-index='0']").click();
       await expect(page.locator("#objectVectorStudioV2StrokeModeButton")).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#objectVectorStudioV2PaintModeButton")).toHaveAttribute("aria-pressed", "false");
       await expect.poll(async () => page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().style.fill)).toBe("#6fd3ff");
@@ -6476,6 +6476,38 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(selectedSetBefore.indexes).toEqual([1, 3]);
+
+      const tinyDragPoint = await objectVectorLogicalClientPoint(page, selectedSetBefore.bounds.x + selectedSetBefore.bounds.width / 2, selectedSetBefore.bounds.y + selectedSetBefore.bounds.height / 2);
+      await page.mouse.move(tinyDragPoint.x, tinyDragPoint.y);
+      await page.mouse.down();
+      await page.mouse.move(tinyDragPoint.x + 2, tinyDragPoint.y + 2);
+      await page.mouse.up();
+      const selectedSetAfterTinyDrag = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const frame = app.activeFrame();
+        const indexes = Array.from(app.selectedShapeIndexes).sort((left, right) => left - right);
+        return {
+          indexes,
+          transforms: indexes.map((shapeIndex) => {
+            const transform = app.effectiveShapeForFrame(app.selectedObject().shapes[shapeIndex], frame, shapeIndex).transform;
+            return { index: shapeIndex, x: transform.x, y: transform.y };
+          })
+        };
+      });
+      expect(selectedSetAfterTinyDrag.indexes).toEqual([1, 3]);
+      expect(selectedSetAfterTinyDrag.transforms).toEqual(selectedSetBefore.transforms);
+
+      await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='1']").first().click();
+      const selectedSetAfterRepeatedClick = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        return {
+          indexes: Array.from(app.selectedShapeIndexes).sort((left, right) => left - right),
+          selectedShapeIndex: app.selectedShapeIndex
+        };
+      });
+      expect(selectedSetAfterRepeatedClick.indexes).toEqual([1, 3]);
+      expect(selectedSetAfterRepeatedClick.selectedShapeIndex).toBe(1);
+
       await mouseDragObjectVectorLogicalPoints(page, {
         x: selectedSetBefore.bounds.x + selectedSetBefore.bounds.width / 2,
         y: selectedSetBefore.bounds.y + selectedSetBefore.bounds.height / 2
@@ -6554,6 +6586,64 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(outsideDragResult.transforms).toEqual(transformsBeforeOutsideDrag);
       expect(outsideDragResult.selectedCount).toBe(0);
       expect(outsideDragResult.selectedShapeIndex).toBe(-1);
+
+      await shapePanel.locator("[data-object-tile-shape-index='1']").click();
+      const liveDragStart = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const surface = document.querySelector("#objectVectorStudioV2RenderSurface");
+        const selectionBox = surface.querySelector("[data-selection-bounds='1']");
+        const handle = surface.querySelector("[data-resize-handle='nw']");
+        const effectiveShape = app.effectiveShape(app.selectedObject().shapes[1], 1);
+        const bounds = app.transformedBounds(effectiveShape);
+        const transform = effectiveShape.transform;
+        return {
+          bounds: {
+            height: Number(selectionBox.getAttribute("height")),
+            width: Number(selectionBox.getAttribute("width")),
+            x: Number(selectionBox.getAttribute("x")),
+            y: Number(selectionBox.getAttribute("y"))
+          },
+          handle: {
+            x: Number(handle.getAttribute("x")),
+            y: Number(handle.getAttribute("y"))
+          },
+          logicalCenter: {
+            x: bounds.x + bounds.width / 2,
+            y: bounds.y + bounds.height / 2
+          },
+          transform: { x: transform.x, y: transform.y }
+        };
+      });
+      const liveDragClientStart = await objectVectorLogicalClientPoint(page, liveDragStart.logicalCenter.x, liveDragStart.logicalCenter.y);
+      const liveDragClientEnd = await objectVectorLogicalClientPoint(page, liveDragStart.logicalCenter.x + 5.1234, liveDragStart.logicalCenter.y + 2.9876);
+      await page.mouse.move(liveDragClientStart.x, liveDragClientStart.y);
+      await page.mouse.down();
+      await page.mouse.move(liveDragClientEnd.x, liveDragClientEnd.y, { steps: 4 });
+      const liveDragDuring = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const surface = document.querySelector("#objectVectorStudioV2RenderSurface");
+        const selectionBox = surface.querySelector("[data-selection-bounds='1']");
+        const handle = surface.querySelector("[data-resize-handle='nw']");
+        const transform = app.effectiveShapeForFrame(app.selectedObject().shapes[1], app.activeFrame(), 1).transform;
+        return {
+          bounds: {
+            x: Number(selectionBox.getAttribute("x")),
+            y: Number(selectionBox.getAttribute("y"))
+          },
+          handle: {
+            x: Number(handle.getAttribute("x")),
+            y: Number(handle.getAttribute("y"))
+          },
+          transform: { x: transform.x, y: transform.y }
+        };
+      });
+      expect(liveDragDuring.bounds.x).not.toBe(liveDragStart.bounds.x);
+      expect(liveDragDuring.bounds.y).not.toBe(liveDragStart.bounds.y);
+      expect(liveDragDuring.handle.x).not.toBe(liveDragStart.handle.x);
+      expect(liveDragDuring.handle.y).not.toBe(liveDragStart.handle.y);
+      expect(String(liveDragDuring.transform.x).split(".")[1]?.length || 0).toBeLessThanOrEqual(3);
+      expect(String(liveDragDuring.transform.y).split(".")[1]?.length || 0).toBeLessThanOrEqual(3);
+      await page.mouse.up();
 
       expect(pageErrors).toEqual([]);
     } finally {

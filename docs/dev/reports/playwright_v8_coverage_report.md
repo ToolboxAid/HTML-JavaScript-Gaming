@@ -23,11 +23,7 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(63%) tools/asset-manager-v2/js/AssetManagerV2App.js - executed lines 643/643; executed functions 36/57
-(86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 963/963; executed functions 42/49
-(92%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1662/1662; executed functions 149/162
-(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8286/8286; executed functions 809/860
-(100%) tools/storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - executed lines 184/184; executed functions 29/29
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8334/8334; executed functions 818/866
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -216,7 +212,7 @@ Files with executed line/function counts where available:
 (94%) games/shared/workspaceGameMetadataHydrator.js - executed lines 106/106; executed functions 16/17
 (94%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 1136/1136; executed functions 111/118
 (94%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 17/18
-(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8286/8286; executed functions 809/860
+(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8334/8334; executed functions 818/866
 (95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 458/458; executed functions 56/59
 (98%) tools/storage-inspector-v2/js/StorageInspectorV2App.js - executed lines 347/347; executed functions 51/52
 (100%) games/Asteroids/flow/attract.js - executed lines 17/17; executed functions 1/1
@@ -300,14 +296,6 @@ Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) scripts/validate-json-contracts.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/games/AsteroidsAssetReferenceAdoption.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/games/AsteroidsPlatformDemo.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AssetManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/WorkspaceManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
-(63%) tools/asset-manager-v2/js/AssetManagerV2App.js - changed JS file with browser V8 coverage
-(86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - changed JS file with browser V8 coverage
-(92%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - changed JS file with browser V8 coverage
 (94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage
-(100%) tools/storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - changed JS file with browser V8 coverage
 ```
