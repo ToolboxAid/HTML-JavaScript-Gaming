@@ -31,6 +31,7 @@ const WAVE_SPAWN_MARGIN_Y = 120;
 const WAVE_SPAWN_ATTEMPTS = 60;
 const ASTEROID_SPAWN_SAFE_PADDING = 24;
 const MAX_UPDATE_STEP_SECONDS = 1 / 60;
+const VECTOR_COLLISION_EPSILON = 0.000001;
 let hasLoggedWorldConstruction = false;
 let hasLoggedWorldStartGame = false;
 
@@ -133,6 +134,116 @@ function getRectOverlapDepth(x, y, radius, rect) {
   const overlapBottom = (rect.y + rect.height) - (y - radius);
 
   return Math.max(0, Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom));
+}
+
+function isFiniteVectorPoint(point) {
+  return Number.isFinite(point?.x) && Number.isFinite(point?.y);
+}
+
+function areVectorPointsEqual(left, right) {
+  return Math.abs(left.x - right.x) <= VECTOR_COLLISION_EPSILON
+    && Math.abs(left.y - right.y) <= VECTOR_COLLISION_EPSILON;
+}
+
+function normalizeVectorPolygon(points) {
+  if (!Array.isArray(points)) {
+    return [];
+  }
+
+  const polygon = points
+    .filter(isFiniteVectorPoint)
+    .map((point) => ({ x: point.x, y: point.y }));
+
+  if (polygon.length > 1 && areVectorPointsEqual(polygon[0], polygon[polygon.length - 1])) {
+    polygon.pop();
+  }
+
+  return polygon;
+}
+
+function vectorCross(start, end, point) {
+  return ((end.x - start.x) * (point.y - start.y)) - ((end.y - start.y) * (point.x - start.x));
+}
+
+function isPointOnVectorSegment(point, start, end) {
+  if (Math.abs(vectorCross(start, end, point)) > VECTOR_COLLISION_EPSILON) {
+    return false;
+  }
+
+  return point.x >= Math.min(start.x, end.x) - VECTOR_COLLISION_EPSILON
+    && point.x <= Math.max(start.x, end.x) + VECTOR_COLLISION_EPSILON
+    && point.y >= Math.min(start.y, end.y) - VECTOR_COLLISION_EPSILON
+    && point.y <= Math.max(start.y, end.y) + VECTOR_COLLISION_EPSILON;
+}
+
+function areVectorSegmentsIntersecting(leftStart, leftEnd, rightStart, rightEnd) {
+  const leftStartToRightStart = vectorCross(leftStart, leftEnd, rightStart);
+  const leftStartToRightEnd = vectorCross(leftStart, leftEnd, rightEnd);
+  const rightStartToLeftStart = vectorCross(rightStart, rightEnd, leftStart);
+  const rightStartToLeftEnd = vectorCross(rightStart, rightEnd, leftEnd);
+
+  if (isPointOnVectorSegment(rightStart, leftStart, leftEnd)
+    || isPointOnVectorSegment(rightEnd, leftStart, leftEnd)
+    || isPointOnVectorSegment(leftStart, rightStart, rightEnd)
+    || isPointOnVectorSegment(leftEnd, rightStart, rightEnd)) {
+    return true;
+  }
+
+  return ((leftStartToRightStart > VECTOR_COLLISION_EPSILON && leftStartToRightEnd < -VECTOR_COLLISION_EPSILON)
+      || (leftStartToRightStart < -VECTOR_COLLISION_EPSILON && leftStartToRightEnd > VECTOR_COLLISION_EPSILON))
+    && ((rightStartToLeftStart > VECTOR_COLLISION_EPSILON && rightStartToLeftEnd < -VECTOR_COLLISION_EPSILON)
+      || (rightStartToLeftStart < -VECTOR_COLLISION_EPSILON && rightStartToLeftEnd > VECTOR_COLLISION_EPSILON));
+}
+
+function isPointInsideVectorPolygon(point, polygon) {
+  let inside = false;
+
+  for (let index = 0, previousIndex = polygon.length - 1; index < polygon.length; previousIndex = index, index += 1) {
+    const current = polygon[index];
+    const previous = polygon[previousIndex];
+
+    if (isPointOnVectorSegment(point, previous, current)) {
+      return true;
+    }
+
+    const crossesRay = (current.y > point.y) !== (previous.y > point.y);
+    if (crossesRay) {
+      const rayX = ((previous.x - current.x) * (point.y - current.y)) / (previous.y - current.y) + current.x;
+      if (point.x < rayX) {
+        inside = !inside;
+      }
+    }
+  }
+
+  return inside;
+}
+
+function areVectorPolygonsOverlapping(leftPoints, rightPoints) {
+  const leftPolygon = normalizeVectorPolygon(leftPoints);
+  const rightPolygon = normalizeVectorPolygon(rightPoints);
+
+  if (leftPolygon.length < 3 || rightPolygon.length < 3) {
+    return false;
+  }
+
+  for (let leftIndex = 0; leftIndex < leftPolygon.length; leftIndex += 1) {
+    const leftStart = leftPolygon[leftIndex];
+    const leftEnd = leftPolygon[(leftIndex + 1) % leftPolygon.length];
+
+    for (let rightIndex = 0; rightIndex < rightPolygon.length; rightIndex += 1) {
+      if (areVectorSegmentsIntersecting(
+        leftStart,
+        leftEnd,
+        rightPolygon[rightIndex],
+        rightPolygon[(rightIndex + 1) % rightPolygon.length]
+      )) {
+        return true;
+      }
+    }
+  }
+
+  return leftPolygon.some((point) => isPointInsideVectorPolygon(point, rightPolygon))
+    || rightPolygon.some((point) => isPointInsideVectorPolygon(point, leftPolygon));
 }
 
 export default class AsteroidsWorld {
@@ -809,7 +920,7 @@ export default class AsteroidsWorld {
       const shipPolygon = this.ship.getPoints();
       for (let asteroidIndex = this.asteroids.length - 1; asteroidIndex >= 0; asteroidIndex -= 1) {
         const asteroid = this.asteroids[asteroidIndex];
-        if (arePolygonsColliding(shipPolygon, asteroid.getPoints())) {
+        if (areVectorPolygonsOverlapping(shipPolygon, asteroid.getPoints())) {
           const result = this.splitAsteroid(asteroidIndex);
           this.destroyShip();
           events.scoreEvents.push(result.points);

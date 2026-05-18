@@ -91,6 +91,23 @@ export function run() {
   assert.equal(shipImpactEvents.shipDestroyed, true);
   assert.equal(shipImpactWorld.shipActive, false);
 
+  const shipConcaveEdgeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
+  shipConcaveEdgeWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
+  shipConcaveEdgeWorld.ship.invulnerable = 0;
+  shipConcaveEdgeWorld.ship.x = 430;
+  shipConcaveEdgeWorld.ship.y = 386;
+  shipConcaveEdgeWorld.ship.vx = 0;
+  shipConcaveEdgeWorld.ship.vy = 0;
+  shipConcaveEdgeWorld.ship.angle = -Math.PI / 2;
+  shipConcaveEdgeWorld.asteroids = [createStationaryAsteroid(shipConcaveEdgeWorld, {
+    x: 480,
+    y: 360,
+    size: 3,
+  })];
+  const shipConcaveEdgeEvents = shipConcaveEdgeWorld.update(0, createInput());
+  assert.equal(shipConcaveEdgeEvents.shipDestroyed, true);
+  assert.equal(shipConcaveEdgeWorld.shipActive, false);
+
   const ufoImpactWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, asteroidGeometryProfiles });
   ufoImpactWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   ufoImpactWorld.asteroids = [createStationaryAsteroid(ufoImpactWorld, { x: 480, y: 360, size: 3 })];
