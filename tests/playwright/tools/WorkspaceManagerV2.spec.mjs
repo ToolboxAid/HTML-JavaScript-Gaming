@@ -1824,6 +1824,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const labelButton = document.querySelector("#objectVectorStudioV2ToolLabelModeButton");
         const toolsContent = document.querySelector("#objectVectorStudioV2ShapeToolsContent");
         const shapesContent = document.querySelector("#objectVectorStudioV2ShapesContent");
+        const toolsContentRect = toolsContent.getBoundingClientRect();
+        const toolsAccordion = toolsContent.closest(".accordion-v2").getBoundingClientRect();
         const shapesContentRect = shapesContent.getBoundingClientRect();
         const shapesAccordion = shapesContent.closest(".accordion-v2").getBoundingClientRect();
         const leftPanel = document.querySelector(".tool-starter__panel--left");
@@ -1843,6 +1845,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           textButtonWider: Math.round(rect.width) > Math.round(rect.height),
           toolsButtonLabels,
           toolsContainsShapeButtons: Boolean(toolsContent.querySelector(".object-vector-studio-v2__tool-toggle")),
+          toolsReachesBottom: Math.abs(toolsContentRect.bottom - toolsAccordion.bottom) <= 1,
           visibleIconTopOffsetRange: Math.max(...iconTopOffsets) - Math.min(...iconTopOffsets),
           shapesReachesBottom: Math.abs(shapesContentRect.bottom - shapesAccordion.bottom) <= 1,
           zOrderAbsentBeforeObjectSelection: !document.querySelector(".object-vector-studio-v2__z-order-actions"),
@@ -1857,6 +1860,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         textButtonWider: true,
         toolsButtonLabels: ["Snap Grid", "Snap Angle", "Grid", "Icons"],
         toolsContainsShapeButtons: false,
+        toolsReachesBottom: true,
         visibleIconTopOffsetRange: 0,
         shapesReachesBottom: true,
         zOrderAbsentBeforeObjectSelection: true,
@@ -3431,7 +3435,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       const zoomSource = await readFile("tools/object-vector-studio-v2/js/ToolStarterApp.js", "utf8");
       expect(zoomSource).toContain("const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 0.1 });");
-      expect(zoomSource).toContain("const MAX_ZOOM = 0.5;");
+      expect(zoomSource).toContain("const MAX_ZOOM = 1.0;");
       expect(zoomSource).toContain("const MIN_ZOOM = 0.01;");
       expect(zoomSource).toContain("const ZOOM_STEP = 0.01;");
       expect(zoomSource).toMatch(/formatZoomPercentage\(\) \{\s+return Math\.round\(this\.viewport\.zoom \* 100\);\s+\}/);
@@ -3456,8 +3460,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.zoomViewport(2.5);
       });
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 500%");
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-320 -220 640 440");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 1000%");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.zoomViewport(0);
       });
@@ -3708,6 +3712,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(remainingOpenSections.every((entry) => entry.height >= 44)).toBe(true);
       expect(collapsedLayout.find((entry) => entry.title.startsWith("Palette"))?.height).toBeLessThanOrEqual(320);
       await expect(page.locator(".tool-starter__panel--right")).toHaveCSS("overflow-y", "auto");
+      const maxZoomState = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        app.zoomViewport(2);
+        return {
+          display: document.querySelector("#objectVectorStudioV2CoordinateDisplay").textContent,
+          zoom: app.viewport.zoom
+        };
+      });
+      expect(maxZoomState.zoom).toBe(1);
+      expect(maxZoomState.display).toContain("Zoom 1000%");
+      await page.locator("#objectVectorStudioV2ResetViewButton").click();
 
       const summary = page.locator("[data-tool-starter-summary]");
       await summary.click();
@@ -3724,15 +3739,22 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const left = document.querySelector(".tool-starter__panel--left").getBoundingClientRect();
         const center = document.querySelector(".tool-starter__panel--center").getBoundingClientRect();
         const right = document.querySelector(".tool-starter__panel--right").getBoundingClientRect();
+        const rightPanel = document.querySelector(".tool-starter__panel--right");
         return {
           centerHeight: Math.round(center.height),
           centerWidth: Math.round(center.width),
           leftBeforeCenter: left.right <= center.left,
-          rightAfterCenter: right.left >= center.right
+          rightAfterCenter: right.left >= center.right,
+          rightBottomWithinViewport: right.bottom <= window.innerHeight + 1,
+          rightOverflowY: getComputedStyle(rightPanel).overflowY,
+          rightScrollable: rightPanel.scrollHeight >= rightPanel.clientHeight
         };
       });
       expect(fullscreenLayout.leftBeforeCenter).toBe(true);
       expect(fullscreenLayout.rightAfterCenter).toBe(true);
+      expect(fullscreenLayout.rightBottomWithinViewport).toBe(true);
+      expect(fullscreenLayout.rightOverflowY).toBe("auto");
+      expect(fullscreenLayout.rightScrollable).toBe(true);
       expect(fullscreenLayout.centerWidth).toBeGreaterThan(300);
       expect(fullscreenLayout.centerHeight).toBeGreaterThan(300);
 
@@ -5765,6 +5787,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(groupedRotateBackTransforms).toEqual([{ rotation: 15 }, { rotation: 15 }]);
 
+      const objectScaleOriginOffsetsBefore = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const object = app.selectedObject();
+        const origin = app.objectTransformOrigin(object);
+        const frame = app.activeFrame();
+        return object.shapes.map((shape, shapeIndex) => {
+          const effective = app.effectiveShapeForFrame(shape, frame, shapeIndex);
+          const transform = app.ensureShapeTransform(effective);
+          const originWorld = app.transformedPoint(transform.shapeOrigin, transform);
+          return {
+            x: Number((originWorld.x - origin.x).toFixed(3)),
+            y: Number((originWorld.y - origin.y).toFixed(3))
+          };
+        });
+      });
       await page.locator("#objectVectorStudioV2ObjectScaleUpLargeButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Object scale preview set to 1\.1 for UFO Template\./);
       const objectScaleAfterLargeStep = await page.evaluate(() => {
@@ -5787,6 +5824,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         });
       });
       expect(objectScaleAfterSmallStep).toEqual([{ scaleX: 1.09, scaleY: 1.09 }, { scaleX: 1.09, scaleY: 1.09 }]);
+      const objectScaleOriginOffsetsAfterSmallStep = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const object = app.selectedObject();
+        const origin = app.objectTransformOrigin(object);
+        const frame = app.activeFrame();
+        return object.shapes.map((shape, shapeIndex) => {
+          const effective = app.effectiveShapeForFrame(shape, frame, shapeIndex);
+          const transform = app.ensureShapeTransform(effective);
+          const originWorld = app.transformedPoint(transform.shapeOrigin, transform);
+          return {
+            x: Number((originWorld.x - origin.x).toFixed(3)),
+            y: Number((originWorld.y - origin.y).toFixed(3))
+          };
+        });
+      });
+      objectScaleOriginOffsetsAfterSmallStep.forEach((offset, index) => {
+        expect(offset.x).toBeCloseTo(Number((objectScaleOriginOffsetsBefore[index].x * 1.09).toFixed(3)), 2);
+        expect(offset.y).toBeCloseTo(Number((objectScaleOriginOffsetsBefore[index].y * 1.09).toFixed(3)), 2);
+      });
 
       await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(0, "shape transform single-shape verification"));
       await expect(page.locator("#objectVectorStudioV2ShapeTransform #objectVectorStudioV2ScaleDownSmallButton")).toBeEnabled();

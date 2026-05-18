@@ -13,7 +13,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 0.1 });
 const GRID_STEP = 10;
 const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;
-const MAX_ZOOM = 0.5;
+const MAX_ZOOM = 1.0;
 const MIN_ZOOM = 0.01;
 const ZOOM_STEP = 0.01;
 const TRANSPARENT_STYLE_COLOR = "#00000000";
@@ -525,6 +525,7 @@ export class ToolStarterApp {
     this.previewRedoStack = [];
     this.previewPointerEdit = null;
     this.transformInputValues = new Map();
+    this.objectScalePreviewValues = new Map();
     this.stateControlStateId = "";
     this.pendingAddObjectClick = false;
     this.hiddenObjectIds = new Set();
@@ -2805,7 +2806,7 @@ export class ToolStarterApp {
     const section = document.createElement("section");
     section.className = "object-vector-studio-v2__edit-panel object-vector-studio-v2__edit-panel--transform object-vector-studio-v2__edit-panel--object-transform";
     const origin = this.objectTransformOrigin(object);
-    const objectScaleInput = Number(this.transformInputValue("objectVectorStudioV2ObjectScaleInput", "1"));
+    const objectScaleInput = Number(this.objectScalePreviewValues.get(object.id) ?? 1);
     const objectScale = Number.isFinite(objectScaleInput) && objectScaleInput > 0 ? objectScaleInput : 1;
     section.append(
       this.createObjectOriginControlRow(origin),
@@ -4100,17 +4101,17 @@ export class ToolStarterApp {
     };
   }
 
-  transformWithScaledOriginAroundPivot(transform, pivot, scale) {
+  transformWithRelativeScaleAroundPivot(transform, pivot, scaleRatio) {
     const normalized = this.ensureShapeTransform({ transform });
     const originWorld = this.transformedPoint(normalized.shapeOrigin, normalized);
     const nextOriginWorld = {
-      x: this.formatViewportNumber(pivot.x + (originWorld.x - pivot.x) * scale),
-      y: this.formatViewportNumber(pivot.y + (originWorld.y - pivot.y) * scale)
+      x: this.formatViewportNumber(pivot.x + (originWorld.x - pivot.x) * scaleRatio),
+      y: this.formatViewportNumber(pivot.y + (originWorld.y - pivot.y) * scaleRatio)
     };
     return {
       ...normalized,
-      scaleX: Number(scale.toFixed(3)),
-      scaleY: Number(scale.toFixed(3)),
+      scaleX: this.formatViewportNumber(normalized.scaleX * scaleRatio),
+      scaleY: this.formatViewportNumber(normalized.scaleY * scaleRatio),
       x: this.formatViewportNumber(nextOriginWorld.x - normalized.shapeOrigin.x),
       y: this.formatViewportNumber(nextOriginWorld.y - normalized.shapeOrigin.y)
     };
@@ -7384,20 +7385,54 @@ export class ToolStarterApp {
       this.transformInputValues.set(inputElement.id, inputElement.value);
     }
     this.applySelectedObjectScaleValue(nextScale, {
+      previousScale: input.value,
       okMessage: `OK Object scale preview set to ${this.formatScaleInputValue(nextScale)} for ${this.selectedObject()?.name || "selected object"}.`
     });
   }
 
-  applySelectedObjectScaleValue(scale, { okMessage } = {}) {
+  currentObjectScalePreviewValue(object = this.selectedObject()) {
+    const storedScale = this.objectScalePreviewValues.get(object?.id);
+    return Number.isFinite(storedScale) && storedScale > 0 ? storedScale : 1;
+  }
+
+  applySelectedObjectScaleValue(scale, { okMessage, previousScale } = {}) {
     const origin = this.readObjectOriginInputs();
     if (!origin.ok) {
       this.statusLog.write(`FAIL Invalid object transform rejected: ${origin.error}`);
       return false;
     }
     const object = this.selectedObject();
-    return this.updateSelectedObjectTransforms("scale", (shape) => {
-      shape.transform = this.transformWithScaledOriginAroundPivot(this.ensureShapeTransform(shape), origin.value, scale);
+    const priorScale = Number.isFinite(previousScale) && previousScale > 0
+      ? previousScale
+      : this.currentObjectScalePreviewValue(object);
+    const scaleRatio = scale / priorScale;
+    if (!Number.isFinite(scaleRatio) || scaleRatio <= 0) {
+      this.statusLog.write("FAIL Invalid object transform rejected: scale ratio must be greater than 0.");
+      return false;
+    }
+    const priorStoredScale = object?.id ? this.objectScalePreviewValues.get(object.id) : undefined;
+    const priorInputScale = this.transformInputValues.get("objectVectorStudioV2ObjectScaleInput");
+    const nextScale = this.formatViewportNumber(scale);
+    if (object?.id) {
+      this.objectScalePreviewValues.set(object.id, nextScale);
+      this.transformInputValues.set("objectVectorStudioV2ObjectScaleInput", this.formatScaleInputValue(nextScale));
+    }
+    const committed = this.updateSelectedObjectTransforms("scale", (shape) => {
+      shape.transform = this.transformWithRelativeScaleAroundPivot(this.ensureShapeTransform(shape), origin.value, scaleRatio);
     }, okMessage || `OK Object scale preview set to ${this.formatScaleInputValue(scale)} for ${object?.name || "selected object"}.`, "Object Transform scale failed schema validation");
+    if (!committed && object?.id) {
+      if (priorStoredScale === undefined) {
+        this.objectScalePreviewValues.delete(object.id);
+      } else {
+        this.objectScalePreviewValues.set(object.id, priorStoredScale);
+      }
+      if (priorInputScale === undefined) {
+        this.transformInputValues.delete("objectVectorStudioV2ObjectScaleInput");
+      } else {
+        this.transformInputValues.set("objectVectorStudioV2ObjectScaleInput", priorInputScale);
+      }
+    }
+    return committed;
   }
 
   resizeSelectedObject() {
@@ -7428,12 +7463,18 @@ export class ToolStarterApp {
     }
 
     const nextPayload = this.cloneCurrentPayload();
+    const currentScale = this.currentObjectScalePreviewValue(object);
+    const scaleRatio = input.value / currentScale;
+    if (!Number.isFinite(scaleRatio) || scaleRatio <= 0) {
+      this.statusLog.write("FAIL Resize Geometry rejected for selected object: scale ratio must be greater than 0.");
+      return;
+    }
     try {
       targetIndexes.forEach((shapeIndex) => {
         const baseShape = this.findShapeInPayload(nextPayload, shapeIndex);
         const override = this.frameOverrideInPayload(nextPayload, shapeIndex, { create: false });
         const transformTarget = override?.transform ? { transform: override.transform, geometry: baseShape.geometry } : baseShape;
-        const transform = this.transformWithScaledOriginAroundPivot(this.ensureShapeTransform(transformTarget), origin.value, input.value);
+        const transform = this.transformWithRelativeScaleAroundPivot(this.ensureShapeTransform(transformTarget), origin.value, scaleRatio);
         this.resizeShapeGeometryByTransformScale(baseShape, transform);
         transform.scaleX = 1;
         transform.scaleY = 1;
@@ -7453,6 +7494,7 @@ export class ToolStarterApp {
     }
 
     this.transformInputValues.set("objectVectorStudioV2ObjectScaleInput", "1");
+    this.objectScalePreviewValues.set(object.id, 1);
     this.commitPayloadUpdate(
       nextPayload,
       object.id,

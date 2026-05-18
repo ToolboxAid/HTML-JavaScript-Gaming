@@ -2292,6 +2292,8 @@ html:fullscreen body.tools-platform-surface[data-tool-id="object-vector-studio-v
   justify-self: end;
   width: 360px;
   max-width: 360px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="object-vector-studio-v2"] .tool-starter__panel--center,
