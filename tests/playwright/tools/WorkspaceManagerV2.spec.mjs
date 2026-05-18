@@ -2393,6 +2393,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           allOneLine: centers.every((center) => Math.abs(center - centers[0]) <= 2),
           appearance: scaleInputStyle.appearance,
           order: children.map((child) => child.tagName === "INPUT" ? child.value : child.textContent.trim()),
+          resetTitle: row.querySelector("#objectVectorStudioV2ResetShapeScaleButton").title,
           scaleInputFitsNegativeThreeDecimals: (() => {
             const priorValue = scaleInput.value;
             scaleInput.value = "-12.345";
@@ -2407,7 +2408,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(scaleControlLayout).toEqual({
         allOneLine: true,
         appearance: "textfield",
-        order: ["Scale", "--", "-", "1", "+", "++", "Resize"],
+        order: ["Scale", "--", "-", "1", "+", "++", "Resize", "X"],
+        resetTitle: "Reset Scale to 1.0",
         scaleInputFitsNegativeThreeDecimals: true,
         resizeTitle: "Resize Geometry",
         spinnerCssRuleExists: true
@@ -2850,21 +2852,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-selection-bounds='0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-resize-handle]")).toHaveCount(4);
-      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-pivot-origin='0']")).toHaveCount(1);
+      await expect(page.locator("#objectVectorStudioV2RenderSurface [data-pivot-origin='0']")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-object-origin='object.asteroids.object-1']")).toHaveCount(1);
       const selectionChrome = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
         const selectionBox = surface.querySelector("[data-selection-bounds='0']");
         const handle = surface.querySelector("[data-resize-handle]");
-        const [shapeDiagonalA, shapeDiagonalB] = Array.from(surface.querySelector("[data-pivot-origin='0']").querySelectorAll("line"));
         const [objectHorizontal, objectVertical] = Array.from(surface.querySelector("[data-object-origin='object.asteroids.object-1']").querySelectorAll("line"));
         return {
           handleHeight: Number(handle.getAttribute("height")),
           handleWidth: Number(handle.getAttribute("width")),
           objectHorizontalSpan: Math.abs(Number(objectHorizontal.getAttribute("x2")) - Number(objectHorizontal.getAttribute("x1"))),
           objectVerticalSpan: Math.abs(Number(objectVertical.getAttribute("y2")) - Number(objectVertical.getAttribute("y1"))),
-          selectionStrokeWidth: getComputedStyle(selectionBox).strokeWidth,
-          shapeDiagonalASpan: Math.abs(Number(shapeDiagonalA.getAttribute("x2")) - Number(shapeDiagonalA.getAttribute("x1"))),
-          shapeDiagonalBSpan: Math.abs(Number(shapeDiagonalB.getAttribute("y2")) - Number(shapeDiagonalB.getAttribute("y1")))
+          selectionStrokeWidth: getComputedStyle(selectionBox).strokeWidth
         };
       });
       expect(selectionChrome).toEqual({
@@ -2872,9 +2871,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         handleWidth: 3,
         objectHorizontalSpan: 16,
         objectVerticalSpan: 16,
-        selectionStrokeWidth: "0.75px",
-        shapeDiagonalASpan: 16,
-        shapeDiagonalBSpan: 16
+        selectionStrokeWidth: "0.75px"
       });
 
       await clickPreviewShape(1, { shiftKey: true });
@@ -3923,6 +3920,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       }));
       expect(movedPolygonHint.x).toBeGreaterThan(polygonHintState.hintX);
       expect(movedPolygonHint.y).toBeGreaterThan(polygonHintState.hintY);
+      await clickObjectVectorLogicalPoint(page, -20, -10);
+      await clickObjectVectorLogicalPoint(page, 0, -20);
+      await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        app.activeDrawing.style.pointRounding = [false, true, false];
+        app.activeDrawing.style.roundingRadius = 5;
+      });
+      await moveObjectVectorLogicalPoint(page, { x: 20, y: -10 });
+      const roundedSnapLine = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__snap-line").evaluate((line) => ({
+        d: line.getAttribute("d"),
+        mode: line.dataset.snapLineMode,
+        stroke: getComputedStyle(line).stroke,
+        tagName: line.tagName.toLowerCase()
+      }));
+      expect(roundedSnapLine).toEqual({
+        d: expect.stringContaining("Q"),
+        mode: "grid",
+        stroke: expect.any(String),
+        tagName: "path"
+      });
       const zoomHintStates = await page.locator("#objectVectorStudioV2WorkArea .object-vector-studio-v2__drawing-hint").evaluate((hint) => {
         const app = window.__objectVectorStudioV2App;
         const collect = (zoom) => {
@@ -4370,26 +4387,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         strokeOpacity: 1,
         strokeWidth: 20
       });
-      const pivotMarkerState = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__pivot-origin").evaluate((pivot) => {
-        const [diagonalForward, diagonalBack] = Array.from(pivot.querySelectorAll("line"));
-        return {
-          ariaLabel: pivot.getAttribute("aria-label"),
-          diagonalBackSpan: Math.abs(Number(diagonalBack.getAttribute("y2")) - Number(diagonalBack.getAttribute("y1"))),
-          diagonalForwardSpan: Math.abs(Number(diagonalForward.getAttribute("x2")) - Number(diagonalForward.getAttribute("x1"))),
-          title: pivot.querySelector("title")?.textContent || "",
-          xMarker: diagonalForward.getAttribute("x1") === diagonalBack.getAttribute("x1")
-            && diagonalForward.getAttribute("x2") === diagonalBack.getAttribute("x2")
-            && diagonalForward.getAttribute("y1") === diagonalBack.getAttribute("y2")
-            && diagonalForward.getAttribute("y2") === diagonalBack.getAttribute("y1")
-        };
-      });
-      expect(pivotMarkerState).toEqual({
-        ariaLabel: "Selected shape center marker",
-        diagonalBackSpan: 16,
-        diagonalForwardSpan: 16,
-        title: "Selected shape center marker. Shape Transform rotate uses the object origin marker.",
-        xMarker: true
-      });
+      await expect(page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__pivot-origin")).toHaveCount(0);
       const previewToolbarAfterText = await page.evaluate(() => Array.from(document.querySelectorAll(".object-vector-studio-v2__preview-edit-toolbar button")).map((button) => ({
         disabled: button.disabled,
         label: button.textContent.trim()
@@ -5792,8 +5790,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           return { scaleX: transform.scaleX, scaleY: transform.scaleY };
         });
       });
+      const objectBoundsBeforeScalePreview = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__object-bounds").evaluate((box) => ({
+        height: Number(box.getAttribute("height")),
+        width: Number(box.getAttribute("width"))
+      }));
       await page.locator("#objectVectorStudioV2ObjectScaleUpLargeButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Object resize scale set to 1\.1 for UFO Template; object transform scale remains 1 until Resize rewrites geometry\./);
+      await expect(page.locator("#objectVectorStudioV2ObjectScaleInput")).toHaveValue("1.1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("origin 0, 0, rot 15, scale 1.1");
       const objectScaleAfterLargeStep = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -5803,8 +5807,24 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         });
       });
       expect(objectScaleAfterLargeStep).toEqual(objectScaleTransformsBefore);
+      const objectBoundsAfterScalePreview = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__object-bounds").evaluate((box) => ({
+        height: Number(box.getAttribute("height")),
+        width: Number(box.getAttribute("width"))
+      }));
+      expect(objectBoundsAfterScalePreview.width).toBeGreaterThan(objectBoundsBeforeScalePreview.width);
+      expect(objectBoundsAfterScalePreview.height).toBeGreaterThan(objectBoundsBeforeScalePreview.height);
+      await page.locator("#objectVectorStudioV2ObjectResetScaleButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object resize scale reset to 1 for UFO Template; object transform scale remains 1 until Resize rewrites geometry\./);
+      await expect(page.locator("#objectVectorStudioV2ObjectScaleInput")).toHaveValue("1");
+      await expect(page.locator("#objectVectorStudioV2ObjectTransform .object-vector-studio-v2__transform-summary")).toHaveText("origin 0, 0, rot 15, scale 1");
+      const objectBoundsAfterScaleReset = await page.locator("#objectVectorStudioV2RenderSurface .object-vector-studio-v2__object-bounds").evaluate((box) => ({
+        height: Number(box.getAttribute("height")),
+        width: Number(box.getAttribute("width"))
+      }));
+      expect(objectBoundsAfterScaleReset.width).toBeCloseTo(objectBoundsBeforeScalePreview.width, 1);
+      expect(objectBoundsAfterScaleReset.height).toBeCloseTo(objectBoundsBeforeScalePreview.height, 1);
       await page.locator("#objectVectorStudioV2ObjectScaleDownSmallButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Object resize scale set to 1\.09 for UFO Template; object transform scale remains 1 until Resize rewrites geometry\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Object resize scale set to 0\.99 for UFO Template; object transform scale remains 1 until Resize rewrites geometry\./);
       const objectScaleAfterSmallStep = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
         const frame = app.activeFrame();
@@ -5814,6 +5834,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         });
       });
       expect(objectScaleAfterSmallStep).toEqual(objectScaleTransformsBefore);
+      await page.locator("#objectVectorStudioV2ObjectResetScaleButton").click();
+      await expect(page.locator("#objectVectorStudioV2ObjectScaleInput")).toHaveValue("1");
 
       await page.evaluate(() => window.__objectVectorStudioV2App.selectShape(0, "shape transform single-shape verification"));
       await expect(page.locator("#objectVectorStudioV2ShapeTransform #objectVectorStudioV2ScaleDownSmallButton")).toBeEnabled();
@@ -5828,6 +5850,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         });
       });
       expect(shapeScaleAfterSingleStep).toEqual([{ scaleX: 0.99, scaleY: 0.99 }, objectScaleTransformsBefore[1]]);
+      await page.locator("#objectVectorStudioV2ResetShapeScaleButton").click();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Scale reset to 1 for shape row 0\./);
+      await expect(page.locator("#objectVectorStudioV2ScaleInput")).toHaveValue("1");
 
       await page.locator("#objectVectorStudioV2CopyJsonButton").click();
       const copiedPayload = await page.evaluate(() => JSON.parse(sessionStorage.getItem("object-vector-studio-v2.authoring-copied-json")));

@@ -2115,6 +2115,11 @@ export class ToolStarterApp {
   }
 
   updateTransformSummaryText() {
+    const objectSummary = this.elements.objectTransform.querySelector(".object-vector-studio-v2__transform-summary");
+    const object = this.selectedObject();
+    if (objectSummary && object) {
+      objectSummary.textContent = this.formatObjectTransformSummary(object);
+    }
     const summary = this.elements.shapeTransform.querySelector(".object-vector-studio-v2__transform-summary");
     const shape = this.selectedShape();
     if (!summary || !shape) {
@@ -2383,18 +2388,22 @@ export class ToolStarterApp {
   formatObjectTransformSummary(object) {
     const shapes = sortedShapes(object);
     const origin = this.objectTransformOrigin(object);
+    const objectScale = object?.id === this.selectedObjectId ? this.objectScalePreviewValue() : 1;
     if (!shapes.length) {
-      return `origin ${origin.x}, ${origin.y}, rot 0, scale 1`;
+      return `origin ${origin.x}, ${origin.y}, rot 0, scale ${this.formatScaleInputValue(objectScale)}`;
     }
     const frame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
     const transforms = shapes.map((shape, shapeIndex) => this.shapeTransform(this.effectiveShapeForFrame(shape, frame, shapeIndex)));
     const sameNumber = (key) => transforms.every((transform) => Math.abs(transform[key] - transforms[0][key]) < 0.001);
     const sameScale = transforms.every((transform) => Math.abs(transform.scaleX - transforms[0].scaleX) < 0.001 && Math.abs(transform.scaleY - transforms[0].scaleY) < 0.001);
-    const scaleText = sameScale
-      ? (Math.abs(transforms[0].scaleX - transforms[0].scaleY) < 0.001
+    let scaleText = "mixed";
+    if (Math.abs(objectScale - 1) >= 0.001) {
+      scaleText = this.formatScaleInputValue(objectScale);
+    } else if (sameScale) {
+      scaleText = Math.abs(transforms[0].scaleX - transforms[0].scaleY) < 0.001
         ? String(this.formatViewportNumber(transforms[0].scaleX))
-        : `${this.formatViewportNumber(transforms[0].scaleX)} x ${this.formatViewportNumber(transforms[0].scaleY)}`)
-      : "mixed";
+        : `${this.formatViewportNumber(transforms[0].scaleX)} x ${this.formatViewportNumber(transforms[0].scaleY)}`;
+    }
     const rotationText = sameNumber("rotation") ? String(this.normalizeRotationDegrees(transforms[0].rotation)) : "mixed";
     return `origin ${origin.x}, ${origin.y}, rot ${rotationText}, scale ${scaleText}`;
   }
@@ -2813,8 +2822,10 @@ export class ToolStarterApp {
         inputId: "objectVectorStudioV2ObjectScaleInput",
         inputLabel: "Object Scale",
         onInput: (input) => this.applyObjectScaleInputLive(input),
+        onReset: () => this.resetSelectedObjectScale(),
         onResize: () => this.resizeSelectedObject(),
         onStep: (delta) => this.adjustSelectedObjectScale(delta),
+        resetButtonId: "objectVectorStudioV2ObjectResetScaleButton",
         resizeButtonId: "objectVectorStudioV2ObjectResizeButton",
         upLargeId: "objectVectorStudioV2ObjectScaleUpLargeButton",
         upSmallId: "objectVectorStudioV2ObjectScaleUpSmallButton"
@@ -2824,7 +2835,33 @@ export class ToolStarterApp {
   }
 
   objectScaleControlValue(object) {
-    return 1;
+    return this.objectScalePreviewValueForObject(object);
+  }
+
+  objectScalePreviewValue() {
+    const value = Number(this.transformInputValue("objectVectorStudioV2ObjectScaleInput", "1"));
+    return Number.isFinite(value) && value > 0 ? this.formatViewportNumber(value) : 1;
+  }
+
+  objectScalePreviewValueForObject(object) {
+    return object?.id === this.selectedObjectId ? this.objectScalePreviewValue() : 1;
+  }
+
+  shapeWithObjectScalePreview(shape, scale = this.objectScalePreviewValue()) {
+    if (!shape || Math.abs(scale - 1) < 0.001) {
+      return shape;
+    }
+    const transform = this.shapeTransform(shape);
+    return {
+      ...shape,
+      transform: {
+        ...transform,
+        scaleX: this.formatViewportNumber(transform.scaleX * scale),
+        scaleY: this.formatViewportNumber(transform.scaleY * scale),
+        x: this.formatViewportNumber(transform.x * scale),
+        y: this.formatViewportNumber(transform.y * scale)
+      }
+    };
   }
 
   createMoveControlRow() {
@@ -3041,8 +3078,10 @@ export class ToolStarterApp {
       inputId = "objectVectorStudioV2ScaleInput",
       inputLabel = "Scale",
       onInput = (input) => this.applyScaleInputLive(input),
+      onReset = () => this.resetSelectedShapeScale(),
       onResize = () => this.resizeSelectedShape(),
       onStep = (delta) => this.adjustSelectedShapeScale(delta),
+      resetButtonId = "objectVectorStudioV2ResetShapeScaleButton",
       resizeButtonId = "objectVectorStudioV2ResizeShapeButton",
       upLargeId = "objectVectorStudioV2ScaleUpLargeButton",
       upSmallId = "objectVectorStudioV2ScaleUpSmallButton"
@@ -3092,6 +3131,16 @@ export class ToolStarterApp {
     this.applyIconGlyph(resizeButton, "resize");
     resizeButton.addEventListener("click", onResize);
     row.append(resizeButton);
+
+    const resetButton = document.createElement("button");
+    resetButton.id = resetButtonId;
+    resetButton.className = "object-vector-studio-v2__scale-reset-button";
+    resetButton.type = "button";
+    resetButton.textContent = "X";
+    resetButton.title = "Reset Scale to 1.0";
+    resetButton.setAttribute("aria-label", `${inputLabel} Reset Scale to 1.0`);
+    resetButton.addEventListener("click", onReset);
+    row.append(resetButton);
     return row;
   }
 
@@ -3190,12 +3239,13 @@ export class ToolStarterApp {
       this.renderOnionSkin(object);
     }
     const transformOrigin = this.objectTransformOrigin(object);
+    const objectScale = this.objectScalePreviewValueForObject(object);
     let renderedCount = 0;
     const hitLayer = document.createElementNS(SVG_NS, "g");
     hitLayer.classList.add("object-vector-studio-v2__shape-hit-layer");
     this.elements.renderSurface.append(hitLayer);
     sortedShapes(object).forEach((shape, shapeIndex) => {
-      const renderShape = this.effectiveShape(shape, shapeIndex);
+      const renderShape = this.shapeWithObjectScalePreview(this.effectiveShape(shape, shapeIndex), objectScale);
       if (!renderShape.visible) {
         return;
       }
@@ -3372,8 +3422,9 @@ export class ToolStarterApp {
     group.classList.add("object-vector-studio-v2__onion-skin");
     group.dataset.onionSkinFrame = previousFrame.id;
     const transformOrigin = this.objectTransformOrigin(object);
+    const objectScale = this.objectScalePreviewValueForObject(object);
     sortedShapes(object).forEach((shape, shapeIndex) => {
-      const renderShape = this.effectiveShapeForFrame(shape, previousFrame, shapeIndex);
+      const renderShape = this.shapeWithObjectScalePreview(this.effectiveShapeForFrame(shape, previousFrame, shapeIndex), objectScale);
       if (!renderShape.visible) {
         return;
       }
@@ -3472,6 +3523,7 @@ export class ToolStarterApp {
       return;
     }
     try {
+      this.renderDrawingSnapLine(previewShape);
       const element = this.createSvgShape(previewShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
       element.classList.add("object-vector-studio-v2__drawing-preview");
       element.dataset.drawingPreviewTool = this.activeDrawing.tool;
@@ -3481,6 +3533,20 @@ export class ToolStarterApp {
     } catch (error) {
       this.statusLog.write(`FAIL Drawing preview failed for ${this.activeDrawing.tool}: ${error.message}`);
     }
+  }
+
+  renderDrawingSnapLine(previewShape) {
+    if (this.snapMode === "none") {
+      return;
+    }
+    const element = this.createSvgShape(previewShape, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE });
+    element.classList.add("object-vector-studio-v2__snap-line");
+    element.dataset.snapLineMode = this.snapMode;
+    element.dataset.snapLineTool = this.activeDrawing?.tool || shapeTool(previewShape);
+    element.setAttribute("aria-hidden", "true");
+    this.applyDrawingPreviewPresentation(element, previewShape);
+    element.style.strokeDasharray = "none";
+    this.elements.renderSurface.append(element);
   }
 
   renderDrawingHint() {
@@ -3566,11 +3632,12 @@ export class ToolStarterApp {
     }
     const points = [];
     const transformOrigin = this.objectTransformOrigin(object);
+    const objectScale = this.objectScalePreviewValueForObject(object);
     sortedShapes(object).forEach((shape, shapeIndex) => {
       if (normalizeShapeIndex(options.excludeShapeIndex) === shapeIndex) {
         return;
       }
-      const effective = this.effectiveShape(shape, shapeIndex);
+      const effective = this.shapeWithObjectScalePreview(this.effectiveShape(shape, shapeIndex), objectScale);
       if (!effective.visible) {
         return;
       }
@@ -4102,10 +4169,11 @@ export class ToolStarterApp {
   objectBounds(object, { drawingScale = 1, includeInvisible = true } = {}) {
     const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
     const transformOrigin = this.objectTransformOrigin(object);
+    const objectScale = this.objectScalePreviewValueForObject(object);
     const shapes = sortedShapes(object)
       .map((shape, shapeIndex) => ({ shape, shapeIndex }))
       .map(({ shape, shapeIndex }) => ({
-        shape: this.effectiveShapeForFrame(shape, activeFrame, shapeIndex),
+        shape: this.shapeWithObjectScalePreview(this.effectiveShapeForFrame(shape, activeFrame, shapeIndex), objectScale),
         shapeIndex
       }))
       .filter((entry) => includeInvisible || entry.shape.visible !== false);
@@ -4182,12 +4250,13 @@ export class ToolStarterApp {
     const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
     const objectShapes = sortedShapes(object);
     const transformOrigin = this.objectTransformOrigin(object);
+    const objectScale = this.objectScalePreviewValueForObject(object);
     const targetIndexes = Array.from(new Set(Array.from(shapeIndexes || [])
       .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
       .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)))
       .sort((left, right) => left - right);
     const shapes = targetIndexes
-      .map((shapeIndex) => this.effectiveShapeForFrame(objectShapes[shapeIndex], activeFrame, shapeIndex))
+      .map((shapeIndex) => this.shapeWithObjectScalePreview(this.effectiveShapeForFrame(objectShapes[shapeIndex], activeFrame, shapeIndex), objectScale))
       .filter((shape) => includeInvisible || shape.visible !== false);
     if (!shapes.length) {
       return null;
@@ -4213,9 +4282,10 @@ export class ToolStarterApp {
     try {
       const selectedIndexes = this.selectedPreviewDragIndexes(object, this.selectedShapeIndex);
       const transformOrigin = this.objectTransformOrigin(object);
+      const objectScale = this.objectScalePreviewValueForObject(object);
       const bounds = selectedIndexes.length > 1
         ? this.shapeSetBounds(object, selectedIndexes, { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE })
-        : this.transformedBounds(this.effectiveShape(selectedShape), { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE, transformOrigin });
+        : this.transformedBounds(this.shapeWithObjectScalePreview(this.effectiveShape(selectedShape), objectScale), { drawingScale: OBJECT_PREVIEW_DRAWING_SCALE, transformOrigin });
       if (!bounds) {
         return;
       }
@@ -4265,26 +4335,6 @@ export class ToolStarterApp {
       });
 
       this.renderGeometryPointHandles(selectedShape);
-
-      const pivot = document.createElementNS(SVG_NS, "g");
-      pivot.classList.add("object-vector-studio-v2__pivot-origin");
-      pivot.dataset.pivotOrigin = String(this.selectedShapeIndex);
-      pivot.setAttribute("role", "img");
-      pivot.setAttribute("aria-label", "Selected shape center marker");
-      const pivotTitle = document.createElementNS(SVG_NS, "title");
-      pivotTitle.textContent = "Selected shape center marker. Shape Transform rotate uses the object origin marker.";
-      const diagonalForward = document.createElementNS(SVG_NS, "line");
-      diagonalForward.setAttribute("x1", bounds.originX - 8);
-      diagonalForward.setAttribute("x2", bounds.originX + 8);
-      diagonalForward.setAttribute("y1", bounds.originY - 8);
-      diagonalForward.setAttribute("y2", bounds.originY + 8);
-      const diagonalBack = document.createElementNS(SVG_NS, "line");
-      diagonalBack.setAttribute("x1", bounds.originX - 8);
-      diagonalBack.setAttribute("x2", bounds.originX + 8);
-      diagonalBack.setAttribute("y1", bounds.originY + 8);
-      diagonalBack.setAttribute("y2", bounds.originY - 8);
-      pivot.append(pivotTitle, diagonalForward, diagonalBack);
-      this.elements.renderSurface.append(pivot);
     } catch (error) {
       this.statusLog.write(`FAIL Selection overlay render failed for ${object.name}/shape-${this.selectedShapeIndex} (${shapeTool(selectedShape)}): ${error.message}`);
     }
@@ -4319,12 +4369,13 @@ export class ToolStarterApp {
     const objectShapes = sortedShapes(object);
     const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
     const transformOrigin = this.objectTransformOrigin(object);
+    const objectScale = this.objectScalePreviewValueForObject(object);
     return Array.from(shapeIndexes || [])
       .map((shapeIndex) => normalizeShapeIndex(shapeIndex))
       .filter((shapeIndex) => shapeIndex >= 0 && shapeIndex < objectShapes.length)
       .reverse()
       .find((shapeIndex) => {
-        const effectiveShape = this.effectiveShapeForFrame(objectShapes[shapeIndex], activeFrame, shapeIndex);
+        const effectiveShape = this.shapeWithObjectScalePreview(this.effectiveShapeForFrame(objectShapes[shapeIndex], activeFrame, shapeIndex), objectScale);
         if (!effectiveShape || effectiveShape.visible === false) {
           return false;
         }
@@ -4364,10 +4415,11 @@ export class ToolStarterApp {
 
   renderGeometryPointHandles(shape) {
     const effectiveShape = this.effectiveShape(shape);
-    const transform = this.shapeTransform(effectiveShape);
+    const renderShape = this.shapeWithObjectScalePreview(effectiveShape, this.objectScalePreviewValueForObject(this.selectedObject()));
+    const renderTransform = this.shapeTransform(renderShape);
     const transformOrigin = this.objectTransformOrigin(this.selectedObject());
     this.geometryPointHandleDefinitions(effectiveShape).forEach((definition) => {
-      const position = this.transformedPoint(definition.point, transform, transformOrigin);
+      const position = this.transformedPoint(definition.point, renderTransform, transformOrigin);
       const point = document.createElementNS(SVG_NS, "rect");
       point.classList.add("object-vector-studio-v2__resize-handle", "object-vector-studio-v2__geometry-point-handle");
       if (definition.className) {
@@ -5525,6 +5577,7 @@ export class ToolStarterApp {
 
     const scrollState = this.captureLeftPanelScrollState();
     this.selectedObjectId = objectId;
+    this.transformInputValues.set("objectVectorStudioV2ObjectScaleInput", "1");
     const selectedObject = this.selectedObject();
     this.selectedShapeIndex = sortedShapes(selectedObject).length ? 0 : -1;
     this.selectedShapeIndexes = new Set(this.selectedShapeIndex >= 0 ? [this.selectedShapeIndex] : []);
@@ -7243,6 +7296,19 @@ export class ToolStarterApp {
     });
   }
 
+  resetSelectedShapeScale() {
+    const inputElement = this.window.document.getElementById("objectVectorStudioV2ScaleInput");
+    if (inputElement) {
+      inputElement.value = "1";
+      this.transformInputValues.set(inputElement.id, "1");
+      this.clearInputValidity(inputElement);
+    }
+    this.applySelectedShapeScaleValue(1, {
+      okMessage: `OK Scale reset to 1 for shape row ${this.selectedShapeIndex}.`,
+      renderControls: false
+    });
+  }
+
   applySelectedShapeScaleValue(scale, { okMessage, renderControls = false } = {}) {
     if (!this.canUseShapeTransform()) {
       this.statusLog.write("WARN Transform scale skipped: select exactly one shape.");
@@ -7354,12 +7420,28 @@ export class ToolStarterApp {
     });
   }
 
+  resetSelectedObjectScale() {
+    const inputElement = this.window.document.getElementById("objectVectorStudioV2ObjectScaleInput");
+    if (inputElement) {
+      inputElement.value = "1";
+      this.transformInputValues.set(inputElement.id, "1");
+      this.clearInputValidity(inputElement);
+    }
+    this.applySelectedObjectScaleValue(1, {
+      okMessage: `OK Object resize scale reset to 1 for ${this.selectedObject()?.name || "selected object"}; object transform scale remains 1 until Resize rewrites geometry.`
+    });
+  }
+
   applySelectedObjectScaleValue(scale, { okMessage } = {}) {
     const object = this.selectedObject();
     if (!object) {
       this.statusLog.write("WARN Object scale skipped: no object is selected.");
       return false;
     }
+    this.transformInputValues.set("objectVectorStudioV2ObjectScaleInput", this.formatScaleInputValue(scale));
+    this.renderWorkSurface();
+    this.updateTransformSummaryText();
+    this.updateSelectedObjectJsonDetails();
     if (okMessage) {
       this.statusLog.write(okMessage);
     } else {

@@ -211,12 +211,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": 5,
-                  "y": 11
+                  "x": -7,
+                  "y": 16
                 },
                 "point2": {
-                  "x": 0,
-                  "y": 19
+                  "x": -0.079,
+                  "y": 19.96
                 }
               },
               "style": {
@@ -232,8 +232,7 @@
                 "scaleY": 1,
                 "x": 0,
                 "y": 0
-              },
-              "groupId": "group-1"
+              }
             },
             {
               "tool": "line",
@@ -242,16 +241,16 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -5.002,
-                  "y": 11
+                  "x": 7,
+                  "y": 16
                 },
                 "point2": {
-                  "x": -0.002,
-                  "y": 19
+                  "x": -0.079,
+                  "y": 19.96
                 }
               },
               "style": {
-                "fill": "transparent",
+                "fill": "#00000000",
                 "stroke": "#FFFFFF",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
@@ -263,8 +262,7 @@
                 "scaleY": 1,
                 "x": 0,
                 "y": 0
-              },
-              "groupId": "group-1"
+              }
             },
             {
               "tool": "polygon",
@@ -275,19 +273,19 @@
                 "points": [
                   {
                     "x": 0,
-                    "y": -16
+                    "y": -24
                   },
                   {
-                    "x": 14,
-                    "y": 16
+                    "x": 21,
+                    "y": 24
                   },
                   {
                     "x": 0,
-                    "y": 8
+                    "y": 12
                   },
                   {
-                    "x": -14,
-                    "y": 16
+                    "x": -21,
+                    "y": 24
                   }
                 ]
               },
@@ -314,6 +312,66 @@
                 "x": 0,
                 "y": 0
               }
+            },
+            {
+              "tool": "line",
+              "order": 4,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "point1": {
+                  "x": 0,
+                  "y": 24
+                },
+                "point2": {
+                  "x": -7,
+                  "y": 16
+                }
+              },
+              "style": {
+                "fill": "#00000000",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "tool": "line",
+              "order": 5,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "point1": {
+                  "x": 7,
+                  "y": 16
+                },
+                "point2": {
+                  "x": 0,
+                  "y": 24
+                }
+              },
+              "style": {
+                "fill": "#00000000",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "x": 0,
+                "y": 0
+              }
             }
           ],
           "states": [
@@ -327,24 +385,13 @@
                   "durationFrames": 1,
                   "shapeOverrides": [
                     {
-                      "visible": true,
-                      "shapeIndex": 1,
-                      "transform": {
-                        "rotation": 0,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "x": 0.002,
-                        "y": 0
-                      }
-                    },
-                    {
-                      "visible": true,
+                      "visible": false,
                       "shapeIndex": 0,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
                         "scaleY": 1,
-                        "x": 0,
+                        "x": 0.002,
                         "y": 0
                       }
                     },
@@ -358,6 +405,39 @@
                         "y": 0
                       },
                       "visible": true
+                    },
+                    {
+                      "shapeIndex": 1,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": false
+                    },
+                    {
+                      "shapeIndex": 3,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": false
+                    },
+                    {
+                      "shapeIndex": 4,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": false
                     }
                   ]
                 }
@@ -369,13 +449,86 @@
               "frames": [
                 {
                   "id": "frame-1",
-                  "order": 0,
+                  "order": 1,
                   "durationFrames": 1,
                   "shapeOverrides": [
                     {
                       "visible": true,
-                      "shapeIndex": 1
+                      "shapeIndex": 0
                     },
+                    {
+                      "shapeIndex": 4,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": false
+                    },
+                    {
+                      "shapeIndex": 3,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": false
+                    }
+                  ]
+                },
+                {
+                  "id": "frame-2",
+                  "order": 2,
+                  "durationFrames": 1,
+                  "shapeOverrides": [
+                    {
+                      "visible": false,
+                      "shapeIndex": 0
+                    },
+                    {
+                      "shapeIndex": 1,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": false
+                    },
+                    {
+                      "shapeIndex": 3,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 4,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    }
+                  ]
+                },
+                {
+                  "id": "frame-3",
+                  "order": 3,
+                  "durationFrames": 1,
+                  "shapeOverrides": [
                     {
                       "visible": true,
                       "shapeIndex": 0
@@ -393,17 +546,6 @@
                   "shapeOverrides": [
                     {
                       "shapeIndex": 2,
-                      "transform": {
-                        "x": 0,
-                        "y": 0,
-                        "rotation": 0,
-                        "scaleX": 1,
-                        "scaleY": 1
-                      },
-                      "visible": true
-                    },
-                    {
-                      "shapeIndex": 1,
                       "transform": {
                         "x": 0,
                         "y": 0,
