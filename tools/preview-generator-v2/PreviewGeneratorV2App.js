@@ -481,7 +481,7 @@ function selectedRepoRootPathState() {
     return {
       ok: false,
       message: `Repo root path is unavailable; cannot resolve a full absolute output path. Selected repo label: ${displayLabel}; handle root name: ${handleName || "(unavailable)"}; session key checked: ${WORKSPACE_REPO_REFERENCE_SESSION_KEY}. Required action: select the repo root folder again in Workspace Manager V2 or Pick Repo before generating previews.`,
-      repoRootDisplayPath: displayLabel === "(unavailable)" ? "" : displayLabel,
+      repoRootDisplayPath: "",
       repoRootPath: ""
     };
   }
