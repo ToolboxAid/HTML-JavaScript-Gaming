@@ -3438,6 +3438,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(zoomSource).toContain("const MAX_ZOOM = 1.0;");
       expect(zoomSource).toContain("const MIN_ZOOM = 0.01;");
       expect(zoomSource).toContain("const ZOOM_STEP = 0.01;");
+      expect(zoomSource).toContain("transformWithObjectScaleAroundPivot");
+      expect(zoomSource).not.toContain("objectScalePreviewValues");
+      expect(zoomSource).not.toContain("transformWithRelativeScaleAroundPivot");
       expect(zoomSource).toMatch(/formatZoomPercentage\(\) \{\s+return Math\.round\(this\.viewport\.zoom \* 100\);\s+\}/);
       expect(zoomSource.match(/formatZoomPercentage\(\) \* 10/g)?.length || 0).toBeGreaterThanOrEqual(4);
       expect(zoomSource).not.toMatch(/viewport\.zoom\s*\*\s*100\s*\*\s*GRID_STEP|const MAX_ZOOM = 2/);

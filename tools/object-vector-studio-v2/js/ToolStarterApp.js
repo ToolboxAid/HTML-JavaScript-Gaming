@@ -525,7 +525,6 @@ export class ToolStarterApp {
     this.previewRedoStack = [];
     this.previewPointerEdit = null;
     this.transformInputValues = new Map();
-    this.objectScalePreviewValues = new Map();
     this.stateControlStateId = "";
     this.pendingAddObjectClick = false;
     this.hiddenObjectIds = new Set();
@@ -2806,8 +2805,7 @@ export class ToolStarterApp {
     const section = document.createElement("section");
     section.className = "object-vector-studio-v2__edit-panel object-vector-studio-v2__edit-panel--transform object-vector-studio-v2__edit-panel--object-transform";
     const origin = this.objectTransformOrigin(object);
-    const objectScaleInput = Number(this.objectScalePreviewValues.get(object.id) ?? 1);
-    const objectScale = Number.isFinite(objectScaleInput) && objectScaleInput > 0 ? objectScaleInput : 1;
+    const objectScale = this.objectScaleControlValue(object);
     section.append(
       this.createObjectOriginControlRow(origin),
       this.createObjectRotateControlRow(),
@@ -2825,6 +2823,18 @@ export class ToolStarterApp {
       })
     );
     return section;
+  }
+
+  objectScaleControlValue(object) {
+    const frame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
+    const transforms = sortedShapes(object)
+      .map((shape, shapeIndex) => this.ensureShapeTransform(this.effectiveShapeForFrame(shape, frame, shapeIndex)));
+    if (!transforms.length) {
+      return 1;
+    }
+    const firstScale = transforms[0].scaleX;
+    const sameScale = transforms.every((transform) => Math.abs(transform.scaleX - transform.scaleY) < 0.001 && Math.abs(transform.scaleX - firstScale) < 0.001);
+    return sameScale && firstScale > 0 ? this.formatViewportNumber(firstScale) : 1;
   }
 
   createMoveControlRow() {
@@ -4101,8 +4111,16 @@ export class ToolStarterApp {
     };
   }
 
-  transformWithRelativeScaleAroundPivot(transform, pivot, scaleRatio) {
+  transformWithObjectScaleAroundPivot(transform, pivot, scale) {
     const normalized = this.ensureShapeTransform({ transform });
+    if (Math.abs(normalized.scaleX - normalized.scaleY) >= 0.001) {
+      throw new Error("shape transform scale must be uniform for Object Scale.");
+    }
+    const currentScale = normalized.scaleX;
+    const scaleRatio = scale / currentScale;
+    if (!Number.isFinite(scaleRatio) || scaleRatio <= 0) {
+      throw new Error("scale ratio must be greater than 0.");
+    }
     const originWorld = this.transformedPoint(normalized.shapeOrigin, normalized);
     const nextOriginWorld = {
       x: this.formatViewportNumber(pivot.x + (originWorld.x - pivot.x) * scaleRatio),
@@ -4110,8 +4128,8 @@ export class ToolStarterApp {
     };
     return {
       ...normalized,
-      scaleX: this.formatViewportNumber(normalized.scaleX * scaleRatio),
-      scaleY: this.formatViewportNumber(normalized.scaleY * scaleRatio),
+      scaleX: this.formatViewportNumber(scale),
+      scaleY: this.formatViewportNumber(scale),
       x: this.formatViewportNumber(nextOriginWorld.x - normalized.shapeOrigin.x),
       y: this.formatViewportNumber(nextOriginWorld.y - normalized.shapeOrigin.y)
     };
@@ -7385,54 +7403,20 @@ export class ToolStarterApp {
       this.transformInputValues.set(inputElement.id, inputElement.value);
     }
     this.applySelectedObjectScaleValue(nextScale, {
-      previousScale: input.value,
       okMessage: `OK Object scale preview set to ${this.formatScaleInputValue(nextScale)} for ${this.selectedObject()?.name || "selected object"}.`
     });
   }
 
-  currentObjectScalePreviewValue(object = this.selectedObject()) {
-    const storedScale = this.objectScalePreviewValues.get(object?.id);
-    return Number.isFinite(storedScale) && storedScale > 0 ? storedScale : 1;
-  }
-
-  applySelectedObjectScaleValue(scale, { okMessage, previousScale } = {}) {
+  applySelectedObjectScaleValue(scale, { okMessage } = {}) {
     const origin = this.readObjectOriginInputs();
     if (!origin.ok) {
       this.statusLog.write(`FAIL Invalid object transform rejected: ${origin.error}`);
       return false;
     }
     const object = this.selectedObject();
-    const priorScale = Number.isFinite(previousScale) && previousScale > 0
-      ? previousScale
-      : this.currentObjectScalePreviewValue(object);
-    const scaleRatio = scale / priorScale;
-    if (!Number.isFinite(scaleRatio) || scaleRatio <= 0) {
-      this.statusLog.write("FAIL Invalid object transform rejected: scale ratio must be greater than 0.");
-      return false;
-    }
-    const priorStoredScale = object?.id ? this.objectScalePreviewValues.get(object.id) : undefined;
-    const priorInputScale = this.transformInputValues.get("objectVectorStudioV2ObjectScaleInput");
-    const nextScale = this.formatViewportNumber(scale);
-    if (object?.id) {
-      this.objectScalePreviewValues.set(object.id, nextScale);
-      this.transformInputValues.set("objectVectorStudioV2ObjectScaleInput", this.formatScaleInputValue(nextScale));
-    }
-    const committed = this.updateSelectedObjectTransforms("scale", (shape) => {
-      shape.transform = this.transformWithRelativeScaleAroundPivot(this.ensureShapeTransform(shape), origin.value, scaleRatio);
+    return this.updateSelectedObjectTransforms("scale", (shape) => {
+      shape.transform = this.transformWithObjectScaleAroundPivot(this.ensureShapeTransform(shape), origin.value, scale);
     }, okMessage || `OK Object scale preview set to ${this.formatScaleInputValue(scale)} for ${object?.name || "selected object"}.`, "Object Transform scale failed schema validation");
-    if (!committed && object?.id) {
-      if (priorStoredScale === undefined) {
-        this.objectScalePreviewValues.delete(object.id);
-      } else {
-        this.objectScalePreviewValues.set(object.id, priorStoredScale);
-      }
-      if (priorInputScale === undefined) {
-        this.transformInputValues.delete("objectVectorStudioV2ObjectScaleInput");
-      } else {
-        this.transformInputValues.set("objectVectorStudioV2ObjectScaleInput", priorInputScale);
-      }
-    }
-    return committed;
   }
 
   resizeSelectedObject() {
@@ -7463,18 +7447,12 @@ export class ToolStarterApp {
     }
 
     const nextPayload = this.cloneCurrentPayload();
-    const currentScale = this.currentObjectScalePreviewValue(object);
-    const scaleRatio = input.value / currentScale;
-    if (!Number.isFinite(scaleRatio) || scaleRatio <= 0) {
-      this.statusLog.write("FAIL Resize Geometry rejected for selected object: scale ratio must be greater than 0.");
-      return;
-    }
     try {
       targetIndexes.forEach((shapeIndex) => {
         const baseShape = this.findShapeInPayload(nextPayload, shapeIndex);
         const override = this.frameOverrideInPayload(nextPayload, shapeIndex, { create: false });
         const transformTarget = override?.transform ? { transform: override.transform, geometry: baseShape.geometry } : baseShape;
-        const transform = this.transformWithRelativeScaleAroundPivot(this.ensureShapeTransform(transformTarget), origin.value, scaleRatio);
+        const transform = this.transformWithObjectScaleAroundPivot(this.ensureShapeTransform(transformTarget), origin.value, input.value);
         this.resizeShapeGeometryByTransformScale(baseShape, transform);
         transform.scaleX = 1;
         transform.scaleY = 1;
@@ -7494,7 +7472,6 @@ export class ToolStarterApp {
     }
 
     this.transformInputValues.set("objectVectorStudioV2ObjectScaleInput", "1");
-    this.objectScalePreviewValues.set(object.id, 1);
     this.commitPayloadUpdate(
       nextPayload,
       object.id,
