@@ -52,28 +52,51 @@ function deriveManifestPath(options = {}) {
   return deriveManifestPathFromGameId(gameId);
 }
 
-function normalizeAssetEntry(rawEntry, fallbackId = "") {
+function resolveManifestRelativePath(pathValue, manifestPath) {
+  const normalized = normalizePath(pathValue);
+  if (!normalized || hasUrlProtocol(normalized) || normalized.startsWith("/") || normalized.startsWith("//")) {
+    return normalized;
+  }
+  const baseManifestPath = normalizeManifestPath(manifestPath);
+  if (!baseManifestPath) {
+    return normalized;
+  }
+  const slashIndex = baseManifestPath.lastIndexOf("/");
+  const baseFolder = slashIndex >= 0 ? baseManifestPath.slice(0, slashIndex) : "";
+  return `${baseFolder}/${normalized.replace(/^\/+/, "")}`;
+}
+
+function normalizeAssetEntry(rawEntry, fallbackId = "", manifestPath = "") {
   const entry = toObject(rawEntry);
-  const path = normalizePath(entry.path || entry.runtimePath || entry.href);
+  const path = resolveManifestRelativePath(entry.path || entry.runtimePath || entry.href, manifestPath);
   if (!path) {
     return null;
   }
   return {
     id: safeText(entry.id, "") || safeText(fallbackId, ""),
     kind: safeText(entry.kind, "").toLowerCase(),
-    path
+    path,
+    role: safeText(entry.role, "").toLowerCase(),
+    type: safeText(entry.type, "").toLowerCase()
   };
 }
 
-function collectImageEntriesFromManifest(manifestPayload) {
+function collectImageEntriesFromManifest(manifestPayload, { manifestPath = "" } = {}) {
   const payload = toObject(manifestPayload);
   const entries = [];
+
+  const isImageEntry = (entry) => entry.type === "image"
+    || entry.kind === "image"
+    || entry.role === "background"
+    || entry.role === "bezel"
+    || entry.role === "preview"
+    || safeText(entry.id, "").toLowerCase().includes(".image.");
 
   const pushEntry = (entry) => {
     if (!entry || !entry.path) {
       return;
     }
-    if (entry.kind && entry.kind !== "image") {
+    if (!isImageEntry(entry)) {
       return;
     }
     entries.push(entry);
@@ -81,7 +104,12 @@ function collectImageEntriesFromManifest(manifestPayload) {
 
   const assetBrowserAssets = toObject(payload?.tools?.["asset-browser"]?.assets);
   Object.entries(assetBrowserAssets).forEach(([assetId, rawEntry]) => {
-    pushEntry(normalizeAssetEntry(rawEntry, assetId));
+    pushEntry(normalizeAssetEntry(rawEntry, assetId, manifestPath));
+  });
+
+  const assetManagerAssets = toObject(payload?.tools?.["asset-manager-v2"]?.assets);
+  Object.entries(assetManagerAssets).forEach(([assetId, rawEntry]) => {
+    pushEntry(normalizeAssetEntry(rawEntry, assetId, manifestPath));
   });
 
   return entries;
@@ -97,7 +125,8 @@ function chooseSemanticImagePath(entries, semanticToken) {
 
   const byId = normalizedEntries.find((entry) => {
     const id = safeText(entry?.id, "").toLowerCase();
-    return id.includes(token);
+    const role = safeText(entry?.role, "").toLowerCase();
+    return role === token || id.includes(token);
   });
   if (byId?.path) {
     return byId.path;
@@ -205,7 +234,7 @@ export async function resolveManifestChromeAssetPaths(options = {}) {
     };
   }
 
-  const imageEntries = collectImageEntriesFromManifest(manifestPayload);
+  const imageEntries = collectImageEntriesFromManifest(manifestPayload, { manifestPath: base.manifestPath });
   return {
     ...base,
     manifestPayload,

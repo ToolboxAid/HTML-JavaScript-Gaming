@@ -169,7 +169,7 @@
     const hasSaveSource = Boolean(this.activeRepoHandle && !this.activeToolStateRequiresRepoHandle);
     this.menu.setSaveEnabled(hasActiveToolState && hasSaveSource && dirtyStatus === "true");
     this.menu.setCloseEnabled(hasActiveToolState && dirtyStatus === "false");
-    this.menu.setCancelEnabled(hasActiveToolState);
+    this.menu.setCancelEnabled(hasActiveToolState && dirtyStatus === "true");
     this.repoDestination.setPickRepoEnabled(!hasActiveToolState || this.activeToolStateRequiresRepoHandle);
     this.gameSelector.setSelectionLocked(hasActiveToolState);
   }

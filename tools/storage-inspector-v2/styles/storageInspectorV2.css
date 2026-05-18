@@ -353,6 +353,16 @@ button:hover {
   line-height: 1.45;
 }
 
+.storage-inspector-v2__filter-notes {
+  display: grid;
+  gap: 4px;
+  border-top: 1px solid var(--storage-inspector-v2-line);
+  color: var(--storage-inspector-v2-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  padding-top: 8px;
+}
+
 .storage-inspector-v2__entry-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, 234px);

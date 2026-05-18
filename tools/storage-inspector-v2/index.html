@@ -71,6 +71,7 @@
                 <option value="all">All storage</option>
                 <option value="sessionStorage">sessionStorage</option>
                 <option value="localStorage">localStorage</option>
+                <option value="cookies">cookies</option>
               </select>
             </label>
             <label class="storage-inspector-v2__field" for="storageInspectorV2FilterInput">
@@ -81,6 +82,12 @@
               <span>(0) Entries shown.</span>
               <span>(0) SessionStorage.</span>
               <span>(0) LocalStorage.</span>
+              <span>(0) Cookies.</span>
+            </div>
+            <div class="storage-inspector-v2__filter-notes" aria-label="Storage lifetime notes">
+              <span>sessionStorage survives refresh, not tab close.</span>
+              <span>localStorage survives refresh/browser restart.</span>
+              <span>cookies survive based on cookie expiration/session rules.</span>
             </div>
           </div>
         </section>

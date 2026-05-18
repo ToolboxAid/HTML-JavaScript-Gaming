@@ -23,7 +23,14 @@ Exercised tool entry points detected:
 (0%) Workspace Manager - not exercised by this Playwright run
 
 Changed runtime JS files covered:
-(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8334/8334; executed functions 818/866
+(86%) src/engine/runtime/fullscreenBezel.js - executed lines 1042/1042; executed functions 62/72
+(86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 963/963; executed functions 42/49
+(88%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 1500/1500; executed functions 107/121
+(92%) src/engine/runtime/gameImageConvention.js - executed lines 233/233; executed functions 23/25
+(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8380/8380; executed functions 826/874
+(98%) tools/storage-inspector-v2/js/StorageInspectorV2App.js - executed lines 348/348; executed functions 52/53
+(100%) tools/storage-inspector-v2/js/controls/FilterControl.js - executed lines 35/35; executed functions 9/9
+(100%) tools/storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - executed lines 259/259; executed functions 39/39
 
 Files with executed line/function counts where available:
 (2%) src/engine/input/ActionInputService.js - executed lines 397/397; executed functions 1/51
@@ -98,9 +105,7 @@ Files with executed line/function counts where available:
 (43%) games/Asteroids/systems/AsteroidsInitialsEntry.js - executed lines 71/71; executed functions 3/7
 (43%) games/Pong/game/PongAudio.js - executed lines 57/57; executed functions 3/7
 (44%) games/Asteroids/systems/ShipDebrisSystem.js - executed lines 84/84; executed functions 4/9
-(44%) src/engine/runtime/fullscreenBezel.js - executed lines 1034/1034; executed functions 29/66
 (47%) src/engine/input/InputService.js - executed lines 185/185; executed functions 14/30
-(47%) src/engine/runtime/backgroundImage.js - executed lines 205/205; executed functions 8/17
 (47%) src/engine/runtime/RuntimeMonitoringHooks.js - executed lines 191/191; executed functions 8/17
 (50%) games/Asteroids/index.js - executed lines 211/211; executed functions 6/12
 (50%) src/engine/camera/ZoneCameraSystem.js - executed lines 26/26; executed functions 1/2
@@ -146,12 +151,12 @@ Files with executed line/function counts where available:
 (68%) tools/palette-manager-v2/controls/UserPaletteControl.js - executed lines 95/95; executed functions 13/19
 (70%) games/Asteroids/systems/AsteroidsHighScoreService.js - executed lines 73/73; executed functions 7/10
 (71%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 5/7
+(71%) src/engine/runtime/backgroundImage.js - executed lines 205/205; executed functions 12/17
 (71%) src/engine/runtime/FullscreenService.js - executed lines 123/123; executed functions 10/14
 (71%) src/shared/utils/debugConfigUtils.js - executed lines 89/89; executed functions 5/7
 (71%) tools/asset-manager-v2/js/assetPreviewHelpers.js - executed lines 156/156; executed functions 10/14
 (71%) tools/palette-manager-v2/controls/PaletteValidationErrorControl.js - executed lines 30/30; executed functions 5/7
 (71%) tools/world-vector-studio-v2/js/controls/ActionNavControl.js - executed lines 76/76; executed functions 5/7
-(73%) src/engine/runtime/gameImageConvention.js - executed lines 207/207; executed functions 16/22
 (73%) src/engine/theme/mount-shared-header.js - executed lines 143/143; executed functions 8/11
 (75%) games/Pong/game/PongModeConfig.js - executed lines 88/88; executed functions 3/4
 (75%) games/shared/workspaceGameRuntimeContext.js - executed lines 58/58; executed functions 3/4
@@ -175,34 +180,35 @@ Files with executed line/function counts where available:
 (80%) tools/workspace-manager-v2/js/controls/AccordionSection.js - executed lines 27/27; executed functions 4/5
 (80%) tools/world-vector-studio-v2/js/controls/AccordionSection.js - executed lines 27/27; executed functions 4/5
 (81%) games/Asteroids/game/asteroidsObjectVectorRoles.js - executed lines 174/174; executed functions 13/16
-(82%) src/engine/rendering/CanvasRenderer.js - executed lines 100/100; executed functions 9/11
 (82%) tools/storage-inspector-v2/js/controls/EntryListControl.js - executed lines 59/59; executed functions 9/11
 (83%) games/Asteroids/entities/Asteroid.js - executed lines 61/61; executed functions 5/6
 (83%) tools/object-vector-studio-v2/js/bootstrap.js - executed lines 110/110; executed functions 5/6
 (83%) tools/palette-manager-v2/main.js - executed lines 227/227; executed functions 15/18
 (83%) tools/storage-inspector-v2/js/controls/AccordionSection.js - executed lines 41/41; executed functions 5/6
+(85%) src/engine/audio/GaplessLoopPlayer.js - executed lines 187/187; executed functions 17/20
 (86%) games/Asteroids/systems/AsteroidsAudio.js - executed lines 134/134; executed functions 12/14
 (86%) games/shared/gameSkinLoader.js - executed lines 352/352; executed functions 18/21
 (86%) src/engine/audio/WebAudioToneBackend.js - executed lines 65/65; executed functions 6/7
+(86%) src/engine/runtime/fullscreenBezel.js - executed lines 1042/1042; executed functions 62/72
 (86%) tools/asset-manager-v2/js/controls/AssetCatalogControl.js - executed lines 134/134; executed functions 12/14
 (86%) tools/workspace-manager-v2/js/controls/RepoDestinationControl.js - executed lines 25/25; executed functions 6/7
 (86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - executed lines 963/963; executed functions 42/49
 (88%) games/Pong/game/PongInputController.js - executed lines 77/77; executed functions 7/8
 (88%) games/shared/workspaceGameAssetCatalog.js - executed lines 313/313; executed functions 23/26
-(88%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 1498/1498; executed functions 107/121
+(88%) tools/preview-generator-v2/PreviewGeneratorV2App.js - executed lines 1500/1500; executed functions 107/121
 (88%) tools/shared/toolLaunchSSoTData.js - executed lines 112/112; executed functions 14/16
 (88%) tools/text2speech-V2/js/controls/TextInputControl.js - executed lines 24/24; executed functions 7/8
 (88%) tools/world-vector-studio-v2/js/controls/SourceInputControl.js - executed lines 33/33; executed functions 7/8
 (89%) games/Asteroids/game/asteroidObjectGeometry.js - executed lines 82/82; executed functions 16/18
 (89%) tools/asset-manager-v2/js/services/AssetSchemaValidator.js - executed lines 295/295; executed functions 25/28
 (89%) tools/preview-generator-v2/controls/StatusLogControl.js - executed lines 32/32; executed functions 8/9
-(89%) tools/storage-inspector-v2/js/controls/FilterControl.js - executed lines 34/34; executed functions 8/9
-(90%) src/engine/audio/GaplessLoopPlayer.js - executed lines 187/187; executed functions 18/20
 (90%) tools/palette-manager-v2/modules/PaletteValidationService.js - executed lines 88/88; executed functions 9/10
 (90%) tools/text2speech-V2/js/controls/ActionNavControl.js - executed lines 117/117; executed functions 19/21
 (90%) tools/text2speech-V2/js/TextToSpeechToolApp.js - executed lines 807/807; executed functions 62/69
+(91%) src/engine/rendering/CanvasRenderer.js - executed lines 100/100; executed functions 10/11
 (91%) tools/object-vector-studio-v2/js/controls/ActionNavControl.js - executed lines 78/78; executed functions 10/11
 (91%) tools/toolRegistry.js - executed lines 526/526; executed functions 10/11
+(92%) src/engine/runtime/gameImageConvention.js - executed lines 233/233; executed functions 23/25
 (92%) tools/object-vector-studio-v2/js/controls/ToolStarterShellControl.js - executed lines 112/112; executed functions 11/12
 (92%) tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js - executed lines 1662/1662; executed functions 149/162
 (93%) tools/asset-manager-v2/js/services/WorkspaceBridge.js - executed lines 305/305; executed functions 25/27
@@ -212,9 +218,9 @@ Files with executed line/function counts where available:
 (94%) games/shared/workspaceGameMetadataHydrator.js - executed lines 106/106; executed functions 16/17
 (94%) src/engine/rendering/ObjectVectorRuntimeAssetService.js - executed lines 1136/1136; executed functions 111/118
 (94%) tools/common/PaletteSortService.js - executed lines 103/103; executed functions 17/18
-(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8334/8334; executed functions 818/866
 (95%) tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js - executed lines 458/458; executed functions 56/59
-(98%) tools/storage-inspector-v2/js/StorageInspectorV2App.js - executed lines 347/347; executed functions 51/52
+(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - executed lines 8380/8380; executed functions 826/874
+(98%) tools/storage-inspector-v2/js/StorageInspectorV2App.js - executed lines 348/348; executed functions 52/53
 (100%) games/Asteroids/flow/attract.js - executed lines 17/17; executed functions 1/1
 (100%) games/Asteroids/flow/highscore.js - executed lines 16/16; executed functions 1/1
 (100%) games/Asteroids/flow/intro.js - executed lines 18/18; executed functions 1/1
@@ -275,10 +281,11 @@ Files with executed line/function counts where available:
 (100%) tools/storage-inspector-v2/js/bootstrap.js - executed lines 55/55; executed functions 4/4
 (100%) tools/storage-inspector-v2/js/controls/DataControl.js - executed lines 23/23; executed functions 5/5
 (100%) tools/storage-inspector-v2/js/controls/DirtyControl.js - executed lines 30/30; executed functions 6/6
+(100%) tools/storage-inspector-v2/js/controls/FilterControl.js - executed lines 35/35; executed functions 9/9
 (100%) tools/storage-inspector-v2/js/controls/JsonControl.js - executed lines 19/19; executed functions 5/5
 (100%) tools/storage-inspector-v2/js/controls/StatusLogControl.js - executed lines 32/32; executed functions 10/10
 (100%) tools/storage-inspector-v2/js/services/StorageInspectorV2RuntimeContract.js - executed lines 10/10; executed functions 2/2
-(100%) tools/storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - executed lines 184/184; executed functions 29/29
+(100%) tools/storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - executed lines 259/259; executed functions 39/39
 (100%) tools/text2speech-V2/js/controls/OutputSummaryControl.js - executed lines 8/8; executed functions 3/3
 (100%) tools/text2speech-V2/js/controls/SpeechOptionsControl.js - executed lines 451/451; executed functions 47/47
 (100%) tools/text2speech-V2/js/controls/StatusLogControl.js - executed lines 28/28; executed functions 8/8
@@ -297,5 +304,12 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) tests/playwright/tools/WorkspaceManagerV2.spec.mjs - changed JS file not collected as browser runtime coverage
-(94%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage
+(86%) src/engine/runtime/fullscreenBezel.js - changed JS file with browser V8 coverage
+(86%) tools/workspace-manager-v2/js/WorkspaceManagerV2App.js - changed JS file with browser V8 coverage
+(88%) tools/preview-generator-v2/PreviewGeneratorV2App.js - changed JS file with browser V8 coverage
+(92%) src/engine/runtime/gameImageConvention.js - changed JS file with browser V8 coverage
+(95%) tools/object-vector-studio-v2/js/ToolStarterApp.js - changed JS file with browser V8 coverage
+(98%) tools/storage-inspector-v2/js/StorageInspectorV2App.js - changed JS file with browser V8 coverage
+(100%) tools/storage-inspector-v2/js/controls/FilterControl.js - changed JS file with browser V8 coverage
+(100%) tools/storage-inspector-v2/js/services/StorageInspectorV2StorageService.js - changed JS file with browser V8 coverage
 ```

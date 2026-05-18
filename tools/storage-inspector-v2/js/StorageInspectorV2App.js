@@ -90,8 +90,9 @@ export class StorageInspectorV2App {
   summaryCounts() {
     const sessionCount = this.entries.filter((entry) => entry.storageType === "sessionStorage").length;
     const localCount = this.entries.filter((entry) => entry.storageType === "localStorage").length;
+    const cookieCount = this.entries.filter((entry) => entry.storageType === "cookies").length;
     const totalCount = this.entries.length;
-    return { localCount, sessionCount, totalCount };
+    return { cookieCount, localCount, sessionCount, totalCount };
   }
 
   selectEntry(entryId) {

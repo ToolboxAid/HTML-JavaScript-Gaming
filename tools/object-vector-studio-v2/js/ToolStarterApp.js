@@ -45,10 +45,12 @@ const objectVectorStudioIcon = (name, glyph) => Object.freeze({ glyph, name });
 const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   add: objectVectorStudioIcon("nf-fa-plus", "\uf067"),
   angle: objectVectorStudioIcon("nf-md-angle_acute", "\u{f0937}"),
+  annulusRing: objectVectorStudioIcon("nf-md-circle_double", "\u{f0e95}"),
   arc: objectVectorStudioIcon("nf-md-vector_radius", "\u{f074a}"),
   bri: objectVectorStudioIcon("nf-fa-sun_o", "\uf185"),
   bringForward: objectVectorStudioIcon("nf-fa-arrow_up", "\uf062"),
   bringFront: objectVectorStudioIcon("nf-fa-angle_double_up", "\uf102"),
+  capsuleStadium: objectVectorStudioIcon("nf-md-rounded_corner", "\u{f0607}"),
   center: objectVectorStudioIcon("nf-fa-dot_circle_o", "\uf192"),
   circle: objectVectorStudioIcon("nf-md-vector_circle_variant", "\u{f0557}"),
   copy: objectVectorStudioIcon("nf-fa-copy", "\uf0c5"),
@@ -61,6 +63,9 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   grid: objectVectorStudioIcon("nf-md-grid", "\u{f02c1}"),
   gridOff: objectVectorStudioIcon("nf-md-grid_off", "\u{f02c2}"),
   polyline: objectVectorStudioIcon("nf-md-vector_polyline", "\u{f0561}"),
+  kite: objectVectorStudioIcon("nf-md-vector_polygon", "\u{f0560}"),
+  lune: objectVectorStudioIcon("nf-md-moon_waning_crescent", "\u{f0f64}"),
+  parallelogram: objectVectorStudioIcon("nf-md-vector_polygon", "\u{f0560}"),
   snapGrid: objectVectorStudioIcon("nf-md-grid_large", "\u{f0758}"),
   snapNone: objectVectorStudioIcon("nf-fa-not_equal", "\u{efcb}"),
   snapPoint: objectVectorStudioIcon("nf-md-vector_point", "\u{f055f}"),
@@ -82,16 +87,22 @@ const OBJECT_VECTOR_STUDIO_ICON_GLYPHS = Object.freeze({
   redo: objectVectorStudioIcon("nf-md-redo", "\u{f044e}"),
   reset: objectVectorStudioIcon("nf-fa-undo", "\uf0e2"),
   resize: objectVectorStudioIcon("nf-md-resize", "\u{f0a68}"),
+  rhombus: objectVectorStudioIcon("nf-md-rhombus_outline", "\u{f070b}"),
   rotate: objectVectorStudioIcon("nf-fa-repeat", "\uf01e"),
   sat: objectVectorStudioIcon("nf-fa-tint", "\uf043"),
   scale: objectVectorStudioIcon("nf-fa-scale_unbalanced", "\u{eddf}"),
+  sector: objectVectorStudioIcon("nf-md-chart_pie", "\u{f012b}"),
   select: objectVectorStudioIcon("nf-md-select", "\u{f0485}"),
+  segment: objectVectorStudioIcon("nf-md-circle_slice_4", "\u{f0a9e}"),
   sendBack: objectVectorStudioIcon("nf-fa-angle_double_down", "\uf103"),
   sendBackward: objectVectorStudioIcon("nf-fa-arrow_down", "\uf063"),
   stroke: objectVectorStudioIcon("nf-fa-pencil", "\uf040"),
   square: objectVectorStudioIcon("nf-fa-vector_square", "\u{ee92}"),
+  squircle: objectVectorStudioIcon("nf-md-rounded_corner", "\u{f0607}"),
+  starPolygon: objectVectorStudioIcon("nf-fa-star_o", "\uf006"),
   tag: objectVectorStudioIcon("nf-fa-tag", "\uf02b"),
   text: objectVectorStudioIcon("nf-fa-font", "\uf031"),
+  trapezoidTrapezium: objectVectorStudioIcon("nf-md-vector_polygon", "\u{f0560}"),
   triangle: objectVectorStudioIcon("nf-md-vector_triangle", "\u{f0563}"),
   ungroup: objectVectorStudioIcon("nf-fa-object_ungroup", "\uf248"),
   undo: objectVectorStudioIcon("nf-md-undo", "\u{f054c}"),
@@ -133,17 +144,28 @@ const OBJECT_VECTOR_STUDIO_STATIC_ICON_TARGETS = Object.freeze([
   ["#objectVectorStudioV2AngleSnapButton", "angle"],
   ["#objectVectorStudioV2GridRenderButton", "grid"],
   [".object-vector-studio-v2__shape-icon--select", "select"],
+  [".object-vector-studio-v2__shape-icon--annulus-ring", "annulusRing"],
   [".object-vector-studio-v2__shape-icon--triangle", "triangle"],
   [".object-vector-studio-v2__shape-icon--rectangle", "rectangle"],
   [".object-vector-studio-v2__shape-icon--square", "square"],
   [".object-vector-studio-v2__shape-icon--circle", "circle"],
+  [".object-vector-studio-v2__shape-icon--capsule-stadium", "capsuleStadium"],
   [".object-vector-studio-v2__shape-icon--ellipse", "ellipse"],
+  [".object-vector-studio-v2__shape-icon--kite", "kite"],
   [".object-vector-studio-v2__shape-icon--line", "line"],
+  [".object-vector-studio-v2__shape-icon--lune", "lune"],
+  [".object-vector-studio-v2__shape-icon--parallelogram", "parallelogram"],
   [".object-vector-studio-v2__shape-icon--picker", "picker"],
   [".object-vector-studio-v2__shape-icon--polygon", "polygon"],
   [".object-vector-studio-v2__shape-icon--polyline", "polyline"],
+  [".object-vector-studio-v2__shape-icon--rhombus", "rhombus"],
   [".object-vector-studio-v2__shape-icon--arc", "arc"],
+  [".object-vector-studio-v2__shape-icon--sector", "sector"],
+  [".object-vector-studio-v2__shape-icon--segment", "segment"],
+  [".object-vector-studio-v2__shape-icon--squircle", "squircle"],
+  [".object-vector-studio-v2__shape-icon--star-polygon", "starPolygon"],
   [".object-vector-studio-v2__shape-icon--text", "text"],
+  [".object-vector-studio-v2__shape-icon--trapezoid-trapezium", "trapezoidTrapezium"],
   [".object-vector-studio-v2__z-icon--bring-forward", "bringForward"],
   [".object-vector-studio-v2__z-icon--send-backward", "sendBackward"],
   [".object-vector-studio-v2__z-icon--bring-front", "bringFront"],
@@ -4115,6 +4137,27 @@ export class ToolStarterApp {
     };
   }
 
+  rawVisibleObjectGeometryBounds(object) {
+    const activeFrame = object?.id === this.selectedObjectId ? this.activeFrame() : null;
+    const bounds = sortedShapes(object)
+      .map((shape, shapeIndex) => this.effectiveShapeForFrame(shape, activeFrame, shapeIndex))
+      .filter((shape) => shape.visible !== false)
+      .map((shape) => shapeBounds(shape));
+    if (!bounds.length) {
+      return null;
+    }
+    const minX = Math.min(...bounds.map((entry) => entry.x));
+    const minY = Math.min(...bounds.map((entry) => entry.y));
+    const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
+    const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
+    return {
+      height: Number((maxY - minY).toFixed(3)),
+      width: Number((maxX - minX).toFixed(3)),
+      x: Number(minX.toFixed(3)),
+      y: Number(minY.toFixed(3))
+    };
+  }
+
   objectBoundsForFrame(object, frame) {
     const shapes = sortedShapes(object)
       .map((shape, shapeIndex) => this.effectiveShapeForFrame(shape, frame, shapeIndex))
@@ -6805,14 +6848,18 @@ export class ToolStarterApp {
       this.statusLog.write(`FAIL Auto Origin blocked: object ${object.name} has no visible geometry.`);
       return;
     }
-    const bounds = this.objectBounds(object, { includeInvisible: false });
+    const bounds = this.rawVisibleObjectGeometryBounds(object);
+    if (!bounds) {
+      this.statusLog.write(`FAIL Auto Origin blocked: object ${object.name} has no raw visible geometry bounds.`);
+      return;
+    }
     const balancedCenter = {
       x: this.formatViewportNumber(bounds.x + bounds.width / 2),
       y: this.formatViewportNumber(bounds.y + bounds.height / 2)
     };
     this.transformInputValues.set("objectVectorStudioV2ObjectOriginXInput", String(balancedCenter.x));
     this.transformInputValues.set("objectVectorStudioV2ObjectOriginYInput", String(balancedCenter.y));
-    this.updateSelectedObjectOrigin(balancedCenter, `OK Auto Origin updated object ${object.name} origin/pivot from visible object bounds ${balancedCenter.x}, ${balancedCenter.y}.`);
+    this.updateSelectedObjectOrigin(balancedCenter, `OK Auto Origin updated object ${object.name} origin/pivot from raw visible geometry bounds ${balancedCenter.x}, ${balancedCenter.y}.`);
   }
 
   moveSelectedShape() {

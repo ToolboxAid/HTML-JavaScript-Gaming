@@ -593,7 +593,7 @@ async function expectWorkspaceRestoreRequiresRepoRebind(page, { dirty = false, g
   await expect(page.locator("#activeGameSelect")).toBeDisabled();
   await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
   await expect(page.locator("#closeWorkspaceButton"))[dirty ? "toBeDisabled" : "toBeEnabled"]();
-  await expect(page.locator("#cancelWorkspaceButton")).toBeEnabled();
+  await expect(page.locator("#cancelWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toBeDisabled();
@@ -614,7 +614,7 @@ async function rebindRestoredWorkspace(page, { dirty = false, gameId = "Asteroid
   await expectWorkspaceReturnRehydrated(page, { gameId, repoName });
   await expect(page.locator("#saveWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator("#closeWorkspaceButton"))[dirty ? "toBeDisabled" : "toBeEnabled"]();
-  await expect(page.locator("#cancelWorkspaceButton")).toBeEnabled();
+  await expect(page.locator("#cancelWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Rebound restored .* toolState to /games/${gameId}/game\\.manifest\\.json after repo folder selection\\.`));
 }
 
@@ -629,7 +629,7 @@ async function expectWorkspaceReturnedFromTool(page, options = {}) {
   await expectWorkspaceReturnRehydrated(page, { gameId, repoName });
   await expect(page.locator("#saveWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator("#closeWorkspaceButton"))[dirty ? "toBeDisabled" : "toBeEnabled"]();
-  await expect(page.locator("#cancelWorkspaceButton")).toBeEnabled();
+  await expect(page.locator("#cancelWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Return from tool restore: repo selected: ${repoName}\\.`));
   await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Return from tool restore: game selected: ${gameName} \\(${gameId}\\)\\.`));
   await expect(page.locator("#statusLog")).toHaveValue(new RegExp(`OK Return from tool restore: source binding active: /games/${gameId}/game\\.manifest\\.json\\.`));
@@ -1512,7 +1512,26 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Blocked Object");
       await page.locator("#objectVectorStudioV2AddObjectButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Add object blocked: load a schema-valid Object Vector Studio V2 payload before adding objects\./);
-      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(["Select", "Arc", "Circle", "Ellipse", "Line", "Polygon", "Polyline", "Rectangle", "Square", "Triangle", "Text"]);
+      const expectedShapeToolLabels = ["Select", "Annulus/Ring", "Arc", "Capsule/Stadium", "Circle", "Ellipse", "Kite", "Line", "Lune", "Parallelogram", "Polygon", "Polyline", "Rectangle", "Rhombus", "Sector", "Segment", "Square", "Squircle", "Star Polygon", "Trapezoid/Trapezium", "Triangle", "Text"];
+      await expect(page.locator(".object-vector-studio-v2__tool-toggle")).toHaveText(expectedShapeToolLabels);
+      expect(await page.locator("[data-future-shape]").evaluateAll((buttons) => buttons.map((button) => ({
+        disabled: button.disabled,
+        label: button.textContent.trim(),
+        pressed: button.getAttribute("aria-pressed"),
+        title: button.title
+      })))).toEqual([
+        { disabled: true, label: "Annulus/Ring", pressed: "false", title: "Future shape: Annulus/Ring is not creatable yet" },
+        { disabled: true, label: "Capsule/Stadium", pressed: "false", title: "Future shape: Capsule/Stadium is not creatable yet" },
+        { disabled: true, label: "Kite", pressed: "false", title: "Future shape: Kite is not creatable yet" },
+        { disabled: true, label: "Lune", pressed: "false", title: "Future shape: Lune is not creatable yet" },
+        { disabled: true, label: "Parallelogram", pressed: "false", title: "Future shape: Parallelogram is not creatable yet" },
+        { disabled: true, label: "Rhombus", pressed: "false", title: "Future shape: Rhombus is not creatable yet" },
+        { disabled: true, label: "Sector", pressed: "false", title: "Future shape: Sector is not creatable yet" },
+        { disabled: true, label: "Segment", pressed: "false", title: "Future shape: Segment is not creatable yet" },
+        { disabled: true, label: "Squircle", pressed: "false", title: "Future shape: Squircle is not creatable yet" },
+        { disabled: true, label: "Star Polygon", pressed: "false", title: "Future shape: Star Polygon is not creatable yet" },
+        { disabled: true, label: "Trapezoid/Trapezium", pressed: "false", title: "Future shape: Trapezoid/Trapezium is not creatable yet" }
+      ]);
       const futureNotes = await readFile("tools/object-vector-studio-v2/possible.future.adds.txt", "utf8");
       expect(futureNotes).toContain("Object Vector Studio V2 should stay focused on reusable atomic vector objects.");
       expect(futureNotes).toContain("Future World Vector or Scene layers should instance Object Vector objects");
@@ -1552,6 +1571,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             stroke: icon("#objectVectorStudioV2StrokeModeButton")
           },
           fontAssetOk: fontResponse.ok,
+          futureShapeIcons: {
+            annulusRing: icon(".object-vector-studio-v2__shape-icon--annulus-ring"),
+            capsuleStadium: icon(".object-vector-studio-v2__shape-icon--capsule-stadium"),
+            kite: icon(".object-vector-studio-v2__shape-icon--kite"),
+            lune: icon(".object-vector-studio-v2__shape-icon--lune"),
+            parallelogram: icon(".object-vector-studio-v2__shape-icon--parallelogram"),
+            rhombus: icon(".object-vector-studio-v2__shape-icon--rhombus"),
+            sector: icon(".object-vector-studio-v2__shape-icon--sector"),
+            segment: icon(".object-vector-studio-v2__shape-icon--segment"),
+            squircle: icon(".object-vector-studio-v2__shape-icon--squircle"),
+            starPolygon: icon(".object-vector-studio-v2__shape-icon--star-polygon"),
+            trapezoidTrapezium: icon(".object-vector-studio-v2__shape-icon--trapezoid-trapezium")
+          },
           oldCustomIconCssRemoved: !/object-vector-studio-v2__shape-icon--select::before|object-vector-studio-v2__z-icon--group::after|object-vector-studio-v2__tile-icon--delete::after|content:\s*"T"/u.test(toolCss),
           paletteSortIcons: {
             bri: icon("[data-palette-sort='bri']"),
@@ -1644,6 +1676,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(iconStyleState.oldCustomIconCssRemoved).toBe(true);
       [
         ...Object.values(iconStyleState.actionIcons),
+        ...Object.values(iconStyleState.futureShapeIcons),
         ...Object.values(iconStyleState.gridIcons),
         ...Object.values(iconStyleState.previewEditIcons),
         ...Object.values(iconStyleState.shapeIcons),
@@ -1697,6 +1730,19 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         name: { iconKey: "name", iconName: "nf-fa-font" },
         sat: { iconKey: "sat", iconName: "nf-fa-tint" },
         tag: { iconKey: "tag", iconName: "nf-fa-tag" }
+      });
+      expect(Object.fromEntries(Object.entries(iconStyleState.futureShapeIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
+        annulusRing: "annulusRing",
+        capsuleStadium: "capsuleStadium",
+        kite: "kite",
+        lune: "lune",
+        parallelogram: "parallelogram",
+        rhombus: "rhombus",
+        sector: "sector",
+        segment: "segment",
+        squircle: "squircle",
+        starPolygon: "starPolygon",
+        trapezoidTrapezium: "trapezoidTrapezium"
       });
       expect(Object.fromEntries(Object.entries(iconStyleState.shapeIcons).map(([key, value]) => [key, value.iconKey]))).toEqual({
         arc: "arc",
@@ -1804,10 +1850,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       expect(shapeToolLayout).toEqual({
-        buttonCount: 11,
+        buttonCount: 22,
         labelBesideGrid: true,
         leftPanelOverflowY: "auto",
-        shapesButtonLabels: ["Select", "Arc", "Circle", "Ellipse", "Line", "Polygon", "Polyline", "Rectangle", "Square", "Triangle", "Text"],
+        shapesButtonLabels: expectedShapeToolLabels,
         textButtonWider: true,
         toolsButtonLabels: ["Snap Grid", "Snap Angle", "Grid", "Icons"],
         toolsContainsShapeButtons: false,
@@ -7093,7 +7139,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.waitForFunction(() => document.fullscreenElement?.getAttribute("data-runtime-fullscreen-host") === "canvas");
       await page.waitForFunction(() => {
         const canvas = document.getElementById("game");
-        return canvas.style.width === "1200px" && canvas.style.height === "900px";
+        const engine = window.__asteroidsNewEngine;
+        const bezelState = engine?.fullscreenBezelLayer?.getState?.();
+        return canvas.style.position === "absolute"
+          && canvas.style.width !== ""
+          && canvas.style.height !== ""
+          && bezelState?.visible === true
+          && bezelState?.canvasLayoutMode === "transparent-window-fit";
       });
 
       const fullscreenLayout = await page.evaluate(() => {
@@ -7101,8 +7153,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const fullscreenElement = document.fullscreenElement;
         const canvasRect = canvas.getBoundingClientRect();
         const hostRect = fullscreenElement.getBoundingClientRect();
+        const bezelState = window.__asteroidsNewEngine?.fullscreenBezelLayer?.getState?.() || null;
         return {
           canvasHeight: Math.round(canvasRect.height),
+          canvasInsideHost: canvasRect.left >= hostRect.left
+            && canvasRect.top >= hostRect.top
+            && canvasRect.right <= hostRect.right
+            && canvasRect.bottom <= hostRect.bottom,
           canvasInlineHeight: canvas.style.height,
           canvasInlineLeft: canvas.style.left,
           canvasInlineTop: canvas.style.top,
@@ -7113,6 +7170,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           hostHeight: Math.round(hostRect.height),
           hostKind: fullscreenElement.getAttribute("data-runtime-fullscreen-host") || "",
           hostWidth: Math.round(hostRect.width),
+          bezelState,
           requests: window.__gameFullscreenRequests
         };
       });
@@ -7121,10 +7179,18 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(fullscreenLayout.fullscreenIsDocumentElement).toBe(false);
       expect(fullscreenLayout.hostWidth).toBe(1200);
       expect(fullscreenLayout.hostHeight).toBe(900);
-      expect(fullscreenLayout.canvasWidth).toBe(1200);
-      expect(fullscreenLayout.canvasHeight).toBe(900);
-      expect(fullscreenLayout.canvasInlineLeft).toBe("0px");
-      expect(fullscreenLayout.canvasInlineTop).toBe("0px");
+      expect(fullscreenLayout.canvasWidth).toBeGreaterThan(600);
+      expect(fullscreenLayout.canvasWidth).toBeLessThan(fullscreenLayout.hostWidth);
+      expect(fullscreenLayout.canvasHeight).toBeGreaterThan(400);
+      expect(fullscreenLayout.canvasHeight).toBeLessThan(fullscreenLayout.hostHeight);
+      expect(fullscreenLayout.canvasInsideHost).toBe(true);
+      expect(fullscreenLayout.canvasInlineLeft).not.toBe("");
+      expect(fullscreenLayout.canvasInlineTop).not.toBe("");
+      expect(fullscreenLayout.bezelState).toMatchObject({
+        canvasLayoutMode: "transparent-window-fit",
+        path: "/games/Asteroids/assets/images/bezel.png",
+        visible: true
+      });
       expect(fullscreenLayout.requests).toEqual([
         { containsCanvas: true, hostKind: "canvas", tagName: "DIV" }
       ]);
@@ -7175,6 +7241,27 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
       await page.waitForFunction(() => window.__asteroidsNewBootStage === "boot-complete");
       await page.waitForFunction(() => window.__asteroidsObjectVectorRuntime?.loaded === true);
+      await page.waitForFunction(() => {
+        const engine = window.__asteroidsNewEngine;
+        return engine?.backgroundImageLayer?.getState?.().manifestResolved === true
+          && engine?.fullscreenBezelLayer?.getState?.().manifestResolved === true;
+      });
+      const chromeAssetState = await page.evaluate(() => {
+        const engine = window.__asteroidsNewEngine;
+        return {
+          background: engine.backgroundImageLayer.getState(),
+          bezel: engine.fullscreenBezelLayer.getState()
+        };
+      });
+      expect(chromeAssetState.background).toMatchObject({
+        path: "/games/Asteroids/assets/images/deluxe.png"
+      });
+      expect(["idle", "loading", "ready"]).toContain(chromeAssetState.background.status);
+      expect(chromeAssetState.bezel).toMatchObject({
+        path: "/games/Asteroids/assets/images/bezel.png",
+        uniformEdgeStretchPx: 10
+      });
+      expect(chromeAssetState.bezel.stretchConfigPath).toContain("games/Asteroids/game.manifest.json");
       const vectorBattleFontState = await page.evaluate(async () => {
         const obsoletePath = ["/games", "Asteroids", "assets", "fonts", "vector_battle.ttf"].join("/");
         const cssText = await (await fetch("/games/shared/styles/vectorBattleFont.css", { cache: "no-store" })).text();
@@ -8560,6 +8647,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       window.sessionStorage.setItem("storage-inspector-v2-delta", "delta value that is long enough to prove tile text clips inside a fixed tile");
       window.sessionStorage.setItem("storage-inspector-v2-super-long-storage-key-name-that-must-wrap-inside-the-fixed-session-tile", "epsilon value");
       window.localStorage.setItem("storage-inspector-v2-local", "local value");
+      document.cookie = "storage-inspector-v2-cookie=cookie%20value; path=/";
     });
     const server = await openStorageInspectorV2(page, "?launch=workspace&fromTool=workspace-manager-v2&hostContextId=storage-inspector-v2-test-context&workspaceMode=uat");
 
@@ -8608,11 +8696,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "Controls",
         "Filters"
       ]);
-      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(6);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(7);
       await expect(page.locator("#storageInspectorV2Summary > span")).toHaveText([
-        "(6) Entries shown.",
+        "(7) Entries shown.",
         "(5) SessionStorage.",
-        "(1) LocalStorage."
+        "(1) LocalStorage.",
+        "(1) Cookies."
+      ]);
+      await expect(page.locator(".storage-inspector-v2__filter-notes > span")).toHaveText([
+        "sessionStorage survives refresh, not tab close.",
+        "localStorage survives refresh/browser restart.",
+        "cookies survive based on cookie expiration/session rules."
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Storage Inspector V2 ready\. Storage is read\/delete\./);
       const controlsLayout = await page.evaluate(() => {
@@ -8771,6 +8865,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { height: 198, width: 234 },
         { height: 198, width: 234 },
         { height: 198, width: 234 },
+        { height: 198, width: 234 },
         { height: 198, width: 234 }
       ]);
       expect(tileState.firstRowMovesLeftToRight).toBe(true);
@@ -8798,13 +8893,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#storageInspectorV2Summary > span")).toHaveText([
         "(1) Entries shown.",
         "(0) SessionStorage.",
-        "(1) LocalStorage."
+        "(1) LocalStorage.",
+        "(0) Cookies."
       ]);
       await page.locator("#storageInspectorV2FilterInput").fill("*gamma");
       await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(1);
       await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:storage-inspector-v2-gamma']")).toHaveCount(1);
       await page.locator("#storageInspectorV2FilterInput").fill("");
-      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(6);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(7);
 
       await page.locator('[data-storage-inspector-v2-entry-id="sessionStorage:storage-inspector-v2-alpha"]').click();
       await expect(page.locator("#storageInspectorV2JsonOutput")).toHaveText("true");
@@ -8820,7 +8916,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#clearStorageInspectorV2StatusButton").click();
       await expect(page.locator("#statusLog")).toHaveValue("");
       await page.locator('[data-storage-inspector-v2-delete-entry-id="sessionStorage:storage-inspector-v2-alpha"]').click();
-      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(5);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(6);
       await expect(page.locator("#storageInspectorV2JsonOutput")).toHaveText('"plain beta value"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted sessionStorage:storage-inspector-v2-alpha\./);
       expect(await page.evaluate(() => window.sessionStorage.getItem("storage-inspector-v2-alpha"))).toBeNull();
@@ -8835,21 +8931,32 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         };
       });
       await page.locator('[data-storage-inspector-v2-delete-entry-id="sessionStorage:storage-inspector-v2-beta"]').click();
-      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(5);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(6);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Delete failed for sessionStorage:storage-inspector-v2-beta: blocked delete/);
 
       await page.evaluate(() => {
         Storage.prototype.removeItem = window.__storageInspectorV2OriginalRemoveItem;
       });
       await page.locator("#clearLocalStorageInspectorV2Button").click();
-      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(4);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(5);
       await expect(page.locator("#storageInspectorV2Summary > span")).toHaveText([
-        "(4) Entries shown.",
+        "(5) Entries shown.",
         "(4) SessionStorage.",
-        "(0) LocalStorage."
+        "(0) LocalStorage.",
+        "(1) Cookies."
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Cleared 1 local storage entry\./);
       expect(await page.evaluate(() => window.localStorage.getItem("storage-inspector-v2-local"))).toBeNull();
+
+      await page.locator("#storageScopeSelect").selectOption("cookies");
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='cookies:storage-inspector-v2-cookie']")).toHaveCount(1);
+      await page.locator('[data-storage-inspector-v2-delete-entry-id="cookies:storage-inspector-v2-cookie"]').click();
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(0);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted cookies:storage-inspector-v2-cookie\./);
+      expect(await page.evaluate(() => document.cookie.includes("storage-inspector-v2-cookie"))).toBe(false);
+      await page.locator("#storageScopeSelect").selectOption("all");
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(4);
 
       await page.locator("#clearSessionStorageInspectorV2Button").click();
       await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id]")).toHaveCount(0);
@@ -8860,7 +8967,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#storageInspectorV2Summary > span")).toHaveText([
         "(0) Entries shown.",
         "(0) SessionStorage.",
-        "(0) LocalStorage."
+        "(0) LocalStorage.",
+        "(0) Cookies."
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Cleared 4 session storage entries\./);
       await page.locator("#copyStorageInspectorV2AllButton").click();
@@ -9487,7 +9595,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activeGameSelect")).toBeDisabled();
       await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
       await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
-      await expect(page.locator("#cancelWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#cancelWorkspaceButton")).toBeDisabled();
       await expect(page.locator("#activeGameContent button")).toHaveCount(0);
       const selectedGameHydration = await readWorkspaceSessionHydration(page);
       expectRuntimeBindingMetadata(selectedGameHydration.repoReference);
@@ -10687,7 +10795,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           const shape = app.selectedShape();
           const effectiveShape = app.effectiveShape(shape);
           const transform = app.shapeTransform(effectiveShape);
-          const bounds = app.objectBounds(app.selectedObject(), { includeInvisible: false });
+          const bounds = app.rawVisibleObjectGeometryBounds(app.selectedObject());
           return {
             bounds,
             center: {
@@ -10700,7 +10808,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           };
         });
         await page.locator("#objectVectorStudioV2ObjectAutoOriginButton").click();
-        await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Origin updated object Asteroids Ship origin\/pivot from visible object bounds/);
+        await expect(page.locator("#statusLog")).toHaveValue(/OK Auto Origin updated object Asteroids Ship origin\/pivot from raw visible geometry bounds/);
         const autoOriginAfter = await page.evaluate(() => {
           const app = window.__objectVectorStudioV2App;
           const object = app.selectedObject();
@@ -10854,7 +10962,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectWorkspaceReturnRehydrated(page);
       await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
       await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
-      await expect(page.locator("#cancelWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#cancelWorkspaceButton")).toBeDisabled();
 
       await dirtyPaletteToolState(page, {
         hex: "#654321",
@@ -10882,7 +10990,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toHaveAttribute("data-workspace-tool-dirty", "false");
       await expect(page.locator("#saveWorkspaceButton")).toBeDisabled();
       await expect(page.locator("#closeWorkspaceButton")).toBeEnabled();
-      await expect(page.locator("#cancelWorkspaceButton")).toBeEnabled();
+      await expect(page.locator("#cancelWorkspaceButton")).toBeDisabled();
       const savedHydration = await readWorkspaceSessionHydration(page);
       expect(savedHydration.dirtyByTool["palette-manager-v2"]).toEqual({
         isDirty: false,
@@ -11389,6 +11497,40 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(log).toContainText("Failed: 1", { timeout: 10000 });
       await expect(log).toContainText("Skipped: 0", { timeout: 10000 });
       await expect(log).toContainText("Done.", { timeout: 10000 });
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("logs actionable Preview Generator V2 repo-root selection failures without fallback", async ({ page }) => {
+    await installMissingGamePreviewRepoPicker(page);
+    const server = await openPreviewGeneratorV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await page.locator("#pickRepoBtn").click();
+      await expect(page.locator("#repoSelectedValue")).toHaveText("HTML-JavaScript-Gaming");
+      await page.locator("#targetTypeGames").check();
+      await page.locator("#baseUrl").fill(server.baseUrl);
+      await page.locator("#sampleList").fill("MissingGame");
+      await expect(page.locator("#executeBtn")).toBeEnabled();
+
+      await page.locator("#executeBtn").click();
+      const log = page.locator("#log");
+      await expect(log).toContainText("FAIL Repo root path resolution: Repo root path is unavailable; cannot resolve a full absolute output path.", { timeout: 10000 });
+      await expect(log).toContainText("Selected repo label: HTML-JavaScript-Gaming", { timeout: 10000 });
+      await expect(log).toContainText("session key checked: workspace.repo.reference", { timeout: 10000 });
+      await expect(log).toContainText("Required action: select the repo root folder again in Workspace Manager V2 or Pick Repo before generating previews.", { timeout: 10000 });
+      await expect(log).toContainText("FAIL PATH MissingGame", { timeout: 10000 });
+      await expect(log).toContainText("full absolute output path: (unavailable)", { timeout: 10000 });
+      await expect(log).toContainText("Failed: 1", { timeout: 10000 });
+      await expect(log).not.toContainText("OK WRITE MissingGame");
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

@@ -258,15 +258,23 @@ function parseStretchConfigPayload(payload, configPath = "") {
     return parsed;
   }
 
-  const flatAssetEntries = payload?.tools?.["asset-browser"]?.assets;
-  if (flatAssetEntries && typeof flatAssetEntries === "object") {
+  const assetEntriesByTool = [
+    payload?.tools?.["asset-browser"]?.assets,
+    payload?.tools?.["asset-manager-v2"]?.assets
+  ];
+  for (const flatAssetEntries of assetEntriesByTool) {
+    if (!flatAssetEntries || typeof flatAssetEntries !== "object") {
+      continue;
+    }
     const bezelAssetEntry = Object.entries(flatAssetEntries).find(([assetId, entry]) => {
       const normalizedAssetId = typeof assetId === "string" ? assetId.trim().toLowerCase() : "";
       const normalizedKind = typeof entry?.kind === "string" ? entry.kind.trim().toLowerCase() : "";
+      const normalizedType = typeof entry?.type === "string" ? entry.type.trim().toLowerCase() : "";
+      const normalizedRole = typeof entry?.role === "string" ? entry.role.trim().toLowerCase() : "";
       const hasStretch = entry?.stretchOverride && typeof entry.stretchOverride === "object";
       return hasStretch
-        && normalizedKind === "image"
-        && (normalizedAssetId.includes(".bezel") || normalizedAssetId.endsWith("bezel"));
+        && (normalizedKind === "image" || normalizedType === "image" || normalizedRole === "bezel")
+        && (normalizedRole === "bezel" || normalizedAssetId.includes(".bezel") || normalizedAssetId.endsWith("bezel"));
     });
     if (bezelAssetEntry && typeof bezelAssetEntry[1] === "object") {
       const stretchConfig = parseStretchConfigObject(bezelAssetEntry[1].stretchOverride);

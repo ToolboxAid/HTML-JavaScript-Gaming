@@ -22,11 +22,12 @@ export class FilterControl {
     return String(this.scopeSelect.value || "all");
   }
 
-  setSummary({ localCount = 0, sessionCount = 0, totalCount = 0 } = {}) {
+  setSummary({ cookieCount = 0, localCount = 0, sessionCount = 0, totalCount = 0 } = {}) {
     const lines = [
       `(${totalCount}) Entries shown.`,
       `(${sessionCount}) SessionStorage.`,
-      `(${localCount}) LocalStorage.`
+      `(${localCount}) LocalStorage.`,
+      `(${cookieCount}) Cookies.`
     ];
     const documentRef = this.summary.ownerDocument || document;
     this.summary.replaceChildren(...lines.map((line) => {
