@@ -2454,7 +2454,9 @@ export class ToolStarterApp {
         const input = document.createElement("input");
         input.dataset.shapeGeometryField = field.key;
         input.type = field.kind;
-        input.value = field.kind === "number" ? String(this.formatViewportNumber(field.value)) : String(field.value);
+        input.value = field.kind === "number"
+          ? (field.coordinate ? this.formatCoordinateInputValue(field.value) : String(this.formatViewportNumber(field.value)))
+          : String(field.value);
         this.bindGeometryAutoApplyInput(input);
         label.append(caption, input);
         grid.append(label);
@@ -2641,7 +2643,7 @@ export class ToolStarterApp {
       input.dataset.polygonPointIndex = String(index);
       input.inputMode = "decimal";
       input.type = "text";
-      input.value = String(this.formatViewportNumber(value));
+      input.value = this.formatCoordinateInputValue(value);
       this.bindGeometryAutoApplyInput(input);
       label.append(axisLabel, input);
       row.append(label);
@@ -2735,7 +2737,7 @@ export class ToolStarterApp {
       axisLabel.textContent = axis;
       const valueElement = document.createElement("span");
       valueElement.className = "object-vector-studio-v2__polygon-point-value";
-      valueElement.textContent = String(this.formatViewportNumber(value));
+      valueElement.textContent = this.formatCoordinateInputValue(value);
       field.append(axisLabel, valueElement);
       row.append(field);
     });
@@ -3168,10 +3170,10 @@ export class ToolStarterApp {
       const point1 = linePoint(shape.geometry, "point1");
       const point2 = linePoint(shape.geometry, "point2");
       return [
-        { key: "point1.x", kind: "number", label: "Point 1 X", value: point1.x },
-        { key: "point1.y", kind: "number", label: "Point 1 Y", value: point1.y },
-        { key: "point2.x", kind: "number", label: "Point 2 X", value: point2.x },
-        { key: "point2.y", kind: "number", label: "Point 2 Y", value: point2.y }
+        { coordinate: true, key: "point1.x", kind: "number", label: "Point 1 X", value: point1.x },
+        { coordinate: true, key: "point1.y", kind: "number", label: "Point 1 Y", value: point1.y },
+        { coordinate: true, key: "point2.x", kind: "number", label: "Point 2 X", value: point2.x },
+        { coordinate: true, key: "point2.y", kind: "number", label: "Point 2 Y", value: point2.y }
       ];
     }
     if (geometryTool === "arc") {
@@ -4462,7 +4464,8 @@ export class ToolStarterApp {
         className: "object-vector-studio-v2__line-endpoint-handle",
         editOptions: {
           endpoint,
-          mode: "line-endpoint"
+          mode: "line-endpoint",
+          point: { ...point }
         },
         endpoint,
         id: `line-${endpoint}`,
@@ -4606,6 +4609,10 @@ export class ToolStarterApp {
   formatViewportNumber(value) {
     const normalized = Number(Number(value).toFixed(3));
     return Object.is(normalized, -0) ? 0 : normalized;
+  }
+
+  formatCoordinateInputValue(value) {
+    return this.formatViewportNumber(value).toFixed(3);
   }
 
   canvasOriginDisplayText() {
@@ -5164,13 +5171,25 @@ export class ToolStarterApp {
     }
     event.preventDefault();
     event.stopPropagation();
+    const effectiveSelected = this.effectiveShape(selected, normalizedIndex);
+    const originalTransform = { ...this.shapeTransform(effectiveSelected) };
+    const rawPointer = this.pointerPreviewPoint(event);
+    const transformedPoint = options?.point
+      ? this.transformedPoint(options.point, originalTransform)
+      : null;
     this.previewPointerEdit = {
       ...this.previewPointerEditStartMetadata(event),
       ...options,
       originalGeometry: JSON.parse(JSON.stringify(selected.geometry)),
-      originalTransform: { ...this.shapeTransform(selected) },
+      originalTransform,
+      pointerOffset: transformedPoint
+        ? {
+          x: this.formatViewportNumber(rawPointer.x - transformedPoint.x),
+          y: this.formatViewportNumber(rawPointer.y - transformedPoint.y)
+        }
+        : null,
       shapeIndex: normalizedIndex,
-      start: this.snapCanvasPoint(this.pointerPreviewPoint(event), { excludeShapeIndex: normalizedIndex })
+      start: transformedPoint || this.snapCanvasPoint(rawPointer, { excludeShapeIndex: normalizedIndex })
     };
   }
 
@@ -5204,12 +5223,31 @@ export class ToolStarterApp {
   }
 
   previewPointerEditDelta(edit, event) {
-    const rawEnd = this.pointerPreviewPoint(event);
-    const end = this.snapCanvasPoint(rawEnd, { excludeShapeIndex: edit.shapeIndex });
+    const end = this.previewPointerEditTargetPoint(edit, event);
+    edit.currentTargetPoint = end;
     return {
       x: this.formatViewportNumber(end.x - edit.start.x),
       y: this.formatViewportNumber(end.y - edit.start.y)
     };
+  }
+
+  previewPointerEditTargetPoint(edit, event) {
+    const rawEnd = this.pointerPreviewPoint(event);
+    const target = edit.pointerOffset
+      ? {
+        x: this.formatViewportNumber(rawEnd.x - edit.pointerOffset.x),
+        y: this.formatViewportNumber(rawEnd.y - edit.pointerOffset.y)
+      }
+      : rawEnd;
+    return this.snapCanvasPoint(target, { excludeShapeIndex: edit.shapeIndex });
+  }
+
+  previewPointerEditLocalTarget(edit) {
+    const target = edit.currentTargetPoint || edit.start;
+    if (!edit.originalTransform) {
+      return this.normalizeDrawingPoint(target);
+    }
+    return this.localPointFromTransformedPoint(target, edit.originalTransform);
   }
 
   updatePreviewPointerEdit(event) {
@@ -5358,12 +5396,11 @@ export class ToolStarterApp {
     if (shapeGeometryTool(shape) !== "line") {
       return geometry;
     }
+    const movedPoint = this.previewPointerEditLocalTarget(edit);
     if (edit.endpoint === "start") {
-      geometry.point1.x = Number((edit.originalGeometry.point1.x + delta.x).toFixed(3));
-      geometry.point1.y = Number((edit.originalGeometry.point1.y + delta.y).toFixed(3));
+      geometry.point1 = movedPoint;
     } else {
-      geometry.point2.x = Number((edit.originalGeometry.point2.x + delta.x).toFixed(3));
-      geometry.point2.y = Number((edit.originalGeometry.point2.y + delta.y).toFixed(3));
+      geometry.point2 = movedPoint;
     }
     return geometry;
   }
@@ -5470,10 +5507,7 @@ export class ToolStarterApp {
   previewGeometryPointGeometry(shape, edit, delta) {
     const geometry = JSON.parse(JSON.stringify(edit.originalGeometry));
     const geometryTool = shapeGeometryTool(shape);
-    const movedPoint = {
-      x: Number((edit.point.x + delta.x).toFixed(3)),
-      y: Number((edit.point.y + delta.y).toFixed(3))
-    };
+    const movedPoint = this.previewPointerEditLocalTarget(edit);
     if (geometryTool === "polygon" || geometryTool === "polyline") {
       const pointIndex = normalizeShapeIndex(edit.pointIndex);
       if (pointIndex >= 0 && pointIndex < geometry.points.length) {

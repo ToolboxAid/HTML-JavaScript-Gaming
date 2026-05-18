@@ -147,6 +147,28 @@ async function dragObjectVectorLogicalPoints(page, start, end) {
   }, { endPoint, startPoint });
 }
 
+async function dragObjectVectorHandleToLogicalPoint(page, selector, start, end) {
+  const startPoint = await objectVectorLogicalClientPoint(page, start.x, start.y);
+  const endPoint = await objectVectorLogicalClientPoint(page, end.x, end.y);
+  await page.evaluate(({ endPoint, selector, startPoint }) => {
+    const handle = document.querySelector(selector);
+    if (!handle) {
+      throw new Error(`Missing Object Vector handle: ${selector}`);
+    }
+    const pointerInit = {
+      bubbles: true,
+      button: 0,
+      buttons: 1,
+      cancelable: true,
+      pointerId: 1,
+      pointerType: "mouse"
+    };
+    handle.dispatchEvent(new PointerEvent("pointerdown", { ...pointerInit, clientX: startPoint.x, clientY: startPoint.y }));
+    window.dispatchEvent(new PointerEvent("pointermove", { ...pointerInit, clientX: endPoint.x, clientY: endPoint.y }));
+    window.dispatchEvent(new PointerEvent("pointerup", { ...pointerInit, buttons: 0, clientX: endPoint.x, clientY: endPoint.y }));
+  }, { endPoint, selector, startPoint });
+}
+
 async function mouseDragObjectVectorLogicalPoints(page, start, end) {
   const startPoint = await objectVectorLogicalClientPoint(page, start.x, start.y);
   const endPoint = await objectVectorLogicalClientPoint(page, end.x, end.y);
@@ -4544,10 +4566,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         x: row.querySelector("[data-polygon-point-axis='x']").value,
         y: row.querySelector("[data-polygon-point-axis='y']").value
       })))).toEqual([
-        { label: "Point 1", rounded: false, x: "0", y: "-18" },
-        { label: "Point 2", rounded: false, x: "14", y: "16" },
-        { label: "Point 3", rounded: false, x: "0", y: "8" },
-        { label: "Point 4", rounded: false, x: "-14", y: "16" }
+        { label: "Point 1", rounded: false, x: "0.000", y: "-18.000" },
+        { label: "Point 2", rounded: false, x: "14.000", y: "16.000" },
+        { label: "Point 3", rounded: false, x: "0.000", y: "8.000" },
+        { label: "Point 4", rounded: false, x: "-14.000", y: "16.000" }
       ]);
       const polygonPointListLayout = await page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-list").evaluate((list) => ({
         headingMarginBottom: Number.parseFloat(getComputedStyle(list.previousElementSibling).marginBottom),
@@ -4679,11 +4701,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         y: row.querySelector("[data-polygon-point-axis='y']").value,
         selected: row.dataset.polygonPointActionSelected === "true"
       })))).toEqual([
-        { label: "Point 1", rounded: false, x: "0", y: "-18", selected: false },
-        { label: "Point 2", rounded: true, x: "14", y: "16", selected: false },
-        { label: "Point 3", rounded: true, x: "14", y: "16", selected: false },
-        { label: "Point 4", rounded: false, x: "0", y: "8", selected: false },
-        { label: "Point 5", rounded: false, x: "-14", y: "16", selected: false }
+        { label: "Point 1", rounded: false, x: "0.000", y: "-18.000", selected: false },
+        { label: "Point 2", rounded: true, x: "14.000", y: "16.000", selected: false },
+        { label: "Point 3", rounded: true, x: "14.000", y: "16.000", selected: false },
+        { label: "Point 4", rounded: false, x: "0.000", y: "8.000", selected: false },
+        { label: "Point 5", rounded: false, x: "-14.000", y: "16.000", selected: false }
       ]);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Added copied point after point 2 for shape row 0\./);
       await expect.poll(() => page.evaluate(() => window.__objectVectorStudioV2App.selectedShape().geometry.points.length)).toBe(5);
@@ -4699,10 +4721,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         y: row.querySelector("[data-polygon-point-axis='y']").value,
         selected: row.dataset.polygonPointActionSelected === "true"
       })))).toEqual([
-        { label: "Point 1", rounded: false, x: "0", y: "-18", selected: false },
-        { label: "Point 2", rounded: true, x: "14", y: "16", selected: false },
-        { label: "Point 3", rounded: false, x: "0", y: "8", selected: false },
-        { label: "Point 4", rounded: false, x: "-14", y: "16", selected: false }
+        { label: "Point 1", rounded: false, x: "0.000", y: "-18.000", selected: false },
+        { label: "Point 2", rounded: true, x: "14.000", y: "16.000", selected: false },
+        { label: "Point 3", rounded: false, x: "0.000", y: "8.000", selected: false },
+        { label: "Point 4", rounded: false, x: "-14.000", y: "16.000", selected: false }
       ]);
       await expect.poll(() => page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field").evaluateAll((rows) => rows.every((row) => row.dataset.polygonPointActionSelected !== "true"))).toBe(true);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Deleted point 3 from shape row 0\./);
@@ -5241,14 +5263,49 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(lineAfterEndpoint.geometry.point2.y).not.toBe(lineBeforeEndpoint.geometry.point2.y);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved line end for shape row 1\./);
 
+      const scaledLineStart = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const line = app.selectedObject().shapes[1];
+        line.geometry.point2 = { x: -10.4, y: 30.4 };
+        line.transform = { shapeOrigin: { x: 0, y: 0 }, rotation: 0, scaleX: 2, scaleY: 2, x: 0, y: 0 };
+        app.setSnapMode("grid", "Snap Grid");
+        app.selectShape(1, "scaled snap drag validation");
+        return app.transformedPoint(line.geometry.point2, line.transform);
+      });
+      await dragObjectVectorHandleToLogicalPoint(page, "#objectVectorStudioV2RenderSurface [data-line-endpoint='end']", scaledLineStart, { x: -15.2, y: 55.8 });
+      const scaledLineSnapDrag = await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const line = app.selectedObject().shapes[1];
+        return {
+          geometryPoint: line.geometry.point2,
+          renderedPoint: app.transformedPoint(line.geometry.point2, line.transform)
+        };
+      });
+      expect(scaledLineSnapDrag).toEqual({
+        geometryPoint: { x: -7.5, y: 28 },
+        renderedPoint: { x: -15, y: 56 }
+      });
+
       await page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='2']").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-geometry-point-kind='polygon-point']")).toHaveCount(4);
+      await page.evaluate(() => {
+        const app = window.__objectVectorStudioV2App;
+        const polygon = app.selectedObject().shapes[2];
+        polygon.geometry.points[1] = { x: 42.4, y: 12.4 };
+        app.setSnapMode("grid", "Snap Grid");
+        app.selectShape(2, "off-grid point snap validation");
+      });
+      await dragObjectVectorHandleToLogicalPoint(page, "#objectVectorStudioV2RenderSurface [data-geometry-point-handle='polygon-1']", { x: 42.4, y: 12.4 }, { x: 47.2, y: 9.7 });
+      const polygonSnapDrag = await shapeSnapshot(2);
+      expect(polygonSnapDrag.geometry.points[1]).toEqual({ x: 47, y: 10 });
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='1'][data-polygon-point-axis='x']")).toHaveValue("47.000");
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='1'][data-polygon-point-axis='y']")).toHaveValue("10.000");
       const polygonBeforePointDrag = await shapeSnapshot(2);
       await dragLocator("#objectVectorStudioV2RenderSurface [data-geometry-point-handle='polygon-1']", 24, -16);
       const polygonAfterPointDrag = await shapeSnapshot(2);
       expect(polygonAfterPointDrag.geometry.points[1].x).not.toBe(polygonBeforePointDrag.geometry.points[1].x);
       expect(polygonAfterPointDrag.geometry.points[1].y).not.toBe(polygonBeforePointDrag.geometry.points[1].y);
-      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='1'][data-polygon-point-axis='x']")).toHaveValue(String(polygonAfterPointDrag.geometry.points[1].x));
+      await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='1'][data-polygon-point-axis='x']")).toHaveValue(polygonAfterPointDrag.geometry.points[1].x.toFixed(3));
       await expect(page.locator("#statusLog")).toHaveValue(/OK Moved geometry point 2 for shape row 2\./);
       const polygonBeforeBoundsDrag = await shapeSnapshot(2);
       await dragLocator("#objectVectorStudioV2RenderSurface [data-resize-handle='se']", 18, 14);
@@ -10836,8 +10893,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         await page.mouse.move(x + 18, y + 12, { steps: 4 });
         await expect.poll(async () => page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().geometry.points[0] }))).not.toEqual(pointBefore);
         const livePoint = await page.evaluate(() => ({ ...window.__objectVectorStudioV2App.selectedShape().geometry.points[0] }));
-        await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='0'][data-polygon-point-axis='x']")).toHaveValue(String(livePoint.x));
-        await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='0'][data-polygon-point-axis='y']")).toHaveValue(String(livePoint.y));
+        await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='0'][data-polygon-point-axis='x']")).toHaveValue(livePoint.x.toFixed(3));
+        await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='0'][data-polygon-point-axis='y']")).toHaveValue(livePoint.y.toFixed(3));
         await expect.poll(async () => page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']").getAttribute("points")).not.toBe(pointsBefore);
         await expect.poll(async () => {
           const box = await handle.boundingBox();
