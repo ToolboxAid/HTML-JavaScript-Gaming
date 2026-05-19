@@ -29,7 +29,7 @@ export class CollisionInspectorV2App {
     this.window = windowRef;
     this.manifest = null;
     this.objects = [];
-    this.screen = { width: renderer.canvas.width, height: renderer.canvas.height };
+    this.screen = null;
     this.instances = this.defaultInstances();
     this.collisionMode = "vector";
     this.manualModeOverride = false;
@@ -58,12 +58,12 @@ export class CollisionInspectorV2App {
       onZoomChange: (zoom) => this.setZoom(zoom)
     });
     this.controls.setLaunchMode(this.isWorkspaceLaunch());
-    this.controls.setViewportSize(this.screen.width, this.screen.height);
-    this.renderer.setViewportSize(this.screen.width, this.screen.height);
     this.controls.setZoom(this.zoom);
     this.logger.write("INFO Collision Inspector V2 ready.");
     await this.loadInitialManifest();
-    this.evaluateAndRender();
+    if (this.hasRenderableManifest()) {
+      this.evaluateAndRender();
+    }
   }
 
   isWorkspaceLaunch() {
@@ -71,10 +71,20 @@ export class CollisionInspectorV2App {
   }
 
   defaultInstances() {
+    if (!this.screen) {
+      return {
+        a: { x: 0, y: 0, rotation: 0 },
+        b: { x: 0, y: 0, rotation: 0 }
+      };
+    }
     return {
       a: { x: this.screen.width * 0.375, y: this.screen.height * (4 / 9), rotation: 0 },
       b: { x: this.screen.width * (125 / 240), y: this.screen.height * (4 / 9), rotation: 0 }
     };
+  }
+
+  hasRenderableManifest() {
+    return Boolean(this.manifest && this.screen && this.objects.length);
   }
 
   async loadInitialManifest() {
@@ -98,33 +108,35 @@ export class CollisionInspectorV2App {
       return;
     }
     if (!result?.ok) {
-      this.logger.write(`FAIL ${result?.message || "Manifest load failed."}`);
+      this.failManifestLoad(result?.message || "Manifest load failed.");
       return;
     }
     this.loadManifest(result.manifest, result.sourceLabel);
   }
 
+  failManifestLoad(message, sourceLabel = "Manifest") {
+    this.manifest = null;
+    this.objects = [];
+    this.screen = null;
+    this.instances = this.defaultInstances();
+    this.controls.setObjectOptions([]);
+    this.controls.setManifestSummary(message);
+    this.controls.setFailureState(message);
+    this.renderer.clear();
+    this.logger.write(`FAIL ${sourceLabel}: ${message}`);
+  }
+
   loadManifest(manifest, sourceLabel) {
     const screenResult = resolveManifestScreenDimensions(manifest);
     if (!screenResult.ok) {
-      this.manifest = null;
-      this.objects = [];
-      this.controls.setObjectOptions([]);
-      this.controls.setManifestSummary(screenResult.message);
-      this.logger.write(`FAIL ${sourceLabel}: ${screenResult.message}`);
-      this.evaluateAndRender();
+      this.failManifestLoad(screenResult.message, sourceLabel);
       return;
     }
     const objects = Array.isArray(manifest?.tools?.["object-vector-studio-v2"]?.objects)
       ? manifest.tools["object-vector-studio-v2"].objects
       : [];
     if (!objects.length) {
-      this.manifest = null;
-      this.objects = [];
-      this.controls.setObjectOptions([]);
-      this.controls.setManifestSummary("Manifest has no Object Vector Studio V2 objects.");
-      this.logger.write(`FAIL ${sourceLabel} has no Object Vector Studio V2 objects.`);
-      this.evaluateAndRender();
+      this.failManifestLoad("Manifest has no Object Vector Studio V2 objects.", sourceLabel);
       return;
     }
     this.manifest = manifest;
@@ -186,6 +198,10 @@ export class CollisionInspectorV2App {
   }
 
   resetSimulation({ silent = false } = {}) {
+    if (!this.screen || !this.objects.length) {
+      this.logger.write("FAIL Load a manifest with root.screen.width, root.screen.height, and Object Vector Studio V2 objects before resetting.");
+      return;
+    }
     this.instances = this.defaultInstances();
     this.controls.setRotations(this.instances);
     this.autoSelectMode("reset");
@@ -215,12 +231,18 @@ export class CollisionInspectorV2App {
   }
 
   evaluateAndRender() {
+    if (!this.hasRenderableManifest()) {
+      return;
+    }
     this.lastResult = this.evaluateCollision();
     this.controls.syncResult(this.lastResult);
     this.renderer.render(this.lastResult);
   }
 
   handlePointerDown(event) {
+    if (!this.hasRenderableManifest()) {
+      return;
+    }
     const point = this.renderer.canvasPoint(event);
     const key = this.renderer.hitObjectAt(point, this.lastResult) || "a";
     this.dragState = {

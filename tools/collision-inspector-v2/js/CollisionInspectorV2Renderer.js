@@ -17,6 +17,13 @@ export class CollisionInspectorV2Renderer {
     this.zoom = Math.max(0.5, Math.min(2, numberValue(zoom, 1)));
   }
 
+  clear() {
+    const ctx = this.ctx;
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.fillStyle = "#070b0c";
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
   canvasPoint(event) {
     const rect = this.canvas.getBoundingClientRect();
     const logical = {

@@ -4,6 +4,10 @@ import { join } from "node:path";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
+test.afterAll(async () => {
+  await coverageReporter.writeReport();
+});
+
 async function dragCanvasPoint(page, from, to) {
   await page.locator("#collisionCanvas").evaluate((canvas, points) => {
     const rect = canvas.getBoundingClientRect();
@@ -39,6 +43,9 @@ test.describe("Collision Inspector V2", () => {
     try {
       await page.goto(`${server.baseUrl}/tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`, { waitUntil: "networkidle" });
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='collision-inspector-v2']")).toBeVisible();
+      await expect(page.locator(".tool-starter__header[data-tool-starter-header]")).toBeVisible();
+      await expect(page.locator("nav.tool-starter__menu.tool-starter__tool__menu")).toBeVisible();
+      await expect(page.locator("nav.tool-starter__menu.tool-starter__workspace__menu")).toBeHidden();
       await expect(page.locator("#collisionModeSelect option")).toHaveText(["Bounds", "Vector", "Pixel/Sprite", "Hybrid"]);
       await expect(page.locator("#loadAsteroidsManifestButton")).toHaveCount(0);
       await expect(page.locator("#collisionManifestInput")).toBeVisible();
@@ -53,6 +60,18 @@ test.describe("Collision Inspector V2", () => {
         return rect.width / rect.height;
       });
       expect(Math.abs(aspectRatio - (960 / 720))).toBeLessThan(0.02);
+      const canvasLayout = await page.evaluate(() => {
+        const zoom = document.querySelector(".collision-inspector-v2__zoom-row").getBoundingClientRect();
+        const canvas = document.querySelector("#collisionCanvas").getBoundingClientRect();
+        return {
+          canvasBelowZoom: canvas.top >= zoom.bottom,
+          canvasHeight: canvas.height,
+          canvasWidth: canvas.width
+        };
+      });
+      expect(canvasLayout.canvasBelowZoom).toBe(true);
+      expect(canvasLayout.canvasWidth).toBeGreaterThan(100);
+      expect(canvasLayout.canvasHeight).toBeGreaterThan(100);
       await expect(page.locator("#objectASelect")).toContainText("Asteroids Ship");
       await expect(page.locator("#objectBSelect")).toContainText("Large Asteroid");
       await page.locator("#objectASelect").selectOption("object.asteroids.ship");
@@ -66,6 +85,10 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionSummary")).toContainText('"objectOrigins"');
       await expect(page.locator("#collisionSummary")).toContainText('"recommendedMode": "vector"');
       await expect(page.locator("#collisionSummary")).toContainText('"transformedPoints"');
+      await expect(page.locator("#resultContent #collisionSummary")).toHaveCount(0);
+      await expect(page.locator("#collisionSummaryContent #collisionSummary")).toBeVisible();
+      const summaryOverflow = await page.locator("#collisionSummaryContent").evaluate((element) => getComputedStyle(element).overflowY);
+      expect(["auto", "scroll"]).toContain(summaryOverflow);
 
       await page.locator("#objectBRotationInput").fill("180");
       await expect(page.locator("#rotationState")).toHaveText("A 0 / B 180");
@@ -128,6 +151,47 @@ test.describe("Collision Inspector V2", () => {
     }
   });
 
+  test("hard fails when manifest screen dimensions are missing", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.route((url) => url.pathname === "/missing-screen-manifest.json", async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            game: { name: "Missing Screen Dimensions" },
+            tools: {
+              "object-vector-studio-v2": {
+                objects: []
+              }
+            }
+          })
+        });
+      });
+      await page.goto(`${server.baseUrl}/tools/collision-inspector-v2/index.html?manifestPath=/missing-screen-manifest.json`, { waitUntil: "networkidle" });
+
+      await expect(page.locator("#manifestSummary")).toContainText("root.screen.width");
+      await expect(page.locator("#manifestSummary")).toContainText("root.screen.height");
+      await expect(page.locator("#collisionResultBadge")).toHaveText("Manifest Error");
+      await expect(page.locator("#collisionSummary")).toContainText('"required": "root.screen.width and root.screen.height"');
+      await expect(page.locator("#collisionLog")).toHaveValue(/FAIL URL manifest path/);
+      await expect(page.locator("#objectASelect option")).toHaveCount(0);
+      await expect(page.locator("#objectBSelect option")).toHaveCount(0);
+      await expect(page.locator("#collisionCanvas")).toHaveAttribute("width", "1");
+      await expect(page.locator("#collisionCanvas")).toHaveAttribute("height", "1");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("loads Asteroids Object Vector objects from a Workspace Manager V2 manifest context", async ({ page }) => {
     const server = await startRepoServer();
     const pageErrors = [];
@@ -157,8 +221,8 @@ test.describe("Collision Inspector V2", () => {
       }, workspaceContext);
       await page.goto(`${server.baseUrl}/tools/collision-inspector-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=workspace-manager-v2-collision-test`, { waitUntil: "networkidle" });
 
-      await expect(page.locator('[data-launch-mode-nav="workspace"]')).toBeVisible();
-      await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
+      await expect(page.locator("nav.tool-starter__workspace__menu[data-launch-mode-nav='workspace']")).toBeVisible();
+      await expect(page.locator("nav.tool-starter__tool__menu[data-launch-mode-nav='tool']")).toBeHidden();
       await expect(page.locator("#collisionManifestInput")).toBeDisabled();
       await expect(page.locator("#manifestSummary")).toContainText("Asteroids Workspace Manager V2 Context");
       await expect(page.locator("#manifestSummary")).toContainText("screen 960x720");

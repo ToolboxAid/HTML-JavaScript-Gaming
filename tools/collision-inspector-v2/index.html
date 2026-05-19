@@ -12,11 +12,11 @@
   </head>
   <body class="tools-platform-tool-page tools-platform-surface hub-page-tools" data-tool-id="collision-inspector-v2">
     <details class="is-collapsible" open>
-      <summary class="is-collapsible__summary" data-collision-inspector-summary>Hide Header and Details</summary>
+      <summary class="is-collapsible__summary" data-tool-starter-summary>Hide Header and Details</summary>
       <div class="is-collapsible__content">
         <div id="shared-theme-header"></div>
-        <div class="collision-inspector-v2__header" data-collision-inspector-header>
-          <section class="tools-platform-frame collision-inspector-v2__local-shell-frame">
+        <div class="tool-starter__header" data-tool-starter-header="">
+          <section class="tools-platform-frame tool-starter__local-shell-frame collision-inspector-v2__local-shell-frame">
             <div class="tools-platform-frame__accordion-content">
               <div class="tools-platform-frame__accordion-summary">
                 <div class="tools-platform-frame__summary-copy">
@@ -29,21 +29,23 @@
               </div>
               <div class="tools-platform-frame__topline">
                 <p class="tools-platform-frame__description">Load a game manifest, select two Object Vector V2 objects, and drag them through live collision checks.</p>
-                <div class="collision-inspector-v2__header-actions">
-                  <label class="collision-inspector-v2__field collision-inspector-v2__header-file" for="collisionManifestInput" data-launch-mode-nav="tool">
-                    <span>Game Manifest JSON</span>
-                    <input id="collisionManifestInput" type="file" accept=".json,application/json">
-                  </label>
-                  <nav class="collision-inspector-v2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
-                    <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
-                  </nav>
-                </div>
               </div>
             </div>
           </section>
         </div>
       </div>
     </details>
+
+    <nav class="tool-starter__menu tool-starter__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
+      <label class="collision-inspector-v2__field collision-inspector-v2__menu-file" for="collisionManifestInput">
+        <span>Game Manifest JSON</span>
+        <input id="collisionManifestInput" type="file" accept=".json,application/json">
+      </label>
+    </nav>
+
+    <nav class="tool-starter__menu tool-starter__workspace__menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+      <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
+    </nav>
 
     <main class="collision-inspector-v2 app-shell" data-tool-id="collision-inspector-v2">
       <aside class="collision-inspector-v2__panel collision-inspector-v2__panel--left" aria-label="Collision inputs">
@@ -109,7 +111,9 @@
               </label>
               <output id="zoomState" for="collisionZoomInput">1x</output>
             </div>
-            <canvas id="collisionCanvas" width="960" height="640" aria-label="Collision movement simulation"></canvas>
+            <div class="collision-inspector-v2__canvas-viewport">
+              <canvas id="collisionCanvas" width="1" height="1" aria-label="Collision movement simulation"></canvas>
+            </div>
             <div class="collision-inspector-v2__legend" aria-label="Collision overlay legend">
               <span>Object A</span>
               <span>Object B</span>
@@ -153,11 +157,20 @@
                 <dd id="pointsState">waiting</dd>
               </div>
             </dl>
+          </div>
+        </section>
+
+        <section class="accordion-v2 collision-inspector-v2__accordion collision-inspector-v2__accordion--summary is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="collisionSummaryContent">
+            <span>Collision Summary</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="collisionSummaryContent" class="accordion-v2__content collision-inspector-v2__summary-content">
             <pre id="collisionSummary" class="collision-inspector-v2__output">{}</pre>
           </div>
         </section>
 
-        <section class="accordion-v2 collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 collision-inspector-v2__accordion collision-inspector-v2__accordion--logs is-open" data-accordion-v2-open="true">
           <div class="accordion-v2__header collision-inspector-v2__status-header" aria-expanded="true" aria-controls="collisionLogContent">
             <span>Collision Logs</span>
             <div class="collision-inspector-v2__status-actions">

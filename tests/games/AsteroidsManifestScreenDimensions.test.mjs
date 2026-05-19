@@ -69,4 +69,30 @@ export async function run() {
   assert.equal(engineOptions.width, manifestPayload.screen.width);
   assert.equal(engineOptions.height, manifestPayload.screen.height);
   assert.deepEqual(sceneOptions.screenDimensions, manifestPayload.screen);
+
+  const missingScreenManifest = { ...manifestPayload };
+  delete missingScreenManifest.screen;
+  let invalidEngineCreated = false;
+  await assert.rejects(
+    () => bootAsteroids({
+      documentRef: {
+        body: { style: {} },
+        documentElement: { style: {} },
+        getElementById(id) {
+          return id === 'game' ? createCanvas() : null;
+        },
+      },
+      EngineClass: class {
+        constructor() {
+          invalidEngineCreated = true;
+        }
+      },
+      InputServiceClass: class {},
+      ObjectVectorRuntimeClass: class {},
+      SceneClass: class {},
+      manifestPayload: missingScreenManifest,
+    }),
+    /requires screen\.width and screen\.height/
+  );
+  assert.equal(invalidEngineCreated, false);
 }

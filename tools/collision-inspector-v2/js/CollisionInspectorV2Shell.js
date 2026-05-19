@@ -12,6 +12,7 @@ export class CollisionInspectorV2Shell {
   }
 
   mount() {
+    this.document.body.classList.add("tool-starter-local-shell");
     this.applyFullscreenState(Boolean(this.document.fullscreenElement));
     this.bindHeaderDetails();
     this.updateSummary();
@@ -22,7 +23,7 @@ export class CollisionInspectorV2Shell {
   }
 
   getSummaryElement() {
-    return this.document.querySelector("[data-collision-inspector-summary]");
+    return this.document.querySelector("[data-tool-starter-summary]");
   }
 
   hostContextId() {

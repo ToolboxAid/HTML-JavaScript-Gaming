@@ -65,6 +65,21 @@ export class CollisionInspectorV2Controls {
     this.elements.manifestSummary.textContent = text;
   }
 
+  setFailureState(message) {
+    this.elements.resultBadge.dataset.collisionState = "fail";
+    this.elements.resultBadge.textContent = "Manifest Error";
+    this.elements.overlapState.textContent = "unavailable";
+    this.elements.modeState.textContent = "unavailable";
+    this.elements.boundsState.textContent = "unavailable";
+    this.elements.originState.textContent = "unavailable";
+    this.elements.rotationState.textContent = "unavailable";
+    this.elements.pointsState.textContent = "unavailable";
+    this.elements.summary.textContent = JSON.stringify({
+      failure: message,
+      required: "root.screen.width and root.screen.height"
+    }, null, 2);
+  }
+
   clearManifestInput() {
     this.elements.fileInput.value = "";
   }
