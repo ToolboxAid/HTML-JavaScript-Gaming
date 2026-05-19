@@ -69,7 +69,6 @@ export class CollisionInspectorV2Controls {
     this.elements.resultBadge.dataset.collisionState = "fail";
     this.elements.resultBadge.textContent = "Manifest Error";
     this.elements.overlapState.textContent = "unavailable";
-    this.elements.modeState.textContent = "unavailable";
     this.elements.boundsState.textContent = "unavailable";
     this.elements.originState.textContent = "unavailable";
     this.elements.rotationState.textContent = "unavailable";
@@ -133,7 +132,6 @@ export class CollisionInspectorV2Controls {
     this.elements.resultBadge.dataset.collisionState = result.collided ? "hit" : "clear";
     this.elements.resultBadge.textContent = result.collided ? "Collision" : "No Collision";
     this.elements.overlapState.textContent = String(result.boundsOverlap === true);
-    this.elements.modeState.textContent = result.modeLabel || "Vector";
     this.elements.boundsState.textContent = result.boundsOverlap ? "overlap" : "clear";
     this.elements.originState.textContent = `A ${roundNumber(geometryA.originWorld?.x)},${roundNumber(geometryA.originWorld?.y)} / B ${roundNumber(geometryB.originWorld?.x)},${roundNumber(geometryB.originWorld?.y)}`;
     this.elements.rotationState.textContent = `A ${roundNumber(geometryA.instance?.rotation)} / B ${roundNumber(geometryB.instance?.rotation)}`;

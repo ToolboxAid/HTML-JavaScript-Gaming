@@ -14,7 +14,7 @@ export class CollisionInspectorV2Renderer {
   }
 
   setZoom(zoom) {
-    this.zoom = Math.max(0.5, Math.min(2, numberValue(zoom, 1)));
+    this.zoom = Math.max(0.5, Math.min(5, numberValue(zoom, 1)));
   }
 
   clear() {
@@ -135,6 +135,8 @@ export class CollisionInspectorV2Renderer {
     ctx.moveTo(origin.x, origin.y);
     ctx.lineTo(origin.x + Math.cos(rotationRadians) * 34, origin.y + Math.sin(rotationRadians) * 34);
     ctx.stroke();
+    ctx.font = `${Math.max(9, 11 / this.zoom)}px ui-monospace, monospace`;
+    ctx.fillText("heading", origin.x + Math.cos(rotationRadians) * 40, origin.y + Math.sin(rotationRadians) * 40);
     ctx.restore();
   }
 

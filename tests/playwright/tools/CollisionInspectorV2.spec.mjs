@@ -87,8 +87,32 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionSummary")).toContainText('"transformedPoints"');
       await expect(page.locator("#resultContent #collisionSummary")).toHaveCount(0);
       await expect(page.locator("#collisionSummaryContent #collisionSummary")).toBeVisible();
+      await expect(page.locator("#resultContent")).not.toContainText("Mode");
+      await expect(page.locator(".collision-inspector-v2__legend")).toContainText("Heading");
       const summaryOverflow = await page.locator("#collisionSummaryContent").evaluate((element) => getComputedStyle(element).overflowY);
       expect(["auto", "scroll"]).toContain(summaryOverflow);
+      const resultOverflow = await page.locator("#resultContent").evaluate((element) => getComputedStyle(element).overflowY);
+      expect(["auto", "scroll"]).toContain(resultOverflow);
+      const outputLayout = await page.evaluate(() => {
+        const result = document.querySelector(".collision-inspector-v2__accordion--result").getBoundingClientRect();
+        const summary = document.querySelector(".collision-inspector-v2__accordion--summary").getBoundingClientRect();
+        const logs = document.querySelector(".collision-inspector-v2__accordion--logs").getBoundingClientRect();
+        const heights = [result.height, summary.height, logs.height];
+        return {
+          maxDelta: Math.max(...heights) - Math.min(...heights),
+          resultWidth: result.width,
+          summaryWidth: summary.width,
+          logsWidth: logs.width
+        };
+      });
+      expect(outputLayout.maxDelta).toBeLessThanOrEqual(6);
+      expect(Math.abs(outputLayout.resultWidth - outputLayout.summaryWidth)).toBeLessThanOrEqual(1);
+      expect(Math.abs(outputLayout.summaryWidth - outputLayout.logsWidth)).toBeLessThanOrEqual(1);
+      await expect(page.locator("button[aria-controls='collisionLogContent']")).toBeVisible();
+      await page.locator("button[aria-controls='collisionLogContent']").click();
+      await expect(page.locator("#collisionLogContent")).toBeHidden();
+      await page.locator("button[aria-controls='collisionLogContent']").click();
+      await expect(page.locator("#collisionLogContent")).toBeVisible();
 
       await page.locator("#objectBRotationInput").fill("180");
       await expect(page.locator("#rotationState")).toHaveText("A 0 / B 180");
@@ -115,6 +139,13 @@ test.describe("Collision Inspector V2", () => {
       await page.locator("#collisionZoomInput").fill("1.5");
       await expect(page.locator("#zoomState")).toHaveText("1.5x");
       await expect(page.locator("#collisionSummary")).toContainText('"zoom": 1.5');
+      await expect(page.locator("#collisionZoomInput")).toHaveAttribute("max", "5");
+      await page.locator("#collisionZoomInput").fill("5");
+      await expect(page.locator("#zoomState")).toHaveText("5x");
+      await expect(page.locator("#collisionSummary")).toContainText('"zoom": 5');
+      await page.evaluate(() => window.__collisionInspectorV2App.setZoom(8));
+      await expect(page.locator("#zoomState")).toHaveText("5x");
+      await expect(page.locator("#collisionSummary")).toContainText('"zoom": 5');
 
       await page.locator("#resetSimulationButton").click();
       await expect(page.locator("#collisionResultBadge")).toHaveText("No Collision");

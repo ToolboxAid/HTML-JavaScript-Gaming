@@ -103,7 +103,7 @@ body[data-tool-id="collision-inspector-v2"] {
 .collision-inspector-v2__field input,
 .collision-inspector-v2__field select,
 .collision-inspector-v2__zoom-row output,
-.collision-inspector-v2__status-actions button {
+.collision-inspector-v2__log-clear {
   border: 1px solid var(--collision-inspector-line);
   border-radius: 6px;
   background: #ffffff;
@@ -113,7 +113,7 @@ body[data-tool-id="collision-inspector-v2"] {
 
 .tool-starter__workspace__menu button,
 .collision-inspector-v2__wide-button,
-.collision-inspector-v2__status-actions button {
+.collision-inspector-v2__log-clear {
   min-height: 36px;
   padding: 0 12px;
   cursor: pointer;
@@ -164,16 +164,30 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 .collision-inspector-v2__accordion--fill,
+.collision-inspector-v2__accordion--result,
 .collision-inspector-v2__accordion--summary,
 .collision-inspector-v2__accordion--logs {
   flex: 1 1 auto;
 }
 
 .collision-inspector-v2__accordion--fill .accordion-v2__content,
+.collision-inspector-v2__accordion--result .accordion-v2__content,
 .collision-inspector-v2__accordion--summary .accordion-v2__content,
 .collision-inspector-v2__accordion--logs .accordion-v2__content {
   min-height: 0;
   flex: 1 1 auto;
+}
+
+.collision-inspector-v2__panel--right .collision-inspector-v2__accordion--result,
+.collision-inspector-v2__panel--right .collision-inspector-v2__accordion--summary,
+.collision-inspector-v2__panel--right .collision-inspector-v2__accordion--logs {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.collision-inspector-v2__panel--right .collision-inspector-v2__accordion:not(.is-open) {
+  flex: 0 0 auto;
 }
 
 .collision-inspector-v2__field {
@@ -265,7 +279,7 @@ body[data-tool-id="collision-inspector-v2"] {
 
 .collision-inspector-v2__legend {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   font-size: 0.83rem;
   color: var(--collision-inspector-muted);
@@ -292,6 +306,13 @@ body[data-tool-id="collision-inspector-v2"] {
 
 .collision-inspector-v2__legend span:nth-child(3)::before {
   background: var(--collision-inspector-hit);
+}
+
+.collision-inspector-v2__legend span:nth-child(4)::before {
+  width: 18px;
+  height: 2px;
+  border-radius: 0;
+  background: #f8fafc;
 }
 
 .collision-inspector-v2__result {
@@ -324,7 +345,7 @@ body[data-tool-id="collision-inspector-v2"] {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
-  margin: 0 0 12px;
+  margin: 0;
 }
 
 .collision-inspector-v2__metrics div {
@@ -361,13 +382,25 @@ body[data-tool-id="collision-inspector-v2"] {
 
 .collision-inspector-v2__summary-content {
   min-height: 0;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: scroll;
+}
+
+.collision-inspector-v2__result-content {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .collision-inspector-v2__summary-content .collision-inspector-v2__output {
   flex: 1 1 auto;
   margin: 0;
   overflow: visible;
+}
+
+.collision-inspector-v2__log-clear {
+  flex: 0 0 auto;
+  align-self: end;
 }
 
 #collisionLog {
@@ -380,12 +413,6 @@ body[data-tool-id="collision-inspector-v2"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-}
-
-.collision-inspector-v2__status-actions {
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
 }
 

@@ -107,7 +107,7 @@
             <div class="collision-inspector-v2__zoom-row">
               <label class="collision-inspector-v2__field collision-inspector-v2__field--inline" for="collisionZoomInput">
                 <span>Zoom</span>
-                <input id="collisionZoomInput" type="range" min="0.5" max="2" step="0.1" value="1">
+                <input id="collisionZoomInput" type="range" min="0.5" max="5" step="0.1" value="1">
               </label>
               <output id="zoomState" for="collisionZoomInput">1x</output>
             </div>
@@ -118,27 +118,24 @@
               <span>Object A</span>
               <span>Object B</span>
               <span>Overlap</span>
+              <span>Heading</span>
             </div>
           </div>
         </section>
       </section>
 
       <aside class="collision-inspector-v2__panel collision-inspector-v2__panel--right" aria-label="Collision output">
-        <section class="accordion-v2 collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 collision-inspector-v2__accordion collision-inspector-v2__accordion--result is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="resultContent">
             <span>Live Result</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
-          <div id="resultContent" class="accordion-v2__content">
+          <div id="resultContent" class="accordion-v2__content collision-inspector-v2__result-content">
             <div id="collisionResultBadge" class="collision-inspector-v2__result" data-collision-state="idle">No Collision</div>
             <dl class="collision-inspector-v2__metrics">
               <div>
                 <dt>Overlap</dt>
                 <dd id="overlapState">false</dd>
-              </div>
-              <div>
-                <dt>Mode</dt>
-                <dd id="modeState">Vector</dd>
               </div>
               <div>
                 <dt>Bounds</dt>
@@ -171,14 +168,12 @@
         </section>
 
         <section class="accordion-v2 collision-inspector-v2__accordion collision-inspector-v2__accordion--logs is-open" data-accordion-v2-open="true">
-          <div class="accordion-v2__header collision-inspector-v2__status-header" aria-expanded="true" aria-controls="collisionLogContent">
+          <button class="accordion-v2__header collision-inspector-v2__status-header" type="button" aria-expanded="true" aria-controls="collisionLogContent">
             <span>Collision Logs</span>
-            <div class="collision-inspector-v2__status-actions">
-              <button id="clearCollisionLogButton" type="button">Clear</button>
-              <span class="accordion-v2__icon" aria-hidden="true">+</span>
-            </div>
-          </div>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
           <div id="collisionLogContent" class="accordion-v2__content">
+            <button id="clearCollisionLogButton" class="collision-inspector-v2__log-clear" type="button">Clear</button>
             <textarea id="collisionLog" readonly rows="12" aria-label="Collision logs"></textarea>
           </div>
         </section>

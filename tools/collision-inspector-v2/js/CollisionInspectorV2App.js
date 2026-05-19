@@ -191,7 +191,7 @@ export class CollisionInspectorV2App {
   }
 
   setZoom(zoom) {
-    this.zoom = Math.max(0.5, Math.min(2, numberValue(zoom, 1)));
+    this.zoom = Math.max(0.5, Math.min(5, numberValue(zoom, 1)));
     this.renderer.setZoom(this.zoom);
     this.controls.setZoom(this.zoom);
     this.evaluateAndRender();

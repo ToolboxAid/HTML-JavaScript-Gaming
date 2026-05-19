@@ -23,7 +23,6 @@ window.addEventListener("DOMContentLoaded", () => {
     log: requireElement("#collisionLog"),
     manifestSummary: requireElement("#manifestSummary"),
     modeSelect: requireElement("#collisionModeSelect"),
-    modeState: requireElement("#modeState"),
     objectASelect: requireElement("#objectASelect"),
     objectBSelect: requireElement("#objectBSelect"),
     originState: requireElement("#originState"),
