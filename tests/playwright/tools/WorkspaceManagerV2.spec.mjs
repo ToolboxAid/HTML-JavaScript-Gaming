@@ -7802,7 +7802,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.small-ufo; cached resolved object.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=frame-1.");
-      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 1 shapes state=active frame=frame-1.");
+      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 2 shapes state=active frame=frame-1.");
       expect(eventMessages).not.toContain("matched multiple objects by tags");
       expect(pageErrors).toEqual([]);
     } finally {
@@ -10564,7 +10564,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await smallUfoTile.scrollIntoViewIfNeeded();
       await smallUfoTile.click();
       await expect(smallUfoTile).toContainText("object > asteroids > Small UFO");
-      await expect(page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes [data-object-tile-shape-index] .object-vector-studio-v2__shape-select-label")).toHaveText(["0. Polyline"]);
+      await expect(page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes [data-object-tile-shape-index] .object-vector-studio-v2__shape-select-label")).toHaveText(["1. Line", "0. Polyline"]);
       await page.locator('button[aria-controls="objectVectorStudioV2DependencyGraphContent"]').click();
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("Object tags:");
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("object.asteroids.ship: Asteroids Ship");

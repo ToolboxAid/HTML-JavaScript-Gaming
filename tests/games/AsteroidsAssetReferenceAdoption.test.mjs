@@ -68,12 +68,12 @@ export async function run() {
   assert.deepEqual(
     payload.objects.find((object) => object.id === "object.asteroids.ship").shapes.find((shape) => shape.tool === "polygon").geometry.points,
     [
-      { x: 15.4, y: 0 },
-      { x: -11, y: -8.8 },
-      { x: -6.6, y: -3.3 },
-      { x: -6.6, y: 3.3 },
-      { x: -11, y: 8.8 },
-      { x: 15.4, y: 0 },
+      { x: -6, y: -4 },
+      { x: -6, y: 4 },
+      { x: -10, y: 8 },
+      { x: 14, y: 0 },
+      { x: -10, y: -8 },
+      { x: -6, y: -4 },
     ],
   );
   assert.equal(payload.objects.find((object) => object.id === "object.asteroids.large-ufo").shapes[0].tool, "polyline");

@@ -330,8 +330,8 @@ function testAsteroidsShipDebrisUsesManifestShipHullGeometry() {
   });
   assert.equal(spawned, true);
   assert.equal(scene.shipDebris.fragments.length, 5);
-  assert.deepEqual(scene.shipDebris.fragments[0].start, { x: 15.4, y: 0 });
-  assert.deepEqual(scene.shipDebris.fragments[0].end, { x: -11, y: -8.8 });
+  assert.deepEqual(scene.shipDebris.fragments[0].start, { x: -6, y: -4 });
+  assert.deepEqual(scene.shipDebris.fragments[0].end, { x: -6, y: 4 });
 }
 
 function testAsteroidsGameplayBulletsUseManifestObjectGeometry() {

@@ -32,25 +32,25 @@ export function run() {
   ship.angle = Math.PI / 2;
   const shipPoints = ship.getPoints();
   assert.equal(shipPoints.length, 6);
-  assertPointClose(shipPoints[0], { x: 100, y: 215.4 });
-  assertPointClose(shipPoints[1], { x: 108.8, y: 189 });
-  assertPointClose(shipPoints[4], { x: 91.2, y: 189 });
+  assertPointClose(shipPoints[0], { x: 104, y: 194 });
+  assertPointClose(shipPoints[1], { x: 96, y: 194 });
+  assertPointClose(shipPoints[4], { x: 108, y: 190 });
 
   const asteroid = new Asteroid(320, 240, 3, () => 0.5, asteroidGeometryProfiles);
   asteroid.angle = 0;
   asteroid.scale = 1;
   const asteroidPoints = asteroid.getPoints();
-  assert.equal(asteroidPoints.length, 12);
-  assertPointClose(asteroidPoints[0], { x: 325.265, y: 274.425 });
-  assertPointClose(asteroidPoints[5], { x: 341.465, y: 205.575 });
+  assert.equal(asteroidPoints.length, 10);
+  assertPointClose(asteroidPoints[0], { x: 320, y: 256 });
+  assertPointClose(asteroidPoints[5], { x: 328, y: 208 });
 
   const bullet = new Bullet(50, 60, 0, 0, 1, {
     collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet),
   });
   const bulletPoints = bullet.getCollisionPolygon();
   assert.equal(bulletPoints.length, 4);
-  assertPointClose(bulletPoints[0], { x: 49, y: 60 });
-  assertPointClose(bulletPoints[2], { x: 50, y: 63 });
+  assertPointClose(bulletPoints[0], { x: 48.5, y: 61.5 });
+  assertPointClose(bulletPoints[2], { x: 50.5, y: 63.5 });
   const angledBullet = new Bullet(50, 60, 0, 0, 1, {
     angle: Math.PI / 3,
     collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet),
@@ -64,7 +64,7 @@ export function run() {
   ufo.x = 400;
   ufo.y = 220;
   const ufoPolygon = ufo.getCollisionPolygon();
-  assert.equal(ufoPolygon.length, 15);
-  assertPointClose(ufoPolygon[0], { x: 386, y: 223 });
-  assertPointClose(ufoPolygon[9], { x: 402, y: 211 });
+  assert.equal(ufoPolygon.length, 10);
+  assertPointClose(ufoPolygon[0], { x: 390, y: 222 });
+  assertPointClose(ufoPolygon[9], { x: 410, y: 222 });
 }
