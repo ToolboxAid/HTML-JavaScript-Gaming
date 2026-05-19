@@ -254,10 +254,16 @@ function makeValidator(schemaIndex) {
         return;
       }
 
+      const inferredObjectSchema = !Object.prototype.hasOwnProperty.call(nodeSchema, "type")
+        && (Array.isArray(nodeSchema.required)
+          || isPlainObject(nodeSchema.properties)
+          || isPlainObject(nodeSchema.patternProperties)
+          || isPlainObject(nodeSchema.propertyNames)
+          || Object.prototype.hasOwnProperty.call(nodeSchema, "additionalProperties"));
       const schemaTypes = Array.isArray(nodeSchema.type)
         ? nodeSchema.type.filter((entry) => typeof entry === "string")
         : (typeof nodeSchema.type === "string" ? [nodeSchema.type] : []);
-      const schemaType = schemaTypes[0] || "";
+      const schemaType = schemaTypes[0] || (inferredObjectSchema ? "object" : "");
       if (schemaTypes.length > 1 && !schemaTypes.some((candidate) => matchesSchemaType(nodeValue, candidate))) {
         errors.push(`${nodePointer}: value does not match any allowed schema types`);
         return;
@@ -269,6 +275,9 @@ function makeValidator(schemaIndex) {
 
       if (schemaType === "object") {
         if (!isPlainObject(nodeValue)) {
+          if (inferredObjectSchema) {
+            return;
+          }
           errors.push(`${nodePointer}: expected object`);
           return;
         }
@@ -655,8 +664,24 @@ function validateSamples(schemaIndex, validate) {
   return rows;
 }
 
-function validateGames() {
+function resolveManifestAssetPath(manifestPath, assetPath) {
+  const normalized = String(assetPath || "").trim().replace(/\\/g, "/");
+  if (!normalized || /^[a-z][a-z0-9+.-]*:/i.test(normalized) || normalized.startsWith("//")) {
+    return "";
+  }
+  if (normalized.startsWith("/")) {
+    return path.join(ROOT, normalized.slice(1));
+  }
+  if (normalized.startsWith("games/")) {
+    return path.join(ROOT, normalized);
+  }
+  return path.join(path.dirname(manifestPath), normalized);
+}
+
+function validateGames(schemaIndex, validate) {
   const files = walkFiles(path.join(ROOT, "games"), (filePath) => path.basename(filePath).toLowerCase() === "game.manifest.json");
+  const gameManifestSchemaPath = "tools/schemas/game.manifest.schema.json";
+  const gameManifestSchema = schemaIndex.get(gameManifestSchemaPath);
   const rows = [];
   files.forEach((filePath) => {
     const rel = normalizeRel(filePath);
@@ -666,6 +691,32 @@ function validateGames() {
     if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) {
       errors.push("manifest must be an object");
     } else {
+      if (!gameManifestSchema) {
+        errors.push("tools/schemas/game.manifest.schema.json not found");
+      } else {
+        const schemaErrors = validate(manifest, gameManifestSchema, gameManifestSchemaPath, "$");
+        errors.push(...schemaErrors.map((error) => `schema ${error}`));
+      }
+
+      const assetManagerAssets = manifest?.tools?.["asset-manager-v2"]?.assets;
+      if (!assetManagerAssets || typeof assetManagerAssets !== "object" || Array.isArray(assetManagerAssets)) {
+        errors.push("tools.asset-manager-v2.assets must be an object");
+      } else {
+        const previewEntries = Object.entries(assetManagerAssets)
+          .filter(([, entry]) => entry?.type === "image" && String(entry?.role || "").trim().toLowerCase() === "preview");
+        if (previewEntries.length === 0) {
+          errors.push("tools.asset-manager-v2.assets must include an image preview asset");
+        }
+        for (const [assetId, entry] of previewEntries) {
+          const resolvedPreviewPath = resolveManifestAssetPath(filePath, entry.path);
+          if (!resolvedPreviewPath) {
+            errors.push(`preview asset ${assetId} has a non-local or empty path: ${entry.path || "(empty)"}`);
+          } else if (!fs.existsSync(resolvedPreviewPath)) {
+            errors.push(`preview asset ${assetId} file is missing: ${normalizeRel(resolvedPreviewPath)}`);
+          }
+        }
+      }
+
       const assets = manifest?.tools?.["asset-browser"]?.assets;
       if (manifest?.tools?.["asset-browser"]) {
         if (!assets || typeof assets !== "object" || Array.isArray(assets)) {
@@ -837,7 +888,7 @@ function main() {
   const runGames = args.mode === "all" || args.mode === "games";
   const toolRows = runTools ? validateToolSchemas(schemaIndex, validate) : [];
   const sampleRows = runSamples ? validateSamples(schemaIndex, validate) : [];
-  const gameRows = runGames ? validateGames() : [];
+  const gameRows = runGames ? validateGames(schemaIndex, validate) : [];
 
   writeCsv(path.join(args.reportDir, "tool_payload_schema_validation.csv"), ["schemaPath", "status", "errorCount", "firstErrors"], toolRows);
   writeCsv(path.join(args.reportDir, "sample_json_schema_validation.csv"), ["filePath", "schemaPath", "status", "errorCount", "firstErrors", "note"], sampleRows);

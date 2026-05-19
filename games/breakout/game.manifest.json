@@ -1,4 +1,5 @@
 {
+  "$schema": "tools/schemas/game.manifest.schema.json",
   "schema": "html-js-gaming.game-manifest",
   "version": 1,
   "game": {
@@ -12,6 +13,22 @@
     "workspaceManagerOptional": true
   },
   "tools": {
+    "asset-manager-v2": {
+      "$schema": "tools/schemas/tools/asset-manager-v2.schema.json",
+      "schema": "html-js-gaming.asset-manager-v2",
+      "version": 1,
+      "name": "Breakout Asset Manager V2 Registry",
+      "source": "manifest",
+      "assets": {
+        "assets.image.preview.preview": {
+          "path": "assets/images/preview.svg",
+          "type": "image",
+          "kind": "svg",
+          "role": "preview",
+          "source": "manifest"
+        }
+      }
+    },
     "primitive-skin-editor": {
       "skins": [
         {

@@ -1,5 +1,4 @@
 filePath,status,errorCount,firstErrors
-games/_template/game.manifest.json,valid,0,
 games/AITargetDummy/game.manifest.json,valid,0,
 games/Asteroids/game.manifest.json,valid,0,
 games/Bouncing-ball/game.manifest.json,valid,0,
