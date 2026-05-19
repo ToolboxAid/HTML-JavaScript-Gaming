@@ -29,13 +29,6 @@
         }
       }
     },
-    "primitive-skin-editor": {
-      "skins": [],
-      "schema": "html-js-gaming.tool.primitive-skin-editor",
-      "version": 1,
-      "name": "Primitive Skin Editor",
-      "source": "manifest"
-    },
     "sprite-editor": {
       "sprites": [
         {
@@ -238,19 +231,6 @@
       "name": "SVG Asset Studio",
       "source": "manifest"
     },
-    "asset-browser": {
-      "assets": {
-        "image.vector-arcade.backdrop-svg": {
-          "path": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
-          "kind": "image",
-          "source": "workspace-manager"
-        }
-      },
-      "schema": "html-js-gaming.tool.asset-browser",
-      "version": 1,
-      "name": "Asset Browser",
-      "source": "manifest"
-    },
     "preview-generator-tool": {
       "projectConfigs": [
         {
@@ -278,65 +258,6 @@
       "version": 1,
       "name": "Preview Generator Tool",
       "source": "manifest"
-    },
-    "palette-browser": {
-      "schema": "html-js-gaming.tool.palette-browser",
-      "version": 1,
-      "name": "Palette Browser",
-      "source": "manifest",
-      "palette": {
-        "schema": "html-js-gaming.palette",
-        "version": 1,
-        "name": "Vector Arcade Sample Palette",
-        "source": "manifest-and-runtime-color-scan",
-        "swatches": [
-          {
-            "symbol": "0",
-            "hex": "#05070D",
-            "name": "Color 1"
-          },
-          {
-            "symbol": "1",
-            "hex": "#E8F0FF",
-            "name": "Color 2"
-          },
-          {
-            "symbol": "2",
-            "hex": "#6FD3FF",
-            "name": "Color 3"
-          },
-          {
-            "symbol": "3",
-            "hex": "#FFB347",
-            "name": "Color 4"
-          },
-          {
-            "symbol": "4",
-            "hex": "#000000",
-            "name": "Color 5"
-          },
-          {
-            "symbol": "5",
-            "hex": "#FFFFFF",
-            "name": "Color 6"
-          },
-          {
-            "symbol": "6",
-            "hex": "#60A5FA",
-            "name": "Color 7"
-          },
-          {
-            "symbol": "7",
-            "hex": "#F59E0B",
-            "name": "Color 8"
-          },
-          {
-            "symbol": "8",
-            "hex": "#112233",
-            "name": "Color 9"
-          }
-        ]
-      }
     }
   }
 }

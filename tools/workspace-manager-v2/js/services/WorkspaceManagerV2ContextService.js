@@ -1246,6 +1246,15 @@ export class WorkspaceManagerV2ContextService {
       if (!isPlainObject(schema)) {
         return { ok: false, message: `${GAME_MANIFEST_SCHEMA_PATH} did not return a schema object.` };
       }
+      const assetManagerSchemaPath = `/${TOOL_PAYLOAD_SCHEMA_REFS[ASSET_MANAGER_V2_TOOL_KEY]}`;
+      const assetManagerResponse = await this.fetchRef(assetManagerSchemaPath, { cache: "no-store" });
+      if (!assetManagerResponse.ok) {
+        return { ok: false, message: `Unable to load ${assetManagerSchemaPath}: ${assetManagerResponse.status}` };
+      }
+      const assetManagerSchema = await assetManagerResponse.json();
+      if (!isPlainObject(assetManagerSchema)) {
+        return { ok: false, message: `${assetManagerSchemaPath} did not return a schema object.` };
+      }
       const objectVectorResponse = await this.fetchRef(OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH, { cache: "no-store" });
       if (!objectVectorResponse.ok) {
         return { ok: false, message: `Unable to load ${OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH}: ${objectVectorResponse.status}` };
@@ -1255,6 +1264,9 @@ export class WorkspaceManagerV2ContextService {
         return { ok: false, message: `${OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH} did not return a schema object.` };
       }
       const schemaRegistry = new Map();
+      registerSchemaReference(schemaRegistry, assetManagerSchemaPath, assetManagerSchema);
+      registerSchemaReference(schemaRegistry, TOOL_PAYLOAD_SCHEMA_REFS[ASSET_MANAGER_V2_TOOL_KEY], assetManagerSchema);
+      registerSchemaReference(schemaRegistry, "tools/asset-manager-v2.schema.json", assetManagerSchema);
       registerSchemaReference(schemaRegistry, OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH, objectVectorSchema);
       registerSchemaReference(schemaRegistry, "tools/schemas/tools/object-vector-studio-v2.schema.json", objectVectorSchema);
       registerSchemaReference(schemaRegistry, "tools/object-vector-studio-v2.schema.json", objectVectorSchema);
