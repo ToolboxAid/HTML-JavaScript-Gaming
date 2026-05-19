@@ -13,6 +13,7 @@ import { distance } from '../../../src/shared/utils/mathUtils.js';
 import { randomRange } from '../utils/math.js';
 import { sanitizeFiniteNumber, sanitizePositiveNumber } from '../../../src/shared/math/numberNormalization.js';
 import {
+  ASTEROIDS_OBJECT_GEOMETRY_IDS,
   requireAsteroidsObjectGeometryPoints,
 } from './asteroidsObjectGeometryManifest.js';
 
@@ -149,11 +150,11 @@ export default class AsteroidsWorld {
     if (!this.objectGeometry?.objectsById) {
       throw new Error('AsteroidsWorld requires manifest-loaded Object Vector geometry for ship, UFO, asteroid, and bullet gameplay geometry.');
     }
-    this.bulletCollisionPoints = requireAsteroidsObjectGeometryPoints(this.objectGeometry, 'bullet', 'bullet object geometry');
-    this.shipCollisionPoints = requireAsteroidsObjectGeometryPoints(this.objectGeometry, 'ship', 'ship object geometry');
+    this.bulletCollisionPoints = requireAsteroidsObjectGeometryPoints(this.objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet, 'bullet object geometry');
+    this.shipCollisionPoints = requireAsteroidsObjectGeometryPoints(this.objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.ship, 'ship object geometry');
     this.ufoCollisionPoints = {
-      large: requireAsteroidsObjectGeometryPoints(this.objectGeometry, 'ufoLarge', 'large UFO object geometry'),
-      small: requireAsteroidsObjectGeometryPoints(this.objectGeometry, 'ufoSmall', 'small UFO object geometry'),
+      large: requireAsteroidsObjectGeometryPoints(this.objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge, 'large UFO object geometry'),
+      small: requireAsteroidsObjectGeometryPoints(this.objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall, 'small UFO object geometry'),
     };
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.bounds = sanitizeBounds(bounds);

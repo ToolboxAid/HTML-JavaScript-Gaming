@@ -176,11 +176,8 @@ export async function run() {
   ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.forEach((id) => {
     assert.equal(objectGeometry.objectsById.has(id), true, `required Asteroids manifest geometry id ${id} should resolve`);
   });
-  assert.equal(objectGeometry.objectsByKey.bullet.id, 'object.asteroids.bullet');
-  assert.equal(objectGeometry.objectsByKey.ship.id, 'object.asteroids.ship');
-  assert.equal(objectGeometry.objectsByKey.asteroidMedium.id, 'object.asteroids.medium-asteroid');
   assert.deepEqual(
-    getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
+    getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet),
     [
       { x: -1, y: 0 },
       { x: 0, y: 0 },
@@ -189,7 +186,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    getAsteroidsObjectGeometryPoints(objectGeometry, 'ship'),
+    getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.ship),
     [
       { x: 15.4, y: 0 },
       { x: -11, y: -8.8 },
@@ -200,7 +197,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    getAsteroidsObjectGeometryPoints(objectGeometry, 'asteroidMedium'),
+    getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium),
     [
       { x: 4.779, y: 19.845 },
       { x: 24.219, y: 10.125 },
@@ -217,7 +214,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    getAsteroidsObjectGeometryPoints(objectGeometry, 'asteroidSmall'),
+    getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall),
     [
       { x: 1.995, y: 8.925 },
       { x: 10.395, y: 4.725 },
@@ -234,7 +231,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    getAsteroidsObjectGeometryPoints(objectGeometry, 'ufoSmall').slice(0, 5),
+    getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall).slice(0, 5),
     [
       { x: -14, y: 3 },
       { x: 14, y: 3 },
@@ -300,10 +297,7 @@ export async function run() {
   const missingSmallUfoObjectValidation = loadAsteroidsObjectGeometryFromManifest(missingSmallUfoObjectManifest);
   assert.equal(missingSmallUfoObjectValidation.ok, false);
   assert.equal(
-    missingSmallUfoObjectValidation.errors.some((message) => (
-      message.includes('ufoSmall')
-      && message.includes('objects[].tags [ufo, small]')
-    )),
+    missingSmallUfoObjectValidation.errors.some((message) => message.includes(ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall)),
     true,
   );
   const createdDocumentShim = typeof globalThis.document === 'undefined';

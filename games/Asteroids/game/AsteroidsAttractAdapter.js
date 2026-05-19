@@ -7,21 +7,6 @@ AsteroidsAttractAdapter.js
 import { clamp } from '../../../src/shared/utils/mathUtils.js';
 import { ASTEROIDS_OBJECT_GEOMETRY_IDS } from './asteroidsObjectGeometryManifest.js';
 
-const ASTEROID_RENDER_BINDINGS = Object.freeze({
-  large: Object.freeze({
-    objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge,
-    objectKey: 'asteroidLarge',
-  }),
-  medium: Object.freeze({
-    objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium,
-    objectKey: 'asteroidMedium',
-  }),
-  small: Object.freeze({
-    objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall,
-    objectKey: 'asteroidSmall',
-  }),
-});
-
 function estimateTextWidth(text, fontPx) {
   return String(text ?? '').length * (fontPx * 0.62);
 }
@@ -104,17 +89,15 @@ export default class AsteroidsAttractAdapter {
     return clamp(timing.alpha, 0, 1);
   }
 
-  drawManifestAsteroid(renderer, sizeKey, options = {}) {
-    const binding = ASTEROID_RENDER_BINDINGS[sizeKey];
-    if (!binding) {
+  drawManifestAsteroid(renderer, objectId, options = {}) {
+    if (!objectId) {
       return;
     }
 
     this.scene?.drawObjectVectorAsset?.(renderer, 'asteroids', {
-      ...this.scene.objectVectorTagOptions(binding.objectKey),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
-      objectId: binding.objectId,
+      objectId,
       requireManifestBinding: true,
       stateId: 'active',
       ...options,
@@ -153,7 +136,6 @@ export default class AsteroidsAttractAdapter {
     }
 
     this.scene?.drawObjectVectorAsset?.(renderer, 'ship', {
-      ...this.scene.objectVectorTagOptions('ship'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
       objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
@@ -164,16 +146,16 @@ export default class AsteroidsAttractAdapter {
       x: 328,
       y: 348,
     });
-    this.drawManifestAsteroid(renderer, 'large', {
+    this.drawManifestAsteroid(renderer, ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge, {
       x: 632,
       y: 352,
     });
-    this.drawManifestAsteroid(renderer, 'medium', {
+    this.drawManifestAsteroid(renderer, ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium, {
       rotation: 0.34,
       x: 698,
       y: 316,
     });
-    this.drawManifestAsteroid(renderer, 'small', {
+    this.drawManifestAsteroid(renderer, ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall, {
       rotation: -0.46,
       x: 594,
       y: 306,
@@ -247,7 +229,6 @@ export default class AsteroidsAttractAdapter {
     const x = 480 + Math.cos(this.demoTime * 0.7) * 220;
     const y = 340 + Math.sin(this.demoTime * 1.1) * 130;
     this.scene?.drawObjectVectorAsset?.(renderer, 'ship', {
-      ...this.scene.objectVectorTagOptions('ship'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
       objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
@@ -258,23 +239,22 @@ export default class AsteroidsAttractAdapter {
       y,
     });
 
-    this.drawManifestAsteroid(renderer, 'large', {
+    this.drawManifestAsteroid(renderer, ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge, {
       rotation: this.demoTime * 0.25,
       x: 480 + Math.sin(this.demoTime * 0.5) * 250,
       y: 330 + Math.cos(this.demoTime * 0.9) * 120,
     });
-    this.drawManifestAsteroid(renderer, 'medium', {
+    this.drawManifestAsteroid(renderer, ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium, {
       rotation: -this.demoTime * 0.31,
       x: 520 + Math.sin((this.demoTime * 0.78) + 1.4) * 190,
       y: 356 + Math.cos((this.demoTime * 0.64) + 0.7) * 96,
     });
-    this.drawManifestAsteroid(renderer, 'small', {
+    this.drawManifestAsteroid(renderer, ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall, {
       rotation: this.demoTime * 0.42,
       x: 430 + Math.sin((this.demoTime * 0.92) + 2.2) * 154,
       y: 318 + Math.cos((this.demoTime * 0.72) + 2.7) * 78,
     });
     this.scene?.drawObjectVectorAsset?.(renderer, 'ufo', {
-      ...this.scene.objectVectorTagOptions('ufoLarge'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
       objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge,

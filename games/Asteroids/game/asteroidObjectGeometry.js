@@ -1,7 +1,6 @@
 import {
-  ASTEROID_SIZE_RUNTIME_OBJECT_KEYS,
-  resolveAsteroidsTaggedObject,
-} from './asteroidsObjectTags.js';
+  ASTEROIDS_ASTEROID_SIZE_OBJECT_IDS,
+} from './asteroidsObjectGeometryManifest.js';
 
 const ASTEROID_SIZE_LABELS = Object.freeze({
   1: 'SML',
@@ -61,13 +60,36 @@ function extractPrimaryPolygonPoints(object) {
   return asArray(shape?.geometry?.points).map(cleanPoint);
 }
 
+function logProfileFailure(logger, message, details = {}) {
+  if (!logger) {
+    return;
+  }
+  if (typeof logger.log === 'function') {
+    logger.log('FAIL', message, details);
+    return;
+  }
+  logger.error?.(message, details);
+}
+
 function createProfilesFromObjects(objects, options = {}) {
   const profiles = {};
+  const objectsById = new Map(asArray(objects).map((object) => [object?.id, object]).filter(([id]) => id));
 
-  Object.entries(ASTEROID_SIZE_RUNTIME_OBJECT_KEYS).forEach(([size, objectKey]) => {
-    const object = resolveAsteroidsTaggedObject(objects, objectKey, options);
+  Object.entries(ASTEROIDS_ASTEROID_SIZE_OBJECT_IDS).forEach(([size, objectId]) => {
+    const object = objectsById.get(objectId);
+    if (!object) {
+      logProfileFailure(options.logger, `Asteroids asteroid geometry profile ${objectId} is missing from Object Vector manifest objects.`, {
+        objectId,
+        size,
+      });
+      return;
+    }
     const points = centerPoints(extractPrimaryPolygonPoints(object));
     if (points.length < 3) {
+      logProfileFailure(options.logger, `Asteroids asteroid geometry profile ${objectId} must contain visible polygon geometry with at least 3 points.`, {
+        objectId,
+        size,
+      });
       return;
     }
     const sizeId = Number(size);

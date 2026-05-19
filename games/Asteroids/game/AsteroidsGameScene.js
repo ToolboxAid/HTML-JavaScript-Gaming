@@ -15,10 +15,11 @@ import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
 import { createAsteroidGeometryProfilesFromObjectVectorAssets } from './asteroidObjectGeometry.js';
 import {
-  ASTEROID_SIZE_RUNTIME_OBJECT_KEYS,
-  runtimeObjectTagOptions,
-  validateAsteroidsRuntimeObjectTags
-} from './asteroidsObjectTags.js';
+  ASTEROIDS_OBJECT_GEOMETRY_IDS,
+  ASTEROIDS_ASTEROID_SIZE_OBJECT_IDS,
+  ASTEROIDS_UFO_TYPE_OBJECT_IDS,
+  validateAsteroidsRuntimeObjectIds
+} from './asteroidsObjectGeometryManifest.js';
 import {
   ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE
 } from "../rules/flowRules.js";
@@ -89,16 +90,16 @@ export default class AsteroidsGameScene extends Scene {
     this.objectVectorAssets = options.objectVectorAssets || null;
     this.objectVectorRuntime = options.objectVectorRuntime || null;
     this.objectGeometry = options.objectGeometry || null;
-    if (!this.objectGeometry?.objectsById || !this.objectGeometry?.objectsByKey) {
+    if (!this.objectGeometry?.objectsById) {
       const message = 'Asteroids Object Vector manifest validation failed: object geometry was not loaded from game.manifest.json.';
       console.error(message);
       throw new Error(message);
     }
     this.objectVectorRuntimeObjectValidation = this.objectVectorAssets
-      ? validateAsteroidsRuntimeObjectTags([...this.objectVectorAssets.objectsById.values()], {
+      ? validateAsteroidsRuntimeObjectIds(this.objectVectorAssets.objectsById, {
         logger: this.objectVectorRuntime,
       })
-      : { errors: [], objectsByKey: {}, ok: false, warnings: [] };
+      : { errors: [], objectIds: [], ok: false, warnings: [] };
     if (this.objectVectorAssets && !this.objectVectorRuntimeObjectValidation.ok) {
       const message = validationFailureMessage(this.objectVectorRuntimeObjectValidation);
       this.objectVectorRuntime?.log?.('FAIL', message, {
@@ -737,12 +738,11 @@ export default class AsteroidsGameScene extends Scene {
     }
 
     this.world.asteroids.forEach((asteroid) => {
-      const objectKey = ASTEROID_SIZE_RUNTIME_OBJECT_KEYS[asteroid.size];
+      const objectId = ASTEROIDS_ASTEROID_SIZE_OBJECT_IDS[asteroid.size] || "";
       this.drawObjectVectorAsset(renderer, "asteroids", {
-        ...this.objectVectorTagOptions(objectKey),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: this.objectVectorRuntimeObjectValidation.objectsByKey[objectKey]?.id || "",
+        objectId,
         requireManifestBinding: true,
         rotation: asteroid.angle,
         stateId: "active",
@@ -752,12 +752,11 @@ export default class AsteroidsGameScene extends Scene {
     });
 
     if (this.world.ufo) {
-      const objectKey = this.world.ufo.type === "small" ? "ufoSmall" : "ufoLarge";
+      const objectId = ASTEROIDS_UFO_TYPE_OBJECT_IDS[this.world.ufo.type] || ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge;
       this.drawObjectVectorAsset(renderer, "ufo", {
-        ...this.objectVectorTagOptions(objectKey),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: this.objectVectorRuntimeObjectValidation.objectsByKey[objectKey]?.id || "",
+        objectId,
         requireManifestBinding: true,
         stateId: "active",
         x: this.world.ufo.x,
@@ -767,8 +766,7 @@ export default class AsteroidsGameScene extends Scene {
 
     this.world.bullets.forEach((bullet) => {
       this.drawObjectVectorAsset(renderer, "bullet", {
-        ...this.objectVectorTagOptions("bullet"),
-        objectId: this.objectVectorRuntimeObjectValidation.objectsByKey.bullet?.id || "",
+        objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet,
         requireManifestBinding: true,
         rotation: bullet.angle,
         stateId: "active",
@@ -779,8 +777,7 @@ export default class AsteroidsGameScene extends Scene {
 
     this.world.ufoBullets.forEach((bullet) => {
       this.drawObjectVectorAsset(renderer, "bullet", {
-        ...this.objectVectorTagOptions("bullet"),
-        objectId: this.objectVectorRuntimeObjectValidation.objectsByKey.bullet?.id || "",
+        objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet,
         requireManifestBinding: true,
         rotation: bullet.angle,
         stateId: "active",
@@ -793,10 +790,9 @@ export default class AsteroidsGameScene extends Scene {
 
     if (this.world.shipActive && !this.session.isTurnIntroActive() && this.session.mode !== 'menu') {
       this.drawObjectVectorAsset(renderer, "ship", {
-        ...this.objectVectorTagOptions("ship"),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: this.objectVectorRuntimeObjectValidation.objectsByKey.ship?.id || "",
+        objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
         requireManifestBinding: true,
         rotation: this.world.ship.angle,
         stateId: this.world.ship.thrusting && this.session.mode === 'playing' ? "move" : "idle",
@@ -872,10 +868,6 @@ export default class AsteroidsGameScene extends Scene {
     this.publishObjectVectorRuntimeDiagnostics();
   }
 
-  objectVectorTagOptions(objectKey) {
-    return runtimeObjectTagOptions(objectKey);
-  }
-
   drawLives(renderer, centerX, y, lives) {
     if (!lives) {
       return;
@@ -884,10 +876,9 @@ export default class AsteroidsGameScene extends Scene {
     const startX = centerX - ((lives - 1) * LIFE_SPACING) / 2;
     Array.from({ length: lives }).forEach((_, index) => {
       this.drawObjectVectorAsset(renderer, "shipLife", {
-        ...this.objectVectorTagOptions("ship"),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        objectId: this.objectVectorRuntimeObjectValidation.objectsByKey.ship?.id || "",
+        objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
         requireManifestBinding: true,
         rotation: -Math.PI / 2,
         scale: 1.05,
@@ -900,12 +891,12 @@ export default class AsteroidsGameScene extends Scene {
 
   drawObjectVectorAsset(renderer, renderKey, options) {
     if (!this.objectVectorRuntime || !this.objectVectorAssets) {
-      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId || options.runtimeRole, "validated Object Vector runtime assets are not loaded");
+      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId, "validated Object Vector runtime assets are not loaded");
       return false;
     }
     const result = this.objectVectorRuntime.renderObject(renderer, this.objectVectorAssets, options);
     if (!result.ok) {
-      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId || options.runtimeRole, "runtime render returned failed result");
+      this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId, "runtime render returned failed result");
       return false;
     }
     this.objectVectorRenderCounts[renderKey] = (this.objectVectorRenderCounts[renderKey] || 0) + 1;

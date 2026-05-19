@@ -7674,9 +7674,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const messages = (window.__asteroidsObjectVectorRuntime?.events || [])
           .map((entry) => entry.message)
           .join("\n");
-        return messages.includes("Object Vector runtime cache miss for asteroidLarge; cached resolved object object.asteroids.large-asteroid.")
-          && messages.includes("Object Vector runtime cache miss for asteroidMedium; cached resolved object object.asteroids.medium-asteroid.")
-          && messages.includes("Object Vector runtime cache miss for asteroidSmall; cached resolved object object.asteroids.small-asteroid.");
+        return messages.includes("Object Vector runtime cache miss for object.asteroids.large-asteroid; cached resolved object.")
+          && messages.includes("Object Vector runtime cache miss for object.asteroids.medium-asteroid; cached resolved object.")
+          && messages.includes("Object Vector runtime cache miss for object.asteroids.small-asteroid; cached resolved object.");
       });
       await page.waitForFunction(() => {
         const counts = window.__asteroidsObjectVectorRuntime?.renderCounts || {};
@@ -7703,21 +7703,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       const diagnostics = await page.evaluate(() => window.__asteroidsObjectVectorRuntime);
       const runtimeObjectValidation = await page.evaluate(() => window.__asteroidsNewEngine.scene.objectVectorRuntimeObjectValidation);
-      const taglessRuntimeObjectValidation = await page.evaluate(async () => {
-        const { validateAsteroidsRuntimeObjectTags } = await import("/games/Asteroids/game/asteroidsObjectTags.js");
+      const missingRuntimeObjectValidation = await page.evaluate(async () => {
+        const { ASTEROIDS_OBJECT_GEOMETRY_IDS, validateAsteroidsRuntimeObjectIds } = await import("/games/Asteroids/game/asteroidsObjectGeometryManifest.js");
         const scene = window.__asteroidsNewEngine.scene;
-        const objects = scene.objectVectorAssets.payload.objects.map((object) => ({
-          ...object,
-          tags: []
-        }));
-        return validateAsteroidsRuntimeObjectTags(objects);
+        const objectsById = new Map(scene.objectVectorAssets.payload.objects
+          .filter((object) => object.id !== ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium)
+          .map((object) => [object.id, object]));
+        return validateAsteroidsRuntimeObjectIds(objectsById);
       });
       expect(diagnostics.loaded).toBe(true);
       expect(diagnostics.assetCount).toBe(7);
       expect(diagnostics.objectCount).toBe(7);
       expect(diagnostics.runtimeObjectsValid).toBe(true);
       expect(runtimeObjectValidation.ok).toBe(true);
-      expect(runtimeObjectValidation.objectsByKey.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
+      expect(runtimeObjectValidation.objectIds).toContain("object.asteroids.medium-asteroid");
       expect(runtimeObjectValidation.warnings).toEqual([]);
       const runtimeRounding = await page.evaluate(() => {
         const scene = window.__asteroidsNewEngine.scene;
@@ -7775,8 +7774,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(runtimeRounding.renderResult.ok).toBe(true);
       expect(runtimeRounding.roundedCanvasCommandCount).toBe(0);
-      expect(taglessRuntimeObjectValidation.ok).toBe(false);
-      expect(taglessRuntimeObjectValidation.errors.some((entry) => entry.message.includes("objects[].tags [asteroid, medium]"))).toBe(true);
+      expect(missingRuntimeObjectValidation.ok).toBe(false);
+      expect(missingRuntimeObjectValidation.errors.some((entry) => entry.message.includes("object.asteroids.medium-asteroid"))).toBe(true);
       expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.bullet).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ship).toBeGreaterThan(0);
@@ -7795,12 +7794,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       ]));
       const eventMessages = diagnostics.events.map((entry) => entry.message).join("\n");
       expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 7 objects.");
-      expect(eventMessages).toContain("Object Vector runtime cache miss for asteroidLarge; cached resolved object object.asteroids.large-asteroid.");
-      expect(eventMessages).toContain("Object Vector runtime cache miss for asteroidMedium; cached resolved object object.asteroids.medium-asteroid.");
-      expect(eventMessages).toContain("Object Vector runtime cache miss for asteroidSmall; cached resolved object object.asteroids.small-asteroid.");
-      expect(eventMessages).toContain("Object Vector runtime cache miss for ship; cached resolved object object.asteroids.ship.");
-      expect(eventMessages).toContain("Object Vector runtime cache miss for ufoLarge; cached resolved object object.asteroids.large-ufo.");
-      expect(eventMessages).toContain("Object Vector runtime cache miss for ufoSmall; cached resolved object object.asteroids.small-ufo.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.large-asteroid; cached resolved object.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.medium-asteroid; cached resolved object.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.small-asteroid; cached resolved object.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.ship; cached resolved object.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.large-ufo; cached resolved object.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for object.asteroids.small-ufo; cached resolved object.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 1 shapes state=active frame=frame-1.");

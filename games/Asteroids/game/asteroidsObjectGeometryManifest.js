@@ -1,7 +1,3 @@
-import {
-  validateAsteroidsRuntimeObjectTags,
-} from './asteroidsObjectTags.js';
-
 const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';
 const OBJECT_VECTOR_PAYLOAD_KEYS = new Set(['version', 'toolId', 'name', 'objects']);
 
@@ -25,6 +21,17 @@ export const ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS = Object.freeze([
   ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall,
 ]);
 
+export const ASTEROIDS_ASTEROID_SIZE_OBJECT_IDS = Object.freeze({
+  1: ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall,
+  2: ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium,
+  3: ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge,
+});
+
+export const ASTEROIDS_UFO_TYPE_OBJECT_IDS = Object.freeze({
+  large: ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge,
+  small: ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall,
+});
+
 function isRecord(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
@@ -39,6 +46,15 @@ function normalizeString(value) {
 
 function isObjectVectorId(id) {
   return normalizeString(id).startsWith('object.');
+}
+
+function oldObjectSignal(object) {
+  const text = [
+    object?.id,
+    object?.name,
+    ...(Array.isArray(object?.tags) ? object.tags : []),
+  ].map((value) => normalizeString(value).toLowerCase()).join(' ');
+  return /(^|[.\s_-])(old|legacy|deprecated|archive|archived|renamed|stale)($|[.\s_-])/.test(text);
 }
 
 function normalizePoint(point) {
@@ -84,12 +100,11 @@ function objectVectorGeometryPoints(object) {
   return shapeGeometryPoints(shape);
 }
 
-function requiredObjectGeometryPointCount(objectKey) {
-  return objectKey === 'ufoLarge' || objectKey === 'ufoSmall' ? 2 : 3;
-}
-
-function objectForKey(objectsByKey, objectKey) {
-  return objectsByKey?.[objectKey] || null;
+function requiredObjectGeometryPointCount(objectId) {
+  return objectId === ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge
+    || objectId === ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall
+    ? 2
+    : 3;
 }
 
 function logValidation(logger, level, message, details = {}) {
@@ -104,19 +119,22 @@ function logValidation(logger, level, message, details = {}) {
   logger[method]?.(message, details);
 }
 
-function validateRequiredObjectGeometry(objects, errors) {
-  const tagValidation = validateAsteroidsRuntimeObjectTags(objects);
-  tagValidation.errors.forEach((entry) => {
-    errors.push(entry.message);
-  });
-  Object.entries(tagValidation.objectsByKey).forEach(([objectKey, object]) => {
+function validateRequiredObjectGeometry(objectsById, errors) {
+  ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.forEach((objectId) => {
+    const object = objectsById.get(objectId);
+    if (!object) {
+      return;
+    }
+    if (oldObjectSignal(object)) {
+      errors.push(`Asteroids Object Vector manifest object ${objectId} is marked old/legacy/deprecated and cannot be used as active runtime geometry.`);
+      return;
+    }
     const points = objectVectorGeometryPoints(object);
-    const minimumPoints = requiredObjectGeometryPointCount(objectKey);
+    const minimumPoints = requiredObjectGeometryPointCount(objectId);
     if (points.length < minimumPoints) {
-      errors.push(`Asteroids Object Vector manifest object ${objectKey} (${object.id}) must contain visible polygon/polyline/line geometry with at least ${minimumPoints} points.`);
+      errors.push(`Asteroids Object Vector manifest object ${objectId} must contain visible polygon/polyline/line geometry with at least ${minimumPoints} points.`);
     }
   });
-  return tagValidation.objectsByKey;
 }
 
 export function loadAsteroidsObjectGeometryFromManifest(manifest, {
@@ -131,7 +149,7 @@ export function loadAsteroidsObjectGeometryFromManifest(manifest, {
     Object.keys(objectVectorPayload)
       .filter((key) => !OBJECT_VECTOR_PAYLOAD_KEYS.has(key))
       .forEach((key) => {
-        errors.push(`Asteroids Object Vector manifest must not define root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.${key}; object geometry resolves from objects[].tags and objects[].shapes.`);
+        errors.push(`Asteroids Object Vector manifest must not define root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.${key}; object geometry resolves from objects[].id and objects[].shapes.`);
       });
   }
   const objects = Array.isArray(objectVectorPayload?.objects)
@@ -154,7 +172,7 @@ export function loadAsteroidsObjectGeometryFromManifest(manifest, {
       errors.push(`Asteroids Object Vector manifest object ${id} must contain at least one shape.`);
     }
   });
-  const objectsByKey = validateRequiredObjectGeometry(objects, errors);
+  validateRequiredObjectGeometry(objectsById, errors);
   if (errors.length) {
     errors.forEach((message) => logValidation(logger, 'FAIL', message, { sourceLabel }));
     return {
@@ -166,7 +184,6 @@ export function loadAsteroidsObjectGeometryFromManifest(manifest, {
   const objectGeometry = {
     objects,
     objectsById,
-    objectsByKey,
     payload: clone(objectVectorPayload),
     sourceLabel,
   };
@@ -180,16 +197,48 @@ export function loadAsteroidsObjectGeometryFromManifest(manifest, {
   };
 }
 
-export function getAsteroidsObjectGeometryPoints(objectGeometry, objectKey) {
-  return objectVectorGeometryPoints(
-    objectForKey(objectGeometry?.objectsByKey, objectKey)
-  );
+export function validateAsteroidsRuntimeObjectIds(objectsById, {
+  logger = null,
+  sourceLabel = 'Asteroids Object Vector runtime assets',
+} = {}) {
+  const errors = [];
+  const objectMap = objectsById instanceof Map ? objectsById : new Map();
+  ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.forEach((objectId) => {
+    const object = objectMap.get(objectId);
+    if (!object) {
+      const message = `Asteroids Object Vector runtime object ${objectId} is missing from ${sourceLabel}.`;
+      errors.push({ details: { objectId, sourceLabel }, level: 'FAIL', message });
+      logValidation(logger, 'FAIL', message, { objectId, sourceLabel });
+      return;
+    }
+    if (oldObjectSignal(object)) {
+      const message = `Asteroids Object Vector runtime object ${objectId} is marked old/legacy/deprecated and cannot be used as active runtime geometry.`;
+      errors.push({ details: { objectId, sourceLabel }, level: 'FAIL', message });
+      logValidation(logger, 'FAIL', message, { objectId, sourceLabel });
+      return;
+    }
+    if (!Array.isArray(object.shapes) || !object.shapes.length) {
+      const message = `Asteroids Object Vector runtime object ${objectId} must contain at least one shape.`;
+      errors.push({ details: { objectId, sourceLabel }, level: 'FAIL', message });
+      logValidation(logger, 'FAIL', message, { objectId, sourceLabel });
+    }
+  });
+  return {
+    errors,
+    objectIds: ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.filter((objectId) => objectMap.has(objectId)),
+    ok: errors.length === 0,
+    warnings: [],
+  };
 }
 
-export function requireAsteroidsObjectGeometryPoints(objectGeometry, objectKey, label = objectKey, minimumPoints = requiredObjectGeometryPointCount(objectKey)) {
-  const points = getAsteroidsObjectGeometryPoints(objectGeometry, objectKey);
+export function getAsteroidsObjectGeometryPoints(objectGeometry, objectId) {
+  return objectVectorGeometryPoints(objectGeometry?.objectsById?.get(objectId));
+}
+
+export function requireAsteroidsObjectGeometryPoints(objectGeometry, objectId, label = objectId, minimumPoints = requiredObjectGeometryPointCount(objectId)) {
+  const points = getAsteroidsObjectGeometryPoints(objectGeometry, objectId);
   if (points.length < minimumPoints) {
-    throw new Error(`Asteroids required Object Vector manifest geometry ${label} (${objectKey}) is missing or has fewer than ${minimumPoints} points.`);
+    throw new Error(`Asteroids required Object Vector manifest geometry ${label} (${objectId}) is missing or has fewer than ${minimumPoints} points.`);
   }
   return points;
 }

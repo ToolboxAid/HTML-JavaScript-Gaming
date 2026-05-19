@@ -14,6 +14,7 @@ import {
   loadAsteroidsObjectGeometry
 } from './asteroidsManifestObjectGeometry.mjs';
 import {
+  ASTEROIDS_OBJECT_GEOMETRY_IDS,
   getAsteroidsObjectGeometryPoints,
 } from '../../games/Asteroids/game/asteroidsObjectGeometryManifest.js';
 
@@ -26,7 +27,7 @@ export function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
   const objectGeometry = loadAsteroidsObjectGeometry();
   const ship = new Ship(100, 200, {
-    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'ship'),
+    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.ship),
   });
   ship.angle = Math.PI / 2;
   const shipPoints = ship.getPoints();
@@ -44,7 +45,7 @@ export function run() {
   assertPointClose(asteroidPoints[5], { x: 341.465, y: 205.575 });
 
   const bullet = new Bullet(50, 60, 0, 0, 1, {
-    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
+    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet),
   });
   const bulletPoints = bullet.getCollisionPolygon();
   assert.equal(bulletPoints.length, 4);
@@ -52,13 +53,13 @@ export function run() {
   assertPointClose(bulletPoints[2], { x: 50, y: 63 });
   const angledBullet = new Bullet(50, 60, 0, 0, 1, {
     angle: Math.PI / 3,
-    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
+    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet),
   });
   assert.equal(angledBullet.angle, Math.PI / 3);
 
   const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5, {
-    bulletCollisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
-    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'ufoSmall'),
+    bulletCollisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet),
+    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall),
   });
   ufo.x = 400;
   ufo.y = 220;

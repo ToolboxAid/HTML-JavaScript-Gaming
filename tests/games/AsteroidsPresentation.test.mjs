@@ -73,7 +73,6 @@ function createObjectVectorRuntime(calls) {
       calls.push({
         objectId: object?.id || options.objectId,
         requireManifestBinding: options.requireManifestBinding === true,
-        renderKey: options.runtimeRole,
         rotation: options.rotation,
         stroke: shape?.style?.stroke || '',
         stateId: options.stateId,
@@ -255,6 +254,7 @@ function testAsteroidsAttractAsteroidsUseManifestObjectsAndStyles() {
     assert.equal(calls.length > 0, true);
     assert.equal(calls.every((call) => call.requireManifestBinding), true);
     assert.equal(calls.every((call) => call.stroke === styleByObjectId.get(objectId)), true);
+    assert.equal(calls.every((call) => !Array.isArray(call.tags) || call.tags.length === 0), true);
   });
   assert.equal(scene.objectVectorRenderCounts.attractAsteroid, undefined);
   assert.equal(scene.objectVectorRenderCounts.attractShip, undefined);
@@ -303,6 +303,7 @@ function testAsteroidsGameplayObjectsUseSharedManifestBindings() {
     const calls = renderCalls.filter((call) => call.objectId === objectId);
     assert.equal(calls.length > 0, true, `${objectId} should render from the manifest`);
     assert.equal(calls.every((call) => call.requireManifestBinding), true, `${objectId} should require manifest binding`);
+    assert.equal(calls.every((call) => !Array.isArray(call.tags) || call.tags.length === 0), true, `${objectId} should render by manifest object ID only`);
   });
   assert.equal(renderCalls.some((call) => call.objectId === 'object.asteroids.ship' && call.stateId === 'idle'), true);
 
@@ -313,6 +314,7 @@ function testAsteroidsGameplayObjectsUseSharedManifestBindings() {
   const smallUfoCalls = renderCalls.filter((call) => call.objectId === 'object.asteroids.small-ufo');
   assert.equal(smallUfoCalls.length > 0, true);
   assert.equal(smallUfoCalls.every((call) => call.requireManifestBinding), true);
+  assert.equal(smallUfoCalls.every((call) => !Array.isArray(call.tags) || call.tags.length === 0), true);
 }
 
 function testAsteroidsShipDebrisUsesManifestShipHullGeometry() {
@@ -381,6 +383,7 @@ function testAsteroidsGameplayBulletsUseManifestObjectGeometry() {
     fireAngles.map(roundedAngle),
   );
   assert.equal(bulletCalls.every((call) => call.requireManifestBinding), true);
+  assert.equal(bulletCalls.every((call) => !Array.isArray(call.tags) || call.tags.length === 0), true);
   assert.equal(bulletCalls.every((call) => call.stroke === bulletObject.shapes[0].style.stroke), true);
   assert.equal(JSON.stringify(bulletObject.shapes), bulletShapesBeforeRender);
   assert.equal(polygonCalls.length >= fireAngles.length, true);

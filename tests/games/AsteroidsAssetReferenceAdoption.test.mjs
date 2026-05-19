@@ -5,8 +5,9 @@ import {
   loadAsteroidsObjectVectorPayload
 } from "./asteroidsManifestObjectGeometry.mjs";
 import {
-  validateAsteroidsRuntimeObjectTags
-} from "../../games/Asteroids/game/asteroidsObjectTags.js";
+  ASTEROIDS_OBJECT_GEOMETRY_IDS,
+  validateAsteroidsRuntimeObjectIds
+} from "../../games/Asteroids/game/asteroidsObjectGeometryManifest.js";
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -45,6 +46,10 @@ function createPayloadWithRecreatedMediumAsteroid(payload) {
   return nextPayload;
 }
 
+function objectsById(payload) {
+  return new Map(payload.objects.map((object) => [object.id, object]));
+}
+
 export async function run() {
   const manifest = loadAsteroidsManifest();
   const payload = loadAsteroidsObjectVectorPayload();
@@ -77,25 +82,24 @@ export async function run() {
   assert.equal(profiles[2].objectId, "object.asteroids.medium-asteroid");
   assert.equal(profiles[3].objectId, "object.asteroids.large-asteroid");
   assert.deepEqual(payload.objects.find((object) => object.id === "object.asteroids.medium-asteroid").tags, ["asteroid", "medium"]);
-  const tagValidation = validateAsteroidsRuntimeObjectTags(payload.objects);
-  assert.equal(tagValidation.ok, true);
-  assert.equal(tagValidation.objectsByKey.asteroidMedium.id, "object.asteroids.medium-asteroid");
-  assert.deepEqual(tagValidation.warnings, []);
+  const idValidation = validateAsteroidsRuntimeObjectIds(objectsById(payload));
+  assert.equal(idValidation.ok, true);
+  assert.equal(idValidation.objectIds.includes(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium), true);
+  assert.deepEqual(idValidation.warnings, []);
   const missingMediumPayload = {
     ...payload,
     objects: payload.objects.filter((object) => object.id !== "object.asteroids.medium-asteroid")
   };
-  const missingMediumValidation = validateAsteroidsRuntimeObjectTags(missingMediumPayload.objects);
+  const missingMediumValidation = validateAsteroidsRuntimeObjectIds(objectsById(missingMediumPayload));
   assert.equal(missingMediumValidation.ok, false);
   assert.equal(missingMediumValidation.errors.some((entry) => (
-    entry.message.includes("asteroidMedium")
-    && entry.message.includes("objects[].tags [asteroid, medium]")
+    entry.message.includes(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium)
   )), true);
 
   const recreatedPayload = createPayloadWithRecreatedMediumAsteroid(payload);
-  const oldTagValidation = validateAsteroidsRuntimeObjectTags(recreatedPayload.objects);
-  assert.equal(oldTagValidation.ok, false);
-  assert.equal(oldTagValidation.errors.some((entry) => entry.message.includes("old/legacy tagged candidates")), true);
+  const oldIdValidation = validateAsteroidsRuntimeObjectIds(objectsById(recreatedPayload));
+  assert.equal(oldIdValidation.ok, false);
+  assert.equal(oldIdValidation.errors.some((entry) => entry.message.includes("old/legacy/deprecated")), true);
 
   const shapes = payload.objects.flatMap((object) => object.shapes);
   assert.equal(shapes.some((shape) => shape.tool === "polygon"), true);
