@@ -681,6 +681,10 @@
       const palettePayload = this.activeContext.tools?.["palette-manager-v2"];
       this.statusLog.ok(`Object Vector Studio V2 launch source: ${this.activeGame?.manifestPath || "(missing manifest path)"} via root.tools.object-vector-studio-v2 object (${Array.isArray(objectVectorPayload?.objects) ? objectVectorPayload.objects.length : 0} object assets); palette source: workspace.tools.palette-manager-v2 session (${Array.isArray(palettePayload?.swatches) ? palettePayload.swatches.length : 0} swatches).`);
     }
+    if (toolId === "collision-inspector-v2") {
+      const objectVectorPayload = this.activeContext.tools?.["object-vector-studio-v2"];
+      this.statusLog.ok(`Collision Inspector V2 launch source: ${this.activeGame?.manifestPath || "(missing manifest path)"} via root.tools.object-vector-studio-v2 object (${Array.isArray(objectVectorPayload?.objects) ? objectVectorPayload.objects.length : 0} object assets).`);
+    }
     const hostContextId = this.activeHostContextId
       ? this.contextService.writePersistedContext(this.activeHostContextId, this.activeContext)
       : this.contextService.persistContext(this.activeContext);

@@ -64,6 +64,9 @@ export class ToolTilesControl {
     if (tool.id === "object-vector-studio-v2") {
       return `${objectVectorCount} object vector assets`;
     }
+    if (tool.id === "collision-inspector-v2") {
+      return `${objectVectorCount} inspectable objects`;
+    }
     if (tool.id === "storage-inspector-v2") {
       return "";
     }

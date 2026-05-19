@@ -57,6 +57,7 @@
               <span>Game Manifest JSON</span>
               <input id="collisionManifestInput" type="file" accept=".json,application/json">
             </label>
+            <button id="loadAsteroidsManifestButton" class="collision-inspector-v2__wide-button" type="button">Load Asteroids Manifest</button>
             <div id="manifestSummary" class="collision-inspector-v2__summary">No manifest loaded.</div>
           </div>
         </section>
@@ -70,10 +71,9 @@
             <label class="collision-inspector-v2__field" for="collisionModeSelect">
               <span>Collision Mode</span>
               <select id="collisionModeSelect">
-                <option value="vector">Vector</option>
-                <option value="sprite">Sprite</option>
                 <option value="bounds">Bounds</option>
-                <option value="pixel">Pixel</option>
+                <option value="vector">Vector</option>
+                <option value="pixel-sprite">Pixel/Sprite</option>
                 <option value="hybrid">Hybrid</option>
               </select>
             </label>
@@ -85,6 +85,16 @@
               <span>Object B</span>
               <select id="objectBSelect"></select>
             </label>
+            <div class="collision-inspector-v2__rotation-grid">
+              <label class="collision-inspector-v2__field" for="objectARotationInput">
+                <span>Object A Rotation</span>
+                <input id="objectARotationInput" type="number" step="1" value="0">
+              </label>
+              <label class="collision-inspector-v2__field" for="objectBRotationInput">
+                <span>Object B Rotation</span>
+                <input id="objectBRotationInput" type="number" step="1" value="0">
+              </label>
+            </div>
           </div>
         </section>
       </aside>
@@ -126,6 +136,18 @@
               <div>
                 <dt>Bounds</dt>
                 <dd id="boundsState">waiting</dd>
+              </div>
+              <div>
+                <dt>Origins</dt>
+                <dd id="originState">waiting</dd>
+              </div>
+              <div>
+                <dt>Rotation</dt>
+                <dd id="rotationState">A 0 / B 0</dd>
+              </div>
+              <div>
+                <dt>Points</dt>
+                <dd id="pointsState">waiting</dd>
               </div>
             </dl>
             <pre id="collisionSummary" class="collision-inspector-v2__output">{}</pre>

@@ -9,14 +9,20 @@ import {
 const MODE_LABELS = Object.freeze({
   bounds: "Bounds",
   hybrid: "Hybrid",
-  pixel: "Pixel",
-  sprite: "Sprite",
+  "pixel-sprite": "Pixel/Sprite",
+  pixel: "Pixel/Sprite",
+  sprite: "Pixel/Sprite",
   vector: "Vector"
+});
+const MODE_ALIASES = Object.freeze({
+  pixel: "pixel-sprite",
+  sprite: "pixel-sprite"
 });
 const OBJECT_LABELS = Object.freeze({
   a: "Object A",
   b: "Object B"
 });
+const ASTEROIDS_MANIFEST_PATH = "/games/Asteroids/game.manifest.json";
 const POLYGON_SAMPLE_COUNT = 28;
 const MASK_CELL_SIZE = 4;
 
@@ -31,6 +37,32 @@ function isPlainObject(value) {
 function numberValue(value, fallback = 0) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function roundNumber(value, digits = 2) {
+  const factor = 10 ** digits;
+  return Math.round(numberValue(value) * factor) / factor;
+}
+
+function roundPoint(point) {
+  return {
+    x: roundNumber(point?.x),
+    y: roundNumber(point?.y)
+  };
+}
+
+function roundBounds(bounds) {
+  return {
+    x: roundNumber(bounds?.x),
+    y: roundNumber(bounds?.y),
+    width: roundNumber(bounds?.width),
+    height: roundNumber(bounds?.height)
+  };
+}
+
+function normalizeMode(mode) {
+  const rawMode = String(mode || "").trim().toLowerCase();
+  return MODE_ALIASES[rawMode] || rawMode || "bounds";
 }
 
 function sortedShapes(object) {
@@ -138,49 +170,6 @@ function boundsFromPoints(points) {
   return getPolygonBounds(points);
 }
 
-function shapeBounds(shape) {
-  const geometry = isPlainObject(shape?.geometry) ? shape.geometry : {};
-  const tool = shapeTool(shape);
-  if (tool === "rectangle") {
-    return {
-      x: numberValue(geometry.x),
-      y: numberValue(geometry.y),
-      width: Math.max(1, numberValue(geometry.width, 1)),
-      height: Math.max(1, numberValue(geometry.height, 1))
-    };
-  }
-  if (tool === "circle") {
-    const radius = Math.max(1, numberValue(geometry.r, 1));
-    return { x: numberValue(geometry.cx) - radius, y: numberValue(geometry.cy) - radius, width: radius * 2, height: radius * 2 };
-  }
-  if (tool === "ellipse") {
-    const rx = Math.max(1, numberValue(geometry.rx, 1));
-    const ry = Math.max(1, numberValue(geometry.ry, 1));
-    return { x: numberValue(geometry.cx) - rx, y: numberValue(geometry.cy) - ry, width: rx * 2, height: ry * 2 };
-  }
-  if (tool === "line") {
-    const p1 = geometry.point1 || {};
-    const p2 = geometry.point2 || {};
-    const minX = Math.min(numberValue(p1.x), numberValue(p2.x));
-    const minY = Math.min(numberValue(p1.y), numberValue(p2.y));
-    return {
-      x: minX,
-      y: minY,
-      width: Math.max(1, Math.abs(numberValue(p2.x) - numberValue(p1.x))),
-      height: Math.max(1, Math.abs(numberValue(p2.y) - numberValue(p1.y)))
-    };
-  }
-  if (tool === "polygon" || tool === "polyline") {
-    return boundsFromPoints(Array.isArray(geometry.points) ? geometry.points : []);
-  }
-  if (tool === "text") {
-    const fontSize = Math.max(8, numberValue(geometry.fontSize, 12));
-    const text = String(geometry.text || "");
-    return { x: numberValue(geometry.x), y: numberValue(geometry.y) - fontSize, width: Math.max(24, text.length * fontSize * 0.6), height: fontSize };
-  }
-  return { x: -20, y: -20, width: 40, height: 40 };
-}
-
 function shapeLocalPolygons(shape) {
   const geometry = isPlainObject(shape?.geometry) ? shape.geometry : {};
   const tool = shapeTool(shape);
@@ -211,23 +200,32 @@ function shapeLocalPolygons(shape) {
   if (tool === "ellipse") {
     return [ellipsePoints(numberValue(geometry.cx), numberValue(geometry.cy), Math.max(1, numberValue(geometry.rx, 1)), Math.max(1, numberValue(geometry.ry, 1)))];
   }
-  const bounds = shapeBounds(shape);
-  return [rectanglePoints(bounds.x, bounds.y, bounds.width, bounds.height)];
+  return [];
 }
 
-function transformPoint(point, transform, origin, position) {
+function transformShapePoint(point, transform, origin) {
   const radians = (transform.rotation * Math.PI) / 180;
   const scaledX = (point.x - origin.x) * transform.scaleX;
   const scaledY = (point.y - origin.y) * transform.scaleY;
   const rotatedX = scaledX * Math.cos(radians) - scaledY * Math.sin(radians);
   const rotatedY = scaledX * Math.sin(radians) + scaledY * Math.cos(radians);
   return {
-    x: rotatedX + origin.x + transform.x + position.x,
-    y: rotatedY + origin.y + transform.y + position.y
+    x: rotatedX + origin.x + transform.x,
+    y: rotatedY + origin.y + transform.y
   };
 }
 
-function objectPolygons(object, position) {
+function transformInstancePoint(point, origin, instance) {
+  const radians = (numberValue(instance?.rotation) * Math.PI) / 180;
+  const dx = point.x - origin.x;
+  const dy = point.y - origin.y;
+  return {
+    x: (dx * Math.cos(radians) - dy * Math.sin(radians)) + origin.x + numberValue(instance?.x),
+    y: (dx * Math.sin(radians) + dy * Math.cos(radians)) + origin.y + numberValue(instance?.y)
+  };
+}
+
+function objectPolygons(object, instance) {
   const frame = firstObjectFrame(object);
   const origin = objectOrigin(object);
   return sortedShapes(object)
@@ -236,9 +234,18 @@ function objectPolygons(object, position) {
     .flatMap((shape) => {
       const transform = shapeTransform(shape);
       return shapeLocalPolygons(shape)
-        .map((polygon) => polygon.map((point) => transformPoint(point, transform, origin, position)))
+        .map((polygon) => polygon.map((point) => transformInstancePoint(transformShapePoint(point, transform, origin), origin, instance)))
         .filter((polygon) => polygon.length >= 3);
     });
+}
+
+function objectShapeRotations(object) {
+  const frame = firstObjectFrame(object);
+  const rotations = sortedShapes(object)
+    .map((shape, shapeIndex) => effectiveShapeForFrame(shape, frame, shapeIndex))
+    .filter((shape) => shape.visible !== false)
+    .map((shape) => roundNumber(shapeTransform(shape).rotation, 1));
+  return [...new Set(rotations)];
 }
 
 function boundsFromPolygons(polygons) {
@@ -294,9 +301,9 @@ export class CollisionInspectorV2App {
     this.ctx = this.elements.canvas.getContext("2d");
     this.manifest = null;
     this.objects = [];
-    this.positions = {
-      a: { x: 360, y: 320 },
-      b: { x: 500, y: 320 }
+    this.instances = {
+      a: { x: 360, y: 320, rotation: 0 },
+      b: { x: 500, y: 320, rotation: 0 }
     };
     this.dragState = null;
     this.lastResult = null;
@@ -332,9 +339,21 @@ export class CollisionInspectorV2App {
     this.elements.fileInput.addEventListener("change", () => {
       void this.loadManifestFile(this.elements.fileInput.files?.[0] || null);
     });
+    this.elements.loadAsteroidsButton.addEventListener("click", () => {
+      void this.loadManifestFromPath(ASTEROIDS_MANIFEST_PATH, "Asteroids validation path");
+    });
     [this.elements.modeSelect, this.elements.objectASelect, this.elements.objectBSelect].forEach((control) => {
       control.addEventListener("change", () => {
         this.log(`INFO Collision controls changed: ${this.modeLabel()}.`);
+        this.evaluateAndRender();
+      });
+    });
+    [
+      { key: "a", input: this.elements.rotationAInput },
+      { key: "b", input: this.elements.rotationBInput }
+    ].forEach(({ key, input }) => {
+      input.addEventListener("input", () => {
+        this.instances[key].rotation = numberValue(input.value);
         this.evaluateAndRender();
       });
     });
@@ -378,6 +397,15 @@ export class CollisionInspectorV2App {
 
   async loadWorkspaceManifestIfAvailable() {
     const params = new URLSearchParams(this.window.location.search || "");
+    const manifestPath = params.get("manifestPath") || params.get("gameManifestPath") || "";
+    if (manifestPath) {
+      await this.loadManifestFromPath(manifestPath, "URL manifest path");
+      return;
+    }
+    if (params.get("gameId") === "Asteroids") {
+      await this.loadManifestFromPath(ASTEROIDS_MANIFEST_PATH, "Asteroids validation path");
+      return;
+    }
     if (params.get("launch") !== "workspace") {
       return;
     }
@@ -391,6 +419,18 @@ export class CollisionInspectorV2App {
       this.loadManifest(JSON.parse(raw), `workspace:${hostContextId}`);
     } catch (error) {
       this.log(`FAIL Workspace manifest JSON could not be parsed: ${error.message}`);
+    }
+  }
+
+  async loadManifestFromPath(path, sourceLabel = path) {
+    try {
+      const response = await fetch(path, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
+      this.loadManifest(await response.json(), sourceLabel || path);
+    } catch (error) {
+      this.log(`FAIL Manifest load failed from ${path}: ${error.message}`);
     }
   }
 
@@ -451,10 +491,11 @@ export class CollisionInspectorV2App {
   }
 
   resetSimulation({ silent = false } = {}) {
-    this.positions = {
-      a: { x: 360, y: 320 },
-      b: { x: 500, y: 320 }
+    this.instances = {
+      a: { x: 360, y: 320, rotation: 0 },
+      b: { x: 500, y: 320, rotation: 0 }
     };
+    this.syncRotationInputs();
     if (!silent) {
       this.log("INFO Simulation reset.");
     }
@@ -468,24 +509,66 @@ export class CollisionInspectorV2App {
 
   geometryFor(key) {
     const object = this.selectedObject(key);
-    const position = this.positions[key];
-    const polygons = object ? objectPolygons(object, position) : [];
+    const instance = this.instances[key];
+    const origin = object ? objectOrigin(object) : { x: 0, y: 0 };
+    const polygons = object ? objectPolygons(object, instance) : [];
     const bounds = boundsFromPolygons(polygons);
-    return { bounds, object, polygons };
+    const transformedPoints = polygons.flat().slice(0, 24).map(roundPoint);
+    return {
+      bounds,
+      instance: { ...instance },
+      object,
+      origin,
+      originWorld: object ? roundPoint(transformInstancePoint(origin, origin, instance)) : { x: 0, y: 0 },
+      polygons,
+      shapeRotations: object ? objectShapeRotations(object) : [],
+      transformedPoints
+    };
   }
 
   currentMode() {
-    return this.elements.modeSelect.value || "vector";
+    return normalizeMode(this.elements.modeSelect.value);
   }
 
   modeLabel() {
     return MODE_LABELS[this.currentMode()] || "Vector";
   }
 
+  syncRotationInputs() {
+    this.elements.rotationAInput.value = String(roundNumber(this.instances.a.rotation, 1));
+    this.elements.rotationBInput.value = String(roundNumber(this.instances.b.rotation, 1));
+  }
+
   evaluateCollision() {
     const mode = this.currentMode();
     const a = this.geometryFor("a");
     const b = this.geometryFor("b");
+    if (!a.object || !b.object) {
+      return {
+        mode,
+        modeLabel: this.modeLabel(),
+        boundsOverlap: false,
+        vectorOverlap: false,
+        pixelOverlap: false,
+        collided: false,
+        objectA: "",
+        objectB: "",
+        boundsA: a.bounds,
+        boundsB: b.bounds,
+        instanceA: a.instance,
+        instanceB: b.instance,
+        objectOriginA: a.origin,
+        objectOriginB: b.origin,
+        originWorldA: a.originWorld,
+        originWorldB: b.originWorld,
+        polygonsA: 0,
+        polygonsB: 0,
+        shapeRotationsA: [],
+        shapeRotationsB: [],
+        transformedPointsA: [],
+        transformedPointsB: []
+      };
+    }
     const boundsOverlap = isColliding(a.bounds, b.bounds);
     const vectorOverlap = boundsOverlap && anyPolygonsCollide(a.polygons, b.polygons);
     const maskA = maskFromPolygons(a.polygons, a.bounds);
@@ -494,8 +577,7 @@ export class CollisionInspectorV2App {
     const modeCollision = {
       bounds: boundsOverlap,
       hybrid: boundsOverlap && vectorOverlap && pixelOverlap,
-      pixel: pixelOverlap,
-      sprite: boundsOverlap,
+      "pixel-sprite": pixelOverlap,
       vector: vectorOverlap
     };
     return {
@@ -509,8 +591,18 @@ export class CollisionInspectorV2App {
       objectB: b.object ? labelForObject(b.object) : "",
       boundsA: a.bounds,
       boundsB: b.bounds,
+      instanceA: a.instance,
+      instanceB: b.instance,
+      objectOriginA: a.origin,
+      objectOriginB: b.origin,
+      originWorldA: a.originWorld,
+      originWorldB: b.originWorld,
       polygonsA: a.polygons.length,
-      polygonsB: b.polygons.length
+      polygonsB: b.polygons.length,
+      shapeRotationsA: a.shapeRotations,
+      shapeRotationsB: b.shapeRotations,
+      transformedPointsA: a.transformedPoints,
+      transformedPointsB: b.transformedPoints
     };
   }
 
@@ -527,16 +619,41 @@ export class CollisionInspectorV2App {
     this.elements.overlapState.textContent = String(result.boundsOverlap === true);
     this.elements.modeState.textContent = result.modeLabel || "Vector";
     this.elements.boundsState.textContent = result.boundsOverlap ? "overlap" : "clear";
+    this.elements.originState.textContent = `A ${result.originWorldA?.x ?? 0},${result.originWorldA?.y ?? 0} / B ${result.originWorldB?.x ?? 0},${result.originWorldB?.y ?? 0}`;
+    this.elements.rotationState.textContent = `A ${roundNumber(result.instanceA?.rotation)} / B ${roundNumber(result.instanceB?.rotation)}`;
+    this.elements.pointsState.textContent = `A ${result.transformedPointsA?.length || 0} / B ${result.transformedPointsB?.length || 0}`;
     this.elements.summary.textContent = JSON.stringify({
       mode: result.mode,
       collision: result.collided,
       overlap: result.boundsOverlap,
+      bounds: {
+        objectA: roundBounds(result.boundsA),
+        objectB: roundBounds(result.boundsB)
+      },
       vector: result.vectorOverlap,
       pixel: result.pixelOverlap,
       objectA: result.objectA,
       objectB: result.objectB,
+      objectOrigins: {
+        objectA: roundPoint(result.objectOriginA),
+        objectB: roundPoint(result.objectOriginB)
+      },
+      worldOrigins: {
+        objectA: result.originWorldA,
+        objectB: result.originWorldB
+      },
+      rotation: {
+        objectA: roundNumber(result.instanceA?.rotation),
+        objectB: roundNumber(result.instanceB?.rotation),
+        shapeRotationsA: result.shapeRotationsA,
+        shapeRotationsB: result.shapeRotationsB
+      },
       polygonsA: result.polygonsA,
-      polygonsB: result.polygonsB
+      polygonsB: result.polygonsB,
+      transformedPoints: {
+        objectA: result.transformedPointsA,
+        objectB: result.transformedPointsB
+      }
     }, null, 2);
   }
 
@@ -559,6 +676,8 @@ export class CollisionInspectorV2App {
       label: "B",
       stroke: "#f59e0b"
     });
+    this.drawOrigin(ctx, a, "#2dd4bf");
+    this.drawOrigin(ctx, b, "#f59e0b");
     const overlap = intersectionRect(a.bounds, b.bounds);
     if (overlap) {
       ctx.save();
@@ -587,6 +706,26 @@ export class CollisionInspectorV2App {
       ctx.lineTo(canvas.width, y);
       ctx.stroke();
     }
+    ctx.restore();
+  }
+
+  drawOrigin(ctx, geometry, color) {
+    if (!geometry.object) {
+      return;
+    }
+    const origin = geometry.originWorld;
+    const rotationRadians = (numberValue(geometry.instance?.rotation) * Math.PI) / 180;
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(origin.x, origin.y, 5, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(origin.x, origin.y);
+    ctx.lineTo(origin.x + Math.cos(rotationRadians) * 34, origin.y + Math.sin(rotationRadians) * 34);
+    ctx.stroke();
     ctx.restore();
   }
 
@@ -655,9 +794,9 @@ export class CollisionInspectorV2App {
       x: point.x - this.dragState.lastPoint.x,
       y: point.y - this.dragState.lastPoint.y
     };
-    const position = this.positions[this.dragState.key];
-    position.x += delta.x;
-    position.y += delta.y;
+    const instance = this.instances[this.dragState.key];
+    instance.x += delta.x;
+    instance.y += delta.y;
     this.dragState.lastPoint = point;
     this.evaluateAndRender();
   }
@@ -669,7 +808,7 @@ export class CollisionInspectorV2App {
     const key = this.dragState.key;
     this.dragState = null;
     this.elements.canvas.classList.remove("is-dragging");
-    this.log(`INFO Dragged ${OBJECT_LABELS[key]} to ${Math.round(this.positions[key].x)}, ${Math.round(this.positions[key].y)}; collision=${this.lastResult?.collided === true}.`);
+    this.log(`INFO Dragged ${OBJECT_LABELS[key]} to ${Math.round(this.instances[key].x)}, ${Math.round(this.instances[key].y)}; rotation=${roundNumber(this.instances[key].rotation)}; collision=${this.lastResult?.collided === true}.`);
   }
 
   async copyReport() {

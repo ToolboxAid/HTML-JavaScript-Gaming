@@ -39,6 +39,7 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 .collision-inspector-v2__menu button,
+.collision-inspector-v2__wide-button,
 .collision-inspector-v2__field input,
 .collision-inspector-v2__field select,
 .collision-inspector-v2__status-actions button {
@@ -50,10 +51,16 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 .collision-inspector-v2__menu button,
+.collision-inspector-v2__wide-button,
 .collision-inspector-v2__status-actions button {
   min-height: 36px;
   padding: 0 12px;
   cursor: pointer;
+}
+
+.collision-inspector-v2__wide-button {
+  width: 100%;
+  margin-bottom: 12px;
 }
 
 .collision-inspector-v2.app-shell {
@@ -106,6 +113,12 @@ body[data-tool-id="collision-inspector-v2"] {
   width: 100%;
   min-height: 36px;
   padding: 7px 9px;
+}
+
+.collision-inspector-v2__rotation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .collision-inspector-v2__summary {

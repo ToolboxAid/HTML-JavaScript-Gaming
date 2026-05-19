@@ -9,6 +9,7 @@ const WORKSPACE_REPO_HANDLE_DB_NAME = "workspace-manager-v2-repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
+const COLLISION_INSPECTOR_V2_TOOL_KEY = "collision-inspector-v2";
 const OBJECT_VECTOR_STUDIO_V2_TOOL_KEY = "object-vector-studio-v2";
 const PALETTE_MANAGER_V2_TOOL_KEY = "palette-manager-v2";
 const TEXT2SPEECH_V2_TOOL_KEY = "text2speech-V2";
@@ -52,6 +53,13 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     id: OBJECT_VECTOR_STUDIO_V2_TOOL_KEY,
     name: "Object Vector Studio V2",
     path: "../object-vector-studio-v2/index.html"
+  }),
+  Object.freeze({
+    actionLabels: Object.freeze(["How To Use", "Read Me"]),
+    group: "Utilities",
+    id: COLLISION_INSPECTOR_V2_TOOL_KEY,
+    name: "Collision Inspector V2",
+    path: "../collision-inspector-v2/index.html"
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
@@ -179,6 +187,12 @@ function hydrationDecisionForTool(tool, context) {
   }
   if (hasToolPayload(tool, context)) {
     return { hydrate: true, reason: "tool data is present in selected game manifest" };
+  }
+  if (tool.id === COLLISION_INSPECTOR_V2_TOOL_KEY) {
+    const objectVectorPayload = context.tools?.[OBJECT_VECTOR_STUDIO_V2_TOOL_KEY];
+    return Array.isArray(objectVectorPayload?.objects) && objectVectorPayload.objects.length
+      ? { hydrate: true, reason: "tool inspects Object Vector Studio V2 manifest objects" }
+      : { hydrate: false, reason: "tool requires Object Vector Studio V2 manifest objects" };
   }
   if (SELECTED_GAME_PURPOSE_TOOL_IDS.has(tool.id)) {
     return { hydrate: true, reason: "tool has a selected-game manifest launch purpose" };

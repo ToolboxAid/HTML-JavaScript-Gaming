@@ -591,7 +591,7 @@ async function selectMockRepo(page, { repoName = "HTML-JavaScript-Gaming", ...co
 }
 
 async function expectWorkspaceToolsDisabled(page) {
-  await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(7);
+  await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(8);
   expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
 }
 
@@ -601,6 +601,7 @@ async function expectWorkspaceReturnRehydrated(page, { gameId = "Asteroids", rep
   await expect(page.locator("#activeGameSelect")).toHaveValue(gameId);
   await expect(page.locator("#activeGameSelect")).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeEnabled();
+  await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]'))[gameId === "Asteroids" ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]'))[gameId === "Asteroids" ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toBeEnabled();
   await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toBeEnabled();
@@ -617,6 +618,7 @@ async function expectWorkspaceRestoreRequiresRepoRebind(page, { dirty = false, g
   await expect(page.locator("#closeWorkspaceButton"))[dirty ? "toBeDisabled" : "toBeEnabled"]();
   await expect(page.locator("#cancelWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator('[data-workspace-tool-id="asset-manager-v2"]')).toBeDisabled();
+  await expect(page.locator('[data-workspace-tool-id="collision-inspector-v2"]')).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="object-vector-studio-v2"]')).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toBeDisabled();
   await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toBeDisabled();
@@ -647,7 +649,7 @@ async function expectWorkspaceReturnedFromTool(page, options = {}) {
     gameName = "Asteroids",
     repoName = "HTML-JavaScript-Gaming"
   } = options;
-  const enabledToolCount = options.enabledToolCount ?? (gameId === "Asteroids" ? 6 : 5);
+  const enabledToolCount = options.enabledToolCount ?? (gameId === "Asteroids" ? 7 : 5);
   await expectWorkspaceReturnRehydrated(page, { gameId, repoName });
   await expect(page.locator("#saveWorkspaceButton"))[dirty ? "toBeEnabled" : "toBeDisabled"]();
   await expect(page.locator("#closeWorkspaceButton"))[dirty ? "toBeDisabled" : "toBeEnabled"]();
@@ -9936,7 +9938,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(statusHeader).toHaveAttribute("aria-expanded", "true");
       await expect(statusContent).toBeVisible();
       await expect(page.locator(".workspace-manager-v2__tool-group-title")).toHaveText(["Editors", "Utilities", "Viewers"]);
-      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(7);
+      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(8);
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="asset-browser"]')).toHaveCount(0);
       await expect(page.locator('[data-workspace-tool-id="tile-model-converter"]')).toHaveCount(0);
@@ -9946,7 +9948,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       ])));
       expect(toolGroupMembership).toEqual({
         Editors: ["Asset Manager V2", "Palette Manager V2", "Object Vector Studio V2"],
-        Utilities: ["Preview Generator V2", "Text to Speech V2"],
+        Utilities: ["Collision Inspector V2", "Preview Generator V2", "Text to Speech V2"],
         Viewers: ["Tool Starter V2", "Storage Inspector V2"]
       });
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
@@ -10045,6 +10047,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expectRuntimeBindingMetadata(selectedGameHydration.repoReference);
       expect(selectedGameHydration.toolKeys).toEqual([
         "workspace.tools.asset-manager-v2",
+        "workspace.tools.collision-inspector-v2",
         "workspace.tools.object-vector-studio-v2",
         "workspace.tools.palette-manager-v2",
         "workspace.tools.preview-generator-v2",
@@ -10055,6 +10058,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(selectedGameHydration.toolKeys.some((key) => key.endsWith(".schema") || key.endsWith(".state"))).toBe(false);
       expect(Object.keys(selectedGameHydration.toolSessions).sort()).toEqual([
         "asset-manager-v2",
+        "collision-inspector-v2",
         "object-vector-studio-v2",
         "palette-manager-v2",
         "preview-generator-v2",
@@ -10066,6 +10070,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "asset-manager-v2",
         "palette-manager-v2",
         "object-vector-studio-v2",
+        "collision-inspector-v2",
         "preview-generator-v2",
         "text2speech-V2",
         "storage-inspector-v2"
@@ -10103,6 +10108,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         repoReferenceKey: "workspace.repo.reference"
       });
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["asset-manager-v2"]);
+      expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["collision-inspector-v2"]);
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["object-vector-studio-v2"]);
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["palette-manager-v2"]);
       expectRuntimeBindingMetadata(selectedGameHydration.workspaceByTool["preview-generator-v2"]);
@@ -10148,7 +10154,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           || Array.isArray(selectedGameHydration.dataByTool["text2speech-V2"])
       ).toBe(true);
       expect(selectedGameHydration.toolSessions["templates-v2"]).toBeUndefined();
-      expect(Object.values(selectedGameHydration.dirtyByTool)).toHaveLength(6);
+      expect(Object.values(selectedGameHydration.dirtyByTool)).toHaveLength(7);
       expect(Object.values(selectedGameHydration.dirtyByTool).every((dirty) => JSON.stringify(dirty) === JSON.stringify({
         isDirty: false,
         reason: null,
@@ -10181,6 +10187,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Workspace JSON copy failed: Clipboard API is unavailable\./);
       const templateTile = page.locator('[data-workspace-tool-id="templates-v2"]');
       const assetTile = page.locator('[data-workspace-tool-id="asset-manager-v2"]');
+      const collisionInspectorTile = page.locator('[data-workspace-tool-id="collision-inspector-v2"]');
       const objectVectorTile = page.locator('[data-workspace-tool-id="object-vector-studio-v2"]');
       const paletteTile = page.locator('[data-workspace-tool-id="palette-manager-v2"]');
       const previewTile = page.locator('[data-workspace-tool-id="preview-generator-v2"]');
@@ -10199,6 +10206,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(objectVectorTile).toContainText("Object Vector Studio V2");
       await expect(objectVectorTile).toContainText("Ready to launch");
       await expect(objectVectorTile).toContainText("7 object vector assets");
+      await expect(collisionInspectorTile).toBeEnabled();
+      await expect(collisionInspectorTile).toContainText("Collision Inspector V2");
+      await expect(collisionInspectorTile).toContainText("Ready to launch");
+      await expect(collisionInspectorTile).toContainText("7 inspectable objects");
       await expect(previewTile).toContainText("Preview Not Found");
       await expect(previewTile).not.toContainText("Waiting for manifest");
       await expect(textToSpeechToolTile).toBeEnabled();
@@ -10229,19 +10240,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         { height: 142, width: 180 },
         { height: 142, width: 180 },
         { height: 142, width: 180 },
+        { height: 142, width: 180 },
         { height: 142, width: 180 }
       ]);
       expect([...new Set(tileActionLayout.map((entry) => entry.actionBottomGap))]).toHaveLength(1);
       expect(tileActionLayout.every((entry) => entry.actionHeight === 24)).toBe(true);
       expect(tileActionLayout.every((entry) => entry.chipHeights.every((height) => height === 22))).toBe(true);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Boundary contract: game\.manifest\.json is game-only data\. Workspace Manager uses root\.tools to create standalone workspace sessions and saves validated tool data back to root\.tools\./);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, preview-generator-v2, text2speech-V2, storage-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, collision-inspector-v2, preview-generator-v2, text2speech-V2, storage-inspector-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Skipped workspace session hydration for templates-v2: starter\/dev-only tool is not enabled by the selected game manifest\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 10 active palette colors and 15 managed assets\./);
 
       await page.locator('[data-workspace-tool-id="storage-inspector-v2"]').click();
       await expect(page).toHaveURL(/storage-inspector-v2\/index\.html.*launch=workspace/);
       await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.asset-manager-v2']")).toHaveCount(1);
+      await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.collision-inspector-v2']")).toHaveCount(1);
       await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.object-vector-studio-v2']")).toHaveCount(1);
       await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.palette-manager-v2']")).toHaveCount(1);
       await expect(page.locator("#storageInspectorV2EntryList [data-storage-inspector-v2-entry-id='sessionStorage:workspace.tools.preview-generator-v2']")).toHaveCount(1);
@@ -10819,7 +10832,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(textToSpeechToolTile).toContainText("Ready to launch");
       await expect(textToSpeechToolTile).toContainText("0 text to speech");
       await expect(textToSpeechToolTile).not.toContainText("Speech synthesis ready");
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, preview-generator-v2, text2speech-V2, storage-inspector-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Hydrated workspace session for asset-manager-v2, palette-manager-v2, object-vector-studio-v2, collision-inspector-v2, preview-generator-v2, text2speech-V2, storage-inspector-v2\./);
       const textToSpeechSessionData = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2")).data);
       const activeContextHasTextToSpeechPayload = await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speech-V2"));
       expect(textToSpeechSessionData === null || Array.isArray(textToSpeechSessionData)).toBe(true);
@@ -11517,6 +11530,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator("#closeWorkspaceButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.asset-manager-v2\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.collision-inspector-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.palette-manager-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.preview-generator-v2\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Close Workspace removed toolState key: workspace\.tools\.storage-inspector-v2\./);
