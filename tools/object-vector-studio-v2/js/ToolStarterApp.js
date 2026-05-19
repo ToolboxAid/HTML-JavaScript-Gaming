@@ -1,4 +1,7 @@
-import { ObjectVectorRuntimeAssetService } from "../../../src/engine/rendering/index.js";
+import {
+  CANONICAL_WORLD_TO_SCREEN_SCALE,
+  ObjectVectorRuntimeAssetService
+} from "../../../src/engine/rendering/index.js";
 
 const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";
 const WORKSPACE_PALETTE_SESSION_KEY = "workspace.tools.palette-manager-v2";
@@ -571,6 +574,7 @@ export class ToolStarterApp {
     this.statusLog.write("INFO Tools primitive buttons enter drawing mode; use the canvas to commit schema-valid geometry.");
     this.statusLog.write("INFO Disabled controls stay inactive until a schema-valid payload, runtime palette, selected object, or active frame is available.");
     this.statusLog.write("INFO Object identity uses object.game.name ids.");
+    this.statusLog.write(`INFO Object Vector Studio V2 editor zoom is viewport-only; runtime/world scale remains ${CANONICAL_WORLD_TO_SCREEN_SCALE}:1 through the shared world-to-screen transform.`);
     this.statusLog.write("INFO Paint and stroke selection is structured to scale later into shaders, gradients, patterns, neon, SVG export, and runtime rendering.");
     await this.schemaService.loadSchema();
     this.schemaReady = true;

@@ -47,6 +47,67 @@ async function canvasSignature(page) {
   });
 }
 
+async function runtimeObjectPixelBounds(page, objectId, instance) {
+  return page.evaluate(async ({ instance, objectId }) => {
+    const { ObjectVectorRuntimeAssetService } = await import("/src/engine/rendering/index.js");
+    const runtime = new ObjectVectorRuntimeAssetService({
+      logger: {
+        error() {},
+        info() {},
+        warn() {}
+      }
+    });
+    const assetSet = await runtime.loadFromManifest("/games/Asteroids/game.manifest.json", {
+      sourceLabel: "scale validation"
+    });
+    if (!assetSet) {
+      throw new Error("Asteroids object-vector manifest failed to load for scale validation.");
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 960;
+    canvas.height = 720;
+    const context = canvas.getContext("2d");
+    const result = runtime.renderObject({ ctx: context }, assetSet, {
+      elapsedMs: 0,
+      objectId,
+      rotation: instance.rotation,
+      scale: instance.scale,
+      x: instance.x,
+      y: instance.y
+    });
+    if (!result.ok) {
+      throw new Error(`Runtime object render failed for ${objectId}.`);
+    }
+
+    const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    let maxX = -1;
+    let maxY = -1;
+    let minX = canvas.width;
+    let minY = canvas.height;
+    for (let y = 0; y < canvas.height; y += 1) {
+      for (let x = 0; x < canvas.width; x += 1) {
+        if (data[(y * canvas.width + x) * 4 + 3] <= 0) {
+          continue;
+        }
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    }
+    if (maxX < minX || maxY < minY) {
+      throw new Error(`Runtime object render produced no visible pixels for ${objectId}.`);
+    }
+    return {
+      height: maxY - minY + 1,
+      width: maxX - minX + 1,
+      x: minX,
+      y: minY
+    };
+  }, { instance, objectId });
+}
+
 test.describe("Collision Inspector V2", () => {
   test("loads a game manifest and reports live vector, pixel, bounds, and hybrid collisions", async ({ page }) => {
     const server = await startRepoServer();
@@ -116,10 +177,19 @@ test.describe("Collision Inspector V2", () => {
       expect(collisionInspectorScale.scaleX).toBeCloseTo(1, 2);
       expect(collisionInspectorScale.scaleY).toBeCloseTo(1, 2);
       const runtimeRenderSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "ObjectVectorRuntimeAssetService.js"), "utf8");
+      const worldScreenSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "WorldScreenTransform.js"), "utf8");
+      const collisionControlsSource = await readFile(join(server.repoRoot, "tools", "collision-inspector-v2", "js", "CollisionInspectorV2Controls.js"), "utf8");
+      const collisionRendererSource = await readFile(join(server.repoRoot, "tools", "collision-inspector-v2", "js", "CollisionInspectorV2Renderer.js"), "utf8");
       const objectVectorStudioSource = await readFile(join(server.repoRoot, "tools", "object-vector-studio-v2", "js", "ToolStarterApp.js"), "utf8");
-      expect(runtimeRenderSource).toContain("const scale = Number.isFinite(options.scale) ? options.scale : 1;");
-      expect(runtimeRenderSource).toContain("context.scale(scale, scale);");
+      expect(worldScreenSource).toContain("export const CANONICAL_WORLD_TO_SCREEN_SCALE = 1;");
+      expect(worldScreenSource).toContain("objectRenderOptions(options = {})");
+      expect(runtimeRenderSource).toContain("createWorldScreenTransform");
+      expect(runtimeRenderSource).toContain(".objectRenderOptions(options)");
+      expect(collisionControlsSource).toContain("createWorldScreenTransform");
+      expect(collisionRendererSource).toContain("createWorldScreenTransform");
+      expect(collisionRendererSource).toContain("screenPointToWorldWithUserZoom");
       expect(objectVectorStudioSource).toContain("const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;");
+      expect(objectVectorStudioSource).toContain("CANONICAL_WORLD_TO_SCREEN_SCALE");
       expect(objectVectorStudioSource).toContain("point.x / OBJECT_PREVIEW_DRAWING_SCALE");
       const asteroidsPage = await page.context().newPage();
       try {
@@ -147,6 +217,15 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#overlapState")).toHaveText("false");
       await expect(page.locator("#originState")).toHaveText("Origins:\nA 360.000,320.000\nB 500.000,320.000");
       await expect(page.locator("#rotationState")).toHaveText("A 0 / B 0");
+      const scaleMatchSummary = await readCollisionSummary(page);
+      const runtimeShipBounds = await runtimeObjectPixelBounds(page, "object.asteroids.ship", {
+        rotation: 0,
+        scale: 1,
+        x: 360,
+        y: 320
+      });
+      expect(Math.abs(runtimeShipBounds.width - scaleMatchSummary.bounds.objectA.width)).toBeLessThanOrEqual(10);
+      expect(Math.abs(runtimeShipBounds.height - scaleMatchSummary.bounds.objectA.height)).toBeLessThanOrEqual(10);
       await expect(page.locator("#collisionSummary")).toContainText('"enginePath": "src/engine/collision/objectVector.js"');
       await expect(page.locator("#collisionSummary")).toContainText('"objectOrigins"');
       await expect(page.locator("#collisionSummary")).toContainText('"recommendedMode": "vector"');
@@ -317,6 +396,39 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#objectBSelect option")).toHaveCount(0);
       await expect(page.locator("#collisionCanvas")).toHaveAttribute("width", "1");
       await expect(page.locator("#collisionCanvas")).toHaveAttribute("height", "1");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("keeps Object Vector Studio V2 zoom editor-only against shared world scale", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    await coverageReporter.start(page);
+    try {
+      await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
+      await expect(page.locator("#statusLog")).toHaveValue(/Object Vector Studio V2 editor zoom is viewport-only; runtime\/world scale remains 1:1/);
+      const initialZoom = await page.evaluate(() => window.__objectVectorStudioV2App.viewport.zoom);
+      const sharedScale = await page.evaluate(async () => {
+        const { CANONICAL_WORLD_TO_SCREEN_SCALE } = await import("/src/engine/rendering/index.js");
+        return CANONICAL_WORLD_TO_SCREEN_SCALE;
+      });
+      expect(sharedScale).toBe(1);
+      await page.locator("#objectVectorStudioV2ZoomInButton").click();
+      const editorZoom = await page.evaluate(() => window.__objectVectorStudioV2App.viewport.zoom);
+      expect(editorZoom).toBeGreaterThan(initialZoom);
+      const sharedScaleAfterZoom = await page.evaluate(async () => {
+        const { CANONICAL_WORLD_TO_SCREEN_SCALE } = await import("/src/engine/rendering/index.js");
+        return CANONICAL_WORLD_TO_SCREEN_SCALE;
+      });
+      expect(sharedScaleAfterZoom).toBe(1);
+      await expect(page.locator("#statusLog")).toHaveValue(/Viewport zoom set/);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);

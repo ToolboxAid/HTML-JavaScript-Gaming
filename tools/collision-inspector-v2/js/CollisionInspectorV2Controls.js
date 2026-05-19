@@ -1,3 +1,4 @@
+import { createWorldScreenTransform } from "../../../src/engine/rendering/index.js";
 import {
   labelForObject,
   numberValue,
@@ -131,11 +132,15 @@ export class CollisionInspectorV2Controls {
   }
 
   setViewportSize(width, height) {
-    this.elements.canvas.setAttribute("width", String(Math.max(1, Math.floor(numberValue(width, 1)))));
-    this.elements.canvas.setAttribute("height", String(Math.max(1, Math.floor(numberValue(height, 1)))));
-    this.elements.canvas.style.setProperty("--collision-inspector-aspect-ratio", `${this.elements.canvas.width} / ${this.elements.canvas.height}`);
-    this.elements.canvas.style.setProperty("--collision-inspector-screen-width", `${this.elements.canvas.width}px`);
-    this.elements.canvas.style.setProperty("--collision-inspector-screen-height", `${this.elements.canvas.height}px`);
+    const transform = createWorldScreenTransform({
+      screenHeight: height,
+      screenWidth: width
+    });
+    this.elements.canvas.setAttribute("width", String(transform.screenWidth));
+    this.elements.canvas.setAttribute("height", String(transform.screenHeight));
+    this.elements.canvas.style.setProperty("--collision-inspector-aspect-ratio", transform.cssAspectRatio);
+    this.elements.canvas.style.setProperty("--collision-inspector-screen-width", `${transform.cssWidth}px`);
+    this.elements.canvas.style.setProperty("--collision-inspector-screen-height", `${transform.cssHeight}px`);
   }
 
   syncResult(result) {

@@ -4,6 +4,7 @@ import {
   OBJECT_VECTOR_COLLISION_MODE_LABELS,
   recommendObjectVectorCollisionMode
 } from "../../../src/engine/collision/index.js";
+import { CANONICAL_WORLD_TO_SCREEN_SCALE } from "../../../src/engine/rendering/index.js";
 import { resolveManifestScreenDimensions } from "../../../src/tools/common/GameManifestLoader.js";
 import {
   clone,
@@ -60,6 +61,7 @@ export class CollisionInspectorV2App {
     this.controls.setLaunchMode(this.isWorkspaceLaunch());
     this.controls.setZoom(this.zoom);
     this.logger.write("INFO Collision Inspector V2 ready.");
+    this.logger.write(`INFO Shared world-to-screen scale is ${CANONICAL_WORLD_TO_SCREEN_SCALE}:1; Collision Inspector zoom is additional user zoom only.`);
     await this.loadInitialManifest();
     if (this.hasRenderableManifest()) {
       this.evaluateAndRender();

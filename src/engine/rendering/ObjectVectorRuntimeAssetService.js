@@ -1,3 +1,5 @@
+import { createWorldScreenTransform } from "./WorldScreenTransform.js";
+
 const DEFAULT_SCHEMA_URL = new URL("../../../tools/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
 const OBJECT_VECTOR_TOOL_ID = "object-vector-studio-v2";
 
@@ -865,11 +867,13 @@ export class ObjectVectorRuntimeAssetService {
 
   drawObjectToCanvas(context, object, frame, options = {}) {
     try {
+      const renderTransform = createWorldScreenTransform({
+        worldScale: options.worldScale
+      }).objectRenderOptions(options);
       context.save();
-      context.translate(options.x || 0, options.y || 0);
-      context.rotate(options.rotation || 0);
-      const scale = Number.isFinite(options.scale) ? options.scale : 1;
-      context.scale(scale, scale);
+      context.translate(renderTransform.x, renderTransform.y);
+      context.rotate(renderTransform.rotation);
+      context.scale(renderTransform.scale, renderTransform.scale);
       let renderedShapes = 0;
       const transformOrigin = objectTransformOrigin(object);
       sortedShapes(object).forEach((shape, shapeIndex) => {

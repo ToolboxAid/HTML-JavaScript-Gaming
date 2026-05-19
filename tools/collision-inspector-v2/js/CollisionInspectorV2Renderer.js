@@ -1,22 +1,34 @@
+import { createWorldScreenTransform } from "../../../src/engine/rendering/index.js";
 import { numberValue } from "./constants.js";
 
 export class CollisionInspectorV2Renderer {
   constructor({ canvas }) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
+    this.transform = createWorldScreenTransform();
     this.zoom = 1;
   }
 
   setViewportSize(width, height) {
-    this.canvas.width = Math.max(1, Math.floor(numberValue(width, 1)));
-    this.canvas.height = Math.max(1, Math.floor(numberValue(height, 1)));
-    this.canvas.style.setProperty("--collision-inspector-aspect-ratio", `${this.canvas.width} / ${this.canvas.height}`);
-    this.canvas.style.setProperty("--collision-inspector-screen-width", `${this.canvas.width}px`);
-    this.canvas.style.setProperty("--collision-inspector-screen-height", `${this.canvas.height}px`);
+    this.transform = createWorldScreenTransform({
+      screenHeight: height,
+      screenWidth: width,
+      userZoom: this.zoom
+    });
+    this.canvas.width = this.transform.screenWidth;
+    this.canvas.height = this.transform.screenHeight;
+    this.canvas.style.setProperty("--collision-inspector-aspect-ratio", this.transform.cssAspectRatio);
+    this.canvas.style.setProperty("--collision-inspector-screen-width", `${this.transform.cssWidth}px`);
+    this.canvas.style.setProperty("--collision-inspector-screen-height", `${this.transform.cssHeight}px`);
   }
 
   setZoom(zoom) {
     this.zoom = Math.max(0.5, Math.min(5, numberValue(zoom, 1)));
+    this.transform = createWorldScreenTransform({
+      screenHeight: this.canvas.height,
+      screenWidth: this.canvas.width,
+      userZoom: this.zoom
+    });
   }
 
   clear() {
@@ -28,15 +40,8 @@ export class CollisionInspectorV2Renderer {
 
   canvasPoint(event) {
     const rect = this.canvas.getBoundingClientRect();
-    const logical = {
-      x: ((event.clientX - rect.left) / rect.width) * this.canvas.width,
-      y: ((event.clientY - rect.top) / rect.height) * this.canvas.height
-    };
-    const center = this.canvasCenter();
-    return {
-      x: (logical.x - center.x) / this.zoom + center.x,
-      y: (logical.y - center.y) / this.zoom + center.y
-    };
+    const screenPoint = this.transform.clientPointToScreenPoint(event, rect);
+    return this.transform.screenPointToWorldWithUserZoom(screenPoint);
   }
 
   setDragging(isDragging) {
@@ -67,7 +72,8 @@ export class CollisionInspectorV2Renderer {
     ctx.fillStyle = "#070b0c";
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.save();
-    this.applyZoomTransform(ctx);
+    this.transform.applyUserZoom(ctx);
+    this.transform.applyWorldToScreen(ctx);
     this.drawGrid(ctx);
     this.drawGeometry(ctx, result.geometryA, {
       fill: "rgba(13, 148, 136, 0.18)",
@@ -88,17 +94,7 @@ export class CollisionInspectorV2Renderer {
   }
 
   canvasCenter() {
-    return {
-      x: this.canvas.width / 2,
-      y: this.canvas.height / 2
-    };
-  }
-
-  applyZoomTransform(ctx) {
-    const center = this.canvasCenter();
-    ctx.translate(center.x, center.y);
-    ctx.scale(this.zoom, this.zoom);
-    ctx.translate(-center.x, -center.y);
+    return this.transform.center;
   }
 
   drawGrid(ctx) {
