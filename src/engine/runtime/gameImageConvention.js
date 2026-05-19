@@ -152,34 +152,6 @@ function collectColorEntriesFromManifest(manifestPayload) {
   return entries;
 }
 
-function chooseSemanticImagePath(entries, semanticToken) {
-  const token = safeText(semanticToken, "").toLowerCase();
-  if (!token) {
-    return "";
-  }
-
-  const normalizedEntries = Array.isArray(entries) ? entries : [];
-
-  const byId = normalizedEntries.find((entry) => {
-    const id = safeText(entry?.id, "").toLowerCase();
-    const role = safeText(entry?.role, "").toLowerCase();
-    return role === token || id.includes(token);
-  });
-  if (byId?.path) {
-    return byId.path;
-  }
-
-  const byFileName = normalizedEntries.find((entry) => {
-    const candidatePath = safeText(entry?.path, "").toLowerCase();
-    return candidatePath.includes(`/${token}.`) || candidatePath.includes(`/${token}-`) || candidatePath.includes(`_${token}.`);
-  });
-  if (byFileName?.path) {
-    return byFileName.path;
-  }
-
-  return "";
-}
-
 function chooseGameBackgroundColor(entries) {
   const normalizedEntries = Array.isArray(entries) ? entries : [];
   return normalizedEntries.find((entry) => entry.id === "assets.color.background.game")
@@ -187,15 +159,19 @@ function chooseGameBackgroundColor(entries) {
     || null;
 }
 
-function chooseAssetManagerBackgroundImagePath(entries) {
+function chooseAssetManagerImagePath(entries, semanticRole) {
   const normalizedEntries = Array.isArray(entries) ? entries : [];
-  const backgroundAsset = normalizedEntries.find((entry) => (
+  const role = safeText(semanticRole, "").toLowerCase();
+  if (!role) {
+    return "";
+  }
+  const asset = normalizedEntries.find((entry) => (
     entry?.sourceToolId === "asset-manager-v2"
     && entry?.type === "image"
-    && entry?.role === "background"
+    && entry?.role === role
     && safeText(entry?.path, "")
   ));
-  return backgroundAsset?.path || "";
+  return asset?.path || "";
 }
 
 const manifestCache = new Map();
@@ -274,7 +250,8 @@ export function resolveGameImageConventionPaths(options = {}) {
     backgroundColorName: "",
     backgroundColorPath: "",
     backgroundPath: "",
-    bezelPath: gameId ? `games/${gameId}/assets/images/bezel.png` : ""
+    bezelPath: "",
+    previewPath: ""
   };
 }
 
@@ -300,8 +277,9 @@ export async function resolveManifestChromeAssetPaths(options = {}) {
     backgroundColorHex: backgroundColor?.hex || "",
     backgroundColorName: backgroundColor?.name || "",
     backgroundColorPath: backgroundColor?.path || "",
-    backgroundPath: chooseAssetManagerBackgroundImagePath(imageEntries),
-    bezelPath: chooseSemanticImagePath(imageEntries, "bezel")
+    backgroundPath: chooseAssetManagerImagePath(imageEntries, "background"),
+    bezelPath: chooseAssetManagerImagePath(imageEntries, "bezel"),
+    previewPath: chooseAssetManagerImagePath(imageEntries, "preview")
   };
 }
 

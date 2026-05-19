@@ -733,6 +733,9 @@ export default class fullscreenBezel {
     this.manifestPath = resolved.manifestPath;
     this.path = resolved.bezelPath;
     this.stretchConfigPath = resolveBezelStretchConfigPath(this.path, DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME, this.manifestPath);
+    this.manifestPayload = options.manifestPayload && typeof options.manifestPayload === "object" && !Array.isArray(options.manifestPayload)
+      ? options.manifestPayload
+      : null;
     this.host = null;
     this.element = null;
     this.ready = false;
@@ -780,7 +783,8 @@ export default class fullscreenBezel {
     this.manifestResolvePromise = resolveManifestChromeAssetPaths({
       gameId: this.gameId,
       manifestPath: this.manifestPath,
-      documentRef: this.documentRef
+      documentRef: this.documentRef,
+      manifestPayload: this.manifestPayload
     })
       .then((resolved) => {
         this.gameId = resolved.gameId || this.gameId;

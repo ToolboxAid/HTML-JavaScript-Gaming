@@ -260,6 +260,42 @@ function gameFromGameManifest(gameManifest, manifestPath = "", repoRoot = "", re
   };
 }
 
+function manifestAssetRepoPath(assetPath, manifestPath) {
+  const normalizedAssetPath = String(assetPath || "").replaceAll("\\", "/").trim();
+  if (!normalizedAssetPath || /^[a-z][a-z0-9+.-]*:/i.test(normalizedAssetPath) || normalizedAssetPath.startsWith("//")) {
+    return "";
+  }
+  if (normalizedAssetPath.startsWith("/")) {
+    return normalizedAssetPath.replace(/^\/+/, "");
+  }
+  const normalizedManifestPath = String(manifestPath || "").replaceAll("\\", "/").replace(/^\/+/, "");
+  if (!normalizedManifestPath.includes("/")) {
+    return normalizedAssetPath.replace(/^\/+/, "");
+  }
+  const manifestFolder = normalizedManifestPath.slice(0, normalizedManifestPath.lastIndexOf("/") + 1);
+  return `${manifestFolder}${normalizedAssetPath.replace(/^\/+/, "")}`;
+}
+
+function assetManagerImagePathForRole(game, role) {
+  const normalizedRole = String(role || "").trim().toLowerCase();
+  if (!normalizedRole) {
+    return "";
+  }
+  const assets = game?.manifest?.tools?.[ASSET_MANAGER_V2_TOOL_KEY]?.assets;
+  if (!isPlainObject(assets)) {
+    return "";
+  }
+  const assetEntry = Object.values(assets).find((asset) => (
+    isPlainObject(asset)
+    && String(asset.type || "").trim().toLowerCase() === "image"
+    && String(asset.role || "").trim().toLowerCase() === normalizedRole
+    && String(asset.path || "").trim()
+  ));
+  return assetEntry
+    ? manifestAssetRepoPath(assetEntry.path, game?.manifestPath || "")
+    : "";
+}
+
 function isGameManifest(value) {
   return value?.schema === "html-js-gaming.game-manifest"
     && isPlainObject(value.game);
@@ -1518,15 +1554,7 @@ export class WorkspaceManagerV2ContextService {
   }
 
   previewAssetPathForGame(game) {
-    const gameRoot = String(game?.gameRoot || "").replaceAll("\\", "/").replace(/^\/+/, "");
-    if (gameRoot) {
-      return `${gameRoot.replace(/\/?$/, "/")}assets/images/preview.svg`;
-    }
-    const manifestPath = String(game?.manifestPath || "").replaceAll("\\", "/").replace(/^\/+/, "");
-    if (manifestPath.endsWith("/game.manifest.json")) {
-      return `${manifestPath.replace(/game\.manifest\.json$/, "")}assets/images/preview.svg`;
-    }
-    return "assets/images/preview.svg";
+    return assetManagerImagePathForRole(game, "preview");
   }
 
   async repoFileExists(repoHandle, repoRelativePath) {
