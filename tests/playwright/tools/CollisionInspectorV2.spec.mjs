@@ -333,7 +333,7 @@ test.describe("Collision Inspector V2", () => {
       expect(runtimeRenderSource).toContain(".applyObjectRenderTransform(context, options)");
       expect(runtimeRenderSource).toContain("applyObjectVectorCanvasTransform");
       expect(collisionObjectVectorSource).toContain("createObjectVectorTransformPipeline");
-      expect(collisionObjectVectorSource).toContain("transformObjectVectorInstancePoint");
+      expect(collisionObjectVectorSource).toContain(".localPointsToWorld(polygon)");
       expect(collisionObjectVectorSource).toContain("transformRuntimeOrientedPoints");
       expect(collisionControlsSource).toContain("createWorldScreenTransform");
       expect(collisionControlsSource).toContain("rotationUnits");
