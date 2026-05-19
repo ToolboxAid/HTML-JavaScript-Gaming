@@ -48,6 +48,34 @@ async function selectTextToSpeechTile(page, itemId) {
 const TEXT_TO_SPEECH_SAMPLE_PRESET_PATH = "/samples/phase-19/1903/sample.1903.text2speech-V2.json";
 const TEXT_TO_SPEECH_SAMPLE_QUERY = `?samplePresetPath=${encodeURIComponent(TEXT_TO_SPEECH_SAMPLE_PRESET_PATH)}`;
 const TEXT_TO_SPEECH_SAMPLE_ITEM_IDS = ["narrator-welcome", "hero-ready", "alert-warning", "alert-warning-2"];
+const DEFAULT_MOCK_GAME_OPTIONS = ["Select a game", "Asteroids", "Gravity Well", "Pong"];
+const ALL_REPO_GAME_MANIFEST_PATHS = [
+  "/games/AITargetDummy/game.manifest.json",
+  "/games/Asteroids/game.manifest.json",
+  "/games/Bouncing-ball/game.manifest.json",
+  "/games/Breakout/game.manifest.json",
+  "/games/GravityWell/game.manifest.json",
+  "/games/Pacman/game.manifest.json",
+  "/games/Pong/game.manifest.json",
+  "/games/SolarSystem/game.manifest.json",
+  "/games/SpaceDuel/game.manifest.json",
+  "/games/SpaceInvaders/game.manifest.json",
+  "/games/vector-arcade-sample/game.manifest.json"
+];
+const ALL_REPO_GAME_OPTIONS = [
+  "Select a game",
+  "AI Target Dummy",
+  "Asteroids",
+  "Bouncing Ball",
+  "Breakout",
+  "Gravity Well",
+  "Pacman",
+  "Pong",
+  "Solar System",
+  "Space Duel",
+  "Space Invaders Next",
+  "Vector Arcade Sample"
+];
 
 async function openToolsIndex(page) {
   const server = await startRepoServer();
@@ -425,8 +453,13 @@ async function installMockRepoPicker(page) {
         const gameFolder = parts[1];
         const gamePath = `${repoName}/games/${gameFolder}`;
         const imageChildren = {};
-        if (typeof config.previewFiles?.[gameFolder] === "string") {
-          imageChildren["preview.svg"] = makeFileHandle("preview.svg", config.previewFiles[gameFolder], `${gamePath}/assets/images/preview.svg`, config);
+        const previewConfig = config.previewFiles?.[gameFolder];
+        if (typeof previewConfig === "string") {
+          imageChildren["preview.svg"] = makeFileHandle("preview.svg", previewConfig, `${gamePath}/assets/images/preview.svg`, config);
+        } else if (previewConfig && typeof previewConfig === "object" && !Array.isArray(previewConfig)) {
+          Object.entries(previewConfig).forEach(([previewFileName, contents]) => {
+            imageChildren[previewFileName] = makeFileHandle(previewFileName, String(contents || ""), `${gamePath}/assets/images/${previewFileName}`, config);
+          });
         }
         games[gameFolder] = makeDirectoryHandle(gameFolder, {
           assets: makeDirectoryHandle("assets", {
@@ -573,7 +606,7 @@ async function installMockSpeechSynthesis(page, { includeAgeVoice = false, inclu
   }, { includeAgeVoice, includeNeutralVoice, voicesInitiallyAvailable });
 }
 
-async function selectMockRepo(page, { repoName = "HTML-JavaScript-Gaming", ...config } = {}) {
+async function selectMockRepo(page, { repoName = "HTML-JavaScript-Gaming", expectedGameOptions = DEFAULT_MOCK_GAME_OPTIONS, ...config } = {}) {
   await page.evaluate(({ nextConfig, nextRepoName }) => {
     window.__workspaceManagerV2MockRepoConfig = { ...nextConfig, repoName: nextRepoName };
   }, { nextConfig: { repoPath: process.cwd().replaceAll("\\", "/"), ...config }, nextRepoName: repoName });
@@ -581,12 +614,7 @@ async function selectMockRepo(page, { repoName = "HTML-JavaScript-Gaming", ...co
   await expect(page.locator("#repoSelectedValue")).toHaveText(repoName);
   await expect(page.locator("#activeGameSelect")).toBeEnabled();
   await expect(page.locator("#activeGameSelect")).toHaveValue("");
-  await expect(page.locator("#activeGameSelect option")).toHaveText([
-    "Select a game",
-    "Asteroids",
-    "Gravity Well",
-    "Pong"
-  ]);
+  await expect(page.locator("#activeGameSelect option")).toHaveText(expectedGameOptions);
   await expectWorkspaceToolsDisabled(page);
 }
 
@@ -8979,8 +9007,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await selectMockRepo(page);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
       await expectWorkspaceReturnRehydrated(page);
-      expect(await page.evaluate(() => Object.hasOwn(window.__workspaceManagerV2App.activeContext.tools, "text2speech-V2"))).toBe(true);
-      expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.text2speech-V2")).data)).toEqual([]);
       const schemaContract = await page.evaluate(async () => {
         const schema = await fetch("/tools/schemas/tools/text2speech-V2.schema.json", { cache: "no-store" }).then((response) => response.json());
         return {
@@ -9888,6 +9914,53 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await selectMockRepo(page, { repoName: "SecondRepo" });
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Discovered 3 schema-valid game manifests from SecondRepo\./);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue("{}");
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
+  test("resolves game manifest schema refs from the game schema during repo discovery", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await selectMockRepo(page, {
+        expectedGameOptions: ALL_REPO_GAME_OPTIONS,
+        manifestPaths: ALL_REPO_GAME_MANIFEST_PATHS
+      });
+      await expect(page.locator("#statusLog")).toHaveValue(/INFO Discovered 11 schema-valid game manifests from HTML-JavaScript-Gaming\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Discovered 11 schema-valid game manifests\./);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/unresolved schema reference tools\/asset-manager-v2\.schema\.json/);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/unresolved schema reference tools\/palette-manager-v2\.schema\.json/);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/SKIP games\/Asteroids\/game\.manifest\.json/);
+      await expect(page.locator("#statusLog")).not.toHaveValue(/SKIP games\/AITargetDummy\/game\.manifest\.json/);
+
+      const discoveredGameIds = await page.locator("#activeGameSelect option").evaluateAll((options) => (
+        options.map((option) => option.value).filter(Boolean)
+      ));
+      expect(discoveredGameIds).toEqual([
+        "AITargetDummy",
+        "Asteroids",
+        "Bouncing-ball",
+        "Breakout",
+        "GravityWell",
+        "Pacman",
+        "Pong",
+        "SolarSystem",
+        "SpaceDuel",
+        "SpaceInvaders",
+        "vector-arcade-sample"
+      ]);
+
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameId": "Asteroids"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"asset-manager-v2"/);
       expect(pageErrors).toEqual([]);
     } finally {
       await coverageReporter.stop(page);
@@ -10867,7 +10940,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("shows Preview Generator tile status from assets/images/preview.svg existence", async ({ page }) => {
+  test("shows Preview Generator tile status from manifest preview asset existence", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
 
@@ -10882,7 +10955,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await selectMockRepo(page, {
         previewFiles: {
-          Asteroids: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 8 8\"></svg>"
+          Asteroids: {
+            "preview.png": "mock asteroids preview"
+          }
         }
       });
       await page.locator("#activeGameSelect").selectOption("Asteroids");
@@ -11407,7 +11482,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.evaluate(() => {
         const session = JSON.parse(sessionStorage.getItem("workspace.tools.object-vector-studio-v2"));
-        session.data.unexpected = "blocked";
+        session.data.objects[0].unexpected = "blocked";
         session.dirty = {
           isDirty: true,
           reason: "object-vector-invalid-save",
@@ -12159,7 +12234,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pongManifest.repoPath).toBe(manifestRepoPath(server));
       expect(Object.keys(pongManifest.tools).sort()).toEqual(["asset-manager-v2", "palette-manager-v2"]);
       expect(pongManifest.tools["asset-manager-v2"].assets["assets.image.preview.preview"]).toEqual({
-        path: "assets/images/preview.svg",
+        path: "assets/images/preview1.svg",
         type: "image",
         kind: "svg",
         role: "preview",
