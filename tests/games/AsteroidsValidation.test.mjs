@@ -23,6 +23,9 @@ import {
   loadAsteroidsVectorMapsFromManifest
 } from '../../games/Asteroids/game/asteroidsVectorMaps.js';
 
+const ASTEROIDS_MEDIUM_ASTEROID_VECTOR_MAP_ID = 'vector.asteroids.asteroid.medium';
+const ASTEROIDS_SMALL_ASTEROID_VECTOR_MAP_ID = 'vector.asteroids.asteroid.small';
+
 function createCanvas() {
   const listeners = new Map();
   const canvas = {
@@ -159,6 +162,8 @@ export async function run() {
   const manifestVectorIds = objectVectorPayload.vectorMaps.vectors.map((vector) => vector.id);
   assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.bullet), true);
   assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.ship), true);
+  assert.equal(manifestVectorIds.includes(ASTEROIDS_MEDIUM_ASTEROID_VECTOR_MAP_ID), true);
+  assert.equal(manifestVectorIds.includes(ASTEROIDS_SMALL_ASTEROID_VECTOR_MAP_ID), true);
   assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.ufoLarge), true);
   assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.ufoSmall), true);
   assert.equal(manifestVectorIds.includes('vector.asteroids.ship.collision'), false);
@@ -195,17 +200,53 @@ export async function run() {
   assert.deepEqual(
     vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.ship).points,
     [
-      { x: 0, y: -18 },
-      { x: 14, y: 16 },
-      { x: 0, y: 8 },
-      { x: -14, y: 16 },
+      { x: 14, y: 0 },
+      { x: -10, y: -8 },
+      { x: -6, y: -3 },
+      { x: -6, y: 3 },
+      { x: -10, y: 8 },
+      { x: 14, y: 0 },
     ],
   );
   assert.deepEqual(
     vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.ship).paths,
     [
-      'M 0 -18 L 14 16 L 0 8 L -14 16 Z',
-      'M -6 14 L 0 6 L 6 14',
+      'M 14 0 L -10 -8 L -6 -3 L -6 3 L -10 8 L 14 0',
+    ],
+  );
+  assert.deepEqual(
+    vectorMaps.vectorsById.get(ASTEROIDS_MEDIUM_ASTEROID_VECTOR_MAP_ID).points,
+    [
+      { x: -16, y: -10 },
+      { x: -2, y: -18 },
+      { x: 16, y: -14 },
+      { x: 20, y: 2 },
+      { x: 8, y: 18 },
+      { x: -10, y: 16 },
+      { x: -20, y: 4 },
+    ],
+  );
+  assert.deepEqual(
+    vectorMaps.vectorsById.get(ASTEROIDS_MEDIUM_ASTEROID_VECTOR_MAP_ID).paths,
+    [
+      'M -16 -10 L -2 -18 L 16 -14 L 20 2 L 8 18 L -10 16 L -20 4 Z',
+    ],
+  );
+  assert.deepEqual(
+    vectorMaps.vectorsById.get(ASTEROIDS_SMALL_ASTEROID_VECTOR_MAP_ID).points,
+    [
+      { x: -10, y: -6 },
+      { x: 0, y: -12 },
+      { x: 10, y: -6 },
+      { x: 8, y: 8 },
+      { x: -6, y: 10 },
+      { x: -12, y: 0 },
+    ],
+  );
+  assert.deepEqual(
+    vectorMaps.vectorsById.get(ASTEROIDS_SMALL_ASTEROID_VECTOR_MAP_ID).paths,
+    [
+      'M -10 -6 L 0 -12 L 10 -6 L 8 8 L -6 10 L -12 0 Z',
     ],
   );
   assert.deepEqual(
@@ -221,12 +262,12 @@ export async function run() {
   const shipObject = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.ship');
   const shipHull = shipObject.shapes.find((shape) => shape.tool === 'polygon');
   assert.deepEqual(shipHull.geometry.points, [
-    { x: 0, y: -18 },
+    { x: 0, y: -16 },
     { x: 14, y: 16 },
     { x: 0, y: 8 },
     { x: -14, y: 16 },
   ]);
-  const mediumAsteroidVariant = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.medium-asteroid-2');
+  const mediumAsteroidVariant = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.medium-asteroid');
   assert.deepEqual(mediumAsteroidVariant.shapes[0].geometry.points, [
     { x: -16, y: -10 },
     { x: -2, y: -18 },

@@ -83,10 +83,6 @@ export async function run() {
   });
   assert.equal(missingMediumValidation.ok, false);
   assert.equal(missingMediumValidation.errors.some((entry) => (
-    entry.message.includes("requires object object.asteroids.medium-asteroid")
-    && entry.details.candidates.some((candidate) => candidate.includes("object.asteroids.medium-asteroid-2"))
-  )), true);
-  assert.equal(missingMediumValidation.errors.some((entry) => (
     entry.message.includes("manifest binding requires object object.asteroids.medium-asteroid")
   )), true);
 

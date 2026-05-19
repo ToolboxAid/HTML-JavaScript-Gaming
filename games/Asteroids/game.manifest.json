@@ -273,25 +273,114 @@
             ],
             "viewBox": "-24 -24 48 48",
             "paths": [
-              "M 0 -18 L 14 16 L 0 8 L -14 16 Z",
-              "M -6 14 L 0 6 L 6 14"
+              "M 14 0 L -10 -8 L -6 -3 L -6 3 L -10 8 L 14 0"
             ],
             "points": [
               {
-                "x": 0,
-                "y": -18
-              },
-              {
                 "x": 14,
-                "y": 16
+                "y": 0
               },
               {
-                "x": 0,
+                "x": -10,
+                "y": -8
+              },
+              {
+                "x": -6,
+                "y": -3
+              },
+              {
+                "x": -6,
+                "y": 3
+              },
+              {
+                "x": -10,
                 "y": 8
               },
               {
-                "x": -14,
+                "x": 14,
+                "y": 0
+              }
+            ]
+          },
+          {
+            "id": "vector.asteroids.asteroid.medium",
+            "label": "Medium Asteroid",
+            "kind": "polygon",
+            "usage": [
+              "gameplay",
+              "collision"
+            ],
+            "viewBox": "-28 -28 56 56",
+            "paths": [
+              "M -16 -10 L -2 -18 L 16 -14 L 20 2 L 8 18 L -10 16 L -20 4 Z"
+            ],
+            "points": [
+              {
+                "x": -16,
+                "y": -10
+              },
+              {
+                "x": -2,
+                "y": -18
+              },
+              {
+                "x": 16,
+                "y": -14
+              },
+              {
+                "x": 20,
+                "y": 2
+              },
+              {
+                "x": 8,
+                "y": 18
+              },
+              {
+                "x": -10,
                 "y": 16
+              },
+              {
+                "x": -20,
+                "y": 4
+              }
+            ]
+          },
+          {
+            "id": "vector.asteroids.asteroid.small",
+            "label": "Small Asteroid",
+            "kind": "polygon",
+            "usage": [
+              "gameplay",
+              "collision"
+            ],
+            "viewBox": "-18 -18 36 36",
+            "paths": [
+              "M -10 -6 L 0 -12 L 10 -6 L 8 8 L -6 10 L -12 0 Z"
+            ],
+            "points": [
+              {
+                "x": -10,
+                "y": -6
+              },
+              {
+                "x": 0,
+                "y": -12
+              },
+              {
+                "x": 10,
+                "y": -6
+              },
+              {
+                "x": 8,
+                "y": 8
+              },
+              {
+                "x": -6,
+                "y": 10
+              },
+              {
+                "x": -12,
+                "y": 0
               }
             ]
           },
@@ -557,7 +646,7 @@
                 "points": [
                   {
                     "x": 0,
-                    "y": -18
+                    "y": -16
                   },
                   {
                     "x": 14,
@@ -1275,86 +1364,6 @@
               "style": {
                 "fill": "transparent",
                 "stroke": "#FFBE64",
-                "strokeWidth": 2,
-                "fillOpacity": 1,
-                "strokeOpacity": 1
-              },
-              "transform": {
-                "x": 0,
-                "y": 0,
-                "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
-              }
-            }
-          ],
-          "states": [
-            {
-              "id": "active",
-              "name": "Active",
-              "frames": [
-                {
-                  "id": "frame-1",
-                  "order": 0,
-                  "durationFrames": 1,
-                  "shapeOverrides": []
-                }
-              ]
-            }
-          ],
-          "tags": [
-            "asteroid",
-            "medium"
-          ],
-          "objectOrigin": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        {
-          "id": "object.asteroids.medium-asteroid-2",
-          "name": "Medium Asteroid 2",
-          "shapes": [
-            {
-              "tool": "polygon",
-              "order": 0,
-              "visible": true,
-              "locked": false,
-              "geometry": {
-                "points": [
-                  {
-                    "x": -16,
-                    "y": -10
-                  },
-                  {
-                    "x": -2,
-                    "y": -18
-                  },
-                  {
-                    "x": 16,
-                    "y": -14
-                  },
-                  {
-                    "x": 20,
-                    "y": 2
-                  },
-                  {
-                    "x": 8,
-                    "y": 18
-                  },
-                  {
-                    "x": -10,
-                    "y": 16
-                  },
-                  {
-                    "x": -20,
-                    "y": 4
-                  }
-                ]
-              },
-              "style": {
-                "fill": "transparent",
-                "stroke": "#CBD5E1",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
