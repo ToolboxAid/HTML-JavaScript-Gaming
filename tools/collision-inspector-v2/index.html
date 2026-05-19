@@ -113,14 +113,15 @@
               <output id="zoomState" for="collisionZoomInput">1x</output>
             </div>
             <div class="collision-inspector-v2__canvas-viewport">
-              <canvas id="collisionCanvas" width="1" height="1" aria-label="Collision movement simulation"></canvas>
+              <canvas id="collisionCanvas" width="1" height="1" aria-label="Collision movement simulation" aria-describedby="collisionGuideNote"></canvas>
             </div>
             <div class="collision-inspector-v2__legend" aria-label="Collision overlay legend">
               <span>Object A</span>
               <span>Object B</span>
               <span>Overlap</span>
-              <span>Heading</span>
+              <span title="Heading guide shows object rotation from its origin.">Heading</span>
             </div>
+            <p id="collisionGuideNote" class="collision-inspector-v2__guide-note">Heading guides show each object's rotation from its origin.</p>
           </div>
         </section>
       </section>

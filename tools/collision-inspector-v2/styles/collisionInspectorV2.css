@@ -127,6 +127,12 @@
   background: var(--tool-starter-text);
 }
 
+.collision-inspector-v2__guide-note {
+  margin: 0;
+  color: var(--tool-starter-muted);
+  font-size: 0.86rem;
+}
+
 .collision-inspector-v2__result {
   min-height: 48px;
   display: grid;

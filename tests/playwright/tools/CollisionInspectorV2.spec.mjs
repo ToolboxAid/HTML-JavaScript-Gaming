@@ -31,6 +31,22 @@ async function dragCanvasPoint(page, from, to) {
   }, { from, to });
 }
 
+async function readCollisionSummary(page) {
+  return JSON.parse(await page.locator("#collisionSummary").textContent());
+}
+
+async function canvasSignature(page) {
+  return page.locator("#collisionCanvas").evaluate((canvas) => {
+    const context = canvas.getContext("2d");
+    const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    let signature = 0;
+    for (let index = 0; index < data.length; index += 97) {
+      signature = (signature * 31 + data[index] * 3 + data[index + 1] * 5 + data[index + 2] * 7 + data[index + 3]) >>> 0;
+    }
+    return signature;
+  });
+}
+
 test.describe("Collision Inspector V2", () => {
   test("loads a game manifest and reports live vector, pixel, bounds, and hybrid collisions", async ({ page }) => {
     const server = await startRepoServer();
@@ -139,6 +155,9 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionSummaryContent #collisionSummary")).toBeVisible();
       await expect(page.locator("#resultContent")).not.toContainText("Mode");
       await expect(page.locator(".collision-inspector-v2__legend")).toContainText("Heading");
+      await expect(page.locator(".collision-inspector-v2__legend span").nth(3)).toHaveAttribute("title", "Heading guide shows object rotation from its origin.");
+      await expect(page.locator("#collisionCanvas")).toHaveAttribute("aria-describedby", "collisionGuideNote");
+      await expect(page.locator("#collisionGuideNote")).toHaveText("Heading guides show each object's rotation from its origin.");
       const summaryOverflow = await page.locator("#collisionSummaryContent").evaluate((element) => getComputedStyle(element).overflowY);
       expect(["auto", "scroll"]).toContain(summaryOverflow);
       const resultOverflow = await page.locator("#resultContent").evaluate((element) => getComputedStyle(element).overflowY);
@@ -151,15 +170,21 @@ test.describe("Collision Inspector V2", () => {
         const logs = document.querySelector(".collision-inspector-v2__accordion--logs").getBoundingClientRect();
         const heights = [result.height, summary.height, logs.height];
         return {
+          logContentHeight: document.querySelector("#collisionLogContent").getBoundingClientRect().height,
           inputMaxDelta: Math.abs(manifest.height - pair.height),
           maxDelta: Math.max(...heights) - Math.min(...heights),
+          resultContentHeight: document.querySelector("#resultContent").getBoundingClientRect().height,
           resultWidth: result.width,
+          summaryContentHeight: document.querySelector("#collisionSummaryContent").getBoundingClientRect().height,
           summaryWidth: summary.width,
           logsWidth: logs.width
         };
       });
       expect(outputLayout.inputMaxDelta).toBeLessThanOrEqual(6);
       expect(outputLayout.maxDelta).toBeLessThanOrEqual(6);
+      expect(outputLayout.resultContentHeight).toBeGreaterThan(80);
+      expect(outputLayout.summaryContentHeight).toBeGreaterThan(80);
+      expect(outputLayout.logContentHeight).toBeGreaterThan(80);
       expect(Math.abs(outputLayout.resultWidth - outputLayout.summaryWidth)).toBeLessThanOrEqual(1);
       expect(Math.abs(outputLayout.summaryWidth - outputLayout.logsWidth)).toBeLessThanOrEqual(1);
       await expect(page.locator("button[aria-controls='collisionLogContent']")).toBeVisible();
@@ -168,10 +193,23 @@ test.describe("Collision Inspector V2", () => {
       await page.locator("button[aria-controls='collisionLogContent']").click();
       await expect(page.locator("#collisionLogContent")).toBeVisible();
 
+      const initialSummary = await readCollisionSummary(page);
+      const initialSignature = await canvasSignature(page);
       await page.locator("#objectARotationInput").fill("45");
       await expect(page.locator("#rotationState")).toHaveText("A 45 / B 0");
+      const rotatedASummary = await readCollisionSummary(page);
+      expect(rotatedASummary.enginePath).toBe("src/engine/collision/objectVector.js");
+      expect(rotatedASummary.rotation.objectA).toBe(45);
+      expect(rotatedASummary.rotation.objectB).toBe(0);
+      expect(rotatedASummary.transformedPoints.objectA).not.toEqual(initialSummary.transformedPoints.objectA);
+      expect(await canvasSignature(page)).not.toBe(initialSignature);
       await page.locator("#objectBRotationInput").fill("180");
       await expect(page.locator("#rotationState")).toHaveText("A 45 / B 180");
+      const rotatedBSummary = await readCollisionSummary(page);
+      expect(rotatedBSummary.enginePath).toBe("src/engine/collision/objectVector.js");
+      expect(rotatedBSummary.rotation.objectA).toBe(45);
+      expect(rotatedBSummary.rotation.objectB).toBe(180);
+      expect(rotatedBSummary.transformedPoints.objectB).not.toEqual(initialSummary.transformedPoints.objectB);
       await page.locator("#objectARotationInput").fill("0");
       await expect(page.locator("#rotationState")).toHaveText("A 0 / B 180");
 
@@ -201,6 +239,11 @@ test.describe("Collision Inspector V2", () => {
       await page.locator("#collisionZoomInput").fill("5");
       await expect(page.locator("#zoomState")).toHaveText("5x");
       await expect(page.locator("#collisionSummary")).toContainText('"zoom": 5');
+      const zoomAspectRatio = await page.locator("#collisionCanvas").evaluate((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        return rect.width / rect.height;
+      });
+      expect(Math.abs(zoomAspectRatio - (960 / 720))).toBeLessThan(0.02);
       await page.evaluate(() => window.__collisionInspectorV2App.setZoom(8));
       await expect(page.locator("#zoomState")).toHaveText("5x");
       await expect(page.locator("#collisionSummary")).toContainText('"zoom": 5');
