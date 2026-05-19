@@ -1,4 +1,7 @@
-import { createWorldScreenTransform } from "../../../src/engine/rendering/index.js";
+import {
+  createWorldScreenTransform,
+  headingPointFromRotation
+} from "../../../src/engine/rendering/index.js";
 import { numberValue } from "./constants.js";
 
 export class CollisionInspectorV2Renderer {
@@ -121,7 +124,17 @@ export class CollisionInspectorV2Renderer {
       return;
     }
     const origin = geometry.originWorld || { x: 0, y: 0 };
-    const rotationRadians = (numberValue(geometry.instance?.rotation) * Math.PI) / 180;
+    const rotationOptions = {
+      rotationUnit: geometry.instance?.rotationUnit || "degrees"
+    };
+    const headingEnd = headingPointFromRotation(origin, geometry.instance?.rotation, {
+      ...rotationOptions,
+      length: 34
+    });
+    const headingLabel = headingPointFromRotation(origin, geometry.instance?.rotation, {
+      ...rotationOptions,
+      length: 40
+    });
     ctx.save();
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
@@ -131,10 +144,10 @@ export class CollisionInspectorV2Renderer {
     ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(origin.x, origin.y);
-    ctx.lineTo(origin.x + Math.cos(rotationRadians) * 34, origin.y + Math.sin(rotationRadians) * 34);
+    ctx.lineTo(headingEnd.x, headingEnd.y);
     ctx.stroke();
     ctx.font = `${Math.max(9, 11 / this.zoom)}px ui-monospace, monospace`;
-    ctx.fillText("heading", origin.x + Math.cos(rotationRadians) * 40, origin.y + Math.sin(rotationRadians) * 40);
+    ctx.fillText("heading", headingLabel.x, headingLabel.y);
     ctx.restore();
   }
 

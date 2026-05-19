@@ -1,3 +1,5 @@
+import { rotationRadians } from "./OrientationTransform.js";
+
 export const CANONICAL_WORLD_TO_SCREEN_SCALE = 1;
 
 function finiteNumber(value, fallback = 0) {
@@ -63,7 +65,7 @@ export function createWorldScreenTransform({
     },
     objectRenderOptions(options = {}) {
       return {
-        rotation: options.rotation || 0,
+        rotation: rotationRadians(options.rotation || 0, options.rotationUnit || "radians"),
         scale: (Number.isFinite(options.scale) ? options.scale : 1) * resolvedWorldScale,
         x: (options.x || 0) * resolvedWorldScale,
         y: (options.y || 0) * resolvedWorldScale

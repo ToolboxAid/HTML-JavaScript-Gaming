@@ -75,13 +75,13 @@ export class CollisionInspectorV2App {
   defaultInstances() {
     if (!this.screen) {
       return {
-        a: { x: 0, y: 0, rotation: 0 },
-        b: { x: 0, y: 0, rotation: 0 }
+        a: { x: 0, y: 0, rotation: 0, rotationUnit: "degrees" },
+        b: { x: 0, y: 0, rotation: 0, rotationUnit: "degrees" }
       };
     }
     return {
-      a: { x: this.screen.width * 0.375, y: this.screen.height * (4 / 9), rotation: 0 },
-      b: { x: this.screen.width * (125 / 240), y: this.screen.height * (4 / 9), rotation: 0 }
+      a: { x: this.screen.width * 0.375, y: this.screen.height * (4 / 9), rotation: 0, rotationUnit: "degrees" },
+      b: { x: this.screen.width * (125 / 240), y: this.screen.height * (4 / 9), rotation: 0, rotationUnit: "degrees" }
     };
   }
 
@@ -189,6 +189,7 @@ export class CollisionInspectorV2App {
       return;
     }
     this.instances[key].rotation = numberValue(rotation);
+    this.instances[key].rotationUnit = "degrees";
     this.evaluateAndRender();
   }
 

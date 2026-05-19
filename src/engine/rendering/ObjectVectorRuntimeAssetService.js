@@ -1,3 +1,9 @@
+import {
+  applyObjectVectorCanvasTransform,
+  normalizeObjectVectorOrigin,
+  normalizeObjectVectorTransform,
+  objectVectorSvgTransformAttribute
+} from "./OrientationTransform.js";
 import { createWorldScreenTransform } from "./WorldScreenTransform.js";
 
 const DEFAULT_SCHEMA_URL = new URL("../../../tools/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
@@ -119,30 +125,11 @@ function shapeGeometryTool(shape) {
 }
 
 function shapeTransform(shape) {
-  const transform = shape.transform || {
-    rotation: 0,
-    scaleX: 1,
-    scaleY: 1,
-    x: 0,
-    y: 0
-  };
-  return {
-    rotation: Number(transform.rotation ?? 0),
-    scaleX: Number(transform.scaleX ?? 1),
-    scaleY: Number(transform.scaleY ?? 1),
-    x: Number(transform.x ?? 0),
-    y: Number(transform.y ?? 0)
-  };
+  return normalizeObjectVectorTransform(shape?.transform);
 }
 
 function objectTransformOrigin(object) {
-  if (isPlainObject(object?.objectOrigin) && Number.isFinite(Number(object.objectOrigin.x)) && Number.isFinite(Number(object.objectOrigin.y))) {
-    return {
-      x: Number(object.objectOrigin.x),
-      y: Number(object.objectOrigin.y)
-    };
-  }
-  return { x: 0, y: 0 };
+  return normalizeObjectVectorOrigin(object?.objectOrigin);
 }
 
 function pointStyleValue(value) {
@@ -421,16 +408,6 @@ function effectiveShapeForFrame(shape, frame, shapeIndex) {
     effective.transform = { ...override.transform };
   }
   return effective;
-}
-
-function svgTransformAttribute(transform, origin = { x: 0, y: 0 }) {
-  return [
-    `translate(${transform.x} ${transform.y})`,
-    `translate(${origin.x} ${origin.y})`,
-    `rotate(${transform.rotation})`,
-    `scale(${transform.scaleX} ${transform.scaleY})`,
-    `translate(${-origin.x} ${-origin.y})`
-  ].join(" ");
 }
 
 export class ObjectVectorRuntimeAssetService {
@@ -897,11 +874,7 @@ export class ObjectVectorRuntimeAssetService {
     const transform = shapeTransform(shape);
     context.save();
     try {
-      context.translate(transform.x, transform.y);
-      context.translate(transformOrigin.x, transformOrigin.y);
-      context.rotate((transform.rotation * Math.PI) / 180);
-      context.scale(transform.scaleX, transform.scaleY);
-      context.translate(-transformOrigin.x, -transformOrigin.y);
+      applyObjectVectorCanvasTransform(context, transform, transformOrigin);
       context.lineWidth = shape.style.strokeWidth;
       context.lineCap = pointStyleValue(shape.style.strokeLinecap ?? shape.style.startPointStyle ?? shape.style.pointStyle);
       context.lineJoin = strokeLineJoinValue(shape.style.pointStyle ?? shape.style.strokeLinecap);
@@ -1014,7 +987,7 @@ export class ObjectVectorRuntimeAssetService {
   shapeToSvg(shape, transformOrigin = { x: 0, y: 0 }) {
     const lineCap = pointStyleValue(shape.style.strokeLinecap ?? shape.style.startPointStyle ?? shape.style.pointStyle);
     const lineJoin = strokeLineJoinValue(shape.style.pointStyle ?? shape.style.strokeLinecap);
-    const style = ` fill="${escapeXml(shape.style.fill)}" fill-opacity="${shape.style.fillOpacity}" stroke="${escapeXml(shape.style.stroke)}" stroke-opacity="${shape.style.strokeOpacity}" stroke-width="${shape.style.strokeWidth}" stroke-linecap="${lineCap}" stroke-linejoin="${lineJoin}" transform="${svgTransformAttribute(shapeTransform(shape), transformOrigin)}"`;
+    const style = ` fill="${escapeXml(shape.style.fill)}" fill-opacity="${shape.style.fillOpacity}" stroke="${escapeXml(shape.style.stroke)}" stroke-opacity="${shape.style.strokeOpacity}" stroke-width="${shape.style.strokeWidth}" stroke-linecap="${lineCap}" stroke-linejoin="${lineJoin}" transform="${objectVectorSvgTransformAttribute(shapeTransform(shape), transformOrigin)}"`;
     const geometryTool = shapeGeometryTool(shape);
     if (geometryTool === "rectangle") {
       const roundedPath = roundedPointPathCommands(shape, { closed: true });

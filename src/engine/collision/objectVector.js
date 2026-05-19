@@ -7,6 +7,13 @@ objectVector.js
 import { isColliding } from './aabb.js';
 import { arePolygonsColliding, getPolygonBounds, isPointInPolygon } from './polygon.js';
 import { areMasksColliding, createRasterMask } from './raster.js';
+import {
+  normalizeObjectVectorOrigin,
+  normalizeObjectVectorTransform,
+  transformObjectVectorInstancePoint,
+  transformObjectVectorShapePoint,
+  transformRuntimeOrientedPoints,
+} from '../rendering/OrientationTransform.js';
 
 export const OBJECT_VECTOR_COLLISION_ENGINE_PATH = 'src/engine/collision/objectVector.js';
 export const OBJECT_VECTOR_COLLISION_MODES = Object.freeze(['bounds', 'vector', 'pixel-sprite', 'hybrid']);
@@ -80,21 +87,11 @@ function firstObjectFrame(object, preferredStateIds = ['active', 'idle']) {
 }
 
 function shapeTransform(shape) {
-  const transform = isRecord(shape?.transform) ? shape.transform : {};
-  return {
-    rotation: numberValue(transform.rotation),
-    scaleX: numberValue(transform.scaleX, 1),
-    scaleY: numberValue(transform.scaleY, 1),
-    x: numberValue(transform.x),
-    y: numberValue(transform.y),
-  };
+  return normalizeObjectVectorTransform(shape?.transform);
 }
 
 export function getObjectVectorOrigin(object) {
-  return {
-    x: numberValue(object?.objectOrigin?.x),
-    y: numberValue(object?.objectOrigin?.y),
-  };
+  return normalizeObjectVectorOrigin(object?.objectOrigin);
 }
 
 function effectiveShapeForFrame(shape, frame, shapeIndex) {
@@ -193,31 +190,8 @@ function shapeLocalPolygons(shape) {
   return [];
 }
 
-function transformShapePoint(point, transform, origin) {
-  const radians = (transform.rotation * Math.PI) / 180;
-  const scaledX = (point.x - origin.x) * transform.scaleX;
-  const scaledY = (point.y - origin.y) * transform.scaleY;
-  const rotatedX = scaledX * Math.cos(radians) - scaledY * Math.sin(radians);
-  const rotatedY = scaledX * Math.sin(radians) + scaledY * Math.cos(radians);
-  return {
-    x: rotatedX + origin.x + transform.x,
-    y: rotatedY + origin.y + transform.y,
-  };
-}
-
-function rotationRadians(value, unit = 'degrees') {
-  const rotation = numberValue(value);
-  return unit === 'radians' ? rotation : (rotation * Math.PI) / 180;
-}
-
-function transformInstancePoint(point, origin, instance) {
-  const radians = rotationRadians(instance?.rotation, instance?.rotationUnit || 'degrees');
-  const dx = point.x - origin.x;
-  const dy = point.y - origin.y;
-  return {
-    x: (dx * Math.cos(radians) - dy * Math.sin(radians)) + origin.x + numberValue(instance?.x),
-    y: (dx * Math.sin(radians) + dy * Math.cos(radians)) + origin.y + numberValue(instance?.y),
-  };
+function transformInstancePoint(point, instance) {
+  return transformObjectVectorInstancePoint(point, instance, { rotationUnit: 'degrees' });
 }
 
 export function transformCollisionPoints(points, {
@@ -229,13 +203,15 @@ export function transformCollisionPoints(points, {
   scaleX = scale,
   scaleY = scale,
 } = {}) {
-  const radians = rotationRadians(rotation, rotationUnit);
-  const safeScaleX = numberValue(scaleX, 1);
-  const safeScaleY = numberValue(scaleY, 1);
-  return normalizePoints(points).map((point) => ({
-    x: numberValue(x) + ((point.x * safeScaleX) * Math.cos(radians)) - ((point.y * safeScaleY) * Math.sin(radians)),
-    y: numberValue(y) + ((point.x * safeScaleX) * Math.sin(radians)) + ((point.y * safeScaleY) * Math.cos(radians)),
-  }));
+  return transformRuntimeOrientedPoints(normalizePoints(points), {
+    rotation,
+    rotationUnit,
+    scale,
+    scaleX,
+    scaleY,
+    x,
+    y,
+  });
 }
 
 function boundsFromPoints(points) {
@@ -301,7 +277,7 @@ export function getObjectVectorCollisionOutlinePoints(object, options = {}) {
     return tool === 'polygon' || tool === 'polyline';
   }) || visibleEffectiveShapes(object, options).find((candidate) => shapeTool(candidate) === 'line');
   const transform = shapeTransform(shape);
-  return shapeLocalOutlinePoints(shape).map((point) => transformShapePoint(point, transform, origin));
+  return shapeLocalOutlinePoints(shape).map((point) => transformObjectVectorShapePoint(point, transform, origin));
 }
 
 export function createObjectVectorCollisionGeometry(object, instance = {}, options = {}) {
@@ -310,7 +286,7 @@ export function createObjectVectorCollisionGeometry(object, instance = {}, optio
     .flatMap((shape) => {
       const transform = shapeTransform(shape);
       return shapeLocalPolygons(shape)
-        .map((polygon) => polygon.map((point) => transformInstancePoint(transformShapePoint(point, transform, origin), origin, instance)))
+        .map((polygon) => polygon.map((point) => transformInstancePoint(transformObjectVectorShapePoint(point, transform, origin), instance)))
         .filter((polygon) => polygon.length >= 3);
     });
   const bounds = boundsFromPolygons(polygons);
@@ -322,7 +298,7 @@ export function createObjectVectorCollisionGeometry(object, instance = {}, optio
     mask: maskFromPolygons(polygons, bounds, maskCellSize),
     object,
     origin,
-    originWorld: object ? transformInstancePoint(origin, origin, instance) : { x: 0, y: 0 },
+    originWorld: object ? transformInstancePoint(origin, instance) : { x: 0, y: 0 },
     polygons,
     shapeRotations: [...new Set(visibleEffectiveShapes(object, options).map((shape) => shapeTransform(shape).rotation))],
     transformedPoints: polygons.flat(),

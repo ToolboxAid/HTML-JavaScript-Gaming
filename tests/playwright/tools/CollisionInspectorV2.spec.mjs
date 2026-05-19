@@ -72,6 +72,7 @@ async function runtimeObjectPixelBounds(page, objectId, instance) {
       elapsedMs: 0,
       objectId,
       rotation: instance.rotation,
+      rotationUnit: instance.rotationUnit,
       scale: instance.scale,
       x: instance.x,
       y: instance.y
@@ -106,6 +107,110 @@ async function runtimeObjectPixelBounds(page, objectId, instance) {
       y: minY
     };
   }, { instance, objectId });
+}
+
+async function runtimeCollisionOrientationSamples(page, samples) {
+  return page.evaluate(async ({ samples: requestedSamples }) => {
+    const {
+      ObjectVectorRuntimeAssetService,
+      transformRuntimeOrientedPoint
+    } = await import("/src/engine/rendering/index.js");
+    const {
+      createObjectVectorCollisionGeometry,
+      getObjectVectorOrigin
+    } = await import("/src/engine/collision/index.js");
+    const runtime = new ObjectVectorRuntimeAssetService({
+      logger: {
+        error() {},
+        info() {},
+        warn() {}
+      }
+    });
+    const assetSet = await runtime.loadFromManifest("/games/Asteroids/game.manifest.json", {
+      sourceLabel: "orientation validation"
+    });
+    if (!assetSet) {
+      throw new Error("Asteroids object-vector manifest failed to load for orientation validation.");
+    }
+
+    function runtimeBounds(objectId, instance) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 960;
+      canvas.height = 720;
+      const context = canvas.getContext("2d");
+      const result = runtime.renderObject({ ctx: context }, assetSet, {
+        elapsedMs: 0,
+        objectId,
+        rotation: instance.rotation,
+        rotationUnit: instance.rotationUnit,
+        scale: instance.scale,
+        x: instance.x,
+        y: instance.y
+      });
+      if (!result.ok) {
+        throw new Error(`Runtime object render failed for ${objectId}.`);
+      }
+      const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      let maxX = -1;
+      let maxY = -1;
+      let minX = canvas.width;
+      let minY = canvas.height;
+      for (let y = 0; y < canvas.height; y += 1) {
+        for (let x = 0; x < canvas.width; x += 1) {
+          if (data[(y * canvas.width + x) * 4 + 3] <= 0) {
+            continue;
+          }
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+        }
+      }
+      if (maxX < minX || maxY < minY) {
+        throw new Error(`Runtime object render produced no visible pixels for ${objectId}.`);
+      }
+      return {
+        height: maxY - minY + 1,
+        width: maxX - minX + 1,
+        x: minX,
+        y: minY
+      };
+    }
+
+    return requestedSamples.map((sample) => {
+      const object = assetSet.objectsById.get(sample.objectId);
+      if (!object) {
+        throw new Error(`Manifest object ${sample.objectId} is unavailable.`);
+      }
+      const scale = sample.scale ?? 1;
+      const runtimeInstance = {
+        rotation: sample.radians,
+        rotationUnit: "radians",
+        scale,
+        x: sample.x,
+        y: sample.y
+      };
+      const collisionInstance = {
+        rotation: sample.degrees,
+        rotationUnit: "degrees",
+        scale,
+        x: sample.x,
+        y: sample.y
+      };
+      const geometry = createObjectVectorCollisionGeometry(object, collisionInstance);
+      const origin = getObjectVectorOrigin(object);
+      return {
+        collisionBounds: geometry.bounds,
+        collisionPoints: geometry.transformedPoints.slice(0, 6),
+        helperOrigin: transformRuntimeOrientedPoint(origin, runtimeInstance),
+        label: sample.label,
+        objectId: sample.objectId,
+        originWorld: geometry.originWorld,
+        runtimeBounds: runtimeBounds(sample.objectId, runtimeInstance),
+        transformedPointCount: geometry.transformedPoints.length
+      };
+    });
+  }, { samples });
 }
 
 test.describe("Collision Inspector V2", () => {
@@ -178,18 +283,32 @@ test.describe("Collision Inspector V2", () => {
       expect(collisionInspectorScale.scaleY).toBeCloseTo(1, 2);
       const runtimeRenderSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "ObjectVectorRuntimeAssetService.js"), "utf8");
       const worldScreenSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "WorldScreenTransform.js"), "utf8");
+      const orientationTransformSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "OrientationTransform.js"), "utf8");
+      const collisionObjectVectorSource = await readFile(join(server.repoRoot, "src", "engine", "collision", "objectVector.js"), "utf8");
       const collisionControlsSource = await readFile(join(server.repoRoot, "tools", "collision-inspector-v2", "js", "CollisionInspectorV2Controls.js"), "utf8");
       const collisionRendererSource = await readFile(join(server.repoRoot, "tools", "collision-inspector-v2", "js", "CollisionInspectorV2Renderer.js"), "utf8");
       const objectVectorStudioSource = await readFile(join(server.repoRoot, "tools", "object-vector-studio-v2", "js", "ToolStarterApp.js"), "utf8");
       expect(worldScreenSource).toContain("export const CANONICAL_WORLD_TO_SCREEN_SCALE = 1;");
       expect(worldScreenSource).toContain("objectRenderOptions(options = {})");
+      expect(worldScreenSource).toContain("rotationRadians(options.rotation || 0, options.rotationUnit || \"radians\")");
+      expect(orientationTransformSource).toContain("export function rotationRadians");
+      expect(orientationTransformSource).toContain("export function transformRuntimeOrientedPoint");
+      expect(orientationTransformSource).toContain("export function transformObjectVectorShapePoint");
+      expect(orientationTransformSource).toContain("export function headingPointFromRotation");
       expect(runtimeRenderSource).toContain("createWorldScreenTransform");
       expect(runtimeRenderSource).toContain(".objectRenderOptions(options)");
+      expect(runtimeRenderSource).toContain("applyObjectVectorCanvasTransform");
+      expect(collisionObjectVectorSource).toContain("transformObjectVectorInstancePoint");
+      expect(collisionObjectVectorSource).toContain("transformRuntimeOrientedPoints");
       expect(collisionControlsSource).toContain("createWorldScreenTransform");
+      expect(collisionControlsSource).toContain("rotationUnits");
       expect(collisionRendererSource).toContain("createWorldScreenTransform");
+      expect(collisionRendererSource).toContain("headingPointFromRotation");
       expect(collisionRendererSource).toContain("screenPointToWorldWithUserZoom");
       expect(objectVectorStudioSource).toContain("const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;");
       expect(objectVectorStudioSource).toContain("CANONICAL_WORLD_TO_SCREEN_SCALE");
+      expect(objectVectorStudioSource).toContain("transformObjectVectorShapePoint");
+      expect(objectVectorStudioSource).toContain("inverseTransformObjectVectorShapePoint");
       expect(objectVectorStudioSource).toContain("point.x / OBJECT_PREVIEW_DRAWING_SCALE");
       const asteroidsPage = await page.context().newPage();
       try {
@@ -226,6 +345,28 @@ test.describe("Collision Inspector V2", () => {
       });
       expect(Math.abs(runtimeShipBounds.width - scaleMatchSummary.bounds.objectA.width)).toBeLessThanOrEqual(10);
       expect(Math.abs(runtimeShipBounds.height - scaleMatchSummary.bounds.objectA.height)).toBeLessThanOrEqual(10);
+      const orientationSamples = await runtimeCollisionOrientationSamples(page, [
+        { degrees: -90, label: "ship-up", objectId: "object.asteroids.ship", radians: -Math.PI / 2, x: 360, y: 320 },
+        { degrees: 60, label: "large-asteroid-60", objectId: "object.asteroids.large-asteroid", radians: Math.PI / 3, x: 280, y: 260 },
+        { degrees: 180, label: "large-ufo-180", objectId: "object.asteroids.large-ufo", radians: Math.PI, x: 520, y: 280 },
+        { degrees: 0, label: "bullet-0", objectId: "object.asteroids.bullet", radians: 0, x: 320, y: 300 },
+        { degrees: 90, label: "bullet-90", objectId: "object.asteroids.bullet", radians: Math.PI / 2, x: 320, y: 300 },
+        { degrees: 180, label: "bullet-180", objectId: "object.asteroids.bullet", radians: Math.PI, x: 320, y: 300 },
+        { degrees: 270, label: "bullet-270", objectId: "object.asteroids.bullet", radians: Math.PI * 1.5, x: 320, y: 300 }
+      ]);
+      orientationSamples.forEach((sample) => {
+        expect(sample.transformedPointCount, sample.label).toBeGreaterThan(0);
+        expect(Math.abs(sample.originWorld.x - sample.helperOrigin.x), `${sample.label} origin x`).toBeLessThan(0.001);
+        expect(Math.abs(sample.originWorld.y - sample.helperOrigin.y), `${sample.label} origin y`).toBeLessThan(0.001);
+        expect(Math.abs(sample.runtimeBounds.width - sample.collisionBounds.width), `${sample.label} width`).toBeLessThanOrEqual(12);
+        expect(Math.abs(sample.runtimeBounds.height - sample.collisionBounds.height), `${sample.label} height`).toBeLessThanOrEqual(12);
+      });
+      const bulletPointSignatures = new Set(
+        orientationSamples
+          .filter((sample) => sample.objectId === "object.asteroids.bullet")
+          .map((sample) => JSON.stringify(sample.collisionPoints))
+      );
+      expect(bulletPointSignatures.size).toBe(4);
       await expect(page.locator("#collisionSummary")).toContainText('"enginePath": "src/engine/collision/objectVector.js"');
       await expect(page.locator("#collisionSummary")).toContainText('"objectOrigins"');
       await expect(page.locator("#collisionSummary")).toContainText('"recommendedMode": "vector"');
@@ -280,6 +421,8 @@ test.describe("Collision Inspector V2", () => {
       expect(rotatedASummary.enginePath).toBe("src/engine/collision/objectVector.js");
       expect(rotatedASummary.rotation.objectA).toBe(45);
       expect(rotatedASummary.rotation.objectB).toBe(0);
+      expect(rotatedASummary.rotationUnits.objectA).toBe("degrees");
+      expect(rotatedASummary.rotationUnits.objectB).toBe("degrees");
       expect(rotatedASummary.transformedPoints.objectA).not.toEqual(initialSummary.transformedPoints.objectA);
       expect(await canvasSignature(page)).not.toBe(initialSignature);
       await page.locator("#objectBRotationInput").fill("180");
@@ -428,6 +571,34 @@ test.describe("Collision Inspector V2", () => {
         return CANONICAL_WORLD_TO_SCREEN_SCALE;
       });
       expect(sharedScaleAfterZoom).toBe(1);
+      const editorOrientation = await page.evaluate(async () => {
+        const {
+          inverseTransformObjectVectorShapePoint,
+          normalizeRotationDegrees,
+          objectVectorSvgTransformAttribute,
+          transformObjectVectorShapePoint
+        } = await import("/src/engine/rendering/index.js");
+        const transform = { rotation: 45, scaleX: 1.25, scaleY: 0.75, x: 10, y: -4 };
+        const origin = { x: 2, y: 3 };
+        const point = { x: 8, y: 5 };
+        const helperPoint = transformObjectVectorShapePoint(point, transform, origin);
+        return {
+          appLocal: window.__objectVectorStudioV2App.localPointFromTransformedPoint(helperPoint, transform, origin),
+          appNormalized: window.__objectVectorStudioV2App.normalizeRotationDegrees(-45),
+          appPoint: window.__objectVectorStudioV2App.transformedPoint(point, transform, origin),
+          appSvg: window.__objectVectorStudioV2App.svgTransformAttribute(transform, origin),
+          helperLocal: inverseTransformObjectVectorShapePoint(helperPoint, transform, origin),
+          helperNormalized: normalizeRotationDegrees(-45),
+          helperPoint,
+          helperSvg: objectVectorSvgTransformAttribute(transform, origin)
+        };
+      });
+      expect(editorOrientation.appSvg).toBe(editorOrientation.helperSvg);
+      expect(editorOrientation.appNormalized).toBe(editorOrientation.helperNormalized);
+      expect(editorOrientation.appPoint.x).toBeCloseTo(editorOrientation.helperPoint.x, 3);
+      expect(editorOrientation.appPoint.y).toBeCloseTo(editorOrientation.helperPoint.y, 3);
+      expect(editorOrientation.appLocal.x).toBeCloseTo(editorOrientation.helperLocal.x, 3);
+      expect(editorOrientation.appLocal.y).toBeCloseTo(editorOrientation.helperLocal.y, 3);
       await expect(page.locator("#statusLog")).toHaveValue(/Viewport zoom set/);
       expect(pageErrors).toEqual([]);
     } finally {

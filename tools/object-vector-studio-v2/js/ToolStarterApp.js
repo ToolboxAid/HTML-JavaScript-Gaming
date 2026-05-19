@@ -1,5 +1,11 @@
 import {
   CANONICAL_WORLD_TO_SCREEN_SCALE,
+  inverseTransformObjectVectorShapePoint,
+  normalizeObjectVectorOrigin,
+  normalizeRotationDegrees as normalizeSharedRotationDegrees,
+  objectVectorSvgTransformAttribute,
+  rotatePointAround as rotateSharedPointAround,
+  transformObjectVectorShapePoint,
   ObjectVectorRuntimeAssetService
 } from "../../../src/engine/rendering/index.js";
 
@@ -4085,13 +4091,7 @@ export class ToolStarterApp {
   }
 
   svgTransformAttribute(transform, origin = { x: 0, y: 0 }) {
-    return [
-      `translate(${transform.x} ${transform.y})`,
-      `translate(${origin.x} ${origin.y})`,
-      `rotate(${transform.rotation})`,
-      `scale(${transform.scaleX} ${transform.scaleY})`,
-      `translate(${-origin.x} ${-origin.y})`
-    ].join(" ");
+    return objectVectorSvgTransformAttribute(transform, origin);
   }
 
   scaleDrawingValue(value, drawingScale = 1) {
@@ -4134,29 +4134,14 @@ export class ToolStarterApp {
   }
 
   transformedPoint(point, transform, origin = { x: 0, y: 0 }) {
-    const radians = (transform.rotation * Math.PI) / 180;
-    const relativeX = (point.x - origin.x) * transform.scaleX;
-    const relativeY = (point.y - origin.y) * transform.scaleY;
-    const rotatedX = relativeX * Math.cos(radians) - relativeY * Math.sin(radians);
-    const rotatedY = relativeX * Math.sin(radians) + relativeY * Math.cos(radians);
-
-    return {
-      x: transform.x + origin.x + rotatedX,
-      y: transform.y + origin.y + rotatedY
-    };
+    return transformObjectVectorShapePoint(point, transform, origin);
   }
 
   localPointFromTransformedPoint(point, transform, origin = { x: 0, y: 0 }) {
-    const radians = (transform.rotation * Math.PI) / 180;
-    const cos = Math.cos(radians);
-    const sin = Math.sin(radians);
-    const dx = Number(point.x) - transform.x - origin.x;
-    const dy = Number(point.y) - transform.y - origin.y;
-    const unrotatedX = dx * cos + dy * sin;
-    const unrotatedY = -dx * sin + dy * cos;
+    const localPoint = inverseTransformObjectVectorShapePoint(point, transform, origin);
     return {
-      x: this.formatViewportNumber(origin.x + unrotatedX / transform.scaleX),
-      y: this.formatViewportNumber(origin.y + unrotatedY / transform.scaleY)
+      x: this.formatViewportNumber(localPoint.x),
+      y: this.formatViewportNumber(localPoint.y)
     };
   }
 
@@ -6951,13 +6936,11 @@ export class ToolStarterApp {
   }
 
   objectTransformOrigin(object) {
-    if (object?.objectOrigin && Number.isFinite(Number(object.objectOrigin.x)) && Number.isFinite(Number(object.objectOrigin.y))) {
-      return {
-        x: this.formatViewportNumber(Number(object.objectOrigin.x)),
-        y: this.formatViewportNumber(Number(object.objectOrigin.y))
-      };
-    }
-    return { x: 0, y: 0 };
+    const origin = normalizeObjectVectorOrigin(object?.objectOrigin);
+    return {
+      x: this.formatViewportNumber(origin.x),
+      y: this.formatViewportNumber(origin.y)
+    };
   }
 
   updateSelectedObjectOrigin(origin, okMessage) {
@@ -7302,13 +7285,7 @@ export class ToolStarterApp {
   }
 
   rotatePointAround(point, pivot, rotation) {
-    const radians = (rotation * Math.PI) / 180;
-    const relativeX = point.x - pivot.x;
-    const relativeY = point.y - pivot.y;
-    return {
-      x: pivot.x + relativeX * Math.cos(radians) - relativeY * Math.sin(radians),
-      y: pivot.y + relativeX * Math.sin(radians) + relativeY * Math.cos(radians)
-    };
+    return rotateSharedPointAround(point, pivot, rotation, "degrees");
   }
 
   rotateGeometryPoint(point, origin, rotation) {
@@ -7367,11 +7344,7 @@ export class ToolStarterApp {
   }
 
   normalizeRotationDegrees(value) {
-    if (!Number.isFinite(value)) {
-      return value;
-    }
-    const normalized = ((value % 360) + 360) % 360;
-    return Number(normalized.toFixed(3));
+    return normalizeSharedRotationDegrees(value);
   }
 
   formatScaleInputValue(value) {

@@ -177,6 +177,10 @@ export class CollisionInspectorV2Controls {
         shapeRotationsA: (geometryA.shapeRotations || []).map((value) => roundNumber(value, 1)),
         shapeRotationsB: (geometryB.shapeRotations || []).map((value) => roundNumber(value, 1))
       },
+      rotationUnits: {
+        objectA: geometryA.instance?.rotationUnit || "degrees",
+        objectB: geometryB.instance?.rotationUnit || "degrees"
+      },
       transformedPoints: {
         objectA: (geometryA.transformedPoints || []).slice(0, 24).map(roundPoint),
         objectB: (geometryB.transformedPoints || []).slice(0, 24).map(roundPoint)

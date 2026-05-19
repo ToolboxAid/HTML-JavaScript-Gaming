@@ -111,6 +111,8 @@ export default class Ufo {
 
   getCollisionPolygon() {
     return transformCollisionPoints(this.collisionPoints, {
+      rotation: 0,
+      rotationUnit: 'radians',
       x: this.x,
       y: this.y,
     });

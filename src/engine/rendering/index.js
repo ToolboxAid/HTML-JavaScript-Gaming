@@ -10,4 +10,20 @@ export { default as ResolutionScaler } from './ResolutionScaler.js';
 export { renderSpriteReadyEntities } from './SpriteRenderSystem.js';
 export { renderByLayers } from './LayeredRenderSystem.js';
 export { transformPoints, drawVectorShape } from './VectorDrawing.js';
+export {
+  applyObjectVectorCanvasTransform,
+  headingPointFromRotation,
+  inverseTransformObjectVectorShapePoint,
+  normalizeObjectVectorOrigin,
+  normalizeObjectVectorTransform,
+  normalizeRotationDegrees,
+  objectVectorSvgTransformAttribute,
+  rotatePointAround,
+  rotationDegrees,
+  rotationRadians,
+  transformObjectVectorInstancePoint,
+  transformObjectVectorShapePoint,
+  transformRuntimeOrientedPoint,
+  transformRuntimeOrientedPoints
+} from './OrientationTransform.js';
 export { CANONICAL_WORLD_TO_SCREEN_SCALE, createWorldScreenTransform } from './WorldScreenTransform.js';

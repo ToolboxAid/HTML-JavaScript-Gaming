@@ -74,6 +74,7 @@ function createObjectVectorRuntime(calls) {
         objectId: object?.id || options.objectId,
         requireManifestBinding: options.requireManifestBinding === true,
         rotation: options.rotation,
+        rotationUnit: options.rotationUnit,
         stroke: shape?.style?.stroke || '',
         stateId: options.stateId,
         tags: options.tags,
@@ -253,6 +254,7 @@ function testAsteroidsAttractAsteroidsUseManifestObjectsAndStyles() {
     const calls = renderCalls.filter((call) => call.objectId === objectId);
     assert.equal(calls.length > 0, true);
     assert.equal(calls.every((call) => call.requireManifestBinding), true);
+    assert.equal(calls.every((call) => call.rotationUnit === 'radians'), true);
     assert.equal(calls.every((call) => call.stroke === styleByObjectId.get(objectId)), true);
     assert.equal(calls.every((call) => !Array.isArray(call.tags) || call.tags.length === 0), true);
   });
@@ -303,6 +305,7 @@ function testAsteroidsGameplayObjectsUseSharedManifestBindings() {
     const calls = renderCalls.filter((call) => call.objectId === objectId);
     assert.equal(calls.length > 0, true, `${objectId} should render from the manifest`);
     assert.equal(calls.every((call) => call.requireManifestBinding), true, `${objectId} should require manifest binding`);
+    assert.equal(calls.every((call) => call.rotationUnit === 'radians'), true, `${objectId} should use the shared runtime radians convention`);
     assert.equal(calls.every((call) => !Array.isArray(call.tags) || call.tags.length === 0), true, `${objectId} should render by manifest object ID only`);
   });
   assert.equal(renderCalls.some((call) => call.objectId === 'object.asteroids.ship' && call.stateId === 'idle'), true);
@@ -314,6 +317,7 @@ function testAsteroidsGameplayObjectsUseSharedManifestBindings() {
   const smallUfoCalls = renderCalls.filter((call) => call.objectId === 'object.asteroids.small-ufo');
   assert.equal(smallUfoCalls.length > 0, true);
   assert.equal(smallUfoCalls.every((call) => call.requireManifestBinding), true);
+  assert.equal(smallUfoCalls.every((call) => call.rotationUnit === 'radians'), true);
   assert.equal(smallUfoCalls.every((call) => !Array.isArray(call.tags) || call.tags.length === 0), true);
 }
 
@@ -382,6 +386,7 @@ function testAsteroidsGameplayBulletsUseManifestObjectGeometry() {
     bulletCalls.map((call) => roundedAngle(call.rotation)),
     fireAngles.map(roundedAngle),
   );
+  assert.equal(bulletCalls.every((call) => call.rotationUnit === 'radians'), true);
   assert.equal(bulletCalls.every((call) => call.requireManifestBinding), true);
   assert.equal(bulletCalls.every((call) => !Array.isArray(call.tags) || call.tags.length === 0), true);
   assert.equal(bulletCalls.every((call) => call.stroke === bulletObject.shapes[0].style.stroke), true);
