@@ -211,8 +211,8 @@ function testAsteroidsAttractObjectsLoadFromManifestRoles() {
 
   const objectIds = renderCalls.map((call) => call.objectId);
   assert.equal(objectIds.includes('object.asteroids.ship'), true);
-  assert.equal(objectIds.includes('object.asteroids.small-asteroid'), true);
-  assert.equal(objectIds.includes('object.asteroids.small-ufo'), true);
+  assert.equal(objectIds.includes('object.asteroids.large-asteroid'), true);
+  assert.equal(objectIds.includes('object.asteroids.large-ufo'), true);
 }
 
 function testAsteroidsGameplayBulletsUseManifestVectorMap() {

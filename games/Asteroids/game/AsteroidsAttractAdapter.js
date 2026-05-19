@@ -5,6 +5,7 @@ David Quesenberry
 AsteroidsAttractAdapter.js
 */
 import { clamp } from '../../../src/shared/utils/mathUtils.js';
+import { ASTEROIDS_VECTOR_MAP_IDS } from './asteroidsVectorMaps.js';
 
 function estimateTextWidth(text, fontPx) {
   return String(text ?? '').length * (fontPx * 0.62);
@@ -123,6 +124,7 @@ export default class AsteroidsAttractAdapter {
       ...this.scene.objectVectorRoleOptions('ship'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
+      objectId: ASTEROIDS_VECTOR_MAP_IDS.attractShip,
       rotation: (Math.PI / 2) - 0.28,
       scale: 1.1,
       stateId: 'idle',
@@ -130,9 +132,11 @@ export default class AsteroidsAttractAdapter {
       y: 348,
     });
     this.scene?.drawObjectVectorAsset?.(renderer, 'attractAsteroid', {
-      ...this.scene.objectVectorRoleOptions('asteroidSmall'),
+      ...this.scene.objectVectorRoleOptions('asteroidLarge'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
+      objectId: ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid,
+      scale: 0.72,
       stateId: 'active',
       x: 632,
       y: 352,
@@ -209,6 +213,7 @@ export default class AsteroidsAttractAdapter {
       ...this.scene.objectVectorRoleOptions('ship'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
+      objectId: ASTEROIDS_VECTOR_MAP_IDS.attractShip,
       rotation: (Math.PI / 2) + Math.sin(this.demoTime * 0.9) * 1.2,
       stateId: 'idle',
       x,
@@ -218,17 +223,20 @@ export default class AsteroidsAttractAdapter {
     const rockX = 480 + Math.sin(this.demoTime * 0.5) * 250;
     const rockY = 330 + Math.cos(this.demoTime * 0.9) * 120;
     this.scene?.drawObjectVectorAsset?.(renderer, 'attractAsteroid', {
-      ...this.scene.objectVectorRoleOptions('asteroidSmall'),
+      ...this.scene.objectVectorRoleOptions('asteroidLarge'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
+      objectId: ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid,
+      scale: 0.72,
       stateId: 'active',
       x: rockX,
       y: rockY,
     });
     this.scene?.drawObjectVectorAsset?.(renderer, 'attractUfo', {
-      ...this.scene.objectVectorRoleOptions('ufoSmall'),
+      ...this.scene.objectVectorRoleOptions('ufoLarge'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
+      objectId: ASTEROIDS_VECTOR_MAP_IDS.attractUfo,
       stateId: 'active',
       x: 480 + Math.cos(this.demoTime * 0.43) * 280,
       y: 284,

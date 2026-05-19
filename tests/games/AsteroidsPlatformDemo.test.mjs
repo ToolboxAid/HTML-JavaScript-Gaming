@@ -72,7 +72,8 @@ export async function run() {
   const vectorMaps = loadAsteroidsVectorMaps();
   const manifestText = JSON.stringify(manifest);
 
-  assert.equal(Array.isArray(manifest.tools['vector-map-editor'].vectorMapDocument.vectors), true);
+  assert.equal(manifest.tools['vector-map-editor'], undefined);
+  assert.equal(Array.isArray(manifest.tools['object-vector-studio-v2'].vectorMaps.vectors), true);
   assert.equal(vectorMaps.vectorsById.has('vector.asteroids.ship.collision'), true);
   assert.equal(vectorMaps.vectorsById.has('vector.asteroids.ui.title'), true);
   assert.equal(manifest.game["workspace"], undefined);

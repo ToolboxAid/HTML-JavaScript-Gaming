@@ -1,7 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/tools/vector-map-editor.schema.json",
-  "title": "Vector Map Editor Payload",
+  "title": "Vector Map Editor Payload (Deprecated)",
+  "description": "Deprecated tool payload schema. Do not select Vector Map Editor for new manifest vector work; use object-vector-studio-v2.vectorMaps for current game-owned vector maps.",
+  "deprecated": true,
   "type": "object",
   "required": [
     "vectorMapDocument"
@@ -9,6 +11,8 @@
   "additionalProperties": false,
   "properties": {
     "vectorMapDocument": {
+      "description": "Deprecated legacy Vector Map Editor document. Current game-owned vector maps should live under object-vector-studio-v2.vectorMaps.",
+      "deprecated": true,
       "$ref": "#/$defs/jsonValue"
     }
   },

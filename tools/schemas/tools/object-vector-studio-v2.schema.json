@@ -18,6 +18,9 @@
       "type": "string",
       "minLength": 1
     },
+    "vectorMaps": {
+      "$ref": "#/$defs/vectorMapDocument"
+    },
     "objects": {
       "type": "array",
       "items": {
@@ -71,11 +74,129 @@
         }
       }
     },
+    "objectIdentityId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^object\\.[a-z0-9-]+\\.[a-z0-9][a-z0-9-]*$"
+    },
     "tags": {
       "type": "array",
       "items": {
         "type": "string",
         "minLength": 1
+      }
+    },
+    "vectorMapDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "version", "name", "source", "objectVectorRoles", "vectors"],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "const": "object-vector-studio-v2"
+        },
+        "objectVectorRoles": {
+          "$ref": "#/$defs/objectVectorRoles"
+        },
+        "vectors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vectorMapEntry"
+          }
+        }
+      }
+    },
+    "objectVectorRoles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ship", "asteroidLarge", "asteroidMedium", "asteroidSmall", "ufoLarge", "ufoSmall"],
+      "properties": {
+        "ship": {
+          "$ref": "#/$defs/objectVectorRoleBinding"
+        },
+        "asteroidLarge": {
+          "$ref": "#/$defs/objectVectorRoleBinding"
+        },
+        "asteroidMedium": {
+          "$ref": "#/$defs/objectVectorRoleBinding"
+        },
+        "asteroidSmall": {
+          "$ref": "#/$defs/objectVectorRoleBinding"
+        },
+        "ufoLarge": {
+          "$ref": "#/$defs/objectVectorRoleBinding"
+        },
+        "ufoSmall": {
+          "$ref": "#/$defs/objectVectorRoleBinding"
+        }
+      }
+    },
+    "objectVectorRoleBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objectId", "tags"],
+      "properties": {
+        "objectId": {
+          "$ref": "#/$defs/objectIdentityId"
+        },
+        "tags": {
+          "$ref": "#/$defs/tags"
+        }
+      }
+    },
+    "vectorMapEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "kind", "usage", "points"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^vector\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["path", "polygon", "polyline"]
+        },
+        "usage": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/point2d"
+          }
+        },
+        "viewBox": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
       }
     },
     "objectState": {

@@ -208,12 +208,15 @@
         }
       }
     },
-    "vector-map-editor": {
-      "vectorMapDocument": {
+    "object-vector-studio-v2": {
+      "version": 1,
+      "toolId": "object-vector-studio-v2",
+      "name": "Asteroids Object Vector Assets",
+      "vectorMaps": {
         "schema": "html-js-gaming.asteroids-vector-map",
         "version": 1,
-        "name": "Asteroids Manifest Vector Maps",
-        "source": "manifest",
+        "name": "Asteroids Object Vector Manifest Maps",
+        "source": "object-vector-studio-v2",
         "objectVectorRoles": {
           "ship": {
             "objectId": "object.asteroids.ship",
@@ -329,7 +332,11 @@
             "id": "vector.asteroids.bullet",
             "label": "Bullet",
             "kind": "polygon",
-            "usage": ["gameplay", "collision", "projectile"],
+            "usage": [
+              "gameplay",
+              "collision",
+              "projectile"
+            ],
             "points": [
               {
                 "x": -2,
@@ -492,92 +499,6 @@
             ]
           },
           {
-            "id": "vector.asteroids.attract.ship",
-            "label": "Attract Ship",
-            "kind": "polygon",
-            "usage": [
-              "attract"
-            ],
-            "points": [
-              {
-                "x": 16,
-                "y": 0
-              },
-              {
-                "x": -10,
-                "y": 9
-              },
-              {
-                "x": -5,
-                "y": 0
-              },
-              {
-                "x": -10,
-                "y": -9
-              }
-            ]
-          },
-          {
-            "id": "vector.asteroids.attract.asteroid",
-            "label": "Attract Asteroid",
-            "kind": "polyline",
-            "usage": [
-              "attract"
-            ],
-            "points": [
-              {
-                "x": -16,
-                "y": -5
-              },
-              {
-                "x": -7,
-                "y": 14
-              },
-              {
-                "x": 11,
-                "y": 12
-              },
-              {
-                "x": 15,
-                "y": -6
-              },
-              {
-                "x": 2,
-                "y": -16
-              },
-              {
-                "x": -16,
-                "y": -5
-              }
-            ]
-          },
-          {
-            "id": "vector.asteroids.attract.ufo",
-            "label": "Attract UFO",
-            "kind": "polygon",
-            "usage": [
-              "attract"
-            ],
-            "points": [
-              {
-                "x": -20,
-                "y": 5
-              },
-              {
-                "x": 20,
-                "y": 5
-              },
-              {
-                "x": 14,
-                "y": -4
-              },
-              {
-                "x": -14,
-                "y": -4
-              }
-            ]
-          },
-          {
             "id": "vector.asteroids.ui.title",
             "label": "Asteroids Title",
             "kind": "path",
@@ -594,12 +515,7 @@
             "points": []
           }
         ]
-      }
-    },
-    "object-vector-studio-v2": {
-      "version": 1,
-      "toolId": "object-vector-studio-v2",
-      "name": "Asteroids Object Vector Assets",
+      },
       "objects": [
         {
           "id": "object.asteroids.ship",

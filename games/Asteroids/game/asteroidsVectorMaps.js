@@ -1,10 +1,10 @@
-const ASTEROIDS_VECTOR_MAP_TOOL_KEY = 'vector-map-editor';
-const ASTEROIDS_VECTOR_MAP_DOCUMENT_KEY = 'vectorMapDocument';
+const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';
+const ASTEROIDS_VECTOR_MAP_DOCUMENT_KEY = 'vectorMaps';
 
 export const ASTEROIDS_VECTOR_MAP_IDS = Object.freeze({
-  attractAsteroid: 'vector.asteroids.attract.asteroid',
-  attractShip: 'vector.asteroids.attract.ship',
-  attractUfo: 'vector.asteroids.attract.ufo',
+  attractAsteroid: 'object.asteroids.large-asteroid',
+  attractShip: 'object.asteroids.ship',
+  attractUfo: 'object.asteroids.large-ufo',
   bullet: 'vector.asteroids.bullet',
   shipCollision: 'vector.asteroids.ship.collision',
   shipLife: 'vector.asteroids.ship.life',
@@ -14,15 +14,18 @@ export const ASTEROIDS_VECTOR_MAP_IDS = Object.freeze({
 });
 
 export const ASTEROIDS_REQUIRED_VECTOR_MAP_IDS = Object.freeze([
-  ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid,
-  ASTEROIDS_VECTOR_MAP_IDS.attractShip,
-  ASTEROIDS_VECTOR_MAP_IDS.attractUfo,
   ASTEROIDS_VECTOR_MAP_IDS.bullet,
   ASTEROIDS_VECTOR_MAP_IDS.shipCollision,
   ASTEROIDS_VECTOR_MAP_IDS.shipLife,
   ASTEROIDS_VECTOR_MAP_IDS.ufoLargeCollision,
   ASTEROIDS_VECTOR_MAP_IDS.ufoSmallCollision,
   ASTEROIDS_VECTOR_MAP_IDS.uiTitle,
+]);
+
+export const ASTEROIDS_REQUIRED_OBJECT_VECTOR_MAP_IDS = Object.freeze([
+  ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid,
+  ASTEROIDS_VECTOR_MAP_IDS.attractShip,
+  ASTEROIDS_VECTOR_MAP_IDS.attractUfo,
 ]);
 
 export const ASTEROIDS_REQUIRED_OBJECT_VECTOR_ROLE_IDS = Object.freeze([
@@ -148,15 +151,22 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
   logger = null,
   sourceLabel = 'games/Asteroids/game.manifest.json',
 } = {}) {
-  const document = manifest?.tools?.[ASTEROIDS_VECTOR_MAP_TOOL_KEY]?.[ASTEROIDS_VECTOR_MAP_DOCUMENT_KEY];
+  const objectVectorPayload = manifest?.tools?.[ASTEROIDS_OBJECT_VECTOR_TOOL_KEY];
+  const document = objectVectorPayload?.[ASTEROIDS_VECTOR_MAP_DOCUMENT_KEY];
   const errors = [];
   if (!isRecord(document)) {
-    errors.push(`Asteroids vector map manifest is missing root.tools.${ASTEROIDS_VECTOR_MAP_TOOL_KEY}.${ASTEROIDS_VECTOR_MAP_DOCUMENT_KEY}.`);
+    errors.push(`Asteroids vector map manifest is missing root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.${ASTEROIDS_VECTOR_MAP_DOCUMENT_KEY}.`);
   }
   const vectors = Array.isArray(document?.vectors)
     ? document.vectors.map(normalizeVectorEntry).filter(Boolean)
     : [];
   const vectorsById = new Map(vectors.map((vector) => [vector.id, vector]));
+  const objectVectorMaps = Array.isArray(objectVectorPayload?.objects)
+    ? objectVectorPayload.objects
+      .filter((object) => isRecord(object) && normalizeString(object.id))
+      .map((object) => clone(object))
+    : [];
+  const objectVectorMapsById = new Map(objectVectorMaps.map((object) => [object.id, object]));
   ASTEROIDS_REQUIRED_VECTOR_MAP_IDS.forEach((id) => {
     const vector = vectorsById.get(id);
     if (!vector) {
@@ -166,6 +176,16 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
     const minimumPoints = minimumRequiredPointsForVector(id);
     if (vector.points.length < minimumPoints) {
       errors.push(`Asteroids vector map ${id} must contain at least ${minimumPoints} points.`);
+    }
+  });
+  ASTEROIDS_REQUIRED_OBJECT_VECTOR_MAP_IDS.forEach((id) => {
+    const object = objectVectorMapsById.get(id);
+    if (!object) {
+      errors.push(`Asteroids Object Vector manifest map ${id} is missing from root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.objects.`);
+      return;
+    }
+    if (!Array.isArray(object.shapes) || !object.shapes.length) {
+      errors.push(`Asteroids Object Vector manifest map ${id} must contain at least one shape.`);
     }
   });
   const objectVectorRoles = normalizeObjectVectorRoleBindings(document, errors);
@@ -179,6 +199,8 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
   }
   const vectorMaps = {
     document: clone(document),
+    objectVectorMaps,
+    objectVectorMapsById,
     objectVectorRoles,
     sourceLabel,
     usageCounts: usageCounts(vectors),

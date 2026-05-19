@@ -153,8 +153,19 @@ export async function run() {
   const vectorMaps = loadAsteroidsVectorMaps();
   const worldOptions = { asteroidGeometryProfiles, vectorMaps };
   const manifestPayload = loadAsteroidsManifest();
-  const manifestVectorIds = manifestPayload.tools['vector-map-editor'].vectorMapDocument.vectors.map((vector) => vector.id);
+  assert.equal(manifestPayload.tools['vector-map-editor'], undefined);
+  const objectVectorPayload = manifestPayload.tools['object-vector-studio-v2'];
+  const manifestVectorIds = objectVectorPayload.vectorMaps.vectors.map((vector) => vector.id);
   assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.bullet), true);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.attract.ship'), false);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.attract.asteroid'), false);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.attract.ufo'), false);
+  assert.equal(ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid, 'object.asteroids.large-asteroid');
+  assert.equal(ASTEROIDS_VECTOR_MAP_IDS.attractShip, 'object.asteroids.ship');
+  assert.equal(ASTEROIDS_VECTOR_MAP_IDS.attractUfo, 'object.asteroids.large-ufo');
+  assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid).id, 'object.asteroids.large-asteroid');
+  assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_VECTOR_MAP_IDS.attractShip).id, 'object.asteroids.ship');
+  assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_VECTOR_MAP_IDS.attractUfo).id, 'object.asteroids.large-ufo');
   assert.deepEqual(
     vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.bullet).points,
     [
@@ -183,7 +194,7 @@ export async function run() {
     { x: -20, y: 4 },
   ]);
   const missingBulletManifest = structuredClone(manifestPayload);
-  missingBulletManifest.tools['vector-map-editor'].vectorMapDocument.vectors = missingBulletManifest.tools['vector-map-editor'].vectorMapDocument.vectors
+  missingBulletManifest.tools['object-vector-studio-v2'].vectorMaps.vectors = missingBulletManifest.tools['object-vector-studio-v2'].vectorMaps.vectors
     .filter((vector) => vector.id !== ASTEROIDS_VECTOR_MAP_IDS.bullet);
   const missingBulletValidation = loadAsteroidsVectorMapsFromManifest(missingBulletManifest);
   assert.equal(missingBulletValidation.ok, false);
