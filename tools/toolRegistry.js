@@ -14,7 +14,7 @@ export const TOOL_REGISTRY = Object.freeze([
     showcaseTag: "Geometry",
     showcaseStatus: "Deprecated",
     active: true,
-    legacy: false,
+    legacy: true,
     order: 1,
     sampleEntryPoints: [
       {

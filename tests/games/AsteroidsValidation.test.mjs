@@ -176,10 +176,10 @@ export async function run() {
   assert.deepEqual(
     getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
     [
-      { x: -2, y: -2 },
-      { x: 2, y: -2 },
-      { x: 2, y: 2 },
-      { x: -2, y: 2 },
+      { x: -1, y: 0 },
+      { x: 0, y: 0 },
+      { x: 0, y: 3 },
+      { x: -1, y: 5 },
     ],
   );
   assert.deepEqual(
@@ -196,24 +196,35 @@ export async function run() {
   assert.deepEqual(
     getAsteroidsObjectGeometryPoints(objectGeometry, 'asteroidMedium'),
     [
-      { x: -16, y: -10 },
-      { x: -2, y: -18 },
-      { x: 16, y: -14 },
-      { x: 20, y: 2 },
-      { x: 8, y: 18 },
-      { x: -10, y: 16 },
-      { x: -20, y: 4 },
+      { x: 4.779, y: 19.845 },
+      { x: 24.219, y: 10.125 },
+      { x: 21.789, y: 2.835 },
+      { x: 12.069, y: -4.455 },
+      { x: 24.219, y: -16.605 },
+      { x: 14.499, y: -21.465 },
+      { x: 4.779, y: -18.063 },
+      { x: -9.801, y: -21.465 },
+      { x: -20.979, y: -8.343 },
+      { x: -20.979, y: 10.125 },
+      { x: -12.231, y: 10.125 },
+      { x: -12.231, y: 19.845 },
     ],
   );
   assert.deepEqual(
     getAsteroidsObjectGeometryPoints(objectGeometry, 'asteroidSmall'),
     [
-      { x: -10, y: -6 },
-      { x: 0, y: -12 },
-      { x: 10, y: -6 },
-      { x: 8, y: 8 },
-      { x: -6, y: 10 },
-      { x: -12, y: 0 },
+      { x: 1.995, y: 8.925 },
+      { x: 10.395, y: 4.725 },
+      { x: 9.345, y: 1.575 },
+      { x: 5.145, y: -1.575 },
+      { x: 10.395, y: -6.825 },
+      { x: 6.195, y: -8.925 },
+      { x: 1.995, y: -7.455 },
+      { x: -4.305, y: -8.925 },
+      { x: -9.135, y: -3.255 },
+      { x: -9.135, y: 4.725 },
+      { x: -5.355, y: 4.725 },
+      { x: -5.355, y: 8.925 },
     ],
   );
   assert.deepEqual(
@@ -241,13 +252,18 @@ export async function run() {
   assert.equal(largeUfoObject.shapes[0].geometry.points.length, 15);
   const mediumAsteroidVariant = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.medium-asteroid');
   assert.deepEqual(mediumAsteroidVariant.shapes[0].geometry.points, [
-    { x: -16, y: -10 },
-    { x: -2, y: -18 },
-    { x: 16, y: -14 },
-    { x: 20, y: 2 },
-    { x: 8, y: 18 },
-    { x: -10, y: 16 },
-    { x: -20, y: 4 },
+    { x: 4.779, y: 19.845 },
+    { x: 24.219, y: 10.125 },
+    { x: 21.789, y: 2.835 },
+    { x: 12.069, y: -4.455 },
+    { x: 24.219, y: -16.605 },
+    { x: 14.499, y: -21.465 },
+    { x: 4.779, y: -18.063 },
+    { x: -9.801, y: -21.465 },
+    { x: -20.979, y: -8.343 },
+    { x: -20.979, y: 10.125 },
+    { x: -12.231, y: 10.125 },
+    { x: -12.231, y: 19.845 },
   ]);
   const missingBulletManifest = structuredClone(manifestPayload);
   missingBulletManifest.tools['object-vector-studio-v2'].objects = missingBulletManifest.tools['object-vector-studio-v2'].objects

@@ -85,9 +85,11 @@ export async function run() {
   assert.equal(geometryProfiles[1].objectId, 'object.asteroids.small-asteroid');
   assert.equal(geometryProfiles[2].objectId, 'object.asteroids.medium-asteroid');
   assert.equal(geometryProfiles[3].objectId, 'object.asteroids.large-asteroid');
-  assert.equal(geometryProfiles[1].points.length, 6);
-  assert.equal(geometryProfiles[2].points.length, 7);
+  assert.equal(geometryProfiles[1].points.length, 12);
+  assert.equal(geometryProfiles[2].points.length, 12);
   assert.equal(geometryProfiles[3].points.length, 12);
+  assert.equal(geometryProfiles[3].radius > geometryProfiles[2].radius, true);
+  assert.equal(geometryProfiles[2].radius > geometryProfiles[1].radius, true);
   assert.deepEqual(payload.objects.find((object) => object.id === 'object.asteroids.medium-asteroid').tags, ['asteroid', 'medium']);
   const tagValidation = validateAsteroidsRuntimeObjectTags(payload.objects);
   assert.equal(tagValidation.ok, true);

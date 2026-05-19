@@ -27,10 +27,10 @@ Use World Vector Studio V2 instead for terrain, maps, tile/world geometry, layer
 
 ## Migration Direction
 
-- SVG Asset Studio functionality moves toward Object Vector Studio V2.
+- SVG Asset Studio object-level authoring moves toward Object Vector Studio V2.
 - Primitive Skin Editor remains deprecated compatibility during the transition.
-- Vector Map Editor remains deprecated compatibility during the transition.
-- Old tools remain available until replacement workflows are implemented and validated.
+- Vector Map Editor remains deprecated compatibility for older map documents; it is not a current Object Vector object-geometry source.
+- Current object geometry lives in Object Vector Studio V2 payloads as `objects[]`, `objects[].tags`, and `objects[].shapes`.
 
 ## Examples
 
