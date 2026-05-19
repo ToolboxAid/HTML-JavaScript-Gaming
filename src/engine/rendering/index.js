@@ -12,17 +12,24 @@ export { renderByLayers } from './LayeredRenderSystem.js';
 export { transformPoints, drawVectorShape } from './VectorDrawing.js';
 export {
   applyObjectVectorCanvasTransform,
+  boundsFromObjectVectorPoints,
+  combineObjectVectorBounds,
+  createObjectVectorTransformPipeline,
   headingPointFromRotation,
   inverseTransformObjectVectorShapePoint,
   normalizeObjectVectorOrigin,
   normalizeObjectVectorTransform,
   normalizeRotationDegrees,
+  objectVectorBoundsCornerPoints,
   objectVectorSvgTransformAttribute,
   rotatePointAround,
   rotationDegrees,
   rotationRadians,
+  transformedObjectVectorShapeBounds,
   transformObjectVectorInstancePoint,
+  transformObjectVectorInstancePoints,
   transformObjectVectorShapePoint,
+  transformObjectVectorShapePoints,
   transformRuntimeOrientedPoint,
   transformRuntimeOrientedPoints
 } from './OrientationTransform.js';

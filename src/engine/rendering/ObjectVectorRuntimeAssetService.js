@@ -1,7 +1,10 @@
 import {
   applyObjectVectorCanvasTransform,
+  combineObjectVectorBounds,
   normalizeObjectVectorOrigin,
   normalizeObjectVectorTransform,
+  objectVectorBoundsCornerPoints,
+  transformedObjectVectorShapeBounds,
   objectVectorSvgTransformAttribute
 } from "./OrientationTransform.js";
 import { createWorldScreenTransform } from "./WorldScreenTransform.js";
@@ -376,26 +379,12 @@ function objectBounds(object, frame) {
   if (!visibleShapes.length) {
     return { height: 80, width: 120, x: -60, y: -40 };
   }
-  const bounds = visibleShapes.map((shape) => {
-    const baseBounds = shapeBounds(shape);
-    const transform = shapeTransform(shape);
-    return {
-      height: Math.max(1, baseBounds.height * transform.scaleY),
-      width: Math.max(1, baseBounds.width * transform.scaleX),
-      x: baseBounds.x + transform.x,
-      y: baseBounds.y + transform.y
-    };
-  });
-  const minX = Math.min(...bounds.map((entry) => entry.x));
-  const minY = Math.min(...bounds.map((entry) => entry.y));
-  const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
-  const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
-  return {
-    height: Number((maxY - minY).toFixed(3)),
-    width: Number((maxX - minX).toFixed(3)),
-    x: Number(minX.toFixed(3)),
-    y: Number(minY.toFixed(3))
-  };
+  const transformOrigin = objectTransformOrigin(object);
+  return combineObjectVectorBounds(visibleShapes.map((shape) => transformedObjectVectorShapeBounds(
+    objectVectorBoundsCornerPoints(shapeBounds(shape)),
+    shapeTransform(shape),
+    transformOrigin
+  )));
 }
 
 function effectiveShapeForFrame(shape, frame, shapeIndex) {
@@ -844,13 +833,11 @@ export class ObjectVectorRuntimeAssetService {
 
   drawObjectToCanvas(context, object, frame, options = {}) {
     try {
-      const renderTransform = createWorldScreenTransform({
+      const worldScreenTransform = createWorldScreenTransform({
         worldScale: options.worldScale
-      }).objectRenderOptions(options);
+      });
       context.save();
-      context.translate(renderTransform.x, renderTransform.y);
-      context.rotate(renderTransform.rotation);
-      context.scale(renderTransform.scale, renderTransform.scale);
+      worldScreenTransform.applyObjectRenderTransform(context, options);
       let renderedShapes = 0;
       const transformOrigin = objectTransformOrigin(object);
       sortedShapes(object).forEach((shape, shapeIndex) => {

@@ -112,7 +112,10 @@ async function runtimeObjectPixelBounds(page, objectId, instance) {
 async function runtimeCollisionOrientationSamples(page, samples) {
   return page.evaluate(async ({ samples: requestedSamples }) => {
     const {
+      createObjectVectorTransformPipeline,
+      createWorldScreenTransform,
       ObjectVectorRuntimeAssetService,
+      transformObjectVectorShapePoint,
       transformRuntimeOrientedPoint
     } = await import("/src/engine/rendering/index.js");
     const {
@@ -199,6 +202,25 @@ async function runtimeCollisionOrientationSamples(page, samples) {
       };
       const geometry = createObjectVectorCollisionGeometry(object, collisionInstance);
       const origin = getObjectVectorOrigin(object);
+      const shape = object.shapes.find((candidate) => candidate.visible !== false && Array.isArray(candidate.geometry?.points)) || null;
+      const firstPoint = shape?.geometry?.points?.[0] || origin;
+      const viewportTransform = createWorldScreenTransform({
+        screenHeight: 720,
+        screenWidth: 960,
+        userZoom: 1.25,
+        worldScale: 1
+      });
+      const pipeline = createObjectVectorTransformPipeline({
+        instance: runtimeInstance,
+        objectOrigin: origin,
+        screenTransform: viewportTransform,
+        shapeTransform: shape?.transform || {}
+      });
+      const pipelineWorldPoint = pipeline.localPointToWorld(firstPoint);
+      const manualWorldPoint = transformRuntimeOrientedPoint(
+        transformObjectVectorShapePoint(firstPoint, shape?.transform || {}, origin),
+        runtimeInstance
+      );
       return {
         collisionBounds: geometry.bounds,
         collisionPoints: geometry.transformedPoints.slice(0, 6),
@@ -206,6 +228,12 @@ async function runtimeCollisionOrientationSamples(page, samples) {
         label: sample.label,
         objectId: sample.objectId,
         originWorld: geometry.originWorld,
+        pipelineOriginViewport: pipeline.originViewport(),
+        pipelineOriginWorld: pipeline.originWorld(),
+        pipelineViewportPoint: pipeline.localPointToViewport(firstPoint),
+        pipelineWorldPoint,
+        manualViewportPoint: viewportTransform.worldPointToViewportPoint(manualWorldPoint),
+        manualWorldPoint,
         runtimeBounds: runtimeBounds(sample.objectId, runtimeInstance),
         transformedPointCount: geometry.transformedPoints.length
       };
@@ -290,23 +318,33 @@ test.describe("Collision Inspector V2", () => {
       const objectVectorStudioSource = await readFile(join(server.repoRoot, "tools", "object-vector-studio-v2", "js", "ToolStarterApp.js"), "utf8");
       expect(worldScreenSource).toContain("export const CANONICAL_WORLD_TO_SCREEN_SCALE = 1;");
       expect(worldScreenSource).toContain("objectRenderOptions(options = {})");
+      expect(worldScreenSource).toContain("applyViewportTransform(context)");
+      expect(worldScreenSource).toContain("applyObjectRenderTransform(context, options = {})");
+      expect(worldScreenSource).toContain("worldPointToViewportPoint(point)");
       expect(worldScreenSource).toContain("rotationRadians(options.rotation || 0, options.rotationUnit || \"radians\")");
+      expect(orientationTransformSource).toContain("export function createObjectVectorTransformPipeline");
+      expect(orientationTransformSource).toContain("export function transformedObjectVectorShapeBounds");
+      expect(orientationTransformSource).toContain("export function combineObjectVectorBounds");
       expect(orientationTransformSource).toContain("export function rotationRadians");
       expect(orientationTransformSource).toContain("export function transformRuntimeOrientedPoint");
       expect(orientationTransformSource).toContain("export function transformObjectVectorShapePoint");
       expect(orientationTransformSource).toContain("export function headingPointFromRotation");
       expect(runtimeRenderSource).toContain("createWorldScreenTransform");
-      expect(runtimeRenderSource).toContain(".objectRenderOptions(options)");
+      expect(runtimeRenderSource).toContain(".applyObjectRenderTransform(context, options)");
       expect(runtimeRenderSource).toContain("applyObjectVectorCanvasTransform");
+      expect(collisionObjectVectorSource).toContain("createObjectVectorTransformPipeline");
       expect(collisionObjectVectorSource).toContain("transformObjectVectorInstancePoint");
       expect(collisionObjectVectorSource).toContain("transformRuntimeOrientedPoints");
       expect(collisionControlsSource).toContain("createWorldScreenTransform");
       expect(collisionControlsSource).toContain("rotationUnits");
       expect(collisionRendererSource).toContain("createWorldScreenTransform");
+      expect(collisionRendererSource).toContain("applyViewportTransform(ctx)");
       expect(collisionRendererSource).toContain("headingPointFromRotation");
       expect(collisionRendererSource).toContain("screenPointToWorldWithUserZoom");
       expect(objectVectorStudioSource).toContain("const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;");
       expect(objectVectorStudioSource).toContain("CANONICAL_WORLD_TO_SCREEN_SCALE");
+      expect(objectVectorStudioSource).toContain("transformedObjectVectorShapeBounds");
+      expect(objectVectorStudioSource).toContain("combineObjectVectorBounds");
       expect(objectVectorStudioSource).toContain("transformObjectVectorShapePoint");
       expect(objectVectorStudioSource).toContain("inverseTransformObjectVectorShapePoint");
       expect(objectVectorStudioSource).toContain("point.x / OBJECT_PREVIEW_DRAWING_SCALE");
@@ -358,6 +396,14 @@ test.describe("Collision Inspector V2", () => {
         expect(sample.transformedPointCount, sample.label).toBeGreaterThan(0);
         expect(Math.abs(sample.originWorld.x - sample.helperOrigin.x), `${sample.label} origin x`).toBeLessThan(0.001);
         expect(Math.abs(sample.originWorld.y - sample.helperOrigin.y), `${sample.label} origin y`).toBeLessThan(0.001);
+        expect(Math.abs(sample.pipelineOriginWorld.x - sample.originWorld.x), `${sample.label} pipeline origin x`).toBeLessThan(0.001);
+        expect(Math.abs(sample.pipelineOriginWorld.y - sample.originWorld.y), `${sample.label} pipeline origin y`).toBeLessThan(0.001);
+        expect(Math.abs(sample.pipelineWorldPoint.x - sample.manualWorldPoint.x), `${sample.label} pipeline point x`).toBeLessThan(0.001);
+        expect(Math.abs(sample.pipelineWorldPoint.y - sample.manualWorldPoint.y), `${sample.label} pipeline point y`).toBeLessThan(0.001);
+        expect(Math.abs(sample.pipelineViewportPoint.x - sample.manualViewportPoint.x), `${sample.label} viewport point x`).toBeLessThan(0.001);
+        expect(Math.abs(sample.pipelineViewportPoint.y - sample.manualViewportPoint.y), `${sample.label} viewport point y`).toBeLessThan(0.001);
+        expect(sample.pipelineOriginViewport.x, `${sample.label} viewport origin x`).toBeGreaterThan(0);
+        expect(sample.pipelineOriginViewport.y, `${sample.label} viewport origin y`).toBeGreaterThan(0);
         expect(Math.abs(sample.runtimeBounds.width - sample.collisionBounds.width), `${sample.label} width`).toBeLessThanOrEqual(12);
         expect(Math.abs(sample.runtimeBounds.height - sample.collisionBounds.height), `${sample.label} height`).toBeLessThanOrEqual(12);
       });
@@ -573,32 +619,58 @@ test.describe("Collision Inspector V2", () => {
       expect(sharedScaleAfterZoom).toBe(1);
       const editorOrientation = await page.evaluate(async () => {
         const {
+          createObjectVectorTransformPipeline,
           inverseTransformObjectVectorShapePoint,
           normalizeRotationDegrees,
           objectVectorSvgTransformAttribute,
+          transformedObjectVectorShapeBounds,
           transformObjectVectorShapePoint
         } = await import("/src/engine/rendering/index.js");
         const transform = { rotation: 45, scaleX: 1.25, scaleY: 0.75, x: 10, y: -4 };
         const origin = { x: 2, y: 3 };
         const point = { x: 8, y: 5 };
+        const shape = {
+          geometry: {
+            points: [
+              { x: -4, y: -2 },
+              { x: 12, y: -2 },
+              { x: 4, y: 9 }
+            ]
+          },
+          tool: "polygon",
+          transform
+        };
         const helperPoint = transformObjectVectorShapePoint(point, transform, origin);
+        const pipeline = createObjectVectorTransformPipeline({
+          objectOrigin: origin,
+          shapeTransform: transform
+        });
         return {
+          appBounds: window.__objectVectorStudioV2App.transformedBounds(shape, { transformOrigin: origin }),
           appLocal: window.__objectVectorStudioV2App.localPointFromTransformedPoint(helperPoint, transform, origin),
           appNormalized: window.__objectVectorStudioV2App.normalizeRotationDegrees(-45),
           appPoint: window.__objectVectorStudioV2App.transformedPoint(point, transform, origin),
           appSvg: window.__objectVectorStudioV2App.svgTransformAttribute(transform, origin),
+          helperBounds: transformedObjectVectorShapeBounds(shape.geometry.points, transform, origin),
           helperLocal: inverseTransformObjectVectorShapePoint(helperPoint, transform, origin),
           helperNormalized: normalizeRotationDegrees(-45),
           helperPoint,
-          helperSvg: objectVectorSvgTransformAttribute(transform, origin)
+          helperSvg: objectVectorSvgTransformAttribute(transform, origin),
+          pipelinePoint: pipeline.localPointToShape(point)
         };
       });
       expect(editorOrientation.appSvg).toBe(editorOrientation.helperSvg);
       expect(editorOrientation.appNormalized).toBe(editorOrientation.helperNormalized);
       expect(editorOrientation.appPoint.x).toBeCloseTo(editorOrientation.helperPoint.x, 3);
       expect(editorOrientation.appPoint.y).toBeCloseTo(editorOrientation.helperPoint.y, 3);
+      expect(editorOrientation.appPoint.x).toBeCloseTo(editorOrientation.pipelinePoint.x, 3);
+      expect(editorOrientation.appPoint.y).toBeCloseTo(editorOrientation.pipelinePoint.y, 3);
       expect(editorOrientation.appLocal.x).toBeCloseTo(editorOrientation.helperLocal.x, 3);
       expect(editorOrientation.appLocal.y).toBeCloseTo(editorOrientation.helperLocal.y, 3);
+      expect(editorOrientation.appBounds.x).toBeCloseTo(editorOrientation.helperBounds.x, 3);
+      expect(editorOrientation.appBounds.y).toBeCloseTo(editorOrientation.helperBounds.y, 3);
+      expect(editorOrientation.appBounds.width).toBeCloseTo(editorOrientation.helperBounds.width, 3);
+      expect(editorOrientation.appBounds.height).toBeCloseTo(editorOrientation.helperBounds.height, 3);
       await expect(page.locator("#statusLog")).toHaveValue(/Viewport zoom set/);
       expect(pageErrors).toEqual([]);
     } finally {

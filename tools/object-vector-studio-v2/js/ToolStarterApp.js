@@ -1,10 +1,13 @@
 import {
   CANONICAL_WORLD_TO_SCREEN_SCALE,
+  combineObjectVectorBounds,
   inverseTransformObjectVectorShapePoint,
   normalizeObjectVectorOrigin,
   normalizeRotationDegrees as normalizeSharedRotationDegrees,
+  objectVectorBoundsCornerPoints,
   objectVectorSvgTransformAttribute,
   rotatePointAround as rotateSharedPointAround,
+  transformedObjectVectorShapeBounds,
   transformObjectVectorShapePoint,
   ObjectVectorRuntimeAssetService
 } from "../../../src/engine/rendering/index.js";
@@ -424,15 +427,6 @@ function shapeBounds(shape) {
   throw new Error(`unsupported shape bounds for ${shapeTool(shape)}`);
 }
 
-function boundsCornerPoints(bounds) {
-  return [
-    { x: bounds.x, y: bounds.y },
-    { x: bounds.x + bounds.width, y: bounds.y },
-    { x: bounds.x + bounds.width, y: bounds.y + bounds.height },
-    { x: bounds.x, y: bounds.y + bounds.height }
-  ];
-}
-
 function ellipseSamplePoints(cx, cy, rx, ry, sampleCount = 64) {
   return Array.from({ length: sampleCount }, (_, index) => {
     const radians = (index / sampleCount) * Math.PI * 2;
@@ -476,7 +470,7 @@ function shapeBoundsPoints(shape) {
   if (geometryTool === "arc") {
     return arcSamplePoints(shape.geometry);
   }
-  return boundsCornerPoints(shapeBounds(shape));
+  return objectVectorBoundsCornerPoints(shapeBounds(shape));
 }
 
 function defaultShapeTransform() {
@@ -4146,21 +4140,10 @@ export class ToolStarterApp {
   }
 
   transformedBounds(shape, { drawingScale = 1, transformOrigin = { x: 0, y: 0 } } = {}) {
-    const transform = this.shapeTransform(shape);
-    const points = shapeBoundsPoints(shape).map((point) => this.transformedPoint(point, transform, transformOrigin));
-    const xValues = points.map((point) => point.x);
-    const yValues = points.map((point) => point.y);
-    const minX = Math.min(...xValues);
-    const minY = Math.min(...yValues);
-
-    return this.scaledDrawingBounds({
-      height: Math.max(1, Math.max(...yValues) - minY),
-      originX: minX + (Math.max(...xValues) - minX) / 2,
-      originY: minY + (Math.max(...yValues) - minY) / 2,
-      width: Math.max(1, Math.max(...xValues) - minX),
-      x: minX,
-      y: minY
-    }, drawingScale);
+    return this.scaledDrawingBounds(
+      transformedObjectVectorShapeBounds(shapeBoundsPoints(shape), this.shapeTransform(shape), transformOrigin),
+      drawingScale
+    );
   }
 
   objectBounds(object, { drawingScale = 1, includeInvisible = true } = {}) {
@@ -4183,17 +4166,7 @@ export class ToolStarterApp {
       };
     }
 
-    const bounds = shapes.map(({ shape }) => this.transformedBounds(shape, { drawingScale, transformOrigin }));
-    const minX = Math.min(...bounds.map((entry) => entry.x));
-    const minY = Math.min(...bounds.map((entry) => entry.y));
-    const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
-    const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
-    return {
-      height: Number((maxY - minY).toFixed(3)),
-      width: Number((maxX - minX).toFixed(3)),
-      x: Number(minX.toFixed(3)),
-      y: Number(minY.toFixed(3))
-    };
+    return combineObjectVectorBounds(shapes.map(({ shape }) => this.transformedBounds(shape, { drawingScale, transformOrigin })));
   }
 
   rawVisibleObjectGeometryBounds(object) {
@@ -4205,16 +4178,7 @@ export class ToolStarterApp {
     if (!bounds.length) {
       return null;
     }
-    const minX = Math.min(...bounds.map((entry) => entry.x));
-    const minY = Math.min(...bounds.map((entry) => entry.y));
-    const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
-    const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
-    return {
-      height: Number((maxY - minY).toFixed(3)),
-      width: Number((maxX - minX).toFixed(3)),
-      x: Number(minX.toFixed(3)),
-      y: Number(minY.toFixed(3))
-    };
+    return combineObjectVectorBounds(bounds);
   }
 
   objectBoundsForFrame(object, frame) {
@@ -4230,17 +4194,7 @@ export class ToolStarterApp {
         y: -40
       };
     }
-    const bounds = shapes.map((shape) => this.transformedBounds(shape, { transformOrigin }));
-    const minX = Math.min(...bounds.map((entry) => entry.x));
-    const minY = Math.min(...bounds.map((entry) => entry.y));
-    const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
-    const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
-    return {
-      height: Number((maxY - minY).toFixed(3)),
-      width: Number((maxX - minX).toFixed(3)),
-      x: Number(minX.toFixed(3)),
-      y: Number(minY.toFixed(3))
-    };
+    return combineObjectVectorBounds(shapes.map((shape) => this.transformedBounds(shape, { transformOrigin })));
   }
 
   shapeSetBounds(object, shapeIndexes, { drawingScale = 1, includeInvisible = false } = {}) {
@@ -4258,17 +4212,7 @@ export class ToolStarterApp {
     if (!shapes.length) {
       return null;
     }
-    const bounds = shapes.map((shape) => this.transformedBounds(shape, { drawingScale, transformOrigin }));
-    const minX = Math.min(...bounds.map((entry) => entry.x));
-    const minY = Math.min(...bounds.map((entry) => entry.y));
-    const maxX = Math.max(...bounds.map((entry) => entry.x + entry.width));
-    const maxY = Math.max(...bounds.map((entry) => entry.y + entry.height));
-    return {
-      height: Number((maxY - minY).toFixed(3)),
-      width: Number((maxX - minX).toFixed(3)),
-      x: Number(minX.toFixed(3)),
-      y: Number(minY.toFixed(3))
-    };
+    return combineObjectVectorBounds(shapes.map((shape) => this.transformedBounds(shape, { drawingScale, transformOrigin })));
   }
 
   renderSelectionOverlay(object) {

@@ -8,10 +8,9 @@ import { isColliding } from './aabb.js';
 import { arePolygonsColliding, getPolygonBounds, isPointInPolygon } from './polygon.js';
 import { areMasksColliding, createRasterMask } from './raster.js';
 import {
+  createObjectVectorTransformPipeline,
   normalizeObjectVectorOrigin,
   normalizeObjectVectorTransform,
-  transformObjectVectorInstancePoint,
-  transformObjectVectorShapePoint,
   transformRuntimeOrientedPoints,
 } from '../rendering/OrientationTransform.js';
 
@@ -190,10 +189,6 @@ function shapeLocalPolygons(shape) {
   return [];
 }
 
-function transformInstancePoint(point, instance) {
-  return transformObjectVectorInstancePoint(point, instance, { rotationUnit: 'degrees' });
-}
-
 export function transformCollisionPoints(points, {
   x = 0,
   y = 0,
@@ -276,17 +271,23 @@ export function getObjectVectorCollisionOutlinePoints(object, options = {}) {
     const tool = shapeTool(candidate);
     return tool === 'polygon' || tool === 'polyline';
   }) || visibleEffectiveShapes(object, options).find((candidate) => shapeTool(candidate) === 'line');
-  const transform = shapeTransform(shape);
-  return shapeLocalOutlinePoints(shape).map((point) => transformObjectVectorShapePoint(point, transform, origin));
+  return createObjectVectorTransformPipeline({
+    objectOrigin: origin,
+    shapeTransform: shapeTransform(shape)
+  }).localPointsToShape(shapeLocalOutlinePoints(shape));
 }
 
 export function createObjectVectorCollisionGeometry(object, instance = {}, options = {}) {
   const origin = getObjectVectorOrigin(object);
   const polygons = visibleEffectiveShapes(object, options)
     .flatMap((shape) => {
-      const transform = shapeTransform(shape);
+      const pipeline = createObjectVectorTransformPipeline({
+        instance,
+        objectOrigin: origin,
+        shapeTransform: shapeTransform(shape)
+      });
       return shapeLocalPolygons(shape)
-        .map((polygon) => polygon.map((point) => transformInstancePoint(transformObjectVectorShapePoint(point, transform, origin), instance)))
+        .map((polygon) => pipeline.localPointsToWorld(polygon))
         .filter((polygon) => polygon.length >= 3);
     });
   const bounds = boundsFromPolygons(polygons);
@@ -298,7 +299,7 @@ export function createObjectVectorCollisionGeometry(object, instance = {}, optio
     mask: maskFromPolygons(polygons, bounds, maskCellSize),
     object,
     origin,
-    originWorld: object ? transformInstancePoint(origin, instance) : { x: 0, y: 0 },
+    originWorld: object ? createObjectVectorTransformPipeline({ instance, objectOrigin: origin }).originWorld() : { x: 0, y: 0 },
     polygons,
     shapeRotations: [...new Set(visibleEffectiveShapes(object, options).map((shape) => shapeTransform(shape).rotation))],
     transformedPoints: polygons.flat(),

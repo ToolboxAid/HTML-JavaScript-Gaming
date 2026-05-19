@@ -75,8 +75,7 @@ export class CollisionInspectorV2Renderer {
     ctx.fillStyle = "#070b0c";
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.save();
-    this.transform.applyUserZoom(ctx);
-    this.transform.applyWorldToScreen(ctx);
+    this.transform.applyViewportTransform(ctx);
     this.drawGrid(ctx);
     this.drawGeometry(ctx, result.geometryA, {
       fill: "rgba(13, 148, 136, 0.18)",

@@ -55,6 +55,16 @@ export function createWorldScreenTransform({
       }
       context.scale(resolvedWorldScale, resolvedWorldScale);
     },
+    applyViewportTransform(context) {
+      this.applyUserZoom(context);
+      this.applyWorldToScreen(context);
+    },
+    applyObjectRenderTransform(context, options = {}) {
+      const renderOptions = this.objectRenderOptions(options);
+      context.translate(renderOptions.x, renderOptions.y);
+      context.rotate(renderOptions.rotation);
+      context.scale(renderOptions.scale, renderOptions.scale);
+    },
     clientPointToScreenPoint(event, rect) {
       const rectWidth = positiveScale(rect?.width);
       const rectHeight = positiveScale(rect?.height);
@@ -64,17 +74,37 @@ export function createWorldScreenTransform({
       };
     },
     objectRenderOptions(options = {}) {
+      const screenPoint = this.worldPointToScreenPoint({ x: options.x, y: options.y });
       return {
         rotation: rotationRadians(options.rotation || 0, options.rotationUnit || "radians"),
         scale: (Number.isFinite(options.scale) ? options.scale : 1) * resolvedWorldScale,
-        x: (options.x || 0) * resolvedWorldScale,
-        y: (options.y || 0) * resolvedWorldScale
+        x: screenPoint.x,
+        y: screenPoint.y
+      };
+    },
+    screenPointToWorldPoint(point) {
+      return {
+        x: finiteNumber(point?.x) / resolvedWorldScale,
+        y: finiteNumber(point?.y) / resolvedWorldScale
       };
     },
     screenPointToWorldWithUserZoom(point) {
       return {
         x: ((finiteNumber(point?.x) - center.x) / resolvedUserZoom + center.x) / resolvedWorldScale,
         y: ((finiteNumber(point?.y) - center.y) / resolvedUserZoom + center.y) / resolvedWorldScale
+      };
+    },
+    worldPointToScreenPoint(point) {
+      return {
+        x: finiteNumber(point?.x) * resolvedWorldScale,
+        y: finiteNumber(point?.y) * resolvedWorldScale
+      };
+    },
+    worldPointToViewportPoint(point) {
+      const screenPoint = this.worldPointToScreenPoint(point);
+      return {
+        x: (screenPoint.x - center.x) * resolvedUserZoom + center.x,
+        y: (screenPoint.y - center.y) * resolvedUserZoom + center.y
       };
     }
   });

@@ -1,5 +1,6 @@
 const DEGREES_PER_RADIAN = 180 / Math.PI;
 const RADIANS_PER_DEGREE = Math.PI / 180;
+const DEFAULT_OBJECT_VECTOR_BOUNDS = Object.freeze({ height: 80, width: 120, x: -60, y: -40 });
 
 function isRecord(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -89,6 +90,10 @@ export function transformObjectVectorShapePoint(point, transform = {}, origin = 
   };
 }
 
+export function transformObjectVectorShapePoints(points, transform = {}, origin = {}) {
+  return (Array.isArray(points) ? points : []).map((point) => transformObjectVectorShapePoint(point, transform, origin));
+}
+
 export function inverseTransformObjectVectorShapePoint(point, transform = {}, origin = {}) {
   const resolvedTransform = normalizeObjectVectorTransform(transform);
   const resolvedOrigin = normalizeObjectVectorOrigin(origin);
@@ -115,6 +120,10 @@ export function transformObjectVectorInstancePoint(point, instance = {}, options
   });
 }
 
+export function transformObjectVectorInstancePoints(points, instance = {}, options = {}) {
+  return (Array.isArray(points) ? points : []).map((point) => transformObjectVectorInstancePoint(point, instance, options));
+}
+
 export function transformRuntimeOrientedPoint(point, {
   rotation = 0,
   rotationUnit = "radians",
@@ -135,6 +144,100 @@ export function transformRuntimeOrientedPoint(point, {
 
 export function transformRuntimeOrientedPoints(points, options = {}) {
   return (Array.isArray(points) ? points : []).map((point) => transformRuntimeOrientedPoint(point, options));
+}
+
+export function objectVectorBoundsCornerPoints(bounds = {}) {
+  const x = numberValue(bounds.x);
+  const y = numberValue(bounds.y);
+  const width = numberValue(bounds.width, 1);
+  const height = numberValue(bounds.height, 1);
+  return [
+    { x, y },
+    { x: x + width, y },
+    { x: x + width, y: y + height },
+    { x, y: y + height }
+  ];
+}
+
+export function boundsFromObjectVectorPoints(points, fallback = DEFAULT_OBJECT_VECTOR_BOUNDS) {
+  const normalizedPoints = (Array.isArray(points) ? points : [])
+    .map((point) => ({ x: Number(point?.x), y: Number(point?.y) }))
+    .filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y));
+  if (!normalizedPoints.length) {
+    return { ...fallback };
+  }
+  const xValues = normalizedPoints.map((point) => point.x);
+  const yValues = normalizedPoints.map((point) => point.y);
+  const minX = Math.min(...xValues);
+  const minY = Math.min(...yValues);
+  const maxX = Math.max(...xValues);
+  const maxY = Math.max(...yValues);
+  const width = Math.max(1, maxX - minX);
+  const height = Math.max(1, maxY - minY);
+  return {
+    height: Number(height.toFixed(3)),
+    originX: Number((minX + width / 2).toFixed(3)),
+    originY: Number((minY + height / 2).toFixed(3)),
+    width: Number(width.toFixed(3)),
+    x: Number(minX.toFixed(3)),
+    y: Number(minY.toFixed(3))
+  };
+}
+
+export function transformedObjectVectorShapeBounds(points, transform = {}, origin = {}) {
+  return boundsFromObjectVectorPoints(transformObjectVectorShapePoints(points, transform, origin));
+}
+
+export function combineObjectVectorBounds(boundsList, fallback = DEFAULT_OBJECT_VECTOR_BOUNDS) {
+  const points = (Array.isArray(boundsList) ? boundsList : []).flatMap((bounds) => objectVectorBoundsCornerPoints(bounds));
+  return boundsFromObjectVectorPoints(points, fallback);
+}
+
+export function createObjectVectorTransformPipeline({
+  instance = {},
+  objectOrigin = {},
+  screenTransform = null,
+  shapeTransform = {}
+} = {}) {
+  const origin = normalizeObjectVectorOrigin(objectOrigin);
+  const transform = normalizeObjectVectorTransform(shapeTransform);
+  const localPointToShape = (point) => transformObjectVectorShapePoint(point, transform, origin);
+  const localPointsToShape = (points) => transformObjectVectorShapePoints(points, transform, origin);
+  const shapePointToWorld = (point) => transformObjectVectorInstancePoint(point, instance);
+  const shapePointsToWorld = (points) => transformObjectVectorInstancePoints(points, instance);
+  const worldPointToViewport = (point) => (
+    typeof screenTransform?.worldPointToViewportPoint === "function"
+      ? screenTransform.worldPointToViewportPoint(point)
+      : point
+  );
+  const localPointToWorld = (point) => shapePointToWorld(localPointToShape(point));
+  const localPointsToWorld = (points) => shapePointsToWorld(localPointsToShape(points));
+  const localPointToViewport = (point) => worldPointToViewport(localPointToWorld(point));
+  const localPointsToViewport = (points) => localPointsToWorld(points).map((point) => worldPointToViewport(point));
+  const originWorld = () => shapePointToWorld(origin);
+  const originViewport = () => worldPointToViewport(originWorld());
+
+  return Object.freeze({
+    localPointToShape,
+    localPointToViewport,
+    localPointToWorld,
+    localPointsToShape,
+    localPointsToViewport,
+    localPointsToWorld,
+    origin,
+    originViewport,
+    originWorld,
+    shapeBounds(points) {
+      return transformedObjectVectorShapeBounds(points, transform, origin);
+    },
+    shapeTransform: transform,
+    viewportBounds(points) {
+      return boundsFromObjectVectorPoints(localPointsToViewport(points));
+    },
+    worldBounds(points) {
+      return boundsFromObjectVectorPoints(localPointsToWorld(points));
+    }
+  });
 }
 
 export function objectVectorSvgTransformAttribute(transform = {}, origin = {}) {
