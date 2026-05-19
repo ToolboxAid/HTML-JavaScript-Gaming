@@ -1,41 +1,121 @@
 :root {
-  --collision-inspector-bg: #101415;
-  --collision-inspector-panel: #f7f3ea;
-  --collision-inspector-panel-2: #e7f0ec;
-  --collision-inspector-ink: #17201d;
-  --collision-inspector-muted: #59655f;
-  --collision-inspector-line: #bac8bf;
+  --tool-starter-bg: linear-gradient(180deg, #182120 0%, #101415 58%, #080c0e 100%);
+  --tool-starter-panel: #f7f3ea;
+  --tool-starter-surface: #fffdf8;
+  --tool-starter-panel-strong: #e7f0ec;
+  --tool-starter-input-surface: #ffffff;
+  --tool-starter-line: #bac8bf;
+  --tool-starter-surface-border: #aabbb1;
+  --tool-starter-text: #17201d;
+  --tool-starter-muted: #59655f;
+  --tool-starter-header-muted: #d9e7e0;
+  --tool-starter-accent: #0d9488;
+  --tool-starter-danger: #b91c1c;
+  --tool-starter-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+  --tool-starter-shadow-strong: 0 20px 44px rgba(0, 0, 0, 0.26);
   --collision-inspector-a: #0d9488;
   --collision-inspector-b: #b45309;
   --collision-inspector-hit: #dc2626;
+  color-scheme: light;
+  font-family: Inter, Segoe UI, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body[data-tool-id="collision-inspector-v2"] {
   min-height: 100vh;
   min-height: 100dvh;
   margin: 0;
-  background: var(--collision-inspector-bg);
-  color: var(--collision-inspector-ink);
+  background: var(--tool-starter-bg);
+  color: var(--tool-starter-text);
   overflow-x: hidden;
 }
 
-.tool-starter__header,
-.collision-inspector-v2.app-shell {
-  width: min(1460px, calc(100vw - 32px));
-  margin-inline: auto;
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--tool-starter-text);
+  cursor: pointer;
+  padding: 2px 8px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  filter: saturate(0.72);
+  box-shadow: none;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--tool-starter-accent);
+  outline-offset: 2px;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid var(--tool-starter-surface-border);
+  border-radius: 8px;
+  background: var(--tool-starter-input-surface);
+  color: var(--tool-starter-text);
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--tool-starter-accent);
+}
+
+.is-collapsible {
+  border-bottom: 1px solid rgba(247, 243, 234, 0.24);
+  background: transparent;
+}
+
+.is-collapsible__summary {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--tool-starter-header-muted);
+  font-weight: 700;
+  padding: 8px 18px;
+}
+
+.is-collapsible__content {
+  display: grid;
+  gap: 0;
+}
+
+#shared-theme-header {
+  min-height: 0;
 }
 
 .tool-starter__header {
   background: transparent;
-  padding: 10px 0;
+  padding: 10px 16px;
 }
 
 .tool-starter__local-shell-frame {
-  border: 1px solid var(--collision-inspector-line);
+  --tools-platform-frame-surface: var(--tool-starter-panel);
+  --tools-platform-frame-line: var(--tool-starter-line);
+  border: 1px solid var(--tool-starter-line);
   border-radius: 18px;
-  background: var(--collision-inspector-panel);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);
-  color: var(--collision-inspector-ink);
+  background: var(--tool-starter-panel);
+  box-shadow: var(--tool-starter-shadow);
+  color: var(--tool-starter-text);
 }
 
 .tool-starter__local-shell-frame .tools-platform-frame__accordion-content {
@@ -51,7 +131,7 @@ body[data-tool-id="collision-inspector-v2"] {
   align-items: center;
   justify-content: space-between;
   border-radius: 12px;
-  background: #d8e6df;
+  background: var(--tool-starter-panel-strong);
   padding: 12px 14px;
 }
 
@@ -63,27 +143,27 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 .tool-starter__local-shell-frame .tools-platform-frame__title {
-  color: var(--collision-inspector-ink);
+  color: var(--tool-starter-text);
 }
 
 .tool-starter__local-shell-frame .tools-platform-frame__eyebrow,
 .tool-starter__local-shell-frame .tools-platform-frame__meta,
 .tool-starter__local-shell-frame .tools-platform-frame__description {
-  color: var(--collision-inspector-muted);
+  color: var(--tool-starter-muted);
 }
 
 .tool-starter__menu {
   box-sizing: border-box;
-  width: min(1460px, calc(100vw - 32px));
+  width: calc(100% - 32px);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
-  margin: 16px auto 0;
-  border: 1px solid var(--collision-inspector-line);
+  margin: 16px 16px 0;
+  border: 1px solid var(--tool-starter-line);
   border-radius: 8px;
-  background: var(--collision-inspector-panel);
+  background: var(--tool-starter-panel);
   padding: 10px 14px;
 }
 
@@ -91,24 +171,156 @@ body[data-tool-id="collision-inspector-v2"] {
   display: none;
 }
 
-.collision-inspector-v2__menu-file {
-  width: min(460px, 100%);
-  grid-template-columns: 150px minmax(0, 1fr);
-  align-items: center;
-  margin-bottom: 0;
+.tool-starter.app-shell {
+  height: calc(100vh - 137px);
+  min-height: 0;
+  width: min(1600px, calc(100% - 32px));
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr) 360px;
+  gap: 14px;
+  margin: 0 auto 16px;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 20px;
+  box-shadow: var(--tool-starter-shadow-strong);
+  overflow: hidden;
+  padding: 16px;
 }
 
-.tool-starter__workspace__menu button,
-.collision-inspector-v2__wide-button,
-.collision-inspector-v2__field input,
-.collision-inspector-v2__field select,
-.collision-inspector-v2__zoom-row output,
-.collision-inspector-v2__log-clear {
-  border: 1px solid var(--collision-inspector-line);
-  border-radius: 6px;
-  background: #ffffff;
-  color: var(--collision-inspector-ink);
-  font: inherit;
+.tool-starter__panel {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-panel);
+  overflow: auto;
+  padding: 14px;
+}
+
+.tool-starter__panel--center {
+  min-height: 0;
+  background: var(--tool-starter-panel-strong);
+}
+
+.accordion-v2 {
+  --accordion-v2-accent: var(--tool-starter-accent);
+  --accordion-v2-line: var(--tool-starter-line);
+  --accordion-v2-surface: var(--tool-starter-surface);
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-surface);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.accordion-v2.is-open {
+  flex: 1 1 auto;
+}
+
+.accordion-v2:not(.is-open) {
+  flex: 0 0 auto;
+}
+
+.accordion-v2__header {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-weight: 700;
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.accordion-v2__icon {
+  width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.accordion-v2.is-open .accordion-v2__icon {
+  transform: rotate(45deg);
+}
+
+.accordion-v2__content {
+  min-height: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--tool-starter-line);
+  overflow: auto;
+  padding: 12px;
+}
+
+.accordion-v2__content[hidden] {
+  display: none;
+}
+
+.tool-starter__accordion--fill {
+  flex: 1 1 auto;
+}
+
+.collision-inspector-v2__panel--left > .accordion-v2.is-open,
+.collision-inspector-v2__panel--right > .accordion-v2.is-open {
+  flex: 1 1 0;
+}
+
+.tool-starter__field {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  color: var(--tool-starter-muted);
+  font-weight: 700;
+}
+
+.tool-starter__field--compact {
+  grid-template-columns: 104px minmax(0, 1fr);
+}
+
+.tool-starter__field input,
+.tool-starter__field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  padding: 7px 9px;
+}
+
+.tool-starter__output {
+  width: 100%;
+  min-height: 160px;
+  margin: 0;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-panel-strong);
+  color: var(--tool-starter-text);
+  overflow: auto;
+  padding: 12px;
+  white-space: pre-wrap;
+}
+
+.collision-inspector-v2__menu-file {
+  width: min(520px, 100%);
+  grid-template-columns: 160px minmax(0, 1fr);
+  margin: 0;
 }
 
 .tool-starter__workspace__menu button,
@@ -116,108 +328,25 @@ body[data-tool-id="collision-inspector-v2"] {
 .collision-inspector-v2__log-clear {
   min-height: 36px;
   padding: 0 12px;
-  cursor: pointer;
 }
 
 .collision-inspector-v2__wide-button {
   width: 100%;
-  margin-bottom: 12px;
-}
-
-.collision-inspector-v2.app-shell {
-  height: calc(100vh - 218px);
-  min-height: 620px;
-  display: grid;
-  grid-template-columns: minmax(240px, 300px) minmax(520px, 1fr) minmax(280px, 360px);
-  gap: 12px;
-  align-items: stretch;
-  margin-top: 16px;
-  margin-bottom: 18px;
-}
-
-.collision-inspector-v2__panel {
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--collision-inspector-line);
-  border-radius: 8px;
-  background: var(--collision-inspector-panel);
-  overflow: hidden;
-}
-
-.collision-inspector-v2__panel--center {
-  background: var(--collision-inspector-panel-2);
-}
-
-.collision-inspector-v2__accordion {
-  min-height: 0;
-  flex: 0 0 auto;
-  border: 0;
-  border-bottom: 1px solid var(--collision-inspector-line);
-  border-radius: 0;
-  background: transparent;
-}
-
-.collision-inspector-v2__accordion:last-child {
-  border-bottom: 0;
-}
-
-.collision-inspector-v2__accordion--fill,
-.collision-inspector-v2__accordion--result,
-.collision-inspector-v2__accordion--summary,
-.collision-inspector-v2__accordion--logs {
-  flex: 1 1 auto;
-}
-
-.collision-inspector-v2__accordion--fill .accordion-v2__content,
-.collision-inspector-v2__accordion--result .accordion-v2__content,
-.collision-inspector-v2__accordion--summary .accordion-v2__content,
-.collision-inspector-v2__accordion--logs .accordion-v2__content {
-  min-height: 0;
-  flex: 1 1 auto;
-}
-
-.collision-inspector-v2__panel--right .collision-inspector-v2__accordion--result,
-.collision-inspector-v2__panel--right .collision-inspector-v2__accordion--summary,
-.collision-inspector-v2__panel--right .collision-inspector-v2__accordion--logs {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.collision-inspector-v2__panel--right .collision-inspector-v2__accordion:not(.is-open) {
-  flex: 0 0 auto;
-}
-
-.collision-inspector-v2__field {
-  display: grid;
-  gap: 6px;
-  margin-bottom: 12px;
-  color: var(--collision-inspector-muted);
-  font-size: 0.9rem;
-}
-
-.collision-inspector-v2__field input,
-.collision-inspector-v2__field select {
-  width: 100%;
-  min-height: 36px;
-  padding: 7px 9px;
 }
 
 .collision-inspector-v2__rotation-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
 .collision-inspector-v2__summary {
   min-height: 64px;
   padding: 10px;
-  border: 1px solid var(--collision-inspector-line);
-  border-radius: 6px;
-  background: #fffdf8;
-  color: var(--collision-inspector-muted);
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-panel-strong);
+  color: var(--tool-starter-muted);
   line-height: 1.45;
 }
 
@@ -233,44 +362,49 @@ body[data-tool-id="collision-inspector-v2"] {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 56px;
   gap: 8px;
-  align-items: end;
+  align-items: center;
 }
 
 .collision-inspector-v2__field--inline {
-  margin-bottom: 0;
+  margin: 0;
 }
 
 .collision-inspector-v2__zoom-row output {
   display: grid;
   place-items: center;
   min-height: 36px;
-  border-radius: 6px;
-  background: #fffdf8;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-surface);
   font-weight: 700;
-}
-
-#collisionCanvas {
-  --collision-inspector-aspect-ratio: 1 / 1;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
-  aspect-ratio: var(--collision-inspector-aspect-ratio);
-  justify-self: center;
-  align-self: center;
-  border: 1px solid #263630;
-  border-radius: 6px;
-  background: #070b0c;
-  cursor: grab;
-  touch-action: none;
 }
 
 .collision-inspector-v2__canvas-viewport {
   min-height: 0;
   flex: 1 1 auto;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  overflow: auto;
+  border: 1px dashed var(--tool-starter-line);
+  border-radius: 8px;
+  background: rgba(23, 32, 29, 0.14);
+  padding: 12px;
+}
+
+#collisionCanvas {
+  --collision-inspector-aspect-ratio: 1 / 1;
+  width: var(--collision-inspector-screen-width, 1px);
+  height: var(--collision-inspector-screen-height, 1px);
+  max-width: none;
+  max-height: none;
+  flex: 0 0 auto;
+  aspect-ratio: var(--collision-inspector-aspect-ratio);
+  border: 1px solid #263630;
+  border-radius: 8px;
+  background: #070b0c;
+  cursor: grab;
+  touch-action: none;
 }
 
 #collisionCanvas.is-dragging {
@@ -279,13 +413,14 @@ body[data-tool-id="collision-inspector-v2"] {
 
 .collision-inspector-v2__legend {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
+  color: var(--tool-starter-muted);
   font-size: 0.83rem;
-  color: var(--collision-inspector-muted);
 }
 
 .collision-inspector-v2__legend span {
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -296,6 +431,7 @@ body[data-tool-id="collision-inspector-v2"] {
   content: "";
   width: 14px;
   height: 14px;
+  flex: 0 0 auto;
   border-radius: 50%;
   background: var(--collision-inspector-a);
 }
@@ -312,15 +448,14 @@ body[data-tool-id="collision-inspector-v2"] {
   width: 18px;
   height: 2px;
   border-radius: 0;
-  background: #f8fafc;
+  background: #263630;
 }
 
 .collision-inspector-v2__result {
   display: grid;
   place-items: center;
   min-height: 48px;
-  margin-bottom: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #e2e8f0;
   color: #1f2937;
   font-weight: 700;
@@ -349,35 +484,34 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 .collision-inspector-v2__metrics div {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
   gap: 12px;
   padding: 8px 10px;
-  border: 1px solid var(--collision-inspector-line);
-  border-radius: 6px;
-  background: #fffdf8;
+  border: 1px solid var(--tool-starter-line);
+  border-radius: 8px;
+  background: var(--tool-starter-panel-strong);
 }
 
 .collision-inspector-v2__metrics dt {
-  color: var(--collision-inspector-muted);
+  color: var(--tool-starter-muted);
 }
 
 .collision-inspector-v2__metrics dd {
   margin: 0;
   font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+#originState {
+  white-space: pre-line;
 }
 
 .collision-inspector-v2__output,
 #collisionLog {
-  width: 100%;
   min-height: 0;
-  padding: 10px;
-  border: 1px solid var(--collision-inspector-line);
-  border-radius: 6px;
-  background: #fffdf8;
-  color: var(--collision-inspector-ink);
+  flex: 1 1 auto;
   font: 0.82rem/1.45 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  white-space: pre-wrap;
 }
 
 .collision-inspector-v2__summary-content {
@@ -393,9 +527,8 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 .collision-inspector-v2__summary-content .collision-inspector-v2__output {
-  flex: 1 1 auto;
-  margin: 0;
-  overflow: visible;
+  flex: 0 0 auto;
+  min-height: 100%;
 }
 
 .collision-inspector-v2__log-clear {
@@ -404,9 +537,8 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 #collisionLog {
-  min-height: 0;
-  flex: 1 1 auto;
-  resize: vertical;
+  width: 100%;
+  resize: none;
 }
 
 .collision-inspector-v2__status-header {
@@ -417,8 +549,15 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 @media (max-width: 1060px) {
-  .collision-inspector-v2.app-shell {
+  .tool-starter.app-shell {
+    height: auto;
+    min-height: calc(100vh - 137px);
     grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .tool-starter__header {
+    min-width: 0;
   }
 
   .collision-inspector-v2__canvas-wrap {
@@ -433,26 +572,28 @@ html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2
   overflow: hidden;
 }
 
-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] > .is-collapsible,
-html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] > .is-collapsible {
-  width: 100%;
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] > .tool-starter__menu,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] > .tool-starter__menu {
+  width: calc(100vw - 16px);
+  margin: 8px;
 }
 
-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] > .collision-inspector-v2.app-shell,
-html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] > .collision-inspector-v2.app-shell {
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] > .tool-starter.app-shell,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] > .tool-starter.app-shell {
   width: 100vw;
   height: calc(100vh - 100px);
   min-height: 0;
   grid-template-columns: 300px minmax(0, 1fr) 360px;
   gap: 8px;
   margin: 0;
+  border-radius: 0;
   padding: 8px;
 }
 
-body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel,
-html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel {
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] .tool-starter__panel,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] .tool-starter__panel {
   min-height: 0;
-  overflow-y: auto;
+  overflow: auto;
 }
 
 body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel--left,

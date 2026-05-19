@@ -11,6 +11,8 @@ export class CollisionInspectorV2Renderer {
     this.canvas.width = Math.max(1, Math.floor(numberValue(width, 1)));
     this.canvas.height = Math.max(1, Math.floor(numberValue(height, 1)));
     this.canvas.style.setProperty("--collision-inspector-aspect-ratio", `${this.canvas.width} / ${this.canvas.height}`);
+    this.canvas.style.setProperty("--collision-inspector-screen-width", `${this.canvas.width}px`);
+    this.canvas.style.setProperty("--collision-inspector-screen-height", `${this.canvas.height}px`);
   }
 
   setZoom(zoom) {

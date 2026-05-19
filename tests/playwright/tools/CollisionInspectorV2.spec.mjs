@@ -46,9 +46,16 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator(".tool-starter__header[data-tool-starter-header]")).toBeVisible();
       await expect(page.locator("nav.tool-starter__menu.tool-starter__tool__menu")).toBeVisible();
       await expect(page.locator("nav.tool-starter__menu.tool-starter__workspace__menu")).toBeHidden();
+      await expect(page.locator("main.tool-starter.collision-inspector-v2.app-shell")).toBeVisible();
+      await expect(page.locator(".tool-starter__panel.tool-starter__panel--left.collision-inspector-v2__panel--left")).toBeVisible();
+      await expect(page.locator(".tool-starter__panel.tool-starter__panel--center.collision-inspector-v2__panel--center")).toBeVisible();
+      await expect(page.locator(".tool-starter__panel.tool-starter__panel--right.collision-inspector-v2__panel--right")).toBeVisible();
+      await expect(page.locator(".tool-starter__accordion.collision-inspector-v2__accordion")).toHaveCount(6);
       await expect(page.locator("#collisionModeSelect option")).toHaveText(["Bounds", "Vector", "Pixel/Sprite", "Hybrid"]);
       await expect(page.locator("#loadAsteroidsManifestButton")).toHaveCount(0);
       await expect(page.locator("#collisionManifestInput")).toBeVisible();
+      await expect(page.locator("label[for='objectARotationInput']")).toContainText("Object A Rotate");
+      await expect(page.locator("label[for='objectBRotationInput']")).toContainText("Object B Rotate");
 
       await expect(page.locator("#manifestSummary")).toContainText("Asteroids");
       await expect(page.locator("#manifestSummary")).toContainText("7 objects loaded");
@@ -70,8 +77,40 @@ test.describe("Collision Inspector V2", () => {
         };
       });
       expect(canvasLayout.canvasBelowZoom).toBe(true);
-      expect(canvasLayout.canvasWidth).toBeGreaterThan(100);
-      expect(canvasLayout.canvasHeight).toBeGreaterThan(100);
+      expect(Math.abs(canvasLayout.canvasWidth - 960)).toBeLessThanOrEqual(1);
+      expect(Math.abs(canvasLayout.canvasHeight - 720)).toBeLessThanOrEqual(1);
+      const collisionInspectorScale = await page.locator("#collisionCanvas").evaluate((canvas) => {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          scaleX: rect.width / canvas.width,
+          scaleY: rect.height / canvas.height
+        };
+      });
+      expect(collisionInspectorScale.scaleX).toBeCloseTo(1, 2);
+      expect(collisionInspectorScale.scaleY).toBeCloseTo(1, 2);
+      const runtimeRenderSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "ObjectVectorRuntimeAssetService.js"), "utf8");
+      const objectVectorStudioSource = await readFile(join(server.repoRoot, "tools", "object-vector-studio-v2", "js", "ToolStarterApp.js"), "utf8");
+      expect(runtimeRenderSource).toContain("const scale = Number.isFinite(options.scale) ? options.scale : 1;");
+      expect(runtimeRenderSource).toContain("context.scale(scale, scale);");
+      expect(objectVectorStudioSource).toContain("const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;");
+      expect(objectVectorStudioSource).toContain("point.x / OBJECT_PREVIEW_DRAWING_SCALE");
+      const asteroidsPage = await page.context().newPage();
+      try {
+        await asteroidsPage.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "domcontentloaded" });
+        await expect(asteroidsPage.locator("#game")).toHaveAttribute("width", "960");
+        await expect(asteroidsPage.locator("#game")).toHaveAttribute("height", "720");
+        const asteroidsScale = await asteroidsPage.locator("#game").evaluate((canvas) => {
+          const rect = canvas.getBoundingClientRect();
+          return {
+            scaleX: rect.width / canvas.width,
+            scaleY: rect.height / canvas.height
+          };
+        });
+        expect(asteroidsScale.scaleX).toBeCloseTo(1, 2);
+        expect(asteroidsScale.scaleY).toBeCloseTo(1, 2);
+      } finally {
+        await asteroidsPage.close();
+      }
       await expect(page.locator("#objectASelect")).toContainText("Asteroids Ship");
       await expect(page.locator("#objectBSelect")).toContainText("Large Asteroid");
       await page.locator("#objectASelect").selectOption("object.asteroids.ship");
@@ -79,7 +118,7 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionModeSelect")).toHaveValue("vector");
       await expect(page.locator("#collisionResultBadge")).toHaveText("No Collision");
       await expect(page.locator("#overlapState")).toHaveText("false");
-      await expect(page.locator("#originState")).toContainText("A");
+      await expect(page.locator("#originState")).toHaveText("Origins:\nA 360.000,320.000\nB 500.000,320.000");
       await expect(page.locator("#rotationState")).toHaveText("A 0 / B 0");
       await expect(page.locator("#collisionSummary")).toContainText('"enginePath": "src/engine/collision/objectVector.js"');
       await expect(page.locator("#collisionSummary")).toContainText('"objectOrigins"');
@@ -94,17 +133,21 @@ test.describe("Collision Inspector V2", () => {
       const resultOverflow = await page.locator("#resultContent").evaluate((element) => getComputedStyle(element).overflowY);
       expect(["auto", "scroll"]).toContain(resultOverflow);
       const outputLayout = await page.evaluate(() => {
+        const manifest = document.querySelector(".collision-inspector-v2__panel--left .collision-inspector-v2__accordion:nth-of-type(1)").getBoundingClientRect();
+        const pair = document.querySelector(".collision-inspector-v2__panel--left .collision-inspector-v2__accordion:nth-of-type(2)").getBoundingClientRect();
         const result = document.querySelector(".collision-inspector-v2__accordion--result").getBoundingClientRect();
         const summary = document.querySelector(".collision-inspector-v2__accordion--summary").getBoundingClientRect();
         const logs = document.querySelector(".collision-inspector-v2__accordion--logs").getBoundingClientRect();
         const heights = [result.height, summary.height, logs.height];
         return {
+          inputMaxDelta: Math.abs(manifest.height - pair.height),
           maxDelta: Math.max(...heights) - Math.min(...heights),
           resultWidth: result.width,
           summaryWidth: summary.width,
           logsWidth: logs.width
         };
       });
+      expect(outputLayout.inputMaxDelta).toBeLessThanOrEqual(6);
       expect(outputLayout.maxDelta).toBeLessThanOrEqual(6);
       expect(Math.abs(outputLayout.resultWidth - outputLayout.summaryWidth)).toBeLessThanOrEqual(1);
       expect(Math.abs(outputLayout.summaryWidth - outputLayout.logsWidth)).toBeLessThanOrEqual(1);
@@ -114,7 +157,11 @@ test.describe("Collision Inspector V2", () => {
       await page.locator("button[aria-controls='collisionLogContent']").click();
       await expect(page.locator("#collisionLogContent")).toBeVisible();
 
+      await page.locator("#objectARotationInput").fill("45");
+      await expect(page.locator("#rotationState")).toHaveText("A 45 / B 0");
       await page.locator("#objectBRotationInput").fill("180");
+      await expect(page.locator("#rotationState")).toHaveText("A 45 / B 180");
+      await page.locator("#objectARotationInput").fill("0");
       await expect(page.locator("#rotationState")).toHaveText("A 0 / B 180");
 
       await dragCanvasPoint(page, { x: 500, y: 320 }, { x: 360, y: 320 });

@@ -6,6 +6,16 @@ import {
   roundPoint
 } from "./constants.js";
 
+function fixedOriginValue(value) {
+  const parsed = numberValue(value);
+  const normalized = Math.abs(parsed) < 0.0005 ? 0 : parsed;
+  return normalized.toFixed(3);
+}
+
+function formatOriginPoint(point) {
+  return `${fixedOriginValue(point?.x)},${fixedOriginValue(point?.y)}`;
+}
+
 export class CollisionInspectorV2Controls {
   constructor({ elements, windowRef = window }) {
     this.elements = elements;
@@ -124,6 +134,8 @@ export class CollisionInspectorV2Controls {
     this.elements.canvas.setAttribute("width", String(Math.max(1, Math.floor(numberValue(width, 1)))));
     this.elements.canvas.setAttribute("height", String(Math.max(1, Math.floor(numberValue(height, 1)))));
     this.elements.canvas.style.setProperty("--collision-inspector-aspect-ratio", `${this.elements.canvas.width} / ${this.elements.canvas.height}`);
+    this.elements.canvas.style.setProperty("--collision-inspector-screen-width", `${this.elements.canvas.width}px`);
+    this.elements.canvas.style.setProperty("--collision-inspector-screen-height", `${this.elements.canvas.height}px`);
   }
 
   syncResult(result) {
@@ -133,7 +145,7 @@ export class CollisionInspectorV2Controls {
     this.elements.resultBadge.textContent = result.collided ? "Collision" : "No Collision";
     this.elements.overlapState.textContent = String(result.boundsOverlap === true);
     this.elements.boundsState.textContent = result.boundsOverlap ? "overlap" : "clear";
-    this.elements.originState.textContent = `A ${roundNumber(geometryA.originWorld?.x)},${roundNumber(geometryA.originWorld?.y)} / B ${roundNumber(geometryB.originWorld?.x)},${roundNumber(geometryB.originWorld?.y)}`;
+    this.elements.originState.textContent = `Origins:\nA ${formatOriginPoint(geometryA.originWorld)}\nB ${formatOriginPoint(geometryB.originWorld)}`;
     this.elements.rotationState.textContent = `A ${roundNumber(geometryA.instance?.rotation)} / B ${roundNumber(geometryB.instance?.rotation)}`;
     this.elements.pointsState.textContent = `A ${geometryA.transformedPoints?.slice(0, 24).length || 0} / B ${geometryB.transformedPoints?.slice(0, 24).length || 0}`;
     this.elements.summary.textContent = JSON.stringify({

@@ -37,7 +37,7 @@
     </details>
 
     <nav class="tool-starter__menu tool-starter__tool__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
-      <label class="collision-inspector-v2__field collision-inspector-v2__menu-file" for="collisionManifestInput">
+      <label class="tool-starter__field collision-inspector-v2__menu-file" for="collisionManifestInput">
         <span>Game Manifest JSON</span>
         <input id="collisionManifestInput" type="file" accept=".json,application/json">
       </label>
@@ -47,9 +47,9 @@
       <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
     </nav>
 
-    <main class="collision-inspector-v2 app-shell" data-tool-id="collision-inspector-v2">
-      <aside class="collision-inspector-v2__panel collision-inspector-v2__panel--left" aria-label="Collision inputs">
-        <section class="accordion-v2 collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+    <main class="tool-starter collision-inspector-v2 app-shell" data-tool-id="collision-inspector-v2">
+      <aside class="tool-starter__panel tool-starter__panel--left collision-inspector-v2__panel collision-inspector-v2__panel--left" aria-label="Collision inputs">
+        <section class="accordion-v2 tool-starter__accordion collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="manifestContent">
             <span>Manifest</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -59,21 +59,21 @@
           </div>
         </section>
 
-        <section class="accordion-v2 collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion collision-inspector-v2__accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="collisionControlsContent">
             <span>Collision Pair</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="collisionControlsContent" class="accordion-v2__content">
-            <label class="collision-inspector-v2__field" for="objectASelect">
+            <label class="tool-starter__field tool-starter__field--compact collision-inspector-v2__field" for="objectASelect">
               <span>Object A</span>
               <select id="objectASelect"></select>
             </label>
-            <label class="collision-inspector-v2__field" for="objectBSelect">
+            <label class="tool-starter__field tool-starter__field--compact collision-inspector-v2__field" for="objectBSelect">
               <span>Object B</span>
               <select id="objectBSelect"></select>
             </label>
-            <label class="collision-inspector-v2__field" for="collisionModeSelect">
+            <label class="tool-starter__field tool-starter__field--compact collision-inspector-v2__field" for="collisionModeSelect">
               <span>Collision Mode</span>
               <select id="collisionModeSelect">
                 <option value="bounds">Bounds</option>
@@ -83,12 +83,12 @@
               </select>
             </label>
             <div class="collision-inspector-v2__rotation-grid">
-              <label class="collision-inspector-v2__field" for="objectARotationInput">
-                <span>Object A Rotation</span>
+              <label class="tool-starter__field tool-starter__field--compact collision-inspector-v2__field" for="objectARotationInput">
+                <span>Object A Rotate</span>
                 <input id="objectARotationInput" type="number" step="1" value="0">
               </label>
-              <label class="collision-inspector-v2__field" for="objectBRotationInput">
-                <span>Object B Rotation</span>
+              <label class="tool-starter__field tool-starter__field--compact collision-inspector-v2__field" for="objectBRotationInput">
+                <span>Object B Rotate</span>
                 <input id="objectBRotationInput" type="number" step="1" value="0">
               </label>
             </div>
@@ -97,15 +97,15 @@
         </section>
       </aside>
 
-      <section class="collision-inspector-v2__panel collision-inspector-v2__panel--center" aria-label="Collision simulation">
-        <section class="accordion-v2 collision-inspector-v2__accordion collision-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
+      <section class="tool-starter__panel tool-starter__panel--center collision-inspector-v2__panel collision-inspector-v2__panel--center" aria-label="Collision simulation">
+        <section class="accordion-v2 tool-starter__accordion tool-starter__accordion--fill collision-inspector-v2__accordion collision-inspector-v2__accordion--fill is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="simulationContent">
             <span>Simulation</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="simulationContent" class="accordion-v2__content collision-inspector-v2__canvas-wrap">
             <div class="collision-inspector-v2__zoom-row">
-              <label class="collision-inspector-v2__field collision-inspector-v2__field--inline" for="collisionZoomInput">
+              <label class="tool-starter__field tool-starter__field--compact collision-inspector-v2__field collision-inspector-v2__field--inline" for="collisionZoomInput">
                 <span>Zoom</span>
                 <input id="collisionZoomInput" type="range" min="0.5" max="5" step="0.1" value="1">
               </label>
@@ -124,8 +124,8 @@
         </section>
       </section>
 
-      <aside class="collision-inspector-v2__panel collision-inspector-v2__panel--right" aria-label="Collision output">
-        <section class="accordion-v2 collision-inspector-v2__accordion collision-inspector-v2__accordion--result is-open" data-accordion-v2-open="true">
+      <aside class="tool-starter__panel tool-starter__panel--right collision-inspector-v2__panel collision-inspector-v2__panel--right" aria-label="Collision output">
+        <section class="accordion-v2 tool-starter__accordion collision-inspector-v2__accordion collision-inspector-v2__accordion--result is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="resultContent">
             <span>Live Result</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
@@ -157,24 +157,24 @@
           </div>
         </section>
 
-        <section class="accordion-v2 collision-inspector-v2__accordion collision-inspector-v2__accordion--summary is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion collision-inspector-v2__accordion collision-inspector-v2__accordion--summary is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="collisionSummaryContent">
             <span>Collision Summary</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="collisionSummaryContent" class="accordion-v2__content collision-inspector-v2__summary-content">
-            <pre id="collisionSummary" class="collision-inspector-v2__output">{}</pre>
+            <pre id="collisionSummary" class="tool-starter__output collision-inspector-v2__output">{}</pre>
           </div>
         </section>
 
-        <section class="accordion-v2 collision-inspector-v2__accordion collision-inspector-v2__accordion--logs is-open" data-accordion-v2-open="true">
+        <section class="accordion-v2 tool-starter__accordion collision-inspector-v2__accordion collision-inspector-v2__accordion--logs is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header collision-inspector-v2__status-header" type="button" aria-expanded="true" aria-controls="collisionLogContent">
             <span>Collision Logs</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="collisionLogContent" class="accordion-v2__content">
             <button id="clearCollisionLogButton" class="collision-inspector-v2__log-clear" type="button">Clear</button>
-            <textarea id="collisionLog" readonly rows="12" aria-label="Collision logs"></textarea>
+            <textarea id="collisionLog" class="tool-starter__output" readonly rows="12" aria-label="Collision logs"></textarea>
           </div>
         </section>
       </aside>
