@@ -11,7 +11,7 @@ import AsteroidsInitialsEntry from '../../games/Asteroids/systems/AsteroidsIniti
 import {
   createAsteroidsTestSceneOptions,
   loadAsteroidsObjectVectorPayload
-} from './asteroidsManifestObjectVectors.mjs';
+} from './asteroidsManifestObjectGeometry.mjs';
 
 const ASTEROIDS_TEST_SCENE_OPTIONS = createAsteroidsTestSceneOptions();
 
@@ -204,7 +204,7 @@ function testAsteroidsMenuHighScoreUsesLeaderboardTop() {
   assert.equal(textCalls.some(([text]) => text === 'HIGH SCORE 2500'), false);
 }
 
-function testAsteroidsAttractObjectsLoadFromManifestRoles() {
+function testAsteroidsAttractObjectsLoadFromManifestTags() {
   const renderCalls = [];
   const scene = new AsteroidsGameScene(createAsteroidsTestSceneOptions({
     objectVectorAssets: createObjectVectorAssetSet(),
@@ -322,7 +322,7 @@ export function run() {
   testAsteroidsAttractMenuFlow();
   testAsteroidsGameOverQualifyingScoreInitialsFlow();
   testAsteroidsMenuHighScoreUsesLeaderboardTop();
-  testAsteroidsAttractObjectsLoadFromManifestRoles();
+  testAsteroidsAttractObjectsLoadFromManifestTags();
   testAsteroidsGameplayBulletsUseManifestObjectGeometry();
   testAsteroidsGameplayRenderDoesNotCoverBackgroundLayer();
 }

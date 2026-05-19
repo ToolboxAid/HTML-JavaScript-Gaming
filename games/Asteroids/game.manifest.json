@@ -212,13 +212,6 @@
       "version": 1,
       "toolId": "object-vector-studio-v2",
       "name": "Asteroids Object Vector Assets",
-      "vectorMaps": {
-        "schema": "html-js-gaming.asteroids-object-vector-shapes",
-        "version": 1,
-        "name": "Asteroids Object Vector Shape Roles",
-        "source": "object-vector-studio-v2",
-        "shapes": []
-      },
       "objects": [
         {
           "id": "object.asteroids.bullet",

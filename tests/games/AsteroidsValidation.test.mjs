@@ -15,14 +15,14 @@ import {
   createAsteroidsTestSceneOptions,
   loadAsteroidsManifest,
   loadAsteroidsObjectVectorPayload,
-  loadAsteroidsVectorMaps
-} from './asteroidsManifestObjectVectors.mjs';
+  loadAsteroidsObjectGeometry
+} from './asteroidsManifestObjectGeometry.mjs';
 import {
-  ASTEROIDS_OBJECT_VECTOR_IDS,
   ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS,
-  getAsteroidsObjectVectorPoints,
-  loadAsteroidsVectorMapsFromManifest
-} from '../../games/Asteroids/game/asteroidsVectorMaps.js';
+  ASTEROIDS_OBJECT_GEOMETRY_IDS,
+  getAsteroidsObjectGeometryPoints,
+  loadAsteroidsObjectGeometryFromManifest
+} from '../../games/Asteroids/game/asteroidsObjectGeometryManifest.js';
 
 function createCanvas() {
   const listeners = new Map();
@@ -152,35 +152,29 @@ function withBlockedLocalStorage(run) {
 
 export async function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
-  const vectorMaps = loadAsteroidsVectorMaps();
-  const worldOptions = { asteroidGeometryProfiles, vectorMaps };
+  const objectGeometry = loadAsteroidsObjectGeometry();
+  const worldOptions = { asteroidGeometryProfiles, objectGeometry };
   const manifestPayload = loadAsteroidsManifest();
   assert.equal(manifestPayload.tools['vector-map-editor'], undefined);
   assert.equal(Object.hasOwn(manifestPayload.tools, 'text2speech-V2'), false);
   const objectVectorPayload = manifestPayload.tools['object-vector-studio-v2'];
-  assert.equal(Object.hasOwn(objectVectorPayload.vectorMaps, 'vectors'), false);
-  assert.equal(Object.hasOwn(objectVectorPayload.vectorMaps, 'objectVectorRoles'), false);
-  assert.equal(Array.isArray(objectVectorPayload.vectorMaps.shapes), true);
-  assert.equal(objectVectorPayload.vectorMaps.shapes.length, 0);
-  assert.equal(JSON.stringify(objectVectorPayload.vectorMaps).includes('"paths"'), false);
-  assert.equal(JSON.stringify(objectVectorPayload.vectorMaps).includes('"points"'), false);
-  assert.equal(ASTEROIDS_OBJECT_VECTOR_IDS.bullet, 'object.asteroids.bullet');
-  assert.equal(ASTEROIDS_OBJECT_VECTOR_IDS.attractAsteroid, 'object.asteroids.large-asteroid');
-  assert.equal(ASTEROIDS_OBJECT_VECTOR_IDS.attractShip, 'object.asteroids.ship');
-  assert.equal(ASTEROIDS_OBJECT_VECTOR_IDS.attractUfo, 'object.asteroids.large-ufo');
-  assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_OBJECT_VECTOR_IDS.bullet).id, 'object.asteroids.bullet');
-  assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_OBJECT_VECTOR_IDS.attractAsteroid).id, 'object.asteroids.large-asteroid');
-  assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_OBJECT_VECTOR_IDS.attractShip).id, 'object.asteroids.ship');
-  assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_OBJECT_VECTOR_IDS.attractUfo).id, 'object.asteroids.large-ufo');
+  assert.equal(Object.hasOwn(objectVectorPayload, 'vectorMaps'), false);
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet, 'object.asteroids.bullet');
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractAsteroid, 'object.asteroids.large-asteroid');
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip, 'object.asteroids.ship');
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractUfo, 'object.asteroids.large-ufo');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet).id, 'object.asteroids.bullet');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractAsteroid).id, 'object.asteroids.large-asteroid');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip).id, 'object.asteroids.ship');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractUfo).id, 'object.asteroids.large-ufo');
   ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.forEach((id) => {
-    assert.equal(vectorMaps.objectVectorMapsById.has(id), true, `required Asteroids manifest geometry id ${id} should resolve`);
+    assert.equal(objectGeometry.objectsById.has(id), true, `required Asteroids manifest geometry id ${id} should resolve`);
   });
-  assert.equal(vectorMaps.objectsByRole.bullet.id, 'object.asteroids.bullet');
-  assert.equal(vectorMaps.objectsByRole.ship.id, 'object.asteroids.ship');
-  assert.equal(vectorMaps.objectsByRole.asteroidMedium.id, 'object.asteroids.medium-asteroid');
-  assert.equal(Object.hasOwn(vectorMaps, 'objectVectorRoles'), false);
+  assert.equal(objectGeometry.objectsByKey.bullet.id, 'object.asteroids.bullet');
+  assert.equal(objectGeometry.objectsByKey.ship.id, 'object.asteroids.ship');
+  assert.equal(objectGeometry.objectsByKey.asteroidMedium.id, 'object.asteroids.medium-asteroid');
   assert.deepEqual(
-    getAsteroidsObjectVectorPoints(vectorMaps, 'bullet'),
+    getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
     [
       { x: -2, y: -2 },
       { x: 2, y: -2 },
@@ -189,7 +183,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    getAsteroidsObjectVectorPoints(vectorMaps, 'ship'),
+    getAsteroidsObjectGeometryPoints(objectGeometry, 'ship'),
     [
       { x: 14, y: 0 },
       { x: -10, y: -8 },
@@ -200,7 +194,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    getAsteroidsObjectVectorPoints(vectorMaps, 'asteroidMedium'),
+    getAsteroidsObjectGeometryPoints(objectGeometry, 'asteroidMedium'),
     [
       { x: -16, y: -10 },
       { x: -2, y: -18 },
@@ -212,7 +206,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    getAsteroidsObjectVectorPoints(vectorMaps, 'asteroidSmall'),
+    getAsteroidsObjectGeometryPoints(objectGeometry, 'asteroidSmall'),
     [
       { x: -10, y: -6 },
       { x: 0, y: -12 },
@@ -223,7 +217,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    getAsteroidsObjectVectorPoints(vectorMaps, 'ufoSmall').slice(0, 5),
+    getAsteroidsObjectGeometryPoints(objectGeometry, 'ufoSmall').slice(0, 5),
     [
       { x: -14, y: 3 },
       { x: 14, y: 3 },
@@ -257,30 +251,31 @@ export async function run() {
   ]);
   const missingBulletManifest = structuredClone(manifestPayload);
   missingBulletManifest.tools['object-vector-studio-v2'].objects = missingBulletManifest.tools['object-vector-studio-v2'].objects
-    .filter((object) => object.id !== ASTEROIDS_OBJECT_VECTOR_IDS.bullet);
-  const missingBulletValidation = loadAsteroidsVectorMapsFromManifest(missingBulletManifest);
+    .filter((object) => object.id !== ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet);
+  const missingBulletValidation = loadAsteroidsObjectGeometryFromManifest(missingBulletManifest);
   assert.equal(missingBulletValidation.ok, false);
-  assert.equal(missingBulletValidation.errors.some((message) => message.includes(ASTEROIDS_OBJECT_VECTOR_IDS.bullet)), true);
-  const legacyRolesManifest = structuredClone(manifestPayload);
-  legacyRolesManifest.tools['object-vector-studio-v2'].vectorMaps.objectVectorRoles = {
-    ship: {
-      objectId: ASTEROIDS_OBJECT_VECTOR_IDS.attractShip,
-      tags: ['player', 'ship'],
-    },
+  assert.equal(missingBulletValidation.errors.some((message) => message.includes(ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet)), true);
+  const legacySharedGeometryManifest = structuredClone(manifestPayload);
+  legacySharedGeometryManifest.tools['object-vector-studio-v2'].vectorMaps = {
+    schema: 'html-js-gaming.legacy-shared-shapes',
+    version: 1,
+    name: 'Legacy Shared Shapes',
+    source: 'object-vector-studio-v2',
+    shapes: []
   };
-  const legacyRolesValidation = loadAsteroidsVectorMapsFromManifest(legacyRolesManifest);
-  assert.equal(legacyRolesValidation.ok, false);
-  assert.equal(legacyRolesValidation.errors.some((message) => message.includes('objectVectorRoles')), true);
+  const legacySharedGeometryValidation = loadAsteroidsObjectGeometryFromManifest(legacySharedGeometryManifest);
+  assert.equal(legacySharedGeometryValidation.ok, false);
+  assert.equal(legacySharedGeometryValidation.errors.some((message) => message.includes('vectorMaps')), true);
   const missingShipObjectManifest = structuredClone(manifestPayload);
   missingShipObjectManifest.tools['object-vector-studio-v2'].objects = missingShipObjectManifest.tools['object-vector-studio-v2'].objects
-    .filter((object) => object.id !== ASTEROIDS_OBJECT_VECTOR_IDS.attractShip);
-  const missingShipObjectValidation = loadAsteroidsVectorMapsFromManifest(missingShipObjectManifest);
+    .filter((object) => object.id !== ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip);
+  const missingShipObjectValidation = loadAsteroidsObjectGeometryFromManifest(missingShipObjectManifest);
   assert.equal(missingShipObjectValidation.ok, false);
-  assert.equal(missingShipObjectValidation.errors.some((message) => message.includes(ASTEROIDS_OBJECT_VECTOR_IDS.attractShip)), true);
+  assert.equal(missingShipObjectValidation.errors.some((message) => message.includes(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip)), true);
   const missingSmallUfoObjectManifest = structuredClone(manifestPayload);
   missingSmallUfoObjectManifest.tools['object-vector-studio-v2'].objects = missingSmallUfoObjectManifest.tools['object-vector-studio-v2'].objects
     .filter((object) => object.id !== 'object.asteroids.small-ufo');
-  const missingSmallUfoObjectValidation = loadAsteroidsVectorMapsFromManifest(missingSmallUfoObjectManifest);
+  const missingSmallUfoObjectValidation = loadAsteroidsObjectGeometryFromManifest(missingSmallUfoObjectManifest);
   assert.equal(missingSmallUfoObjectValidation.ok, false);
   assert.equal(
     missingSmallUfoObjectValidation.errors.some((message) => (

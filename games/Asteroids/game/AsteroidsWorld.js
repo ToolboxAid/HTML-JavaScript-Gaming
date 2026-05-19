@@ -13,8 +13,8 @@ import { distance } from '../../../src/shared/utils/mathUtils.js';
 import { randomRange } from '../utils/math.js';
 import { sanitizeFiniteNumber, sanitizePositiveNumber } from '../../../src/shared/math/numberNormalization.js';
 import {
-  requireAsteroidsObjectVectorPoints,
-} from './asteroidsVectorMaps.js';
+  requireAsteroidsObjectGeometryPoints,
+} from './asteroidsObjectGeometryManifest.js';
 
 const WAVE_ASTEROID_COUNTS = [4, 6, 8];
 const RESPAWN_SAFE_DISTANCE = 100;
@@ -139,21 +139,21 @@ function getRectOverlapDepth(x, y, radius, rect) {
 }
 
 export default class AsteroidsWorld {
-  constructor(bounds, { rng = Math.random, asteroidGeometryProfiles = null, vectorMaps = null } = {}) {
+  constructor(bounds, { rng = Math.random, asteroidGeometryProfiles = null, objectGeometry = null } = {}) {
     if (!hasLoggedWorldConstruction) {
       hasLoggedWorldConstruction = true;
       logWorldBootStage('constructed', bounds);
     }
     this.asteroidGeometryProfiles = asteroidGeometryProfiles;
-    this.vectorMaps = vectorMaps;
-    if (!this.vectorMaps?.objectVectorMapsById) {
+    this.objectGeometry = objectGeometry;
+    if (!this.objectGeometry?.objectsById) {
       throw new Error('AsteroidsWorld requires manifest-loaded Object Vector geometry for ship, UFO, asteroid, and bullet gameplay geometry.');
     }
-    this.bulletCollisionPoints = requireAsteroidsObjectVectorPoints(this.vectorMaps, 'bullet', 'bullet object geometry');
-    this.shipCollisionPoints = requireAsteroidsObjectVectorPoints(this.vectorMaps, 'ship', 'ship object geometry');
+    this.bulletCollisionPoints = requireAsteroidsObjectGeometryPoints(this.objectGeometry, 'bullet', 'bullet object geometry');
+    this.shipCollisionPoints = requireAsteroidsObjectGeometryPoints(this.objectGeometry, 'ship', 'ship object geometry');
     this.ufoCollisionPoints = {
-      large: requireAsteroidsObjectVectorPoints(this.vectorMaps, 'ufoLarge', 'large UFO object geometry'),
-      small: requireAsteroidsObjectVectorPoints(this.vectorMaps, 'ufoSmall', 'small UFO object geometry'),
+      large: requireAsteroidsObjectGeometryPoints(this.objectGeometry, 'ufoLarge', 'large UFO object geometry'),
+      small: requireAsteroidsObjectGeometryPoints(this.objectGeometry, 'ufoSmall', 'small UFO object geometry'),
     };
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.bounds = sanitizeBounds(bounds);

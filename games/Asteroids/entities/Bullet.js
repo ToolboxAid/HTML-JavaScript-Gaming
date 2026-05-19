@@ -25,7 +25,7 @@ export default class Bullet {
     this.life = life;
     this.collisionPoints = normalizePoints(collisionPoints);
     if (this.collisionPoints.length < 3) {
-      throw new Error('Asteroids Bullet requires manifest-loaded bullet vector map geometry.');
+      throw new Error('Asteroids Bullet requires manifest-loaded bullet object geometry.');
     }
   }
 

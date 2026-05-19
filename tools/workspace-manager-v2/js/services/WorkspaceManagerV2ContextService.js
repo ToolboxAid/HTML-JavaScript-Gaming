@@ -1558,9 +1558,6 @@ export class WorkspaceManagerV2ContextService {
         if (toolId === OBJECT_VECTOR_STUDIO_V2_TOOL_KEY && Array.isArray(payload?.objects)) {
           return `${toolId} objects=${payload.objects.length}`;
         }
-        if (Array.isArray(payload?.vectorMaps?.shapes)) {
-          return `${toolId} shapes=${payload.vectorMaps.shapes.length}`;
-        }
         if (toolId === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(payload)) {
           return `${toolId} queue=${payload.length}`;
         }

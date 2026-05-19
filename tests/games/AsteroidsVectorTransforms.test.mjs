@@ -11,11 +11,11 @@ import Ship from '../../games/Asteroids/entities/Ship.js';
 import Ufo from '../../games/Asteroids/entities/Ufo.js';
 import {
   createAsteroidsTestGeometryProfiles,
-  loadAsteroidsVectorMaps
-} from './asteroidsManifestObjectVectors.mjs';
+  loadAsteroidsObjectGeometry
+} from './asteroidsManifestObjectGeometry.mjs';
 import {
-  getAsteroidsObjectVectorPoints,
-} from '../../games/Asteroids/game/asteroidsVectorMaps.js';
+  getAsteroidsObjectGeometryPoints,
+} from '../../games/Asteroids/game/asteroidsObjectGeometryManifest.js';
 
 function assertPointClose(actual, expected) {
   assert.equal(Math.abs(actual.x - expected.x) < 1e-9, true);
@@ -24,9 +24,9 @@ function assertPointClose(actual, expected) {
 
 export function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
-  const vectorMaps = loadAsteroidsVectorMaps();
+  const objectGeometry = loadAsteroidsObjectGeometry();
   const ship = new Ship(100, 200, {
-    collisionPoints: getAsteroidsObjectVectorPoints(vectorMaps, 'ship'),
+    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'ship'),
   });
   ship.angle = Math.PI / 2;
   const shipPoints = ship.getPoints();
@@ -44,7 +44,7 @@ export function run() {
   assertPointClose(asteroidPoints[5], { x: 346.5, y: 197.5 });
 
   const bullet = new Bullet(50, 60, 0, 0, 1, {
-    collisionPoints: getAsteroidsObjectVectorPoints(vectorMaps, 'bullet'),
+    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
   });
   const bulletPoints = bullet.getCollisionPolygon();
   assert.equal(bulletPoints.length, 4);
@@ -52,8 +52,8 @@ export function run() {
   assertPointClose(bulletPoints[2], { x: 52, y: 62 });
 
   const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5, {
-    bulletCollisionPoints: getAsteroidsObjectVectorPoints(vectorMaps, 'bullet'),
-    collisionPoints: getAsteroidsObjectVectorPoints(vectorMaps, 'ufoSmall'),
+    bulletCollisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
+    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'ufoSmall'),
   });
   ufo.x = 400;
   ufo.y = 220;

@@ -9,7 +9,7 @@ import { Theme, ThemeTokens } from "../../src/engine/theme/index.js";
 import { resolveDebugConfig } from "../../src/shared/utils/debugConfigUtils.js";
 import { createNoopDevConsoleIntegration } from "../../src/shared/utils/createNoopDevConsoleIntegration.js";
 import AsteroidsGameScene from "./game/AsteroidsGameScene.js";
-import { loadAsteroidsVectorMapsFromManifest } from "./game/asteroidsVectorMaps.js";
+import { loadAsteroidsObjectGeometryFromManifest } from "./game/asteroidsObjectGeometryManifest.js";
 import { preloadWorkspaceGameAssetCatalog } from "../shared/workspaceGameAssetCatalog.js";
 
 export const asteroidFlow = Object.freeze({
@@ -159,11 +159,11 @@ export async function bootAsteroidsNew({
     stage = "load-game-manifest";
     traceBoot(stage);
     const asteroidsManifest = await loadAsteroidsManifestPayload(ASTEROIDS_MANIFEST_PATH, manifestPayload);
-    const vectorMapValidation = loadAsteroidsVectorMapsFromManifest(asteroidsManifest, {
+    const objectGeometryValidation = loadAsteroidsObjectGeometryFromManifest(asteroidsManifest, {
       sourceLabel: "Asteroids game.manifest.json"
     });
-    if (!vectorMapValidation.ok) {
-      throw new Error(`Asteroids Object Vector manifest validation failed: ${vectorMapValidation.errors.join(" ")}`);
+    if (!objectGeometryValidation.ok) {
+      throw new Error(`Asteroids Object Vector manifest validation failed: ${objectGeometryValidation.errors.join(" ")}`);
     }
 
     stage = "preload-object-vector-runtime";
@@ -223,9 +223,9 @@ export async function bootAsteroidsNew({
     engine.setScene(new SceneClass({
       devConsoleIntegration,
       debugConfig,
+      objectGeometry: objectGeometryValidation.objectGeometry,
       objectVectorAssets,
       objectVectorRuntime,
-      vectorMaps: vectorMapValidation.vectorMaps
     }));
 
     stage = "start-engine";

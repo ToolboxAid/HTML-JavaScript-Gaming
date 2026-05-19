@@ -15,10 +15,10 @@ import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
 import { createAsteroidGeometryProfilesFromObjectVectorAssets } from './asteroidObjectGeometry.js';
 import {
-  ASTEROID_SIZE_RUNTIME_ROLES,
-  runtimeObjectRoleOptions,
-  validateAsteroidsRuntimeObjectRoles
-} from './asteroidsObjectVectorRoles.js';
+  ASTEROID_SIZE_RUNTIME_OBJECT_KEYS,
+  runtimeObjectTagOptions,
+  validateAsteroidsRuntimeObjectTags
+} from './asteroidsObjectTags.js';
 import {
   ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE
 } from "../rules/flowRules.js";
@@ -88,17 +88,17 @@ export default class AsteroidsGameScene extends Scene {
     this.devConsoleIntegration = options.devConsoleIntegration || null;
     this.objectVectorAssets = options.objectVectorAssets || null;
     this.objectVectorRuntime = options.objectVectorRuntime || null;
-    this.vectorMaps = options.vectorMaps || null;
-    if (!this.vectorMaps?.objectVectorMapsById || !this.vectorMaps?.objectsByRole) {
+    this.objectGeometry = options.objectGeometry || null;
+    if (!this.objectGeometry?.objectsById || !this.objectGeometry?.objectsByKey) {
       const message = 'Asteroids Object Vector manifest validation failed: object geometry was not loaded from game.manifest.json.';
       console.error(message);
       throw new Error(message);
     }
     this.objectVectorRuntimeObjectValidation = this.objectVectorAssets
-      ? validateAsteroidsRuntimeObjectRoles([...this.objectVectorAssets.objectsById.values()], {
+      ? validateAsteroidsRuntimeObjectTags([...this.objectVectorAssets.objectsById.values()], {
         logger: this.objectVectorRuntime,
       })
-      : { errors: [], objectsByRole: {}, ok: false, warnings: [] };
+      : { errors: [], objectsByKey: {}, ok: false, warnings: [] };
     if (this.objectVectorAssets && !this.objectVectorRuntimeObjectValidation.ok) {
       const message = validationFailureMessage(this.objectVectorRuntimeObjectValidation);
       this.objectVectorRuntime?.log?.('FAIL', message, {
@@ -125,7 +125,7 @@ export default class AsteroidsGameScene extends Scene {
     };
     this.world = new AsteroidsWorld({ width: 960, height: 720 }, {
       asteroidGeometryProfiles: this.asteroidGeometryProfiles,
-      vectorMaps: this.vectorMaps,
+      objectGeometry: this.objectGeometry,
     });
     this.highScoreService = new AsteroidsHighScoreService();
     this.highScoreRows = this.highScoreService.loadTable();
@@ -734,9 +734,9 @@ export default class AsteroidsGameScene extends Scene {
     }
 
     this.world.asteroids.forEach((asteroid) => {
-      const roleId = ASTEROID_SIZE_RUNTIME_ROLES[asteroid.size];
+      const objectKey = ASTEROID_SIZE_RUNTIME_OBJECT_KEYS[asteroid.size];
       this.drawObjectVectorAsset(renderer, "asteroids", {
-        ...this.objectVectorRoleOptions(roleId),
+        ...this.objectVectorTagOptions(objectKey),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
         rotation: asteroid.angle,
@@ -747,9 +747,9 @@ export default class AsteroidsGameScene extends Scene {
     });
 
     if (this.world.ufo) {
-      const roleId = this.world.ufo.type === "small" ? "ufoSmall" : "ufoLarge";
+      const objectKey = this.world.ufo.type === "small" ? "ufoSmall" : "ufoLarge";
       this.drawObjectVectorAsset(renderer, "ufo", {
-        ...this.objectVectorRoleOptions(roleId),
+        ...this.objectVectorTagOptions(objectKey),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
         stateId: "active",
@@ -760,7 +760,7 @@ export default class AsteroidsGameScene extends Scene {
 
     this.world.bullets.forEach((bullet) => {
       this.drawObjectVectorAsset(renderer, "bullet", {
-        ...this.objectVectorRoleOptions("bullet"),
+        ...this.objectVectorTagOptions("bullet"),
         stateId: "active",
         x: bullet.x,
         y: bullet.y,
@@ -769,7 +769,7 @@ export default class AsteroidsGameScene extends Scene {
 
     this.world.ufoBullets.forEach((bullet) => {
       this.drawObjectVectorAsset(renderer, "bullet", {
-        ...this.objectVectorRoleOptions("bullet"),
+        ...this.objectVectorTagOptions("bullet"),
         stateId: "active",
         x: bullet.x,
         y: bullet.y,
@@ -780,7 +780,7 @@ export default class AsteroidsGameScene extends Scene {
 
     if (this.world.shipActive && !this.session.isTurnIntroActive() && this.session.mode !== 'menu') {
       this.drawObjectVectorAsset(renderer, "ship", {
-        ...this.objectVectorRoleOptions("ship"),
+        ...this.objectVectorTagOptions("ship"),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
         rotation: this.world.ship.angle,
@@ -857,8 +857,8 @@ export default class AsteroidsGameScene extends Scene {
     this.publishObjectVectorRuntimeDiagnostics();
   }
 
-  objectVectorRoleOptions(roleId) {
-    return runtimeObjectRoleOptions(roleId);
+  objectVectorTagOptions(objectKey) {
+    return runtimeObjectTagOptions(objectKey);
   }
 
   drawLives(renderer, centerX, y, lives) {
@@ -869,7 +869,7 @@ export default class AsteroidsGameScene extends Scene {
     const startX = centerX - ((lives - 1) * LIFE_SPACING) / 2;
     Array.from({ length: lives }).forEach((_, index) => {
       this.drawObjectVectorAsset(renderer, "shipLife", {
-        ...this.objectVectorRoleOptions("ship"),
+        ...this.objectVectorTagOptions("ship"),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
         rotation: -Math.PI / 2,
@@ -916,10 +916,9 @@ export default class AsteroidsGameScene extends Scene {
         assetCount: this.objectVectorAssets?.objectsById?.size || 0,
         loaded: Boolean(this.objectVectorAssets),
         objectCount: this.objectVectorAssets?.objectsById?.size || 0,
-        objectVectorObjectIds: this.vectorMaps?.objectVectorMaps?.map((object) => object.id) || [],
+        objectVectorObjectIds: this.objectGeometry?.objects?.map((object) => object.id) || [],
         runtimeObjectsValid: Boolean(this.objectVectorRuntimeObjectValidation?.ok),
         renderCounts: { ...this.objectVectorRenderCounts },
-        sharedShapeCount: this.vectorMaps?.shapes?.length || 0,
       };
     } catch {
       // Ignore diagnostics assignment in restricted runtimes.

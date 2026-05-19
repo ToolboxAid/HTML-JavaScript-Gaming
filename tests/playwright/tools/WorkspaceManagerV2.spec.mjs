@@ -7682,20 +7682,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       const diagnostics = await page.evaluate(() => window.__asteroidsObjectVectorRuntime);
       const runtimeObjectValidation = await page.evaluate(() => window.__asteroidsNewEngine.scene.objectVectorRuntimeObjectValidation);
       const taglessRuntimeObjectValidation = await page.evaluate(async () => {
-        const { validateAsteroidsRuntimeObjectRoles } = await import("/games/Asteroids/game/asteroidsObjectVectorRoles.js");
+        const { validateAsteroidsRuntimeObjectTags } = await import("/games/Asteroids/game/asteroidsObjectTags.js");
         const scene = window.__asteroidsNewEngine.scene;
         const objects = scene.objectVectorAssets.payload.objects.map((object) => ({
           ...object,
           tags: []
         }));
-        return validateAsteroidsRuntimeObjectRoles(objects);
+        return validateAsteroidsRuntimeObjectTags(objects);
       });
       expect(diagnostics.loaded).toBe(true);
       expect(diagnostics.assetCount).toBe(7);
       expect(diagnostics.objectCount).toBe(7);
       expect(diagnostics.runtimeObjectsValid).toBe(true);
       expect(runtimeObjectValidation.ok).toBe(true);
-      expect(runtimeObjectValidation.objectsByRole.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
+      expect(runtimeObjectValidation.objectsByKey.asteroidMedium.id).toBe("object.asteroids.medium-asteroid");
       expect(runtimeObjectValidation.warnings).toEqual([]);
       const runtimeRounding = await page.evaluate(() => {
         const scene = window.__asteroidsNewEngine.scene;
@@ -7762,7 +7762,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(diagnostics.renderCounts.attractAsteroid).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.attractShip).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.attractUfo).toBeGreaterThan(0);
-      expect(diagnostics.sharedShapeCount).toBe(0);
       expect(diagnostics.objectVectorObjectIds).toEqual(expect.arrayContaining([
         "object.asteroids.bullet",
         "object.asteroids.large-asteroid",
@@ -7775,7 +7774,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(eventMessages).toContain("Object Vector runtime cache miss for ufoSmall; cached resolved object object.asteroids.small-ufo.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=frame-1.");
-      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 2 shapes state=active frame=frame-1.");
+      expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.small-ufo: 1 shapes state=active frame=frame-1.");
       expect(eventMessages).not.toContain("matched multiple objects by tags");
       expect(pageErrors).toEqual([]);
     } finally {
@@ -10240,29 +10239,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(asteroidsManifest.objectVectorRuntime).toBeUndefined();
       expect(Object.keys(asteroidsManifest.tools).sort()).toEqual(expect.arrayContaining(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2"]));
       expect(asteroidsManifest.tools["vector-map-editor"]).toBeUndefined();
-      expect(asteroidsManifest.tools["object-vector-studio-v2"].vectorMaps.vectors.map((vector) => vector.id)).toEqual(expect.arrayContaining([
-        "vector.asteroids.bullet",
-        "vector.asteroids.ship",
-        "vector.asteroids.ui.title",
-        "vector.asteroids.ufo.large",
-        "vector.asteroids.ufo.small"
-      ]));
-      expect(asteroidsManifest.tools["object-vector-studio-v2"].vectorMaps.vectors.map((vector) => vector.id)).not.toEqual(expect.arrayContaining([
-        "vector.asteroids.attract.ship",
-        "vector.asteroids.attract.asteroid",
-        "vector.asteroids.attract.ufo",
-        "vector.asteroids.ship.collision",
-        "vector.asteroids.ship.life",
-        "vector.asteroids.ufo.large.collision",
-        "vector.asteroids.ufo.small.collision"
-      ]));
+      expect(asteroidsManifest.tools["object-vector-studio-v2"].vectorMaps).toBeUndefined();
       expect(asteroidsManifest.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(asteroidsManifest.tools["object-vector-studio-v2"].palette).toBeUndefined();
       expect(asteroidsManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
         "object.asteroids.ship",
         "object.asteroids.large-asteroid",
         "object.asteroids.medium-asteroid",
-        "object.asteroids.medium-asteroid-2",
         "object.asteroids.small-asteroid",
         "object.asteroids.large-ufo",
         "object.asteroids.small-ufo"
@@ -10432,13 +10415,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         source: "manifest"
       });
       expect(storedContext.tools["vector-map-editor"]).toBeUndefined();
-      expect(storedContext.tools["object-vector-studio-v2"].vectorMaps.vectors.map((vector) => vector.id)).toEqual(expect.arrayContaining([
-        "vector.asteroids.bullet",
-        "vector.asteroids.ship",
-        "vector.asteroids.ui.title",
-        "vector.asteroids.ufo.large",
-        "vector.asteroids.ufo.small"
-      ]));
+      expect(storedContext.tools["object-vector-studio-v2"].vectorMaps).toBeUndefined();
       expect(storedContext.tools["asset-manager-v2"].assets["assets.font.ui.vector-battle"]).toEqual({
         path: "src/assets/fonts/vector_battle/vector_battle.ttf",
         type: "font",

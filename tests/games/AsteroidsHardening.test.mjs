@@ -12,8 +12,8 @@ import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';
 import {
   createAsteroidsTestGeometryProfiles,
   createAsteroidsTestSceneOptions,
-  loadAsteroidsVectorMaps
-} from './asteroidsManifestObjectVectors.mjs';
+  loadAsteroidsObjectGeometry
+} from './asteroidsManifestObjectGeometry.mjs';
 
 function createInput(keys = {}) {
   return {
@@ -37,8 +37,8 @@ function createWorldEvents() {
 
 export function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
-  const vectorMaps = loadAsteroidsVectorMaps();
-  const worldOptions = { asteroidGeometryProfiles, vectorMaps };
+  const objectGeometry = loadAsteroidsObjectGeometry();
+  const worldOptions = { asteroidGeometryProfiles, objectGeometry };
   assert.equal(wrap(5000, 0, 960), 200);
   assert.equal(wrap(-5000, 0, 960), 760);
 

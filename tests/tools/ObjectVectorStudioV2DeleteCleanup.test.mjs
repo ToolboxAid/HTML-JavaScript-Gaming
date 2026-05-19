@@ -30,13 +30,6 @@ function createPayload() {
     version: 1,
     toolId: "object-vector-studio-v2",
     name: "Delete Cleanup Object Set",
-    vectorMaps: {
-      schema: "html-js-gaming.test-vector-map",
-      version: 1,
-      name: "Delete Cleanup Roles",
-      source: "object-vector-studio-v2",
-      shapes: []
-    },
     objects: [
       {
         id: "object.test.keep",
@@ -74,19 +67,20 @@ export async function run() {
   const service = await createSchemaService();
   const payload = createPayload();
   assert.deepEqual(service.validatePayload(payload).errors, []);
-  assert.equal(Object.hasOwn(payload.vectorMaps, "objectVectorRoles"), false);
+  assert.equal(Object.hasOwn(payload, "vectorMaps"), false);
 
-  const legacyRolePayload = createPayload();
-  legacyRolePayload.vectorMaps.objectVectorRoles = {
-    tempRole: {
-      objectId: "object.test.temp",
-      tags: ["temp"]
-    }
+  const legacyVectorPayload = createPayload();
+  legacyVectorPayload.vectorMaps = {
+    schema: "html-js-gaming.test-vector-map",
+    version: 1,
+    name: "Deprecated Shared Shapes",
+    source: "object-vector-studio-v2",
+    shapes: []
   };
-  const legacyRoleValidation = service.validatePayload(legacyRolePayload);
-  assert.equal(legacyRoleValidation.ok, false);
+  const legacyVectorValidation = service.validatePayload(legacyVectorPayload);
+  assert.equal(legacyVectorValidation.ok, false);
   assert.equal(
-    legacyRoleValidation.errors.some((message) => message === "root.vectorMaps.objectVectorRoles is not allowed."),
+    legacyVectorValidation.errors.some((message) => message === "root.vectorMaps is not allowed."),
     true,
   );
 
@@ -94,7 +88,7 @@ export async function run() {
   deletePayload.objects = deletePayload.objects.filter((object) => object.id !== "object.test.temp");
   const app = Object.create(ToolStarterApp.prototype);
   app.removeDeletedObjectReferences(deletePayload, "object.test.temp");
-  assert.equal(Object.hasOwn(deletePayload.vectorMaps, "objectVectorRoles"), false);
+  assert.equal(Object.hasOwn(deletePayload, "vectorMaps"), false);
   assert.equal(Object.hasOwn(deletePayload.objects.find((object) => object.id === "object.test.child"), "baseObjectId"), false);
   assert.deepEqual(service.validatePayload(deletePayload).errors, []);
 }

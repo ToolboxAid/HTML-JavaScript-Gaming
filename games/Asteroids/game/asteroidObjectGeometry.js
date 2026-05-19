@@ -1,7 +1,7 @@
 import {
-  ASTEROID_SIZE_RUNTIME_ROLES,
-  resolveAsteroidsObjectVectorRole,
-} from './asteroidsObjectVectorRoles.js';
+  ASTEROID_SIZE_RUNTIME_OBJECT_KEYS,
+  resolveAsteroidsTaggedObject,
+} from './asteroidsObjectTags.js';
 
 const ASTEROID_SIZE_LABELS = Object.freeze({
   1: 'SML',
@@ -64,8 +64,8 @@ function extractPrimaryPolygonPoints(object) {
 function createProfilesFromObjects(objects, options = {}) {
   const profiles = {};
 
-  Object.entries(ASTEROID_SIZE_RUNTIME_ROLES).forEach(([size, roleId]) => {
-    const object = resolveAsteroidsObjectVectorRole(objects, roleId, options);
+  Object.entries(ASTEROID_SIZE_RUNTIME_OBJECT_KEYS).forEach(([size, objectKey]) => {
+    const object = resolveAsteroidsTaggedObject(objects, objectKey, options);
     const points = centerPoints(extractPrimaryPolygonPoints(object));
     if (points.length < 3) {
       return;

@@ -8,8 +8,8 @@ import assert from 'node:assert/strict';
 import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';
 import {
   createAsteroidsTestGeometryProfiles,
-  loadAsteroidsVectorMaps
-} from './asteroidsManifestObjectVectors.mjs';
+  loadAsteroidsObjectGeometry
+} from './asteroidsManifestObjectGeometry.mjs';
 
 function createInput(keys = {}) {
   return {
@@ -66,7 +66,7 @@ export function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
   const worldOptions = {
     asteroidGeometryProfiles,
-    vectorMaps: loadAsteroidsVectorMaps(),
+    objectGeometry: loadAsteroidsObjectGeometry(),
   };
   Object.entries(asteroidGeometryProfiles).forEach(([size, profile]) => {
     assert.equal(profile.points.length >= 4, true, `Asteroid size ${size} should load polygon collision points from object-vector-studio-v2 tool geometry.`);
