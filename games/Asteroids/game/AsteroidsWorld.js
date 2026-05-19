@@ -14,7 +14,7 @@ import { randomRange } from '../utils/math.js';
 import { sanitizeFiniteNumber, sanitizePositiveNumber } from '../../../src/shared/math/numberNormalization.js';
 import {
   ASTEROIDS_VECTOR_MAP_IDS,
-  getAsteroidsVectorPoints
+  requireAsteroidsVectorPoints
 } from './asteroidsVectorMaps.js';
 
 const WAVE_ASTEROID_COUNTS = [4, 6, 8];
@@ -148,8 +148,14 @@ export default class AsteroidsWorld {
     this.asteroidGeometryProfiles = asteroidGeometryProfiles;
     this.vectorMaps = vectorMaps;
     if (!this.vectorMaps?.vectorsById) {
-      throw new Error('AsteroidsWorld requires manifest-loaded vector maps for ship and UFO gameplay geometry.');
+      throw new Error('AsteroidsWorld requires manifest-loaded vector maps for ship, UFO, and bullet gameplay geometry.');
     }
+    this.bulletCollisionPoints = requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet, 'bullet geometry');
+    this.shipCollisionPoints = requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.shipCollision, 'ship collision geometry');
+    this.ufoCollisionPoints = {
+      large: requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoLargeCollision, 'large UFO collision geometry'),
+      small: requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoSmallCollision, 'small UFO collision geometry'),
+    };
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.bounds = sanitizeBounds(bounds);
     this.starfield = Array.from({ length: 70 }, () => ({
@@ -158,7 +164,7 @@ export default class AsteroidsWorld {
       size: this.rng() > 0.7 ? 2 : 1,
     }));
     this.ship = new Ship(this.bounds.width / 2, this.bounds.height / 2, {
-      collisionPoints: getAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.shipCollision),
+      collisionPoints: this.shipCollisionPoints,
     });
     this.startGame();
   }
@@ -169,12 +175,10 @@ export default class AsteroidsWorld {
 
   createUfoEntity(type = 'large', level = 1) {
     return new Ufo(this.bounds, type, level, this.rng, {
-      collisionPoints: getAsteroidsVectorPoints(
-        this.vectorMaps,
-        type === 'small'
-          ? ASTEROIDS_VECTOR_MAP_IDS.ufoSmallCollision
-          : ASTEROIDS_VECTOR_MAP_IDS.ufoLargeCollision
-      ),
+      bulletCollisionPoints: this.bulletCollisionPoints,
+      collisionPoints: type === 'small'
+        ? this.ufoCollisionPoints.small
+        : this.ufoCollisionPoints.large,
     });
   }
 
@@ -308,6 +312,9 @@ export default class AsteroidsWorld {
       sanitizeFiniteNumber(source.vx, 0),
       sanitizeFiniteNumber(source.vy, 0),
       Math.max(0, sanitizeFiniteNumber(source.life, 1.1)),
+      {
+        collisionPoints: this.bulletCollisionPoints,
+      }
     );
   }
 
@@ -563,6 +570,9 @@ export default class AsteroidsWorld {
       this.ship.vx + Math.cos(this.ship.angle) * shotSpeed,
       this.ship.vy + Math.sin(this.ship.angle) * shotSpeed,
       fullScreenLife,
+      {
+        collisionPoints: this.bulletCollisionPoints,
+      }
     ));
     this.fireCooldown = 0.18;
     return true;

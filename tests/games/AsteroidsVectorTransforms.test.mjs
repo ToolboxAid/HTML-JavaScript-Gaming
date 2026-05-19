@@ -6,6 +6,7 @@
 */
 import assert from 'node:assert/strict';
 import Asteroid from '../../games/Asteroids/entities/Asteroid.js';
+import Bullet from '../../games/Asteroids/entities/Bullet.js';
 import Ship from '../../games/Asteroids/entities/Ship.js';
 import Ufo from '../../games/Asteroids/entities/Ufo.js';
 import {
@@ -43,7 +44,16 @@ export function run() {
   assertPointClose(asteroidPoints[0], { x: 326.5, y: 282.5 });
   assertPointClose(asteroidPoints[5], { x: 346.5, y: 197.5 });
 
+  const bullet = new Bullet(50, 60, 0, 0, 1, {
+    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet),
+  });
+  const bulletPoints = bullet.getCollisionPolygon();
+  assert.equal(bulletPoints.length, 4);
+  assertPointClose(bulletPoints[0], { x: 48, y: 58 });
+  assertPointClose(bulletPoints[2], { x: 52, y: 62 });
+
   const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5, {
+    bulletCollisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet),
     collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoSmallCollision),
   });
   ufo.x = 400;

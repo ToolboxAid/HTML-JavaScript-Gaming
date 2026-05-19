@@ -5,7 +5,6 @@ David Quesenberry
 AsteroidsAttractAdapter.js
 */
 import { clamp } from '../../../src/shared/utils/mathUtils.js';
-import { ASTEROIDS_VECTOR_MAP_IDS } from './asteroidsVectorMaps.js';
 
 function estimateTextWidth(text, fontPx) {
   return String(text ?? '').length * (fontPx * 0.62);
@@ -120,16 +119,21 @@ export default class AsteroidsAttractAdapter {
       });
     }
 
-    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractShip, {
-      color: `rgba(248,250,252,${alpha})`,
-      lineWidth: 2,
-      rotation: -0.28,
+    this.scene?.drawObjectVectorAsset?.(renderer, 'attractShip', {
+      ...this.scene.objectVectorRoleOptions('ship'),
+      elapsedMs: this.scene.objectVectorPlaybackMs,
+      fps: 12,
+      rotation: (Math.PI / 2) - 0.28,
+      scale: 1.1,
+      stateId: 'idle',
       x: 328,
       y: 348,
     });
-    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid, {
-      color: `rgba(203,213,225,${alpha})`,
-      lineWidth: 2,
+    this.scene?.drawObjectVectorAsset?.(renderer, 'attractAsteroid', {
+      ...this.scene.objectVectorRoleOptions('asteroidSmall'),
+      elapsedMs: this.scene.objectVectorPlaybackMs,
+      fps: 12,
+      stateId: 'active',
       x: 632,
       y: 352,
     });
@@ -201,25 +205,31 @@ export default class AsteroidsAttractAdapter {
 
     const x = 480 + Math.cos(this.demoTime * 0.7) * 220;
     const y = 340 + Math.sin(this.demoTime * 1.1) * 130;
-    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractShip, {
-      color: '#ffffff',
-      lineWidth: 2,
-      rotation: Math.sin(this.demoTime * 0.9) * 1.2,
+    this.scene?.drawObjectVectorAsset?.(renderer, 'attractShip', {
+      ...this.scene.objectVectorRoleOptions('ship'),
+      elapsedMs: this.scene.objectVectorPlaybackMs,
+      fps: 12,
+      rotation: (Math.PI / 2) + Math.sin(this.demoTime * 0.9) * 1.2,
+      stateId: 'idle',
       x,
       y,
     });
 
     const rockX = 480 + Math.sin(this.demoTime * 0.5) * 250;
     const rockY = 330 + Math.cos(this.demoTime * 0.9) * 120;
-    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid, {
-      color: '#cbd5e1',
-      lineWidth: 2,
+    this.scene?.drawObjectVectorAsset?.(renderer, 'attractAsteroid', {
+      ...this.scene.objectVectorRoleOptions('asteroidSmall'),
+      elapsedMs: this.scene.objectVectorPlaybackMs,
+      fps: 12,
+      stateId: 'active',
       x: rockX,
       y: rockY,
     });
-    this.scene?.drawManifestVectorMap?.(renderer, ASTEROIDS_VECTOR_MAP_IDS.attractUfo, {
-      color: '#dbeafe',
-      lineWidth: 2,
+    this.scene?.drawObjectVectorAsset?.(renderer, 'attractUfo', {
+      ...this.scene.objectVectorRoleOptions('ufoSmall'),
+      elapsedMs: this.scene.objectVectorPlaybackMs,
+      fps: 12,
+      stateId: 'active',
       x: 480 + Math.cos(this.demoTime * 0.43) * 280,
       y: 284,
     });

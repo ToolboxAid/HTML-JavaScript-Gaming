@@ -767,11 +767,21 @@ export default class AsteroidsGameScene extends Scene {
     }
 
     this.world.bullets.forEach((bullet) => {
-      renderer.drawRect(bullet.x - 2, bullet.y - 2, 4, 4, '#f8fafc');
+      this.drawManifestVectorMap(renderer, ASTEROIDS_VECTOR_MAP_IDS.bullet, {
+        color: '#f8fafc',
+        lineWidth: 1,
+        x: bullet.x,
+        y: bullet.y,
+      });
     });
 
     this.world.ufoBullets.forEach((bullet) => {
-      renderer.drawRect(bullet.x - 2, bullet.y - 2, 4, 4, '#ffffff');
+      this.drawManifestVectorMap(renderer, ASTEROIDS_VECTOR_MAP_IDS.bullet, {
+        color: '#ffffff',
+        lineWidth: 1,
+        x: bullet.x,
+        y: bullet.y,
+      });
     });
 
     this.particles.render(renderer);

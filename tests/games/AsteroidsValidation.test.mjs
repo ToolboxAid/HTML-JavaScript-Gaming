@@ -17,6 +17,10 @@ import {
   loadAsteroidsObjectVectorPayload,
   loadAsteroidsVectorMaps
 } from './asteroidsManifestObjectVectors.mjs';
+import {
+  ASTEROIDS_VECTOR_MAP_IDS,
+  loadAsteroidsVectorMapsFromManifest
+} from '../../games/Asteroids/game/asteroidsVectorMaps.js';
 
 function createCanvas() {
   const listeners = new Map();
@@ -149,6 +153,41 @@ export async function run() {
   const vectorMaps = loadAsteroidsVectorMaps();
   const worldOptions = { asteroidGeometryProfiles, vectorMaps };
   const manifestPayload = loadAsteroidsManifest();
+  const manifestVectorIds = manifestPayload.tools['vector-map-editor'].vectorMapDocument.vectors.map((vector) => vector.id);
+  assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.bullet), true);
+  assert.deepEqual(
+    vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.bullet).points,
+    [
+      { x: -2, y: -2 },
+      { x: 2, y: -2 },
+      { x: 2, y: 2 },
+      { x: -2, y: 2 },
+    ],
+  );
+  const shipObject = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.ship');
+  const shipHull = shipObject.shapes.find((shape) => shape.tool === 'polygon');
+  assert.deepEqual(shipHull.geometry.points, [
+    { x: 0, y: -18 },
+    { x: 14, y: 16 },
+    { x: 0, y: 8 },
+    { x: -14, y: 16 },
+  ]);
+  const mediumAsteroidVariant = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.medium-asteroid-2');
+  assert.deepEqual(mediumAsteroidVariant.shapes[0].geometry.points, [
+    { x: -16, y: -10 },
+    { x: -2, y: -18 },
+    { x: 16, y: -14 },
+    { x: 20, y: 2 },
+    { x: 8, y: 18 },
+    { x: -10, y: 16 },
+    { x: -20, y: 4 },
+  ]);
+  const missingBulletManifest = structuredClone(manifestPayload);
+  missingBulletManifest.tools['vector-map-editor'].vectorMapDocument.vectors = missingBulletManifest.tools['vector-map-editor'].vectorMapDocument.vectors
+    .filter((vector) => vector.id !== ASTEROIDS_VECTOR_MAP_IDS.bullet);
+  const missingBulletValidation = loadAsteroidsVectorMapsFromManifest(missingBulletManifest);
+  assert.equal(missingBulletValidation.ok, false);
+  assert.equal(missingBulletValidation.errors.some((message) => message.includes(ASTEROIDS_VECTOR_MAP_IDS.bullet)), true);
   const createdDocumentShim = typeof globalThis.document === 'undefined';
   const createdWindowShim = typeof globalThis.window === 'undefined';
   const shimCanvas = createCanvas();

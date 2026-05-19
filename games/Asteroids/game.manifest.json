@@ -326,6 +326,30 @@
             ]
           },
           {
+            "id": "vector.asteroids.bullet",
+            "label": "Bullet",
+            "kind": "polygon",
+            "usage": ["gameplay", "collision", "projectile"],
+            "points": [
+              {
+                "x": -2,
+                "y": -2
+              },
+              {
+                "x": 2,
+                "y": -2
+              },
+              {
+                "x": 2,
+                "y": 2
+              },
+              {
+                "x": -2,
+                "y": 2
+              }
+            ]
+          },
+          {
             "id": "vector.asteroids.ufo.small.collision",
             "label": "Small UFO Collision",
             "kind": "polyline",
@@ -588,12 +612,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -3,
-                  "y": 7
+                  "x": -6,
+                  "y": 14
                 },
                 "point2": {
                   "x": 0,
-                  "y": 9
+                  "y": 6
                 }
               },
               "style": {
@@ -618,12 +642,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": 3,
-                  "y": 7
+                  "x": 6,
+                  "y": 14
                 },
                 "point2": {
                   "x": 0,
-                  "y": 9
+                  "y": 6
                 }
               },
               "style": {
@@ -650,19 +674,19 @@
                 "points": [
                   {
                     "x": 0,
-                    "y": -16
+                    "y": -18
                   },
                   {
-                    "x": 9,
-                    "y": 10
+                    "x": 14,
+                    "y": 16
                   },
                   {
                     "x": 0,
-                    "y": 5
+                    "y": 8
                   },
                   {
-                    "x": -9,
-                    "y": 10
+                    "x": -14,
+                    "y": 16
                   }
                 ]
               },
@@ -697,12 +721,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": 0,
-                  "y": 10
+                  "x": -6,
+                  "y": 14
                 },
                 "point2": {
-                  "x": -3,
-                  "y": 7
+                  "x": 0,
+                  "y": 6
                 }
               },
               "style": {
@@ -727,12 +751,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": 3,
-                  "y": 7
+                  "x": 6,
+                  "y": 14
                 },
                 "point2": {
                   "x": 0,
-                  "y": 10
+                  "y": 6
                 }
               },
               "style": {
@@ -1368,6 +1392,86 @@
               "style": {
                 "fill": "transparent",
                 "stroke": "#FFBE64",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ],
+          "states": [
+            {
+              "id": "active",
+              "name": "Active",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": []
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "asteroid",
+            "medium"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "id": "object.asteroids.medium-asteroid-2",
+          "name": "Medium Asteroid 2",
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": -16,
+                    "y": -10
+                  },
+                  {
+                    "x": -2,
+                    "y": -18
+                  },
+                  {
+                    "x": 16,
+                    "y": -14
+                  },
+                  {
+                    "x": 20,
+                    "y": 2
+                  },
+                  {
+                    "x": 8,
+                    "y": 18
+                  },
+                  {
+                    "x": -10,
+                    "y": 16
+                  },
+                  {
+                    "x": -20,
+                    "y": 4
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#CBD5E1",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1

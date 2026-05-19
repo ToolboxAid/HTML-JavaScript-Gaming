@@ -36,11 +36,12 @@ function normalizePoints(points) {
 }
 
 export default class Ufo {
-  constructor(bounds, type = 'large', level = 1, rng = Math.random, { collisionPoints = [] } = {}) {
+  constructor(bounds, type = 'large', level = 1, rng = Math.random, { bulletCollisionPoints = [], collisionPoints = [] } = {}) {
     this.bounds = bounds;
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.type = UFO_PROFILES[type] ? type : 'large';
     this.profile = UFO_PROFILES[this.type];
+    this.bulletCollisionPoints = normalizePoints(bulletCollisionPoints);
     this.collisionPoints = normalizePoints(collisionPoints);
     this.direction = this.rng() > 0.5 ? 1 : -1;
     this.x = this.direction > 0 ? -48 : bounds.width + 48;
@@ -97,6 +98,9 @@ export default class Ufo {
       Math.cos(aimAngle) * shotSpeed,
       Math.sin(aimAngle) * shotSpeed,
       fullScreenLife,
+      {
+        collisionPoints: this.bulletCollisionPoints,
+      }
     );
   }
 

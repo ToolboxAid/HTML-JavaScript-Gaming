@@ -5,15 +5,28 @@ David Quesenberry
 Bullet.js
 */
 import { wrap } from '../utils/math.js';
+import { transformPoints } from '../../../src/engine/rendering/index.js';
+
+function normalizePoints(points) {
+  return Array.isArray(points)
+    ? points.map((point) => ({
+      x: Number(point?.x ?? 0),
+      y: Number(point?.y ?? 0),
+    })).filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y))
+    : [];
+}
 
 export default class Bullet {
-  constructor(x, y, vx, vy, life = 1.1) {
+  constructor(x, y, vx, vy, life = 1.1, { collisionPoints = [] } = {}) {
     this.x = x;
     this.y = y;
     this.vx = vx;
     this.vy = vy;
     this.life = life;
-    this.radius = 2;
+    this.collisionPoints = normalizePoints(collisionPoints);
+    if (this.collisionPoints.length < 3) {
+      throw new Error('Asteroids Bullet requires manifest-loaded bullet vector map geometry.');
+    }
   }
 
   update(dtSeconds, bounds) {
@@ -27,11 +40,9 @@ export default class Bullet {
   }
 
   getCollisionPolygon() {
-    return [
-      { x: this.x - this.radius, y: this.y - this.radius },
-      { x: this.x + this.radius, y: this.y - this.radius },
-      { x: this.x + this.radius, y: this.y + this.radius },
-      { x: this.x - this.radius, y: this.y + this.radius },
-    ];
+    return transformPoints(this.collisionPoints, {
+      x: this.x,
+      y: this.y,
+    });
   }
 }

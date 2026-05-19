@@ -5,6 +5,7 @@ export const ASTEROIDS_VECTOR_MAP_IDS = Object.freeze({
   attractAsteroid: 'vector.asteroids.attract.asteroid',
   attractShip: 'vector.asteroids.attract.ship',
   attractUfo: 'vector.asteroids.attract.ufo',
+  bullet: 'vector.asteroids.bullet',
   shipCollision: 'vector.asteroids.ship.collision',
   shipLife: 'vector.asteroids.ship.life',
   ufoLargeCollision: 'vector.asteroids.ufo.large.collision',
@@ -16,6 +17,7 @@ export const ASTEROIDS_REQUIRED_VECTOR_MAP_IDS = Object.freeze([
   ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid,
   ASTEROIDS_VECTOR_MAP_IDS.attractShip,
   ASTEROIDS_VECTOR_MAP_IDS.attractUfo,
+  ASTEROIDS_VECTOR_MAP_IDS.bullet,
   ASTEROIDS_VECTOR_MAP_IDS.shipCollision,
   ASTEROIDS_VECTOR_MAP_IDS.shipLife,
   ASTEROIDS_VECTOR_MAP_IDS.ufoLargeCollision,
@@ -132,6 +134,16 @@ function usageCounts(vectors) {
   }, {});
 }
 
+function minimumRequiredPointsForVector(id) {
+  if (id === ASTEROIDS_VECTOR_MAP_IDS.uiTitle) {
+    return 0;
+  }
+  if (id === ASTEROIDS_VECTOR_MAP_IDS.bullet) {
+    return 3;
+  }
+  return 2;
+}
+
 export function loadAsteroidsVectorMapsFromManifest(manifest, {
   logger = null,
   sourceLabel = 'games/Asteroids/game.manifest.json',
@@ -151,8 +163,9 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
       errors.push(`Asteroids vector map manifest is missing ${id}.`);
       return;
     }
-    if (id !== ASTEROIDS_VECTOR_MAP_IDS.uiTitle && vector.points.length < 2) {
-      errors.push(`Asteroids vector map ${id} must contain at least two points.`);
+    const minimumPoints = minimumRequiredPointsForVector(id);
+    if (vector.points.length < minimumPoints) {
+      errors.push(`Asteroids vector map ${id} must contain at least ${minimumPoints} points.`);
     }
   });
   const objectVectorRoles = normalizeObjectVectorRoleBindings(document, errors);
@@ -190,4 +203,12 @@ export function getAsteroidsVectorMap(vectorMaps, id) {
 
 export function getAsteroidsVectorPoints(vectorMaps, id) {
   return getAsteroidsVectorMap(vectorMaps, id)?.points || [];
+}
+
+export function requireAsteroidsVectorPoints(vectorMaps, id, label = id, minimumPoints = minimumRequiredPointsForVector(id)) {
+  const points = getAsteroidsVectorPoints(vectorMaps, id);
+  if (points.length < minimumPoints) {
+    throw new Error(`Asteroids required manifest vector map ${label} (${id}) is missing or has fewer than ${minimumPoints} points.`);
+  }
+  return points;
 }
