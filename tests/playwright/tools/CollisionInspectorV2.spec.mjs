@@ -311,17 +311,22 @@ test.describe("Collision Inspector V2", () => {
       expect(collisionInspectorScale.scaleY).toBeCloseTo(1, 2);
       const runtimeRenderSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "ObjectVectorRuntimeAssetService.js"), "utf8");
       const worldScreenSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "WorldScreenTransform.js"), "utf8");
+      const worldScreenTransformServiceSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "WorldScreenTransformService.js"), "utf8");
       const orientationTransformSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "OrientationTransform.js"), "utf8");
+      const objectVectorTransformServiceSource = await readFile(join(server.repoRoot, "src", "engine", "rendering", "ObjectVectorTransformService.js"), "utf8");
       const collisionObjectVectorSource = await readFile(join(server.repoRoot, "src", "engine", "collision", "objectVector.js"), "utf8");
       const collisionControlsSource = await readFile(join(server.repoRoot, "tools", "collision-inspector-v2", "js", "CollisionInspectorV2Controls.js"), "utf8");
       const collisionRendererSource = await readFile(join(server.repoRoot, "tools", "collision-inspector-v2", "js", "CollisionInspectorV2Renderer.js"), "utf8");
       const objectVectorStudioSource = await readFile(join(server.repoRoot, "tools", "object-vector-studio-v2", "js", "ToolStarterApp.js"), "utf8");
-      expect(worldScreenSource).toContain("export const CANONICAL_WORLD_TO_SCREEN_SCALE = 1;");
-      expect(worldScreenSource).toContain("objectRenderOptions(options = {})");
-      expect(worldScreenSource).toContain("applyViewportTransform(context)");
-      expect(worldScreenSource).toContain("applyObjectRenderTransform(context, options = {})");
-      expect(worldScreenSource).toContain("worldPointToViewportPoint(point)");
-      expect(worldScreenSource).toContain("rotationRadians(options.rotation || 0, options.rotationUnit || \"radians\")");
+      expect(worldScreenSource).toContain("new WorldScreenTransformService(options)");
+      expect(worldScreenTransformServiceSource).toContain("export const CANONICAL_WORLD_TO_SCREEN_SCALE = 1;");
+      expect(worldScreenTransformServiceSource).toContain("export class WorldScreenTransformService");
+      expect(worldScreenTransformServiceSource).toContain("objectRenderOptions(options = {})");
+      expect(worldScreenTransformServiceSource).toContain("applyViewportTransform(context)");
+      expect(worldScreenTransformServiceSource).toContain("applyObjectRenderTransform(context, options = {})");
+      expect(worldScreenTransformServiceSource).toContain("worldPointToViewportPoint(point)");
+      expect(worldScreenTransformServiceSource).toContain("rotationRadians(options.rotation || 0, options.rotationUnit || \"radians\")");
+      expect(orientationTransformSource).toContain("objectVectorTransformService");
       expect(orientationTransformSource).toContain("export function createObjectVectorTransformPipeline");
       expect(orientationTransformSource).toContain("export function transformedObjectVectorShapeBounds");
       expect(orientationTransformSource).toContain("export function combineObjectVectorBounds");
@@ -329,6 +334,12 @@ test.describe("Collision Inspector V2", () => {
       expect(orientationTransformSource).toContain("export function transformRuntimeOrientedPoint");
       expect(orientationTransformSource).toContain("export function transformObjectVectorShapePoint");
       expect(orientationTransformSource).toContain("export function headingPointFromRotation");
+      expect(objectVectorTransformServiceSource).toContain("export class ObjectVectorTransformService");
+      expect(objectVectorTransformServiceSource).toContain("createPipeline({");
+      expect(objectVectorTransformServiceSource).toContain("transformShapePoint(point, transform = {}, origin = {})");
+      expect(objectVectorTransformServiceSource).toContain("transformRuntimePoint(point, {");
+      expect(objectVectorTransformServiceSource).toContain("transformedShapeBounds(points, transform = {}, origin = {})");
+      expect(objectVectorTransformServiceSource).toContain("combineBounds(boundsList, fallback = DEFAULT_OBJECT_VECTOR_BOUNDS)");
       expect(runtimeRenderSource).toContain("createWorldScreenTransform");
       expect(runtimeRenderSource).toContain(".applyObjectRenderTransform(context, options)");
       expect(runtimeRenderSource).toContain("applyObjectVectorCanvasTransform");
@@ -622,9 +633,11 @@ test.describe("Collision Inspector V2", () => {
           createObjectVectorTransformPipeline,
           inverseTransformObjectVectorShapePoint,
           normalizeRotationDegrees,
+          ObjectVectorTransformService,
           objectVectorSvgTransformAttribute,
           transformedObjectVectorShapeBounds,
-          transformObjectVectorShapePoint
+          transformObjectVectorShapePoint,
+          WorldScreenTransformService
         } = await import("/src/engine/rendering/index.js");
         const transform = { rotation: 45, scaleX: 1.25, scaleY: 0.75, x: 10, y: -4 };
         const origin = { x: 2, y: 3 };
@@ -645,6 +658,13 @@ test.describe("Collision Inspector V2", () => {
           objectOrigin: origin,
           shapeTransform: transform
         });
+        const transformService = new ObjectVectorTransformService();
+        const worldScreenService = new WorldScreenTransformService({
+          screenHeight: 720,
+          screenWidth: 960,
+          userZoom: 2,
+          worldScale: 1
+        });
         return {
           appBounds: window.__objectVectorStudioV2App.transformedBounds(shape, { transformOrigin: origin }),
           appLocal: window.__objectVectorStudioV2App.localPointFromTransformedPoint(helperPoint, transform, origin),
@@ -656,7 +676,12 @@ test.describe("Collision Inspector V2", () => {
           helperNormalized: normalizeRotationDegrees(-45),
           helperPoint,
           helperSvg: objectVectorSvgTransformAttribute(transform, origin),
-          pipelinePoint: pipeline.localPointToShape(point)
+          pipelinePoint: pipeline.localPointToShape(point),
+          servicePoint: transformService.createPipeline({
+            objectOrigin: origin,
+            shapeTransform: transform
+          }).localPointToShape(point),
+          viewportPoint: worldScreenService.worldPointToViewportPoint({ x: 500, y: 360 })
         };
       });
       expect(editorOrientation.appSvg).toBe(editorOrientation.helperSvg);
@@ -665,12 +690,15 @@ test.describe("Collision Inspector V2", () => {
       expect(editorOrientation.appPoint.y).toBeCloseTo(editorOrientation.helperPoint.y, 3);
       expect(editorOrientation.appPoint.x).toBeCloseTo(editorOrientation.pipelinePoint.x, 3);
       expect(editorOrientation.appPoint.y).toBeCloseTo(editorOrientation.pipelinePoint.y, 3);
+      expect(editorOrientation.appPoint.x).toBeCloseTo(editorOrientation.servicePoint.x, 3);
+      expect(editorOrientation.appPoint.y).toBeCloseTo(editorOrientation.servicePoint.y, 3);
       expect(editorOrientation.appLocal.x).toBeCloseTo(editorOrientation.helperLocal.x, 3);
       expect(editorOrientation.appLocal.y).toBeCloseTo(editorOrientation.helperLocal.y, 3);
       expect(editorOrientation.appBounds.x).toBeCloseTo(editorOrientation.helperBounds.x, 3);
       expect(editorOrientation.appBounds.y).toBeCloseTo(editorOrientation.helperBounds.y, 3);
       expect(editorOrientation.appBounds.width).toBeCloseTo(editorOrientation.helperBounds.width, 3);
       expect(editorOrientation.appBounds.height).toBeCloseTo(editorOrientation.helperBounds.height, 3);
+      expect(editorOrientation.viewportPoint).toEqual({ x: 520, y: 360 });
       await expect(page.locator("#statusLog")).toHaveValue(/Viewport zoom set/);
       expect(pageErrors).toEqual([]);
     } finally {

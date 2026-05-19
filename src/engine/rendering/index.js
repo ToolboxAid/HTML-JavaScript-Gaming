@@ -11,6 +11,10 @@ export { renderSpriteReadyEntities } from './SpriteRenderSystem.js';
 export { renderByLayers } from './LayeredRenderSystem.js';
 export { transformPoints, drawVectorShape } from './VectorDrawing.js';
 export {
+  ObjectVectorTransformService,
+  objectVectorTransformService
+} from './ObjectVectorTransformService.js';
+export {
   applyObjectVectorCanvasTransform,
   boundsFromObjectVectorPoints,
   combineObjectVectorBounds,
@@ -33,4 +37,8 @@ export {
   transformRuntimeOrientedPoint,
   transformRuntimeOrientedPoints
 } from './OrientationTransform.js';
-export { CANONICAL_WORLD_TO_SCREEN_SCALE, createWorldScreenTransform } from './WorldScreenTransform.js';
+export {
+  CANONICAL_WORLD_TO_SCREEN_SCALE,
+  createWorldScreenTransform,
+  WorldScreenTransformService
+} from './WorldScreenTransform.js';
