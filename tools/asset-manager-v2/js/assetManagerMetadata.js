@@ -235,21 +235,13 @@ export function assetIdForFile(type, fileName, role) {
   return `assets.${normalizedType}.${normalizedRole}.${filenamePartForAssetId(fileName)}`;
 }
 
-export function assetIdForColor(type, role, usage, colorName) {
+export function assetIdForColor(type, role, usage) {
   const normalizedType = dotPathIdSegment(type);
   const normalizedRole = dotPathIdSegment(role);
-  const normalizedUsage = dotPathIdSegment(usage);
-  const normalizedColorName = dotPathIdSegment(colorName);
-  if (!normalizedType || !normalizedRole || !normalizedUsage) {
+  if (!normalizedType || !normalizedRole) {
     return "";
   }
-  if (normalizedType === "color" && normalizedRole === "background" && normalizedUsage === "game") {
-    return "assets.color.background.game";
-  }
-  if (!normalizedColorName) {
-    return "";
-  }
-  return `assets.${normalizedType}.${normalizedRole}.${normalizedUsage}.${normalizedColorName}`;
+  return `assets.${normalizedType}.${normalizedRole}.${dotPathIdSegment(usage) || "game"}`;
 }
 
 export function suggestedRoleForFile(type, fileName) {

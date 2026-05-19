@@ -1,7 +1,6 @@
 import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 
 const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;
-const GAME_BACKGROUND_COLOR_ASSET_ID = "assets.color.background.game";
 const BACKGROUND_ASSET_ID_PATTERN = /^assets\.image\.background\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
 const BEZEL_ASSET_ID_PATTERN = /^assets\.image\.bezel\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
 const PREVIEW_ASSET_ID_PATTERN = /^assets\.image\.preview\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
@@ -38,12 +37,6 @@ function stretchDefaultForRole(role) {
 
 function assetIdAllowsStretchOverride(assetId) {
   return BACKGROUND_ASSET_ID_PATTERN.test(assetId) || BEZEL_ASSET_ID_PATTERN.test(assetId);
-}
-
-function isGameBackgroundColorAsset(assetId, entry) {
-  return assetId === GAME_BACKGROUND_COLOR_ASSET_ID
-    && entry?.type === "color"
-    && entry?.role === "background";
 }
 
 export class AssetSchemaValidator {
@@ -126,10 +119,7 @@ export class AssetSchemaValidator {
       .reduce((node, key) => (node && typeof node === "object" ? node[key] : undefined), this.schema);
   }
 
-  createEntry({ assetId, color, kind, path, role, stretchOverride, type, usage }) {
-    if (type === "color" && !String(usage || "").trim()) {
-      return { ok: false, errors: ["Color usage is required for color assets."] };
-    }
+  createEntry({ assetId, color, kind, path, role, stretchOverride, type }) {
     const entry = {
       path,
       type,
@@ -180,9 +170,6 @@ export class AssetSchemaValidator {
     }
     if (formValue.kind !== "hex") {
       return { ok: false, errors: [`Selected color kind must be "hex", received "${formValue.kind}".`] };
-    }
-    if (!String(formValue.usage || "").trim()) {
-      return { ok: false, errors: ["Color usage is required for color assets."] };
     }
     if (formValue.color?.hex !== colorInfo.hex || formValue.color?.name !== colorInfo.name) {
       return { ok: false, errors: ["Selected color must come from the active Workspace Manager V2 palette."] };
@@ -286,9 +273,8 @@ export class AssetSchemaValidator {
     }
     if (entry.type === "color") {
       if (assetIdParts
-        && assetIdParts.filenamePart.split(".").filter(Boolean).length < 2
-        && !isGameBackgroundColorAsset(assetId, entry)) {
-        errors.push(`${pointer}: color ids must use assets.color.background.game or assets.<type>.<role>.<usage>.<colorName>.`);
+        && assetIdParts.filenamePart.split(".").filter(Boolean).length !== 1) {
+        errors.push(`${pointer}: color ids must use assets.color.<role>.<usage-or-game> and must not include the color name.`);
       }
       errors.push(...this.validateColorEntry(entry.color, `${pointer}.color`).errors);
     } else if (Object.prototype.hasOwnProperty.call(entry, "color")) {

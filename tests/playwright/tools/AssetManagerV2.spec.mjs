@@ -569,6 +569,24 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#assetStretchOverrideInput")).toHaveValue("0");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-background\.png validated as type image, kind png, role background\./);
       await expect(page.locator("#addAssetButton")).toBeEnabled();
+      await page.locator("#assetRoleSelect").selectOption("preview");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.preview.nebula-background");
+      await expect(page.locator("#assetStretchOverrideField")).toBeHidden();
+      await page.locator("#assetRoleSelect").selectOption("background");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.background.nebula-background");
+      await expect(page.locator("#assetStretchOverrideField")).toBeVisible();
+      await page.locator("#assetKindAudio").check();
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("sound");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.audio.sound.nebula-background");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-background.png");
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected file validation failed: File nebula-background\.png is not accepted for Audio assets\./);
+      await expect(page.locator("#addAssetButton")).toBeDisabled();
+      await page.locator("#assetKindImage").check();
+      await expect(page.locator("#assetRoleSelect")).toHaveValue("background");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.image.background.nebula-background");
+      await expect(page.locator("#assetPathInput")).toHaveValue("assets/images/nebula-background.png");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected file nebula-background\.png validated as type image, kind png, role background\./);
+      await expect(page.locator("#addAssetButton")).toBeEnabled();
       await page.locator("#addAssetButton").click();
       await expect(page.locator("#statusLog")).toHaveValue(/OK Added assets\.image\.background\.nebula-background\./);
       await expect(page.locator("#assetList")).toContainText("assets.image.background.nebula-background");
@@ -1230,29 +1248,28 @@ test.describe("Asset Manager V2", () => {
         isSelected: true,
         swatchBorderColor: "rgb(255, 255, 255)"
       });
-      await expect(page.locator("#assetIdInput")).toHaveValue("");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.game");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/signal-violet");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected color validation failed: Color usage is required for color assets\./);
-      await expect(page.locator("#addAssetButton")).toBeDisabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Signal Violet! validated as type color, kind hex, role hud\./);
+      await expect(page.locator("#addAssetButton")).toBeEnabled();
       await page.locator("#assetRoleSelect").selectOption("background");
-      await page.locator("#assetUsageInput").fill("game");
       await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.background.game");
       await expect(page.locator("#assetUsageField")).toHaveCount(1);
       await page.locator("#assetRoleSelect").selectOption("hud");
       await page.locator("#assetUsageInput").fill("Menu Highlight");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.menu-highlight.signal-violet");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.menu-highlight");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/signal-violet");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color Signal Violet! validated as type color, kind hex, role hud\./);
       await page.locator("#addAssetButton").click();
-      await expect(page.locator("#assetList")).toContainText("assets.color.hud.menu-highlight.signal-violet");
+      await expect(page.locator("#assetList")).toContainText("assets.color.hud.menu-highlight");
       await expect(page.locator("#assetList")).toContainText("assets.font.ui.vector-battle");
       await expect(page.locator("#assetList")).toContainText("assets.image.preview.uat-preview");
       await expect(page.locator("#assetList")).toContainText("assets.video.cutscene.8-mile");
       await expect(page.locator("#selectedAssetDetails")).not.toContainText("Final ID");
-      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.menu-highlight.signal-violet");
+      await expect(page.locator("#selectedAssetDetails")).toContainText("assets.color.hud.menu-highlight");
       const output = JSON.parse(await page.locator("#inspectorOutput").textContent());
       expect(output.assets[0]).toEqual({
-        id: "assets.color.hud.menu-highlight.signal-violet",
+        id: "assets.color.hud.menu-highlight",
         type: "color",
         kind: "hex",
         role: "hud",
@@ -1394,7 +1411,7 @@ test.describe("Asset Manager V2", () => {
     });
 
     try {
-      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(7);
+      await expect(page.locator("#workspaceToolTiles [data-workspace-tool-id]")).toHaveCount(8);
       await expect(page.locator('[data-workspace-tool-id="workspace-manager-v2"]')).toHaveCount(0);
       await selectFakeWorkspaceRepo(page);
       await page.locator("#activeGameSelect").selectOption("Asteroids");
@@ -1503,22 +1520,25 @@ test.describe("Asset Manager V2", () => {
       expect(paletteTitles.some((title) => title.includes("name: HUD Blue"))).toBe(true);
       expect(paletteTitles.some((title) => title.includes("name: Vector White"))).toBe(true);
       await page.locator('#assetColorSwatchList button[title*="HUD Blue"]').click();
-      await expect(page.locator("#assetIdInput")).toHaveValue("");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.game");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/hud-blue");
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Selected color validation failed: Color usage is required for color assets\./);
-      await expect(page.locator("#addAssetButton")).toBeDisabled();
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color HUD Blue validated as type color, kind hex, role hud\./);
+      await expect(page.locator("#addAssetButton")).toBeEnabled();
+      await page.locator("#assetRoleSelect").selectOption("background");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.background.game");
+      await page.locator("#assetRoleSelect").selectOption("hud");
       await page.locator("#assetUsageInput").fill("Primary HUD");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud.hud-blue");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud");
       await expect(page.locator("#assetPathInput")).toHaveValue("palette://workspace/hud-blue");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color HUD Blue validated as type color, kind hex, role hud\./);
       await page.locator("#assetRoleSelect").selectOption("accent");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.accent.primary-hud.hud-blue");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.accent.primary-hud");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Selected color HUD Blue validated as type color, kind hex, role accent\./);
       await page.locator("#assetRoleSelect").selectOption("hud");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud.hud-blue");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.primary-hud");
       await expect(page.locator("#addAssetButton")).toBeEnabled();
       await page.locator("#addAssetButton").click();
-      await expect(page.locator("#assetList")).toContainText("assets.color.hud.primary-hud.hud-blue");
+      await expect(page.locator("#assetList")).toContainText("assets.color.hud.primary-hud");
       await expect(page.locator('#assetPreview [data-preview-type="color"][data-preview-kind="hex"]')).toBeVisible();
       await expect(page.locator(".asset-manager-v2__preview-color span")).toHaveCSS("background-color", "rgb(120, 183, 255)");
       await expect(page.locator("#inspectorOutput")).toContainText("\"type\": \"color\"");
@@ -1579,7 +1599,7 @@ test.describe("Asset Manager V2", () => {
         role: "preview",
         source: "asset-manager-v2"
       });
-      expect(storedAssetSession.data.assets["assets.color.hud.primary-hud.hud-blue"]).toEqual({
+      expect(storedAssetSession.data.assets["assets.color.hud.primary-hud"]).toEqual({
         path: "palette://workspace/hud-blue",
         type: "color",
         kind: "hex",
@@ -1596,7 +1616,7 @@ test.describe("Asset Manager V2", () => {
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(storedContext.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toContain("object.asteroids.ship");
       expect(storedContext.tools["workspace-v2"]).toBeUndefined();
-      expect(Object.keys(storedContext.tools).sort()).toEqual(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2", "text2speech-V2"]);
+      expect(Object.keys(storedContext.tools).sort()).toEqual(["asset-manager-v2", "object-vector-studio-v2", "palette-manager-v2"]);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
       await expect(page.locator("#activeGameSelect")).toHaveValue("Asteroids");
@@ -1614,7 +1634,7 @@ test.describe("Asset Manager V2", () => {
       expect(savedManifest.tools["asset-manager-v2"].previewImagePath).toBeUndefined();
       expect(savedManifest.tools["asset-manager-v2"].assets["assets.color.background.game"]).toEqual(storedContext.tools["asset-manager-v2"].assets["assets.color.background.game"]);
       expect(savedManifest.tools["asset-manager-v2"].assets["assets.audio.sound.laser"]).toEqual(storedAssetSession.data.assets["assets.audio.sound.laser"]);
-      expect(savedManifest.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud.hud-blue"]).toEqual(storedAssetSession.data.assets["assets.color.hud.primary-hud.hud-blue"]);
+      expect(savedManifest.tools["asset-manager-v2"].assets["assets.color.hud.primary-hud"]).toEqual(storedAssetSession.data.assets["assets.color.hud.primary-hud"]);
       expect(savedManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toContain("object.asteroids.ship");
 
       expect(pageErrors).toEqual([]);

@@ -206,7 +206,7 @@ export class AssetFormControl {
       input.addEventListener("change", () => {
         this.updateFileAccept();
         this.updateRoleOptions({ preserveCurrentRole: false });
-        this.clearSelectionFields();
+        this.applyTypeChange({ onFileSelected });
         this.updatePickerMode();
         onChange();
       });
@@ -217,7 +217,7 @@ export class AssetFormControl {
         this.applyDerivedFileValues();
         onFileSelected(this.readValue(), this.selectedFileInfo);
       } else if (this.selectedColorInfo) {
-        this.applyDerivedAssetId(this.selectedColorInfo.name);
+        this.applyDerivedAssetId();
         this.onColorSelected?.(this.readValue(), this.selectedColorInfo);
       } else {
         this.applyDerivedAssetId();
@@ -288,7 +288,6 @@ export class AssetFormControl {
       && value.kind
       && value.path
       && value.role
-      && (value.type !== "color" || value.usage)
       && !this.selectedFileError);
   }
 
@@ -450,7 +449,7 @@ export class AssetFormControl {
     this.selectedFileError = "";
     this.kindValue = "hex";
     this.pathInput.value = colorAssetPath(this.selectedColorInfo.name);
-    this.applyDerivedAssetId(this.selectedColorInfo.name);
+    this.applyDerivedAssetId();
     this.renderColorSwatches();
   }
 
@@ -468,8 +467,46 @@ export class AssetFormControl {
     const fallbackFromId = this.assetIdInput.value.split(".").slice(3).join(".");
     const name = fileName || fallbackFromPath || fallbackFromId;
     this.assetIdInput.value = this.selectedKind() === "color"
-      ? assetIdForColor(this.selectedKind(), this.selectedRole(), this.usageInput.value, name)
+      ? assetIdForColor(this.selectedKind(), this.selectedRole(), this.usageInput.value)
       : assetIdForFile(this.selectedKind(), name, this.selectedRole());
+  }
+
+  applyTypeChange({ onFileSelected } = {}) {
+    const type = this.selectedKind();
+    if (type === "color") {
+      this.selectedFileInfo = null;
+      this.selectedFileError = "";
+      this.kindValue = this.selectedColorInfo ? "hex" : "";
+      this.pathInput.value = this.selectedColorInfo ? colorAssetPath(this.selectedColorInfo.name) : "";
+      this.applyDerivedAssetId();
+      if (this.selectedColorInfo) {
+        this.onColorSelected?.(this.readValue(), this.selectedColorInfo);
+      }
+      return;
+    }
+    if (!this.selectedFileInfo) {
+      this.clearSelectionFields();
+      return;
+    }
+    this.selectedColorInfo = null;
+    this.selectedFileInfo = {
+      ...this.selectedFileInfo,
+      type
+    };
+    const suggestedRole = suggestedRoleForFile(type, this.selectedFileInfo.name);
+    if (suggestedRole && [...this.roleSelect.options].some((option) => option.value === suggestedRole)) {
+      this.roleSelect.value = suggestedRole;
+    }
+    this.updateStretchControl();
+    this.selectedFileError = fileMatchesAccept(type, {
+      name: this.selectedFileInfo.name,
+      type: this.selectedFileInfo.mimeType
+    })
+      ? ""
+      : `File ${this.selectedFileInfo.name} is not accepted for ${labelForKind(type)} assets.`;
+    this.kindValue = this.selectedFileInfo.kind;
+    this.applyDerivedFileValues();
+    onFileSelected?.(this.readValue(), this.selectedFileInfo);
   }
 
   updateStretchControl({ preserveValue = false } = {}) {

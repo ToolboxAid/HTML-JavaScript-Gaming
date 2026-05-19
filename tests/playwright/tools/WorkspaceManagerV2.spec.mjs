@@ -10675,13 +10675,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(sessionPurpleSwatch).toBeVisible();
       await sessionPurpleSwatch.click();
       await page.locator("#assetUsageInput").fill("session");
-      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.session.workspace-session-purple");
+      await expect(page.locator("#assetIdInput")).toHaveValue("assets.color.hud.session");
       await page.locator("#addAssetButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Added assets\.color\.hud\.session\.workspace-session-purple\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Added assets\.color\.hud\.session\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK workspace\.tools\.asset-manager-v2 now has 16 validated assets\./);
       const editedAssetSession = await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.tools.asset-manager-v2")));
       expect(Object.keys(editedAssetSession.data.assets)).toHaveLength(16);
-      expect(editedAssetSession.data.assets["assets.color.hud.session.workspace-session-purple"]).toMatchObject({
+      expect(editedAssetSession.data.assets["assets.color.hud.session"]).toMatchObject({
         color: {
           hex: "#123456",
           name: "Workspace Session Purple",
@@ -10700,7 +10700,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(Date.parse(editedAssetSession.dirty.changedAt)).not.toBeNaN();
       expect(editedAssetSession.dirty.changedKeys).toEqual(expect.arrayContaining([
         "data.assets",
-        'data.assets["assets.color.hud.session.workspace-session-purple"]'
+        'data.assets["assets.color.hud.session"]'
       ]));
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-/);
