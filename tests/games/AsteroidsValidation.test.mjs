@@ -156,6 +156,7 @@ export async function run() {
   const worldOptions = { asteroidGeometryProfiles, vectorMaps };
   const manifestPayload = loadAsteroidsManifest();
   assert.equal(manifestPayload.tools['vector-map-editor'], undefined);
+  assert.equal(Object.hasOwn(manifestPayload.tools, 'text2speech-V2'), false);
   const objectVectorPayload = manifestPayload.tools['object-vector-studio-v2'];
   const manifestVectorIds = objectVectorPayload.vectorMaps.vectors.map((vector) => vector.id);
   assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.bullet), true);

@@ -119,27 +119,8 @@
     },
     "objectVectorRoles": {
       "type": "object",
-      "additionalProperties": false,
-      "required": ["ship", "asteroidLarge", "asteroidMedium", "asteroidSmall", "ufoLarge", "ufoSmall"],
-      "properties": {
-        "ship": {
-          "$ref": "#/$defs/objectVectorRoleBinding"
-        },
-        "asteroidLarge": {
-          "$ref": "#/$defs/objectVectorRoleBinding"
-        },
-        "asteroidMedium": {
-          "$ref": "#/$defs/objectVectorRoleBinding"
-        },
-        "asteroidSmall": {
-          "$ref": "#/$defs/objectVectorRoleBinding"
-        },
-        "ufoLarge": {
-          "$ref": "#/$defs/objectVectorRoleBinding"
-        },
-        "ufoSmall": {
-          "$ref": "#/$defs/objectVectorRoleBinding"
-        }
+      "additionalProperties": {
+        "$ref": "#/$defs/objectVectorRoleBinding"
       }
     },
     "objectVectorRoleBinding": {

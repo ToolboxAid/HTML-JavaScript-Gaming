@@ -226,6 +226,13 @@ export class ObjectVectorStudioV2SchemaService {
       });
     });
 
+    if (isPlainObject(payload?.vectorMaps?.objectVectorRoles)) {
+      Object.entries(payload.vectorMaps.objectVectorRoles).forEach(([roleId, binding]) => {
+        if (isPlainObject(binding) && !objectsById.has(binding.objectId)) {
+          errors.push(`root.vectorMaps.objectVectorRoles.${roleId}.objectId ${binding.objectId} must reference an existing object.`);
+        }
+      });
+    }
   }
 
   validateInheritanceChain(object, objectsById, path, errors) {
@@ -472,6 +479,13 @@ export class ObjectVectorStudioV2SchemaService {
         this.validateValue(childSchema, value[key], `${path}.${key}`, errors);
       }
     });
+    if (isPlainObject(schema.additionalProperties)) {
+      Object.entries(value).forEach(([key, child]) => {
+        if (!Object.prototype.hasOwnProperty.call(properties, key)) {
+          this.validateValue(schema.additionalProperties, child, `${path}.${key}`, errors);
+        }
+      });
+    }
     if (schema.additionalProperties === false) {
       Object.keys(value).forEach((key) => {
         if (!Object.prototype.hasOwnProperty.call(properties, key)) {
