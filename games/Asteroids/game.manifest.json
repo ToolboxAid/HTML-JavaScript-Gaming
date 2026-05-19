@@ -225,36 +225,36 @@
               "geometry": {
                 "points": [
                   {
-                    "x": -2,
-                    "y": -2
+                    "x": -1,
+                    "y": 0
                   },
                   {
-                    "x": 2,
-                    "y": -2
+                    "x": 0,
+                    "y": 0
                   },
                   {
-                    "x": 2,
-                    "y": 2
+                    "x": 0,
+                    "y": 3
                   },
                   {
-                    "x": -2,
-                    "y": 2
+                    "x": -1,
+                    "y": 5
                   }
                 ]
               },
               "style": {
-                "fill": "transparent",
-                "stroke": "#F8FAFC",
-                "strokeWidth": 1,
+                "fill": "#FFFFFF",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
               },
               "transform": {
-                "x": 0,
-                "y": 0,
                 "rotation": 0,
                 "scaleX": 1,
-                "scaleY": 1
+                "scaleY": 1,
+                "x": 0,
+                "y": 0
               }
             }
           ],
@@ -267,7 +267,19 @@
                   "id": "frame-1",
                   "order": 0,
                   "durationFrames": 1,
-                  "shapeOverrides": []
+                  "shapeOverrides": [
+                    {
+                      "shapeIndex": 0,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    }
+                  ]
                 }
               ]
             }
@@ -277,8 +289,8 @@
             "bullet"
           ],
           "objectOrigin": {
-            "x": 0,
-            "y": 0
+            "x": -0.5,
+            "y": 2.5
           }
         },
         {
@@ -292,11 +304,11 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -14,
-                  "y": -6
+                  "x": -6,
+                  "y": -3
                 },
                 "point2": {
-                  "x": -6,
+                  "x": -10,
                   "y": 0
                 }
               },
@@ -322,12 +334,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -14,
-                  "y": 6
+                  "x": -10,
+                  "y": 0
                 },
                 "point2": {
                   "x": -6,
-                  "y": 0
+                  "y": 3
                 }
               },
               "style": {
@@ -380,7 +392,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#F87171",
+                "stroke": "#FFFFFF",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1,
@@ -411,11 +423,11 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -14,
-                  "y": -6
+                  "x": -6,
+                  "y": -3
                 },
                 "point2": {
-                  "x": -6,
+                  "x": -8,
                   "y": 0
                 }
               },
@@ -441,11 +453,11 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -14,
-                  "y": 6
+                  "x": -6,
+                  "y": 3
                 },
                 "point2": {
-                  "x": -6,
+                  "x": -8,
                   "y": 0
                 }
               },
@@ -607,7 +619,14 @@
                   "shapeOverrides": [
                     {
                       "visible": false,
-                      "shapeIndex": 0
+                      "shapeIndex": 0,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      }
                     },
                     {
                       "shapeIndex": 1,
@@ -641,6 +660,17 @@
                         "y": 0
                       },
                       "visible": true
+                    },
+                    {
+                      "shapeIndex": 2,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
                     }
                   ]
                 },
@@ -651,7 +681,58 @@
                   "shapeOverrides": [
                     {
                       "visible": true,
-                      "shapeIndex": 0
+                      "shapeIndex": 0,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    {
+                      "shapeIndex": 1,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 2,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 3,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 4,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
                     }
                   ]
                 }
@@ -667,22 +748,55 @@
                     {
                       "shapeIndex": 2,
                       "transform": {
-                        "x": 0,
-                        "y": 0,
-                        "rotation": 0,
+                        "rotation": 270,
                         "scaleX": 1,
-                        "scaleY": 1
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
                       },
                       "visible": true
                     },
                     {
                       "shapeIndex": 0,
                       "transform": {
-                        "x": 0,
-                        "y": 0,
-                        "rotation": 0,
+                        "rotation": 270,
                         "scaleX": 1,
-                        "scaleY": 1
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 1,
+                      "transform": {
+                        "rotation": 270,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 3,
+                      "transform": {
+                        "rotation": 270,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
+                    },
+                    {
+                      "shapeIndex": 4,
+                      "transform": {
+                        "rotation": 270,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
                       },
                       "visible": true
                     }
@@ -714,68 +828,68 @@
               "geometry": {
                 "points": [
                   {
-                    "x": 10,
-                    "y": 40
+                    "x": 8.1,
+                    "y": 32.4
                   },
                   {
-                    "x": 50,
-                    "y": 20
+                    "x": 40.5,
+                    "y": 16.2
                   },
                   {
-                    "x": 45,
-                    "y": 5
+                    "x": 36.45,
+                    "y": 4.05
                   },
                   {
-                    "x": 25,
-                    "y": -10
+                    "x": 20.25,
+                    "y": -8.1
                   },
                   {
-                    "x": 50,
-                    "y": -35
+                    "x": 40.5,
+                    "y": -28.35
                   },
                   {
-                    "x": 30,
-                    "y": -45
+                    "x": 24.3,
+                    "y": -36.45
                   },
                   {
-                    "x": 10,
-                    "y": -38
+                    "x": 8.1,
+                    "y": -30.78
                   },
                   {
-                    "x": -20,
-                    "y": -45
+                    "x": -16.2,
+                    "y": -36.45
                   },
                   {
-                    "x": -43,
-                    "y": -18
+                    "x": -34.83,
+                    "y": -14.58
                   },
                   {
-                    "x": -43,
-                    "y": 20
+                    "x": -34.83,
+                    "y": 16.2
                   },
                   {
-                    "x": -25,
-                    "y": 20
+                    "x": -20.25,
+                    "y": 16.2
                   },
                   {
-                    "x": -25,
-                    "y": 40
+                    "x": -20.25,
+                    "y": 32.4
                   }
                 ]
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#FFBE64",
+                "stroke": "#FFFFFF",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
               },
               "transform": {
-                "x": 0,
-                "y": 0,
                 "rotation": 0,
                 "scaleX": 1,
-                "scaleY": 1
+                "scaleY": 1,
+                "x": 0,
+                "y": 0
               }
             }
           ],
@@ -796,82 +910,6 @@
           "tags": [
             "asteroid",
             "large"
-          ],
-          "objectOrigin": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        {
-          "id": "object.asteroids.small-asteroid",
-          "name": "Small Asteroid",
-          "shapes": [
-            {
-              "tool": "polygon",
-              "order": 0,
-              "visible": true,
-              "locked": false,
-              "geometry": {
-                "points": [
-                  {
-                    "x": -10,
-                    "y": -6
-                  },
-                  {
-                    "x": 0,
-                    "y": -12
-                  },
-                  {
-                    "x": 10,
-                    "y": -6
-                  },
-                  {
-                    "x": 8,
-                    "y": 8
-                  },
-                  {
-                    "x": -6,
-                    "y": 10
-                  },
-                  {
-                    "x": -12,
-                    "y": 0
-                  }
-                ]
-              },
-              "style": {
-                "fill": "transparent",
-                "stroke": "#FFBE64",
-                "strokeWidth": 2,
-                "fillOpacity": 1,
-                "strokeOpacity": 1
-              },
-              "transform": {
-                "x": 0,
-                "y": 0,
-                "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
-              }
-            }
-          ],
-          "states": [
-            {
-              "id": "active",
-              "name": "Active",
-              "frames": [
-                {
-                  "id": "frame-1",
-                  "order": 0,
-                  "durationFrames": 1,
-                  "shapeOverrides": []
-                }
-              ]
-            }
-          ],
-          "tags": [
-            "asteroid",
-            "small"
           ],
           "objectOrigin": {
             "x": 0,
@@ -953,7 +991,7 @@
               },
               "style": {
                 "fill": "transparent",
-                "stroke": "#FFBE64",
+                "stroke": "#FFFFFF",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1,
@@ -1068,7 +1106,7 @@
               },
               "style": {
                 "fill": "transparent",
-                "stroke": "#FFBE64",
+                "stroke": "#FFFFFF",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1,
@@ -1120,48 +1158,68 @@
               "geometry": {
                 "points": [
                   {
-                    "x": -16,
-                    "y": -10
+                    "x": 4.779,
+                    "y": 19.845
                   },
                   {
-                    "x": -2,
-                    "y": -18
+                    "x": 24.219,
+                    "y": 10.125
                   },
                   {
-                    "x": 16,
-                    "y": -14
+                    "x": 21.789,
+                    "y": 2.835
                   },
                   {
-                    "x": 20,
-                    "y": 2
+                    "x": 12.069,
+                    "y": -4.455
                   },
                   {
-                    "x": 8,
-                    "y": 18
+                    "x": 24.219,
+                    "y": -16.605
                   },
                   {
-                    "x": -10,
-                    "y": 16
+                    "x": 14.499,
+                    "y": -21.465
                   },
                   {
-                    "x": -20,
-                    "y": 4
+                    "x": 4.779,
+                    "y": -18.063
+                  },
+                  {
+                    "x": -9.801,
+                    "y": -21.465
+                  },
+                  {
+                    "x": -20.979,
+                    "y": -8.343
+                  },
+                  {
+                    "x": -20.979,
+                    "y": 10.125
+                  },
+                  {
+                    "x": -12.231,
+                    "y": 10.125
+                  },
+                  {
+                    "x": -12.231,
+                    "y": 19.845
                   }
                 ]
               },
               "style": {
-                "fill": "transparent",
-                "stroke": "#FFBE64",
+                "fill": "#00000000",
+                "stroke": "#FFFFFF",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
               },
               "transform": {
-                "x": 0,
-                "y": 0,
                 "rotation": 0,
                 "scaleX": 1,
-                "scaleY": 1
+                "scaleY": 1,
+                "x": 0,
+                "y": 0
               }
             }
           ],
@@ -1182,6 +1240,106 @@
           "tags": [
             "asteroid",
             "medium"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "id": "object.asteroids.small-asteroid",
+          "name": "Small Asteroid",
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": 1.995,
+                    "y": 8.925
+                  },
+                  {
+                    "x": 10.395,
+                    "y": 4.725
+                  },
+                  {
+                    "x": 9.345,
+                    "y": 1.575
+                  },
+                  {
+                    "x": 5.145,
+                    "y": -1.575
+                  },
+                  {
+                    "x": 10.395,
+                    "y": -6.825
+                  },
+                  {
+                    "x": 6.195,
+                    "y": -8.925
+                  },
+                  {
+                    "x": 1.995,
+                    "y": -7.455
+                  },
+                  {
+                    "x": -4.305,
+                    "y": -8.925
+                  },
+                  {
+                    "x": -9.135,
+                    "y": -3.255
+                  },
+                  {
+                    "x": -9.135,
+                    "y": 4.725
+                  },
+                  {
+                    "x": -5.355,
+                    "y": 4.725
+                  },
+                  {
+                    "x": -5.355,
+                    "y": 8.925
+                  }
+                ]
+              },
+              "style": {
+                "fill": "#00000000",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "states": [
+            {
+              "id": "active",
+              "name": "Active",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": []
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "asteroid",
+            "small"
           ],
           "objectOrigin": {
             "x": 0,
