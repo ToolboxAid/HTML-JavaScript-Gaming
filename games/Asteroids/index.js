@@ -20,6 +20,7 @@ export const asteroidFlow = Object.freeze({
 const theme = new Theme(ThemeTokens);
 const BOOT_TRACE_PREFIX = "Asteroids";
 const ASTEROIDS_MANIFEST_PATH = "/games/Asteroids/game.manifest.json";
+const ASTEROIDS_DEBUG_STORAGE_KEY = "toolbox.sample.asteroids.debug.enabled";
 
 function traceBoot(stage, details = null) {
   if (details === null) {
@@ -212,7 +213,9 @@ export async function bootAsteroidsNew({
 
     stage = "resolve-debug-config";
     traceBoot(stage);
-    const debugConfig = resolveDebugConfig(documentRef);
+    const debugConfig = resolveDebugConfig(documentRef, {
+      storageKey: ASTEROIDS_DEBUG_STORAGE_KEY
+    });
     const devConsoleIntegration = debugConfig.debugEnabled && typeof createDevConsoleIntegration === "function"
       ? createDevConsoleIntegration({
           sampleId: "asteroids-new-showcase",

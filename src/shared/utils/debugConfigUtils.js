@@ -1,7 +1,6 @@
 import { safeTrim, toLowerSafe } from './stringUtils.js';
 const BUILD_DEBUG_MODE = 'prod';
 const BUILD_DEBUG_ENABLED = false;
-const DEBUG_STATE_STORAGE_KEY = 'toolbox.sample.asteroids.debug.enabled';
 
 export function parseBooleanFlag(value, fallback) {
   const normalized = toLowerSafe(value);
@@ -68,7 +67,8 @@ export function isLocalDebugEnvironment(documentRef) {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
 }
 
-export function resolveDebugConfig(documentRef) {
+export function resolveDebugConfig(documentRef, options = {}) {
+  const debugStateStorageKey = safeTrim(options?.storageKey);
   const search = safeTrim(documentRef?.location?.search) || safeTrim(globalThis?.location?.search);
   const searchParams = new URLSearchParams(search);
   const queryMode = searchParams.get('debugMode');
@@ -83,15 +83,15 @@ export function resolveDebugConfig(documentRef) {
     : normalizeDebugMode(BUILD_DEBUG_MODE, 'prod');
   const debugMode = normalizeDebugMode(queryMode, demoMode ? 'qa' : defaultMode);
   const fallbackEnabled = (BUILD_DEBUG_ENABLED === true || localDebugEnvironment) && debugMode !== 'prod';
-  const storedDebugEnabled = rememberDebugState && queryEnabled === null
-    ? readStoredBoolean(DEBUG_STATE_STORAGE_KEY)
+  const storedDebugEnabled = debugStateStorageKey && rememberDebugState && queryEnabled === null
+    ? readStoredBoolean(debugStateStorageKey)
     : null;
   const debugEnabled = demoMode
     ? true
     : parseBooleanFlag(queryEnabled, storedDebugEnabled ?? fallbackEnabled);
 
-  if (rememberDebugState) {
-    writeStoredBoolean(DEBUG_STATE_STORAGE_KEY, debugEnabled);
+  if (debugStateStorageKey && rememberDebugState) {
+    writeStoredBoolean(debugStateStorageKey, debugEnabled);
   }
 
   return {

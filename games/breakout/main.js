@@ -7,21 +7,12 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import {
-  parseBooleanFlag,
-  normalizeDebugMode,
-  readStoredBoolean,
-  writeStoredBoolean,
-  isLocalDebugEnvironment,
-  resolveDebugConfig,
-} from '../../src/shared/utils/debugConfigUtils.js';
+import { resolveDebugConfig } from '../../src/shared/utils/debugConfigUtils.js';
 import { createNoopDevConsoleIntegration } from '../../src/shared/utils/createNoopDevConsoleIntegration.js';
 import BreakoutScene from './game/BreakoutScene.js';
 import { loadGameSkin } from '/games/shared/gameSkinLoader.js';
 
 const theme = new Theme(ThemeTokens);
-const BUILD_DEBUG_MODE = 'prod';
-const BUILD_DEBUG_ENABLED = false;
 const DEBUG_STATE_STORAGE_KEY = 'toolbox.sample.breakout.debug.enabled';
 
 function sanitizeText(value) {
@@ -117,7 +108,9 @@ export function bootBreakout({
     input,
   });
 
-  const debugConfig = resolveDebugConfig(documentRef);
+  const debugConfig = resolveDebugConfig(documentRef, {
+    storageKey: DEBUG_STATE_STORAGE_KEY,
+  });
   const devConsoleIntegration = debugConfig.debugEnabled
     ? createDevConsoleIntegration({
         sampleId: 'breakout-debug-showcase',
