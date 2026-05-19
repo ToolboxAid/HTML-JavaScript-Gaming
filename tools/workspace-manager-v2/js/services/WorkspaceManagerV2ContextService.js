@@ -1255,6 +1255,15 @@ export class WorkspaceManagerV2ContextService {
       if (!isPlainObject(assetManagerSchema)) {
         return { ok: false, message: `${assetManagerSchemaPath} did not return a schema object.` };
       }
+      const paletteManagerSchemaPath = `/${TOOL_PAYLOAD_SCHEMA_REFS[PALETTE_MANAGER_V2_TOOL_KEY]}`;
+      const paletteManagerResponse = await this.fetchRef(paletteManagerSchemaPath, { cache: "no-store" });
+      if (!paletteManagerResponse.ok) {
+        return { ok: false, message: `Unable to load ${paletteManagerSchemaPath}: ${paletteManagerResponse.status}` };
+      }
+      const paletteManagerSchema = await paletteManagerResponse.json();
+      if (!isPlainObject(paletteManagerSchema)) {
+        return { ok: false, message: `${paletteManagerSchemaPath} did not return a schema object.` };
+      }
       const objectVectorResponse = await this.fetchRef(OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH, { cache: "no-store" });
       if (!objectVectorResponse.ok) {
         return { ok: false, message: `Unable to load ${OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH}: ${objectVectorResponse.status}` };
@@ -1267,6 +1276,9 @@ export class WorkspaceManagerV2ContextService {
       registerSchemaReference(schemaRegistry, assetManagerSchemaPath, assetManagerSchema);
       registerSchemaReference(schemaRegistry, TOOL_PAYLOAD_SCHEMA_REFS[ASSET_MANAGER_V2_TOOL_KEY], assetManagerSchema);
       registerSchemaReference(schemaRegistry, "tools/asset-manager-v2.schema.json", assetManagerSchema);
+      registerSchemaReference(schemaRegistry, paletteManagerSchemaPath, paletteManagerSchema);
+      registerSchemaReference(schemaRegistry, TOOL_PAYLOAD_SCHEMA_REFS[PALETTE_MANAGER_V2_TOOL_KEY], paletteManagerSchema);
+      registerSchemaReference(schemaRegistry, "tools/palette-manager-v2.schema.json", paletteManagerSchema);
       registerSchemaReference(schemaRegistry, OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH, objectVectorSchema);
       registerSchemaReference(schemaRegistry, "tools/schemas/tools/object-vector-studio-v2.schema.json", objectVectorSchema);
       registerSchemaReference(schemaRegistry, "tools/object-vector-studio-v2.schema.json", objectVectorSchema);

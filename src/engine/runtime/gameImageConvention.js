@@ -126,11 +126,6 @@ function collectImageEntriesFromManifest(manifestPayload, { manifestPath = "" } 
     entries.push(entry);
   };
 
-  const assetBrowserAssets = toObject(payload?.tools?.["asset-browser"]?.assets);
-  Object.entries(assetBrowserAssets).forEach(([assetId, rawEntry]) => {
-    pushEntry(normalizeAssetEntry(rawEntry, assetId, manifestPath, "asset-browser"));
-  });
-
   const assetManagerAssets = toObject(payload?.tools?.["asset-manager-v2"]?.assets);
   Object.entries(assetManagerAssets).forEach(([assetId, rawEntry]) => {
     pushEntry(normalizeAssetEntry(rawEntry, assetId, manifestPath, "asset-manager-v2"));

@@ -8,9 +8,7 @@
     "folder": "vector-arcade-sample"
   },
   "launch": {
-    "directPath": "/games/vector-arcade-sample/index.html",
-    "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=vector-arcade-sample&mount=game",
-    "workspaceManagerOptional": true
+    "directPath": "/games/vector-arcade-sample/index.html"
   },
   "tools": {
     "asset-manager-v2": {
@@ -29,235 +27,451 @@
         }
       }
     },
-    "sprite-editor": {
-      "sprites": [
+    "object-vector-studio-v2": {
+      "version": 1,
+      "toolId": "object-vector-studio-v2",
+      "name": "Vector Arcade Sample Object Vector Assets",
+      "objects": [
         {
-          "id": "sprite.vector-arcade.player",
-          "data": {
-            "schema": "toolbox.sprite-project/1",
-            "version": 1,
-            "projectId": "vector-arcade-template-sprite",
-            "name": "Vector Arcade Template Sprite",
-            "frames": [
-              {
-                "id": "idle-0",
-                "width": 16,
-                "height": 16,
-                "durationMs": 120,
-                "pixels": []
+          "id": "object.vector-arcade-sample.ui-hud",
+          "name": "Ui Hud",
+          "objectOrigin": {
+            "x": 80,
+            "y": 16
+          },
+          "tags": ["ui", "hud"],
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 1,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": 4,
+                    "y": 4
+                  },
+                  {
+                    "x": 156,
+                    "y": 4
+                  },
+                  {
+                    "x": 156,
+                    "y": 28
+                  },
+                  {
+                    "x": 4,
+                    "y": 28
+                  },
+                  {
+                    "x": 4,
+                    "y": 4
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 0,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
               }
-            ],
-            "palette": ["#000000", "#ffffff", "#60a5fa", "#f59e0b"]
-          }
-        }
-      ],
-      "schema": "html-js-gaming.tool.sprite-editor",
-      "version": 1,
-      "name": "Sprite Editor",
-      "source": "manifest"
-    },
-    "tile-map-editor": {
-      "maps": [
-        {
-          "id": "tilemap.vector-arcade.arena",
-          "data": {
-            "name": "Vector Arcade Sample Arena",
-            "states": ["title", "start", "gameplay", "restart"],
-            "extensionPoints": ["spawn-patterns", "score-rules", "victory-conditions"]
-          }
-        }
-      ],
-      "tilesets": [
-        {
-          "id": "tilemap.vector-arcade.ui",
-          "data": {
-            "name": "Template UI Tileset",
-            "tileWidth": 8,
-            "tileHeight": 8,
-            "tiles": ["score-panel", "wave-panel", "status-panel"]
-          }
-        }
-      ],
-      "schema": "html-js-gaming.tool.tile-map-editor",
-      "version": 1,
-      "name": "Tile Map Editor",
-      "source": "manifest"
-    },
-    "parallax-editor": {
-      "parallaxLevels": [
-        {
-          "id": "parallax.vector-arcade.backdrop",
-          "data": {
-            "name": "Sample Backdrop Layer",
-            "role": "backdrop",
-            "imageId": "image.template.backdrop"
-          }
-        }
-      ],
-      "schema": "html-js-gaming.tool.parallax-editor",
-      "version": 1,
-      "name": "Parallax Editor",
-      "source": "manifest"
-    },
-    "svg-asset-studio": {
-      "vectors": [
-        {
-          "id": "vector.vector-arcade.hud",
-          "data": {
-            "id": "vector.template.ui.hud",
-            "type": "vector",
-            "source": {
-              "kind": "svg",
-              "path": "games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json"
             },
-            "geometry": {
-              "viewBox": "0 0 160 32",
-              "paths": [
-                {
-                  "d": "M 4 4 L 156 4 L 156 28 L 4 28 Z"
-                },
-                {
-                  "d": "M 18 10 L 28 10 L 28 22 L 18 22 Z"
-                }
-              ]
-            },
-            "style": {
-              "stroke": true,
-              "fill": false
+            {
+              "tool": "polygon",
+              "order": 2,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": 18,
+                    "y": 10
+                  },
+                  {
+                    "x": 28,
+                    "y": 10
+                  },
+                  {
+                    "x": 28,
+                    "y": 22
+                  },
+                  {
+                    "x": 18,
+                    "y": 22
+                  },
+                  {
+                    "x": 18,
+                    "y": 10
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 0,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
             }
-          }
+          ]
         },
         {
-          "id": "vector.vector-arcade.obstacle-large",
-          "data": {
-            "id": "vector.template.obstacle.large",
-            "type": "vector",
-            "source": {
-              "kind": "svg",
-              "path": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json"
-            },
-            "geometry": {
-              "viewBox": "-34 -34 68 68",
-              "paths": [
-                {
-                  "d": "M -20 -14 L 0 -24 L 22 -18 L 28 6 L 14 24 L -10 22 L -26 4 Z"
-                }
-              ]
-            },
-            "style": {
-              "stroke": true,
-              "fill": false
+          "id": "object.vector-arcade-sample.obstacle-large",
+          "name": "Obstacle Large",
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "tags": ["obstacle", "large"],
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 1,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": -20,
+                    "y": -14
+                  },
+                  {
+                    "x": 0,
+                    "y": -24
+                  },
+                  {
+                    "x": 22,
+                    "y": -18
+                  },
+                  {
+                    "x": 28,
+                    "y": 6
+                  },
+                  {
+                    "x": 14,
+                    "y": 24
+                  },
+                  {
+                    "x": -10,
+                    "y": 22
+                  },
+                  {
+                    "x": -26,
+                    "y": 4
+                  },
+                  {
+                    "x": -20,
+                    "y": -14
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 0,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
             }
-          }
+          ]
         },
         {
-          "id": "vector.vector-arcade.obstacle-small",
-          "data": {
-            "id": "vector.template.obstacle.small",
-            "type": "vector",
-            "source": {
-              "kind": "svg",
-              "path": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json"
-            },
-            "geometry": {
-              "viewBox": "-18 -18 36 36",
-              "paths": [
-                {
-                  "d": "M -8 -8 L 2 -12 L 10 -2 L 6 10 L -6 12 L -12 0 Z"
-                }
-              ]
-            },
-            "style": {
-              "stroke": true,
-              "fill": false
+          "id": "object.vector-arcade-sample.obstacle-small",
+          "name": "Obstacle Small",
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "tags": ["obstacle", "small"],
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 1,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": -8,
+                    "y": -8
+                  },
+                  {
+                    "x": 2,
+                    "y": -12
+                  },
+                  {
+                    "x": 10,
+                    "y": -2
+                  },
+                  {
+                    "x": 6,
+                    "y": 10
+                  },
+                  {
+                    "x": -6,
+                    "y": 12
+                  },
+                  {
+                    "x": -12,
+                    "y": 0
+                  },
+                  {
+                    "x": -8,
+                    "y": -8
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 0,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
             }
-          }
+          ]
         },
         {
-          "id": "vector.vector-arcade.player",
-          "data": {
-            "id": "vector.template.player",
-            "type": "vector",
-            "source": {
-              "kind": "svg",
-              "path": "games/vector-arcade-sample/assets/data/vectors/template-player.vector.json"
+          "id": "object.vector-arcade-sample.player",
+          "name": "Player",
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          },
+          "tags": ["player"],
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 1,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": 0,
+                    "y": -16
+                  },
+                  {
+                    "x": 12,
+                    "y": 12
+                  },
+                  {
+                    "x": 0,
+                    "y": 6
+                  },
+                  {
+                    "x": -12,
+                    "y": 12
+                  },
+                  {
+                    "x": 0,
+                    "y": -16
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 0,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
             },
-            "geometry": {
-              "viewBox": "-20 -20 40 40",
-              "paths": [
-                {
-                  "d": "M 0 -16 L 12 12 L 0 6 L -12 12 Z"
-                },
-                {
-                  "d": "M -4 10 L 0 4 L 4 10"
-                }
-              ]
-            },
-            "style": {
-              "stroke": true,
-              "fill": false
+            {
+              "tool": "polyline",
+              "order": 2,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": -4,
+                    "y": 10
+                  },
+                  {
+                    "x": 0,
+                    "y": 4
+                  },
+                  {
+                    "x": 4,
+                    "y": 10
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 0,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
             }
-          }
+          ]
         },
         {
-          "id": "vector.vector-arcade.title",
-          "data": {
-            "id": "vector.template.ui.title",
-            "type": "vector",
-            "source": {
-              "kind": "svg",
-              "path": "games/vector-arcade-sample/assets/data/vectors/template-title.vector.json"
+          "id": "object.vector-arcade-sample.ui-title",
+          "name": "Ui Title",
+          "objectOrigin": {
+            "x": 110,
+            "y": 24
+          },
+          "tags": ["ui", "title"],
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 1,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": 8,
+                    "y": 40
+                  },
+                  {
+                    "x": 24,
+                    "y": 8
+                  },
+                  {
+                    "x": 40,
+                    "y": 40
+                  },
+                  {
+                    "x": 8,
+                    "y": 40
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 0,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
             },
-            "geometry": {
-              "viewBox": "0 0 220 48",
-              "paths": [
-                {
-                  "d": "M 8 40 L 24 8 L 40 40 Z"
-                },
-                {
-                  "d": "M 56 40 L 56 8 L 84 8 L 84 18 L 68 18 L 68 22 L 82 22 L 82 32 L 68 32 L 68 40 Z"
-                }
-              ]
-            },
-            "style": {
-              "stroke": true,
-              "fill": false
+            {
+              "tool": "polygon",
+              "order": 2,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": 56,
+                    "y": 40
+                  },
+                  {
+                    "x": 56,
+                    "y": 8
+                  },
+                  {
+                    "x": 84,
+                    "y": 8
+                  },
+                  {
+                    "x": 84,
+                    "y": 18
+                  },
+                  {
+                    "x": 68,
+                    "y": 18
+                  },
+                  {
+                    "x": 68,
+                    "y": 22
+                  },
+                  {
+                    "x": 82,
+                    "y": 22
+                  },
+                  {
+                    "x": 82,
+                    "y": 32
+                  },
+                  {
+                    "x": 68,
+                    "y": 32
+                  },
+                  {
+                    "x": 68,
+                    "y": 40
+                  },
+                  {
+                    "x": 56,
+                    "y": 40
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 2,
+                "fillOpacity": 0,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
             }
-          }
+          ]
         }
-      ],
-      "schema": "html-js-gaming.tool.svg-asset-studio",
-      "version": 1,
-      "name": "SVG Asset Studio",
-      "source": "manifest"
-    },
-    "preview-generator-tool": {
-      "projectConfigs": [
-        {
-          "id": "games.vector.arcade.sample.config.sample.project",
-          "data": {
-            "sampleId": "vector-arcade-sample",
-            "schema": "toolbox.sample/1",
-            "visualContract": "vector-only",
-            "runtimeEntry": "games/vector-arcade-sample/main.js#bootVectorArcadeSample"
-          }
-        }
-      ],
-      "runtimeConfigs": [
-        {
-          "id": "games.vector.arcade.sample.runtime.bootstrap.runtime",
-          "data": {
-            "modulePath": "games/vector-arcade-sample/main.js",
-            "exportName": "bootVectorArcadeSample",
-            "canvasId": "game",
-            "requiredVectorIds": ["vector.template.player", "vector.template.obstacle.large", "vector.template.obstacle.small", "vector.template.ui.title", "vector.template.ui.hud"]
-          }
-        }
-      ],
-      "schema": "html-js-gaming.tool.preview-generator-tool",
-      "version": 1,
-      "name": "Preview Generator Tool",
-      "source": "manifest"
+      ]
     }
   }
 }

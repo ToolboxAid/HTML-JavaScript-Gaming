@@ -230,17 +230,12 @@ function normalizeManifestCatalogPayload(payload) {
     tools?.["asset-manager-v2"]?.assets,
     assetsPath
   );
-  const toolAssetEntries = normalizeCatalogEntries(tools?.["asset-browser"]?.assets);
-  const entries = {
-    ...toolAssetEntries,
-    ...assetManagerEntries
-  };
   const isValidSchema = schema === GAME_MANIFEST_SCHEMA;
   const isValidVersion = Number.isFinite(version) && version >= 1;
   return {
     schema,
     version,
-    entries,
+    entries: assetManagerEntries,
     valid: isValidSchema && isValidVersion
   };
 }

@@ -10,7 +10,7 @@ function resolveWorkspaceHostedContext(normalizedGameId) {
   const hosted = params.get("hosted") === "1";
   const hostToolId = (params.get("hostToolId") || "").trim().toLowerCase();
   const hostContextId = (params.get("hostContextId") || "").trim();
-  if (!hosted || hostToolId !== "workspace-manager" || !hostContextId) {
+  if (!hosted || hostToolId !== "workspace-manager-v2" || !hostContextId) {
     return null;
   }
 
@@ -32,9 +32,8 @@ export function openGameInWorkspaceManager(gameId) {
   if (!normalizedGameId) {
     return false;
   }
-  const redirectUrl = new URL("/tools/Workspace%20Manager/index.html", window.location.origin);
+  const redirectUrl = new URL("/tools/workspace-manager-v2/index.html", window.location.origin);
   redirectUrl.searchParams.set("gameId", normalizedGameId);
-  redirectUrl.searchParams.set("mount", "game");
   window.location.replace(redirectUrl.toString());
   return true;
 }

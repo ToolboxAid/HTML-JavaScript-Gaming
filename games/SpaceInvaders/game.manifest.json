@@ -8,9 +8,7 @@
     "folder": "SpaceInvaders"
   },
   "launch": {
-    "directPath": "/games/SpaceInvaders/index.html",
-    "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=SpaceInvaders&mount=game",
-    "workspaceManagerOptional": true
+    "directPath": "/games/SpaceInvaders/index.html"
   },
   "tools": {
     "asset-manager-v2": {
