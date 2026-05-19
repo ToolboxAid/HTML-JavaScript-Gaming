@@ -219,7 +219,7 @@
           "shapes": [
             {
               "tool": "polygon",
-              "order": 0,
+              "order": 1,
               "visible": true,
               "locked": false,
               "geometry": {
@@ -245,36 +245,6 @@
               "style": {
                 "fill": "#FFFFFF",
                 "stroke": "#FFFFFF",
-                "strokeWidth": 2,
-                "fillOpacity": 1,
-                "strokeOpacity": 1
-              },
-              "transform": {
-                "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1,
-                "x": 0,
-                "y": 0
-              }
-            },
-            {
-              "tool": "line",
-              "order": 1,
-              "visible": true,
-              "locked": false,
-              "geometry": {
-                "point1": {
-                  "x": -16,
-                  "y": 2
-                },
-                "point2": {
-                  "x": -3,
-                  "y": 2
-                }
-              },
-              "style": {
-                "fill": "#00000000",
-                "stroke": "#F87171",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -334,11 +304,11 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -6,
-                  "y": -3
+                  "x": -6.6,
+                  "y": -3.3
                 },
                 "point2": {
-                  "x": -10,
+                  "x": -11,
                   "y": 0
                 }
               },
@@ -364,12 +334,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -10,
+                  "x": -11,
                   "y": 0
                 },
                 "point2": {
-                  "x": -6,
-                  "y": 3
+                  "x": -6.6,
+                  "y": 3.3
                 }
               },
               "style": {
@@ -395,27 +365,27 @@
               "geometry": {
                 "points": [
                   {
-                    "x": 14,
+                    "x": 15.4,
                     "y": 0
                   },
                   {
-                    "x": -10,
-                    "y": -8
+                    "x": -11,
+                    "y": -8.8
                   },
                   {
-                    "x": -6,
-                    "y": -3
+                    "x": -6.6,
+                    "y": -3.3
                   },
                   {
-                    "x": -6,
-                    "y": 3
+                    "x": -6.6,
+                    "y": 3.3
                   },
                   {
-                    "x": -10,
-                    "y": 8
+                    "x": -11,
+                    "y": 8.8
                   },
                   {
-                    "x": 14,
+                    "x": 15.4,
                     "y": 0
                   }
                 ]
@@ -453,11 +423,11 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -6,
-                  "y": -3
+                  "x": -6.6,
+                  "y": -3.3
                 },
                 "point2": {
-                  "x": -8,
+                  "x": -8.8,
                   "y": 0
                 }
               },
@@ -483,11 +453,11 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -6,
-                  "y": 3
+                  "x": -6.6,
+                  "y": 3.3
                 },
                 "point2": {
-                  "x": -8,
+                  "x": -8.8,
                   "y": 0
                 }
               },
@@ -909,7 +879,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#F87171",
+                "stroke": "#DBEAFE",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -1239,7 +1209,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#FFBE64",
+                "stroke": "#DBEAFE",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1
@@ -1339,7 +1309,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#78B7FF",
+                "stroke": "#DBEAFE",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1

@@ -305,13 +305,16 @@ export default class AsteroidsWorld {
 
   createBulletFromState(state) {
     const source = state && typeof state === 'object' ? state : {};
+    const vx = sanitizeFiniteNumber(source.vx, 0);
+    const vy = sanitizeFiniteNumber(source.vy, 0);
     return new Bullet(
       sanitizeFiniteNumber(source.x, this.bounds.width * 0.5),
       sanitizeFiniteNumber(source.y, this.bounds.height * 0.5),
-      sanitizeFiniteNumber(source.vx, 0),
-      sanitizeFiniteNumber(source.vy, 0),
+      vx,
+      vy,
       Math.max(0, sanitizeFiniteNumber(source.life, 1.1)),
       {
+        angle: sanitizeFiniteNumber(source.angle, (vx || vy) ? Math.atan2(vy, vx) : 0),
         collisionPoints: this.bulletCollisionPoints,
       }
     );
@@ -371,6 +374,7 @@ export default class AsteroidsWorld {
         radius: asteroid.radius,
       })),
       bullets: this.bullets.map((bullet) => ({
+        angle: bullet.angle,
         x: bullet.x,
         y: bullet.y,
         vx: bullet.vx,
@@ -378,6 +382,7 @@ export default class AsteroidsWorld {
         life: bullet.life,
       })),
       ufoBullets: this.ufoBullets.map((bullet) => ({
+        angle: bullet.angle,
         x: bullet.x,
         y: bullet.y,
         vx: bullet.vx,
@@ -570,6 +575,7 @@ export default class AsteroidsWorld {
       this.ship.vy + Math.sin(this.ship.angle) * shotSpeed,
       fullScreenLife,
       {
+        angle: this.ship.angle,
         collisionPoints: this.bulletCollisionPoints,
       }
     ));

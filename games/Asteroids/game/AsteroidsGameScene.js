@@ -763,6 +763,9 @@ export default class AsteroidsGameScene extends Scene {
     this.world.bullets.forEach((bullet) => {
       this.drawObjectVectorAsset(renderer, "bullet", {
         ...this.objectVectorTagOptions("bullet"),
+        objectId: this.objectVectorRuntimeObjectValidation.objectsByKey.bullet?.id || "",
+        requireManifestBinding: true,
+        rotation: bullet.angle,
         stateId: "active",
         x: bullet.x,
         y: bullet.y,
@@ -772,6 +775,9 @@ export default class AsteroidsGameScene extends Scene {
     this.world.ufoBullets.forEach((bullet) => {
       this.drawObjectVectorAsset(renderer, "bullet", {
         ...this.objectVectorTagOptions("bullet"),
+        objectId: this.objectVectorRuntimeObjectValidation.objectsByKey.bullet?.id || "",
+        requireManifestBinding: true,
+        rotation: bullet.angle,
         stateId: "active",
         x: bullet.x,
         y: bullet.y,

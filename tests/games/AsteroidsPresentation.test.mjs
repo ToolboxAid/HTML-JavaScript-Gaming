@@ -55,6 +55,10 @@ function objectHasTags(object, tags = []) {
   return tags.every((tag) => objectTags.has(String(tag).toLowerCase()));
 }
 
+function roundedAngle(value) {
+  return Number(value.toFixed(6));
+}
+
 function createObjectVectorRuntime(calls) {
   return {
     getDiagnostics() {
@@ -70,6 +74,7 @@ function createObjectVectorRuntime(calls) {
         objectId: object?.id || options.objectId,
         requireManifestBinding: options.requireManifestBinding === true,
         renderKey: options.runtimeRole,
+        rotation: options.rotation,
         stroke: shape?.style?.stroke || '',
         stateId: options.stateId,
         tags: options.tags,
@@ -253,6 +258,9 @@ function testAsteroidsAttractAsteroidsUseManifestObjectsAndStyles() {
 
 function testAsteroidsGameplayBulletsUseManifestObjectGeometry() {
   const renderCalls = [];
+  const payload = loadAsteroidsObjectVectorPayload();
+  const bulletObject = payload.objects.find((object) => object.id === 'object.asteroids.bullet');
+  const bulletShapesBeforeRender = JSON.stringify(bulletObject.shapes);
   const scene = new AsteroidsGameScene(createAsteroidsTestSceneOptions({
     objectVectorAssets: createObjectVectorAssetSet(),
     objectVectorRuntime: createObjectVectorRuntime(renderCalls),
@@ -260,20 +268,21 @@ function testAsteroidsGameplayBulletsUseManifestObjectGeometry() {
   scene.session.mode = 'playing';
   scene.attractController.active = false;
   scene.world.asteroids = [];
-  scene.world.bullets = [scene.world.createBulletFromState({
-    x: 100,
-    y: 110,
-    vx: 0,
-    vy: 0,
-    life: 1,
-  })];
-  scene.world.ufoBullets = [scene.world.createBulletFromState({
-    x: 120,
-    y: 130,
-    vx: 0,
-    vy: 0,
-    life: 1,
-  })];
+  scene.world.bullets = [];
+  scene.world.ufoBullets = [];
+  scene.world.ship.x = 220;
+  scene.world.ship.y = 240;
+  scene.world.ship.vx = 0;
+  scene.world.ship.vy = 0;
+  const fireAngles = [-Math.PI / 2, 0, Math.PI / 3];
+  fireAngles.forEach((angle) => {
+    scene.world.ship.angle = angle;
+    assert.equal(scene.world.fire(), true);
+  });
+  assert.deepEqual(
+    scene.world.bullets.map((bullet) => roundedAngle(bullet.angle)),
+    fireAngles.map(roundedAngle),
+  );
 
   const polygonCalls = [];
   const renderer = {
@@ -288,9 +297,17 @@ function testAsteroidsGameplayBulletsUseManifestObjectGeometry() {
   };
 
   scene.render(renderer);
-  assert.equal(scene.objectVectorRenderCounts.bullet, 2);
-  assert.equal(renderCalls.filter((call) => call.objectId === 'object.asteroids.bullet').length, 2);
-  assert.equal(polygonCalls.length >= 2, true);
+  const bulletCalls = renderCalls.filter((call) => call.objectId === 'object.asteroids.bullet');
+  assert.equal(scene.objectVectorRenderCounts.bullet, fireAngles.length);
+  assert.equal(bulletCalls.length, fireAngles.length);
+  assert.deepEqual(
+    bulletCalls.map((call) => roundedAngle(call.rotation)),
+    fireAngles.map(roundedAngle),
+  );
+  assert.equal(bulletCalls.every((call) => call.requireManifestBinding), true);
+  assert.equal(bulletCalls.every((call) => call.stroke === bulletObject.shapes[0].style.stroke), true);
+  assert.equal(JSON.stringify(bulletObject.shapes), bulletShapesBeforeRender);
+  assert.equal(polygonCalls.length >= fireAngles.length, true);
 }
 
 function testAsteroidsGameplayRenderDoesNotCoverBackgroundLayer() {

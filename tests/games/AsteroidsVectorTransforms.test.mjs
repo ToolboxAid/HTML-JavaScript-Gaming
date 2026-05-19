@@ -40,16 +40,21 @@ export function run() {
   asteroid.scale = 1;
   const asteroidPoints = asteroid.getPoints();
   assert.equal(asteroidPoints.length, 12);
-  assertPointClose(asteroidPoints[0], { x: 326.5, y: 282.5 });
-  assertPointClose(asteroidPoints[5], { x: 346.5, y: 197.5 });
+  assertPointClose(asteroidPoints[0], { x: 325.265, y: 274.425 });
+  assertPointClose(asteroidPoints[5], { x: 341.465, y: 205.575 });
 
   const bullet = new Bullet(50, 60, 0, 0, 1, {
     collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
   });
   const bulletPoints = bullet.getCollisionPolygon();
   assert.equal(bulletPoints.length, 4);
-  assertPointClose(bulletPoints[0], { x: 48, y: 58 });
-  assertPointClose(bulletPoints[2], { x: 52, y: 62 });
+  assertPointClose(bulletPoints[0], { x: 49, y: 60 });
+  assertPointClose(bulletPoints[2], { x: 50, y: 63 });
+  const angledBullet = new Bullet(50, 60, 0, 0, 1, {
+    angle: Math.PI / 3,
+    collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),
+  });
+  assert.equal(angledBullet.angle, Math.PI / 3);
 
   const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5, {
     bulletCollisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, 'bullet'),

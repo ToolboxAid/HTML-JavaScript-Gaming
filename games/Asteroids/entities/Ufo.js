@@ -99,6 +99,7 @@ export default class Ufo {
       Math.sin(aimAngle) * shotSpeed,
       fullScreenLife,
       {
+        angle: aimAngle,
         collisionPoints: this.bulletCollisionPoints,
       }
     );

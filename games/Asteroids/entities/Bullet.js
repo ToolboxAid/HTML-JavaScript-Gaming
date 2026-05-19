@@ -17,12 +17,13 @@ function normalizePoints(points) {
 }
 
 export default class Bullet {
-  constructor(x, y, vx, vy, life = 1.1, { collisionPoints = [] } = {}) {
+  constructor(x, y, vx, vy, life = 1.1, { angle = 0, collisionPoints = [] } = {}) {
     this.x = x;
     this.y = y;
     this.vx = vx;
     this.vy = vy;
     this.life = life;
+    this.angle = Number.isFinite(angle) ? angle : 0;
     this.collisionPoints = normalizePoints(collisionPoints);
     if (this.collisionPoints.length < 3) {
       throw new Error('Asteroids Bullet requires manifest-loaded bullet object geometry.');
