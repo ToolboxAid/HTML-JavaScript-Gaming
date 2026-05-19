@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/workspace.manifest.schema.json",
   "title": "Workspace Manifest",
@@ -59,9 +59,6 @@
       "properties": {
         "palette-manager-v2": {
           "$ref": "./tools/palette-manager-v2.schema.json"
-        },
-        "vector-map-editor": {
-          "$ref": "./tools/vector-map-editor.schema.json"
         },
         "svg-asset-studio": {
           "$ref": "./tools/svg-asset-studio.schema.json"

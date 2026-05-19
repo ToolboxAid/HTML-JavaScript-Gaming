@@ -18,6 +18,7 @@ import {
   loadAsteroidsVectorMaps
 } from './asteroidsManifestObjectVectors.mjs';
 import {
+  ASTEROIDS_REQUIRED_VECTOR_MAP_IDS,
   ASTEROIDS_VECTOR_MAP_IDS,
   loadAsteroidsVectorMapsFromManifest
 } from '../../games/Asteroids/game/asteroidsVectorMaps.js';
@@ -157,6 +158,13 @@ export async function run() {
   const objectVectorPayload = manifestPayload.tools['object-vector-studio-v2'];
   const manifestVectorIds = objectVectorPayload.vectorMaps.vectors.map((vector) => vector.id);
   assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.bullet), true);
+  assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.ship), true);
+  assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.ufoLarge), true);
+  assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.ufoSmall), true);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.ship.collision'), false);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.ship.life'), false);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.ufo.large.collision'), false);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.ufo.small.collision'), false);
   assert.equal(manifestVectorIds.includes('vector.asteroids.attract.ship'), false);
   assert.equal(manifestVectorIds.includes('vector.asteroids.attract.asteroid'), false);
   assert.equal(manifestVectorIds.includes('vector.asteroids.attract.ufo'), false);
@@ -166,6 +174,15 @@ export async function run() {
   assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid).id, 'object.asteroids.large-asteroid');
   assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_VECTOR_MAP_IDS.attractShip).id, 'object.asteroids.ship');
   assert.equal(vectorMaps.objectVectorMapsById.get(ASTEROIDS_VECTOR_MAP_IDS.attractUfo).id, 'object.asteroids.large-ufo');
+  ASTEROIDS_REQUIRED_VECTOR_MAP_IDS.forEach((id) => {
+    assert.equal(
+      id.startsWith('object.')
+        ? vectorMaps.objectVectorMapsById.has(id)
+        : vectorMaps.vectorsById.has(id),
+      true,
+      `required Asteroids manifest vector id ${id} should resolve`,
+    );
+  });
   assert.deepEqual(
     vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.bullet).points,
     [
@@ -173,6 +190,32 @@ export async function run() {
       { x: 2, y: -2 },
       { x: 2, y: 2 },
       { x: -2, y: 2 },
+    ],
+  );
+  assert.deepEqual(
+    vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.ship).points,
+    [
+      { x: 0, y: -18 },
+      { x: 14, y: 16 },
+      { x: 0, y: 8 },
+      { x: -14, y: 16 },
+    ],
+  );
+  assert.deepEqual(
+    vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.ship).paths,
+    [
+      'M 0 -18 L 14 16 L 0 8 L -14 16 Z',
+      'M -6 14 L 0 6 L 6 14',
+    ],
+  );
+  assert.deepEqual(
+    vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.ufoSmall).points.slice(0, 5),
+    [
+      { x: -14, y: 3 },
+      { x: 14, y: 3 },
+      { x: 9, y: 9 },
+      { x: -9, y: 9 },
+      { x: -14, y: 3 },
     ],
   );
   const shipObject = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.ship');
@@ -199,6 +242,12 @@ export async function run() {
   const missingBulletValidation = loadAsteroidsVectorMapsFromManifest(missingBulletManifest);
   assert.equal(missingBulletValidation.ok, false);
   assert.equal(missingBulletValidation.errors.some((message) => message.includes(ASTEROIDS_VECTOR_MAP_IDS.bullet)), true);
+  const missingShipObjectManifest = structuredClone(manifestPayload);
+  missingShipObjectManifest.tools['object-vector-studio-v2'].objects = missingShipObjectManifest.tools['object-vector-studio-v2'].objects
+    .filter((object) => object.id !== ASTEROIDS_VECTOR_MAP_IDS.attractShip);
+  const missingShipObjectValidation = loadAsteroidsVectorMapsFromManifest(missingShipObjectManifest);
+  assert.equal(missingShipObjectValidation.ok, false);
+  assert.equal(missingShipObjectValidation.errors.some((message) => message.includes(ASTEROIDS_VECTOR_MAP_IDS.attractShip)), true);
   const createdDocumentShim = typeof globalThis.document === 'undefined';
   const createdWindowShim = typeof globalThis.window === 'undefined';
   const shimCanvas = createCanvas();

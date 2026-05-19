@@ -27,14 +27,14 @@ export function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
   const vectorMaps = loadAsteroidsVectorMaps();
   const ship = new Ship(100, 200, {
-    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.shipCollision),
+    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ship),
   });
   ship.angle = Math.PI / 2;
   const shipPoints = ship.getPoints();
-  assert.equal(shipPoints.length, 6);
-  assertPointClose(shipPoints[0], { x: 100, y: 214 });
-  assertPointClose(shipPoints[1], { x: 108, y: 190 });
-  assertPointClose(shipPoints[5], { x: 100, y: 214 });
+  assert.equal(shipPoints.length, 4);
+  assertPointClose(shipPoints[0], { x: 118, y: 200 });
+  assertPointClose(shipPoints[1], { x: 84, y: 214 });
+  assertPointClose(shipPoints[3], { x: 84, y: 186 });
 
   const asteroid = new Asteroid(320, 240, 3, () => 0.5, asteroidGeometryProfiles);
   asteroid.angle = 0;
@@ -54,7 +54,7 @@ export function run() {
 
   const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5, {
     bulletCollisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet),
-    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoSmallCollision),
+    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoSmall),
   });
   ufo.x = 400;
   ufo.y = 220;

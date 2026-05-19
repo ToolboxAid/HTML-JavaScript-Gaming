@@ -151,10 +151,10 @@ export default class AsteroidsWorld {
       throw new Error('AsteroidsWorld requires manifest-loaded vector maps for ship, UFO, and bullet gameplay geometry.');
     }
     this.bulletCollisionPoints = requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet, 'bullet geometry');
-    this.shipCollisionPoints = requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.shipCollision, 'ship collision geometry');
+    this.shipCollisionPoints = requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ship, 'ship collision geometry');
     this.ufoCollisionPoints = {
-      large: requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoLargeCollision, 'large UFO collision geometry'),
-      small: requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoSmallCollision, 'small UFO collision geometry'),
+      large: requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoLarge, 'large UFO collision geometry'),
+      small: requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoSmall, 'small UFO collision geometry'),
     };
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.bounds = sanitizeBounds(bounds);

@@ -876,7 +876,7 @@ export default class AsteroidsGameScene extends Scene {
 
     const startX = centerX - ((lives - 1) * LIFE_SPACING) / 2;
     Array.from({ length: lives }).forEach((_, index) => {
-      this.drawManifestVectorMap(renderer, ASTEROIDS_VECTOR_MAP_IDS.shipLife, {
+      this.drawManifestVectorMap(renderer, ASTEROIDS_VECTOR_MAP_IDS.ship, {
         color: '#ffffff',
         lineWidth: 1,
         rotation: -Math.PI / 2,
