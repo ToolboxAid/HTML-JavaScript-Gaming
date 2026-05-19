@@ -19,7 +19,7 @@
       "minLength": 1
     },
     "vectorMaps": {
-      "$ref": "#/$defs/vectorMapDocument"
+      "$ref": "#/$defs/objectVectorShapeDocument"
     },
     "objects": {
       "type": "array",
@@ -86,10 +86,10 @@
         "minLength": 1
       }
     },
-    "vectorMapDocument": {
+    "objectVectorShapeDocument": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["schema", "version", "name", "source", "objectVectorRoles", "vectors"],
+      "required": ["schema", "version", "name", "source", "objectVectorRoles", "shapes"],
       "properties": {
         "schema": {
           "type": "string",
@@ -109,10 +109,10 @@
         "objectVectorRoles": {
           "$ref": "#/$defs/objectVectorRoles"
         },
-        "vectors": {
+        "shapes": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/vectorMapEntry"
+            "$ref": "#/$defs/shape"
           }
         }
       }
@@ -133,50 +133,6 @@
         },
         "tags": {
           "$ref": "#/$defs/tags"
-        }
-      }
-    },
-    "vectorMapEntry": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "label", "kind", "usage", "points"],
-      "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "^vector\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
-        },
-        "label": {
-          "type": "string",
-          "minLength": 1
-        },
-        "kind": {
-          "type": "string",
-          "enum": ["path", "polygon", "polyline"]
-        },
-        "usage": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "points": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/point2d"
-          }
-        },
-        "viewBox": {
-          "type": "string",
-          "minLength": 1
-        },
-        "paths": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
         }
       }
     },

@@ -1,23 +1,22 @@
 const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';
-const ASTEROIDS_VECTOR_MAP_DOCUMENT_KEY = 'vectorMaps';
+const ASTEROIDS_OBJECT_VECTOR_DOCUMENT_KEY = 'vectorMaps';
 
-export const ASTEROIDS_VECTOR_MAP_IDS = Object.freeze({
+export const ASTEROIDS_OBJECT_VECTOR_IDS = Object.freeze({
   attractAsteroid: 'object.asteroids.large-asteroid',
+  bullet: 'object.asteroids.bullet',
   attractShip: 'object.asteroids.ship',
   attractUfo: 'object.asteroids.large-ufo',
-  bullet: 'vector.asteroids.bullet',
-  uiTitle: 'vector.asteroids.ui.title',
 });
 
-export const ASTEROIDS_REQUIRED_VECTOR_MAP_IDS = Object.freeze([
-  ASTEROIDS_VECTOR_MAP_IDS.attractAsteroid,
-  ASTEROIDS_VECTOR_MAP_IDS.attractShip,
-  ASTEROIDS_VECTOR_MAP_IDS.attractUfo,
-  ASTEROIDS_VECTOR_MAP_IDS.bullet,
-  ASTEROIDS_VECTOR_MAP_IDS.uiTitle,
+export const ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS = Object.freeze([
+  ASTEROIDS_OBJECT_VECTOR_IDS.attractAsteroid,
+  ASTEROIDS_OBJECT_VECTOR_IDS.attractShip,
+  ASTEROIDS_OBJECT_VECTOR_IDS.attractUfo,
+  ASTEROIDS_OBJECT_VECTOR_IDS.bullet,
 ]);
 
 export const ASTEROIDS_REQUIRED_OBJECT_VECTOR_ROLE_IDS = Object.freeze([
+  'bullet',
   'ship',
   'asteroidLarge',
   'asteroidMedium',
@@ -45,12 +44,6 @@ function isObjectVectorId(id) {
 function normalizeTags(value) {
   return Array.isArray(value)
     ? value.map((tag) => normalizeString(tag).toLowerCase()).filter(Boolean)
-    : [];
-}
-
-function normalizeUsage(value) {
-  return Array.isArray(value)
-    ? value.map((entry) => normalizeString(entry).toLowerCase()).filter(Boolean)
     : [];
 }
 
@@ -108,21 +101,6 @@ function objectForRole(objectVectorMapsById, objectVectorRoles, roleId) {
     : null;
 }
 
-function normalizeVectorEntry(entry) {
-  const id = normalizeString(entry?.id);
-  if (!id) {
-    return null;
-  }
-  return {
-    ...clone(entry),
-    id,
-    kind: normalizeString(entry.kind || 'polyline'),
-    label: normalizeString(entry.label || id),
-    points: normalizePoints(entry.points),
-    usage: normalizeUsage(entry.usage),
-  };
-}
-
 function logValidation(logger, level, message, details = {}) {
   if (!logger) {
     return;
@@ -142,16 +120,16 @@ function normalizeObjectVectorRoleBindings(document, errors) {
   ASTEROIDS_REQUIRED_OBJECT_VECTOR_ROLE_IDS.forEach((roleId) => {
     const binding = isRecord(rawBindings[roleId]) ? rawBindings[roleId] : null;
     if (!binding) {
-      errors.push(`Asteroids vector map manifest is missing objectVectorRoles.${roleId}.`);
+      errors.push(`Asteroids Object Vector manifest is missing objectVectorRoles.${roleId}.`);
       return;
     }
     const objectId = normalizeString(binding.objectId);
     const tags = normalizeTags(binding.tags);
     if (!objectId) {
-      errors.push(`Asteroids vector map manifest objectVectorRoles.${roleId}.objectId is required.`);
+      errors.push(`Asteroids Object Vector manifest objectVectorRoles.${roleId}.objectId is required.`);
     }
     if (!tags.length) {
-      errors.push(`Asteroids vector map manifest objectVectorRoles.${roleId}.tags must contain at least one tag.`);
+      errors.push(`Asteroids Object Vector manifest objectVectorRoles.${roleId}.tags must contain at least one tag.`);
     }
     bindings[roleId] = {
       objectId,
@@ -160,25 +138,6 @@ function normalizeObjectVectorRoleBindings(document, errors) {
   });
 
   return bindings;
-}
-
-function usageCounts(vectors) {
-  return vectors.reduce((counts, vector) => {
-    vector.usage.forEach((usage) => {
-      counts[usage] = (counts[usage] || 0) + 1;
-    });
-    return counts;
-  }, {});
-}
-
-function minimumRequiredPointsForVector(id) {
-  if (id === ASTEROIDS_VECTOR_MAP_IDS.uiTitle) {
-    return 0;
-  }
-  if (id === ASTEROIDS_VECTOR_MAP_IDS.bullet) {
-    return 3;
-  }
-  return 2;
 }
 
 function validateRequiredObjectGeometry(objectVectorMapsById, objectVectorRoles, errors) {
@@ -205,41 +164,32 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
   sourceLabel = 'games/Asteroids/game.manifest.json',
 } = {}) {
   const objectVectorPayload = manifest?.tools?.[ASTEROIDS_OBJECT_VECTOR_TOOL_KEY];
-  const document = objectVectorPayload?.[ASTEROIDS_VECTOR_MAP_DOCUMENT_KEY];
+  const document = objectVectorPayload?.[ASTEROIDS_OBJECT_VECTOR_DOCUMENT_KEY];
   const errors = [];
   if (!isRecord(document)) {
-    errors.push(`Asteroids vector map manifest is missing root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.${ASTEROIDS_VECTOR_MAP_DOCUMENT_KEY}.`);
+    errors.push(`Asteroids Object Vector manifest is missing root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.${ASTEROIDS_OBJECT_VECTOR_DOCUMENT_KEY}.`);
   }
-  const vectors = Array.isArray(document?.vectors)
-    ? document.vectors.map(normalizeVectorEntry).filter(Boolean)
+  const sharedShapes = Array.isArray(document?.shapes)
+    ? document.shapes.map((shape) => clone(shape))
     : [];
-  const vectorsById = new Map(vectors.map((vector) => [vector.id, vector]));
   const objectVectorMaps = Array.isArray(objectVectorPayload?.objects)
     ? objectVectorPayload.objects
       .filter((object) => isRecord(object) && normalizeString(object.id))
       .map((object) => clone(object))
     : [];
   const objectVectorMapsById = new Map(objectVectorMaps.map((object) => [object.id, object]));
-  ASTEROIDS_REQUIRED_VECTOR_MAP_IDS.forEach((id) => {
-    if (isObjectVectorId(id)) {
-      const object = objectVectorMapsById.get(id);
-      if (!object) {
-        errors.push(`Asteroids Object Vector manifest map ${id} is missing from root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.objects.`);
-        return;
-      }
-      if (!Array.isArray(object.shapes) || !object.shapes.length) {
-        errors.push(`Asteroids Object Vector manifest map ${id} must contain at least one shape.`);
-      }
+  ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.forEach((id) => {
+    if (!isObjectVectorId(id)) {
+      errors.push(`Asteroids required manifest geometry ${id} must resolve through root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.objects.`);
       return;
     }
-    const vector = vectorsById.get(id);
-    if (!vector) {
-      errors.push(`Asteroids vector map manifest is missing ${id}.`);
+    const object = objectVectorMapsById.get(id);
+    if (!object) {
+      errors.push(`Asteroids Object Vector manifest map ${id} is missing from root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.objects.`);
       return;
     }
-    const minimumPoints = minimumRequiredPointsForVector(id);
-    if (vector.points.length < minimumPoints) {
-      errors.push(`Asteroids vector map ${id} must contain at least ${minimumPoints} points.`);
+    if (!Array.isArray(object.shapes) || !object.shapes.length) {
+      errors.push(`Asteroids Object Vector manifest map ${id} must contain at least one shape.`);
     }
   });
   const objectVectorRoles = normalizeObjectVectorRoleBindings(document, errors);
@@ -257,13 +207,12 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
     objectVectorMaps,
     objectVectorMapsById,
     objectVectorRoles,
+    shapes: sharedShapes,
     sourceLabel,
-    usageCounts: usageCounts(vectors),
-    vectors,
-    vectorsById,
   };
-  logValidation(logger, 'OK', `Asteroids vector maps loaded from ${sourceLabel}: ${vectors.length} maps.`, {
-    usageCounts: vectorMaps.usageCounts,
+  logValidation(logger, 'OK', `Asteroids Object Vector manifest geometry loaded from ${sourceLabel}: ${objectVectorMaps.length} objects, ${sharedShapes.length} shared shapes.`, {
+    objectCount: objectVectorMaps.length,
+    sharedShapeCount: sharedShapes.length,
   });
   return {
     errors: [],
@@ -272,28 +221,10 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
   };
 }
 
-export function getAsteroidsVectorMap(vectorMaps, id) {
-  return vectorMaps?.vectorsById instanceof Map
-    ? vectorMaps.vectorsById.get(id) || null
-    : null;
-}
-
-export function getAsteroidsVectorPoints(vectorMaps, id) {
-  return getAsteroidsVectorMap(vectorMaps, id)?.points || [];
-}
-
 export function getAsteroidsObjectVectorPoints(vectorMaps, roleId) {
   return objectVectorGeometryPoints(
     objectForRole(vectorMaps?.objectVectorMapsById, vectorMaps?.objectVectorRoles, roleId)
   );
-}
-
-export function requireAsteroidsVectorPoints(vectorMaps, id, label = id, minimumPoints = minimumRequiredPointsForVector(id)) {
-  const points = getAsteroidsVectorPoints(vectorMaps, id);
-  if (points.length < minimumPoints) {
-    throw new Error(`Asteroids required manifest vector map ${label} (${id}) is missing or has fewer than ${minimumPoints} points.`);
-  }
-  return points;
 }
 
 export function requireAsteroidsObjectVectorPoints(vectorMaps, roleId, label = roleId, minimumPoints = requiredObjectGeometryPointCount(roleId)) {

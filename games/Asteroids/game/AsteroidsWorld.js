@@ -13,9 +13,7 @@ import { distance } from '../../../src/shared/utils/mathUtils.js';
 import { randomRange } from '../utils/math.js';
 import { sanitizeFiniteNumber, sanitizePositiveNumber } from '../../../src/shared/math/numberNormalization.js';
 import {
-  ASTEROIDS_VECTOR_MAP_IDS,
   requireAsteroidsObjectVectorPoints,
-  requireAsteroidsVectorPoints
 } from './asteroidsVectorMaps.js';
 
 const WAVE_ASTEROID_COUNTS = [4, 6, 8];
@@ -148,10 +146,10 @@ export default class AsteroidsWorld {
     }
     this.asteroidGeometryProfiles = asteroidGeometryProfiles;
     this.vectorMaps = vectorMaps;
-    if (!this.vectorMaps?.vectorsById || !this.vectorMaps?.objectVectorMapsById) {
+    if (!this.vectorMaps?.objectVectorMapsById) {
       throw new Error('AsteroidsWorld requires manifest-loaded Object Vector geometry for ship, UFO, asteroid, and bullet gameplay geometry.');
     }
-    this.bulletCollisionPoints = requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet, 'bullet geometry');
+    this.bulletCollisionPoints = requireAsteroidsObjectVectorPoints(this.vectorMaps, 'bullet', 'bullet object geometry');
     this.shipCollisionPoints = requireAsteroidsObjectVectorPoints(this.vectorMaps, 'ship', 'ship object geometry');
     this.ufoCollisionPoints = {
       large: requireAsteroidsObjectVectorPoints(this.vectorMaps, 'ufoLarge', 'large UFO object geometry'),

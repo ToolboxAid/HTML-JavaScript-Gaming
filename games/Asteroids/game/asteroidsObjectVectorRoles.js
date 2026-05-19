@@ -1,4 +1,7 @@
 export const ASTEROIDS_RUNTIME_OBJECT_ROLES = Object.freeze({
+  bullet: Object.freeze({
+    label: 'Bullet',
+  }),
   ship: Object.freeze({
     label: 'Ship',
   }),

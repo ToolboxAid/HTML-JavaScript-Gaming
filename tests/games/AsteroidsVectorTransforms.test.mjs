@@ -14,9 +14,7 @@ import {
   loadAsteroidsVectorMaps
 } from './asteroidsManifestObjectVectors.mjs';
 import {
-  ASTEROIDS_VECTOR_MAP_IDS,
   getAsteroidsObjectVectorPoints,
-  getAsteroidsVectorPoints
 } from '../../games/Asteroids/game/asteroidsVectorMaps.js';
 
 function assertPointClose(actual, expected) {
@@ -46,7 +44,7 @@ export function run() {
   assertPointClose(asteroidPoints[5], { x: 346.5, y: 197.5 });
 
   const bullet = new Bullet(50, 60, 0, 0, 1, {
-    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet),
+    collisionPoints: getAsteroidsObjectVectorPoints(vectorMaps, 'bullet'),
   });
   const bulletPoints = bullet.getCollisionPolygon();
   assert.equal(bulletPoints.length, 4);
@@ -54,7 +52,7 @@ export function run() {
   assertPointClose(bulletPoints[2], { x: 52, y: 62 });
 
   const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5, {
-    bulletCollisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet),
+    bulletCollisionPoints: getAsteroidsObjectVectorPoints(vectorMaps, 'bullet'),
     collisionPoints: getAsteroidsObjectVectorPoints(vectorMaps, 'ufoSmall'),
   });
   ufo.x = 400;

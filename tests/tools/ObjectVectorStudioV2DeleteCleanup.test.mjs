@@ -45,7 +45,7 @@ function createPayload() {
           tags: ["temp"]
         }
       },
-      vectors: []
+      shapes: []
     },
     objects: [
       {

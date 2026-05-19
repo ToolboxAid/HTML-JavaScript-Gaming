@@ -213,11 +213,18 @@
       "toolId": "object-vector-studio-v2",
       "name": "Asteroids Object Vector Assets",
       "vectorMaps": {
-        "schema": "html-js-gaming.asteroids-vector-map",
+        "schema": "html-js-gaming.asteroids-object-vector-shapes",
         "version": 1,
-        "name": "Asteroids Object Vector Manifest Maps",
+        "name": "Asteroids Object Vector Shape Roles",
         "source": "object-vector-studio-v2",
         "objectVectorRoles": {
+          "bullet": {
+            "objectId": "object.asteroids.bullet",
+            "tags": [
+              "projectile",
+              "bullet"
+            ]
+          },
           "ship": {
             "objectId": "object.asteroids.ship",
             "tags": [
@@ -261,54 +268,77 @@
             ]
           }
         },
-        "vectors": [
-          {
-            "id": "vector.asteroids.bullet",
-            "label": "Bullet",
-            "kind": "polygon",
-            "usage": [
-              "gameplay",
-              "collision",
-              "projectile"
-            ],
-            "points": [
-              {
-                "x": -2,
-                "y": -2
-              },
-              {
-                "x": 2,
-                "y": -2
-              },
-              {
-                "x": 2,
-                "y": 2
-              },
-              {
-                "x": -2,
-                "y": 2
-              }
-            ]
-          },
-          {
-            "id": "vector.asteroids.ui.title",
-            "label": "Asteroids Title",
-            "kind": "path",
-            "usage": [
-              "splash",
-              "attract",
-              "ui"
-            ],
-            "viewBox": "0 0 220 48",
-            "paths": [
-              "M 6 40 L 24 6 L 42 40 Z",
-              "M 58 40 L 58 8 L 88 8 L 88 18 L 70 18 L 70 22 L 86 22 L 86 32 L 70 32 L 70 40 Z"
-            ],
-            "points": []
-          }
-        ]
+        "shapes": []
       },
       "objects": [
+        {
+          "id": "object.asteroids.bullet",
+          "name": "Bullet",
+          "shapes": [
+            {
+              "tool": "polygon",
+              "order": 0,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "points": [
+                  {
+                    "x": -2,
+                    "y": -2
+                  },
+                  {
+                    "x": 2,
+                    "y": -2
+                  },
+                  {
+                    "x": 2,
+                    "y": 2
+                  },
+                  {
+                    "x": -2,
+                    "y": 2
+                  }
+                ]
+              },
+              "style": {
+                "fill": "transparent",
+                "stroke": "#F8FAFC",
+                "strokeWidth": 1,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ],
+          "states": [
+            {
+              "id": "active",
+              "name": "Active",
+              "frames": [
+                {
+                  "id": "frame-1",
+                  "order": 0,
+                  "durationFrames": 1,
+                  "shapeOverrides": []
+                }
+              ]
+            }
+          ],
+          "tags": [
+            "projectile",
+            "bullet"
+          ],
+          "objectOrigin": {
+            "x": 0,
+            "y": 0
+          }
+        },
         {
           "id": "object.asteroids.ship",
           "name": "Asteroids Ship",

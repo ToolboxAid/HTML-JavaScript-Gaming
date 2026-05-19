@@ -54,18 +54,14 @@ export async function run() {
   const manifestText = JSON.stringify(manifest);
 
   assert.equal(manifest.tools["vector-map-editor"], undefined);
-  assert.equal(Array.isArray(manifest.tools["object-vector-studio-v2"].vectorMaps.vectors), true);
-  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ship"), false);
-  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.asteroid.medium"), false);
-  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.asteroid.small"), false);
-  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ufo.large"), false);
-  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ufo.small"), false);
-  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ship.collision"), false);
-  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ui.title"), true);
+  assert.equal(Array.isArray(manifest.tools["object-vector-studio-v2"].vectorMaps.shapes), true);
+  assert.equal(Object.hasOwn(manifest.tools["object-vector-studio-v2"].vectorMaps, "vectors"), false);
+  assert.equal(manifest.tools["object-vector-studio-v2"].vectorMaps.shapes.length, 0);
   assert.equal(manifest.game["workspace"], undefined);
   assert.equal(manifest.game.gameData, undefined);
   assert.equal(manifest.objectVectorRuntime, undefined);
-  assert.equal(manifestText.includes(`vector.${"asteroids"}.`), true);
+  assert.equal(manifestText.includes(`vector.${"asteroids"}.`), false);
+  assert.equal(payload.objects.some((object) => object.id === "object.asteroids.bullet"), true);
   assert.equal(payload.objects.some((object) => object.id === "object.asteroids.ship"), true);
   assert.equal(payload.objects.some((object) => object.id === "object.asteroids.small-asteroid"), true);
   assert.deepEqual(

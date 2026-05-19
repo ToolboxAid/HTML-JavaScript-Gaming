@@ -6,7 +6,6 @@ AsteroidsGameScene.js
 */
 import { AttractModeController, Scene } from '../../../src/engine/scene/index.js';
 import { ParticleSystem } from '../../../src/engine/fx/index.js';
-import { transformPoints } from '../../../src/engine/rendering/index.js';
 import AsteroidsSession from './AsteroidsSession.js';
 import AsteroidsWorld from './AsteroidsWorld.js';
 import AsteroidsAudio from '../systems/AsteroidsAudio.js';
@@ -20,10 +19,6 @@ import {
   runtimeObjectRoleOptions,
   validateAsteroidsRuntimeObjectRoles
 } from './asteroidsObjectVectorRoles.js';
-import {
-  ASTEROIDS_VECTOR_MAP_IDS,
-  getAsteroidsVectorMap
-} from './asteroidsVectorMaps.js';
 import {
   ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE
 } from "../rules/flowRules.js";
@@ -94,10 +89,8 @@ export default class AsteroidsGameScene extends Scene {
     this.objectVectorAssets = options.objectVectorAssets || null;
     this.objectVectorRuntime = options.objectVectorRuntime || null;
     this.vectorMaps = options.vectorMaps || null;
-    this.vectorMapRenderCounts = {};
-    this.vectorMapRenderFailures = new Set();
-    if (!this.vectorMaps?.vectorsById || !this.vectorMaps?.objectVectorRoles) {
-      const message = 'Asteroids vector map manifest validation failed: vector maps were not loaded from game.manifest.json.';
+    if (!this.vectorMaps?.objectVectorMapsById || !this.vectorMaps?.objectVectorRoles) {
+      const message = 'Asteroids Object Vector manifest validation failed: object geometry was not loaded from game.manifest.json.';
       console.error(message);
       throw new Error(message);
     }
@@ -123,6 +116,7 @@ export default class AsteroidsGameScene extends Scene {
     this.objectVectorPlaybackMs = 0;
     this.objectVectorRenderCounts = {
       asteroids: 0,
+      bullet: 0,
       ship: 0,
       ufo: 0,
     };
@@ -767,18 +761,18 @@ export default class AsteroidsGameScene extends Scene {
     }
 
     this.world.bullets.forEach((bullet) => {
-      this.drawManifestVectorMap(renderer, ASTEROIDS_VECTOR_MAP_IDS.bullet, {
-        color: '#f8fafc',
-        lineWidth: 1,
+      this.drawObjectVectorAsset(renderer, "bullet", {
+        ...this.objectVectorRoleOptions("bullet"),
+        stateId: "active",
         x: bullet.x,
         y: bullet.y,
       });
     });
 
     this.world.ufoBullets.forEach((bullet) => {
-      this.drawManifestVectorMap(renderer, ASTEROIDS_VECTOR_MAP_IDS.bullet, {
-        color: '#ffffff',
-        lineWidth: 1,
+      this.drawObjectVectorAsset(renderer, "bullet", {
+        ...this.objectVectorRoleOptions("bullet"),
+        stateId: "active",
         x: bullet.x,
         y: bullet.y,
       });
@@ -889,53 +883,6 @@ export default class AsteroidsGameScene extends Scene {
     });
   }
 
-  drawManifestVectorMap(renderer, vectorMapId, {
-    color = '#ffffff',
-    lineWidth = 2,
-    rotation = 0,
-    scale = 1,
-    x = 0,
-    y = 0,
-  } = {}) {
-    const vectorMap = getAsteroidsVectorMap(this.vectorMaps, vectorMapId);
-    if (!vectorMap || !Array.isArray(vectorMap.points) || vectorMap.points.length < 2) {
-      this.recordVectorMapRenderFailure(vectorMapId, 'manifest vector map points are unavailable');
-      return false;
-    }
-    const points = transformPoints(vectorMap.points, {
-      rotation,
-      scale,
-      x,
-      y,
-    });
-    if (vectorMap.kind === 'polygon' && typeof renderer.drawPolygon === 'function') {
-      renderer.drawPolygon(points, {
-        fillColor: null,
-        lineWidth,
-        strokeColor: color,
-      });
-    } else {
-      for (let index = 0; index < points.length - 1; index += 1) {
-        renderer.drawLine(points[index].x, points[index].y, points[index + 1].x, points[index + 1].y, color, lineWidth);
-      }
-    }
-    this.vectorMapRenderCounts[vectorMapId] = (this.vectorMapRenderCounts[vectorMapId] || 0) + 1;
-    return true;
-  }
-
-  recordVectorMapRenderFailure(vectorMapId, reason) {
-    const failureKey = `${vectorMapId || 'unknown'}:${reason}`;
-    if (this.vectorMapRenderFailures.has(failureKey)) {
-      return;
-    }
-    this.vectorMapRenderFailures.add(failureKey);
-    this.pushDebugEvent('ASTEROIDS_VECTOR_MAP_RENDER_FAIL', {
-      reason,
-      vectorMapId: vectorMapId || 'unknown',
-    });
-    console.error(`FAIL Asteroids manifest vector map render blocked for ${vectorMapId || 'unknown'}: ${reason}.`);
-  }
-
   drawObjectVectorAsset(renderer, renderKey, options) {
     if (!this.objectVectorRuntime || !this.objectVectorAssets) {
       this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId || options.runtimeRole, "validated Object Vector runtime assets are not loaded");
@@ -971,19 +918,10 @@ export default class AsteroidsGameScene extends Scene {
         assetCount: this.objectVectorAssets?.objectsById?.size || 0,
         loaded: Boolean(this.objectVectorAssets),
         objectCount: this.objectVectorAssets?.objectsById?.size || 0,
-        objectVectorMapIds: this.vectorMaps?.objectVectorMaps?.map((object) => object.id) || [],
+        objectVectorObjectIds: this.vectorMaps?.objectVectorMaps?.map((object) => object.id) || [],
         runtimeObjectsValid: Boolean(this.objectVectorRuntimeObjectValidation?.ok),
         renderCounts: { ...this.objectVectorRenderCounts },
-        vectorMapIds: this.vectorMaps?.vectors?.map((vector) => vector.id) || [],
-        vectorMapRenderCounts: { ...this.vectorMapRenderCounts },
-        vectorMapUsageCounts: { ...(this.vectorMaps?.usageCounts || {}) },
-        vectorMapsLoaded: Boolean(this.vectorMaps?.vectorsById),
-      };
-      globalThis.__asteroidsVectorMaps = {
-        ids: this.vectorMaps?.vectors?.map((vector) => vector.id) || [],
-        loaded: Boolean(this.vectorMaps?.vectorsById),
-        renderCounts: { ...this.vectorMapRenderCounts },
-        usageCounts: { ...(this.vectorMaps?.usageCounts || {}) },
+        sharedShapeCount: this.vectorMaps?.shapes?.length || 0,
       };
     } catch {
       // Ignore diagnostics assignment in restricted runtimes.
