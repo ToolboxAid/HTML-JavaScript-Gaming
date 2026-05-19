@@ -143,7 +143,10 @@ export default class AsteroidsGameScene extends Scene {
     );
     this.gameOverAutoExitRemainingSeconds = 0;
     this.audio = new AsteroidsAudio();
-    this.shipDebris = new ShipDebrisSystem({ rng: this.world.rng });
+    this.shipDebris = new ShipDebrisSystem({
+      rng: this.world.rng,
+      shipGeometryPoints: this.world.shipCollisionPoints,
+    });
     this.particles = new ParticleSystem();
     this.lastEnterPressed = false;
     this.lastOnePressed = false;

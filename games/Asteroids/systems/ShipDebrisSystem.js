@@ -6,15 +6,29 @@ ShipDebrisSystem.js
 */
 import { randomRange } from '../utils/math.js';
 
-const SHIP_SEGMENTS = [
-  [[14, 0], [-10, -8]],
-  [[-10, -8], [-6, -3]],
-  [[-6, -3], [-6, 3]],
-  [[-6, 3], [-10, 8]],
-  [[-10, 8], [14, 0]],
-];
+function normalizePoints(points) {
+  return Array.isArray(points)
+    ? points.map((point) => ({
+      x: Number(point?.x ?? 0),
+      y: Number(point?.y ?? 0),
+    })).filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y))
+    : [];
+}
 
-function rotatePoint([x, y], angle) {
+function createShipSegments(points) {
+  const normalized = normalizePoints(points);
+  return normalized.slice(0, -1).map((start, index) => ({
+    end: normalized[index + 1],
+    start,
+  })).filter((segment) => (
+    segment.start.x !== segment.end.x
+    || segment.start.y !== segment.end.y
+  ));
+}
+
+function rotatePoint(point, angle) {
+  const x = Number(point?.x ?? 0);
+  const y = Number(point?.y ?? 0);
   return {
     x: x * Math.cos(angle) - y * Math.sin(angle),
     y: x * Math.sin(angle) + y * Math.cos(angle),
@@ -27,15 +41,20 @@ function whiteWithAlpha(alpha) {
 }
 
 export default class ShipDebrisSystem {
-  constructor({ rng = Math.random } = {}) {
+  constructor({ rng = Math.random, shipGeometryPoints = [] } = {}) {
     this.fragments = [];
     this.rng = typeof rng === 'function' ? rng : Math.random;
+    this.shipSegments = createShipSegments(shipGeometryPoints);
   }
 
   spawn({ x, y, angle = -Math.PI / 2, vx = 0, vy = 0, lifeSeconds = 3 }) {
-    SHIP_SEGMENTS.forEach((segment, index) => {
-      const start = rotatePoint(segment[0], angle);
-      const end = rotatePoint(segment[1], angle);
+    if (!this.shipSegments.length) {
+      console.error('FAIL Asteroids ship debris render blocked: manifest ship geometry did not provide debris hull segments.');
+      return false;
+    }
+    this.shipSegments.forEach((segment, index) => {
+      const start = rotatePoint(segment.start, angle);
+      const end = rotatePoint(segment.end, angle);
       const burstAngle = angle + (-0.9 + index * 0.45);
       const speed = 90 + index * 26;
       this.fragments.push({
@@ -51,6 +70,7 @@ export default class ShipDebrisSystem {
         end,
       });
     });
+    return true;
   }
 
   clear() {
@@ -74,8 +94,8 @@ export default class ShipDebrisSystem {
 
   render(renderer) {
     this.fragments.forEach((fragment) => {
-      const start = rotatePoint([fragment.start.x, fragment.start.y], fragment.angle);
-      const end = rotatePoint([fragment.end.x, fragment.end.y], fragment.angle);
+      const start = rotatePoint(fragment.start, fragment.angle);
+      const end = rotatePoint(fragment.end, fragment.angle);
       const lifeRatio = fragment.maxLifeSeconds > 0
         ? fragment.lifeSeconds / fragment.maxLifeSeconds
         : 0;

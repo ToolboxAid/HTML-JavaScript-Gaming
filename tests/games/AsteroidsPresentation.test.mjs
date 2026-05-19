@@ -315,6 +315,23 @@ function testAsteroidsGameplayObjectsUseSharedManifestBindings() {
   assert.equal(smallUfoCalls.every((call) => call.requireManifestBinding), true);
 }
 
+function testAsteroidsShipDebrisUsesManifestShipHullGeometry() {
+  const scene = new AsteroidsGameScene(createAsteroidsTestSceneOptions({
+    objectVectorAssets: createObjectVectorAssetSet(),
+    objectVectorRuntime: createObjectVectorRuntime([]),
+  }));
+  const spawned = scene.shipDebris.spawn({
+    angle: 0,
+    lifeSeconds: 1,
+    x: 0,
+    y: 0,
+  });
+  assert.equal(spawned, true);
+  assert.equal(scene.shipDebris.fragments.length, 5);
+  assert.deepEqual(scene.shipDebris.fragments[0].start, { x: 15.4, y: 0 });
+  assert.deepEqual(scene.shipDebris.fragments[0].end, { x: -11, y: -8.8 });
+}
+
 function testAsteroidsGameplayBulletsUseManifestObjectGeometry() {
   const renderCalls = [];
   const payload = loadAsteroidsObjectVectorPayload();
@@ -420,6 +437,7 @@ export function run() {
   testAsteroidsMenuHighScoreUsesLeaderboardTop();
   testAsteroidsAttractAsteroidsUseManifestObjectsAndStyles();
   testAsteroidsGameplayObjectsUseSharedManifestBindings();
+  testAsteroidsShipDebrisUsesManifestShipHullGeometry();
   testAsteroidsGameplayBulletsUseManifestObjectGeometry();
   testAsteroidsGameplayRenderDoesNotCoverBackgroundLayer();
 }
