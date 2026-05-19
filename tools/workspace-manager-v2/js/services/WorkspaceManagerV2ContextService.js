@@ -132,6 +132,40 @@ function toolPayloadForContext(tool, context) {
   return context?.tools?.[tool.id];
 }
 
+function objectVectorStudioWorkspacePayload(payload) {
+  if (!isPlainObject(payload)) {
+    return payload;
+  }
+  return ["version", "toolId", "name", "objects"].reduce((objectVectorPayload, key) => {
+    if (Object.prototype.hasOwnProperty.call(payload, key)) {
+      objectVectorPayload[key] = clone(payload[key]);
+    }
+    return objectVectorPayload;
+  }, {});
+}
+
+function workspaceToolsWithObjectVectorPayload(tools) {
+  if (!isPlainObject(tools)) {
+    return tools;
+  }
+  const workspaceTools = clone(tools);
+  if (isPlainObject(workspaceTools[OBJECT_VECTOR_STUDIO_V2_TOOL_KEY])) {
+    workspaceTools[OBJECT_VECTOR_STUDIO_V2_TOOL_KEY] = objectVectorStudioWorkspacePayload(workspaceTools[OBJECT_VECTOR_STUDIO_V2_TOOL_KEY]);
+  }
+  return workspaceTools;
+}
+
+function workspaceContextWithObjectVectorPayload(context) {
+  if (!isPlainObject(context)) {
+    return context;
+  }
+  const workspaceContext = clone(context);
+  if (isPlainObject(workspaceContext.tools)) {
+    workspaceContext.tools = workspaceToolsWithObjectVectorPayload(workspaceContext.tools);
+  }
+  return workspaceContext;
+}
+
 function hasToolPayload(tool, context) {
   const payload = toolPayloadForContext(tool, context);
   return tool?.id === TEXT2SPEECH_V2_TOOL_KEY
@@ -734,6 +768,15 @@ export class WorkspaceManagerV2ContextService {
     if (tool.id === TEXT2SPEECH_V2_TOOL_KEY && !Array.isArray(session.data)) {
       return { ok: false, key: result.key, message: `${result.key}.data is stale for text2speech-V2; expected root array named speech items.` };
     }
+    if (tool.id === OBJECT_VECTOR_STUDIO_V2_TOOL_KEY && isPlainObject(session.data)) {
+      return {
+        ...result,
+        session: {
+          ...session,
+          data: objectVectorStudioWorkspacePayload(session.data)
+        }
+      };
+    }
     return result;
   }
 
@@ -839,6 +882,9 @@ export class WorkspaceManagerV2ContextService {
     const toolPayload = toolPayloadForContext(tool, context);
     if (tool.id === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(toolPayload)) {
       return clone(toolPayload);
+    }
+    if (tool.id === OBJECT_VECTOR_STUDIO_V2_TOOL_KEY && isPlainObject(toolPayload)) {
+      return objectVectorStudioWorkspacePayload(toolPayload);
     }
     if (isPlainObject(toolPayload)) {
       return clone(toolPayload);
@@ -1078,15 +1124,16 @@ export class WorkspaceManagerV2ContextService {
   }
 
   async contextResultFromManifest(game, workspaceManifest, sourceLabel) {
-    const validation = await this.validateGeneratedManifest(workspaceManifest);
+    const workspaceContext = workspaceContextWithObjectVectorPayload(workspaceManifest);
+    const validation = await this.validateGeneratedManifest(workspaceContext);
     if (!validation.ok) {
       return { ok: false, message: `${sourceLabel} failed workspace manifest schema validation: ${validation.message}` };
     }
-    if (workspaceManifest.gameId !== game.id) {
-      return { ok: false, message: `${sourceLabel} gameId ${workspaceManifest.gameId || "(empty)"} does not match ${game.id}.` };
+    if (workspaceContext.gameId !== game.id) {
+      return { ok: false, message: `${sourceLabel} gameId ${workspaceContext.gameId || "(empty)"} does not match ${game.id}.` };
     }
-    const palettePayload = workspaceManifest.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
-    const assetPayload = workspaceManifest.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
+    const palettePayload = workspaceContext.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
+    const assetPayload = workspaceContext.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
     const paletteSwatches = Array.isArray(palettePayload?.swatches) ? clone(palettePayload.swatches) : [];
     const assetCount = Object.keys(assetPayload?.assets || {}).length;
     const assetWarning = game.id === "Asteroids" && assetCount === 0
@@ -1097,15 +1144,15 @@ export class WorkspaceManagerV2ContextService {
     }
     return {
       ok: true,
-      context: clone(workspaceManifest),
+      context: clone(workspaceContext),
       game: {
         ...game,
-        assetsPath: workspaceManifest.assetsPath,
-        gameRoot: workspaceManifest.gameRoot,
-        manifestId: workspaceManifest.id,
+        assetsPath: workspaceContext.assetsPath,
+        gameRoot: workspaceContext.gameRoot,
+        manifestId: workspaceContext.id,
         paletteName: palettePayload.name || "Workspace Palette",
-        repoPath: workspaceManifest.repoPath || "",
-        repoRoot: workspaceManifest.repoRoot || ""
+        repoPath: workspaceContext.repoPath || "",
+        repoRoot: workspaceContext.repoRoot || ""
       },
       assetCount,
       assetWarning,
@@ -1199,9 +1246,10 @@ export class WorkspaceManagerV2ContextService {
     if (!schemaResult.ok) {
       return schemaResult;
     }
-    const errors = this.validateManifestAgainstSchema(manifest, schemaResult.schema);
+    const workspaceContext = workspaceContextWithObjectVectorPayload(manifest);
+    const errors = this.validateManifestAgainstSchema(workspaceContext, schemaResult.schema);
     if (!errors.length) {
-      const toolValidation = await this.validateToolPayloads(manifest, schemaResult.schema);
+      const toolValidation = await this.validateToolPayloads(workspaceContext, schemaResult.schema);
       errors.push(...toolValidation.errors);
     }
     return errors.length
@@ -1597,10 +1645,11 @@ export class WorkspaceManagerV2ContextService {
       return { ok: false, message: `Unable to read ${fileHandleResult.path} before save: ${error.message}` };
     }
 
+    const contextTools = workspaceToolsWithObjectVectorPayload(context.tools || {});
     const nextManifest = clone(boundGame.manifest);
     delete nextManifest.game.gameData;
     delete nextManifest.game["workspace"];
-    nextManifest.tools = clone(context.tools || {});
+    nextManifest.tools = contextTools;
     const gameValidation = await this.validateGameManifest(nextManifest);
     if (!gameValidation.ok) {
       return gameValidation;
@@ -1648,7 +1697,7 @@ export class WorkspaceManagerV2ContextService {
     if (!readBackWorkspaceValidation.ok) {
       return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: ${readBackWorkspaceValidation.message}` };
     }
-    if (JSON.stringify(readBackManifest.tools) !== JSON.stringify(context.tools || {})) {
+    if (JSON.stringify(readBackManifest.tools) !== JSON.stringify(contextTools)) {
       return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: re-read root.tools toolState does not match the saved context.` };
     }
     const toolStateDetails = this.toolStateItemDetails({ tools: readBackManifest.tools });
@@ -1700,7 +1749,7 @@ export class WorkspaceManagerV2ContextService {
       gameId: gameInfo.id || game?.id || "",
       gameRoot,
       assetsPath: `${gameRoot}assets`,
-      tools: clone(game.manifest?.tools || game?.tools || {})
+      tools: workspaceToolsWithObjectVectorPayload(game.manifest?.tools || game?.tools || {})
     };
     if (!workspaceManifest.repoRoot && game.repoRoot) {
       workspaceManifest.repoRoot = game.repoRoot;
@@ -1713,7 +1762,7 @@ export class WorkspaceManagerV2ContextService {
 
   persistContext(context) {
     const hostContextId = makeHostContextId();
-    this.sessionStorage.setItem(hostContextId, JSON.stringify(context));
+    this.sessionStorage.setItem(hostContextId, JSON.stringify(workspaceContextWithObjectVectorPayload(context)));
     this.sessionStorage.setItem(HOST_CONTEXT_STORAGE_KEY, hostContextId);
     return hostContextId;
   }
@@ -1722,7 +1771,7 @@ export class WorkspaceManagerV2ContextService {
     if (!hostContextId) {
       return this.persistContext(context);
     }
-    this.sessionStorage.setItem(hostContextId, JSON.stringify(context));
+    this.sessionStorage.setItem(hostContextId, JSON.stringify(workspaceContextWithObjectVectorPayload(context)));
     this.sessionStorage.setItem(HOST_CONTEXT_STORAGE_KEY, hostContextId);
     return hostContextId;
   }

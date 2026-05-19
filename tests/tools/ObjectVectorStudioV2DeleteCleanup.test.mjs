@@ -80,7 +80,11 @@ export async function run() {
   const legacyVectorValidation = service.validatePayload(legacyVectorPayload);
   assert.equal(legacyVectorValidation.ok, false);
   assert.equal(
-    legacyVectorValidation.errors.some((message) => message === "root.vectorMaps is not allowed."),
+    legacyVectorValidation.errors.some((message) => message.includes("root.vectorMaps is deprecated legacy vector-map data")),
+    true,
+  );
+  assert.equal(
+    legacyVectorValidation.errors.some((message) => message.includes("root.objects[].tags and root.objects[].shapes only")),
     true,
   );
 

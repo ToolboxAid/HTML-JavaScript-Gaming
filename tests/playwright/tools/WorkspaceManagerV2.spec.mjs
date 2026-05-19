@@ -1942,6 +1942,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(paletteDriftPayloadPath);
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-palette-drift\.json: root\.palette is not allowed\./);
 
+      const legacyVectorMapsPayloadPath = testInfo.outputPath("object-vector-legacy-vector-maps.json");
+      await writeFile(legacyVectorMapsPayloadPath, JSON.stringify({
+        name: "Legacy Vector Maps",
+        objects: [],
+        toolId: "object-vector-studio-v2",
+        vectorMaps: {
+          name: "Legacy Vector Maps",
+          shapes: []
+        },
+        version: 1
+      }, null, 2), "utf8");
+      await page.locator("#objectVectorStudioV2ImportJsonInput").setInputFiles(legacyVectorMapsPayloadPath);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Object Vector Studio V2 schema validation failed from import:object-vector-legacy-vector-maps\.json: root\.vectorMaps is deprecated legacy vector-map data\. Remove root\.vectorMaps and import Object Vector Studio V2 payloads with root\.objects\[\]\.tags and root\.objects\[\]\.shapes only\./);
+
       const unknownRootPayloadPath = testInfo.outputPath("object-vector-unknown-root.json");
       await writeFile(unknownRootPayloadPath, JSON.stringify({
         name: "Unknown Root",
@@ -9987,12 +10001,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"palette-manager-v2"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"object-vector-studio-v2"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"vector-map-editor"/);
-      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"vector\.asteroids\.ship"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"object\.asteroids\.ship"/);
       const activeWorkspaceOutput = JSON.parse(await page.locator("#workspaceContextOutput").inputValue());
+      const activeObjectVectorPayload = activeWorkspaceOutput.tools["object-vector-studio-v2"];
+      expect(Object.keys(activeObjectVectorPayload).sort()).toEqual(["name", "objects", "toolId", "version"]);
+      expect(activeObjectVectorPayload.vectorMaps).toBeUndefined();
+      expect(activeObjectVectorPayload.objects.every((object) => Array.isArray(object.tags) && Array.isArray(object.shapes))).toBe(true);
       if (Object.hasOwn(activeWorkspaceOutput.tools, "text2speech-V2")) {
         expect(activeWorkspaceOutput.tools["text2speech-V2"]).toEqual(expect.any(Array));
       }
-      await expect(page.locator("#workspaceContextOutput")).toHaveValue(new RegExp('"vector' + "\\.asteroids"));
+      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"vectorMaps"/);
+      await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(new RegExp('"vector' + "\\.asteroids"));
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"palette-browser"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"asset-browser"/);
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"activePalette"/);
@@ -10079,23 +10098,25 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(JSON.stringify(selectedGameHydration.toolSessions)).not.toMatch(/getDirectoryHandle|createWritable|FileSystemDirectoryHandle/);
       expect(Object.keys(selectedGameHydration.dataByTool["asset-manager-v2"].assets)).toHaveLength(15);
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
+        "object.asteroids.bullet",
         "object.asteroids.ship",
         "object.asteroids.large-asteroid",
         "object.asteroids.medium-asteroid",
-        "object.asteroids.medium-asteroid-2",
         "object.asteroids.small-asteroid",
         "object.asteroids.large-ufo",
         "object.asteroids.small-ufo"
       ]));
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
+        "object.asteroids.bullet",
         "object.asteroids.ship",
         "object.asteroids.large-asteroid",
         "object.asteroids.medium-asteroid",
-        "object.asteroids.medium-asteroid-2",
         "object.asteroids.small-asteroid",
         "object.asteroids.large-ufo",
         "object.asteroids.small-ufo"
       ]));
+      expect(Object.keys(selectedGameHydration.dataByTool["object-vector-studio-v2"]).sort()).toEqual(["name", "objects", "toolId", "version"]);
+      expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].vectorMaps).toBeUndefined();
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].assetLibrary).toBeUndefined();
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].objects.every((object) => object.id.startsWith("object.") && !Object.hasOwn(object, "objectId"))).toBe(true);
       expect(selectedGameHydration.dataByTool["object-vector-studio-v2"].objects.every((object) => /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9-]*$/.test(object.id))).toBe(true);
@@ -10243,6 +10264,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(asteroidsManifest.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(asteroidsManifest.tools["object-vector-studio-v2"].palette).toBeUndefined();
       expect(asteroidsManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
+        "object.asteroids.bullet",
         "object.asteroids.ship",
         "object.asteroids.large-asteroid",
         "object.asteroids.medium-asteroid",
@@ -10251,10 +10273,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         "object.asteroids.small-ufo"
       ]));
       expect(asteroidsManifest.tools["object-vector-studio-v2"].objects.map((object) => object.id)).toEqual(expect.arrayContaining([
+        "object.asteroids.bullet",
         "object.asteroids.ship",
         "object.asteroids.large-asteroid",
         "object.asteroids.medium-asteroid",
-        "object.asteroids.medium-asteroid-2",
         "object.asteroids.small-asteroid",
         "object.asteroids.large-ufo",
         "object.asteroids.small-ufo"
@@ -10364,6 +10386,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.repoPath).toBe(manifestRepoPath(server));
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);
       expect(storedContext.tools["object-vector-studio-v2"].palette).toBeUndefined();
+      expect(Object.keys(storedContext.tools["object-vector-studio-v2"]).sort()).toEqual(["name", "objects", "toolId", "version"]);
       expect(storedContext.tools["object-vector-studio-v2"].objects.map((object) => object.name)).toEqual(expect.arrayContaining([
         "Asteroids Ship",
         "Large Asteroid",
@@ -10477,10 +10500,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           objectVectorExtraKeys: [],
           objectVectorMissingKeys: [],
           objectVectorNames: expect.arrayContaining([
+            "Bullet",
             "Asteroids Ship",
             "Large Asteroid",
             "Medium Asteroid",
-            "Medium Asteroid 2",
             "Small Asteroid",
             "Large UFO",
             "Small UFO"
@@ -10519,7 +10542,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2PaletteSwatchCount")).toHaveText("(10 swatches)");
       await expect(page.locator("#objectVectorStudioV2PaletteSummary [data-palette-color]")).toHaveCount(10);
       await expect(page.locator("#statusLog")).toHaveValue(/INFO Runtime palette is read-only session\/workspace data; Object Vector JSON remains palette-free\./);
-      await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(7 obj, states \d+, \d+ shapes\)/);
+      await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(7 obj, states \d+, \d+ shapes?\)/);
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Asteroids Ship");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Large Asteroid");
       await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("Large UFO");
@@ -10527,11 +10550,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await smallUfoTile.scrollIntoViewIfNeeded();
       await smallUfoTile.click();
       await expect(smallUfoTile).toContainText("object > asteroids > Small UFO");
-      await expect(page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes [data-object-tile-shape-index] .object-vector-studio-v2__shape-select-label")).toHaveText(["1. Ellipse", "0. Ellipse"]);
+      await expect(page.locator(".object-vector-studio-v2__object-tile.is-selected .object-vector-studio-v2__object-tile-shapes [data-object-tile-shape-index] .object-vector-studio-v2__shape-select-label")).toHaveText(["0. Polyline"]);
       await page.locator('button[aria-controls="objectVectorStudioV2DependencyGraphContent"]').click();
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("Object tags:");
       await expect(page.locator("#objectVectorStudioV2DependencyGraph")).toContainText("object.asteroids.ship: Asteroids Ship");
       await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"palette"');
+      await expect(page.locator("#objectVectorStudioV2JsonDetails")).not.toContainText('"vectorMaps"');
       await expect(page.locator("#statusLog")).toHaveValue(/OK Runtime palette loaded from workspace\.tools\.palette-manager-v2\.data: 10 swatches\./);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from workspace\.tools\.object-vector-studio-v2: 7 objects\./);
       await page.locator("#returnToWorkspaceButton").click();
@@ -11102,7 +11126,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       await page.locator('[data-workspace-tool-id="object-vector-studio-v2"]').click();
       await expect(page).toHaveURL(/object-vector-studio-v2\/index\.html.*launch=workspace/);
-      await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(7 obj, states \d+, \d+ shapes\)/);
+      await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText(/\(7 obj, states \d+, \d+ shapes?\)/);
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Object Vector Studio V2 schema payload from workspace\.tools\.object-vector-studio-v2: 7 objects\./);
 
       let objectVectorSession = await readObjectVectorWorkspaceSession(page);

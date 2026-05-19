@@ -102,7 +102,7 @@ export class ObjectVectorStudioV2SchemaService {
     if (!Array.isArray(schema.required) || requiredRootFields.some((key) => !schema.required.includes(key))) {
       errors.push("Object Vector Studio V2 schema root must require version, toolId, name, and objects.");
     }
-    ["palette", "selection", "viewport", "export"].forEach((key) => {
+    ["palette", "selection", "viewport", "export", "vectorMaps"].forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(schema.properties || {}, key)) {
         errors.push(`Object Vector Studio V2 schema root must not define ${key}.`);
       }
@@ -173,6 +173,7 @@ export class ObjectVectorStudioV2SchemaService {
 
     const payloadForValidation = this.stripLegacyShapeOrigins(payload);
     const errors = [];
+    this.validateLegacyRootFields(payloadForValidation, errors);
     this.validateValue(this.schema, payloadForValidation, "root", errors);
     if (!errors.length) {
       this.validatePayloadReferences(payloadForValidation, errors);
@@ -186,6 +187,15 @@ export class ObjectVectorStudioV2SchemaService {
       ok: true,
       payload: this.normalizePayload(payloadForValidation)
     };
+  }
+
+  validateLegacyRootFields(payload, errors) {
+    if (!isPlainObject(payload)) {
+      return;
+    }
+    if (Object.prototype.hasOwnProperty.call(payload, "vectorMaps")) {
+      errors.push("root.vectorMaps is deprecated legacy vector-map data. Remove root.vectorMaps and import Object Vector Studio V2 payloads with root.objects[].tags and root.objects[].shapes only.");
+    }
   }
 
   validatePayloadReferences(payload, errors) {
