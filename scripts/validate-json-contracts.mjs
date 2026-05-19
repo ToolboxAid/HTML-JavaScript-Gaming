@@ -5,9 +5,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const REPORT_DIR = path.join(ROOT, "docs", "dev", "reports");
 const SCHEMA_ROOT = path.join(ROOT, "tools", "schemas");
-const ASSET_ID_PATTERN = /^(image|audio|font)\.[a-z0-9-]+\.[a-z0-9-]+(?:\.[a-z0-9-]+)*$/;
-const ASSET_KIND_SET = new Set(["image", "audio", "font"]);
-const ASSET_SOURCE_SET = new Set(["workspace-manager", "asset-browser", "asset-manager-v2", "manifest"]);
+const DEPRECATED_GAME_TOOL_IDS = new Set(["asset-browser", "palette-browser", "primitive-skin-editor", "vector-map-editor"]);
 
 function parseArgs(argv) {
   const args = {
@@ -678,6 +676,26 @@ function resolveManifestAssetPath(manifestPath, assetPath) {
   return path.join(path.dirname(manifestPath), normalized);
 }
 
+function assetManagerImageEntriesByRole(assetManagerAssets, role) {
+  const normalizedRole = String(role || "").trim().toLowerCase();
+  if (!normalizedRole || !isPlainObject(assetManagerAssets)) {
+    return [];
+  }
+  return Object.entries(assetManagerAssets)
+    .filter(([, entry]) => entry?.type === "image" && String(entry?.role || "").trim().toLowerCase() === normalizedRole);
+}
+
+function validateLocalAssetFiles(filePath, entries, role, errors) {
+  for (const [assetId, entry] of entries) {
+    const resolvedAssetPath = resolveManifestAssetPath(filePath, entry.path);
+    if (!resolvedAssetPath) {
+      errors.push(`${role} asset ${assetId} has a non-local or empty path: ${entry.path || "(empty)"}`);
+    } else if (!fs.existsSync(resolvedAssetPath)) {
+      errors.push(`${role} asset ${assetId} file is missing: ${normalizeRel(resolvedAssetPath)}`);
+    }
+  }
+}
+
 function validateGames(schemaIndex, validate) {
   const files = walkFiles(path.join(ROOT, "games"), (filePath) => path.basename(filePath).toLowerCase() === "game.manifest.json");
   const gameManifestSchemaPath = "tools/schemas/game.manifest.schema.json";
@@ -702,70 +720,20 @@ function validateGames(schemaIndex, validate) {
       if (!assetManagerAssets || typeof assetManagerAssets !== "object" || Array.isArray(assetManagerAssets)) {
         errors.push("tools.asset-manager-v2.assets must be an object");
       } else {
-        const previewEntries = Object.entries(assetManagerAssets)
-          .filter(([, entry]) => entry?.type === "image" && String(entry?.role || "").trim().toLowerCase() === "preview");
+        const previewEntries = assetManagerImageEntriesByRole(assetManagerAssets, "preview");
         if (previewEntries.length === 0) {
           errors.push("tools.asset-manager-v2.assets must include an image preview asset");
         }
-        for (const [assetId, entry] of previewEntries) {
-          const resolvedPreviewPath = resolveManifestAssetPath(filePath, entry.path);
-          if (!resolvedPreviewPath) {
-            errors.push(`preview asset ${assetId} has a non-local or empty path: ${entry.path || "(empty)"}`);
-          } else if (!fs.existsSync(resolvedPreviewPath)) {
-            errors.push(`preview asset ${assetId} file is missing: ${normalizeRel(resolvedPreviewPath)}`);
-          }
-        }
+        validateLocalAssetFiles(filePath, previewEntries, "preview", errors);
+        validateLocalAssetFiles(filePath, assetManagerImageEntriesByRole(assetManagerAssets, "background"), "background", errors);
+        validateLocalAssetFiles(filePath, assetManagerImageEntriesByRole(assetManagerAssets, "bezel"), "bezel", errors);
       }
 
-      const assets = manifest?.tools?.["asset-browser"]?.assets;
-      if (manifest?.tools?.["asset-browser"]) {
-        if (!assets || typeof assets !== "object" || Array.isArray(assets)) {
-          errors.push("tools.asset-browser.assets must be an object");
-        } else {
-          if (Object.prototype.hasOwnProperty.call(assets, "media")) {
-            errors.push("tools.asset-browser.assets.media is not allowed");
-          }
-          for (const [assetId, entry] of Object.entries(assets)) {
-            if (!ASSET_ID_PATTERN.test(assetId)) {
-              errors.push(`invalid asset id pattern: ${assetId}`);
-            }
-            if (!isPlainObject(entry)) {
-              errors.push(`asset entry must be object: ${assetId}`);
-              continue;
-            }
-            if (typeof entry.path !== "string" || !entry.path.trim()) {
-              errors.push(`asset entry missing path: ${assetId}`);
-            }
-            if (!ASSET_KIND_SET.has(String(entry.kind || ""))) {
-              errors.push(`asset entry invalid kind: ${assetId}`);
-            }
-            if (!ASSET_SOURCE_SET.has(String(entry.source || ""))) {
-              errors.push(`asset entry invalid source: ${assetId}`);
-            }
-            if (Object.prototype.hasOwnProperty.call(entry, "stretchOverride")) {
-              if (!/^image\.[a-z0-9-]+(?:\.[a-z0-9-]+)*\.bezel$/.test(assetId)) {
-                errors.push(`stretchOverride only allowed on image.*.bezel entries: ${assetId}`);
-              }
-              if (!isPlainObject(entry.stretchOverride) || typeof entry.stretchOverride.uniformEdgeStretchPx !== "number") {
-                errors.push(`invalid stretchOverride payload: ${assetId}`);
-              }
-            }
-          }
+      Object.keys(manifest?.tools || {}).forEach((toolId) => {
+        if (DEPRECATED_GAME_TOOL_IDS.has(toolId)) {
+          errors.push(`deprecated game manifest tool is not allowed: tools.${toolId}`);
         }
-      }
-
-      if (rel === "games/Asteroids/game.manifest.json") {
-        const astAssets = manifest?.tools?.["asset-manager-v2"]?.assets || {};
-        if (astAssets?.["assets.image.bezel.bezel"]?.path !== "assets/images/bezel.png") {
-          errors.push("Asteroids bezel path must be assets/images/bezel.png");
-        }
-        if (astAssets?.["assets.image.background.deluxe"]?.path !== "assets/images/deluxe.png") {
-          errors.push("Asteroids background path must be assets/images/deluxe.png");
-        }
-        if (astAssets?.["assets.font.ui.vector-battle"]?.path !== "src/assets/fonts/vector_battle/vector_battle.ttf") {
-          errors.push("Asteroids assets.font.ui.vector-battle must point to src/assets/fonts/vector_battle/vector_battle.ttf");
-        }
-      }
+      });
     }
 
     rows.push({
@@ -852,10 +820,7 @@ function writeUsageReport(reportDir, usageSummary) {
   lines.push("# Schema Usage Code Updates");
   lines.push("");
   lines.push("## Updated Runtime/Validation Paths");
-  lines.push("- tools/Workspace Manager/main.js: schema runtime validator now supports anyOf/allOf/not, propertyNames, and typed additionalProperties.");
-  lines.push("- tools/schemas/workspace.manifest.schema.json: removed duplicate palette alias key `palette-browser` from workspace tools contract.");
-  lines.push("- tools/schemas/tools/asset-browser.schema.json: tightened asset id/kind/source rules and stretchOverride placement.");
-  lines.push("- samples/phase-19/1902/sample.1902.workspace-all-tools.json: removed duplicate `palette-browser` block and normalized asset-browser asset ids.");
+  lines.push("- scripts/validate-json-contracts.mjs: validates game manifests against the current schema, Asset Manager V2 preview/background/bezel asset file paths, and deprecated game-manifest tool keys.");
   lines.push("");
   lines.push("## Validation Summary");
   lines.push(`- Tool schema rows: ${usageSummary.toolRows}`);

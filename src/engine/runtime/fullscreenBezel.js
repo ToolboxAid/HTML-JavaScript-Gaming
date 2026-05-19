@@ -205,12 +205,6 @@ function parseStretchConfigObject(candidate) {
   };
 }
 
-function isAsteroidsBezelStretchConfigPath(configPath) {
-  const normalizedPath = normalizePath(configPath).toLowerCase();
-  return normalizedPath.endsWith("/games/asteroids/assets/images/bezel.stretch.override.json")
-    || normalizedPath.endsWith("games/asteroids/assets/images/bezel.stretch.override.json");
-}
-
 function resolveStretchConfigRequestPath(configPath) {
   const normalizedPath = normalizePath(configPath);
   const hashIndex = normalizedPath.indexOf("#");
@@ -218,9 +212,6 @@ function resolveStretchConfigRequestPath(configPath) {
     ? normalizedPath.slice(0, hashIndex)
     : normalizedPath;
 
-  if (isAsteroidsBezelStretchConfigPath(configPath)) {
-    return "/games/Asteroids/game.manifest.json";
-  }
   return pathWithoutHash.startsWith("/") ? pathWithoutHash : `/${pathWithoutHash}`;
 }
 
@@ -258,15 +249,9 @@ function parseStretchConfigPayload(payload, configPath = "") {
     return parsed;
   }
 
-  const assetEntriesByTool = [
-    payload?.tools?.["asset-browser"]?.assets,
-    payload?.tools?.["asset-manager-v2"]?.assets
-  ];
-  for (const flatAssetEntries of assetEntriesByTool) {
-    if (!flatAssetEntries || typeof flatAssetEntries !== "object") {
-      continue;
-    }
-    const bezelAssetEntry = Object.entries(flatAssetEntries).find(([assetId, entry]) => {
+  const assetManagerAssets = payload?.tools?.["asset-manager-v2"]?.assets;
+  if (assetManagerAssets && typeof assetManagerAssets === "object") {
+    const bezelAssetEntry = Object.entries(assetManagerAssets).find(([assetId, entry]) => {
       const normalizedAssetId = typeof assetId === "string" ? assetId.trim().toLowerCase() : "";
       const normalizedKind = typeof entry?.kind === "string" ? entry.kind.trim().toLowerCase() : "";
       const normalizedType = typeof entry?.type === "string" ? entry.type.trim().toLowerCase() : "";

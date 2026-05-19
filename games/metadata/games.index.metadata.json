@@ -15,7 +15,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolsUsed": ["palette-browser", "skin-editor", "asset-browser"]
+      "toolsUsed": ["asset-manager-v2"]
     },
     {
       "id": "Breakout",
@@ -31,7 +31,7 @@
       "debugShowcase": true,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/GamepadInputAdapter", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/utils/math/clamp"],
-      "toolsUsed": ["palette-browser", "skin-editor", "asset-browser"]
+      "toolsUsed": ["asset-manager-v2"]
     },
     {
       "id": "SolarSystem",
@@ -47,7 +47,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/InputService", "engine/scene/index/Scene"],
-      "toolsUsed": ["palette-browser", "skin-editor", "asset-browser"]
+      "toolsUsed": ["asset-manager-v2"]
     },
     {
       "id": "GravityWell",
@@ -63,7 +63,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/rendering/VectorDrawing/drawVectorShape", "engine/rendering/VectorDrawing/transformPoints", "engine/replay/index/ReplaySystem", "engine/scene/index/Scene", "engine/utils/index/clamp", "engine/utils/index/distance"],
-      "toolsUsed": ["asset-browser", "svg-asset-studio"]
+      "toolsUsed": ["palette-manager-v2", "asset-manager-v2"]
     },
     {
       "id": "Pong",
@@ -73,13 +73,13 @@
       "status": "playable",
       "classValues": ["games/collision/paddle"],
       "tags": ["arcade", "collision", "multimode"],
-      "preview": "/games/Pong/assets/images/preview.svg",
+      "preview": "/games/Pong/assets/images/preview1.svg",
       "href": "/games/Pong/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/GamepadInputAdapter", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/utils/math/clamp"],
-      "toolsUsed": ["palette-browser", "skin-editor", "asset-browser"]
+      "toolsUsed": ["palette-manager-v2", "asset-manager-v2"]
     },
     {
       "id": "Asteroids",
@@ -95,7 +95,7 @@
       "debugShowcase": true,
       "requiresService": false,
       "engineClassesUsed": ["engine/audio/index/GaplessLoopPlayer", "engine/audio/index/HtmlAudioMediaBackend", "engine/audio/index/MediaTrackService", "engine/collision/index/arePolygonsColliding", "engine/core/Engine", "engine/debug/inspectors/shared/inspectorUtils/asArray", "engine/debug/inspectors/shared/inspectorUtils/asObject", "engine/fx/index/ParticleSystem", "engine/input/index/InputService", "engine/persistence/index/StorageService", "engine/rendering/index/transformPoints", "engine/scene/index/AttractModeController", "engine/scene/index/Scene", "engine/utils/index/distance", "engine/utils/index/randomRange", "engine/utils/index/wrap", "engine/utils/math/clamp"],
-      "toolsUsed": ["palette-browser", "asset-browser", "sprite-editor", "tile-map-editor", "parallax-editor", "svg-asset-studio", "asset-pipeline"]
+      "toolsUsed": ["palette-manager-v2", "asset-manager-v2", "object-vector-studio-v2"]
     },
     {
       "id": "SpaceInvaders",
@@ -111,7 +111,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/GamepadInputAdapter", "engine/input/index/InputService", "engine/persistence/index/StorageService", "engine/scene/index/AttractModeController", "engine/scene/index/Scene", "engine/utils/math/clamp"],
-      "toolsUsed": ["palette-browser", "asset-browser"]
+      "toolsUsed": ["asset-manager-v2"]
     },
     {
       "id": "SpaceDuel",
@@ -127,7 +127,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/persistence/index/StorageService", "engine/scene/index/AttractModeController", "engine/scene/index/Scene", "engine/utils/math/clamp"],
-      "toolsUsed": ["palette-browser", "asset-browser"]
+      "toolsUsed": ["asset-manager-v2"]
     },
     {
       "id": "AITargetDummy",
@@ -143,7 +143,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/GamepadInputAdapter", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/utils/math/clamp"],
-      "toolsUsed": ["asset-browser"]
+      "toolsUsed": ["asset-manager-v2"]
     },
     {
       "id": "Pacman",
@@ -159,7 +159,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "engineClassesUsed": ["engine/core/Engine", "engine/input/index/GamepadInputAdapter", "engine/input/index/InputService", "engine/scene/index/Scene"],
-      "toolsUsed": ["asset-browser"]
+      "toolsUsed": ["asset-manager-v2"]
     },
     {
       "id": "vector-arcade-sample",
@@ -169,12 +169,12 @@
       "status": "playable",
       "classValues": ["games/template/vector"],
       "tags": ["template", "vector", "sample"],
-      "preview": "/games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
+      "preview": "/games/vector-arcade-sample/assets/images/preview.svg",
       "href": "/games/vector-arcade-sample/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolsUsed": ["palette-browser", "parallax-editor", "asset-browser", "sprite-editor", "tile-map-editor", "svg-asset-studio"]
+      "toolsUsed": ["asset-manager-v2", "object-vector-studio-v2"]
     },
     {
       "id": "Frogger",
@@ -204,7 +204,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolsUsed": ["sprite-editor", "vector-map-editor", "performance-profiler"]
+      "toolsUsed": ["sprite-editor", "world-vector-studio-v2", "performance-profiler"]
     },
     {
       "id": "ArenaShooter",
@@ -339,7 +339,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolsUsed": ["tile-map-editor", "vector-map-editor", "state-inspector"]
+      "toolsUsed": ["tile-map-editor", "world-vector-studio-v2", "state-inspector"]
     },
     {
       "id": "FullArenaShooter",
@@ -399,7 +399,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolsUsed": ["vector-map-editor", "svg-asset-studio", "tile-map-editor"]
+      "toolsUsed": ["world-vector-studio-v2", "svg-asset-studio", "tile-map-editor"]
     },
     {
       "id": "TicTacToe",

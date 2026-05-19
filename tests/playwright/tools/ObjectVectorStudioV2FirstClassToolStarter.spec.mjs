@@ -71,20 +71,21 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.locator("#objectVectorStudioV2CopyJsonButton")).toBeDisabled();
     await expect(page.locator("#objectVectorStudioV2ExportJsonButton")).toBeDisabled();
     await expect(page.locator("#objectVectorStudioV2PaletteSwatchCount")).toHaveText("(0 swatches)");
-    await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(0 obj, 0 shapes)");
+    await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(0 obj, states 0, 0 shapes)");
     await expect(page.locator("#objectVectorStudioV2ObjectTiles")).toContainText("No objects loaded");
     await expect(page.locator("#objectVectorStudioV2RenameObjectButton")).toBeDisabled();
-    await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toHaveText("No shape selected.");
+    await expect(page.locator("#objectVectorStudioV2ObjectTransform")).toHaveText("No object selected.");
     await expect(page.locator("#objectVectorStudioV2FlattenObjectButton")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Object", exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Shape/Tools", exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Objects (0 obj, 0 shapes)" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Tools", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Objects (0 obj, states 0, 0 shapes)" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Palette (0 swatches)" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Object Geometry", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Shape Geometry/ })).toBeVisible();
     await expect(page.getByRole("button", { name: "Object Transform", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Shape Transform", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "JSON Details" })).toBeVisible();
     await expect(page.locator("#statusLog")).toHaveValue(/Object Vector Studio V2 layout shell ready\./);
-    await expect(page.locator("#statusLog")).toHaveValue(/INFO Shape\/Tools primitive buttons create schema-valid shapes on the selected object\./);
+    await expect(page.locator("#statusLog")).toHaveValue(/INFO Tools primitive buttons enter drawing mode; use the canvas to commit schema-valid geometry\./);
     await expect(page.locator("#statusLog")).toHaveValue(/INFO Object identity uses object\.game\.name ids\./);
   });
 
@@ -107,8 +108,8 @@ test.describe("Object Vector Studio V2", () => {
     await writeFile(validPayloadPath, JSON.stringify({
       name: "Local Object Set",
       objects: [
-        { id: "object.local.ship", name: "Asteroids Ship", shapes: [] },
-        { id: "object.local.energy-pickup", name: "Energy Pickup", shapes: [] }
+        { id: "object.local.ship", name: "Asteroids Ship", tags: [], shapes: [] },
+        { id: "object.local.energy-pickup", name: "Energy Pickup", tags: [], shapes: [] }
       ],
       toolId: "object-vector-studio-v2",
       version: 1
@@ -126,18 +127,16 @@ test.describe("Object Vector Studio V2", () => {
 
     await page.locator("#objectVectorStudioV2ObjectNameInput").fill("Local Object");
     await page.locator("#objectVectorStudioV2AddObjectButton").click();
-    await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(3 obj, 0 shapes)");
-    await expect(page.locator('[data-object-id="object.local.local-object"]')).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(3 obj, states 0, 0 shapes)");
+    const localObjectTile = page.locator(".object-vector-studio-v2__object-tile", { hasText: "Local Object" });
+    await expect(localObjectTile).toHaveAttribute("aria-pressed", "true");
+    const localObjectId = await localObjectTile.getAttribute("data-object-id");
+    expect(localObjectId).toBeTruthy();
     await expect(page.locator("#objectVectorStudioV2JsonDetails")).toContainText('"name": "Local Object"');
 
-    await page.locator('[data-shape-tool="rectangle"]').click();
-    await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(3 obj, 1 shape)");
-    await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveClass(/is-selected/);
-    await expect(page.locator("#statusLog")).toHaveValue(/OK Created rectangle shape on Local Object\./);
-
-    await page.locator('[data-object-id="object.local.local-object"] [data-object-control="delete"]').click();
-    await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(2 obj, 0 shapes)");
-    await expect(page.locator('[data-object-id="object.local.local-object"]')).toHaveCount(0);
+    await page.locator(`[data-object-id="${localObjectId}"] [data-object-control="delete"]`).click();
+    await expect(page.locator("#objectVectorStudioV2ObjectsCount")).toHaveText("(2 obj, states 0, 0 shapes)");
+    await expect(page.locator(`[data-object-id="${localObjectId}"]`)).toHaveCount(0);
   });
 
   test("workspace launch shows Return to Workspace only", async ({ page }) => {
@@ -151,7 +150,7 @@ test.describe("Object Vector Studio V2", () => {
 
   test("accordion sections collapse and fullscreen shell preserves work area", async ({ page }) => {
     await expect(page.locator("#objectVectorStudioV2ShapeToolsContent")).toBeVisible();
-    await page.getByRole("button", { name: "Shape/Tools" }).click();
+    await page.getByRole("button", { name: "Tools" }).click();
     await expect(page.locator("#objectVectorStudioV2ShapeToolsContent")).toBeHidden();
 
     await page.locator("[data-tool-starter-summary]").click();
