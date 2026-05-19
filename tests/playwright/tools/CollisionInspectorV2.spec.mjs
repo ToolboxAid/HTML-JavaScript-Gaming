@@ -43,6 +43,7 @@ test.describe("Collision Inspector V2", () => {
     try {
       await page.goto(`${server.baseUrl}/tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`, { waitUntil: "networkidle" });
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='collision-inspector-v2']")).toBeVisible();
+      await expect(page.locator("link[href='../templates-v2/styles/toolStarter.css']")).toHaveCount(1);
       await expect(page.locator(".tool-starter__header[data-tool-starter-header]")).toBeVisible();
       await expect(page.locator("nav.tool-starter__menu.tool-starter__tool__menu")).toBeVisible();
       await expect(page.locator("nav.tool-starter__menu.tool-starter__workspace__menu")).toBeHidden();
@@ -56,6 +57,16 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionManifestInput")).toBeVisible();
       await expect(page.locator("label[for='objectARotationInput']")).toContainText("Object A Rotate");
       await expect(page.locator("label[for='objectBRotationInput']")).toContainText("Object B Rotate");
+      const collisionCss = (await readFile(join(server.repoRoot, "tools", "collision-inspector-v2", "styles", "collisionInspectorV2.css"), "utf8")).replace(/\r\n/g, "\n");
+      expect(collisionCss).not.toContain(":root {");
+      expect(collisionCss).not.toMatch(/--tool-starter-[a-z-]+:/);
+      expect(collisionCss).not.toMatch(/(^|\n)\s*body(?:\[|\.|\s|,|\{)/);
+      expect(collisionCss).not.toMatch(/(^|\n)\s*button\s*(?:,|\{)/);
+      expect(collisionCss).not.toMatch(/(^|\n)\s*input\s*(?:,|\{)/);
+      expect(collisionCss).not.toMatch(/(^|\n)\s*select\s*(?:,|\{)/);
+      expect(collisionCss).not.toMatch(/(^|\n)\s*textarea\s*(?:,|\{)/);
+      expect(collisionCss).not.toMatch(/(^|\n)\s*\.tool-starter__(?:header|menu|panel|field|output)\b/);
+      expect(collisionCss).not.toMatch(/(^|\n)\s*\.accordion-v2(?:[\s.#:{]|$)/);
 
       await expect(page.locator("#manifestSummary")).toContainText("Asteroids");
       await expect(page.locator("#manifestSummary")).toContainText("7 objects loaded");
