@@ -49,13 +49,16 @@ export function run() {
   });
   const bulletPoints = bullet.getCollisionPolygon();
   assert.equal(bulletPoints.length, 4);
-  assertPointClose(bulletPoints[0], { x: 48.5, y: 61.5 });
-  assertPointClose(bulletPoints[2], { x: 50.5, y: 63.5 });
+  assertPointClose(bulletPoints[0], { x: 50.5, y: 61.5 });
+  assertPointClose(bulletPoints[2], { x: 48.5, y: 63.5 });
   const angledBullet = new Bullet(50, 60, 0, 0, 1, {
     angle: Math.PI / 3,
     collisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet),
   });
   assert.equal(angledBullet.angle, Math.PI / 3);
+  const angledBulletPoints = angledBullet.getCollisionPolygon();
+  assertPointClose(angledBulletPoints[0], { x: 48.95096189432334, y: 61.18301270189222 });
+  assertPointClose(angledBulletPoints[2], { x: 46.21891108675447, y: 60.45096189432334 });
 
   const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5, {
     bulletCollisionPoints: getAsteroidsObjectGeometryPoints(objectGeometry, ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet),

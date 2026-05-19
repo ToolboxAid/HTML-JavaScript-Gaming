@@ -78,6 +78,7 @@ function classifyToolGroup(toolId) {
   ]);
   const viewerToolIds = new Set([
     "3d-asset-viewer",
+    "collision-inspector-v2",
     "storage-inspector-v2",
     "replay-visualizer",
     "performance-profiler"
@@ -85,7 +86,6 @@ function classifyToolGroup(toolId) {
   const utilityToolIds = new Set([
     "asset-manager-v2",
     "asset-pipeline",
-    "collision-inspector-v2",
     "physics-sandbox",
     "text2speech-V2",
     "3d-json-payload"

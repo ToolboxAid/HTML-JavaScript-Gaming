@@ -16,6 +16,7 @@ const TEXT2SPEECH_V2_TOOL_KEY = "text2speech-V2";
 const TEMPORARY_UAT_MANIFEST_PATH = "/games/_template/workspace-manager-v2-UAT.manifest.json";
 const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [ASSET_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/asset-manager-v2.schema.json",
+  [COLLISION_INSPECTOR_V2_TOOL_KEY]: "tools/schemas/tools/collision-inspector-v2.schema.json",
   [OBJECT_VECTOR_STUDIO_V2_TOOL_KEY]: "tools/schemas/tools/object-vector-studio-v2.schema.json",
   [PALETTE_MANAGER_V2_TOOL_KEY]: "tools/schemas/tools/palette-manager-v2.schema.json",
   [TEXT2SPEECH_V2_TOOL_KEY]: "tools/schemas/tools/text2speech-V2.schema.json"
@@ -56,7 +57,7 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
   }),
   Object.freeze({
     actionLabels: Object.freeze(["How To Use", "Read Me"]),
-    group: "Utilities",
+    group: "Viewers",
     id: COLLISION_INSPECTOR_V2_TOOL_KEY,
     name: "Collision Inspector V2",
     path: "../collision-inspector-v2/index.html"

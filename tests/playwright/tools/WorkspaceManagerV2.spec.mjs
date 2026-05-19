@@ -1280,7 +1280,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.headings.slice(0, 4)).toEqual(["Workflow", "Editors", "Utilities", "Viewers"]);
       expect(toolsIndexState.workflowCards).toEqual(["Workspace Manager V2"]);
       expect(toolsIndexState.utilitiesCards).not.toContain("Workspace Manager V2");
-      expect(toolsIndexState.utilitiesCards).toContain("Collision Inspector V2");
+      expect(toolsIndexState.viewersCards).toContain("Collision Inspector V2");
       expect(toolsIndexState.utilitiesCards).toContain("Text to Speech V2");
       expect(toolsIndexState.allCards).toEqual(expect.arrayContaining(["World Vector Studio V2", "Object Vector Studio V2", "Collision Inspector V2"]));
       expect(toolsIndexState.registryIds).toEqual(expect.arrayContaining(["world-vector-studio-v2", "object-vector-studio-v2", "collision-inspector-v2"]));
@@ -9948,8 +9948,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       ])));
       expect(toolGroupMembership).toEqual({
         Editors: ["Asset Manager V2", "Palette Manager V2", "Object Vector Studio V2"],
-        Utilities: ["Collision Inspector V2", "Preview Generator V2", "Text to Speech V2"],
-        Viewers: ["Tool Starter V2", "Storage Inspector V2"]
+        Utilities: ["Preview Generator V2", "Text to Speech V2"],
+        Viewers: ["Tool Starter V2", "Collision Inspector V2", "Storage Inspector V2"]
       });
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => tiles.every((tile) => tile.disabled))).toBe(true);
       expect(await page.locator("#workspaceToolTiles [data-workspace-tool-id]").evaluateAll((tiles) => (
@@ -10090,6 +10090,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         toolId: "asset-manager-v2",
         schemaRole: "workspace-tool-payload",
         schemaRef: "tools/schemas/tools/asset-manager-v2.schema.json",
+        workspaceSchemaRef: "tools/schemas/workspace.manifest.schema.json"
+      });
+      expect(selectedGameHydration.schemaByTool["collision-inspector-v2"]).toMatchObject({
+        source: "workspace-manager-v2",
+        toolId: "collision-inspector-v2",
+        schemaRole: "workspace-tool-payload",
+        schemaRef: "tools/schemas/tools/collision-inspector-v2.schema.json",
         workspaceSchemaRef: "tools/schemas/workspace.manifest.schema.json"
       });
       expect(selectedGameHydration.schemaByTool["preview-generator-v2"]).toMatchObject({

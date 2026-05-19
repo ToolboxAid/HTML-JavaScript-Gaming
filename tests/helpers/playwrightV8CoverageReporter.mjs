@@ -326,6 +326,7 @@ export class PlaywrightV8CoverageReporter {
     const toolEntryPoints = [
       { name: "Preview Generator V2", prefix: "tools/preview-generator-v2/" },
       { name: "Asset Manager V2", prefix: "tools/asset-manager-v2/" },
+      { name: "Collision Inspector V2", prefix: "tools/collision-inspector-v2/" },
       { name: "Palette Manager V2", prefix: "tools/palette-manager-v2/" },
       { name: "Tool Template V2", prefix: "tools/templates-v2/" },
       { name: "Workspace Manager V2", prefix: "tools/workspace-manager-v2/" },

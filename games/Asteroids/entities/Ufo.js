@@ -6,7 +6,7 @@ Ufo.js
 */
 import Bullet from './Bullet.js';
 import { distance } from '../../../src/shared/utils/mathUtils.js';
-import { transformPoints } from '../../../src/engine/rendering/index.js';
+import { transformCollisionPoints } from '../../../src/engine/collision/index.js';
 import { randomRange } from '../utils/math.js';
 
 const UFO_PROFILES = {
@@ -110,7 +110,7 @@ export default class Ufo {
   }
 
   getCollisionPolygon() {
-    return transformPoints(this.collisionPoints, {
+    return transformCollisionPoints(this.collisionPoints, {
       x: this.x,
       y: this.y,
     });

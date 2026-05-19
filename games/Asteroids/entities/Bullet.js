@@ -5,7 +5,7 @@ David Quesenberry
 Bullet.js
 */
 import { wrap } from '../utils/math.js';
-import { transformPoints } from '../../../src/engine/rendering/index.js';
+import { transformCollisionPoints } from '../../../src/engine/collision/index.js';
 
 function normalizePoints(points) {
   return Array.isArray(points)
@@ -41,9 +41,11 @@ export default class Bullet {
   }
 
   getCollisionPolygon() {
-    return transformPoints(this.collisionPoints, {
+    return transformCollisionPoints(this.collisionPoints, {
       x: this.x,
       y: this.y,
+      rotation: this.angle,
+      rotationUnit: 'radians',
     });
   }
 }

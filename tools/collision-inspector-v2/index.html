@@ -24,7 +24,7 @@
                   <h2 class="tools-platform-frame__eyebrow">Manifest Driven Collision Tool</h2>
                 </div>
                 <div class="tools-platform-frame__summary-meta">
-                  <div class="tools-platform-frame__meta">Vector, sprite, bounds, pixel, and hybrid collision inspection for game manifests.</div>
+                <div class="tools-platform-frame__meta">Engine-aligned bounds, vector, pixel/sprite, and hybrid collision inspection for game manifests.</div>
                 </div>
               </div>
               <div class="tools-platform-frame__topline">
@@ -36,10 +36,7 @@
       </div>
     </details>
 
-    <nav class="collision-inspector-v2__menu" aria-label="Tool actions" data-launch-mode-nav="tool">
-      <button id="copyCollisionReportButton" type="button">Copy Report</button>
-      <button id="resetSimulationButton" type="button">Reset</button>
-    </nav>
+    <nav class="collision-inspector-v2__menu" aria-label="Tool actions" data-launch-mode-nav="tool" hidden></nav>
 
     <nav class="collision-inspector-v2__menu collision-inspector-v2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
       <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
@@ -68,6 +65,14 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="collisionControlsContent" class="accordion-v2__content">
+            <label class="collision-inspector-v2__field" for="objectASelect">
+              <span>Object A</span>
+              <select id="objectASelect"></select>
+            </label>
+            <label class="collision-inspector-v2__field" for="objectBSelect">
+              <span>Object B</span>
+              <select id="objectBSelect"></select>
+            </label>
             <label class="collision-inspector-v2__field" for="collisionModeSelect">
               <span>Collision Mode</span>
               <select id="collisionModeSelect">
@@ -76,14 +81,6 @@
                 <option value="pixel-sprite">Pixel/Sprite</option>
                 <option value="hybrid">Hybrid</option>
               </select>
-            </label>
-            <label class="collision-inspector-v2__field" for="objectASelect">
-              <span>Object A</span>
-              <select id="objectASelect"></select>
-            </label>
-            <label class="collision-inspector-v2__field" for="objectBSelect">
-              <span>Object B</span>
-              <select id="objectBSelect"></select>
             </label>
             <div class="collision-inspector-v2__rotation-grid">
               <label class="collision-inspector-v2__field" for="objectARotationInput">
@@ -95,6 +92,7 @@
                 <input id="objectBRotationInput" type="number" step="1" value="0">
               </label>
             </div>
+            <button id="resetSimulationButton" class="collision-inspector-v2__wide-button" type="button">Reset</button>
           </div>
         </section>
       </aside>
@@ -106,6 +104,13 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="simulationContent" class="accordion-v2__content collision-inspector-v2__canvas-wrap">
+            <div class="collision-inspector-v2__zoom-row">
+              <label class="collision-inspector-v2__field collision-inspector-v2__field--inline" for="collisionZoomInput">
+                <span>Zoom</span>
+                <input id="collisionZoomInput" type="range" min="0.5" max="2" step="0.1" value="1">
+              </label>
+              <output id="zoomState" for="collisionZoomInput">1x</output>
+            </div>
             <canvas id="collisionCanvas" width="960" height="640" aria-label="Collision movement simulation"></canvas>
             <div class="collision-inspector-v2__legend" aria-label="Collision overlay legend">
               <span>Object A</span>

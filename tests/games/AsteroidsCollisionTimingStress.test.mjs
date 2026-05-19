@@ -115,7 +115,7 @@ export function run() {
   const shipConcaveEdgeWorld = new AsteroidsWorld({ width: 960, height: 720 }, { rng: () => 0.5, ...worldOptions });
   shipConcaveEdgeWorld.ufoSpawnTimer = Number.POSITIVE_INFINITY;
   shipConcaveEdgeWorld.ship.invulnerable = 0;
-  shipConcaveEdgeWorld.ship.x = 430;
+  shipConcaveEdgeWorld.ship.x = 448;
   shipConcaveEdgeWorld.ship.y = 386;
   shipConcaveEdgeWorld.ship.vx = 0;
   shipConcaveEdgeWorld.ship.vy = 0;

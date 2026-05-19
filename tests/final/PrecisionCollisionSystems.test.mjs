@@ -11,8 +11,11 @@ import {
   isPointInPolygon,
   createRasterMask,
   areMasksColliding,
+  evaluateObjectVectorCollisionPair,
+  getObjectVectorCollisionOutlinePoints,
   runHybridCollision,
   getPolygonBounds,
+  transformCollisionPoints,
 } from '../../src/engine/collision/index.js';
 
 export function run() {
@@ -98,4 +101,45 @@ export function run() {
     polygonB: polyC,
   });
   assert.equal(hybridMiss.collided, false);
+
+  const objectA = {
+    id: 'object.test.ship',
+    name: 'Ship',
+    objectOrigin: { x: 0, y: 0 },
+    shapes: [{
+      geometry: { points: polyA },
+      order: 0,
+      tool: 'polygon',
+      transform: { rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+      visible: true,
+    }],
+    states: [{ id: 'active', name: 'Active', frames: [{ id: 'frame-1', order: 0, durationFrames: 1, shapeOverrides: [] }] }],
+  };
+  const objectB = {
+    id: 'object.test.asteroid',
+    name: 'Asteroid',
+    objectOrigin: { x: 0, y: 0 },
+    shapes: [{
+      geometry: { points: polyB },
+      order: 0,
+      tool: 'polygon',
+      transform: { rotation: 0, scaleX: 1, scaleY: 1, x: 0, y: 0 },
+      visible: true,
+    }],
+    states: [{ id: 'active', name: 'Active', frames: [{ id: 'frame-1', order: 0, durationFrames: 1, shapeOverrides: [] }] }],
+  };
+  const objectVectorHit = evaluateObjectVectorCollisionPair({
+    instanceA: { x: 0, y: 0, rotation: 0 },
+    instanceB: { x: 0, y: 0, rotation: 0 },
+    mode: 'auto',
+    objectA,
+    objectB,
+  });
+  assert.equal(objectVectorHit.mode, 'vector');
+  assert.equal(objectVectorHit.collided, true);
+  assert.equal(objectVectorHit.enginePath, 'src/engine/collision/objectVector.js');
+  assert.equal(getObjectVectorCollisionOutlinePoints(objectA).length, polyA.length);
+  const collisionTransform = transformCollisionPoints([{ x: 10, y: 0 }], { x: 4, y: 5, rotation: Math.PI / 2 });
+  assert.equal(Math.abs(collisionTransform[0].x - 4) < 1e-9, true);
+  assert.equal(Math.abs(collisionTransform[0].y - 15) < 1e-9, true);
 }

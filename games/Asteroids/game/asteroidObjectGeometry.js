@@ -1,6 +1,7 @@
 import {
   ASTEROIDS_ASTEROID_SIZE_OBJECT_IDS,
 } from './asteroidsObjectGeometryManifest.js';
+import { getObjectVectorCollisionOutlinePoints } from '../../../src/engine/collision/index.js';
 
 const ASTEROID_SIZE_LABELS = Object.freeze({
   1: 'SML',
@@ -10,18 +11,6 @@ const ASTEROID_SIZE_LABELS = Object.freeze({
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
-}
-
-function toSafeNumber(value, fallback = 0) {
-  const numberValue = Number(value);
-  return Number.isNaN(numberValue) || Math.abs(numberValue) === Infinity ? fallback : numberValue;
-}
-
-function cleanPoint(point) {
-  return {
-    x: toSafeNumber(point?.x, 0),
-    y: toSafeNumber(point?.y, 0),
-  };
 }
 
 function centerPoints(points) {
@@ -43,21 +32,6 @@ function maxRadius(points) {
     return 0;
   }
   return Math.max(...points.map(({ x, y }) => Math.sqrt(x * x + y * y)));
-}
-
-function sortedShapes(object) {
-  return [...asArray(object?.shapes)].sort((left, right) => (
-    toSafeNumber(left?.order, 0) - toSafeNumber(right?.order, 0)
-  ));
-}
-
-function extractPrimaryPolygonPoints(object) {
-  const shape = sortedShapes(object).find((candidate) => (
-    candidate?.visible !== false
-    && candidate?.tool === 'polygon'
-    && asArray(candidate?.geometry?.points).length >= 3
-  ));
-  return asArray(shape?.geometry?.points).map(cleanPoint);
 }
 
 function logProfileFailure(logger, message, details = {}) {
@@ -84,7 +58,7 @@ function createProfilesFromObjects(objects, options = {}) {
       });
       return;
     }
-    const points = centerPoints(extractPrimaryPolygonPoints(object));
+    const points = centerPoints(getObjectVectorCollisionOutlinePoints(object));
     if (points.length < 3) {
       logProfileFailure(options.logger, `Asteroids asteroid geometry profile ${objectId} must contain visible polygon geometry with at least 3 points.`, {
         objectId,

@@ -49,11 +49,14 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#objectBSelect")).toContainText("Large Asteroid");
       await page.locator("#objectASelect").selectOption("object.asteroids.ship");
       await page.locator("#objectBSelect").selectOption("object.asteroids.large-asteroid");
+      await expect(page.locator("#collisionModeSelect")).toHaveValue("vector");
       await expect(page.locator("#collisionResultBadge")).toHaveText("No Collision");
       await expect(page.locator("#overlapState")).toHaveText("false");
       await expect(page.locator("#originState")).toContainText("A");
       await expect(page.locator("#rotationState")).toHaveText("A 0 / B 0");
+      await expect(page.locator("#collisionSummary")).toContainText('"enginePath": "src/engine/collision/objectVector.js"');
       await expect(page.locator("#collisionSummary")).toContainText('"objectOrigins"');
+      await expect(page.locator("#collisionSummary")).toContainText('"recommendedMode": "vector"');
       await expect(page.locator("#collisionSummary")).toContainText('"transformedPoints"');
 
       await page.locator("#objectBRotationInput").fill("180");
@@ -62,15 +65,12 @@ test.describe("Collision Inspector V2", () => {
       await dragCanvasPoint(page, { x: 500, y: 320 }, { x: 360, y: 320 });
       await expect(page.locator("#collisionResultBadge")).toHaveText("Collision");
       await expect(page.locator("#overlapState")).toHaveText("true");
-      await expect(page.locator("#collisionSummary")).toContainText('"mode": "bounds"');
-      await expect(page.locator("#collisionLog")).toHaveValue(/Dragged Object B/);
-
-      await page.locator("#collisionModeSelect").selectOption("vector");
-      await expect(page.locator("#collisionResultBadge")).toHaveText("Collision");
       await expect(page.locator("#collisionSummary")).toContainText('"mode": "vector"');
+      await expect(page.locator("#collisionLog")).toHaveValue(/Dragged Object B/);
 
       await page.locator("#collisionModeSelect").selectOption("pixel-sprite");
       await expect(page.locator("#collisionResultBadge")).toHaveText("Collision");
+      await expect(page.locator("#collisionSummary")).toContainText('"manualModeOverride": true');
       await expect(page.locator("#collisionSummary")).toContainText('"mode": "pixel-sprite"');
 
       await page.locator("#collisionModeSelect").selectOption("bounds");
@@ -81,8 +81,13 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionSummary")).toContainText('"mode": "hybrid"');
       await expect(page.locator("#collisionResultBadge")).toHaveText("Collision");
 
+      await page.locator("#collisionZoomInput").fill("1.5");
+      await expect(page.locator("#zoomState")).toHaveText("1.5x");
+      await expect(page.locator("#collisionSummary")).toContainText('"zoom": 1.5');
+
       await page.locator("#resetSimulationButton").click();
       await expect(page.locator("#collisionResultBadge")).toHaveText("No Collision");
+      await expect(page.locator("#collisionModeSelect")).toHaveValue("vector");
       await expect(page.locator("#rotationState")).toHaveText("A 0 / B 0");
       expect(pageErrors).toEqual([]);
     } finally {

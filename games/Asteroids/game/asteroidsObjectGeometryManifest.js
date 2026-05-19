@@ -1,3 +1,5 @@
+import { getObjectVectorCollisionOutlinePoints } from '../../../src/engine/collision/index.js';
+
 const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';
 const OBJECT_VECTOR_PAYLOAD_KEYS = new Set(['version', 'toolId', 'name', 'objects']);
 
@@ -57,47 +59,8 @@ function oldObjectSignal(object) {
   return /(^|[.\s_-])(old|legacy|deprecated|archive|archived|renamed|stale)($|[.\s_-])/.test(text);
 }
 
-function normalizePoint(point) {
-  return {
-    x: Number(point?.x ?? 0),
-    y: Number(point?.y ?? 0),
-  };
-}
-
-function normalizePoints(points) {
-  return Array.isArray(points)
-    ? points.map(normalizePoint).filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y))
-    : [];
-}
-
-function shapeTool(shape) {
-  return normalizeString(shape?.tool).toLowerCase();
-}
-
-function sortedShapes(object) {
-  return Array.isArray(object?.shapes)
-    ? [...object.shapes].sort((left, right) => Number(left?.order ?? 0) - Number(right?.order ?? 0))
-    : [];
-}
-
-function shapeGeometryPoints(shape) {
-  const tool = shapeTool(shape);
-  if (tool === 'polygon' || tool === 'polyline') {
-    return normalizePoints(shape?.geometry?.points);
-  }
-  if (tool === 'line') {
-    return normalizePoints([shape?.geometry?.point1, shape?.geometry?.point2]);
-  }
-  return [];
-}
-
 function objectVectorGeometryPoints(object) {
-  const shapes = sortedShapes(object).filter((shape) => shape?.visible !== false);
-  const shape = shapes.find((candidate) => {
-    const tool = shapeTool(candidate);
-    return tool === 'polygon' || tool === 'polyline';
-  }) || shapes.find((candidate) => shapeTool(candidate) === 'line');
-  return shapeGeometryPoints(shape);
+  return getObjectVectorCollisionOutlinePoints(object);
 }
 
 function requiredObjectGeometryPointCount(objectId) {

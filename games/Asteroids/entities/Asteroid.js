@@ -5,7 +5,7 @@ David Quesenberry
 Asteroid.js
 */
 import { TAU, randomRange, wrap } from '../utils/math.js';
-import { transformPoints } from '../../../src/engine/rendering/index.js';
+import { transformCollisionPoints } from '../../../src/engine/collision/index.js';
 
 const SIZE_PROFILES = {
   SML: { id: 1 },
@@ -57,10 +57,11 @@ export default class Asteroid {
     if (!this.collisionPoints.length) {
       return [];
     }
-    return transformPoints(this.collisionPoints, {
+    return transformCollisionPoints(this.collisionPoints, {
       x: this.x,
       y: this.y,
       rotation: this.angle,
+      rotationUnit: 'radians',
       scale: this.scale,
     });
   }

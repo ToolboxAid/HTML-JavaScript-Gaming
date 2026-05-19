@@ -1,0 +1,388 @@
+/*
+Toolbox Aid
+David Quesenberry
+05/19/2026
+objectVector.js
+*/
+import { isColliding } from './aabb.js';
+import { arePolygonsColliding, getPolygonBounds, isPointInPolygon } from './polygon.js';
+import { areMasksColliding, createRasterMask } from './raster.js';
+
+export const OBJECT_VECTOR_COLLISION_ENGINE_PATH = 'src/engine/collision/objectVector.js';
+export const OBJECT_VECTOR_COLLISION_MODES = Object.freeze(['bounds', 'vector', 'pixel-sprite', 'hybrid']);
+export const OBJECT_VECTOR_COLLISION_MODE_LABELS = Object.freeze({
+  bounds: 'Bounds',
+  hybrid: 'Hybrid',
+  'pixel-sprite': 'Pixel/Sprite',
+  vector: 'Vector',
+});
+
+const MODE_ALIASES = Object.freeze({
+  pixel: 'pixel-sprite',
+  sprite: 'pixel-sprite',
+});
+const POLYGON_SAMPLE_COUNT = 28;
+const DEFAULT_MASK_CELL_SIZE = 4;
+
+function isRecord(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function numberValue(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isNaN(parsed) || Math.abs(parsed) === Infinity ? fallback : parsed;
+}
+
+function normalizePoint(point) {
+  return {
+    x: numberValue(point?.x),
+    y: numberValue(point?.y),
+  };
+}
+
+function normalizePoints(points) {
+  return Array.isArray(points)
+    ? points.map(normalizePoint)
+    : [];
+}
+
+function shapeTool(shape) {
+  const tool = String(shape?.tool || '').trim().toLowerCase();
+  if (tool === 'triangle') {
+    return 'polygon';
+  }
+  if (tool === 'square') {
+    return 'rectangle';
+  }
+  return tool;
+}
+
+function sortedShapes(object) {
+  return [...(Array.isArray(object?.shapes) ? object.shapes : [])]
+    .sort((left, right) => numberValue(left?.order) - numberValue(right?.order));
+}
+
+function sortedFrames(state) {
+  return [...(Array.isArray(state?.frames) ? state.frames : [])]
+    .sort((left, right) => numberValue(left?.order) - numberValue(right?.order));
+}
+
+function firstObjectFrame(object, preferredStateIds = ['active', 'idle']) {
+  const states = Array.isArray(object?.states) ? object.states : [];
+  const preferred = states.find((state) => preferredStateIds.includes(String(state?.id || '').trim().toLowerCase()))
+    || states[0]
+    || null;
+  return sortedFrames(preferred)[0] || null;
+}
+
+function shapeTransform(shape) {
+  const transform = isRecord(shape?.transform) ? shape.transform : {};
+  return {
+    rotation: numberValue(transform.rotation),
+    scaleX: numberValue(transform.scaleX, 1),
+    scaleY: numberValue(transform.scaleY, 1),
+    x: numberValue(transform.x),
+    y: numberValue(transform.y),
+  };
+}
+
+export function getObjectVectorOrigin(object) {
+  return {
+    x: numberValue(object?.objectOrigin?.x),
+    y: numberValue(object?.objectOrigin?.y),
+  };
+}
+
+function effectiveShapeForFrame(shape, frame, shapeIndex) {
+  const effective = clone(shape);
+  const override = Array.isArray(frame?.shapeOverrides)
+    ? frame.shapeOverrides.find((entry) => entry.shapeIndex === shapeIndex)
+    : null;
+  if (override && Object.prototype.hasOwnProperty.call(override, 'visible')) {
+    effective.visible = override.visible;
+  }
+  if (isRecord(override?.transform)) {
+    effective.transform = { ...effective.transform, ...override.transform };
+  }
+  return effective;
+}
+
+function rectanglePoints(x, y, width, height) {
+  return [
+    { x, y },
+    { x: x + width, y },
+    { x: x + width, y: y + height },
+    { x, y: y + height },
+  ];
+}
+
+function ellipsePoints(cx, cy, rx, ry, count = POLYGON_SAMPLE_COUNT) {
+  return Array.from({ length: count }, (_, index) => {
+    const angle = (Math.PI * 2 * index) / count;
+    return {
+      x: cx + Math.cos(angle) * rx,
+      y: cy + Math.sin(angle) * ry,
+    };
+  });
+}
+
+function segmentPolygon(start, end, width) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const length = Math.hypot(dx, dy);
+  if (length <= 0) {
+    const radius = Math.max(1, width / 2);
+    return rectanglePoints(start.x - radius, start.y - radius, radius * 2, radius * 2);
+  }
+  const nx = (-dy / length) * (width / 2);
+  const ny = (dx / length) * (width / 2);
+  return [
+    { x: start.x + nx, y: start.y + ny },
+    { x: end.x + nx, y: end.y + ny },
+    { x: end.x - nx, y: end.y - ny },
+    { x: start.x - nx, y: start.y - ny },
+  ];
+}
+
+function shapeLocalOutlinePoints(shape) {
+  const geometry = isRecord(shape?.geometry) ? shape.geometry : {};
+  const tool = shapeTool(shape);
+  if (tool === 'polygon' || tool === 'polyline') {
+    return normalizePoints(geometry.points);
+  }
+  if (tool === 'line') {
+    return normalizePoints([geometry.point1, geometry.point2]);
+  }
+  return [];
+}
+
+function shapeLocalPolygons(shape) {
+  const geometry = isRecord(shape?.geometry) ? shape.geometry : {};
+  const tool = shapeTool(shape);
+  if (tool === 'rectangle') {
+    return [rectanglePoints(numberValue(geometry.x), numberValue(geometry.y), numberValue(geometry.width, 1), numberValue(geometry.height, 1))];
+  }
+  if (tool === 'polygon') {
+    const points = normalizePoints(geometry.points);
+    return points.length >= 3 ? [points] : [];
+  }
+  if (tool === 'polyline') {
+    const points = normalizePoints(geometry.points);
+    const strokeWidth = Math.max(2, numberValue(shape?.style?.strokeWidth, 2));
+    return points.slice(1).map((point, index) => segmentPolygon(points[index], point, strokeWidth));
+  }
+  if (tool === 'line') {
+    const strokeWidth = Math.max(2, numberValue(shape?.style?.strokeWidth, 2));
+    return [segmentPolygon(
+      normalizePoint(geometry.point1),
+      normalizePoint(geometry.point2),
+      strokeWidth
+    )];
+  }
+  if (tool === 'circle') {
+    const radius = Math.max(1, numberValue(geometry.r, 1));
+    return [ellipsePoints(numberValue(geometry.cx), numberValue(geometry.cy), radius, radius)];
+  }
+  if (tool === 'ellipse') {
+    return [ellipsePoints(numberValue(geometry.cx), numberValue(geometry.cy), Math.max(1, numberValue(geometry.rx, 1)), Math.max(1, numberValue(geometry.ry, 1)))];
+  }
+  return [];
+}
+
+function transformShapePoint(point, transform, origin) {
+  const radians = (transform.rotation * Math.PI) / 180;
+  const scaledX = (point.x - origin.x) * transform.scaleX;
+  const scaledY = (point.y - origin.y) * transform.scaleY;
+  const rotatedX = scaledX * Math.cos(radians) - scaledY * Math.sin(radians);
+  const rotatedY = scaledX * Math.sin(radians) + scaledY * Math.cos(radians);
+  return {
+    x: rotatedX + origin.x + transform.x,
+    y: rotatedY + origin.y + transform.y,
+  };
+}
+
+function rotationRadians(value, unit = 'degrees') {
+  const rotation = numberValue(value);
+  return unit === 'radians' ? rotation : (rotation * Math.PI) / 180;
+}
+
+function transformInstancePoint(point, origin, instance) {
+  const radians = rotationRadians(instance?.rotation, instance?.rotationUnit || 'degrees');
+  const dx = point.x - origin.x;
+  const dy = point.y - origin.y;
+  return {
+    x: (dx * Math.cos(radians) - dy * Math.sin(radians)) + origin.x + numberValue(instance?.x),
+    y: (dx * Math.sin(radians) + dy * Math.cos(radians)) + origin.y + numberValue(instance?.y),
+  };
+}
+
+export function transformCollisionPoints(points, {
+  x = 0,
+  y = 0,
+  rotation = 0,
+  rotationUnit = 'radians',
+  scale = 1,
+  scaleX = scale,
+  scaleY = scale,
+} = {}) {
+  const radians = rotationRadians(rotation, rotationUnit);
+  const safeScaleX = numberValue(scaleX, 1);
+  const safeScaleY = numberValue(scaleY, 1);
+  return normalizePoints(points).map((point) => ({
+    x: numberValue(x) + ((point.x * safeScaleX) * Math.cos(radians)) - ((point.y * safeScaleY) * Math.sin(radians)),
+    y: numberValue(y) + ((point.x * safeScaleX) * Math.sin(radians)) + ((point.y * safeScaleY) * Math.cos(radians)),
+  }));
+}
+
+function boundsFromPoints(points) {
+  if (!Array.isArray(points) || !points.length) {
+    return { x: 0, y: 0, width: 1, height: 1 };
+  }
+  return getPolygonBounds(points);
+}
+
+function boundsFromPolygons(polygons) {
+  const points = polygons.flat();
+  if (!points.length) {
+    return { x: 0, y: 0, width: 1, height: 1 };
+  }
+  const bounds = boundsFromPoints(points);
+  return {
+    x: bounds.x,
+    y: bounds.y,
+    width: Math.max(1, bounds.width),
+    height: Math.max(1, bounds.height),
+  };
+}
+
+function anyPolygonsCollide(leftPolygons, rightPolygons) {
+  return leftPolygons.some((left) => rightPolygons.some((right) => arePolygonsColliding(left, right)));
+}
+
+function maskFromPolygons(polygons, bounds, cellSize) {
+  const width = Math.max(1, Math.ceil(bounds.width / cellSize) + 2);
+  const height = Math.max(1, Math.ceil(bounds.height / cellSize) + 2);
+  const rows = Array.from({ length: height }, () => Array.from({ length: width }, () => 0));
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const point = {
+        x: bounds.x + x * cellSize + cellSize / 2,
+        y: bounds.y + y * cellSize + cellSize / 2,
+      };
+      rows[y][x] = polygons.some((polygon) => isPointInPolygon(point, polygon)) ? 1 : 0;
+    }
+  }
+  return createRasterMask(rows, { cellSize });
+}
+
+function intersectionRect(left, right) {
+  const x = Math.max(left.x, right.x);
+  const y = Math.max(left.y, right.y);
+  const width = Math.min(left.x + left.width, right.x + right.width) - x;
+  const height = Math.min(left.y + left.height, right.y + right.height) - y;
+  return width > 0 && height > 0 ? { x, y, width, height } : null;
+}
+
+function visibleEffectiveShapes(object, options = {}) {
+  const frame = firstObjectFrame(object, options.preferredStateIds);
+  return sortedShapes(object)
+    .map((shape, shapeIndex) => effectiveShapeForFrame(shape, frame, shapeIndex))
+    .filter((shape) => shape.visible !== false);
+}
+
+export function getObjectVectorCollisionOutlinePoints(object, options = {}) {
+  const origin = getObjectVectorOrigin(object);
+  const shape = visibleEffectiveShapes(object, options).find((candidate) => {
+    const tool = shapeTool(candidate);
+    return tool === 'polygon' || tool === 'polyline';
+  }) || visibleEffectiveShapes(object, options).find((candidate) => shapeTool(candidate) === 'line');
+  const transform = shapeTransform(shape);
+  return shapeLocalOutlinePoints(shape).map((point) => transformShapePoint(point, transform, origin));
+}
+
+export function createObjectVectorCollisionGeometry(object, instance = {}, options = {}) {
+  const origin = getObjectVectorOrigin(object);
+  const polygons = visibleEffectiveShapes(object, options)
+    .flatMap((shape) => {
+      const transform = shapeTransform(shape);
+      return shapeLocalPolygons(shape)
+        .map((polygon) => polygon.map((point) => transformInstancePoint(transformShapePoint(point, transform, origin), origin, instance)))
+        .filter((polygon) => polygon.length >= 3);
+    });
+  const bounds = boundsFromPolygons(polygons);
+  const maskCellSize = Math.max(1, numberValue(options.maskCellSize, DEFAULT_MASK_CELL_SIZE));
+  return {
+    bounds,
+    hasGeometry: polygons.length > 0,
+    instance: { ...instance },
+    mask: maskFromPolygons(polygons, bounds, maskCellSize),
+    object,
+    origin,
+    originWorld: object ? transformInstancePoint(origin, origin, instance) : { x: 0, y: 0 },
+    polygons,
+    shapeRotations: [...new Set(visibleEffectiveShapes(object, options).map((shape) => shapeTransform(shape).rotation))],
+    transformedPoints: polygons.flat(),
+  };
+}
+
+export function normalizeObjectVectorCollisionMode(mode) {
+  const rawMode = String(mode || '').trim().toLowerCase();
+  const normalized = MODE_ALIASES[rawMode] || rawMode;
+  return OBJECT_VECTOR_COLLISION_MODES.includes(normalized) ? normalized : 'auto';
+}
+
+export function recommendObjectVectorCollisionMode(objectA, objectB, options = {}) {
+  const geometryA = createObjectVectorCollisionGeometry(objectA, {}, options);
+  const geometryB = createObjectVectorCollisionGeometry(objectB, {}, options);
+  return geometryA.hasGeometry && geometryB.hasGeometry ? 'vector' : 'bounds';
+}
+
+export function evaluateObjectVectorCollisionPair({
+  instanceA = {},
+  instanceB = {},
+  maskCellSize = DEFAULT_MASK_CELL_SIZE,
+  mode = 'auto',
+  objectA = null,
+  objectB = null,
+} = {}) {
+  const geometryA = createObjectVectorCollisionGeometry(objectA, instanceA, { maskCellSize });
+  const geometryB = createObjectVectorCollisionGeometry(objectB, instanceB, { maskCellSize });
+  const recommendedMode = geometryA.hasGeometry && geometryB.hasGeometry ? 'vector' : 'bounds';
+  const activeMode = normalizeObjectVectorCollisionMode(mode) === 'auto'
+    ? recommendedMode
+    : normalizeObjectVectorCollisionMode(mode);
+  const boundsOverlap = Boolean(objectA && objectB && geometryA.hasGeometry && geometryB.hasGeometry && isColliding(geometryA.bounds, geometryB.bounds));
+  const vectorOverlap = boundsOverlap && anyPolygonsCollide(geometryA.polygons, geometryB.polygons);
+  const pixelOverlap = boundsOverlap && areMasksColliding(
+    geometryA.mask,
+    geometryA.bounds.x,
+    geometryA.bounds.y,
+    geometryB.mask,
+    geometryB.bounds.x,
+    geometryB.bounds.y
+  );
+  const modeCollision = {
+    bounds: boundsOverlap,
+    hybrid: boundsOverlap && vectorOverlap && pixelOverlap,
+    'pixel-sprite': pixelOverlap,
+    vector: vectorOverlap,
+  };
+
+  return {
+    boundsOverlap,
+    collided: modeCollision[activeMode] === true,
+    enginePath: OBJECT_VECTOR_COLLISION_ENGINE_PATH,
+    geometryA,
+    geometryB,
+    mode: activeMode,
+    modeLabel: OBJECT_VECTOR_COLLISION_MODE_LABELS[activeMode] || 'Vector',
+    overlapBounds: boundsOverlap ? intersectionRect(geometryA.bounds, geometryB.bounds) : null,
+    pixelOverlap,
+    recommendedMode,
+    vectorOverlap,
+  };
+}
