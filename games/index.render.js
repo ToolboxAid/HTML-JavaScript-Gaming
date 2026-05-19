@@ -1,4 +1,5 @@
 import { getToolRegistry } from "../tools/toolRegistry.js";
+import { resolveGamePreviewMap } from "./shared/gameManifestPreviewResolver.js";
 import { launchWithExternalToolWorkspaceReset, resolveGameWorkspaceLaunchHref } from "../tools/shared/toolLaunchSSoT.js";
 
 const METADATA_PATH = "./metadata/games.index.metadata.json";
@@ -123,7 +124,7 @@ function writePinnedSet(pinnedSet) {
   window.localStorage.setItem(GAMES_PINNED_KEY, JSON.stringify([...pinnedSet].sort()));
 }
 
-function buildRows(metadata, pinnedSet, toolLabelMap) {
+function buildRows(metadata, pinnedSet, toolLabelMap, previewMap) {
   const rows = asArray(metadata?.games)
     .map((game) => {
       const id = normalize(game?.id);
@@ -162,7 +163,7 @@ function buildRows(metadata, pinnedSet, toolLabelMap) {
         engineClassNames,
         toolTokens,
         tags,
-        preview: normalize(game?.preview),
+        preview: normalize(previewMap.get(id)),
         href,
         workspaceHref: workspaceLaunch.href,
         workspaceLaunchError: workspaceLaunch.error,
@@ -365,6 +366,7 @@ export async function initGamesIndex() {
     return;
   }
   const metadata = await response.json();
+  const previewMap = await resolveGamePreviewMap(metadata?.games, { documentRef: document });
   const toolRegistry = getToolRegistry();
   const toolLabelMap = new Map(
     toolRegistry
@@ -373,7 +375,7 @@ export async function initGamesIndex() {
       .filter((entry) => entry[0] && entry[1])
   );
   let pinnedSet = readPinnedSet();
-  let model = buildRows(metadata, pinnedSet, toolLabelMap);
+  let model = buildRows(metadata, pinnedSet, toolLabelMap, previewMap);
   setSelect(levelSelect, model.levels, (value) => value);
   setSelect(classSelect, model.classes, (value) => value);
   setSelect(toolSelect, model.tools.map((entry) => entry.value), (value) => {
@@ -387,7 +389,7 @@ export async function initGamesIndex() {
   }
 
   const apply = () => {
-    model = buildRows(metadata, pinnedSet, toolLabelMap);
+    model = buildRows(metadata, pinnedSet, toolLabelMap, previewMap);
     const state = {
       level: normalize(levelSelect.value),
       classValue: normalize(classSelect.value),

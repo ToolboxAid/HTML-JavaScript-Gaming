@@ -11,10 +11,8 @@ index.html
   <title>Pong</title>
   <link rel="stylesheet" href="/src/engine/ui/baseLayout.css" />
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
-  <script type="module">
-    import { bootWorkspaceGame } from "/games/shared/workspaceGameBoot.js";
-    bootWorkspaceGame("Pong");
-  </script>
+  <link rel="stylesheet" href="../index.css" />
+  <script type="module" src="./boot.js"></script>
 
 </head>
 <body class="hub-page-games">
@@ -22,6 +20,13 @@ index.html
   <main>
     <h1>Pong</h1>
     <p>Arcade-style Pong build with Tennis, Hockey, Handball, and Jai-Alai modes, paddle english, and keyboard/gamepad support.</p>
+    <section>
+      <h3>Preview</h3>
+      <a class="game-preview-link" href="#game" aria-label="Pong preview thumbnail">
+        <img id="pong-preview-thumbnail" class="game-thumb" loading="lazy" decoding="async" alt="Pong preview thumbnail" hidden>
+        <span id="pong-preview-placeholder" class="game-preview-missing">No Preview</span>
+      </a>
+    </section>
     <canvas id="game" width="960" height="720"></canvas>
     <section>
       <h3>Controls</h3>

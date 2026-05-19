@@ -70,7 +70,7 @@
       "source": "manifest",
       "assets": {
         "assets.image.preview.preview": {
-          "path": "assets/images/preview.svg",
+          "path": "assets/images/preview1.svg",
           "type": "image",
           "kind": "svg",
           "role": "preview",

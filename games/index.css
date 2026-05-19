@@ -34,6 +34,10 @@
   margin-bottom: 10px;
 }
 
+.game-preview-link [hidden] {
+  display: none !important;
+}
+
 .game-thumb {
   display: block;
   width: 100%;
