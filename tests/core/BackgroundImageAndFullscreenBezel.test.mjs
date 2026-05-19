@@ -15,11 +15,51 @@ import fullscreenBezel, {
 import {
   resolveBezelStretchOverridePath,
   resolveGameImageConventionPaths,
+  resolveManifestChromeAssetPaths,
   resolveRuntimeAssetUrl
 } from "../../src/engine/runtime/gameImageConvention.js";
 
-function createImageFactory(presentPaths) {
-  return () => {
+const ASTEROIDS_BACKGROUND_RUNTIME_PATH = "/games/Asteroids/assets/images/deluxe.png";
+
+function createAssetManagerManifest({ includeBackground = true } = {}) {
+  const assets = {
+    "assets.color.background.game": {
+      path: "palette://workspace/space-black",
+      type: "color",
+      kind: "hex",
+      role: "background",
+      color: {
+        hex: "#020617",
+        name: "Space Black"
+      }
+    },
+    "assets.image.bezel.bezel": {
+      path: "assets/images/bezel.png",
+      type: "image",
+      kind: "png",
+      role: "bezel"
+    }
+  };
+  if (includeBackground) {
+    assets["assets.image.background.deluxe"] = {
+      path: "assets/images/deluxe.png",
+      type: "image",
+      kind: "png",
+      role: "background"
+    };
+  }
+  return {
+    tools: {
+      "asset-manager-v2": {
+        assets
+      }
+    }
+  };
+}
+
+function createImageFactory(presentPaths, onCreate = null) {
+  return (requestedPath) => {
+    onCreate?.(String(requestedPath || ""));
     const image = {
       width: 1920,
       height: 1080,
@@ -200,61 +240,81 @@ function createCanvasWithOrder(order, documentRef) {
   return canvas;
 }
 
-function testBackgroundGameplayGatingAndOrder() {
+async function testBackgroundManifestRenderOrder() {
   const documentRef = { location: { pathname: "/games/Asteroids/index.html" } };
-  const paths = resolveGameImageConventionPaths({ documentRef: { location: { pathname: "/games/Asteroids/index.html" } } });
-  assert.equal(paths.backgroundPath, "games/Asteroids/assets/images/background.png");
+  const manifestPayload = createAssetManagerManifest();
+  const paths = resolveGameImageConventionPaths({ documentRef });
+  assert.equal(paths.backgroundPath, "");
   assert.equal(paths.bezelPath, "games/Asteroids/assets/images/bezel.png");
-  const runtimeBackgroundPath = resolveRuntimeAssetUrl(paths.backgroundPath, documentRef);
+  const manifestPaths = await resolveManifestChromeAssetPaths({ documentRef, manifestPayload });
+  assert.equal(manifestPaths.backgroundPath, ASTEROIDS_BACKGROUND_RUNTIME_PATH);
+  assert.equal(manifestPaths.bezelPath, "/games/Asteroids/assets/images/bezel.png");
+  const runtimeBackgroundPath = resolveRuntimeAssetUrl(manifestPaths.backgroundPath, documentRef);
 
   const layer = new backgroundImage({
     documentRef,
+    manifestPayload,
     imageFactory: createImageFactory(new Set([runtimeBackgroundPath]))
   });
   const order = [];
   const renderer = createRendererSpy(order);
 
   const menuResult = layer.render(renderer, { scene: { session: { mode: "menu" } } });
+  if (layer.manifestResolvePromise) {
+    await layer.manifestResolvePromise;
+  }
   assert.equal(menuResult.drawn, false);
-  assert.equal(menuResult.reason, "non-gameplay-state");
+  assert.equal(menuResult.reason, "unavailable");
   assert.deepEqual(order, []);
 
+  const resolvedMenuResult = layer.render(renderer, { scene: { session: { mode: "menu" } } });
+  assert.equal(resolvedMenuResult.drawn, true);
+  assert.equal(resolvedMenuResult.path, ASTEROIDS_BACKGROUND_RUNTIME_PATH);
+  assert.deepEqual(order, [`background:${ASTEROIDS_BACKGROUND_RUNTIME_PATH}`]);
+
+  order.length = 0;
   const attractResult = layer.render(renderer, { scene: { mode: "attract" } });
-  assert.equal(attractResult.drawn, false);
-  assert.equal(attractResult.reason, "non-gameplay-state");
-  assert.deepEqual(order, []);
+  assert.equal(attractResult.drawn, true);
+  assert.equal(attractResult.path, ASTEROIDS_BACKGROUND_RUNTIME_PATH);
+  assert.deepEqual(order, [`background:${ASTEROIDS_BACKGROUND_RUNTIME_PATH}`]);
 
+  order.length = 0;
   const gameplayResult = layer.render(renderer, { scene: { session: { mode: "playing" } } });
   assert.equal(gameplayResult.drawn, true);
-  assert.equal(gameplayResult.path, "games/Asteroids/assets/images/background.png");
-  assert.deepEqual(order, ["background:/games/Asteroids/assets/images/background.png"]);
+  assert.equal(gameplayResult.path, ASTEROIDS_BACKGROUND_RUNTIME_PATH);
+  assert.deepEqual(order, [`background:${ASTEROIDS_BACKGROUND_RUNTIME_PATH}`]);
 
   order.length = 0;
   const backToMenuResult = layer.render(renderer, { scene: { session: { mode: "menu" } } });
-  assert.equal(backToMenuResult.drawn, false);
-  assert.equal(backToMenuResult.reason, "non-gameplay-state");
-  assert.deepEqual(order, []);
+  assert.equal(backToMenuResult.drawn, true);
+  assert.equal(backToMenuResult.path, ASTEROIDS_BACKGROUND_RUNTIME_PATH);
+  assert.deepEqual(order, [`background:${ASTEROIDS_BACKGROUND_RUNTIME_PATH}`]);
 }
 
-function testGameImageConventionsAreGameAgnostic() {
+async function testGameImageConventionsAreGameAgnostic() {
   const asteroidsPaths = resolveGameImageConventionPaths({
     documentRef: { location: { pathname: "/games/Asteroids/index.html" } }
   });
-  assert.equal(asteroidsPaths.backgroundPath, "games/Asteroids/assets/images/background.png");
+  assert.equal(asteroidsPaths.backgroundPath, "");
   assert.equal(asteroidsPaths.bezelPath, "games/Asteroids/assets/images/bezel.png");
   assert.equal(
     resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/games/Asteroids/index.html" } } }),
-    "games/Asteroids/game.manifest.json#tools.asset-browser.assets.image.asteroids.bezel.stretchOverride"
+    "/games/Asteroids/game.manifest.json"
   );
+  const asteroidsManifestPaths = await resolveManifestChromeAssetPaths({
+    documentRef: { location: { pathname: "/games/Asteroids/index.html" } },
+    manifestPayload: createAssetManagerManifest()
+  });
+  assert.equal(asteroidsManifestPaths.backgroundPath, ASTEROIDS_BACKGROUND_RUNTIME_PATH);
 
   const templatePaths = resolveGameImageConventionPaths({
     documentRef: { location: { pathname: "/games/_template/index.html" } }
   });
-  assert.equal(templatePaths.backgroundPath, "games/_template/assets/images/background.png");
+  assert.equal(templatePaths.backgroundPath, "");
   assert.equal(templatePaths.bezelPath, "games/_template/assets/images/bezel.png");
   assert.equal(
     resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/games/_template/index.html" } } }),
-    "games/_template/assets/images/bezel.stretch.override.json"
+    "/games/_template/game.manifest.json"
   );
 }
 
@@ -291,21 +351,32 @@ function testResolvePreferredFullscreenTargetCreatesCanvasOnlyHost() {
   assert.equal(main.children.includes(section), true);
 }
 
-function testNoOpWhenBackgroundMissing() {
+async function testNoOpWhenBackgroundMissing() {
+  let imageCreateCount = 0;
   const layer = new backgroundImage({
     documentRef: { location: { pathname: "/games/MissingGame/index.html" } },
-    imageFactory: createImageFactory(new Set())
+    manifestPayload: createAssetManagerManifest({ includeBackground: false }),
+    imageFactory: createImageFactory(new Set(), () => {
+      imageCreateCount += 1;
+    })
   });
   const order = [];
   const result = layer.render(createRendererSpy(order), { scene: { session: { mode: "playing" } } });
+  if (layer.manifestResolvePromise) {
+    await layer.manifestResolvePromise;
+  }
+  const resolvedResult = layer.render(createRendererSpy(order), { scene: { session: { mode: "playing" } } });
   assert.equal(result.drawn, false);
+  assert.equal(resolvedResult.drawn, false);
+  assert.equal(resolvedResult.path, "");
+  assert.equal(imageCreateCount, 0);
   assert.equal(order.length, 0);
 }
 
 function testSampleGameBackgroundAndBezelNoOpWhenMissing() {
   const documentRef = createDocumentStub("/games/SpaceInvaders/index.html");
   const paths = resolveGameImageConventionPaths({ documentRef });
-  assert.equal(paths.backgroundPath, "games/SpaceInvaders/assets/images/background.png");
+  assert.equal(paths.backgroundPath, "");
   assert.equal(paths.bezelPath, "games/SpaceInvaders/assets/images/bezel.png");
 
   const backgroundLayer = new backgroundImage({
@@ -317,7 +388,7 @@ function testSampleGameBackgroundAndBezelNoOpWhenMissing() {
     scene: { session: { mode: "playing" } }
   });
   assert.equal(backgroundResult.drawn, false);
-  assert.equal(backgroundResult.path, "games/SpaceInvaders/assets/images/background.png");
+  assert.equal(backgroundResult.path, "");
   assert.equal(backgroundOrder.length, 0);
 
   const host = createElement("div", documentRef);
@@ -837,10 +908,11 @@ async function testSampleGameBezelDetectionCreatesStretchConfig() {
   }
 }
 
-function testEngineRuntimeIntegration() {
+async function testEngineRuntimeIntegration() {
   const animationFrame = createAnimationFrameStub();
   const originalDocument = globalThis.document;
   const originalImage = globalThis.Image;
+  const originalFetch = globalThis.fetch;
   const order = [];
 
   try {
@@ -852,9 +924,27 @@ function testEngineRuntimeIntegration() {
     globalThis.document = documentRef;
 
     const availablePaths = new Set([
-      "/games/Asteroids/assets/images/background.png",
+      ASTEROIDS_BACKGROUND_RUNTIME_PATH,
       "/games/Asteroids/assets/images/bezel.png"
     ]);
+    const manifestPayload = createAssetManagerManifest();
+    globalThis.fetch = async (url) => {
+      const requestUrl = String(url?.url || url || "");
+      if (requestUrl.endsWith("/games/Asteroids/game.manifest.json")) {
+        return {
+          ok: true,
+          async json() {
+            return manifestPayload;
+          }
+        };
+      }
+      return {
+        ok: false,
+        async json() {
+          return null;
+        }
+      };
+    };
     globalThis.Image = function StubImage() {
       this.width = 1920;
       this.height = 1080;
@@ -932,15 +1022,28 @@ function testEngineRuntimeIntegration() {
     assert.equal(engine.fullscreenBezelLayer.element.src.includes("/games/Asteroids/games/Asteroids/"), false);
 
     engine.tick(1000);
+    await Promise.all([
+      engine.backgroundColorLayer.manifestResolvePromise,
+      engine.backgroundImageLayer.manifestResolvePromise,
+      engine.fullscreenBezelLayer.manifestResolvePromise
+    ].filter(Boolean));
     assert.deepEqual(order, ["clear", "scene"]);
     assert.equal(engine.fullscreenBezelLayer.getState().visible, false);
+
+    order.length = 0;
+    engine.tick(1008);
+    assert.deepEqual(order, [
+      "clear",
+      `background:${ASTEROIDS_BACKGROUND_RUNTIME_PATH}`,
+      "scene"
+    ]);
 
     scene.session.mode = "playing";
     order.length = 0;
     engine.tick(1016);
     assert.deepEqual(order, [
       "clear",
-      "background:/games/Asteroids/assets/images/background.png",
+      `background:${ASTEROIDS_BACKGROUND_RUNTIME_PATH}`,
       "scene"
     ]);
 
@@ -950,7 +1053,7 @@ function testEngineRuntimeIntegration() {
     engine.tick(1032);
     assert.deepEqual(order, [
       "clear",
-      "background:/games/Asteroids/assets/images/background.png",
+      `background:${ASTEROIDS_BACKGROUND_RUNTIME_PATH}`,
       "scene"
     ]);
     assert.equal(engine.fullscreenBezelLayer.getState().visible, true);
@@ -967,15 +1070,20 @@ function testEngineRuntimeIntegration() {
     } else {
       globalThis.Image = originalImage;
     }
+    if (originalFetch === undefined) {
+      delete globalThis.fetch;
+    } else {
+      globalThis.fetch = originalFetch;
+    }
   }
 }
 
 export async function run() {
-  testBackgroundGameplayGatingAndOrder();
-  testGameImageConventionsAreGameAgnostic();
+  await testBackgroundManifestRenderOrder();
+  await testGameImageConventionsAreGameAgnostic();
   testResolvePreferredFullscreenTargetKeepsCanvasOnlyParent();
   testResolvePreferredFullscreenTargetCreatesCanvasOnlyHost();
-  testNoOpWhenBackgroundMissing();
+  await testNoOpWhenBackgroundMissing();
   testSampleGameBackgroundAndBezelNoOpWhenMissing();
   testFullscreenBezelVisibilityAndHtmlAttachment();
   testNoOpWhenBezelMissing();
@@ -990,5 +1098,5 @@ export async function run() {
   await testBezelDetectionDoesNotOverwriteExistingStretchConfig();
   await testMalformedStretchConfigFileFallsBackWithoutOverwrite();
   await testSampleGameBezelDetectionCreatesStretchConfig();
-  testEngineRuntimeIntegration();
+  await testEngineRuntimeIntegration();
 }

@@ -4,29 +4,6 @@ import {
   resolveRuntimeAssetUrl
 } from "./gameImageConvention.js";
 
-const NON_GAMEPLAY_MODE_TOKENS = Object.freeze([
-  "menu",
-  "title",
-  "attract",
-  "select-player",
-  "player-select",
-  "intro",
-  "splash",
-  "game-over",
-  "credits",
-  "pause"
-]);
-
-const GAMEPLAY_MODE_TOKENS = Object.freeze([
-  "playing",
-  "gameplay",
-  "in-game",
-  "ingame",
-  "combat",
-  "runtime",
-  "active"
-]);
-
 function createLayerState(path) {
   return {
     path,
@@ -54,30 +31,6 @@ function drawFullscreenImage(renderer, image) {
   return true;
 }
 
-function toModeText(value) {
-  return typeof value === "string" ? value.trim().toLowerCase() : "";
-}
-
-function sceneModeCandidates(scene) {
-  if (!scene || typeof scene !== "object") {
-    return [];
-  }
-
-  return [
-    scene.mode,
-    scene.state,
-    scene.status,
-    scene.screen,
-    scene.view,
-    scene.phase,
-    scene.session?.mode,
-    scene.session?.state,
-    scene.session?.status
-  ]
-    .map(toModeText)
-    .filter(Boolean);
-}
-
 export default class backgroundImage {
   constructor(options = {}) {
     this.documentRef = options.documentRef || globalThis.document || null;
@@ -88,6 +41,9 @@ export default class backgroundImage {
     this.gameId = resolved.gameId;
     this.manifestPath = resolved.manifestPath;
     this.layer = createLayerState(resolved.backgroundPath);
+    this.manifestPayload = options.manifestPayload && typeof options.manifestPayload === "object" && !Array.isArray(options.manifestPayload)
+      ? options.manifestPayload
+      : null;
     this.imageFactory = typeof options.imageFactory === "function"
       ? options.imageFactory
       : (typeof Image === "function" ? () => new Image() : null);
@@ -116,7 +72,8 @@ export default class backgroundImage {
     this.manifestResolvePromise = resolveManifestChromeAssetPaths({
       gameId: this.gameId,
       manifestPath: this.manifestPath,
-      documentRef: this.documentRef
+      documentRef: this.documentRef,
+      manifestPayload: this.manifestPayload
     })
       .then((resolved) => {
         this.gameId = resolved.gameId || this.gameId;
@@ -134,45 +91,14 @@ export default class backgroundImage {
       });
   }
 
-  isGameplayState(scene) {
-    if (!scene || typeof scene !== "object") {
-      return true;
-    }
-
-    if (typeof scene.isGameplayStateActive === "function") {
-      const explicit = scene.isGameplayStateActive();
-      if (typeof explicit === "boolean") {
-        return explicit;
-      }
-    }
-    if (typeof scene.isGameplayStateActive === "boolean") {
-      return scene.isGameplayStateActive;
-    }
-
-    const modes = sceneModeCandidates(scene);
-    for (const mode of modes) {
-      if (NON_GAMEPLAY_MODE_TOKENS.some((token) => mode.includes(token))) {
-        return false;
-      }
-      if (GAMEPLAY_MODE_TOKENS.some((token) => mode.includes(token))) {
-        return true;
-      }
-    }
-
-    if (scene.attractController?.active === true) {
-      return false;
-    }
-
-    return true;
-  }
-
   ensureLoaded() {
     this.ensureManifestResolved();
 
+    if (!this.manifestResolved) {
+      return;
+    }
     if (!this.layer.path) {
-      if (this.manifestResolved) {
-        this.layer.status = "unavailable";
-      }
+      this.layer.status = "unavailable";
       return;
     }
     if (this.layer.status === "ready" || this.layer.status === "missing" || this.layer.status === "loading") {
@@ -213,13 +139,6 @@ export default class backgroundImage {
 
   render(renderer, options = {}) {
     this.ensureLoaded();
-    if (!this.isGameplayState(options.scene)) {
-      return {
-        drawn: false,
-        reason: "non-gameplay-state",
-        path: this.layer.path
-      };
-    }
     if (this.layer.status !== "ready" || !this.layer.image) {
       return {
         drawn: false,

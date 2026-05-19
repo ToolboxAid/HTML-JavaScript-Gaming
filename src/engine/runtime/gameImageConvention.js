@@ -66,7 +66,7 @@ function resolveManifestRelativePath(pathValue, manifestPath) {
   return `${baseFolder}/${normalized.replace(/^\/+/, "")}`;
 }
 
-function normalizeAssetEntry(rawEntry, fallbackId = "", manifestPath = "") {
+function normalizeAssetEntry(rawEntry, fallbackId = "", manifestPath = "", sourceToolId = "") {
   const entry = toObject(rawEntry);
   const path = resolveManifestRelativePath(entry.path || entry.runtimePath || entry.href, manifestPath);
   if (!path) {
@@ -77,6 +77,7 @@ function normalizeAssetEntry(rawEntry, fallbackId = "", manifestPath = "") {
     kind: safeText(entry.kind, "").toLowerCase(),
     path,
     role: safeText(entry.role, "").toLowerCase(),
+    sourceToolId: safeText(sourceToolId, "").toLowerCase(),
     type: safeText(entry.type, "").toLowerCase()
   };
 }
@@ -127,12 +128,12 @@ function collectImageEntriesFromManifest(manifestPayload, { manifestPath = "" } 
 
   const assetBrowserAssets = toObject(payload?.tools?.["asset-browser"]?.assets);
   Object.entries(assetBrowserAssets).forEach(([assetId, rawEntry]) => {
-    pushEntry(normalizeAssetEntry(rawEntry, assetId, manifestPath));
+    pushEntry(normalizeAssetEntry(rawEntry, assetId, manifestPath, "asset-browser"));
   });
 
   const assetManagerAssets = toObject(payload?.tools?.["asset-manager-v2"]?.assets);
   Object.entries(assetManagerAssets).forEach(([assetId, rawEntry]) => {
-    pushEntry(normalizeAssetEntry(rawEntry, assetId, manifestPath));
+    pushEntry(normalizeAssetEntry(rawEntry, assetId, manifestPath, "asset-manager-v2"));
   });
 
   return entries;
@@ -184,6 +185,17 @@ function chooseGameBackgroundColor(entries) {
   return normalizedEntries.find((entry) => entry.id === "assets.color.background.game")
     || normalizedEntries.find((entry) => entry.role === "background" && entry.id.includes(".background.game"))
     || null;
+}
+
+function chooseAssetManagerBackgroundImagePath(entries) {
+  const normalizedEntries = Array.isArray(entries) ? entries : [];
+  const backgroundAsset = normalizedEntries.find((entry) => (
+    entry?.sourceToolId === "asset-manager-v2"
+    && entry?.type === "image"
+    && entry?.role === "background"
+    && safeText(entry?.path, "")
+  ));
+  return backgroundAsset?.path || "";
 }
 
 const manifestCache = new Map();
@@ -261,7 +273,7 @@ export function resolveGameImageConventionPaths(options = {}) {
     backgroundColorHex: "",
     backgroundColorName: "",
     backgroundColorPath: "",
-    backgroundPath: gameId ? `games/${gameId}/assets/images/background.png` : "",
+    backgroundPath: "",
     bezelPath: gameId ? `games/${gameId}/assets/images/bezel.png` : ""
   };
 }
@@ -288,7 +300,7 @@ export async function resolveManifestChromeAssetPaths(options = {}) {
     backgroundColorHex: backgroundColor?.hex || "",
     backgroundColorName: backgroundColor?.name || "",
     backgroundColorPath: backgroundColor?.path || "",
-    backgroundPath: chooseSemanticImagePath(imageEntries, "background"),
+    backgroundPath: chooseAssetManagerBackgroundImagePath(imageEntries),
     bezelPath: chooseSemanticImagePath(imageEntries, "bezel")
   };
 }
