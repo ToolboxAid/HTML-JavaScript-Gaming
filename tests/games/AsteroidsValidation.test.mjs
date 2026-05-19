@@ -163,14 +163,16 @@ export async function run() {
   assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge, 'object.asteroids.large-asteroid');
   assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium, 'object.asteroids.medium-asteroid');
   assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall, 'object.asteroids.small-asteroid');
-  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip, 'object.asteroids.ship');
-  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractUfo, 'object.asteroids.large-ufo');
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.ship, 'object.asteroids.ship');
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge, 'object.asteroids.large-ufo');
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall, 'object.asteroids.small-ufo');
   assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet).id, 'object.asteroids.bullet');
   assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge).id, 'object.asteroids.large-asteroid');
   assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium).id, 'object.asteroids.medium-asteroid');
   assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall).id, 'object.asteroids.small-asteroid');
-  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip).id, 'object.asteroids.ship');
-  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractUfo).id, 'object.asteroids.large-ufo');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.ship).id, 'object.asteroids.ship');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge).id, 'object.asteroids.large-ufo');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall).id, 'object.asteroids.small-ufo');
   ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.forEach((id) => {
     assert.equal(objectGeometry.objectsById.has(id), true, `required Asteroids manifest geometry id ${id} should resolve`);
   });
@@ -189,12 +191,12 @@ export async function run() {
   assert.deepEqual(
     getAsteroidsObjectGeometryPoints(objectGeometry, 'ship'),
     [
-      { x: 14, y: 0 },
-      { x: -10, y: -8 },
-      { x: -6, y: -3 },
-      { x: -6, y: 3 },
-      { x: -10, y: 8 },
-      { x: 14, y: 0 },
+      { x: 15.4, y: 0 },
+      { x: -11, y: -8.8 },
+      { x: -6.6, y: -3.3 },
+      { x: -6.6, y: 3.3 },
+      { x: -11, y: 8.8 },
+      { x: 15.4, y: 0 },
     ],
   );
   assert.deepEqual(
@@ -244,12 +246,12 @@ export async function run() {
   const shipObject = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.ship');
   const shipHull = shipObject.shapes.find((shape) => shape.tool === 'polygon');
   assert.deepEqual(shipHull.geometry.points, [
-    { x: 14, y: 0 },
-    { x: -10, y: -8 },
-    { x: -6, y: -3 },
-    { x: -6, y: 3 },
-    { x: -10, y: 8 },
-    { x: 14, y: 0 },
+    { x: 15.4, y: 0 },
+    { x: -11, y: -8.8 },
+    { x: -6.6, y: -3.3 },
+    { x: -6.6, y: 3.3 },
+    { x: -11, y: 8.8 },
+    { x: 15.4, y: 0 },
   ]);
   const largeUfoObject = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.large-ufo');
   assert.equal(largeUfoObject.shapes[0].tool, 'polyline');
@@ -288,13 +290,13 @@ export async function run() {
   assert.equal(legacySharedGeometryValidation.errors.some((message) => message.includes('vectorMaps')), true);
   const missingShipObjectManifest = structuredClone(manifestPayload);
   missingShipObjectManifest.tools['object-vector-studio-v2'].objects = missingShipObjectManifest.tools['object-vector-studio-v2'].objects
-    .filter((object) => object.id !== ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip);
+    .filter((object) => object.id !== ASTEROIDS_OBJECT_GEOMETRY_IDS.ship);
   const missingShipObjectValidation = loadAsteroidsObjectGeometryFromManifest(missingShipObjectManifest);
   assert.equal(missingShipObjectValidation.ok, false);
-  assert.equal(missingShipObjectValidation.errors.some((message) => message.includes(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip)), true);
+  assert.equal(missingShipObjectValidation.errors.some((message) => message.includes(ASTEROIDS_OBJECT_GEOMETRY_IDS.ship)), true);
   const missingSmallUfoObjectManifest = structuredClone(manifestPayload);
   missingSmallUfoObjectManifest.tools['object-vector-studio-v2'].objects = missingSmallUfoObjectManifest.tools['object-vector-studio-v2'].objects
-    .filter((object) => object.id !== 'object.asteroids.small-ufo');
+    .filter((object) => object.id !== ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall);
   const missingSmallUfoObjectValidation = loadAsteroidsObjectGeometryFromManifest(missingSmallUfoObjectManifest);
   assert.equal(missingSmallUfoObjectValidation.ok, false);
   assert.equal(

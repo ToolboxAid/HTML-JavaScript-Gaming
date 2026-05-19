@@ -31,9 +31,9 @@ export function run() {
   ship.angle = Math.PI / 2;
   const shipPoints = ship.getPoints();
   assert.equal(shipPoints.length, 6);
-  assertPointClose(shipPoints[0], { x: 100, y: 214 });
-  assertPointClose(shipPoints[1], { x: 108, y: 190 });
-  assertPointClose(shipPoints[4], { x: 92, y: 190 });
+  assertPointClose(shipPoints[0], { x: 100, y: 215.4 });
+  assertPointClose(shipPoints[1], { x: 108.8, y: 189 });
+  assertPointClose(shipPoints[4], { x: 91.2, y: 189 });
 
   const asteroid = new Asteroid(320, 240, 3, () => 0.5, asteroidGeometryProfiles);
   asteroid.angle = 0;

@@ -7662,8 +7662,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await page.waitForFunction(() => {
         const counts = window.__asteroidsObjectVectorRuntime?.renderCounts || {};
-        return counts.attractShip > 0
-          && counts.attractAsteroid > 0;
+        return counts.ship > 0
+          && counts.asteroids > 0;
       });
       await page.evaluate(() => {
         const scene = window.__asteroidsNewEngine.scene;
@@ -7680,7 +7680,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await page.waitForFunction(() => {
         const counts = window.__asteroidsObjectVectorRuntime?.renderCounts || {};
-        return counts.attractUfo > 0;
+        return counts.ufo > 0;
       });
 
       await page.evaluate(() => {
@@ -7781,15 +7781,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(diagnostics.renderCounts.bullet).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ship).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);
-      expect(diagnostics.renderCounts.attractAsteroid).toBeGreaterThan(0);
-      expect(diagnostics.renderCounts.attractShip).toBeGreaterThan(0);
-      expect(diagnostics.renderCounts.attractUfo).toBeGreaterThan(0);
+      expect(diagnostics.renderCounts.attractAsteroid).toBeUndefined();
+      expect(diagnostics.renderCounts.attractShip).toBeUndefined();
+      expect(diagnostics.renderCounts.attractUfo).toBeUndefined();
       expect(diagnostics.objectVectorObjectIds).toEqual(expect.arrayContaining([
         "object.asteroids.bullet",
         "object.asteroids.large-asteroid",
         "object.asteroids.medium-asteroid",
         "object.asteroids.small-asteroid",
         "object.asteroids.large-ufo",
+        "object.asteroids.small-ufo",
         "object.asteroids.ship"
       ]));
       const eventMessages = diagnostics.events.map((entry) => entry.message).join("\n");
@@ -7798,6 +7799,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(eventMessages).toContain("Object Vector runtime cache miss for asteroidMedium; cached resolved object object.asteroids.medium-asteroid.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for asteroidSmall; cached resolved object object.asteroids.small-asteroid.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ship; cached resolved object object.asteroids.ship.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for ufoLarge; cached resolved object object.asteroids.large-ufo.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ufoSmall; cached resolved object object.asteroids.small-ufo.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/frame-1.");
       expect(eventMessages).toContain("Object Vector runtime rendered object.asteroids.ship: 1 shapes state=idle frame=frame-1.");

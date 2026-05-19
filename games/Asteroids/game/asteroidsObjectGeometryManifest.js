@@ -10,17 +10,19 @@ export const ASTEROIDS_OBJECT_GEOMETRY_IDS = Object.freeze({
   asteroidMedium: 'object.asteroids.medium-asteroid',
   asteroidSmall: 'object.asteroids.small-asteroid',
   bullet: 'object.asteroids.bullet',
-  attractShip: 'object.asteroids.ship',
-  attractUfo: 'object.asteroids.large-ufo',
+  ship: 'object.asteroids.ship',
+  ufoLarge: 'object.asteroids.large-ufo',
+  ufoSmall: 'object.asteroids.small-ufo',
 });
 
 export const ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS = Object.freeze([
   ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge,
   ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium,
   ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall,
-  ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip,
-  ASTEROIDS_OBJECT_GEOMETRY_IDS.attractUfo,
   ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet,
+  ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
+  ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge,
+  ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall,
 ]);
 
 function isRecord(value) {

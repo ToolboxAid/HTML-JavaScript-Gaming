@@ -245,15 +245,74 @@ function testAsteroidsAttractAsteroidsUseManifestObjectsAndStyles() {
   assert.equal(objectIds.includes('object.asteroids.small-asteroid'), true);
   assert.equal(objectIds.includes('object.asteroids.large-ufo'), true);
   [
+    'object.asteroids.ship',
     'object.asteroids.large-asteroid',
     'object.asteroids.medium-asteroid',
     'object.asteroids.small-asteroid',
+    'object.asteroids.large-ufo',
   ].forEach((objectId) => {
     const calls = renderCalls.filter((call) => call.objectId === objectId);
     assert.equal(calls.length > 0, true);
     assert.equal(calls.every((call) => call.requireManifestBinding), true);
     assert.equal(calls.every((call) => call.stroke === styleByObjectId.get(objectId)), true);
   });
+  assert.equal(scene.objectVectorRenderCounts.attractAsteroid, undefined);
+  assert.equal(scene.objectVectorRenderCounts.attractShip, undefined);
+  assert.equal(scene.objectVectorRenderCounts.attractUfo, undefined);
+  assert.equal(scene.objectVectorRenderCounts.asteroids > 0, true);
+  assert.equal(scene.objectVectorRenderCounts.ship > 0, true);
+  assert.equal(scene.objectVectorRenderCounts.ufo > 0, true);
+}
+
+function testAsteroidsGameplayObjectsUseSharedManifestBindings() {
+  const renderCalls = [];
+  const scene = new AsteroidsGameScene(createAsteroidsTestSceneOptions({
+    objectVectorAssets: createObjectVectorAssetSet(),
+    objectVectorRuntime: createObjectVectorRuntime(renderCalls),
+  }));
+  scene.session.start(1);
+  scene.attractController.active = false;
+  scene.world.asteroids = [
+    scene.world.createAsteroidFromState({ angle: 0.12, size: 3, x: 120, y: 160 }),
+    scene.world.createAsteroidFromState({ angle: -0.28, size: 2, x: 240, y: 260 }),
+    scene.world.createAsteroidFromState({ angle: 0.47, size: 1, x: 360, y: 320 }),
+  ];
+  scene.world.bullets = [];
+  scene.world.ufoBullets = [];
+  scene.world.ufo = scene.world.createUfoEntity('large', scene.world.wave);
+  scene.world.ufo.x = 520;
+  scene.world.ufo.y = 180;
+
+  const renderer = {
+    drawRect() {},
+    strokeRect() {},
+    drawPolygon() {},
+    drawLine() {},
+    drawCircle() {},
+    drawText() {},
+  };
+
+  scene.render(renderer);
+  [
+    'object.asteroids.ship',
+    'object.asteroids.large-asteroid',
+    'object.asteroids.medium-asteroid',
+    'object.asteroids.small-asteroid',
+    'object.asteroids.large-ufo',
+  ].forEach((objectId) => {
+    const calls = renderCalls.filter((call) => call.objectId === objectId);
+    assert.equal(calls.length > 0, true, `${objectId} should render from the manifest`);
+    assert.equal(calls.every((call) => call.requireManifestBinding), true, `${objectId} should require manifest binding`);
+  });
+  assert.equal(renderCalls.some((call) => call.objectId === 'object.asteroids.ship' && call.stateId === 'idle'), true);
+
+  scene.world.ufo = scene.world.createUfoEntity('small', scene.world.wave);
+  scene.world.ufo.x = 580;
+  scene.world.ufo.y = 220;
+  scene.render(renderer);
+  const smallUfoCalls = renderCalls.filter((call) => call.objectId === 'object.asteroids.small-ufo');
+  assert.equal(smallUfoCalls.length > 0, true);
+  assert.equal(smallUfoCalls.every((call) => call.requireManifestBinding), true);
 }
 
 function testAsteroidsGameplayBulletsUseManifestObjectGeometry() {
@@ -360,6 +419,7 @@ export function run() {
   testAsteroidsGameOverQualifyingScoreInitialsFlow();
   testAsteroidsMenuHighScoreUsesLeaderboardTop();
   testAsteroidsAttractAsteroidsUseManifestObjectsAndStyles();
+  testAsteroidsGameplayObjectsUseSharedManifestBindings();
   testAsteroidsGameplayBulletsUseManifestObjectGeometry();
   testAsteroidsGameplayRenderDoesNotCoverBackgroundLayer();
 }

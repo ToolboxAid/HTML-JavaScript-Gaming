@@ -7,7 +7,7 @@ AsteroidsAttractAdapter.js
 import { clamp } from '../../../src/shared/utils/mathUtils.js';
 import { ASTEROIDS_OBJECT_GEOMETRY_IDS } from './asteroidsObjectGeometryManifest.js';
 
-const ATTRACT_ASTEROID_RENDER_BINDINGS = Object.freeze({
+const ASTEROID_RENDER_BINDINGS = Object.freeze({
   large: Object.freeze({
     objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge,
     objectKey: 'asteroidLarge',
@@ -105,12 +105,12 @@ export default class AsteroidsAttractAdapter {
   }
 
   drawManifestAsteroid(renderer, sizeKey, options = {}) {
-    const binding = ATTRACT_ASTEROID_RENDER_BINDINGS[sizeKey];
+    const binding = ASTEROID_RENDER_BINDINGS[sizeKey];
     if (!binding) {
       return;
     }
 
-    this.scene?.drawObjectVectorAsset?.(renderer, 'attractAsteroid', {
+    this.scene?.drawObjectVectorAsset?.(renderer, 'asteroids', {
       ...this.scene.objectVectorTagOptions(binding.objectKey),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
@@ -152,11 +152,12 @@ export default class AsteroidsAttractAdapter {
       });
     }
 
-    this.scene?.drawObjectVectorAsset?.(renderer, 'attractShip', {
+    this.scene?.drawObjectVectorAsset?.(renderer, 'ship', {
       ...this.scene.objectVectorTagOptions('ship'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
-      objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip,
+      objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
+      requireManifestBinding: true,
       rotation: -0.28,
       scale: 1.1,
       stateId: 'idle',
@@ -245,11 +246,12 @@ export default class AsteroidsAttractAdapter {
 
     const x = 480 + Math.cos(this.demoTime * 0.7) * 220;
     const y = 340 + Math.sin(this.demoTime * 1.1) * 130;
-    this.scene?.drawObjectVectorAsset?.(renderer, 'attractShip', {
+    this.scene?.drawObjectVectorAsset?.(renderer, 'ship', {
       ...this.scene.objectVectorTagOptions('ship'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
-      objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip,
+      objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
+      requireManifestBinding: true,
       rotation: Math.sin(this.demoTime * 0.9) * 1.2,
       stateId: 'idle',
       x,
@@ -271,11 +273,12 @@ export default class AsteroidsAttractAdapter {
       x: 430 + Math.sin((this.demoTime * 0.92) + 2.2) * 154,
       y: 318 + Math.cos((this.demoTime * 0.72) + 2.7) * 78,
     });
-    this.scene?.drawObjectVectorAsset?.(renderer, 'attractUfo', {
+    this.scene?.drawObjectVectorAsset?.(renderer, 'ufo', {
       ...this.scene.objectVectorTagOptions('ufoLarge'),
       elapsedMs: this.scene.objectVectorPlaybackMs,
       fps: 12,
-      objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.attractUfo,
+      objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge,
+      requireManifestBinding: true,
       stateId: 'active',
       x: 480 + Math.cos(this.demoTime * 0.43) * 280,
       y: 284,
