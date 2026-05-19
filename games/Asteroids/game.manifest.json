@@ -263,128 +263,6 @@
         },
         "vectors": [
           {
-            "id": "vector.asteroids.ship",
-            "label": "Ship",
-            "kind": "polygon",
-            "usage": [
-              "gameplay",
-              "collision",
-              "ui"
-            ],
-            "viewBox": "-24 -24 48 48",
-            "paths": [
-              "M 14 0 L -10 -8 L -6 -3 L -6 3 L -10 8 L 14 0"
-            ],
-            "points": [
-              {
-                "x": 14,
-                "y": 0
-              },
-              {
-                "x": -10,
-                "y": -8
-              },
-              {
-                "x": -6,
-                "y": -3
-              },
-              {
-                "x": -6,
-                "y": 3
-              },
-              {
-                "x": -10,
-                "y": 8
-              },
-              {
-                "x": 14,
-                "y": 0
-              }
-            ]
-          },
-          {
-            "id": "vector.asteroids.asteroid.medium",
-            "label": "Medium Asteroid",
-            "kind": "polygon",
-            "usage": [
-              "gameplay",
-              "collision"
-            ],
-            "viewBox": "-28 -28 56 56",
-            "paths": [
-              "M -16 -10 L -2 -18 L 16 -14 L 20 2 L 8 18 L -10 16 L -20 4 Z"
-            ],
-            "points": [
-              {
-                "x": -16,
-                "y": -10
-              },
-              {
-                "x": -2,
-                "y": -18
-              },
-              {
-                "x": 16,
-                "y": -14
-              },
-              {
-                "x": 20,
-                "y": 2
-              },
-              {
-                "x": 8,
-                "y": 18
-              },
-              {
-                "x": -10,
-                "y": 16
-              },
-              {
-                "x": -20,
-                "y": 4
-              }
-            ]
-          },
-          {
-            "id": "vector.asteroids.asteroid.small",
-            "label": "Small Asteroid",
-            "kind": "polygon",
-            "usage": [
-              "gameplay",
-              "collision"
-            ],
-            "viewBox": "-18 -18 36 36",
-            "paths": [
-              "M -10 -6 L 0 -12 L 10 -6 L 8 8 L -6 10 L -12 0 Z"
-            ],
-            "points": [
-              {
-                "x": -10,
-                "y": -6
-              },
-              {
-                "x": 0,
-                "y": -12
-              },
-              {
-                "x": 10,
-                "y": -6
-              },
-              {
-                "x": 8,
-                "y": 8
-              },
-              {
-                "x": -6,
-                "y": 10
-              },
-              {
-                "x": -12,
-                "y": 0
-              }
-            ]
-          },
-          {
             "id": "vector.asteroids.bullet",
             "label": "Bullet",
             "kind": "polygon",
@@ -409,148 +287,6 @@
               {
                 "x": -2,
                 "y": 2
-              }
-            ]
-          },
-          {
-            "id": "vector.asteroids.ufo.small",
-            "label": "Small UFO",
-            "kind": "polyline",
-            "usage": [
-              "gameplay",
-              "collision"
-            ],
-            "points": [
-              {
-                "x": -14,
-                "y": 3
-              },
-              {
-                "x": 14,
-                "y": 3
-              },
-              {
-                "x": 9,
-                "y": 9
-              },
-              {
-                "x": -9,
-                "y": 9
-              },
-              {
-                "x": -14,
-                "y": 3
-              },
-              {
-                "x": -9,
-                "y": -3
-              },
-              {
-                "x": -5,
-                "y": -3
-              },
-              {
-                "x": -5,
-                "y": -6
-              },
-              {
-                "x": -2,
-                "y": -9
-              },
-              {
-                "x": 2,
-                "y": -9
-              },
-              {
-                "x": 5,
-                "y": -6
-              },
-              {
-                "x": 5,
-                "y": -3
-              },
-              {
-                "x": -5,
-                "y": -3
-              },
-              {
-                "x": 9,
-                "y": -3
-              },
-              {
-                "x": 14,
-                "y": 3
-              }
-            ]
-          },
-          {
-            "id": "vector.asteroids.ufo.large",
-            "label": "Large UFO",
-            "kind": "polyline",
-            "usage": [
-              "gameplay",
-              "collision"
-            ],
-            "points": [
-              {
-                "x": -21,
-                "y": 4.5
-              },
-              {
-                "x": 21,
-                "y": 4.5
-              },
-              {
-                "x": 13.5,
-                "y": 13.5
-              },
-              {
-                "x": -13.5,
-                "y": 13.5
-              },
-              {
-                "x": -21,
-                "y": 4.5
-              },
-              {
-                "x": -13.5,
-                "y": -4.5
-              },
-              {
-                "x": -7.5,
-                "y": -4.5
-              },
-              {
-                "x": -7.5,
-                "y": -9
-              },
-              {
-                "x": -3,
-                "y": -13.5
-              },
-              {
-                "x": 3,
-                "y": -13.5
-              },
-              {
-                "x": 7.5,
-                "y": -9
-              },
-              {
-                "x": 7.5,
-                "y": -4.5
-              },
-              {
-                "x": -7.5,
-                "y": -4.5
-              },
-              {
-                "x": 13.5,
-                "y": -4.5
-              },
-              {
-                "x": 21,
-                "y": 4.5
               }
             ]
           },
@@ -584,12 +320,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -6,
-                  "y": 14
+                  "x": -14,
+                  "y": -6
                 },
                 "point2": {
-                  "x": 0,
-                  "y": 6
+                  "x": -6,
+                  "y": 0
                 }
               },
               "style": {
@@ -614,12 +350,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": 6,
-                  "y": 14
+                  "x": -14,
+                  "y": 6
                 },
                 "point2": {
-                  "x": 0,
-                  "y": 6
+                  "x": -6,
+                  "y": 0
                 }
               },
               "style": {
@@ -645,20 +381,28 @@
               "geometry": {
                 "points": [
                   {
-                    "x": 0,
-                    "y": -16
-                  },
-                  {
                     "x": 14,
-                    "y": 16
+                    "y": 0
                   },
                   {
-                    "x": 0,
+                    "x": -10,
+                    "y": -8
+                  },
+                  {
+                    "x": -6,
+                    "y": -3
+                  },
+                  {
+                    "x": -6,
+                    "y": 3
+                  },
+                  {
+                    "x": -10,
                     "y": 8
                   },
                   {
-                    "x": -14,
-                    "y": 16
+                    "x": 14,
+                    "y": 0
                   }
                 ]
               },
@@ -669,6 +413,8 @@
                 "fillOpacity": 1,
                 "strokeOpacity": 1,
                 "pointRounding": [
+                  false,
+                  false,
                   false,
                   false,
                   false,
@@ -693,12 +439,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -6,
-                  "y": 14
+                  "x": -14,
+                  "y": -6
                 },
                 "point2": {
-                  "x": 0,
-                  "y": 6
+                  "x": -6,
+                  "y": 0
                 }
               },
               "style": {
@@ -723,12 +469,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": 6,
-                  "y": 14
+                  "x": -14,
+                  "y": 6
                 },
                 "point2": {
-                  "x": 0,
-                  "y": 6
+                  "x": -6,
+                  "y": 0
                 }
               },
               "style": {
@@ -981,7 +727,7 @@
           ],
           "objectOrigin": {
             "x": 0,
-            "y": -3
+            "y": 0
           }
         },
         {
@@ -1165,48 +911,83 @@
           "name": "Large UFO",
           "shapes": [
             {
-              "tool": "ellipse",
+              "tool": "polyline",
               "order": 0,
               "visible": true,
               "locked": false,
               "geometry": {
-                "cx": 0,
-                "cy": 6,
-                "rx": 24,
-                "ry": 9
+                "points": [
+                  {
+                    "x": -21,
+                    "y": 4.5
+                  },
+                  {
+                    "x": 21,
+                    "y": 4.5
+                  },
+                  {
+                    "x": 13.5,
+                    "y": 13.5
+                  },
+                  {
+                    "x": -13.5,
+                    "y": 13.5
+                  },
+                  {
+                    "x": -21,
+                    "y": 4.5
+                  },
+                  {
+                    "x": -13.5,
+                    "y": -4.5
+                  },
+                  {
+                    "x": -7.5,
+                    "y": -4.5
+                  },
+                  {
+                    "x": -7.5,
+                    "y": -9
+                  },
+                  {
+                    "x": -3,
+                    "y": -13.5
+                  },
+                  {
+                    "x": 3,
+                    "y": -13.5
+                  },
+                  {
+                    "x": 7.5,
+                    "y": -9
+                  },
+                  {
+                    "x": 7.5,
+                    "y": -4.5
+                  },
+                  {
+                    "x": -7.5,
+                    "y": -4.5
+                  },
+                  {
+                    "x": 13.5,
+                    "y": -4.5
+                  },
+                  {
+                    "x": 21,
+                    "y": 4.5
+                  }
+                ]
               },
               "style": {
                 "fill": "transparent",
                 "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
-                "strokeOpacity": 1
-              },
-              "transform": {
-                "x": 0,
-                "y": 0,
-                "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
-              }
-            },
-            {
-              "tool": "ellipse",
-              "order": 1,
-              "visible": true,
-              "locked": false,
-              "geometry": {
-                "cx": 0,
-                "cy": -2,
-                "rx": 12,
-                "ry": 7
-              },
-              "style": {
-                "fill": "transparent",
-                "stroke": "#FFBE64",
-                "strokeWidth": 2,
-                "fillOpacity": 1,
-                "strokeOpacity": 1
+                "strokeOpacity": 1,
+                "startPointStyle": "square",
+                "endPointStyle": "square",
+                "pointStyle": "square"
               },
               "transform": {
                 "x": 0,
@@ -1245,48 +1026,83 @@
           "name": "Small UFO",
           "shapes": [
             {
-              "tool": "ellipse",
+              "tool": "polyline",
               "order": 0,
               "visible": true,
               "locked": false,
               "geometry": {
-                "cx": 0,
-                "cy": 4,
-                "rx": 16,
-                "ry": 6
+                "points": [
+                  {
+                    "x": -14,
+                    "y": 3
+                  },
+                  {
+                    "x": 14,
+                    "y": 3
+                  },
+                  {
+                    "x": 9,
+                    "y": 9
+                  },
+                  {
+                    "x": -9,
+                    "y": 9
+                  },
+                  {
+                    "x": -14,
+                    "y": 3
+                  },
+                  {
+                    "x": -9,
+                    "y": -3
+                  },
+                  {
+                    "x": -5,
+                    "y": -3
+                  },
+                  {
+                    "x": -5,
+                    "y": -6
+                  },
+                  {
+                    "x": -2,
+                    "y": -9
+                  },
+                  {
+                    "x": 2,
+                    "y": -9
+                  },
+                  {
+                    "x": 5,
+                    "y": -6
+                  },
+                  {
+                    "x": 5,
+                    "y": -3
+                  },
+                  {
+                    "x": -5,
+                    "y": -3
+                  },
+                  {
+                    "x": 9,
+                    "y": -3
+                  },
+                  {
+                    "x": 14,
+                    "y": 3
+                  }
+                ]
               },
               "style": {
                 "fill": "transparent",
                 "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
-                "strokeOpacity": 1
-              },
-              "transform": {
-                "x": 0,
-                "y": 0,
-                "rotation": 0,
-                "scaleX": 1,
-                "scaleY": 1
-              }
-            },
-            {
-              "tool": "ellipse",
-              "order": 1,
-              "visible": true,
-              "locked": false,
-              "geometry": {
-                "cx": 0,
-                "cy": -2,
-                "rx": 8,
-                "ry": 5
-              },
-              "style": {
-                "fill": "transparent",
-                "stroke": "#FFBE64",
-                "strokeWidth": 2,
-                "fillOpacity": 1,
-                "strokeOpacity": 1
+                "strokeOpacity": 1,
+                "startPointStyle": "square",
+                "endPointStyle": "square",
+                "pointStyle": "square"
               },
               "transform": {
                 "x": 0,

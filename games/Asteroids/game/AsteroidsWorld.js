@@ -14,6 +14,7 @@ import { randomRange } from '../utils/math.js';
 import { sanitizeFiniteNumber, sanitizePositiveNumber } from '../../../src/shared/math/numberNormalization.js';
 import {
   ASTEROIDS_VECTOR_MAP_IDS,
+  requireAsteroidsObjectVectorPoints,
   requireAsteroidsVectorPoints
 } from './asteroidsVectorMaps.js';
 
@@ -147,14 +148,14 @@ export default class AsteroidsWorld {
     }
     this.asteroidGeometryProfiles = asteroidGeometryProfiles;
     this.vectorMaps = vectorMaps;
-    if (!this.vectorMaps?.vectorsById) {
-      throw new Error('AsteroidsWorld requires manifest-loaded vector maps for ship, UFO, and bullet gameplay geometry.');
+    if (!this.vectorMaps?.vectorsById || !this.vectorMaps?.objectVectorMapsById) {
+      throw new Error('AsteroidsWorld requires manifest-loaded Object Vector geometry for ship, UFO, asteroid, and bullet gameplay geometry.');
     }
     this.bulletCollisionPoints = requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet, 'bullet geometry');
-    this.shipCollisionPoints = requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ship, 'ship collision geometry');
+    this.shipCollisionPoints = requireAsteroidsObjectVectorPoints(this.vectorMaps, 'ship', 'ship object geometry');
     this.ufoCollisionPoints = {
-      large: requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoLarge, 'large UFO collision geometry'),
-      small: requireAsteroidsVectorPoints(this.vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoSmall, 'small UFO collision geometry'),
+      large: requireAsteroidsObjectVectorPoints(this.vectorMaps, 'ufoLarge', 'large UFO object geometry'),
+      small: requireAsteroidsObjectVectorPoints(this.vectorMaps, 'ufoSmall', 'small UFO object geometry'),
     };
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.bounds = sanitizeBounds(bounds);

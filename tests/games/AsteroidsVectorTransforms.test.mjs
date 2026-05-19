@@ -15,6 +15,7 @@ import {
 } from './asteroidsManifestObjectVectors.mjs';
 import {
   ASTEROIDS_VECTOR_MAP_IDS,
+  getAsteroidsObjectVectorPoints,
   getAsteroidsVectorPoints
 } from '../../games/Asteroids/game/asteroidsVectorMaps.js';
 
@@ -27,7 +28,7 @@ export function run() {
   const asteroidGeometryProfiles = createAsteroidsTestGeometryProfiles();
   const vectorMaps = loadAsteroidsVectorMaps();
   const ship = new Ship(100, 200, {
-    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ship),
+    collisionPoints: getAsteroidsObjectVectorPoints(vectorMaps, 'ship'),
   });
   ship.angle = Math.PI / 2;
   const shipPoints = ship.getPoints();
@@ -54,7 +55,7 @@ export function run() {
 
   const ufo = new Ufo({ width: 960, height: 720 }, 'small', 1, () => 0.5, {
     bulletCollisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.bullet),
-    collisionPoints: getAsteroidsVectorPoints(vectorMaps, ASTEROIDS_VECTOR_MAP_IDS.ufoSmall),
+    collisionPoints: getAsteroidsObjectVectorPoints(vectorMaps, 'ufoSmall'),
   });
   ufo.x = 400;
   ufo.y = 220;

@@ -791,7 +791,7 @@ export default class AsteroidsGameScene extends Scene {
         ...this.objectVectorRoleOptions("ship"),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
-        rotation: this.world.ship.angle + Math.PI / 2,
+        rotation: this.world.ship.angle,
         stateId: this.world.ship.thrusting && this.session.mode === 'playing' ? "move" : "idle",
         x: this.world.ship.x,
         y: this.world.ship.y,
@@ -876,11 +876,13 @@ export default class AsteroidsGameScene extends Scene {
 
     const startX = centerX - ((lives - 1) * LIFE_SPACING) / 2;
     Array.from({ length: lives }).forEach((_, index) => {
-      this.drawManifestVectorMap(renderer, ASTEROIDS_VECTOR_MAP_IDS.ship, {
-        color: '#ffffff',
-        lineWidth: 1,
+      this.drawObjectVectorAsset(renderer, "shipLife", {
+        ...this.objectVectorRoleOptions("ship"),
+        elapsedMs: this.objectVectorPlaybackMs,
+        fps: 12,
         rotation: -Math.PI / 2,
         scale: 1.05,
+        stateId: "idle",
         x: startX + index * LIFE_SPACING,
         y,
       });

@@ -55,7 +55,11 @@ export async function run() {
 
   assert.equal(manifest.tools["vector-map-editor"], undefined);
   assert.equal(Array.isArray(manifest.tools["object-vector-studio-v2"].vectorMaps.vectors), true);
-  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ship"), true);
+  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ship"), false);
+  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.asteroid.medium"), false);
+  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.asteroid.small"), false);
+  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ufo.large"), false);
+  assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ufo.small"), false);
   assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ship.collision"), false);
   assert.equal(vectorMaps.vectorsById.has("vector.asteroids.ui.title"), true);
   assert.equal(manifest.game["workspace"], undefined);
@@ -64,6 +68,19 @@ export async function run() {
   assert.equal(manifestText.includes(`vector.${"asteroids"}.`), true);
   assert.equal(payload.objects.some((object) => object.id === "object.asteroids.ship"), true);
   assert.equal(payload.objects.some((object) => object.id === "object.asteroids.small-asteroid"), true);
+  assert.deepEqual(
+    payload.objects.find((object) => object.id === "object.asteroids.ship").shapes.find((shape) => shape.tool === "polygon").geometry.points,
+    [
+      { x: 14, y: 0 },
+      { x: -10, y: -8 },
+      { x: -6, y: -3 },
+      { x: -6, y: 3 },
+      { x: -10, y: 8 },
+      { x: 14, y: 0 },
+    ],
+  );
+  assert.equal(payload.objects.find((object) => object.id === "object.asteroids.large-ufo").shapes[0].tool, "polyline");
+  assert.equal(payload.objects.find((object) => object.id === "object.asteroids.small-ufo").shapes[0].tool, "polyline");
   assert.equal(profiles[1].objectId, "object.asteroids.small-asteroid");
   assert.equal(profiles[2].objectId, "object.asteroids.medium-asteroid");
   assert.equal(profiles[3].objectId, "object.asteroids.large-asteroid");

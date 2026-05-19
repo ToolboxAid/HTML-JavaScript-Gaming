@@ -20,11 +20,9 @@ import {
 import {
   ASTEROIDS_REQUIRED_VECTOR_MAP_IDS,
   ASTEROIDS_VECTOR_MAP_IDS,
+  getAsteroidsObjectVectorPoints,
   loadAsteroidsVectorMapsFromManifest
 } from '../../games/Asteroids/game/asteroidsVectorMaps.js';
-
-const ASTEROIDS_MEDIUM_ASTEROID_VECTOR_MAP_ID = 'vector.asteroids.asteroid.medium';
-const ASTEROIDS_SMALL_ASTEROID_VECTOR_MAP_ID = 'vector.asteroids.asteroid.small';
 
 function createCanvas() {
   const listeners = new Map();
@@ -161,11 +159,11 @@ export async function run() {
   const objectVectorPayload = manifestPayload.tools['object-vector-studio-v2'];
   const manifestVectorIds = objectVectorPayload.vectorMaps.vectors.map((vector) => vector.id);
   assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.bullet), true);
-  assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.ship), true);
-  assert.equal(manifestVectorIds.includes(ASTEROIDS_MEDIUM_ASTEROID_VECTOR_MAP_ID), true);
-  assert.equal(manifestVectorIds.includes(ASTEROIDS_SMALL_ASTEROID_VECTOR_MAP_ID), true);
-  assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.ufoLarge), true);
-  assert.equal(manifestVectorIds.includes(ASTEROIDS_VECTOR_MAP_IDS.ufoSmall), true);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.ship'), false);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.asteroid.medium'), false);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.asteroid.small'), false);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.ufo.large'), false);
+  assert.equal(manifestVectorIds.includes('vector.asteroids.ufo.small'), false);
   assert.equal(manifestVectorIds.includes('vector.asteroids.ship.collision'), false);
   assert.equal(manifestVectorIds.includes('vector.asteroids.ship.life'), false);
   assert.equal(manifestVectorIds.includes('vector.asteroids.ufo.large.collision'), false);
@@ -198,7 +196,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.ship).points,
+    getAsteroidsObjectVectorPoints(vectorMaps, 'ship'),
     [
       { x: 14, y: 0 },
       { x: -10, y: -8 },
@@ -209,13 +207,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.ship).paths,
-    [
-      'M 14 0 L -10 -8 L -6 -3 L -6 3 L -10 8 L 14 0',
-    ],
-  );
-  assert.deepEqual(
-    vectorMaps.vectorsById.get(ASTEROIDS_MEDIUM_ASTEROID_VECTOR_MAP_ID).points,
+    getAsteroidsObjectVectorPoints(vectorMaps, 'asteroidMedium'),
     [
       { x: -16, y: -10 },
       { x: -2, y: -18 },
@@ -227,13 +219,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    vectorMaps.vectorsById.get(ASTEROIDS_MEDIUM_ASTEROID_VECTOR_MAP_ID).paths,
-    [
-      'M -16 -10 L -2 -18 L 16 -14 L 20 2 L 8 18 L -10 16 L -20 4 Z',
-    ],
-  );
-  assert.deepEqual(
-    vectorMaps.vectorsById.get(ASTEROIDS_SMALL_ASTEROID_VECTOR_MAP_ID).points,
+    getAsteroidsObjectVectorPoints(vectorMaps, 'asteroidSmall'),
     [
       { x: -10, y: -6 },
       { x: 0, y: -12 },
@@ -244,13 +230,7 @@ export async function run() {
     ],
   );
   assert.deepEqual(
-    vectorMaps.vectorsById.get(ASTEROIDS_SMALL_ASTEROID_VECTOR_MAP_ID).paths,
-    [
-      'M -10 -6 L 0 -12 L 10 -6 L 8 8 L -6 10 L -12 0 Z',
-    ],
-  );
-  assert.deepEqual(
-    vectorMaps.vectorsById.get(ASTEROIDS_VECTOR_MAP_IDS.ufoSmall).points.slice(0, 5),
+    getAsteroidsObjectVectorPoints(vectorMaps, 'ufoSmall').slice(0, 5),
     [
       { x: -14, y: 3 },
       { x: 14, y: 3 },
@@ -262,11 +242,16 @@ export async function run() {
   const shipObject = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.ship');
   const shipHull = shipObject.shapes.find((shape) => shape.tool === 'polygon');
   assert.deepEqual(shipHull.geometry.points, [
-    { x: 0, y: -16 },
-    { x: 14, y: 16 },
-    { x: 0, y: 8 },
-    { x: -14, y: 16 },
+    { x: 14, y: 0 },
+    { x: -10, y: -8 },
+    { x: -6, y: -3 },
+    { x: -6, y: 3 },
+    { x: -10, y: 8 },
+    { x: 14, y: 0 },
   ]);
+  const largeUfoObject = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.large-ufo');
+  assert.equal(largeUfoObject.shapes[0].tool, 'polyline');
+  assert.equal(largeUfoObject.shapes[0].geometry.points.length, 15);
   const mediumAsteroidVariant = loadAsteroidsObjectVectorPayload().objects.find((object) => object.id === 'object.asteroids.medium-asteroid');
   assert.deepEqual(mediumAsteroidVariant.shapes[0].geometry.points, [
     { x: -16, y: -10 },
@@ -289,6 +274,19 @@ export async function run() {
   const missingShipObjectValidation = loadAsteroidsVectorMapsFromManifest(missingShipObjectManifest);
   assert.equal(missingShipObjectValidation.ok, false);
   assert.equal(missingShipObjectValidation.errors.some((message) => message.includes(ASTEROIDS_VECTOR_MAP_IDS.attractShip)), true);
+  const missingSmallUfoObjectManifest = structuredClone(manifestPayload);
+  missingSmallUfoObjectManifest.tools['object-vector-studio-v2'].objects = missingSmallUfoObjectManifest.tools['object-vector-studio-v2'].objects
+    .filter((object) => object.id !== 'object.asteroids.small-ufo');
+  const missingSmallUfoObjectValidation = loadAsteroidsVectorMapsFromManifest(missingSmallUfoObjectManifest);
+  assert.equal(missingSmallUfoObjectValidation.ok, false);
+  assert.equal(
+    missingSmallUfoObjectValidation.errors.some((message) => (
+      message.includes('ufoSmall')
+      && message.includes('object.asteroids.small-ufo')
+      && message.includes('object-vector-studio-v2.objects')
+    )),
+    true,
+  );
   const createdDocumentShim = typeof globalThis.document === 'undefined';
   const createdWindowShim = typeof globalThis.window === 'undefined';
   const shimCanvas = createCanvas();
