@@ -163,7 +163,7 @@ export async function bootAsteroidsNew({
       sourceLabel: "Asteroids game.manifest.json"
     });
     if (!vectorMapValidation.ok) {
-      throw new Error(`Asteroids vector map manifest validation failed: ${vectorMapValidation.errors.join(" ")}`);
+      throw new Error(`Asteroids Object Vector manifest validation failed: ${vectorMapValidation.errors.join(" ")}`);
     }
 
     stage = "preload-object-vector-runtime";

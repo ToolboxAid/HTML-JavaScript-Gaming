@@ -159,6 +159,7 @@ export async function run() {
   assert.equal(Object.hasOwn(manifestPayload.tools, 'text2speech-V2'), false);
   const objectVectorPayload = manifestPayload.tools['object-vector-studio-v2'];
   assert.equal(Object.hasOwn(objectVectorPayload.vectorMaps, 'vectors'), false);
+  assert.equal(Object.hasOwn(objectVectorPayload.vectorMaps, 'objectVectorRoles'), false);
   assert.equal(Array.isArray(objectVectorPayload.vectorMaps.shapes), true);
   assert.equal(objectVectorPayload.vectorMaps.shapes.length, 0);
   assert.equal(JSON.stringify(objectVectorPayload.vectorMaps).includes('"paths"'), false);
@@ -174,6 +175,10 @@ export async function run() {
   ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.forEach((id) => {
     assert.equal(vectorMaps.objectVectorMapsById.has(id), true, `required Asteroids manifest geometry id ${id} should resolve`);
   });
+  assert.equal(vectorMaps.objectsByRole.bullet.id, 'object.asteroids.bullet');
+  assert.equal(vectorMaps.objectsByRole.ship.id, 'object.asteroids.ship');
+  assert.equal(vectorMaps.objectsByRole.asteroidMedium.id, 'object.asteroids.medium-asteroid');
+  assert.equal(Object.hasOwn(vectorMaps, 'objectVectorRoles'), false);
   assert.deepEqual(
     getAsteroidsObjectVectorPoints(vectorMaps, 'bullet'),
     [
@@ -256,6 +261,16 @@ export async function run() {
   const missingBulletValidation = loadAsteroidsVectorMapsFromManifest(missingBulletManifest);
   assert.equal(missingBulletValidation.ok, false);
   assert.equal(missingBulletValidation.errors.some((message) => message.includes(ASTEROIDS_OBJECT_VECTOR_IDS.bullet)), true);
+  const legacyRolesManifest = structuredClone(manifestPayload);
+  legacyRolesManifest.tools['object-vector-studio-v2'].vectorMaps.objectVectorRoles = {
+    ship: {
+      objectId: ASTEROIDS_OBJECT_VECTOR_IDS.attractShip,
+      tags: ['player', 'ship'],
+    },
+  };
+  const legacyRolesValidation = loadAsteroidsVectorMapsFromManifest(legacyRolesManifest);
+  assert.equal(legacyRolesValidation.ok, false);
+  assert.equal(legacyRolesValidation.errors.some((message) => message.includes('objectVectorRoles')), true);
   const missingShipObjectManifest = structuredClone(manifestPayload);
   missingShipObjectManifest.tools['object-vector-studio-v2'].objects = missingShipObjectManifest.tools['object-vector-studio-v2'].objects
     .filter((object) => object.id !== ASTEROIDS_OBJECT_VECTOR_IDS.attractShip);
@@ -270,8 +285,7 @@ export async function run() {
   assert.equal(
     missingSmallUfoObjectValidation.errors.some((message) => (
       message.includes('ufoSmall')
-      && message.includes('object.asteroids.small-ufo')
-      && message.includes('object-vector-studio-v2.objects')
+      && message.includes('objects[].tags [ufo, small]')
     )),
     true,
   );

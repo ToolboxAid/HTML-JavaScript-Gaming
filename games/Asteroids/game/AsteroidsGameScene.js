@@ -89,14 +89,13 @@ export default class AsteroidsGameScene extends Scene {
     this.objectVectorAssets = options.objectVectorAssets || null;
     this.objectVectorRuntime = options.objectVectorRuntime || null;
     this.vectorMaps = options.vectorMaps || null;
-    if (!this.vectorMaps?.objectVectorMapsById || !this.vectorMaps?.objectVectorRoles) {
+    if (!this.vectorMaps?.objectVectorMapsById || !this.vectorMaps?.objectsByRole) {
       const message = 'Asteroids Object Vector manifest validation failed: object geometry was not loaded from game.manifest.json.';
       console.error(message);
       throw new Error(message);
     }
     this.objectVectorRuntimeObjectValidation = this.objectVectorAssets
       ? validateAsteroidsRuntimeObjectRoles([...this.objectVectorAssets.objectsById.values()], {
-        roleBindings: this.vectorMaps.objectVectorRoles,
         logger: this.objectVectorRuntime,
       })
       : { errors: [], objectsByRole: {}, ok: false, warnings: [] };
@@ -110,7 +109,6 @@ export default class AsteroidsGameScene extends Scene {
     }
     this.asteroidGeometryProfiles = options.asteroidGeometryProfiles
       || createAsteroidGeometryProfilesFromObjectVectorAssets(this.objectVectorAssets, {
-        roleBindings: this.vectorMaps.objectVectorRoles,
         logger: this.objectVectorRuntime,
       });
     this.objectVectorPlaybackMs = 0;
@@ -860,7 +858,7 @@ export default class AsteroidsGameScene extends Scene {
   }
 
   objectVectorRoleOptions(roleId) {
-    return runtimeObjectRoleOptions(roleId, this.vectorMaps.objectVectorRoles);
+    return runtimeObjectRoleOptions(roleId);
   }
 
   drawLives(renderer, centerX, y, lives) {

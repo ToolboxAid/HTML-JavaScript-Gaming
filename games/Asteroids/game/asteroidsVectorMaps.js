@@ -1,3 +1,8 @@
+import {
+  ASTEROIDS_REQUIRED_RUNTIME_OBJECT_ROLE_IDS,
+  validateAsteroidsRuntimeObjectRoles,
+} from './asteroidsObjectVectorRoles.js';
+
 const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';
 const ASTEROIDS_OBJECT_VECTOR_DOCUMENT_KEY = 'vectorMaps';
 
@@ -15,15 +20,7 @@ export const ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS = Object.freeze([
   ASTEROIDS_OBJECT_VECTOR_IDS.bullet,
 ]);
 
-export const ASTEROIDS_REQUIRED_OBJECT_VECTOR_ROLE_IDS = Object.freeze([
-  'bullet',
-  'ship',
-  'asteroidLarge',
-  'asteroidMedium',
-  'asteroidSmall',
-  'ufoLarge',
-  'ufoSmall',
-]);
+export const ASTEROIDS_REQUIRED_OBJECT_VECTOR_ROLE_IDS = ASTEROIDS_REQUIRED_RUNTIME_OBJECT_ROLE_IDS;
 
 function isRecord(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -39,12 +36,6 @@ function normalizeString(value) {
 
 function isObjectVectorId(id) {
   return normalizeString(id).startsWith('object.');
-}
-
-function normalizeTags(value) {
-  return Array.isArray(value)
-    ? value.map((tag) => normalizeString(tag).toLowerCase()).filter(Boolean)
-    : [];
 }
 
 function normalizePoint(point) {
@@ -94,11 +85,8 @@ function requiredObjectGeometryPointCount(roleId) {
   return roleId === 'ufoLarge' || roleId === 'ufoSmall' ? 2 : 3;
 }
 
-function objectForRole(objectVectorMapsById, objectVectorRoles, roleId) {
-  const objectId = normalizeString(objectVectorRoles?.[roleId]?.objectId);
-  return objectId && objectVectorMapsById instanceof Map
-    ? objectVectorMapsById.get(objectId) || null
-    : null;
+function objectForRole(objectsByRole, roleId) {
+  return objectsByRole?.[roleId] || null;
 }
 
 function logValidation(logger, level, message, details = {}) {
@@ -113,50 +101,19 @@ function logValidation(logger, level, message, details = {}) {
   logger[method]?.(message, details);
 }
 
-function normalizeObjectVectorRoleBindings(document, errors) {
-  const rawBindings = isRecord(document?.objectVectorRoles) ? document.objectVectorRoles : {};
-  const bindings = {};
-
-  ASTEROIDS_REQUIRED_OBJECT_VECTOR_ROLE_IDS.forEach((roleId) => {
-    const binding = isRecord(rawBindings[roleId]) ? rawBindings[roleId] : null;
-    if (!binding) {
-      errors.push(`Asteroids Object Vector manifest is missing objectVectorRoles.${roleId}.`);
-      return;
-    }
-    const objectId = normalizeString(binding.objectId);
-    const tags = normalizeTags(binding.tags);
-    if (!objectId) {
-      errors.push(`Asteroids Object Vector manifest objectVectorRoles.${roleId}.objectId is required.`);
-    }
-    if (!tags.length) {
-      errors.push(`Asteroids Object Vector manifest objectVectorRoles.${roleId}.tags must contain at least one tag.`);
-    }
-    bindings[roleId] = {
-      objectId,
-      tags,
-    };
+function validateRequiredObjectGeometry(objectVectorMaps, errors) {
+  const roleValidation = validateAsteroidsRuntimeObjectRoles(objectVectorMaps);
+  roleValidation.errors.forEach((entry) => {
+    errors.push(entry.message);
   });
-
-  return bindings;
-}
-
-function validateRequiredObjectGeometry(objectVectorMapsById, objectVectorRoles, errors) {
-  ASTEROIDS_REQUIRED_OBJECT_VECTOR_ROLE_IDS.forEach((roleId) => {
-    const objectId = normalizeString(objectVectorRoles?.[roleId]?.objectId);
-    if (!objectId) {
-      return;
-    }
-    const object = objectVectorMapsById.get(objectId);
-    if (!object) {
-      errors.push(`Asteroids Object Vector manifest role ${roleId} object ${objectId} is missing from root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.objects.`);
-      return;
-    }
+  Object.entries(roleValidation.objectsByRole).forEach(([roleId, object]) => {
     const points = objectVectorGeometryPoints(object);
     const minimumPoints = requiredObjectGeometryPointCount(roleId);
     if (points.length < minimumPoints) {
-      errors.push(`Asteroids Object Vector manifest role ${roleId} object ${objectId} must contain visible polygon/polyline/line geometry with at least ${minimumPoints} points.`);
+      errors.push(`Asteroids Object Vector manifest role ${roleId} object ${object.id} must contain visible polygon/polyline/line geometry with at least ${minimumPoints} points.`);
     }
   });
+  return roleValidation.objectsByRole;
 }
 
 export function loadAsteroidsVectorMapsFromManifest(manifest, {
@@ -168,6 +125,8 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
   const errors = [];
   if (!isRecord(document)) {
     errors.push(`Asteroids Object Vector manifest is missing root.tools.${ASTEROIDS_OBJECT_VECTOR_TOOL_KEY}.${ASTEROIDS_OBJECT_VECTOR_DOCUMENT_KEY}.`);
+  } else if (Object.hasOwn(document, 'objectVectorRoles')) {
+    errors.push(`Asteroids Object Vector manifest must not define ${ASTEROIDS_OBJECT_VECTOR_DOCUMENT_KEY}.objectVectorRoles; runtime roles resolve from objects[].tags.`);
   }
   const sharedShapes = Array.isArray(document?.shapes)
     ? document.shapes.map((shape) => clone(shape))
@@ -192,8 +151,7 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
       errors.push(`Asteroids Object Vector manifest map ${id} must contain at least one shape.`);
     }
   });
-  const objectVectorRoles = normalizeObjectVectorRoleBindings(document, errors);
-  validateRequiredObjectGeometry(objectVectorMapsById, objectVectorRoles, errors);
+  const objectsByRole = validateRequiredObjectGeometry(objectVectorMaps, errors);
   if (errors.length) {
     errors.forEach((message) => logValidation(logger, 'FAIL', message, { sourceLabel }));
     return {
@@ -206,7 +164,7 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
     document: clone(document),
     objectVectorMaps,
     objectVectorMapsById,
-    objectVectorRoles,
+    objectsByRole,
     shapes: sharedShapes,
     sourceLabel,
   };
@@ -223,7 +181,7 @@ export function loadAsteroidsVectorMapsFromManifest(manifest, {
 
 export function getAsteroidsObjectVectorPoints(vectorMaps, roleId) {
   return objectVectorGeometryPoints(
-    objectForRole(vectorMaps?.objectVectorMapsById, vectorMaps?.objectVectorRoles, roleId)
+    objectForRole(vectorMaps?.objectsByRole, roleId)
   );
 }
 

@@ -217,57 +217,6 @@
         "version": 1,
         "name": "Asteroids Object Vector Shape Roles",
         "source": "object-vector-studio-v2",
-        "objectVectorRoles": {
-          "bullet": {
-            "objectId": "object.asteroids.bullet",
-            "tags": [
-              "projectile",
-              "bullet"
-            ]
-          },
-          "ship": {
-            "objectId": "object.asteroids.ship",
-            "tags": [
-              "player",
-              "ship"
-            ]
-          },
-          "asteroidLarge": {
-            "objectId": "object.asteroids.large-asteroid",
-            "tags": [
-              "asteroid",
-              "large"
-            ]
-          },
-          "asteroidMedium": {
-            "objectId": "object.asteroids.medium-asteroid",
-            "tags": [
-              "asteroid",
-              "medium"
-            ]
-          },
-          "asteroidSmall": {
-            "objectId": "object.asteroids.small-asteroid",
-            "tags": [
-              "asteroid",
-              "small"
-            ]
-          },
-          "ufoLarge": {
-            "objectId": "object.asteroids.large-ufo",
-            "tags": [
-              "ufo",
-              "large"
-            ]
-          },
-          "ufoSmall": {
-            "objectId": "object.asteroids.small-ufo",
-            "tags": [
-              "ufo",
-              "small"
-            ]
-          }
-        },
         "shapes": []
       },
       "objects": [

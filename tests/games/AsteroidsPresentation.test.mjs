@@ -50,6 +50,11 @@ function createObjectVectorAssetSet() {
   };
 }
 
+function objectHasTags(object, tags = []) {
+  const objectTags = new Set((object?.tags || []).map((tag) => String(tag).toLowerCase()));
+  return tags.every((tag) => objectTags.has(String(tag).toLowerCase()));
+}
+
 function createObjectVectorRuntime(calls) {
   return {
     getDiagnostics() {
@@ -57,9 +62,11 @@ function createObjectVectorRuntime(calls) {
     },
     log() {},
     renderObject(renderer, assetSet, options) {
-      const object = assetSet.objectsById.get(options.objectId);
+      const object = options.objectId
+        ? assetSet.objectsById.get(options.objectId)
+        : [...assetSet.objectsById.values()].find((candidate) => objectHasTags(candidate, options.tags || []));
       calls.push({
-        objectId: options.objectId,
+        objectId: object?.id || options.objectId,
         renderKey: options.runtimeRole,
         stateId: options.stateId,
         tags: options.tags,

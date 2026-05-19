@@ -24,9 +24,7 @@ export function loadAsteroidsVectorMaps() {
 }
 
 export function createAsteroidsTestGeometryProfiles() {
-  return createAsteroidGeometryProfilesFromObjectVectorPayload(loadAsteroidsObjectVectorPayload(), {
-    roleBindings: loadAsteroidsVectorMaps().objectVectorRoles,
-  });
+  return createAsteroidGeometryProfilesFromObjectVectorPayload(loadAsteroidsObjectVectorPayload());
 }
 
 export function createAsteroidsTestSceneOptions(options = {}) {

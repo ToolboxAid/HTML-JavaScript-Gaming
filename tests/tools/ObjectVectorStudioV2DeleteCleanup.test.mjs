@@ -35,16 +35,6 @@ function createPayload() {
       version: 1,
       name: "Delete Cleanup Roles",
       source: "object-vector-studio-v2",
-      objectVectorRoles: {
-        keepRole: {
-          objectId: "object.test.keep",
-          tags: ["keep"]
-        },
-        tempRole: {
-          objectId: "object.test.temp",
-          tags: ["temp"]
-        }
-      },
       shapes: []
     },
     objects: [
@@ -58,6 +48,13 @@ function createPayload() {
         id: "object.test.temp",
         name: "Temp",
         tags: ["temp"],
+        shapes: []
+      },
+      {
+        id: "object.test.child",
+        name: "Child",
+        baseObjectId: "object.test.temp",
+        tags: ["child"],
         shapes: []
       }
     ]
@@ -77,22 +74,19 @@ export async function run() {
   const service = await createSchemaService();
   const payload = createPayload();
   assert.deepEqual(service.validatePayload(payload).errors, []);
+  assert.equal(Object.hasOwn(payload.vectorMaps, "objectVectorRoles"), false);
 
-  const missingObjectIdPayload = createPayload();
-  delete missingObjectIdPayload.vectorMaps.objectVectorRoles.tempRole.objectId;
-  const missingObjectIdValidation = service.validatePayload(missingObjectIdPayload);
-  assert.equal(missingObjectIdValidation.ok, false);
+  const legacyRolePayload = createPayload();
+  legacyRolePayload.vectorMaps.objectVectorRoles = {
+    tempRole: {
+      objectId: "object.test.temp",
+      tags: ["temp"]
+    }
+  };
+  const legacyRoleValidation = service.validatePayload(legacyRolePayload);
+  assert.equal(legacyRoleValidation.ok, false);
   assert.equal(
-    missingObjectIdValidation.errors.some((message) => message === "root.vectorMaps.objectVectorRoles.tempRole.objectId is required."),
-    true,
-  );
-
-  const staleReferencePayload = createPayload();
-  staleReferencePayload.objects = staleReferencePayload.objects.filter((object) => object.id !== "object.test.temp");
-  const staleReferenceValidation = service.validatePayload(staleReferencePayload);
-  assert.equal(staleReferenceValidation.ok, false);
-  assert.equal(
-    staleReferenceValidation.errors.some((message) => message === "root.vectorMaps.objectVectorRoles.tempRole.objectId object.test.temp must reference an existing object."),
+    legacyRoleValidation.errors.some((message) => message === "root.vectorMaps.objectVectorRoles is not allowed."),
     true,
   );
 
@@ -100,11 +94,7 @@ export async function run() {
   deletePayload.objects = deletePayload.objects.filter((object) => object.id !== "object.test.temp");
   const app = Object.create(ToolStarterApp.prototype);
   app.removeDeletedObjectReferences(deletePayload, "object.test.temp");
-  assert.equal(Object.hasOwn(deletePayload.vectorMaps.objectVectorRoles, "tempRole"), false);
-  assert.equal(deletePayload.vectorMaps.objectVectorRoles.keepRole.objectId, "object.test.keep");
-  assert.equal(
-    Object.values(deletePayload.vectorMaps.objectVectorRoles).some((binding) => !Object.hasOwn(binding, "objectId")),
-    false,
-  );
+  assert.equal(Object.hasOwn(deletePayload.vectorMaps, "objectVectorRoles"), false);
+  assert.equal(Object.hasOwn(deletePayload.objects.find((object) => object.id === "object.test.child"), "baseObjectId"), false);
   assert.deepEqual(service.validatePayload(deletePayload).errors, []);
 }

@@ -7675,10 +7675,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await page.waitForFunction(() => {
         const counts = window.__asteroidsObjectVectorRuntime?.renderCounts || {};
-        const vectorCounts = window.__asteroidsObjectVectorRuntime?.vectorMapRenderCounts || {};
         return counts.asteroids > 0 && counts.ship > 0 && counts.ufo > 0
-          && vectorCounts["vector.asteroids.ship"] > 0
-          && vectorCounts["vector.asteroids.bullet"] > 0;
+          && counts.bullet > 0;
       });
 
       const diagnostics = await page.evaluate(() => window.__asteroidsObjectVectorRuntime);
@@ -7690,9 +7688,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           ...object,
           tags: []
         }));
-        return validateAsteroidsRuntimeObjectRoles(objects, {
-          roleBindings: scene.vectorMaps.objectVectorRoles
-        });
+        return validateAsteroidsRuntimeObjectRoles(objects);
       });
       expect(diagnostics.loaded).toBe(true);
       expect(diagnostics.assetCount).toBe(7);
@@ -7758,43 +7754,21 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(runtimeRounding.renderResult.ok).toBe(true);
       expect(runtimeRounding.roundedCanvasCommandCount).toBe(0);
       expect(taglessRuntimeObjectValidation.ok).toBe(false);
-      expect(taglessRuntimeObjectValidation.errors.some((entry) => entry.message.includes("manifest binding object.asteroids.medium-asteroid is missing required tags"))).toBe(true);
+      expect(taglessRuntimeObjectValidation.errors.some((entry) => entry.message.includes("objects[].tags [asteroid, medium]"))).toBe(true);
       expect(diagnostics.renderCounts.asteroids).toBeGreaterThan(0);
+      expect(diagnostics.renderCounts.bullet).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ship).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.ufo).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.attractAsteroid).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.attractShip).toBeGreaterThan(0);
       expect(diagnostics.renderCounts.attractUfo).toBeGreaterThan(0);
-      expect(diagnostics.vectorMapsLoaded).toBe(true);
-      expect(diagnostics.vectorMapIds).toEqual(expect.arrayContaining([
-        "vector.asteroids.bullet",
-        "vector.asteroids.ship",
-        "vector.asteroids.ui.title",
-        "vector.asteroids.ufo.large",
-        "vector.asteroids.ufo.small"
-      ]));
-      expect(diagnostics.vectorMapIds).not.toEqual(expect.arrayContaining([
-        "vector.asteroids.attract.ship",
-        "vector.asteroids.attract.asteroid",
-        "vector.asteroids.attract.ufo",
-        "vector.asteroids.ship.collision",
-        "vector.asteroids.ship.life",
-        "vector.asteroids.ufo.large.collision",
-        "vector.asteroids.ufo.small.collision"
-      ]));
-      expect(diagnostics.objectVectorMapIds).toEqual(expect.arrayContaining([
+      expect(diagnostics.sharedShapeCount).toBe(0);
+      expect(diagnostics.objectVectorObjectIds).toEqual(expect.arrayContaining([
+        "object.asteroids.bullet",
         "object.asteroids.large-asteroid",
         "object.asteroids.large-ufo",
         "object.asteroids.ship"
       ]));
-      expect(diagnostics.vectorMapUsageCounts).toMatchObject({
-        attract: 1,
-        collision: 4,
-        gameplay: 4,
-        projectile: 1,
-        splash: 1,
-        ui: 2
-      });
       const eventMessages = diagnostics.events.map((entry) => entry.message).join("\n");
       expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 7 objects.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ship; cached resolved object object.asteroids.ship.");

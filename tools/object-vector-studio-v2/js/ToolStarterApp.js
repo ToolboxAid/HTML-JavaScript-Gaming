@@ -6258,20 +6258,7 @@ export class ToolStarterApp {
         delete object.baseObjectId;
       }
     });
-    this.removeDeletedObjectVectorRoleBindings(payload, objectId);
     this.removeDirectReferenceEntries(payload, "objectId", objectId);
-  }
-
-  removeDeletedObjectVectorRoleBindings(payload, objectId) {
-    const objectVectorRoles = payload?.vectorMaps?.objectVectorRoles;
-    if (!isPlainObject(objectVectorRoles)) {
-      return;
-    }
-    Object.entries(objectVectorRoles).forEach(([roleId, binding]) => {
-      if (isPlainObject(binding) && binding.objectId === objectId) {
-        delete objectVectorRoles[roleId];
-      }
-    });
   }
 
   removeDirectReferenceEntries(value, referenceKey, targetId) {

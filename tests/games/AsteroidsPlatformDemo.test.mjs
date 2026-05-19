@@ -5,8 +5,7 @@ import { ObjectVectorRuntimeAssetService } from '../../src/engine/rendering/inde
 import {
   createAsteroidsTestGeometryProfiles,
   loadAsteroidsManifest,
-  loadAsteroidsObjectVectorPayload,
-  loadAsteroidsVectorMaps
+  loadAsteroidsObjectVectorPayload
 } from './asteroidsManifestObjectVectors.mjs';
 import {
   validateAsteroidsRuntimeObjectRoles
@@ -69,12 +68,12 @@ function createPayloadWithRecreatedMediumAsteroid(payload) {
 export async function run() {
   const manifest = loadAsteroidsManifest();
   const payload = loadAsteroidsObjectVectorPayload();
-  const vectorMaps = loadAsteroidsVectorMaps();
   const manifestText = JSON.stringify(manifest);
 
   assert.equal(manifest.tools['vector-map-editor'], undefined);
   assert.equal(Array.isArray(manifest.tools['object-vector-studio-v2'].vectorMaps.shapes), true);
   assert.equal(Object.hasOwn(manifest.tools['object-vector-studio-v2'].vectorMaps, 'vectors'), false);
+  assert.equal(Object.hasOwn(manifest.tools['object-vector-studio-v2'].vectorMaps, 'objectVectorRoles'), false);
   assert.equal(manifest.tools['object-vector-studio-v2'].vectorMaps.shapes.length, 0);
   assert.equal(manifest.game["workspace"], undefined);
   assert.equal(manifest.game.gameData, undefined);
@@ -93,9 +92,7 @@ export async function run() {
   assert.equal(geometryProfiles[2].points.length, 7);
   assert.equal(geometryProfiles[3].points.length, 12);
   assert.deepEqual(payload.objects.find((object) => object.id === 'object.asteroids.medium-asteroid').tags, ['asteroid', 'medium']);
-  const roleValidation = validateAsteroidsRuntimeObjectRoles(payload.objects, {
-    roleBindings: vectorMaps.objectVectorRoles
-  });
+  const roleValidation = validateAsteroidsRuntimeObjectRoles(payload.objects);
   assert.equal(roleValidation.ok, true);
   assert.equal(roleValidation.objectsByRole.asteroidMedium.id, 'object.asteroids.medium-asteroid');
   assert.deepEqual(roleValidation.warnings, []);
@@ -103,18 +100,17 @@ export async function run() {
     ...payload,
     objects: payload.objects.filter((object) => object.id !== 'object.asteroids.medium-asteroid')
   };
-  const missingMediumValidation = validateAsteroidsRuntimeObjectRoles(missingMediumPayload.objects, {
-    roleBindings: vectorMaps.objectVectorRoles
-  });
+  const missingMediumValidation = validateAsteroidsRuntimeObjectRoles(missingMediumPayload.objects);
   assert.equal(missingMediumValidation.ok, false);
-  assert.equal(missingMediumValidation.errors.some((entry) => entry.message.includes('manifest binding requires object object.asteroids.medium-asteroid')), true);
+  assert.equal(missingMediumValidation.errors.some((entry) => (
+    entry.message.includes('asteroidMedium')
+    && entry.message.includes('objects[].tags [asteroid, medium]')
+  )), true);
 
   const recreatedPayload = createPayloadWithRecreatedMediumAsteroid(payload);
-  const oldRoleValidation = validateAsteroidsRuntimeObjectRoles(recreatedPayload.objects, {
-    roleBindings: vectorMaps.objectVectorRoles
-  });
+  const oldRoleValidation = validateAsteroidsRuntimeObjectRoles(recreatedPayload.objects);
   assert.equal(oldRoleValidation.ok, false);
-  assert.equal(oldRoleValidation.errors.some((entry) => entry.message.includes('is marked old/legacy')), true);
+  assert.equal(oldRoleValidation.errors.some((entry) => entry.message.includes('old/legacy object tag candidates')), true);
 
   const shapes = payload.objects.flatMap((object) => object.shapes);
   assert.equal(shapes.some((shape) => shape.tool === 'polygon'), true);

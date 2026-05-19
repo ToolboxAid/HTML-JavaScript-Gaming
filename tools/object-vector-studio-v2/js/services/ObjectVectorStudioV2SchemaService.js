@@ -226,13 +226,6 @@ export class ObjectVectorStudioV2SchemaService {
       });
     });
 
-    if (isPlainObject(payload?.vectorMaps?.objectVectorRoles)) {
-      Object.entries(payload.vectorMaps.objectVectorRoles).forEach(([roleId, binding]) => {
-        if (isPlainObject(binding) && !objectsById.has(binding.objectId)) {
-          errors.push(`root.vectorMaps.objectVectorRoles.${roleId}.objectId ${binding.objectId} must reference an existing object.`);
-        }
-      });
-    }
   }
 
   validateInheritanceChain(object, objectsById, path, errors) {

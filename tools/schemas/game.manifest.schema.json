@@ -103,7 +103,7 @@
           "minLength": 1
         },
         "vectorMaps": {
-          "$ref": "tools/object-vector-studio-v2.schema.json#/$defs/vectorMapDocument"
+          "$ref": "tools/object-vector-studio-v2.schema.json#/$defs/objectVectorShapeDocument"
         },
         "objects": {
           "type": "array",

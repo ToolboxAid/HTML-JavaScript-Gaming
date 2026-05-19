@@ -74,11 +74,6 @@
         }
       }
     },
-    "objectIdentityId": {
-      "type": "string",
-      "minLength": 1,
-      "pattern": "^object\\.[a-z0-9-]+\\.[a-z0-9][a-z0-9-]*$"
-    },
     "tags": {
       "type": "array",
       "items": {
@@ -89,7 +84,7 @@
     "objectVectorShapeDocument": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["schema", "version", "name", "source", "objectVectorRoles", "shapes"],
+      "required": ["schema", "version", "name", "source", "shapes"],
       "properties": {
         "schema": {
           "type": "string",
@@ -106,33 +101,11 @@
         "source": {
           "const": "object-vector-studio-v2"
         },
-        "objectVectorRoles": {
-          "$ref": "#/$defs/objectVectorRoles"
-        },
         "shapes": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/shape"
           }
-        }
-      }
-    },
-    "objectVectorRoles": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/$defs/objectVectorRoleBinding"
-      }
-    },
-    "objectVectorRoleBinding": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["objectId", "tags"],
-      "properties": {
-        "objectId": {
-          "$ref": "#/$defs/objectIdentityId"
-        },
-        "tags": {
-          "$ref": "#/$defs/tags"
         }
       }
     },
