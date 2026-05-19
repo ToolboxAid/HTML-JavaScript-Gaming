@@ -7,6 +7,10 @@
     "name": "Asteroids",
     "folder": "Asteroids"
   },
+  "screen": {
+    "width": 960,
+    "height": 720
+  },
   "launch": {
     "directPath": "/games/Asteroids/index.html",
     "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?gameId=Asteroids",

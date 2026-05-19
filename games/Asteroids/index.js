@@ -72,6 +72,20 @@ async function loadAsteroidsManifestPayload(manifestPath, manifestPayload = null
   return response.json();
 }
 
+function positiveInteger(value) {
+  const parsed = Math.floor(Number(value));
+  return Number.isNaN(parsed) || Math.abs(parsed) === Infinity || parsed <= 0 ? 0 : parsed;
+}
+
+export function resolveAsteroidsScreenDimensions(manifest) {
+  const width = positiveInteger(manifest?.screen?.width);
+  const height = positiveInteger(manifest?.screen?.height);
+  if (!width || !height) {
+    throw new Error("Asteroids game.manifest.json requires screen.width and screen.height.");
+  }
+  return { width, height };
+}
+
 export function loadAsteroidsWorldModule() {
   return import("./game/AsteroidsWorld.js");
 }
@@ -159,6 +173,7 @@ export async function bootAsteroidsNew({
     stage = "load-game-manifest";
     traceBoot(stage);
     const asteroidsManifest = await loadAsteroidsManifestPayload(ASTEROIDS_MANIFEST_PATH, manifestPayload);
+    const screenDimensions = resolveAsteroidsScreenDimensions(asteroidsManifest);
     const objectGeometryValidation = loadAsteroidsObjectGeometryFromManifest(asteroidsManifest, {
       sourceLabel: "Asteroids game.manifest.json"
     });
@@ -189,8 +204,8 @@ export async function bootAsteroidsNew({
     traceBoot(stage);
     const engine = new EngineClass({
       canvas,
-      width: 960,
-      height: 720,
+      width: screenDimensions.width,
+      height: screenDimensions.height,
       fixedStepMs: 1000 / 60,
       input
     });
@@ -226,6 +241,7 @@ export async function bootAsteroidsNew({
       objectGeometry: objectGeometryValidation.objectGeometry,
       objectVectorAssets,
       objectVectorRuntime,
+      screenDimensions,
     }));
 
     stage = "start-engine";

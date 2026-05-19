@@ -32,6 +32,7 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
+const DEFAULT_SCREEN_DIMENSIONS = Object.freeze({ width: 960, height: 720 });
 const ATTRACT_INPUT_CODES = [
   'Digit1',
   'Digit2',
@@ -58,6 +59,18 @@ function logSceneBootStage(stage, details = null) {
   } else {
     console.info(`Asteroids scene:${stage}`, details);
   }
+}
+
+function positiveInteger(value, fallback) {
+  const parsed = Math.floor(Number(value));
+  return Number.isNaN(parsed) || Math.abs(parsed) === Infinity || parsed <= 0 ? fallback : parsed;
+}
+
+function screenDimensionsFromOptions(options) {
+  return {
+    width: positiveInteger(options?.screenDimensions?.width, DEFAULT_SCREEN_DIMENSIONS.width),
+    height: positiveInteger(options?.screenDimensions?.height, DEFAULT_SCREEN_DIMENSIONS.height),
+  };
 }
 
 function getBeatInterval(asteroidCount) {
@@ -124,7 +137,8 @@ export default class AsteroidsGameScene extends Scene {
       debugMode: 'prod',
       debugEnabled: Boolean(this.devConsoleIntegration),
     };
-    this.world = new AsteroidsWorld({ width: 960, height: 720 }, {
+    this.screenDimensions = screenDimensionsFromOptions(options);
+    this.world = new AsteroidsWorld(this.screenDimensions, {
       asteroidGeometryProfiles: this.asteroidGeometryProfiles,
       objectGeometry: this.objectGeometry,
     });

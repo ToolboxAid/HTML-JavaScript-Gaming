@@ -1,8 +1,9 @@
 import { CollisionInspectorV2App } from "./CollisionInspectorV2App.js";
 import { CollisionInspectorV2Controls } from "./CollisionInspectorV2Controls.js";
 import { CollisionInspectorV2Logger } from "./CollisionInspectorV2Logger.js";
-import { CollisionInspectorV2ManifestLoader } from "./CollisionInspectorV2ManifestLoader.js";
 import { CollisionInspectorV2Renderer } from "./CollisionInspectorV2Renderer.js";
+import { CollisionInspectorV2Shell } from "./CollisionInspectorV2Shell.js";
+import { GameManifestLoader } from "../../../src/tools/common/GameManifestLoader.js";
 
 function requireElement(selector) {
   const element = document.querySelector(selector);
@@ -19,7 +20,6 @@ window.addEventListener("DOMContentLoaded", () => {
     canvas: requireElement("#collisionCanvas"),
     clearLogButton: requireElement("#clearCollisionLogButton"),
     fileInput: requireElement("#collisionManifestInput"),
-    loadAsteroidsButton: requireElement("#loadAsteroidsManifestButton"),
     log: requireElement("#collisionLog"),
     manifestSummary: requireElement("#manifestSummary"),
     modeSelect: requireElement("#collisionModeSelect"),
@@ -44,8 +44,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const app = new CollisionInspectorV2App({
     controls: new CollisionInspectorV2Controls({ elements, windowRef: window }),
     logger: new CollisionInspectorV2Logger({ logElement: elements.log }),
-    manifestLoader: new CollisionInspectorV2ManifestLoader({ windowRef: window }),
+    manifestLoader: new GameManifestLoader({ windowRef: window }),
     renderer: new CollisionInspectorV2Renderer({ canvas: elements.canvas }),
+    shell: new CollisionInspectorV2Shell({ documentRef: document, windowRef: window }),
     windowRef: window
   });
   window.__collisionInspectorV2App = app;

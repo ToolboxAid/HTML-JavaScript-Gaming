@@ -17,7 +17,6 @@ export class CollisionInspectorV2Controls {
     this.elements.fileInput.addEventListener("change", () => {
       callbacks.onManifestFile(this.elements.fileInput.files?.[0] || null);
     });
-    this.elements.loadAsteroidsButton.addEventListener("click", callbacks.onLoadAsteroids);
     this.elements.objectASelect.addEventListener("change", callbacks.onObjectPairChange);
     this.elements.objectBSelect.addEventListener("change", callbacks.onObjectPairChange);
     this.elements.modeSelect.addEventListener("change", () => {
@@ -57,7 +56,8 @@ export class CollisionInspectorV2Controls {
   }
 
   setLaunchMode(workspaceLaunch) {
-    this.elements.toolNav.hidden = true;
+    this.elements.toolNav.hidden = workspaceLaunch;
+    this.elements.fileInput.disabled = workspaceLaunch;
     this.elements.workspaceNav.hidden = !workspaceLaunch;
   }
 
@@ -104,6 +104,12 @@ export class CollisionInspectorV2Controls {
   setZoom(zoom) {
     this.elements.zoomInput.value = String(roundNumber(zoom, 1));
     this.elements.zoomState.textContent = `${roundNumber(zoom, 1)}x`;
+  }
+
+  setViewportSize(width, height) {
+    this.elements.canvas.setAttribute("width", String(Math.max(1, Math.floor(numberValue(width, 1)))));
+    this.elements.canvas.setAttribute("height", String(Math.max(1, Math.floor(numberValue(height, 1)))));
+    this.elements.canvas.style.setProperty("--collision-inspector-aspect-ratio", `${this.elements.canvas.width} / ${this.elements.canvas.height}`);
   }
 
   syncResult(result) {

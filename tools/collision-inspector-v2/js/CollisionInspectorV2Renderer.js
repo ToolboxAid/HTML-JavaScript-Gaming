@@ -7,6 +7,12 @@ export class CollisionInspectorV2Renderer {
     this.zoom = 1;
   }
 
+  setViewportSize(width, height) {
+    this.canvas.width = Math.max(1, Math.floor(numberValue(width, 1)));
+    this.canvas.height = Math.max(1, Math.floor(numberValue(height, 1)));
+    this.canvas.style.setProperty("--collision-inspector-aspect-ratio", `${this.canvas.width} / ${this.canvas.height}`);
+  }
+
   setZoom(zoom) {
     this.zoom = Math.max(0.5, Math.min(2, numberValue(zoom, 1)));
   }

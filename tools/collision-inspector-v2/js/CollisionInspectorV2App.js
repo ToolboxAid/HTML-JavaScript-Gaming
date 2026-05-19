@@ -4,8 +4,8 @@ import {
   OBJECT_VECTOR_COLLISION_MODE_LABELS,
   recommendObjectVectorCollisionMode
 } from "../../../src/engine/collision/index.js";
+import { resolveManifestScreenDimensions } from "../../../src/tools/common/GameManifestLoader.js";
 import {
-  ASTEROIDS_MANIFEST_PATH,
   clone,
   numberValue,
   OBJECT_LABELS,
@@ -18,19 +18,19 @@ export class CollisionInspectorV2App {
     logger,
     manifestLoader,
     renderer,
+    shell,
     windowRef = window
   }) {
     this.controls = controls;
     this.logger = logger;
     this.manifestLoader = manifestLoader;
     this.renderer = renderer;
+    this.shell = shell;
     this.window = windowRef;
     this.manifest = null;
     this.objects = [];
-    this.instances = {
-      a: { x: 360, y: 320, rotation: 0 },
-      b: { x: 500, y: 320, rotation: 0 }
-    };
+    this.screen = { width: renderer.canvas.width, height: renderer.canvas.height };
+    this.instances = this.defaultInstances();
     this.collisionMode = "vector";
     this.manualModeOverride = false;
     this.dragState = null;
@@ -39,11 +39,9 @@ export class CollisionInspectorV2App {
   }
 
   async start() {
+    this.shell.mount();
     this.controls.mount({
       onClearLog: () => this.logger.clear(),
-      onLoadAsteroids: () => {
-        void this.loadManifestFromPath(ASTEROIDS_MANIFEST_PATH, "Asteroids validation path");
-      },
       onManifestFile: (file) => {
         void this.loadManifestFile(file);
       },
@@ -54,12 +52,14 @@ export class CollisionInspectorV2App {
       onPointerUp: () => this.handlePointerUp(),
       onReset: () => this.resetSimulation(),
       onReturnToWorkspace: () => {
-        this.window.location.href = this.workspaceReturnUrl();
+        this.shell.returnToWorkspace();
       },
       onRotationChange: (key, rotation) => this.setRotation(key, rotation),
       onZoomChange: (zoom) => this.setZoom(zoom)
     });
     this.controls.setLaunchMode(this.isWorkspaceLaunch());
+    this.controls.setViewportSize(this.screen.width, this.screen.height);
+    this.renderer.setViewportSize(this.screen.width, this.screen.height);
     this.controls.setZoom(this.zoom);
     this.logger.write("INFO Collision Inspector V2 ready.");
     await this.loadInitialManifest();
@@ -67,20 +67,14 @@ export class CollisionInspectorV2App {
   }
 
   isWorkspaceLaunch() {
-    return new URLSearchParams(this.window.location.search || "").get("launch") === "workspace";
+    return this.shell.isWorkspaceLaunch();
   }
 
-  workspaceReturnUrl() {
-    const params = new URLSearchParams(this.window.location.search || "");
-    const url = new URL("../workspace-manager-v2/index.html", this.window.location.href);
-    const hostContextId = params.get("hostContextId") || "";
-    if (hostContextId) {
-      url.searchParams.set("hostContextId", hostContextId);
-    }
-    if (params.get("workspaceMode") === "uat") {
-      url.searchParams.set("workspace", "uat");
-    }
-    return url.href;
+  defaultInstances() {
+    return {
+      a: { x: this.screen.width * 0.375, y: this.screen.height * (4 / 9), rotation: 0 },
+      b: { x: this.screen.width * (125 / 240), y: this.screen.height * (4 / 9), rotation: 0 }
+    };
   }
 
   async loadInitialManifest() {
@@ -111,6 +105,16 @@ export class CollisionInspectorV2App {
   }
 
   loadManifest(manifest, sourceLabel) {
+    const screenResult = resolveManifestScreenDimensions(manifest);
+    if (!screenResult.ok) {
+      this.manifest = null;
+      this.objects = [];
+      this.controls.setObjectOptions([]);
+      this.controls.setManifestSummary(screenResult.message);
+      this.logger.write(`FAIL ${sourceLabel}: ${screenResult.message}`);
+      this.evaluateAndRender();
+      return;
+    }
     const objects = Array.isArray(manifest?.tools?.["object-vector-studio-v2"]?.objects)
       ? manifest.tools["object-vector-studio-v2"].objects
       : [];
@@ -125,11 +129,14 @@ export class CollisionInspectorV2App {
     }
     this.manifest = manifest;
     this.objects = objects.map((object) => clone(object));
+    this.screen = { width: screenResult.width, height: screenResult.height };
+    this.controls.setViewportSize(this.screen.width, this.screen.height);
+    this.renderer.setViewportSize(this.screen.width, this.screen.height);
     this.controls.setObjectOptions(this.objects);
     this.resetSimulation({ silent: true });
     const gameName = manifest?.game?.name || manifest?.name || manifest?.gameId || "Loaded manifest";
-    this.controls.setManifestSummary(`${gameName}: ${this.objects.length} vector objects loaded.`);
-    this.logger.write(`OK Loaded manifest ${sourceLabel}: ${this.objects.length} vector objects.`);
+    this.controls.setManifestSummary(`${gameName}: ${this.objects.length} objects loaded; screen ${this.screen.width}x${this.screen.height}.`);
+    this.logger.write(`OK Loaded manifest ${sourceLabel}: ${this.objects.length} objects; screen ${this.screen.width}x${this.screen.height}.`);
     this.autoSelectMode("manifest load");
     this.evaluateAndRender();
   }
@@ -179,10 +186,7 @@ export class CollisionInspectorV2App {
   }
 
   resetSimulation({ silent = false } = {}) {
-    this.instances = {
-      a: { x: 360, y: 320, rotation: 0 },
-      b: { x: 500, y: 320, rotation: 0 }
-    };
+    this.instances = this.defaultInstances();
     this.controls.setRotations(this.instances);
     this.autoSelectMode("reset");
     if (!silent) {

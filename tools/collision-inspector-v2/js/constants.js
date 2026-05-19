@@ -1,4 +1,3 @@
-export const ASTEROIDS_MANIFEST_PATH = "/games/Asteroids/game.manifest.json";
 export const OBJECT_LABELS = Object.freeze({
   a: "Object A",
   b: "Object B"

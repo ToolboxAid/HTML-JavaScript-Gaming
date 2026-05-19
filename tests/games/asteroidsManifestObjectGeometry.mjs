@@ -23,6 +23,14 @@ export function loadAsteroidsObjectGeometry() {
   return result.objectGeometry;
 }
 
+export function loadAsteroidsScreenDimensions() {
+  const manifest = loadAsteroidsManifest();
+  return {
+    width: manifest.screen.width,
+    height: manifest.screen.height,
+  };
+}
+
 export function createAsteroidsTestGeometryProfiles() {
   return createAsteroidGeometryProfilesFromObjectVectorPayload(loadAsteroidsObjectVectorPayload());
 }
@@ -31,6 +39,7 @@ export function createAsteroidsTestSceneOptions(options = {}) {
   return {
     asteroidGeometryProfiles: createAsteroidsTestGeometryProfiles(),
     objectGeometry: loadAsteroidsObjectGeometry(),
+    screenDimensions: loadAsteroidsScreenDimensions(),
     ...options,
   };
 }

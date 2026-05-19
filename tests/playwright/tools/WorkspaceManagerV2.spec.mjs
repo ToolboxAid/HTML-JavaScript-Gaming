@@ -725,6 +725,9 @@ function workspaceContextFromGameManifest(gameManifest, { repoPath = "", repoRoo
     assetsPath: `${gameRoot}assets`,
     tools: cloneJson(gameManifest.tools || {})
   };
+  if (gameManifest.screen) {
+    context.screen = cloneJson(gameManifest.screen);
+  }
   if (repoRoot) {
     context.repoRoot = repoRoot;
   }
@@ -10005,6 +10008,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#launchContextSummary")).toHaveCount(0);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/Asteroids\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/Asteroids\/assets"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"screen": \{\s+"width": 960,\s+"height": 720\s+\}/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"repoRoot": "HTML-JavaScript-Gaming"/);
       expect(JSON.parse(await page.locator("#workspaceContextOutput").inputValue()).repoPath).toBe(manifestRepoPath(server));
       await expect(page.locator("#workspaceContextOutput")).not.toHaveValue(/"previewImagePath"/);
@@ -10416,6 +10420,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.gameId).toBe("Asteroids");
       expect(storedContext.gameRoot).toBe("games/Asteroids/");
       expect(storedContext.assetsPath).toBe("games/Asteroids/assets");
+      expect(storedContext.screen).toEqual({ width: 960, height: 720 });
       expect(storedContext.repoRoot).toBe("HTML-JavaScript-Gaming");
       expect(storedContext.repoPath).toBe(manifestRepoPath(server));
       expect(storedContext.tools["palette-manager-v2"].swatches.length).toBeGreaterThan(0);

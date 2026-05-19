@@ -17,7 +17,6 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 .collision-inspector-v2__header,
-.collision-inspector-v2__menu,
 .collision-inspector-v2.app-shell {
   width: min(1460px, calc(100vw - 32px));
   margin-inline: auto;
@@ -27,18 +26,36 @@ body[data-tool-id="collision-inspector-v2"] {
   margin-top: 16px;
 }
 
-.collision-inspector-v2__menu {
+.collision-inspector-v2__header .tools-platform-frame__topline {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.collision-inspector-v2__header .tools-platform-frame__description {
+  flex: 1 1 360px;
+}
+
+.collision-inspector-v2__header-actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-block: 12px;
+  align-items: end;
+  margin-left: auto;
 }
 
-.collision-inspector-v2__menu[hidden] {
+.collision-inspector-v2__header-actions [hidden] {
   display: none;
 }
 
-.collision-inspector-v2__menu button,
+.collision-inspector-v2__header-file {
+  min-width: min(360px, 100%);
+  margin-bottom: 0;
+}
+
+.collision-inspector-v2__workspace-menu button,
 .collision-inspector-v2__wide-button,
 .collision-inspector-v2__field input,
 .collision-inspector-v2__field select,
@@ -51,7 +68,7 @@ body[data-tool-id="collision-inspector-v2"] {
   font: inherit;
 }
 
-.collision-inspector-v2__menu button,
+.collision-inspector-v2__workspace-menu button,
 .collision-inspector-v2__wide-button,
 .collision-inspector-v2__status-actions button {
   min-height: 36px;
@@ -134,9 +151,10 @@ body[data-tool-id="collision-inspector-v2"] {
 
 .collision-inspector-v2__canvas-wrap {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, auto) auto;
   gap: 8px;
   min-height: 640px;
+  align-content: center;
 }
 
 .collision-inspector-v2__zoom-row {
@@ -160,9 +178,13 @@ body[data-tool-id="collision-inspector-v2"] {
 }
 
 #collisionCanvas {
+  --collision-inspector-aspect-ratio: 960 / 720;
   width: 100%;
-  height: 100%;
-  min-height: 560px;
+  height: auto;
+  max-height: 100%;
+  aspect-ratio: var(--collision-inspector-aspect-ratio);
+  justify-self: center;
+  align-self: center;
   border: 1px solid #263630;
   border-radius: 6px;
   background: #070b0c;
@@ -291,4 +313,56 @@ body[data-tool-id="collision-inspector-v2"] {
   .collision-inspector-v2__canvas-wrap {
     min-height: 520px;
   }
+}
+
+html.tools-platform-fullscreen-active,
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"],
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] {
+  height: 100%;
+  overflow: hidden;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] > .is-collapsible,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] > .is-collapsible {
+  width: 100%;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] > .collision-inspector-v2.app-shell,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] > .collision-inspector-v2.app-shell {
+  width: 100vw;
+  height: calc(100vh - 44px);
+  min-height: 0;
+  grid-template-columns: 300px minmax(0, 1fr) 360px;
+  gap: 8px;
+  margin: 0;
+  padding: 8px;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel--left,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel--left {
+  grid-column: 1;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel--center,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel--center {
+  grid-column: 2;
+  overflow: hidden;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel--right,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__panel--right {
+  grid-column: 3;
+}
+
+body.tools-platform-surface.tools-platform-fullscreen-active[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__canvas-wrap,
+html:fullscreen body.tools-platform-surface[data-tool-id="collision-inspector-v2"] .collision-inspector-v2__canvas-wrap {
+  min-height: 0;
+  height: 100%;
+  align-content: center;
 }

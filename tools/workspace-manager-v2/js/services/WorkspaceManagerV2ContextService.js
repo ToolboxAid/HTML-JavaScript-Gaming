@@ -248,6 +248,7 @@ function gameFromGameManifest(gameManifest, manifestPath = "", repoRoot = "", re
     gameRoot,
     assetsPath: `${gameRoot}assets`,
     launch: clone(gameManifest.launch || {}),
+    screen: clone(gameManifest.screen || null),
     tools: clone(gameManifest.tools || {}),
     id: gameInfo.id,
     manifest: clone(gameManifest),
@@ -1167,7 +1168,8 @@ export class WorkspaceManagerV2ContextService {
         manifestId: workspaceContext.id,
         paletteName: palettePayload.name || "Workspace Palette",
         repoPath: workspaceContext.repoPath || "",
-        repoRoot: workspaceContext.repoRoot || ""
+        repoRoot: workspaceContext.repoRoot || "",
+        screen: clone(workspaceContext.screen || null)
       },
       assetCount,
       assetWarning,
@@ -1766,6 +1768,10 @@ export class WorkspaceManagerV2ContextService {
       assetsPath: `${gameRoot}assets`,
       tools: workspaceToolsWithObjectVectorPayload(game.manifest?.tools || game?.tools || {})
     };
+    const screen = game.manifest?.screen || game.screen || null;
+    if (isPlainObject(screen)) {
+      workspaceManifest.screen = clone(screen);
+    }
     if (!workspaceManifest.repoRoot && game.repoRoot) {
       workspaceManifest.repoRoot = game.repoRoot;
     }

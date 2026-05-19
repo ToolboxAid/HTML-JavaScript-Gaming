@@ -39,6 +39,9 @@
         }
       }
     },
+    "screen": {
+      "$ref": "#/$defs/screenDimensions"
+    },
     "launch": {
       "$ref": "#/$defs/gameLaunch"
     },
@@ -62,6 +65,21 @@
         },
         "workspaceManagerOptional": {
           "type": "boolean"
+        }
+      }
+    },
+    "screenDimensions": {
+      "type": "object",
+      "required": ["width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
         }
       }
     },

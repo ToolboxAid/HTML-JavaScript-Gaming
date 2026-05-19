@@ -21,7 +21,7 @@
               <div class="tools-platform-frame__accordion-summary">
                 <div class="tools-platform-frame__summary-copy">
                   <h1 class="tools-platform-frame__title" data-tool-id="collision-inspector-v2">Collision Inspector V2</h1>
-                  <h2 class="tools-platform-frame__eyebrow">Manifest Driven Collision Tool</h2>
+                  <h2 class="tools-platform-frame__eyebrow">Shared Manifest Collision Tool</h2>
                 </div>
                 <div class="tools-platform-frame__summary-meta">
                 <div class="tools-platform-frame__meta">Engine-aligned bounds, vector, pixel/sprite, and hybrid collision inspection for game manifests.</div>
@@ -29,18 +29,21 @@
               </div>
               <div class="tools-platform-frame__topline">
                 <p class="tools-platform-frame__description">Load a game manifest, select two Object Vector V2 objects, and drag them through live collision checks.</p>
+                <div class="collision-inspector-v2__header-actions">
+                  <label class="collision-inspector-v2__field collision-inspector-v2__header-file" for="collisionManifestInput" data-launch-mode-nav="tool">
+                    <span>Game Manifest JSON</span>
+                    <input id="collisionManifestInput" type="file" accept=".json,application/json">
+                  </label>
+                  <nav class="collision-inspector-v2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
+                    <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
+                  </nav>
+                </div>
               </div>
             </div>
           </section>
         </div>
       </div>
     </details>
-
-    <nav class="collision-inspector-v2__menu" aria-label="Tool actions" data-launch-mode-nav="tool" hidden></nav>
-
-    <nav class="collision-inspector-v2__menu collision-inspector-v2__workspace-menu" aria-label="Workspace actions" data-launch-mode-nav="workspace" hidden>
-      <button id="returnToWorkspaceButton" type="button">Return to Workspace</button>
-    </nav>
 
     <main class="collision-inspector-v2 app-shell" data-tool-id="collision-inspector-v2">
       <aside class="collision-inspector-v2__panel collision-inspector-v2__panel--left" aria-label="Collision inputs">
@@ -50,11 +53,6 @@
             <span class="accordion-v2__icon" aria-hidden="true">+</span>
           </button>
           <div id="manifestContent" class="accordion-v2__content">
-            <label class="collision-inspector-v2__field" for="collisionManifestInput">
-              <span>Game Manifest JSON</span>
-              <input id="collisionManifestInput" type="file" accept=".json,application/json">
-            </label>
-            <button id="loadAsteroidsManifestButton" class="collision-inspector-v2__wide-button" type="button">Load Asteroids Manifest</button>
             <div id="manifestSummary" class="collision-inspector-v2__summary">No manifest loaded.</div>
           </div>
         </section>
