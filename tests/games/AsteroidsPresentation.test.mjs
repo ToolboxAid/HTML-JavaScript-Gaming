@@ -65,13 +65,15 @@ function createObjectVectorRuntime(calls) {
       const object = options.objectId
         ? assetSet.objectsById.get(options.objectId)
         : [...assetSet.objectsById.values()].find((candidate) => objectHasTags(candidate, options.tags || []));
+      const shape = object?.shapes?.[0];
       calls.push({
         objectId: object?.id || options.objectId,
+        requireManifestBinding: options.requireManifestBinding === true,
         renderKey: options.runtimeRole,
+        stroke: shape?.style?.stroke || '',
         stateId: options.stateId,
         tags: options.tags,
       });
-      const shape = object?.shapes?.[0];
       const points = shape?.geometry?.points;
       if (typeof renderer.drawPolygon === 'function' && Array.isArray(points)) {
         renderer.drawPolygon(points, shape.style);
@@ -204,8 +206,13 @@ function testAsteroidsMenuHighScoreUsesLeaderboardTop() {
   assert.equal(textCalls.some(([text]) => text === 'HIGH SCORE 2500'), false);
 }
 
-function testAsteroidsAttractObjectsLoadFromManifestTags() {
+function testAsteroidsAttractAsteroidsUseManifestObjectsAndStyles() {
   const renderCalls = [];
+  const payload = loadAsteroidsObjectVectorPayload();
+  const styleByObjectId = new Map(payload.objects.map((object) => [
+    object.id,
+    object.shapes[0]?.style?.stroke || '',
+  ]));
   const scene = new AsteroidsGameScene(createAsteroidsTestSceneOptions({
     objectVectorAssets: createObjectVectorAssetSet(),
     objectVectorRuntime: createObjectVectorRuntime(renderCalls),
@@ -216,6 +223,7 @@ function testAsteroidsAttractObjectsLoadFromManifestTags() {
 
   const renderer = {
     drawRect() {},
+    drawPolygon() {},
     drawText() {},
   };
 
@@ -228,7 +236,19 @@ function testAsteroidsAttractObjectsLoadFromManifestTags() {
   const objectIds = renderCalls.map((call) => call.objectId);
   assert.equal(objectIds.includes('object.asteroids.ship'), true);
   assert.equal(objectIds.includes('object.asteroids.large-asteroid'), true);
+  assert.equal(objectIds.includes('object.asteroids.medium-asteroid'), true);
+  assert.equal(objectIds.includes('object.asteroids.small-asteroid'), true);
   assert.equal(objectIds.includes('object.asteroids.large-ufo'), true);
+  [
+    'object.asteroids.large-asteroid',
+    'object.asteroids.medium-asteroid',
+    'object.asteroids.small-asteroid',
+  ].forEach((objectId) => {
+    const calls = renderCalls.filter((call) => call.objectId === objectId);
+    assert.equal(calls.length > 0, true);
+    assert.equal(calls.every((call) => call.requireManifestBinding), true);
+    assert.equal(calls.every((call) => call.stroke === styleByObjectId.get(objectId)), true);
+  });
 }
 
 function testAsteroidsGameplayBulletsUseManifestObjectGeometry() {
@@ -322,7 +342,7 @@ export function run() {
   testAsteroidsAttractMenuFlow();
   testAsteroidsGameOverQualifyingScoreInitialsFlow();
   testAsteroidsMenuHighScoreUsesLeaderboardTop();
-  testAsteroidsAttractObjectsLoadFromManifestTags();
+  testAsteroidsAttractAsteroidsUseManifestObjectsAndStyles();
   testAsteroidsGameplayBulletsUseManifestObjectGeometry();
   testAsteroidsGameplayRenderDoesNotCoverBackgroundLayer();
 }

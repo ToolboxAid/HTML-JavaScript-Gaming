@@ -6,14 +6,18 @@ const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';
 const OBJECT_VECTOR_PAYLOAD_KEYS = new Set(['version', 'toolId', 'name', 'objects']);
 
 export const ASTEROIDS_OBJECT_GEOMETRY_IDS = Object.freeze({
-  attractAsteroid: 'object.asteroids.large-asteroid',
+  asteroidLarge: 'object.asteroids.large-asteroid',
+  asteroidMedium: 'object.asteroids.medium-asteroid',
+  asteroidSmall: 'object.asteroids.small-asteroid',
   bullet: 'object.asteroids.bullet',
   attractShip: 'object.asteroids.ship',
   attractUfo: 'object.asteroids.large-ufo',
 });
 
 export const ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS = Object.freeze([
-  ASTEROIDS_OBJECT_GEOMETRY_IDS.attractAsteroid,
+  ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge,
+  ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium,
+  ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall,
   ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip,
   ASTEROIDS_OBJECT_GEOMETRY_IDS.attractUfo,
   ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet,

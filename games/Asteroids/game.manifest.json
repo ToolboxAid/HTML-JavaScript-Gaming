@@ -256,6 +256,36 @@
                 "x": 0,
                 "y": 0
               }
+            },
+            {
+              "tool": "line",
+              "order": 1,
+              "visible": true,
+              "locked": false,
+              "geometry": {
+                "point1": {
+                  "x": -16,
+                  "y": 2
+                },
+                "point2": {
+                  "x": -3,
+                  "y": 2
+                }
+              },
+              "style": {
+                "fill": "#00000000",
+                "stroke": "#F87171",
+                "strokeWidth": 2,
+                "fillOpacity": 1,
+                "strokeOpacity": 1
+              },
+              "transform": {
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "x": 0,
+                "y": 0
+              }
             }
           ],
           "states": [
@@ -271,7 +301,7 @@
                     {
                       "shapeIndex": 0,
                       "transform": {
-                        "rotation": 0,
+                        "rotation": 90,
                         "scaleX": 1,
                         "scaleY": 1,
                         "x": 0,
@@ -1209,7 +1239,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#94A3B8",
+                "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1

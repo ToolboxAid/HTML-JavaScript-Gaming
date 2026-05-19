@@ -7671,6 +7671,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         scene.attractAdapter.startDemo();
       });
       await page.waitForFunction(() => {
+        const messages = (window.__asteroidsObjectVectorRuntime?.events || [])
+          .map((entry) => entry.message)
+          .join("\n");
+        return messages.includes("Object Vector runtime cache miss for asteroidLarge; cached resolved object object.asteroids.large-asteroid.")
+          && messages.includes("Object Vector runtime cache miss for asteroidMedium; cached resolved object object.asteroids.medium-asteroid.")
+          && messages.includes("Object Vector runtime cache miss for asteroidSmall; cached resolved object object.asteroids.small-asteroid.");
+      });
+      await page.waitForFunction(() => {
         const counts = window.__asteroidsObjectVectorRuntime?.renderCounts || {};
         return counts.attractUfo > 0;
       });
@@ -7779,11 +7787,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(diagnostics.objectVectorObjectIds).toEqual(expect.arrayContaining([
         "object.asteroids.bullet",
         "object.asteroids.large-asteroid",
+        "object.asteroids.medium-asteroid",
+        "object.asteroids.small-asteroid",
         "object.asteroids.large-ufo",
         "object.asteroids.ship"
       ]));
       const eventMessages = diagnostics.events.map((entry) => entry.message).join("\n");
       expect(eventMessages).toContain("Object Vector runtime asset load from Asteroids game.manifest.json:tools.object-vector-studio-v2: 7 objects.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for asteroidLarge; cached resolved object object.asteroids.large-asteroid.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for asteroidMedium; cached resolved object object.asteroids.medium-asteroid.");
+      expect(eventMessages).toContain("Object Vector runtime cache miss for asteroidSmall; cached resolved object object.asteroids.small-asteroid.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ship; cached resolved object object.asteroids.ship.");
       expect(eventMessages).toContain("Object Vector runtime cache miss for ufoSmall; cached resolved object object.asteroids.small-ufo.");
       expect(eventMessages).toContain("Object Vector runtime frame resolved: object.asteroids.ship idle/frame-1.");

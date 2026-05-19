@@ -739,6 +739,8 @@ export default class AsteroidsGameScene extends Scene {
         ...this.objectVectorTagOptions(objectKey),
         elapsedMs: this.objectVectorPlaybackMs,
         fps: 12,
+        objectId: this.objectVectorRuntimeObjectValidation.objectsByKey[objectKey]?.id || "",
+        requireManifestBinding: true,
         rotation: asteroid.angle,
         stateId: "active",
         x: asteroid.x,

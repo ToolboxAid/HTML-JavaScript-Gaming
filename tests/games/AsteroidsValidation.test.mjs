@@ -160,11 +160,15 @@ export async function run() {
   const objectVectorPayload = manifestPayload.tools['object-vector-studio-v2'];
   assert.equal(Object.hasOwn(objectVectorPayload, 'vectorMaps'), false);
   assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet, 'object.asteroids.bullet');
-  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractAsteroid, 'object.asteroids.large-asteroid');
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge, 'object.asteroids.large-asteroid');
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium, 'object.asteroids.medium-asteroid');
+  assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall, 'object.asteroids.small-asteroid');
   assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip, 'object.asteroids.ship');
   assert.equal(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractUfo, 'object.asteroids.large-ufo');
   assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.bullet).id, 'object.asteroids.bullet');
-  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractAsteroid).id, 'object.asteroids.large-asteroid');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidLarge).id, 'object.asteroids.large-asteroid');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidMedium).id, 'object.asteroids.medium-asteroid');
+  assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.asteroidSmall).id, 'object.asteroids.small-asteroid');
   assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractShip).id, 'object.asteroids.ship');
   assert.equal(objectGeometry.objectsById.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.attractUfo).id, 'object.asteroids.large-ufo');
   ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.forEach((id) => {
