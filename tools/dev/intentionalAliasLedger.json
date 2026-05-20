@@ -117,16 +117,6 @@
         "import { CANONICAL_WORLD_TO_SCREEN_SCALE, combineObjectVectorBounds, inverseTransformObjectVectorShapePoint, normalizeObjectVectorOrigin, normalizeRotationDegrees as normalizeSharedRotationDegrees, objectVectorBoundsCornerPoints, objectVectorSvgTransformAttribute, rotatePointAround as rotateSharedPointAround, transformedObjectVectorShapeBounds, transformObjectVectorShapePoint, ObjectVectorRuntimeAssetService } from \"../../../src/engine/rendering/index.js\";"
       ],
       "reason": "Object Vector Studio V2 keeps local method names for editor actions while delegating to shared transform helpers."
-    },
-    {
-      "id": "asteroids-wrap-adapter",
-      "files": [
-        "games/Asteroids/utils/math.js"
-      ],
-      "statements": [
-        "import { wrap as sharedWrap } from '../../../src/shared/utils/mathUtils.js';"
-      ],
-      "reason": "Asteroids preserves its local wrap(value, max) gameplay API while delegating to the shared wrap(value, min, max) helper."
     }
   ]
 }
