@@ -5,8 +5,8 @@ David Quesenberry
 asteroidsShowcaseDebug.js
 */
 
-import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { sanitizeText } from "../../../src/shared/string/index.js";
+import { asArray, asObject } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "/src/shared/string/index.js";
 
 function formatNumber(value, fallback = 0) {
   return Number.isFinite(value) ? Number(value) : fallback;

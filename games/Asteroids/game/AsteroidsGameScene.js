@@ -4,9 +4,9 @@ David Quesenberry
 03/22/2026
 AsteroidsGameScene.js
 */
-import { AttractModeController, Scene } from '../../../src/engine/scene/index.js';
-import { ParticleSystem } from '../../../src/engine/fx/index.js';
-import { asPositiveInteger } from '../../../src/shared/number/index.js';
+import { AttractModeController, Scene } from '/src/engine/scene/index.js';
+import { ParticleSystem } from '/src/engine/fx/index.js';
+import { asPositiveInteger } from '/src/shared/number/index.js';
 import AsteroidsSession from './AsteroidsSession.js';
 import AsteroidsWorld from './AsteroidsWorld.js';
 import AsteroidsAudio from '../systems/AsteroidsAudio.js';

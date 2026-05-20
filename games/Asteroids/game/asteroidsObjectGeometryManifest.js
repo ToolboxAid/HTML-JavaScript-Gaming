@@ -1,6 +1,6 @@
-import { getObjectVectorCollisionOutlinePoints } from '../../../src/engine/collision/index.js';
-import { isRecord } from '../../../src/shared/types/typeGuards.js';
-import { deepClone } from '../../../src/shared/utils/jsonUtils.js';
+import { getObjectVectorCollisionOutlinePoints } from '/src/engine/collision/index.js';
+import { isRecord } from '/src/shared/types/typeGuards.js';
+import { deepClone } from '/src/shared/utils/jsonUtils.js';
 
 const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';
 const OBJECT_VECTOR_PAYLOAD_KEYS = new Set(['version', 'toolId', 'name', 'objects']);

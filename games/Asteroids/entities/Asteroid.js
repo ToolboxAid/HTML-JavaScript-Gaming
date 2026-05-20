@@ -5,7 +5,7 @@ David Quesenberry
 Asteroid.js
 */
 import { TAU, randomRange, wrap } from '/src/shared/utils/mathUtils.js';
-import { transformCollisionPoints } from '../../../src/engine/collision/index.js';
+import { transformCollisionPoints } from '/src/engine/collision/index.js';
 
 const SIZE_PROFILES = {
   SML: { id: 1 },

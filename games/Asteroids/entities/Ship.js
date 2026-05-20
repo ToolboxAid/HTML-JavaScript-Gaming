@@ -5,8 +5,8 @@ David Quesenberry
 Ship.js
 */
 import { wrap } from '/src/shared/utils/mathUtils.js';
-import { transformCollisionPoints } from '../../../src/engine/collision/index.js';
-import { normalizePoints } from '../../../src/shared/utils/geometryUtils.js';
+import { transformCollisionPoints } from '/src/engine/collision/index.js';
+import { normalizePoints } from '/src/shared/utils/geometryUtils.js';
 
 export default class Ship {
   constructor(x, y, { collisionPoints = [] } = {}) {

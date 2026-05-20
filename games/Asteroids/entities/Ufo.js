@@ -6,8 +6,8 @@ Ufo.js
 */
 import Bullet from './Bullet.js';
 import { distance, randomRange } from '/src/shared/utils/mathUtils.js';
-import { normalizePoints } from '../../../src/shared/utils/geometryUtils.js';
-import { transformCollisionPoints } from '../../../src/engine/collision/index.js';
+import { normalizePoints } from '/src/shared/utils/geometryUtils.js';
+import { transformCollisionPoints } from '/src/engine/collision/index.js';
 
 const UFO_PROFILES = {
   large: {
