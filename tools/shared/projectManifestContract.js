@@ -9,7 +9,7 @@ import {
 export const PROJECT_MANIFEST_SCHEMA = "html-js-gaming.project";
 export const PROJECT_MANIFEST_VERSION = 1;
 export const ACTIVE_PROJECT_STORAGE_KEY = "toolboxaid.projectSystem.activeManifest";
-export const PROJECT_DOCUMENT_KIND = "workspace-manifest";
+export const PROJECT_DOCUMENT_KIND = "project-manifest";
 const WORKSPACE_EXPORT_ARTIFACT_SCHEMA = "html-js-gaming.workspace-export-artifacts/1";
 const RESERVED_EXTERNAL_ASSET_KEYS = new Set([
   "externalAssets",
@@ -204,7 +204,7 @@ export function validateProjectManifest(rawManifest) {
   const manifest = migrateProjectManifest(rawManifest);
 
   if (manifest.documentKind !== PROJECT_DOCUMENT_KIND) {
-    issues.push(`Workspace documentKind must be ${PROJECT_DOCUMENT_KIND}.`);
+    issues.push(`Project documentKind must be ${PROJECT_DOCUMENT_KIND}.`);
   }
   if (manifest.schema !== PROJECT_MANIFEST_SCHEMA) {
     issues.push(`Workspace contract id must be ${PROJECT_MANIFEST_SCHEMA}.`);

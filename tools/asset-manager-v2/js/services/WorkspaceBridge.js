@@ -19,9 +19,9 @@ function hasOnlyGamesRoot(value) {
   return path.startsWith("games/") && !path.includes("/samples/") && !path.includes("/tools/");
 }
 
-function isWorkspaceManifest(value) {
+function isProjectManifestContext(value) {
   return isPlainObject(value)
-    && value.documentKind === "workspace-manifest"
+    && value.documentKind === "project-manifest"
     && typeof value.schema === "string"
     && isPlainObject(value.tools);
 }
@@ -80,7 +80,7 @@ export class WorkspaceBridge {
     if (!isPlainObject(workspaceManifest)) {
       return { ok: false, message: "Workspace Manager V2 manifest context is invalid." };
     }
-    if (!isWorkspaceManifest(workspaceManifest)) {
+    if (!isProjectManifestContext(workspaceManifest)) {
       return { ok: false, message: "Workspace Manager V2 launch requires a valid manifest/toolState context." };
     }
     if (Object.prototype.hasOwnProperty.call(workspaceManifest, "workspaceManifest")

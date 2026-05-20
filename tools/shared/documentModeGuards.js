@@ -132,7 +132,7 @@ export function detectWorkspaceDocument(rawDocument) {
   }
   const documentKind = sanitizeText(rawDocument.documentKind);
   const schema = sanitizeText(rawDocument.schema).toLowerCase();
-  return documentKind === "workspace-manifest" || schema === "html-js-gaming.project";
+  return documentKind === "project-manifest" || schema === "html-js-gaming.project";
 }
 
 export function assertStandaloneToolDocument(rawDocument, options = {}) {

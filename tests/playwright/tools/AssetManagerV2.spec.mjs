@@ -1292,7 +1292,7 @@ test.describe("Asset Manager V2", () => {
 
   test("shows Asset Manager V2 launch guard when Workspace Manager V2 palette context is missing", async ({ page }) => {
     const server = await openAssetManagerWithSessionContext(page, {
-      documentKind: "workspace-manifest",
+      documentKind: "project-manifest",
       schema: "html-js-gaming.project",
       version: 1,
       id: "workspace-manager-v2-Asteroids",
@@ -1341,7 +1341,7 @@ test.describe("Asset Manager V2", () => {
       toolId: "asset-manager-v2",
       gameId: "Asteroids",
       workspaceManifest: {
-        documentKind: "workspace-manifest",
+        documentKind: "project-manifest",
         schema: "html-js-gaming.project",
         version: 1,
         id: "legacy-workspace-v2-Asteroids",
@@ -1547,7 +1547,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK workspace\.tools\.asset-manager-v2 now has 19 validated assets\./);
 
       const storedContext = await page.evaluate((id) => JSON.parse(sessionStorage.getItem(id)), hostContextId);
-      expect(storedContext.documentKind).toBe("workspace-manifest");
+      expect(storedContext.documentKind).toBe("project-manifest");
       expect(storedContext.toolId).toBeUndefined();
       expect(storedContext.activePalette).toBeUndefined();
       expect(storedContext.workspaceManifest).toBeUndefined();

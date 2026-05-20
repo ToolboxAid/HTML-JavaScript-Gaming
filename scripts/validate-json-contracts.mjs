@@ -564,7 +564,7 @@ function validateSamples(schemaIndex, validate) {
     }
 
     let schemaPath = "";
-    const isWorkspaceManifest = String(document?.documentKind || "").trim() === "workspace-manifest"
+    const isWorkspaceManifest = String(document?.documentKind || "").trim() === "project-manifest"
       || String(document?.schema || "").trim().toLowerCase() === "html-js-gaming.project";
     if (isWorkspaceManifest) {
       rows.push({ filePath: rel, schemaPath: "", status: "skipped", errorCount: 0, firstErrors: "", note: "separate workspace validation contract removed; sample workspace JSON is out of scope" });

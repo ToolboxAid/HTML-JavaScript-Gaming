@@ -740,7 +740,7 @@ function workspaceContextFromGameManifest(gameManifest, { repoPath = "", repoRoo
   const game = gameManifest.game || {};
   const gameRoot = `games/${game.folder}/`;
   const context = {
-    documentKind: "workspace-manifest",
+    documentKind: "project-manifest",
     schema: "html-js-gaming.project",
     version: 1,
     id: `workspace-manager-v2-${game.id}`,
@@ -9837,7 +9837,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const invalidRuntimeWorkspaceManifest = structuredClone(manifest);
         invalidRuntimeWorkspaceManifest.game.gameData = { workspace: {} };
         const invalidEmbeddedWorkspaceManifest = structuredClone(manifest);
-        invalidEmbeddedWorkspaceManifest.game["workspace"] = { documentKind: "workspace-manifest" };
+        invalidEmbeddedWorkspaceManifest.game["workspace"] = { documentKind: "project-manifest" };
         const invalidObjectVectorRuntimeManifest = structuredClone(manifest);
         invalidObjectVectorRuntimeManifest.objectVectorRuntime = {
           objectIds: {
@@ -10551,7 +10551,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const hostContextId = url.searchParams.get("hostContextId");
         return JSON.parse(sessionStorage.getItem(hostContextId));
       });
-      expect(storedContext.documentKind).toBe("workspace-manifest");
+      expect(storedContext.documentKind).toBe("project-manifest");
       expect(storedContext.toolId).toBeUndefined();
       expect(storedContext.activePalette).toBeUndefined();
       expect(storedContext.workspaceManifest).toBeUndefined();

@@ -475,7 +475,7 @@ function isWorkspaceManifestPreset(rawPreset) {
   }
   const documentKind = normalizeTextValue(rawPreset.documentKind);
   const schema = normalizeTextValue(rawPreset.schema).toLowerCase();
-  return documentKind === "workspace-manifest" || schema === "html-js-gaming.project";
+  return documentKind === "project-manifest" || schema === "html-js-gaming.project";
 }
 
 function resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId) {

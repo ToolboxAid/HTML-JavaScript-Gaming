@@ -179,15 +179,15 @@ function readWorkspacePreviewGeneratorWorkspace(manifest) {
   return { ok: true, workspace };
 }
 
-function isWorkspaceManifest(value) {
-  return isPlainObject(value) && value.documentKind === "workspace-manifest";
+function isProjectManifestContext(value) {
+  return isPlainObject(value) && value.documentKind === "project-manifest";
 }
 
 function workspaceManifestFromLaunchContext(launchContext) {
-  if (isWorkspaceManifest(launchContext)) {
+  if (isProjectManifestContext(launchContext)) {
     return launchContext;
   }
-  if (isWorkspaceManifest(launchContext?.manifest)) {
+  if (isProjectManifestContext(launchContext?.manifest)) {
     return launchContext.manifest;
   }
   return null;

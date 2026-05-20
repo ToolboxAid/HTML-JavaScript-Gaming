@@ -8,6 +8,7 @@ const WORKSPACE_TOOL_SESSION_KEY_PREFIX = "workspace.tools.";
 const WORKSPACE_REPO_HANDLE_DB_NAME = "workspace-manager-v2-repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
+const WORKSPACE_CONTEXT_DOCUMENT_KIND = "project-manifest";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const COLLISION_INSPECTOR_V2_TOOL_KEY = "collision-inspector-v2";
 const OBJECT_VECTOR_STUDIO_V2_TOOL_KEY = "object-vector-studio-v2";
@@ -342,8 +343,8 @@ function validateWorkspaceContextContract(context) {
       errors.push(`root.${key} is required`);
     }
   });
-  if (context.documentKind !== "workspace-manifest") {
-    errors.push("root.documentKind: expected \"workspace-manifest\"");
+  if (context.documentKind !== WORKSPACE_CONTEXT_DOCUMENT_KIND) {
+    errors.push(`root.documentKind: expected \"${WORKSPACE_CONTEXT_DOCUMENT_KIND}\"`);
   }
   ["schema", "id", "name", "gameId"].forEach((key) => {
     if (typeof context[key] !== "string" || !context[key].trim()) {
@@ -1923,7 +1924,7 @@ export class WorkspaceManagerV2ContextService {
     const folder = gameInfo.folder || game?.folder || game?.id || "";
     const gameRoot = `games/${folder}/`;
     const workspaceManifest = {
-      documentKind: "workspace-manifest",
+      documentKind: WORKSPACE_CONTEXT_DOCUMENT_KIND,
       schema: "html-js-gaming.project",
       version: 1,
       id: `workspace-manager-v2-${gameInfo.id || game?.id || "game"}`,
