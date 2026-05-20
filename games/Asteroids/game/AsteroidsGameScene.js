@@ -15,6 +15,10 @@ import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
 import { createAsteroidGeometryProfilesFromObjectVectorAssets } from './asteroidObjectGeometry.js';
 import {
+  calculateAsteroidsBeatTiming,
+  getAsteroidsBeatWeightedTotal
+} from './asteroidsBeatTiming.js';
+import {
   ASTEROIDS_OBJECT_GEOMETRY_IDS,
   ASTEROIDS_ASTEROID_SIZE_OBJECT_IDS,
   ASTEROIDS_UFO_TYPE_OBJECT_IDS,
@@ -32,13 +36,6 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
-const ASTEROID_BEAT_MIN_INTERVAL_SECONDS = 0.18;
-const ASTEROID_BEAT_MAX_INTERVAL_SECONDS = 0.98;
-const ASTEROID_BEAT_SIZE_WEIGHTS = Object.freeze({
-  1: 1,
-  2: 4,
-  3: 9,
-});
 const ATTRACT_INPUT_CODES = [
   'Digit1',
   'Digit2',
@@ -79,31 +76,6 @@ function screenDimensionsFromOptions(options) {
     throw new Error('AsteroidsGameScene requires screenDimensions.width and screenDimensions.height from game.manifest.json.');
   }
   return { width, height };
-}
-
-function isActiveAsteroid(asteroid) {
-  return Boolean(asteroid)
-    && typeof asteroid === 'object'
-    && asteroid.active !== false
-    && asteroid.alive !== false
-    && asteroid.destroyed !== true;
-}
-
-export function getAsteroidsBeatWeightedTotal(asteroids) {
-  if (!Array.isArray(asteroids)) {
-    return 0;
-  }
-  return asteroids.reduce((total, asteroid) => (
-    total + (isActiveAsteroid(asteroid) ? ASTEROID_BEAT_SIZE_WEIGHTS[asteroid.size] || 0 : 0)
-  ), 0);
-}
-
-export function getAsteroidsBeatInterval(weightedTotal, maxWeightedTotal) {
-  const safeWeightedTotal = Math.max(0, Number.isFinite(weightedTotal) ? weightedTotal : 0);
-  const safeMaxWeightedTotal = Math.max(1, Number.isFinite(maxWeightedTotal) ? maxWeightedTotal : safeWeightedTotal);
-  const weightedProgress = Math.min(1, safeWeightedTotal / safeMaxWeightedTotal);
-  return ASTEROID_BEAT_MIN_INTERVAL_SECONDS
-    + ((ASTEROID_BEAT_MAX_INTERVAL_SECONDS - ASTEROID_BEAT_MIN_INTERVAL_SECONDS) * weightedProgress);
 }
 
 export default class AsteroidsGameScene extends Scene {
@@ -553,13 +525,9 @@ export default class AsteroidsGameScene extends Scene {
   }
 
   resolveAsteroidsBeatTiming() {
-    const weightedTotal = getAsteroidsBeatWeightedTotal(this.world?.asteroids);
-    this.beatMaxWeightedTotal = Math.max(this.beatMaxWeightedTotal, weightedTotal, 1);
-    return {
-      intervalSeconds: getAsteroidsBeatInterval(weightedTotal, this.beatMaxWeightedTotal),
-      maxWeightedTotal: this.beatMaxWeightedTotal,
-      weightedTotal,
-    };
+    const beatTiming = calculateAsteroidsBeatTiming(this.world?.asteroids, this.beatMaxWeightedTotal);
+    this.beatMaxWeightedTotal = beatTiming.maxWeightedTotal;
+    return beatTiming;
   }
 
   update(dtSeconds, engine) {
