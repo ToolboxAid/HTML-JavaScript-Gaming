@@ -10,6 +10,6 @@ export { default as LocalStorageService } from './LocalStorageService.js';
 export { default as SessionStorageService } from './SessionStorageService.js';
 export { default as CookieStorageService } from './CookieStorageService.js';
 export { default as SaveSlotManager } from './SaveSlotManager.js';
-export { downloadTextFile, readFileHandleText, readFileText, writeFileHandleText } from './FilePersistenceService.js';
+export { downloadBlobFile, downloadTextFile, readFileHandleText, readFileText, writeFileHandleText } from './FilePersistenceService.js';
 export { compressText, decompressText, compressJson, decompressJson } from './CompressionService.js';
 export { serializeWorldState, deserializeWorldState } from './WorldSerializer.js';

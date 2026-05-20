@@ -16,7 +16,7 @@ import {
   PROJECT_FORMAT,
   TOOL_IDS
 } from "./constants.js";
-import { readFileText } from "../../../src/engine/persistence/index.js";
+import { downloadBlobFile, readFileText } from "../../../src/engine/persistence/index.js";
 import { colorToPickerValue, dedupeColors, isTransparent, normalizeColor, rgbaToHex } from "./colorUtils.js";
 import {
   cloneFrame,
@@ -272,17 +272,6 @@ function resolvePaletteFromAssetRegistry(state) {
     locked: true
   };
   return true;
-}
-
-function downloadBlob(blob, filename) {
-  const link = document.createElement("a");
-  const url = URL.createObjectURL(blob);
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 }
 
 function summarizeGraphFindings(findings) {
@@ -1890,7 +1879,7 @@ async function exportCurrentFramePng(state) {
   const frameCanvas = createImageFromFrame(frame, state.project.width, state.project.height);
   const blob = await canvasToBlob(frameCanvas);
   const filename = `sprite-frame-${state.project.currentFrameIndex + 1}-${state.project.width}x${state.project.height}.png`;
-  downloadBlob(blob, filename);
+  downloadBlobFile(blob, filename, { appendToBody: true });
   setStatus(state, `Exported ${filename} (${state.project.width}x${state.project.height}).`);
 }
 
@@ -1901,7 +1890,7 @@ async function exportSpriteSheetPng(state) {
   const sheetCanvas = createSpriteSheetCanvas(state.project);
   const blob = await canvasToBlob(sheetCanvas);
   const filename = `sprite-sheet-${state.project.frames.length}f-${state.project.width}x${state.project.height}.png`;
-  downloadBlob(blob, filename);
+  downloadBlobFile(blob, filename, { appendToBody: true });
   setStatus(state, `Exported ${filename} (${sheetCanvas.width}x${sheetCanvas.height}).`);
 }
 
@@ -1935,8 +1924,8 @@ async function packageSpriteProject(state) {
     return false;
   }
   const baseName = `${state.assetRegistry.projectId || "sprite-project"}.package`;
-  downloadBlob(new Blob([`${JSON.stringify(packageResult.manifest, null, 2)}\n`], { type: "application/json" }), `${baseName}.json`);
-  downloadBlob(new Blob([`${packageResult.reportText}\n`], { type: "text/plain" }), `${baseName}.report.txt`);
+  downloadBlobFile(new Blob([`${JSON.stringify(packageResult.manifest, null, 2)}\n`], { type: "application/json" }), `${baseName}.json`, { appendToBody: true });
+  downloadBlobFile(new Blob([`${packageResult.reportText}\n`], { type: "text/plain" }), `${baseName}.report.txt`, { appendToBody: true });
   setStatus(state, `${summarizeProjectPackaging(packageResult)} Manifest and report exported.`);
   return true;
 }
@@ -1951,7 +1940,7 @@ async function saveAssetRegistryJson(state) {
   const payload = createRegistryDownloadPayload(state.assetRegistry);
   const blob = new Blob([payload], { type: "application/json" });
   const fileName = "project.assets.json";
-  downloadBlob(blob, fileName);
+  downloadBlobFile(blob, fileName, { appendToBody: true });
   setStatus(
     state,
     `Saved ${fileName} with ${state.assetRegistry.sprites.length} sprite entries.${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`
@@ -1993,7 +1982,7 @@ async function saveProjectJson(state) {
   };
   const json = `${JSON.stringify(payload, null, 2)}\n`;
   const blob = new Blob([json], { type: "application/json" });
-  downloadBlob(blob, fileName);
+  downloadBlobFile(blob, fileName, { appendToBody: true });
   setStatus(
     state,
     `Saved ${fileName} (frame ${state.project.currentFrameIndex + 1} active, asset refs: palette=${state.project.assetRefs.paletteId || "none"}, sprite=${state.project.assetRefs.spriteId || "none"}).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`

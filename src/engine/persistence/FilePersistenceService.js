@@ -72,6 +72,40 @@ export async function writeFileHandleText(fileHandle, content, {
   return true;
 }
 
+export function downloadBlobFile(blob, fileName, {
+  appendToBody = false,
+  documentRef = null,
+  windowRef = null
+} = {}) {
+  const browserWindow = resolveWindowRef(windowRef);
+  const documentObject = resolveDocumentRef(documentRef, browserWindow);
+  const urlApi = browserWindow.URL || browserWindow.webkitURL || globalThis.URL;
+  if (
+    !blob
+    || !documentObject
+    || typeof documentObject.createElement !== "function"
+    || typeof urlApi?.createObjectURL !== "function"
+    || typeof urlApi?.revokeObjectURL !== "function"
+  ) {
+    return false;
+  }
+
+  const url = urlApi.createObjectURL(blob);
+  const link = documentObject.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.rel = "noopener";
+  if (appendToBody && documentObject.body) {
+    documentObject.body.append(link);
+  }
+  link.click();
+  if (appendToBody && typeof link.remove === "function") {
+    link.remove();
+  }
+  urlApi.revokeObjectURL(url);
+  return true;
+}
+
 export function downloadTextFile(content, fileName, {
   appendToBody = false,
   documentRef = null,
@@ -93,18 +127,5 @@ export function downloadTextFile(content, fileName, {
   }
 
   const blob = new BlobCtor([String(content)], { type: mimeType });
-  const url = urlApi.createObjectURL(blob);
-  const link = documentObject.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  link.rel = "noopener";
-  if (appendToBody && documentObject.body) {
-    documentObject.body.append(link);
-  }
-  link.click();
-  if (appendToBody && typeof link.remove === "function") {
-    link.remove();
-  }
-  urlApi.revokeObjectURL(url);
-  return true;
+  return downloadBlobFile(blob, fileName, { appendToBody, documentRef, windowRef });
 }
