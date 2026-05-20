@@ -1,5 +1,5 @@
 import { getObjectVectorCollisionOutlinePoints } from '/src/engine/collision/index.js';
-import { isRecord } from '/src/shared/types/typeGuards.js';
+import { isRecord } from '/src/shared/object/objects.js';
 import { deepClone } from '/src/shared/json/clone.js';
 
 const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';

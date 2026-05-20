@@ -4,7 +4,8 @@ David Quesenberry
 04/14/2026
 guards.js
 */
-import { isFunction, isRecord } from "../types/index.js";
+import { isRecord } from "../object/objects.js";
+import { isFunction } from "../types/typeGuards.js";
 import { SHARED_STATE_KEYS } from "./contracts.js";
 
 export function isStateContainer(source) {

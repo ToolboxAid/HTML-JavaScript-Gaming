@@ -4,7 +4,7 @@ David Quesenberry
 04/14/2026
 selectors.js
 */
-import { normalizeRecord } from "../data/index.js";
+import { normalizeRecord } from "../object/objects.js";
 import { readState } from "./guards.js";
 
 export function getState(source) {

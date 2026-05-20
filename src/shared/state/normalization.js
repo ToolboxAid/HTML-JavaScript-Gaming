@@ -4,8 +4,9 @@ David Quesenberry
 04/14/2026
 normalization.js
 */
-import { normalizeRecord } from "../data/index.js";
-import { isBoolean, isNonEmptyString } from "../types/index.js";
+import { normalizeRecord } from "../object/objects.js";
+import { isNonEmptyString } from "../string/strings.js";
+import { isBoolean } from "../types/typeGuards.js";
 import { SHARED_PROMOTION_MODES } from "./contracts.js";
 import { createPromotionStateSnapshot } from "./createPromotionStateSnapshot.js";
 

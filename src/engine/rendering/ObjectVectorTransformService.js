@@ -1,4 +1,4 @@
-import { isRecord } from "../../shared/types/typeGuards.js";
+import { isRecord } from "../../shared/object/objects.js";
 import { asFiniteNumber } from "../../shared/number/index.js";
 
 const DEGREES_PER_RADIAN = 180 / Math.PI;

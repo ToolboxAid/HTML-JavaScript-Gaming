@@ -13,7 +13,7 @@ import {
   normalizeObjectVectorTransform,
   transformRuntimeOrientedPoints,
 } from '../rendering/OrientationTransform.js';
-import { isRecord } from '../../shared/types/typeGuards.js';
+import { isRecord } from '../../shared/object/objects.js';
 import { deepClone } from '../../shared/json/clone.js';
 import { asFiniteNumber } from '../../shared/number/index.js';
 

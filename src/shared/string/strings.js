@@ -38,6 +38,10 @@ export function normalizeString(value) {
   return safeTrim(value);
 }
 
+export function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
 export function escapeHtml(value) {
   return String(value || "")
     .replaceAll("&", "&amp;")

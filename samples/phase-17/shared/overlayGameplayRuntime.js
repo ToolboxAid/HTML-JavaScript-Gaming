@@ -10,7 +10,7 @@ import {
   LEVEL17_OVERLAY_CYCLE_KEY,
 } from '/samples/phase-17/shared/overlayCycleInput.js';
 import { normalizeOverlayRuntimeExtensions } from '/samples/phase-17/shared/overlayRuntimeExtensionNormalization.js';
-import { cloneJsonData, safeJsonParse, safeJsonStringify } from '/src/shared/io/index.js';
+import { cloneJsonData, safeJsonParse, safeJsonStringify } from '/src/shared/json/jsonIO.js';
 import { asFiniteNumber } from '/src/shared/number/index.js';
 
 const overlayRuntimePreferenceMemoryStore = new Map();
