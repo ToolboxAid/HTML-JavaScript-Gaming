@@ -1,3 +1,4 @@
+import { LocalStorageService } from '../../engine/persistence/index.js';
 import { safeTrim, toLowerSafe } from './stringUtils.js';
 const BUILD_DEBUG_MODE = 'prod';
 const BUILD_DEBUG_ENABLED = false;
@@ -25,35 +26,27 @@ export function normalizeDebugMode(value, fallback = 'prod') {
 }
 
 export function readStoredBoolean(key) {
-  if (!key || typeof globalThis.localStorage === 'undefined') {
+  if (!key) {
     return null;
   }
 
-  try {
-    const value = globalThis.localStorage.getItem(key);
-    if (value === '1') {
-      return true;
-    }
-    if (value === '0') {
-      return false;
-    }
-  } catch {
-    return null;
+  const value = new LocalStorageService().getItem(key, null);
+  if (value === '1') {
+    return true;
+  }
+  if (value === '0') {
+    return false;
   }
 
   return null;
 }
 
 export function writeStoredBoolean(key, value) {
-  if (!key || typeof globalThis.localStorage === 'undefined') {
+  if (!key) {
     return;
   }
 
-  try {
-    globalThis.localStorage.setItem(key, value ? '1' : '0');
-  } catch {
-    // Ignore storage failures to keep startup resilient.
-  }
+  new LocalStorageService().setItem(key, value ? '1' : '0');
 }
 
 export function isLocalDebugEnvironment(documentRef) {

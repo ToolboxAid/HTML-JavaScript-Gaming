@@ -1,5 +1,9 @@
 import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
 import {
+  LocalStorageService,
+  SessionStorageService
+} from "../../src/engine/persistence/index.js";
+import {
   createStateInspectorSnapshot,
   safeParseJson,
   toPrettyJson
@@ -124,23 +128,17 @@ function readRoutedInspectionPayload() {
     return null;
   }
   const storageKey = `toolboxaid.viewerPayload.${String(payloadId).trim()}`;
+  const sessionStorage = new SessionStorageService();
+  const localStorage = new LocalStorageService();
   let raw = null;
-  try {
-    raw = window.sessionStorage.getItem(storageKey);
-    if (raw) {
-      window.sessionStorage.removeItem(storageKey);
-    }
-  } catch {
-    raw = null;
+  raw = sessionStorage.getItem(storageKey, null);
+  if (raw) {
+    sessionStorage.removeItem(storageKey);
   }
   if (!raw) {
-    try {
-      raw = window.localStorage.getItem(storageKey);
-      if (raw) {
-        window.localStorage.removeItem(storageKey);
-      }
-    } catch {
-      raw = null;
+    raw = localStorage.getItem(storageKey, null);
+    if (raw) {
+      localStorage.removeItem(storageKey);
     }
   }
 
@@ -155,38 +153,27 @@ function readRoutedInspectionPayload() {
   return payload && typeof payload === "object" ? payload : null;
 }
 
-function readStorageEntries(storageLike, prefix = "") {
-  const entries = [];
-  if (!storageLike || typeof storageLike.length !== "number") {
-    return entries;
-  }
-
-  for (let index = 0; index < storageLike.length; index += 1) {
-    const key = storageLike.key(index);
-    if (!key || (prefix && !key.startsWith(prefix))) {
-      continue;
-    }
-    const value = storageLike.getItem(key);
-    entries.push({
+function readStorageEntries(storage, prefix = "") {
+  return storage.entries()
+    .filter(({ key }) => {
+      if (!key || (prefix && !key.startsWith(prefix))) {
+        return false;
+      }
+      return true;
+    })
+    .map(({ key, rawValue }) => ({
       key,
-      value: typeof value === "string" ? value : ""
-    });
-  }
-
-  entries.sort((left, right) => left.key.localeCompare(right.key));
-  return entries;
+      value: typeof rawValue === "string" ? rawValue : ""
+    }))
+    .sort((left, right) => left.key.localeCompare(right.key));
 }
 
 function readProjectManifest() {
-  try {
-    const raw = window.localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY);
-    if (!raw) {
-      return null;
-    }
-    return safeParseJson(raw);
-  } catch {
+  const raw = new LocalStorageService().getItem(ACTIVE_PROJECT_STORAGE_KEY, null);
+  if (!raw) {
     return null;
   }
+  return safeParseJson(raw);
 }
 
 function readBootRegistryKeys() {
@@ -199,8 +186,8 @@ function readBootRegistryKeys() {
 
 function buildLiveSnapshot() {
   const hostContext = readToolHostSharedContextFromLocation(window.location);
-  const localStorageEntries = readStorageEntries(window.localStorage, "toolboxaid.");
-  const sessionStorageEntries = readStorageEntries(window.sessionStorage, "toolboxaid.");
+  const localStorageEntries = readStorageEntries(new LocalStorageService(), "toolboxaid.");
+  const sessionStorageEntries = readStorageEntries(new SessionStorageService(), "toolboxaid.");
   const hosted = new URLSearchParams(window.location.search).get("hosted") === "1";
   return createStateInspectorSnapshot({
     hosted,

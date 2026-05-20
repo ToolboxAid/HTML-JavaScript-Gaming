@@ -13,6 +13,10 @@ import { bindEventHandlers, createCommandDispatcher } from "./eventCommandUtils.
 import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } from "./uiSafeUtils.js";
 import { escapeHtml } from "../../src/shared/string/stringUtil.js";
 import { Logger } from "../../src/engine/logging/index.js";
+import {
+  LocalStorageService,
+  SessionStorageService
+} from "../../src/engine/persistence/index.js";
 import { createRuntimeMonitoringHooks } from "../../src/engine/runtime/index.js";
 import { logToolUiControlReady, logToolUiFinalReady, logToolUiLifecycle } from "./toolLoadDiagnostics.js";
 
@@ -62,16 +66,12 @@ function readStoredHeaderExpandedState() {
   if (typeof window === "undefined") {
     return getDefaultHeaderExpandedState();
   }
-  try {
-    const value = window.localStorage.getItem(HEADER_EXPANDED_STORAGE_KEY);
-    if (value === "true") {
-      return true;
-    }
-    if (value === "false") {
-      return false;
-    }
-  } catch {
-    // Ignore storage read failures and use the baseline state.
+  const value = new LocalStorageService().getItem(HEADER_EXPANDED_STORAGE_KEY, null);
+  if (value === "true") {
+    return true;
+  }
+  if (value === "false") {
+    return false;
   }
   return getDefaultHeaderExpandedState();
 }
@@ -80,11 +80,7 @@ function writeStoredHeaderExpandedState(value) {
   if (typeof window === "undefined") {
     return;
   }
-  try {
-    window.localStorage.setItem(HEADER_EXPANDED_STORAGE_KEY, value ? "true" : "false");
-  } catch {
-    // Ignore storage write failures because they are non-fatal for shell rendering.
-  }
+  new LocalStorageService().setItem(HEADER_EXPANDED_STORAGE_KEY, value ? "true" : "false");
 }
 
 function getRelativeToolsHomePath() {
@@ -798,26 +794,19 @@ function readStoredLaunchSignature() {
   if (typeof window === "undefined") {
     return "";
   }
-  try {
-    return normalizeTextValue(window.localStorage.getItem(WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY));
-  } catch {
-    return "";
-  }
+  return normalizeTextValue(new LocalStorageService().getItem(WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY, null));
 }
 
 function writeStoredLaunchSignature(signature) {
   if (typeof window === "undefined") {
     return;
   }
-  try {
-    if (signature) {
-      window.localStorage.setItem(WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY, signature);
-      return;
-    }
-    window.localStorage.removeItem(WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY);
-  } catch {
-    // Ignore storage failures and continue.
+  const storage = new LocalStorageService();
+  if (signature) {
+    storage.setItem(WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY, signature);
+    return;
   }
+  storage.removeItem(WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY);
 }
 
 function clearSharedBindingsForNewLaunch(signature) {
@@ -840,40 +829,24 @@ function clearToolStateStorageForWorkspaceLaunch() {
     return;
   }
 
-  const clearStorageLike = (storageLike) => {
-    if (!storageLike || typeof storageLike.length !== "number") {
-      return;
-    }
-    const keysToRemove = [];
-    for (let index = 0; index < storageLike.length; index += 1) {
-      const key = normalizeTextValue(storageLike.key(index));
-      if (!key || !key.startsWith(TOOL_STATE_STORAGE_KEY_PREFIX)) {
-        continue;
-      }
-      if (PRESERVED_TOOL_STATE_KEYS.has(key)) {
-        continue;
-      }
-      keysToRemove.push(key);
-    }
+  const clearStorage = (storage) => {
+    const keysToRemove = storage.entries().map(({ key }) => normalizeTextValue(key))
+      .filter((key) => {
+        if (!key || !key.startsWith(TOOL_STATE_STORAGE_KEY_PREFIX)) {
+          return false;
+        }
+        if (PRESERVED_TOOL_STATE_KEYS.has(key)) {
+          return false;
+        }
+        return true;
+      });
     keysToRemove.forEach((key) => {
-      try {
-        storageLike.removeItem(key);
-      } catch {
-        // Ignore storage write failures and continue.
-      }
+      storage.removeItem(key);
     });
   };
 
-  try {
-    clearStorageLike(window.localStorage);
-  } catch {
-    // Ignore storage read/write failures and continue.
-  }
-  try {
-    clearStorageLike(window.sessionStorage);
-  } catch {
-    // Ignore storage read/write failures and continue.
-  }
+  clearStorage(new LocalStorageService());
+  clearStorage(new SessionStorageService());
 }
 
 function readGameLaunchContext() {

@@ -1,4 +1,5 @@
 import { asPositiveInteger } from "../../shared/number/index.js";
+import { SessionStorageService } from "../../engine/persistence/index.js";
 import { isRecord } from "../../shared/types/typeGuards.js";
 
 export { isRecord };
@@ -36,7 +37,7 @@ export class GameManifestLoader {
   } = {}) {
     this.fetch = fetchRef || windowRef.fetch?.bind(windowRef) || null;
     this.pathParams = pathParams;
-    this.sessionStorage = sessionStorageRef || windowRef.sessionStorage || null;
+    this.sessionStorage = new SessionStorageService(sessionStorageRef || windowRef.sessionStorage || null);
     this.window = windowRef;
   }
 
@@ -62,7 +63,7 @@ export class GameManifestLoader {
     if (!hostContextId) {
       return { ok: false, message: "Workspace launch did not include hostContextId." };
     }
-    const rawValue = this.sessionStorage?.getItem(hostContextId) || "";
+    const rawValue = this.sessionStorage.getItem(hostContextId, "") || "";
     if (!rawValue) {
       return { ok: false, message: `Workspace manifest context was not found in sessionStorage: ${hostContextId}.` };
     }

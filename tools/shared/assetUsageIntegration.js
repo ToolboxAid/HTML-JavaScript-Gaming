@@ -1,3 +1,4 @@
+import { LocalStorageService } from "../../src/engine/persistence/index.js";
 import { sanitizeText } from "../../src/shared/string/index.js";
 import { getToolById } from "../toolRegistry.js";
 
@@ -76,6 +77,10 @@ function isHostedWorkspaceMode() {
   return params.get("hosted") === "1"
     && Boolean(sanitizeText(params.get("hostToolId")))
     && Boolean(sanitizeText(params.get("hostContextId")));
+}
+
+function getSharedLocalStorage() {
+  return typeof window === "undefined" ? null : new LocalStorageService();
 }
 
 export function normalizeSharedAssetHandoff(raw) {
@@ -204,13 +209,14 @@ export function createPaletteHandoff({
 }
 
 export function readSharedAssetHandoff() {
-  if (typeof window === "undefined") {
+  const storage = getSharedLocalStorage();
+  if (!storage) {
     return null;
   }
   if (isHostedWorkspaceMode()) {
     return null;
   }
-  const normalized = normalizeSharedAssetHandoff(safeParseJson(window.localStorage.getItem(SHARED_ASSET_HANDOFF_KEY)));
+  const normalized = normalizeSharedAssetHandoff(safeParseJson(storage.getItem(SHARED_ASSET_HANDOFF_KEY, null)));
   console.log("[LEGACY_BADGE_WRITE]", {
     source: "readSharedAssetHandoff",
     action: "read-asset-handoff",
@@ -224,13 +230,14 @@ export function readSharedAssetHandoff() {
 }
 
 export function readSharedPaletteHandoff() {
-  if (typeof window === "undefined") {
+  const storage = getSharedLocalStorage();
+  if (!storage) {
     return null;
   }
   if (isHostedWorkspaceMode()) {
     return null;
   }
-  const normalized = normalizeSharedPaletteHandoff(safeParseJson(window.localStorage.getItem(SHARED_PALETTE_HANDOFF_KEY)));
+  const normalized = normalizeSharedPaletteHandoff(safeParseJson(storage.getItem(SHARED_PALETTE_HANDOFF_KEY, null)));
   console.log("[LEGACY_BADGE_WRITE]", {
     source: "readSharedPaletteHandoff",
     action: "read-palette-handoff",
@@ -242,7 +249,8 @@ export function readSharedPaletteHandoff() {
 }
 
 export function writeSharedAssetHandoff(handoff) {
-  if (typeof window === "undefined") {
+  const storage = getSharedLocalStorage();
+  if (!storage) {
     return false;
   }
   if (isHostedWorkspaceMode()) {
@@ -261,7 +269,9 @@ export function writeSharedAssetHandoff(handoff) {
     sourcePath: normalized.sourcePath,
     sourceToolId: normalized.sourceToolId
   });
-  window.localStorage.setItem(SHARED_ASSET_HANDOFF_KEY, JSON.stringify(normalized));
+  if (!storage.setItem(SHARED_ASSET_HANDOFF_KEY, JSON.stringify(normalized))) {
+    return false;
+  }
   dispatchHandoffChanged(SHARED_ASSET_HANDOFF_EVENT, {
     key: SHARED_ASSET_HANDOFF_KEY,
     action: "write",
@@ -271,7 +281,8 @@ export function writeSharedAssetHandoff(handoff) {
 }
 
 export function writeSharedPaletteHandoff(handoff) {
-  if (typeof window === "undefined") {
+  const storage = getSharedLocalStorage();
+  if (!storage) {
     return false;
   }
   if (isHostedWorkspaceMode()) {
@@ -288,7 +299,9 @@ export function writeSharedPaletteHandoff(handoff) {
     displayName: normalized.displayName,
     sourceToolId: normalized.sourceToolId
   });
-  window.localStorage.setItem(SHARED_PALETTE_HANDOFF_KEY, JSON.stringify(normalized));
+  if (!storage.setItem(SHARED_PALETTE_HANDOFF_KEY, JSON.stringify(normalized))) {
+    return false;
+  }
   dispatchHandoffChanged(SHARED_PALETTE_HANDOFF_EVENT, {
     key: SHARED_PALETTE_HANDOFF_KEY,
     action: "write",
@@ -298,13 +311,14 @@ export function writeSharedPaletteHandoff(handoff) {
 }
 
 export function clearSharedAssetHandoff() {
-  if (typeof window === "undefined") {
+  const storage = getSharedLocalStorage();
+  if (!storage) {
     return false;
   }
   if (isHostedWorkspaceMode()) {
     return false;
   }
-  window.localStorage.removeItem(SHARED_ASSET_HANDOFF_KEY);
+  storage.removeItem(SHARED_ASSET_HANDOFF_KEY);
   dispatchHandoffChanged(SHARED_ASSET_HANDOFF_EVENT, {
     key: SHARED_ASSET_HANDOFF_KEY,
     action: "clear"
@@ -313,13 +327,14 @@ export function clearSharedAssetHandoff() {
 }
 
 export function clearSharedPaletteHandoff() {
-  if (typeof window === "undefined") {
+  const storage = getSharedLocalStorage();
+  if (!storage) {
     return false;
   }
   if (isHostedWorkspaceMode()) {
     return false;
   }
-  window.localStorage.removeItem(SHARED_PALETTE_HANDOFF_KEY);
+  storage.removeItem(SHARED_PALETTE_HANDOFF_KEY);
   dispatchHandoffChanged(SHARED_PALETTE_HANDOFF_EVENT, {
     key: SHARED_PALETTE_HANDOFF_KEY,
     action: "clear"

@@ -1,3 +1,7 @@
+import {
+  LocalStorageService,
+  SessionStorageService
+} from "../../src/engine/persistence/index.js";
 import { sanitizeText } from "../../src/shared/string/index.js";
 const VIEWER_PAYLOAD_STORAGE_KEY_PREFIX = "toolboxaid.viewerPayload.";
 
@@ -13,16 +17,10 @@ function stashViewerPayload(payload, sourceToolId = "") {
     routedAt: new Date().toISOString()
   };
   const serialized = JSON.stringify(wrapped);
-  try {
-    window.sessionStorage.setItem(storageKey, serialized);
-  } catch {
-    try {
-      window.localStorage.setItem(storageKey, serialized);
-    } catch {
-      return "";
-    }
+  if (new SessionStorageService().setItem(storageKey, serialized)) {
+    return payloadId;
   }
-  return payloadId;
+  return new LocalStorageService().setItem(storageKey, serialized) ? payloadId : "";
 }
 
 function navigateToTool(toolId, options = {}) {

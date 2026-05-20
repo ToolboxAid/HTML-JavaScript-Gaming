@@ -1,89 +1,8 @@
-function storageLength(storage) {
-  try {
-    return Number(storage?.length || 0);
-  } catch {
-    return 0;
-  }
-}
-
-function safeStorageKey(storage, index) {
-  try {
-    return storage.key(index);
-  } catch {
-    return null;
-  }
-}
-
-function safeStorageValue(storage, key) {
-  try {
-    return storage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function safeRemoveStorageValue(storage, key) {
-  try {
-    storage.removeItem(key);
-    return { ok: true };
-  } catch (error) {
-    return { ok: false, message: error.message };
-  }
-}
-
-function safeDecodeCookiePart(value) {
-  try {
-    return decodeURIComponent(String(value || ""));
-  } catch {
-    return String(value || "");
-  }
-}
-
-function parseCookieString(cookieText) {
-  const text = String(cookieText || "").trim();
-  if (!text) {
-    return [];
-  }
-  return text.split(";").map((part) => part.trim()).filter(Boolean).map((part) => {
-    const separatorIndex = part.indexOf("=");
-    const rawName = separatorIndex >= 0 ? part.slice(0, separatorIndex) : part;
-    const rawValue = separatorIndex >= 0 ? part.slice(separatorIndex + 1) : "";
-    return {
-      key: safeDecodeCookiePart(rawName),
-      rawValue: safeDecodeCookiePart(rawValue)
-    };
-  }).filter((entry) => entry.key);
-}
-
-function safeCookieString(documentRef) {
-  try {
-    return String(documentRef?.cookie || "");
-  } catch {
-    return "";
-  }
-}
-
-function safeRemoveCookie(documentRef, key) {
-  if (!documentRef || !key) {
-    return { ok: false, message: "cookie entry does not include a supported document and key" };
-  }
-  try {
-    const encodedKey = encodeURIComponent(key);
-    const expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    const maxAge = "Max-Age=0";
-    documentRef.cookie = `${encodedKey}=; ${maxAge}; ${expires}; path=/`;
-    const pathname = String(documentRef.location?.pathname || "/");
-    const pathSegments = pathname.split("/").filter(Boolean);
-    let currentPath = "";
-    pathSegments.forEach((segment) => {
-      currentPath += `/${segment}`;
-      documentRef.cookie = `${encodedKey}=; ${maxAge}; ${expires}; path=${currentPath}`;
-    });
-    return { ok: true };
-  } catch (error) {
-    return { ok: false, message: error.message };
-  }
-}
+import {
+  CookieStorageService,
+  LocalStorageService,
+  SessionStorageService,
+} from "/src/engine/persistence/index.js";
 
 function parseValue(rawValue) {
   if (rawValue == null || rawValue === "") {
@@ -154,12 +73,12 @@ function filterMatchesEntry(entry, filter) {
 export class StorageInspectorV2StorageService {
   constructor({
     documentRef = window.document,
-    localStorageRef = window.localStorage,
-    sessionStorageRef = window.sessionStorage
+    localStorageRef = undefined,
+    sessionStorageRef = undefined
   } = {}) {
-    this.document = documentRef;
-    this.localStorage = localStorageRef;
-    this.sessionStorage = sessionStorageRef;
+    this.cookieStorage = new CookieStorageService({ documentRef });
+    this.localStorage = new LocalStorageService(localStorageRef);
+    this.sessionStorage = new SessionStorageService(sessionStorageRef);
   }
 
   readEntries({ scope = "all", filterText = "" } = {}) {
@@ -184,16 +103,9 @@ export class StorageInspectorV2StorageService {
   }
 
   readStorageEntries(storage, storageType) {
-    const entries = [];
-    const length = storageLength(storage);
-    for (let index = 0; index < length; index += 1) {
-      const key = safeStorageKey(storage, index);
-      if (!key) {
-        continue;
-      }
-      const rawValue = safeStorageValue(storage, key);
+    return storage.entries().map(({ key, rawValue }) => {
       const parsed = parseValue(rawValue);
-      entries.push({
+      return {
         id: `${storageType}:${key}`,
         key,
         parseOk: parsed.parseOk,
@@ -203,13 +115,12 @@ export class StorageInspectorV2StorageService {
         sizeBytes: sizeBytes(rawValue),
         storageType,
         valueType: parsed.valueType
-      });
-    }
-    return entries;
+      };
+    });
   }
 
   readCookieEntries() {
-    return parseCookieString(safeCookieString(this.document)).map((entry) => {
+    return this.cookieStorage.entries().map((entry) => {
       const parsed = parseValue(entry.rawValue);
       return {
         id: `cookies:${entry.key}`,
@@ -237,13 +148,13 @@ export class StorageInspectorV2StorageService {
 
   deleteEntry(entry) {
     if (entry?.storageType === "cookies") {
-      return safeRemoveCookie(this.document, entry.key);
+      return this.cookieStorage.removeEverywhere(entry.key);
     }
     const storage = this.storageForType(entry?.storageType);
     if (!storage || !entry?.key) {
       return { ok: false, message: "storage entry does not include a supported storageType and key" };
     }
-    return safeRemoveStorageValue(storage, entry.key);
+    return storage.removeItem(entry.key);
   }
 
   deleteEntries(entries) {

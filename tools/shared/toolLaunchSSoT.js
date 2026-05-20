@@ -2,6 +2,10 @@ import {
   getSampleToolLaunchDefinition,
   validateLaunchDefinitionAccess
 } from "./toolLaunchSSoTData.js";
+import {
+  LocalStorageService,
+  SessionStorageService
+} from "../../src/engine/persistence/index.js";
 import { normalizeText } from "../../src/shared/string/index.js";
 
 const TOOLBOXAID_STORAGE_KEY_PREFIX = "toolboxaid.";
@@ -33,24 +37,16 @@ function appendQuery(baseHref, queryValues) {
   return queryString ? `${baseHref}?${queryString}` : baseHref;
 }
 
-function clearStorageKeysByPrefix(storageLike, keyPrefix) {
-  if (!storageLike || typeof storageLike.length !== "number") {
-    return;
-  }
-  const keysToRemove = [];
-  for (let index = 0; index < storageLike.length; index += 1) {
-    const key = normalizeText(storageLike.key(index));
-    if (!key || !key.startsWith(keyPrefix)) {
-      continue;
-    }
-    keysToRemove.push(key);
-  }
+function clearStorageKeysByPrefix(storage, keyPrefix) {
+  const keysToRemove = storage.entries().map(({ key }) => normalizeText(key))
+    .filter((key) => {
+      if (!key || !key.startsWith(keyPrefix)) {
+        return false;
+      }
+      return true;
+    });
   keysToRemove.forEach((key) => {
-    try {
-      storageLike.removeItem(key);
-    } catch {
-      // Ignore storage errors to preserve launch navigation.
-    }
+    storage.removeItem(key);
   });
 }
 
@@ -102,16 +98,8 @@ export function clearExternalToolWorkspaceMemory() {
   if (typeof window === "undefined") {
     return false;
   }
-  try {
-    clearStorageKeysByPrefix(window.localStorage, TOOLBOXAID_STORAGE_KEY_PREFIX);
-  } catch {
-    // Ignore storage access errors.
-  }
-  try {
-    clearStorageKeysByPrefix(window.sessionStorage, TOOLBOXAID_STORAGE_KEY_PREFIX);
-  } catch {
-    // Ignore storage access errors.
-  }
+  clearStorageKeysByPrefix(new LocalStorageService(), TOOLBOXAID_STORAGE_KEY_PREFIX);
+  clearStorageKeysByPrefix(new SessionStorageService(), TOOLBOXAID_STORAGE_KEY_PREFIX);
   return true;
 }
 

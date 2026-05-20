@@ -1,19 +1,18 @@
+import {
+  LocalStorageService,
+  SessionStorageService
+} from "../../src/engine/persistence/index.js";
+
 const TOOL_HOST_CONTEXT_KEY_PREFIX = "toolboxaid.toolHost.context.";
 
 function getHostStorage() {
-  try {
-    if (globalThis.sessionStorage) {
-      return globalThis.sessionStorage;
-    }
-  } catch {}
+  const sessionStorage = new SessionStorageService();
+  if (sessionStorage.isSupported()) {
+    return sessionStorage;
+  }
 
-  try {
-    if (globalThis.localStorage) {
-      return globalThis.localStorage;
-    }
-  } catch {}
-
-  return null;
+  const localStorage = new LocalStorageService();
+  return localStorage.isSupported() ? localStorage : null;
 }
 
 function safeParseJson(rawValue) {
@@ -67,8 +66,9 @@ export function writeToolHostSharedContext(payload = {}) {
   }
 
   const context = createToolHostSharedContext(payload);
-  storage.setItem(buildContextStorageKey(context.contextId), JSON.stringify(context));
-  return context;
+  return storage.setItem(buildContextStorageKey(context.contextId), JSON.stringify(context))
+    ? context
+    : null;
 }
 
 export function readToolHostSharedContextById(contextId) {
@@ -82,7 +82,7 @@ export function readToolHostSharedContextById(contextId) {
     return null;
   }
 
-  return safeParseJson(storage.getItem(buildContextStorageKey(normalized)));
+  return safeParseJson(storage.getItem(buildContextStorageKey(normalized), null));
 }
 
 export function removeToolHostSharedContextById(contextId) {
@@ -96,8 +96,7 @@ export function removeToolHostSharedContextById(contextId) {
     return false;
   }
 
-  storage.removeItem(buildContextStorageKey(normalized));
-  return true;
+  return storage.removeItem(buildContextStorageKey(normalized)).ok;
 }
 
 export function readToolHostSharedContextFromLocation(locationLike = null) {

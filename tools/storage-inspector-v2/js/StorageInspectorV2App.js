@@ -1,3 +1,5 @@
+import { SessionStorageService } from "/src/engine/persistence/index.js";
+
 const WORKSPACE_RETURN_HISTORY_CONTEXT_KEY = "workspace-manager-v2-return-history-context-id";
 
 export class StorageInspectorV2App {
@@ -39,6 +41,7 @@ export class StorageInspectorV2App {
     this.storageService = storageService;
     this.selectedId = "";
     this.window = windowRef;
+    this.sessionStorage = new SessionStorageService(this.window.sessionStorage);
     this.document = this.window.document;
     this.suppressFullscreenSync = false;
   }
@@ -249,7 +252,7 @@ export class StorageInspectorV2App {
     const targetUrl = this.workspaceManagerUrl();
     const params = new URLSearchParams(this.window.location.search || "");
     const hostContextId = params.get("hostContextId") || "";
-    if (this.window.sessionStorage.getItem(WORKSPACE_RETURN_HISTORY_CONTEXT_KEY) === hostContextId
+    if (this.sessionStorage.getItem(WORKSPACE_RETURN_HISTORY_CONTEXT_KEY, null) === hostContextId
       && this.window.history.length > 1) {
       this.window.history.back();
       return;
