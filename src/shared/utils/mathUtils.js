@@ -4,6 +4,8 @@ David Quesenberry
 04/29/2026
 mathUtils.js
 */
+export const TAU = Math.PI * 2;
+
 export function clamp(value, min, max) {
   return Math.max(min, Math.min(value, max));
 }

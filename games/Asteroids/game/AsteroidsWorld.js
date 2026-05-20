@@ -9,8 +9,7 @@ import Bullet from '../entities/Bullet.js';
 import Ship from '../entities/Ship.js';
 import Ufo from '../entities/Ufo.js';
 import { arePolygonsColliding } from '../../../src/engine/collision/index.js';
-import { distance } from '../../../src/shared/utils/mathUtils.js';
-import { randomRange } from '../utils/math.js';
+import { distance, randomRange } from '../../../src/shared/utils/mathUtils.js';
 import { sanitizeFiniteNumber, sanitizePositiveNumber } from '../../../src/shared/math/numberNormalization.js';
 import {
   ASTEROIDS_OBJECT_GEOMETRY_IDS,

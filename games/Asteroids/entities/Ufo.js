@@ -5,10 +5,9 @@ David Quesenberry
 Ufo.js
 */
 import Bullet from './Bullet.js';
-import { distance } from '../../../src/shared/utils/mathUtils.js';
+import { distance, randomRange } from '../../../src/shared/utils/mathUtils.js';
 import { normalizePoints } from '../../../src/shared/utils/geometryUtils.js';
 import { transformCollisionPoints } from '../../../src/engine/collision/index.js';
-import { randomRange } from '../utils/math.js';
 
 const UFO_PROFILES = {
   large: {
