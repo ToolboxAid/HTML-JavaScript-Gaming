@@ -28,6 +28,7 @@ const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
 const CENTER_ORIGIN_SESSION_KEY = "object-vector-studio-v2.centerOrigin";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1.0 });
+const VIEWPORT_ZOOM_VIEWBOX_SCALE = 0.1;
 const GRID_STEP = 10;
 const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;
 const MAX_ZOOM = 10.0;
@@ -3347,8 +3348,8 @@ export class ToolStarterApp {
     if (!this.gridRenderEnabled) {
       return;
     }
-    const width = DEFAULT_VIEWPORT.width / this.viewport.zoom;
-    const height = DEFAULT_VIEWPORT.height / this.viewport.zoom;
+    const width = DEFAULT_VIEWPORT.width / this.viewBoxZoom();
+    const height = DEFAULT_VIEWPORT.height / this.viewBoxZoom();
     const minX = this.viewport.x - width / 2;
     const maxX = this.viewport.x + width / 2;
     const minY = this.viewport.y - height / 2;
@@ -3598,8 +3599,8 @@ export class ToolStarterApp {
     if (!bounds.width || !bounds.height) {
       return null;
     }
-    const viewWidth = DEFAULT_VIEWPORT.width / this.viewport.zoom;
-    const viewHeight = DEFAULT_VIEWPORT.height / this.viewport.zoom;
+    const viewWidth = DEFAULT_VIEWPORT.width / this.viewBoxZoom();
+    const viewHeight = DEFAULT_VIEWPORT.height / this.viewBoxZoom();
     const drawingX = point.x * OBJECT_PREVIEW_DRAWING_SCALE;
     const drawingY = point.y * OBJECT_PREVIEW_DRAWING_SCALE;
     return {
@@ -4541,8 +4542,8 @@ export class ToolStarterApp {
   }
 
   updateViewport() {
-    const width = DEFAULT_VIEWPORT.width / this.viewport.zoom;
-    const height = DEFAULT_VIEWPORT.height / this.viewport.zoom;
+    const width = DEFAULT_VIEWPORT.width / this.viewBoxZoom();
+    const height = DEFAULT_VIEWPORT.height / this.viewBoxZoom();
     const viewX = this.formatViewportNumber(this.viewport.x - width / 2);
     const viewY = this.formatViewportNumber(this.viewport.y - height / 2);
     this.elements.renderSurface.setAttribute("viewBox", `${viewX} ${viewY} ${this.formatViewportNumber(width)} ${this.formatViewportNumber(height)}`);
@@ -4579,6 +4580,10 @@ export class ToolStarterApp {
     return Math.round(this.viewport.zoom * 100);
   }
 
+  viewBoxZoom(zoom = this.viewport.zoom) {
+    return zoom * VIEWPORT_ZOOM_VIEWBOX_SCALE;
+  }
+
   zoomViewportByStep(step) {
     const nextZoom = Number((this.viewport.zoom + step).toFixed(3));
     this.zoomViewport(nextZoom);
@@ -4611,8 +4616,9 @@ export class ToolStarterApp {
       return;
     }
     const zoom = this.clampedViewportZoom(nextZoom);
-    const viewWidth = DEFAULT_VIEWPORT.width / zoom;
-    const viewHeight = DEFAULT_VIEWPORT.height / zoom;
+    const viewBoxZoom = this.viewBoxZoom(zoom);
+    const viewWidth = DEFAULT_VIEWPORT.width / viewBoxZoom;
+    const viewHeight = DEFAULT_VIEWPORT.height / viewBoxZoom;
     this.viewport.zoom = zoom;
     this.viewport.x = Number((anchor.x - (anchor.ratioX - 0.5) * viewWidth).toFixed(6));
     this.viewport.y = Number((anchor.y - (anchor.ratioY - 0.5) * viewHeight).toFixed(6));
@@ -4666,8 +4672,9 @@ export class ToolStarterApp {
     }
     const ratioX = (clientX - bounds.left) / bounds.width;
     const ratioY = (clientY - bounds.top) / bounds.height;
-    const viewWidth = DEFAULT_VIEWPORT.width / zoom;
-    const viewHeight = DEFAULT_VIEWPORT.height / zoom;
+    const viewBoxZoom = this.viewBoxZoom(zoom);
+    const viewWidth = DEFAULT_VIEWPORT.width / viewBoxZoom;
+    const viewHeight = DEFAULT_VIEWPORT.height / viewBoxZoom;
     return {
       ratioX,
       ratioY,
