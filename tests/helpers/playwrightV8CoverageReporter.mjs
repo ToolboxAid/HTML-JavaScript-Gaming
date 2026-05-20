@@ -276,6 +276,7 @@ export class PlaywrightV8CoverageReporter {
       return false;
     }
     return filePath.startsWith("src/")
+      || filePath.startsWith("games/Asteroids/")
       || filePath.startsWith("tools/")
       || filePath.startsWith("common/");
   }

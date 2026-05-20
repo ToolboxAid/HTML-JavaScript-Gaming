@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 ShipDebrisSystem.js
 */
-import { randomRange } from '../../../src/shared/utils/mathUtils.js';
+import { randomRange } from '/src/shared/utils/mathUtils.js';
 import { normalizePoints } from '../../../src/shared/utils/geometryUtils.js';
 
 function createShipSegments(points) {
