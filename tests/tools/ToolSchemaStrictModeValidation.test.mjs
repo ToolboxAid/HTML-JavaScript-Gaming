@@ -263,7 +263,6 @@ export async function run() {
     "tile-map-editor",
     "parallax-editor",
     "sprite-editor",
-    "skin-editor",
     "state-inspector",
     "replay-visualizer",
     "performance-profiler",

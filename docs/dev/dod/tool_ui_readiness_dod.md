@@ -727,52 +727,6 @@ layer list empty after successful fetch
 seeded/demo layers shown instead of loaded layers
 ```
 
-## 12. Skin Editor (`skin-editor`)
-
-### Required inputs
-
-```text
-gameId context
-skin payload json when samplePresetPath is provided
-palette/context handoff from workspace or game context
-```
-
-### Required controls
-
-```text
-object list/workbench
-selected object controls
-palette list
-preview canvas
-status/summary/context fields
-```
-
-### Required output fields
-
-```text
-status text that reports Loaded preset or load failure
-active game context output
-palette availability output
-selected object output
-```
-
-### Success
-
-```text
-game context fields match loaded launch context
-palette list is populated when palette context is required
-selected object controls bind loaded skin payload
-preview canvas renders loaded object state
-```
-
-### Failure
-
-```text
-missing game context hidden
-palette context missing while editor reports ready
-preview uses fallback/default object data
-```
-
 ## 13. State Inspector (`state-inspector`)
 
 ### Required inputs

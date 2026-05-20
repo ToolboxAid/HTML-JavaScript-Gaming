@@ -20,7 +20,6 @@ const DIAGNOSTIC_TEXT = "Workspace Manager game launch requires a valid gameId";
 const DEFAULT_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
 const MISSING_SHARED_PALETTE_TEXT = "Shared Palette: No shared palette selected";
 const MISSING_SHARED_ASSET_TEXT = "Shared Assets: No shared asset selected";
-const BOUNCING_BALL_EXPECTED_SKIN_TEXT = "Bouncing Ball Classic Skin";
 
 let WebSocketCtor = null;
 
@@ -356,8 +355,6 @@ function readExpectedMetadataSets() {
       const catalogPath = path.join(gameFolderPath, "assets", DEFAULT_GAME_ASSET_CATALOG_FILENAME);
 
       let hasManifestPalette = false;
-      let hasManifestSkin = false;
-      let expectedSkinName = "";
       let hasManifestToolAsset = false;
       let hasManifestVectors = false;
       let expectedVectorStrokeEnabled = false;
@@ -367,8 +364,6 @@ function readExpectedMetadataSets() {
           const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
           const palette = manifest?.tools?.["palette-browser"]?.palette;
           hasManifestPalette = Array.isArray(palette?.swatches) && palette.swatches.length > 0;
-          const skins = manifest?.tools?.["primitive-skin-editor"]?.skins;
-          hasManifestSkin = Array.isArray(skins) && skins.length > 0;
           const spriteEntries = manifest?.tools?.["sprite-editor"]?.sprites;
           const tileMapEntries = manifest?.tools?.["tile-map-editor"]?.maps;
           const parallaxEntries = manifest?.tools?.["parallax-editor"]?.parallaxLevels;
@@ -384,18 +379,12 @@ function readExpectedMetadataSets() {
             return 0;
           };
           hasManifestToolAsset = (
-            countEntries(skins) > 0
-            || countEntries(spriteEntries) > 0
+            countEntries(spriteEntries) > 0
             || countEntries(tileMapEntries) > 0
             || countEntries(parallaxEntries) > 0
             || countEntries(vectorEntries) > 0
           );
           hasManifestVectors = countEntries(vectorEntries) > 0;
-          const firstSkin = hasManifestSkin ? skins[0] : null;
-          const candidateSkinName = typeof firstSkin?.data?.name === "string"
-            ? firstSkin.data.name.trim()
-            : (typeof firstSkin?.name === "string" ? firstSkin.name.trim() : "");
-          expectedSkinName = candidateSkinName || "";
           if (hasManifestVectors) {
             const firstVector = Array.isArray(vectorEntries)
               ? vectorEntries.find((entry) => Boolean(entry && typeof entry === "object"))
@@ -440,12 +429,10 @@ function readExpectedMetadataSets() {
         id: entry.id,
         href: entry.href,
         hasManifestPalette,
-        hasManifestSkin,
         hasManifestToolAsset,
         hasManifestVectors,
         expectedVectorStrokeEnabled,
         expectedVectorFillEnabled,
-        expectedSkinName,
         hasCatalogPalette,
         hasCatalogNonPalette,
         catalogKinds
@@ -500,7 +487,6 @@ async function inspectMountedWorkspaceState(page) {
         missingSharedAsset: false,
         hasGameSourceLine: false,
         hasAnyExpectedAssetKeyword: false,
-        hasBouncingBallClassicSkin: false,
         paletteLabel: "",
         sharedAssetLabel: ""
       };
@@ -517,8 +503,7 @@ async function inspectMountedWorkspaceState(page) {
       missingSharedPalette: text.includes(${JSON.stringify(MISSING_SHARED_PALETTE_TEXT)}),
       missingSharedAsset: text.includes(${JSON.stringify(MISSING_SHARED_ASSET_TEXT)}),
       hasGameSourceLine: /Game Source:/i.test(text),
-      hasAnyExpectedAssetKeyword: /(palette|skin|audio|image|vector|sprite|tilemap|parallax)/i.test(text),
-      hasBouncingBallClassicSkin: text.includes(${JSON.stringify(BOUNCING_BALL_EXPECTED_SKIN_TEXT)}),
+      hasAnyExpectedAssetKeyword: /(palette|audio|image|vector|sprite|tilemap|parallax)/i.test(text),
       paletteLabel: paletteLabelMatch ? String(paletteLabelMatch[1]).trim() : "",
       sharedAssetLabel: sharedAssetLabelMatch ? String(sharedAssetLabelMatch[1]).trim() : ""
     };
@@ -692,8 +677,6 @@ export async function run() {
           sharedPalettePresent: false,
           sharedAssetsPresent: false,
           expectedManifestPalette: Boolean(expectedAssetModel?.hasManifestPalette),
-          expectedManifestSkin: Boolean(expectedAssetModel?.hasManifestSkin),
-          expectedSkinName: expectedAssetModel?.expectedSkinName || "",
           expectedCatalogKinds: expectedAssetModel?.catalogKinds || [],
           failures: gameFailures
         });
@@ -753,20 +736,6 @@ export async function run() {
         gameFailures.push(failure);
       }
 
-      if (expectedAssetModel?.hasManifestSkin) {
-        const expectedSkinName = expectedAssetModel.expectedSkinName || "";
-        const hasNamedSkin = expectedSkinName
-          ? state.frameText.includes(expectedSkinName)
-          : /skin/i.test(state.frameText);
-        if (!hasNamedSkin) {
-          const failure = expectedSkinName
-            ? `Expected skin "${expectedSkinName}" not visible for ${action.gameId}.`
-            : `Expected skin data not visible for ${action.gameId}.`;
-          assetPresenceFailures.push(failure);
-          gameFailures.push(failure);
-        }
-      }
-
       if (action.gameId.toLowerCase() === "bouncing-ball" && state.missingSharedPalette) {
         const failure = "Bouncing-ball regression: UI shows \"Shared Palette: No shared palette selected\".";
         assetPresenceFailures.push(failure);
@@ -790,11 +759,8 @@ export async function run() {
         paletteLabel: state.paletteLabel,
         sharedAssetLabel: state.sharedAssetLabel,
         expectedManifestPalette: Boolean(expectedAssetModel?.hasManifestPalette),
-        expectedManifestSkin: Boolean(expectedAssetModel?.hasManifestSkin),
         expectedManifestToolAsset: Boolean(expectedAssetModel?.hasManifestToolAsset),
-        expectedSkinName: expectedAssetModel?.expectedSkinName || "",
         expectedCatalogKinds: expectedAssetModel?.catalogKinds || [],
-        hasBouncingBallClassicSkin: state.hasBouncingBallClassicSkin,
         failures: gameFailures
       });
     }

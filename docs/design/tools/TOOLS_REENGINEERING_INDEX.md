@@ -11,7 +11,6 @@ This index lists the remaining rebuild anchors, schema baseline, and support fol
 | `asset-pipeline` | `tools/Asset Pipeline` | rebuildable tool | core-03 | tools.asset-pipeline | core rebuild lane |
 | `svg-asset-studio` | `tools/SVG Asset Studio` | rebuildable tool | core-04 | tools.svg-asset-studio | core rebuild lane |
 | `sprite-editor` | `tools/Sprite Editor` | rebuildable tool | core-05 | tools.sprite-editor | core rebuild lane |
-| `skin-editor` | `tools/Skin Editor` | rebuildable tool | core-06 | tools.skin-editor | core rebuild lane |
 | `tile-map-editor` | `tools/Tilemap Studio` | rebuildable tool | core-07 | tools.tile-map-editor | core rebuild lane |
 | `tile-model-converter` | `tools/Tile Model Converter` | rebuildable tool | core-08 | tools.tile-model-converter | core rebuild lane |
 | `parallax-editor` | `tools/Parallax Scene Studio` | rebuildable tool | core-09 | tools.parallax-editor | core rebuild lane |

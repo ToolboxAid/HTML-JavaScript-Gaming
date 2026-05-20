@@ -10,7 +10,6 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { resolveDebugConfig } from '../../src/shared/utils/debugConfigUtils.js';
 import { createNoopDevConsoleIntegration } from '../../src/shared/utils/createNoopDevConsoleIntegration.js';
 import BreakoutScene from './game/BreakoutScene.js';
-import { loadGameSkin } from '/games/shared/gameSkinLoader.js';
 
 const theme = new Theme(ThemeTokens);
 const DEBUG_STATE_STORAGE_KEY = 'toolbox.sample.breakout.debug.enabled';
@@ -130,20 +129,12 @@ export function bootBreakout({
 
   updateDebugShowcaseUi(documentRef, debugConfig, devConsoleIntegration, appliedPresetCommand);
 
-  void loadGameSkin({
-    gameId: 'Breakout',
-    expectedSchema: 'games.breakout.skin/1'
-  }).then(({ skin }) => {
-    const scene = new SceneClass({
-      devConsoleIntegration,
-      debugConfig,
-      skin
-    });
-    engine.setScene(scene);
-    engine.start();
-  }).catch((error) => {
-    console.error('[Breakout] Skin load failed. Game startup stopped.', error);
+  const scene = new SceneClass({
+    devConsoleIntegration,
+    debugConfig
   });
+  engine.setScene(scene);
+  engine.start();
 
   canvas.addEventListener?.('click', async () => {
     const fullscreenState = engine.fullscreen?.getState?.();

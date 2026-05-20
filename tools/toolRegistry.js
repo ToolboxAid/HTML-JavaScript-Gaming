@@ -190,33 +190,6 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "skin-editor",
-    name: "Primitive Skin Editor",
-    displayName: "Primitive Skin Editor",
-    shortDescription: "Deprecated: use Object Vector Studio V2 for ships, enemies, pickups, actors, and reusable gameplay entities.",
-    shortLabel: "Skin",
-    path: "Skin Editor",
-    folderName: "Skin Editor",
-    entryPoint: "Skin Editor/index.html",
-    description: "Deprecated: use Object Vector Studio V2 for ships, enemies, pickups, actors, and reusable gameplay entities.",
-    showcaseTag: "Primitive Skins",
-    showcaseStatus: "Deprecated",
-    active: true,
-    legacy: false,
-    order: 5.5,
-    sampleEntryPoints: [
-      {
-        label: "How To Use",
-        path: "Skin Editor/how_to_use.html"
-      },
-      {
-        label: "README",
-        path: "Skin Editor/README.md"
-      }
-    ],
-    visibleInToolsList: true
-  },
-  {
     id: "asset-manager-v2",
     name: "Asset Manager V2",
     displayName: "Asset Manager V2",

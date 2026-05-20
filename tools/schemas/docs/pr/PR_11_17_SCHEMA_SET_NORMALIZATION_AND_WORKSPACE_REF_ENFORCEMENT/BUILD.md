@@ -13,7 +13,7 @@ The uploaded candidate set contained:
 - `palette.schema.json`
 - `sample.tool-payload.schema.json`
 - `tool.manifest.schema.json`
-- tool schemas for asset-browser, sprite-editor, vector-map-editor, svg-asset-studio, tile-map-editor, parallax-editor, palette-browser, state-inspector, replay-visualizer, performance-profiler, physics-sandbox, asset-pipeline-tool, tile-model-converter, 3d-json-payload-normalizer, 3d-asset-viewer, 3d-camera-path-editor, skin-editor
+- tool schemas for asset-browser, sprite-editor, vector-map-editor, svg-asset-studio, tile-map-editor, parallax-editor, palette-browser, state-inspector, replay-visualizer, performance-profiler, physics-sandbox, asset-pipeline-tool, tile-model-converter, 3d-json-payload-normalizer, 3d-asset-viewer, 3d-camera-path-editor
 
 ### 2. Correct workspace.manifest schema
 Update:

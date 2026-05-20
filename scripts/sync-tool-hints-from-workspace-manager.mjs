@@ -29,7 +29,6 @@ const GAME_TOOLS_MANIFEST_VERSION = 1;
 
 const KIND_TO_TOOLS_USED = Object.freeze({
   palette: ["palette-manager-v2"],
-  skin: ["skin-editor"],
   sprite: ["sprite-editor"],
   tilemap: ["tile-map-editor"],
   parallax: ["parallax-editor"],

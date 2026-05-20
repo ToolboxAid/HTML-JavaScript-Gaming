@@ -1244,8 +1244,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(objectVectorStudioCard).toContainText("Ships, enemies, pickups, actors, and reusable gameplay entities");
       const vectorMapEditorCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Vector Map Editor" }) });
       await expect(vectorMapEditorCard).toContainText("Deprecated");
-      const primitiveSkinEditorCard = page.locator(".tools-platform-card", { has: page.locator("h3", { hasText: "Primitive Skin Editor" }) });
-      await expect(primitiveSkinEditorCard).toContainText("Deprecated");
       const toolsIndexState = await page.evaluate(async () => {
         const registryModule = await import("/tools/toolRegistry.js");
         const launchModule = await import("/tools/shared/toolLaunchSSoTData.js");

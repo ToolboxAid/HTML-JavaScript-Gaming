@@ -192,13 +192,8 @@ export async function run() {
     }
 
     if (gameFolder.toLowerCase() === "bouncing-ball") {
-      const skinsCount = getToolDataCount(manifest?.tools?.["primitive-skin-editor"], "skins");
-      row.bouncingBallSkinCount = skinsCount;
-      if (skinsCount <= 0) {
-        failures.push("Bouncing-ball: tools[\"primitive-skin-editor\"].skins must contain at least one skin payload.");
-      }
-      if (/assets\/palettes\/.*\.json/i.test(text) || /assets\/skins\/.*\.json/i.test(text)) {
-        failures.push("Bouncing-ball: stale external palette/skin JSON path references must be removed.");
+      if (/assets\/palettes\/.*\.json/i.test(text)) {
+        failures.push("Bouncing-ball: stale external palette JSON path references must be removed.");
       }
       if (Object.prototype.hasOwnProperty.call(manifest, "lineage")
         || Object.prototype.hasOwnProperty.call(manifest, "sources")

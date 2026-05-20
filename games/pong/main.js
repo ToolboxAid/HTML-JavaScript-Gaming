@@ -8,7 +8,6 @@ import Engine from '/src/engine/core/Engine.js';
 import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import PongScene from './game/PongScene.js';
-import { loadGameSkin } from '/games/shared/gameSkinLoader.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -40,16 +39,9 @@ export function bootPong({
     input,
   });
 
-  void loadGameSkin({
-    gameId: 'Pong',
-    expectedSchema: 'games.pong.skin/1'
-  }).then(({ skin }) => {
-    const scene = new SceneClass({ skin });
-    engine.setScene(scene);
-    engine.start();
-  }).catch((error) => {
-    console.error('[Pong] Skin load failed. Game startup stopped.', error);
-  });
+  const scene = new SceneClass();
+  engine.setScene(scene);
+  engine.start();
 
   canvas.addEventListener?.('click', async () => {
     const fullscreenState = engine.fullscreen?.getState?.();

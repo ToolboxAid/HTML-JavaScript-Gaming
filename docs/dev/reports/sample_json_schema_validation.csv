@@ -1,64 +1,63 @@
 filePath,schemaPath,status,errorCount,firstErrors,note
-samples/metadata/samples.index.metadata.json,,skipped,0,,no matching schema contract
-samples/phase-02/0204/sample.0204.asset-browser.json,tools/schemas/tools/asset-browser.schema.json,valid,0,,
+samples/metadata/samples.index.metadata.json,,invalid-json,1,parse failed,
+samples/phase-02/0204/sample.0204.asset-browser.json,tools/schemas/tools/asset-browser.schema.json,schema-missing,1,schema not found,
 samples/phase-02/0207/sample.0207.palette.json,,skipped,0,,no matching schema contract
-samples/phase-02/0207/sample.0207.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,valid,0,,
+samples/phase-02/0207/sample.0207.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,4,"$: missing required key ""spriteProject"" | $: unknown key ""tool"" | $: unknown key ""version""",
 samples/phase-02/0213/sample.0213.palette.json,,skipped,0,,no matching schema contract
-samples/phase-02/0213/sample.0213.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,valid,0,,
+samples/phase-02/0213/sample.0213.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,4,"$: missing required key ""spriteProject"" | $: unknown key ""tool"" | $: unknown key ""version""",
 samples/phase-02/0214/sample.0214.palette.json,,skipped,0,,no matching schema contract
-samples/phase-02/0214/sample.0214.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,valid,0,,
+samples/phase-02/0214/sample.0214.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,4,"$: missing required key ""spriteProject"" | $: unknown key ""tool"" | $: unknown key ""version""",
 samples/phase-02/0219/sample.0219.palette.json,,skipped,0,,no matching schema contract
-samples/phase-02/0219/sample.0219.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,valid,0,,
+samples/phase-02/0219/sample.0219.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,4,"$: missing required key ""spriteProject"" | $: unknown key ""tool"" | $: unknown key ""version""",
 samples/phase-02/0221/sample-0221-tile-map-editor-document.json,,skipped,0,,no matching schema contract
 samples/phase-02/0221/sample.0221.palette.json,,skipped,0,,no matching schema contract
-samples/phase-02/0221/sample.0221.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,valid,0,,
-samples/phase-02/0221/sample.0221.tile-model-converter.json,tools/schemas/tools/tile-model-converter.schema.json,valid,0,,
+samples/phase-02/0221/sample.0221.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
+samples/phase-02/0221/sample.0221.tile-model-converter.json,tools/schemas/tools/tile-model-converter.schema.json,schema-missing,1,schema not found,
 samples/phase-02/0224/sample-0224-tile-map-editor-document.json,,skipped,0,,no matching schema contract
 samples/phase-02/0224/sample.0224.palette.json,,skipped,0,,no matching schema contract
-samples/phase-02/0224/sample.0224.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,valid,0,,
-samples/phase-02/0224/sample.0224.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,valid,0,,
-samples/phase-02/0226/sample.0226.skin-editor.json,tools/schemas/tools/skin-editor.schema.json,valid,0,,
-samples/phase-02/0227/sample.0227.skin-editor.json,tools/schemas/tools/skin-editor.schema.json,valid,0,,
+samples/phase-02/0224/sample.0224.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,4,"$: missing required key ""spriteProject"" | $: unknown key ""tool"" | $: unknown key ""version""",
+samples/phase-02/0224/sample.0224.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
 samples/phase-03/0301/sample.0301.palette.json,,skipped,0,,no matching schema contract
-samples/phase-03/0301/sample.0301.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,valid,0,,
+samples/phase-03/0301/sample.0301.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,4,"$: missing required key ""spriteProject"" | $: unknown key ""tool"" | $: unknown key ""version""",
 samples/phase-03/0302/sample.0302.palette.json,,skipped,0,,no matching schema contract
-samples/phase-03/0302/sample.0302.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,valid,0,,
+samples/phase-03/0302/sample.0302.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,4,"$: missing required key ""spriteProject"" | $: unknown key ""tool"" | $: unknown key ""version""",
 samples/phase-03/0305/sample-0305-tile-map-editor-document.json,,skipped,0,,no matching schema contract
 samples/phase-03/0305/sample.0305.palette.json,,skipped,0,,no matching schema contract
-samples/phase-03/0305/sample.0305.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,valid,0,,
-samples/phase-03/0305/sample.0305.tile-model-converter.json,tools/schemas/tools/tile-model-converter.schema.json,valid,0,,
+samples/phase-03/0305/sample.0305.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
+samples/phase-03/0305/sample.0305.tile-model-converter.json,tools/schemas/tools/tile-model-converter.schema.json,schema-missing,1,schema not found,
 samples/phase-03/0308/sample.0308.palette.json,,skipped,0,,no matching schema contract
 samples/phase-03/0313/sample.0313.palette.json,,skipped,0,,no matching schema contract
 samples/phase-09/0901/sample.0901.palette.json,,skipped,0,,no matching schema contract
 samples/phase-09/0905/sample.0905.palette.json,,skipped,0,,no matching schema contract
-samples/phase-09/0905/sample.0905.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,valid,0,,
+samples/phase-09/0905/sample.0905.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,4,"$: missing required key ""spriteProject"" | $: unknown key ""tool"" | $: unknown key ""version""",
 samples/phase-12/1204/sample.1204.palette.json,,skipped,0,,no matching schema contract
 samples/phase-12/1205/sample.1205.palette.json,,skipped,0,,no matching schema contract
 samples/phase-12/1208/sample.1208.palette.json,,skipped,0,,no matching schema contract
-samples/phase-12/1208/sample.1208.parallax-editor.json,tools/schemas/tools/parallax-editor.schema.json,valid,0,,
-samples/phase-12/1208/sample.1208.svg-asset-studio.json,tools/schemas/tools/svg-asset-studio.schema.json,valid,0,,
-samples/phase-12/1208/sample.1208.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,valid,0,,
+samples/phase-12/1208/sample.1208.parallax-editor.json,tools/schemas/tools/parallax-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
+samples/phase-12/1208/sample.1208.svg-asset-studio.json,tools/schemas/tools/svg-asset-studio.schema.json,invalid,4,"$: missing required key ""vectorAssetDocument"" | $: unknown key ""tool"" | $: unknown key ""version""",
+samples/phase-12/1208/sample.1208.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
 samples/phase-12/1209/sample-1209-tile-map-editor-document.json,,skipped,0,,no matching schema contract
 samples/phase-12/1209/sample.1209.palette.json,,skipped,0,,no matching schema contract
-samples/phase-12/1209/sample.1209.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,valid,0,,
-samples/phase-12/1209/sample.1209.tile-model-converter.json,tools/schemas/tools/tile-model-converter.schema.json,valid,0,,
+samples/phase-12/1209/sample.1209.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
+samples/phase-12/1209/sample.1209.tile-model-converter.json,tools/schemas/tools/tile-model-converter.schema.json,schema-missing,1,schema not found,
 samples/phase-12/1210/sample-1210-tile-map-editor-document.json,,skipped,0,,no matching schema contract
 samples/phase-12/1210/sample.1210.palette.json,,skipped,0,,no matching schema contract
-samples/phase-12/1210/sample.1210.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,valid,0,,
+samples/phase-12/1210/sample.1210.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
 samples/phase-12/1211/sample-1211-tile-map-editor-document.json,,skipped,0,,no matching schema contract
 samples/phase-12/1211/sample.1211.palette.json,,skipped,0,,no matching schema contract
-samples/phase-12/1211/sample.1211.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,valid,0,,
-samples/phase-12/1212/sample-1212-vector-map-editor.json,tools/schemas/tools/vector-map-editor.schema.json,valid,0,,
-samples/phase-12/1213/sample-1213-vector-map-editor.json,tools/schemas/tools/vector-map-editor.schema.json,valid,0,,
-samples/phase-12/1214/sample-1214-vector-map-editor.json,tools/schemas/tools/vector-map-editor.schema.json,valid,0,,
-samples/phase-12/1215/sample-1215-svg-asset-studio.json,tools/schemas/tools/svg-asset-studio.schema.json,valid,0,,
-samples/phase-12/1216/sample-1216-svg-asset-studio.json,tools/schemas/tools/svg-asset-studio.schema.json,valid,0,,
-samples/phase-12/1217/sample-1217-svg-asset-studio.json,tools/schemas/tools/svg-asset-studio.schema.json,valid,0,,
-samples/phase-12/1218/sample-1218-parallax-editor.json,tools/schemas/tools/parallax-editor.schema.json,valid,0,,
-samples/phase-12/1219/sample-1219-parallax-editor.json,tools/schemas/tools/parallax-editor.schema.json,valid,0,,
-samples/phase-12/1220/sample-1220-parallax-editor.json,tools/schemas/tools/parallax-editor.schema.json,valid,0,,
-samples/phase-14/1413/sample.1413.asset-pipeline.json,tools/schemas/tools/asset-pipeline.schema.json,valid,0,,
+samples/phase-12/1211/sample.1211.tile-map-editor.json,tools/schemas/tools/tile-map-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
+samples/phase-12/1212/sample-1212-vector-map-editor.json,tools/schemas/tools/vector-map-editor.schema.json,invalid,4,"$: missing required key ""vectorMapDocument"" | $: unknown key ""tool"" | $: unknown key ""version""",
+samples/phase-12/1213/sample-1213-vector-map-editor.json,tools/schemas/tools/vector-map-editor.schema.json,invalid,4,"$: missing required key ""vectorMapDocument"" | $: unknown key ""tool"" | $: unknown key ""version""",
+samples/phase-12/1214/sample-1214-vector-map-editor.json,tools/schemas/tools/vector-map-editor.schema.json,invalid,4,"$: missing required key ""vectorMapDocument"" | $: unknown key ""tool"" | $: unknown key ""version""",
+samples/phase-12/1215/sample-1215-svg-asset-studio.json,tools/schemas/tools/svg-asset-studio.schema.json,invalid,4,"$: missing required key ""vectorAssetDocument"" | $: unknown key ""tool"" | $: unknown key ""version""",
+samples/phase-12/1216/sample-1216-svg-asset-studio.json,tools/schemas/tools/svg-asset-studio.schema.json,invalid,4,"$: missing required key ""vectorAssetDocument"" | $: unknown key ""tool"" | $: unknown key ""version""",
+samples/phase-12/1217/sample-1217-svg-asset-studio.json,tools/schemas/tools/svg-asset-studio.schema.json,invalid,4,"$: missing required key ""vectorAssetDocument"" | $: unknown key ""tool"" | $: unknown key ""version""",
+samples/phase-12/1218/sample-1218-parallax-editor.json,tools/schemas/tools/parallax-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
+samples/phase-12/1219/sample-1219-parallax-editor.json,tools/schemas/tools/parallax-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
+samples/phase-12/1220/sample-1220-parallax-editor.json,tools/schemas/tools/parallax-editor.schema.json,invalid,3,"$: unknown key ""tool"" | $: unknown key ""version"" | $: unknown key ""payload""",
+samples/phase-14/1413/sample.1413.asset-pipeline.json,tools/schemas/tools/asset-pipeline.schema.json,invalid,4,"$: missing required key ""pipelinePayload"" | $: unknown key ""tool"" | $: unknown key ""version""",
 samples/phase-14/1414/sample.1414.palette.json,,skipped,0,,no matching schema contract
-samples/phase-14/1414/sample.1414.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,valid,0,,
-samples/phase-15/1505/sample.1505.asset-browser.json,tools/schemas/tools/asset-browser.schema.json,valid,0,,
-samples/phase-19/1902/sample.1902.workspace-all-tools.json,tools/schemas/workspace.manifest.schema.json,valid,0,,
+samples/phase-14/1414/sample.1414.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,4,"$: missing required key ""spriteProject"" | $: unknown key ""tool"" | $: unknown key ""version""",
+samples/phase-15/1505/sample.1505.asset-browser.json,tools/schemas/tools/asset-browser.schema.json,schema-missing,1,schema not found,
+samples/phase-19/1902/sample.1902.workspace-all-tools.json,tools/schemas/workspace.manifest.schema.json,invalid,7,root.gameId is required by workspace.manifest schema | root.gameRoot is required by workspace.manifest schema | root.assetsPath is required by workspace.manifest schema,
+samples/phase-19/1903/sample.1903.text2speech-V2.json,,skipped,0,,no matching schema contract

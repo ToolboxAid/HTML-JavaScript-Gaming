@@ -1358,7 +1358,6 @@ function normalizeAssetKind(value) {
 function resolveAcceptedAssetKindsForTool(toolId = "") {
   const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
   const byTool = {
-    "skin-editor": ["skin"],
     "sprite-editor": ["sprite"],
     "tile-map-editor": ["tilemap"],
     "parallax-editor": ["parallax"],
@@ -1501,7 +1500,7 @@ function renderToolAssetBadge(toolId = "") {
 
   const asset = readSharedAssetHandoff();
   const compatibleAsset = isAssetCompatibleWithTool(toolId, asset) ? asset : null;
-  const missingAssetLabel = normalizedToolId === "skin-editor" ? "select a skin asset" : "none";
+  const missingAssetLabel = "none";
   const compatibleAssetLabel = resolveSharedAssetLabel(compatibleAsset);
   const assetLabel = compatibleAssetLabel || (
     normalizedToolId === "svg-asset-studio"

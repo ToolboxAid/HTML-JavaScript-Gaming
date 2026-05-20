@@ -5,7 +5,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const REPORT_DIR = path.join(ROOT, "docs", "dev", "reports");
 const SCHEMA_ROOT = path.join(ROOT, "tools", "schemas");
-const DEPRECATED_GAME_TOOL_IDS = new Set(["asset-browser", "palette-browser", "primitive-skin-editor", "vector-map-editor"]);
+const DEPRECATED_GAME_TOOL_IDS = new Set(["asset-browser", "palette-browser", "vector-map-editor"]);
 
 function parseArgs(argv) {
   const args = {

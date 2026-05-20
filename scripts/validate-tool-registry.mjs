@@ -17,8 +17,11 @@ const IGNORED_DIRECTORIES = new Set([
   "shared",
   "Tool Host",
   "codex",
+  "common",
   "dev",
   "preview",
+  "schemas",
+  "templates-v2",
   "templates"
 ]);
 
@@ -153,8 +156,16 @@ async function main() {
   }
 
   const toolsLandingPage = await fs.readFile(path.join(toolsRoot, "index.html"), "utf8");
-  if (!toolsLandingPage.includes("data-active-tools-grid")) {
-    issues.push("Tools landing page must include the active-tools grid host.");
+  const requiredGridHosts = [
+    "data-active-tools-workflow-grid",
+    "data-active-tools-editors-grid",
+    "data-active-tools-utilities-grid",
+    "data-active-tools-viewers-grid"
+  ];
+  for (const gridHost of requiredGridHosts) {
+    if (!toolsLandingPage.includes(gridHost)) {
+      issues.push(`Tools landing page must include the ${gridHost} host.`);
+    }
   }
 
   const reportLines = [

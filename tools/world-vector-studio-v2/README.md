@@ -30,9 +30,7 @@ Object Vector Studio V2 asset references are read-only inside World Vector Studi
 ## Migration Direction
 
 - Vector Map Editor remains deprecated compatibility during the transition.
-- Primitive Skin Editor remains deprecated compatibility during the transition.
 - SVG Asset Studio functionality moves toward Object Vector Studio V2, not World Vector Studio V2.
-- Old tools remain available until replacement workflows are implemented and validated.
 
 ## Examples
 
