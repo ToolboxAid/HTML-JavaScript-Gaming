@@ -118,6 +118,14 @@ function getRgbHexKey(hex) {
   return normalizeHex(hex).slice(0, 7);
 }
 
+function formatSourcePaletteName(value) {
+  const cleanValue = sanitizeText(value);
+  if (!cleanValue) {
+    return "";
+  }
+  return cleanValue.replace(/^([a-z])/, (letter) => letter.toUpperCase());
+}
+
 function formatDuplicateUserSwatchMessage(duplicateFields) {
   const parts = [];
   if (duplicateFields.symbol) {
@@ -538,20 +546,35 @@ export class PaletteManagerApp {
   }
 
   getCurrentSourcePaletteSwatches() {
-    return (this.sourcePalettes[this.state.sourcePaletteId] || [])
+    const sourceId = this.state.sourcePaletteId;
+    const paletteName = this.getHarmonySourcePaletteName(sourceId);
+    return (this.sourcePalettes[sourceId] || [])
       .map((swatch) => cloneSwatch({
         ...swatch,
-        source: swatch.source || this.state.sourcePaletteId
+        source: swatch.source || sourceId
+      }))
+      .map((swatch) => ({
+        ...swatch,
+        paletteId: sourceId,
+        paletteName
       }));
   }
 
   getAllSourcePaletteSwatches() {
     return Object.entries(this.sourcePalettes)
       .flatMap(([sourceId, swatches]) => (Array.isArray(swatches) ? swatches : [])
-        .map((swatch) => cloneSwatch({
-          ...swatch,
-          source: swatch.source || sourceId
+        .map((swatch) => ({
+          ...cloneSwatch({
+            ...swatch,
+            source: swatch.source || sourceId
+          }),
+          paletteId: sourceId,
+          paletteName: this.getHarmonySourcePaletteName(sourceId)
         })));
+  }
+
+  getHarmonySourcePaletteName(sourceId) {
+    return formatSourcePaletteName(this.getSourcePaletteLabel(sourceId) || sourceId);
   }
 
   getHarmonyColors() {
@@ -564,21 +587,31 @@ export class PaletteManagerApp {
     const matchPalette = matchSource === "source-palette"
       ? this.getCurrentSourcePaletteSwatches()
       : (matchSource === "all-palettes" ? this.getAllSourcePaletteSwatches() : []);
-    return calculatedColors.map((color, index) => {
+    return calculatedColors.map((color) => {
       const matchedSwatch = matchPalette.length ? closestPaletteMatch(color.hex, matchPalette) : null;
       const cleanHex = normalizeHex(matchedSwatch?.hex || color.hex).slice(0, 7);
       const schemeLabel = findHarmonyScheme(this.state.harmonyScheme).label;
-      const matchLabel = matchedSwatch ? `Closest ${matchedSwatch.name}` : color.label;
+      const paletteName = matchedSwatch
+        ? (sanitizeText(matchedSwatch.paletteName) || this.getHarmonySourcePaletteName(matchedSwatch.paletteId || matchedSwatch.source))
+        : "";
+      const swatchName = sanitizeText(matchedSwatch?.name);
+      const calculationLabel = sanitizeText(color.label);
+      const displayName = matchedSwatch
+        ? `${paletteName} - ${swatchName}`
+        : `${schemeLabel} - ${calculationLabel || cleanHex}`;
       return {
         baseHex: normalizeHex(color.hex).slice(0, 7),
         hex: cleanHex,
-        name: `${schemeLabel} ${index + 1} - ${matchLabel}`,
+        name: displayName,
+        displayName,
+        paletteName,
+        swatchName,
         source: matchedSwatch?.source || findHarmonyMatchSource(this.state.harmonyMatchSource).label,
         swatch: cloneSwatch({
           symbol: "",
           hex: cleanHex,
-          name: `${schemeLabel} ${index + 1} - ${matchLabel}`,
-          source: matchedSwatch?.source || findHarmonyMatchSource(this.state.harmonyMatchSource).label,
+          name: displayName,
+          source: paletteName || findHarmonyMatchSource(this.state.harmonyMatchSource).label,
           tags: ["harmony"]
         })
       };

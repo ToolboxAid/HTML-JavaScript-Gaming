@@ -8104,6 +8104,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#harmonyMatchSourceSelect").selectOption("calculated");
       await page.locator("#harmonySchemeSelect").selectOption("complementary");
       await expect(page.locator("#harmonyColorList [data-harmony-index='0']")).toHaveAttribute("data-harmony-hex", "#00FFFF");
+      await expect(page.locator("#harmonyColorList [data-harmony-index='0'] .palette-manager-v2__harmony-text")).toHaveText("Complementary - +180 deg");
+      await expect(page.locator("#harmonyColorList [data-harmony-index='0'] .palette-manager-v2__harmony-meta")).toHaveText("#00FFFF");
       await page.locator("#addSelectedHarmonyButton").click();
       await expect(page.locator("#userPaletteCount")).toHaveText("2 user swatches");
       await expect(page.locator("#paletteStatus")).toHaveText(/OK Added selected harmony color/);
@@ -8126,21 +8128,47 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#harmonySchemeSelect").selectOption("complementary");
       await page.locator("#harmonyMatchSourceSelect").selectOption("source-palette");
       const sourceMatchState = await page.evaluate(() => {
+        const formatPaletteName = (value) => String(value || "").trim().replace(/^([a-z])/, (letter) => letter.toUpperCase());
         const sourceId = document.querySelector("#sourcePaletteSelect").value;
-        const harmonyHex = document.querySelector("#harmonyColorList [data-harmony-index='0']").dataset.harmonyHex;
-        const sourceHexes = (window.paletteList.SOURCE_PALETTES[sourceId] || []).map((swatch) => swatch.hex.toUpperCase());
-        return { harmonyHex, isFromCurrentSource: sourceHexes.includes(harmonyHex) };
+        const harmonyButton = document.querySelector("#harmonyColorList [data-harmony-index='0']");
+        const harmonyHex = harmonyButton.dataset.harmonyHex;
+        const paletteName = harmonyButton.dataset.harmonyPalette;
+        const swatchName = harmonyButton.dataset.harmonySwatchName;
+        const label = harmonyButton.querySelector(".palette-manager-v2__harmony-text").textContent;
+        const meta = harmonyButton.querySelector(".palette-manager-v2__harmony-meta").textContent;
+        const expectedPaletteName = formatPaletteName(window.paletteList.SOURCE_PALETTE_LABELS[sourceId] || sourceId);
+        const sourceMatch = (window.paletteList.SOURCE_PALETTES[sourceId] || [])
+          .find((swatch) => swatch.hex.toUpperCase() === harmonyHex && swatch.name === swatchName);
+        return { expectedPaletteName, harmonyHex, isFromCurrentSource: Boolean(sourceMatch), label, meta, paletteName, swatchName };
       });
       expect(sourceMatchState.isFromCurrentSource).toBe(true);
+      expect(sourceMatchState.paletteName).toBe(sourceMatchState.expectedPaletteName);
+      expect(sourceMatchState.label).toBe(`${sourceMatchState.expectedPaletteName} - ${sourceMatchState.swatchName}`);
+      expect(sourceMatchState.label).not.toContain("Closest");
+      expect(sourceMatchState.meta).toBe(sourceMatchState.harmonyHex);
 
       await page.locator("#harmonyMatchSourceSelect").selectOption("all-palettes");
       const allMatchState = await page.evaluate(() => {
-        const harmonyHex = document.querySelector("#harmonyColorList [data-harmony-index='0']").dataset.harmonyHex;
-        const allHexes = Object.values(window.paletteList.SOURCE_PALETTES)
-          .flatMap((swatches) => swatches.map((swatch) => swatch.hex.toUpperCase()));
-        return { harmonyHex, isFromAnySource: allHexes.includes(harmonyHex) };
+        const formatPaletteName = (value) => String(value || "").trim().replace(/^([a-z])/, (letter) => letter.toUpperCase());
+        const harmonyButton = document.querySelector("#harmonyColorList [data-harmony-index='0']");
+        const harmonyHex = harmonyButton.dataset.harmonyHex;
+        const paletteName = harmonyButton.dataset.harmonyPalette;
+        const swatchName = harmonyButton.dataset.harmonySwatchName;
+        const label = harmonyButton.querySelector(".palette-manager-v2__harmony-text").textContent;
+        const meta = harmonyButton.querySelector(".palette-manager-v2__harmony-meta").textContent;
+        const allMatch = Object.entries(window.paletteList.SOURCE_PALETTES)
+          .flatMap(([sourceId, swatches]) => swatches.map((swatch) => ({ sourceId, swatch })))
+          .find(({ sourceId, swatch }) => {
+            return swatch.hex.toUpperCase() === harmonyHex
+              && swatch.name === swatchName
+              && formatPaletteName(window.paletteList.SOURCE_PALETTE_LABELS[sourceId] || sourceId) === paletteName;
+          });
+        return { harmonyHex, isFromAnySource: Boolean(allMatch), label, meta, paletteName, swatchName };
       });
       expect(allMatchState.isFromAnySource).toBe(true);
+      expect(allMatchState.label).toBe(`${allMatchState.paletteName} - ${allMatchState.swatchName}`);
+      expect(allMatchState.label).not.toContain("Closest");
+      expect(allMatchState.meta).toBe(allMatchState.harmonyHex);
       expect(pageErrors).toEqual([]);
     } finally {
       await workspaceV2CoverageReporter.stop(page);

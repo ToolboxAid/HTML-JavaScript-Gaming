@@ -109,7 +109,10 @@ export class PaletteHarmonyControl {
     button.setAttribute("aria-pressed", String(index === this.app.getSelectedHarmonyColorIndex()));
     button.dataset.harmonyIndex = String(index);
     button.dataset.harmonyHex = normalizeHex(color.hex);
-    button.title = `${color.name}: ${normalizeHex(color.hex)}`;
+    button.dataset.harmonyLabel = color.displayName || color.name || "";
+    button.dataset.harmonyPalette = color.paletteName || "";
+    button.dataset.harmonySwatchName = color.swatchName || "";
+    button.title = `${color.displayName || color.name}: ${normalizeHex(color.hex)}`;
     button.addEventListener("click", () => {
       this.app.setSelectedHarmonyColorIndex(index);
     });
@@ -121,7 +124,7 @@ export class PaletteHarmonyControl {
 
     const text = this.document.createElement("span");
     text.className = "palette-manager-v2__harmony-text";
-    text.textContent = cleanSwatch.name || color.name || normalizeHex(color.hex);
+    text.textContent = color.displayName || cleanSwatch.name || color.name || normalizeHex(color.hex);
 
     const meta = this.document.createElement("span");
     meta.className = "palette-manager-v2__harmony-meta";

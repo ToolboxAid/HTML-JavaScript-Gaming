@@ -246,7 +246,14 @@ export function closestPaletteMatch(targetHex, swatches) {
         + ((target.g - rgb.g) ** 2)
         + ((target.b - rgb.b) ** 2)
       );
-      return { distance, swatch: cloneSwatch(swatch) };
+      return {
+        distance,
+        swatch: {
+          ...cloneSwatch(swatch),
+          paletteId: sanitizeText(swatch?.paletteId),
+          paletteName: sanitizeText(swatch?.paletteName)
+        }
+      };
     })
     .filter(Boolean)
     .sort((left, right) => left.distance - right.distance)[0]?.swatch || null;
