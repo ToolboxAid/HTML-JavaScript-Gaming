@@ -15,6 +15,11 @@ import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
 import { createAsteroidGeometryProfilesFromObjectVectorAssets } from './asteroidObjectGeometry.js';
 import {
+  ASTEROIDS_DEBUG_WORLD_STAGES,
+  buildAsteroidsDebugDiagnosticsContext,
+  formatAsteroidsDebugEventSummary
+} from './asteroidsDebugDiagnostics.js';
+import {
   calculateAsteroidsBeatTiming,
   getAsteroidsBeatWeightedTotal
 } from './asteroidsBeatTiming.js';
@@ -289,17 +294,6 @@ export default class AsteroidsGameScene extends Scene {
     }
   }
 
-  formatDebugEventSummary(details = {}) {
-    if (!details || typeof details !== 'object') {
-      return '';
-    }
-
-    const summaryParts = Object.entries(details)
-      .map(([key, value]) => `${key}=${String(value)}`)
-      .slice(0, 4);
-    return summaryParts.join(' ');
-  }
-
   pushDebugEvent(type, details = {}) {
     const eventType = typeof type === 'string' ? type.trim() : '';
     if (!eventType) {
@@ -309,7 +303,7 @@ export default class AsteroidsGameScene extends Scene {
     const entry = {
       frame: this.debugFrame,
       type: eventType,
-      summary: this.formatDebugEventSummary(details),
+      summary: formatAsteroidsDebugEventSummary(details),
       details: { ...details },
       timestamp: Date.now(),
     };
@@ -411,103 +405,6 @@ export default class AsteroidsGameScene extends Scene {
     this.lastWave = this.world.wave;
   }
 
-  buildDebugDiagnosticsContext(engine, dtSeconds, frameEvents = {}) {
-    const safeDt = Number.isFinite(dtSeconds) && dtSeconds > 0 ? dtSeconds : 1 / 60;
-    const fps = safeDt > 0 ? Math.round(1 / safeDt) : 0;
-    const activePlayer = this.session.activePlayer || { id: 1, score: 0, lives: 0 };
-    const recentEvents = this.debugEvents.slice(-12);
-    const input = engine?.input;
-    const worldStages = ['parallax', 'entities', 'sprite-effects', 'vector-overlay'];
-
-    return {
-      runtime: {
-        sceneId: 'asteroids-showcase',
-        status: this.session.mode,
-        fps,
-        frameTimeMs: Math.round(safeDt * 1000 * 100) / 100,
-        debugMode: this.debugConfig.debugMode,
-        debugEnabled: this.debugConfig.debugEnabled === true,
-      },
-      camera: {
-        x: 0,
-        y: 0,
-        viewportWidth: this.world.bounds.width,
-        viewportHeight: this.world.bounds.height,
-      },
-      entities: {
-        count: (this.world.shipActive ? 1 : 0) + this.world.asteroids.length + this.world.bullets.length + this.world.ufoBullets.length + (this.world.ufo ? 1 : 0),
-        shipActive: this.world.shipActive,
-        asteroidCount: this.world.asteroids.length,
-        bulletCount: this.world.bullets.length,
-        ufoBulletCount: this.world.ufoBullets.length,
-      },
-      tilemap: {
-        width: 0,
-        height: 0,
-        tileSize: 0,
-      },
-      input: {
-        left: input?.isDown?.('ArrowLeft') === true,
-        right: input?.isDown?.('ArrowRight') === true,
-        thrust: input?.isDown?.('ArrowUp') === true,
-        fire: input?.isDown?.('Space') === true,
-        pause: input?.isDown?.('KeyP') === true,
-        consoleToggle: input?.isDown?.('ShiftLeft') === true && input?.isDown?.('Backquote') === true,
-        overlayToggle: (input?.isDown?.('ControlLeft') === true || input?.isDown?.('ControlRight') === true) && input?.isDown?.('ShiftLeft') === true && input?.isDown?.('Backquote') === true,
-      },
-      hotReload: {
-        enabled: false,
-        pending: false,
-        mode: 'showcase-manual',
-      },
-      validation: {
-        errorCount: 0,
-        warningCount: 0,
-        asteroidsRecentEvents: recentEvents,
-        asteroidsFrameEvents: frameEvents,
-      },
-      render: {
-        stages: worldStages,
-        debugSurfaceTail: ['debug-overlay', 'dev-console-surface'],
-      },
-      assets: {
-        asteroidsShowcase: {
-          session: {
-            mode: this.session.mode,
-            status: this.session.status,
-            activePlayer: activePlayer.id,
-            score: activePlayer.score,
-            highScore: this.session.highScore,
-            lives: activePlayer.lives,
-            wave: this.world.wave,
-            isPaused: this.isPaused,
-          },
-          entities: {
-            ship: {
-              active: this.world.shipActive,
-              x: this.world.ship.x,
-              y: this.world.ship.y,
-              vx: this.world.ship.vx,
-              vy: this.world.ship.vy,
-              angle: this.world.ship.angle,
-            },
-            asteroidCount: this.world.asteroids.length,
-            bulletCount: this.world.bullets.length,
-            ufoBulletCount: this.world.ufoBullets.length,
-            ufo: {
-              active: Boolean(this.world.ufo),
-              type: this.world.ufo?.type || '',
-            },
-          },
-          presets: {
-            defaultCommand: 'asteroidsshowcase.preset.default',
-            eventsCommand: 'asteroidsshowcase.preset.events',
-          },
-        },
-      },
-    };
-  }
-
   updateDebugIntegration(engine, dtSeconds, frameEvents = {}) {
     if (!this.devConsoleIntegration) {
       return;
@@ -516,7 +413,16 @@ export default class AsteroidsGameScene extends Scene {
     this.devConsoleIntegration.update({
       engine,
       scene: this,
-      diagnosticsContext: this.buildDebugDiagnosticsContext(engine, dtSeconds, frameEvents),
+      diagnosticsContext: buildAsteroidsDebugDiagnosticsContext({
+        debugConfig: this.debugConfig,
+        debugEvents: this.debugEvents,
+        dtSeconds,
+        engine,
+        frameEvents,
+        isPaused: this.isPaused,
+        session: this.session,
+        world: this.world
+      }),
     });
   }
 
@@ -882,7 +788,7 @@ export default class AsteroidsGameScene extends Scene {
 
     if (this.devConsoleIntegration) {
       this.devConsoleIntegration.render(renderer, {
-        worldStages: ['parallax', 'entities', 'sprite-effects', 'vector-overlay'],
+        worldStages: [...ASTEROIDS_DEBUG_WORLD_STAGES],
       });
     }
     this.publishObjectVectorRuntimeDiagnostics();
