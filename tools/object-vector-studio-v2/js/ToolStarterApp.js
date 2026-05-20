@@ -11,6 +11,10 @@ import {
   transformObjectVectorShapePoint,
   ObjectVectorRuntimeAssetService
 } from "../../../src/engine/rendering/index.js";
+import {
+  downloadTextFile,
+  readFileText
+} from "../../../src/engine/persistence/index.js";
 import { isPlainObject } from "../../../src/shared/utils/objectUtils.js";
 
 const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";
@@ -1326,7 +1330,7 @@ export class ToolStarterApp {
 
     let payload;
     try {
-      payload = JSON.parse(await file.text());
+      payload = JSON.parse(await readFileText(file));
     } catch (error) {
       this.statusLog.write(`FAIL Import JSON blocked: ${file.name || "selected file"} is invalid JSON: ${error.message}`);
       return;
@@ -9008,13 +9012,10 @@ export class ToolStarterApp {
       return;
     }
 
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = this.window.document.createElement("a");
-    anchor.href = url;
-    anchor.download = "object-vector-studio-v2.json";
-    anchor.click();
-    URL.revokeObjectURL(url);
+    downloadTextFile(JSON.stringify(payload, null, 2), "object-vector-studio-v2.json", {
+      documentRef: this.window.document,
+      windowRef: this.window
+    });
     this.statusLog.write(`OK Export JSON prepared for ${payload.objects.length} Object Vector Studio V2 objects.`);
   }
 
@@ -9027,13 +9028,11 @@ export class ToolStarterApp {
 
     try {
       const svg = this.createObjectSvgExport(object);
-      const blob = new Blob([svg], { type: "image/svg+xml" });
-      const url = URL.createObjectURL(blob);
-      const anchor = this.window.document.createElement("a");
-      anchor.href = url;
-      anchor.download = `${slugifyObjectName(object.name)}.svg`;
-      anchor.click();
-      URL.revokeObjectURL(url);
+      downloadTextFile(svg, `${slugifyObjectName(object.name)}.svg`, {
+        documentRef: this.window.document,
+        mimeType: "image/svg+xml",
+        windowRef: this.window
+      });
       const visibleShapeCount = sortedShapes(object).filter((shape) => shape.visible).length;
       this.statusLog.write(`OK Export SVG generated for ${object.name}: ${visibleShapeCount} visible shapes.`);
     } catch (error) {

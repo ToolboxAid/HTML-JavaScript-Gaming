@@ -15,6 +15,7 @@ import {
   sanitizeAssetRegistry,
   upsertRegistryEntry
 } from "../shared/projectAssetRegistry.js";
+import { downloadTextFile, readFileText } from "../../src/engine/persistence/index.js";
 import { registerAssetPipelineCandidate } from "../shared/assetPipelineFoundation.js";
 import {
   getBlockingAssetValidationMessage,
@@ -626,22 +627,6 @@ function createRuntimeExport(documentModel) {
   };
 }
 
-function downloadTextFile(fileName, content) {
-  const blob = new Blob([content], { type: "application/json" });
-  const blobUrl = URL.createObjectURL(blob);
-
-  const anchor = document.createElement("a");
-  anchor.href = blobUrl;
-  anchor.download = fileName;
-  anchor.style.display = "none";
-
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
-
-  URL.revokeObjectURL(blobUrl);
-}
-
 function summarizeGraphFindings(findings) {
   return Array.isArray(findings) && findings.length > 0
     ? ` Graph findings: ${findings.length}.`
@@ -1199,7 +1184,7 @@ class TileMapEditorApp {
     };
     const serialized = JSON.stringify(output, null, 2);
     const fileName = `${this.documentModel.map.name || "tile-map"}.tilemap.json`;
-    downloadTextFile(fileName, serialized);
+    downloadTextFile(serialized, fileName);
     this.updateStatus(
       `Saved ${fileName} (tilemapRef=${this.documentModel.assetRefs.tilemapId || "none"}, tilesetRef=${this.documentModel.assetRefs.tilesetId || "none"}).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`
     );
@@ -1214,7 +1199,7 @@ class TileMapEditorApp {
     }
     const { findings } = buildAssetDependencyGraph(this.assetRegistry);
     const payload = createRegistryDownloadPayload(this.assetRegistry);
-    downloadTextFile("project.assets.json", payload);
+    downloadTextFile(payload, "project.assets.json");
     this.updateStatus(`Saved project.assets.json (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
@@ -1227,7 +1212,7 @@ class TileMapEditorApp {
     const runtimePayload = createRuntimeExport(createPersistableTileMapDocument(this.documentModel));
     const serialized = JSON.stringify(runtimePayload, null, 2);
     const fileName = `${this.documentModel.map.name || "tile-map"}.runtime.json`;
-    downloadTextFile(fileName, serialized);
+    downloadTextFile(serialized, fileName);
     this.updateStatus(`Exported ${fileName}. Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
@@ -1263,22 +1248,21 @@ class TileMapEditorApp {
       return;
     }
     const fileBase = `${this.assetRegistry.projectId || this.documentModel.map.name || "tile-map"}.package`;
-    downloadTextFile(`${fileBase}.json`, `${JSON.stringify(packageResult.manifest, null, 2)}\n`);
-    downloadTextFile(`${fileBase}.report.txt`, `${packageResult.reportText}\n`);
+    downloadTextFile(`${JSON.stringify(packageResult.manifest, null, 2)}\n`, `${fileBase}.json`);
+    downloadTextFile(`${packageResult.reportText}\n`, `${fileBase}.report.txt`);
     this.updateStatus(`${summarizeProjectPackaging(packageResult)} Manifest and report exported.`);
   }
 
-  handleLoadProject(event) {
+  async handleLoadProject(event) {
     this.exitSimulationMode();
     const file = event.target.files?.[0];
     if (!file) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(String(reader.result));
+    try {
+      const text = await readFileText(file);
+      const parsed = JSON.parse(text);
         const guard = assertStandaloneToolDocument(parsed, {
           expectedLabel: "Tilemap project",
           acceptedSchemas: ["toolbox.tilemap/1"],
@@ -1316,28 +1300,24 @@ class TileMapEditorApp {
         } else {
           this.updateStatus(`Loaded ${file.name} (validation: ${summarizeAssetValidation(validation)}).`);
         }
-      } catch (error) {
-        this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
-      }
+    } catch (error) {
+      this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
+    }
 
-      if (this.refs.loadProjectInput) {
-        this.refs.loadProjectInput.value = "";
-      }
-    };
-
-    reader.readAsText(file);
+    if (this.refs.loadProjectInput) {
+      this.refs.loadProjectInput.value = "";
+    }
   }
 
-  handleLoadAssetRegistry(event) {
+  async handleLoadAssetRegistry(event) {
     const file = event.target.files?.[0];
     if (!file) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(String(reader.result));
+    try {
+      const text = await readFileText(file);
+      const parsed = JSON.parse(text);
         this.assetRegistry = mergeAssetRegistries(this.assetRegistry, parsed);
         const resolution = this.resolveAssetRefsFromRegistry();
         this.renderAll();
@@ -1350,14 +1330,11 @@ class TileMapEditorApp {
         } else {
           this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.tilemaps.length} tilemaps, ${this.assetRegistry.tilesets.length} tilesets, validation: ${summarizeAssetValidation(validation)}).`);
         }
-      } catch (error) {
-        this.updateStatus(`Asset registry load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
-      }
+    } catch (error) {
+      this.updateStatus(`Asset registry load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
+    }
 
-      this.refs.loadAssetRegistryInput.value = "";
-    };
-
-    reader.readAsText(file);
+    this.refs.loadAssetRegistryInput.value = "";
   }
 
   findFirstNonEmptyTileId() {

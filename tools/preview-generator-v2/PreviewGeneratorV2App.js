@@ -1,4 +1,5 @@
 import { isPlainObject } from '../../src/shared/utils/objectUtils.js';
+import { readFileHandleText, writeFileHandleText } from '../../src/engine/persistence/index.js';
 import { PreviewGeneratorV2Logger } from './PreviewGeneratorV2Logger.js';
 import { PreviewGeneratorV2Ui } from './PreviewGeneratorV2Ui.js';
 import { PreviewGeneratorV2RepoAccess } from './PreviewGeneratorV2RepoAccess.js';
@@ -685,11 +686,9 @@ async function verifyWrittenPreview(fileHandle, expectedContents, pathState) {
     };
   }
   try {
-    const file = await fileHandle.getFile();
-    if (!file || typeof file.text !== "function") {
-      return { checked: false, message: "file text read-back is unavailable from this repo handle", ok: false };
-    }
-    const actualContents = await file.text();
+    const { file, text: actualContents } = await readFileHandleText(fileHandle, {
+      textErrorMessage: "file text read-back is unavailable from this repo handle"
+    });
     const fileSize = Number.isFinite(file.size) ? file.size : String(actualContents).length;
     const modifiedTimestamp = Number.isFinite(file.lastModified) && file.lastModified > 0
       ? file.lastModified
@@ -723,6 +722,9 @@ async function verifyWrittenPreview(fileHandle, expectedContents, pathState) {
       ok: true
     };
   } catch (error) {
+    if (error.message === "file text read-back is unavailable from this repo handle") {
+      return { checked: false, message: error.message, ok: false };
+    }
     return {
       checked: true,
       fileExists: false,
@@ -1035,22 +1037,24 @@ async function readExistingPreview(targetDirHandle) {
         verified: false
       };
     }
-    const file = await fileHandle.getFile();
-    if (!file || typeof file.text !== "function") {
-      return {
-        contents: "",
-        exists: true,
-        message: `${OUTPUT_NAME} exists but text read-back is unavailable.`,
-        verified: false
-      };
-    }
+    const { text } = await readFileHandleText(fileHandle, {
+      textErrorMessage: `${OUTPUT_NAME} exists but text read-back is unavailable.`
+    });
     return {
-      contents: await file.text(),
+      contents: text,
       exists: true,
       message: "",
       verified: true
     };
   } catch (error) {
+    if (error.message === `${OUTPUT_NAME} exists but text read-back is unavailable.`) {
+      return {
+        contents: "",
+        exists: true,
+        message: error.message,
+        verified: false
+      };
+    }
     return {
       contents: "",
       exists: false,
@@ -1102,9 +1106,7 @@ async function writePreview(targetDirHandle, svgContent, pathState) {
     : targetDirHandle;
 
   const fileHandle = await PreviewGeneratorV2RepoAccess.getFileHandle(targetDir, OUTPUT_NAME, true);
-  const writable = await fileHandle.createWritable();
-  await writable.write(svgContent);
-  await writable.close();
+  await writeFileHandleText(fileHandle, svgContent);
   const verification = await verifyWrittenPreview(fileHandle, svgContent, pathState);
   if (!verification.ok) {
     return {

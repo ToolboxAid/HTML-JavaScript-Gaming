@@ -1,5 +1,9 @@
 import { getToolById } from "../toolRegistry.js";
 import {
+  downloadTextFile,
+  readFileText
+} from "../../src/engine/persistence/index.js";
+import {
   ACTIVE_PROJECT_STORAGE_KEY,
   captureSharedReferenceSnapshot,
   createEmptyProjectManifest,
@@ -36,25 +40,6 @@ function writeStorage(manifest) {
 
 function clearStorage() {
   localStorage.removeItem(ACTIVE_PROJECT_STORAGE_KEY);
-}
-
-function downloadTextFile(content, fileName) {
-  const blob = new Blob([content], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
-function readFileAsText(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Unable to read selected project file."));
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.readAsText(file);
-  });
 }
 
 function buildStatusSummary(validation) {
@@ -262,7 +247,7 @@ export function createWorkspaceSystemController(options = {}) {
   }
 
   async function handleOpenWorkspace(file) {
-    const text = await readFileAsText(file);
+    const text = await readFileText(file, { errorMessage: "Unable to read selected project file." });
     const parsed = JSON.parse(text);
     if (!detectWorkspaceDocument(parsed)) {
       throw new Error("Selected file is not a Workspace manifest. Open tool documents inside their matching standalone tool.");

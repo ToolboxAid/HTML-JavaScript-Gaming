@@ -4,6 +4,7 @@ David Quesenberry
 03/25/2026
 VectorMapSerializer.js
 */
+import { downloadTextFile, readFileText } from "../../../src/engine/persistence/index.js";
 import { addToolModeMetadata } from "../../shared/documentModeGuards.js";
 
 export class VectorMapSerializer {
@@ -18,20 +19,14 @@ export class VectorMapSerializer {
   download(documentModel) {
     const data = this.toPrettyJSON(documentModel);
     const fileName = `${documentModel.getData().name || "untitled"}.editor.json`;
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadTextFile(data, fileName);
   }
 
   async readFile(file) {
     if (!file) {
       return null;
     }
-    const text = await file.text();
+    const text = await readFileText(file);
     return this.parseJSON(text);
   }
 }

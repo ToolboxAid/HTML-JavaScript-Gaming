@@ -16,6 +16,7 @@ import {
   PROJECT_FORMAT,
   TOOL_IDS
 } from "./constants.js";
+import { readFileText } from "../../../src/engine/persistence/index.js";
 import { colorToPickerValue, dedupeColors, isTransparent, normalizeColor, rgbaToHex } from "./colorUtils.js";
 import {
   cloneFrame,
@@ -447,15 +448,6 @@ function canvasToBlob(canvas) {
       }
       resolve(blob);
     }, "image/png");
-  });
-}
-
-function fileToText(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Failed to read file."));
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.readAsText(file);
   });
 }
 
@@ -1967,7 +1959,7 @@ async function saveAssetRegistryJson(state) {
 }
 
 async function loadAssetRegistryJson(state, file) {
-  const text = await fileToText(file);
+  const text = await readFileText(file, { errorMessage: "Failed to read file." });
   const parsed = JSON.parse(text);
   state.assetRegistry = mergeAssetRegistries(state.assetRegistry, parsed);
 
@@ -2009,7 +2001,7 @@ async function saveProjectJson(state) {
 }
 
 async function loadProjectJson(state, file) {
-  const text = await fileToText(file);
+  const text = await readFileText(file, { errorMessage: "Failed to read file." });
   const parsed = JSON.parse(text);
   const guard = assertStandaloneToolDocument(parsed, {
     expectedLabel: "Sprite Editor project",

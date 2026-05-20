@@ -1,5 +1,6 @@
 import { isPlainObject } from '../../../../src/shared/utils/objectUtils.js';
 import { deepClone } from '../../../../src/shared/utils/jsonUtils.js';
+import { readFileHandleText, writeFileHandleText } from '../../../../src/engine/persistence/index.js';
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
@@ -1521,8 +1522,9 @@ export class WorkspaceManagerV2ContextService {
       return { ok: false, message: "manifest file handle cannot be read" };
     }
     try {
-      const file = await fileHandle.getFile();
-      const text = await file.text();
+      const { text } = await readFileHandleText(fileHandle, {
+        handleErrorMessage: "manifest file handle cannot be read"
+      });
       const manifest = JSON.parse(text);
       return isPlainObject(manifest)
         ? { ok: true, manifest }
@@ -1704,8 +1706,9 @@ export class WorkspaceManagerV2ContextService {
     let beforeFile;
     let beforeText;
     try {
-      beforeFile = await fileHandleResult.fileHandle.getFile();
-      beforeText = await beforeFile.text();
+      const beforeRead = await readFileHandleText(fileHandleResult.fileHandle);
+      beforeFile = beforeRead.file;
+      beforeText = beforeRead.text;
     } catch (error) {
       return { ok: false, message: `Unable to read ${fileHandleResult.path} before save: ${error.message}` };
     }
@@ -1721,9 +1724,7 @@ export class WorkspaceManagerV2ContextService {
     }
     const json = `${JSON.stringify(nextManifest, null, 2)}\n`;
     try {
-      const writable = await fileHandleResult.fileHandle.createWritable();
-      await writable.write(json);
-      await writable.close();
+      await writeFileHandleText(fileHandleResult.fileHandle, json);
     } catch (error) {
       return { ok: false, message: `Unable to write ${fileHandleResult.path}: ${error.message}` };
     }
@@ -1732,8 +1733,9 @@ export class WorkspaceManagerV2ContextService {
     let readBackText;
     let readBackManifest;
     try {
-      readBackFile = await fileHandleResult.fileHandle.getFile();
-      readBackText = await readBackFile.text();
+      const readBack = await readFileHandleText(fileHandleResult.fileHandle);
+      readBackFile = readBack.file;
+      readBackText = readBack.text;
       readBackManifest = JSON.parse(readBackText);
     } catch (error) {
       return { ok: false, message: `Save verification failed for ${fileHandleResult.path}: ${error.message}` };

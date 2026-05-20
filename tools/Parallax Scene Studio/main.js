@@ -15,6 +15,7 @@ import {
   sanitizeAssetRegistry,
   upsertRegistryEntry
 } from "../shared/projectAssetRegistry.js";
+import { downloadTextFile, readFileText } from "../../src/engine/persistence/index.js";
 import { registerAssetPipelineCandidate } from "../shared/assetPipelineFoundation.js";
 import {
   getBlockingAssetValidationMessage,
@@ -359,19 +360,6 @@ function createTilemapParallaxPatch(parallaxDocument) {
       generatedBy: "tools/Parallax Scene Studio"
     }
   };
-}
-
-function createDownload(fileName, content) {
-  const blob = new Blob([content], { type: "application/json" });
-  const href = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = href;
-  anchor.download = fileName;
-  anchor.style.display = "none";
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
-  URL.revokeObjectURL(href);
 }
 
 function summarizeGraphFindings(findings) {
@@ -1210,7 +1198,7 @@ class ParallaxEditorApp {
     };
     const payload = JSON.stringify(output, null, 2);
     const fileName = `${this.documentModel.map.name || "map"}.parallax.json`;
-    createDownload(fileName, payload);
+    downloadTextFile(payload, fileName);
     this.updateStatus(`Saved ${fileName} (${output.assetRefs.parallaxSourceIds.length} parallax asset refs, ID-based layer references).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
@@ -1223,7 +1211,7 @@ class ParallaxEditorApp {
     }
     const { findings } = buildAssetDependencyGraph(this.assetRegistry);
     const payload = createRegistryDownloadPayload(this.assetRegistry);
-    createDownload("project.assets.json", payload);
+    downloadTextFile(payload, "project.assets.json");
     this.updateStatus(`Saved project.assets.json (${this.assetRegistry.parallaxSources.length} parallax sources).${summarizeGraphFindings(findings)} Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
@@ -1236,7 +1224,7 @@ class ParallaxEditorApp {
     const patch = createTilemapParallaxPatch(createRegistryManagedParallaxSaveDocument(this.documentModel));
     const payload = JSON.stringify(patch, null, 2);
     const fileName = `${this.documentModel.map.name || "map"}.tilemap-parallax.patch.json`;
-    createDownload(fileName, payload);
+    downloadTextFile(payload, fileName);
     this.updateStatus(`Exported ${fileName}. Validation: ${summarizeAssetValidation(validation)}.`);
   }
 
@@ -1272,22 +1260,21 @@ class ParallaxEditorApp {
       return;
     }
     const fileBase = `${this.assetRegistry.projectId || this.documentModel.map.name || "parallax-project"}.package`;
-    createDownload(`${fileBase}.json`, `${JSON.stringify(packageResult.manifest, null, 2)}\n`);
-    createDownload(`${fileBase}.report.txt`, `${packageResult.reportText}\n`);
+    downloadTextFile(`${JSON.stringify(packageResult.manifest, null, 2)}\n`, `${fileBase}.json`);
+    downloadTextFile(`${packageResult.reportText}\n`, `${fileBase}.report.txt`);
     this.updateStatus(`${summarizeProjectPackaging(packageResult)} Manifest and report exported.`);
   }
 
-  handleLoadProject(event) {
+  async handleLoadProject(event) {
     this.exitSimulationMode();
     const file = event.target.files?.[0];
     if (!file) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const raw = JSON.parse(String(reader.result));
+    try {
+      const text = await readFileText(file);
+      const raw = JSON.parse(text);
         const guard = assertStandaloneToolDocument(raw, {
           expectedLabel: "Parallax project",
           acceptedSchemas: ["toolbox.parallax/1", "toolbox.tilemap/1"],
@@ -1324,25 +1311,21 @@ class ParallaxEditorApp {
         } else {
           this.updateStatus(`Loaded ${file.name} (validation: ${summarizeAssetValidation(validation)}).`);
         }
-      } catch (error) {
-        this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
-      }
+    } catch (error) {
+      this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
+    }
       this.refs.loadProjectInput.value = "";
-    };
-
-    reader.readAsText(file);
   }
 
-  handleLoadAssetRegistry(event) {
+  async handleLoadAssetRegistry(event) {
     const file = event.target.files?.[0];
     if (!file) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(String(reader.result));
+    try {
+      const text = await readFileText(file);
+      const parsed = JSON.parse(text);
         this.assetRegistry = mergeAssetRegistries(this.assetRegistry, parsed);
         const resolution = this.resolveAssetRefsFromRegistry();
         this.invalidateImageCache();
@@ -1355,13 +1338,10 @@ class ParallaxEditorApp {
         } else {
           this.updateStatus(`Loaded ${file.name} (${this.assetRegistry.parallaxSources.length} parallax sources, validation: ${summarizeAssetValidation(validation)}).`);
         }
-      } catch (error) {
-        this.updateStatus(`Asset registry load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
-      }
+    } catch (error) {
+      this.updateStatus(`Asset registry load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
+    }
       this.refs.loadAssetRegistryInput.value = "";
-    };
-
-    reader.readAsText(file);
   }
 
   applyMapMetaFromInputs() {

@@ -4,6 +4,8 @@ David Quesenberry
 03/26/2026
 VectorMapRuntimeExporter.js
 */
+import { downloadTextFile } from "../../../src/engine/persistence/index.js";
+
 export class VectorMapRuntimeExporter {
   build(documentModel) {
     const data = documentModel.toJSON();
@@ -42,12 +44,6 @@ export class VectorMapRuntimeExporter {
   download(documentModel) {
     const payload = JSON.stringify(this.build(documentModel), null, 2);
     const fileName = `${documentModel.getData().name || "untitled"}.runtime.json`;
-    const blob = new Blob([payload], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadTextFile(payload, fileName);
   }
 }

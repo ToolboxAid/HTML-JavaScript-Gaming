@@ -1,5 +1,5 @@
 import { asPositiveInteger } from "../../shared/number/index.js";
-import { SessionStorageService } from "../../engine/persistence/index.js";
+import { readFileText, SessionStorageService } from "../../engine/persistence/index.js";
 import { isRecord } from "../../shared/types/typeGuards.js";
 
 export { isRecord };
@@ -93,7 +93,7 @@ export class GameManifestLoader {
       return { ok: false, skipped: true };
     }
     try {
-      return parseJson(await file.text(), file.name || "selected manifest file");
+      return parseJson(await readFileText(file), file.name || "selected manifest file");
     } catch (error) {
       return { ok: false, message: `Manifest file could not be read: ${error.message}` };
     }

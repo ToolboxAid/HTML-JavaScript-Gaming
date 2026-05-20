@@ -1,6 +1,10 @@
 import { isPlainObject } from '../../../src/shared/utils/objectUtils.js';
 import { deepClone } from '../../../src/shared/utils/jsonUtils.js';
 import {
+  downloadTextFile,
+  readFileText
+} from "../../../src/engine/persistence/index.js";
+import {
   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
@@ -554,7 +558,7 @@ export class TextToSpeechToolApp {
 
     let payload;
     try {
-      payload = JSON.parse(await file.text());
+      payload = JSON.parse(await readFileText(file));
     } catch (error) {
       this.statusLog.fail(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON failed: ${file.name || "selected file"} is invalid JSON: ${error.message}`);
       return;
@@ -616,15 +620,11 @@ export class TextToSpeechToolApp {
       return;
     }
     const json = JSON.stringify(validation.payload, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = this.window.document.createElement("a");
-    link.href = url;
-    link.download = "text-to-speech-v2.json";
-    this.window.document.body.append(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    downloadTextFile(json, "text-to-speech-v2.json", {
+      appendToBody: true,
+      documentRef: this.window.document,
+      windowRef: this.window
+    });
     this.statusLog.ok(`Exported ${TEXT_TO_SPEECH_DISPLAY_NAME} JSON root array (${validation.payload.length} item${validation.payload.length === 1 ? "" : "s"}).`);
   }
 

@@ -1,3 +1,8 @@
+import {
+  downloadTextFile,
+  readFileText
+} from "../../../src/engine/persistence/index.js";
+
 export class PaletteImportExportControl {
   constructor({ refs, app }) {
     this.refs = refs;
@@ -28,7 +33,7 @@ export class PaletteImportExportControl {
   }
 
   async importPaletteJsonFromFile(file) {
-    const rawText = await file.text();
+    const rawText = await readFileText(file);
     let parsed = null;
     try {
       parsed = JSON.parse(rawText);
@@ -44,13 +49,7 @@ export class PaletteImportExportControl {
       return;
     }
 
-    const blob = new Blob([JSON.stringify(this.app.getExportDocument(), null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "tools.palette-manager-v2.json";
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadTextFile(JSON.stringify(this.app.getExportDocument(), null, 2), "tools.palette-manager-v2.json");
     this.app.setActionState([], "Exported tools.palette-manager-v2 JSON.");
   }
 

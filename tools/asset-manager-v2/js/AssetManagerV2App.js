@@ -1,4 +1,8 @@
 import { deepClone } from '../../../src/shared/utils/jsonUtils.js';
+import {
+  downloadTextFile,
+  readFileText
+} from "../../../src/engine/persistence/index.js";
 import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
 const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.";
 
@@ -496,7 +500,7 @@ export class AssetManagerV2App {
       return;
     }
     try {
-      const payload = JSON.parse(await file.text());
+      const payload = JSON.parse(await readFileText(file));
       const validation = this.schemaValidator.validatePayload(payload);
       if (!validation.ok) {
         this.statusLog.fail(`Import JSON failed schema validation: ${validation.errors.join(" | ")}`);
@@ -527,22 +531,15 @@ export class AssetManagerV2App {
       return;
     }
     const json = JSON.stringify(validation.payload, null, 2);
-    const BlobCtor = this.window.Blob;
-    const urlApi = this.window.URL || this.window.webkitURL;
-    if (typeof BlobCtor !== "function" || !urlApi?.createObjectURL) {
+    const downloaded = downloadTextFile(json, "asset-manager-v2-assets.json", {
+      appendToBody: true,
+      documentRef: this.window.document,
+      windowRef: this.window
+    });
+    if (!downloaded) {
       this.statusLog.fail("Export JSON failed: browser download APIs are unavailable.");
       return;
     }
-    const blob = new BlobCtor([json], { type: "application/json" });
-    const url = urlApi.createObjectURL(blob);
-    const link = this.window.document.createElement("a");
-    link.href = url;
-    link.download = "asset-manager-v2-assets.json";
-    link.rel = "noopener";
-    this.window.document.body.append(link);
-    link.click();
-    link.remove();
-    urlApi.revokeObjectURL(url);
     this.statusLog.ok(`Exported JSON with ${Object.keys(validation.payload.assets).length} validated assets.`);
   }
 

@@ -4,6 +4,7 @@ David Quesenberry
 03/30/2026
 main.js
 */
+import { downloadTextFile, readFileText } from "../../src/engine/persistence/index.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import {
   getToolLoadQuerySnapshot,
@@ -2313,19 +2314,6 @@ function serializeCurrentSvg() {
   return `<?xml version="1.0" encoding="UTF-8"?>\n${serialized}\n`;
 }
 
-function downloadTextFile(fileName, content, mimeType) {
-  const blob = new Blob([content], { type: mimeType });
-  const href = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = href;
-  anchor.download = fileName;
-  anchor.style.display = "none";
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
-  URL.revokeObjectURL(href);
-}
-
 function parseDimension(value, fallback) {
   if (typeof value !== "string") {
     return fallback;
@@ -3180,7 +3168,7 @@ function bindEvents() {
     if (!file) {
       return;
     }
-    const text = await file.text();
+    const text = await readFileText(file);
     loadSvgFromText(text, file.name);
     refs.loadSvgInput.value = "";
   });
@@ -3189,7 +3177,7 @@ function bindEvents() {
     finalizePendingPolyline(true);
     const content = serializeCurrentSvg();
     const fileName = `${state.documentName || "background-art"}.svg`;
-    downloadTextFile(fileName, content, "image/svg+xml");
+    downloadTextFile(content, fileName, { mimeType: "image/svg+xml" });
     setStatus(`Saved ${fileName}.`);
   });
 

@@ -1,4 +1,5 @@
 import { runAssetPipelineTooling } from "../shared/pipeline/assetPipelineTooling.js";
+import { readFileText } from "../../src/engine/persistence/index.js";
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import {
@@ -591,7 +592,7 @@ async function loadPipelineFromJsonFile(file) {
     return;
   }
   try {
-    const text = await file.text();
+    const text = await readFileText(file);
     const parsed = parseJsonObjectString(text);
     if (!parsed) {
       throw new Error("Selected file must contain a valid JSON object.");
