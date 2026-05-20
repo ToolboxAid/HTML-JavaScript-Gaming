@@ -1,11 +1,8 @@
 import { readToolHostSharedContextFromLocation } from "./toolHostSharedContext.js";
+import { normalizeText } from "../../src/shared/string/index.js";
 
 let workspaceShellInitialized = false;
 let initializedWorkspaceShellState = null;
-
-function normalizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function isRecord(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);

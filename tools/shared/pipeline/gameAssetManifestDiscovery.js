@@ -3,12 +3,9 @@ import {
   GAME_ASSET_MANIFEST_SCHEMA,
   GAME_ASSET_MANIFEST_VERSION
 } from "./gameAssetManifestCoordinator.js";
+import { toObject } from "../../../src/shared/utils/objectUtils.js";
 
 const SUPPORTED_DOMAINS = Object.freeze(["sprites", "tilemaps", "parallax", "vectors"]);
-
-function asObject(value) {
-  return value && typeof value === "object" ? value : {};
-}
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
@@ -19,7 +16,7 @@ function pushIssue(issues, message) {
 }
 
 function inferRuntimeKind(domain, metadata) {
-  const runtimeType = safeString(asObject(metadata).runtimeType, "").toLowerCase();
+  const runtimeType = safeString(toObject(metadata).runtimeType, "").toLowerCase();
   if (runtimeType) {
     return runtimeType;
   }
@@ -39,7 +36,7 @@ function inferRuntimeKind(domain, metadata) {
 }
 
 export function validateGameAssetManifestStructure(manifestInput, options = {}) {
-  const manifest = asObject(manifestInput);
+  const manifest = toObject(manifestInput);
   const issues = [];
   const expectedGameId = safeString(options.gameId, "").toLowerCase();
 
@@ -58,7 +55,7 @@ export function validateGameAssetManifestStructure(manifestInput, options = {}) 
     pushIssue(issues, `manifest.gameId must match expected gameId ${expectedGameId}.`);
   }
 
-  const domains = asObject(manifest.domains);
+  const domains = toObject(manifest.domains);
   SUPPORTED_DOMAINS.forEach((domain) => {
     const domainEntries = domains[domain];
     if (!Array.isArray(domainEntries)) {
@@ -99,7 +96,7 @@ export function discoverRuntimeAssetSourcesFromManifest(manifestInput, options =
       runtimeAssetSources: {},
       records: [],
       issues: validation.issues,
-      gameId: safeString(asObject(manifestInput).gameId, "")
+      gameId: safeString(toObject(manifestInput).gameId, "")
     };
   }
 
@@ -115,7 +112,7 @@ export function discoverRuntimeAssetSourcesFromManifest(manifestInput, options =
       if (!assetId || !runtimePath) {
         return;
       }
-      const metadata = asObject(entry?.metadata);
+      const metadata = toObject(entry?.metadata);
       sources[assetId] = {
         file: runtimePath,
         path: runtimePath,

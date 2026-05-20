@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { findRegistryEntryById, sanitizeAssetRegistry } from "./projectAssetRegistry.js";
 import { hasBlockingAssetValidationFindings, summarizeAssetValidation, validateProjectAssetState } from "./projectAssetValidation.js";
 
@@ -10,10 +11,6 @@ const SECTION_BY_NODE_TYPE = Object.freeze({
   image: "images",
   parallaxLayer: "parallaxSources"
 });
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function sortStrings(values) {
   return values.slice().sort((left, right) => left.localeCompare(right));

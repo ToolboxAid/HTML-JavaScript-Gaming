@@ -5,6 +5,7 @@ David Quesenberry
 SolarSystemWorld.js
 */
 import { toObject } from '/src/shared/utils/objectUtils.js';
+import { toFiniteNumber } from '/src/shared/number/index.js';
 
 const MAX_STEP_SECONDS = 1 / 60;
 
@@ -84,11 +85,6 @@ const DEFAULT_SOLAR_WORLD_SKIN = Object.freeze({
 
 function clampIndex(value, max) {
   return Math.max(0, Math.min(max, value));
-}
-
-function toFiniteNumber(value, fallback) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
 }
 
 function sanitizeSolarWorldSkin(skin) {

@@ -1,7 +1,4 @@
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
+import { sanitizeText } from "../../src/shared/string/index.js";
 function createLine(label, value) {
   return `${label}: ${sanitizeText(value) || "none"}`;
 }

@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { inspectVectorAssetContract } from "./vector/vectorAssetContract.js";
 import { prepareVectorRenderables } from "./vector/vectorRenderPrep.js";
 import { ensureArray } from "../../src/shared/utils/arrayUtils.js";
@@ -23,10 +24,6 @@ export const VECTOR_GEOMETRY_RUNTIME_POLICY = Object.freeze({
   ],
   collisionPolicy: "collision-primitives-follow-render-order"
 });
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createReport(level, code, message) {
   return {

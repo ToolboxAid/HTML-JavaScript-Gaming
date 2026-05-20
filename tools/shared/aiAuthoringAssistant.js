@@ -1,9 +1,6 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { buildProjectAssetRemediation, getPrimaryRemediationAction } from "./projectAssetRemediation.js";
 import { buildDebugVisualizationLayer } from "./debugVisualizationLayer.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createSuggestion(kind, label, rationale, payload = {}) {
   return {

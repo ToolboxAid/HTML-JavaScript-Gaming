@@ -1,15 +1,12 @@
 import { safeString } from "../projectSystemValueUtils.js";
 import { GAME_ASSET_MANIFEST_SCHEMA, GAME_ASSET_MANIFEST_VERSION } from "./gameAssetManifestCoordinator.js";
+import { toObject } from "../../../src/shared/utils/objectUtils.js";
 
 export const RUNTIME_ASSET_BINDING_SCHEMA = "html-js-gaming.runtime-asset-binding";
 export const RUNTIME_ASSET_BINDING_VERSION = 1;
 
 export const RUNTIME_ACTIVE_DOMAINS = Object.freeze(["sprites", "tilemaps", "parallax", "vectors"]);
 const RUNTIME_BINDING_INDEX_CACHE = new WeakMap();
-
-function asObject(value) {
-  return value && typeof value === "object" ? value : {};
-}
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
@@ -41,7 +38,7 @@ function isRuntimePath(pathValue, domain) {
 }
 
 function normalizeManifestRecord(rawRecord, domain) {
-  const source = asObject(rawRecord);
+  const source = toObject(rawRecord);
   return {
     assetId: toSlug(source.assetId || source.id || `${domain}-asset`, `${domain}-asset`),
     runtimePath: safeString(source.runtimePath, ""),
@@ -78,8 +75,8 @@ function buildDomainBindingEntries(rawEntries, domain) {
 }
 
 export function createRuntimeAssetBinding(manifestInput) {
-  const manifest = asObject(manifestInput);
-  const domains = asObject(manifest.domains);
+  const manifest = toObject(manifestInput);
+  const domains = toObject(manifest.domains);
   const bindingDomains = {};
   const rejected = [];
   const issues = [];
@@ -115,7 +112,7 @@ export function createRuntimeAssetBinding(manifestInput) {
 }
 
 export function resolveRuntimeAsset(bindingInput, options = {}) {
-  const binding = asObject(bindingInput);
+  const binding = toObject(bindingInput);
   const domain = normalizeDomain(options.domain);
   const assetId = toSlug(options.assetId, "");
   if (!domain || !assetId) {
@@ -127,7 +124,7 @@ export function resolveRuntimeAsset(bindingInput, options = {}) {
     index = {};
     RUNTIME_ACTIVE_DOMAINS.forEach((activeDomain) => {
       const domainMap = new Map();
-      asArray(asObject(binding.domains)[activeDomain]).forEach((entry) => {
+      asArray(toObject(binding.domains)[activeDomain]).forEach((entry) => {
         domainMap.set(toSlug(entry?.assetId, ""), entry);
       });
       index[activeDomain] = domainMap;

@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { validateProjectAssetState, summarizeAssetValidation } from "./projectAssetValidation.js";
 import { buildProjectPackage, summarizeProjectPackaging } from "./projectPackaging.js";
 import { loadPackagedProjectRuntime, summarizeRuntimeAssetLoader } from "./runtimeAssetLoader.js";
@@ -11,10 +12,6 @@ import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./perfor
 import { normalizeSvgToVectorAsset } from "./vector/vectorAssetBridge.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 import { createRuntimeManifestAssetLookup } from "./pipeline/runtimeAssetLookup.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createReport(level, code, message) {
   return {

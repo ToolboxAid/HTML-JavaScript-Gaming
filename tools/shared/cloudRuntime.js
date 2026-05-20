@@ -1,8 +1,5 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { cloneJson } from '../../src/shared/utils/jsonUtils.js';
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createReport(level, code, message) {
   return {

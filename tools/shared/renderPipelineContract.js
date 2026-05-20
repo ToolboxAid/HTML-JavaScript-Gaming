@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 /*
 Toolbox Aid
 David Quesenberry
@@ -67,10 +68,6 @@ export const TOOL_ENGINE_MAPPINGS = Object.freeze({
 });
 
 const STAGES = Object.freeze(["load", "validate", "normalize", "resolve", "compose", "sequence", "render"]);
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createStageStatus(stage, status, message = "") {
   return {

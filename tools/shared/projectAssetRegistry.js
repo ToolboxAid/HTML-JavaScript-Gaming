@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 /*
 Toolbox Aid
 David Quesenberry
@@ -29,10 +30,6 @@ function cloneDeep(value) {
     return structuredClone(value);
   }
   return JSON.parse(JSON.stringify(value));
-}
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
 }
 
 export function slugify(value, fallback = "entry") {

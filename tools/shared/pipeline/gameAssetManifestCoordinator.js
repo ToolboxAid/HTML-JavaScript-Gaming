@@ -1,4 +1,5 @@
 import { safeString } from "../projectSystemValueUtils.js";
+import { toObject } from "../../../src/shared/utils/objectUtils.js";
 
 export const GAME_ASSET_MANIFEST_SCHEMA = "html-js-gaming.game-asset-manifest";
 export const GAME_ASSET_MANIFEST_VERSION = 1;
@@ -14,16 +15,12 @@ function toSlug(value, fallback = "game") {
   return text || fallback;
 }
 
-function asObject(value) {
-  return value && typeof value === "object" ? value : {};
-}
-
 function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
 function normalizeRecord(rawRecord, domain) {
-  const source = asObject(rawRecord);
+  const source = toObject(rawRecord);
   return {
     assetId: toSlug(source.assetId || source.id || `${domain}-asset`, `${domain}-asset`),
     runtimePath: safeString(source.runtimePath, ""),
@@ -46,8 +43,8 @@ function buildEmptyDomains() {
 }
 
 function normalizeExistingManifest(existingManifest, gameId) {
-  const source = asObject(existingManifest);
-  const sourceDomains = asObject(source.domains);
+  const source = toObject(existingManifest);
+  const sourceDomains = toObject(source.domains);
   const domains = buildEmptyDomains();
 
   ACTIVE_DOMAINS.forEach((domain) => {
@@ -86,7 +83,7 @@ function mergeDomains(baseDomains, incomingRecords) {
 export function coordinateGameAssetManifest(options = {}) {
   const gameId = toSlug(options.gameId, "game");
   const records = asArray(options.records).map((entry) => ({
-    ...asObject(entry),
+    ...toObject(entry),
     domain: ACTIVE_DOMAINS.includes(safeString(entry?.domain, "").toLowerCase())
       ? safeString(entry.domain, "").toLowerCase()
       : ""

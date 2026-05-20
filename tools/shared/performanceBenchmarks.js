@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 /*
 Toolbox Aid
 David Quesenberry
@@ -9,10 +10,6 @@ import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 export const PERFORMANCE_BENCHMARK_CONTRACT_ID = "toolbox.performance.benchmarks";
 export const PERFORMANCE_BENCHMARK_CONTRACT_VERSION = "1.0.0";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function normalizeNumber(value, fallback = 0) {
   return Number.isFinite(value) ? Number(value) : fallback;

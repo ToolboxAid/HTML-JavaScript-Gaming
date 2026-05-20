@@ -1,3 +1,4 @@
+import { asFiniteNumber } from "../../../src/shared/number/index.js";
 export { deepClone as clone } from "../../../src/shared/utils/jsonUtils.js";
 
 export const OBJECT_LABELS = Object.freeze({
@@ -9,14 +10,9 @@ export function labelForObject(object) {
   return `${object?.name || "Object"} (${object?.id || "unknown"})`;
 }
 
-export function numberValue(value, fallback = 0) {
-  const parsed = Number(value);
-  return Number.isNaN(parsed) || Math.abs(parsed) === Infinity ? fallback : parsed;
-}
-
 export function roundNumber(value, digits = 2) {
   const factor = 10 ** digits;
-  return Math.round(numberValue(value) * factor) / factor;
+  return Math.round(asFiniteNumber(value) * factor) / factor;
 }
 
 export function roundPoint(point) {

@@ -1,11 +1,8 @@
 import { toObject } from "../../shared/utils/objectUtils.js";
+import { normalizePathSeparators } from "../../shared/string/index.js";
 
 function safeText(value, fallback = "") {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
-}
-
-function normalizePath(value) {
-  return safeText(value, "").replace(/\\/g, "/");
 }
 
 function hasUrlProtocol(value) {
@@ -13,7 +10,7 @@ function hasUrlProtocol(value) {
 }
 
 function discoverGameIdFromDocument(documentRef) {
-  const pathname = normalizePath(documentRef?.location?.pathname || "");
+  const pathname = normalizePathSeparators(documentRef?.location?.pathname || "");
   if (!pathname) {
     return "";
   }
@@ -22,7 +19,7 @@ function discoverGameIdFromDocument(documentRef) {
 }
 
 function normalizeManifestPath(value) {
-  const normalized = normalizePath(value);
+  const normalized = normalizePathSeparators(value);
   if (!normalized) {
     return "";
   }
@@ -51,7 +48,7 @@ function deriveManifestPath(options = {}) {
 }
 
 function resolveManifestRelativePath(pathValue, manifestPath) {
-  const normalized = normalizePath(pathValue);
+  const normalized = normalizePathSeparators(pathValue);
   if (!normalized || hasUrlProtocol(normalized) || normalized.startsWith("/") || normalized.startsWith("//")) {
     return normalized;
   }
@@ -203,7 +200,7 @@ async function readManifestPayload(manifestPath, documentRef = null) {
 }
 
 export function resolveRuntimeAssetUrl(pathValue, documentRef = null) {
-  const normalized = normalizePath(pathValue);
+  const normalized = normalizePathSeparators(pathValue);
   if (!normalized) {
     return "";
   }
@@ -277,7 +274,7 @@ export async function resolveManifestChromeAssetPaths(options = {}) {
 }
 
 function resolveSiblingPath(pathValue, fileName) {
-  const normalizedPath = normalizePath(pathValue);
+  const normalizedPath = normalizePathSeparators(pathValue);
   const normalizedName = safeText(fileName, "");
   if (!normalizedPath || !normalizedName) {
     return "";

@@ -1,8 +1,4 @@
-function asObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value)
-    ? value
-    : {};
-}
+import { asObject } from "../../../../shared/utils/objectUtils.js";
 
 export function readHostStatus(host) {
   return host && typeof host.getStatus === "function"

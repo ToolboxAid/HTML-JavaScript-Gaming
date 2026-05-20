@@ -1,7 +1,4 @@
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
+import { sanitizeText } from "../../src/shared/string/index.js";
 const VIEWER_PAYLOAD_STORAGE_KEY_PREFIX = "toolboxaid.viewerPayload.";
 
 function stashViewerPayload(payload, sourceToolId = "") {

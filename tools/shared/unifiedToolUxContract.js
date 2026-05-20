@@ -1,3 +1,5 @@
+import { normalizeText } from "../../src/shared/string/index.js";
+
 export const TOOL_UX_LIFECYCLE = Object.freeze({
   INIT: "INIT",
   LOADING: "LOADING",
@@ -7,10 +9,6 @@ export const TOOL_UX_LIFECYCLE = Object.freeze({
 });
 
 const ALLOWED_STATES = new Set(Object.values(TOOL_UX_LIFECYCLE));
-
-function normalizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function getBodyElement() {
   return typeof document !== "undefined" ? document.body : null;

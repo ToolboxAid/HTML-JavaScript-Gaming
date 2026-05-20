@@ -6,6 +6,7 @@ BreakoutWorld.js
 */
 import { clamp } from '/src/shared/utils/mathUtils.js';
 import { toObject } from '/src/shared/utils/objectUtils.js';
+import { toFiniteNumber } from '/src/shared/number/index.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
 
@@ -33,11 +34,6 @@ const DEFAULT_BREAKOUT_SKIN = Object.freeze({
     brickGap: 6
   }
 });
-
-function toFiniteNumber(value, fallback) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
 
 function sanitizeBreakoutWorldSkin(value) {
   const source = toObject(value);

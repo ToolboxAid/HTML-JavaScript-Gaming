@@ -6,14 +6,9 @@ threeDDebugUtils.js
 */
 
 import { sanitizeText } from "../../../../../shared/string/index.js";
+import { asObject } from "../../../../../shared/utils/objectUtils.js";
 
-export { sanitizeText };
-
-export function asObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value)
-    ? value
-    : {};
-}
+export { asObject, sanitizeText };
 
 export function asArray(value) {
   return Array.isArray(value) ? value : [];

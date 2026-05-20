@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 export const LIVE_PREVIEW_CHANNEL_NAME = "toolboxaid.livePreviewSync.v1";
 const LIVE_PREVIEW_STORAGE_KEY = "__toolboxaid_live_preview_sync_v1__";
 const VALID_EVENT_TYPES = new Set([
@@ -5,10 +6,6 @@ const VALID_EVENT_TYPES = new Set([
   "tool-live-preview-sync",
   "runtime-state-binding"
 ]);
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function toMessageEnvelope(sourceId, payload, eventType) {
   const normalizedEventType = sanitizeText(eventType) || "update";

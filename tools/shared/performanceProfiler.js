@@ -1,8 +1,5 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { summarizePlatformValidationSuite } from "./platformValidationSuite.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createSample(stage, units) {
   return {

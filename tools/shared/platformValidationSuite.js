@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { validateProjectAssetState } from "./projectAssetValidation.js";
 import { buildProjectAssetRemediation, getPrimaryRemediationAction } from "./projectAssetRemediation.js";
 import { buildProjectPackage } from "./projectPackaging.js";
@@ -6,10 +7,6 @@ import { buildRuntimeStreamingManifest, loadRuntimeStreamingChunks } from "./run
 import { buildPluginArchitecture } from "./pluginArchitecture.js";
 import { buildProjectVersioning } from "./projectVersioning.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createScenario(id, status, summary, details = []) {
   return {

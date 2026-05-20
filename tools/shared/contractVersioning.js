@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 /*
 Toolbox Aid
 David Quesenberry
@@ -6,10 +7,6 @@ contractVersioning.js
 */
 
 import { cloneJson } from '../../src/shared/utils/jsonUtils.js';
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function parseVersionParts(value) {
   const normalized = sanitizeText(value).replace(/^v/i, "");

@@ -2,7 +2,7 @@ import {
   createWorldScreenTransform,
   headingPointFromRotation
 } from "../../../src/engine/rendering/index.js";
-import { numberValue } from "./constants.js";
+import { asFiniteNumber } from "../../../src/shared/number/index.js";
 
 export class CollisionInspectorV2Renderer {
   constructor({ canvas }) {
@@ -26,7 +26,7 @@ export class CollisionInspectorV2Renderer {
   }
 
   setZoom(zoom) {
-    this.zoom = Math.max(0.5, Math.min(5, numberValue(zoom, 1)));
+    this.zoom = Math.max(0.5, Math.min(5, asFiniteNumber(zoom, 1)));
     this.transform = createWorldScreenTransform({
       screenHeight: this.canvas.height,
       screenWidth: this.canvas.width,

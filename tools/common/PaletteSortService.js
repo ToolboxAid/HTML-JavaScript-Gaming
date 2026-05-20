@@ -1,13 +1,11 @@
+import { normalizeText } from "../../src/shared/string/index.js";
+
 const PALETTE_SORT_MODES = Object.freeze([
   Object.freeze({ value: "hue", label: "Hue" }),
   Object.freeze({ value: "saturation", label: "Saturation" }),
   Object.freeze({ value: "brightness", label: "Brightness" }),
   Object.freeze({ value: "name", label: "Name" })
 ]);
-
-function normalizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function hexToRgb(hex) {
   const value = normalizeText(hex).replace(/^#/u, "");

@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 /*
 Toolbox Aid
 David Quesenberry
@@ -28,10 +29,6 @@ const REFERENCE_ROLE_TO_DOMAIN = Object.freeze({
   vector: "vector",
   overlay: "overlay"
 });
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createStructuredReport(level, stage, code, message, details = {}) {
   return {

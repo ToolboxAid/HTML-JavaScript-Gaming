@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { validateProjectAssetState, summarizeAssetValidation } from "./projectAssetValidation.js";
 import { buildProjectPackage, summarizeProjectPackaging } from "./projectPackaging.js";
 import { loadPackagedProjectRuntime, summarizeRuntimeAssetLoader } from "./runtimeAssetLoader.js";
@@ -8,10 +9,6 @@ import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 import { createRuntimeManifestAssetLookup } from "./pipeline/runtimeAssetLookup.js";
 
 const DEFAULT_VECTOR_FIXTURE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 20 20"><path d="M 0 -8 L 6 8 L 0 4 L -6 8 Z" /></svg>';
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createReport(level, code, message) {
   return {

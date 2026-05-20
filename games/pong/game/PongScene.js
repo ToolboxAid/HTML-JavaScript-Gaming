@@ -10,6 +10,7 @@ import PongAudio from './PongAudio.js';
 import { getPongModes } from './PongModeConfig.js';
 import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
 import { toObject } from '/src/shared/utils/objectUtils.js';
+import { toFiniteNumber } from '/src/shared/number/index.js';
 
 const COURT = {
   width: 960,
@@ -36,11 +37,6 @@ const DEFAULT_SIZING = {
   paddleWidth: 14,
   ballRadius: 8
 };
-
-function toFiniteNumber(value, fallback) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
 
 function sanitizePongSkin(skin) {
   const colors = toObject(skin?.colors);

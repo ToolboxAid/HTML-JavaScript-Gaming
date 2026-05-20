@@ -1,4 +1,5 @@
 import { enforceToolPresetSchemaOnlyContract } from "./schemaOnlyToolPresetValidation.js";
+import { normalizeText } from "../../src/shared/string/index.js";
 
 const TOOL_LOAD_PREFIXES = Object.freeze({
   request: "[tool-load:request]",
@@ -54,10 +55,6 @@ const TOOL_EXPECTED_CONTRACTS = Object.freeze({
 
 const LAST_LOADED_CACHE = new Map();
 const CLASSIFICATION_CACHE = new Map();
-
-function normalizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function normalizeClassificationValue(value) {
   const normalized = normalizeText(value).toLowerCase();

@@ -1,8 +1,6 @@
-const TOOL_SCHEMA_CACHE = new Map();
+import { normalizeText } from "../../src/shared/string/index.js";
 
-function normalizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+const TOOL_SCHEMA_CACHE = new Map();
 
 function isPlainObject(value) {
   return !!value && typeof value === "object" && !Array.isArray(value);

@@ -1,10 +1,7 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { runCiValidationPipeline } from "./ciValidationPipeline.js";
 import { buildMultiTargetExport } from "./multiTargetExport.js";
 import { buildCloudRuntime } from "./cloudRuntime.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createReport(level, code, message) {
   return {

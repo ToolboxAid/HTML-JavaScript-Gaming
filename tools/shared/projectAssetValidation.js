@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import {
   buildAssetDependencyGraph,
   findRegistryEntryById,
@@ -20,10 +21,6 @@ const SEVERITY_ORDER = Object.freeze({
   warning: 1,
   info: 2
 });
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createFinding(code, severity, blocking, sourceType, sourceId, message) {
   return {

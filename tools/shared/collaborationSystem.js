@@ -1,9 +1,6 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { buildProjectVersioning } from "./projectVersioning.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function createAudit(event, message) {
   return {

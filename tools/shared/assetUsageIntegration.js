@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { getToolById } from "../toolRegistry.js";
 
 export const SHARED_ASSET_HANDOFF_KEY = "toolboxaid.shared.assetHandoff";
@@ -8,10 +9,6 @@ export const SHARED_PALETTE_HANDOFF_EVENT = "toolboxaid.shared.paletteHandoff.ch
 export const SHARED_ACTION_LABELS = Object.freeze({
   paletteManager: "Palette Manager"
 });
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function safeParseJson(raw) {
   if (typeof raw !== "string" || !raw.trim()) {

@@ -15,6 +15,7 @@ import {
 } from '../rendering/OrientationTransform.js';
 import { isRecord } from '../../shared/types/typeGuards.js';
 import { deepClone as clone } from '../../shared/utils/jsonUtils.js';
+import { asFiniteNumber } from '../../shared/number/index.js';
 
 export const OBJECT_VECTOR_COLLISION_ENGINE_PATH = 'src/engine/collision/objectVector.js';
 export const OBJECT_VECTOR_COLLISION_MODES = Object.freeze(['bounds', 'vector', 'pixel-sprite', 'hybrid']);
@@ -32,15 +33,10 @@ const MODE_ALIASES = Object.freeze({
 const POLYGON_SAMPLE_COUNT = 28;
 const DEFAULT_MASK_CELL_SIZE = 4;
 
-function numberValue(value, fallback = 0) {
-  const parsed = Number(value);
-  return Number.isNaN(parsed) || Math.abs(parsed) === Infinity ? fallback : parsed;
-}
-
 function normalizePoint(point) {
   return {
-    x: numberValue(point?.x),
-    y: numberValue(point?.y),
+    x: asFiniteNumber(point?.x),
+    y: asFiniteNumber(point?.y),
   };
 }
 
@@ -63,12 +59,12 @@ function shapeTool(shape) {
 
 function sortedShapes(object) {
   return [...(Array.isArray(object?.shapes) ? object.shapes : [])]
-    .sort((left, right) => numberValue(left?.order) - numberValue(right?.order));
+    .sort((left, right) => asFiniteNumber(left?.order) - asFiniteNumber(right?.order));
 }
 
 function sortedFrames(state) {
   return [...(Array.isArray(state?.frames) ? state.frames : [])]
-    .sort((left, right) => numberValue(left?.order) - numberValue(right?.order));
+    .sort((left, right) => asFiniteNumber(left?.order) - asFiniteNumber(right?.order));
 }
 
 function firstObjectFrame(object, preferredStateIds = ['active', 'idle']) {
@@ -154,7 +150,7 @@ function shapeLocalPolygons(shape) {
   const geometry = isRecord(shape?.geometry) ? shape.geometry : {};
   const tool = shapeTool(shape);
   if (tool === 'rectangle') {
-    return [rectanglePoints(numberValue(geometry.x), numberValue(geometry.y), numberValue(geometry.width, 1), numberValue(geometry.height, 1))];
+    return [rectanglePoints(asFiniteNumber(geometry.x), asFiniteNumber(geometry.y), asFiniteNumber(geometry.width, 1), asFiniteNumber(geometry.height, 1))];
   }
   if (tool === 'polygon') {
     const points = normalizePoints(geometry.points);
@@ -162,11 +158,11 @@ function shapeLocalPolygons(shape) {
   }
   if (tool === 'polyline') {
     const points = normalizePoints(geometry.points);
-    const strokeWidth = Math.max(2, numberValue(shape?.style?.strokeWidth, 2));
+    const strokeWidth = Math.max(2, asFiniteNumber(shape?.style?.strokeWidth, 2));
     return points.slice(1).map((point, index) => segmentPolygon(points[index], point, strokeWidth));
   }
   if (tool === 'line') {
-    const strokeWidth = Math.max(2, numberValue(shape?.style?.strokeWidth, 2));
+    const strokeWidth = Math.max(2, asFiniteNumber(shape?.style?.strokeWidth, 2));
     return [segmentPolygon(
       normalizePoint(geometry.point1),
       normalizePoint(geometry.point2),
@@ -174,11 +170,11 @@ function shapeLocalPolygons(shape) {
     )];
   }
   if (tool === 'circle') {
-    const radius = Math.max(1, numberValue(geometry.r, 1));
-    return [ellipsePoints(numberValue(geometry.cx), numberValue(geometry.cy), radius, radius)];
+    const radius = Math.max(1, asFiniteNumber(geometry.r, 1));
+    return [ellipsePoints(asFiniteNumber(geometry.cx), asFiniteNumber(geometry.cy), radius, radius)];
   }
   if (tool === 'ellipse') {
-    return [ellipsePoints(numberValue(geometry.cx), numberValue(geometry.cy), Math.max(1, numberValue(geometry.rx, 1)), Math.max(1, numberValue(geometry.ry, 1)))];
+    return [ellipsePoints(asFiniteNumber(geometry.cx), asFiniteNumber(geometry.cy), Math.max(1, asFiniteNumber(geometry.rx, 1)), Math.max(1, asFiniteNumber(geometry.ry, 1)))];
   }
   return [];
 }
@@ -285,7 +281,7 @@ export function createObjectVectorCollisionGeometry(object, instance = {}, optio
         .filter((polygon) => polygon.length >= 3);
     });
   const bounds = boundsFromPolygons(polygons);
-  const maskCellSize = Math.max(1, numberValue(options.maskCellSize, DEFAULT_MASK_CELL_SIZE));
+  const maskCellSize = Math.max(1, asFiniteNumber(options.maskCellSize, DEFAULT_MASK_CELL_SIZE));
   return {
     bounds,
     hasGeometry: polygons.length > 0,

@@ -2,12 +2,9 @@ import {
   getSampleToolLaunchDefinition,
   validateLaunchDefinitionAccess
 } from "./toolLaunchSSoTData.js";
+import { normalizeText } from "../../src/shared/string/index.js";
 
 const TOOLBOXAID_STORAGE_KEY_PREFIX = "toolboxaid.";
-
-function normalizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function normalizeSamplePresetPath(value) {
   const normalized = normalizeText(value).replace(/\\/g, "/");

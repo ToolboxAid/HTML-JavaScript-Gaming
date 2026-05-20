@@ -2,21 +2,11 @@ import {
   resolveManifestChromeAssetPaths,
   resolveRuntimeAssetUrl
 } from "/src/engine/runtime/gameImageConvention.js";
-
-function normalizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function normalizePath(value) {
-  return normalizeText(value).replace(/\\/g, "/");
-}
+import { normalizePathSeparators, normalizeText } from "../../src/shared/string/index.js";
+import { asArray } from "../../src/shared/utils/arrayUtils.js";
 
 function hasProtocol(value) {
   return /^[a-z][a-z0-9+.-]*:/i.test(value);
-}
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
 }
 
 function documentRefOrNull(documentRef) {
@@ -33,7 +23,7 @@ async function waitForDocumentReady(documentRef) {
 }
 
 export function manifestPathFromGameHref(href) {
-  const normalized = normalizePath(href);
+  const normalized = normalizePathSeparators(href);
   if (!normalized || hasProtocol(normalized) || normalized.includes("..")) {
     return "";
   }
@@ -42,7 +32,7 @@ export function manifestPathFromGameHref(href) {
 }
 
 export function manifestPathForGame(game) {
-  const explicitPath = normalizePath(game?.manifestPath || game?.gameManifestPath);
+  const explicitPath = normalizePathSeparators(game?.manifestPath || game?.gameManifestPath);
   if (explicitPath && !hasProtocol(explicitPath) && !explicitPath.startsWith("//") && !explicitPath.includes("..")) {
     return explicitPath.startsWith("/") ? explicitPath : `/${explicitPath}`;
   }
@@ -51,7 +41,7 @@ export function manifestPathForGame(game) {
 
 export async function resolveGameManifestPreview(options = {}) {
   const documentRef = documentRefOrNull(options.documentRef);
-  const manifestPath = normalizePath(options.manifestPath);
+  const manifestPath = normalizePathSeparators(options.manifestPath);
   if (!manifestPath) {
     return {
       manifestPath: "",
@@ -65,7 +55,7 @@ export async function resolveGameManifestPreview(options = {}) {
     manifestPayload: options.manifestPayload,
     documentRef
   });
-  const previewPath = normalizePath(resolved.previewPath);
+  const previewPath = normalizePathSeparators(resolved.previewPath);
   return {
     manifestPath: resolved.manifestPath || manifestPath,
     previewPath,
@@ -112,7 +102,7 @@ export async function hydrateGameManifestPreviewImage(options = {}) {
   const gameId = normalizeText(options.gameId);
   const resolved = await resolveGameManifestPreview({
     gameId,
-    manifestPath: normalizePath(options.manifestPath) || (gameId ? `/games/${gameId}/game.manifest.json` : ""),
+    manifestPath: normalizePathSeparators(options.manifestPath) || (gameId ? `/games/${gameId}/game.manifest.json` : ""),
     documentRef
   });
   if (resolved.previewUrl) {

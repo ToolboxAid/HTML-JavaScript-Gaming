@@ -1,14 +1,14 @@
 import { createWorldScreenTransform } from "../../../src/engine/rendering/index.js";
+import { asFiniteNumber } from "../../../src/shared/number/index.js";
 import {
   labelForObject,
-  numberValue,
   roundBounds,
   roundNumber,
   roundPoint
 } from "./constants.js";
 
 function fixedOriginValue(value) {
-  const parsed = numberValue(value);
+  const parsed = asFiniteNumber(value);
   const normalized = Math.abs(parsed) < 0.0005 ? 0 : parsed;
   return normalized.toFixed(3);
 }
@@ -34,13 +34,13 @@ export class CollisionInspectorV2Controls {
       callbacks.onModeChange(this.elements.modeSelect.value);
     });
     this.elements.rotationAInput.addEventListener("input", () => {
-      callbacks.onRotationChange("a", numberValue(this.elements.rotationAInput.value));
+      callbacks.onRotationChange("a", asFiniteNumber(this.elements.rotationAInput.value));
     });
     this.elements.rotationBInput.addEventListener("input", () => {
-      callbacks.onRotationChange("b", numberValue(this.elements.rotationBInput.value));
+      callbacks.onRotationChange("b", asFiniteNumber(this.elements.rotationBInput.value));
     });
     this.elements.zoomInput.addEventListener("input", () => {
-      callbacks.onZoomChange(numberValue(this.elements.zoomInput.value, 1));
+      callbacks.onZoomChange(asFiniteNumber(this.elements.zoomInput.value, 1));
     });
     this.elements.clearLogButton.addEventListener("click", callbacks.onClearLog);
     this.elements.resetButton.addEventListener("click", callbacks.onReset);

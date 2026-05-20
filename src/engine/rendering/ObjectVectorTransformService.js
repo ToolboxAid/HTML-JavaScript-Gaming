@@ -1,13 +1,9 @@
 import { isRecord } from "../../shared/types/typeGuards.js";
+import { asFiniteNumber } from "../../shared/number/index.js";
 
 const DEGREES_PER_RADIAN = 180 / Math.PI;
 const RADIANS_PER_DEGREE = Math.PI / 180;
 const DEFAULT_OBJECT_VECTOR_BOUNDS = Object.freeze({ height: 80, width: 120, x: -60, y: -40 });
-
-function numberValue(value, fallback = 0) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
 
 function rotationUnit(value, fallback = "radians") {
   const normalized = String(value || fallback).trim().toLowerCase();
@@ -26,12 +22,12 @@ function inverseScaleValue(value) {
 
 export class ObjectVectorTransformService {
   rotationRadians(value, unit = "radians") {
-    const rotation = numberValue(value);
+    const rotation = asFiniteNumber(value);
     return rotationUnit(unit) === "degrees" ? rotation * RADIANS_PER_DEGREE : rotation;
   }
 
   rotationDegrees(value, unit = "radians") {
-    const rotation = numberValue(value);
+    const rotation = asFiniteNumber(value);
     return rotationUnit(unit) === "radians" ? rotation * DEGREES_PER_RADIAN : rotation;
   }
 
@@ -46,11 +42,11 @@ export class ObjectVectorTransformService {
   normalizeTransform(transform = {}) {
     const source = isRecord(transform) ? transform : {};
     return {
-      rotation: numberValue(source.rotation),
+      rotation: asFiniteNumber(source.rotation),
       scaleX: transformScaleValue(source.scaleX, 1),
       scaleY: transformScaleValue(source.scaleY, 1),
-      x: numberValue(source.x),
-      y: numberValue(source.y)
+      x: asFiniteNumber(source.x),
+      y: asFiniteNumber(source.y)
     };
   }
 
@@ -67,8 +63,8 @@ export class ObjectVectorTransformService {
   rotatePointAround(point, pivot, rotation, unit = "degrees") {
     const radians = this.rotationRadians(rotation, unit);
     const origin = this.normalizeOrigin(pivot);
-    const relativeX = numberValue(point?.x) - origin.x;
-    const relativeY = numberValue(point?.y) - origin.y;
+    const relativeX = asFiniteNumber(point?.x) - origin.x;
+    const relativeY = asFiniteNumber(point?.y) - origin.y;
     return {
       x: origin.x + relativeX * Math.cos(radians) - relativeY * Math.sin(radians),
       y: origin.y + relativeX * Math.sin(radians) + relativeY * Math.cos(radians)
@@ -78,8 +74,8 @@ export class ObjectVectorTransformService {
   transformShapePoint(point, transform = {}, origin = {}) {
     const resolvedTransform = this.normalizeTransform(transform);
     const resolvedOrigin = this.normalizeOrigin(origin);
-    const relativeX = (numberValue(point?.x) - resolvedOrigin.x) * resolvedTransform.scaleX;
-    const relativeY = (numberValue(point?.y) - resolvedOrigin.y) * resolvedTransform.scaleY;
+    const relativeX = (asFiniteNumber(point?.x) - resolvedOrigin.x) * resolvedTransform.scaleX;
+    const relativeY = (asFiniteNumber(point?.y) - resolvedOrigin.y) * resolvedTransform.scaleY;
     const radians = this.rotationRadians(resolvedTransform.rotation, "degrees");
     const rotatedX = relativeX * Math.cos(radians) - relativeY * Math.sin(radians);
     const rotatedY = relativeX * Math.sin(radians) + relativeY * Math.cos(radians);
@@ -97,8 +93,8 @@ export class ObjectVectorTransformService {
     const resolvedTransform = this.normalizeTransform(transform);
     const resolvedOrigin = this.normalizeOrigin(origin);
     const radians = this.rotationRadians(resolvedTransform.rotation, "degrees");
-    const dx = numberValue(point?.x) - resolvedTransform.x - resolvedOrigin.x;
-    const dy = numberValue(point?.y) - resolvedTransform.y - resolvedOrigin.y;
+    const dx = asFiniteNumber(point?.x) - resolvedTransform.x - resolvedOrigin.x;
+    const dy = asFiniteNumber(point?.y) - resolvedTransform.y - resolvedOrigin.y;
     const unrotatedX = dx * Math.cos(radians) + dy * Math.sin(radians);
     const unrotatedY = -dx * Math.sin(radians) + dy * Math.cos(radians);
     return {
@@ -136,8 +132,8 @@ export class ObjectVectorTransformService {
     const resolvedScaleX = transformScaleValue(scaleX, 1);
     const resolvedScaleY = transformScaleValue(scaleY, 1);
     return {
-      x: numberValue(x) + (numberValue(point?.x) * resolvedScaleX) * Math.cos(radians) - (numberValue(point?.y) * resolvedScaleY) * Math.sin(radians),
-      y: numberValue(y) + (numberValue(point?.x) * resolvedScaleX) * Math.sin(radians) + (numberValue(point?.y) * resolvedScaleY) * Math.cos(radians)
+      x: asFiniteNumber(x) + (asFiniteNumber(point?.x) * resolvedScaleX) * Math.cos(radians) - (asFiniteNumber(point?.y) * resolvedScaleY) * Math.sin(radians),
+      y: asFiniteNumber(y) + (asFiniteNumber(point?.x) * resolvedScaleX) * Math.sin(radians) + (asFiniteNumber(point?.y) * resolvedScaleY) * Math.cos(radians)
     };
   }
 
@@ -146,10 +142,10 @@ export class ObjectVectorTransformService {
   }
 
   boundsCornerPoints(bounds = {}) {
-    const x = numberValue(bounds.x);
-    const y = numberValue(bounds.y);
-    const width = numberValue(bounds.width, 1);
-    const height = numberValue(bounds.height, 1);
+    const x = asFiniteNumber(bounds.x);
+    const y = asFiniteNumber(bounds.y);
+    const width = asFiniteNumber(bounds.width, 1);
+    const height = asFiniteNumber(bounds.height, 1);
     return [
       { x, y },
       { x: x + width, y },
@@ -262,8 +258,8 @@ export class ObjectVectorTransformService {
     const resolvedOrigin = this.normalizeOrigin(origin);
     const radians = this.rotationRadians(rotation, unit);
     return {
-      x: resolvedOrigin.x + Math.cos(radians) * numberValue(length, 34),
-      y: resolvedOrigin.y + Math.sin(radians) * numberValue(length, 34)
+      x: resolvedOrigin.x + Math.cos(radians) * asFiniteNumber(length, 34),
+      y: resolvedOrigin.y + Math.sin(radians) * asFiniteNumber(length, 34)
     };
   }
 }

@@ -6,9 +6,9 @@ import {
 } from "../../../src/engine/collision/index.js";
 import { CANONICAL_WORLD_TO_SCREEN_SCALE } from "../../../src/engine/rendering/index.js";
 import { resolveManifestScreenDimensions } from "../../../src/tools/common/GameManifestLoader.js";
+import { asFiniteNumber } from "../../../src/shared/number/index.js";
 import {
   clone,
-  numberValue,
   OBJECT_LABELS,
   roundNumber
 } from "./constants.js";
@@ -188,13 +188,13 @@ export class CollisionInspectorV2App {
     if (!this.instances[key]) {
       return;
     }
-    this.instances[key].rotation = numberValue(rotation);
+    this.instances[key].rotation = asFiniteNumber(rotation);
     this.instances[key].rotationUnit = "degrees";
     this.evaluateAndRender();
   }
 
   setZoom(zoom) {
-    this.zoom = Math.max(0.5, Math.min(5, numberValue(zoom, 1)));
+    this.zoom = Math.max(0.5, Math.min(5, asFiniteNumber(zoom, 1)));
     this.renderer.setZoom(this.zoom);
     this.controls.setZoom(this.zoom);
     this.evaluateAndRender();

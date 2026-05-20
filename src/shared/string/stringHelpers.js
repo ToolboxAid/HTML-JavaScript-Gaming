@@ -26,6 +26,10 @@ export function normalizeGameId(value) {
   return normalizeText(value);
 }
 
+export function normalizePathSeparators(value) {
+  return normalizeText(value).replace(/\\/g, "/");
+}
+
 export function sanitizeText(value) {
   return safeTrim(value);
 }

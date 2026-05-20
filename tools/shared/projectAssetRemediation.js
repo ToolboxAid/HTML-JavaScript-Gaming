@@ -1,3 +1,4 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
 import { sanitizeAssetRegistry } from "./projectAssetRegistry.js";
 
 const ACTION_TYPE_ORDER = Object.freeze({
@@ -6,10 +7,6 @@ const ACTION_TYPE_ORDER = Object.freeze({
   "confirmable-fix": 2,
   suggest: 3
 });
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function toRegistryIds(registry, section) {
   const entries = Array.isArray(registry?.[section]) ? registry[section] : [];

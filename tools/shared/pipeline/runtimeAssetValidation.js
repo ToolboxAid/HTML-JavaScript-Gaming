@@ -1,10 +1,7 @@
 import { safeString } from "../projectSystemValueUtils.js";
 import { RUNTIME_ACTIVE_DOMAINS } from "./runtimeAssetBinding.js";
 import { appendAssetError } from "./assetErrorHandling.js";
-
-function asObject(value) {
-  return value && typeof value === "object" ? value : {};
-}
+import { toObject } from "../../../src/shared/utils/objectUtils.js";
 
 function hasText(value) {
   return safeString(value, "").length > 0;
@@ -20,7 +17,7 @@ function includesDataPath(pathValue) {
 
 function validateRequiredFields(domain, source, assetId) {
   const errors = [];
-  const assetSource = asObject(source);
+  const assetSource = toObject(source);
 
   if (!hasRuntimePath(assetSource)) {
     appendAssetError(errors, {
@@ -95,7 +92,7 @@ function validateRequiredFields(domain, source, assetId) {
 export function validateRuntimeResolvedAsset(options = {}) {
   const domain = safeString(options.domain, "").toLowerCase();
   const assetId = safeString(options.assetId, "");
-  const source = asObject(options.source);
+  const source = toObject(options.source);
   const runtimePath = safeString(options.runtimePath || source.file || source.path, "");
   const errors = [];
 

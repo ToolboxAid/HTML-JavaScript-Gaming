@@ -13,6 +13,7 @@ export {
   normalizeText,
   normalizeToken,
   normalizeGameId,
+  normalizePathSeparators,
   sanitizeText,
   normalizeString,
   escapeHtml,
