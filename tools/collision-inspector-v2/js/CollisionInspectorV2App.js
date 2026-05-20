@@ -11,6 +11,8 @@ import { deepClone } from "../../../src/shared/utils/jsonUtils.js";
 import {
   clampCollisionZoom,
   COLLISION_ZOOM_DEFAULT,
+  COLLISION_ZOOM_STEP,
+  collisionZoomToPercent,
   OBJECT_LABELS,
   roundNumber
 } from "./constants.js";
@@ -58,6 +60,7 @@ export class CollisionInspectorV2App {
         this.shell.returnToWorkspace();
       },
       onRotationChange: (key, rotation) => this.setRotation(key, rotation),
+      onCanvasWheel: (event) => this.handleCanvasWheel(event),
       onZoomChange: (zoom) => this.setZoom(zoom)
     });
     this.controls.setLaunchMode(this.isWorkspaceLaunch());
@@ -201,6 +204,27 @@ export class CollisionInspectorV2App {
     this.renderer.setZoom(this.zoom);
     this.controls.setZoom(this.zoom);
     this.evaluateAndRender();
+  }
+
+  handleCanvasWheel(event) {
+    if (!this.hasRenderableManifest() || this.dragState) {
+      return;
+    }
+    const deltaY = Number(event.deltaY) || 0;
+    if (!deltaY) {
+      return;
+    }
+    event.preventDefault();
+    const direction = deltaY < 0 ? 1 : -1;
+    const nextZoom = clampCollisionZoom(Number((this.zoom + direction * COLLISION_ZOOM_STEP).toFixed(3)));
+    if (nextZoom === this.zoom) {
+      return;
+    }
+    this.zoom = nextZoom;
+    this.renderer.setZoomAtClientPoint(this.zoom, event);
+    this.controls.setZoom(this.zoom);
+    this.evaluateAndRender();
+    this.logger.write(`INFO Canvas zoom set to ${collisionZoomToPercent(this.zoom)}%.`);
   }
 
   resetSimulation({ silent = false } = {}) {

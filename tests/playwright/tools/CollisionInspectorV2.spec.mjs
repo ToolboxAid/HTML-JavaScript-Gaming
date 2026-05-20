@@ -288,6 +288,43 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionZoomInput")).toHaveAttribute("step", "10");
       await expect(page.locator("#collisionZoomInput")).toHaveValue("100");
       await expect(page.locator("#zoomState")).toHaveText("100%");
+      const wheelZoomState = await page.locator("#collisionCanvas").evaluate((canvas) => {
+        const app = window.__collisionInspectorV2App;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = Math.round(rect.left + rect.width * 0.72);
+        const clientY = Math.round(rect.top + rect.height * 0.44);
+        const before = app.renderer.canvasPoint({ clientX, clientY });
+        const event = new WheelEvent("wheel", {
+          bubbles: true,
+          cancelable: true,
+          clientX,
+          clientY,
+          deltaY: -120
+        });
+        canvas.dispatchEvent(event);
+        const after = app.renderer.canvasPoint({ clientX, clientY });
+        return {
+          after,
+          before,
+          defaultPrevented: event.defaultPrevented,
+          pan: { ...app.renderer.viewportPan },
+          zoom: app.zoom
+        };
+      });
+      expect(wheelZoomState.defaultPrevented).toBe(true);
+      expect(wheelZoomState.zoom).toBe(1.1);
+      expect(Math.abs(wheelZoomState.after.x - wheelZoomState.before.x)).toBeLessThan(0.01);
+      expect(Math.abs(wheelZoomState.after.y - wheelZoomState.before.y)).toBeLessThan(0.01);
+      expect(Math.abs(wheelZoomState.pan.x) + Math.abs(wheelZoomState.pan.y)).toBeGreaterThan(0);
+      await expect(page.locator("#zoomState")).toHaveText("110%");
+      await expect(page.locator("#collisionSummary")).toContainText('"zoom": "110%"');
+      await expect(page.locator("#collisionLog")).toHaveValue(/Canvas zoom set to 110%/);
+      await page.evaluate(() => {
+        window.__collisionInspectorV2App.setZoom(1);
+        window.__collisionInspectorV2App.renderer.resetViewportPan();
+        window.__collisionInspectorV2App.evaluateAndRender();
+      });
+      await expect(page.locator("#zoomState")).toHaveText("100%");
       const viewportPanState = await page.locator("#collisionCanvas").evaluate((canvas) => {
         const app = window.__collisionInspectorV2App;
         const rect = canvas.getBoundingClientRect();

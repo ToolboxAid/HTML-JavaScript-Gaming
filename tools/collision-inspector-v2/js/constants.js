@@ -8,6 +8,7 @@ export const OBJECT_LABELS = Object.freeze({
 export const COLLISION_ZOOM_DEFAULT = 1;
 export const COLLISION_ZOOM_MAX = 10;
 export const COLLISION_ZOOM_MIN = 0.1;
+export const COLLISION_ZOOM_STEP = 0.1;
 
 export function labelForObject(object) {
   return `${object?.name || "Object"} (${object?.id || "unknown"})`;

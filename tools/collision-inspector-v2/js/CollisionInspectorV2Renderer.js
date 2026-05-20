@@ -38,6 +38,17 @@ export class CollisionInspectorV2Renderer {
     });
   }
 
+  setZoomAtClientPoint(zoom, event) {
+    const before = this.canvasPoint(event);
+    this.setZoom(zoom);
+    const after = this.canvasPoint(event);
+    this.viewportPan = {
+      x: Number((this.viewportPan.x + before.x - after.x).toFixed(6)),
+      y: Number((this.viewportPan.y + before.y - after.y).toFixed(6))
+    };
+    return { ...this.viewportPan };
+  }
+
   clear() {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

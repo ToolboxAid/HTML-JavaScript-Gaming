@@ -229,20 +229,20 @@
               "geometry": {
                 "points": [
                   {
-                    "x": -1.5,
-                    "y": 1.5
+                    "x": -1,
+                    "y": -1
                   },
                   {
-                    "x": 0.5,
-                    "y": 1.5
+                    "x": 1,
+                    "y": -1
                   },
                   {
-                    "x": 0.5,
-                    "y": 3.5
+                    "x": 1,
+                    "y": 1
                   },
                   {
-                    "x": -1.5,
-                    "y": 3.5
+                    "x": -1,
+                    "y": 1
                   }
                 ]
               },
@@ -251,7 +251,16 @@
                 "stroke": "#FFFFFF",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
-                "strokeOpacity": 1
+                "strokeOpacity": 1,
+                "pointRounding": [
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "startPointStyle": "square",
+                "endPointStyle": "square",
+                "pointStyle": "square"
               },
               "transform": {
                 "rotation": 0,
@@ -293,8 +302,8 @@
             "bullet"
           ],
           "objectOrigin": {
-            "x": -0.5,
-            "y": 2.5
+            "x": 0,
+            "y": 0
           }
         },
         {

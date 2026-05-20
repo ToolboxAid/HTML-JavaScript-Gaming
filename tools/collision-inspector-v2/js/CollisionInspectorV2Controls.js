@@ -48,6 +48,9 @@ export class CollisionInspectorV2Controls {
     this.elements.resetButton.addEventListener("click", callbacks.onReset);
     this.elements.returnToWorkspaceButton.addEventListener("click", callbacks.onReturnToWorkspace);
     this.elements.canvas.addEventListener("pointerdown", callbacks.onPointerDown);
+    this.elements.canvas.addEventListener("wheel", (event) => {
+      callbacks.onCanvasWheel?.(event);
+    }, { passive: false });
     this.window.addEventListener("pointermove", callbacks.onPointerMove);
     this.window.addEventListener("pointerup", callbacks.onPointerUp);
   }
