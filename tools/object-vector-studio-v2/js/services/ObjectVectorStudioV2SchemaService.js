@@ -1,12 +1,7 @@
+import { isPlainObject } from "../../../../src/shared/utils/objectUtils.js";
+import { deepClone as clone } from "../../../../src/shared/utils/jsonUtils.js";
+
 const SCHEMA_URL = new URL("../../../schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function isObjectIdentityId(value) {
   return /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9-]*$/.test(String(value || ""));

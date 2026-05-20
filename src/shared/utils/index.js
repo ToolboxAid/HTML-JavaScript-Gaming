@@ -23,12 +23,12 @@ export {
 } from "../id/index.js";
 export { isFiniteNumber, toFiniteNumber, asFiniteNumber, asPositiveInteger, asPositiveNumber } from "../number/index.js";
 export { isObject, isPlainObject, asObject, asArray as asObjectArray } from "./objectUtils.js";
-export { cloneJson } from "./jsonUtils.js";
+export { cloneJson, deepClone } from "./jsonUtils.js";
 export { stringifyValue } from "./stringifyValueUtils.js";
 export { oppositeCardinalDirection } from "./directionUtils.js";
 export { wrapTextByCharacterCount } from "./textWrapUtils.js";
 export { clamp, distance, wrap, randomRange } from "./mathUtils.js";
-export { pointInRect, xyInRect, getCenteredRect } from "./geometryUtils.js";
+export { pointInRect, xyInRect, getCenteredRect, normalizePoints, centerPoints, maxRadius } from "./geometryUtils.js";
 export { invariant } from "./invariantUtils.js";
 export { normalizeCommandText } from "./normalizeCommandTextUtils.js";
 export { fuzzyMatchScore } from "./fuzzyMatchScore.js";

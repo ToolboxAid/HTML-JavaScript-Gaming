@@ -1,11 +1,9 @@
+export { deepClone as clone } from "../../../src/shared/utils/jsonUtils.js";
+
 export const OBJECT_LABELS = Object.freeze({
   a: "Object A",
   b: "Object B"
 });
-
-export function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 export function labelForObject(object) {
   return `${object?.name || "Object"} (${object?.id || "unknown"})`;

@@ -11,6 +11,7 @@ import {
   transformObjectVectorShapePoint,
   ObjectVectorRuntimeAssetService
 } from "../../../src/engine/rendering/index.js";
+import { isPlainObject } from "../../../src/shared/utils/objectUtils.js";
 
 const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";
 const WORKSPACE_PALETTE_SESSION_KEY = "workspace.tools.palette-manager-v2";
@@ -308,10 +309,6 @@ function payloadGameSlugFromName(name) {
   const slug = slugifyObjectName(name || "game")
     .replace(/-(object-vector-assets|object-vector-asset|object-assets|object-set|payload|assets)$/u, "");
   return slug || "game";
-}
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function sortedShapes(object) {

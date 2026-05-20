@@ -1,4 +1,6 @@
 import { getObjectVectorCollisionOutlinePoints } from '../../../src/engine/collision/index.js';
+import { isRecord } from '../../../src/shared/types/typeGuards.js';
+import { deepClone as clone } from '../../../src/shared/utils/jsonUtils.js';
 
 const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';
 const OBJECT_VECTOR_PAYLOAD_KEYS = new Set(['version', 'toolId', 'name', 'objects']);
@@ -33,14 +35,6 @@ export const ASTEROIDS_UFO_TYPE_OBJECT_IDS = Object.freeze({
   large: ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoLarge,
   small: ASTEROIDS_OBJECT_GEOMETRY_IDS.ufoSmall,
 });
-
-function isRecord(value) {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-}
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function normalizeString(value) {
   return String(value || '').trim();

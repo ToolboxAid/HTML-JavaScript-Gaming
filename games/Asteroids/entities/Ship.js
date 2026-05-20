@@ -6,15 +6,7 @@ Ship.js
 */
 import { wrap } from '../utils/math.js';
 import { transformCollisionPoints } from '../../../src/engine/collision/index.js';
-
-function normalizePoints(points) {
-  return Array.isArray(points)
-    ? points.map((point) => ({
-      x: Number(point?.x ?? 0),
-      y: Number(point?.y ?? 0),
-    })).filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y))
-    : [];
-}
+import { normalizePoints } from '../../../src/shared/utils/geometryUtils.js';
 
 export default class Ship {
   constructor(x, y, { collisionPoints = [] } = {}) {

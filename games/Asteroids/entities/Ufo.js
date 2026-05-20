@@ -6,6 +6,7 @@ Ufo.js
 */
 import Bullet from './Bullet.js';
 import { distance } from '../../../src/shared/utils/mathUtils.js';
+import { normalizePoints } from '../../../src/shared/utils/geometryUtils.js';
 import { transformCollisionPoints } from '../../../src/engine/collision/index.js';
 import { randomRange } from '../utils/math.js';
 
@@ -25,15 +26,6 @@ const UFO_PROFILES = {
     aimJitter: 0.16,
   },
 };
-
-function normalizePoints(points) {
-  return Array.isArray(points)
-    ? points.map((point) => ({
-      x: Number(point?.x ?? 0),
-      y: Number(point?.y ?? 0),
-    })).filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y))
-    : [];
-}
 
 export default class Ufo {
   constructor(bounds, type = 'large', level = 1, rng = Math.random, { bulletCollisionPoints = [], collisionPoints = [] } = {}) {

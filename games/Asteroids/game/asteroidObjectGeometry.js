@@ -2,37 +2,14 @@ import {
   ASTEROIDS_ASTEROID_SIZE_OBJECT_IDS,
 } from './asteroidsObjectGeometryManifest.js';
 import { getObjectVectorCollisionOutlinePoints } from '../../../src/engine/collision/index.js';
+import { asArray } from '../../../src/shared/utils/arrayUtils.js';
+import { centerPoints, maxRadius } from '../../../src/shared/utils/geometryUtils.js';
 
 const ASTEROID_SIZE_LABELS = Object.freeze({
   1: 'SML',
   2: 'MED',
   3: 'LRG',
 });
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
-}
-
-function centerPoints(points) {
-  if (!points.length) {
-    return [];
-  }
-  const xs = points.map(({ x }) => x);
-  const ys = points.map(({ y }) => y);
-  const centerX = (Math.min(...xs) + Math.max(...xs)) / 2;
-  const centerY = (Math.min(...ys) + Math.max(...ys)) / 2;
-  return points.map(({ x, y }) => ({
-    x: x - centerX,
-    y: y - centerY,
-  }));
-}
-
-function maxRadius(points) {
-  if (!points.length) {
-    return 0;
-  }
-  return Math.max(...points.map(({ x, y }) => Math.sqrt(x * x + y * y)));
-}
 
 function logProfileFailure(logger, message, details = {}) {
   if (!logger) {

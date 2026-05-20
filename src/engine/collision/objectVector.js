@@ -13,6 +13,8 @@ import {
   normalizeObjectVectorTransform,
   transformRuntimeOrientedPoints,
 } from '../rendering/OrientationTransform.js';
+import { isRecord } from '../../shared/types/typeGuards.js';
+import { deepClone as clone } from '../../shared/utils/jsonUtils.js';
 
 export const OBJECT_VECTOR_COLLISION_ENGINE_PATH = 'src/engine/collision/objectVector.js';
 export const OBJECT_VECTOR_COLLISION_MODES = Object.freeze(['bounds', 'vector', 'pixel-sprite', 'hybrid']);
@@ -29,14 +31,6 @@ const MODE_ALIASES = Object.freeze({
 });
 const POLYGON_SAMPLE_COUNT = 28;
 const DEFAULT_MASK_CELL_SIZE = 4;
-
-function isRecord(value) {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-}
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function numberValue(value, fallback = 0) {
   const parsed = Number(value);

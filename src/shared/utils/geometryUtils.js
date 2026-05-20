@@ -27,3 +27,33 @@ export function getCenteredRect(containerRect, width, height, verticalBias = 0.5
     h: height
   };
 }
+
+export function normalizePoints(points) {
+  return Array.isArray(points)
+    ? points.map((point) => ({
+      x: Number(point?.x ?? 0),
+      y: Number(point?.y ?? 0),
+    })).filter((point) => Number.isFinite(point.x) && Number.isFinite(point.y))
+    : [];
+}
+
+export function centerPoints(points) {
+  if (!points.length) {
+    return [];
+  }
+  const xs = points.map(({ x }) => x);
+  const ys = points.map(({ y }) => y);
+  const centerX = (Math.min(...xs) + Math.max(...xs)) / 2;
+  const centerY = (Math.min(...ys) + Math.max(...ys)) / 2;
+  return points.map(({ x, y }) => ({
+    x: x - centerX,
+    y: y - centerY,
+  }));
+}
+
+export function maxRadius(points) {
+  if (!points.length) {
+    return 0;
+  }
+  return Math.max(...points.map(({ x, y }) => Math.sqrt(x * x + y * y)));
+}
