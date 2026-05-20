@@ -1,10 +1,22 @@
 import { PaletteEditorControl } from "../controls/PaletteEditorControl.js";
+import { PaletteHarmonyControl } from "../controls/PaletteHarmonyControl.js";
 import { PaletteImportExportControl } from "../controls/PaletteImportExportControl.js";
 import { PaletteValidationErrorControl } from "../controls/PaletteValidationErrorControl.js";
 import { SourcePaletteBrowserControl } from "../controls/SourcePaletteBrowserControl.js";
 import { UserPaletteControl } from "../controls/UserPaletteControl.js";
 import { PaletteHistoryStack } from "./PaletteHistoryStack.js";
 import { PaletteValidationService } from "./PaletteValidationService.js";
+import {
+  HARMONY_MATCH_SOURCES,
+  HARMONY_SCHEMES,
+  calculateHarmonyColors,
+  closestPaletteMatch,
+  defaultHarmonyParameterValue,
+  findHarmonyMatchSource,
+  findHarmonyScheme,
+  nextHarmonySymbol,
+  normalizeHarmonyParameter
+} from "./paletteHarmonyUtils.js";
 import { USER_ADDED_SOURCE, cloneSwatch, normalizeHex, normalizeTags, sanitizeText } from "./paletteUtils.js";
 
 const USER_HEX_COLOR_PATTERN = /^#[0-9A-F]{6}(?:[0-9A-F]{2})?$/;
@@ -30,6 +42,12 @@ const REQUIRED_REF_IDS = Object.freeze([
   "selectedSwatchNameInput",
   "selectedSwatchSourceInput",
   "selectedSwatchTagList",
+  "harmonyMatchSourceSelect",
+  "harmonySchemeSelect",
+  "harmonyParameterControls",
+  "harmonyColorList",
+  "addSelectedHarmonyButton",
+  "addAllHarmonyButton",
   "userDefinedSwatchPreview",
   "swatchSymbolInput",
   "swatchHexInput",
@@ -176,8 +194,13 @@ export class PaletteManagerApp {
     this.state = {
       userSwatches: [],
       selectedUserIndex: -1,
+      selectedSwatch: null,
       sourcePaletteId: this.sourcePaletteIds[0] || "",
       sourceSearch: "",
+      harmonyMatchSource: "calculated",
+      harmonyScheme: "achromatic",
+      harmonyParameterValue: defaultHarmonyParameterValue("achromatic"),
+      selectedHarmonyColorIndex: 0,
       userSortKey: "hue",
       userSortDirection: "ascending",
       userSortHasUserChoice: false,
@@ -202,6 +225,7 @@ export class PaletteManagerApp {
     });
     this.controls = [
       this.editorControl,
+      new PaletteHarmonyControl({ documentRef: this.document, refs: this.refs, app: this }),
       new UserPaletteControl({ documentRef: this.document, refs: this.refs, app: this }),
       new SourcePaletteBrowserControl({ documentRef: this.document, refs: this.refs, app: this }),
       new PaletteImportExportControl({ refs: this.refs, app: this }),
@@ -245,6 +269,7 @@ export class PaletteManagerApp {
     return {
       userSwatches: this.state.userSwatches.map(cloneSwatch),
       selectedUserIndex: this.state.selectedUserIndex,
+      selectedSwatch: this.state.selectedSwatch ? cloneSwatch(this.state.selectedSwatch) : null,
       availableTags: this.state.availableTags.slice()
     };
   }
@@ -264,6 +289,9 @@ export class PaletteManagerApp {
       && snapshot.selectedUserIndex < this.state.userSwatches.length
       ? snapshot.selectedUserIndex
       : -1;
+    this.state.selectedSwatch = this.state.selectedUserIndex >= 0
+      ? cloneSwatch(this.state.userSwatches[this.state.selectedUserIndex])
+      : (snapshot.selectedSwatch ? cloneSwatch(snapshot.selectedSwatch) : null);
     this.setAvailableTags(snapshot.availableTags);
     this.checkedUserSwatchIndexes.clear();
     this.renderSelectedSwatchState();
@@ -278,6 +306,7 @@ export class PaletteManagerApp {
       this.editorControl.clearForm();
       return;
     }
+    this.state.selectedSwatch = cloneSwatch(selectedSwatch);
     this.editorControl.showSwatch(selectedSwatch);
     if (isUserDefinedSwatch(selectedSwatch)) {
       this.editorControl.showUserDefinedSwatch(selectedSwatch);
@@ -443,10 +472,117 @@ export class PaletteManagerApp {
   }
 
   getSelectedSwatch() {
-    if (this.state.selectedUserIndex < 0 || this.state.selectedUserIndex >= this.state.userSwatches.length) {
-      return null;
+    if (this.state.selectedUserIndex >= 0 && this.state.selectedUserIndex < this.state.userSwatches.length) {
+      return cloneSwatch(this.state.userSwatches[this.state.selectedUserIndex]);
     }
-    return cloneSwatch(this.state.userSwatches[this.state.selectedUserIndex]);
+    return this.state.selectedSwatch ? cloneSwatch(this.state.selectedSwatch) : null;
+  }
+
+  getHarmonyMatchSourceOptions() {
+    return HARMONY_MATCH_SOURCES.map((option) => ({ ...option }));
+  }
+
+  getHarmonySchemeOptions() {
+    return HARMONY_SCHEMES.map((option) => ({ ...option }));
+  }
+
+  getHarmonyMatchSource() {
+    return this.state.harmonyMatchSource;
+  }
+
+  getHarmonyScheme() {
+    return this.state.harmonyScheme;
+  }
+
+  getHarmonySchemeParameter() {
+    const parameter = findHarmonyScheme(this.state.harmonyScheme).parameter;
+    return parameter ? { ...parameter } : null;
+  }
+
+  getHarmonyParameterValue() {
+    return this.state.harmonyParameterValue;
+  }
+
+  getSelectedHarmonyColorIndex() {
+    return this.state.selectedHarmonyColorIndex;
+  }
+
+  setHarmonyMatchSource(matchSource) {
+    this.state.harmonyMatchSource = findHarmonyMatchSource(matchSource).value;
+    this.state.selectedHarmonyColorIndex = 0;
+    this.render();
+  }
+
+  setHarmonyScheme(scheme) {
+    const cleanScheme = findHarmonyScheme(scheme);
+    this.state.harmonyScheme = cleanScheme.value;
+    this.state.harmonyParameterValue = defaultHarmonyParameterValue(cleanScheme.value);
+    this.state.selectedHarmonyColorIndex = 0;
+    this.render();
+  }
+
+  setHarmonyParameterValue(parameterValue) {
+    this.state.harmonyParameterValue = normalizeHarmonyParameter(this.state.harmonyScheme, parameterValue);
+    this.state.selectedHarmonyColorIndex = 0;
+    this.render();
+  }
+
+  setSelectedHarmonyColorIndex(index) {
+    const colors = this.getHarmonyColors();
+    const nextIndex = Number(index);
+    if (!Number.isInteger(nextIndex) || nextIndex < 0 || nextIndex >= colors.length) {
+      return;
+    }
+    this.state.selectedHarmonyColorIndex = nextIndex;
+    this.render();
+  }
+
+  getCurrentSourcePaletteSwatches() {
+    return (this.sourcePalettes[this.state.sourcePaletteId] || [])
+      .map((swatch) => cloneSwatch({
+        ...swatch,
+        source: swatch.source || this.state.sourcePaletteId
+      }));
+  }
+
+  getAllSourcePaletteSwatches() {
+    return Object.entries(this.sourcePalettes)
+      .flatMap(([sourceId, swatches]) => (Array.isArray(swatches) ? swatches : [])
+        .map((swatch) => cloneSwatch({
+          ...swatch,
+          source: swatch.source || sourceId
+        })));
+  }
+
+  getHarmonyColors() {
+    const selectedSwatch = this.getSelectedSwatch();
+    if (!selectedSwatch || !this.hexColorPattern.test(normalizeHex(selectedSwatch.hex))) {
+      return [];
+    }
+    const calculatedColors = calculateHarmonyColors(selectedSwatch.hex, this.state.harmonyScheme, this.state.harmonyParameterValue);
+    const matchSource = findHarmonyMatchSource(this.state.harmonyMatchSource).value;
+    const matchPalette = matchSource === "source-palette"
+      ? this.getCurrentSourcePaletteSwatches()
+      : (matchSource === "all-palettes" ? this.getAllSourcePaletteSwatches() : []);
+    return calculatedColors.map((color, index) => {
+      const matchedSwatch = matchPalette.length ? closestPaletteMatch(color.hex, matchPalette) : null;
+      const cleanHex = normalizeHex(matchedSwatch?.hex || color.hex).slice(0, 7);
+      const schemeLabel = findHarmonyScheme(this.state.harmonyScheme).label;
+      const matchLabel = matchedSwatch ? `Closest ${matchedSwatch.name}` : color.label;
+      return {
+        baseHex: normalizeHex(color.hex).slice(0, 7),
+        hex: cleanHex,
+        name: `${schemeLabel} ${index + 1} - ${matchLabel}`,
+        source: matchedSwatch?.source || findHarmonyMatchSource(this.state.harmonyMatchSource).label,
+        swatch: cloneSwatch({
+          symbol: "",
+          hex: cleanHex,
+          name: `${schemeLabel} ${index + 1} - ${matchLabel}`,
+          source: matchedSwatch?.source || findHarmonyMatchSource(this.state.harmonyMatchSource).label,
+          tags: ["harmony"]
+        })
+      };
+    });
   }
 
   getVisibleSourceSwatches() {
@@ -590,6 +726,8 @@ export class PaletteManagerApp {
 
   clearEditorForm(status) {
     this.state.selectedUserIndex = -1;
+    this.state.selectedSwatch = null;
+    this.state.selectedHarmonyColorIndex = 0;
     this.editorControl.clearForm();
     this.setActionState([], status || "Ready.");
   }
@@ -600,6 +738,8 @@ export class PaletteManagerApp {
       return;
     }
     this.state.selectedUserIndex = index;
+    this.state.selectedSwatch = cloneSwatch(swatch);
+    this.state.selectedHarmonyColorIndex = 0;
     this.editorControl.showSwatch(swatch);
     if (isUserDefinedSwatch(swatch)) {
       this.editorControl.showUserDefinedSwatch(swatch);
@@ -611,6 +751,8 @@ export class PaletteManagerApp {
 
   browseSourceSwatch(swatch) {
     this.state.selectedUserIndex = -1;
+    this.state.selectedSwatch = cloneSwatch(swatch);
+    this.state.selectedHarmonyColorIndex = 0;
     this.editorControl.showSwatch(swatch);
     this.editorControl.clearUserDefinedSwatch();
     this.render();
@@ -629,6 +771,8 @@ export class PaletteManagerApp {
 
     this.state.userSwatches.push(cleanSwatch);
     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
+    this.state.selectedSwatch = cloneSwatch(cleanSwatch);
+    this.state.selectedHarmonyColorIndex = 0;
     this.mergeAvailableTags(cleanSwatch.tags);
     this.editorControl.showSwatch(cleanSwatch);
     this.editorControl.showUserDefinedSwatch(cleanSwatch);
@@ -667,6 +811,8 @@ export class PaletteManagerApp {
     }
 
     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
+    this.state.selectedSwatch = cloneSwatch(cleanSwatch);
+    this.state.selectedHarmonyColorIndex = 0;
     this.mergeAvailableTags(cleanSwatch.tags);
     this.editorControl.showSwatch(cleanSwatch);
     if (isUserDefinedSwatch(cleanSwatch)) {
@@ -712,6 +858,8 @@ export class PaletteManagerApp {
     }
 
     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
+    this.state.selectedSwatch = cloneSwatch(cleanSwatch);
+    this.state.selectedHarmonyColorIndex = 0;
     this.mergeAvailableTags([cleanTag]);
     this.editorControl.showSwatch(cleanSwatch);
     if (isUserDefinedSwatch(cleanSwatch)) {
@@ -754,6 +902,8 @@ export class PaletteManagerApp {
     }
 
     this.state.userSwatches[this.state.selectedUserIndex] = cleanSwatch;
+    this.state.selectedSwatch = cloneSwatch(cleanSwatch);
+    this.state.selectedHarmonyColorIndex = 0;
     this.editorControl.showSwatch(cleanSwatch);
     if (isUserDefinedSwatch(cleanSwatch)) {
       this.editorControl.showUserDefinedSwatch(cleanSwatch);
@@ -940,9 +1090,12 @@ export class PaletteManagerApp {
     this.state.userSwatches.splice(index, 1);
     if (this.state.selectedUserIndex === index) {
       this.state.selectedUserIndex = -1;
+      this.state.selectedSwatch = null;
+      this.state.selectedHarmonyColorIndex = 0;
       this.editorControl.clearForm();
     } else if (this.state.selectedUserIndex > index) {
       this.state.selectedUserIndex -= 1;
+      this.state.selectedSwatch = cloneSwatch(this.state.userSwatches[this.state.selectedUserIndex]);
     }
     this.shiftCheckedUserSwatchIndexesAfterRemove(index);
     this.recordHistorySnapshot();
@@ -972,6 +1125,8 @@ export class PaletteManagerApp {
 
     this.state.userSwatches.push(pinnedSwatch);
     this.state.selectedUserIndex = this.state.userSwatches.length - 1;
+    this.state.selectedSwatch = cloneSwatch(pinnedSwatch);
+    this.state.selectedHarmonyColorIndex = 0;
     this.mergeAvailableTags(pinnedSwatch.tags);
     this.editorControl.showSwatch(pinnedSwatch);
     this.editorControl.clearUserDefinedSwatch();
@@ -1014,6 +1169,8 @@ export class PaletteManagerApp {
 
     if (lastPinnedIndex >= 0) {
       this.state.selectedUserIndex = lastPinnedIndex;
+      this.state.selectedSwatch = cloneSwatch(this.state.userSwatches[lastPinnedIndex]);
+      this.state.selectedHarmonyColorIndex = 0;
       this.editorControl.showSwatch(this.state.userSwatches[lastPinnedIndex]);
       this.editorControl.clearUserDefinedSwatch();
     }
@@ -1026,6 +1183,106 @@ export class PaletteManagerApp {
     if (pinnedCount > 0) {
       this.persistWorkspacePalette(["data.swatches"]);
     }
+  }
+
+  getUniqueHarmonyName(baseName) {
+    const cleanBaseName = sanitizeText(baseName) || "Harmony Color";
+    const existingNames = new Set(this.state.userSwatches.map((swatch) => sanitizeText(swatch.name).toLowerCase()));
+    if (!existingNames.has(cleanBaseName.toLowerCase())) {
+      return cleanBaseName;
+    }
+    for (let index = 2; index < 1000; index += 1) {
+      const nextName = `${cleanBaseName} ${index}`;
+      if (!existingNames.has(nextName.toLowerCase())) {
+        return nextName;
+      }
+    }
+    return `${cleanBaseName} ${this.state.userSwatches.length + 1}`;
+  }
+
+  harmonyColorToSwatch(color) {
+    return cloneSwatch({
+      symbol: nextHarmonySymbol(this.state.userSwatches),
+      hex: normalizeHex(color?.hex).slice(0, 7),
+      name: this.getUniqueHarmonyName(color?.name),
+      source: sanitizeText(color?.source) || "Harmony",
+      tags: ["harmony"]
+    });
+  }
+
+  addHarmonyColor(color, label) {
+    const cleanSwatch = this.harmonyColorToSwatch(color);
+    if (!cleanSwatch.hex || this.state.userSwatches.some((swatch) => getRgbHexKey(swatch.hex) === getRgbHexKey(cleanSwatch.hex))) {
+      return { added: false, message: `${label} ${cleanSwatch.hex || "(empty hex)"} already exists in the active palette.` };
+    }
+    const errors = this.validator.validateSwatch(cleanSwatch, label);
+    if (errors.length > 0) {
+      return { added: false, errors };
+    }
+    this.state.userSwatches.push(cleanSwatch);
+    this.state.selectedUserIndex = this.state.userSwatches.length - 1;
+    this.state.selectedSwatch = cloneSwatch(cleanSwatch);
+    this.state.selectedHarmonyColorIndex = 0;
+    this.mergeAvailableTags(cleanSwatch.tags);
+    return { added: true, swatch: cleanSwatch };
+  }
+
+  addSelectedHarmonyColor() {
+    const colors = this.getHarmonyColors();
+    if (colors.length === 0) {
+      this.setActionState(["Select a swatch before adding a harmony color."], "FAIL Harmony color was not added.");
+      return;
+    }
+    const color = colors[this.state.selectedHarmonyColorIndex] || colors[0];
+    const result = this.addHarmonyColor(color, "selected harmony color");
+    if (result.errors?.length) {
+      this.setActionState(result.errors, "FAIL Harmony color was not added.");
+      return;
+    }
+    if (!result.added) {
+      this.setActionState([result.message], "WARN Harmony color already exists.");
+      return;
+    }
+    this.editorControl.showSwatch(result.swatch);
+    this.editorControl.showUserDefinedSwatch(result.swatch);
+    this.recordHistorySnapshot();
+    this.setActionState([], `OK Added selected harmony color ${result.swatch.name}.`);
+    this.persistWorkspacePalette([
+      "data.swatches",
+      `data.swatches[${this.state.selectedUserIndex}]`
+    ]);
+  }
+
+  addAllHarmonyColors() {
+    const colors = this.getHarmonyColors();
+    if (colors.length === 0) {
+      this.setActionState(["Select a swatch before adding harmony colors."], "FAIL Harmony colors were not added.");
+      return;
+    }
+    const errors = [];
+    const skipped = [];
+    let addedCount = 0;
+    colors.forEach((color, index) => {
+      const result = this.addHarmonyColor(color, `harmony color ${index + 1}`);
+      if (result.errors?.length) {
+        errors.push(...result.errors);
+      } else if (!result.added) {
+        skipped.push(result.message);
+      } else {
+        addedCount += 1;
+      }
+    });
+    if (addedCount > 0) {
+      const selectedSwatch = this.state.userSwatches[this.state.selectedUserIndex];
+      this.editorControl.showSwatch(selectedSwatch);
+      this.editorControl.showUserDefinedSwatch(selectedSwatch);
+      this.recordHistorySnapshot();
+      this.persistWorkspacePalette(["data.swatches"]);
+    }
+    const status = addedCount > 0
+      ? `OK Added ${addedCount} harmony colors. Skipped ${skipped.length} duplicates.`
+      : `WARN No harmony colors added. Skipped ${skipped.length} duplicates.`;
+    this.setActionState(Array.from(new Set([...errors, ...skipped])), status);
   }
 
   findDuplicateUserSwatchIndex(swatch) {
@@ -1051,6 +1308,8 @@ export class PaletteManagerApp {
     this.state.userSwatches = importResult.swatches.map(cloneSwatch);
     this.setAvailableTags(this.state.userSwatches.flatMap((swatch) => normalizeTags(swatch.tags)));
     this.state.selectedUserIndex = -1;
+    this.state.selectedSwatch = null;
+    this.state.selectedHarmonyColorIndex = 0;
     this.checkedUserSwatchIndexes.clear();
     this.editorControl.clearForm();
     this.resetHistorySnapshot();

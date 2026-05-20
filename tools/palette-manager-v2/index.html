@@ -68,6 +68,31 @@
         </section>
 
         <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
+          <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="colorHarmonyAccordionContent">
+            <span>Color Harmony Schemes</span>
+            <span class="accordion-v2__icon" aria-hidden="true">+</span>
+          </button>
+          <div id="colorHarmonyAccordionContent" class="accordion-v2__content">
+            <div class="palette-manager-v2__form-grid palette-manager-v2__form-grid--stacked palette-manager-v2__form-grid--compact">
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
+                Match source
+                <select id="harmonyMatchSourceSelect"></select>
+              </label>
+              <label class="palette-manager-v2__field palette-manager-v2__field--compact">
+                Scheme
+                <select id="harmonySchemeSelect"></select>
+              </label>
+            </div>
+            <div id="harmonyParameterControls" class="palette-manager-v2__harmony-parameters" aria-label="Harmony scheme parameters"></div>
+            <div id="harmonyColorList" class="palette-manager-v2__harmony-list" aria-label="Generated harmony colors"></div>
+            <div class="palette-manager-v2__controls palette-manager-v2__harmony-actions">
+              <button id="addSelectedHarmonyButton" type="button">Add Selected</button>
+              <button id="addAllHarmonyButton" type="button">Add All</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="accordion-v2 palette-manager-v2__left-accordion is-open" data-accordion-v2-open="true">
           <button class="accordion-v2__header" type="button" aria-expanded="true" aria-controls="userDefinedSwatchAccordionContent">
             <span>User Defined Swatch</span>
             <span class="accordion-v2__icon" aria-hidden="true">+</span>

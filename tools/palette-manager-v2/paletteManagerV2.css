@@ -731,6 +731,75 @@ body.tools-platform-surface :is(input, select, textarea):hover {
   aspect-ratio: 8 / 3;
 }
 
+#selectedSwatchPreview.palette-manager-v2__preview {
+  width: 30px;
+  height: 30px;
+  aspect-ratio: auto;
+}
+
+.palette-manager-v2__harmony-parameters {
+  display: grid;
+  gap: 8px;
+}
+
+.palette-manager-v2__harmony-list {
+  min-height: 52px;
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--pm-line);
+  border-radius: 8px;
+  background: var(--pm-surface-strong);
+  padding: 8px;
+}
+
+.palette-manager-v2__harmony-color {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 4px 8px;
+  align-items: center;
+  border: 1px solid var(--pm-line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+  cursor: pointer;
+  padding: 6px;
+  text-align: left;
+}
+
+.palette-manager-v2__harmony-color.is-selected {
+  border-color: var(--pm-accent);
+  box-shadow: inset 0 0 0 1px var(--pm-accent);
+}
+
+.palette-manager-v2__harmony-chip {
+  grid-row: span 2;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+}
+
+.palette-manager-v2__harmony-text,
+.palette-manager-v2__harmony-meta {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.palette-manager-v2__harmony-text {
+  font-weight: 700;
+}
+
+.palette-manager-v2__harmony-meta {
+  color: var(--pm-text-muted);
+  font-size: 0.86rem;
+}
+
+.palette-manager-v2__harmony-actions {
+  margin-top: 8px;
+}
+
 .palette-manager-v2__json-preview {
   min-height: 180px;
   max-height: clamp(220px, 36vh, 460px);

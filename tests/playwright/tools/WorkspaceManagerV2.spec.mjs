@@ -8075,6 +8075,79 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("generates Palette Manager V2 harmony schemes and adds non-duplicate colors", async ({ page }) => {
+    const server = await startRepoServer();
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await workspaceV2CoverageReporter.start(page);
+      await page.goto(`${server.baseUrl}/tools/palette-manager-v2/index.html`, { waitUntil: "networkidle" });
+      await expect(page.locator(".palette-manager-v2.app-shell")).toBeVisible();
+      await expect(page.locator("#harmonyColorList")).toContainText("Select a user or source swatch.");
+      await expect(page.locator("#addSelectedHarmonyButton")).toBeDisabled();
+      await expect(page.locator("#addAllHarmonyButton")).toBeDisabled();
+      const selectedPreviewBox = await page.locator("#selectedSwatchPreview").boundingBox();
+      expect(Math.round(selectedPreviewBox.width)).toBe(30);
+      expect(Math.round(selectedPreviewBox.height)).toBe(30);
+
+      await page.locator("#swatchSymbolInput").fill("R");
+      await page.locator("#swatchHexInput").fill("#FF0000");
+      await page.locator("#swatchNameInput").fill("Harmony Base Red");
+      await page.locator("#addSwatchButton").click();
+      await expect(page.locator("#userPaletteCount")).toHaveText("1 user swatches");
+      await expect(page.locator("#harmonySchemeSelect")).toHaveValue("achromatic");
+
+      await page.locator("#harmonyMatchSourceSelect").selectOption("calculated");
+      await page.locator("#harmonySchemeSelect").selectOption("complementary");
+      await expect(page.locator("#harmonyColorList [data-harmony-index='0']")).toHaveAttribute("data-harmony-hex", "#00FFFF");
+      await page.locator("#addSelectedHarmonyButton").click();
+      await expect(page.locator("#userPaletteCount")).toHaveText("2 user swatches");
+      await expect(page.locator("#paletteStatus")).toHaveText(/OK Added selected harmony color/);
+
+      await page.locator('#userSwatchList [aria-label="Edit Harmony Base Red"]').click();
+      await expect(page.locator("#harmonyColorList [data-harmony-index='0']")).toHaveAttribute("data-harmony-hex", "#00FFFF");
+      await page.locator("#addSelectedHarmonyButton").click();
+      await expect(page.locator("#userPaletteCount")).toHaveText("2 user swatches");
+      await expect(page.locator("#paletteStatus")).toHaveText(/WARN Harmony color already exists/);
+
+      await page.locator("#harmonySchemeSelect").selectOption("triadic");
+      await page.locator("#addAllHarmonyButton").click();
+      await expect(page.locator("#userPaletteCount")).toHaveText("4 user swatches");
+      await expect(page.locator("#paletteStatus")).toHaveText(/OK Added 2 harmony colors\. Skipped 0 duplicates\./);
+      const paletteHexes = await page.evaluate(() => window.paletteManagerV2App.getPaletteValue().swatches.map((swatch) => swatch.hex));
+      expect(new Set(paletteHexes).size).toBe(paletteHexes.length);
+      expect(paletteHexes).toEqual(expect.arrayContaining(["#FF0000", "#00FFFF", "#00FF00", "#0000FF"]));
+
+      await page.locator('#userSwatchList [aria-label="Edit Harmony Base Red"]').click();
+      await page.locator("#harmonySchemeSelect").selectOption("complementary");
+      await page.locator("#harmonyMatchSourceSelect").selectOption("source-palette");
+      const sourceMatchState = await page.evaluate(() => {
+        const sourceId = document.querySelector("#sourcePaletteSelect").value;
+        const harmonyHex = document.querySelector("#harmonyColorList [data-harmony-index='0']").dataset.harmonyHex;
+        const sourceHexes = (window.paletteList.SOURCE_PALETTES[sourceId] || []).map((swatch) => swatch.hex.toUpperCase());
+        return { harmonyHex, isFromCurrentSource: sourceHexes.includes(harmonyHex) };
+      });
+      expect(sourceMatchState.isFromCurrentSource).toBe(true);
+
+      await page.locator("#harmonyMatchSourceSelect").selectOption("all-palettes");
+      const allMatchState = await page.evaluate(() => {
+        const harmonyHex = document.querySelector("#harmonyColorList [data-harmony-index='0']").dataset.harmonyHex;
+        const allHexes = Object.values(window.paletteList.SOURCE_PALETTES)
+          .flatMap((swatches) => swatches.map((swatch) => swatch.hex.toUpperCase()));
+        return { harmonyHex, isFromAnySource: allHexes.includes(harmonyHex) };
+      });
+      expect(allMatchState.isFromAnySource).toBe(true);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await workspaceV2CoverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("does not redirect legacy Text to Speech V2 path, sample, or schema references", async ({ page }) => {
     const server = await startRepoServer();
     await workspaceV2CoverageReporter.start(page);
