@@ -312,12 +312,12 @@
                   "y": -4
                 },
                 "point2": {
-                  "x": -14,
+                  "x": -10,
                   "y": 0
                 }
               },
               "style": {
-                "fill": "transparent",
+                "fill": "#00000000",
                 "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
@@ -338,7 +338,7 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -14,
+                  "x": -10,
                   "y": 0
                 },
                 "point2": {
@@ -396,7 +396,7 @@
               },
               "style": {
                 "fill": "#00000000",
-                "stroke": "#FFFFFF",
+                "stroke": "#DBEAFE",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
                 "strokeOpacity": 1,
@@ -427,12 +427,12 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -6,
-                  "y": -4
+                  "x": -12,
+                  "y": 0
                 },
                 "point2": {
-                  "x": -14,
-                  "y": 0
+                  "x": -6,
+                  "y": 4
                 }
               },
               "style": {
@@ -457,16 +457,16 @@
               "locked": false,
               "geometry": {
                 "point1": {
-                  "x": -14,
-                  "y": 0
+                  "x": -6,
+                  "y": -4
                 },
                 "point2": {
-                  "x": -6,
-                  "y": 4
+                  "x": -12,
+                  "y": 0
                 }
               },
               "style": {
-                "fill": "#00000000",
+                "fill": "transparent",
                 "stroke": "#FFBE64",
                 "strokeWidth": 2,
                 "fillOpacity": 1,
@@ -493,7 +493,7 @@
                   "shapeOverrides": [
                     {
                       "visible": false,
-                      "shapeIndex": 0,
+                      "shapeIndex": 4,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
@@ -525,7 +525,7 @@
                       "visible": false
                     },
                     {
-                      "shapeIndex": 3,
+                      "shapeIndex": 0,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
@@ -536,7 +536,7 @@
                       "visible": false
                     },
                     {
-                      "shapeIndex": 4,
+                      "shapeIndex": 3,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
@@ -560,17 +560,7 @@
                   "durationFrames": 1,
                   "shapeOverrides": [
                     {
-                      "visible": true,
-                      "shapeIndex": 0,
-                      "transform": {
-                        "rotation": 0,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "x": 0,
-                        "y": 0
-                      }
-                    },
-                    {
+                      "visible": false,
                       "shapeIndex": 4,
                       "transform": {
                         "rotation": 0,
@@ -578,8 +568,7 @@
                         "scaleY": 1,
                         "x": 0,
                         "y": 0
-                      },
-                      "visible": false
+                      }
                     },
                     {
                       "shapeIndex": 3,
@@ -591,6 +580,17 @@
                         "y": 0
                       },
                       "visible": false
+                    },
+                    {
+                      "shapeIndex": 0,
+                      "transform": {
+                        "rotation": 0,
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "x": 0,
+                        "y": 0
+                      },
+                      "visible": true
                     },
                     {
                       "shapeIndex": 1,
@@ -622,8 +622,8 @@
                   "durationFrames": 1,
                   "shapeOverrides": [
                     {
-                      "visible": false,
-                      "shapeIndex": 0,
+                      "visible": true,
+                      "shapeIndex": 4,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
@@ -641,10 +641,10 @@
                         "x": 0,
                         "y": 0
                       },
-                      "visible": false
+                      "visible": true
                     },
                     {
-                      "shapeIndex": 3,
+                      "shapeIndex": 0,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
@@ -655,7 +655,7 @@
                       "visible": true
                     },
                     {
-                      "shapeIndex": 4,
+                      "shapeIndex": 3,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
@@ -685,7 +685,7 @@
                   "shapeOverrides": [
                     {
                       "visible": true,
-                      "shapeIndex": 0,
+                      "shapeIndex": 4,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
@@ -703,7 +703,7 @@
                         "x": 0,
                         "y": 0
                       },
-                      "visible": true
+                      "visible": false
                     },
                     {
                       "shapeIndex": 2,
@@ -717,7 +717,7 @@
                       "visible": true
                     },
                     {
-                      "shapeIndex": 3,
+                      "shapeIndex": 0,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
@@ -725,10 +725,10 @@
                         "x": 0,
                         "y": 0
                       },
-                      "visible": true
+                      "visible": false
                     },
                     {
-                      "shapeIndex": 4,
+                      "shapeIndex": 3,
                       "transform": {
                         "rotation": 0,
                         "scaleX": 1,
@@ -741,74 +741,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "frames": [
-                {
-                  "durationFrames": 1,
-                  "id": "frame-1",
-                  "order": 1,
-                  "shapeOverrides": [
-                    {
-                      "shapeIndex": 2,
-                      "transform": {
-                        "rotation": 270,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "x": 0,
-                        "y": 0
-                      },
-                      "visible": true
-                    },
-                    {
-                      "shapeIndex": 0,
-                      "transform": {
-                        "rotation": 270,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "x": 0,
-                        "y": 0
-                      },
-                      "visible": true
-                    },
-                    {
-                      "shapeIndex": 1,
-                      "transform": {
-                        "rotation": 270,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "x": 0,
-                        "y": 0
-                      },
-                      "visible": true
-                    },
-                    {
-                      "shapeIndex": 3,
-                      "transform": {
-                        "rotation": 270,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "x": 0,
-                        "y": 0
-                      },
-                      "visible": true
-                    },
-                    {
-                      "shapeIndex": 4,
-                      "transform": {
-                        "rotation": 270,
-                        "scaleX": 1,
-                        "scaleY": 1,
-                        "x": 0,
-                        "y": 0
-                      },
-                      "visible": true
-                    }
-                  ]
-                }
-              ],
-              "id": "destroyed",
-              "name": "Destroyed"
             }
           ],
           "tags": [

@@ -812,6 +812,47 @@ export default class AsteroidsGameScene extends Scene {
     });
   }
 
+  getShipVisualStateIds() {
+    const states = this.objectVectorAssets?.objectsById?.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.ship)?.states
+      || this.objectGeometry?.objectsById?.get(ASTEROIDS_OBJECT_GEOMETRY_IDS.ship)?.states;
+    return Array.isArray(states)
+      ? states.map((state) => String(state?.id || '').trim()).filter(Boolean)
+      : [];
+  }
+
+  debugPreviewShipVisualState(renderer, stateId, options = {}) {
+    const shipStateId = String(stateId || '').trim();
+    const availableStates = this.getShipVisualStateIds();
+    if (!renderer || !shipStateId || !availableStates.includes(shipStateId)) {
+      return {
+        availableStates,
+        objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
+        ok: false,
+        rendered: false,
+        stateId: shipStateId,
+      };
+    }
+
+    const rendered = this.drawObjectVectorAsset(renderer, "shipVisualStatePreview", {
+      elapsedMs: Number.isFinite(options.elapsedMs) ? options.elapsedMs : this.objectVectorPlaybackMs,
+      fps: Number.isFinite(options.fps) ? options.fps : 12,
+      objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
+      requireManifestBinding: true,
+      rotation: Number.isFinite(options.rotation) ? options.rotation : this.world.ship.angle,
+      rotationUnit: options.rotationUnit || 'radians',
+      stateId: shipStateId,
+      x: Number.isFinite(options.x) ? options.x : this.world.ship.x,
+      y: Number.isFinite(options.y) ? options.y : this.world.ship.y,
+    });
+    return {
+      availableStates,
+      objectId: ASTEROIDS_OBJECT_GEOMETRY_IDS.ship,
+      ok: rendered,
+      rendered,
+      stateId: shipStateId,
+    };
+  }
+
   drawObjectVectorAsset(renderer, renderKey, options) {
     if (!this.objectVectorRuntime || !this.objectVectorAssets) {
       this.recordObjectVectorRenderFailure(renderKey, options.assetId || options.objectId, "validated Object Vector runtime assets are not loaded");
@@ -849,6 +890,7 @@ export default class AsteroidsGameScene extends Scene {
         objectCount: this.objectVectorAssets?.objectsById?.size || 0,
         objectVectorObjectIds: this.objectGeometry?.objects?.map((object) => object.id) || [],
         runtimeObjectsValid: Boolean(this.objectVectorRuntimeObjectValidation?.ok),
+        shipVisualStates: this.getShipVisualStateIds(),
         renderCounts: { ...this.objectVectorRenderCounts },
       };
     } catch {
@@ -893,4 +935,3 @@ export default class AsteroidsGameScene extends Scene {
     });
   }
 }
-
