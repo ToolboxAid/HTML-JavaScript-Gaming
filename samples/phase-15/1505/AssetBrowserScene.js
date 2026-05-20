@@ -7,7 +7,7 @@ AssetBrowserScene.js
 import { Scene } from '/src/engine/scene/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { AssetBrowser } from '/tools/shared/tooling/index.js';
+import AssetBrowser from '/tools/shared/tooling/AssetBrowser.js';
 
 const theme = new Theme(ThemeTokens);
 

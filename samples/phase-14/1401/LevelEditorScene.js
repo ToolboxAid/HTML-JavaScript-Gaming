@@ -7,7 +7,7 @@ LevelEditorScene.js
 import { Scene } from '/src/engine/scene/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { LevelEditor } from '/tools/shared/editor/index.js';
+import LevelEditor from '/tools/shared/editor/LevelEditor.js';
 
 const theme = new Theme(ThemeTokens);
 

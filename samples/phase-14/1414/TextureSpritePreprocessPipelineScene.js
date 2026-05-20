@@ -1,7 +1,7 @@
 import { Scene } from "/src/engine/scene/index.js";
 import { drawFrame, drawPanel } from "/src/engine/debug/index.js";
 import { Theme, ThemeTokens } from "/src/engine/theme/index.js";
-import { TexturePreprocessPipeline } from "/tools/shared/pipeline/index.js";
+import TexturePreprocessPipeline from "/tools/shared/pipeline/TexturePreprocessPipeline.js";
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from "/samples/shared/spritePresetRuntime.js";
 
 const theme = new Theme(ThemeTokens);
