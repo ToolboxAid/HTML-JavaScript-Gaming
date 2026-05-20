@@ -12444,7 +12444,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#seedUatManifestButton").click();
       const uatManifestValidation = await page.evaluate(async (manifest) => {
         const { WorkspaceManagerV2ContextService } = await import("/tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js");
-        return new WorkspaceManagerV2ContextService().validateGeneratedManifest(manifest);
+        return new WorkspaceManagerV2ContextService().validateGameManifest(manifest);
       }, uatManifest);
       expect(uatManifestValidation).toEqual({ ok: true });
       await expect(page.locator("#activeGameSelect")).toHaveValue("_template");
@@ -12457,12 +12457,12 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-workspace-tool-id="palette-manager-v2"]')).toContainText("3 palette swatches");
       await expect(page.locator('[data-workspace-tool-id="preview-generator-v2"]')).toContainText("Preview Not Found");
       await expect(page.locator('[data-workspace-tool-id="storage-inspector-v2"]')).toContainText("Storage Inspector V2");
-      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"id": "workspace-manager-v2-UAT-template"/);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"id": "workspace-manager-v2-_template"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/_template\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/_template\/assets"/);
-      expect(JSON.parse(await page.locator("#workspaceContextOutput").inputValue()).repoPath).toBe(manifestRepoPath(server));
+      expect(JSON.parse(await page.locator("#workspaceContextOutput").inputValue()).repoPath).toBeUndefined();
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"sourceId": "tests\/fixtures\/workspace-v2\/uat.manifest.json"/);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded UAT Workspace Manager V2 manifest workspace-manager-v2-UAT-template from \/tests\/fixtures\/workspace-v2\/uat\.manifest\.json\./);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded UAT game manifest fixture workspace-manager-v2-_template from \/tests\/fixtures\/workspace-v2\/uat\.manifest\.json\./);
 
       await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);

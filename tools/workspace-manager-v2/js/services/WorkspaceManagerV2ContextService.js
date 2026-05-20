@@ -1310,11 +1310,10 @@ export class WorkspaceManagerV2ContextService {
     if (!manifestResult.ok) {
       return manifestResult;
     }
-    const game = temporaryUatGameFromManifest(manifestResult.manifest);
-    if (!game) {
-      return { ok: false, message: `${TEMPORARY_UAT_MANIFEST_PATH} is not a valid Workspace Manager V2 UAT template manifest.` };
+    if (!isGameManifest(manifestResult.manifest)) {
+      return { ok: false, message: `${TEMPORARY_UAT_MANIFEST_PATH} is not a valid Workspace Manager V2 UAT game manifest fixture.` };
     }
-    return this.contextResultFromManifest(game, manifestResult.manifest, TEMPORARY_UAT_MANIFEST_PATH);
+    return this.buildContextFromManifest(manifestResult.manifest, TEMPORARY_UAT_MANIFEST_PATH);
   }
 
   async restorePersistedContext() {

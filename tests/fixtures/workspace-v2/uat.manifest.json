@@ -1,13 +1,17 @@
 {
-  "schema": "html-js-gaming.project",
+  "$schema": "tools/schemas/game.manifest.schema.json",
+  "schema": "html-js-gaming.game-manifest",
   "version": 1,
-  "id": "workspace-manager-v2-UAT-template",
-  "name": "Workspace Manager V2 UAT Template Context",
-  "gameId": "_template",
-  "gameRoot": "games/_template/",
-  "assetsPath": "games/_template/assets",
-  "repoRoot": "HTML-JavaScript-Gaming",
-  "repoPath": "C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming",
+  "game": {
+    "id": "_template",
+    "name": "Template UAT",
+    "folder": "_template"
+  },
+  "launch": {
+    "directPath": "/games/_template/index.html",
+    "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?workspace=uat",
+    "workspaceManagerOptional": true
+  },
   "tools": {
     "palette-manager-v2": {
       "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
@@ -24,21 +28,30 @@
           "hex": "#7C3AED",
           "name": "Signal Violet!",
           "source": "UAT Sample",
-          "tags": ["ui", "accent"]
+          "tags": [
+            "ui",
+            "accent"
+          ]
         },
         {
           "symbol": "G",
           "hex": "#22C55E",
           "name": "Success Green",
           "source": "UAT Sample",
-          "tags": ["success", "hud"]
+          "tags": [
+            "success",
+            "hud"
+          ]
         },
         {
           "symbol": "A",
           "hex": "#F59E0B",
           "name": "Alert Amber",
           "source": "UAT Sample",
-          "tags": ["warning", "hud"]
+          "tags": [
+            "warning",
+            "hud"
+          ]
         }
       ]
     },
