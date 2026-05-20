@@ -6,7 +6,7 @@ import {
   LocalStorageService,
   SessionStorageService
 } from "../../src/engine/persistence/index.js";
-import { normalizeText } from "../../src/shared/string/index.js";
+import { normalizeText } from "../../src/shared/string/strings.js";
 
 const TOOLBOXAID_STORAGE_KEY_PREFIX = "toolboxaid.";
 

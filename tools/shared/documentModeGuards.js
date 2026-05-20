@@ -2,7 +2,7 @@ import {
   LocalStorageService,
   SessionStorageService
 } from "../../src/engine/persistence/index.js";
-import { sanitizeText } from "../../src/shared/string/index.js";
+import { sanitizeText } from "../../src/shared/string/strings.js";
 const VIEWER_PAYLOAD_STORAGE_KEY_PREFIX = "toolboxaid.viewerPayload.";
 
 function stashViewerPayload(payload, sourceToolId = "") {

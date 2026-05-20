@@ -8,7 +8,7 @@ import { ObjectVectorRuntimeAssetService } from "/src/engine/rendering/index.js"
 import { Theme, ThemeTokens } from "/src/engine/theme/index.js";
 import { resolveDebugConfig } from "/src/shared/debug/config.js";
 import { createNoopDevConsoleIntegration } from "/src/shared/debug/noopDevConsoleIntegration.js";
-import { asPositiveInteger } from "/src/shared/number/index.js";
+import { asPositiveInteger } from "/src/shared/number/numbers.js";
 import AsteroidsGameScene from "./game/AsteroidsGameScene.js";
 import { loadAsteroidsObjectGeometryFromManifest } from "./game/asteroidsObjectGeometryManifest.js";
 import { preloadWorkspaceGameAssetCatalog } from "../shared/workspaceGameAssetCatalog.js";

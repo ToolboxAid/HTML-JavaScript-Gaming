@@ -2,7 +2,7 @@ import {
   resolveManifestChromeAssetPaths,
   resolveRuntimeAssetUrl
 } from "/src/engine/runtime/gameImageConvention.js";
-import { normalizePathSeparators, normalizeText } from "../../src/shared/string/index.js";
+import { normalizePathSeparators, normalizeText } from "../../src/shared/string/strings.js";
 import { asArray } from "../../src/shared/array/arrays.js";
 
 function hasProtocol(value) {

@@ -1,5 +1,5 @@
 import { isRecord } from "../../shared/object/objects.js";
-import { asFiniteNumber } from "../../shared/number/index.js";
+import { asFiniteNumber } from "../../shared/number/numbers.js";
 
 const DEGREES_PER_RADIAN = 180 / Math.PI;
 const RADIANS_PER_DEGREE = Math.PI / 180;

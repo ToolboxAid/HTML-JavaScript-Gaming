@@ -6,7 +6,7 @@ import {
 } from "../../../src/engine/collision/index.js";
 import { CANONICAL_WORLD_TO_SCREEN_SCALE } from "../../../src/engine/rendering/index.js";
 import { resolveManifestScreenDimensions } from "../../../src/tools/common/GameManifestLoader.js";
-import { asFiniteNumber } from "../../../src/shared/number/index.js";
+import { asFiniteNumber } from "../../../src/shared/number/numbers.js";
 import { deepClone } from "../../../src/shared/json/clone.js";
 import {
   clampCollisionZoom,

@@ -1,5 +1,5 @@
 import { readToolHostSharedContextFromLocation } from "./toolHostSharedContext.js";
-import { normalizeText } from "../../src/shared/string/index.js";
+import { normalizeText } from "../../src/shared/string/strings.js";
 
 let workspaceShellInitialized = false;
 let initializedWorkspaceShellState = null;

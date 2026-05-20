@@ -10,7 +10,7 @@ import PongAudio from './PongAudio.js';
 import { getPongModes } from './PongModeConfig.js';
 import { wrapTextByCharacterCount } from '/src/shared/string/textWrap.js';
 import { toObject } from '/src/shared/object/objects.js';
-import { toFiniteNumber } from '/src/shared/number/index.js';
+import { toFiniteNumber } from '/src/shared/number/numbers.js';
 
 const COURT = {
   width: 960,

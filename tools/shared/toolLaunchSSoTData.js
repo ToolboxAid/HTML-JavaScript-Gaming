@@ -1,5 +1,5 @@
 import { getActiveToolRegistry } from "../toolRegistry.js";
-import { normalizeText, normalizeToken } from "../../src/shared/string/index.js";
+import { normalizeText, normalizeToken } from "../../src/shared/string/strings.js";
 
 const ALLOWED_LAUNCH_SOURCES = Object.freeze(["samples", "games", "tools", "workspace", "internal"]);
 const ALLOWED_LAUNCH_TYPES = Object.freeze(["sample-to-tool", "game-to-workspace", "tool-internal", "workspace-internal"]);

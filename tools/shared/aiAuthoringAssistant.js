@@ -1,4 +1,4 @@
-import { sanitizeText } from "../../src/shared/string/index.js";
+import { sanitizeText } from "../../src/shared/string/strings.js";
 import { buildProjectAssetRemediation, getPrimaryRemediationAction } from "./projectAssetRemediation.js";
 import { buildDebugVisualizationLayer } from "./debugVisualizationLayer.js";
 

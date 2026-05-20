@@ -1,4 +1,4 @@
-import { sanitizeText } from "../../src/shared/string/index.js";
+import { sanitizeText } from "../../src/shared/string/strings.js";
 import { buildGameplaySystemLayer } from "./gameplaySystemLayer.js";
 
 function createReport(level, code, message) {

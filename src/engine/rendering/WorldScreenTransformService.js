@@ -1,4 +1,4 @@
-import { asPositiveInteger } from "../../shared/number/index.js";
+import { asPositiveInteger } from "../../shared/number/numbers.js";
 import { rotationRadians } from "./OrientationTransform.js";
 
 export const CANONICAL_WORLD_TO_SCREEN_SCALE = 1;

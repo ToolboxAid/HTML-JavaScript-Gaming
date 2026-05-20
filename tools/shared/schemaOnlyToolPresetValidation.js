@@ -1,5 +1,5 @@
 import { isPlainObject } from '../../src/shared/object/objects.js';
-import { normalizeText } from "../../src/shared/string/index.js";
+import { normalizeText } from "../../src/shared/string/strings.js";
 
 const TOOL_SCHEMA_CACHE = new Map();
 

@@ -1,5 +1,5 @@
 import { readToolHostSharedContextFromLocation } from "/tools/shared/toolHostSharedContext.js";
-import { normalizeGameId } from "../../src/shared/string/index.js";
+import { normalizeGameId } from "../../src/shared/string/strings.js";
 
 function resolveWorkspaceHostedContext(normalizedGameId) {
   const url = new URL(window.location.href);

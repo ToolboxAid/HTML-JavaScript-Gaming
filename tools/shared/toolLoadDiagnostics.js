@@ -1,5 +1,5 @@
 import { enforceToolPresetSchemaOnlyContract } from "./schemaOnlyToolPresetValidation.js";
-import { normalizeText } from "../../src/shared/string/index.js";
+import { normalizeText } from "../../src/shared/string/strings.js";
 
 const TOOL_LOAD_PREFIXES = Object.freeze({
   request: "[tool-load:request]",

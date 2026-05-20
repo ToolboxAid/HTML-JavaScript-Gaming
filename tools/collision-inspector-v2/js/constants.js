@@ -1,4 +1,4 @@
-import { asFiniteNumber } from "../../../src/shared/number/index.js";
+import { asFiniteNumber } from "../../../src/shared/number/numbers.js";
 
 export const OBJECT_LABELS = Object.freeze({
   a: "Object A",

@@ -6,7 +6,7 @@ BouncingBallWorld.js
 */
 import { clamp } from '/src/shared/math/scalars.js';
 import { toObject } from '/src/shared/object/objects.js';
-import { toFiniteNumber } from '/src/shared/number/index.js';
+import { toFiniteNumber } from '/src/shared/number/numbers.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
 const DEFAULT_BOUNCING_BALL_WORLD_SKIN = Object.freeze({

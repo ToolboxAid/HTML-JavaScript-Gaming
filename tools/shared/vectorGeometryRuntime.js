@@ -1,4 +1,4 @@
-import { sanitizeText } from "../../src/shared/string/index.js";
+import { sanitizeText } from "../../src/shared/string/strings.js";
 import { inspectVectorAssetContract } from "./vector/vectorAssetContract.js";
 import { prepareVectorRenderables } from "./vector/vectorRenderPrep.js";
 import { ensureArray } from "../../src/shared/array/arrays.js";

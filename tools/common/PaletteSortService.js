@@ -1,4 +1,4 @@
-import { normalizeText } from "../../src/shared/string/index.js";
+import { normalizeText } from "../../src/shared/string/strings.js";
 
 const PALETTE_SORT_MODES = Object.freeze([
   Object.freeze({ value: "hue", label: "Hue" }),

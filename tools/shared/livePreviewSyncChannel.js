@@ -1,4 +1,4 @@
-import { sanitizeText } from "../../src/shared/string/index.js";
+import { sanitizeText } from "../../src/shared/string/strings.js";
 export const LIVE_PREVIEW_CHANNEL_NAME = "toolboxaid.livePreviewSync.v1";
 const LIVE_PREVIEW_STORAGE_KEY = "__toolboxaid_live_preview_sync_v1__";
 const VALID_EVENT_TYPES = new Set([

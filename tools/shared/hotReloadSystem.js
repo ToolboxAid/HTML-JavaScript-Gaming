@@ -1,4 +1,4 @@
-import { sanitizeText } from "../../src/shared/string/index.js";
+import { sanitizeText } from "../../src/shared/string/strings.js";
 import { validateProjectAssetState } from "./projectAssetValidation.js";
 import { buildProjectPackage } from "./projectPackaging.js";
 import { loadPackagedProjectRuntime } from "./runtimeAssetLoader.js";

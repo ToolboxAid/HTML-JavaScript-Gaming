@@ -6,7 +6,7 @@ ReplayModel.js
 */
 import {
   SHARED_REPLAY_MODEL_CONTRACT_VERSION,
-} from "../../shared/contracts/index.js";
+} from "../../shared/contracts/replayContracts.js";
 
 function cloneOrNull(value) {
   return value === undefined || value === null ? null : structuredClone(value);

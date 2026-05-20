@@ -1,5 +1,5 @@
 import { toObject } from "../../shared/object/objects.js";
-import { normalizePathSeparators } from "../../shared/string/index.js";
+import { normalizePathSeparators } from "../../shared/string/strings.js";
 
 function safeText(value, fallback = "") {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;

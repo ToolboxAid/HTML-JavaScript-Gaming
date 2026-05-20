@@ -1,7 +1,7 @@
 import { asArray } from '../src/shared/array/arrays.js';
 import { getToolRegistry } from "../tools/toolRegistry.js";
 import { resolveGamePreviewMap } from "./shared/gameManifestPreviewResolver.js";
-import { normalizeText, normalizeToken } from "../src/shared/string/index.js";
+import { normalizeText, normalizeToken } from "../src/shared/string/strings.js";
 import { launchWithExternalToolWorkspaceReset, resolveGameWorkspaceLaunchHref } from "../tools/shared/toolLaunchSSoT.js";
 
 const METADATA_PATH = "./metadata/games.index.metadata.json";

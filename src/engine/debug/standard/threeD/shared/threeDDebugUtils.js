@@ -5,7 +5,7 @@ David Quesenberry
 threeDDebugUtils.js
 */
 
-import { sanitizeText } from "../../../../../shared/string/index.js";
+import { sanitizeText } from "../../../../../shared/string/strings.js";
 import { asFinite } from "../../../../../shared/math/numberNormalization.js";
 import { asArray } from "../../../../../shared/array/arrays.js";
 import { asObject } from "../../../../../shared/object/objects.js";

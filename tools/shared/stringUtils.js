@@ -1,1 +1,1 @@
-export { trimSafe } from "../../src/shared/string/index.js";
+export { trimSafe } from "../../src/shared/string/strings.js";

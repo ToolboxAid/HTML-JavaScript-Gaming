@@ -1,4 +1,4 @@
-import { normalizeText } from "../../src/shared/string/index.js";
+import { normalizeText } from "../../src/shared/string/strings.js";
 
 export const TOOL_UX_LIFECYCLE = Object.freeze({
   INIT: "INIT",

@@ -11,7 +11,7 @@ import {
 } from '/samples/phase-17/shared/overlayCycleInput.js';
 import { normalizeOverlayRuntimeExtensions } from '/samples/phase-17/shared/overlayRuntimeExtensionNormalization.js';
 import { cloneJsonData, safeJsonParse, safeJsonStringify } from '/src/shared/json/jsonIO.js';
-import { asFiniteNumber } from '/src/shared/number/index.js';
+import { asFiniteNumber } from '/src/shared/number/numbers.js';
 
 const overlayRuntimePreferenceMemoryStore = new Map();
 const OVERLAY_RUNTIME_SHARE_PACKAGE_FORMAT = 'overlay-runtime-share-package';

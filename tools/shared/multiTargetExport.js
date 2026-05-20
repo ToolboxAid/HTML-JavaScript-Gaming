@@ -1,4 +1,4 @@
-import { sanitizeText } from "../../src/shared/string/index.js";
+import { sanitizeText } from "../../src/shared/string/strings.js";
 import { buildProjectPackage } from "./projectPackaging.js";
 import { validateProjectAssetState } from "./projectAssetValidation.js";
 import { cloneJson } from "../../src/shared/json/clone.js";

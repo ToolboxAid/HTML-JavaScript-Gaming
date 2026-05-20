@@ -1,4 +1,4 @@
-import { normalizeText, normalizeToken } from "../../src/shared/string/index.js";
+import { normalizeText, normalizeToken } from "../../src/shared/string/strings.js";
 
 const GAMES_METADATA_PATH = "/games/metadata/games.index.metadata.json";
 

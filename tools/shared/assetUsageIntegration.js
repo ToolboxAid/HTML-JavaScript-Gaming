@@ -1,5 +1,5 @@
 import { LocalStorageService } from "../../src/engine/persistence/index.js";
-import { sanitizeText } from "../../src/shared/string/index.js";
+import { sanitizeText } from "../../src/shared/string/strings.js";
 import { getToolById } from "../toolRegistry.js";
 
 export const SHARED_ASSET_HANDOFF_KEY = "toolboxaid.shared.assetHandoff";

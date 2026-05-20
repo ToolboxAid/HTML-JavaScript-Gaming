@@ -15,7 +15,7 @@ import {
 } from '../rendering/OrientationTransform.js';
 import { isRecord } from '../../shared/object/objects.js';
 import { deepClone } from '../../shared/json/clone.js';
-import { asFiniteNumber } from '../../shared/number/index.js';
+import { asFiniteNumber } from '../../shared/number/numbers.js';
 
 export const OBJECT_VECTOR_COLLISION_ENGINE_PATH = 'src/engine/collision/objectVector.js';
 export const OBJECT_VECTOR_COLLISION_MODES = Object.freeze(['bounds', 'vector', 'pixel-sprite', 'hybrid']);

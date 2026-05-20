@@ -14,7 +14,7 @@ import {
   logToolLoadLoaded,
   logToolLoadWarning
 } from "../shared/toolLoadDiagnostics.js";
-import { isFiniteNumber } from "../../src/shared/number/index.js";
+import { isFiniteNumber } from "../../src/shared/number/numbers.js";
 import { setupDebugToolInteractionFlow } from "../shared/debugToolInteractionFlow.js";
 
 const refs = {

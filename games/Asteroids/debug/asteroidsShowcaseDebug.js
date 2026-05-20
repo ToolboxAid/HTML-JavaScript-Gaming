@@ -6,7 +6,7 @@ asteroidsShowcaseDebug.js
 */
 
 import { asArray, asObject } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { sanitizeText } from "/src/shared/string/index.js";
+import { sanitizeText } from "/src/shared/string/strings.js";
 
 function formatNumber(value, defaultValue = 0) {
   return Number.isFinite(value) ? Number(value) : defaultValue;

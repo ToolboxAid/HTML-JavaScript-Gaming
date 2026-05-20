@@ -7,7 +7,7 @@ ReplayTimeline.js
 import { asNonNegativeInteger, asPositiveInteger } from "../../shared/math/numberNormalization.js";
 import {
   SHARED_REPLAY_TIMELINE_DEFAULT_WINDOW_FRAMES,
-} from "../../shared/contracts/index.js";
+} from "../../shared/contracts/replayContracts.js";
 
 function cloneEntry(entry) {
   return {

@@ -1,4 +1,4 @@
-import { asPositiveInteger } from "../../shared/number/index.js";
+import { asPositiveInteger } from "../../shared/number/numbers.js";
 import { readFileText, SessionStorageService } from "../../engine/persistence/index.js";
 import { isRecord } from "../../shared/object/objects.js";
 

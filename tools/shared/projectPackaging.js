@@ -1,4 +1,4 @@
-import { sanitizeText } from "../../src/shared/string/index.js";
+import { sanitizeText } from "../../src/shared/string/strings.js";
 import { findRegistryEntryById, sanitizeAssetRegistry } from "./projectAssetRegistry.js";
 import { hasBlockingAssetValidationFindings, summarizeAssetValidation, validateProjectAssetState } from "./projectAssetValidation.js";
 

@@ -1,5 +1,5 @@
 import { createWorldScreenTransform } from "../../../src/engine/rendering/index.js";
-import { asFiniteNumber } from "../../../src/shared/number/index.js";
+import { asFiniteNumber } from "../../../src/shared/number/numbers.js";
 import {
   collisionZoomToPercent,
   labelForObject,

@@ -4,7 +4,7 @@ David Quesenberry
 04/17/2026
 voxelTileRenderPipeline.js
 */
-import { asFiniteNumber } from '/src/shared/number/index.js';
+import { asFiniteNumber } from '/src/shared/number/numbers.js';
 
 export const TILE_RENDER_FACE_ORDER = Object.freeze(['top', 'south', 'east']);
 
