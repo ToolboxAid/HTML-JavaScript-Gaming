@@ -8,17 +8,11 @@ import {
   objectVectorSvgTransformAttribute
 } from "./OrientationTransform.js";
 import { createWorldScreenTransform } from "./WorldScreenTransform.js";
+import { isPlainObject } from "../../shared/utils/objectUtils.js";
+import { deepClone as clone } from "../../shared/utils/jsonUtils.js";
 
 const DEFAULT_SCHEMA_URL = new URL("../../../tools/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
 const OBJECT_VECTOR_TOOL_ID = "object-vector-studio-v2";
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function isObjectIdentityId(value) {
   return /^object\.[a-z0-9-]+\.[a-z0-9][a-z0-9-]*$/.test(String(value || ""));

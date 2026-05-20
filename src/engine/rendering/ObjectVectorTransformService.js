@@ -1,10 +1,8 @@
+import { isRecord } from "../../shared/types/typeGuards.js";
+
 const DEGREES_PER_RADIAN = 180 / Math.PI;
 const RADIANS_PER_DEGREE = Math.PI / 180;
 const DEFAULT_OBJECT_VECTOR_BOUNDS = Object.freeze({ height: 80, width: 120, x: -60, y: -40 });
-
-function isRecord(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
 
 function numberValue(value, fallback = 0) {
   const parsed = Number(value);
