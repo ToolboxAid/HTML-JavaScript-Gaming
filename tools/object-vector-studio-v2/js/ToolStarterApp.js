@@ -534,6 +534,7 @@ export class ToolStarterApp {
     this.gridRenderEnabled = true;
     this.centerOriginVisible = this.window.sessionStorage?.getItem(CENTER_ORIGIN_SESSION_KEY) !== "0";
     this.schemaReady = false;
+    this.viewportPan = null;
     this.viewport = { ...DEFAULT_VIEWPORT };
   }
 
@@ -1033,12 +1034,14 @@ export class ToolStarterApp {
     this.elements.renderSurface.addEventListener("dblclick", (event) => this.finishMultiPointDrawing("double-click", event));
     this.window.addEventListener("pointermove", (event) => this.updatePreviewPointerEdit(event));
     this.window.addEventListener("pointermove", (event) => this.updateDrawingPreview(event));
+    this.window.addEventListener("pointermove", (event) => this.updateViewportPan(event));
     this.elements.renderSurface.addEventListener("wheel", (event) => {
       event.preventDefault();
       this.zoomViewportByStepAtPointer(event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP, event);
     }, { passive: false });
     this.window.addEventListener("pointerup", (event) => {
       this.isPaintDragging = false;
+      this.finishViewportPan(event);
       this.finishPreviewPointerEdit(event);
     });
   }
@@ -4761,6 +4764,9 @@ export class ToolStarterApp {
       if (this.startPreviewObjectMove(event)) {
         return;
       }
+      if (this.startViewportPan(event)) {
+        return;
+      }
       this.deselectShape("empty canvas");
     }
   }
@@ -4789,10 +4795,23 @@ export class ToolStarterApp {
     return !targetIndexes.some((shapeIndex) => sortedShapes(object)[shapeIndex]?.locked);
   }
 
+  canPanViewportFromEmptyCanvas() {
+    return !this.activeDrawing
+      && !this.previewPointerEdit
+      && this.activeTool === "select"
+      && this.selectedShapeIndex < 0
+      && !this.selectedShapeIndexes.size
+      && !this.directSelectedShapeIndexes.size
+      && !this.canDragSelectedObjectFromEmptyCanvas();
+  }
+
   updateRenderSurfaceCursorState() {
     const draggingObject = this.previewPointerEdit?.mode === "move-object";
+    const panningViewport = Boolean(this.viewportPan);
     this.elements.renderSurface.classList.toggle("is-empty-canvas-object-drag-ready", this.canDragSelectedObjectFromEmptyCanvas());
     this.elements.renderSurface.classList.toggle("is-empty-canvas-object-dragging", draggingObject);
+    this.elements.renderSurface.classList.toggle("is-canvas-pan-ready", this.canPanViewportFromEmptyCanvas());
+    this.elements.renderSurface.classList.toggle("is-canvas-panning", panningViewport);
   }
 
   deselectShape(sourceLabel = "selection") {
@@ -5089,6 +5108,80 @@ export class ToolStarterApp {
       targetIndexes
     };
     this.updateRenderSurfaceCursorState();
+    return true;
+  }
+
+  startViewportPan(event) {
+    if (event.button !== 0 || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey || !this.canPanViewportFromEmptyCanvas()) {
+      return false;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.viewportPan = {
+      dragThresholdMet: false,
+      pointerId: event.pointerId,
+      startClient: {
+        x: Number(event.clientX) || 0,
+        y: Number(event.clientY) || 0
+      },
+      startViewport: { ...this.viewport }
+    };
+    try {
+      this.elements.renderSurface.setPointerCapture?.(event.pointerId);
+    } catch {
+      // Pointer capture is best-effort for synthetic validation events.
+    }
+    this.updateRenderSurfaceCursorState();
+    return true;
+  }
+
+  updateViewportPan(event) {
+    const pan = this.viewportPan;
+    if (!pan || event.buttons !== 1) {
+      return;
+    }
+    const clientX = Number(event.clientX) || 0;
+    const clientY = Number(event.clientY) || 0;
+    const distance = Math.hypot(clientX - pan.startClient.x, clientY - pan.startClient.y);
+    if (!pan.dragThresholdMet && distance < PREVIEW_DRAG_START_THRESHOLD_PX) {
+      return;
+    }
+    pan.dragThresholdMet = true;
+    const bounds = this.elements.renderSurface.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) {
+      return;
+    }
+    const viewWidth = DEFAULT_VIEWPORT.width / pan.startViewport.zoom;
+    const viewHeight = DEFAULT_VIEWPORT.height / pan.startViewport.zoom;
+    const viewportX = Number((pan.startViewport.x - ((clientX - pan.startClient.x) / bounds.width) * viewWidth).toFixed(3));
+    const viewportY = Number((pan.startViewport.y - ((clientY - pan.startClient.y) / bounds.height) * viewHeight).toFixed(3));
+    if (viewportX === this.viewport.x && viewportY === this.viewport.y) {
+      return;
+    }
+    this.viewport.x = viewportX;
+    this.viewport.y = viewportY;
+    this.updateViewport();
+    this.updateCoordinateDisplay(event);
+  }
+
+  finishViewportPan(event) {
+    const pan = this.viewportPan;
+    if (!pan) {
+      return false;
+    }
+    this.viewportPan = null;
+    try {
+      this.elements.renderSurface.releasePointerCapture?.(pan.pointerId);
+    } catch {
+      // Pointer capture is best-effort for synthetic validation events.
+    }
+    this.updateRenderSurfaceCursorState();
+    if (!pan.dragThresholdMet) {
+      this.deselectShape("empty canvas");
+      return true;
+    }
+    this.updateCoordinateDisplay(event);
+    this.statusLog.write(`OK Viewport drag-pan set to ${this.viewport.x}, ${this.viewport.y}.`);
     return true;
   }
 

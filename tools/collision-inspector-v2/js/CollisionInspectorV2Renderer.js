@@ -13,6 +13,7 @@ export class CollisionInspectorV2Renderer {
     this.ctx = canvas.getContext("2d");
     this.transform = createWorldScreenTransform();
     this.zoom = COLLISION_ZOOM_DEFAULT;
+    this.viewportPan = { x: 0, y: 0 };
   }
 
   setViewportSize(width, height) {
@@ -47,7 +48,29 @@ export class CollisionInspectorV2Renderer {
   canvasPoint(event) {
     const rect = this.canvas.getBoundingClientRect();
     const screenPoint = this.transform.clientPointToScreenPoint(event, rect);
-    return this.transform.screenPointToWorldWithUserZoom(screenPoint);
+    const worldPoint = this.transform.screenPointToWorldWithUserZoom(screenPoint);
+    return {
+      x: worldPoint.x + this.viewportPan.x,
+      y: worldPoint.y + this.viewportPan.y
+    };
+  }
+
+  panViewportByClientDelta(deltaX, deltaY) {
+    const rect = this.canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) {
+      return { ...this.viewportPan };
+    }
+    const screenDeltaX = (Number(deltaX) / rect.width) * this.canvas.width;
+    const screenDeltaY = (Number(deltaY) / rect.height) * this.canvas.height;
+    this.viewportPan = {
+      x: Number((this.viewportPan.x - screenDeltaX / this.zoom).toFixed(3)),
+      y: Number((this.viewportPan.y - screenDeltaY / this.zoom).toFixed(3))
+    };
+    return { ...this.viewportPan };
+  }
+
+  resetViewportPan() {
+    this.viewportPan = { x: 0, y: 0 };
   }
 
   setDragging(isDragging) {
@@ -55,7 +78,11 @@ export class CollisionInspectorV2Renderer {
   }
 
   capturePointer(pointerId) {
-    this.canvas.setPointerCapture?.(pointerId);
+    try {
+      this.canvas.setPointerCapture?.(pointerId);
+    } catch {
+      // Pointer capture is best-effort for synthetic validation events.
+    }
   }
 
   hitObjectAt(point, result) {
@@ -79,6 +106,7 @@ export class CollisionInspectorV2Renderer {
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.save();
     this.transform.applyViewportTransform(ctx);
+    ctx.translate(-this.viewportPan.x, -this.viewportPan.y);
     this.drawGrid(ctx);
     this.drawGeometry(ctx, result.geometryA, {
       fill: "rgba(13, 148, 136, 0.18)",

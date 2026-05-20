@@ -1505,11 +1505,13 @@ textarea:hover {
   cursor: crosshair;
 }
 
-.object-vector-studio-v2__render-surface.is-empty-canvas-object-drag-ready {
+.object-vector-studio-v2__render-surface.is-empty-canvas-object-drag-ready,
+.object-vector-studio-v2__render-surface.is-canvas-pan-ready {
   cursor: grab;
 }
 
-.object-vector-studio-v2__render-surface.is-empty-canvas-object-dragging {
+.object-vector-studio-v2__render-surface.is-empty-canvas-object-dragging,
+.object-vector-studio-v2__render-surface.is-canvas-panning {
   cursor: grabbing;
 }
 

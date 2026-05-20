@@ -288,6 +288,60 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionZoomInput")).toHaveAttribute("step", "10");
       await expect(page.locator("#collisionZoomInput")).toHaveValue("100");
       await expect(page.locator("#zoomState")).toHaveText("100%");
+      const viewportPanState = await page.locator("#collisionCanvas").evaluate((canvas) => {
+        const app = window.__collisionInspectorV2App;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = rect.width / canvas.width;
+        const scaleY = rect.height / canvas.height;
+        const clientPoint = (point) => ({
+          clientX: rect.left + point.x * scaleX,
+          clientY: rect.top + point.y * scaleY
+        });
+        const pointerInit = {
+          bubbles: true,
+          button: 0,
+          buttons: 1,
+          cancelable: true,
+          pointerId: 52,
+          pointerType: "mouse"
+        };
+        const before = { ...app.renderer.viewportPan };
+        canvas.dispatchEvent(new PointerEvent("pointerdown", { ...pointerInit, ...clientPoint({ x: 80, y: 80 }) }));
+        window.dispatchEvent(new PointerEvent("pointermove", { ...pointerInit, ...clientPoint({ x: 150, y: 110 }) }));
+        const draggingClassDuringPan = canvas.classList.contains("is-dragging");
+        window.dispatchEvent(new PointerEvent("pointerup", { ...pointerInit, buttons: 0, ...clientPoint({ x: 150, y: 110 }) }));
+        return {
+          after: { ...app.renderer.viewportPan },
+          before,
+          draggingClassDuringPan
+        };
+      });
+      expect(viewportPanState.draggingClassDuringPan).toBe(true);
+      expect(viewportPanState.after.x).toBeLessThan(viewportPanState.before.x);
+      expect(viewportPanState.after.y).toBeLessThan(viewportPanState.before.y);
+      await expect(page.locator("#collisionLog")).toHaveValue(/Panned viewport/);
+      await expect(page.locator("#zoomState")).toHaveText("100%");
+      const postPanHit = await page.locator("#collisionCanvas").evaluate((canvas) => {
+        const app = window.__collisionInspectorV2App;
+        const pan = app.renderer.viewportPan;
+        const rect = canvas.getBoundingClientRect();
+        const viewportPoint = app.renderer.transform.worldPointToViewportPoint({
+          x: app.instances.b.x - pan.x,
+          y: app.instances.b.y - pan.y
+        });
+        const clientX = rect.left + (viewportPoint.x / canvas.width) * rect.width;
+        const clientY = rect.top + (viewportPoint.y / canvas.height) * rect.height;
+        const point = app.renderer.canvasPoint({ clientX, clientY });
+        return {
+          hit: app.renderer.hitObjectAt(point, app.lastResult),
+          point
+        };
+      });
+      expect(postPanHit.hit).toBe("b");
+      await page.evaluate(() => {
+        window.__collisionInspectorV2App.renderer.resetViewportPan();
+        window.__collisionInspectorV2App.evaluateAndRender();
+      });
       const aspectRatio = await page.locator("#collisionCanvas").evaluate((canvas) => {
         const rect = canvas.getBoundingClientRect();
         return rect.width / rect.height;

@@ -148,6 +148,7 @@ export class CollisionInspectorV2App {
     this.screen = { width: screenResult.width, height: screenResult.height };
     this.controls.setViewportSize(this.screen.width, this.screen.height);
     this.renderer.setViewportSize(this.screen.width, this.screen.height);
+    this.renderer.resetViewportPan();
     this.controls.setObjectOptions(this.objects);
     this.resetSimulation({ silent: true });
     const gameName = manifest?.game?.name || manifest?.name || manifest?.gameId || "Loaded manifest";
@@ -249,10 +250,22 @@ export class CollisionInspectorV2App {
       return;
     }
     const point = this.renderer.canvasPoint(event);
-    const key = this.renderer.hitObjectAt(point, this.lastResult) || "a";
+    const key = this.renderer.hitObjectAt(point, this.lastResult);
+    if (!key) {
+      this.dragState = {
+        lastClient: { x: Number(event.clientX) || 0, y: Number(event.clientY) || 0 },
+        mode: "pan",
+        moved: false
+      };
+      this.renderer.setDragging(true);
+      this.renderer.capturePointer(event.pointerId);
+      event.preventDefault();
+      return;
+    }
     this.dragState = {
       key,
-      lastPoint: point
+      lastPoint: point,
+      mode: "object"
     };
     this.renderer.setDragging(true);
     this.renderer.capturePointer(event.pointerId);
@@ -261,6 +274,20 @@ export class CollisionInspectorV2App {
 
   handlePointerMove(event) {
     if (!this.dragState) {
+      return;
+    }
+    if (this.dragState.mode === "pan") {
+      const clientX = Number(event.clientX) || 0;
+      const clientY = Number(event.clientY) || 0;
+      const deltaX = clientX - this.dragState.lastClient.x;
+      const deltaY = clientY - this.dragState.lastClient.y;
+      this.dragState.lastClient = { x: clientX, y: clientY };
+      if (deltaX || deltaY) {
+        this.dragState.moved = true;
+        this.renderer.panViewportByClientDelta(deltaX, deltaY);
+        this.evaluateAndRender();
+      }
+      event.preventDefault();
       return;
     }
     const point = this.renderer.canvasPoint(event);
@@ -277,6 +304,16 @@ export class CollisionInspectorV2App {
 
   handlePointerUp() {
     if (!this.dragState) {
+      return;
+    }
+    if (this.dragState.mode === "pan") {
+      const pan = { ...this.renderer.viewportPan };
+      const moved = this.dragState.moved;
+      this.dragState = null;
+      this.renderer.setDragging(false);
+      if (moved) {
+        this.logger.write(`INFO Panned viewport to ${roundNumber(pan.x)}, ${roundNumber(pan.y)}.`);
+      }
       return;
     }
     const key = this.dragState.key;

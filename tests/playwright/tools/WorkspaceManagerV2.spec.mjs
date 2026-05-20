@@ -2327,6 +2327,44 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 100%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(0);
+      const dragPanState = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
+        const app = window.__objectVectorStudioV2App;
+        const rect = surface.getBoundingClientRect();
+        const start = {
+          clientX: rect.left + rect.width * 0.5,
+          clientY: rect.top + rect.height * 0.5
+        };
+        const end = {
+          clientX: start.clientX + 72,
+          clientY: start.clientY + 36
+        };
+        const pointerInit = {
+          bubbles: true,
+          button: 0,
+          buttons: 1,
+          cancelable: true,
+          pointerId: 41,
+          pointerType: "mouse"
+        };
+        const before = { ...app.viewport };
+        surface.dispatchEvent(new PointerEvent("pointerdown", { ...pointerInit, ...start }));
+        window.dispatchEvent(new PointerEvent("pointermove", { ...pointerInit, ...end }));
+        const panningClassDuringDrag = surface.classList.contains("is-canvas-panning");
+        window.dispatchEvent(new PointerEvent("pointerup", { ...pointerInit, buttons: 0, ...end }));
+        return {
+          after: { ...app.viewport },
+          before,
+          panningClassDuringDrag,
+          viewBox: surface.getAttribute("viewBox")
+        };
+      });
+      expect(dragPanState.panningClassDuringDrag).toBe(true);
+      expect(dragPanState.after.x).toBeLessThan(dragPanState.before.x);
+      expect(dragPanState.after.y).toBeLessThan(dragPanState.before.y);
+      expect(dragPanState.viewBox).not.toBe("-1600 -1100 3200 2200");
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport drag-pan set to/);
+      await page.locator("#objectVectorStudioV2ResetViewButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
       await page.locator("#objectVectorStudioV2CenterDotButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "true");
