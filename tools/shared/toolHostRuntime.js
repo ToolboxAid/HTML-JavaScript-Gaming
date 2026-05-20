@@ -1,12 +1,9 @@
+import { isPlainObject } from '../../src/shared/utils/objectUtils.js';
 import { getToolHostEntryById } from "./toolHostManifest.js";
 import {
   removeToolHostSharedContextById,
   writeToolHostSharedContext
 } from "./toolHostSharedContext.js";
-
-function isPlainObject(value) {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
 
 export function validateInput(payloadJson, paletteJson = null) {
   if (!isPlainObject(payloadJson)) {

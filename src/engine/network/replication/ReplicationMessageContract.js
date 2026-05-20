@@ -4,6 +4,8 @@ David Quesenberry
 04/15/2026
 ReplicationMessageContract.js
 */
+
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
 export const REPLICATION_SNAPSHOT_TYPES = Object.freeze({
   FULL: 'full',
   DELTA: 'delta',
@@ -28,10 +30,6 @@ const CLIENT_OWNED_METADATA_FIELDS = Object.freeze([
   'lastAppliedSequence',
   'pendingEnvelopes',
 ]);
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function isPlainObject(value) {
   return value !== null

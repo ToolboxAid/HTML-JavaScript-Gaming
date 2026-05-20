@@ -1,3 +1,5 @@
+import { isPlainObject } from '../../../../src/shared/utils/objectUtils.js';
+import { deepClone as clone } from '../../../../src/shared/utils/jsonUtils.js';
 import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 
 const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;
@@ -11,14 +13,6 @@ const STRETCH_ROLE_DEFAULTS = Object.freeze({
   bezel: 10
 });
 const COLOR_HEX_PATTERN = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function parseAssetId(assetId) {
   const match = ASSET_ID_PATTERN.exec(String(assetId || ""));

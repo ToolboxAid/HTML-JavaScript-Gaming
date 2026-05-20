@@ -14,6 +14,10 @@ export function distance(a, b) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+export function near(a, b, epsilon = 0.5) {
+  return Math.abs(a - b) <= epsilon;
+}
+
 export function wrap(value, min, max) {
   const low = Math.min(min, max);
   const high = Math.max(min, max);

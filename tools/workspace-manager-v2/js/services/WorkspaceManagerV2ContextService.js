@@ -1,4 +1,6 @@
-﻿const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
+import { isPlainObject } from '../../../../src/shared/utils/objectUtils.js';
+import { deepClone as clone } from '../../../../src/shared/utils/jsonUtils.js';
+const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 const WORKSPACE_SESSION_SCHEMA_REF = "tools/schemas/workspace.manifest.schema.json";
@@ -83,14 +85,6 @@ const WORKSPACE_LAUNCHABLE_TOOLS = Object.freeze([
     path: "../storage-inspector-v2/index.html"
   })
 ]);
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
 
 function makeHostContextId() {
   return `workspace-manager-v2-${Date.now().toString(36)}`;

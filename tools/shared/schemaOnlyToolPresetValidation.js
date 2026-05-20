@@ -1,10 +1,7 @@
+import { isPlainObject } from '../../src/shared/utils/objectUtils.js';
 import { normalizeText } from "../../src/shared/string/index.js";
 
 const TOOL_SCHEMA_CACHE = new Map();
-
-function isPlainObject(value) {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
 
 function resolveJsonPointer(root, pointer) {
   if (!pointer.startsWith("#/")) {

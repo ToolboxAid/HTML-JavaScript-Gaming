@@ -1,3 +1,4 @@
+import { asArray } from '../../../src/shared/utils/arrayUtils.js';
 import { safeString } from "../projectSystemValueUtils.js";
 import {
   GAME_ASSET_MANIFEST_SCHEMA,
@@ -6,10 +7,6 @@ import {
 import { toObject } from "../../../src/shared/utils/objectUtils.js";
 
 const SUPPORTED_DOMAINS = Object.freeze(["sprites", "tilemaps", "parallax", "vectors"]);
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
-}
 
 function pushIssue(issues, message) {
   issues.push(safeString(message, "Invalid manifest structure."));

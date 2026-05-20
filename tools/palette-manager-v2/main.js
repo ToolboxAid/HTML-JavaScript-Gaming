@@ -1,13 +1,10 @@
+import { isPlainObject } from '../../src/shared/utils/objectUtils.js';
 import { PaletteUsageService } from "../common/PaletteUsageService.js";
 import { PaletteSortService } from "../common/PaletteSortService.js";
 import { PaletteManagerApp } from "./modules/PaletteManagerApp.js";
 
 const PALETTE_MANAGER_V2_TOOL_SESSION_KEY = "workspace.tools.palette-manager-v2";
 const WORKSPACE_RETURN_HISTORY_CONTEXT_KEY = "workspace-manager-v2-return-history-context-id";
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
 
 function resolvePaletteSource() {
   const paletteSource = globalThis.paletteList;

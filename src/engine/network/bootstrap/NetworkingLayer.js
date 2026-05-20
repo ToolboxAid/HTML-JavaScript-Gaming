@@ -4,12 +4,10 @@ David Quesenberry
 03/22/2026
 NetworkingLayer.js
 */
+
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
 import LoopbackTransport from '../transport/LoopbackTransport.js';
 import NetworkConditionSimulator from '../transport/NetworkConditionSimulator.js';
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 export default class NetworkingLayer {
   constructor({

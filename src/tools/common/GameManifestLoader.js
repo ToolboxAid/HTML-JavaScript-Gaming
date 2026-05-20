@@ -1,8 +1,7 @@
 import { asPositiveInteger } from "../../shared/number/index.js";
+import { isRecord } from "../../shared/types/typeGuards.js";
 
-export function isRecord(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
+export { isRecord };
 
 function parseJson(rawValue, sourceLabel) {
   try {

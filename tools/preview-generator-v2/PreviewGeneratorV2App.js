@@ -1,3 +1,4 @@
+import { isPlainObject } from '../../src/shared/utils/objectUtils.js';
 import { PreviewGeneratorV2Logger } from './PreviewGeneratorV2Logger.js';
 import { PreviewGeneratorV2Ui } from './PreviewGeneratorV2Ui.js';
 import { PreviewGeneratorV2RepoAccess } from './PreviewGeneratorV2RepoAccess.js';
@@ -114,10 +115,6 @@ function repoRootNameMatches(selectedRepoName, expectedRepoRoot) {
     .filter(Boolean)
     .at(-1);
   return selectedRepoName === expectedFolderName;
-}
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function readSessionJson(key) {

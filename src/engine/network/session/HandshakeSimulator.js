@@ -4,6 +4,8 @@ David Quesenberry
 04/15/2026
 HandshakeSimulator.js
 */
+
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
 import LoopbackTransport from '../transport/LoopbackTransport.js';
 import {
   createSessionLifecycle,
@@ -11,10 +13,6 @@ import {
   SESSION_STATES,
 } from './SessionLifecycleContract.js';
 import { createTransportBoundary, getTransportContract } from '../transport/TransportContract.js';
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 export const HANDSHAKE_MESSAGE_TYPES = Object.freeze({
   HELLO: 'session.handshake.hello',

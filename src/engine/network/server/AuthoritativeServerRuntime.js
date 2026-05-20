@@ -4,6 +4,8 @@ David Quesenberry
 04/15/2026
 AuthoritativeServerRuntime.js
 */
+
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
 import AuthoritativeInputIngestionContract from './AuthoritativeInputIngestionContract.js';
 
 export const SERVER_RUNTIME_PHASES = Object.freeze({
@@ -18,10 +20,6 @@ export const SERVER_RUNTIME_INGEST_REJECTION_CODES = Object.freeze({
   INPUT_QUEUE_FULL: 'INPUT_QUEUE_FULL',
   DUPLICATE_OR_OUT_OF_ORDER_SEQUENCE: 'DUPLICATE_OR_OUT_OF_ORDER_SEQUENCE',
 });
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function sanitizeTickRate(tickRateHz) {
   if (!Number.isFinite(tickRateHz) || tickRateHz <= 0) {

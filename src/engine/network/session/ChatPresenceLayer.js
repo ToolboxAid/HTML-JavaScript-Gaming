@@ -4,11 +4,9 @@ David Quesenberry
 03/22/2026
 ChatPresenceLayer.js
 */
-import LobbySessionManager from './LobbySessionManager.js';
 
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import LobbySessionManager from './LobbySessionManager.js';
 
 export default class ChatPresenceLayer {
   constructor({ lobby = null } = {}) {

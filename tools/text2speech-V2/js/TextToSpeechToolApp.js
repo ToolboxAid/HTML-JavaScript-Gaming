@@ -1,4 +1,6 @@
-﻿import {
+import { isPlainObject } from '../../../src/shared/utils/objectUtils.js';
+import { deepClone as clone } from '../../../src/shared/utils/jsonUtils.js';
+import {
   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
@@ -16,14 +18,6 @@
 const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speech-V2";
 const TEXT_TO_SPEECH_SCHEMA_URL = `/${TEXT_TO_SPEECH_SCHEMA_ID}`;
 const TEXT_TO_SPEECH_URL_SOURCE_PARAM = "samplePresetPath";
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function slugFromName(name) {
   const slug = String(name || "")

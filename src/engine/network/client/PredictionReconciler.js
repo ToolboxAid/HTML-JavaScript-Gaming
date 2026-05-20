@@ -4,10 +4,8 @@ David Quesenberry
 03/22/2026
 PredictionReconciler.js
 */
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
 function distance(a, b) {
   return Math.abs((a?.x ?? 0) - (b?.x ?? 0)) + Math.abs((a?.y ?? 0) - (b?.y ?? 0));
 }

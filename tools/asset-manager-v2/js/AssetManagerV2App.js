@@ -1,9 +1,6 @@
+import { deepClone as clone } from '../../../src/shared/utils/jsonUtils.js';
 import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
 const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.";
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function sortedAssets(assets) {
   return Object.fromEntries(Object.entries(assets).sort(([left], [right]) => left.localeCompare(right)));

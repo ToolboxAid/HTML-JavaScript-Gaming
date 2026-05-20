@@ -1,11 +1,5 @@
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-
+import { isPlainObject } from '../../../../src/shared/utils/objectUtils.js';
+import { deepClone as clone } from '../../../../src/shared/utils/jsonUtils.js';
 function normalizeWorkspacePath(value) {
   return String(value || "").trim().replace(/\\/g, "/").replace(/\/+/g, "/").replace(/^\/+|\/+$/g, "");
 }

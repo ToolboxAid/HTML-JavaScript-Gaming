@@ -4,11 +4,9 @@ David Quesenberry
 03/22/2026
 StateReplication.js
 */
-import Serializer from '../transport/Serializer.js';
 
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import Serializer from '../transport/Serializer.js';
 
 export default class StateReplication {
   constructor({ serializer = null } = {}) {

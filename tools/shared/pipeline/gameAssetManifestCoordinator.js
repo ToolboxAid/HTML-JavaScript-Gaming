@@ -1,3 +1,4 @@
+import { asArray } from '../../../src/shared/utils/arrayUtils.js';
 import { safeString } from "../projectSystemValueUtils.js";
 import { toObject } from "../../../src/shared/utils/objectUtils.js";
 
@@ -13,10 +14,6 @@ function toSlug(value, fallback = "game") {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
   return text || fallback;
-}
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
 }
 
 function normalizeRecord(rawRecord, domain) {

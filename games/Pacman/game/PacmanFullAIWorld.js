@@ -4,6 +4,8 @@ David Quesenberry
 03/25/2026
 PacmanFullAIWorld.js
 */
+
+import { near } from '/src/shared/utils/mathUtils.js';
 import PacmanFullAIConfig from './PacmanFullAIConfig.js';
 import PacmanFullAIGhostController from './PacmanFullAIGhostController.js';
 import PacmanFullAIGhostHouseController from './PacmanFullAIGhostHouseController.js';
@@ -13,10 +15,6 @@ import { DIRS } from './PacmanFullAINavigator.js';
 import { oppositeCardinalDirection } from '/src/shared/utils/index.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
-
-function near(a, b, epsilon = 0.5) {
-  return Math.abs(a - b) <= epsilon;
-}
 
 function isOppositePair(a, b) {
   return Boolean(a && b && oppositeCardinalDirection(a) === b);

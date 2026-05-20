@@ -4,10 +4,8 @@ David Quesenberry
 03/22/2026
 Serializer.js
 */
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
 export default class Serializer {
   constructor({ version = 1 } = {}) {
     this.version = version;

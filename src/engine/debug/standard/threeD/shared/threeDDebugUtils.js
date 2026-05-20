@@ -6,17 +6,11 @@ threeDDebugUtils.js
 */
 
 import { sanitizeText } from "../../../../../shared/string/index.js";
+import { asFinite } from "../../../../../shared/math/numberNormalization.js";
+import { asArray } from "../../../../../shared/utils/arrayUtils.js";
 import { asObject } from "../../../../../shared/utils/objectUtils.js";
 
-export { asObject, sanitizeText };
-
-export function asArray(value) {
-  return Array.isArray(value) ? value : [];
-}
-
-export function asFinite(value, fallback = 0) {
-  return Number.isFinite(value) ? Number(value) : fallback;
-}
+export { asArray, asFinite, asObject, sanitizeText };
 
 export function asNonNegativeInteger(value, fallback = 0) {
   const normalized = Number.isFinite(value) ? Math.floor(Number(value)) : fallback;

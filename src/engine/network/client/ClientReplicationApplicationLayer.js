@@ -4,15 +4,13 @@ David Quesenberry
 04/15/2026
 ClientReplicationApplicationLayer.js
 */
+
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
 import ClientReconciliationStrategy, {
   REPLICATION_IGNORE_REASONS,
 } from './ClientReconciliationStrategy.js';
 import ReplicationMessageContract from '../replication/ReplicationMessageContract.js';
 import StateReplication from '../replication/StateReplication.js';
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 export default class ClientReplicationApplicationLayer {
   constructor({

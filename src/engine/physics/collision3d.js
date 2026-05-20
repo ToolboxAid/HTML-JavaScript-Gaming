@@ -4,10 +4,8 @@ David Quesenberry
 04/15/2026
 collision3d.js
 */
-function toFinite(value, fallback = 0) {
-  return Number.isFinite(value) ? value : fallback;
-}
 
+import { asFinite as toFinite } from '../../shared/math/numberNormalization.js';
 function getAabb3D(bounds) {
   return {
     x: toFinite(bounds?.x, 0),

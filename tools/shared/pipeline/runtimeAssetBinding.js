@@ -1,3 +1,4 @@
+import { asArray } from '../../../src/shared/utils/arrayUtils.js';
 import { safeString } from "../projectSystemValueUtils.js";
 import { GAME_ASSET_MANIFEST_SCHEMA, GAME_ASSET_MANIFEST_VERSION } from "./gameAssetManifestCoordinator.js";
 import { toObject } from "../../../src/shared/utils/objectUtils.js";
@@ -7,10 +8,6 @@ export const RUNTIME_ASSET_BINDING_VERSION = 1;
 
 export const RUNTIME_ACTIVE_DOMAINS = Object.freeze(["sprites", "tilemaps", "parallax", "vectors"]);
 const RUNTIME_BINDING_INDEX_CACHE = new WeakMap();
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
-}
 
 function toSlug(value, fallback = "asset") {
   const text = safeString(value, fallback)

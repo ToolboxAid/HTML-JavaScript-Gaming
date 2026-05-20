@@ -4,6 +4,8 @@ David Quesenberry
 04/15/2026
 AuthoritativeInputIngestionContract.js
 */
+
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
 export const INPUT_INGESTION_REJECTION_CODES = Object.freeze({
   ENVELOPE_REQUIRED: 'ENVELOPE_REQUIRED',
   SESSION_ID_REQUIRED: 'SESSION_ID_REQUIRED',
@@ -22,10 +24,6 @@ export const SERVER_OWNED_STATE_FIELDS = Object.freeze([
   'connectedClients',
   'acceptedInputQueue',
 ]);
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function isPlainObject(value) {
   return value !== null

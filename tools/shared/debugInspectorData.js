@@ -1,9 +1,6 @@
+import { asArray } from '../../src/shared/utils/arrayUtils.js';
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
 import { isFiniteNumber } from "../../src/shared/number/index.js";
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
-}
 
 function asNumber(value, fallback = 0) {
   const numeric = Number(value);

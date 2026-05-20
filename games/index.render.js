@@ -1,3 +1,4 @@
+import { asArray } from '../src/shared/utils/arrayUtils.js';
 import { getToolRegistry } from "../tools/toolRegistry.js";
 import { resolveGamePreviewMap } from "./shared/gameManifestPreviewResolver.js";
 import { normalizeText as normalize, normalizeToken } from "../src/shared/string/index.js";
@@ -50,10 +51,6 @@ function sortLevels(a, b) {
     return left.order - right.order;
   }
   return left.label.localeCompare(right.label, undefined, { sensitivity: "base" });
-}
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
 }
 
 function escapeHtml(value) {

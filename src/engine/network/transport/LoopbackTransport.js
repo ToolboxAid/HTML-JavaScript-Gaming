@@ -4,10 +4,8 @@ David Quesenberry
 03/22/2026
 LoopbackTransport.js
 */
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
+import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
 export default class LoopbackTransport {
   constructor(id) {
     this.id = id;

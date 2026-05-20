@@ -4,10 +4,8 @@ David Quesenberry
 04/15/2026
 integration3d.js
 */
-function toFinite(value, fallback = 0) {
-  return Number.isFinite(value) ? value : fallback;
-}
 
+import { asFinite as toFinite } from '../../shared/math/numberNormalization.js';
 export function integrateVelocity3D(body, dtSeconds) {
   if (!body || typeof body !== 'object') {
     return body;

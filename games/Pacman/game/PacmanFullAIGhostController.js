@@ -4,12 +4,10 @@ David Quesenberry
 03/25/2026
 PacmanFullAIGhostController.js
 */
+
+import { near } from '/src/shared/utils/mathUtils.js';
 import { chooseDirectionTowardTarget, DIRS, opposite } from './PacmanFullAINavigator.js';
 import { computeTargetTile } from './PacmanFullAITargeting.js';
-
-function near(a, b, epsilon = 0.5) {
-  return Math.abs(a - b) <= epsilon;
-}
 
 function speedForGhost(cfg, mode, ghost, tileX, tileY) {
   if (ghost.eaten) return cfg.ghostSpeedEaten;

@@ -4,12 +4,10 @@ David Quesenberry
 03/22/2026
 SettingsSystem.js
 */
+
+import { deepClone } from '../../shared/utils/jsonUtils.js';
 import { ConfigStore } from '../config/index.js';
 import { StorageService } from '../persistence/index.js';
-
-function deepClone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
 
 function mergeSettings(base, incoming) {
   const output = Array.isArray(base) ? [...base] : { ...base };
