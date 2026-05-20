@@ -5,7 +5,7 @@ David Quesenberry
 ClientReplicationApplicationLayer.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 import ClientReconciliationStrategy, {
   REPLICATION_IGNORE_REASONS,
 } from './ClientReconciliationStrategy.js';
@@ -40,7 +40,7 @@ export default class ClientReplicationApplicationLayer {
       this.ignoredEnvelopes.push({
         reason: REPLICATION_IGNORE_REASONS.INVALID_ENVELOPE,
         code: validation.code,
-        envelope: envelope ? clone(envelope) : null,
+        envelope: envelope ? deepClone(envelope) : null,
       });
       this.ignoredCount += 1;
       return {
@@ -77,7 +77,7 @@ export default class ClientReplicationApplicationLayer {
       if (!decision.apply) {
         this.ignoredEnvelopes.push({
           reason: decision.reason,
-          envelope: clone(envelope),
+          envelope: deepClone(envelope),
         });
         this.ignoredCount += 1;
         ignored += 1;
@@ -100,11 +100,11 @@ export default class ClientReplicationApplicationLayer {
   }
 
   getReplicatedStateSnapshot() {
-    return clone(this.replicatedState);
+    return deepClone(this.replicatedState);
   }
 
   getIgnoredEnvelopes() {
-    return this.ignoredEnvelopes.map((entry) => clone(entry));
+    return this.ignoredEnvelopes.map((entry) => deepClone(entry));
   }
 
   getReplicationStatus() {

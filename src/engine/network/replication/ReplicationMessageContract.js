@@ -5,7 +5,7 @@ David Quesenberry
 ReplicationMessageContract.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 export const REPLICATION_SNAPSHOT_TYPES = Object.freeze({
   FULL: 'full',
   DELTA: 'delta',
@@ -149,8 +149,8 @@ export function normalizeReplicationEnvelope(
     snapshotType: envelope.snapshotType,
     snapshot: {
       tick: envelope.authoritativeTick,
-      entities: clone(envelope.snapshot.entities || []),
-      despawned: clone(envelope.snapshot.despawned || []),
+      entities: deepClone(envelope.snapshot.entities || []),
+      despawned: deepClone(envelope.snapshot.despawned || []),
     },
     sentAtMs: Number(envelope.sentAtMs),
     receivedAtMs,

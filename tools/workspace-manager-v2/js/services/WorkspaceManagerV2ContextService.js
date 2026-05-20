@@ -1,5 +1,5 @@
 import { isPlainObject } from '../../../../src/shared/utils/objectUtils.js';
-import { deepClone as clone } from '../../../../src/shared/utils/jsonUtils.js';
+import { deepClone } from '../../../../src/shared/utils/jsonUtils.js';
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
@@ -140,7 +140,7 @@ function objectVectorStudioWorkspacePayload(payload) {
   }
   return ["version", "toolId", "name", "objects"].reduce((objectVectorPayload, key) => {
     if (Object.prototype.hasOwnProperty.call(payload, key)) {
-      objectVectorPayload[key] = clone(payload[key]);
+      objectVectorPayload[key] = deepClone(payload[key]);
     }
     return objectVectorPayload;
   }, {});
@@ -150,7 +150,7 @@ function workspaceToolsWithObjectVectorPayload(tools) {
   if (!isPlainObject(tools)) {
     return tools;
   }
-  const workspaceTools = clone(tools);
+  const workspaceTools = deepClone(tools);
   if (isPlainObject(workspaceTools[OBJECT_VECTOR_STUDIO_V2_TOOL_KEY])) {
     workspaceTools[OBJECT_VECTOR_STUDIO_V2_TOOL_KEY] = objectVectorStudioWorkspacePayload(workspaceTools[OBJECT_VECTOR_STUDIO_V2_TOOL_KEY]);
   }
@@ -161,7 +161,7 @@ function workspaceContextWithObjectVectorPayload(context) {
   if (!isPlainObject(context)) {
     return context;
   }
-  const workspaceContext = clone(context);
+  const workspaceContext = deepClone(context);
   if (isPlainObject(workspaceContext.tools)) {
     workspaceContext.tools = workspaceToolsWithObjectVectorPayload(workspaceContext.tools);
   }
@@ -225,7 +225,7 @@ function gameFromWorkspaceManifest(workspaceManifest, manifestPath = "") {
   return {
     id: workspaceManifest.gameId,
     name: displayNameFromGameId(workspaceManifest.gameId) || workspaceManifest.name || workspaceManifest.gameId,
-    manifest: clone(workspaceManifest),
+    manifest: deepClone(workspaceManifest),
     manifestPath: manifestPath || `/${String(workspaceManifest.gameRoot).replace(/^\/+/, "")}game.manifest.json`
   };
 }
@@ -240,11 +240,11 @@ function gameFromGameManifest(gameManifest, manifestPath = "", repoRoot = "", re
     folder: gameInfo.folder,
     gameRoot,
     assetsPath: `${gameRoot}assets`,
-    launch: clone(gameManifest.launch || {}),
-    screen: clone(gameManifest.screen || null),
-    tools: clone(gameManifest.tools || {}),
+    launch: deepClone(gameManifest.launch || {}),
+    screen: deepClone(gameManifest.screen || null),
+    tools: deepClone(gameManifest.tools || {}),
     id: gameInfo.id,
-    manifest: clone(gameManifest),
+    manifest: deepClone(gameManifest),
     manifestKind: "game-manifest",
     manifestPath,
     name: gameInfo.name,
@@ -586,11 +586,11 @@ export class WorkspaceManagerV2ContextService {
   }
 
   games() {
-    return this.discoveredGames.map((game) => ({ ...game, manifest: clone(game.manifest) }));
+    return this.discoveredGames.map((game) => ({ ...game, manifest: deepClone(game.manifest) }));
   }
 
   setDiscoveredGames(games) {
-    this.discoveredGames = games.map((game) => ({ ...game, manifest: clone(game.manifest) }));
+    this.discoveredGames = games.map((game) => ({ ...game, manifest: deepClone(game.manifest) }));
   }
 
   clearDiscoveredGames() {
@@ -1007,13 +1007,13 @@ export class WorkspaceManagerV2ContextService {
   dataSessionForTool(tool, context) {
     const toolPayload = toolPayloadForContext(tool, context);
     if (tool.id === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(toolPayload)) {
-      return clone(toolPayload);
+      return deepClone(toolPayload);
     }
     if (tool.id === OBJECT_VECTOR_STUDIO_V2_TOOL_KEY && isPlainObject(toolPayload)) {
       return objectVectorStudioWorkspacePayload(toolPayload);
     }
     if (isPlainObject(toolPayload)) {
-      return clone(toolPayload);
+      return deepClone(toolPayload);
     }
     return null;
   }
@@ -1074,7 +1074,7 @@ export class WorkspaceManagerV2ContextService {
       assetCount: tool.id === ASSET_MANAGER_V2_TOOL_KEY && isPlainObject(data?.assets)
         ? Object.keys(data.assets).length
         : null,
-      dirty: isPlainObject(session?.dirty) ? clone(session.dirty) : null,
+      dirty: isPlainObject(session?.dirty) ? deepClone(session.dirty) : null,
       dirtyStatus: dirtyStatusFromSession(session),
       paletteSwatchCount: tool.id === PALETTE_MANAGER_V2_TOOL_KEY && Array.isArray(data?.swatches)
         ? data.swatches.length
@@ -1091,7 +1091,7 @@ export class WorkspaceManagerV2ContextService {
   }
 
   refreshContextFromToolSessions({ context, tools = this.workspaceLaunchableTools() } = {}) {
-    const refreshedContext = clone(context);
+    const refreshedContext = deepClone(context);
     const toolSummaries = {};
     if (!isPlainObject(refreshedContext.tools)) {
       refreshedContext.tools = {};
@@ -1105,7 +1105,7 @@ export class WorkspaceManagerV2ContextService {
         }
         const session = sessionResult.session;
         if (isPlainObject(session.data) || (tool.id === TEXT2SPEECH_V2_TOOL_KEY && Array.isArray(session.data))) {
-          refreshedContext.tools[tool.id] = clone(session.data);
+          refreshedContext.tools[tool.id] = deepClone(session.data);
         }
         toolSummaries[tool.id] = this.summarizeToolSession(tool, session);
       });
@@ -1260,7 +1260,7 @@ export class WorkspaceManagerV2ContextService {
     }
     const palettePayload = workspaceContext.tools?.[PALETTE_MANAGER_V2_TOOL_KEY];
     const assetPayload = workspaceContext.tools?.[ASSET_MANAGER_V2_TOOL_KEY];
-    const paletteSwatches = Array.isArray(palettePayload?.swatches) ? clone(palettePayload.swatches) : [];
+    const paletteSwatches = Array.isArray(palettePayload?.swatches) ? deepClone(palettePayload.swatches) : [];
     const assetCount = Object.keys(assetPayload?.assets || {}).length;
     const assetWarning = game.id === "Asteroids" && assetCount === 0
       ? `${sourceLabel} has no Asteroids Asset Manager V2 assets; Workspace Manager V2 did not inject hardcoded assets.`
@@ -1270,7 +1270,7 @@ export class WorkspaceManagerV2ContextService {
     }
     return {
       ok: true,
-      context: clone(workspaceContext),
+      context: deepClone(workspaceContext),
       game: {
         ...game,
         assetsPath: workspaceContext.assetsPath,
@@ -1279,7 +1279,7 @@ export class WorkspaceManagerV2ContextService {
         paletteName: palettePayload.name || "Workspace Palette",
         repoPath: workspaceContext.repoPath || "",
         repoRoot: workspaceContext.repoRoot || "",
-        screen: clone(workspaceContext.screen || null)
+        screen: deepClone(workspaceContext.screen || null)
       },
       assetCount,
       assetWarning,
@@ -1711,7 +1711,7 @@ export class WorkspaceManagerV2ContextService {
     }
 
     const contextTools = workspaceToolsWithObjectVectorPayload(context.tools || {});
-    const nextManifest = clone(boundGame.manifest);
+    const nextManifest = deepClone(boundGame.manifest);
     delete nextManifest.game.gameData;
     delete nextManifest.game["workspace"];
     nextManifest.tools = contextTools;
@@ -1818,7 +1818,7 @@ export class WorkspaceManagerV2ContextService {
     };
     const screen = game.manifest?.screen || game.screen || null;
     if (isPlainObject(screen)) {
-      workspaceManifest.screen = clone(screen);
+      workspaceManifest.screen = deepClone(screen);
     }
     if (!workspaceManifest.repoRoot && game.repoRoot) {
       workspaceManifest.repoRoot = game.repoRoot;

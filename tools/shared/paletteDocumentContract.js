@@ -1,5 +1,5 @@
 import { sanitizeText } from "../../src/shared/string/index.js";
-import { asObject as toObject } from "../../src/shared/utils/objectUtils.js";
+import { asObject } from "../../src/shared/utils/objectUtils.js";
 
 /*
 Toolbox Aid
@@ -29,7 +29,7 @@ function getFallbackSymbol(index) {
 }
 
 function normalizeEntry(rawEntry, index) {
-  const source = toObject(rawEntry);
+  const source = asObject(rawEntry);
   const hex = toHexColor(source.hex);
   const symbol = sanitizeText(source.symbol).slice(0, 1) || getFallbackSymbol(index);
   return {
@@ -54,7 +54,7 @@ function normalizeLegacyColorEntries(colors) {
 }
 
 export function normalizePaletteDocument(rawDocument) {
-  const source = toObject(rawDocument);
+  const source = asObject(rawDocument);
   const swatches = Array.isArray(source.swatches)
     ? source.swatches.map((entry, index) => normalizeEntry(entry, index)).filter((entry) => Boolean(entry.hex))
     : Array.isArray(source.entries)
@@ -73,7 +73,7 @@ export function normalizePaletteDocument(rawDocument) {
 }
 
 export function validatePaletteDocument(rawDocument, options = {}) {
-  const source = toObject(rawDocument);
+  const source = asObject(rawDocument);
   const normalized = normalizePaletteDocument(source);
   const issues = [];
   const warnings = [];

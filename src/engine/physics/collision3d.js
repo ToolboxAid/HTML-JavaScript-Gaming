@@ -5,15 +5,15 @@ David Quesenberry
 collision3d.js
 */
 
-import { asFinite as toFinite } from '../../shared/math/numberNormalization.js';
+import { asFinite } from '../../shared/math/numberNormalization.js';
 function getAabb3D(bounds) {
   return {
-    x: toFinite(bounds?.x, 0),
-    y: toFinite(bounds?.y, 0),
-    z: toFinite(bounds?.z, 0),
-    width: Math.max(0, toFinite(bounds?.width, 0)),
-    height: Math.max(0, toFinite(bounds?.height, 0)),
-    depth: Math.max(0, toFinite(bounds?.depth, 0)),
+    x: asFinite(bounds?.x, 0),
+    y: asFinite(bounds?.y, 0),
+    z: asFinite(bounds?.z, 0),
+    width: Math.max(0, asFinite(bounds?.width, 0)),
+    height: Math.max(0, asFinite(bounds?.height, 0)),
+    depth: Math.max(0, asFinite(bounds?.depth, 0)),
   };
 }
 

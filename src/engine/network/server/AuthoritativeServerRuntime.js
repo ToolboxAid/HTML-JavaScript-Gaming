@@ -5,7 +5,7 @@ David Quesenberry
 AuthoritativeServerRuntime.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 import AuthoritativeInputIngestionContract from './AuthoritativeInputIngestionContract.js';
 
 export const SERVER_RUNTIME_PHASES = Object.freeze({
@@ -159,7 +159,7 @@ export default class AuthoritativeServerRuntime {
 
     return {
       ok: true,
-      envelope: clone(accepted),
+      envelope: deepClone(accepted),
       queueDepth: this.acceptedInputQueue.length,
     };
   }
@@ -168,7 +168,7 @@ export default class AuthoritativeServerRuntime {
     const entry = {
       code,
       message,
-      envelope: envelope ? clone(envelope) : null,
+      envelope: envelope ? deepClone(envelope) : null,
       atTick: this.authoritativeTick,
     };
     this.rejectedInputLog.push(entry);
@@ -188,14 +188,14 @@ export default class AuthoritativeServerRuntime {
         || (left.sequence - right.sequence)
         || (left.ordinal - right.ordinal)
       ))
-      .map((entry) => clone(entry));
+      .map((entry) => deepClone(entry));
 
     this.acceptedInputQueue.length = 0;
     return drained;
   }
 
   getRejectedInputs() {
-    return this.rejectedInputLog.map((entry) => clone(entry));
+    return this.rejectedInputLog.map((entry) => deepClone(entry));
   }
 
   getSnapshot() {

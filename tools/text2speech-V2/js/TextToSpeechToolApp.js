@@ -1,5 +1,5 @@
 import { isPlainObject } from '../../../src/shared/utils/objectUtils.js';
-import { deepClone as clone } from '../../../src/shared/utils/jsonUtils.js';
+import { deepClone } from '../../../src/shared/utils/jsonUtils.js';
 import {
   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
   TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
@@ -677,7 +677,7 @@ export class TextToSpeechToolApp {
     this.queueControl.replaceSelectedItem(selectedItem);
     const name = this.uniqueItemName(`${selectedItem.name} copy`);
     const item = {
-      ...clone(selectedItem),
+      ...deepClone(selectedItem),
       id: this.uniqueItemId(name),
       name
     };

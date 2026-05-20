@@ -1,6 +1,6 @@
 import { getObjectVectorCollisionOutlinePoints } from '../../../src/engine/collision/index.js';
 import { isRecord } from '../../../src/shared/types/typeGuards.js';
-import { deepClone as clone } from '../../../src/shared/utils/jsonUtils.js';
+import { deepClone } from '../../../src/shared/utils/jsonUtils.js';
 
 const ASTEROIDS_OBJECT_VECTOR_TOOL_KEY = 'object-vector-studio-v2';
 const OBJECT_VECTOR_PAYLOAD_KEYS = new Set(['version', 'toolId', 'name', 'objects']);
@@ -112,7 +112,7 @@ export function loadAsteroidsObjectGeometryFromManifest(manifest, {
   const objects = Array.isArray(objectVectorPayload?.objects)
     ? objectVectorPayload.objects
       .filter((object) => isRecord(object) && normalizeString(object.id))
-      .map((object) => clone(object))
+      .map((object) => deepClone(object))
     : [];
   const objectsById = new Map(objects.map((object) => [object.id, object]));
   ASTEROIDS_REQUIRED_MANIFEST_GEOMETRY_IDS.forEach((id) => {
@@ -141,7 +141,7 @@ export function loadAsteroidsObjectGeometryFromManifest(manifest, {
   const objectGeometry = {
     objects,
     objectsById,
-    payload: clone(objectVectorPayload),
+    payload: deepClone(objectVectorPayload),
     sourceLabel,
   };
   logValidation(logger, 'OK', `Asteroids Object Vector manifest geometry loaded from ${sourceLabel}: ${objects.length} objects.`, {

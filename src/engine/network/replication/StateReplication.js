@@ -5,7 +5,7 @@ David Quesenberry
 StateReplication.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 import Serializer from '../transport/Serializer.js';
 
 export default class StateReplication {
@@ -26,7 +26,7 @@ export default class StateReplication {
       tick,
       spawned,
       despawned,
-      entities: entities.map((entity) => clone(entity)),
+      entities: entities.map((entity) => deepClone(entity)),
     };
   }
 
@@ -39,10 +39,10 @@ export default class StateReplication {
   }
 
   applySnapshot(snapshot, current = []) {
-    const map = new Map(current.map((entity) => [entity.id, clone(entity)]));
+    const map = new Map(current.map((entity) => [entity.id, deepClone(entity)]));
     snapshot.despawned.forEach((id) => map.delete(id));
     snapshot.entities.forEach((entity) => {
-      map.set(entity.id, clone(entity));
+      map.set(entity.id, deepClone(entity));
     });
     return [...map.values()];
   }

@@ -5,7 +5,7 @@ David Quesenberry
 Serializer.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 export default class Serializer {
   constructor({ version = 1 } = {}) {
     this.version = version;
@@ -15,7 +15,7 @@ export default class Serializer {
     return JSON.stringify({
       type,
       version,
-      payload: clone(payload),
+      payload: deepClone(payload),
     });
   }
 
@@ -24,7 +24,7 @@ export default class Serializer {
     return {
       type: parsed.type,
       version: parsed.version ?? 1,
-      payload: clone(parsed.payload),
+      payload: deepClone(parsed.payload),
     };
   }
 

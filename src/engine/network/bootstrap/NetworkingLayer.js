@@ -5,7 +5,7 @@ David Quesenberry
 NetworkingLayer.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 import LoopbackTransport from '../transport/LoopbackTransport.js';
 import NetworkConditionSimulator from '../transport/NetworkConditionSimulator.js';
 
@@ -62,7 +62,7 @@ export default class NetworkingLayer {
       from: this.playerId,
       sessionId: this.sessionId,
       type,
-      payload: clone(payload),
+      payload: deepClone(payload),
       createdAt: Date.now(),
     };
 

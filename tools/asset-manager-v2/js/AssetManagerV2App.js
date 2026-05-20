@@ -1,4 +1,4 @@
-import { deepClone as clone } from '../../../src/shared/utils/jsonUtils.js';
+import { deepClone } from '../../../src/shared/utils/jsonUtils.js';
 import { createAssetPreviewModel } from "./assetPreviewHelpers.js";
 const LAUNCH_GUARD_MESSAGE = "Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.";
 
@@ -360,7 +360,7 @@ export class AssetManagerV2App {
 
   captureState() {
     return {
-      assets: clone(this.assets),
+      assets: deepClone(this.assets),
       missingFileAssetIds: [...this.missingFileAssetIds],
       selectedAssetId: this.selectedAssetId
     };

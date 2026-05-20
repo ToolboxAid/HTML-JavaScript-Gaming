@@ -5,13 +5,13 @@ David Quesenberry
 utils.js
 */
 
-import { isPlainObject as isPlainRecord } from '../../shared/utils/objectUtils.js';
+import { isPlainObject } from '../../shared/utils/objectUtils.js';
 
 function cloneDeep(value) {
   if (Array.isArray(value)) {
     return value.map((entry) => cloneDeep(entry));
   }
-  if (isPlainRecord(value)) {
+  if (isPlainObject(value)) {
     const out = {};
     const keys = Object.keys(value);
     for (let i = 0; i < keys.length; i += 1) {
@@ -40,8 +40,8 @@ function mergeDeep(baseValue, patchValue) {
   if (Array.isArray(patchValue)) {
     return patchValue.map((entry) => cloneDeep(entry));
   }
-  if (isPlainRecord(patchValue)) {
-    const baseObject = isPlainRecord(baseValue) ? baseValue : {};
+  if (isPlainObject(patchValue)) {
+    const baseObject = isPlainObject(baseValue) ? baseValue : {};
     const out = {};
     const baseKeys = Object.keys(baseObject);
     for (let i = 0; i < baseKeys.length; i += 1) {

@@ -1,7 +1,7 @@
 import { asArray } from '../src/shared/utils/arrayUtils.js';
 import { getToolRegistry } from "../tools/toolRegistry.js";
 import { resolveGamePreviewMap } from "./shared/gameManifestPreviewResolver.js";
-import { normalizeText as normalize, normalizeToken } from "../src/shared/string/index.js";
+import { normalizeText, normalizeToken } from "../src/shared/string/index.js";
 import { launchWithExternalToolWorkspaceReset, resolveGameWorkspaceLaunchHref } from "../tools/shared/toolLaunchSSoT.js";
 
 const METADATA_PATH = "./metadata/games.index.metadata.json";
@@ -12,7 +12,7 @@ function normalizeTag(value) {
 }
 
 function isThemeEngineClass(value) {
-  const normalized = normalize(value).replace(/\\/g, "/");
+  const normalized = normalizeText(value).replace(/\\/g, "/");
   if (!normalized) {
     return false;
   }
@@ -21,16 +21,16 @@ function isThemeEngineClass(value) {
 }
 
 function toEngineClassName(value) {
-  const normalized = normalize(value).replace(/\\/g, "/");
+  const normalized = normalizeText(value).replace(/\\/g, "/");
   if (!normalized) {
     return "";
   }
   const leaf = normalized.split("/").pop() || "";
-  return normalize(leaf);
+  return normalizeText(leaf);
 }
 
 function levelSortKey(level) {
-  const value = normalize(level);
+  const value = normalizeText(level);
   const numericMatch = value.match(/Level\s+(\d+)/i);
   if (numericMatch) {
     return { bucket: 0, order: Number(numericMatch[1]), label: value };
@@ -63,7 +63,7 @@ function escapeHtml(value) {
 }
 
 function normalizeGameHref(value) {
-  const href = normalize(value).replace(/\\/g, "/");
+  const href = normalizeText(value).replace(/\\/g, "/");
   if (!href || href.includes("..") || !href.startsWith("/games/")) {
     return "";
   }
@@ -104,7 +104,7 @@ function readPinnedSet() {
     if (!Array.isArray(parsed)) {
       return new Set();
     }
-    return new Set(parsed.map((entry) => normalize(entry)).filter(Boolean));
+    return new Set(parsed.map((entry) => normalizeText(entry)).filter(Boolean));
   } catch {
     return new Set();
   }
@@ -117,16 +117,16 @@ function writePinnedSet(pinnedSet) {
 function buildRows(metadata, pinnedSet, toolLabelMap, previewMap) {
   const rows = asArray(metadata?.games)
     .map((game) => {
-      const id = normalize(game?.id);
-      const title = normalize(game?.title) || id;
-      const level = normalize(game?.level) || "Unassigned";
+      const id = normalizeText(game?.id);
+      const title = normalizeText(game?.title) || id;
+      const level = normalizeText(game?.level) || "Unassigned";
       if (!id || !title) {
         return null;
       }
-      const classValues = [...new Set(asArray(game?.classValues).map((value) => normalize(value)).filter(Boolean))]
+      const classValues = [...new Set(asArray(game?.classValues).map((value) => normalizeText(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const engineClasses = [...new Set(asArray(game?.engineClassesUsed)
-        .map((value) => normalize(value))
+        .map((value) => normalizeText(value))
         .filter(Boolean)
         .filter((value) => !isThemeEngineClass(value)))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
@@ -145,15 +145,15 @@ function buildRows(metadata, pinnedSet, toolLabelMap, previewMap) {
       return {
         id,
         title,
-        description: normalize(game?.description) || "No description available.",
+        description: normalizeText(game?.description) || "No description available.",
         level,
-        status: normalize(game?.status) || "planned",
+        status: normalizeText(game?.status) || "planned",
         classValues,
         engineClasses,
         engineClassNames,
         toolTokens,
         tags,
-        preview: normalize(previewMap.get(id)),
+        preview: normalizeText(previewMap.get(id)),
         href,
         workspaceHref: workspaceLaunch.href,
         workspaceLaunchError: workspaceLaunch.error,
@@ -356,7 +356,7 @@ export async function initGamesIndex() {
   const toolLabelMap = new Map(
     toolRegistry
       .filter((tool) => tool.id !== "workspace-manager")
-      .map((tool) => [normalizeToken(tool.id), normalize(tool.displayName) || normalize(tool.name) || normalize(tool.id)])
+      .map((tool) => [normalizeToken(tool.id), normalizeText(tool.displayName) || normalizeText(tool.name) || normalizeText(tool.id)])
       .filter((entry) => entry[0] && entry[1])
   );
   let pinnedSet = readPinnedSet();
@@ -376,11 +376,11 @@ export async function initGamesIndex() {
   const apply = () => {
     model = buildRows(metadata, pinnedSet, toolLabelMap, previewMap);
     const state = {
-      level: normalize(levelSelect.value),
-      classValue: normalize(classSelect.value),
+      level: normalizeText(levelSelect.value),
+      classValue: normalizeText(classSelect.value),
       toolId: normalizeToken(toolSelect.value),
-      tag: normalize(tagSelect.value),
-      query: normalize(searchInput.value)
+      tag: normalizeText(tagSelect.value),
+      query: normalizeText(searchInput.value)
     };
     render(container, statusNode, model.rows, state);
     renderPinned(pinnedContainer, model.rows.filter((row) => row.pinned));
@@ -398,7 +398,7 @@ export async function initGamesIndex() {
     if (!(launchLink instanceof HTMLAnchorElement)) {
       return;
     }
-    const workspaceHref = normalize(launchLink.dataset.workspaceLaunchHref);
+    const workspaceHref = normalizeText(launchLink.dataset.workspaceLaunchHref);
     if (!workspaceHref) {
       return;
     }
@@ -411,7 +411,7 @@ export async function initGamesIndex() {
     if (!(target instanceof HTMLInputElement) || target.type !== "checkbox") {
       return;
     }
-    const gameId = normalize(target.dataset.gamePin);
+    const gameId = normalizeText(target.dataset.gamePin);
     if (!gameId) {
       return;
     }

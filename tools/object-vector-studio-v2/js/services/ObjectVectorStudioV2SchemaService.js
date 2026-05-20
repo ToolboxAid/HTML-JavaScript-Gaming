@@ -1,5 +1,5 @@
 import { isPlainObject } from "../../../../src/shared/utils/objectUtils.js";
-import { deepClone as clone } from "../../../../src/shared/utils/jsonUtils.js";
+import { deepClone } from "../../../../src/shared/utils/jsonUtils.js";
 
 const SCHEMA_URL = new URL("../../../schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
 
@@ -79,7 +79,7 @@ export class ObjectVectorStudioV2SchemaService {
     if (!isPlainObject(definition) || !Object.prototype.hasOwnProperty.call(definition, "default")) {
       throw new Error(`Object Vector Studio V2 schema default is missing for $defs.${definitionName}.default.`);
     }
-    return clone(definition.default);
+    return deepClone(definition.default);
   }
 
   validateSchemaShape(schema, errors) {
@@ -308,7 +308,7 @@ export class ObjectVectorStudioV2SchemaService {
     return {
       errors: [],
       ok: true,
-      palette: clone(palette)
+      palette: deepClone(palette)
     };
   }
 
@@ -316,7 +316,7 @@ export class ObjectVectorStudioV2SchemaService {
     if (!isPlainObject(payload)) {
       return payload;
     }
-    const normalized = clone(payload);
+    const normalized = deepClone(payload);
     if (!Array.isArray(normalized?.objects)) {
       return normalized;
     }
@@ -494,7 +494,7 @@ export class ObjectVectorStudioV2SchemaService {
   }
 
   normalizePayload(payload) {
-    const normalized = clone(payload);
+    const normalized = deepClone(payload);
     normalized.name = normalized.name.trim();
     normalized.objects = normalized.objects.map((object) => ({
       ...object,

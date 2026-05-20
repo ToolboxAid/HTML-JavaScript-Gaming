@@ -5,7 +5,7 @@ David Quesenberry
 HandshakeSimulator.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 import LoopbackTransport from '../transport/LoopbackTransport.js';
 import {
   createSessionLifecycle,
@@ -33,7 +33,7 @@ function createHandshakePacket({
     sessionId,
     from,
     to,
-    payload: clone(payload),
+    payload: deepClone(payload),
     createdAt: Date.now(),
   };
 }
@@ -86,7 +86,7 @@ export default class HandshakeSimulator {
   log(event, details = {}) {
     this.eventLog.push({
       event,
-      details: clone(details),
+      details: deepClone(details),
       step: this.eventLog.length,
     });
   }

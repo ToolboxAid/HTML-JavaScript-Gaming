@@ -4,7 +4,7 @@ David Quesenberry
 04/08/2026
 objectUtils.js
 */
-import { asArray as normalizeArray } from "./arrayUtils.js";
+import { asArray } from "./arrayUtils.js";
 
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -20,10 +20,6 @@ function asObject(value) {
 
 function toObject(value) {
   return value !== null && typeof value === 'object' ? value : {};
-}
-
-function asArray(value) {
-  return normalizeArray(value);
 }
 
 export { isObject, isPlainObject, asObject, toObject, asArray };

@@ -5,7 +5,7 @@ David Quesenberry
 LoopbackTransport.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 export default class LoopbackTransport {
   constructor(id) {
     this.id = id;
@@ -25,7 +25,7 @@ export default class LoopbackTransport {
   }
 
   receive(packet) {
-    this.inbox.push(clone(packet));
+    this.inbox.push(deepClone(packet));
   }
 
   send(packet) {

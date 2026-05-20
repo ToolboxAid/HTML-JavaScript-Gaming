@@ -5,7 +5,7 @@ David Quesenberry
 LobbySessionManager.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 export default class LobbySessionManager {
   constructor() {
     this.sessions = new Map();
@@ -19,7 +19,7 @@ export default class LobbySessionManager {
       players: [{ playerId: hostId, status: 'host' }],
     };
     this.sessions.set(sessionId, session);
-    return clone(session);
+    return deepClone(session);
   }
 
   joinSession(sessionId, playerId) {
@@ -31,7 +31,7 @@ export default class LobbySessionManager {
     if (!session.players.find((player) => player.playerId === playerId)) {
       session.players.push({ playerId, status: 'online' });
     }
-    return clone(session);
+    return deepClone(session);
   }
 
   leaveSession(sessionId, playerId) {
@@ -41,7 +41,7 @@ export default class LobbySessionManager {
     }
 
     session.players = session.players.filter((player) => player.playerId !== playerId);
-    return clone(session);
+    return deepClone(session);
   }
 
   setPresence(sessionId, playerId, status) {
@@ -52,11 +52,11 @@ export default class LobbySessionManager {
     }
 
     player.status = status;
-    return clone(session);
+    return deepClone(session);
   }
 
   getSession(sessionId) {
     const session = this.sessions.get(sessionId);
-    return session ? clone(session) : null;
+    return session ? deepClone(session) : null;
   }
 }

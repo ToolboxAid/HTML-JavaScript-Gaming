@@ -14,7 +14,7 @@ import {
   transformRuntimeOrientedPoints,
 } from '../rendering/OrientationTransform.js';
 import { isRecord } from '../../shared/types/typeGuards.js';
-import { deepClone as clone } from '../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../shared/utils/jsonUtils.js';
 import { asFiniteNumber } from '../../shared/number/index.js';
 
 export const OBJECT_VECTOR_COLLISION_ENGINE_PATH = 'src/engine/collision/objectVector.js';
@@ -84,7 +84,7 @@ export function getObjectVectorOrigin(object) {
 }
 
 function effectiveShapeForFrame(shape, frame, shapeIndex) {
-  const effective = clone(shape);
+  const effective = deepClone(shape);
   const override = Array.isArray(frame?.shapeOverrides)
     ? frame.shapeOverrides.find((entry) => entry.shapeIndex === shapeIndex)
     : null;

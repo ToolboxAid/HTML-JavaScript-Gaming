@@ -5,7 +5,7 @@ David Quesenberry
 PredictionReconciler.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 function distance(a, b) {
   return Math.abs((a?.x ?? 0) - (b?.x ?? 0)) + Math.abs((a?.y ?? 0) - (b?.y ?? 0));
 }
@@ -23,41 +23,41 @@ export default class PredictionReconciler {
   }
 
   setState(state) {
-    this.state = clone(state);
+    this.state = deepClone(state);
   }
 
   predict(input) {
     this.sequence += 1;
-    this.state = this.applyInput(clone(this.state), input);
+    this.state = this.applyInput(deepClone(this.state), input);
     this.history.push({
       sequence: this.sequence,
-      input: clone(input),
+      input: deepClone(input),
     });
     return {
       sequence: this.sequence,
-      state: clone(this.state),
+      state: deepClone(this.state),
     };
   }
 
   reconcile(authoritativeState, acknowledgedSequence = 0) {
-    const before = clone(this.state);
-    this.state = clone(authoritativeState);
+    const before = deepClone(this.state);
+    this.state = deepClone(authoritativeState);
     const pending = this.history.filter((entry) => entry.sequence > acknowledgedSequence);
     this.history = pending;
     pending.forEach((entry) => {
-      this.state = this.applyInput(clone(this.state), entry.input);
+      this.state = this.applyInput(deepClone(this.state), entry.input);
     });
 
     return {
       corrected: distance(before, this.state) > 0,
       replayedInputs: pending.length,
-      state: clone(this.state),
+      state: deepClone(this.state),
       before,
-      authoritativeState: clone(authoritativeState),
+      authoritativeState: deepClone(authoritativeState),
     };
   }
 
   getState() {
-    return clone(this.state);
+    return deepClone(this.state);
   }
 }

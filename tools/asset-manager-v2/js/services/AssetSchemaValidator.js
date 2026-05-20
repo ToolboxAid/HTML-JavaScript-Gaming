@@ -1,5 +1,5 @@
 import { isPlainObject } from '../../../../src/shared/utils/objectUtils.js';
-import { deepClone as clone } from '../../../../src/shared/utils/jsonUtils.js';
+import { deepClone } from '../../../../src/shared/utils/jsonUtils.js';
 import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 
 const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;
@@ -197,7 +197,7 @@ export class AssetSchemaValidator {
     }
     return errors.length
       ? { ok: false, errors }
-      : { ok: true, payload: { ...clone(payload), assets: clone(payload.assets) } };
+      : { ok: true, payload: { ...deepClone(payload), assets: deepClone(payload.assets) } };
   }
 
   validateAssetEntry(assetId, entry, pointer) {

@@ -1,5 +1,5 @@
 import { isPlainObject } from '../../../../src/shared/utils/objectUtils.js';
-import { deepClone as clone } from '../../../../src/shared/utils/jsonUtils.js';
+import { deepClone } from '../../../../src/shared/utils/jsonUtils.js';
 function normalizeWorkspacePath(value) {
   return String(value || "").trim().replace(/\\/g, "/").replace(/\/+/g, "/").replace(/^\/+|\/+$/g, "");
 }
@@ -220,7 +220,7 @@ export class WorkspaceBridge {
     return {
       ok: true,
       payload: {
-        assets: clone(assetPayload.assets)
+        assets: deepClone(assetPayload.assets)
       }
     };
   }
@@ -238,7 +238,7 @@ export class WorkspaceBridge {
     if (!isPlainObject(activePalette) || !Array.isArray(activePalette.swatches)) {
       return { ok: false, message: `${sessionResult.key}.data.swatches must contain the active workspace palette.` };
     }
-    return { ok: true, swatches: clone(activePalette.swatches) };
+    return { ok: true, swatches: deepClone(activePalette.swatches) };
   }
 
   readWorkspacePreviewContext() {
@@ -279,7 +279,7 @@ export class WorkspaceBridge {
     if (!sessionResult.ok) {
       return sessionResult;
     }
-    const workspaceManifest = clone(contextResult.context);
+    const workspaceManifest = deepClone(contextResult.context);
     if (!isPlainObject(workspaceManifest)) {
       return { ok: false, message: "Workspace Manager V2 manifest context is invalid." };
     }
@@ -294,7 +294,7 @@ export class WorkspaceBridge {
     const currentAssets = isPlainObject(session.data?.assets) ? session.data.assets : {};
     const nextData = {
       ...(isPlainObject(session.data) ? session.data : {}),
-      assets: clone(payload.assets)
+      assets: deepClone(payload.assets)
     };
     const assetsChanged = JSON.stringify(currentAssets) !== JSON.stringify(nextData.assets);
     const nextSession = {
@@ -312,12 +312,12 @@ export class WorkspaceBridge {
         : session.dirty
     };
     this.window.sessionStorage.setItem(sessionResult.key, JSON.stringify(nextSession));
-    workspaceManifest.tools[ASSET_MANAGER_V2_TOOL_KEY] = clone(nextData);
+    workspaceManifest.tools[ASSET_MANAGER_V2_TOOL_KEY] = deepClone(nextData);
     return {
       ok: true,
       changed: assetsChanged,
-      session: clone(nextSession),
-      workspaceManifest: clone(workspaceManifest)
+      session: deepClone(nextSession),
+      workspaceManifest: deepClone(workspaceManifest)
     };
   }
 }

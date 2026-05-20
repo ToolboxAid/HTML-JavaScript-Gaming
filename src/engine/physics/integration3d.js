@@ -5,15 +5,15 @@ David Quesenberry
 integration3d.js
 */
 
-import { asFinite as toFinite } from '../../shared/math/numberNormalization.js';
+import { asFinite } from '../../shared/math/numberNormalization.js';
 export function integrateVelocity3D(body, dtSeconds) {
   if (!body || typeof body !== 'object') {
     return body;
   }
 
-  const dt = toFinite(dtSeconds, 0);
-  body.x = toFinite(body.x, 0) + toFinite(body.velocityX, 0) * dt;
-  body.y = toFinite(body.y, 0) + toFinite(body.velocityY, 0) * dt;
-  body.z = toFinite(body.z, 0) + toFinite(body.velocityZ, 0) * dt;
+  const dt = asFinite(dtSeconds, 0);
+  body.x = asFinite(body.x, 0) + asFinite(body.velocityX, 0) * dt;
+  body.y = asFinite(body.y, 0) + asFinite(body.velocityY, 0) * dt;
+  body.z = asFinite(body.z, 0) + asFinite(body.velocityZ, 0) * dt;
   return body;
 }

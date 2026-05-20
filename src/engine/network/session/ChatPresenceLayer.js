@@ -5,7 +5,7 @@ David Quesenberry
 ChatPresenceLayer.js
 */
 
-import { deepClone as clone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/utils/jsonUtils.js';
 import LobbySessionManager from './LobbySessionManager.js';
 
 export default class ChatPresenceLayer {
@@ -47,7 +47,7 @@ export default class ChatPresenceLayer {
   getState(sessionId) {
     return {
       session: this.lobby.getSession(sessionId),
-      messages: clone(this.messages.get(sessionId) || []),
+      messages: deepClone(this.messages.get(sessionId) || []),
     };
   }
 }

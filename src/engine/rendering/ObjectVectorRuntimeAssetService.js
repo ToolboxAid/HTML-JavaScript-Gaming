@@ -9,7 +9,7 @@ import {
 } from "./OrientationTransform.js";
 import { createWorldScreenTransform } from "./WorldScreenTransform.js";
 import { isPlainObject } from "../../shared/utils/objectUtils.js";
-import { deepClone as clone } from "../../shared/utils/jsonUtils.js";
+import { deepClone } from "../../shared/utils/jsonUtils.js";
 
 const DEFAULT_SCHEMA_URL = new URL("../../../tools/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
 const OBJECT_VECTOR_TOOL_ID = "object-vector-studio-v2";
@@ -382,7 +382,7 @@ function objectBounds(object, frame) {
 }
 
 function effectiveShapeForFrame(shape, frame, shapeIndex) {
-  const effective = clone(shape);
+  const effective = deepClone(shape);
   const override = frame?.shapeOverrides?.find((entry) => entry.shapeIndex === shapeIndex) || null;
   if (override && Object.prototype.hasOwnProperty.call(override, "visible")) {
     effective.visible = override.visible;
@@ -726,7 +726,7 @@ export class ObjectVectorRuntimeAssetService {
       return null;
     }
     if (!object.baseObjectId) {
-      return clone(object);
+      return deepClone(object);
     }
     const baseObject = assetSet.objectsById.get(object.baseObjectId);
     if (!baseObject) {
@@ -737,17 +737,17 @@ export class ObjectVectorRuntimeAssetService {
     if (!resolvedBase) {
       return null;
     }
-    const shapeByOrder = new Map(resolvedBase.shapes.map((shape) => [shape.order, clone(shape)]));
+    const shapeByOrder = new Map(resolvedBase.shapes.map((shape) => [shape.order, deepClone(shape)]));
     object.shapes.forEach((shape) => {
-      shapeByOrder.set(shape.order, clone(shape));
+      shapeByOrder.set(shape.order, deepClone(shape));
     });
-    const stateById = new Map((resolvedBase.states || []).map((state) => [state.id, clone(state)]));
+    const stateById = new Map((resolvedBase.states || []).map((state) => [state.id, deepClone(state)]));
     (object.states || []).forEach((state) => {
-      stateById.set(state.id, clone(state));
+      stateById.set(state.id, deepClone(state));
     });
     const merged = {
       ...resolvedBase,
-      ...clone(object),
+      ...deepClone(object),
       inheritedFrom: object.baseObjectId,
       shapes: Array.from(shapeByOrder.values()).sort((left, right) => left.order - right.order)
     };
@@ -1277,7 +1277,7 @@ export class ObjectVectorRuntimeAssetService {
   }
 
   normalizePayload(payload) {
-    const normalized = clone(payload);
+    const normalized = deepClone(payload);
     normalized.name = normalized.name.trim();
     normalized.objects = normalized.objects.map((object) => {
       const normalizedObject = {

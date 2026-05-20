@@ -1,4 +1,4 @@
-import { asNumber as toNumber } from "../math/numberNormalization.js";
+import { asNumber } from "../math/numberNormalization.js";
 import { asObject, asArray } from "./objectUtils.js";
 import { safeTrim } from "./stringUtils.js";
 
@@ -32,7 +32,7 @@ export function commandLinesForTrace(context, args = [], options = {}) {
     : sanitizeText;
   const formatNumber = typeof normalizedOptions?.formatNumber === "function"
     ? normalizedOptions.formatNumber
-    : toNumber;
+    : asNumber;
 
   const snapshot = getCommandSnapshot(context, normalizedOptions?.sampleKey);
   const trace = asObject(snapshot.trace);
