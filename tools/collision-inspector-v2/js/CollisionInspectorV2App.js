@@ -9,6 +9,8 @@ import { resolveManifestScreenDimensions } from "../../../src/tools/common/GameM
 import { asFiniteNumber } from "../../../src/shared/number/index.js";
 import { deepClone } from "../../../src/shared/utils/jsonUtils.js";
 import {
+  clampCollisionZoom,
+  COLLISION_ZOOM_DEFAULT,
   OBJECT_LABELS,
   roundNumber
 } from "./constants.js";
@@ -36,7 +38,7 @@ export class CollisionInspectorV2App {
     this.manualModeOverride = false;
     this.dragState = null;
     this.lastResult = null;
-    this.zoom = 1;
+    this.zoom = COLLISION_ZOOM_DEFAULT;
   }
 
   async start() {
@@ -194,7 +196,7 @@ export class CollisionInspectorV2App {
   }
 
   setZoom(zoom) {
-    this.zoom = Math.max(0.5, Math.min(5, asFiniteNumber(zoom, 1)));
+    this.zoom = clampCollisionZoom(zoom);
     this.renderer.setZoom(this.zoom);
     this.controls.setZoom(this.zoom);
     this.evaluateAndRender();

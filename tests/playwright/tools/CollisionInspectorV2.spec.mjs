@@ -283,6 +283,11 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#manifestSummary")).toContainText("screen 960x720");
       await expect(page.locator("#collisionCanvas")).toHaveAttribute("width", "960");
       await expect(page.locator("#collisionCanvas")).toHaveAttribute("height", "720");
+      await expect(page.locator("#collisionZoomInput")).toHaveAttribute("min", "10");
+      await expect(page.locator("#collisionZoomInput")).toHaveAttribute("max", "1000");
+      await expect(page.locator("#collisionZoomInput")).toHaveAttribute("step", "10");
+      await expect(page.locator("#collisionZoomInput")).toHaveValue("100");
+      await expect(page.locator("#zoomState")).toHaveText("100%");
       const aspectRatio = await page.locator("#collisionCanvas").evaluate((canvas) => {
         const rect = canvas.getBoundingClientRect();
         return rect.width / rect.height;
@@ -511,21 +516,20 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionSummary")).toContainText('"mode": "hybrid"');
       await expect(page.locator("#collisionResultBadge")).toHaveText("Collision");
 
-      await page.locator("#collisionZoomInput").fill("1.5");
-      await expect(page.locator("#zoomState")).toHaveText("1.5x");
-      await expect(page.locator("#collisionSummary")).toContainText('"zoom": 1.5');
-      await expect(page.locator("#collisionZoomInput")).toHaveAttribute("max", "5");
-      await page.locator("#collisionZoomInput").fill("5");
-      await expect(page.locator("#zoomState")).toHaveText("5x");
-      await expect(page.locator("#collisionSummary")).toContainText('"zoom": 5');
+      await page.locator("#collisionZoomInput").fill("150");
+      await expect(page.locator("#zoomState")).toHaveText("150%");
+      await expect(page.locator("#collisionSummary")).toContainText('"zoom": "150%"');
+      await page.locator("#collisionZoomInput").fill("1000");
+      await expect(page.locator("#zoomState")).toHaveText("1000%");
+      await expect(page.locator("#collisionSummary")).toContainText('"zoom": "1000%"');
       const zoomAspectRatio = await page.locator("#collisionCanvas").evaluate((canvas) => {
         const rect = canvas.getBoundingClientRect();
         return rect.width / rect.height;
       });
       expect(Math.abs(zoomAspectRatio - (960 / 720))).toBeLessThan(0.02);
-      await page.evaluate(() => window.__collisionInspectorV2App.setZoom(8));
-      await expect(page.locator("#zoomState")).toHaveText("5x");
-      await expect(page.locator("#collisionSummary")).toContainText('"zoom": 5');
+      await page.evaluate(() => window.__collisionInspectorV2App.setZoom(12));
+      await expect(page.locator("#zoomState")).toHaveText("1000%");
+      await expect(page.locator("#collisionSummary")).toContainText('"zoom": "1000%"');
 
       await page.locator("#resetSimulationButton").click();
       await expect(page.locator("#collisionResultBadge")).toHaveText("No Collision");

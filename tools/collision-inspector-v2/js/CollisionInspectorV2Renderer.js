@@ -2,14 +2,17 @@ import {
   createWorldScreenTransform,
   headingPointFromRotation
 } from "../../../src/engine/rendering/index.js";
-import { asFiniteNumber } from "../../../src/shared/number/index.js";
+import {
+  clampCollisionZoom,
+  COLLISION_ZOOM_DEFAULT
+} from "./constants.js";
 
 export class CollisionInspectorV2Renderer {
   constructor({ canvas }) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     this.transform = createWorldScreenTransform();
-    this.zoom = 1;
+    this.zoom = COLLISION_ZOOM_DEFAULT;
   }
 
   setViewportSize(width, height) {
@@ -26,7 +29,7 @@ export class CollisionInspectorV2Renderer {
   }
 
   setZoom(zoom) {
-    this.zoom = Math.max(0.5, Math.min(5, asFiniteNumber(zoom, 1)));
+    this.zoom = clampCollisionZoom(zoom);
     this.transform = createWorldScreenTransform({
       screenHeight: this.canvas.height,
       screenWidth: this.canvas.width,

@@ -108,9 +108,9 @@
             <div class="collision-inspector-v2__zoom-row">
               <label class="tool-starter__field tool-starter__field--compact collision-inspector-v2__field collision-inspector-v2__field--inline" for="collisionZoomInput">
                 <span>Zoom</span>
-                <input id="collisionZoomInput" type="range" min="0.5" max="5" step="0.1" value="1">
+                <input id="collisionZoomInput" type="range" min="10" max="1000" step="10" value="100">
               </label>
-              <output id="zoomState" for="collisionZoomInput">1x</output>
+              <output id="zoomState" for="collisionZoomInput">100%</output>
             </div>
             <div class="collision-inspector-v2__canvas-viewport">
               <canvas id="collisionCanvas" width="1" height="1" aria-label="Collision movement simulation" aria-describedby="collisionGuideNote"></canvas>

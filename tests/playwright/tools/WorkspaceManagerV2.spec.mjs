@@ -2308,7 +2308,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         chipsSameRow: true,
         inputAndAddInline: true
       });
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(1);
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveAttribute("r", "9");
       await expect(page.locator("#objectVectorStudioV2ViewportControls button")).toHaveText(["Out", "In", "Up", "Down", "Left", "Right", "View", "Center"]);
@@ -2316,17 +2316,17 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2PanRightButton").click();
       await page.locator("#objectVectorStudioV2PanDownButton").click();
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 2 | Canvas origin -2,-2 from center | Zoom 100%");
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1580 -1080 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-140 -90 320 220");
       await page.locator("#objectVectorStudioV2RenderSurface").hover({ position: { x: 12, y: 12 } });
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Pointer");
       await page.locator("#objectVectorStudioV2CenterDotButton").click();
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1580 -1080 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-140 -90 320 220");
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Canvas origin -2,-2 from center | Zoom 100%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(0);
       await expect(page.locator("#objectVectorStudioV2CenterDotButton")).toHaveAttribute("aria-pressed", "false");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Center dot hidden\./);
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 100%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-center-origin='0,0']")).toHaveCount(0);
       await page.locator("#objectVectorStudioV2CenterDotButton").click();
@@ -3435,44 +3435,44 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Tools mode selected from keyboard: select\./);
 
       const zoomSource = await readFile("tools/object-vector-studio-v2/js/ToolStarterApp.js", "utf8");
-      expect(zoomSource).toContain("const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 0.1 });");
-      expect(zoomSource).toContain("const MAX_ZOOM = 1.0;");
-      expect(zoomSource).toContain("const MIN_ZOOM = 0.01;");
-      expect(zoomSource).toContain("const ZOOM_STEP = 0.01;");
+      expect(zoomSource).toContain("const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1.0 });");
+      expect(zoomSource).toContain("const MAX_ZOOM = 10.0;");
+      expect(zoomSource).toContain("const MIN_ZOOM = 0.1;");
+      expect(zoomSource).toContain("const ZOOM_STEP = 0.1;");
       expect(zoomSource).not.toContain("transformWithObjectScaleAroundPivot");
       expect(zoomSource).not.toContain("objectScalePreviewValues");
       expect(zoomSource).not.toContain("transformWithRelativeScaleAroundPivot");
       expect(zoomSource).toMatch(/formatZoomPercentage\(\) \{\s+return Math\.round\(this\.viewport\.zoom \* 100\);\s+\}/);
-      expect(zoomSource.match(/formatZoomPercentage\(\) \* 10/g)?.length || 0).toBeGreaterThanOrEqual(4);
+      expect(zoomSource).not.toContain("formatZoomPercentage() * 10");
       expect(zoomSource).not.toMatch(/viewport\.zoom\s*\*\s*100\s*\*\s*GRID_STEP|const MAX_ZOOM = 2/);
 
       await page.locator("#objectVectorStudioV2ZoomInButton").click();
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 110%");
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1454.545 -1000 2909.091 2000");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-145.455 -100 290.909 200");
       await page.locator("#objectVectorStudioV2PanRightButton").click();
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1434.545 -1000 2909.091 2000");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-125.455 -100 290.909 200");
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas origin -2,0 from center | Zoom 110%");
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 100%");
       await expect(page.locator("#statusLog")).toHaveValue(/OK Viewport reset to 100% at origin 0,0\./);
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.viewport.zoom = 0.095;
         window.__objectVectorStudioV2App.updateViewport();
       });
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 100%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 10%");
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.zoomViewport(2.5);
       });
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 1000%");
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-64 -44 128 88");
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.zoomViewport(0);
       });
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 10%");
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-16000 -11000 32000 22000");
-      await page.locator("#objectVectorStudioV2ResetViewButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
+      await page.locator("#objectVectorStudioV2ResetViewButton").click();
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
       const wheelAnchor = await page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
         const rect = surface.getBoundingClientRect();
         const clientX = Math.round(rect.left + rect.width * 0.75);
@@ -3508,14 +3508,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(zoomedGridState.pointerDelta.y).toBeLessThan(0.001);
       expect(Math.abs(zoomedGridState.viewport.x)).toBeGreaterThan(1);
       expect(Math.abs(zoomedGridState.viewport.y)).toBeGreaterThan(1);
-      expect(zoomedGridState.viewBox).not.toBe("-1454.545 -1000 2909.091 2000");
+      expect(zoomedGridState.viewBox).not.toBe("-145.455 -100 290.909 200");
       await page.mouse.wheel(0, 240);
       await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 100%");
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.zoomViewport(0.25);
       });
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 25%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
 
@@ -3718,13 +3718,13 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".tool-starter__panel--right")).toHaveCSS("overflow-y", "auto");
       const maxZoomState = await page.evaluate(() => {
         const app = window.__objectVectorStudioV2App;
-        app.zoomViewport(2);
+        app.zoomViewport(20);
         return {
           display: document.querySelector("#objectVectorStudioV2CoordinateDisplay").textContent,
           zoom: app.viewport.zoom
         };
       });
-      expect(maxZoomState.zoom).toBe(1);
+      expect(maxZoomState.zoom).toBe(10);
       expect(maxZoomState.display).toContain("Zoom 1000%");
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
 
@@ -4001,8 +4001,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
             zoom
           };
         };
-        const states = [collect(0.1), collect(0.3), collect(0.05)];
-        app.viewport.zoom = 0.1;
+        const states = [collect(1), collect(3), collect(0.5)];
+        app.viewport.zoom = 1;
         app.updateViewport();
         app.renderWorkSurface();
         return states;
@@ -4724,11 +4724,11 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='1'][data-polygon-point-axis='y']").fill("16");
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-index='1'][data-polygon-point-axis='y']").dispatchEvent("change");
       await expect(page.locator("#objectVectorStudioV2RenderSurface [data-shape-index='0']")).toHaveAttribute("points", "0,-180 140,160 0,80 -140,160");
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
       await page.evaluate(() => {
         window.__objectVectorStudioV2App.zoomViewport(0.25);
       });
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toContainText("Zoom 25%");
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
 
       const readPreviewScale = async () => page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface) => {
@@ -4815,16 +4815,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await page.locator("#objectVectorStudioV2PanRightButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-620 -440 1280 880");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas origin -2,0 from center | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 2, 0 | Canvas origin -2,0 from center | Zoom 25%");
       await page.locator("#objectVectorStudioV2PanLeftButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 25%");
       await page.locator("#objectVectorStudioV2PanUpButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -460 1280 880");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, -2 | Canvas origin 0,2 from center | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, -2 | Canvas origin 0,2 from center | Zoom 25%");
       await page.locator("#objectVectorStudioV2PanDownButton").click();
       await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-640 -440 1280 880");
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Origin: 0, 0 | Canvas origin 0,0 centered | Zoom 25%");
       const afterPanShapeState = await page.evaluate(() => {
         const shape = window.__objectVectorStudioV2App.selectedShape();
         return {
@@ -4845,7 +4845,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         clientX: examplePointerScreen.x,
         clientY: examplePointerScreen.y
       });
-      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Pointer -14, -16 | Canvas origin 0,0 centered | Zoom 250%");
+      await expect(page.locator("#objectVectorStudioV2CoordinateDisplay")).toHaveText("Pointer -14, -16 | Canvas origin 0,0 centered | Zoom 25%");
       await page.setViewportSize({ width: 1040, height: 720 });
       const resizedPreviewScale = await readPreviewScale();
       expect(resizedPreviewScale.aspectRatioStable).toBe(true);
@@ -4855,7 +4855,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(resizedPreviewScale.gridStepRestored).toBe(true);
       expect(resizedPreviewScale.pointsOnVisibleGridLines).toBe(true);
       await page.locator("#objectVectorStudioV2ResetViewButton").click();
-      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-1600 -1100 3200 2200");
+      await expect(page.locator("#objectVectorStudioV2RenderSurface")).toHaveAttribute("viewBox", "-160 -110 320 220");
       await page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-delete='true'][data-polygon-point-index='0']").click();
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails .object-vector-studio-v2__polygon-point-field")).toHaveCount(4);
       await expect(page.locator("#objectVectorStudioV2ShapeGeometryDetails [data-polygon-point-delete='true'][data-polygon-point-index='0']")).toHaveAttribute("aria-invalid", "true");

@@ -1,7 +1,9 @@
 import { createWorldScreenTransform } from "../../../src/engine/rendering/index.js";
 import { asFiniteNumber } from "../../../src/shared/number/index.js";
 import {
+  collisionZoomToPercent,
   labelForObject,
+  percentToCollisionZoom,
   roundBounds,
   roundNumber,
   roundPoint
@@ -40,7 +42,7 @@ export class CollisionInspectorV2Controls {
       callbacks.onRotationChange("b", asFiniteNumber(this.elements.rotationBInput.value));
     });
     this.elements.zoomInput.addEventListener("input", () => {
-      callbacks.onZoomChange(asFiniteNumber(this.elements.zoomInput.value, 1));
+      callbacks.onZoomChange(percentToCollisionZoom(this.elements.zoomInput.value));
     });
     this.elements.clearLogButton.addEventListener("click", callbacks.onClearLog);
     this.elements.resetButton.addEventListener("click", callbacks.onReset);
@@ -127,8 +129,9 @@ export class CollisionInspectorV2Controls {
   }
 
   setZoom(zoom) {
-    this.elements.zoomInput.value = String(roundNumber(zoom, 1));
-    this.elements.zoomState.textContent = `${roundNumber(zoom, 1)}x`;
+    const zoomPercent = collisionZoomToPercent(zoom);
+    this.elements.zoomInput.value = String(zoomPercent);
+    this.elements.zoomState.textContent = `${zoomPercent}%`;
   }
 
   setViewportSize(width, height) {
@@ -190,7 +193,7 @@ export class CollisionInspectorV2Controls {
         objectA: roundPoint(geometryA.originWorld),
         objectB: roundPoint(geometryB.originWorld)
       },
-      zoom: roundNumber(result.zoom, 1)
+      zoom: `${collisionZoomToPercent(result.zoom)}%`
     }, null, 2);
   }
 }

@@ -27,12 +27,12 @@ const ANGLE_SNAP_STEP_SESSION_KEY = "object-vector-studio-v2.angleSnapStep";
 const GRID_RENDER_SESSION_KEY = "object-vector-studio-v2.gridRender";
 const CENTER_ORIGIN_SESSION_KEY = "object-vector-studio-v2.centerOrigin";
 const SVG_NS = "http://www.w3.org/2000/svg";
-const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 0.1 });
+const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1.0 });
 const GRID_STEP = 10;
 const OBJECT_PREVIEW_DRAWING_SCALE = GRID_STEP;
-const MAX_ZOOM = 1.0;
-const MIN_ZOOM = 0.01;
-const ZOOM_STEP = 0.01;
+const MAX_ZOOM = 10.0;
+const MIN_ZOOM = 0.1;
+const ZOOM_STEP = 0.1;
 const TRANSPARENT_STYLE_COLOR = "#00000000";
 const PREVIEW_HISTORY_LIMIT = 50;
 const PREVIEW_DRAG_START_THRESHOLD_PX = 5;
@@ -4546,7 +4546,7 @@ export class ToolStarterApp {
     const viewX = this.formatViewportNumber(this.viewport.x - width / 2);
     const viewY = this.formatViewportNumber(this.viewport.y - height / 2);
     this.elements.renderSurface.setAttribute("viewBox", `${viewX} ${viewY} ${this.formatViewportNumber(width)} ${this.formatViewportNumber(height)}`);
-    this.elements.coordinateDisplay.textContent = `Origin: ${this.formatLogicalCoordinate(this.viewport.x)}, ${this.formatLogicalCoordinate(this.viewport.y)} | ${this.canvasOriginDisplayText()} | Zoom ${this.formatZoomPercentage() * 10}%`;
+    this.elements.coordinateDisplay.textContent = `Origin: ${this.formatLogicalCoordinate(this.viewport.x)}, ${this.formatLogicalCoordinate(this.viewport.y)} | ${this.canvasOriginDisplayText()} | Zoom ${this.formatZoomPercentage()}%`;
   }
 
   formatViewportNumber(value) {
@@ -4597,7 +4597,7 @@ export class ToolStarterApp {
     this.viewport.zoom = this.clampedViewportZoom(nextZoom);
     this.updateViewport();
     this.renderWorkSurface();
-    this.statusLog.write(`OK Viewport zoom set to ${this.formatZoomPercentage() * 10}%.`);
+    this.statusLog.write(`OK Viewport zoom set to ${this.formatZoomPercentage()}%.`);
   }
 
   zoomViewportAtPointer(nextZoom, event) {
@@ -4619,7 +4619,7 @@ export class ToolStarterApp {
     this.updateViewport();
     this.renderWorkSurface();
     this.updateCoordinateDisplay(event);
-    this.statusLog.write(`OK Viewport zoom set to ${this.formatZoomPercentage() * 10}%.`);
+    this.statusLog.write(`OK Viewport zoom set to ${this.formatZoomPercentage()}%.`);
   }
 
   clampedViewportZoom(zoom) {
@@ -4644,7 +4644,7 @@ export class ToolStarterApp {
   resetViewport() {
     this.viewport = { ...DEFAULT_VIEWPORT };
     this.updateViewport();
-    this.statusLog.write(`OK Viewport reset to ${this.formatZoomPercentage() * 10}% at origin 0,0.`);
+    this.statusLog.write(`OK Viewport reset to ${this.formatZoomPercentage()}% at origin 0,0.`);
   }
 
   updateCoordinateDisplay(event) {
@@ -4652,7 +4652,7 @@ export class ToolStarterApp {
     if (!point) {
       return;
     }
-    this.elements.coordinateDisplay.textContent = `Pointer ${this.formatLogicalPointerCoordinate(point.x)}, ${this.formatLogicalPointerCoordinate(point.y)} | ${this.canvasOriginDisplayText()} | Zoom ${this.formatZoomPercentage() * 10}%`;
+    this.elements.coordinateDisplay.textContent = `Pointer ${this.formatLogicalPointerCoordinate(point.x)}, ${this.formatLogicalPointerCoordinate(point.y)} | ${this.canvasOriginDisplayText()} | Zoom ${this.formatZoomPercentage()}%`;
   }
 
   viewportPointFromEvent(event) {
