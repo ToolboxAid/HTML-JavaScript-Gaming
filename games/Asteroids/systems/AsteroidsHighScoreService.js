@@ -33,15 +33,15 @@ export default class AsteroidsHighScoreService {
   }
 
   loadTable() {
-    const fallback = this.getDefaultTable();
-    const loaded = this.storage.loadJson(this.key, fallback);
+    const defaultTable = this.getDefaultTable();
+    const loaded = this.storage.loadJson(this.key, defaultTable);
     if (!Array.isArray(loaded)) {
-      return fallback;
+      return defaultTable;
     }
 
     const rows = loaded.map((row) => sanitizeRow(row));
     if (!rows.length) {
-      return fallback;
+      return defaultTable;
     }
 
     return sortRows(rows).slice(0, this.tableSize);

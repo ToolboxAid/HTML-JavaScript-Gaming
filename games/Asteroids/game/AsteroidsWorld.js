@@ -45,13 +45,13 @@ function logWorldBootStage(stage, details = null) {
   }
 }
 
-function sanitizeBoolean(value, fallback = false) {
-  return typeof value === 'boolean' ? value : fallback;
+function sanitizeBoolean(value, defaultValue = false) {
+  return typeof value === 'boolean' ? value : defaultValue;
 }
 
-function sanitizeInteger(value, fallback, { min = -Infinity, max = Infinity } = {}) {
+function sanitizeInteger(value, defaultValue, { min = -Infinity, max = Infinity } = {}) {
   if (!Number.isFinite(value)) {
-    return fallback;
+    return defaultValue;
   }
   return Math.max(min, Math.min(max, Math.trunc(value)));
 }
@@ -60,8 +60,8 @@ function sanitizeArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
-function sanitizeStatus(value, fallback = '') {
-  return typeof value === 'string' ? value : fallback;
+function sanitizeStatus(value, defaultValue = '') {
+  return typeof value === 'string' ? value : defaultValue;
 }
 
 function sanitizeUfoType(type) {
@@ -70,9 +70,9 @@ function sanitizeUfoType(type) {
     : 'large';
 }
 
-function sanitizeDirection(value, fallback = 1) {
+function sanitizeDirection(value, defaultValue = 1) {
   if (!Number.isFinite(value) || value === 0) {
-    return fallback < 0 ? -1 : 1;
+    return defaultValue < 0 ? -1 : 1;
   }
 
   return value < 0 ? -1 : 1;

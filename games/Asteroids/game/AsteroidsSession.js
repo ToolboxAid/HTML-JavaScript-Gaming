@@ -4,9 +4,9 @@ David Quesenberry
 03/22/2026
 AsteroidsSession.js
 */
-function sanitizeNonNegativeInteger(value, fallback = 0) {
+function sanitizeNonNegativeInteger(value, defaultValue = 0) {
   if (!Number.isFinite(value)) {
-    return fallback;
+    return defaultValue;
   }
 
   return Math.max(0, Math.trunc(value));
