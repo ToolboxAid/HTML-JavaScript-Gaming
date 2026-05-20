@@ -1,6 +1,4 @@
-import {
-  toFiniteNumber as normalizeFiniteNumberValue
-} from "../math/numberNormalization.js";
+import { toFiniteNumber } from "../math/numberNormalization.js";
 
 export { toFiniteNumber, asFiniteNumber, asPositiveInteger } from "../math/numberNormalization.js";
 
@@ -9,7 +7,7 @@ export function isFiniteNumber(value) {
 }
 
 export function asPositiveNumber(value, fallback) {
-  const numeric = normalizeFiniteNumberValue(value, fallback);
+  const numeric = toFiniteNumber(value, fallback);
   if (!isFiniteNumber(numeric) || numeric <= 0) {
     return fallback;
   }

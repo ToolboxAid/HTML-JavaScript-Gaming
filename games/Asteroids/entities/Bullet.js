@@ -4,9 +4,9 @@ David Quesenberry
 03/22/2026
 Bullet.js
 */
-import { wrap } from '/src/shared/utils/mathUtils.js';
+import { wrap } from '/src/shared/math/scalars.js';
 import { transformCollisionPoints } from '/src/engine/collision/index.js';
-import { normalizePoints } from '/src/shared/utils/geometryUtils.js';
+import { normalizePoints } from '/src/shared/geometry.js';
 
 export default class Bullet {
   constructor(x, y, vx, vy, life = 1.1, { angle = 0, collisionPoints = [] } = {}) {

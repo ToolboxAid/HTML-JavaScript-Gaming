@@ -5,7 +5,7 @@ David Quesenberry
 PacmanLitePlayerController.js
 */
 import { DIRS, canMoveDirection } from './PacmanLiteNavigator.js';
-import { clamp } from '/src/shared/utils/mathUtils.js';
+import { clamp } from '/src/shared/math/scalars.js';
 
 function near(a, b, epsilon = 1.2) {
   return Math.abs(a - b) <= epsilon;

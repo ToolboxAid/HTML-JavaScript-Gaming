@@ -4,4 +4,4 @@ export {
   asFiniteNumber,
   asPositiveInteger,
   asPositiveNumber
-} from "./numberUtils.js";
+} from "./numbers.js";

@@ -6,7 +6,7 @@ LevelLoaderScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { clamp } from '/src/shared/utils/mathUtils.js';
+import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { isColliding } from '/src/engine/collision/index.js';
 import { LevelLoader } from '/src/engine/level/index.js';

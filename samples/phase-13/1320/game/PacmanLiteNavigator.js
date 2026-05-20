@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 PacmanLiteNavigator.js
 */
-import { oppositeCardinalDirection } from '/src/shared/utils/index.js';
+import { oppositeCardinalDirection } from '/src/shared/directions.js';
 
 const DIRS = Object.freeze({
   left: { x: -1, y: 0 },

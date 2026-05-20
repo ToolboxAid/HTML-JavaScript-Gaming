@@ -5,7 +5,7 @@ David Quesenberry
 ThrusterInputController.js
 */
 import { GamepadInputAdapter } from '/src/engine/input/index.js';
-import { clamp } from '/src/shared/utils/mathUtils.js';
+import { clamp } from '/src/shared/math/scalars.js';
 
 export default class ThrusterInputController {
   constructor(input) {

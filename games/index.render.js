@@ -1,4 +1,4 @@
-import { asArray } from '../src/shared/utils/arrayUtils.js';
+import { asArray } from '../src/shared/arrays.js';
 import { getToolRegistry } from "../tools/toolRegistry.js";
 import { resolveGamePreviewMap } from "./shared/gameManifestPreviewResolver.js";
 import { normalizeText, normalizeToken } from "../src/shared/string/index.js";

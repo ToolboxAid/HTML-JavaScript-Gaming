@@ -5,7 +5,7 @@ import { loadPackagedProjectRuntime, summarizeRuntimeAssetLoader } from "./runti
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "./debugVisualizationLayer.js";
 import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./performanceProfiler.js";
 import { normalizeSvgToVectorAsset, summarizeVectorAssetDefinition } from "./vector/vectorAssetBridge.js";
-import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { cloneJson } from "../../src/shared/json.js";
 import { createRuntimeManifestAssetLookup } from "./pipeline/runtimeAssetLookup.js";
 
 const DEFAULT_VECTOR_FIXTURE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 20 20"><path d="M 0 -8 L 6 8 L 0 4 L -6 8 Z" /></svg>';

@@ -1,4 +1,4 @@
-import { sanitizeText } from "../string/index.js";
+import { sanitizeText } from "../strings.js";
 
 export function isValidId(value) {
   return typeof value === "string" && value.trim().length > 0;

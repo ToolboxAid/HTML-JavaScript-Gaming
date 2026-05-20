@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 MovementSystem.js
 */
-import { clamp } from '../../shared/utils/mathUtils.js';
+import { clamp } from '../../shared/math/scalars.js';
 import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 
 export function moveEntities(world, dt, worldBounds = null) {

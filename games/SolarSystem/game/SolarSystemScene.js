@@ -6,7 +6,7 @@ SolarSystemScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import SolarSystemWorld from './SolarSystemWorld.js';
-import { toObject } from '/src/shared/utils/objectUtils.js';
+import { toObject } from '/src/shared/objects.js';
 
 const VIEW = { width: 960, height: 720 };
 

@@ -1,5 +1,5 @@
-import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
-import { toObject } from "../../../src/shared/utils/objectUtils.js";
+import { cloneJson } from "../../../src/shared/json.js";
+import { toObject } from "../../../src/shared/objects.js";
 import { safeString } from "../projectSystemValueUtils.js";
 import { coordinateGameAssetManifest } from "./gameAssetManifestCoordinator.js";
 import { createRuntimeAssetBinding, resolveRuntimeAsset } from "./runtimeAssetBinding.js";

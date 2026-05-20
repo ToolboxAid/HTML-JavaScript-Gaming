@@ -16,12 +16,12 @@ const CASES = [
   },
   {
     name: "violation: disallowed shared relative import",
-    fileContent: "import { asFiniteNumber } from '../../../src/shared/utils/numberUtils.js';\n",
+    fileContent: "import { asFiniteNumber } from '../../../src/shared/number/index.js';\n",
     expectedExitCode: 1
   },
   {
     name: "violation: alias usage",
-    fileContent: "import { asFiniteNumber } from '@shared/utils/numberUtils.js';\n",
+    fileContent: "import { asFiniteNumber } from '@shared/number/index.js';\n",
     expectedExitCode: 1
   },
   {

@@ -26,7 +26,7 @@ const DIRECT_SHARED_IMPORT_RULES = [
 ];
 
 const ALIAS_RULE = { rule: "shared-alias-import-disallowed", regex: /@shared\//g, label: "rule:shared-alias-marker" };
-const NUMBER_UTIL_IMPORT_HINT = /from\s+["'][^"']*shared\/utils\/numberUtils\.js["']/;
+const NUMBER_UTIL_IMPORT_HINT = /from\s+["'][^"']*shared\/number\/(?:index|numbers)\.js["']/;
 
 const INLINE_HELPER_VARIANT_RULES = [
   { rule: "inline-helper-clone", regex: /\(value\)\s*=>\s*Number\.isFinite/g, label: "rule:inline-arrow-number-is-finite" },

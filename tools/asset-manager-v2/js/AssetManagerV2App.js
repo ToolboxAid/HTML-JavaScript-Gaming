@@ -1,4 +1,4 @@
-import { deepClone } from '../../../src/shared/utils/jsonUtils.js';
+import { deepClone } from '../../../src/shared/json.js';
 import {
   downloadTextFile,
   readFileText

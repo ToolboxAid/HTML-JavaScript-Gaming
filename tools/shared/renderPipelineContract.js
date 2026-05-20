@@ -6,7 +6,7 @@ David Quesenberry
 renderPipelineContract.js
 */
 import { normalizeProjectRelativePath } from "./projectAssetRegistry.js";
-import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { cloneJson } from "../../src/shared/json.js";
 
 import {
   createVersionedContractMetadata,
@@ -14,7 +14,7 @@ import {
   evaluateContractVersion,
   normalizeContractVersion
 } from "./contractVersioning.js";
-import { isObject } from "../../src/shared/utils/objectUtils.js";
+import { isObject } from "../../src/shared/objects.js";
 
 export const RENDER_CONTRACT_VERSION = "1.0.0";
 export const RENDER_CONTRACT_ID = "toolbox.render.contract";

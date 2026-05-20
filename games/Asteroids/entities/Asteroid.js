@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 Asteroid.js
 */
-import { TAU, randomRange, wrap } from '/src/shared/utils/mathUtils.js';
+import { TAU, randomRange, wrap } from '/src/shared/math/scalars.js';
 import { transformCollisionPoints } from '/src/engine/collision/index.js';
 
 const SIZE_PROFILES = {

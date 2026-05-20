@@ -5,7 +5,7 @@ David Quesenberry
 PacmanFullAIGhostController.js
 */
 
-import { near } from '/src/shared/utils/mathUtils.js';
+import { near } from '/src/shared/math/scalars.js';
 import { chooseDirectionTowardTarget, DIRS, oppositeCardinalDirection } from './PacmanFullAINavigator.js';
 import { computeTargetTile } from './PacmanFullAITargeting.js';
 

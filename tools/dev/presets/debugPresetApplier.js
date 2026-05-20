@@ -5,9 +5,9 @@ David Quesenberry
 debugPresetApplier.js
 */
 
-import { sanitizeText } from "../../../src/shared/utils/stringUtils.js";
-import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
-import { getRuntimeAndRegistry } from "../../../src/shared/utils/runtimeRegistryUtils.js";
+import { sanitizeText } from "../../../src/shared/strings.js";
+import { cloneJson } from "../../../src/shared/json.js";
+import { getRuntimeAndRegistry } from "../../../src/shared/runtimeRegistry.js";
 import { toResult } from "../../../src/engine/debug/shared/debugCommandResultUtils.js";
 
 function getAllPanels(panelRegistry) {

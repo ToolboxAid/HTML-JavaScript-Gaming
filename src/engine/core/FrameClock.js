@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 FrameClock.js
 */
-import { invariant } from "../../shared/utils/invariantUtils.js";
+import { invariant } from "../../shared/invariant.js";
 
 export default class FrameClock {
     constructor({ now = () => performance.now(), maxDeltaMs = 100 } = {}) {

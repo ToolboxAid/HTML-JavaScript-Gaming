@@ -16,4 +16,5 @@ export {
   roundNumber,
 } from "./numberNormalization.js";
 export { vectorFromAngle } from "./vectorMath.js";
-export { safeNormalize } from "./vectorNormalizeUtils.js";
+export { safeNormalize } from "./vectorNormalize.js";
+export { TAU, clamp, distance, near, wrap, randomRange } from "./scalars.js";

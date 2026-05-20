@@ -5,8 +5,8 @@ David Quesenberry
 04/05/2026
 performanceBenchmarks.js
 */
-import { isObject } from "../../src/shared/utils/objectUtils.js";
-import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { isObject } from "../../src/shared/objects.js";
+import { cloneJson } from "../../src/shared/json.js";
 
 export const PERFORMANCE_BENCHMARK_CONTRACT_ID = "toolbox.performance.benchmarks";
 export const PERFORMANCE_BENCHMARK_CONTRACT_VERSION = "1.0.0";

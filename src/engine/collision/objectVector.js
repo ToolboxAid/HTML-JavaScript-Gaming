@@ -14,7 +14,7 @@ import {
   transformRuntimeOrientedPoints,
 } from '../rendering/OrientationTransform.js';
 import { isRecord } from '../../shared/types/typeGuards.js';
-import { deepClone } from '../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../shared/json.js';
 import { asFiniteNumber } from '../../shared/number/index.js';
 
 export const OBJECT_VECTOR_COLLISION_ENGINE_PATH = 'src/engine/collision/objectVector.js';

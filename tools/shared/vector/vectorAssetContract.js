@@ -1,6 +1,6 @@
 import { parseSvgPathData } from "./vectorGeometryMath.js";
 import { toFiniteNumber, roundNumber } from "../../../src/shared/math/numberNormalization.js";
-import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
+import { cloneJson } from "../../../src/shared/json.js";
 import { sanitizeVectorText } from "./vectorSafeValueUtils.js";
 
 export const VECTOR_ASSET_FORMAT = "toolbox.vector.asset";

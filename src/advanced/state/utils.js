@@ -5,7 +5,7 @@ David Quesenberry
 utils.js
 */
 
-import { isPlainObject } from '../../shared/utils/objectUtils.js';
+import { isPlainObject } from '../../shared/objects.js';
 
 function cloneDeep(value) {
   if (Array.isArray(value)) {
@@ -59,7 +59,7 @@ function mergeDeep(baseValue, patchValue) {
 
 export {
   isPlainObject
-} from '../../shared/utils/objectUtils.js';
+} from '../../shared/objects.js';
 
 export {
   cloneDeep,

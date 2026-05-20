@@ -7,8 +7,8 @@ runtimeSceneLoaderHotReload.js
 */
 import { normalizeProjectRelativePath } from "./projectAssetRegistry.js";
 import { runRenderContractRuntimePath } from "./renderPipelineContract.js";
-import { isObject } from "../../src/shared/utils/objectUtils.js";
-import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { isObject } from "../../src/shared/objects.js";
+import { cloneJson } from "../../src/shared/json.js";
 
 const DOMAIN_ORDER = Object.freeze(["parallax", "tilemap", "sprite", "vector", "overlay"]);
 

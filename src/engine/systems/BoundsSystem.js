@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 BoundsSystem.js
 */
-import { clamp } from '../../shared/utils/mathUtils.js';
+import { clamp } from '../../shared/math/scalars.js';
 import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 
 export function clampEntitiesToBounds(world, bounds, query = ['transform', 'size']) {

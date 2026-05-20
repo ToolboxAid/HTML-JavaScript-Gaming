@@ -6,7 +6,7 @@ packUtils.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { isObject } from "../../../src/shared/utils/objectUtils.js";
+import { isObject } from "../../../src/shared/objects.js";
 
 export function requireNoArgs({ args = [], commandName = "" } = {}) {
   if (Array.isArray(args) && args.length > 0) {

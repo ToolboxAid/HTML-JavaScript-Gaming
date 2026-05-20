@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 PaddleInterceptWorld.js
 */
-import { clamp } from '/src/shared/utils/mathUtils.js';
+import { clamp } from '/src/shared/math/scalars.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
 

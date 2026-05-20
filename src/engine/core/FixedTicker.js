@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 FixedTicker.js
 */
-import { invariant } from "../../shared/utils/invariantUtils.js";
+import { invariant } from "../../shared/invariant.js";
 
 export default class FixedTicker {
     constructor({ stepMs = 1000 / 60, maxCatchUpSteps = 5 } = {}) {

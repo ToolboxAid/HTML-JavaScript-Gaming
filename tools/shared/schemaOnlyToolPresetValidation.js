@@ -1,4 +1,4 @@
-import { isPlainObject } from '../../src/shared/utils/objectUtils.js';
+import { isPlainObject } from '../../src/shared/objects.js';
 import { normalizeText } from "../../src/shared/string/index.js";
 
 const TOOL_SCHEMA_CACHE = new Map();

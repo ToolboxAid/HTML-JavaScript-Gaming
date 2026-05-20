@@ -2,9 +2,9 @@
 Toolbox Aid
 David Quesenberry
 04/08/2026
-objectUtils.js
+objects.js
 */
-import { asArray } from "./arrayUtils.js";
+import { asArray } from "./arrays.js";
 
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);

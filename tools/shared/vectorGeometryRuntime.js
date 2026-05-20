@@ -1,8 +1,8 @@
 import { sanitizeText } from "../../src/shared/string/index.js";
 import { inspectVectorAssetContract } from "./vector/vectorAssetContract.js";
 import { prepareVectorRenderables } from "./vector/vectorRenderPrep.js";
-import { ensureArray } from "../../src/shared/utils/arrayUtils.js";
-import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { ensureArray } from "../../src/shared/arrays.js";
+import { cloneJson } from "../../src/shared/json.js";
 
 export const VECTOR_GEOMETRY_RUNTIME_POLICY = Object.freeze({
   contract: "vector-geometry-runtime/1",

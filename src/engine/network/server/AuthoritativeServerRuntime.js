@@ -5,7 +5,7 @@ David Quesenberry
 AuthoritativeServerRuntime.js
 */
 
-import { deepClone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/json.js';
 import AuthoritativeInputIngestionContract from './AuthoritativeInputIngestionContract.js';
 
 export const SERVER_RUNTIME_PHASES = Object.freeze({

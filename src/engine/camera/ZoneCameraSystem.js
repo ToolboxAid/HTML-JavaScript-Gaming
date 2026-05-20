@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 ZoneCameraSystem.js
 */
-import { clamp } from '../../shared/utils/mathUtils.js';
+import { clamp } from '../../shared/math/scalars.js';
 
 export function updateZoneCamera(camera, target, zones = []) {
   const targetCenterX = target.x + target.width / 2;

@@ -6,7 +6,7 @@ ToolFormattedTilesParallaxScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { clamp } from '/src/shared/utils/mathUtils.js';
+import { clamp } from '/src/shared/math/scalars.js';
 import { Camera2D, worldRectToScreen } from '/src/engine/camera/index.js';
 import { Tilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
 import { isFiniteNumber } from '../../shared/numberUtils.js';

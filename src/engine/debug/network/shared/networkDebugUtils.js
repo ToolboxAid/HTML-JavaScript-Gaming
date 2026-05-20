@@ -6,11 +6,11 @@ networkDebugUtils.js
 */
 
 import { asNumber } from "../../../../shared/math/numberNormalization.js";
-import { asArray } from "../../../../shared/utils/objectUtils.js";
+import { asArray } from "../../../../shared/objects.js";
 
-export { asObject, asArray } from "../../../../shared/utils/objectUtils.js";
+export { asObject, asArray } from "../../../../shared/objects.js";
 export { asNumber } from "../../../../shared/math/numberNormalization.js";
-export { sanitizeText } from "../../../../shared/utils/stringUtils.js";
+export { sanitizeText } from "../../../../shared/strings.js";
 
 export function asBoolean(value, fallback = false) {
   if (typeof value === "boolean") {

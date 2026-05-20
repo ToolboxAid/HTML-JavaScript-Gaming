@@ -5,14 +5,14 @@ David Quesenberry
 PacmanFullAIWorld.js
 */
 
-import { near } from '/src/shared/utils/mathUtils.js';
+import { near } from '/src/shared/math/scalars.js';
 import PacmanFullAIConfig from './PacmanFullAIConfig.js';
 import PacmanFullAIGhostController from './PacmanFullAIGhostController.js';
 import PacmanFullAIGhostHouseController from './PacmanFullAIGhostHouseController.js';
 import PacmanFullAIGhostModeScheduler from './PacmanFullAIGhostModeScheduler.js';
 import PacmanFullAIGrid from './PacmanFullAIGrid.js';
 import { DIRS } from './PacmanFullAINavigator.js';
-import { oppositeCardinalDirection } from '/src/shared/utils/index.js';
+import { oppositeCardinalDirection } from '/src/shared/directions.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
 

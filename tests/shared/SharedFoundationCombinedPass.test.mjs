@@ -8,15 +8,18 @@ import assert from "node:assert/strict";
 import {
   ensureArray,
   asArray,
-  asStringArray,
+  asStringArray
+} from "../../src/shared/arrays.js";
+import {
   sanitizeText,
-  escapeHtml,
+  escapeHtml
+} from "../../src/shared/strings.js";
+import {
   normalizeId,
   createId,
   createStableId,
   isValidId,
-} from "../../src/shared/utils/index.js";
-import { escapeHtml as legacyEscapeHtml } from "../../src/shared/string/stringUtil.js";
+} from "../../src/shared/id/index.js";
 import {
   asPositiveInteger,
   roundNumber,
@@ -47,7 +50,6 @@ export function run() {
 
   assert.equal(sanitizeText("  hi "), "hi");
   assert.equal(escapeHtml("<a>&\"'</a>"), "&lt;a&gt;&amp;&quot;&#39;&lt;/a&gt;");
-  assert.equal(legacyEscapeHtml("<b>"), "&lt;b&gt;");
 
   assert.equal(normalizeId("  Score Board  "), "score-board");
   assert.equal(createStableId(["Game", "HUD Layer"]), "game.hud-layer");

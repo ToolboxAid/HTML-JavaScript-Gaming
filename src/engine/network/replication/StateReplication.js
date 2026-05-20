@@ -5,7 +5,7 @@ David Quesenberry
 StateReplication.js
 */
 
-import { deepClone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/json.js';
 import Serializer from '../transport/Serializer.js';
 
 export default class StateReplication {

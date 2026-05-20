@@ -2,7 +2,7 @@ import { sanitizeText } from "../../src/shared/string/index.js";
 import { validateProjectAssetState } from "./projectAssetValidation.js";
 import { buildProjectPackage } from "./projectPackaging.js";
 import { loadPackagedProjectRuntime } from "./runtimeAssetLoader.js";
-import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { cloneJson } from "../../src/shared/json.js";
 
 function createReport(level, code, message) {
   return {

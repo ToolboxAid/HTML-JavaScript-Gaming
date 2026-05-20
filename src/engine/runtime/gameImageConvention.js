@@ -1,4 +1,4 @@
-import { toObject } from "../../shared/utils/objectUtils.js";
+import { toObject } from "../../shared/objects.js";
 import { normalizePathSeparators } from "../../shared/string/index.js";
 
 function safeText(value, fallback = "") {

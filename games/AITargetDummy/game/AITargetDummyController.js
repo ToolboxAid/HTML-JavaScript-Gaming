@@ -6,8 +6,8 @@ AITargetDummyController.js
 */
 import AITargetDummyConfig from './AITargetDummyConfig.js';
 import AITargetDummyStateMachine from './AITargetDummyStateMachine.js';
-import { clamp } from '/src/shared/utils/mathUtils.js';
-import { safeNormalize } from '../../../src/shared/math/vectorNormalizeUtils.js';
+import { clamp } from '/src/shared/math/scalars.js';
+import { safeNormalize } from '../../../src/shared/math/vectorNormalize.js';
 
 export default class AITargetDummyController {
   constructor({ config = AITargetDummyConfig } = {}) {

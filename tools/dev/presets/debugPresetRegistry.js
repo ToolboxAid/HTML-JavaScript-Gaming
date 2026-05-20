@@ -6,9 +6,9 @@ debugPresetRegistry.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { asStringArray } from "../../../src/shared/utils/arrayUtils.js";
-import { isObject } from "../../../src/shared/utils/objectUtils.js";
-import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
+import { asStringArray } from "../../../src/shared/arrays.js";
+import { isObject } from "../../../src/shared/objects.js";
+import { cloneJson } from "../../../src/shared/json.js";
 
 function normalizePresetDescriptor(descriptor = {}) {
   const presetId = sanitizeText(descriptor.presetId);

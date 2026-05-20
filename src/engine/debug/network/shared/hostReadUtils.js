@@ -1,4 +1,4 @@
-import { asObject } from "../../../../shared/utils/objectUtils.js";
+import { asObject } from "../../../../shared/objects.js";
 
 export function readHostStatus(host) {
   return host && typeof host.getStatus === "function"

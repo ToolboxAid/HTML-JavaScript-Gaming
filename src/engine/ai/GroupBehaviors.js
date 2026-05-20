@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 GroupBehaviors.js
 */
-import { clamp } from '../../shared/utils/mathUtils.js';
+import { clamp } from '../../shared/math/scalars.js';
 
 export function computeGroupSteering(agent, agents, {
   neighborRadius = 120,

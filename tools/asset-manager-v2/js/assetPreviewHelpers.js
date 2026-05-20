@@ -1,5 +1,5 @@
 import { resolveRuntimeAssetUrl } from "../../../src/engine/runtime/gameImageConvention.js";
-import { escapeHtml, sanitizeText } from "../../../src/shared/string/stringHelpers.js";
+import { escapeHtml, sanitizeText } from "../../../src/shared/strings.js";
 
 function cssString(value) {
   return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, "\\\"");

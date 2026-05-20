@@ -4,8 +4,8 @@ David Quesenberry
 03/24/2026
 BouncingBallWorld.js
 */
-import { clamp } from '/src/shared/utils/mathUtils.js';
-import { toObject } from '/src/shared/utils/objectUtils.js';
+import { clamp } from '/src/shared/math/scalars.js';
+import { toObject } from '/src/shared/objects.js';
 import { toFiniteNumber } from '/src/shared/number/index.js';
 
 const MAX_STEP_SECONDS = 1 / 120;

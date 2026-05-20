@@ -5,7 +5,7 @@ David Quesenberry
 Combat.js
 */
 import { isColliding } from '../collision/aabb.js';
-import { clamp } from '../../shared/utils/mathUtils.js';
+import { clamp } from '../../shared/math/scalars.js';
 
 function sanitizeDuration(value) {
   return Math.max(0, Number(value) || 0);

@@ -12,8 +12,8 @@ const DEFAULT_LIMITS = Object.freeze({
 });
 
 import { asArray, asObject, sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { isObject } from "../../../src/shared/utils/objectUtils.js";
-import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
+import { isObject } from "../../../src/shared/objects.js";
+import { cloneJson } from "../../../src/shared/json.js";
 
 function asFinite(value, fallback = 0) {
   return Number.isFinite(value) ? Number(value) : fallback;

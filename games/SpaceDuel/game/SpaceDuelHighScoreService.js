@@ -10,7 +10,7 @@ import {
   sanitizeInitials,
   sanitizeRow,
   sortRows,
-} from '../../../src/shared/utils/highScoreUtils.js';
+} from '../../../src/shared/highScores.js';
 
 const DEFAULT_KEY = 'toolboxaid:games:space-duel:high-scores';
 const DEFAULT_TABLE = [

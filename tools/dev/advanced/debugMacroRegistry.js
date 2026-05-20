@@ -6,7 +6,7 @@ debugMacroRegistry.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
+import { cloneJson } from "../../../src/shared/json.js";
 
 function asStepArray(value) {
   if (!Array.isArray(value)) {

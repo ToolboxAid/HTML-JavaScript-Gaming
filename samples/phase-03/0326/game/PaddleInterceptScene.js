@@ -8,7 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import PaddleInterceptAudio from './PaddleInterceptAudio.js';
 import PaddleInterceptInputController from './PaddleInterceptInputController.js';
 import PaddleInterceptWorld from './PaddleInterceptWorld.js';
-import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
+import { wrapTextByCharacterCount } from '/src/shared/textWrap.js';
 
 const VIEW = { width: 960, height: 720 };
 

@@ -1,4 +1,4 @@
-import { isPlainObject } from '../../src/shared/utils/objectUtils.js';
+import { isPlainObject } from '../../src/shared/objects.js';
 import { PaletteUsageService } from "../common/PaletteUsageService.js";
 import { PaletteSortService } from "../common/PaletteSortService.js";
 import { PaletteManagerApp } from "./modules/PaletteManagerApp.js";

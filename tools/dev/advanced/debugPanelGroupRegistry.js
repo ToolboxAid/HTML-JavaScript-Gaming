@@ -6,8 +6,8 @@ debugPanelGroupRegistry.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { asStringArray } from "../../../src/shared/utils/arrayUtils.js";
-import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
+import { asStringArray } from "../../../src/shared/arrays.js";
+import { cloneJson } from "../../../src/shared/json.js";
 
 function normalizeGroupDescriptor(descriptor = {}) {
   const groupId = sanitizeText(descriptor.groupId);

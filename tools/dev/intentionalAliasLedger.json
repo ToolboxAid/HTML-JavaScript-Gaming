@@ -85,30 +85,6 @@
       "reason": "Overlay framework test intentionally validates the sampled runtime module surface as a namespace."
     },
     {
-      "id": "shared-legacy-compatibility-comparison-tests",
-      "files": [
-        "tests/shared/SharedNumberStringIdCloseout.test.mjs",
-        "tests/shared/SharedFoundationCombinedPass.test.mjs"
-      ],
-      "statements": [
-        "import { trimSafe as legacyTrimSafe } from \"../../src/shared/utils/stringUtils.js\";",
-        "import { normalizeId as legacyNormalizeId } from \"../../src/shared/utils/idUtils.js\";",
-        "import { isFiniteNumber as legacyIsFiniteNumber } from \"../../src/shared/utils/numberUtils.js\";",
-        "import { escapeHtml as legacyEscapeHtml } from \"../../src/shared/string/stringUtil.js\";"
-      ],
-      "reason": "Shared closeout tests intentionally compare legacy compatibility exports against canonical helpers."
-    },
-    {
-      "id": "shared-number-legacy-bridge-local-name",
-      "files": [
-        "src/shared/number/numberUtils.js"
-      ],
-      "statements": [
-        "import { toFiniteNumber as normalizeFiniteNumberValue } from \"../math/numberNormalization.js\";"
-      ],
-      "reason": "Legacy number utility bridge keeps its public re-export names stable while using the canonical finite-number helper internally."
-    },
-    {
       "id": "object-vector-studio-shared-transform-adapters",
       "files": [
         "tools/object-vector-studio-v2/js/ToolStarterApp.js"

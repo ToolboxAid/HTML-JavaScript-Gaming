@@ -1,12 +1,12 @@
-import { asNumber } from "../math/numberNormalization.js";
-import { asObject, asArray } from "./objectUtils.js";
-import { safeTrim } from "./stringUtils.js";
+import { asNumber } from "./math/numberNormalization.js";
+import { asObject, asArray } from "./objects.js";
+import { safeTrim } from "./strings.js";
 
 function toSafeKey(value) {
   return safeTrim(value);
 }
 
-export { asNumber } from "../math/numberNormalization.js";
+export { asNumber } from "./math/numberNormalization.js";
 export const sanitizeText = safeTrim;
 
 export function toNetworkSnapshot(snapshot, sampleKey) {

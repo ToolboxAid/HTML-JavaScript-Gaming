@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-17T15:24:24.499Z",
+  "generatedAt": "2026-05-20T22:31:33.107Z",
   "violations": [
     {
       "file": "games/AITargetDummy/game/AITargetDummyController.js",
@@ -22,6 +22,56 @@
       "match": "rule:number-is-finite-usage"
     },
     {
+      "file": "games/Asteroids/entities/Bullet.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/asteroidsBeatTiming.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/asteroidsBeatTiming.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/asteroidsBeatTiming.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/asteroidsDebugDiagnostics.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsGameScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsGameScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsGameScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsGameScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsGameScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
       "file": "games/Asteroids/game/AsteroidsGameScene.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
@@ -48,38 +98,38 @@
     },
     {
       "file": "games/Asteroids/game/AsteroidsWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/index.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
+      "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "games/Asteroids/game/AsteroidsWorld.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "games/Asteroids/game/AsteroidsWorld.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "games/Asteroids/game/AsteroidsWorld.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "games/Asteroids/game/AsteroidsWorld.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "games/Asteroids/systems/AsteroidsHighScoreService.js",
+      "file": "games/Asteroids/systems/AsteroidsAudio.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
+      "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "games/Asteroids/systems/AsteroidsInitialsEntry.js",
+      "file": "games/Asteroids/systems/AsteroidsAudio.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "games/Asteroids/systems/HighScoreStore.js",
@@ -117,9 +167,29 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "games/Pacman/game/PacmanGameScene.js",
+      "file": "games/shared/workspaceGameAssetCatalog.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/shared/workspaceGameAssetCatalog.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/SolarSystem/game/SolarSystemWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/SpaceDuel/game/SoundController.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "games/SpaceDuel/game/SoundController.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "games/SpaceDuel/game/SpaceDuelHighScoreService.js",
@@ -130,6 +200,16 @@
       "file": "games/SpaceDuel/game/SpaceDuelInitialsEntry.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "games/SpaceInvaders/game/SpaceInvadersAudio.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "games/SpaceInvaders/game/SpaceInvadersAudio.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "games/SpaceInvaders/game/SpaceInvadersHighScoreService.js",
@@ -262,6 +342,61 @@
       "match": "rule:relative-shared-depth-2"
     },
     {
+      "file": "samples/phase-03/0325/game/GravityInputController.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/phase-03/0325/game/GravityInputController.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/phase-03/0325/game/GravityWorld.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/phase-03/0325/game/GravityWorld.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/phase-07/0713/fullscreenViewportFit.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-07/0713/fullscreenViewportFit.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-07/0713/fullscreenViewportFit.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-07/0713/fullscreenViewportFit.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-09/0905/PixelPerfectCollisionScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-09/0905/PixelPerfectCollisionScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-09/0905/PixelPerfectCollisionScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
       "file": "samples/phase-12/1205/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
@@ -287,6 +422,11 @@
       "match": "rule:number-is-finite-usage"
     },
     {
+      "file": "samples/phase-13/_shared/latencyModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
       "file": "samples/phase-13/1303/AsteroidsWorldSystemsScene.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
@@ -308,8 +448,8 @@
     },
     {
       "file": "samples/phase-13/1316/game/FakeLoopbackNetworkModel.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
     },
     {
       "file": "samples/phase-13/1316/game/FakeLoopbackNetworkModel.js",
@@ -324,7 +464,7 @@
     {
       "file": "samples/phase-13/1316/game/FakeLoopbackNetworkModel.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
+      "match": "rule:relative-shared-src-depth-3"
     },
     {
       "file": "samples/phase-13/1316/game/NetworkSampleAScene.js",
@@ -1082,6 +1222,21 @@
       "match": "rule:helper-fn-isPlainObject"
     },
     {
+      "file": "samples/shared/spritePresetRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/shared/spritePresetRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/shared/spritePresetRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
       "file": "samples/shared/worldGameStateSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
@@ -1259,6 +1414,26 @@
     {
       "file": "src/advanced/state/utils.js",
       "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/state/utils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/state/utils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/ai/GroupBehaviors.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/ai/GroupBehaviors.js",
+      "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
@@ -1267,9 +1442,24 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "src/engine/audio/TextToSpeechEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/audio/TextToSpeechEngine.js",
+      "type": "renamed-helper-clone",
+      "match": "rule:renamed-helper-finiteNumber"
+    },
+    {
+      "file": "src/engine/camera/Camera2D.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/camera/Camera2D.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "src/engine/camera/Camera3D.js",
@@ -1310,6 +1500,91 @@
       "file": "src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/ZoneCameraSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/camera/ZoneCameraSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/collision/objectVector.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/collision/objectVector.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/collision/objectVector.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/collision/objectVector.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/collision/objectVector.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/collision/objectVector.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/collision/polygon.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/collision/polygon.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/combat/Combat.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/combat/Combat.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/core/FixedTicker.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/core/FixedTicker.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/core/FrameClock.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/core/FrameClock.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "src/engine/debug/DebugOverlayLayout.js",
@@ -1379,12 +1654,27 @@
     {
       "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
     },
     {
       "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
@@ -1557,6 +1847,36 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
+      "file": "src/engine/debug/network/shared/hostReadUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/shared/hostReadUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/hostReadUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
       "file": "src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
@@ -1575,6 +1895,36 @@
       "file": "src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
     },
     {
       "file": "src/engine/debug/network/shared/networkDebugUtils.js",
@@ -1590,6 +1940,16 @@
       "file": "src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/panels/PromotionGatePanel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/panels/PromotionGatePanel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "src/engine/debug/standard/threeD/bootstrap/createStandard3dDebugSurfaceIntegration.js",
@@ -1723,8 +2083,63 @@
     },
     {
       "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
     },
     {
       "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
@@ -1732,6 +2147,46 @@
       "match": "rule:number-is-finite-usage"
     },
     {
+      "file": "src/engine/network/bootstrap/NetworkingLayer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/bootstrap/NetworkingLayer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/network/client/ClientReplicationApplicationLayer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/client/ClientReplicationApplicationLayer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/network/client/PredictionReconciler.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/client/PredictionReconciler.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/network/replication/ReplicationMessageContract.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/replication/ReplicationMessageContract.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
       "file": "src/engine/network/replication/ReplicationMessageContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
@@ -1740,6 +2195,26 @@
       "file": "src/engine/network/replication/ReplicationMessageContract.js",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-isPlainObject"
+    },
+    {
+      "file": "src/engine/network/replication/StateReplication.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/replication/StateReplication.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/network/server/AuthoritativeInputIngestionContract.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/server/AuthoritativeInputIngestionContract.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "src/engine/network/server/AuthoritativeInputIngestionContract.js",
@@ -1753,6 +2228,16 @@
     },
     {
       "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -1760,16 +2245,226 @@
       "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/network/session/ChatPresenceLayer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/session/ChatPresenceLayer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/network/session/HandshakeSimulator.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/session/HandshakeSimulator.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/network/session/LobbySessionManager.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/session/LobbySessionManager.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/network/transport/LoopbackTransport.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/transport/LoopbackTransport.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/network/transport/Serializer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/network/transport/Serializer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/physics/arcadeBody.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/physics/arcadeBody.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "src/engine/physics/collision3d.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/physics/collision3d.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "src/engine/physics/integration3d.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/physics/integration3d.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/release/SettingsSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/release/SettingsSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "type": "renamed-helper-clone",
+      "match": "rule:renamed-helper-finiteNumber"
     },
     {
       "file": "src/engine/replay/ReplayModel.js",
@@ -1828,6 +2523,76 @@
     },
     {
       "file": "src/engine/runtime/fullscreenBezel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/runtime/gameImageConvention.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/runtime/gameImageConvention.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/runtime/gameImageConvention.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/runtime/gameImageConvention.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/scene/SceneManager.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/scene/SceneManager.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/systems/BoundsSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/systems/BoundsSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/systems/MovementSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/systems/MovementSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/theme/mount-shared-header.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/geometry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/geometry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/highScores.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -1867,49 +2632,64 @@
       "match": "rule:helper-fn-asPositiveInteger"
     },
     {
-      "file": "src/shared/number/numberUtils.js",
+      "file": "src/shared/networkDebug.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/state/normalization.js",
+      "file": "src/shared/number/numbers.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/state/normalization.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "src/shared/utils/highScoreUtils.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "src/shared/utils/networkDebugUtils.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "src/shared/utils/objectUtils.js",
+      "file": "src/shared/objects.js",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-isPlainObject"
     },
     {
-      "file": "tools/3D Asset Viewer/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/3D Asset Viewer/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/3D Asset Viewer/main.js",
+      "file": "src/shared/state/normalization.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/state/normalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/tools/common/GameManifestLoader.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/tools/common/GameManifestLoader.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/tools/common/GameManifestLoader.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/tools/common/GameManifestLoader.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/3D Asset Viewer/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/3D Asset Viewer/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/3D Asset Viewer/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "tools/3D Camera Path Editor/main.js",
@@ -1923,11 +2703,6 @@
     },
     {
       "file": "tools/3D Camera Path Editor/main.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "tools/3D JSON Payload/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
@@ -1938,16 +2713,11 @@
     },
     {
       "file": "tools/3D JSON Payload/main.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "tools/Asset Browser/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Asset Browser/main.js",
+      "file": "tools/3D JSON Payload/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
@@ -1965,6 +2735,101 @@
       "file": "tools/Asset Pipeline/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Asset Pipeline/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Asset Pipeline/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/AssetManagerV2App.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/assetPreviewHelpers.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/controls/AssetFormControl.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/AssetSchemaValidator.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/AssetSchemaValidator.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/AssetSchemaValidator.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/AssetSchemaValidator.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/AssetSchemaValidator.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/AssetSchemaValidator.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/WorkspaceBridge.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/WorkspaceBridge.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/WorkspaceBridge.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/asset-manager-v2/js/services/WorkspaceBridge.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/collision-inspector-v2/js/CollisionInspectorV2App.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/collision-inspector-v2/js/CollisionInspectorV2App.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/collision-inspector-v2/js/CollisionInspectorV2Controls.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/collision-inspector-v2/js/constants.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
     },
     {
       "file": "tools/dev/advanced/debugMacroExecutor.js",
@@ -2152,6 +3017,186 @@
       "match": "rule:relative-shared-src-depth-3"
     },
     {
+      "file": "tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/object-vector-studio-v2/js/ToolStarterApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/palette-manager-v2/modules/paletteHarmonyUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/palette-manager-v2/modules/paletteUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
       "file": "tools/Parallax Scene Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
@@ -2220,6 +3265,16 @@
       "file": "tools/Parallax Scene Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Performance Profiler/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Performance Profiler/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "tools/Performance Profiler/main.js",
@@ -2243,6 +3298,41 @@
     },
     {
       "file": "tools/Physics Sandbox/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Physics Sandbox/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Physics Sandbox/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/preview-generator-v2/PreviewGeneratorV2App.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/preview-generator-v2/PreviewGeneratorV2App.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/preview-generator-v2/PreviewGeneratorV2App.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Replay Visualizer/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Replay Visualizer/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
@@ -2347,7 +3437,12 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/shared/livePreviewSyncChannel.js",
+      "file": "tools/shared/documentModeGuards.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/documentModeGuards.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -2363,6 +3458,26 @@
     },
     {
       "file": "tools/shared/livePreviewSyncChannel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/livePreviewSyncChannel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/paletteDocumentContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/paletteDocumentContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/paletteDocumentContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -2387,7 +3502,47 @@
       "match": "rule:number-is-finite-usage"
     },
     {
+      "file": "tools/shared/pipeline/gameAssetManifestCoordinator.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/pipeline/gameAssetManifestCoordinator.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/pipeline/gameAssetManifestDiscovery.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/pipeline/gameAssetManifestDiscovery.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/pipeline/runtimeAssetBinding.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/pipeline/runtimeAssetBinding.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
       "file": "tools/shared/pipeline/runtimeAssetLookup.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/pipeline/runtimeAssetLookup.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/pipeline/runtimeAssetValidation.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
@@ -2567,6 +3722,31 @@
       "match": "rule:number-is-finite-usage"
     },
     {
+      "file": "tools/shared/toolLoadDiagnostics.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/toolLoadDiagnostics.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/toolLoadDiagnostics.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/toolLoadDiagnostics.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/toolLoadDiagnostics.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
       "file": "tools/shared/vector/vectorAssetContract.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
@@ -2714,6 +3894,36 @@
     {
       "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
       "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
@@ -2782,74 +3992,34 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Tilemap Studio/main.js",
+      "file": "tools/State Inspector/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Tilemap Studio/main.js",
+      "file": "tools/State Inspector/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Tilemap Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Tilemap Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Tilemap Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Tilemap Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/Tilemap Studio/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/Tilemap Studio/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/Tilemap Studio/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/Tilemap Studio/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "tools/Tilemap Studio/main.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "tools/Tilemap Studio/main.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "tools/Tilemap Studio/main.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "tools/Tilemap Studio/main.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
     },
     {
       "file": "tools/SVG Asset Studio/main.js",
@@ -2983,6 +4153,181 @@
     },
     {
       "file": "tools/SVG Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/SVG Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/SVG Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/text2speech-V2/js/TextToSpeechToolApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/text2speech-V2/js/TextToSpeechToolApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/text2speech-V2/js/TextToSpeechToolApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/text2speech-V2/js/TextToSpeechToolApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/text2speech-V2/js/TextToSpeechToolApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/text2speech-V2/js/TextToSpeechToolApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/text2speech-V2/js/TextToSpeechToolApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -3023,6 +4368,41 @@
     },
     {
       "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -3035,6 +4415,21 @@
       "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapSerializer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapSerializer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "tools/Vector Map Editor/editor/VectorMapTransformController.js",
@@ -3045,6 +4440,61 @@
       "file": "tools/Vector Map Editor/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Vector Map Editor/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
     }
   ]
 }

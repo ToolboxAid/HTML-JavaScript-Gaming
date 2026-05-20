@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 AsteroidsAttractAdapter.js
 */
-import { clamp } from '/src/shared/utils/mathUtils.js';
+import { clamp } from '/src/shared/math/scalars.js';
 import { ASTEROIDS_OBJECT_GEOMETRY_IDS } from './asteroidsObjectGeometryManifest.js';
 
 function estimateTextWidth(text, fontPx) {

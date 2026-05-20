@@ -1,7 +1,7 @@
-import { asArray } from '../../../src/shared/utils/arrayUtils.js';
+import { asArray } from '../../../src/shared/arrays.js';
 import { safeString } from "../projectSystemValueUtils.js";
 import { GAME_ASSET_MANIFEST_SCHEMA, GAME_ASSET_MANIFEST_VERSION } from "./gameAssetManifestCoordinator.js";
-import { toObject } from "../../../src/shared/utils/objectUtils.js";
+import { toObject } from "../../../src/shared/objects.js";
 
 export const RUNTIME_ASSET_BINDING_SCHEMA = "html-js-gaming.runtime-asset-binding";
 export const RUNTIME_ASSET_BINDING_VERSION = 1;

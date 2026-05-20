@@ -5,7 +5,7 @@ David Quesenberry
 NetworkingLayer.js
 */
 
-import { deepClone } from '../../../shared/utils/jsonUtils.js';
+import { deepClone } from '../../../shared/json.js';
 import LoopbackTransport from '../transport/LoopbackTransport.js';
 import NetworkConditionSimulator from '../transport/NetworkConditionSimulator.js';
 

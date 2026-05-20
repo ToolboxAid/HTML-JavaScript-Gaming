@@ -1,5 +1,5 @@
 import { sanitizeText } from "../../src/shared/string/index.js";
-import { asObject } from "../../src/shared/utils/objectUtils.js";
+import { asObject } from "../../src/shared/objects.js";
 
 /*
 Toolbox Aid

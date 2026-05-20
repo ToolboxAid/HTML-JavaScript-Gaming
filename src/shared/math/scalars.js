@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 04/29/2026
-mathUtils.js
+scalars.js
 */
 export const TAU = Math.PI * 2;
 

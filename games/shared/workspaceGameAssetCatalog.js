@@ -1,4 +1,4 @@
-import { toObject } from "../../src/shared/utils/objectUtils.js";
+import { toObject } from "../../src/shared/objects.js";
 
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;

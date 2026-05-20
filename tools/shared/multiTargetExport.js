@@ -1,7 +1,7 @@
 import { sanitizeText } from "../../src/shared/string/index.js";
 import { buildProjectPackage } from "./projectPackaging.js";
 import { validateProjectAssetState } from "./projectAssetValidation.js";
-import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { cloneJson } from "../../src/shared/json.js";
 
 function createReport(level, code, message) {
   return {

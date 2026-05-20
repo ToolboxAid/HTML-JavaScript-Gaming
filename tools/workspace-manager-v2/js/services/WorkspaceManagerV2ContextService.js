@@ -1,5 +1,5 @@
-import { isPlainObject } from '../../../../src/shared/utils/objectUtils.js';
-import { deepClone } from '../../../../src/shared/utils/jsonUtils.js';
+import { isPlainObject } from '../../../../src/shared/objects.js';
+import { deepClone } from '../../../../src/shared/json.js';
 import { readFileHandleText, writeFileHandleText } from '../../../../src/engine/persistence/index.js';
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
