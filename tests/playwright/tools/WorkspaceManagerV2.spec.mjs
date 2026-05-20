@@ -9968,6 +9968,47 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
+  test("resolves workspace manifest tool schema refs from the workspace schema", async ({ page }) => {
+    const server = await openWorkspaceManagerV2(page);
+    const pageErrors = [];
+
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
+    });
+
+    try {
+      await selectMockRepo(page);
+      await page.locator("#activeGameSelect").selectOption("Asteroids");
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameId": "Asteroids"/);
+
+      const validation = await page.evaluate(async () => {
+        const app = window.__workspaceManagerV2App;
+        const validWorkspace = await app.contextService.validateGeneratedManifest(app.activeContext);
+        const invalidAssetWorkspace = structuredClone(app.activeContext);
+        invalidAssetWorkspace.tools["asset-manager-v2"].schemaRefProbe = true;
+        const invalidPaletteWorkspace = structuredClone(app.activeContext);
+        invalidPaletteWorkspace.tools["palette-manager-v2"].schemaRefProbe = true;
+        return {
+          asset: await app.contextService.validateGeneratedManifest(invalidAssetWorkspace),
+          palette: await app.contextService.validateGeneratedManifest(invalidPaletteWorkspace),
+          valid: validWorkspace
+        };
+      });
+
+      expect(validation.valid, validation.valid.message).toMatchObject({ ok: true });
+      expect(validation.asset.ok).toBe(false);
+      expect(validation.asset.message).toMatch(/root\.tools\.asset-manager-v2\.schemaRefProbe is not allowed/);
+      expect(validation.asset.message).not.toMatch(/unresolved schema reference/);
+      expect(validation.palette.ok).toBe(false);
+      expect(validation.palette.message).toMatch(/root\.tools\.palette-manager-v2\.schemaRefProbe is not allowed/);
+      expect(validation.palette.message).not.toMatch(/unresolved schema reference/);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await coverageReporter.stop(page);
+      await server.close();
+    }
+  });
+
   test("uses header lifecycle controls and launches tools from fixed Workspace Manager V2 tiles", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];

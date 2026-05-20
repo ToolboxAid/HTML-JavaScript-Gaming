@@ -2,7 +2,6 @@
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 const WORKSPACE_SESSION_SCHEMA_REF = "tools/schemas/workspace.manifest.schema.json";
-const OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH = "/tools/schemas/tools/object-vector-studio-v2.schema.json";
 const WORKSPACE_REPO_REFERENCE_SESSION_KEY = "workspace.repo.reference";
 const WORKSPACE_TOOL_SESSION_KEY_PREFIX = "workspace.tools.";
 const WORKSPACE_REPO_HANDLE_DB_NAME = "workspace-manager-v2-repo-handles";
@@ -318,6 +317,24 @@ function unsupportedFields(value, schema) {
   const properties = schemaProperties(schema);
   return Object.keys(value)
     .filter((key) => !Object.prototype.hasOwnProperty.call(properties, key));
+}
+
+function collectExternalSchemaReferences(schema, refs = new Set()) {
+  if (Array.isArray(schema)) {
+    schema.forEach((entry) => collectExternalSchemaReferences(entry, refs));
+    return refs;
+  }
+  if (!isPlainObject(schema)) {
+    return refs;
+  }
+  if (typeof schema.$ref === "string") {
+    const [refPath] = schema.$ref.split("#");
+    if (refPath) {
+      refs.add(refPath);
+    }
+  }
+  Object.values(schema).forEach((entry) => collectExternalSchemaReferences(entry, refs));
+  return refs;
 }
 
 function resolvePointer(schema, pointer) {
@@ -1290,10 +1307,45 @@ export class WorkspaceManagerV2ContextService {
       if (!isPlainObject(schema)) {
         return { ok: false, message: `${WORKSPACE_MANIFEST_SCHEMA_PATH} did not return a schema object.` };
       }
-      return { ok: true, schema };
+      const schemaRegistry = new Map();
+      registerSchemaReference(schemaRegistry, WORKSPACE_MANIFEST_SCHEMA_PATH, schema);
+      const referenceLoad = await this.loadSchemaReferences(schema, WORKSPACE_MANIFEST_SCHEMA_PATH, schemaRegistry);
+      if (!referenceLoad.ok) {
+        return referenceLoad;
+      }
+      return { ok: true, schema, schemaPath: WORKSPACE_MANIFEST_SCHEMA_PATH, schemaRegistry };
     } catch (error) {
       return { ok: false, message: `Unable to load ${WORKSPACE_MANIFEST_SCHEMA_PATH}: ${error.message}` };
     }
+  }
+
+  async loadSchemaReferences(rootSchema, rootSchemaPath, schemaRegistry, loadedSchemas = new Map()) {
+    for (const schemaRef of collectExternalSchemaReferences(rootSchema)) {
+      const resolvedSchemaPath = resolveSchemaPathFromBase(rootSchemaPath, schemaRef);
+      if (!resolvedSchemaPath) {
+        return { ok: false, message: `Unable to resolve schema reference ${schemaRef} from ${rootSchemaPath}.` };
+      }
+      let referencedSchema = loadedSchemas.get(resolvedSchemaPath);
+      if (!referencedSchema) {
+        const fetchPath = `/${resolvedSchemaPath}`;
+        const schemaResponse = await this.fetchRef(fetchPath, { cache: "no-store" });
+        if (!schemaResponse.ok) {
+          return { ok: false, message: `Unable to load ${fetchPath}: ${schemaResponse.status}` };
+        }
+        referencedSchema = await schemaResponse.json();
+        if (!isPlainObject(referencedSchema)) {
+          return { ok: false, message: `${fetchPath} did not return a schema object.` };
+        }
+        loadedSchemas.set(resolvedSchemaPath, referencedSchema);
+        registerSchemaReference(schemaRegistry, resolvedSchemaPath, referencedSchema);
+        const nestedReferences = await this.loadSchemaReferences(referencedSchema, resolvedSchemaPath, schemaRegistry, loadedSchemas);
+        if (!nestedReferences.ok) {
+          return nestedReferences;
+        }
+      }
+      registerSchemaReference(schemaRegistry, schemaRef, referencedSchema, resolvedSchemaPath);
+    }
+    return { ok: true };
   }
 
   async loadGameManifestSchema() {
@@ -1309,54 +1361,12 @@ export class WorkspaceManagerV2ContextService {
       if (!isPlainObject(schema)) {
         return { ok: false, message: `${GAME_MANIFEST_SCHEMA_PATH} did not return a schema object.` };
       }
-      const assetManagerSchemaPath = `/${TOOL_PAYLOAD_SCHEMA_REFS[ASSET_MANAGER_V2_TOOL_KEY]}`;
-      const assetManagerResponse = await this.fetchRef(assetManagerSchemaPath, { cache: "no-store" });
-      if (!assetManagerResponse.ok) {
-        return { ok: false, message: `Unable to load ${assetManagerSchemaPath}: ${assetManagerResponse.status}` };
-      }
-      const assetManagerSchema = await assetManagerResponse.json();
-      if (!isPlainObject(assetManagerSchema)) {
-        return { ok: false, message: `${assetManagerSchemaPath} did not return a schema object.` };
-      }
-      const paletteManagerSchemaPath = `/${TOOL_PAYLOAD_SCHEMA_REFS[PALETTE_MANAGER_V2_TOOL_KEY]}`;
-      const paletteManagerResponse = await this.fetchRef(paletteManagerSchemaPath, { cache: "no-store" });
-      if (!paletteManagerResponse.ok) {
-        return { ok: false, message: `Unable to load ${paletteManagerSchemaPath}: ${paletteManagerResponse.status}` };
-      }
-      const paletteManagerSchema = await paletteManagerResponse.json();
-      if (!isPlainObject(paletteManagerSchema)) {
-        return { ok: false, message: `${paletteManagerSchemaPath} did not return a schema object.` };
-      }
-      const objectVectorResponse = await this.fetchRef(OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH, { cache: "no-store" });
-      if (!objectVectorResponse.ok) {
-        return { ok: false, message: `Unable to load ${OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH}: ${objectVectorResponse.status}` };
-      }
-      const objectVectorSchema = await objectVectorResponse.json();
-      if (!isPlainObject(objectVectorSchema)) {
-        return { ok: false, message: `${OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH} did not return a schema object.` };
-      }
       const schemaRegistry = new Map();
-      registerSchemaReference(schemaRegistry, assetManagerSchemaPath, assetManagerSchema);
-      registerSchemaReference(schemaRegistry, TOOL_PAYLOAD_SCHEMA_REFS[ASSET_MANAGER_V2_TOOL_KEY], assetManagerSchema, assetManagerSchemaPath);
-      registerSchemaReference(schemaRegistry, "tools/asset-manager-v2.schema.json", assetManagerSchema, assetManagerSchemaPath);
-      registerSchemaReference(schemaRegistry, paletteManagerSchemaPath, paletteManagerSchema);
-      registerSchemaReference(schemaRegistry, TOOL_PAYLOAD_SCHEMA_REFS[PALETTE_MANAGER_V2_TOOL_KEY], paletteManagerSchema, paletteManagerSchemaPath);
-      registerSchemaReference(schemaRegistry, "tools/palette-manager-v2.schema.json", paletteManagerSchema, paletteManagerSchemaPath);
-      registerSchemaReference(schemaRegistry, OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH, objectVectorSchema);
-      registerSchemaReference(schemaRegistry, "tools/schemas/tools/object-vector-studio-v2.schema.json", objectVectorSchema, OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH);
-      registerSchemaReference(schemaRegistry, "tools/object-vector-studio-v2.schema.json", objectVectorSchema, OBJECT_VECTOR_STUDIO_V2_SCHEMA_PATH);
-      const text2SpeechSchemaPath = `/${TOOL_PAYLOAD_SCHEMA_REFS[TEXT2SPEECH_V2_TOOL_KEY]}`;
-      const text2SpeechResponse = await this.fetchRef(text2SpeechSchemaPath, { cache: "no-store" });
-      if (!text2SpeechResponse.ok) {
-        return { ok: false, message: `Unable to load ${text2SpeechSchemaPath}: ${text2SpeechResponse.status}` };
+      registerSchemaReference(schemaRegistry, GAME_MANIFEST_SCHEMA_PATH, schema);
+      const referenceLoad = await this.loadSchemaReferences(schema, GAME_MANIFEST_SCHEMA_PATH, schemaRegistry);
+      if (!referenceLoad.ok) {
+        return referenceLoad;
       }
-      const text2SpeechSchema = await text2SpeechResponse.json();
-      if (!isPlainObject(text2SpeechSchema)) {
-        return { ok: false, message: `${text2SpeechSchemaPath} did not return a schema object.` };
-      }
-      registerSchemaReference(schemaRegistry, text2SpeechSchemaPath, text2SpeechSchema);
-      registerSchemaReference(schemaRegistry, TOOL_PAYLOAD_SCHEMA_REFS[TEXT2SPEECH_V2_TOOL_KEY], text2SpeechSchema, text2SpeechSchemaPath);
-      registerSchemaReference(schemaRegistry, "tools/text2speech-V2.schema.json", text2SpeechSchema, text2SpeechSchemaPath);
       return { ok: true, schema, schemaPath: GAME_MANIFEST_SCHEMA_PATH, schemaRegistry };
     } catch (error) {
       return { ok: false, message: `Unable to load ${GAME_MANIFEST_SCHEMA_PATH}: ${error.message}` };
@@ -1387,81 +1397,10 @@ export class WorkspaceManagerV2ContextService {
       return schemaResult;
     }
     const workspaceContext = workspaceContextWithObjectVectorPayload(manifest);
-    const errors = this.validateManifestAgainstSchema(workspaceContext, schemaResult.schema);
-    if (!errors.length) {
-      const toolValidation = await this.validateToolPayloads(workspaceContext, schemaResult.schema);
-      errors.push(...toolValidation.errors);
-    }
+    const errors = validateSchemaValue(workspaceContext, schemaResult.schema, "root", schemaResult.schema, schemaResult.schemaRegistry, schemaResult.schemaPath);
     return errors.length
       ? { ok: false, message: `Generated Workspace Manager V2 manifest failed schema validation: ${errors.join(" | ")}` }
       : { ok: true };
-  }
-
-  validateManifestAgainstSchema(manifest, schema) {
-    const errors = [];
-    if (!isPlainObject(manifest)) {
-      return ["root must be an object"];
-    }
-    missingRequiredFields(manifest, schema).forEach((key) => {
-      errors.push(`root.${key} is required`);
-    });
-    unsupportedFields(manifest, schema).forEach((key) => {
-      errors.push(`root.${key} is not allowed`);
-    });
-
-    if (!isPlainObject(manifest.tools)) {
-      errors.push("root.tools must be an object");
-      return errors;
-    }
-    const toolsSchema = schemaProperties(schema).tools || {};
-    const toolProperties = schemaProperties(toolsSchema);
-    missingRequiredFields(manifest.tools, toolsSchema).forEach((key) => {
-      errors.push(`root.tools.${key} is required`);
-    });
-    Object.keys(manifest.tools).forEach((key) => {
-      if (!Object.prototype.hasOwnProperty.call(toolProperties, key)) {
-        errors.push(`root.tools.${key} is not allowed`);
-      }
-    });
-    return errors;
-  }
-
-  async loadToolPayloadSchema(ref) {
-    if (typeof ref !== "string" || !ref.startsWith("./tools/")) {
-      return { ok: false, message: `Unsupported workspace manifest schema reference ${ref || "(empty)"}.` };
-    }
-    const schemaPath = `/tools/schemas/${ref.slice(2)}`;
-    try {
-      const response = await this.fetchRef(schemaPath, { cache: "no-store" });
-      if (!response.ok) {
-        return { ok: false, message: `Unable to load ${schemaPath}: ${response.status}` };
-      }
-      const schema = await response.json();
-      return isPlainObject(schema)
-        ? { ok: true, schema }
-        : { ok: false, message: `${schemaPath} did not return a schema object.` };
-    } catch (error) {
-      return { ok: false, message: `Unable to load ${schemaPath}: ${error.message}` };
-    }
-  }
-
-  async validateToolPayloads(manifest, workspaceSchema) {
-    const errors = [];
-    const toolsSchema = schemaProperties(workspaceSchema).tools || {};
-    const toolProperties = schemaProperties(toolsSchema);
-    for (const [toolKey, payload] of Object.entries(manifest.tools || {})) {
-      const toolSchemaRef = toolProperties[toolKey]?.$ref;
-      if (!toolSchemaRef) {
-        continue;
-      }
-      const toolSchemaResult = await this.loadToolPayloadSchema(toolSchemaRef);
-      if (!toolSchemaResult.ok) {
-        errors.push(toolSchemaResult.message);
-        continue;
-      }
-      errors.push(...validateSchemaValue(payload, toolSchemaResult.schema, `root.tools.${toolKey}`, toolSchemaResult.schema));
-    }
-    return { ok: errors.length === 0, errors };
   }
 
   async fetchGameManifest(game) {
