@@ -3,4 +3,4 @@ export {
   commandLinesForTrace,
   getCommandSnapshot,
   toNetworkSnapshot
-} from "../../src/shared/networkDebug.js";
+} from "../../src/shared/debug/network.js";

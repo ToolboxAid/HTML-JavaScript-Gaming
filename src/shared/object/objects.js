@@ -4,8 +4,6 @@ David Quesenberry
 04/08/2026
 objects.js
 */
-import { asArray } from "./arrays.js";
-
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -22,4 +20,4 @@ function toObject(value) {
   return value !== null && typeof value === 'object' ? value : {};
 }
 
-export { isObject, isPlainObject, asObject, toObject, asArray };
+export { isObject, isPlainObject, asObject, toObject };

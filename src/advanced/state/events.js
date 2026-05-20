@@ -10,7 +10,7 @@ import {
   WORLD_GAME_STATE_SYSTEM_ID
 } from './constants.js';
 import { cloneDeep } from './utils.js';
-import { isPlainObject } from '../../shared/objects.js';
+import { isPlainObject } from '../../shared/object/objects.js';
 
 function createStateEventEnvelope({
   eventType,

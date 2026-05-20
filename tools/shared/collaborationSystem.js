@@ -1,6 +1,6 @@
 import { sanitizeText } from "../../src/shared/string/index.js";
 import { buildProjectVersioning } from "./projectVersioning.js";
-import { cloneJson } from "../../src/shared/json.js";
+import { cloneJson } from "../../src/shared/json/clone.js";
 
 function createAudit(event, message) {
   return {

@@ -1,5 +1,5 @@
 ﻿import { getToolRegistry } from "./toolRegistry.js";
-import { escapeHtml } from "../src/shared/strings.js";
+import { escapeHtml } from "../src/shared/string/strings.js";
 
 const SAMPLES_INDEX_PATH = "/samples/index.html";
 const SAMPLES_METADATA_PATH = "/samples/metadata/samples.index.metadata.json";

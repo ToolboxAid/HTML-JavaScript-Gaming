@@ -15,7 +15,7 @@ import {
   downloadTextFile,
   readFileText
 } from "../../../src/engine/persistence/index.js";
-import { isPlainObject } from "../../../src/shared/objects.js";
+import { isPlainObject } from "../../../src/shared/object/objects.js";
 
 const WORKSPACE_TOOL_SESSION_KEY = "workspace.tools.object-vector-studio-v2";
 const WORKSPACE_PALETTE_SESSION_KEY = "workspace.tools.palette-manager-v2";

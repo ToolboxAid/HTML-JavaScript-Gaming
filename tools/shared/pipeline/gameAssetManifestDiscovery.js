@@ -1,10 +1,10 @@
-import { asArray } from '../../../src/shared/arrays.js';
+import { asArray } from '../../../src/shared/array/arrays.js';
 import { safeString } from "../projectSystemValueUtils.js";
 import {
   GAME_ASSET_MANIFEST_SCHEMA,
   GAME_ASSET_MANIFEST_VERSION
 } from "./gameAssetManifestCoordinator.js";
-import { toObject } from "../../../src/shared/objects.js";
+import { toObject } from "../../../src/shared/object/objects.js";
 
 const SUPPORTED_DOMAINS = Object.freeze(["sprites", "tilemaps", "parallax", "vectors"]);
 

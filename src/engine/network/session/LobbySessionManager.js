@@ -5,7 +5,7 @@ David Quesenberry
 LobbySessionManager.js
 */
 
-import { deepClone } from '../../../shared/json.js';
+import { deepClone } from '../../../shared/json/clone.js';
 export default class LobbySessionManager {
   constructor() {
     this.sessions = new Map();

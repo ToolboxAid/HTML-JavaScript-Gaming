@@ -5,9 +5,10 @@ David Quesenberry
 inspectorUtils.js
 */
 
-import { asArray, asObject } from "../../../../shared/objects.js";
+import { asArray } from "../../../../shared/array/arrays.js";
+import { asObject } from "../../../../shared/object/objects.js";
 export { asNonNegativeInteger, asPositiveInteger, toFiniteNumber } from "../../../../shared/math/numberNormalization.js";
-export { sanitizeText } from "../../../../shared/strings.js";
+export { sanitizeText } from "../../../../shared/string/strings.js";
 export { asArray, asObject };
 
 export function cloneJson(value) {

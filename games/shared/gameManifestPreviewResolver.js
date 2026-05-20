@@ -3,7 +3,7 @@ import {
   resolveRuntimeAssetUrl
 } from "/src/engine/runtime/gameImageConvention.js";
 import { normalizePathSeparators, normalizeText } from "../../src/shared/string/index.js";
-import { asArray } from "../../src/shared/arrays.js";
+import { asArray } from "../../src/shared/array/arrays.js";
 
 function hasProtocol(value) {
   return /^[a-z][a-z0-9+.-]*:/i.test(value);

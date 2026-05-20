@@ -1,5 +1,5 @@
-import { isPlainObject } from "../../../../src/shared/objects.js";
-import { deepClone } from "../../../../src/shared/json.js";
+import { isPlainObject } from "../../../../src/shared/object/objects.js";
+import { deepClone } from "../../../../src/shared/json/clone.js";
 
 const SCHEMA_URL = new URL("../../../schemas/tools/object-vector-studio-v2.schema.json", import.meta.url);
 

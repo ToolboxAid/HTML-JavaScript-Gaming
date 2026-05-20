@@ -1,4 +1,4 @@
-import { cloneJson } from '../../../src/shared/json.js';
+import { cloneJson } from '../../../src/shared/json/clone.js';
 import { sanitizeVectorText } from "./vectorSafeValueUtils.js";
 
 import {

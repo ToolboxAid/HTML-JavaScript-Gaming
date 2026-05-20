@@ -5,7 +5,7 @@ David Quesenberry
 ClientReplicationApplicationLayer.js
 */
 
-import { deepClone } from '../../../shared/json.js';
+import { deepClone } from '../../../shared/json/clone.js';
 import ClientReconciliationStrategy, {
   REPLICATION_IGNORE_REASONS,
 } from './ClientReconciliationStrategy.js';

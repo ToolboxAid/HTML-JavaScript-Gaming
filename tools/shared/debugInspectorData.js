@@ -1,4 +1,4 @@
-import { asArray } from '../../src/shared/arrays.js';
+import { asArray } from '../../src/shared/array/arrays.js';
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
 import { isFiniteNumber } from "../../src/shared/number/index.js";
 

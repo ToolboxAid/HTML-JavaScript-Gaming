@@ -5,7 +5,7 @@ David Quesenberry
 ReplicationMessageContract.js
 */
 
-import { deepClone } from '../../../shared/json.js';
+import { deepClone } from '../../../shared/json/clone.js';
 export const REPLICATION_SNAPSHOT_TYPES = Object.freeze({
   FULL: 'full',
   DELTA: 'delta',

@@ -2,8 +2,8 @@ import {
   ASTEROIDS_ASTEROID_SIZE_OBJECT_IDS,
 } from './asteroidsObjectGeometryManifest.js';
 import { getObjectVectorCollisionOutlinePoints } from '/src/engine/collision/index.js';
-import { asArray } from '/src/shared/arrays.js';
-import { centerPoints, maxRadius } from '/src/shared/geometry.js';
+import { asArray } from '/src/shared/array/arrays.js';
+import { centerPoints, maxRadius } from '/src/shared/math/geometry.js';
 
 const ASTEROID_SIZE_LABELS = Object.freeze({
   1: 'SML',

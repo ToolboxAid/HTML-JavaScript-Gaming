@@ -1,4 +1,4 @@
-import { isPlainObject } from '../../src/shared/objects.js';
+import { isPlainObject } from '../../src/shared/object/objects.js';
 import { getToolHostEntryById } from "./toolHostManifest.js";
 import {
   removeToolHostSharedContextById,

@@ -13,9 +13,9 @@ import {
   standardDetails,
   toLinePair
 } from "./packUtils.js";
-import { stringifyValue } from "../../../src/shared/stringifyValue.js";
+import { stringifyValue } from "../../../src/shared/string/stringifyValue.js";
 
-import { sanitizeText } from "../../../src/shared/strings.js";
+import { sanitizeText } from "../../../src/shared/string/strings.js";
 
 function asPositiveInt(value, fallback) {
   const normalized = Number.isFinite(value) ? Math.floor(Number(value)) : fallback;

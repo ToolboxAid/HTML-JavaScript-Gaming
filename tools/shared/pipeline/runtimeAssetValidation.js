@@ -1,7 +1,7 @@
 import { safeString } from "../projectSystemValueUtils.js";
 import { RUNTIME_ACTIVE_DOMAINS } from "./runtimeAssetBinding.js";
 import { appendAssetError } from "./assetErrorHandling.js";
-import { toObject } from "../../../src/shared/objects.js";
+import { toObject } from "../../../src/shared/object/objects.js";
 
 function hasText(value) {
   return safeString(value, "").length > 0;

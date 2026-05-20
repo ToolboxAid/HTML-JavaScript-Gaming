@@ -1,1 +1,1 @@
-export { resolveDebugConfig } from "../../src/shared/debugConfig.js";
+export { resolveDebugConfig } from "../../src/shared/debug/config.js";

@@ -9,11 +9,11 @@ import {
   ensureArray,
   asArray,
   asStringArray
-} from "../../src/shared/arrays.js";
+} from "../../src/shared/array/arrays.js";
 import {
   sanitizeText,
   escapeHtml
-} from "../../src/shared/strings.js";
+} from "../../src/shared/string/strings.js";
 import {
   normalizeId,
   createId,

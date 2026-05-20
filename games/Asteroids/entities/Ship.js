@@ -6,7 +6,7 @@ Ship.js
 */
 import { wrap } from '/src/shared/math/scalars.js';
 import { transformCollisionPoints } from '/src/engine/collision/index.js';
-import { normalizePoints } from '/src/shared/geometry.js';
+import { normalizePoints } from '/src/shared/math/geometry.js';
 
 export default class Ship {
   constructor(x, y, { collisionPoints = [] } = {}) {

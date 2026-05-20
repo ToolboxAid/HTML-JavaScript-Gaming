@@ -8,8 +8,8 @@ import { Scene } from '/src/engine/scene/index.js';
 import PongInputController from './PongInputController.js';
 import PongAudio from './PongAudio.js';
 import { getPongModes } from './PongModeConfig.js';
-import { wrapTextByCharacterCount } from '/src/shared/textWrap.js';
-import { toObject } from '/src/shared/objects.js';
+import { wrapTextByCharacterCount } from '/src/shared/string/textWrap.js';
+import { toObject } from '/src/shared/object/objects.js';
 import { toFiniteNumber } from '/src/shared/number/index.js';
 
 const COURT = {

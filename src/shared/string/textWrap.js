@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 04/17/2026
-textWrapUtils.js
+textWrap.js
 */
 export function wrapTextByCharacterCount(
   text,

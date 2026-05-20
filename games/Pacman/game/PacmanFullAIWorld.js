@@ -12,7 +12,7 @@ import PacmanFullAIGhostHouseController from './PacmanFullAIGhostHouseController
 import PacmanFullAIGhostModeScheduler from './PacmanFullAIGhostModeScheduler.js';
 import PacmanFullAIGrid from './PacmanFullAIGrid.js';
 import { DIRS } from './PacmanFullAINavigator.js';
-import { oppositeCardinalDirection } from '/src/shared/directions.js';
+import { oppositeCardinalDirection } from '/src/shared/math/directions.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
 

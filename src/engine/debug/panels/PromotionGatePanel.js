@@ -6,7 +6,7 @@ PromotionGatePanel.js
 */
 
 import { drawPanel } from '../DebugPanel.js';
-import { asObject } from '../../../shared/objects.js';
+import { asObject } from '../../../shared/object/objects.js';
 
 function resolvePromotionStatus(source) {
   const snapshot = asObject(source);

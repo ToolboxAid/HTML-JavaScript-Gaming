@@ -4,8 +4,8 @@ import ImageAssetLoader from "../../src/engine/assets/ImageAssetLoader.js";
 import { prepareVectorGeometryRuntimeAsset } from "./vectorGeometryRuntime.js";
 import { validatePackageManifest, createRegistryDefinition } from "./runtimeAssetValidationUtils.js";
 import { createRuntimeReport, sanitizeRuntimeText } from "./runtimeAssetSharedUtils.js";
-import { ensureArray } from "../../src/shared/arrays.js";
-import { cloneJson } from "../../src/shared/json.js";
+import { ensureArray } from "../../src/shared/array/arrays.js";
+import { cloneJson } from "../../src/shared/json/clone.js";
 
 function createLoaderState(status, reports, extra = {}) {
   return {

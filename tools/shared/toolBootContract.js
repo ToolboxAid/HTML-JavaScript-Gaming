@@ -1,4 +1,4 @@
-import { trimSafe } from "../../src/shared/strings.js";
+import { trimSafe } from "../../src/shared/string/strings.js";
 
 const BOOT_REGISTRY_KEY = "__TOOLS_BOOT_CONTRACT_REGISTRY__";
 

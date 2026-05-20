@@ -7,8 +7,8 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { resolveDebugConfig } from '../../src/shared/debugConfig.js';
-import { createNoopDevConsoleIntegration } from '../../src/shared/noopDevConsoleIntegration.js';
+import { resolveDebugConfig } from '../../src/shared/debug/config.js';
+import { createNoopDevConsoleIntegration } from '../../src/shared/debug/noopDevConsoleIntegration.js';
 import { sanitizeText } from '../../src/shared/string/index.js';
 import BreakoutScene from './game/BreakoutScene.js';
 

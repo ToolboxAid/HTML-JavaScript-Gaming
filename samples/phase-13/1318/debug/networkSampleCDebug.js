@@ -6,7 +6,8 @@ networkSampleCDebug.js
 */
 
 import { createNetworkDebugPluginDefinition } from "/src/engine/debug/network/index.js";
-import { asArray, asObject } from "/src/shared/objects.js";
+import { asArray } from "/src/shared/array/arrays.js";
+import { asObject } from "/src/shared/object/objects.js";
 import { isFiniteNumber } from "../../../shared/numberUtils.js";
 import {
   asNumber,

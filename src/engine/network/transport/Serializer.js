@@ -5,7 +5,7 @@ David Quesenberry
 Serializer.js
 */
 
-import { deepClone } from '../../../shared/json.js';
+import { deepClone } from '../../../shared/json/clone.js';
 export default class Serializer {
   constructor({ version = 1 } = {}) {
     this.version = version;

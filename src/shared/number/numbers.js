@@ -1,6 +1,10 @@
-import { toFiniteNumber } from "../math/numberNormalization.js";
+import {
+  asFiniteNumber,
+  asPositiveInteger,
+  toFiniteNumber,
+} from "../math/numberNormalization.js";
 
-export { toFiniteNumber, asFiniteNumber, asPositiveInteger } from "../math/numberNormalization.js";
+export { toFiniteNumber, asFiniteNumber, asPositiveInteger };
 
 export function isFiniteNumber(value) {
   return Number.isFinite(value);

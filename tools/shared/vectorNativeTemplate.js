@@ -10,7 +10,7 @@ import { runPublishingPipeline, summarizePublishingPipeline } from "./publishing
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "./debugVisualizationLayer.js";
 import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./performanceProfiler.js";
 import { normalizeSvgToVectorAsset } from "./vector/vectorAssetBridge.js";
-import { cloneJson } from "../../src/shared/json.js";
+import { cloneJson } from "../../src/shared/json/clone.js";
 import { createRuntimeManifestAssetLookup } from "./pipeline/runtimeAssetLookup.js";
 
 function createReport(level, code, message) {

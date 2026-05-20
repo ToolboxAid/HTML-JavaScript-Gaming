@@ -8,8 +8,8 @@ import { runPublishingPipeline, summarizePublishingPipeline } from "./publishing
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "./debugVisualizationLayer.js";
 import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./performanceProfiler.js";
 import { createVectorNativeTemplateDefinition } from "./vectorNativeTemplate.js";
-import { cloneJson } from "../../src/shared/json.js";
-import { normalizeString } from "../../src/shared/strings.js";
+import { cloneJson } from "../../src/shared/json/clone.js";
+import { normalizeString } from "../../src/shared/string/strings.js";
 import { createRuntimeManifestAssetLookup } from "./pipeline/runtimeAssetLookup.js";
 
 function createReport(level, code, message) {

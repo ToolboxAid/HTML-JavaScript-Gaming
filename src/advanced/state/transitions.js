@@ -6,7 +6,7 @@ transitions.js
 */
 
 import { WORLD_GAME_STATE_EVENT_TYPES } from './constants.js';
-import { isPlainObject } from '../../shared/objects.js';
+import { isPlainObject } from '../../shared/object/objects.js';
 import { toFiniteNumber } from '../../shared/math/numberNormalization.js';
 
 const ALLOWED_TRANSITION_EVENT_TYPES = new Set(Object.values(WORLD_GAME_STATE_EVENT_TYPES));

@@ -6,7 +6,7 @@ David Quesenberry
 contractVersioning.js
 */
 
-import { cloneJson } from '../../src/shared/json.js';
+import { cloneJson } from '../../src/shared/json/clone.js';
 
 function parseVersionParts(value) {
   const normalized = sanitizeText(value).replace(/^v/i, "");

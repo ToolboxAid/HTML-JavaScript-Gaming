@@ -1,6 +1,6 @@
-import { asArray } from '../../../src/shared/arrays.js';
+import { asArray } from '../../../src/shared/array/arrays.js';
 import { safeString } from "../projectSystemValueUtils.js";
-import { toObject } from "../../../src/shared/objects.js";
+import { toObject } from "../../../src/shared/object/objects.js";
 
 export const GAME_ASSET_MANIFEST_SCHEMA = "html-js-gaming.game-asset-manifest";
 export const GAME_ASSET_MANIFEST_VERSION = 1;

@@ -1,5 +1,5 @@
-import { isPlainObject } from '../../../../src/shared/objects.js';
-import { deepClone } from '../../../../src/shared/json.js';
+import { isPlainObject } from '../../../../src/shared/object/objects.js';
+import { deepClone } from '../../../../src/shared/json/clone.js';
 function normalizeWorkspacePath(value) {
   return String(value || "").trim().replace(/\\/g, "/").replace(/\/+/g, "/").replace(/^\/+|\/+$/g, "");
 }

@@ -16,4 +16,4 @@ export {
   sanitizeText,
   normalizeString,
   escapeHtml
-} from "../strings.js";
+} from "./strings.js";

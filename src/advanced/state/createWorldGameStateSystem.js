@@ -20,7 +20,7 @@ import {
 } from './events.js';
 import { getPromotionState } from '../../shared/state/index.js';
 import { asFiniteNumber, asPositiveInteger } from '../../shared/math/numberNormalization.js';
-import { isPlainObject } from '../../shared/objects.js';
+import { isPlainObject } from '../../shared/object/objects.js';
 import {
   cloneDeep,
   createReadonlyClone,

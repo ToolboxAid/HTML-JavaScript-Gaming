@@ -5,7 +5,7 @@ David Quesenberry
 AuthoritativeInputIngestionContract.js
 */
 
-import { deepClone } from '../../../shared/json.js';
+import { deepClone } from '../../../shared/json/clone.js';
 export const INPUT_INGESTION_REJECTION_CODES = Object.freeze({
   ENVELOPE_REQUIRED: 'ENVELOPE_REQUIRED',
   SESSION_ID_REQUIRED: 'SESSION_ID_REQUIRED',

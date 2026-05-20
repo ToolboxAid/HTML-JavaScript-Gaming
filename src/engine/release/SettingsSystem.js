@@ -5,7 +5,7 @@ David Quesenberry
 SettingsSystem.js
 */
 
-import { deepClone } from '../../shared/json.js';
+import { deepClone } from '../../shared/json/clone.js';
 import { ConfigStore } from '../config/index.js';
 import { StorageService } from '../persistence/index.js';
 

@@ -5,7 +5,7 @@ David Quesenberry
 LoopbackTransport.js
 */
 
-import { deepClone } from '../../../shared/json.js';
+import { deepClone } from '../../../shared/json/clone.js';
 export default class LoopbackTransport {
   constructor(id) {
     this.id = id;

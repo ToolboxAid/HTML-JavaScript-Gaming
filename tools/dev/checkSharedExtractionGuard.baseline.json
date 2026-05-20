@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-20T22:31:33.107Z",
+  "generatedAt": "2026-05-20T22:47:53.369Z",
   "violations": [
     {
       "file": "games/AITargetDummy/game/AITargetDummyController.js",
@@ -1659,6 +1659,16 @@
     {
       "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
@@ -1670,6 +1680,11 @@
       "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
     },
     {
       "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
@@ -1889,7 +1904,7 @@
     {
       "file": "src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
+      "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "src/engine/debug/network/shared/networkDebugUtils.js",
@@ -1910,6 +1925,21 @@
       "file": "src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
     },
     {
       "file": "src/engine/debug/network/shared/networkDebugUtils.js",
@@ -2582,17 +2612,22 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/geometry.js",
+      "file": "src/shared/debug/network.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/geometry.js",
+      "file": "src/shared/game/highScores.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/highScores.js",
+      "file": "src/shared/math/geometry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/math/geometry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -2632,17 +2667,12 @@
       "match": "rule:helper-fn-asPositiveInteger"
     },
     {
-      "file": "src/shared/networkDebug.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
       "file": "src/shared/number/numbers.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/objects.js",
+      "file": "src/shared/object/objects.js",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-isPlainObject"
     },

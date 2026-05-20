@@ -6,7 +6,7 @@ import { loadPackagedProjectRuntime } from "./runtimeAssetLoader.js";
 import { buildRuntimeStreamingManifest, loadRuntimeStreamingChunks } from "./runtimeStreaming.js";
 import { buildPluginArchitecture } from "./pluginArchitecture.js";
 import { buildProjectVersioning } from "./projectVersioning.js";
-import { cloneJson } from "../../src/shared/json.js";
+import { cloneJson } from "../../src/shared/json/clone.js";
 
 function createScenario(id, status, summary, details = []) {
   return {

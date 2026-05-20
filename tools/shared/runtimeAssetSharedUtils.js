@@ -1,4 +1,4 @@
-import { trimSafe } from "../../src/shared/strings.js";
+import { trimSafe } from "../../src/shared/string/strings.js";
 
 export function sanitizeRuntimeText(value, fallback = "") {
   const text = trimSafe(value);

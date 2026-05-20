@@ -1,4 +1,4 @@
-import { trimSafe } from "../../src/shared/strings.js";
+import { trimSafe } from "../../src/shared/string/strings.js";
 
 export function queryFirst(selector, root = document) {
   if (!root || typeof root.querySelector !== "function") {

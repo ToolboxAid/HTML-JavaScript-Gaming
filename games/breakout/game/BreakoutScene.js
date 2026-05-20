@@ -8,8 +8,8 @@ import { Scene } from '/src/engine/scene/index.js';
 import BreakoutAudio from './BreakoutAudio.js';
 import BreakoutInputController from './BreakoutInputController.js';
 import BreakoutWorld from './BreakoutWorld.js';
-import { wrapTextByCharacterCount } from '/src/shared/textWrap.js';
-import { toObject } from '/src/shared/objects.js';
+import { wrapTextByCharacterCount } from '/src/shared/string/textWrap.js';
+import { toObject } from '/src/shared/object/objects.js';
 
 const VIEW = {
   width: 960,

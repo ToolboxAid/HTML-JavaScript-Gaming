@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 04/17/2026
-directionUtils.js
+directions.js
 */
 export function oppositeCardinalDirection(direction) {
   if (direction === "left") return "right";

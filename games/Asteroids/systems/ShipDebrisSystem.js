@@ -5,7 +5,7 @@ David Quesenberry
 ShipDebrisSystem.js
 */
 import { randomRange } from '/src/shared/math/scalars.js';
-import { normalizePoints } from '/src/shared/geometry.js';
+import { normalizePoints } from '/src/shared/math/geometry.js';
 
 function createShipSegments(points) {
   const normalized = normalizePoints(points);

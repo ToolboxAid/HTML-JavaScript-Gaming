@@ -8,7 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import ThrusterAudio from './ThrusterAudio.js';
 import ThrusterInputController from './ThrusterInputController.js';
 import ThrusterWorld from './ThrusterWorld.js';
-import { wrapTextByCharacterCount } from '/src/shared/textWrap.js';
+import { wrapTextByCharacterCount } from '/src/shared/string/textWrap.js';
 
 const VIEW = {
   width: 960,

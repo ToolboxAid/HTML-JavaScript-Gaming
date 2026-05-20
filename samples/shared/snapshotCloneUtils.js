@@ -1,1 +1,1 @@
-export { cloneSnapshot } from "../../src/shared/snapshotClone.js";
+export { cloneSnapshot } from "../../src/shared/runtime/snapshotClone.js";

@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 PacmanFullAINavigator.js
 */
-import { oppositeCardinalDirection } from '/src/shared/directions.js';
+import { oppositeCardinalDirection } from '/src/shared/math/directions.js';
 
 const DIRS = Object.freeze({
   left: { x: -1, y: 0 },

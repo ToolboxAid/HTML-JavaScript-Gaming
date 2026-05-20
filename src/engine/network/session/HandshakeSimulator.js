@@ -5,7 +5,7 @@ David Quesenberry
 HandshakeSimulator.js
 */
 
-import { deepClone } from '../../../shared/json.js';
+import { deepClone } from '../../../shared/json/clone.js';
 import LoopbackTransport from '../transport/LoopbackTransport.js';
 import {
   createSessionLifecycle,

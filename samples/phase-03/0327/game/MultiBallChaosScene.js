@@ -8,7 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import MultiBallChaosAudio from './MultiBallChaosAudio.js';
 import MultiBallChaosInputController from './MultiBallChaosInputController.js';
 import MultiBallChaosWorld from './MultiBallChaosWorld.js';
-import { wrapTextByCharacterCount } from '/src/shared/textWrap.js';
+import { wrapTextByCharacterCount } from '/src/shared/string/textWrap.js';
 
 const VIEW = {
   width: 960,

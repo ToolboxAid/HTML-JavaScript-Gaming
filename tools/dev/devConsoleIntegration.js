@@ -22,8 +22,8 @@ import { createToggleCommandPack } from "./commandPacks/toggleCommandPack.js";
 import { createValidationCommandPack } from "./commandPacks/validationCommandPack.js";
 import { createInspectorStore } from "./inspectors/inspectorStore.js";
 import { createDebugPluginRegistry } from "./plugins/debugPluginSystem.js";
-import { ensureArray } from "../../src/shared/arrays.js";
-import { cloneJson } from "../../src/shared/json.js";
+import { ensureArray } from "../../src/shared/array/arrays.js";
+import { cloneJson } from "../../src/shared/json/clone.js";
 
 import {
   createDiagnosticsCollector,
@@ -59,7 +59,7 @@ const DEFAULT_PLUGIN_CAPABILITIES = Object.freeze([
 ]);
 
 import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { isObject } from "../../src/shared/objects.js";
+import { isObject } from "../../src/shared/object/objects.js";
 
 function toContextSection(context, field) {
   return isObject(context?.[field]) ? context[field] : {};

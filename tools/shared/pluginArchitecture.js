@@ -1,5 +1,5 @@
 import { sanitizeText } from "../../src/shared/string/index.js";
-import { cloneJson } from '../../src/shared/json.js';
+import { cloneJson } from '../../src/shared/json/clone.js';
 
 function createReport(level, code, message) {
   return {

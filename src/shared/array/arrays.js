@@ -1,4 +1,4 @@
-import { sanitizeText } from "./strings.js";
+import { sanitizeText } from "../string/strings.js";
 
 export function ensureArray(value) {
   return Array.isArray(value) ? value : [];

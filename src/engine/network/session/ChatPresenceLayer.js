@@ -5,7 +5,7 @@ David Quesenberry
 ChatPresenceLayer.js
 */
 
-import { deepClone } from '../../../shared/json.js';
+import { deepClone } from '../../../shared/json/clone.js';
 import LobbySessionManager from './LobbySessionManager.js';
 
 export default class ChatPresenceLayer {

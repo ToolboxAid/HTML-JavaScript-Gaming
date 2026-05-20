@@ -1,4 +1,4 @@
-import { isPlainObject } from '../../src/shared/objects.js';
+import { isPlainObject } from '../../src/shared/object/objects.js';
 import { readFileHandleText, writeFileHandleText } from '../../src/engine/persistence/index.js';
 import { PreviewGeneratorV2Logger } from './PreviewGeneratorV2Logger.js';
 import { PreviewGeneratorV2Ui } from './PreviewGeneratorV2Ui.js';

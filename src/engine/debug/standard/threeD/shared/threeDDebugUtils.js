@@ -7,8 +7,8 @@ threeDDebugUtils.js
 
 import { sanitizeText } from "../../../../../shared/string/index.js";
 import { asFinite } from "../../../../../shared/math/numberNormalization.js";
-import { asArray } from "../../../../../shared/arrays.js";
-import { asObject } from "../../../../../shared/objects.js";
+import { asArray } from "../../../../../shared/array/arrays.js";
+import { asObject } from "../../../../../shared/object/objects.js";
 
 export { asArray, asFinite, asObject, sanitizeText };
 

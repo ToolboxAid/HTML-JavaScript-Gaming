@@ -1,5 +1,5 @@
-import { isPlainObject } from '../../../../src/shared/objects.js';
-import { deepClone } from '../../../../src/shared/json.js';
+import { isPlainObject } from '../../../../src/shared/object/objects.js';
+import { deepClone } from '../../../../src/shared/json/clone.js';
 import { fileMatchesAccept, labelForKind } from "../assetManagerMetadata.js";
 
 const ASSET_ID_PATTERN = /^assets\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+(?:\.[a-z0-9-]+)*)$/;

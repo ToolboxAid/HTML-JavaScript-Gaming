@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 AsteroidsInitialsEntry.js
 */
-import { codeToLetter } from '/src/shared/initialsEntry.js';
+import { codeToLetter } from '/src/shared/game/initialsEntry.js';
 
 const KEY_CODES = Array.from({ length: 26 }).map((_, index) => `Key${String.fromCharCode(65 + index)}`);
 
