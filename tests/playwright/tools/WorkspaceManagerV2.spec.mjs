@@ -105,16 +105,13 @@ function displayAbsoluteOutputPath(server, relativePath) {
 
 async function objectVectorLogicalClientPoint(page, x, y) {
   return page.locator("#objectVectorStudioV2RenderSurface").evaluate((surface, point) => {
-    const app = window.__objectVectorStudioV2App;
     const bounds = surface.getBoundingClientRect();
-    const viewBoxZoom = app.viewBoxZoom();
-    const viewWidth = 320 / viewBoxZoom;
-    const viewHeight = 220 / viewBoxZoom;
+    const [viewX, viewY, viewWidth, viewHeight] = surface.getAttribute("viewBox").split(/\s+/).map(Number);
     const drawingX = point.x * 10;
     const drawingY = point.y * 10;
     return {
-      x: bounds.left + ((drawingX - app.viewport.x + viewWidth / 2) / viewWidth) * bounds.width,
-      y: bounds.top + ((drawingY - app.viewport.y + viewHeight / 2) / viewHeight) * bounds.height
+      x: bounds.left + ((drawingX - viewX) / viewWidth) * bounds.width,
+      y: bounds.top + ((drawingY - viewY) / viewHeight) * bounds.height
     };
   }, { x, y });
 }
@@ -3436,8 +3433,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Tools mode selected from keyboard: select\./);
 
       const zoomSource = await readFile("tools/object-vector-studio-v2/js/ToolStarterApp.js", "utf8");
-      expect(zoomSource).toContain("const DEFAULT_VIEWPORT = Object.freeze({ height: 220, width: 320, x: 0, y: 0, zoom: 1.0 });");
-      expect(zoomSource).toContain("const VIEWPORT_ZOOM_VIEWBOX_SCALE = 0.1;");
+      expect(zoomSource).toContain("const DEFAULT_VIEWPORT = Object.freeze({ height: 2200, width: 3200, x: 0, y: 0, zoom: 1.0 });");
+      expect(zoomSource).not.toContain("VIEWPORT_ZOOM_VIEWBOX_SCALE");
+      expect(zoomSource).not.toContain("viewBoxZoom");
       expect(zoomSource).toContain("const MAX_ZOOM = 10.0;");
       expect(zoomSource).toContain("const MIN_ZOOM = 0.1;");
       expect(zoomSource).toContain("const ZOOM_STEP = 0.1;");
