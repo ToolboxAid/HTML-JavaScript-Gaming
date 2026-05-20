@@ -1,4 +1,22 @@
-import { cloneSwatch, normalizeHex } from "../modules/paletteUtils.js";
+import { normalizeHex } from "../modules/paletteUtils.js";
+
+function getHarmonyDisplayName(color, hex) {
+  return color.displayName || color.name || hex;
+}
+
+function createHarmonyReadout(color) {
+  const hex = normalizeHex(color.hex);
+  const lines = [];
+  if (color.paletteName) {
+    lines.push(`Palette: ${color.paletteName}`);
+  }
+  lines.push(`Name: ${color.swatchName || color.name || color.displayName || hex}`);
+  lines.push(`Hex: ${hex}`);
+  if (color.displayName && color.displayName !== color.name && color.displayName !== color.swatchName) {
+    lines.push(`Harmony: ${color.displayName}`);
+  }
+  return lines.join("\n");
+}
 
 export class PaletteHarmonyControl {
   constructor({ documentRef, refs, app }) {
@@ -101,36 +119,25 @@ export class PaletteHarmonyControl {
   }
 
   createHarmonyColorButton(color, index) {
-    const cleanSwatch = cloneSwatch(color.swatch || {});
+    const hex = normalizeHex(color.hex);
+    const displayName = getHarmonyDisplayName(color, hex);
+    const readout = createHarmonyReadout(color);
     const button = this.document.createElement("button");
     button.type = "button";
     button.className = "palette-manager-v2__harmony-color";
     button.classList.toggle("is-selected", index === this.app.getSelectedHarmonyColorIndex());
     button.setAttribute("aria-pressed", String(index === this.app.getSelectedHarmonyColorIndex()));
+    button.setAttribute("aria-label", readout.replace(/\n/g, ". "));
     button.dataset.harmonyIndex = String(index);
-    button.dataset.harmonyHex = normalizeHex(color.hex);
-    button.dataset.harmonyLabel = color.displayName || color.name || "";
+    button.dataset.harmonyHex = hex;
+    button.dataset.harmonyLabel = displayName;
     button.dataset.harmonyPalette = color.paletteName || "";
     button.dataset.harmonySwatchName = color.swatchName || "";
-    button.title = `${color.displayName || color.name}: ${normalizeHex(color.hex)}`;
+    button.title = readout;
+    button.style.background = hex;
     button.addEventListener("click", () => {
       this.app.setSelectedHarmonyColorIndex(index);
     });
-
-    const chip = this.document.createElement("span");
-    chip.className = "palette-manager-v2__harmony-chip";
-    chip.style.background = normalizeHex(color.hex);
-    chip.setAttribute("aria-hidden", "true");
-
-    const text = this.document.createElement("span");
-    text.className = "palette-manager-v2__harmony-text";
-    text.textContent = color.displayName || cleanSwatch.name || color.name || normalizeHex(color.hex);
-
-    const meta = this.document.createElement("span");
-    meta.className = "palette-manager-v2__harmony-meta";
-    meta.textContent = normalizeHex(color.hex);
-
-    button.append(chip, text, meta);
     return button;
   }
 }

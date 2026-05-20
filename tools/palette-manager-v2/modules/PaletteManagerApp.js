@@ -599,10 +599,15 @@ export class PaletteManagerApp {
       const displayName = matchedSwatch
         ? `${paletteName} - ${swatchName}`
         : `${schemeLabel} - ${calculationLabel || cleanHex}`;
+      const addName = matchedSwatch
+        ? (swatchName || cleanHex)
+        : displayName;
       return {
         baseHex: normalizeHex(color.hex).slice(0, 7),
         hex: cleanHex,
-        name: displayName,
+        name: addName,
+        addName,
+        addNameIsExact: Boolean(matchedSwatch),
         displayName,
         paletteName,
         swatchName,
@@ -610,7 +615,7 @@ export class PaletteManagerApp {
         swatch: cloneSwatch({
           symbol: "",
           hex: cleanHex,
-          name: displayName,
+          name: addName,
           source: paletteName || findHarmonyMatchSource(this.state.harmonyMatchSource).label,
           tags: ["harmony"]
         })
@@ -1234,10 +1239,13 @@ export class PaletteManagerApp {
   }
 
   harmonyColorToSwatch(color) {
+    const colorName = color?.addNameIsExact
+      ? sanitizeText(color?.addName || color?.name)
+      : this.getUniqueHarmonyName(color?.addName || color?.name);
     return cloneSwatch({
       symbol: nextHarmonySymbol(this.state.userSwatches),
       hex: normalizeHex(color?.hex).slice(0, 7),
-      name: this.getUniqueHarmonyName(color?.name),
+      name: colorName,
       source: sanitizeText(color?.source) || "Harmony",
       tags: ["harmony"]
     });
