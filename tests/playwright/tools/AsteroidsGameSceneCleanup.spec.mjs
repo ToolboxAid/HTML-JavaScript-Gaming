@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 test.afterAll(async () => {
-  await coverageReporter.writeReport();
+  await workspaceV2CoverageReporter.writeReport();
 });
 
 async function waitForAsteroidsBoot(page) {
@@ -19,7 +19,7 @@ test("keeps Asteroids gameplay smoke and debug diagnostics after scene cleanup",
     pageErrors.push(error.message);
   });
 
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   try {
     await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
     await waitForAsteroidsBoot(page);
@@ -75,7 +75,7 @@ test("keeps Asteroids gameplay smoke and debug diagnostics after scene cleanup",
     });
     expect(pageErrors).toEqual([]);
   } finally {
-    await coverageReporter.stop(page);
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });

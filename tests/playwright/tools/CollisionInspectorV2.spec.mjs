@@ -2,10 +2,10 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 test.afterAll(async () => {
-  await coverageReporter.writeReport();
+  await workspaceV2CoverageReporter.writeReport();
 });
 
 async function dragCanvasPoint(page, from, to) {
@@ -249,7 +249,7 @@ test.describe("Collision Inspector V2", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/collision-inspector-v2/index.html?manifestPath=/games/Asteroids/game.manifest.json`, { waitUntil: "networkidle" });
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='collision-inspector-v2']")).toBeVisible();
@@ -557,7 +557,7 @@ test.describe("Collision Inspector V2", () => {
       await page.evaluate(() => window.__collisionInspectorV2App.shell.applyFullscreenState(false));
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -569,7 +569,7 @@ test.describe("Collision Inspector V2", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.route((url) => url.pathname === "/missing-screen-manifest.json", async (route) => {
         await route.fulfill({
@@ -598,7 +598,7 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#collisionCanvas")).toHaveAttribute("height", "1");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -610,7 +610,7 @@ test.describe("Collision Inspector V2", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await expect(page.locator("#statusLog")).toHaveValue(/Object Vector Studio V2 editor zoom is viewport-only; runtime\/world scale remains 1:1/);
@@ -702,7 +702,7 @@ test.describe("Collision Inspector V2", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/Viewport zoom set/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -714,7 +714,7 @@ test.describe("Collision Inspector V2", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       const gameManifest = JSON.parse(await readFile(join(server.repoRoot, "games", "Asteroids", "game.manifest.json"), "utf8"));
       const workspaceContext = {
@@ -753,7 +753,7 @@ test.describe("Collision Inspector V2", () => {
       await expect(page).toHaveURL(/\/tools\/workspace-manager-v2\/index\.html\?hostContextId=workspace-manager-v2-collision-test/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });

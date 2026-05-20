@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import os from "node:os";
 import path from "node:path";
-import * as fs from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import Engine from "../../src/engine/core/Engine.js";
 import backgroundImage from "../../src/engine/runtime/backgroundImage.js";
 import fullscreenBezel, {
@@ -747,38 +747,38 @@ function testMalformedAndExtremeStretchConfigValuesAreSafe() {
 }
 
 async function testBezelStretchConfigAutoCreate() {
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-stretch-config-"));
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-stretch-config-"));
   const configPath = "games/TestGame/assets/images/bezel.stretch.override.json";
 
   try {
     const config = await ensureBezelStretchConfigFile(configPath, {
       cwd: tempRoot,
-      fsModule: fs,
+      fsModule: { mkdir, readFile, writeFile },
       pathModule: path
     });
     assert.deepEqual(config, { uniformEdgeStretchPx: 0 });
 
     const absolutePath = path.resolve(tempRoot, configPath);
-    const saved = JSON.parse(await fs.readFile(absolutePath, "utf8"));
+    const saved = JSON.parse(await readFile(absolutePath, "utf8"));
     assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
 
     const existingContent = { uniformEdgeStretchPx: 12 };
-    await fs.writeFile(absolutePath, `${JSON.stringify(existingContent, null, 2)}\n`, "utf8");
+    await writeFile(absolutePath, `${JSON.stringify(existingContent, null, 2)}\n`, "utf8");
     const loadedExisting = await ensureBezelStretchConfigFile(configPath, {
       cwd: tempRoot,
-      fsModule: fs,
+      fsModule: { mkdir, readFile, writeFile },
       pathModule: path
     });
-    const savedAfterReload = JSON.parse(await fs.readFile(absolutePath, "utf8"));
+    const savedAfterReload = JSON.parse(await readFile(absolutePath, "utf8"));
     assert.deepEqual(loadedExisting, existingContent);
     assert.deepEqual(savedAfterReload, existingContent);
   } finally {
-    await fs.rm(tempRoot, { recursive: true, force: true });
+    await rm(tempRoot, { recursive: true, force: true });
   }
 }
 
 async function testBezelDetectionTriggersStretchConfigAutoCreate() {
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-detected-config-"));
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-detected-config-"));
   const documentRef = createDocumentStub("/games/_template/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
@@ -796,7 +796,7 @@ async function testBezelDetectionTriggersStretchConfigAutoCreate() {
         providerCalls += 1;
         return ensureBezelStretchConfigFile(configPath, {
           cwd: tempRoot,
-          fsModule: fs,
+          fsModule: { mkdir, readFile, writeFile },
           pathModule: path
         });
       }
@@ -814,17 +814,17 @@ async function testBezelDetectionTriggersStretchConfigAutoCreate() {
     }
 
     const createdPath = path.resolve(tempRoot, "games/_template/assets/images/bezel.stretch.override.json");
-    const saved = JSON.parse(await fs.readFile(createdPath, "utf8"));
+    const saved = JSON.parse(await readFile(createdPath, "utf8"));
     assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
     assert.equal(bezel.getState().stretchConfigPath, "games/_template/assets/images/bezel.stretch.override.json");
     assert.equal(bezel.getState().stretchConfigInitialized, true);
   } finally {
-    await fs.rm(tempRoot, { recursive: true, force: true });
+    await rm(tempRoot, { recursive: true, force: true });
   }
 }
 
 async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-detected-existing-config-"));
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-detected-existing-config-"));
   const documentRef = createDocumentStub("/games/_template/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
@@ -836,8 +836,8 @@ async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
   try {
     const expectedConfig = { uniformEdgeStretchPx: 14 };
     const configPath = path.resolve(tempRoot, "games/_template/assets/images/bezel.stretch.override.json");
-    await fs.mkdir(path.dirname(configPath), { recursive: true });
-    await fs.writeFile(configPath, `${JSON.stringify(expectedConfig, null, 2)}\n`, "utf8");
+    await mkdir(path.dirname(configPath), { recursive: true });
+    await writeFile(configPath, `${JSON.stringify(expectedConfig, null, 2)}\n`, "utf8");
 
     const bezel = new fullscreenBezel({
       canvas,
@@ -845,7 +845,7 @@ async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
       stretchConfigProvider(runtimeConfigPath) {
         return ensureBezelStretchConfigFile(runtimeConfigPath, {
           cwd: tempRoot,
-          fsModule: fs,
+          fsModule: { mkdir, readFile, writeFile },
           pathModule: path
         });
       }
@@ -858,37 +858,37 @@ async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
       await bezel.stretchConfigPromise;
     }
 
-    const savedAfterStartup = JSON.parse(await fs.readFile(configPath, "utf8"));
+    const savedAfterStartup = JSON.parse(await readFile(configPath, "utf8"));
     assert.deepEqual(savedAfterStartup, expectedConfig);
     assert.equal(bezel.getState().uniformEdgeStretchPx, expectedConfig.uniformEdgeStretchPx);
   } finally {
-    await fs.rm(tempRoot, { recursive: true, force: true });
+    await rm(tempRoot, { recursive: true, force: true });
   }
 }
 
 async function testMalformedStretchConfigFileFallsBackWithoutOverwrite() {
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-malformed-config-"));
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-malformed-config-"));
   const configPath = path.resolve(tempRoot, "games/TestGame/assets/images/bezel.stretch.override.json");
   try {
-    await fs.mkdir(path.dirname(configPath), { recursive: true });
+    await mkdir(path.dirname(configPath), { recursive: true });
     const malformedContent = "{not-valid-json";
-    await fs.writeFile(configPath, malformedContent, "utf8");
+    await writeFile(configPath, malformedContent, "utf8");
 
     const loaded = await ensureBezelStretchConfigFile("games/TestGame/assets/images/bezel.stretch.override.json", {
       cwd: tempRoot,
-      fsModule: fs,
+      fsModule: { mkdir, readFile, writeFile },
       pathModule: path
     });
-    const savedAfterLoad = await fs.readFile(configPath, "utf8");
+    const savedAfterLoad = await readFile(configPath, "utf8");
     assert.deepEqual(loaded, { uniformEdgeStretchPx: 0 });
     assert.equal(savedAfterLoad, malformedContent);
   } finally {
-    await fs.rm(tempRoot, { recursive: true, force: true });
+    await rm(tempRoot, { recursive: true, force: true });
   }
 }
 
 async function testSampleGameBezelDetectionCreatesStretchConfig() {
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-detected-spaceinvaders-config-"));
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "bezel-detected-spaceinvaders-config-"));
   const documentRef = createDocumentStub("/games/SpaceInvaders/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
@@ -904,7 +904,7 @@ async function testSampleGameBezelDetectionCreatesStretchConfig() {
       stretchConfigProvider(configPath) {
         return ensureBezelStretchConfigFile(configPath, {
           cwd: tempRoot,
-          fsModule: fs,
+          fsModule: { mkdir, readFile, writeFile },
           pathModule: path
         });
       }
@@ -919,11 +919,11 @@ async function testSampleGameBezelDetectionCreatesStretchConfig() {
     }
 
     const createdPath = path.resolve(tempRoot, "games/SpaceInvaders/assets/images/bezel.stretch.override.json");
-    const saved = JSON.parse(await fs.readFile(createdPath, "utf8"));
+    const saved = JSON.parse(await readFile(createdPath, "utf8"));
     assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
     assert.equal(bezel.getState().stretchConfigPath, "games/SpaceInvaders/assets/images/bezel.stretch.override.json");
   } finally {
-    await fs.rm(tempRoot, { recursive: true, force: true });
+    await rm(tempRoot, { recursive: true, force: true });
   }
 }
 

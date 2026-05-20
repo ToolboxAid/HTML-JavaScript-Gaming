@@ -1,26 +1,26 @@
 import { expect, test } from "@playwright/test";
 import { readFile, writeFile } from "node:fs/promises";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function openWorkspaceManagerV2(page, query = "") {
   const server = await startRepoServer();
   await installMockRepoPicker(page);
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openAssetManagerV2(page, query = "") {
   const server = await startRepoServer();
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/asset-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openPreviewGeneratorV2(page, query = "") {
   const server = await startRepoServer();
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
@@ -28,7 +28,7 @@ async function openPreviewGeneratorV2(page, query = "") {
 async function openTextToSpeechTool(page, query = "", speechOptions = {}) {
   const server = await startRepoServer();
   await installMockSpeechSynthesis(page, speechOptions);
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/text2speech-V2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
@@ -36,7 +36,7 @@ async function openTextToSpeechTool(page, query = "", speechOptions = {}) {
 async function openTextToSpeechSample1903(page) {
   const server = await startRepoServer();
   await installMockSpeechSynthesis(page);
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/samples/phase-19/1903/index.html`, { waitUntil: "networkidle" });
   return server;
 }
@@ -79,14 +79,14 @@ const ALL_REPO_GAME_OPTIONS = [
 
 async function openToolsIndex(page) {
   const server = await startRepoServer();
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openStorageInspectorV2(page, query = "") {
   const server = await startRepoServer();
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/storage-inspector-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
@@ -1213,7 +1213,7 @@ async function expectTextToSpeechV2FullscreenShell(page) {
 
 test.describe("Workspace Manager V2 bootstrap", () => {
   test.afterAll(async () => {
-    await coverageReporter.writeReport();
+    await workspaceV2CoverageReporter.writeReport();
   });
 
   test("registers Workspace Manager V2 from the tools index", async ({ page }) => {
@@ -1358,7 +1358,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(toolsIndexState.sampleLabels.every((label) => /^Samples \(\d+\)$/.test(label))).toBe(true);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -1371,7 +1371,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       for (const tool of [
         {
@@ -1409,7 +1409,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       }
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -1422,7 +1422,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await expect(page.locator("body.tools-platform-tool-page[data-tool-id='object-vector-studio-v2']")).toBeVisible();
@@ -3787,7 +3787,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -3806,7 +3806,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       }
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
@@ -3887,7 +3887,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -3906,7 +3906,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       }
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
@@ -4473,7 +4473,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -4492,7 +4492,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       }
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
@@ -4865,7 +4865,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -4953,7 +4953,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(header).toHaveAttribute("aria-expanded", String(open));
     };
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.setViewportSize({ width: 1366, height: 1000 });
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
@@ -5137,7 +5137,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -5172,7 +5172,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       JSON.parse(JSON.stringify(window.__objectVectorStudioV2App.selectedObject().shapes[index] || null))
     ), shapeIndex);
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.setViewportSize({ width: 1366, height: 1000 });
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
@@ -5425,7 +5425,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -5444,7 +5444,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       }
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.setViewportSize({ width: 1366, height: 1000 });
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
@@ -5598,7 +5598,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -5619,7 +5619,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       }
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.setViewportSize({ width: 1366, height: 1000 });
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
@@ -5691,7 +5691,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pageErrors).toEqual([]);
       expect(consoleErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -5704,7 +5704,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
@@ -5985,7 +5985,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -5998,7 +5998,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
@@ -6300,7 +6300,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -6313,7 +6313,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
@@ -6625,7 +6625,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -6638,7 +6638,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
@@ -6935,7 +6935,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -6948,7 +6948,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html`, { waitUntil: "networkidle" });
       await page.evaluate(() => {
@@ -7116,7 +7116,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -7228,7 +7228,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
       const result = await page.evaluate(async () => {
@@ -7277,7 +7277,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(result.audioWarnings).toEqual([]);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -7350,7 +7350,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
       await page.waitForFunction(() => window.__asteroidsNewBootStage === "boot-complete");
@@ -7499,7 +7499,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(restoredLayout.headerHeight).toBe(normalLayout.headerHeight);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -7512,7 +7512,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       pageErrors.push(error.message);
     });
 
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     try {
       await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
       await page.waitForFunction(() => window.__asteroidsNewBootStage === "boot-complete");
@@ -7837,7 +7837,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(eventMessages).not.toContain("matched multiple objects by tags");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -7922,7 +7922,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(themeContract.textareaBackground).toBe(themeContract.expectedInputBackground);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -8034,14 +8034,14 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator('[data-speech-item-id="draft-empty-state-line"] .text2speech-V2__queue-tile-name')).toHaveText("Draft empty state line");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
 
   test("does not redirect legacy Text to Speech V2 path, sample, or schema references", async ({ page }) => {
     const server = await startRepoServer();
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     const pageErrors = [];
 
     page.on("pageerror", (error) => {
@@ -8059,7 +8059,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(legacyStatuses).toEqual({ sample: 404, schema: 404 });
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -8083,7 +8083,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(JSON.stringify(sampleSummary)).not.toMatch(/queuedSpeechItems|selectedQueueItem|status|\"queue\"/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -8660,7 +8660,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue("");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -8703,7 +8703,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.evaluate(() => JSON.parse(window.__text2speechV2CopiedJson))).toEqual([]);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -8810,7 +8810,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2StatusLog")).toHaveValue(/OK Exported Text to Speech V2 JSON root array \(1 item\)\./);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -8843,7 +8843,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(JSON.stringify(summary)).not.toMatch(/queuedSpeechItems|selectedQueueItem|status/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -8877,7 +8877,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2SpeakButton")).toBeEnabled();
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -8903,7 +8903,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2SpeakButton")).toBeEnabled();
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -8987,7 +8987,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html\?hostContextId=text2speech-v2-invalid-payload/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -9091,7 +9091,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]"))).toEqual([]);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -9461,7 +9461,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator(".storage-inspector-v2__local-shell-frame #returnToWorkspaceButton")).toHaveCount(0);
       await expect(page.locator("#storageInspectorV2ControlsContent #returnToWorkspaceButton")).toHaveCount(0);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -9712,7 +9712,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Cleared 4 workspace tool state storage entries\./);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -9761,7 +9761,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -9914,7 +9914,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue("{}");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -9961,7 +9961,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"asset-manager-v2"/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -10002,7 +10002,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(validation.palette.message).not.toMatch(/unresolved schema reference/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -10932,7 +10932,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Restored repo destination from workspace\.repo\.reference for HTML-JavaScript-Gaming\./);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -10974,7 +10974,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expectWorkspaceReturnedFromTool(page);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11010,7 +11010,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(previewTile).not.toContainText("Waiting for manifest");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11138,7 +11138,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#text2speech-V2StatusLog")).not.toHaveValue(/queue selection failed|schema requires at least one named speech item/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11210,7 +11210,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(previewWrites.at(-1).contents).not.toContain("stale cached prior preview");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11254,7 +11254,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(previewWrites[0].contents).toContain("<svg");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11569,7 +11569,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(writtenManifest.tools["object-vector-studio-v2"].objects.find((object) => object.id === "object.asteroids.large-asteroid").tags).toContain("dirty-state");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11674,7 +11674,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11782,7 +11782,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11844,7 +11844,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11885,7 +11885,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]"))).toEqual([]);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11940,7 +11940,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -11990,7 +11990,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/FAIL Workspace restore failed: workspace\.repo\.reference contains invalid JSON:/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -12011,7 +12011,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     await page.addInitScript(({ contextId, manifest }) => {
       window.sessionStorage.setItem(contextId, JSON.stringify(manifest));
     }, { contextId: hostContextId, manifest: displayRootManifest });
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
 
     try {
@@ -12031,7 +12031,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).not.toContainText("FAIL Workspace launch context hydration");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -12081,7 +12081,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         }
       }));
     }, { contextId: hostContextId, workspaceManifest: manifest });
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=${hostContextId}`, { waitUntil: "networkidle" });
 
     try {
@@ -12091,7 +12091,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#log")).toContainText("Preview Generator V2 requires Workspace Manager V2 repo session storage before image generation.");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -12133,7 +12133,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(log).toContainText("Done.", { timeout: 10000 });
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -12167,7 +12167,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(log).not.toContainText("OK WRITE MissingGame");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -12319,7 +12319,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -12362,7 +12362,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]"))).toEqual([]);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -12385,7 +12385,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
     });
     await installMockRepoPicker(page);
-    await coverageReporter.start(page);
+    await workspaceV2CoverageReporter.start(page);
     await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html`, { waitUntil: "networkidle" });
 
     try {
@@ -12398,7 +12398,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded Asteroids from \/games\/Asteroids\/game\.manifest\.json with 10 active palette colors and 0 managed assets\./);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -12454,7 +12454,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#activeAssetRegistrySummary")).toHaveCount(0);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -12475,7 +12475,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });

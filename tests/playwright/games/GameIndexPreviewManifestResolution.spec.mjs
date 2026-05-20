@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import path from "node:path";
 import { readdir, readFile } from "node:fs/promises";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const GAMES_DIR = "games";
 const PONG_MANIFEST_PATH = "games/Pong/game.manifest.json";
@@ -10,7 +10,7 @@ const PONG_PREVIEW_PATH = "/games/Pong/assets/images/preview1.svg";
 const PONG_OLD_PREVIEW_PATH = "/games/Pong/assets/images/preview.svg";
 
 test.afterAll(async () => {
-  await coverageReporter.writeReport();
+  await workspaceV2CoverageReporter.writeReport();
 });
 
 async function readPongManifest() {
@@ -110,7 +110,7 @@ test("games index resolves every game thumbnail from manifest preview roles", as
     }
   });
 
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   try {
     await page.goto(`${server.baseUrl}/games/index.html`, { waitUntil: "networkidle" });
     for (const [gameId, previewPath] of previewPaths) {
@@ -124,7 +124,7 @@ test("games index resolves every game thumbnail from manifest preview roles", as
     expect(imageNotFoundResponses).toEqual([]);
     expect(pageErrors).toEqual([]);
   } finally {
-    await coverageReporter.stop(page);
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });
@@ -137,7 +137,7 @@ test("games index resolves Pong thumbnail from manifest preview role", async ({ 
     pageErrors.push(error.message);
   });
 
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   try {
     await page.goto(`${server.baseUrl}/games/index.html`, { waitUntil: "networkidle" });
     const pongCard = page.locator('[data-game-id="Pong"]').first();
@@ -150,7 +150,7 @@ test("games index resolves Pong thumbnail from manifest preview role", async ({ 
     expect(requests.imageNotFoundResponses).not.toContain(PONG_OLD_PREVIEW_PATH);
     expect(pageErrors).toEqual([]);
   } finally {
-    await coverageReporter.stop(page);
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });
@@ -163,7 +163,7 @@ test("Pong page resolves thumbnail from manifest preview role", async ({ page })
     pageErrors.push(error.message);
   });
 
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   try {
     await page.goto(`${server.baseUrl}/games/Pong/index.html`, { waitUntil: "networkidle" });
     const previewImage = page.locator("#pong-preview-thumbnail");
@@ -175,7 +175,7 @@ test("Pong page resolves thumbnail from manifest preview role", async ({ page })
     expect(requests.imageNotFoundResponses).not.toContain(PONG_OLD_PREVIEW_PATH);
     expect(pageErrors).toEqual([]);
   } finally {
-    await coverageReporter.stop(page);
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });
@@ -196,7 +196,7 @@ test("Pong page keeps safe placeholder when preview role is absent", async ({ pa
     });
   });
 
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   try {
     await page.goto(`${server.baseUrl}/games/Pong/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("#pong-preview-placeholder")).toBeVisible();
@@ -208,7 +208,7 @@ test("Pong page keeps safe placeholder when preview role is absent", async ({ pa
     expect(requests.imageNotFoundResponses).not.toContain(PONG_OLD_PREVIEW_PATH);
     expect(pageErrors).toEqual([]);
   } finally {
-    await coverageReporter.stop(page);
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });

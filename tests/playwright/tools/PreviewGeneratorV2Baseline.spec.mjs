@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function installFakeRepoPicker(page, {
   validSampleIds = ["0102"],
@@ -129,21 +129,21 @@ async function openPreviewGenerator(page, {
       existingPreviewBySampleId
     });
   }
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/preview-generator-v2/index.html`, { waitUntil: "domcontentloaded" });
   return server;
 }
 
 async function openPaletteManager(page) {
   const server = await startRepoServer();
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/palette-manager-v2/index.html`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openToolTemplate(page, query = "") {
   const server = await startRepoServer();
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/templates-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
@@ -251,7 +251,7 @@ async function expectPathsOrIdsAccordionToggles(page) {
 
 test.describe("Preview Generator V2 baseline", () => {
   test.afterAll(async () => {
-    await coverageReporter.writeReport();
+    await workspaceV2CoverageReporter.writeReport();
   });
 
   test("launches the tool shell and toggles a working accordion", async ({ page }) => {
@@ -326,7 +326,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -421,7 +421,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -462,7 +462,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -533,7 +533,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -560,7 +560,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -722,7 +722,7 @@ test.describe("Preview Generator V2 baseline", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -744,7 +744,7 @@ test.describe("Preview Generator V2 baseline", () => {
       await expect(page.locator("#workspaceExportManifestButton")).toHaveText("Export manifest");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });

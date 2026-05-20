@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const ASTEROIDS_MANIFEST_PATH = "games/Asteroids/game.manifest.json";
 const ASTEROIDS_BACKGROUND_IMAGE_PATH = "/games/Asteroids/assets/images/deluxe.png";
@@ -9,7 +9,7 @@ const ASTEROIDS_BEZEL_IMAGE_PATH = "/games/Asteroids/assets/images/bezel.png";
 const ASTEROIDS_OLD_BACKGROUND_IMAGE_PATH = "/games/Asteroids/assets/images/background.png";
 
 test.afterAll(async () => {
-  await coverageReporter.writeReport();
+  await workspaceV2CoverageReporter.writeReport();
 });
 
 async function readAsteroidsManifest() {
@@ -76,7 +76,7 @@ test("loads Asteroids background image from Asset Manager background role only",
     pageErrors.push(error.message);
   });
 
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   try {
     await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
     await waitForAsteroidsBoot(page);
@@ -95,7 +95,7 @@ test("loads Asteroids background image from Asset Manager background role only",
     expect(requests.imageNotFoundResponses).not.toContain(ASTEROIDS_OLD_BACKGROUND_IMAGE_PATH);
     expect(pageErrors).toEqual([]);
   } finally {
-    await coverageReporter.stop(page);
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });
@@ -118,7 +118,7 @@ test("omits optional Asteroids background image when Asset Manager background ro
     });
   });
 
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   try {
     await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
     await waitForAsteroidsBoot(page);
@@ -150,7 +150,7 @@ test("omits optional Asteroids background image when Asset Manager background ro
     expect(requests.imageNotFoundResponses).not.toContain(ASTEROIDS_OLD_BACKGROUND_IMAGE_PATH);
     expect(pageErrors).toEqual([]);
   } finally {
-    await coverageReporter.stop(page);
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });
@@ -173,7 +173,7 @@ test("omits optional Asteroids bezel image when Asset Manager bezel role is abse
     });
   });
 
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   try {
     await page.goto(`${server.baseUrl}/games/Asteroids/index.html`, { waitUntil: "networkidle" });
     await waitForAsteroidsBoot(page);
@@ -195,7 +195,7 @@ test("omits optional Asteroids bezel image when Asset Manager bezel role is abse
     expect(requests.imageNotFoundResponses).not.toContain(ASTEROIDS_BEZEL_IMAGE_PATH);
     expect(pageErrors).toEqual([]);
   } finally {
-    await coverageReporter.stop(page);
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });

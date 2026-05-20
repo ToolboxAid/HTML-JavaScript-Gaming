@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-import { workspaceV2CoverageReporter as coverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function installFakeAssetFilePicker(page, files = []) {
   await page.addInitScript((initialFiles) => {
@@ -172,7 +172,7 @@ async function openAssetManagerV2(page, query = "", { assetFiles = [] } = {}) {
   if (assetFiles.length) {
     await installFakeAssetFilePicker(page, assetFiles);
   }
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/asset-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
@@ -185,14 +185,14 @@ async function openWorkspaceManagerV2(page, { assetFiles = [], query = "", repoP
   if (assetFiles.length) {
     await installFakeAssetFilePicker(page, assetFiles);
   }
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/workspace-manager-v2/index.html${query}`, { waitUntil: "networkidle" });
   return server;
 }
 
 async function openAssetManagerWithSessionContext(page, context, hostContextId = "workspace-manager-v2-test-context") {
   const server = await startRepoServer();
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
   await page.evaluate(({ id, value }) => {
     sessionStorage.setItem(id, JSON.stringify(value));
@@ -207,7 +207,7 @@ async function openAssetManagerWithSessionContext(page, context, hostContextId =
 
 async function openToolsIndex(page) {
   const server = await startRepoServer();
-  await coverageReporter.start(page);
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/index.html`, { waitUntil: "networkidle" });
   return server;
 }
@@ -259,7 +259,7 @@ async function expectAccordionToggles(page, contentId) {
 
 test.describe("Asset Manager V2", () => {
   test.afterAll(async () => {
-    await coverageReporter.writeReport();
+    await workspaceV2CoverageReporter.writeReport();
   });
 
   test("shows Asset Manager V2 launch guard for direct launch without workspace context", async ({ page }) => {
@@ -280,7 +280,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page).toHaveURL(/\/tools\/index\.html$/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -301,7 +301,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -322,7 +322,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -1083,7 +1083,7 @@ test.describe("Asset Manager V2", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -1285,7 +1285,7 @@ test.describe("Asset Manager V2", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -1330,7 +1330,7 @@ test.describe("Asset Manager V2", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -1375,7 +1375,7 @@ test.describe("Asset Manager V2", () => {
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -1639,7 +1639,7 @@ test.describe("Asset Manager V2", () => {
 
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
@@ -1678,7 +1678,7 @@ test.describe("Asset Manager V2", () => {
       expect(plannedToolNames).not.toContain("Collision / Hitbox Editor");
       expect(pageErrors).toEqual([]);
     } finally {
-      await coverageReporter.stop(page);
+      await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
   });
