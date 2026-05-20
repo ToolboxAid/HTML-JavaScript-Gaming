@@ -551,55 +551,6 @@ function validateToolPayloadShallow(toolId, payload, schema, pointer) {
   return errors;
 }
 
-function validateWorkspaceManifestShallow(document, schemaIndex) {
-  const errors = [];
-  const workspaceSchemaPath = "tools/schemas/workspace.manifest.schema.json";
-  const workspaceSchema = schemaIndex.get(workspaceSchemaPath);
-  if (!workspaceSchema) {
-    return [`missing schema ${workspaceSchemaPath}`];
-  }
-  if (!isPlainObject(document)) {
-    return ["workspace manifest must be an object"];
-  }
-
-  const requiredTopLevel = new Set(Array.isArray(workspaceSchema.required) ? workspaceSchema.required : []);
-  const topLevelProps = isPlainObject(workspaceSchema.properties) ? workspaceSchema.properties : {};
-
-  Object.keys(document).forEach((key) => {
-    if (!(key in topLevelProps)) {
-      errors.push(`root.${key} is not allowed by workspace.manifest schema`);
-    }
-  });
-  requiredTopLevel.forEach((key) => {
-    if (!(key in document)) {
-      errors.push(`root.${key} is required by workspace.manifest schema`);
-    }
-  });
-
-  if (!isPlainObject(document.tools)) {
-    errors.push("root.tools must be an object");
-    return errors;
-  }
-
-  const toolsSchema = topLevelProps.tools;
-  const allowedToolIds = new Set(Object.keys(isPlainObject(toolsSchema?.properties) ? toolsSchema.properties : {}));
-  Object.keys(document.tools).forEach((toolId) => {
-    if (!allowedToolIds.has(toolId)) {
-      errors.push(`root.tools.${toolId} is not allowed by workspace.manifest schema`);
-      return;
-    }
-    const toolSchemaPath = schemaPathForToolId(toolId);
-    const toolSchema = schemaIndex.get(toolSchemaPath);
-    if (!toolSchema) {
-      errors.push(`missing schema for tool ${toolId}: ${toolSchemaPath}`);
-      return;
-    }
-    errors.push(...validateToolPayloadShallow(toolId, document.tools[toolId], toolSchema, `root.tools.${toolId}`));
-  });
-
-  return errors;
-}
-
 function validateSamples(schemaIndex, validate) {
   const sampleFiles = walkFiles(path.join(ROOT, "samples"), (filePath) => filePath.endsWith(".json"));
   const rows = [];
@@ -616,7 +567,8 @@ function validateSamples(schemaIndex, validate) {
     const isWorkspaceManifest = String(document?.documentKind || "").trim() === "workspace-manifest"
       || String(document?.schema || "").trim().toLowerCase() === "html-js-gaming.project";
     if (isWorkspaceManifest) {
-      schemaPath = "tools/schemas/workspace.manifest.schema.json";
+      rows.push({ filePath: rel, schemaPath: "", status: "skipped", errorCount: 0, firstErrors: "", note: "separate workspace validation contract removed; sample workspace JSON is out of scope" });
+      return;
     } else if (typeof document?.tool === "string") {
       schemaPath = schemaPathForToolId(document.tool);
     }
@@ -645,9 +597,7 @@ function validateSamples(schemaIndex, validate) {
       return document;
     })();
 
-    const errors = schemaPath === "tools/schemas/workspace.manifest.schema.json"
-      ? validateWorkspaceManifestShallow(normalizedDocument, schemaIndex)
-      : validate(normalizedDocument, schema, schemaPath, "$");
+    const errors = validate(normalizedDocument, schema, schemaPath, "$");
     rows.push({
       filePath: rel,
       schemaPath,

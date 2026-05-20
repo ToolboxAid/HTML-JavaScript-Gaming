@@ -1371,7 +1371,7 @@ test.describe("Asset Manager V2", () => {
     try {
       await expect(page.locator("#assetLaunchGuard")).toBeVisible();
       await expect(page.locator("#assetLaunchGuardMessage")).toHaveText("Asset Manager V2 is only available through Workspace Manager with a game manifest and palette.");
-      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Workspace Manager V2 launch requires a schema-valid workspace manifest.");
+      await expect(page.locator("#assetLaunchGuardReason")).toContainText("Workspace Manager V2 launch requires a valid manifest/toolState context.");
       await expect(page.locator("body")).toHaveClass(/asset-manager-v2--launch-blocked/);
       expect(pageErrors).toEqual([]);
     } finally {
@@ -1380,7 +1380,7 @@ test.describe("Asset Manager V2", () => {
     }
   });
 
-  test("launches Asset Manager V2 from Workspace Manager V2 with schema-valid context and workspace return nav", async ({ page }) => {
+  test("launches Asset Manager V2 from Workspace Manager V2 with valid manifest context and workspace return nav", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page, {
       assetFiles: [
         {

@@ -692,7 +692,7 @@
     this.lastLaunchedToolId = toolId;
     this.replaceWorkspaceHistoryEntry(hostContextId);
     window.sessionStorage.setItem(WorkspaceManagerV2App.returnHistoryContextKey(), hostContextId);
-    this.statusLog.ok(`Stored Workspace Manager V2 schema-valid manifest ${hostContextId} for ${toolId}.`);
+    this.statusLog.ok(`Stored Workspace Manager V2 manifest/toolState context ${hostContextId} for ${toolId}.`);
     this.contextService.launchTool(toolId, hostContextId, { workspaceMode: this.activeWorkspaceMode });
   }
 

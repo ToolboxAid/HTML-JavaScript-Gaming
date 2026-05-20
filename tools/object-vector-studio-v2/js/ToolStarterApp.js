@@ -1345,7 +1345,7 @@ export class ToolStarterApp {
   loadWorkspaceToolState() {
     const storedPayload = this.window.sessionStorage?.getItem(WORKSPACE_TOOL_SESSION_KEY) || "";
     if (!storedPayload) {
-      const message = `Schema-only workspace loading blocked: ${WORKSPACE_TOOL_SESSION_KEY} is missing. A schema-valid Object Vector Studio V2 payload is required.`;
+      const message = `Workspace toolState loading blocked: ${WORKSPACE_TOOL_SESSION_KEY} is missing. A valid Object Vector Studio V2 payload is required.`;
       this.renderEmptyState(message);
       this.statusLog.write(`FAIL ${message}`);
       return;
@@ -1356,7 +1356,7 @@ export class ToolStarterApp {
       const session = JSON.parse(storedPayload);
       payload = session?.data && typeof session.data === "object" ? session.data : session;
     } catch (error) {
-      const message = `Schema-only workspace loading blocked: ${WORKSPACE_TOOL_SESSION_KEY} is invalid JSON: ${error.message}`;
+      const message = `Workspace toolState loading blocked: ${WORKSPACE_TOOL_SESSION_KEY} is invalid JSON: ${error.message}`;
       this.renderEmptyState(message);
       this.statusLog.write(`FAIL ${message}`);
       return;

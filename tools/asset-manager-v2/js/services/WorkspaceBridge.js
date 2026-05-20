@@ -81,7 +81,7 @@ export class WorkspaceBridge {
       return { ok: false, message: "Workspace Manager V2 manifest context is invalid." };
     }
     if (!isWorkspaceManifest(workspaceManifest)) {
-      return { ok: false, message: "Workspace Manager V2 launch requires a schema-valid workspace manifest." };
+      return { ok: false, message: "Workspace Manager V2 launch requires a valid manifest/toolState context." };
     }
     if (Object.prototype.hasOwnProperty.call(workspaceManifest, "workspaceManifest")
       || Object.prototype.hasOwnProperty.call(workspaceManifest, "toolId")
@@ -89,9 +89,9 @@ export class WorkspaceBridge {
       return { ok: false, message: "Workspace Manager V2 launch no longer accepts wrapper context JSON." };
     }
     const unsupportedManifestKeys = Object.keys(workspaceManifest)
-      .filter((key) => !["$schema", "documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "screen", "repoRoot", "repoPath", "tools"].includes(key));
+      .filter((key) => !["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "screen", "repoRoot", "repoPath", "tools"].includes(key));
     if (unsupportedManifestKeys.length) {
-      return { ok: false, message: `Workspace Manager V2 manifest includes fields not allowed by the workspace manifest schema: ${unsupportedManifestKeys.join(", ")}.` };
+      return { ok: false, message: `Workspace Manager V2 manifest includes fields not allowed by the manifest/toolState contract: ${unsupportedManifestKeys.join(", ")}.` };
     }
     const gameId = String(workspaceManifest.gameId || "").trim();
     const gameRoot = normalizedGameRoot(workspaceManifest.gameRoot);

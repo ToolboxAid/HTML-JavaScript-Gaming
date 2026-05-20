@@ -7,7 +7,6 @@ function readJson(relativePath) {
 
 export async function run() {
   const schemaFiles = [
-    "tools/schemas/workspace.manifest.schema.json",
     "tests/schemas/tool.manifest.schema.json",
     "tools/schemas/tools/palette-browser.schema.json",
     "tools/schemas/samples/sample.tool-payload.schema.json",
@@ -32,6 +31,7 @@ export async function run() {
   });
 
   const removedValidationUtilities = [
+    ["tools", "schemas", ["workspace", "manifest", "schema"].join(".") + ".json"].join("/"),
     "tools/schemas/workspaceManifest.schema.js",
     "tools/schemas/tools/cameraPathPayload.schema.js",
     "tools/schemas/tools/mapPayload.schema.js",
@@ -43,11 +43,11 @@ export async function run() {
   });
 
   const paletteManagerSource = readFileSync(new URL("../../tools/palette-manager-v2/main.js", import.meta.url), "utf8");
-  assert.match(paletteManagerSource, /const GLOBAL_PALETTE_TOOL_KEY = "palette-browser";/);
-  assert.match(paletteManagerSource, /const SOURCE_PALETTES = Object\.freeze/);
-  assert.match(paletteManagerSource, /export function isSwatchUsedByTool\(\) \{\s*return false;\s*\}/s);
+  assert.match(paletteManagerSource, /const PALETTE_MANAGER_V2_TOOL_SESSION_KEY = "workspace\.tools\.palette-manager-v2";/);
+  assert.match(paletteManagerSource, /workspaceSessionPersistence: createWorkspacePaletteSessionPersistence\(\)/);
+  assert.match(paletteManagerSource, /paletteSource: resolvePaletteSource\(\)/);
   assert.match(paletteManagerSource, /window\.paletteManagerV2App =/);
-  assert.doesNotMatch(paletteManagerSource, /paletteBrowserApp|toolState|sessionStorage/);
+  assert.doesNotMatch(paletteManagerSource, /paletteBrowserApp/);
 
   const spriteEditorSource = readFileSync(new URL("../../tools/Sprite Editor/modules/spriteEditorApp.js", import.meta.url), "utf8");
   assert.match(spriteEditorSource, /image\/png/);

@@ -1,8 +1,8 @@
 # Restart Notes — PR 11.123
 
 Current issue:
-- Palette schema details were moved into workspace.manifest.schema.json.
-- Revert that. Workspace manifest should reference palette-browser schema, not contain palette internals.
+- Palette schema details were moved into the old Workspace validation contract.
+- Revert that. Workspace Manager should route palette payloads to the palette tool contract, not contain palette internals in a separate Workspace validation contract.
 
 Target boundary:
 - Workspace/game validates parent document only.

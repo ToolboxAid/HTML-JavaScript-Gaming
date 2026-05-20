@@ -1,6 +1,6 @@
 # Palette Manager V2
 
-Palette Manager V2 is the runtime tool for editing schema-valid palette swatches for V2 workspace contexts.
+Palette Manager V2 is the runtime tool for editing validated palette swatches for V2 workspace contexts.
 
 ## Contract
 - Runtime tool id: `palette-manager-v2`

@@ -345,17 +345,17 @@ Every PR must document:
 
 ## WORKSPACE V2 CURRENT CONTRACT
 
-Workspace manifest is the runtime contract.
+Workspace manifest/toolState context is the runtime contract.
 
 Rules:
-- workspace manifest is SSoT
+- game manifest root.tools is SSoT for persisted tool payloads
 - no `workspaceSession`
 - no `games[]`
 - tools own all tool payloads
 - no tool payloads at manifest root
 - no hidden fallback data
 - no silent defaults
-- schema validation is the only acceptance gate
+- game manifest validation and toolState payload validation are the acceptance gates; no separate Workspace validation contract is required
 
 Palette:
 - exactly one active palette

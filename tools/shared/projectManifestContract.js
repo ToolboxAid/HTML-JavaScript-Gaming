@@ -207,7 +207,7 @@ export function validateProjectManifest(rawManifest) {
     issues.push(`Workspace documentKind must be ${PROJECT_DOCUMENT_KIND}.`);
   }
   if (manifest.schema !== PROJECT_MANIFEST_SCHEMA) {
-    issues.push(`Workspace schema must be ${PROJECT_MANIFEST_SCHEMA}.`);
+    issues.push(`Workspace contract id must be ${PROJECT_MANIFEST_SCHEMA}.`);
   }
   if (!Number.isInteger(manifest.version) || manifest.version < PROJECT_MANIFEST_VERSION) {
     issues.push("Workspace version must be a positive integer.");
@@ -224,7 +224,7 @@ export function validateProjectManifest(rawManifest) {
   if (rawManifest && typeof rawManifest === "object") {
     RESERVED_EXTERNAL_ASSET_KEYS.forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(rawManifest, key)) {
-        issues.push(`Workspace-owned assets must remain in workspace.manifest (remove ${key}).`);
+        issues.push(`Workspace-owned assets must remain in the project manifest tools/sharedLibrary contract (remove ${key}).`);
       }
     });
   }

@@ -1,6 +1,6 @@
-# Tool and Workspace Schemas
+# Tool Schemas
 
-All JSON schema contracts for tools, samples, palettes, and workspace manifests belong here.
+JSON schema contracts for tools, samples, and palettes belong here. Workspace Manager V2 uses game manifest validation plus manifest/toolState contract checks instead of a separate Workspace validation contract.
 
 Root-level schema files should not be added.
 
@@ -8,7 +8,6 @@ Root-level schema files should not be added.
 
 ```text
 tools/schemas/
-  workspace.manifest.schema.json
   palette.schema.json
   samples/
     sample.tool-payload.schema.json

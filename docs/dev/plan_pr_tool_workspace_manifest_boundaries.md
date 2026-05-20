@@ -1,8 +1,8 @@
-# PLAN_PR: Tool / Workspace Schema + Manifest Boundary Cleanup
+# PLAN_PR: Tool / Workspace Manifest Boundary Cleanup
 
 ## Purpose
 
-Make tool data, sample data, workspace data, palette rules, and valid UI actions explicit through schemas and manifests instead of scattered validation code or hidden payload builders.
+Make tool data, sample data, workspace toolState data, palette rules, and valid UI actions explicit through tool schemas, game manifests, and manifest/toolState contract checks instead of scattered validation code or hidden payload builders.
 
 ## Scope
 
@@ -13,7 +13,7 @@ One PR only:
   - 3D Camera Path Editor legacy payload assumptions
   - 3D JSON payload normalizer legacy assumptions
   - Viewer assets being separately saved/exported outside manifests
-- Introduce actual `*.schema` files for tool/workspace/sample payload validation.
+- Introduce actual `*.schema` files for tool/sample payload validation and keep Workspace Manager context validation on the manifest/toolState contract.
 - Clarify palette behavior:
   - Samples use named palettes only.
   - Samples are locked and cannot mutate palettes.
@@ -21,7 +21,7 @@ One PR only:
   - Once a workspace palette swatch is used, that palette cannot be replaced with a different palette.
   - Used workspace palettes may allow swatch edits only.
   - Other palettes may be viewed for reference/copying swatches into the selected workspace palette.
-- Put all workspace-owned assets in `workspace.manifest`.
+- Put workspace-owned game assets in the game manifest/toolState payloads.
 - Allow only exportable/rendered artifacts such as PNG files to be saved/exported outside the manifest.
 - Ensure UI buttons/actions are enabled by loaded context:
   - Tool-loaded context enables only tool-valid actions.
@@ -38,11 +38,11 @@ One PR only:
 
 ## Desired Manifest Shape
 
-Workspace:
+Workspace Manager toolState context:
 
 ```json
 {
-  "palette": {},
+  "gameId": "example-game",
   "tools": {
     "<tool>": {
       "tool data": {}
@@ -67,9 +67,9 @@ The sample payload shape should match the same tool schema used by the tool mani
 
 - `buildDefaultPayload` is no longer required for current tool/sample/workspace loading paths, or it is reduced to a compatibility shim with clear deprecation comments.
 - Each active tool has a dedicated schema file.
-- Workspace manifest has a schema file.
+- Workspace Manager context is validated by the current manifest/toolState contract, with tool payloads validated against their direct tool schemas.
 - Sample tool payloads validate against the same schema used by the corresponding tool.
-- Viewer/vector assets that belong to a workspace are stored inside `workspace.manifest`.
+- Viewer/vector assets that belong to a workspace are stored inside game manifest/toolState payloads.
 - PNG or rendered output remains exportable outside the manifest.
 - Samples are locked to named palettes and cannot mutate palette data.
 - Workspaces duplicate palettes and enforce swatch-use locking rules.

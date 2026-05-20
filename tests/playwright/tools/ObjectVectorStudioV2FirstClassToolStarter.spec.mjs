@@ -145,7 +145,7 @@ test.describe("Object Vector Studio V2", () => {
     await expect(page.locator("[data-launch-mode-nav='tool']")).toBeHidden();
     await expect(page.locator("[data-launch-mode-nav='workspace']")).toBeVisible();
     await expect(page.locator("#returnToWorkspaceButton")).toHaveText("Return to Workspace");
-    await expect(page.locator("#statusLog")).toHaveValue(/FAIL Schema-only workspace loading blocked: workspace\.tools\.object-vector-studio-v2 is missing/);
+    await expect(page.locator("#statusLog")).toHaveValue(/FAIL Workspace toolState loading blocked: workspace\.tools\.object-vector-studio-v2 is missing/);
   });
 
   test("accordion sections collapse and fullscreen shell preserves work area", async ({ page }) => {

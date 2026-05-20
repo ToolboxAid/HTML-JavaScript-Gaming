@@ -740,7 +740,6 @@ function workspaceContextFromGameManifest(gameManifest, { repoPath = "", repoRoo
   const game = gameManifest.game || {};
   const gameRoot = `games/${game.folder}/`;
   const context = {
-    $schema: "tools/schemas/workspace.manifest.schema.json",
     documentKind: "workspace-manifest",
     schema: "html-js-gaming.project",
     version: 1,
@@ -3818,7 +3817,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await page.goto(`${server.baseUrl}/tools/object-vector-studio-v2/index.html?launch=workspace&fromTool=workspace-manager-v2&hostContextId=object-vector-v2-shell&workspaceMode=uat`, { waitUntil: "networkidle" });
       await expect(page.locator('[data-launch-mode-nav="tool"]')).toBeHidden();
       await expect(page.locator('[data-launch-mode-nav="workspace"] button')).toHaveText(["Return to Workspace"]);
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Schema-only workspace loading blocked: workspace\.tools\.object-vector-studio-v2 is missing/);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Workspace toolState loading blocked: workspace\.tools\.object-vector-studio-v2 is missing/);
       await page.locator("#returnToWorkspaceButton").click();
       await expect(page).toHaveURL(/workspace-manager-v2\/index\.html.*hostContextId=object-vector-v2-shell/);
       await expect(page).toHaveURL(/workspace=uat/);
@@ -8334,11 +8333,10 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(pitchHelperBox.y).toBeGreaterThan(pitchSliderBox.y);
       await expect(page.locator("#text2speech-V2SpeechItemName")).toHaveValue("Narrator welcome");
       const schemaRequiredFields = await page.evaluate(async () => {
-        const [schema, assetSchema, paletteSchema, workspaceSchema] = await Promise.all([
+        const [schema, assetSchema, paletteSchema] = await Promise.all([
           fetch("/tools/schemas/tools/text2speech-V2.schema.json", { cache: "no-store" }).then((response) => response.json()),
           fetch("/tools/schemas/tools/asset-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/tools/schemas/tools/palette-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
-          fetch("/tools/schemas/workspace.manifest.schema.json", { cache: "no-store" }).then((response) => response.json())
+          fetch("/tools/schemas/tools/palette-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json())
         ]);
         return {
           assetManagerSchemaType: assetSchema.type,
@@ -8358,7 +8356,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           paletteManagerSchemaType: paletteSchema.type,
           rateMaximum: schema.$defs.speechQueueItem.properties.rate.maximum,
           required: schema.$defs.speechQueueItem.required,
-          workspaceTextToSpeechSchemaRef: workspaceSchema.properties.tools.properties["text2speech-V2"].$ref,
           ssmlLikePresetEnum: schema.$defs.speechQueueItem.properties.ssmlLikePreset.enum,
           volumeMaximum: schema.$defs.speechQueueItem.properties.volume.maximum,
           voiceAgeEnum: schema.$defs.speechQueueItem.properties.voiceAge.enum
@@ -8370,7 +8367,6 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(schemaRequiredFields.rootItemsRef).toBe("#/$defs/speechQueueItem");
       expect(schemaRequiredFields.assetManagerSchemaType).toBe("object");
       expect(schemaRequiredFields.paletteManagerSchemaType).toBe("object");
-      expect(schemaRequiredFields.workspaceTextToSpeechSchemaRef).toBe("./tools/text2speech-V2.schema.json");
       expect(schemaRequiredFields.itemAdditionalProperties).toBe(false);
       expect(schemaRequiredFields.characterPresetEnum).toEqual(["manual", "alert", "calm", "dnd-dungeon-master", "dramatic", "narrator", "robot"]);
       expect(schemaRequiredFields.genderEnum).toEqual(MOCK_TEXT2SPEECH_SCHEMA_GENDER_VALUES);
@@ -9030,7 +9026,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("validates optional Text to Speech V2 schema contract through Workspace Manager V2 schema", async ({ page }) => {
+  test("validates optional Text to Speech V2 schema contract through Workspace Manager V2 toolState", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
 
@@ -9530,8 +9526,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         schema: {
           source: "workspace-manager-v2",
           toolId: "preview-generator-v2",
-          schemaRole: "workspace-launch-context",
-          schemaRef: "tools/schemas/workspace.manifest.schema.json"
+          schemaRole: "workspace-launch-context"
         },
         workspace: {
           source: "workspace-manager-v2",
@@ -9581,8 +9576,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         schema: {
           source: "workspace-manager-v2",
           toolId: "dirty-test",
-          schemaRole: "workspace-launch-context",
-          schemaRef: "tools/schemas/workspace.manifest.schema.json"
+          schemaRole: "workspace-launch-context"
         },
         workspace: {
           source: "workspace-manager-v2",
@@ -9602,8 +9596,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         schema: {
           source: "workspace-manager-v2",
           toolId: "no-data-test",
-          schemaRole: "workspace-launch-context",
-          schemaRef: "tools/schemas/workspace.manifest.schema.json"
+          schemaRole: "workspace-launch-context"
         },
         workspace: {
           source: "workspace-manager-v2",
@@ -9620,8 +9613,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         schema: {
           source: "workspace-manager-v2",
           toolId: "no-dirty-test",
-          schemaRole: "workspace-launch-context",
-          schemaRef: "tools/schemas/workspace.manifest.schema.json"
+          schemaRole: "workspace-launch-context"
         },
         workspace: {
           source: "workspace-manager-v2",
@@ -10004,7 +9996,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
     }
   });
 
-  test("resolves workspace manifest tool schema refs from the workspace schema", async ({ page }) => {
+  test("validates workspace manifest tool payloads without a separate validation contract", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page);
     const pageErrors = [];
 
@@ -10243,22 +10235,20 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         source: "workspace-manager-v2",
         toolId: "asset-manager-v2",
         schemaRole: "workspace-tool-payload",
-        schemaRef: "tools/schemas/tools/asset-manager-v2.schema.json",
-        workspaceSchemaRef: "tools/schemas/workspace.manifest.schema.json"
+        schemaRef: "tools/schemas/tools/asset-manager-v2.schema.json"
       });
       expect(selectedGameHydration.schemaByTool["collision-inspector-v2"]).toMatchObject({
         source: "workspace-manager-v2",
         toolId: "collision-inspector-v2",
         schemaRole: "workspace-tool-payload",
-        schemaRef: "tools/schemas/tools/collision-inspector-v2.schema.json",
-        workspaceSchemaRef: "tools/schemas/workspace.manifest.schema.json"
+        schemaRef: "tools/schemas/tools/collision-inspector-v2.schema.json"
       });
       expect(selectedGameHydration.schemaByTool["preview-generator-v2"]).toMatchObject({
         source: "workspace-manager-v2",
         toolId: "preview-generator-v2",
-        schemaRole: "workspace-launch-context",
-        schemaRef: "tools/schemas/workspace.manifest.schema.json"
+        schemaRole: "workspace-launch-context"
       });
+      expect(selectedGameHydration.schemaByTool["preview-generator-v2"].schemaRef).toBeUndefined();
       expect(selectedGameHydration.workspaceByTool["asset-manager-v2"]).toMatchObject({
         source: "workspace-manager-v2",
         toolId: "asset-manager-v2",
@@ -10643,14 +10633,16 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       expect(storedContext.tools["palette-browser"]).toBeUndefined();
       expect(storedContext.tools["asset-manager-v2"].schema).toBe("html-js-gaming.asset-manager-v2");
       const schemaValidation = await page.evaluate(async () => {
-        const [workspaceSchema, paletteSchema, assetSchema, objectVectorSchema] = await Promise.all([
-          fetch("/tools/schemas/workspace.manifest.schema.json", { cache: "no-store" }).then((response) => response.json()),
+        const [paletteSchema, assetSchema, objectVectorSchema] = await Promise.all([
           fetch("/tools/schemas/tools/palette-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
           fetch("/tools/schemas/tools/asset-manager-v2.schema.json", { cache: "no-store" }).then((response) => response.json()),
           fetch("/tools/schemas/tools/object-vector-studio-v2.schema.json", { cache: "no-store" }).then((response) => response.json())
         ]);
         const url = new URL(window.location.href);
         const manifest = JSON.parse(sessionStorage.getItem(url.searchParams.get("hostContextId")));
+        const allowedManifestKeys = new Set(["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "screen", "repoRoot", "repoPath", "tools"]);
+        const requiredManifestKeys = ["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"];
+        const allowedToolKeys = new Set(["palette-manager-v2", "asset-manager-v2", "object-vector-studio-v2", "collision-inspector-v2", "text2speech-V2"]);
         const palettePayload = manifest.tools["palette-manager-v2"];
         const assetPayload = manifest.tools["asset-manager-v2"];
         const objectVectorPayload = manifest.tools["object-vector-studio-v2"];
@@ -10665,8 +10657,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         return {
           assetExtraKeys: extraKeys(assetPayload, assetSchema),
           assetMissingKeys: missingKeys(assetPayload, assetSchema),
-          manifestExtraKeys: extraKeys(manifest, workspaceSchema),
-          manifestMissingKeys: missingKeys(manifest, workspaceSchema),
+          manifestExtraKeys: Object.keys(manifest).filter((key) => !allowedManifestKeys.has(key)),
+          manifestMissingKeys: requiredManifestKeys.filter((key) => !Object.hasOwn(manifest, key)),
           objectVectorObjectTags: objectVectorPayload.objects.flatMap((object) => object.tags || []),
           objectVectorExtraKeys: extraKeys(objectVectorPayload, objectVectorSchema),
           objectVectorMissingKeys: missingKeys(objectVectorPayload, objectVectorSchema),
@@ -10678,7 +10670,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           swatchMissingKeys,
           textToSpeechPayload: manifest.tools["text2speech-V2"],
           toolKeys: Object.keys(manifest.tools).sort(),
-          unsupportedToolKeys: Object.keys(manifest.tools).filter((key) => !Object.hasOwn(workspaceSchema.properties.tools.properties, key))
+          unsupportedToolKeys: Object.keys(manifest.tools).filter((key) => !allowedToolKeys.has(key))
         };
       });
       expect(schemaValidation).toMatchObject({
@@ -11570,7 +11562,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         window.__workspaceManagerV2App.syncLifecycleControls();
       });
       await page.locator("#saveWorkspaceButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Save blocked: Generated Workspace Manager V2 manifest failed schema validation:/);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Save blocked: Workspace Manager V2 manifest\/toolState contract validation failed:/);
       const failedSaveState = await page.evaluate(() => ({
         dirty: JSON.parse(sessionStorage.getItem("workspace.tools.object-vector-studio-v2")).dirty,
         writes: JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]")
@@ -12099,8 +12091,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         schema: {
           source: "workspace-manager-v2",
           toolId: "preview-generator-v2",
-          schemaRole: "workspace-launch-context",
-          schemaRef: "tools/schemas/workspace.manifest.schema.json"
+          schemaRole: "workspace-launch-context"
         },
         workspace: {
           source: "workspace-manager-v2",
@@ -12396,7 +12387,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       });
       await expect(page.locator("#saveWorkspaceButton")).toBeEnabled();
       await page.locator("#saveWorkspaceButton").click();
-      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Save blocked: Generated Workspace Manager V2 manifest failed schema validation: root\.tools\.asset-manager-v2\.unexpected is not allowed/);
+      await expect(page.locator("#statusLog")).toHaveValue(/FAIL Save blocked: Workspace Manager V2 manifest\/toolState contract validation failed: root\.tools\.asset-manager-v2\.unexpected is not allowed/);
       expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("workspace.repo.manifestWrites") || "[]"))).toEqual([]);
       expect(pageErrors).toEqual([]);
     } finally {
