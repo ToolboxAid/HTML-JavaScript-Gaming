@@ -32,6 +32,13 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
+const ASTEROID_BEAT_MIN_INTERVAL_SECONDS = 0.18;
+const ASTEROID_BEAT_MAX_INTERVAL_SECONDS = 0.98;
+const ASTEROID_BEAT_SIZE_WEIGHTS = Object.freeze({
+  1: 1,
+  2: 4,
+  3: 9,
+});
 const ATTRACT_INPUT_CODES = [
   'Digit1',
   'Digit2',
@@ -74,23 +81,29 @@ function screenDimensionsFromOptions(options) {
   return { width, height };
 }
 
-function getBeatInterval(asteroidCount) {
-  if (asteroidCount <= 1) {
-    return 0.18;
+function isActiveAsteroid(asteroid) {
+  return Boolean(asteroid)
+    && typeof asteroid === 'object'
+    && asteroid.active !== false
+    && asteroid.alive !== false
+    && asteroid.destroyed !== true;
+}
+
+export function getAsteroidsBeatWeightedTotal(asteroids) {
+  if (!Array.isArray(asteroids)) {
+    return 0;
   }
-  if (asteroidCount === 2) {
-    return 0.28;
-  }
-  if (asteroidCount <= 4) {
-    return 0.42;
-  }
-  if (asteroidCount <= 6) {
-    return 0.58;
-  }
-  if (asteroidCount <= 8) {
-    return 0.78;
-  }
-  return 0.98;
+  return asteroids.reduce((total, asteroid) => (
+    total + (isActiveAsteroid(asteroid) ? ASTEROID_BEAT_SIZE_WEIGHTS[asteroid.size] || 0 : 0)
+  ), 0);
+}
+
+export function getAsteroidsBeatInterval(weightedTotal, maxWeightedTotal) {
+  const safeWeightedTotal = Math.max(0, Number.isFinite(weightedTotal) ? weightedTotal : 0);
+  const safeMaxWeightedTotal = Math.max(1, Number.isFinite(maxWeightedTotal) ? maxWeightedTotal : safeWeightedTotal);
+  const weightedProgress = Math.min(1, safeWeightedTotal / safeMaxWeightedTotal);
+  return ASTEROID_BEAT_MIN_INTERVAL_SECONDS
+    + ((ASTEROID_BEAT_MAX_INTERVAL_SECONDS - ASTEROID_BEAT_MIN_INTERVAL_SECONDS) * weightedProgress);
 }
 
 export default class AsteroidsGameScene extends Scene {
@@ -171,6 +184,8 @@ export default class AsteroidsGameScene extends Scene {
     this.isPaused = false;
     this.beatTimer = 0;
     this.nextBeatId = 'beat1';
+    this.beatMaxWeightedTotal = 1;
+    this.resetBeatCadenceBaseline();
     this.scoreFlashTime = 0;
     this.initialsEntry = new AsteroidsInitialsEntry();
     this.attractAdapter = new AsteroidsAttractAdapter({ scene: this });
@@ -533,6 +548,20 @@ export default class AsteroidsGameScene extends Scene {
     });
   }
 
+  resetBeatCadenceBaseline() {
+    this.beatMaxWeightedTotal = Math.max(1, getAsteroidsBeatWeightedTotal(this.world?.asteroids));
+  }
+
+  resolveAsteroidsBeatTiming() {
+    const weightedTotal = getAsteroidsBeatWeightedTotal(this.world?.asteroids);
+    this.beatMaxWeightedTotal = Math.max(this.beatMaxWeightedTotal, weightedTotal, 1);
+    return {
+      intervalSeconds: getAsteroidsBeatInterval(weightedTotal, this.beatMaxWeightedTotal),
+      maxWeightedTotal: this.beatMaxWeightedTotal,
+      weightedTotal,
+    };
+  }
+
   update(dtSeconds, engine) {
     this.debugFrame += 1;
     this.objectVectorPlaybackMs += Math.max(0, Number.isFinite(dtSeconds) ? dtSeconds * 1000 : 0);
@@ -575,12 +604,14 @@ export default class AsteroidsGameScene extends Scene {
       if (onePressed && !this.lastOnePressed) {
         this.attractController.exitAttract();
         this.session.start(1);
+        this.resetBeatCadenceBaseline();
         this.pushDebugEvent('SHIP_SPAWN', { player: 1, wave: this.world.wave });
         this.pushDebugEvent('WAVE_STARTED', { wave: this.world.wave, asteroids: this.world.asteroids.length });
       }
       if (twoPressed && !this.lastTwoPressed) {
         this.attractController.exitAttract();
         this.session.start(2);
+        this.resetBeatCadenceBaseline();
         this.pushDebugEvent('SHIP_SPAWN', { player: 1, wave: this.world.wave });
         this.pushDebugEvent('WAVE_STARTED', { wave: this.world.wave, asteroids: this.world.asteroids.length });
       }
@@ -710,12 +741,12 @@ export default class AsteroidsGameScene extends Scene {
       this.audio.updateThrust(false);
       this.audio.updateUfo(null);
     } else {
-      const beatInterval = getBeatInterval(this.world.asteroids.length);
+      const beatTiming = this.resolveAsteroidsBeatTiming();
       this.beatTimer -= dtSeconds;
       if (this.beatTimer <= 0) {
         this.audio.play(this.nextBeatId);
         this.nextBeatId = this.nextBeatId === 'beat1' ? 'beat2' : 'beat1';
-        this.beatTimer = beatInterval;
+        this.beatTimer = beatTiming.intervalSeconds;
       }
       this.audio.updateThrust(this.world.ship.thrusting && this.session.mode === 'playing');
       this.audio.updateUfo(this.world.ufo?.type || null);
