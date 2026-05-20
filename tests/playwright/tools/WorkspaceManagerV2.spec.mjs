@@ -740,7 +740,6 @@ function workspaceContextFromGameManifest(gameManifest, { repoPath = "", repoRoo
   const game = gameManifest.game || {};
   const gameRoot = `games/${game.folder}/`;
   const context = {
-    documentKind: "project-manifest",
     schema: "html-js-gaming.project",
     version: 1,
     id: `workspace-manager-v2-${game.id}`,
@@ -9837,7 +9836,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const invalidRuntimeWorkspaceManifest = structuredClone(manifest);
         invalidRuntimeWorkspaceManifest.game.gameData = { workspace: {} };
         const invalidEmbeddedWorkspaceManifest = structuredClone(manifest);
-        invalidEmbeddedWorkspaceManifest.game["workspace"] = { documentKind: "project-manifest" };
+        invalidEmbeddedWorkspaceManifest.game["workspace"] = { schema: "html-js-gaming.project" };
         const invalidObjectVectorRuntimeManifest = structuredClone(manifest);
         invalidObjectVectorRuntimeManifest.objectVectorRuntime = {
           objectIds: {
@@ -9864,11 +9863,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
           embeddedWorkspaceValidation: await service.validateGameManifest(invalidEmbeddedWorkspaceManifest),
           objectVectorRuntimeValidation: await service.validateGameManifest(invalidObjectVectorRuntimeManifest),
           runtimeWorkspaceValidation: await service.validateGameManifest(invalidRuntimeWorkspaceManifest),
-          rootDocumentKind: manifest.documentKind || "",
           schema: manifest.schema,
           unknownGameDataValidation: await service.validateGameManifest(invalidUnknownGameDataManifest),
           unknownWorkspaceValidation: await service.validateGeneratedManifest(invalidUnknownWorkspaceManifest),
-          workspaceDocumentKind: manifest.game?.["workspace"]?.documentKind,
           workspaceValidation: await service.validateGeneratedManifest(workspaceManifest)
         };
       });
@@ -9879,11 +9876,9 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         hasRootTools: true,
         hasWorkspace: false,
         objectVectorRuntimeValidation: { ok: false },
-        rootDocumentKind: "",
         schema: "html-js-gaming.game-manifest",
         unknownGameDataValidation: { ok: false },
         unknownWorkspaceValidation: { ok: false },
-        workspaceDocumentKind: undefined,
         workspaceValidation: { ok: true }
       });
       expect(asteroidsGameManifestShape.embeddedWorkspaceValidation.message).toContain("Embedded workspace data under root.game is not allowed");
@@ -10551,7 +10546,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         const hostContextId = url.searchParams.get("hostContextId");
         return JSON.parse(sessionStorage.getItem(hostContextId));
       });
-      expect(storedContext.documentKind).toBe("project-manifest");
+      expect(storedContext.documentKind).toBeUndefined();
       expect(storedContext.toolId).toBeUndefined();
       expect(storedContext.activePalette).toBeUndefined();
       expect(storedContext.workspaceManifest).toBeUndefined();
@@ -10640,8 +10635,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
         ]);
         const url = new URL(window.location.href);
         const manifest = JSON.parse(sessionStorage.getItem(url.searchParams.get("hostContextId")));
-        const allowedManifestKeys = new Set(["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "screen", "repoRoot", "repoPath", "tools"]);
-        const requiredManifestKeys = ["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"];
+        const allowedManifestKeys = new Set(["schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "screen", "repoRoot", "repoPath", "tools"]);
+        const requiredManifestKeys = ["schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "tools"];
         const allowedToolKeys = new Set(["palette-manager-v2", "asset-manager-v2", "object-vector-studio-v2", "collision-inspector-v2", "text2speech-V2"]);
         const palettePayload = manifest.tools["palette-manager-v2"];
         const assetPayload = manifest.tools["asset-manager-v2"];

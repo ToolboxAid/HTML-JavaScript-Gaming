@@ -473,9 +473,8 @@ function isWorkspaceManifestPreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object" || Array.isArray(rawPreset)) {
     return false;
   }
-  const documentKind = normalizeTextValue(rawPreset.documentKind);
   const schema = normalizeTextValue(rawPreset.schema).toLowerCase();
-  return documentKind === "project-manifest" || schema === "html-js-gaming.project";
+  return schema === "html-js-gaming.project";
 }
 
 function resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId) {

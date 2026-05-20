@@ -3,12 +3,12 @@ import { deepClone } from '../../../../src/shared/utils/jsonUtils.js';
 import { readFileHandleText, writeFileHandleText } from '../../../../src/engine/persistence/index.js';
 const HOST_CONTEXT_STORAGE_KEY = "workspace-manager-v2-active-host-context-id";
 const GAME_MANIFEST_SCHEMA_PATH = "/tools/schemas/game.manifest.schema.json";
+const WORKSPACE_CONTEXT_SCHEMA = "html-js-gaming.project";
 const WORKSPACE_REPO_REFERENCE_SESSION_KEY = "workspace.repo.reference";
 const WORKSPACE_TOOL_SESSION_KEY_PREFIX = "workspace.tools.";
 const WORKSPACE_REPO_HANDLE_DB_NAME = "workspace-manager-v2-repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_NAME = "repo-handles";
 const WORKSPACE_REPO_HANDLE_STORE_KEY = "active-repo-handle";
-const WORKSPACE_CONTEXT_DOCUMENT_KIND = "project-manifest";
 const ASSET_MANAGER_V2_TOOL_KEY = "asset-manager-v2";
 const COLLISION_INSPECTOR_V2_TOOL_KEY = "collision-inspector-v2";
 const OBJECT_VECTOR_STUDIO_V2_TOOL_KEY = "object-vector-studio-v2";
@@ -23,7 +23,6 @@ const TOOL_PAYLOAD_SCHEMA_REFS = Object.freeze({
   [TEXT2SPEECH_V2_TOOL_KEY]: "tools/schemas/tools/text2speech-V2.schema.json"
 });
 const WORKSPACE_CONTEXT_ALLOWED_ROOT_KEYS = Object.freeze(new Set([
-  "documentKind",
   "schema",
   "version",
   "id",
@@ -37,7 +36,6 @@ const WORKSPACE_CONTEXT_ALLOWED_ROOT_KEYS = Object.freeze(new Set([
   "tools"
 ]));
 const WORKSPACE_CONTEXT_REQUIRED_ROOT_KEYS = Object.freeze([
-  "documentKind",
   "schema",
   "version",
   "id",
@@ -343,10 +341,10 @@ function validateWorkspaceContextContract(context) {
       errors.push(`root.${key} is required`);
     }
   });
-  if (context.documentKind !== WORKSPACE_CONTEXT_DOCUMENT_KIND) {
-    errors.push(`root.documentKind: expected \"${WORKSPACE_CONTEXT_DOCUMENT_KIND}\"`);
+  if (context.schema !== WORKSPACE_CONTEXT_SCHEMA) {
+    errors.push(`root.schema: expected \"${WORKSPACE_CONTEXT_SCHEMA}\"`);
   }
-  ["schema", "id", "name", "gameId"].forEach((key) => {
+  ["id", "name", "gameId"].forEach((key) => {
     if (typeof context[key] !== "string" || !context[key].trim()) {
       errors.push(`root.${key}: expected non-empty string`);
     }
@@ -1096,7 +1094,6 @@ export class WorkspaceManagerV2ContextService {
       toolId: tool.id,
       toolName: tool.name,
       workspaceManifestId: context.id,
-      workspaceDocumentKind: context.documentKind,
       gameId: context.gameId,
       gameRoot: context.gameRoot,
       assetsPath: context.assetsPath,
@@ -1924,8 +1921,7 @@ export class WorkspaceManagerV2ContextService {
     const folder = gameInfo.folder || game?.folder || game?.id || "";
     const gameRoot = `games/${folder}/`;
     const workspaceManifest = {
-      documentKind: WORKSPACE_CONTEXT_DOCUMENT_KIND,
-      schema: "html-js-gaming.project",
+      schema: WORKSPACE_CONTEXT_SCHEMA,
       version: 1,
       id: `workspace-manager-v2-${gameInfo.id || game?.id || "game"}`,
       name: `${gameInfo.name || game?.name || "Game"} Workspace Manager V2 Context`,

@@ -813,7 +813,6 @@ test.describe("Collision Inspector V2", () => {
     try {
       const gameManifest = JSON.parse(await readFile(join(server.repoRoot, "games", "Asteroids", "game.manifest.json"), "utf8"));
       const workspaceContext = {
-        documentKind: "project-manifest",
         schema: "html-js-gaming.project",
         version: 1,
         id: "workspace-manager-v2-Asteroids",

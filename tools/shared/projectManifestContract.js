@@ -9,7 +9,6 @@ import {
 export const PROJECT_MANIFEST_SCHEMA = "html-js-gaming.project";
 export const PROJECT_MANIFEST_VERSION = 1;
 export const ACTIVE_PROJECT_STORAGE_KEY = "toolboxaid.projectSystem.activeManifest";
-export const PROJECT_DOCUMENT_KIND = "project-manifest";
 const WORKSPACE_EXPORT_ARTIFACT_SCHEMA = "html-js-gaming.workspace-export-artifacts/1";
 const RESERVED_EXTERNAL_ASSET_KEYS = new Set([
   "externalAssets",
@@ -122,7 +121,6 @@ export function createEmptyProjectManifest(options = {}) {
   const tools = sanitizeToolsBlock(options.tools);
   const name = sanitizeString(options.name, "Untitled Project");
   const manifest = {
-    documentKind: PROJECT_DOCUMENT_KIND,
     schema: PROJECT_MANIFEST_SCHEMA,
     version: PROJECT_MANIFEST_VERSION,
     id: sanitizeString(options.id, createProjectId()),
@@ -181,10 +179,6 @@ export function migrateProjectManifest(rawManifest) {
     migrated.migration.applied.push("normalize-legacy-project-shape");
   }
 
-  if (sanitizeString(rawManifest.documentKind, "") !== PROJECT_DOCUMENT_KIND) {
-    migrated.migration.applied.push("project-document-kind-added");
-  }
-
   if (sourceVersion > PROJECT_MANIFEST_VERSION) {
     migrated.migration.applied.push("forward-version-opened-as-compatible");
   }
@@ -203,9 +197,6 @@ export function validateProjectManifest(rawManifest) {
   const warnings = [];
   const manifest = migrateProjectManifest(rawManifest);
 
-  if (manifest.documentKind !== PROJECT_DOCUMENT_KIND) {
-    issues.push(`Project documentKind must be ${PROJECT_DOCUMENT_KIND}.`);
-  }
   if (manifest.schema !== PROJECT_MANIFEST_SCHEMA) {
     issues.push(`Workspace contract id must be ${PROJECT_MANIFEST_SCHEMA}.`);
   }

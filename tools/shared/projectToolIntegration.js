@@ -4,7 +4,6 @@ export const PROJECT_TOOL_INTEGRATION_SCHEMA = "html-js-gaming.project-tool-inte
 export const PROJECT_TOOL_INTEGRATION_VERSION = 1;
 export const TOOL_DATA_CONTRACT_SCHEMA = "html-js-gaming.tool-data-contract";
 export const TOOL_DATA_CONTRACT_VERSION = 1;
-export const TOOL_STATE_DOCUMENT_KIND = "tool-state";
 
 const TOOL_DATA_CONTRACT_IDS = Object.freeze({
   "tile-map-editor": "tool-state.tile-map-editor/1",
@@ -324,7 +323,6 @@ export function buildProjectToolIntegration(rawTools) {
     }
 
     tools[safeToolId] = {
-      documentKind: TOOL_STATE_DOCUMENT_KIND,
       toolId: safeToolId,
       contractId: contractValidation.contractId,
       contractVersion: contractValidation.version,

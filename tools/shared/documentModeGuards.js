@@ -130,9 +130,8 @@ export function detectWorkspaceDocument(rawDocument) {
   if (!rawDocument || typeof rawDocument !== "object") {
     return false;
   }
-  const documentKind = sanitizeText(rawDocument.documentKind);
   const schema = sanitizeText(rawDocument.schema).toLowerCase();
-  return documentKind === "project-manifest" || schema === "html-js-gaming.project";
+  return schema === "html-js-gaming.project";
 }
 
 export function assertStandaloneToolDocument(rawDocument, options = {}) {

@@ -47,7 +47,6 @@ function simulatePersistence(hostContextId, toolStateContext, limitBytes) {
 
 function simulateWorkspaceExportDocument(activeHostContextId, activeToolStatePayload, savedToolStates) {
   return {
-    documentKind: "project-manifest",
     schema: "html-js-gaming.project",
     version: 1,
     id: `workspace-v2-${activeHostContextId}`,

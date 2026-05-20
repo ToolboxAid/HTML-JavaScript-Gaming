@@ -180,7 +180,7 @@ function readWorkspacePreviewGeneratorWorkspace(manifest) {
 }
 
 function isProjectManifestContext(value) {
-  return isPlainObject(value) && value.documentKind === "project-manifest";
+  return isPlainObject(value) && value.schema === "html-js-gaming.project";
 }
 
 function workspaceManifestFromLaunchContext(launchContext) {

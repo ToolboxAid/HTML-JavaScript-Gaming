@@ -21,8 +21,7 @@ function hasOnlyGamesRoot(value) {
 
 function isProjectManifestContext(value) {
   return isPlainObject(value)
-    && value.documentKind === "project-manifest"
-    && typeof value.schema === "string"
+    && value.schema === "html-js-gaming.project"
     && isPlainObject(value.tools);
 }
 
@@ -89,7 +88,7 @@ export class WorkspaceBridge {
       return { ok: false, message: "Workspace Manager V2 launch no longer accepts wrapper context JSON." };
     }
     const unsupportedManifestKeys = Object.keys(workspaceManifest)
-      .filter((key) => !["documentKind", "schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "screen", "repoRoot", "repoPath", "tools"].includes(key));
+      .filter((key) => !["schema", "version", "id", "name", "gameId", "gameRoot", "assetsPath", "screen", "repoRoot", "repoPath", "tools"].includes(key));
     if (unsupportedManifestKeys.length) {
       return { ok: false, message: `Workspace Manager V2 manifest includes fields not allowed by the manifest/toolState contract: ${unsupportedManifestKeys.join(", ")}.` };
     }
