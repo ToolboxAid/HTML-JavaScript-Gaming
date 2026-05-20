@@ -1,10 +1,7 @@
 import { enforceWorkspaceGameLaunch } from "/games/shared/workspaceGameLaunchGuard.js";
 import { hydrateWorkspaceGameRuntime } from "/games/shared/workspaceGameRuntimeHydrator.js";
 import { hydrateWorkspaceGameMetadata } from "/games/shared/workspaceGameMetadataHydrator.js";
-
-function normalizeGameId(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { normalizeGameId } from "../../src/shared/string/index.js";
 
 export function bootWorkspaceGame(gameId) {
   const normalizedGameId = normalizeGameId(gameId);

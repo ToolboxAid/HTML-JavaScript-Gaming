@@ -1,4 +1,5 @@
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
+import { toObject } from "../../../src/shared/utils/objectUtils.js";
 import { safeString } from "../projectSystemValueUtils.js";
 import { coordinateGameAssetManifest } from "./gameAssetManifestCoordinator.js";
 import { createRuntimeAssetBinding, resolveRuntimeAsset } from "./runtimeAssetBinding.js";
@@ -12,10 +13,6 @@ const RUNTIME_BINDING_PREFIXES = Object.freeze({
   "parallax.": "parallax",
   "sprite.": "sprites"
 });
-
-function toObject(value) {
-  return value && typeof value === "object" ? value : {};
-}
 
 function toSlug(value, fallback = "asset") {
   const text = safeString(value, fallback)

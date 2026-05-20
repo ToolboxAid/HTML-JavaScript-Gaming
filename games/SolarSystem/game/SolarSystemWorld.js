@@ -4,6 +4,8 @@ David Quesenberry
 03/24/2026
 SolarSystemWorld.js
 */
+import { toObject } from '/src/shared/utils/objectUtils.js';
+
 const MAX_STEP_SECONDS = 1 / 60;
 
 const TIME_SCALES = [
@@ -82,10 +84,6 @@ const DEFAULT_SOLAR_WORLD_SKIN = Object.freeze({
 
 function clampIndex(value, max) {
   return Math.max(0, Math.min(max, value));
-}
-
-function toObject(value) {
-  return value && typeof value === 'object' ? value : {};
 }
 
 function toFiniteNumber(value, fallback) {

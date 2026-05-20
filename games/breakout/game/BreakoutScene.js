@@ -9,6 +9,7 @@ import BreakoutAudio from './BreakoutAudio.js';
 import BreakoutInputController from './BreakoutInputController.js';
 import BreakoutWorld from './BreakoutWorld.js';
 import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
+import { toObject } from '/src/shared/utils/objectUtils.js';
 
 const VIEW = {
   width: 960,
@@ -24,10 +25,6 @@ const DEFAULT_COLORS = {
   muted: '#a0a0a0',
   panel: '#000000',
 };
-
-function toObject(value) {
-  return value && typeof value === 'object' ? value : {};
-}
 
 function sanitizeBreakoutSceneColors(skin) {
   const colors = toObject(skin?.colors);

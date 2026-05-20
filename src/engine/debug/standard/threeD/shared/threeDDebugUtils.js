@@ -5,9 +5,9 @@ David Quesenberry
 threeDDebugUtils.js
 */
 
-export function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { sanitizeText } from "../../../../../shared/string/index.js";
+
+export { sanitizeText };
 
 export function asObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value)

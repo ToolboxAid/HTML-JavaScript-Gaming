@@ -14,6 +14,18 @@ export function trimSafe(value) {
   return safeTrim(value);
 }
 
+export function normalizeText(value) {
+  return safeTrim(value);
+}
+
+export function normalizeToken(value) {
+  return normalizeText(value).toLowerCase();
+}
+
+export function normalizeGameId(value) {
+  return normalizeText(value);
+}
+
 export function sanitizeText(value) {
   return safeTrim(value);
 }

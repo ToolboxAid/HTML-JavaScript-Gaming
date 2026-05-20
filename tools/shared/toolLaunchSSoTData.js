@@ -1,17 +1,10 @@
 import { getActiveToolRegistry } from "../toolRegistry.js";
+import { normalizeText, normalizeToken } from "../../src/shared/string/index.js";
 
 const ALLOWED_LAUNCH_SOURCES = Object.freeze(["samples", "games", "tools", "workspace", "internal"]);
 const ALLOWED_LAUNCH_TYPES = Object.freeze(["sample-to-tool", "game-to-workspace", "tool-internal", "workspace-internal"]);
 const SAMPLE_TOOL_LAUNCH_SOURCES = Object.freeze(["samples", "tools", "workspace", "internal"]);
 const SAMPLE_TOOL_LAUNCH_TYPES = Object.freeze(["sample-to-tool", "tool-internal", "workspace-internal"]);
-
-function normalizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function normalizeToken(value) {
-  return normalizeText(value).toLowerCase();
-}
 
 function normalizeEntryPoint(value) {
   const normalized = normalizeText(value).replace(/\\/g, "/").replace(/^\/+/, "");

@@ -1,17 +1,10 @@
 import { getToolRegistry } from "../tools/toolRegistry.js";
 import { resolveGamePreviewMap } from "./shared/gameManifestPreviewResolver.js";
+import { normalizeText as normalize, normalizeToken } from "../src/shared/string/index.js";
 import { launchWithExternalToolWorkspaceReset, resolveGameWorkspaceLaunchHref } from "../tools/shared/toolLaunchSSoT.js";
 
 const METADATA_PATH = "./metadata/games.index.metadata.json";
 const GAMES_PINNED_KEY = "games-index-pinned";
-
-function normalize(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function normalizeToken(value) {
-  return normalize(value).toLowerCase();
-}
 
 function normalizeTag(value) {
   return normalizeToken(value).replace(/[_\s]+/g, "-").replace(/-+/g, "-");

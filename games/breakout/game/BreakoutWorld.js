@@ -5,6 +5,7 @@ David Quesenberry
 BreakoutWorld.js
 */
 import { clamp } from '/src/shared/utils/mathUtils.js';
+import { toObject } from '/src/shared/utils/objectUtils.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
 
@@ -32,10 +33,6 @@ const DEFAULT_BREAKOUT_SKIN = Object.freeze({
     brickGap: 6
   }
 });
-
-function toObject(value) {
-  return value && typeof value === 'object' ? value : {};
-}
 
 function toFiniteNumber(value, fallback) {
   const numeric = Number(value);

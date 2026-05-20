@@ -1,8 +1,7 @@
-export const USER_ADDED_SOURCE = "User Added";
+import { sanitizeText } from "../../../src/shared/string/index.js";
 
-export function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+export const USER_ADDED_SOURCE = "User Added";
+export { sanitizeText };
 
 export function normalizeHex(value) {
   return sanitizeText(value).toUpperCase();

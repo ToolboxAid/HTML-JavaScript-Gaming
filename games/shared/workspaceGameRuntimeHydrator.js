@@ -1,9 +1,6 @@
 import { getWorkspaceGameRuntimeContext } from "/games/shared/workspaceGameRuntimeContext.js";
 import { primeWorkspaceGameAssetCatalog } from "/games/shared/workspaceGameAssetCatalog.js";
-
-function normalizeGameId(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { normalizeGameId } from "../../src/shared/string/index.js";
 
 export function hydrateWorkspaceGameRuntime(gameId) {
   const expectedGameId = normalizeGameId(gameId);

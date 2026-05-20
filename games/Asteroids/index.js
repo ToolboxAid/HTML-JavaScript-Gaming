@@ -8,6 +8,7 @@ import { ObjectVectorRuntimeAssetService } from "../../src/engine/rendering/inde
 import { Theme, ThemeTokens } from "../../src/engine/theme/index.js";
 import { resolveDebugConfig } from "../../src/shared/utils/debugConfigUtils.js";
 import { createNoopDevConsoleIntegration } from "../../src/shared/utils/createNoopDevConsoleIntegration.js";
+import { asPositiveInteger } from "../../src/shared/number/index.js";
 import AsteroidsGameScene from "./game/AsteroidsGameScene.js";
 import { loadAsteroidsObjectGeometryFromManifest } from "./game/asteroidsObjectGeometryManifest.js";
 import { preloadWorkspaceGameAssetCatalog } from "../shared/workspaceGameAssetCatalog.js";
@@ -73,14 +74,9 @@ async function loadAsteroidsManifestPayload(manifestPath, manifestPayload = null
   return response.json();
 }
 
-function positiveInteger(value) {
-  const parsed = Math.floor(Number(value));
-  return Number.isNaN(parsed) || Math.abs(parsed) === Infinity || parsed <= 0 ? 0 : parsed;
-}
-
 export function resolveAsteroidsScreenDimensions(manifest) {
-  const width = positiveInteger(manifest?.screen?.width);
-  const height = positiveInteger(manifest?.screen?.height);
+  const width = asPositiveInteger(manifest?.screen?.width, 0);
+  const height = asPositiveInteger(manifest?.screen?.height, 0);
   if (!width || !height) {
     throw new Error("Asteroids game.manifest.json requires screen.width and screen.height.");
   }

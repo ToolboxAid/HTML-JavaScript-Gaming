@@ -1,3 +1,5 @@
+import { toObject } from "../../src/shared/utils/objectUtils.js";
+
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
 const GAME_MANIFEST_SCHEMA = "html-js-gaming.game-manifest";
@@ -7,10 +9,6 @@ const catalogCache = new Map();
 
 function normalizeGameId(value) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
-}
-
-function toObject(value) {
-  return value && typeof value === "object" ? value : {};
 }
 
 function normalizeCatalogPath(value) {

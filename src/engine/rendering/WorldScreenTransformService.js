@@ -1,3 +1,4 @@
+import { asPositiveInteger } from "../../shared/number/index.js";
 import { rotationRadians } from "./OrientationTransform.js";
 
 export const CANONICAL_WORLD_TO_SCREEN_SCALE = 1;
@@ -5,11 +6,6 @@ export const CANONICAL_WORLD_TO_SCREEN_SCALE = 1;
 function finiteNumber(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
-}
-
-function positiveInteger(value, fallback = 1) {
-  const number = Math.floor(Number(value));
-  return Number.isFinite(number) && number > 0 ? number : fallback;
 }
 
 function positiveScale(value, fallback = 1) {
@@ -24,8 +20,8 @@ export class WorldScreenTransformService {
     userZoom = 1,
     worldScale = CANONICAL_WORLD_TO_SCREEN_SCALE
   } = {}) {
-    this.screenHeight = positiveInteger(screenHeight);
-    this.screenWidth = positiveInteger(screenWidth);
+    this.screenHeight = asPositiveInteger(screenHeight);
+    this.screenWidth = asPositiveInteger(screenWidth);
     this.userZoom = positiveScale(userZoom);
     this.worldScale = positiveScale(worldScale, CANONICAL_WORLD_TO_SCREEN_SCALE);
     this.center = Object.freeze({

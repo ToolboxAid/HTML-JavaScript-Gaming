@@ -10,6 +10,9 @@ export {
   toLowerSafe,
   stringCompare,
   trimSafe,
+  normalizeText,
+  normalizeToken,
+  normalizeGameId,
   sanitizeText,
   normalizeString,
   escapeHtml,
@@ -22,7 +25,7 @@ export {
   isValidId,
 } from "../id/index.js";
 export { isFiniteNumber, toFiniteNumber, asFiniteNumber, asPositiveInteger, asPositiveNumber } from "../number/index.js";
-export { isObject, isPlainObject, asObject, asArray as asObjectArray } from "./objectUtils.js";
+export { isObject, isPlainObject, asObject, toObject, asArray as asObjectArray } from "./objectUtils.js";
 export { cloneJson, deepClone } from "./jsonUtils.js";
 export { stringifyValue } from "./stringifyValueUtils.js";
 export { oppositeCardinalDirection } from "./directionUtils.js";

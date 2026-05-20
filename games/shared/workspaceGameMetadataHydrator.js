@@ -1,14 +1,8 @@
+import { normalizeText, normalizeToken } from "../../src/shared/string/index.js";
+
 const GAMES_METADATA_PATH = "/games/metadata/games.index.metadata.json";
 
 let gamesMetadataPromise = null;
-
-function normalizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function normalizeToken(value) {
-  return normalizeText(value).toLowerCase();
-}
 
 function whenDocumentReady(documentRef, callback) {
   if (!documentRef) {

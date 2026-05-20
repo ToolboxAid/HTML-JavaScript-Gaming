@@ -1,3 +1,6 @@
+import { sanitizeText } from "../../src/shared/string/index.js";
+import { asObject as toObject } from "../../src/shared/utils/objectUtils.js";
+
 /*
 Toolbox Aid
 David Quesenberry
@@ -7,14 +10,6 @@ paletteDocumentContract.js
 
 export const PALETTE_DOCUMENT_SCHEMA = "html-js-gaming.palette";
 export const PALETTE_DOCUMENT_VERSION = 1;
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function toObject(value) {
-  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
-}
 
 function toHexColor(value) {
   const safeValue = sanitizeText(value);

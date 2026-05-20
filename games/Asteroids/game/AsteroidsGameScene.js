@@ -6,6 +6,7 @@ AsteroidsGameScene.js
 */
 import { AttractModeController, Scene } from '../../../src/engine/scene/index.js';
 import { ParticleSystem } from '../../../src/engine/fx/index.js';
+import { asPositiveInteger } from '../../../src/shared/number/index.js';
 import AsteroidsSession from './AsteroidsSession.js';
 import AsteroidsWorld from './AsteroidsWorld.js';
 import AsteroidsAudio from '../systems/AsteroidsAudio.js';
@@ -69,14 +70,9 @@ function logSceneBootStage(stage, details = null) {
   }
 }
 
-function positiveInteger(value) {
-  const parsed = Math.floor(Number(value));
-  return Number.isNaN(parsed) || Math.abs(parsed) === Infinity || parsed <= 0 ? 0 : parsed;
-}
-
 function screenDimensionsFromOptions(options) {
-  const width = positiveInteger(options?.screenDimensions?.width);
-  const height = positiveInteger(options?.screenDimensions?.height);
+  const width = asPositiveInteger(options?.screenDimensions?.width, 0);
+  const height = asPositiveInteger(options?.screenDimensions?.height, 0);
   if (!width || !height) {
     throw new Error('AsteroidsGameScene requires screenDimensions.width and screenDimensions.height from game.manifest.json.');
   }

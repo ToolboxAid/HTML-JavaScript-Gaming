@@ -9,6 +9,9 @@ export {
   toLowerSafe,
   stringCompare,
   trimSafe,
+  normalizeText,
+  normalizeToken,
+  normalizeGameId,
   sanitizeText,
   normalizeString,
   escapeHtml

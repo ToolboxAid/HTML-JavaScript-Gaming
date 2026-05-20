@@ -1,9 +1,7 @@
+import { toObject } from "../../shared/utils/objectUtils.js";
+
 function safeText(value, fallback = "") {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
-}
-
-function toObject(value) {
-  return value && typeof value === "object" ? value : {};
 }
 
 function normalizePath(value) {

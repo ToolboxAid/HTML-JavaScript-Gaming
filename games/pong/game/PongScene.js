@@ -9,6 +9,7 @@ import PongInputController from './PongInputController.js';
 import PongAudio from './PongAudio.js';
 import { getPongModes } from './PongModeConfig.js';
 import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
+import { toObject } from '/src/shared/utils/objectUtils.js';
 
 const COURT = {
   width: 960,
@@ -35,10 +36,6 @@ const DEFAULT_SIZING = {
   paddleWidth: 14,
   ballRadius: 8
 };
-
-function toObject(value) {
-  return value && typeof value === 'object' ? value : {};
-}
 
 function toFiniteNumber(value, fallback) {
   const numeric = Number(value);

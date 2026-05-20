@@ -6,6 +6,7 @@ SolarSystemScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import SolarSystemWorld from './SolarSystemWorld.js';
+import { toObject } from '/src/shared/utils/objectUtils.js';
 
 const VIEW = { width: 960, height: 720 };
 
@@ -17,10 +18,6 @@ const DEFAULT_COLORS = {
   muted: '#94a3b8',
   panel: '#07101d',
 };
-
-function toObject(value) {
-  return value && typeof value === 'object' ? value : {};
-}
 
 function sanitizeSolarSceneColors(skin) {
   const colors = toObject(skin?.colors);

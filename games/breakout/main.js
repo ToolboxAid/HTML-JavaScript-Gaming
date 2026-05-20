@@ -9,14 +9,11 @@ import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { resolveDebugConfig } from '../../src/shared/utils/debugConfigUtils.js';
 import { createNoopDevConsoleIntegration } from '../../src/shared/utils/createNoopDevConsoleIntegration.js';
+import { sanitizeText } from '../../src/shared/string/index.js';
 import BreakoutScene from './game/BreakoutScene.js';
 
 const theme = new Theme(ThemeTokens);
 const DEBUG_STATE_STORAGE_KEY = 'toolbox.sample.breakout.debug.enabled';
-
-function sanitizeText(value) {
-  return typeof value === 'string' ? value.trim() : '';
-}
 
 function applyDefaultDebugPreset(devConsoleIntegration) {
   if (!devConsoleIntegration || typeof devConsoleIntegration.executeCommand !== 'function') {

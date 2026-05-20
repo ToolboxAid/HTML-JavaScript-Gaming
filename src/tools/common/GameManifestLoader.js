@@ -1,3 +1,5 @@
+import { asPositiveInteger } from "../../shared/number/index.js";
+
 export function isRecord(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -13,20 +15,10 @@ function parseJson(rawValue, sourceLabel) {
   }
 }
 
-function numberValue(value, fallback = 0) {
-  const parsed = Number(value);
-  return Number.isNaN(parsed) || Math.abs(parsed) === Infinity ? fallback : parsed;
-}
-
-function positiveInteger(value) {
-  const parsed = Math.floor(numberValue(value));
-  return parsed > 0 ? parsed : 0;
-}
-
 export function resolveManifestScreenDimensions(manifest) {
   const screen = isRecord(manifest?.screen) ? manifest.screen : null;
-  const width = positiveInteger(screen?.width);
-  const height = positiveInteger(screen?.height);
+  const width = asPositiveInteger(screen?.width, 0);
+  const height = asPositiveInteger(screen?.height, 0);
   if (!width || !height) {
     return {
       ok: false,

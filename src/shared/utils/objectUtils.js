@@ -18,8 +18,12 @@ function asObject(value) {
   return isObject(value) ? value : {};
 }
 
+function toObject(value) {
+  return value !== null && typeof value === 'object' ? value : {};
+}
+
 function asArray(value) {
   return normalizeArray(value);
 }
 
-export { isObject, isPlainObject, asObject, asArray };
+export { isObject, isPlainObject, asObject, toObject, asArray };

@@ -9,6 +9,7 @@ import BouncingBallAudio from './BouncingBallAudio.js';
 import BouncingBallInputController from './BouncingBallInputController.js';
 import BouncingBallWorld from './BouncingBallWorld.js';
 import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
+import { toObject } from '/src/shared/utils/objectUtils.js';
 
 const VIEW = {
   width: 960,
@@ -23,10 +24,6 @@ const DEFAULT_COLORS = {
   panel: '#05070a',
   ball: '#f4f4ef',
 };
-
-function toObject(value) {
-  return value && typeof value === 'object' ? value : {};
-}
 
 function sanitizeBouncingBallSceneColors(skin) {
   const colors = toObject(skin?.colors);
