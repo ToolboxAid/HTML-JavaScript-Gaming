@@ -18,9 +18,11 @@ export function near(a, b, epsilon = 0.5) {
   return Math.abs(a - b) <= epsilon;
 }
 
-export function wrap(value, min, max) {
-  const low = Math.min(min, max);
-  const high = Math.max(min, max);
+export function wrap(value, min = 0, max) {
+  const rangeMin = max === undefined ? 0 : min;
+  const rangeMax = max === undefined ? min : max;
+  const low = Math.min(rangeMin, rangeMax);
+  const high = Math.max(rangeMin, rangeMax);
   const span = high - low;
   if (span === 0) {
     return low;
