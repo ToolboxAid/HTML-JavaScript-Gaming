@@ -1,18 +1,24 @@
 {
-  "schema": "html-js-gaming.project",
+  "$schema": "tools/schemas/game.manifest.schema.json",
+  "schema": "html-js-gaming.game-manifest",
   "version": 1,
-  "id": "workspace-manager-v2-template",
-  "name": "Workspace Manager V2 Template",
-  "gameId": "_template",
-  "gameRoot": "games/_template/",
-  "assetsPath": "games/_template/assets",
+  "game": {
+    "id": "_template",
+    "name": "Game Template",
+    "folder": "_template"
+  },
+  "launch": {
+    "directPath": "/games/_template/index.html",
+    "workspaceManagerPath": "/tools/workspace-manager-v2/index.html?gameId=_template",
+    "workspaceManagerOptional": true
+  },
   "tools": {
     "palette-manager-v2": {
       "$schema": "tools/schemas/tools/palette-manager-v2.schema.json",
       "schema": "html-js-gaming.palette",
       "version": 1,
       "id": "palette._template.default",
-      "name": "_template Palette",
+      "name": "Game Template Palette",
       "source": "manifest",
       "swatches": [
         {
@@ -32,7 +38,7 @@
       "schema": "html-js-gaming.asset-manager-v2",
       "version": 1,
       "id": "asset-manager-v2._template.registry",
-      "name": "_template Asset Manager V2 Registry",
+      "name": "Game Template Asset Manager V2 Registry",
       "source": "manifest",
       "assets": {}
     }

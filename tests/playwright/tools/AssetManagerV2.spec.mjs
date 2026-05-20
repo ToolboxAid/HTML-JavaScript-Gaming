@@ -1168,7 +1168,7 @@ test.describe("Asset Manager V2", () => {
         assetsPath: "games/_template/assets",
         gameRoot: "games/_template/",
         ok: true,
-        sourceId: "games/_template/workspace-manager-v2-UAT.manifest.json",
+        sourceId: "tests/fixtures/workspace-v2/uat.manifest.json",
         swatchCount: 3
       });
 

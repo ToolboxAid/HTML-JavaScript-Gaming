@@ -989,6 +989,6 @@
       this.statusLog.info(`Warning: ${result.assetWarning}`);
     }
     this.reportToolStateHydration();
-    this.statusLog.ok(`Loaded UAT Workspace Manager V2 manifest ${result.context.id} from /games/_template/workspace-manager-v2-UAT.manifest.json.`);
+    this.statusLog.ok(`Loaded UAT Workspace Manager V2 manifest ${result.context.id} from /tests/fixtures/workspace-v2/uat.manifest.json.`);
   }
 }

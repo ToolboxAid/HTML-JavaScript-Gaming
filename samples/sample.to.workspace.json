@@ -1,0 +1,269 @@
+{
+  "schema": "html-js-gaming.sample-tool-links/1",
+  "version": 1,
+  "tools": {
+    "3d-asset-viewer": [
+      {
+        "sampleId": "1208",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-12/1208/sample.1208.palette.json"
+      }
+    ],
+    "3d-json-payload": [
+      {
+        "sampleId": "0221",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-02/0221/sample.0221.palette.json"
+      },
+      {
+        "sampleId": "0305",
+        "phase": "phase-03",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-03/0305/sample.0305.palette.json"
+      },
+      {
+        "sampleId": "1208",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-12/1208/sample.1208.palette.json"
+      }
+    ],
+    "palette-browser": [
+      {
+        "sampleId": "0213",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-02/0213/sample.0213.palette.json"
+      },
+      {
+        "sampleId": "0308",
+        "phase": "phase-03",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-03/0308/sample.0308.palette.json"
+      },
+      {
+        "sampleId": "0313",
+        "phase": "phase-03",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-03/0313/sample.0313.palette.json"
+      }
+    ],
+    "parallax-editor": [
+      {
+        "sampleId": "1204",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-12/1204/sample.1204.palette.json"
+      },
+      {
+        "sampleId": "1205",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-12/1205/sample.1205.palette.json"
+      },
+      {
+        "sampleId": "1208",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-12/1208/sample.1208.palette.json"
+      }
+    ],
+    "sprite-editor": [
+      {
+        "sampleId": "0207",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-02/0207/sample.0207.palette.json"
+      },
+      {
+        "sampleId": "0213",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-02/0213/sample.0213.palette.json"
+      },
+      {
+        "sampleId": "0214",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-02/0214/sample.0214.palette.json"
+      },
+      {
+        "sampleId": "0219",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-02/0219/sample.0219.palette.json"
+      },
+      {
+        "sampleId": "0224",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-02/0224/sample.0224.palette.json"
+      },
+      {
+        "sampleId": "0301",
+        "phase": "phase-03",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-03/0301/sample.0301.palette.json"
+      },
+      {
+        "sampleId": "0302",
+        "phase": "phase-03",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-03/0302/sample.0302.palette.json"
+      },
+      {
+        "sampleId": "0905",
+        "phase": "phase-09",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-09/0905/sample.0905.palette.json"
+      },
+      {
+        "sampleId": "1414",
+        "phase": "phase-14",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-14/1414/sample.1414.palette.json"
+      }
+    ],
+    "svg-asset-studio": [
+      {
+        "sampleId": "0901",
+        "phase": "phase-09",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-09/0901/sample.0901.palette.json"
+      },
+      {
+        "sampleId": "1204",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-12/1204/sample.1204.palette.json"
+      },
+      {
+        "sampleId": "1208",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-12/1208/sample.1208.palette.json"
+      }
+    ],
+    "tile-map-editor": [
+      {
+        "sampleId": "0221",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-02/0221/sample.0221.palette.json"
+      },
+      {
+        "sampleId": "0224",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-02/0224/sample.0224.palette.json"
+      },
+      {
+        "sampleId": "0305",
+        "phase": "phase-03",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-03/0305/sample.0305.palette.json"
+      },
+      {
+        "sampleId": "1208",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-12/1208/sample.1208.palette.json"
+      },
+      {
+        "sampleId": "1209",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-12/1209/sample.1209.palette.json"
+      },
+      {
+        "sampleId": "1210",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-12/1210/sample.1210.palette.json"
+      },
+      {
+        "sampleId": "1211",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": true,
+        "palettePath": "samples/phase-12/1211/sample.1211.palette.json"
+      }
+    ],
+    "tile-model-converter": [
+      {
+        "sampleId": "0221",
+        "phase": "phase-02",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-02/0221/sample.0221.palette.json"
+      },
+      {
+        "sampleId": "0305",
+        "phase": "phase-03",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-03/0305/sample.0305.palette.json"
+      },
+      {
+        "sampleId": "1209",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-12/1209/sample.1209.palette.json"
+      }
+    ],
+    "vector-map-editor": [
+      {
+        "sampleId": "0901",
+        "phase": "phase-09",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-09/0901/sample.0901.palette.json"
+      },
+      {
+        "sampleId": "1204",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-12/1204/sample.1204.palette.json"
+      },
+      {
+        "sampleId": "1205",
+        "phase": "phase-12",
+        "sampleType": "sample",
+        "primaryTool": false,
+        "palettePath": "samples/phase-12/1205/sample.1205.palette.json"
+      }
+    ]
+  }
+}

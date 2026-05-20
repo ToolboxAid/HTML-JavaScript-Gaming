@@ -119,7 +119,7 @@ function Write-JsonFile {
     [System.IO.File]::WriteAllText($Path, $json + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
 }
 
-function ConvertTo-WorkspaceManifestForGame {
+function ConvertTo-GameManifestForGame {
     param(
         [Parameter(Mandatory = $true)]
         [object]$TemplateManifest,
@@ -130,11 +130,13 @@ function ConvertTo-WorkspaceManifestForGame {
     )
 
     $manifest = $TemplateManifest | ConvertTo-Json -Depth 40 | ConvertFrom-Json
-    $manifest.id = "workspace-manager-v2-$GameId"
-    $manifest.name = "$GameName Workspace Manager V2 Context"
-    $manifest.gameId = $GameId
-    $manifest.gameRoot = "games/$GameId/"
-    $manifest.assetsPath = "games/$GameId/assets"
+    $manifest.game.id = $GameId
+    $manifest.game.name = $GameName
+    $manifest.game.folder = $GameId
+    $manifest.launch.directPath = "/games/$GameId/index.html"
+    if ($null -ne $manifest.launch.workspaceManagerPath) {
+        $manifest.launch.workspaceManagerPath = "/tools/workspace-manager-v2/index.html?gameId=$GameId"
+    }
 
     if ($null -ne $manifest.tools.'palette-manager-v2') {
         $manifest.tools.'palette-manager-v2'.id = "palette.$GameId.default"
@@ -249,25 +251,14 @@ Get-ChildItem -LiteralPath $TemplatePath -Force | ForEach-Object {
     Copy-Item -LiteralPath $_.FullName -Destination $targetGamePath -Recurse -Force
 }
 
-$workspaceManifestTemplatePath = Join-Path $TemplatePath "workspace-manager-v2-template.manifest.json"
-if (-not (Test-Path -LiteralPath $workspaceManifestTemplatePath)) {
-    throw "Workspace Manager V2 template manifest not found: $workspaceManifestTemplatePath"
+$gameManifestTemplatePath = Join-Path $TemplatePath "game.manifest.json"
+if (-not (Test-Path -LiteralPath $gameManifestTemplatePath)) {
+    throw "Game manifest template not found: $gameManifestTemplatePath"
 }
-$workspaceManifestTemplate = Get-Content -LiteralPath $workspaceManifestTemplatePath -Raw | ConvertFrom-Json
+$gameManifestTemplate = Get-Content -LiteralPath $gameManifestTemplatePath -Raw | ConvertFrom-Json
 $gameManifestPath = Join-Path $targetGamePath "game.manifest.json"
-$generatedWorkspaceManifest = ConvertTo-WorkspaceManifestForGame -TemplateManifest $workspaceManifestTemplate -GameId $normalizedGameId -GameName $DisplayName
-Write-JsonFile -Value $generatedWorkspaceManifest -Path $gameManifestPath
-$templateOnlyManifestFiles = @(
-    "workspace-manager-v2-template.manifest.json",
-    "workspace-manager-v2-UAT.manifest.json"
-)
-foreach ($templateOnlyManifestFile in $templateOnlyManifestFiles) {
-    $copiedTemplateOnlyManifestPath = Join-Path $targetGamePath $templateOnlyManifestFile
-    if (Test-Path -LiteralPath $copiedTemplateOnlyManifestPath) {
-        Remove-Item -LiteralPath $copiedTemplateOnlyManifestPath
-    }
-}
-
+$generatedGameManifest = ConvertTo-GameManifestForGame -TemplateManifest $gameManifestTemplate -GameId $normalizedGameId -GameName $DisplayName
+Write-JsonFile -Value $generatedGameManifest -Path $gameManifestPath
 $assetsRoot = Join-Path $targetGamePath "assets"
 Ensure-Directory -Path $assetsRoot
 

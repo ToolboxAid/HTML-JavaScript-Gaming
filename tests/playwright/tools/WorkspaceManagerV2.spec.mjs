@@ -12430,7 +12430,7 @@ test.describe("Workspace Manager V2 bootstrap", () => {
   test("owns temporary UAT manifest seeding and launches Asset Manager V2 through session context", async ({ page }) => {
     const server = await openWorkspaceManagerV2(page, "?workspace=uat");
     const pageErrors = [];
-    const uatManifest = JSON.parse(await readFile("games/_template/workspace-manager-v2-UAT.manifest.json", "utf8"));
+    const uatManifest = JSON.parse(await readFile("tests/fixtures/workspace-v2/uat.manifest.json", "utf8"));
 
     page.on("pageerror", (error) => {
       pageErrors.push(error.message);
@@ -12461,8 +12461,8 @@ test.describe("Workspace Manager V2 bootstrap", () => {
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"gameRoot": "games\/_template\/"/);
       await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"assetsPath": "games\/_template\/assets"/);
       expect(JSON.parse(await page.locator("#workspaceContextOutput").inputValue()).repoPath).toBe(manifestRepoPath(server));
-      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"sourceId": "games\/_template\/workspace-manager-v2-UAT.manifest.json"/);
-      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded UAT Workspace Manager V2 manifest workspace-manager-v2-UAT-template from \/games\/_template\/workspace-manager-v2-UAT\.manifest\.json\./);
+      await expect(page.locator("#workspaceContextOutput")).toHaveValue(/"sourceId": "tests\/fixtures\/workspace-v2\/uat.manifest.json"/);
+      await expect(page.locator("#statusLog")).toHaveValue(/OK Loaded UAT Workspace Manager V2 manifest workspace-manager-v2-UAT-template from \/tests\/fixtures\/workspace-v2\/uat\.manifest\.json\./);
 
       await page.locator('[data-workspace-tool-id="asset-manager-v2"]').click();
       await expect(page).toHaveURL(/asset-manager-v2\/index\.html.*launch=workspace/);
