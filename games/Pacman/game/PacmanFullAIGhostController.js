@@ -6,7 +6,7 @@ PacmanFullAIGhostController.js
 */
 
 import { near } from '/src/shared/utils/mathUtils.js';
-import { chooseDirectionTowardTarget, DIRS, opposite } from './PacmanFullAINavigator.js';
+import { chooseDirectionTowardTarget, DIRS, oppositeCardinalDirection } from './PacmanFullAINavigator.js';
 import { computeTargetTile } from './PacmanFullAITargeting.js';
 
 function speedForGhost(cfg, mode, ghost, tileX, tileY) {
@@ -26,7 +26,7 @@ export default class PacmanFullAIGhostController {
   reverseAll(ghosts) {
     ghosts.forEach((g) => {
       if (g.inHouse || g.eaten) return;
-      g.direction = opposite(g.direction) || g.direction;
+      g.direction = oppositeCardinalDirection(g.direction) || g.direction;
     });
   }
 

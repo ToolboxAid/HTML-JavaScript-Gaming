@@ -1,5 +1,4 @@
 import { asFiniteNumber } from "../../../src/shared/number/index.js";
-export { deepClone as clone } from "../../../src/shared/utils/jsonUtils.js";
 
 export const OBJECT_LABELS = Object.freeze({
   a: "Object A",

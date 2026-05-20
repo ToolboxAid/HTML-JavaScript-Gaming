@@ -8,7 +8,7 @@ getState.js
 import { createPromotionStateSnapshot } from './createPromotionStateSnapshot.js';
 import { createNormalizedPromotionSnapshot } from './normalization.js';
 
-function getState({
+function getPromotionState({
   promoted,
   stableFrames,
   stabilityWindowFrames,
@@ -37,4 +37,4 @@ function getState({
   });
 }
 
-export { getState };
+export { getPromotionState };

@@ -51,4 +51,3 @@ export {
   registerStandard3dDebugPresets
 } from "./presets/registerStandard3dDebugPresets.js";
 export { createStandard3dDebugPluginDefinition } from "./bootstrap/createStandard3dDebugSurfaceIntegration.js";
-export * as legacySummary3d from "./legacySummarySurface.js";

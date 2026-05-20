@@ -9,7 +9,7 @@ import Engine from '../../src/engine/core/Engine.js';
 import AsteroidsGameScene from '../../games/Asteroids/game/AsteroidsGameScene.js';
 import AsteroidsSession from '../../games/Asteroids/game/AsteroidsSession.js';
 import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';
-import { bootAsteroidsNew as bootAsteroids } from '../../games/Asteroids/index.js';
+import { bootAsteroids } from '../../games/Asteroids/index.js';
 import {
   createAsteroidsTestGeometryProfiles,
   createAsteroidsTestSceneOptions,

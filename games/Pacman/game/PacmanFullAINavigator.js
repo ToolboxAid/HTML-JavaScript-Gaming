@@ -38,5 +38,4 @@ function chooseDirectionTowardTarget(grid, tileX, tileY, currentDirection, targe
   return ranked[0].dir;
 }
 
-export { oppositeCardinalDirection as opposite } from '/src/shared/utils/index.js';
-export { DIRS, getLegalDirections, chooseDirectionTowardTarget };
+export { DIRS, getLegalDirections, chooseDirectionTowardTarget, oppositeCardinalDirection };

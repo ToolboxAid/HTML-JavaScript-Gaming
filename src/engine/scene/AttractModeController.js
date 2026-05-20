@@ -163,5 +163,4 @@ export default class AttractModeController {
   }
 }
 
-export { AttractModeController as LegacyAttractModeController };
 export { DEFAULT_ATTRACT_CONFIG };

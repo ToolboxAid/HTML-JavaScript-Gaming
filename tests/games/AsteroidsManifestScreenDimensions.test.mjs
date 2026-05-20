@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { bootAsteroidsNew as bootAsteroids } from '../../games/Asteroids/index.js';
+import { bootAsteroids } from '../../games/Asteroids/index.js';
 import { loadAsteroidsManifest } from './asteroidsManifestObjectGeometry.mjs';
 
 function createCanvas() {

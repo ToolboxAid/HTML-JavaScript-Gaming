@@ -127,7 +127,7 @@ export function createAsteroidsTemplateBoot(initialFlow = "attract") {
   });
 }
 
-export async function bootAsteroidsNew({
+export async function bootAsteroids({
   documentRef = globalThis.document ?? null,
   EngineClass = Engine,
   InputServiceClass = InputService,
@@ -273,7 +273,7 @@ export async function bootAsteroidsNew({
 }
 
 function tryAutoBoot() {
-  void bootAsteroidsNew().catch((error) => {
+  void bootAsteroids().catch((error) => {
     traceBootFailure("auto-boot", error);
   });
 }

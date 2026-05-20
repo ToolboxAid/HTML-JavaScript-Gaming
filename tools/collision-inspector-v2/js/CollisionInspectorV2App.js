@@ -7,8 +7,8 @@ import {
 import { CANONICAL_WORLD_TO_SCREEN_SCALE } from "../../../src/engine/rendering/index.js";
 import { resolveManifestScreenDimensions } from "../../../src/tools/common/GameManifestLoader.js";
 import { asFiniteNumber } from "../../../src/shared/number/index.js";
+import { deepClone } from "../../../src/shared/utils/jsonUtils.js";
 import {
-  clone,
   OBJECT_LABELS,
   roundNumber
 } from "./constants.js";
@@ -142,7 +142,7 @@ export class CollisionInspectorV2App {
       return;
     }
     this.manifest = manifest;
-    this.objects = objects.map((object) => clone(object));
+    this.objects = objects.map((object) => deepClone(object));
     this.screen = { width: screenResult.width, height: screenResult.height };
     this.controls.setViewportSize(this.screen.width, this.screen.height);
     this.renderer.setViewportSize(this.screen.width, this.screen.height);
