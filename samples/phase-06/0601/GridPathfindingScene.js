@@ -8,7 +8,8 @@ import { Scene } from '/src/engine/scene/index.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { advancePatrolRoute, findGridPath } from '/src/engine/ai/index.js';
+import { advancePatrolRoute } from '/src/engine/ai/PatrolSystem.js';
+import { findGridPath } from '/src/engine/ai/GridPathfinding.js';
 
 const theme = new Theme(ThemeTokens);
 

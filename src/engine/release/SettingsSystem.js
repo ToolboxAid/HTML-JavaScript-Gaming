@@ -6,7 +6,7 @@ SettingsSystem.js
 */
 
 import { deepClone } from '../../shared/json/clone.js';
-import { ConfigStore } from '../config/index.js';
+import ConfigStore from '../config/ConfigStore.js';
 import { StorageService } from '../persistence/index.js';
 
 function mergeSettings(base, incoming) {

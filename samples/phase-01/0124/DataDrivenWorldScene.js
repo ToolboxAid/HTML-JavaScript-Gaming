@@ -7,7 +7,7 @@ DataDrivenWorldScene.js
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { World } from '/src/engine/ecs/index.js';
+import World from '/src/engine/ecs/World.js';
 import {
   createTransform,
   createSize,

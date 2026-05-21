@@ -12,7 +12,7 @@ import Camera2D from '/src/engine/camera/Camera2D.js';
 import { followCameraTarget, worldRectToScreen } from '/src/engine/camera/CameraSystem.js';
 import { Tilemap, renderTilemap } from '/src/engine/tilemap/index.js';
 import { SpriteAtlas, ImageAssetLoader } from '/src/engine/assets/index.js';
-import { AnimationController } from '/src/engine/animation/index.js';
+import AnimationController from '/src/engine/animation/AnimationController.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import { stepArcadeBody, moveRectWithTilemapCollision } from '/src/engine/systems/index.js';
 import { createDemoSpriteSheet } from '../0301/demoSpriteFactory.js';

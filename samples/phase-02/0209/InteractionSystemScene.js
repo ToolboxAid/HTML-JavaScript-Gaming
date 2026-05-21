@@ -9,7 +9,7 @@ import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { findNearestInteractable, resolveInteraction } from '/src/engine/interaction/index.js';
+import { findNearestInteractable, resolveInteraction } from '/src/engine/interaction/InteractionSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

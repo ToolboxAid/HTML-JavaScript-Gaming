@@ -7,7 +7,10 @@ RenderAdapterScene.js
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { Entity, Transform, Velocity, Bounds } from '/src/engine/entity/index.js';
+import Entity from '/src/engine/entity/Entity.js';
+import Transform from '/src/engine/entity/Transform.js';
+import Velocity from '/src/engine/entity/Velocity.js';
+import Bounds from '/src/engine/entity/Bounds.js';
 
 const theme = new Theme(ThemeTokens);
 

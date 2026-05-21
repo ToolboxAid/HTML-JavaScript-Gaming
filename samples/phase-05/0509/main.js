@@ -9,7 +9,7 @@ import ActionInputMap from '/src/engine/input/ActionInputMap.js';
 import ActionInputService from '/src/engine/input/ActionInputService.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { ConfigStore } from '/src/engine/config/index.js';
+import ConfigStore from '/src/engine/config/ConfigStore.js';
 import ConfigSystemScene from './ConfigSystemScene.js';
 import { sampleConfigJson } from './sampleConfig.js';
 

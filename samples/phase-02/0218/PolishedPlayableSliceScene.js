@@ -11,8 +11,8 @@ import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { renderByLayers, renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import GameModeState from '/src/engine/game/GameModeState.js';
-import { resolveInteraction } from '/src/engine/interaction/index.js';
-import { updatePatrolEntity, isWithinDetectionRange } from '/src/engine/ai/index.js';
+import { resolveInteraction } from '/src/engine/interaction/InteractionSystem.js';
+import { updatePatrolEntity, isWithinDetectionRange } from '/src/engine/ai/PatrolSystem.js';
 import { spawnProjectile, updateProjectiles } from '/src/engine/systems/index.js';
 import { createPlayerPrefab, createEnemyPrefab } from '/src/engine/prefabs/index.js';
 

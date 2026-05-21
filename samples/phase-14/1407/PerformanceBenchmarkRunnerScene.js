@@ -1,6 +1,6 @@
 /* Toolbox Aid David Quesenberry 03/22/2026 PerformanceBenchmarkRunnerScene.js */
 import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme } from '/src/engine/theme/Theme.js';
-import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import { BenchmarkRunner } from '/src/engine/automation/index.js';
+import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import BenchmarkRunner from '/src/engine/automation/BenchmarkRunner.js';
 const theme = new Theme(ThemeTokens);
 export default class PerformanceBenchmarkRunnerScene extends Scene {
   constructor() { super(); this.runner = new BenchmarkRunner(); this.results = []; this.runner.register('loop-10k', () => { let total = 0; for (let i = 0; i < 10000; i += 1) { total += i; } return total; }); this.runner.register('loop-50k', () => { let total = 0; for (let i = 0; i < 50000; i += 1) { total += i; } return total; }); this.status = 'Run the benchmark suite.'; }

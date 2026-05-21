@@ -8,7 +8,9 @@ import { Scene } from '/src/engine/scene/index.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { advancePatrolRoute, AIStateController, stepChaseBehavior } from '/src/engine/ai/index.js';
+import AIStateController from '/src/engine/ai/AIStateController.js';
+import { advancePatrolRoute } from '/src/engine/ai/PatrolSystem.js';
+import { stepChaseBehavior } from '/src/engine/ai/SteeringBehaviors.js';
 
 const theme = new Theme(ThemeTokens);
 

@@ -5,14 +5,11 @@ David Quesenberry
 AIBehaviors.test.mjs
 */
 import assert from 'node:assert/strict';
-import {
-  AIStateController,
-  advancePatrolRoute,
-  computeGroupSteering,
-  findGridPath,
-  stepChaseBehavior,
-  stepEvadeBehavior,
-} from '../../src/engine/ai/index.js';
+import AIStateController from '../../src/engine/ai/AIStateController.js';
+import { advancePatrolRoute } from '../../src/engine/ai/PatrolSystem.js';
+import { computeGroupSteering } from '../../src/engine/ai/GroupBehaviors.js';
+import { findGridPath } from '../../src/engine/ai/GridPathfinding.js';
+import { stepChaseBehavior, stepEvadeBehavior } from '../../src/engine/ai/SteeringBehaviors.js';
 
 export function run() {
   const grid = [
