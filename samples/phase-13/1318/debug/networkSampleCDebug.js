@@ -5,7 +5,7 @@ David Quesenberry
 networkSampleCDebug.js
 */
 
-import { createNetworkDebugPluginDefinition } from "/src/engine/debug/network/index.js";
+import { createNetworkDebugPluginDefinition } from '/src/engine/debug/network/bootstrap/createNetworkDebugSurfaceIntegration.js';
 import { asArray } from "/src/shared/array/arrays.js";
 import { asObject } from "/src/shared/object/objects.js";
 import { isFiniteNumber } from "../../../shared/numberUtils.js";

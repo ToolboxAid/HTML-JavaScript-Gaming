@@ -5,14 +5,10 @@ David Quesenberry
 CollisionOverlaysDebugPanel.test.mjs
 */
 import assert from "node:assert/strict";
-import {
-  createStandard3dPanels,
-  PANEL_3D_COLLISION_OVERLAYS,
-  create3dCollisionOverlaysPanel,
-  createStandard3dProviders,
-  PROVIDER_3D_COLLISION_OVERLAYS,
-  createCollisionOverlaysProvider
-} from "../../src/engine/debug/standard/threeD/index.js";
+import { createStandard3dPanels } from '../../src/engine/debug/standard/threeD/panels/registerStandard3dPanels.js';
+import { PANEL_3D_COLLISION_OVERLAYS, create3dCollisionOverlaysPanel } from '../../src/engine/debug/standard/threeD/panels/panel3dCollisionOverlays.js';
+import { createStandard3dProviders } from '../../src/engine/debug/standard/threeD/providers/registerStandard3dProviders.js';
+import { PROVIDER_3D_COLLISION_OVERLAYS, createCollisionOverlaysProvider } from '../../src/engine/debug/standard/threeD/providers/collisionOverlaysProvider.js';
 
 export async function run() {
   const provider = createCollisionOverlaysProvider({

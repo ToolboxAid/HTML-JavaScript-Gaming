@@ -8,7 +8,8 @@ import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
-import { drawFrame, drawMinimap } from '/src/engine/debug/index.js';
+import { drawFrame } from '/src/engine/debug/DebugPanel.js';
+import { drawMinimap } from '/src/engine/debug/Minimap.js';
 import Camera2D from '/src/engine/camera/Camera2D.js';
 
 const theme = new Theme(ThemeTokens);

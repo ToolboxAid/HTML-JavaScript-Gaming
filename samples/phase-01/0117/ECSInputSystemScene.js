@@ -16,7 +16,7 @@ import {
   createInputControlled,
   createRenderable,
 } from '/src/engine/components/index.js';
-import { drawSceneFrame } from '/src/engine/debug/index.js';
+import { drawSceneFrame } from '/src/engine/debug/DebugPanel.js';
 import { applyInputControl, moveEntities, clampEntitiesToBounds, renderRectEntities } from '/src/engine/systems/index.js';
 
 const theme = new Theme(ThemeTokens);

@@ -9,7 +9,7 @@ import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import World from '/src/engine/ecs/World.js';
 import { createTransform, createSize, createVelocity, createRenderable } from '/src/engine/components/index.js';
-import { drawSceneFrame } from '/src/engine/debug/index.js';
+import { drawSceneFrame } from '/src/engine/debug/DebugPanel.js';
 import { moveEntities, bounceEntitiesHorizontallyInBounds, renderRectEntities } from '/src/engine/systems/index.js';
 
 const theme = new Theme(ThemeTokens);

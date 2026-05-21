@@ -7,7 +7,7 @@ OrbitLabScene.js
 import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import OrbitLabModel from './OrbitLabModel.js';
 
 const theme = new Theme(ThemeTokens);

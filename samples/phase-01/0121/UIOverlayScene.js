@@ -16,7 +16,7 @@ import {
   createInputControlled,
   createRenderable,
 } from '/src/engine/components/index.js';
-import { drawSceneFrame, drawPanel } from '/src/engine/debug/index.js';
+import { drawSceneFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import {
   applyInputControl,
   moveEntities,

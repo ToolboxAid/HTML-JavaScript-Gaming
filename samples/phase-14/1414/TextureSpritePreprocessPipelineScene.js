@@ -1,5 +1,5 @@
 import Scene from '/src/engine/scene/Scene.js';
-import { drawFrame, drawPanel } from "/src/engine/debug/index.js";
+import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import { Theme } from "/src/engine/theme/Theme.js";
 import { ThemeTokens } from "/src/engine/theme/ThemeTokens.js";
 import TexturePreprocessPipeline from "/tools/shared/pipeline/TexturePreprocessPipeline.js";

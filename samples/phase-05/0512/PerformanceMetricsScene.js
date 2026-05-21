@@ -7,7 +7,8 @@ PerformanceMetricsScene.js
 import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { drawFrame, drawPerformanceMetricsPanel } from '/src/engine/debug/index.js';
+import { drawFrame } from '/src/engine/debug/DebugPanel.js';
+import { drawPerformanceMetricsPanel } from '/src/engine/debug/PerformanceMetricsPanel.js';
 
 const theme = new Theme(ThemeTokens);
 

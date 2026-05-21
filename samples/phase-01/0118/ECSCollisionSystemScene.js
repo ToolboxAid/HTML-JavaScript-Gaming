@@ -18,7 +18,7 @@ import {
   createSolid,
   createRenderable,
 } from '/src/engine/components/index.js';
-import { drawSceneFrame } from '/src/engine/debug/index.js';
+import { drawSceneFrame } from '/src/engine/debug/DebugPanel.js';
 import {
   applyInputControl,
   moveEntities,

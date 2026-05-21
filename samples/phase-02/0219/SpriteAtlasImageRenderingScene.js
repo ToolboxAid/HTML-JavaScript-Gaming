@@ -7,7 +7,7 @@ SpriteAtlasImageRenderingScene.js
 import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSystem.js';
 import SpriteAtlas from '/src/engine/assets/SpriteAtlas.js';
 import ImageAssetLoader from '/src/engine/assets/ImageAssetLoader.js';

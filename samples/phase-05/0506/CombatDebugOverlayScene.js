@@ -7,7 +7,8 @@ CombatDebugOverlayScene.js
 import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { drawCombatDebugOverlay, drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { drawCombatDebugOverlay } from '/src/engine/debug/CombatDebugOverlay.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import {
   applyAttackOverlaps,
   createAttackProfile,

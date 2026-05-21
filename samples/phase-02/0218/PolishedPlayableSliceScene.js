@@ -8,7 +8,7 @@ import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import { renderByLayers } from '/src/engine/rendering/LayeredRenderSystem.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSystem.js';
 import GameModeState from '/src/engine/game/GameModeState.js';

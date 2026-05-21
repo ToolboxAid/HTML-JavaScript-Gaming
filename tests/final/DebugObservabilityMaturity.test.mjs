@@ -6,9 +6,10 @@ DebugObservabilityMaturity.test.mjs
 */
 import assert from "node:assert/strict";
 import { drawPerformanceMetricsPanel } from "../../src/engine/debug/PerformanceMetricsPanel.js";
-import { create3dCollisionOverlaysPanel, createCollisionOverlaysProvider } from "../../src/engine/debug/standard/threeD/index.js";
-import { createAdvancedInspectorDebugPluginDefinition } from "../../src/engine/debug/inspectors/index.js";
-import { createNetworkObservabilityPanels } from "../../src/engine/debug/network/index.js";
+import { create3dCollisionOverlaysPanel } from '../../src/engine/debug/standard/threeD/panels/panel3dCollisionOverlays.js';
+import { createCollisionOverlaysProvider } from '../../src/engine/debug/standard/threeD/providers/collisionOverlaysProvider.js';
+import { createAdvancedInspectorDebugPluginDefinition } from '../../src/engine/debug/inspectors/bootstrap/createInspectorSurfaceIntegration.js';
+import { createNetworkObservabilityPanels } from '../../src/engine/debug/network/panels/networkObservabilityPanels.js';
 import { drawActionInputDebugOverlay } from "../../src/engine/input/ActionInputDebugOverlay.js";
 
 function createRendererProbe() {

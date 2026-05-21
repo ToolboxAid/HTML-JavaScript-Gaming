@@ -5,7 +5,7 @@ David Quesenberry
 networkSampleBDebug.js
 */
 
-import { createNetworkDebugPluginDefinition } from "/src/engine/debug/network/index.js";
+import { createNetworkDebugPluginDefinition } from '/src/engine/debug/network/bootstrap/createNetworkDebugSurfaceIntegration.js';
 import { asArray } from "/src/shared/array/arrays.js";
 import { asObject } from "/src/shared/object/objects.js";
 import { asNumber, toNetworkSnapshot } from "../../../shared/networkDebugUtils.js";

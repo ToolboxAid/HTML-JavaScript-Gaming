@@ -5,20 +5,58 @@ David Quesenberry
 Phase17DebugOverlayBottomRightPosition.test.mjs
 */
 import assert from 'node:assert/strict';
-import {
-  createBottomRightDebugPanelStack,
-  getNextBottomRightDebugPanelRect,
-} from '../../src/engine/debug/index.js';
-import DoomRaycastSpritesScene from '../../samples/phase-17/1701/RaycastDemoScene.js';
-import TextureMaterialDemoScene from '../../samples/phase-17/1704/TextureMaterialDemoScene.js';
-import RealGameplayMiniGameScene from '../../samples/phase-17/1708/RealGameplayMiniGameScene.js';
-import MovementModelsLab1709Scene from '../../samples/phase-17/1709/MovementModelsLabScene.js';
-import RealGameplayMiniGame1710Scene from '../../samples/phase-17/1710/RealGameplayMiniGameScene.js';
-import MovementModelsLab1711Scene from '../../samples/phase-17/1711/MovementModelsLabScene.js';
-import GameplayMetricsTelemetryScene from '../../samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
-import FinalReferenceGameScene from '../../samples/phase-17/1713/FinalReferenceGameScene.js';
-import { getOverlayCycleInputCodes } from '../../samples/phase-17/shared/overlayCycleInput.js';
-import { resetTabDebugOverlayPersistenceForTests } from '../../samples/phase-17/shared/tabDebugOverlayCycle.js';
+import path from 'node:path';
+import { registerHooks } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { createBottomRightDebugPanelStack, getNextBottomRightDebugPanelRect } from '../../src/engine/debug/DebugOverlayLayout.js';
+
+const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
+const ROOT_ALIASES = ['/src/', '/games/', '/tools/', '/samples/'];
+
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (ROOT_ALIASES.some((prefix) => specifier.startsWith(prefix))) {
+      return nextResolve(pathToFileURL(path.join(repoRoot, specifier.slice(1))).href, context);
+    }
+
+    return nextResolve(specifier, context);
+  },
+});
+
+const [
+  doomRaycastSpritesSceneModule,
+  textureMaterialDemoSceneModule,
+  realGameplayMiniGameSceneModule,
+  movementModelsLab1709SceneModule,
+  realGameplayMiniGame1710SceneModule,
+  movementModelsLab1711SceneModule,
+  gameplayMetricsTelemetrySceneModule,
+  finalReferenceGameSceneModule,
+  overlayCycleInputModule,
+  tabDebugOverlayCycleModule,
+] = await Promise.all([
+  import('../../samples/phase-17/1701/RaycastDemoScene.js'),
+  import('../../samples/phase-17/1704/TextureMaterialDemoScene.js'),
+  import('../../samples/phase-17/1708/RealGameplayMiniGameScene.js'),
+  import('../../samples/phase-17/1709/MovementModelsLabScene.js'),
+  import('../../samples/phase-17/1710/RealGameplayMiniGameScene.js'),
+  import('../../samples/phase-17/1711/MovementModelsLabScene.js'),
+  import('../../samples/phase-17/1712/GameplayMetricsTelemetryScene.js'),
+  import('../../samples/phase-17/1713/FinalReferenceGameScene.js'),
+  import('../../samples/phase-17/shared/overlayCycleInput.js'),
+  import('../../samples/phase-17/shared/tabDebugOverlayCycle.js'),
+]);
+
+const { default: DoomRaycastSpritesScene } = doomRaycastSpritesSceneModule;
+const { default: TextureMaterialDemoScene } = textureMaterialDemoSceneModule;
+const { default: RealGameplayMiniGameScene } = realGameplayMiniGameSceneModule;
+const { default: MovementModelsLab1709Scene } = movementModelsLab1709SceneModule;
+const { default: RealGameplayMiniGame1710Scene } = realGameplayMiniGame1710SceneModule;
+const { default: MovementModelsLab1711Scene } = movementModelsLab1711SceneModule;
+const { default: GameplayMetricsTelemetryScene } = gameplayMetricsTelemetrySceneModule;
+const { default: FinalReferenceGameScene } = finalReferenceGameSceneModule;
+const { getOverlayCycleInputCodes } = overlayCycleInputModule;
+const { resetTabDebugOverlayPersistenceForTests } = tabDebugOverlayCycleModule;
 
 function createCameraStub() {
   const state = {
@@ -272,4 +310,8 @@ export function run() {
   assertSample1712TelemetryPlacement();
   assertSample1713FinalRuntimePlacement();
   assertNoFlickerDuringSampleSwitching();
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  run();
 }

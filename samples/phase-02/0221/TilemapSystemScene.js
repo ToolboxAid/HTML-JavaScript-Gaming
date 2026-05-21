@@ -8,7 +8,7 @@ import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { clamp } from '/src/shared/math/scalars.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import Tilemap from '/src/engine/tilemap/Tilemap.js';
 import { renderTilemap } from '/src/engine/tilemap/TilemapRenderSystem.js';
 import { resolveRectVsTilemap } from '/src/engine/tilemap/TilemapCollision.js';

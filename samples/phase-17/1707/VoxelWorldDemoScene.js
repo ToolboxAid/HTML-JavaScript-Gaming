@@ -7,7 +7,8 @@ VoxelWorldDemoScene.js
 import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { createBottomRightDebugPanelStack, drawFrame, drawStackedDebugPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawStackedDebugPanel } from '/src/engine/debug/DebugOverlayLayout.js';
+import { drawFrame } from '/src/engine/debug/DebugPanel.js';
 
 const theme = new Theme(ThemeTokens);
 const WORLD_SIZE = 16;

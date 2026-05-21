@@ -1,4 +1,4 @@
-import Scene from '/src/engine/scene/Scene.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme } from '/src/engine/theme/Theme.js';
+import Scene from '/src/engine/scene/Scene.js'; import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js'; import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js'; import AssetImportPipeline from '/tools/shared/pipeline/AssetImportPipeline.js';
 const theme = new Theme(ThemeTokens);
 export default class AssetImportPipelineScene extends Scene {

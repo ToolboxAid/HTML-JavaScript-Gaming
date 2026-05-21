@@ -4,7 +4,7 @@ David Quesenberry
 04/16/2026
 FinalReferenceGameScene.js
 */
-import { createBottomRightDebugPanelStack, drawStackedDebugPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawStackedDebugPanel } from '/src/engine/debug/DebugOverlayLayout.js';
 import GameplayMetricsTelemetryScene from '/samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
 import { getRequiredLevel17OverlayStackConfig } from '/samples/phase-17/shared/overlayStackBySampleConfig.js';
 const OVERLAY_UI_LAYER = 'ui-layer';

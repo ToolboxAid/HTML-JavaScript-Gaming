@@ -14,7 +14,8 @@ import {
   createVelocity,
   createRenderable,
 } from '/src/engine/components/index.js';
-import { drawSceneFrame, drawPanel, StatsTracker } from '/src/engine/debug/index.js';
+import { drawSceneFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
+import StatsTracker from '/src/engine/debug/StatsTracker.js';
 import {
   moveEntities,
   bounceEntitiesHorizontallyInBounds,

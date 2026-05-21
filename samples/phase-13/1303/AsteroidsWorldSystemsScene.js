@@ -7,7 +7,7 @@ AsteroidsWorldSystemsScene.js
 import Scene from '/src/engine/scene/Scene.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import { isFiniteNumber } from '../../shared/numberUtils.js';
 import { SpawnSystem, LifecycleSystem, WorldStateSystem, EventsSystem, distanceSq } from '/samples/shared/worldSystems.js';
 
