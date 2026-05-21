@@ -14,7 +14,10 @@ import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSys
 import GameModeState from '/src/engine/game/GameModeState.js';
 import { resolveInteraction } from '/src/engine/interaction/InteractionSystem.js';
 import { updatePatrolEntity, isWithinDetectionRange } from '/src/engine/ai/PatrolSystem.js';
-import { spawnProjectile, updateProjectiles } from '/src/engine/systems/index.js';
+import {
+  spawnProjectile,
+  updateProjectiles
+} from '/src/engine/systems/ProjectileSystem.js';
 import { createPlayerPrefab, createEnemyPrefab } from '/src/engine/prefabs/index.js';
 
 const theme = new Theme(ThemeTokens);

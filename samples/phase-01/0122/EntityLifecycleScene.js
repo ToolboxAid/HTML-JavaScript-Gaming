@@ -19,13 +19,11 @@ import {
   createTag,
 } from '/src/engine/components/index.js';
 import { drawSceneFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
-import {
-  applyInputControl,
-  moveEntities,
-  renderRectEntities,
-  tickLifetimes,
-  collectOverlappingEntities,
-} from '/src/engine/systems/index.js';
+import { applyInputControl } from '/src/engine/systems/InputControlSystem.js';
+import { moveEntities } from '/src/engine/systems/MovementSystem.js';
+import { renderRectEntities } from '/src/engine/systems/RenderSystem.js';
+import { tickLifetimes } from '/src/engine/systems/LifecycleSystem.js';
+import { collectOverlappingEntities } from '/src/engine/systems/CollectSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

@@ -16,11 +16,9 @@ import {
 } from '/src/engine/components/index.js';
 import { drawSceneFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import StatsTracker from '/src/engine/debug/StatsTracker.js';
-import {
-  moveEntities,
-  bounceEntitiesHorizontallyInBounds,
-  renderRectEntities,
-} from '/src/engine/systems/index.js';
+import { moveEntities } from '/src/engine/systems/MovementSystem.js';
+import { bounceEntitiesHorizontallyInBounds } from '/src/engine/systems/BounceSystem.js';
+import { renderRectEntities } from '/src/engine/systems/RenderSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

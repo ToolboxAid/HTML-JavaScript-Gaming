@@ -4,7 +4,10 @@ David Quesenberry
 03/24/2026
 ProjectileLabModel.js
 */
-import { spawnProjectile, updateProjectiles } from '/src/engine/systems/index.js';
+import {
+  spawnProjectile,
+  updateProjectiles
+} from '/src/engine/systems/ProjectileSystem.js';
 
 const PRESET_ORDER = ['single', 'fast', 'slow', 'burst', 'angled'];
 

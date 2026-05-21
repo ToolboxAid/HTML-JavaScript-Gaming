@@ -11,7 +11,10 @@ import { clamp } from '/src/shared/math/scalars.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import { resolveInteraction } from '/src/engine/interaction/InteractionSystem.js';
 import { updatePatrolEntity, isWithinDetectionRange } from '/src/engine/ai/PatrolSystem.js';
-import { spawnProjectile, updateProjectiles } from '/src/engine/systems/index.js';
+import {
+  spawnProjectile,
+  updateProjectiles
+} from '/src/engine/systems/ProjectileSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

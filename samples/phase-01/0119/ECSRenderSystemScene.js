@@ -9,7 +9,7 @@ import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import World from '/src/engine/ecs/World.js';
 import { drawSceneFrame } from '/src/engine/debug/DebugPanel.js';
-import { renderRectEntities } from '/src/engine/systems/index.js';
+import { renderRectEntities } from '/src/engine/systems/RenderSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

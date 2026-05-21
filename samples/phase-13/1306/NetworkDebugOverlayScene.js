@@ -8,7 +8,9 @@ import Scene from '/src/engine/scene/Scene.js';
 import { drawFrame } from '/src/engine/debug/DebugPanel.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { drawNetworkDebugOverlay, NetworkingLayer, NetworkConditionSimulator } from '/src/engine/network/index.js';
+import { drawNetworkDebugOverlay } from '/src/engine/network/debug/NetworkDebugOverlay.js';
+import NetworkingLayer from '/src/engine/network/bootstrap/NetworkingLayer.js';
+import NetworkConditionSimulator from '/src/engine/network/transport/NetworkConditionSimulator.js';
 
 const theme = new Theme(ThemeTokens);
 

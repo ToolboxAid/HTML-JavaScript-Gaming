@@ -19,12 +19,10 @@ import {
   createRenderable,
 } from '/src/engine/components/index.js';
 import { drawSceneFrame } from '/src/engine/debug/DebugPanel.js';
-import {
-  applyInputControl,
-  moveEntities,
-  blockCollidingEntities,
-  renderRectEntities,
-} from '/src/engine/systems/index.js';
+import { applyInputControl } from '/src/engine/systems/InputControlSystem.js';
+import { moveEntities } from '/src/engine/systems/MovementSystem.js';
+import { blockCollidingEntities } from '/src/engine/systems/CollisionSystem.js';
+import { renderRectEntities } from '/src/engine/systems/RenderSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

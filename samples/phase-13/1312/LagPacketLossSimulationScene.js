@@ -8,7 +8,8 @@ import Scene from '/src/engine/scene/Scene.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { NetworkConditionSimulator, NetworkingLayer } from '/src/engine/network/index.js';
+import NetworkConditionSimulator from '/src/engine/network/transport/NetworkConditionSimulator.js';
+import NetworkingLayer from '/src/engine/network/bootstrap/NetworkingLayer.js';
 
 const theme = new Theme(ThemeTokens);
 

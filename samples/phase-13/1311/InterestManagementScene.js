@@ -8,7 +8,7 @@ import Scene from '/src/engine/scene/Scene.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
-import { InterestManager } from '/src/engine/network/index.js';
+import InterestManager from '/src/engine/network/server/InterestManager.js';
 
 const theme = new Theme(ThemeTokens);
 

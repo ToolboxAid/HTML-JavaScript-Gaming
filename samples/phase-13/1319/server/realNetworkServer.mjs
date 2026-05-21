@@ -9,9 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { WebSocketServer, WebSocket } from "ws";
 
-import {
-  AuthoritativeServerRuntime
-} from "../../../../src/engine/network/index.js";
+import AuthoritativeServerRuntime from '../../../../src/engine/network/server/AuthoritativeServerRuntime.js';
 import {
   DASHBOARD_PATH,
   DASHBOARD_CSS_PATH,

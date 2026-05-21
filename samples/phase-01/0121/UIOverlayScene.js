@@ -17,11 +17,9 @@ import {
   createRenderable,
 } from '/src/engine/components/index.js';
 import { drawSceneFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
-import {
-  applyInputControl,
-  moveEntities,
-  renderRectEntities,
-} from '/src/engine/systems/index.js';
+import { applyInputControl } from '/src/engine/systems/InputControlSystem.js';
+import { moveEntities } from '/src/engine/systems/MovementSystem.js';
+import { renderRectEntities } from '/src/engine/systems/RenderSystem.js';
 
 const theme = new Theme(ThemeTokens);
 

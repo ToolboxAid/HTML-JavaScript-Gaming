@@ -15,7 +15,7 @@ import { renderTilemap } from '/src/engine/tilemap/TilemapRenderSystem.js';
 import SpriteAtlas from '/src/engine/assets/SpriteAtlas.js';
 import ImageAssetLoader from '/src/engine/assets/ImageAssetLoader.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSystem.js';
-import { moveRectWithTilemapCollision } from '/src/engine/systems/index.js';
+import { moveRectWithTilemapCollision } from '/src/engine/systems/CollisionResolutionSystem.js';
 import { createDemoSpriteSheet } from './demoSpriteFactory.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 

@@ -16,7 +16,7 @@ import SpriteAtlas from '/src/engine/assets/SpriteAtlas.js';
 import ImageAssetLoader from '/src/engine/assets/ImageAssetLoader.js';
 import AnimationController from '/src/engine/animation/AnimationController.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/SpriteRenderSystem.js';
-import { stepArcadeBody } from '/src/engine/systems/index.js';
+import { stepArcadeBody } from '/src/engine/systems/PhysicsSystem.js';
 import { createDemoSpriteSheet } from '../0301/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);

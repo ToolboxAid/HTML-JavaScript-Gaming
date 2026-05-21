@@ -9,7 +9,7 @@ import { Theme } from '/src/engine/theme/Theme.js';
 import { ThemeTokens } from '/src/engine/theme/ThemeTokens.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/DebugPanel.js';
 import World from '/src/engine/ecs/World.js';
-import { stepWorldPhysics3D } from '/src/engine/systems/index.js';
+import { stepWorldPhysics3D } from '/src/engine/systems/PhysicsSystem.js';
 import {
   applyPhase16CameraMode,
   createPhase16ViewState,

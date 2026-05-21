@@ -5,36 +5,35 @@ David Quesenberry
 MultiplayerNetworkingStack.test.mjs
 */
 import assert from 'node:assert/strict';
-import {
-  AuthoritativeInputIngestionContract,
-  AuthoritativeServerRuntime,
-  ClientReplicationApplicationLayer,
-  ClientReconciliationStrategy,
-  ChatPresenceLayer,
-  HandshakeSimulator,
-  HostServerBootstrap,
-  INPUT_INGESTION_REJECTION_CODES,
-  InterestManager,
-  LoopbackTransport,
-  NetworkConditionSimulator,
-  NetworkingLayer,
-  PredictionReconciler,
-  REPLICATION_IGNORE_REASONS,
-  REPLICATION_MESSAGE_REJECTION_CODES,
-  REPLICATION_SNAPSHOT_TYPES,
-  ReplicationMessageContract,
-  RemoteInterpolationBuffer,
-  RollbackDiagnostics,
+import AuthoritativeInputIngestionContract, { INPUT_INGESTION_REJECTION_CODES } from '../../src/engine/network/server/AuthoritativeInputIngestionContract.js';
+import AuthoritativeServerRuntime, {
   SERVER_RUNTIME_INGEST_REJECTION_CODES,
-  SERVER_RUNTIME_PHASES,
+  SERVER_RUNTIME_PHASES
+} from '../../src/engine/network/server/AuthoritativeServerRuntime.js';
+import ClientReplicationApplicationLayer from '../../src/engine/network/client/ClientReplicationApplicationLayer.js';
+import ClientReconciliationStrategy, { REPLICATION_IGNORE_REASONS } from '../../src/engine/network/client/ClientReconciliationStrategy.js';
+import ChatPresenceLayer from '../../src/engine/network/session/ChatPresenceLayer.js';
+import HandshakeSimulator, { getHandshakeContract } from '../../src/engine/network/session/HandshakeSimulator.js';
+import HostServerBootstrap from '../../src/engine/network/bootstrap/HostServerBootstrap.js';
+import InterestManager from '../../src/engine/network/server/InterestManager.js';
+import LoopbackTransport from '../../src/engine/network/transport/LoopbackTransport.js';
+import NetworkConditionSimulator from '../../src/engine/network/transport/NetworkConditionSimulator.js';
+import NetworkingLayer from '../../src/engine/network/bootstrap/NetworkingLayer.js';
+import PredictionReconciler from '../../src/engine/network/client/PredictionReconciler.js';
+import ReplicationMessageContract, {
+  REPLICATION_MESSAGE_REJECTION_CODES,
+  REPLICATION_SNAPSHOT_TYPES
+} from '../../src/engine/network/replication/ReplicationMessageContract.js';
+import RemoteInterpolationBuffer from '../../src/engine/network/client/RemoteInterpolationBuffer.js';
+import RollbackDiagnostics from '../../src/engine/network/server/RollbackDiagnostics.js';
+import {
   SESSION_STATES,
-  Serializer,
-  StateReplication,
   createSessionLifecycle,
-  getHandshakeContract,
-  getSessionLifecycleContract,
-  getTransportContract,
-} from '../../src/engine/network/index.js';
+  getSessionLifecycleContract
+} from '../../src/engine/network/session/SessionLifecycleContract.js';
+import Serializer from '../../src/engine/network/transport/Serializer.js';
+import StateReplication from '../../src/engine/network/replication/StateReplication.js';
+import { getTransportContract } from '../../src/engine/network/transport/TransportContract.js';
 
 export async function run() {
   const serializer = new Serializer({ version: 2 });

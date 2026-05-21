@@ -13,7 +13,7 @@ import Tilemap from '../../src/engine/tilemap/Tilemap.js';
 import { renderTilemap } from '../../src/engine/tilemap/TilemapRenderSystem.js';
 import { isColliding } from '../../src/engine/collision/aabb.js';
 import { runHybridCollision } from '../../src/engine/collision/hybrid.js';
-import { moveRectWithTilemapCollision } from '../../src/engine/systems/index.js';
+import { moveRectWithTilemapCollision } from '../../src/engine/systems/CollisionResolutionSystem.js';
 import GameModeState from '../../src/engine/game/GameModeState.js';
 import { runIfGameplayMode } from '../../src/engine/game/gameplayHooks.js';
 

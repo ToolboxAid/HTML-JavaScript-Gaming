@@ -18,7 +18,8 @@ import { integrateVelocity3D } from '../../src/engine/physics/integration3d.js';
 import { isAabbColliding3D, resolveAabbCollision3D } from '../../src/engine/physics/collision3d.js';
 import { stepSceneBodies3D } from '../../src/engine/physics/scene3d.js';
 import AudioService from '../../src/engine/audio/AudioService.js';
-import * as systems from '../../src/engine/systems/index.js';
+import { moveEntities, moveEntities3D } from '../../src/engine/systems/MovementSystem.js';
+import { stepWorldPhysics3D } from '../../src/engine/systems/PhysicsSystem.js';
 
 export function run() {
   // Core boot/timing boundaries.
@@ -41,10 +42,10 @@ export function run() {
   assert.equal(typeof physics.resolveAabbCollision3D, 'function');
   assert.equal(typeof physics.stepSceneBodies3D, 'function');
   assert.equal(typeof AudioService, 'function');
-  assert.equal(typeof systems.moveEntities, 'function');
-  assert.equal(typeof systems.moveEntities3D, 'function');
-  assert.equal(typeof systems.stepArcadeBody, 'function');
-  assert.equal(typeof systems.stepWorldPhysics3D, 'function');
+  assert.equal(typeof moveEntities, 'function');
+  assert.equal(typeof moveEntities3D, 'function');
+  assert.equal(typeof stepArcadeBody, 'function');
+  assert.equal(typeof stepWorldPhysics3D, 'function');
 
   // Combined service cluster contracts: timing/frame, event routing, camera.
   const frameClock = new core.FrameClock({ now: () => 100, maxDeltaMs: 100 });
